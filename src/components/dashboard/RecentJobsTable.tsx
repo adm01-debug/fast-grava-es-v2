@@ -10,7 +10,7 @@ export function RecentJobsTable() {
   const recentJobs = mockJobs.slice(0, 6);
 
   return (
-    <Card className="col-span-3 glass-card">
+    <Card className="col-span-3 glass-card card-interactive animate-fade-in-up opacity-0 [animation-fill-mode:forwards] [animation-delay:0.15s]">
       <CardHeader className="pb-2">
         <CardTitle className="text-lg font-display gradient-text">Jobs Recentes</CardTitle>
       </CardHeader>
@@ -29,12 +29,15 @@ export function RecentJobsTable() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {recentJobs.map((job) => {
+            {recentJobs.map((job, index) => {
               const technique = getTechniqueById(job.techniqueId);
               const machine = getMachineById(job.machineId);
 
               return (
-                <TableRow key={job.id} className="border-border/20 hover:bg-secondary/50 transition-colors">
+                <TableRow 
+                  key={job.id} 
+                  className="border-border/20 hover:bg-secondary/50 transition-all hover:-translate-x-0.5 cursor-pointer"
+                >
                   <TableCell className="font-mono text-sm font-medium text-primary">
                     {job.orderNumber}
                   </TableCell>

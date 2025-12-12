@@ -56,7 +56,8 @@ export function StatsCard({
 
   return (
     <Card className={cn(
-      'p-5 hover:border-primary/30 transition-all duration-300 animate-fade-in glass-card',
+      'p-5 glass-card card-interactive animate-fade-in',
+      'opacity-0 [animation-fill-mode:forwards]',
       className
     )}>
       <div className="flex items-start justify-between">

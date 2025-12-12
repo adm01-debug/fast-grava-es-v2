@@ -17,7 +17,7 @@ const Index = () => {
     <MainLayout>
       <div className="p-8 space-y-8">
         {/* Page Header */}
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2 animate-fade-in">
           <h1 className="text-3xl font-display font-bold">
             <span className="gradient-text">Dashboard</span>
           </h1>
@@ -35,6 +35,7 @@ const Index = () => {
             icon={Calendar}
             variant="primary"
             trend={{ value: 14, isPositive: true }}
+            className="stagger-1"
           />
           <StatsCard
             title="Em Produção"
@@ -42,6 +43,7 @@ const Index = () => {
             subtitle="de 52 máquinas"
             icon={Printer}
             variant="primary"
+            className="stagger-2"
           />
           <StatsCard
             title="Finalizados Hoje"
@@ -49,6 +51,7 @@ const Index = () => {
             subtitle="2.450 peças"
             icon={CheckCircle2}
             variant="success"
+            className="stagger-3"
           />
           <StatsCard
             title="Atrasados"
@@ -57,6 +60,7 @@ const Index = () => {
             icon={AlertTriangle}
             variant="warning"
             trend={{ value: 25, isPositive: true }}
+            className="stagger-4"
           />
         </div>
 
