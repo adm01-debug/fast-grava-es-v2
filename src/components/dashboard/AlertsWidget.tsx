@@ -51,11 +51,13 @@ export function AlertsWidget() {
   };
 
   return (
-    <Card>
+    <Card className="glass-card">
       <CardHeader className="pb-2">
         <CardTitle className="text-lg font-display flex items-center gap-2">
-          <AlertTriangle className="w-5 h-5 text-status-delayed" />
-          Alertas
+          <div className="w-8 h-8 rounded-lg bg-status-delayed/20 flex items-center justify-center">
+            <AlertTriangle className="w-4 h-4 text-status-delayed" />
+          </div>
+          <span className="gradient-text">Alertas</span>
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
@@ -65,7 +67,7 @@ export function AlertsWidget() {
           return (
             <div 
               key={alert.id}
-              className="flex items-start gap-3 p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors cursor-pointer"
+              className="flex items-start gap-3 p-3 rounded-lg bg-secondary/50 hover:bg-secondary/80 transition-colors cursor-pointer border border-border/20"
             >
               <div className={cn(
                 'w-8 h-8 rounded-lg flex items-center justify-center shrink-0',
@@ -74,7 +76,7 @@ export function AlertsWidget() {
                 <Icon className="w-4 h-4" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium">{alert.title}</p>
+                <p className="text-sm font-medium text-foreground">{alert.title}</p>
                 <p className="text-xs text-muted-foreground truncate">{alert.description}</p>
                 <p className="text-xs text-muted-foreground mt-1">
                   {formatDistanceToNow(alert.time, { addSuffix: true, locale: ptBR })}

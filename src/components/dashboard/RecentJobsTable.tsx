@@ -10,22 +10,22 @@ export function RecentJobsTable() {
   const recentJobs = mockJobs.slice(0, 6);
 
   return (
-    <Card className="col-span-3">
+    <Card className="col-span-3 glass-card">
       <CardHeader className="pb-2">
-        <CardTitle className="text-lg font-display">Jobs Recentes</CardTitle>
+        <CardTitle className="text-lg font-display gradient-text">Jobs Recentes</CardTitle>
       </CardHeader>
       <CardContent>
         <Table>
           <TableHeader>
-            <TableRow>
-              <TableHead className="w-[100px]">OS</TableHead>
-              <TableHead>Cliente</TableHead>
-              <TableHead>Produto</TableHead>
-              <TableHead className="text-center">Qtd</TableHead>
-              <TableHead>Técnica</TableHead>
-              <TableHead>Máquina</TableHead>
-              <TableHead>Horário</TableHead>
-              <TableHead>Status</TableHead>
+            <TableRow className="border-border/30 hover:bg-transparent">
+              <TableHead className="w-[100px] text-muted-foreground">OS</TableHead>
+              <TableHead className="text-muted-foreground">Cliente</TableHead>
+              <TableHead className="text-muted-foreground">Produto</TableHead>
+              <TableHead className="text-center text-muted-foreground">Qtd</TableHead>
+              <TableHead className="text-muted-foreground">Técnica</TableHead>
+              <TableHead className="text-muted-foreground">Máquina</TableHead>
+              <TableHead className="text-muted-foreground">Horário</TableHead>
+              <TableHead className="text-muted-foreground">Status</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -34,8 +34,8 @@ export function RecentJobsTable() {
               const machine = getMachineById(job.machineId);
 
               return (
-                <TableRow key={job.id} className="hover:bg-muted/50 transition-colors">
-                  <TableCell className="font-mono text-sm font-medium">
+                <TableRow key={job.id} className="border-border/20 hover:bg-secondary/50 transition-colors">
+                  <TableCell className="font-mono text-sm font-medium text-primary">
                     {job.orderNumber}
                   </TableCell>
                   <TableCell className="font-medium max-w-[150px] truncate">
@@ -45,7 +45,7 @@ export function RecentJobsTable() {
                     {job.product}
                   </TableCell>
                   <TableCell className="text-center">
-                    <Badge variant="secondary" className="font-mono">
+                    <Badge variant="secondary" className="font-mono bg-secondary/80">
                       {job.quantity.toLocaleString('pt-BR')}
                     </Badge>
                   </TableCell>
@@ -53,7 +53,7 @@ export function RecentJobsTable() {
                     <span className="text-sm">{technique?.shortName}</span>
                   </TableCell>
                   <TableCell>
-                    <Badge variant="outline" className="font-mono text-xs">
+                    <Badge variant="outline" className="font-mono text-xs border-border/50">
                       {machine?.code}
                     </Badge>
                   </TableCell>
