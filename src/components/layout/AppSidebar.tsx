@@ -13,7 +13,9 @@ import {
   ChevronLeft,
   ChevronRight,
   Home,
-  Plus
+  Plus,
+  BarChart3,
+  UserCircle
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -33,7 +35,9 @@ const mainNavItems: NavItem[] = [
   { icon: LayoutGrid, label: 'Kanban', href: '/kanban' },
   { icon: List, label: 'Lista de Pendências', href: '/pending' },
   { icon: PieChart, label: 'Ocupação', href: '/occupancy' },
+  { icon: BarChart3, label: 'KPIs', href: '/kpis' },
   { icon: AlertTriangle, label: 'Alertas', href: '/alerts', badge: 3 },
+  { icon: UserCircle, label: 'Visão Operador', href: '/operator' },
 ];
 
 const secondaryNavItems: NavItem[] = [

@@ -9,6 +9,8 @@ import WeeklyCalendar from "./pages/WeeklyCalendar";
 import PendingQueue from "./pages/PendingQueue";
 import AlertsDashboard from "./pages/AlertsDashboard";
 import KanbanBoard from "./pages/KanbanBoard";
+import KPIDashboard from "./pages/KPIDashboard";
+import OperatorView from "./pages/OperatorView";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -26,6 +28,8 @@ const App = () => (
           <Route path="/pending" element={<PendingQueue />} />
           <Route path="/alerts" element={<AlertsDashboard />} />
           <Route path="/kanban" element={<KanbanBoard />} />
+          <Route path="/kpis" element={<KPIDashboard />} />
+          <Route path="/operator" element={<OperatorView />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
