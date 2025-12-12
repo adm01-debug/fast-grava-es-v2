@@ -13,23 +13,24 @@ const actions = [
 
 export function QuickActions() {
   return (
-    <Card className="glass-card">
+    <Card className="glass-card card-interactive animate-fade-in-up opacity-0 [animation-fill-mode:forwards] [animation-delay:0.2s]">
       <CardHeader className="pb-2">
         <CardTitle className="text-lg font-display gradient-text">Ações Rápidas</CardTitle>
       </CardHeader>
       <CardContent className="grid grid-cols-2 gap-3">
-        {actions.map((action) => {
+        {actions.map((action, index) => {
           const Icon = action.icon;
           return (
             <Link key={action.href} to={action.href}>
               <Button 
                 variant="outline"
                 className={cn(
-                  "w-full h-auto py-4 flex-col gap-2 border-border/30 hover:border-primary/50 transition-all",
-                  action.primary && "gradient-primary border-0 text-primary-foreground hover:opacity-90 glow-primary"
+                  "w-full h-auto py-4 flex-col gap-2 border-border/30 transition-all group",
+                  "hover:border-primary/50 hover:-translate-y-1 hover:shadow-lg",
+                  action.primary && "gradient-primary border-0 text-primary-foreground hover:opacity-90 animate-glow-pulse"
                 )}
               >
-                <Icon className="w-5 h-5" />
+                <Icon className="w-5 h-5 transition-transform group-hover:scale-110" />
                 <span className="text-xs font-medium">{action.label}</span>
               </Button>
             </Link>

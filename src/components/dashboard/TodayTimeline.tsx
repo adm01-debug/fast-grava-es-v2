@@ -56,7 +56,7 @@ export function TodayTimeline() {
   const machineIds = Object.keys(jobsByMachine);
 
   return (
-    <Card className="col-span-3 glass-card">
+    <Card className="col-span-3 glass-card card-interactive animate-fade-in-up opacity-0 [animation-fill-mode:forwards] [animation-delay:0.05s]">
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg font-display gradient-text">Timeline de Hoje</CardTitle>
@@ -86,10 +86,10 @@ export function TodayTimeline() {
               {/* Current time indicator */}
               {currentTimePosition !== null && (
                 <div 
-                  className="absolute top-0 bottom-0 w-0.5 bg-primary z-20"
+                  className="absolute top-0 bottom-0 w-0.5 bg-primary z-20 animate-pulse-soft"
                   style={{ left: `${currentTimePosition + 96}px` }}
                 >
-                  <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-primary glow-primary" />
+                  <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-3 h-3 rounded-full bg-primary animate-glow-pulse" />
                 </div>
               )}
 
@@ -136,7 +136,8 @@ export function TodayTimeline() {
                             className={cn(
                               'absolute top-1.5 bottom-1.5 rounded-md cursor-pointer',
                               'flex items-center px-2 text-xs font-medium text-white',
-                              'hover:ring-2 hover:ring-primary/50 hover:ring-offset-1 hover:ring-offset-card transition-all',
+                              'hover:ring-2 hover:ring-primary/50 hover:ring-offset-1 hover:ring-offset-card',
+                              'transition-all hover:scale-[1.02] hover:z-10',
                               statusColors[job.status]
                             )}
                             style={{ left: `${pos.left}px`, width: `${pos.width}px` }}

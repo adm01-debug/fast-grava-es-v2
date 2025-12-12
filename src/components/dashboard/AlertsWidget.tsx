@@ -51,23 +51,26 @@ export function AlertsWidget() {
   };
 
   return (
-    <Card className="glass-card">
+    <Card className="glass-card card-interactive animate-fade-in-up opacity-0 [animation-fill-mode:forwards] [animation-delay:0.15s]">
       <CardHeader className="pb-2">
         <CardTitle className="text-lg font-display flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-status-delayed/20 flex items-center justify-center">
+          <div className="w-8 h-8 rounded-lg bg-status-delayed/20 flex items-center justify-center animate-glow-pulse">
             <AlertTriangle className="w-4 h-4 text-status-delayed" />
           </div>
           <span className="gradient-text">Alertas</span>
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
-        {alerts.map((alert) => {
+        {alerts.map((alert, index) => {
           const Icon = alertIcons[alert.type];
           
           return (
             <div 
               key={alert.id}
-              className="flex items-start gap-3 p-3 rounded-lg bg-secondary/50 hover:bg-secondary/80 transition-colors cursor-pointer border border-border/20"
+              className={cn(
+                "flex items-start gap-3 p-3 rounded-lg bg-secondary/50 hover:bg-secondary/80 transition-all cursor-pointer border border-border/20",
+                "hover:-translate-x-1 hover:border-primary/30"
+              )}
             >
               <div className={cn(
                 'w-8 h-8 rounded-lg flex items-center justify-center shrink-0',

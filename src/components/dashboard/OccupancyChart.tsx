@@ -18,7 +18,7 @@ const mockOccupancyData: OccupancyData[] = techniques.slice(0, 10).map((tech) =>
 
 export function OccupancyChart() {
   return (
-    <Card className="col-span-2 glass-card">
+    <Card className="col-span-2 glass-card card-interactive animate-fade-in-up opacity-0 [animation-fill-mode:forwards] [animation-delay:0.1s]">
       <CardHeader className="pb-2">
         <CardTitle className="text-lg font-display gradient-text">Ocupação por Técnica</CardTitle>
       </CardHeader>
