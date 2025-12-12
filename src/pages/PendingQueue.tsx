@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { StatusBadge } from "@/components/ui/status-badge";
+import { JobDetailsModal } from "@/components/jobs/JobDetailsModal";
 import { 
   Search, 
   Filter, 
@@ -47,6 +48,8 @@ export default function PendingQueue() {
   const [selectedPriority, setSelectedPriority] = useState<string>("all");
   const [sortField, setSortField] = useState<SortField>('scheduledDate');
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
+  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Filter pending jobs (queue, ready, scheduled, delayed, rework)
   const pendingStatuses: JobStatus[] = ['queue', 'ready', 'scheduled', 'delayed', 'rework'];
@@ -124,8 +127,18 @@ export default function PendingQueue() {
     rework: filteredJobs.filter(j => j.status === 'rework').length,
   }), [filteredJobs]);
 
+  const handleJobClick = (job: Job) => {
+    setSelectedJob(job);
+    setIsModalOpen(true);
+  };
+
   return (
     <div className="min-h-screen bg-background p-6 space-y-6">
+      <JobDetailsModal 
+        job={selectedJob} 
+        open={isModalOpen} 
+        onOpenChange={setIsModalOpen} 
+      />
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -335,6 +348,7 @@ export default function PendingQueue() {
                     <TableRow 
                       key={job.id} 
                       className="border-border/50 hover:bg-muted/30 transition-colors cursor-pointer"
+                      onClick={() => handleJobClick(job)}
                     >
                       <TableCell className="font-medium text-foreground">
                         {job.orderNumber}
