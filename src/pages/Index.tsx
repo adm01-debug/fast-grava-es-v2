@@ -32,7 +32,7 @@ const Index = () => {
             value="24"
             subtitle="+3 desde ontem"
             icon={Calendar}
-            variant="primary"
+            variant="blue"
             trend={{ value: 14, isPositive: true }}
             className="stagger-1"
           />
@@ -41,7 +41,7 @@ const Index = () => {
             value="8"
             subtitle="de 52 máquinas"
             icon={Printer}
-            variant="secondary"
+            variant="cyan"
             className="stagger-2"
           />
           <StatsCard
@@ -49,7 +49,7 @@ const Index = () => {
             value="16"
             subtitle="2.450 peças"
             icon={CheckCircle2}
-            variant="success"
+            variant="green"
             className="stagger-3"
           />
           <StatsCard
@@ -57,7 +57,7 @@ const Index = () => {
             value="3"
             subtitle="Atenção necessária"
             icon={AlertTriangle}
-            variant="warning"
+            variant="purple"
             trend={{ value: 25, isPositive: true }}
             className="stagger-4"
           />

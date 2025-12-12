@@ -11,7 +11,7 @@ interface StatsCardProps {
     value: number;
     isPositive: boolean;
   };
-  variant?: 'default' | 'primary' | 'secondary' | 'success' | 'warning' | 'danger';
+  variant?: 'blue' | 'cyan' | 'green' | 'purple' | 'orange' | 'yellow';
   className?: string;
 }
 
@@ -21,33 +21,46 @@ export function StatsCard({
   subtitle, 
   icon: Icon, 
   trend, 
-  variant = 'default',
+  variant = 'blue',
   className 
 }: StatsCardProps) {
+  // Cores vibrantes como na referência Task Gifts
   const variantStyles = {
-    default: {
-      iconBg: 'bg-muted/50',
-      iconColor: 'text-muted-foreground',
+    blue: {
+      iconBg: 'bg-[hsl(210,100%,50%)]/20',
+      iconColor: 'text-[hsl(210,100%,60%)]',
+      borderColor: 'border-[hsl(210,100%,50%)]/20',
+      hoverBorder: 'hover:border-[hsl(210,100%,50%)]/40',
     },
-    primary: {
-      iconBg: 'bg-primary/20',
-      iconColor: 'text-primary',
+    cyan: {
+      iconBg: 'bg-[hsl(180,100%,45%)]/20',
+      iconColor: 'text-[hsl(180,100%,55%)]',
+      borderColor: 'border-[hsl(180,100%,45%)]/20',
+      hoverBorder: 'hover:border-[hsl(180,100%,45%)]/40',
     },
-    secondary: {
-      iconBg: 'bg-accent/20',
-      iconColor: 'text-accent',
+    green: {
+      iconBg: 'bg-[hsl(145,80%,45%)]/20',
+      iconColor: 'text-[hsl(145,80%,55%)]',
+      borderColor: 'border-[hsl(145,80%,45%)]/20',
+      hoverBorder: 'hover:border-[hsl(145,80%,45%)]/40',
     },
-    success: {
-      iconBg: 'bg-status-finished/20',
-      iconColor: 'text-status-finished',
+    purple: {
+      iconBg: 'bg-[hsl(280,85%,60%)]/20',
+      iconColor: 'text-[hsl(280,85%,65%)]',
+      borderColor: 'border-[hsl(280,85%,60%)]/20',
+      hoverBorder: 'hover:border-[hsl(280,85%,60%)]/40',
     },
-    warning: {
-      iconBg: 'bg-status-rework/20',
-      iconColor: 'text-status-rework',
+    orange: {
+      iconBg: 'bg-[hsl(24,100%,50%)]/20',
+      iconColor: 'text-[hsl(24,100%,60%)]',
+      borderColor: 'border-[hsl(24,100%,50%)]/20',
+      hoverBorder: 'hover:border-[hsl(24,100%,50%)]/40',
     },
-    danger: {
-      iconBg: 'bg-destructive/20',
-      iconColor: 'text-destructive',
+    yellow: {
+      iconBg: 'bg-[hsl(48,100%,50%)]/20',
+      iconColor: 'text-[hsl(48,100%,60%)]',
+      borderColor: 'border-[hsl(48,100%,50%)]/20',
+      hoverBorder: 'hover:border-[hsl(48,100%,50%)]/40',
     },
   };
 
@@ -55,22 +68,25 @@ export function StatsCard({
 
   return (
     <Card className={cn(
-      'p-6 glass-card card-interactive animate-fade-in',
+      'p-6 bg-card rounded-xl animate-fade-in',
       'opacity-0 [animation-fill-mode:forwards]',
+      'border transition-all duration-300 hover:-translate-y-0.5',
+      styles.borderColor,
+      styles.hoverBorder,
       className
     )}>
       <div className="flex items-start justify-between">
-        <div className="space-y-1.5">
+        <div className="space-y-1">
           <p className="text-sm font-medium text-muted-foreground">{title}</p>
           <p className="text-4xl font-display font-bold tracking-tight text-foreground">{value}</p>
           {subtitle && (
-            <p className="text-sm text-muted-foreground">{subtitle}</p>
+            <p className="text-sm text-muted-foreground mt-1">{subtitle}</p>
           )}
           {trend && (
             <div className="flex items-center gap-1.5 pt-1">
               <span className={cn(
                 'text-sm font-semibold',
-                trend.isPositive ? 'text-status-finished' : 'text-destructive'
+                trend.isPositive ? 'text-[hsl(145,80%,50%)]' : 'text-destructive'
               )}>
                 {trend.isPositive ? '+' : ''}{trend.value}%
               </span>
@@ -79,7 +95,7 @@ export function StatsCard({
           )}
         </div>
         <div className={cn(
-          'w-14 h-14 rounded-2xl flex items-center justify-center transition-transform hover:scale-110',
+          'w-14 h-14 rounded-2xl flex items-center justify-center transition-transform hover:scale-105',
           styles.iconBg
         )}>
           <Icon className={cn('w-7 h-7', styles.iconColor)} />
