@@ -1,0 +1,378 @@
+import { useState, useMemo } from 'react';
+import { MainLayout } from '@/components/layout/MainLayout';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useJobs, useTechniques, useMachines, useUpdateJobStatus, DbJob } from '@/hooks/useJobs';
+import { notifyStatusChange } from '@/hooks/useNotifications';
+import { JobDetailsModal } from '@/components/jobs/JobDetailsModal';
+import { 
+  User,
+  Play,
+  Pause,
+  CheckCircle2,
+  Clock,
+  AlertTriangle,
+  Package,
+  Camera
+} from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { Job } from '@/types/scheduling';
+
+// Convert DbJob to Job for modal compatibility
+function dbJobToJob(dbJob: DbJob): Job {
+  return {
+    id: dbJob.id,
+    orderNumber: dbJob.order_number,
+    client: dbJob.client,
+    product: dbJob.product,
+    quantity: dbJob.quantity,
+    techniqueId: dbJob.technique_id as Job['techniqueId'],
+    machineId: dbJob.machine_id || '',
+    operatorId: '',
+    scheduledDate: dbJob.scheduled_date ? new Date(dbJob.scheduled_date) : new Date(),
+    startTime: dbJob.start_time || '',
+    endTime: dbJob.end_time || '',
+    estimatedDuration: dbJob.estimated_duration,
+    status: dbJob.status as Job['status'],
+    gravureColor: dbJob.gravure_color || '',
+    notes: dbJob.notes || undefined,
+    actualStartTime: dbJob.actual_start_time ? new Date(dbJob.actual_start_time) : undefined,
+    actualEndTime: dbJob.actual_end_time ? new Date(dbJob.actual_end_time) : undefined,
+    lostPieces: dbJob.lost_pieces || undefined,
+    priority: dbJob.priority as Job['priority'],
+    createdAt: new Date(dbJob.created_at),
+    updatedAt: new Date(dbJob.updated_at),
+    createdBy: '',
+  };
+}
+
+export default function OperatorView() {
+  const [selectedMachine, setSelectedMachine] = useState<string>('all');
+  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const { data: jobs, isLoading: jobsLoading } = useJobs();
+  const { data: techniques } = useTechniques();
+  const { data: machines, isLoading: machinesLoading } = useMachines();
+  const updateStatus = useUpdateJobStatus();
+
+  const isLoading = jobsLoading || machinesLoading;
+
+  const filteredJobs = useMemo(() => {
+    if (!jobs) return [];
+    
+    let filtered = jobs.filter(job => 
+      ['ready', 'scheduled', 'production', 'paused'].includes(job.status)
+    );
+
+    if (selectedMachine !== 'all') {
+      filtered = filtered.filter(job => job.machine_id === selectedMachine);
+    }
+
+    return filtered;
+  }, [jobs, selectedMachine]);
+
+  const handleStartProduction = async (job: DbJob) => {
+    try {
+      await updateStatus.mutateAsync({ jobId: job.id, status: 'production' });
+      notifyStatusChange(job.client, job.status, 'production');
+    } catch (error) {
+      console.error('Error starting production:', error);
+    }
+  };
+
+  const handlePauseProduction = async (job: DbJob) => {
+    try {
+      await updateStatus.mutateAsync({ jobId: job.id, status: 'paused' });
+      notifyStatusChange(job.client, job.status, 'paused');
+    } catch (error) {
+      console.error('Error pausing production:', error);
+    }
+  };
+
+  const handleFinishProduction = async (job: DbJob) => {
+    try {
+      await updateStatus.mutateAsync({ jobId: job.id, status: 'finished' });
+      notifyStatusChange(job.client, job.status, 'finished');
+    } catch (error) {
+      console.error('Error finishing production:', error);
+    }
+  };
+
+  const handleJobClick = (job: DbJob) => {
+    setSelectedJob(dbJobToJob(job));
+    setIsModalOpen(true);
+  };
+
+  const getTechnique = (techniqueId: string) => {
+    return techniques?.find(t => t.id === techniqueId);
+  };
+
+  const getMachine = (machineId: string | null) => {
+    return machines?.find(m => m.id === machineId);
+  };
+
+  if (isLoading) {
+    return (
+      <MainLayout>
+        <div className="p-8 space-y-6">
+          <Skeleton className="h-10 w-64" />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {[1, 2, 3, 4].map(i => (
+              <Skeleton key={i} className="h-48" />
+            ))}
+          </div>
+        </div>
+      </MainLayout>
+    );
+  }
+
+  const inProductionJobs = filteredJobs.filter(j => j.status === 'production');
+  const readyJobs = filteredJobs.filter(j => ['ready', 'scheduled'].includes(j.status));
+  const pausedJobs = filteredJobs.filter(j => j.status === 'paused');
+
+  return (
+    <MainLayout>
+      <JobDetailsModal 
+        job={selectedJob} 
+        open={isModalOpen} 
+        onOpenChange={setIsModalOpen} 
+      />
+      
+      <div className="p-8 space-y-6 animate-fade-in-up">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-display font-bold">
+              <span className="gradient-text">Visão do Operador</span>
+            </h1>
+            <p className="text-muted-foreground">
+              Gerencie suas produções
+            </p>
+          </div>
+          
+          <div className="flex items-center gap-3">
+            <Select value={selectedMachine} onValueChange={setSelectedMachine}>
+              <SelectTrigger className="w-[220px] bg-card/50 border-border/50">
+                <User className="h-4 w-4 mr-2" />
+                <SelectValue placeholder="Selecionar máquina" />
+              </SelectTrigger>
+              <SelectContent className="bg-card border-border">
+                <SelectItem value="all">Todas as máquinas</SelectItem>
+                {machines?.map(machine => (
+                  <SelectItem key={machine.id} value={machine.id}>
+                    {machine.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
+        {/* In Production */}
+        {inProductionJobs.length > 0 && (
+          <div className="space-y-4">
+            <h2 className="text-xl font-semibold flex items-center gap-2">
+              <Play className="h-5 w-5 text-cyan-400" />
+              Em Produção
+            </h2>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              {inProductionJobs.map(job => {
+                const technique = getTechnique(job.technique_id);
+                const machine = getMachine(job.machine_id);
+                
+                return (
+                  <Card 
+                    key={job.id} 
+                    className="glass-card border-cyan-500/30 cursor-pointer hover:border-cyan-500/50 transition-colors"
+                    onClick={() => handleJobClick(job)}
+                  >
+                    <CardHeader className="pb-2">
+                      <div className="flex items-center justify-between">
+                        <CardTitle className="text-lg">{job.client}</CardTitle>
+                        <Badge className="bg-cyan-500/20 text-cyan-400 border-cyan-500/50">
+                          Em Produção
+                        </Badge>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <Badge variant="outline" style={{ 
+                          borderColor: technique?.color,
+                          color: technique?.color 
+                        }}>
+                          {technique?.name}
+                        </Badge>
+                        {machine && (
+                          <Badge variant="secondary">{machine.name}</Badge>
+                        )}
+                      </div>
+                      
+                      <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                          <p className="text-muted-foreground">Produto</p>
+                          <p className="font-medium">{job.product}</p>
+                        </div>
+                        <div>
+                          <p className="text-muted-foreground">Quantidade</p>
+                          <p className="font-medium">{job.quantity.toLocaleString()} pçs</p>
+                        </div>
+                      </div>
+
+                      <div className="flex gap-2 pt-2" onClick={e => e.stopPropagation()}>
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          className="flex-1 border-orange-500/50 text-orange-400 hover:bg-orange-500/10"
+                          onClick={() => handlePauseProduction(job)}
+                        >
+                          <Pause className="h-4 w-4 mr-1" />
+                          Pausar
+                        </Button>
+                        <Button 
+                          size="sm"
+                          className="flex-1 bg-green-600 hover:bg-green-700"
+                          onClick={() => handleFinishProduction(job)}
+                        >
+                          <CheckCircle2 className="h-4 w-4 mr-1" />
+                          Finalizar
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Paused Jobs */}
+        {pausedJobs.length > 0 && (
+          <div className="space-y-4">
+            <h2 className="text-xl font-semibold flex items-center gap-2">
+              <Pause className="h-5 w-5 text-orange-400" />
+              Pausados
+            </h2>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              {pausedJobs.map(job => {
+                const technique = getTechnique(job.technique_id);
+                
+                return (
+                  <Card 
+                    key={job.id} 
+                    className="glass-card border-orange-500/30 cursor-pointer hover:border-orange-500/50 transition-colors"
+                    onClick={() => handleJobClick(job)}
+                  >
+                    <CardContent className="pt-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <p className="font-medium">{job.client}</p>
+                        <Badge variant="outline" className="border-orange-500/50 text-orange-400">
+                          Pausado
+                        </Badge>
+                      </div>
+                      <p className="text-sm text-muted-foreground mb-3">{job.product}</p>
+                      
+                      <Button 
+                        size="sm"
+                        className="w-full"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleStartProduction(job);
+                        }}
+                      >
+                        <Play className="h-4 w-4 mr-1" />
+                        Retomar Produção
+                      </Button>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Ready Jobs */}
+        <div className="space-y-4">
+          <h2 className="text-xl font-semibold flex items-center gap-2">
+            <Package className="h-5 w-5 text-amber-400" />
+            Próximos Jobs ({readyJobs.length})
+          </h2>
+          
+          {readyJobs.length === 0 ? (
+            <Card className="glass-card">
+              <CardContent className="py-12 text-center">
+                <Clock className="h-12 w-12 mx-auto mb-4 text-muted-foreground opacity-30" />
+                <p className="text-muted-foreground">Nenhum job aguardando produção</p>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {readyJobs.map(job => {
+                const technique = getTechnique(job.technique_id);
+                const machine = getMachine(job.machine_id);
+                
+                return (
+                  <Card 
+                    key={job.id} 
+                    className={cn(
+                      "glass-card cursor-pointer transition-all duration-200 hover:scale-[1.02]",
+                      job.priority === 'urgent' && "border-red-500/30",
+                      job.priority === 'high' && "border-orange-500/30"
+                    )}
+                    onClick={() => handleJobClick(job)}
+                  >
+                    <CardContent className="pt-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <p className="font-medium truncate">{job.client}</p>
+                        {job.priority === 'urgent' && (
+                          <Badge variant="destructive" className="shrink-0">
+                            <AlertTriangle className="h-3 w-3 mr-1" />
+                            Urgente
+                          </Badge>
+                        )}
+                        {job.priority === 'high' && (
+                          <Badge variant="outline" className="border-orange-500/50 text-orange-400 shrink-0">
+                            Alta
+                          </Badge>
+                        )}
+                      </div>
+                      
+                      <p className="text-sm text-muted-foreground truncate mb-2">{job.product}</p>
+                      
+                      <div className="flex items-center gap-2 mb-3 flex-wrap">
+                        <Badge variant="outline" className="text-xs" style={{ 
+                          borderColor: technique?.color,
+                          color: technique?.color 
+                        }}>
+                          {technique?.short_name}
+                        </Badge>
+                        <span className="text-xs text-muted-foreground">
+                          {job.quantity.toLocaleString()} pçs
+                        </span>
+                      </div>
+
+                      <Button 
+                        size="sm"
+                        className="w-full gradient-primary"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleStartProduction(job);
+                        }}
+                      >
+                        <Play className="h-4 w-4 mr-1" />
+                        Iniciar Produção
+                      </Button>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </div>
+    </MainLayout>
+  );
+}
