@@ -11,7 +11,7 @@ interface StatsCardProps {
     value: number;
     isPositive: boolean;
   };
-  variant?: 'default' | 'primary' | 'success' | 'warning' | 'danger';
+  variant?: 'default' | 'primary' | 'secondary' | 'success' | 'warning' | 'danger';
   className?: string;
 }
 
@@ -26,29 +26,28 @@ export function StatsCard({
 }: StatsCardProps) {
   const variantStyles = {
     default: {
-      iconBg: 'bg-muted',
+      iconBg: 'bg-muted/50',
       iconColor: 'text-muted-foreground',
-      glow: '',
     },
     primary: {
-      iconBg: 'gradient-primary',
-      iconColor: 'text-primary-foreground',
-      glow: 'glow-primary',
+      iconBg: 'bg-primary/20',
+      iconColor: 'text-primary',
+    },
+    secondary: {
+      iconBg: 'bg-accent/20',
+      iconColor: 'text-accent',
     },
     success: {
-      iconBg: 'bg-accent',
-      iconColor: 'text-accent-foreground',
-      glow: '',
+      iconBg: 'bg-status-finished/20',
+      iconColor: 'text-status-finished',
     },
     warning: {
-      iconBg: 'bg-status-delayed',
-      iconColor: 'text-status-delayed-foreground',
-      glow: '',
+      iconBg: 'bg-status-rework/20',
+      iconColor: 'text-status-rework',
     },
     danger: {
-      iconBg: 'bg-destructive',
-      iconColor: 'text-destructive-foreground',
-      glow: '',
+      iconBg: 'bg-destructive/20',
+      iconColor: 'text-destructive',
     },
   };
 
@@ -56,22 +55,22 @@ export function StatsCard({
 
   return (
     <Card className={cn(
-      'p-5 glass-card card-interactive animate-fade-in',
+      'p-6 glass-card card-interactive animate-fade-in',
       'opacity-0 [animation-fill-mode:forwards]',
       className
     )}>
       <div className="flex items-start justify-between">
-        <div className="space-y-2">
+        <div className="space-y-1.5">
           <p className="text-sm font-medium text-muted-foreground">{title}</p>
-          <p className="text-3xl font-display font-bold tracking-tight text-foreground">{value}</p>
+          <p className="text-4xl font-display font-bold tracking-tight text-foreground">{value}</p>
           {subtitle && (
             <p className="text-sm text-muted-foreground">{subtitle}</p>
           )}
           {trend && (
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1.5 pt-1">
               <span className={cn(
-                'text-sm font-medium',
-                trend.isPositive ? 'text-accent' : 'text-destructive'
+                'text-sm font-semibold',
+                trend.isPositive ? 'text-status-finished' : 'text-destructive'
               )}>
                 {trend.isPositive ? '+' : ''}{trend.value}%
               </span>
@@ -80,11 +79,10 @@ export function StatsCard({
           )}
         </div>
         <div className={cn(
-          'w-12 h-12 rounded-xl flex items-center justify-center',
-          styles.iconBg,
-          styles.glow
+          'w-14 h-14 rounded-2xl flex items-center justify-center transition-transform hover:scale-110',
+          styles.iconBg
         )}>
-          <Icon className={cn('w-6 h-6', styles.iconColor)} />
+          <Icon className={cn('w-7 h-7', styles.iconColor)} />
         </div>
       </div>
     </Card>

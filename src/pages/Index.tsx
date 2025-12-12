@@ -2,9 +2,8 @@ import { MainLayout } from '@/components/layout/MainLayout';
 import { StatsCard } from '@/components/dashboard/StatsCard';
 import { OccupancyChart } from '@/components/dashboard/OccupancyChart';
 import { RecentJobsTable } from '@/components/dashboard/RecentJobsTable';
-import { TodayTimeline } from '@/components/dashboard/TodayTimeline';
+import { CompactTimeline } from '@/components/dashboard/CompactTimeline';
 import { AlertsWidget } from '@/components/dashboard/AlertsWidget';
-import { QuickActions } from '@/components/dashboard/QuickActions';
 import { 
   Calendar, 
   CheckCircle2, 
@@ -27,7 +26,7 @@ const Index = () => {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
           <StatsCard
             title="Agendados Hoje"
             value="24"
@@ -42,7 +41,7 @@ const Index = () => {
             value="8"
             subtitle="de 52 máquinas"
             icon={Printer}
-            variant="primary"
+            variant="secondary"
             className="stagger-2"
           />
           <StatsCard
@@ -64,21 +63,22 @@ const Index = () => {
           />
         </div>
 
-        {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left Column - Timeline & Occupancy */}
-          <div className="lg:col-span-2 space-y-6">
+        {/* Main Content Grid - Ocupação + Timeline lado a lado */}
+        <div className="grid grid-cols-1 xl:grid-cols-5 gap-6">
+          {/* Left - Occupancy Chart */}
+          <div className="xl:col-span-3">
             <OccupancyChart />
-            <RecentJobsTable />
           </div>
 
-          {/* Right Column - Timeline, Alerts & Actions */}
-          <div className="space-y-6">
-            <TodayTimeline />
+          {/* Right - Timeline + Alerts */}
+          <div className="xl:col-span-2 space-y-6">
+            <CompactTimeline />
             <AlertsWidget />
-            <QuickActions />
           </div>
         </div>
+
+        {/* Jobs Table - Full Width */}
+        <RecentJobsTable />
       </div>
     </MainLayout>
   );
