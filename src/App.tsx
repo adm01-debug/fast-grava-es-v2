@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import DailyCalendar from "./pages/DailyCalendar";
 import WeeklyCalendar from "./pages/WeeklyCalendar";
+import PendingQueue from "./pages/PendingQueue";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -20,6 +21,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/calendar/daily" element={<DailyCalendar />} />
           <Route path="/calendar/weekly" element={<WeeklyCalendar />} />
+          <Route path="/pending" element={<PendingQueue />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
