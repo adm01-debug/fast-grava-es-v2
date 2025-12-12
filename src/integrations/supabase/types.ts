@@ -14,7 +14,152 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      jobs: {
+        Row: {
+          actual_end_time: string | null
+          actual_start_time: string | null
+          client: string
+          created_at: string
+          end_time: string | null
+          estimated_duration: number
+          gravure_color: string | null
+          id: string
+          lost_pieces: number | null
+          machine_id: string | null
+          notes: string | null
+          order_number: string
+          priority: string
+          product: string
+          quantity: number
+          scheduled_date: string | null
+          start_time: string | null
+          status: string
+          technique_id: string
+          updated_at: string
+        }
+        Insert: {
+          actual_end_time?: string | null
+          actual_start_time?: string | null
+          client: string
+          created_at?: string
+          end_time?: string | null
+          estimated_duration?: number
+          gravure_color?: string | null
+          id?: string
+          lost_pieces?: number | null
+          machine_id?: string | null
+          notes?: string | null
+          order_number: string
+          priority?: string
+          product: string
+          quantity: number
+          scheduled_date?: string | null
+          start_time?: string | null
+          status?: string
+          technique_id: string
+          updated_at?: string
+        }
+        Update: {
+          actual_end_time?: string | null
+          actual_start_time?: string | null
+          client?: string
+          created_at?: string
+          end_time?: string | null
+          estimated_duration?: number
+          gravure_color?: string | null
+          id?: string
+          lost_pieces?: number | null
+          machine_id?: string | null
+          notes?: string | null
+          order_number?: string
+          priority?: string
+          product?: string
+          quantity?: number
+          scheduled_date?: string | null
+          start_time?: string | null
+          status?: string
+          technique_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "jobs_machine_id_fkey"
+            columns: ["machine_id"]
+            isOneToOne: false
+            referencedRelation: "machines"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "jobs_technique_id_fkey"
+            columns: ["technique_id"]
+            isOneToOne: false
+            referencedRelation: "techniques"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      machines: {
+        Row: {
+          code: string
+          created_at: string
+          id: string
+          is_active: boolean
+          name: string
+          technique_id: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name: string
+          technique_id: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          technique_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "machines_technique_id_fkey"
+            columns: ["technique_id"]
+            isOneToOne: false
+            referencedRelation: "techniques"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      techniques: {
+        Row: {
+          color: string
+          created_at: string
+          id: string
+          name: string
+          setup_time: number
+          short_name: string
+        }
+        Insert: {
+          color: string
+          created_at?: string
+          id: string
+          name: string
+          setup_time?: number
+          short_name: string
+        }
+        Update: {
+          color?: string
+          created_at?: string
+          id?: string
+          name?: string
+          setup_time?: number
+          short_name?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
