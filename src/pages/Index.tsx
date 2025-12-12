@@ -4,6 +4,7 @@ import { OccupancyChart } from '@/components/dashboard/OccupancyChart';
 import { RecentJobsTable } from '@/components/dashboard/RecentJobsTable';
 import { CompactTimeline } from '@/components/dashboard/CompactTimeline';
 import { AlertsWidget } from '@/components/dashboard/AlertsWidget';
+import { BufferStatusWidget } from '@/components/dashboard/BufferStatusWidget';
 import { 
   Calendar, 
   CheckCircle2, 
@@ -63,19 +64,22 @@ const Index = () => {
           />
         </div>
 
-        {/* Main Content Grid - Ocupação + Timeline lado a lado */}
+        {/* Main Content Grid */}
         <div className="grid grid-cols-1 xl:grid-cols-5 gap-6">
           {/* Left - Occupancy Chart */}
           <div className="xl:col-span-3">
             <OccupancyChart />
           </div>
 
-          {/* Right - Timeline + Alerts */}
+          {/* Right - Buffer + Alerts */}
           <div className="xl:col-span-2 space-y-6">
-            <CompactTimeline />
+            <BufferStatusWidget />
             <AlertsWidget />
           </div>
         </div>
+
+        {/* Timeline */}
+        <CompactTimeline />
 
         {/* Jobs Table - Full Width */}
         <RecentJobsTable />
