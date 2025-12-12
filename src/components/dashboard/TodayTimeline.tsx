@@ -56,10 +56,10 @@ export function TodayTimeline() {
   const machineIds = Object.keys(jobsByMachine);
 
   return (
-    <Card className="col-span-3">
+    <Card className="col-span-3 glass-card">
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-lg font-display">Timeline de Hoje</CardTitle>
+          <CardTitle className="text-lg font-display gradient-text">Timeline de Hoje</CardTitle>
           <span className="text-sm text-muted-foreground">
             {format(today, "EEEE, d 'de' MMMM", { locale: ptBR })}
           </span>
@@ -69,7 +69,7 @@ export function TodayTimeline() {
         <ScrollArea className="w-full">
           <div className="min-w-[1200px]">
             {/* Hours header */}
-            <div className="flex border-b border-border pb-2 mb-2">
+            <div className="flex border-b border-border/30 pb-2 mb-2">
               <div className="w-24 shrink-0" />
               {hours.map(hour => (
                 <div 
@@ -86,10 +86,10 @@ export function TodayTimeline() {
               {/* Current time indicator */}
               {currentTimePosition !== null && (
                 <div 
-                  className="absolute top-0 bottom-0 w-0.5 bg-destructive z-20"
+                  className="absolute top-0 bottom-0 w-0.5 bg-primary z-20"
                   style={{ left: `${currentTimePosition + 96}px` }}
                 >
-                  <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-destructive" />
+                  <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-primary glow-primary" />
                 </div>
               )}
 
@@ -105,12 +105,12 @@ export function TodayTimeline() {
                         {machine?.code}
                       </span>
                     </div>
-                    <div className="flex-1 relative h-12 bg-muted/30 rounded-lg">
+                    <div className="flex-1 relative h-12 bg-secondary/30 rounded-lg">
                       {/* Hour grid lines */}
                       {hours.map((hour, i) => (
                         <div
                           key={hour}
-                          className="absolute top-0 bottom-0 w-px bg-border/50"
+                          className="absolute top-0 bottom-0 w-px bg-border/30"
                           style={{ left: `${i * 80}px` }}
                         />
                       ))}
@@ -119,7 +119,7 @@ export function TodayTimeline() {
                       {jobs.map(job => {
                         const pos = getJobPosition(job.startTime, job.endTime);
                         const statusColors: Record<string, string> = {
-                          production: 'bg-status-production',
+                          production: 'gradient-primary',
                           scheduled: 'bg-status-scheduled',
                           finished: 'bg-status-finished',
                           delayed: 'bg-status-delayed',
@@ -136,7 +136,7 @@ export function TodayTimeline() {
                             className={cn(
                               'absolute top-1.5 bottom-1.5 rounded-md cursor-pointer',
                               'flex items-center px-2 text-xs font-medium text-white',
-                              'hover:ring-2 hover:ring-primary hover:ring-offset-1 transition-all',
+                              'hover:ring-2 hover:ring-primary/50 hover:ring-offset-1 hover:ring-offset-card transition-all',
                               statusColors[job.status]
                             )}
                             style={{ left: `${pos.left}px`, width: `${pos.width}px` }}

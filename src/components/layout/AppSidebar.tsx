@@ -61,20 +61,20 @@ export function AppSidebar() {
           variant="ghost"
           className={cn(
             'w-full justify-start gap-3 h-11 px-3 relative transition-all duration-200',
-            'hover:bg-sidebar-accent/20 hover:text-sidebar-foreground',
-            active && 'bg-sidebar-primary/20 text-sidebar-primary font-medium',
+            'hover:bg-sidebar-muted/50 hover:text-sidebar-foreground',
+            active && 'bg-gradient-to-r from-primary/20 to-accent/10 text-primary font-medium border-l-2 border-primary',
             collapsed && 'justify-center px-0'
           )}
         >
-          <Icon className={cn('h-5 w-5 shrink-0', active && 'text-sidebar-primary')} />
+          <Icon className={cn('h-5 w-5 shrink-0', active && 'text-primary')} />
           {!collapsed && <span className="truncate">{item.label}</span>}
           {!collapsed && item.badge && (
-            <span className="ml-auto bg-destructive text-destructive-foreground text-xs font-semibold px-2 py-0.5 rounded-full">
+            <span className="ml-auto gradient-primary text-primary-foreground text-xs font-semibold px-2 py-0.5 rounded-full">
               {item.badge}
             </span>
           )}
           {collapsed && item.badge && (
-            <span className="absolute -top-1 -right-1 bg-destructive text-destructive-foreground text-xs font-semibold w-5 h-5 rounded-full flex items-center justify-center">
+            <span className="absolute -top-1 -right-1 gradient-primary text-primary-foreground text-xs font-semibold w-5 h-5 rounded-full flex items-center justify-center">
               {item.badge}
             </span>
           )}
@@ -86,10 +86,10 @@ export function AppSidebar() {
       return (
         <Tooltip delayDuration={0}>
           <TooltipTrigger asChild>{button}</TooltipTrigger>
-          <TooltipContent side="right" className="flex items-center gap-2">
+          <TooltipContent side="right" className="flex items-center gap-2 bg-card border-border">
             {item.label}
             {item.badge && (
-              <span className="bg-destructive text-destructive-foreground text-xs font-semibold px-2 py-0.5 rounded-full">
+              <span className="gradient-primary text-primary-foreground text-xs font-semibold px-2 py-0.5 rounded-full">
                 {item.badge}
               </span>
             )}
@@ -115,12 +115,12 @@ export function AppSidebar() {
       )}>
         {!collapsed && (
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg gradient-primary flex items-center justify-center">
-              <Printer className="w-4 h-4 text-primary-foreground" />
+            <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center glow-primary">
+              <Printer className="w-5 h-5 text-primary-foreground" />
             </div>
             <div>
-              <h1 className="font-display font-bold text-sidebar-foreground text-sm">Gravação</h1>
-              <p className="text-xs text-sidebar-foreground/60">Promo Brindes</p>
+              <h1 className="font-display font-bold text-sidebar-foreground text-base">Gravação</h1>
+              <p className="text-xs text-sidebar-foreground/50">Promo Brindes</p>
             </div>
           </div>
         )}
@@ -129,7 +129,7 @@ export function AppSidebar() {
           variant="ghost"
           size="icon"
           onClick={() => setCollapsed(!collapsed)}
-          className="h-8 w-8 text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-muted"
+          className="h-8 w-8 text-sidebar-foreground/50 hover:text-sidebar-foreground hover:bg-sidebar-muted"
         >
           {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
         </Button>
@@ -140,7 +140,7 @@ export function AppSidebar() {
         <Link to="/new-job">
           <Button 
             className={cn(
-              'w-full gap-2 gradient-primary hover:opacity-90 transition-opacity',
+              'w-full gap-2 gradient-primary hover:opacity-90 transition-opacity glow-primary',
               collapsed && 'px-0'
             )}
           >
@@ -153,7 +153,7 @@ export function AppSidebar() {
       {/* Main Navigation */}
       <nav className="flex-1 overflow-y-auto scrollbar-thin p-2 space-y-1">
         {!collapsed && (
-          <p className="text-xs font-medium text-sidebar-foreground/40 uppercase tracking-wider px-3 py-2">
+          <p className="text-xs font-medium text-sidebar-foreground/30 uppercase tracking-wider px-3 py-2">
             Navegação
           </p>
         )}
@@ -161,10 +161,10 @@ export function AppSidebar() {
           <NavButton key={item.href} item={item} />
         ))}
         
-        <div className="my-4 border-t border-sidebar-border" />
+        <div className="my-4 border-t border-sidebar-border/50" />
         
         {!collapsed && (
-          <p className="text-xs font-medium text-sidebar-foreground/40 uppercase tracking-wider px-3 py-2">
+          <p className="text-xs font-medium text-sidebar-foreground/30 uppercase tracking-wider px-3 py-2">
             Administração
           </p>
         )}
@@ -175,20 +175,20 @@ export function AppSidebar() {
 
       {/* User Profile */}
       <div className={cn(
-        'p-3 border-t border-sidebar-border',
+        'p-3 border-t border-sidebar-border/50',
         collapsed && 'p-2'
       )}>
         <div className={cn(
-          'flex items-center gap-3 rounded-lg p-2 hover:bg-sidebar-muted transition-colors cursor-pointer',
+          'flex items-center gap-3 rounded-lg p-2 hover:bg-sidebar-muted/50 transition-colors cursor-pointer',
           collapsed && 'justify-center p-2'
         )}>
-          <div className="w-8 h-8 rounded-full bg-sidebar-primary/20 flex items-center justify-center text-sidebar-primary font-semibold text-sm">
+          <div className="w-9 h-9 rounded-full gradient-primary flex items-center justify-center text-primary-foreground font-semibold text-sm">
             CG
           </div>
           {!collapsed && (
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-sidebar-foreground truncate">Coordenador</p>
-              <p className="text-xs text-sidebar-foreground/60 truncate">coord@promobrindes.com</p>
+              <p className="text-xs text-sidebar-foreground/40 truncate">coord@promobrindes.com</p>
             </div>
           )}
         </div>

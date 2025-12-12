@@ -18,9 +18,9 @@ const mockOccupancyData: OccupancyData[] = techniques.slice(0, 10).map((tech) =>
 
 export function OccupancyChart() {
   return (
-    <Card className="col-span-2">
+    <Card className="col-span-2 glass-card">
       <CardHeader className="pb-2">
-        <CardTitle className="text-lg font-display">Ocupação por Técnica</CardTitle>
+        <CardTitle className="text-lg font-display gradient-text">Ocupação por Técnica</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="h-[300px]">
@@ -48,14 +48,14 @@ export function OccupancyChart() {
                   backgroundColor: 'hsl(var(--card))',
                   border: '1px solid hsl(var(--border))',
                   borderRadius: '8px',
-                  boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
+                  boxShadow: '0 4px 20px -1px rgb(0 0 0 / 0.3)',
                 }}
               />
               <Bar dataKey="occupancy" radius={[0, 4, 4, 0]} maxBarSize={20}>
                 {mockOccupancyData.map((entry, index) => (
                   <Cell 
                     key={`cell-${index}`} 
-                    fill={entry.occupancy >= 80 ? 'hsl(var(--accent))' : entry.occupancy >= 50 ? 'hsl(var(--primary))' : 'hsl(var(--muted-foreground))'}
+                    fill={entry.occupancy >= 80 ? 'hsl(142 71% 45%)' : entry.occupancy >= 50 ? 'hsl(25 95% 55%)' : 'hsl(215 20% 45%)'}
                   />
                 ))}
               </Bar>

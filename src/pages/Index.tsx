@@ -15,11 +15,11 @@ import {
 const Index = () => {
   return (
     <MainLayout>
-      <div className="p-6 space-y-6">
+      <div className="p-8 space-y-8">
         {/* Page Header */}
-        <div className="flex flex-col gap-1">
-          <h1 className="text-2xl font-display font-bold text-foreground">
-            Dashboard
+        <div className="flex flex-col gap-2">
+          <h1 className="text-3xl font-display font-bold">
+            <span className="gradient-text">Dashboard</span>
           </h1>
           <p className="text-muted-foreground">
             Visão geral do departamento de gravação
@@ -27,7 +27,7 @@ const Index = () => {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
           <StatsCard
             title="Agendados Hoje"
             value="24"
