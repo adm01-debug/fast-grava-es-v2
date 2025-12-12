@@ -11,6 +11,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
+import { JobDetailsModal } from '@/components/jobs/JobDetailsModal';
 import { cn } from '@/lib/utils';
 import { mockJobs, machines, techniques, getTechniqueById } from '@/data/mockData';
 import { Job, JobStatus } from '@/types/scheduling';
@@ -42,6 +43,8 @@ const statusLabels: Record<JobStatus, string> = {
 export default function WeeklyCalendar() {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [selectedTechnique, setSelectedTechnique] = useState<string>('all');
+  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const weekStart = startOfWeek(selectedDate, { weekStartsOn: 1 }); // Monday
   const weekEnd = endOfWeek(selectedDate, { weekStartsOn: 1 });
@@ -97,8 +100,18 @@ export default function WeeklyCalendar() {
     return jobsByMachineAndDay[machineId]?.[dayKey] || [];
   };
 
+  const handleJobClick = (job: Job) => {
+    setSelectedJob(job);
+    setIsModalOpen(true);
+  };
+
   return (
     <MainLayout>
+      <JobDetailsModal 
+        job={selectedJob} 
+        open={isModalOpen} 
+        onOpenChange={setIsModalOpen} 
+      />
       <div className="space-y-6 animate-fade-in-up">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -252,6 +265,7 @@ export default function WeeklyCalendar() {
                                 <Tooltip key={job.id}>
                                   <TooltipTrigger asChild>
                                     <div
+                                      onClick={() => handleJobClick(job)}
                                       className={cn(
                                         "px-1.5 py-1 rounded text-xs font-medium truncate cursor-pointer",
                                         "border transition-all duration-200 hover:scale-[1.02]",

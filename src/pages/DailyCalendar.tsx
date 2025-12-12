@@ -11,6 +11,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
+import { JobDetailsModal } from '@/components/jobs/JobDetailsModal';
 import { cn } from '@/lib/utils';
 import { mockJobs, machines, techniques, getMachineById, getTechniqueById } from '@/data/mockData';
 import { Job, JobStatus } from '@/types/scheduling';
@@ -44,6 +45,8 @@ const statusLabels: Record<JobStatus, string> = {
 export default function DailyCalendar() {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [selectedTechnique, setSelectedTechnique] = useState<string>('all');
+  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Filter jobs for selected date
   const dayJobs = useMemo(() => {
@@ -107,9 +110,19 @@ export default function DailyCalendar() {
   const handlePrevDay = () => setSelectedDate(subDays(selectedDate, 1));
   const handleNextDay = () => setSelectedDate(addDays(selectedDate, 1));
   const handleToday = () => setSelectedDate(new Date());
+  
+  const handleJobClick = (job: Job) => {
+    setSelectedJob(job);
+    setIsModalOpen(true);
+  };
 
   return (
     <MainLayout>
+      <JobDetailsModal 
+        job={selectedJob} 
+        open={isModalOpen} 
+        onOpenChange={setIsModalOpen} 
+      />
       <div className="space-y-6 animate-fade-in-up">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -267,6 +280,7 @@ export default function DailyCalendar() {
                             <Tooltip key={job.id}>
                               <TooltipTrigger asChild>
                                 <div
+                                  onClick={() => handleJobClick(job)}
                                   className={cn(
                                     "absolute top-2 bottom-2 rounded-md border cursor-pointer",
                                     "flex items-center justify-center overflow-hidden",
