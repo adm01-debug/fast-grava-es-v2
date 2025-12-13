@@ -8615,18 +8615,20 @@ function OverviewSection({ onNavigate }: OverviewSectionProps) {
     <div className="space-y-6 relative">
       {/* Floating Particles */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {[...Array(12)].map((_, i) => (
+        {[...Array(24)].map((_, i) => (
           <div
             key={i}
-            className="absolute rounded-full opacity-20 animate-float"
+            className="absolute rounded-full animate-float"
             style={{
-              width: `${Math.random() * 8 + 4}px`,
-              height: `${Math.random() * 8 + 4}px`,
+              width: `${Math.random() * 12 + 6}px`,
+              height: `${Math.random() * 12 + 6}px`,
               left: `${Math.random() * 100}%`,
               top: `${Math.random() * 100}%`,
               background: `hsl(var(--${['primary', 'success', 'warning', 'info'][i % 4]}))`,
-              animationDelay: `${i * 0.3}s`,
-              animationDuration: `${3 + Math.random() * 2}s`,
+              opacity: 0.15 + Math.random() * 0.15,
+              filter: `blur(${Math.random() * 2 + 1}px)`,
+              animationDelay: `${i * 0.2}s`,
+              animationDuration: `${3 + Math.random() * 3}s`,
             }}
           />
         ))}
