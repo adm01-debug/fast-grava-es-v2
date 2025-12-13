@@ -2641,6 +2641,33 @@ function FormsSection() {
               <p className="text-xs text-muted-foreground">type="time"</p>
             </div>
           </div>
+
+          {/* Code Examples */}
+          <div className="space-y-4 pt-4 border-t">
+            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Exemplos de Código</h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <CodeBlock
+                label="Input Padrão"
+                code={`<Input placeholder="Digite algo..." />`}
+              />
+              <CodeBlock
+                label="Input Desabilitado"
+                code={`<Input placeholder="Desabilitado" disabled />`}
+              />
+              <CodeBlock
+                label="Input com Ícone"
+                code={`<div className="relative">
+  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+  <Input placeholder="Buscar..." className="pl-10" />
+</div>`}
+              />
+              <CodeBlock
+                label="Input de Data/Hora"
+                code={`<Input type="date" />
+<Input type="time" />`}
+              />
+            </div>
+          </div>
         </CardContent>
       </Card>
 
@@ -2665,6 +2692,21 @@ function FormsSection() {
               <Textarea id="textarea-disabled" placeholder="Desabilitado" disabled />
               <p className="text-xs text-muted-foreground">disabled</p>
             </div>
+          </div>
+
+          {/* Code Examples */}
+          <div className="space-y-4 pt-4 border-t">
+            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Exemplos de Código</h4>
+            <CodeBlock
+              label="Textarea"
+              code={`<Textarea placeholder="Digite sua mensagem..." />
+
+{/* Desabilitado */}
+<Textarea placeholder="Desabilitado" disabled />
+
+{/* Com linhas definidas */}
+<Textarea placeholder="..." rows={4} />`}
+            />
           </div>
         </CardContent>
       </Card>
@@ -2723,6 +2765,32 @@ function FormsSection() {
               <p className="text-xs text-muted-foreground">disabled</p>
             </div>
           </div>
+
+          {/* Code Examples */}
+          <div className="space-y-4 pt-4 border-t">
+            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Exemplos de Código</h4>
+            <CodeBlock
+              label="Select"
+              code={`<Select>
+  <SelectTrigger>
+    <SelectValue placeholder="Selecione uma opção" />
+  </SelectTrigger>
+  <SelectContent>
+    <SelectItem value="option1">Opção 1</SelectItem>
+    <SelectItem value="option2">Opção 2</SelectItem>
+    <SelectItem value="option3">Opção 3</SelectItem>
+  </SelectContent>
+</Select>
+
+{/* Com valor padrão */}
+<Select defaultValue="option2">
+  <SelectTrigger>
+    <SelectValue />
+  </SelectTrigger>
+  <SelectContent>...</SelectContent>
+</Select>`}
+            />
+          </div>
         </CardContent>
       </Card>
 
@@ -2772,6 +2840,30 @@ function FormsSection() {
                 ))}
               </div>
             </div>
+          </div>
+
+          {/* Code Examples */}
+          <div className="space-y-4 pt-4 border-t">
+            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Exemplos de Código</h4>
+            <CodeBlock
+              label="Checkbox"
+              code={`{/* Básico */}
+<div className="flex items-center space-x-2">
+  <Checkbox id="terms" />
+  <Label htmlFor="terms">Aceito os termos</Label>
+</div>
+
+{/* Controlado */}
+<Checkbox 
+  checked={checked} 
+  onCheckedChange={(checked) => setChecked(checked as boolean)} 
+/>
+
+{/* Estados */}
+<Checkbox defaultChecked />
+<Checkbox disabled />
+<Checkbox disabled defaultChecked />`}
+            />
           </div>
         </CardContent>
       </Card>
@@ -2827,6 +2919,34 @@ function FormsSection() {
               </RadioGroup>
             </div>
           </div>
+
+          {/* Code Examples */}
+          <div className="space-y-4 pt-4 border-t">
+            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Exemplos de Código</h4>
+            <CodeBlock
+              label="RadioGroup"
+              code={`{/* Vertical */}
+<RadioGroup defaultValue="option1">
+  <div className="flex items-center space-x-2">
+    <RadioGroupItem value="option1" id="radio-1" />
+    <Label htmlFor="radio-1">Opção 1</Label>
+  </div>
+  <div className="flex items-center space-x-2">
+    <RadioGroupItem value="option2" id="radio-2" />
+    <Label htmlFor="radio-2">Opção 2</Label>
+  </div>
+</RadioGroup>
+
+{/* Horizontal */}
+<RadioGroup defaultValue="high" className="flex gap-4">
+  <div className="flex items-center space-x-2">
+    <RadioGroupItem value="low" id="priority-low" />
+    <Label htmlFor="priority-low">Baixa</Label>
+  </div>
+  ...
+</RadioGroup>`}
+            />
+          </div>
         </CardContent>
       </Card>
 
@@ -2864,6 +2984,29 @@ function FormsSection() {
               </div>
               <Switch id="switch-disabled" disabled />
             </div>
+          </div>
+
+          {/* Code Examples */}
+          <div className="space-y-4 pt-4 border-t">
+            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Exemplos de Código</h4>
+            <CodeBlock
+              label="Switch"
+              code={`{/* Básico */}
+<div className="flex items-center space-x-2">
+  <Switch id="airplane-mode" />
+  <Label htmlFor="airplane-mode">Modo Avião</Label>
+</div>
+
+{/* Controlado */}
+<Switch 
+  checked={switchValue} 
+  onCheckedChange={setSwitchValue} 
+/>
+
+{/* Estados */}
+<Switch defaultChecked />
+<Switch disabled />`}
+            />
           </div>
         </CardContent>
       </Card>
@@ -2931,6 +3074,33 @@ function FormsSection() {
               />
               <p className="text-xs text-muted-foreground">disabled</p>
             </div>
+          </div>
+
+          {/* Code Examples */}
+          <div className="space-y-4 pt-4 border-t">
+            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Exemplos de Código</h4>
+            <CodeBlock
+              label="Slider"
+              code={`{/* Básico */}
+<Slider defaultValue={[50]} max={100} step={1} />
+
+{/* Controlado */}
+<Slider 
+  value={sliderValue} 
+  onValueChange={setSliderValue} 
+  max={100} 
+  step={1} 
+/>
+
+{/* Com Steps */}
+<Slider defaultValue={[25]} max={100} step={25} />
+
+{/* Range (dois valores) */}
+<Slider defaultValue={[20, 80]} max={100} step={1} />
+
+{/* Desabilitado */}
+<Slider defaultValue={[50]} max={100} disabled />`}
+            />
           </div>
         </CardContent>
       </Card>
@@ -3054,6 +3224,40 @@ function FormsSection() {
                 <AlertTriangle className="h-3 w-3" /> Senha fraca
               </p>
             </div>
+          </div>
+
+          {/* Code Examples */}
+          <div className="space-y-4 pt-4 border-t">
+            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Exemplos de Código</h4>
+            <CodeBlock
+              label="Estados de Validação"
+              code={`{/* Sucesso */}
+<Label className="text-[hsl(var(--success))]">Campo Válido</Label>
+<Input 
+  className="border-[hsl(var(--success))] focus-visible:ring-[hsl(var(--success))]" 
+/>
+<p className="text-xs text-[hsl(var(--success))]">
+  <Check className="h-3 w-3" /> Email válido
+</p>
+
+{/* Erro */}
+<Label className="text-destructive">Campo com Erro</Label>
+<Input 
+  className="border-destructive focus-visible:ring-destructive" 
+/>
+<p className="text-xs text-destructive">
+  <X className="h-3 w-3" /> Email inválido
+</p>
+
+{/* Aviso */}
+<Label className="text-[hsl(var(--warning))]">Campo com Aviso</Label>
+<Input 
+  className="border-[hsl(var(--warning))] focus-visible:ring-[hsl(var(--warning))]" 
+/>
+<p className="text-xs text-[hsl(var(--warning))]">
+  <AlertTriangle className="h-3 w-3" /> Senha fraca
+</p>`}
+            />
           </div>
         </CardContent>
       </Card>
