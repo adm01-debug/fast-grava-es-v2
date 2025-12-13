@@ -1,12 +1,14 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { History, CheckCircle2, AlertCircle, AlertTriangle, ArrowDownToLine, ArrowUpFromLine, Webhook, Filter } from 'lucide-react';
-import { formatDistanceToNow } from 'date-fns';
+import { History, CheckCircle2, AlertCircle, AlertTriangle, ArrowDownToLine, ArrowUpFromLine, Webhook, Filter, BarChart3 } from 'lucide-react';
+import { formatDistanceToNow, format, subDays, parseISO, startOfDay } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
 
 interface SyncHistoryItem {
   id: string;
@@ -52,6 +54,42 @@ export const Bitrix24SyncHistory = () => {
     const matchesStatus = statusFilter === 'all' || item.status === statusFilter;
     return matchesType && matchesStatus;
   });
+
+  const dailyChartData = useMemo(() => {
+    if (!history || history.length === 0) return [];
+
+    const last14Days = Array.from({ length: 14 }, (_, i) => {
+      const date = startOfDay(subDays(new Date(), 13 - i));
+      return {
+        date,
+        dateKey: format(date, 'yyyy-MM-dd'),
+        label: format(date, 'dd/MM', { locale: ptBR }),
+        success: 0,
+        partial: 0,
+        error: 0,
+        total: 0
+      };
+    });
+
+    history.forEach(item => {
+      const itemDate = format(startOfDay(parseISO(item.started_at)), 'yyyy-MM-dd');
+      const dayData = last14Days.find(d => d.dateKey === itemDate);
+      if (dayData) {
+        dayData.total++;
+        if (item.status === 'success') dayData.success++;
+        else if (item.status === 'partial') dayData.partial++;
+        else if (item.status === 'error') dayData.error++;
+      }
+    });
+
+    return last14Days;
+  }, [history]);
+
+  const chartConfig = {
+    success: { label: 'Sucesso', color: 'hsl(142, 76%, 36%)' },
+    partial: { label: 'Parcial', color: 'hsl(48, 96%, 53%)' },
+    error: { label: 'Erro', color: 'hsl(0, 84%, 60%)' }
+  };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -167,6 +205,42 @@ export const Bitrix24SyncHistory = () => {
           </div>
         </div>
 
+        {/* Daily Evolution Chart */}
+        {dailyChartData.length > 0 && dailyChartData.some(d => d.total > 0) && (
+          <div className="mb-4">
+            <div className="flex items-center gap-2 mb-3">
+              <BarChart3 className="h-4 w-4 text-primary" />
+              <span className="text-sm font-medium">Evolução Diária (14 dias)</span>
+            </div>
+            <ChartContainer config={chartConfig} className="h-[160px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={dailyChartData} barSize={16}>
+                  <XAxis 
+                    dataKey="label" 
+                    tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
+                    axisLine={false}
+                    tickLine={false}
+                  />
+                  <YAxis 
+                    tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
+                    axisLine={false}
+                    tickLine={false}
+                    allowDecimals={false}
+                  />
+                  <Tooltip content={<ChartTooltipContent />} />
+                  <Legend 
+                    wrapperStyle={{ fontSize: '11px' }}
+                    formatter={(value) => chartConfig[value as keyof typeof chartConfig]?.label || value}
+                  />
+                  <Bar dataKey="success" stackId="a" fill="hsl(142, 76%, 36%)" radius={[0, 0, 0, 0]} name="success" />
+                  <Bar dataKey="partial" stackId="a" fill="hsl(48, 96%, 53%)" radius={[0, 0, 0, 0]} name="partial" />
+                  <Bar dataKey="error" stackId="a" fill="hsl(0, 84%, 60%)" radius={[4, 4, 0, 0]} name="error" />
+                </BarChart>
+              </ResponsiveContainer>
+            </ChartContainer>
+          </div>
+        )}
+
         {isLoading ? (
           <div className="text-center py-4 text-muted-foreground">Carregando...</div>
         ) : !filteredHistory || filteredHistory.length === 0 ? (
@@ -177,7 +251,7 @@ export const Bitrix24SyncHistory = () => {
             }
           </div>
         ) : (
-          <ScrollArea className="h-[280px]">
+          <ScrollArea className="h-[200px]">
             <div className="space-y-2">
               {filteredHistory.map((item) => (
                 <div
