@@ -1,4 +1,4 @@
-import { AlertTriangle, Clock, AlertCircle, Calendar, Settings2, Sparkles, ListTodo } from 'lucide-react';
+import { AlertTriangle, Clock, AlertCircle, Calendar, Settings2, Sparkles, ListTodo, Check, X } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
@@ -602,22 +602,42 @@ export function AlertsWidget() {
                           Horários Livres:
                         </p>
                         <div className="flex flex-wrap gap-1.5">
-                          {freeSlots.map((slot, idx) => (
-                            <button
-                              key={idx}
-                              type="button"
-                              onClick={() => setStartTime(slot.start)}
-                              className={cn(
-                                "px-2 py-1 text-xs font-mono rounded border transition-colors",
-                                startTime === slot.start
-                                  ? "bg-status-ready text-status-ready-foreground border-status-ready"
-                                  : "bg-status-ready/20 text-foreground border-status-ready/40 hover:bg-status-ready/30"
-                              )}
-                            >
-                              {slot.start} - {slot.end} ({slot.duration}min)
-                            </button>
-                          ))}
+                          {freeSlots.map((slot, idx) => {
+                            const jobDuration = selectedJob?.estimated_duration || 0;
+                            const fits = slot.duration >= jobDuration;
+                            const isSelected = startTime === slot.start;
+                            
+                            return (
+                              <button
+                                key={idx}
+                                type="button"
+                                onClick={() => setStartTime(slot.start)}
+                                className={cn(
+                                  "px-2 py-1 text-xs font-mono rounded border transition-colors flex items-center gap-1.5",
+                                  isSelected
+                                    ? fits 
+                                      ? "bg-status-ready text-status-ready-foreground border-status-ready"
+                                      : "bg-destructive text-destructive-foreground border-destructive"
+                                    : fits
+                                      ? "bg-status-ready/20 text-foreground border-status-ready/40 hover:bg-status-ready/30"
+                                      : "bg-destructive/10 text-muted-foreground border-destructive/30 hover:bg-destructive/20"
+                                )}
+                              >
+                                {fits ? (
+                                  <Check className="w-3 h-3" />
+                                ) : (
+                                  <X className="w-3 h-3" />
+                                )}
+                                {slot.start} - {slot.end} ({slot.duration}min)
+                              </button>
+                            );
+                          })}
                         </div>
+                        <p className="text-[10px] text-muted-foreground mt-1.5 flex items-center gap-1">
+                          <Check className="w-3 h-3 text-status-ready" /> Cabe ({selectedJob?.estimated_duration}min)
+                          <span className="mx-1">•</span>
+                          <X className="w-3 h-3 text-destructive" /> Não cabe
+                        </p>
                       </div>
                     )}
                   </div>
