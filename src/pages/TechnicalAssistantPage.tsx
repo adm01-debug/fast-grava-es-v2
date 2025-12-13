@@ -32,7 +32,9 @@ import {
   X,
   Search,
   Filter,
-  Calendar
+  Calendar,
+  ChevronUp,
+  ChevronDown
 } from "lucide-react";
 import { toast } from "sonner";
 import { useTechnicalConversations, useTechnicalMessages, TechnicalMessage } from "@/hooks/useTechnicalConversations";
@@ -68,6 +70,8 @@ const TechnicalAssistantPage = () => {
   const [dateFilter, setDateFilter] = useState<string>("all");
   const [messageSearchQuery, setMessageSearchQuery] = useState("");
   const [messageSearchActive, setMessageSearchActive] = useState(false);
+  const [currentMatchIndex, setCurrentMatchIndex] = useState(0);
+  const messageRefs = useRef<Map<string, HTMLDivElement>>(new Map());
   
   const { messages, isLoading: loadingMessages, addMessage } = useTechnicalMessages(selectedConversationId);
   
@@ -119,14 +123,48 @@ const TechnicalAssistantPage = () => {
     );
   }, [localMessages, messageSearchQuery]);
 
-  // Count search matches
-  const searchMatchCount = useMemo(() => {
-    if (!messageSearchQuery.trim()) return 0;
+  // Get matching message indices for navigation
+  const matchingMessageIndices = useMemo(() => {
+    if (!messageSearchQuery.trim()) return [];
     const query = messageSearchQuery.toLowerCase();
-    return localMessages.filter(msg => 
-      msg.content.toLowerCase().includes(query)
-    ).length;
+    return localMessages
+      .map((msg, index) => ({ msg, index }))
+      .filter(({ msg }) => msg.content.toLowerCase().includes(query))
+      .map(({ index }) => index);
   }, [localMessages, messageSearchQuery]);
+
+  const searchMatchCount = matchingMessageIndices.length;
+
+  // Reset match index when search query changes
+  useEffect(() => {
+    setCurrentMatchIndex(0);
+  }, [messageSearchQuery]);
+
+  // Scroll to current match
+  useEffect(() => {
+    if (matchingMessageIndices.length > 0 && messageSearchQuery.trim()) {
+      const targetIndex = matchingMessageIndices[currentMatchIndex];
+      const targetMessage = localMessages[targetIndex];
+      if (targetMessage) {
+        const element = messageRefs.current.get(targetMessage.id);
+        element?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+  }, [currentMatchIndex, matchingMessageIndices, localMessages, messageSearchQuery]);
+
+  const goToPreviousMatch = () => {
+    if (matchingMessageIndices.length === 0) return;
+    setCurrentMatchIndex(prev => 
+      prev === 0 ? matchingMessageIndices.length - 1 : prev - 1
+    );
+  };
+
+  const goToNextMatch = () => {
+    if (matchingMessageIndices.length === 0) return;
+    setCurrentMatchIndex(prev => 
+      prev === matchingMessageIndices.length - 1 ? 0 : prev + 1
+    );
+  };
 
   // Sync local messages with fetched messages
   useEffect(() => {
@@ -139,6 +177,8 @@ const TechnicalAssistantPage = () => {
   useEffect(() => {
     setMessageSearchQuery("");
     setMessageSearchActive(false);
+    setCurrentMatchIndex(0);
+    messageRefs.current.clear();
   }, [selectedConversationId]);
 
   useEffect(() => {
@@ -506,9 +546,34 @@ const TechnicalAssistantPage = () => {
                           autoFocus
                         />
                       </div>
-                      {messageSearchQuery && (
+                      {messageSearchQuery && searchMatchCount > 0 && (
+                        <div className="flex items-center gap-1">
+                          <span className="text-xs text-muted-foreground whitespace-nowrap">
+                            {currentMatchIndex + 1}/{searchMatchCount}
+                          </span>
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            className="h-6 w-6"
+                            onClick={goToPreviousMatch}
+                            disabled={searchMatchCount === 0}
+                          >
+                            <ChevronUp className="h-3 w-3" />
+                          </Button>
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            className="h-6 w-6"
+                            onClick={goToNextMatch}
+                            disabled={searchMatchCount === 0}
+                          >
+                            <ChevronDown className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      )}
+                      {messageSearchQuery && searchMatchCount === 0 && (
                         <span className="text-xs text-muted-foreground whitespace-nowrap">
-                          {searchMatchCount} resultado(s)
+                          0 resultados
                         </span>
                       )}
                       <Button
@@ -597,7 +662,11 @@ const TechnicalAssistantPage = () => {
                       <p className="text-xs">Tente ajustar sua busca</p>
                     </div>
                   ) : (
-                    (messageSearchQuery ? filteredMessages : localMessages).map((message, index) => {
+                    localMessages.map((message, index) => {
+                      const isMatch = matchingMessageIndices.includes(index);
+                      const isCurrentMatch = messageSearchQuery.trim() && 
+                        matchingMessageIndices[currentMatchIndex] === index;
+                      
                       const highlightText = (text: string) => {
                         if (!messageSearchQuery.trim()) return text;
                         const regex = new RegExp(`(${messageSearchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
@@ -609,12 +678,22 @@ const TechnicalAssistantPage = () => {
                         );
                       };
 
+                      // Hide non-matching messages when searching
+                      if (messageSearchQuery.trim() && !isMatch) {
+                        return null;
+                      }
+
                       return (
                         <div
                           key={message.id || index}
-                          className={`flex gap-3 ${
+                          ref={(el) => {
+                            if (el && message.id) {
+                              messageRefs.current.set(message.id, el);
+                            }
+                          }}
+                          className={`flex gap-3 transition-all ${
                             message.role === "user" ? "justify-end" : "justify-start"
-                          }`}
+                          } ${isCurrentMatch ? "ring-2 ring-primary ring-offset-2 ring-offset-background rounded-lg" : ""}`}
                         >
                           {message.role === "assistant" && (
                             <div className="p-2 rounded-lg bg-primary/20 h-fit">
