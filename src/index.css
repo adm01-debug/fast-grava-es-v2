@@ -82,15 +82,15 @@
     --tech-dtf-textile: 195 100% 45%;
     --tech-cut-media: 220 10% 40%;
 
-    --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 222 25% 15%;
+    --sidebar-background: 220 14% 96%;
+    --sidebar-foreground: 222 25% 12%;
     --sidebar-primary: 24 100% 50%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 280 85% 55%;
     --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 220 14% 85%;
+    --sidebar-border: 220 14% 82%;
     --sidebar-ring: 24 100% 50%;
-    --sidebar-muted: 220 14% 94%;
+    --sidebar-muted: 220 14% 90%;
 
     /* Chart colors */
     --chart-1: 24 100% 50%;
