@@ -55,24 +55,62 @@ const actionConfig: Record<string, { label: string; icon: typeof Play; color: st
   finish: { label: "Finalizou", icon: CheckCircle2, color: "text-purple-400 bg-purple-500/20" },
 };
 
+// Sound configurations for different actions
+const actionSounds: Record<string, { frequencies: number[]; durations: number[]; type: OscillatorType }> = {
+  start: { 
+    frequencies: [523.25, 659.25, 783.99], // C5, E5, G5 - ascending chord (positive)
+    durations: [0.1, 0.1, 0.15],
+    type: 'sine'
+  },
+  pause: { 
+    frequencies: [440, 349.23], // A4, F4 - descending (attention)
+    durations: [0.15, 0.2],
+    type: 'triangle'
+  },
+  resume: { 
+    frequencies: [440, 523.25], // A4, C5 - ascending (resuming)
+    durations: [0.1, 0.15],
+    type: 'sine'
+  },
+  finish: { 
+    frequencies: [523.25, 659.25, 783.99, 1046.5], // C5, E5, G5, C6 - triumphant
+    durations: [0.08, 0.08, 0.08, 0.25],
+    type: 'sine'
+  },
+  view: { 
+    frequencies: [880], // A5 - simple notification
+    durations: [0.15],
+    type: 'sine'
+  },
+};
+
 // Function to play notification sound using Web Audio API
-const playNotificationSound = () => {
+const playNotificationSound = (action: string) => {
   try {
     const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-    const oscillator = audioContext.createOscillator();
-    const gainNode = audioContext.createGain();
-
-    oscillator.connect(gainNode);
-    gainNode.connect(audioContext.destination);
-
-    oscillator.frequency.setValueAtTime(880, audioContext.currentTime); // A5 note
-    oscillator.frequency.setValueAtTime(1046.5, audioContext.currentTime + 0.1); // C6 note
+    const soundConfig = actionSounds[action] || actionSounds.view;
     
-    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
-
-    oscillator.start(audioContext.currentTime);
-    oscillator.stop(audioContext.currentTime + 0.3);
+    let currentTime = audioContext.currentTime;
+    
+    soundConfig.frequencies.forEach((freq, index) => {
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      
+      oscillator.type = soundConfig.type;
+      oscillator.frequency.setValueAtTime(freq, currentTime);
+      
+      const duration = soundConfig.durations[index];
+      gainNode.gain.setValueAtTime(0.25, currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, currentTime + duration);
+      
+      oscillator.start(currentTime);
+      oscillator.stop(currentTime + duration);
+      
+      currentTime += duration * 0.9; // Slight overlap for smoother sound
+    });
   } catch (error) {
     console.log('Could not play notification sound:', error);
   }
@@ -139,9 +177,9 @@ export const ScanHistory = ({ jobId, limit = 200 }: ScanHistoryProps) => {
           // Only show notification if not filtering by specific job, or if it's for this job
           if (jobId && newScan.job_id !== jobId) return;
 
-          // Play notification sound
+          // Play notification sound based on action type
           if (soundEnabled) {
-            playNotificationSound();
+            playNotificationSound(newScan.action);
           }
 
           // Fetch operator name
