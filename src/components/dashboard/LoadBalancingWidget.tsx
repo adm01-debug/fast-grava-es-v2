@@ -1,0 +1,157 @@
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { 
+  Scale, 
+  ArrowRight,
+  AlertTriangle,
+  CheckCircle2,
+  Cpu
+} from "lucide-react";
+import { useLoadBalancing, TechniqueLoadSummary } from "@/hooks/useLoadBalancing";
+
+interface TechniqueLoadCardProps {
+  summary: TechniqueLoadSummary;
+}
+
+function TechniqueLoadCard({ summary }: TechniqueLoadCardProps) {
+  const getOccupancyColor = (rate: number) => {
+    if (rate >= 90) return 'bg-red-500';
+    if (rate >= 75) return 'bg-orange-500';
+    if (rate >= 50) return 'bg-yellow-500';
+    return 'bg-green-500';
+  };
+
+  return (
+    <div className="p-4 rounded-lg bg-muted/30 border border-border/30 space-y-3">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Badge 
+            variant="outline" 
+            style={{ 
+              backgroundColor: `${summary.technique.color}20`,
+              borderColor: `${summary.technique.color}50`,
+              color: summary.technique.color 
+            }}
+          >
+            {summary.technique.short_name}
+          </Badge>
+          <span className="text-sm text-muted-foreground">{summary.technique.name}</span>
+        </div>
+        {summary.isUnbalanced ? (
+          <Badge className="bg-orange-500/20 text-orange-400 border-orange-500/30 border">
+            <AlertTriangle className="h-3 w-3 mr-1" />
+            Desbalanceado
+          </Badge>
+        ) : (
+          <Badge className="bg-green-500/20 text-green-400 border-green-500/30 border">
+            <CheckCircle2 className="h-3 w-3 mr-1" />
+            Equilibrado
+          </Badge>
+        )}
+      </div>
+
+      <div className="space-y-2">
+        {summary.machines.slice(0, 4).map((load) => (
+          <div key={load.machine.id} className="space-y-1">
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-muted-foreground flex items-center gap-1">
+                <Cpu className="h-3 w-3" />
+                {load.machine.code}
+              </span>
+              <span className={`font-medium ${load.occupancyRate >= 90 ? 'text-red-400' : load.occupancyRate >= 75 ? 'text-orange-400' : 'text-foreground'}`}>
+                {Math.round(load.occupancyRate)}%
+              </span>
+            </div>
+            <Progress 
+              value={load.occupancyRate} 
+              className="h-1.5"
+            />
+          </div>
+        ))}
+        {summary.machines.length > 4 && (
+          <p className="text-xs text-muted-foreground text-center pt-1">
+            +{summary.machines.length - 4} máquinas
+          </p>
+        )}
+      </div>
+
+      {summary.suggestions.length > 0 && (
+        <div className="pt-2 border-t border-border/30 space-y-2">
+          <p className="text-xs text-muted-foreground">Sugestões de redistribuição:</p>
+          {summary.suggestions.slice(0, 2).map((suggestion, idx) => (
+            <div key={idx} className="text-xs flex items-center gap-1 text-muted-foreground">
+              <span className="font-medium text-foreground">{suggestion.orderNumber}</span>
+              <ArrowRight className="h-3 w-3" />
+              <span className="text-cyan-400">{suggestion.suggestedMachineName}</span>
+              <span className="text-green-400">(-{Math.round(suggestion.loadDifference)}%)</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+export function LoadBalancingWidget() {
+  const { byTechnique, suggestions, isLoading } = useLoadBalancing();
+
+  const unbalancedCount = byTechnique.filter(t => t.isUnbalanced).length;
+
+  if (isLoading) {
+    return (
+      <Card className="bg-card/50 backdrop-blur-sm border-border/50">
+        <CardContent className="p-6">
+          <div className="animate-pulse space-y-3">
+            <div className="h-4 bg-muted rounded w-1/2" />
+            <div className="h-20 bg-muted rounded" />
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <Card className="bg-card/50 backdrop-blur-sm border-border/50">
+      <CardHeader className="pb-3">
+        <CardTitle className="text-lg flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="p-2 rounded-lg bg-cyan-500/20">
+              <Scale className="h-5 w-5 text-cyan-400" />
+            </div>
+            Balanceamento de Carga
+          </div>
+          <Badge 
+            className={`border ${unbalancedCount > 0 
+              ? 'bg-orange-500/20 text-orange-400 border-orange-500/30' 
+              : 'bg-green-500/20 text-green-400 border-green-500/30'}`}
+          >
+            {unbalancedCount > 0 
+              ? `${unbalancedCount} técnicas desbalanceadas` 
+              : 'Todas equilibradas'}
+          </Badge>
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        {byTechnique.length === 0 ? (
+          <div className="text-center py-6 text-muted-foreground">
+            <Scale className="h-10 w-10 mx-auto mb-2 opacity-50" />
+            <p className="text-sm">Nenhum dado de carga disponível</p>
+          </div>
+        ) : (
+          <ScrollArea className="h-[320px] pr-2">
+            <div className="space-y-3">
+              {byTechnique
+                .filter(t => t.machines.some(m => m.jobCount > 0))
+                .slice(0, 6)
+                .map((summary) => (
+                  <TechniqueLoadCard key={summary.technique.id} summary={summary} />
+                ))}
+            </div>
+          </ScrollArea>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
