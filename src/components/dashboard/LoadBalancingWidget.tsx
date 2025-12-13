@@ -101,7 +101,7 @@ export function LoadBalancingWidget() {
 
   if (isLoading) {
     return (
-      <Card className="bg-card/50 backdrop-blur-sm border-border/50">
+      <Card className="glass-card">
         <CardContent className="p-6">
           <div className="animate-pulse space-y-3">
             <div className="h-4 bg-muted rounded w-1/2" />
@@ -113,14 +113,14 @@ export function LoadBalancingWidget() {
   }
 
   return (
-    <Card className="bg-card/50 backdrop-blur-sm border-border/50">
+    <Card className="glass-card card-interactive animate-fade-in-up opacity-0 [animation-fill-mode:forwards] [animation-delay:0.2s] dark:hover:shadow-[0_8px_32px_-8px_hsl(180,100%,50%,0.25)]">
       <CardHeader className="pb-3">
         <CardTitle className="text-lg flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="p-2 rounded-lg bg-cyan-500/20">
-              <Scale className="h-5 w-5 text-cyan-400" />
+            <div className="p-2 rounded-lg bg-[hsl(180,100%,45%)]/20 dark:shadow-[0_0_20px_-5px_hsl(180,100%,50%,0.4)]">
+              <Scale className="h-5 w-5 text-[hsl(180,100%,50%)]" />
             </div>
-            Balanceamento de Carga
+            <span className="gradient-text">Balanceamento de Carga</span>
           </div>
           <Badge 
             className={`border ${unbalancedCount > 0 
