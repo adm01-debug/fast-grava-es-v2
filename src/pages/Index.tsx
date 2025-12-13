@@ -6,6 +6,9 @@ import { CompactTimeline } from '@/components/dashboard/CompactTimeline';
 import { AlertsWidget } from '@/components/dashboard/AlertsWidget';
 import { BufferStatusWidget } from '@/components/dashboard/BufferStatusWidget';
 import { ConflictAlertsWidget } from '@/components/dashboard/ConflictAlertsWidget';
+import { SmartSequencingWidget } from '@/components/dashboard/SmartSequencingWidget';
+import { LoadBalancingWidget } from '@/components/dashboard/LoadBalancingWidget';
+import { BottleneckWidget } from '@/components/dashboard/BottleneckWidget';
 import { 
   Calendar, 
   CheckCircle2, 
@@ -77,6 +80,18 @@ const Index = () => {
             <BufferStatusWidget />
             <ConflictAlertsWidget />
             <AlertsWidget />
+          </div>
+        </div>
+
+        {/* Operational Efficiency Section */}
+        <div className="space-y-4">
+          <h2 className="text-xl font-display font-semibold text-foreground">
+            Eficiência Operacional
+          </h2>
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+            <SmartSequencingWidget />
+            <LoadBalancingWidget />
+            <BottleneckWidget />
           </div>
         </div>
 
