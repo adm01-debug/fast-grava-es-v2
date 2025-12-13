@@ -44,7 +44,11 @@ import {
   PieChart as PieChartIcon,
   BarChart3,
   List,
-  LayoutGrid
+  LayoutGrid,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight
 } from "lucide-react";
 import { formatDistanceToNow, format, isWithinInterval, startOfDay, endOfDay, subDays } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -135,6 +139,8 @@ export const ScanHistory = ({ jobId, limit = 200 }: ScanHistoryProps) => {
   const [viewMode, setViewMode] = useState<"charts" | "list" | "both">("both");
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [newScanIds, setNewScanIds] = useState<Set<string>>(new Set());
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 15;
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -353,12 +359,25 @@ export const ScanHistory = ({ jobId, limit = 200 }: ScanHistoryProps) => {
     return Array.from(stats.values());
   }, [filteredScans]);
 
+  // Pagination
+  const totalPages = Math.ceil(filteredScans.length / itemsPerPage);
+  const paginatedScans = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return filteredScans.slice(startIndex, startIndex + itemsPerPage);
+  }, [filteredScans, currentPage, itemsPerPage]);
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [operatorFilter, actionFilter, dateRange]);
+
   const hasActiveFilters = operatorFilter !== "all" || actionFilter !== "all" || dateRange?.from;
 
   const clearFilters = () => {
     setOperatorFilter("all");
     setActionFilter("all");
     setDateRange(undefined);
+    setCurrentPage(1);
   };
 
   if (isLoading) {
@@ -710,6 +729,7 @@ export const ScanHistory = ({ jobId, limit = 200 }: ScanHistoryProps) => {
 
         {/* Scan List */}
         {(viewMode === "list" || viewMode === "both") && (
+        <>
         <ScrollArea className="h-[350px] pr-4">
           {filteredScans.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
@@ -730,7 +750,7 @@ export const ScanHistory = ({ jobId, limit = 200 }: ScanHistoryProps) => {
             </div>
           ) : (
             <div className="space-y-3">
-              {filteredScans.map((scan) => {
+              {paginatedScans.map((scan) => {
                 const config = actionConfig[scan.action] || actionConfig.view;
                 const Icon = config.icon;
                 
@@ -843,6 +863,79 @@ export const ScanHistory = ({ jobId, limit = 200 }: ScanHistoryProps) => {
             </div>
           )}
         </ScrollArea>
+        
+        {/* Pagination */}
+        {filteredScans.length > itemsPerPage && (
+          <div className="flex items-center justify-between pt-4 border-t border-border/30">
+            <div className="text-xs text-muted-foreground">
+              Mostrando {((currentPage - 1) * itemsPerPage) + 1} - {Math.min(currentPage * itemsPerPage, filteredScans.length)} de {filteredScans.length}
+            </div>
+            <div className="flex items-center gap-1">
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-8 w-8"
+                onClick={() => setCurrentPage(1)}
+                disabled={currentPage === 1}
+              >
+                <ChevronsLeft className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-8 w-8"
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+              <div className="flex items-center gap-1 px-2">
+                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                  let pageNum: number;
+                  if (totalPages <= 5) {
+                    pageNum = i + 1;
+                  } else if (currentPage <= 3) {
+                    pageNum = i + 1;
+                  } else if (currentPage >= totalPages - 2) {
+                    pageNum = totalPages - 4 + i;
+                  } else {
+                    pageNum = currentPage - 2 + i;
+                  }
+                  return (
+                    <Button
+                      key={pageNum}
+                      variant={currentPage === pageNum ? "default" : "ghost"}
+                      size="icon"
+                      className="h-8 w-8"
+                      onClick={() => setCurrentPage(pageNum)}
+                    >
+                      {pageNum}
+                    </Button>
+                  );
+                })}
+              </div>
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-8 w-8"
+                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                disabled={currentPage === totalPages}
+              >
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-8 w-8"
+                onClick={() => setCurrentPage(totalPages)}
+                disabled={currentPage === totalPages}
+              >
+                <ChevronsRight className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        )}
+        </>
         )}
       </CardContent>
     </Card>
