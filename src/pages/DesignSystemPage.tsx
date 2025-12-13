@@ -8551,6 +8551,19 @@ interface OverviewSectionProps {
 
 function OverviewSection({ onNavigate }: OverviewSectionProps) {
   const [animatedValues, setAnimatedValues] = useState({ categories: 0, components: 0, variants: 0, copiable: 0 });
+  const [ripples, setRipples] = useState<{ id: number; x: number; y: number; color: string }[]>([]);
+
+  const handleRipple = (e: React.MouseEvent<HTMLDivElement>, color: string) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const id = Date.now();
+    
+    setRipples(prev => [...prev, { id, x, y, color }]);
+    setTimeout(() => {
+      setRipples(prev => prev.filter(r => r.id !== id));
+    }, 600);
+  };
 
   useEffect(() => {
     const duration = 1500;
@@ -8636,9 +8649,16 @@ function OverviewSection({ onNavigate }: OverviewSectionProps) {
       
       {/* Stats Overview */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <Card variant="stat" className="hover-lift-sm group relative overflow-hidden">
+        <Card variant="stat" className="hover-lift-sm group relative overflow-hidden cursor-pointer" onClick={(e) => handleRipple(e, 'primary')}>
           <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/10 bg-[length:200%_200%] animate-[gradient-shift_4s_ease_infinite]" />
           <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+          {ripples.filter(r => r.color === 'primary').map(ripple => (
+            <span
+              key={ripple.id}
+              className="absolute rounded-full bg-primary/30 animate-ripple pointer-events-none"
+              style={{ left: ripple.x, top: ripple.y, width: 20, height: 20, marginLeft: -10, marginTop: -10 }}
+            />
+          ))}
           <CardContent className="p-4 relative">
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 transition-all duration-300 group-hover:scale-110 group-hover:shadow-[0_0_20px_hsl(var(--primary)/0.4)]">
@@ -8651,9 +8671,16 @@ function OverviewSection({ onNavigate }: OverviewSectionProps) {
             </div>
           </CardContent>
         </Card>
-        <Card variant="stat" className="hover-lift-sm group relative overflow-hidden">
+        <Card variant="stat" className="hover-lift-sm group relative overflow-hidden cursor-pointer" onClick={(e) => handleRipple(e, 'success')}>
           <div className="absolute inset-0 bg-gradient-to-br from-success/5 via-transparent to-success/10 bg-[length:200%_200%] animate-[gradient-shift_4s_ease_infinite]" />
           <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+          {ripples.filter(r => r.color === 'success').map(ripple => (
+            <span
+              key={ripple.id}
+              className="absolute rounded-full bg-success/30 animate-ripple pointer-events-none"
+              style={{ left: ripple.x, top: ripple.y, width: 20, height: 20, marginLeft: -10, marginTop: -10 }}
+            />
+          ))}
           <CardContent className="p-4 relative">
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-lg bg-success/10 flex items-center justify-center shrink-0 transition-all duration-300 group-hover:scale-110 group-hover:shadow-[0_0_20px_hsl(var(--success)/0.4)]">
@@ -8666,9 +8693,16 @@ function OverviewSection({ onNavigate }: OverviewSectionProps) {
             </div>
           </CardContent>
         </Card>
-        <Card variant="stat" className="hover-lift-sm group relative overflow-hidden">
+        <Card variant="stat" className="hover-lift-sm group relative overflow-hidden cursor-pointer" onClick={(e) => handleRipple(e, 'warning')}>
           <div className="absolute inset-0 bg-gradient-to-br from-warning/5 via-transparent to-warning/10 bg-[length:200%_200%] animate-[gradient-shift_4s_ease_infinite]" />
           <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+          {ripples.filter(r => r.color === 'warning').map(ripple => (
+            <span
+              key={ripple.id}
+              className="absolute rounded-full bg-warning/30 animate-ripple pointer-events-none"
+              style={{ left: ripple.x, top: ripple.y, width: 20, height: 20, marginLeft: -10, marginTop: -10 }}
+            />
+          ))}
           <CardContent className="p-4 relative">
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-lg bg-warning/10 flex items-center justify-center shrink-0 transition-all duration-300 group-hover:scale-110 group-hover:shadow-[0_0_20px_hsl(var(--warning)/0.4)]">
@@ -8681,9 +8715,16 @@ function OverviewSection({ onNavigate }: OverviewSectionProps) {
             </div>
           </CardContent>
         </Card>
-        <Card variant="stat" className="hover-lift-sm group relative overflow-hidden">
+        <Card variant="stat" className="hover-lift-sm group relative overflow-hidden cursor-pointer" onClick={(e) => handleRipple(e, 'info')}>
           <div className="absolute inset-0 bg-gradient-to-br from-info/5 via-transparent to-info/10 bg-[length:200%_200%] animate-[gradient-shift_4s_ease_infinite]" />
           <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+          {ripples.filter(r => r.color === 'info').map(ripple => (
+            <span
+              key={ripple.id}
+              className="absolute rounded-full bg-info/30 animate-ripple pointer-events-none"
+              style={{ left: ripple.x, top: ripple.y, width: 20, height: 20, marginLeft: -10, marginTop: -10 }}
+            />
+          ))}
           <CardContent className="p-4 relative">
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-lg bg-info/10 flex items-center justify-center shrink-0 transition-all duration-300 group-hover:scale-110 group-hover:shadow-[0_0_20px_hsl(var(--info)/0.4)]">
