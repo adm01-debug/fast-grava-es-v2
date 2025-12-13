@@ -301,6 +301,7 @@ export default function DesignSystemPage() {
                     <Button variant="ghost">Ghost</Button>
                     <Button variant="link">Link</Button>
                     <Button variant="destructive">Destructive</Button>
+                    <Button variant="success">Success</Button>
                   </div>
                 </div>
 
@@ -313,6 +314,7 @@ export default function DesignSystemPage() {
                     <Button variant="gradient-success">Gradient Success</Button>
                     <Button variant="glow">Glow</Button>
                     <Button variant="glass">Glass</Button>
+                    <Button variant="premium">Premium</Button>
                   </div>
                 </div>
 
