@@ -1,5 +1,5 @@
-import { useState, useMemo } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useState, useMemo, useEffect } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -31,12 +31,14 @@ import {
   Clock,
   Filter,
   X,
-  CalendarIcon
+  CalendarIcon,
+  Bell
 } from "lucide-react";
 import { formatDistanceToNow, format, isWithinInterval, startOfDay, endOfDay } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { DateRange } from "react-day-picker";
+import { useToast } from "@/hooks/use-toast";
 
 interface ScanHistoryProps {
   jobId?: string;
@@ -56,6 +58,8 @@ export const ScanHistory = ({ jobId, limit = 200 }: ScanHistoryProps) => {
   const [actionFilter, setActionFilter] = useState<string>("all");
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
   const [showFilters, setShowFilters] = useState(false);
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const { data: scans, isLoading } = useQuery({
     queryKey: ['scan-history', jobId, limit],
@@ -91,6 +95,52 @@ export const ScanHistory = ({ jobId, limit = 200 }: ScanHistoryProps) => {
       }));
     }
   });
+
+  // Real-time subscription for new scans
+  useEffect(() => {
+    const channel = supabase
+      .channel('scan-history-realtime')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'qr_scan_history'
+        },
+        async (payload) => {
+          const newScan = payload.new as any;
+          
+          // Only show notification if not filtering by specific job, or if it's for this job
+          if (jobId && newScan.job_id !== jobId) return;
+
+          // Fetch operator name
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("full_name")
+            .eq("id", newScan.operator_id)
+            .maybeSingle();
+
+          const operatorName = profile?.full_name || "Operador";
+          const actionLabel = actionConfig[newScan.action]?.label || newScan.action;
+
+          // Show toast notification
+          toast({
+            title: "Novo scan registrado",
+            description: `${operatorName} ${actionLabel.toLowerCase()} uma produção`,
+            duration: 4000,
+          });
+
+          // Invalidate query to refresh data
+          queryClient.invalidateQueries({ queryKey: ['scan-history'] });
+          queryClient.invalidateQueries({ queryKey: ['scan-stats'] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [jobId, toast, queryClient]);
 
   // Get unique operators for filter
   const operators = useMemo(() => {
