@@ -122,6 +122,7 @@ export const ScanHistory = ({ jobId, limit = 200 }: ScanHistoryProps) => {
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
   const [showFilters, setShowFilters] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(true);
+  const [newScanIds, setNewScanIds] = useState<Set<string>>(new Set());
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -198,6 +199,18 @@ export const ScanHistory = ({ jobId, limit = 200 }: ScanHistoryProps) => {
             description: `${operatorName} ${actionLabel.toLowerCase()} uma produção`,
             duration: 4000,
           });
+
+          // Add to new scan IDs for animation
+          setNewScanIds(prev => new Set(prev).add(newScan.id));
+          
+          // Remove from new scan IDs after animation completes
+          setTimeout(() => {
+            setNewScanIds(prev => {
+              const updated = new Set(prev);
+              updated.delete(newScan.id);
+              return updated;
+            });
+          }, 3000);
 
           // Invalidate query to refresh data
           queryClient.invalidateQueries({ queryKey: ['scan-history'] });
@@ -457,10 +470,17 @@ export const ScanHistory = ({ jobId, limit = 200 }: ScanHistoryProps) => {
                 const config = actionConfig[scan.action] || actionConfig.view;
                 const Icon = config.icon;
                 
+                const isNew = newScanIds.has(scan.id);
+                
                 return (
                   <div
                     key={scan.id}
-                    className="p-3 rounded-lg bg-muted/30 border border-border/30 hover:bg-muted/50 transition-colors"
+                    className={cn(
+                      "p-3 rounded-lg border transition-all duration-500",
+                      isNew 
+                        ? "bg-primary/20 border-primary/50 animate-pulse shadow-lg shadow-primary/20 ring-2 ring-primary/30" 
+                        : "bg-muted/30 border-border/30 hover:bg-muted/50"
+                    )}
                   >
                     <div className="flex items-start gap-3">
                       <div className={`p-2 rounded-lg ${config.color}`}>
