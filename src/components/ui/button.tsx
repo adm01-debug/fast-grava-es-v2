@@ -92,10 +92,12 @@ const buttonVariants = cva(
           "dark:shadow-[0_0_20px_-5px_hsl(var(--warning)/0.4)]",
           "dark:hover:shadow-[0_0_30px_-5px_hsl(var(--warning)/0.6)]",
         ],
-        // New: Subtle variant - minimal visual weight
+        // New: Subtle variant - minimal visual weight with better dark mode contrast
         subtle: [
-          "bg-transparent text-muted-foreground hover:text-foreground hover:bg-muted/50",
-          "dark:hover:bg-white/5",
+          "bg-muted/50 text-muted-foreground border border-transparent",
+          "hover:text-foreground hover:bg-muted hover:border-border/50",
+          "dark:bg-white/5 dark:text-muted-foreground dark:border-white/10",
+          "dark:hover:bg-white/10 dark:hover:text-foreground dark:hover:border-white/20",
         ],
         premium: [
           "bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 text-amber-950 font-semibold",
