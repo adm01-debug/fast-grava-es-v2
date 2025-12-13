@@ -206,6 +206,8 @@ import {
 } from '@/components/ui/pagination';
 
 export default function DesignSystemPage() {
+  const [activeTab, setActiveTab] = useState("overview");
+
   return (
     <MainLayout>
       <div className="p-6 space-y-8 max-w-7xl mx-auto">
@@ -217,7 +219,7 @@ export default function DesignSystemPage() {
           </p>
         </div>
 
-        <Tabs defaultValue="overview" className="space-y-6">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <TabsList className="flex flex-wrap gap-2 h-auto p-1">
             <TabsTrigger value="overview" className="data-[state=active]:gradient-primary data-[state=active]:text-white">
               Overview
@@ -286,7 +288,7 @@ export default function DesignSystemPage() {
 
           {/* Overview Tab */}
           <TabsContent value="overview" className="space-y-6">
-            <OverviewSection />
+            <OverviewSection onNavigate={setActiveTab} />
           </TabsContent>
 
           {/* Buttons Tab */}
@@ -8508,7 +8510,11 @@ html, body, .bg-background, .bg-card {
 }
 
 // Overview Section Component
-function OverviewSection() {
+interface OverviewSectionProps {
+  onNavigate: (tabId: string) => void;
+}
+
+function OverviewSection({ onNavigate }: OverviewSectionProps) {
   const categories = [
     { id: 'buttons', icon: Zap, title: 'Botões', description: '12 variantes de botões incluindo gradient, glow e premium', count: 12 },
     { id: 'forms', icon: Edit, title: 'Formulários', description: 'Inputs, selects, checkboxes, radio buttons e mais', count: 8 },
@@ -8580,7 +8586,8 @@ function OverviewSection() {
               return (
                 <div
                   key={category.id}
-                  className="group p-4 rounded-xl border bg-card/50 hover:bg-card hover:border-primary/30 hover:shadow-lg transition-all duration-300 cursor-pointer hover-lift-sm"
+                  onClick={() => onNavigate(category.id)}
+                  className="group p-4 rounded-xl border bg-card/50 hover:bg-card hover:border-primary/30 hover:shadow-lg transition-all duration-300 cursor-pointer hover-lift-sm animate-fade-in"
                   style={{ animationDelay: `${index * 50}ms` }}
                 >
                   <div className="flex items-start gap-3">
