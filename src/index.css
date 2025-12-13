@@ -6,15 +6,16 @@
 
 @layer base {
   :root {
-    /* Light theme - Improved Contrast Design System */
-    --background: 220 20% 94%;
-    --foreground: 225 30% 8%;
+    /* Light theme - Enhanced Depth & Contrast Design System */
+    --background: 220 16% 96%;
+    --foreground: 225 35% 12%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 225 30% 8%;
+    /* Cards with depth - subtle gray instead of pure white */
+    --card: 220 14% 99%;
+    --card-foreground: 225 35% 12%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 225 30% 8%;
+    --popover: 220 14% 99%;
+    --popover-foreground: 225 35% 12%;
 
     --primary: 24 95% 48%;
     --primary-foreground: 0 0% 100%;
@@ -22,8 +23,9 @@
     --secondary: 210 100% 50%;
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 220 20% 88%;
-    --muted-foreground: 220 20% 35%;
+    /* Improved muted colors - better contrast */
+    --muted: 220 16% 90%;
+    --muted-foreground: 220 15% 40%;
 
     --accent: 280 80% 50%;
     --accent-foreground: 0 0% 100%;
@@ -31,78 +33,82 @@
     --destructive: 0 80% 48%;
     --destructive-foreground: 0 0% 100%;
 
-    --success: 142 70% 40%;
+    --success: 142 70% 38%;
     --success-foreground: 0 0% 100%;
 
-    --warning: 45 100% 48%;
-    --warning-foreground: 225 30% 8%;
+    --warning: 45 100% 45%;
+    --warning-foreground: 225 35% 10%;
 
-    --border: 220 20% 82%;
-    --input: 220 20% 85%;
+    --info: 210 100% 50%;
+    --info-foreground: 0 0% 100%;
+
+    /* Stronger borders for depth */
+    --border: 220 16% 80%;
+    --input: 220 16% 88%;
     --ring: 24 95% 48%;
 
     --radius: 0.75rem;
 
-    /* Custom colors for status - mais saturados para contraste */
-    --status-queue: 220 15% 82%;
-    --status-queue-foreground: 220 25% 20%;
-    --status-ready: 45 100% 45%;
-    --status-ready-foreground: 225 25% 10%;
-    --status-scheduled: 210 100% 48%;
+    /* Custom colors for status - enhanced saturation */
+    --status-queue: 220 12% 85%;
+    --status-queue-foreground: 220 20% 25%;
+    --status-ready: 45 100% 42%;
+    --status-ready-foreground: 225 30% 10%;
+    --status-scheduled: 210 100% 45%;
     --status-scheduled-foreground: 0 0% 100%;
-    --status-production: 280 80% 50%;
+    --status-production: 280 80% 48%;
     --status-production-foreground: 0 0% 100%;
-    --status-finished: 142 70% 38%;
+    --status-finished: 142 70% 35%;
     --status-finished-foreground: 0 0% 100%;
-    --status-paused: 45 100% 45%;
-    --status-paused-foreground: 225 25% 10%;
-    --status-cancelled: 0 80% 48%;
+    --status-paused: 45 100% 42%;
+    --status-paused-foreground: 225 30% 10%;
+    --status-cancelled: 0 80% 45%;
     --status-cancelled-foreground: 0 0% 100%;
-    --status-delayed: 24 95% 48%;
+    --status-delayed: 24 95% 45%;
     --status-delayed-foreground: 0 0% 100%;
-    --status-rework: 280 80% 50%;
+    --status-rework: 280 80% 48%;
     --status-rework-foreground: 0 0% 100%;
 
-    /* Cores dos ícones - mais saturados */
-    --icon-blue: 210 100% 48%;
-    --icon-yellow: 45 100% 45%;
-    --icon-green: 142 70% 38%;
-    --icon-purple: 280 80% 50%;
-    --icon-orange: 24 95% 48%;
-    --icon-pink: 340 80% 50%;
+    /* Icon colors - vivid */
+    --icon-blue: 210 100% 45%;
+    --icon-yellow: 45 100% 42%;
+    --icon-green: 142 70% 35%;
+    --icon-purple: 280 80% 48%;
+    --icon-orange: 24 95% 45%;
+    --icon-pink: 340 80% 48%;
 
-    /* Technique colors - melhor contraste */
-    --tech-silk-textile: 210 100% 48%;
-    --tech-silk-vinyl: 195 100% 45%;
-    --tech-silk-rotative: 170 70% 40%;
-    --tech-silk-decal: 160 70% 38%;
-    --tech-fiber-laser: 0 80% 48%;
-    --tech-laser-co2: 24 95% 48%;
-    --tech-laser-uv: 45 100% 45%;
-    --tech-tampo: 265 80% 50%;
-    --tech-hot-stamp: 280 80% 50%;
-    --tech-thermal: 340 80% 50%;
-    --tech-sublimation: 340 75% 45%;
-    --tech-decal-oven: 142 70% 38%;
-    --tech-dtf-uv: 170 80% 40%;
-    --tech-dtf-textile: 195 100% 45%;
-    --tech-cut-media: 220 15% 40%;
+    /* Technique colors */
+    --tech-silk-textile: 210 100% 45%;
+    --tech-silk-vinyl: 195 100% 42%;
+    --tech-silk-rotative: 170 70% 38%;
+    --tech-silk-decal: 160 70% 35%;
+    --tech-fiber-laser: 0 80% 45%;
+    --tech-laser-co2: 24 95% 45%;
+    --tech-laser-uv: 45 100% 42%;
+    --tech-tampo: 265 80% 48%;
+    --tech-hot-stamp: 280 80% 48%;
+    --tech-thermal: 340 80% 48%;
+    --tech-sublimation: 340 75% 42%;
+    --tech-decal-oven: 142 70% 35%;
+    --tech-dtf-uv: 170 80% 38%;
+    --tech-dtf-textile: 195 100% 42%;
+    --tech-cut-media: 220 12% 38%;
 
-    --sidebar-background: 220 20% 92%;
-    --sidebar-foreground: 225 30% 8%;
+    --sidebar-background: 220 16% 95%;
+    --sidebar-foreground: 225 35% 12%;
     --sidebar-primary: 24 95% 48%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 20% 88%;
-    --sidebar-accent-foreground: 225 30% 8%;
-    --sidebar-border: 220 20% 82%;
+    --sidebar-accent: 220 16% 92%;
+    --sidebar-accent-foreground: 225 35% 12%;
+    --sidebar-border: 220 16% 85%;
     --sidebar-ring: 24 95% 48%;
-    --sidebar-muted: 220 20% 88%;
+    --sidebar-muted: 220 16% 90%;
 
     /* Chart colors */
     --chart-1: 24 95% 48%;
     --chart-2: 280 80% 50%;
     --chart-3: 142 70% 38%;
-    --chart-4: 210 100% 48%;
+    --chart-4: 210 100% 50%;
     --chart-5: 45 100% 45%;
 
     /* Gradient */
@@ -119,17 +125,21 @@
     --silver-foreground: 220 15% 20%;
     --bronze: 25 60% 45%;
     --bronze-foreground: 25 40% 12%;
+
+    /* Transition timing for theme */
+    --theme-transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .dark {
-    /* Dark theme - Gaming Theme */
-    --background: 225 25% 6%;
+    /* Dark theme - Enhanced Gaming Theme with refined borders */
+    --background: 225 25% 7%;
     --foreground: 0 0% 98%;
 
-    --card: 225 25% 9%;
+    /* Cards with subtle border glow */
+    --card: 225 25% 10%;
     --card-foreground: 0 0% 98%;
 
-    --popover: 225 25% 9%;
+    --popover: 225 25% 10%;
     --popover-foreground: 0 0% 98%;
 
     --primary: 24 95% 55%;
@@ -138,8 +148,9 @@
     --secondary: 210 100% 60%;
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 225 20% 14%;
-    --muted-foreground: 225 10% 55%;
+    /* Improved muted contrast */
+    --muted: 225 20% 15%;
+    --muted-foreground: 225 10% 60%;
 
     --accent: 280 80% 60%;
     --accent-foreground: 0 0% 100%;
@@ -153,13 +164,17 @@
     --warning: 45 100% 55%;
     --warning-foreground: 225 25% 10%;
 
-    --border: 225 20% 15%;
-    --input: 225 20% 15%;
+    --info: 210 100% 60%;
+    --info-foreground: 0 0% 100%;
+
+    /* Enhanced borders with subtle glow effect */
+    --border: 225 20% 18%;
+    --input: 225 20% 16%;
     --ring: 24 95% 55%;
 
-    /* Custom colors for status */
+    /* Status colors */
     --status-queue: 225 20% 18%;
-    --status-queue-foreground: 225 10% 60%;
+    --status-queue-foreground: 225 10% 65%;
     --status-ready: 45 100% 55%;
     --status-ready-foreground: 225 25% 10%;
     --status-scheduled: 210 100% 60%;
@@ -177,7 +192,7 @@
     --status-rework: 280 80% 60%;
     --status-rework-foreground: 0 0% 100%;
 
-    /* Cores dos ícones */
+    /* Icon colors */
     --icon-blue: 210 100% 60%;
     --icon-yellow: 45 100% 55%;
     --icon-green: 142 70% 50%;
@@ -200,17 +215,17 @@
     --tech-decal-oven: 142 70% 50%;
     --tech-dtf-uv: 170 80% 50%;
     --tech-dtf-textile: 195 100% 55%;
-    --tech-cut-media: 220 10% 50%;
+    --tech-cut-media: 220 10% 55%;
 
-    --sidebar-background: 225 25% 7%;
-    --sidebar-foreground: 0 0% 90%;
+    --sidebar-background: 225 25% 8%;
+    --sidebar-foreground: 0 0% 92%;
     --sidebar-primary: 24 95% 55%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 225 20% 12%;
-    --sidebar-accent-foreground: 0 0% 90%;
-    --sidebar-border: 225 20% 12%;
+    --sidebar-accent: 225 20% 14%;
+    --sidebar-accent-foreground: 0 0% 92%;
+    --sidebar-border: 225 20% 16%;
     --sidebar-ring: 24 95% 55%;
-    --sidebar-muted: 225 20% 12%;
+    --sidebar-muted: 225 20% 14%;
 
     /* Chart colors */
     --chart-1: 24 95% 55%;
@@ -229,10 +244,13 @@
     --streak: 24 95% 55%;
     --gold: 45 100% 55%;
     --gold-foreground: 35 60% 10%;
-    --silver: 220 10% 70%;
+    --silver: 220 10% 72%;
     --silver-foreground: 220 15% 15%;
-    --bronze: 25 60% 50%;
+    --bronze: 25 60% 52%;
     --bronze-foreground: 25 40% 10%;
+
+    /* Transition timing for theme */
+    --theme-transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 }
 
@@ -241,25 +259,56 @@
     @apply border-border;
   }
 
+  /* Smooth theme transitions */
+  html {
+    transition: background-color var(--theme-transition),
+                color var(--theme-transition);
+  }
+
   body {
     @apply bg-background text-foreground font-sans antialiased;
     font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    transition: background-color var(--theme-transition),
+                color var(--theme-transition);
   }
 
+  /* Typography with consistent font-display */
   h1, h2, h3 {
     font-family: 'Space Grotesk', 'Plus Jakarta Sans', system-ui, sans-serif;
     font-weight: 700;
     letter-spacing: -0.02em;
+    @apply text-foreground;
   }
 
   h4, h5, h6 {
     font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
     font-weight: 600;
+    @apply text-foreground;
   }
 
-  /* Focus visible improvements */
+  /* Enhanced focus visible states - elegant with glow */
   *:focus-visible {
-    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+    @apply outline-none ring-2 ring-ring/70 ring-offset-2 ring-offset-background;
+    transition: box-shadow 0.2s ease-out;
+  }
+
+  /* Elegant focus for interactive elements */
+  button:focus-visible,
+  a:focus-visible,
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible {
+    @apply ring-2 ring-primary/50 ring-offset-2 ring-offset-background;
+    box-shadow: 0 0 0 4px hsl(var(--primary) / 0.1);
+  }
+
+  .dark button:focus-visible,
+  .dark a:focus-visible,
+  .dark input:focus-visible,
+  .dark textarea:focus-visible,
+  .dark select:focus-visible {
+    box-shadow: 0 0 0 4px hsl(var(--primary) / 0.2),
+                0 0 20px hsl(var(--primary) / 0.15);
   }
 }
 
@@ -287,16 +336,22 @@
     background: hsl(var(--muted-foreground) / 0.5);
   }
 
+  /* Glass card with enhanced depth for both modes */
   .glass-card {
-    @apply bg-card/90 backdrop-blur-xl border border-border/30;
-    box-shadow: 0 4px 20px -4px hsl(220 20% 20% / 0.08), 
-                0 8px 32px -8px hsl(220 20% 20% / 0.06);
+    @apply bg-card backdrop-blur-xl border border-border/50;
+    box-shadow: 0 1px 3px hsl(220 20% 20% / 0.06),
+                0 4px 20px -4px hsl(220 20% 20% / 0.1), 
+                0 8px 32px -8px hsl(220 20% 20% / 0.08),
+                inset 0 1px 0 hsl(0 0% 100% / 0.6);
+    transition: all var(--theme-transition);
   }
 
   .dark .glass-card {
-    @apply bg-card/80 backdrop-blur-2xl border-white/5;
+    @apply bg-card/85 backdrop-blur-2xl;
+    border: 1px solid hsl(0 0% 100% / 0.08);
     box-shadow: 0 10px 40px -10px hsl(0 0% 0% / 0.6),
-                0 0 0 1px hsl(0 0% 100% / 0.03) inset;
+                0 0 0 1px hsl(0 0% 100% / 0.04) inset,
+                0 1px 0 hsl(0 0% 100% / 0.06) inset;
   }
 
   /* Glass morphism gaming style */
@@ -447,29 +502,48 @@
     @apply transition-shadow duration-300 hover:shadow-[0_0_40px_-10px_hsl(var(--primary)/0.5)];
   }
 
-  /* Card animations - Enhanced hover effects */
+  /* Card animations - Enhanced hover effects with polished micro-interactions */
   .card-interactive {
-    @apply relative transition-all duration-300 ease-out;
-    @apply hover:-translate-y-1 hover:border-primary/40;
-    @apply hover:shadow-[0_20px_50px_-15px_hsl(var(--primary)/0.25)];
+    @apply relative;
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+                box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                border-color 0.25s ease-out;
+  }
+
+  .card-interactive:hover {
+    transform: translateY(-4px);
+    border-color: hsl(var(--primary) / 0.35);
+    box-shadow: 0 12px 40px -12px hsl(var(--primary) / 0.18),
+                0 4px 16px -4px hsl(220 20% 20% / 0.1);
+  }
+
+  .card-interactive:active {
+    transform: translateY(-2px);
+    transition-duration: 0.1s;
   }
 
   .card-interactive::before {
     content: '';
-    @apply absolute inset-0 rounded-xl opacity-0 transition-opacity duration-300 pointer-events-none;
-    background: linear-gradient(135deg, hsl(var(--primary) / 0.05), hsl(var(--accent) / 0.05));
+    @apply absolute inset-0 rounded-xl pointer-events-none;
+    background: linear-gradient(135deg, hsl(var(--primary) / 0.03), hsl(var(--accent) / 0.02));
+    opacity: 0;
+    transition: opacity 0.3s ease-out;
   }
 
   .card-interactive:hover::before {
-    @apply opacity-100;
+    opacity: 1;
   }
 
-  .dark .card-interactive {
-    @apply hover:shadow-[0_20px_60px_-15px_hsl(var(--primary)/0.35),0_0_30px_-10px_hsl(var(--primary)/0.2)];
+  /* Dark mode card-interactive enhancements */
+  .dark .card-interactive:hover {
+    border-color: hsl(var(--primary) / 0.45);
+    box-shadow: 0 20px 50px -15px hsl(var(--primary) / 0.35),
+                0 0 30px -10px hsl(var(--primary) / 0.2),
+                0 0 0 1px hsl(var(--primary) / 0.1) inset;
   }
 
   .dark .card-interactive::before {
-    background: linear-gradient(135deg, hsl(var(--primary) / 0.08), hsl(var(--accent) / 0.08));
+    background: linear-gradient(135deg, hsl(var(--primary) / 0.06), hsl(var(--accent) / 0.04));
   }
 
   /* Card with colored glow variants */

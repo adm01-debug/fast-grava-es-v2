@@ -97,6 +97,10 @@ export default {
           DEFAULT: "hsl(var(--warning))",
           foreground: "hsl(var(--warning-foreground))",
         },
+        info: {
+          DEFAULT: "hsl(var(--info))",
+          foreground: "hsl(var(--info-foreground))",
+        },
         xp: "hsl(var(--xp))",
         coins: "hsl(var(--coins))",
         streak: "hsl(var(--streak))",

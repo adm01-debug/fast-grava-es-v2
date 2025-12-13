@@ -6,9 +6,14 @@ const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElemen
   <div 
     ref={ref} 
     className={cn(
-      "rounded-xl border bg-card text-card-foreground transition-all duration-normal",
-      "border-border/60 shadow-elevation-2",
-      "dark:border-white/8 dark:bg-card/85 dark:backdrop-blur-xl dark:shadow-[0_8px_32px_-8px_hsl(0_0%_0%/0.5),0_0_0_1px_hsl(0_0%_100%/0.03)_inset]",
+      "rounded-xl border bg-card text-card-foreground",
+      // Light mode - enhanced depth with subtle shadows and inner highlight
+      "border-border/70 shadow-[0_1px_3px_hsl(220_20%_20%/0.06),0_4px_16px_-4px_hsl(220_20%_20%/0.1),inset_0_1px_0_hsl(0_0%_100%/0.7)]",
+      // Dark mode - refined borders with subtle glow
+      "dark:border-white/10 dark:bg-card/90 dark:backdrop-blur-xl",
+      "dark:shadow-[0_8px_32px_-8px_hsl(0_0%_0%/0.5),inset_0_1px_0_hsl(0_0%_100%/0.05),inset_0_0_0_1px_hsl(0_0%_100%/0.02)]",
+      // Smooth transitions for theme changes
+      "transition-[background-color,border-color,box-shadow] duration-300 ease-out",
       className
     )} 
     {...props} 
