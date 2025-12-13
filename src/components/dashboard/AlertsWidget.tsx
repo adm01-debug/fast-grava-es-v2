@@ -290,7 +290,8 @@ export function AlertsWidget() {
       }
     }
     
-    return slots;
+    // Sort by duration (largest first) for easier selection
+    return slots.sort((a, b) => b.duration - a.duration);
   }, [selectedMachineId, scheduleDate, machineScheduledJobs]);
 
   // Detect conflicts for the selected date/time/machine
