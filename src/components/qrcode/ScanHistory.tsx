@@ -36,7 +36,9 @@ import {
   Volume2,
   VolumeX,
   PieChart as PieChartIcon,
-  BarChart3
+  BarChart3,
+  List,
+  LayoutGrid
 } from "lucide-react";
 import { formatDistanceToNow, format, isWithinInterval, startOfDay, endOfDay, subDays } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -124,6 +126,7 @@ export const ScanHistory = ({ jobId, limit = 200 }: ScanHistoryProps) => {
   const [actionFilter, setActionFilter] = useState<string>("all");
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
   const [showFilters, setShowFilters] = useState(false);
+  const [viewMode, setViewMode] = useState<"charts" | "list" | "both">("both");
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [newScanIds, setNewScanIds] = useState<Set<string>>(new Set());
   const { toast } = useToast();
@@ -387,6 +390,36 @@ export const ScanHistory = ({ jobId, limit = 200 }: ScanHistoryProps) => {
             )}
           </CardTitle>
           <div className="flex items-center gap-2">
+            {/* View Mode Toggle */}
+            <div className="flex items-center rounded-lg border border-border/50 p-0.5">
+              <Button
+                variant={viewMode === "charts" ? "secondary" : "ghost"}
+                size="sm"
+                onClick={() => setViewMode("charts")}
+                className="h-7 px-2"
+                title="Apenas gráficos"
+              >
+                <BarChart3 className="h-4 w-4" />
+              </Button>
+              <Button
+                variant={viewMode === "both" ? "secondary" : "ghost"}
+                size="sm"
+                onClick={() => setViewMode("both")}
+                className="h-7 px-2"
+                title="Gráficos e lista"
+              >
+                <LayoutGrid className="h-4 w-4" />
+              </Button>
+              <Button
+                variant={viewMode === "list" ? "secondary" : "ghost"}
+                size="sm"
+                onClick={() => setViewMode("list")}
+                className="h-7 px-2"
+                title="Apenas lista"
+              >
+                <List className="h-4 w-4" />
+              </Button>
+            </div>
             <Button
               variant={soundEnabled ? "secondary" : "ghost"}
               size="sm"
@@ -559,112 +592,118 @@ export const ScanHistory = ({ jobId, limit = 200 }: ScanHistoryProps) => {
           </div>
         )}
 
-        {/* Action Distribution Mini Pie Chart */}
-        {actionDistribution.length > 0 && (
-          <div className="p-4 rounded-lg bg-muted/20 border border-border/30">
-            <div className="flex items-center gap-2 mb-3">
-              <PieChartIcon className="h-4 w-4 text-primary" />
-              <span className="text-sm font-medium text-foreground">Distribuição de Ações</span>
-            </div>
-            <div className="flex items-center gap-4">
-              {/* Mini Pie Chart */}
-              <div className="h-[100px] w-[100px] flex-shrink-0">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={actionDistribution}
-                      dataKey="count"
-                      nameKey="label"
-                      cx="50%"
-                      cy="50%"
-                      outerRadius={40}
-                      innerRadius={20}
-                    >
-                      {actionDistribution.map((entry, index) => (
-                        <Cell key={index} fill={entry.fill} />
-                      ))}
-                    </Pie>
-                    <Tooltip 
-                      formatter={(value: number, name: string) => [`${value} scans`, name]}
-                      contentStyle={{ 
-                        backgroundColor: 'hsl(var(--popover))', 
-                        border: '1px solid hsl(var(--border))',
-                        borderRadius: '8px',
-                        fontSize: '12px'
-                      }}
-                    />
-                  </PieChart>
-                </ResponsiveContainer>
+        {/* Charts Section */}
+        {(viewMode === "charts" || viewMode === "both") && (
+          <>
+            {/* Action Distribution Mini Pie Chart */}
+            {actionDistribution.length > 0 && (
+              <div className="p-4 rounded-lg bg-muted/20 border border-border/30">
+                <div className="flex items-center gap-2 mb-3">
+                  <PieChartIcon className="h-4 w-4 text-primary" />
+                  <span className="text-sm font-medium text-foreground">Distribuição de Ações</span>
+                </div>
+                <div className="flex items-center gap-4">
+                  {/* Mini Pie Chart */}
+                  <div className="h-[100px] w-[100px] flex-shrink-0">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={actionDistribution}
+                          dataKey="count"
+                          nameKey="label"
+                          cx="50%"
+                          cy="50%"
+                          outerRadius={40}
+                          innerRadius={20}
+                        >
+                          {actionDistribution.map((entry, index) => (
+                            <Cell key={index} fill={entry.fill} />
+                          ))}
+                        </Pie>
+                        <Tooltip 
+                          formatter={(value: number, name: string) => [`${value} scans`, name]}
+                          contentStyle={{ 
+                            backgroundColor: 'hsl(var(--popover))', 
+                            border: '1px solid hsl(var(--border))',
+                            borderRadius: '8px',
+                            fontSize: '12px'
+                          }}
+                        />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
+                  {/* Legend */}
+                  <div className="flex-1 grid grid-cols-2 sm:grid-cols-3 gap-2">
+                    {actionDistribution.map((item) => {
+                      const Icon = actionConfig[item.action]?.icon || Eye;
+                      return (
+                        <div 
+                          key={item.action}
+                          className="flex items-center gap-2 text-xs"
+                        >
+                          <div 
+                            className="w-2.5 h-2.5 rounded-full flex-shrink-0" 
+                            style={{ backgroundColor: item.fill }}
+                          />
+                          <Icon className="h-3 w-3 text-muted-foreground flex-shrink-0" />
+                          <span className="text-muted-foreground truncate">{item.label}</span>
+                          <span className="font-medium text-foreground ml-auto">{item.percentage}%</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
               </div>
-              {/* Legend */}
-              <div className="flex-1 grid grid-cols-2 sm:grid-cols-3 gap-2">
-                {actionDistribution.map((item) => {
-                  const Icon = actionConfig[item.action]?.icon || Eye;
-                  return (
-                    <div 
-                      key={item.action}
-                      className="flex items-center gap-2 text-xs"
-                    >
-                      <div 
-                        className="w-2.5 h-2.5 rounded-full flex-shrink-0" 
-                        style={{ backgroundColor: item.fill }}
-                      />
-                      <Icon className="h-3 w-3 text-muted-foreground flex-shrink-0" />
-                      <span className="text-muted-foreground truncate">{item.label}</span>
-                      <span className="font-medium text-foreground ml-auto">{item.percentage}%</span>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-        )}
+            )}
 
-        {/* Daily Evolution Bar Chart */}
-        {dailyEvolution.some(d => d.scans > 0) && (
-          <div className="p-4 rounded-lg bg-muted/20 border border-border/30">
-            <div className="flex items-center gap-2 mb-3">
-              <BarChart3 className="h-4 w-4 text-cyan-400" />
-              <span className="text-sm font-medium text-foreground">Evolução Diária (últimos 7 dias)</span>
-            </div>
-            <div className="h-[120px] w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={dailyEvolution}>
-                  <XAxis 
-                    dataKey="date" 
-                    tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }}
-                    tickLine={false}
-                    axisLine={false}
-                  />
-                  <YAxis 
-                    tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }}
-                    tickLine={false}
-                    axisLine={false}
-                    width={25}
-                    allowDecimals={false}
-                  />
-                  <Tooltip 
-                    formatter={(value: number) => [`${value} scans`, 'Scans']}
-                    contentStyle={{ 
-                      backgroundColor: 'hsl(var(--popover))', 
-                      border: '1px solid hsl(var(--border))',
-                      borderRadius: '8px',
-                      fontSize: '12px'
-                    }}
-                  />
-                  <Bar 
-                    dataKey="scans" 
-                    fill="hsl(187, 85%, 53%)" 
-                    radius={[4, 4, 0, 0]}
-                    name="Scans"
-                  />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
+            {/* Daily Evolution Bar Chart */}
+            {dailyEvolution.some(d => d.scans > 0) && (
+              <div className="p-4 rounded-lg bg-muted/20 border border-border/30">
+                <div className="flex items-center gap-2 mb-3">
+                  <BarChart3 className="h-4 w-4 text-cyan-400" />
+                  <span className="text-sm font-medium text-foreground">Evolução Diária (últimos 7 dias)</span>
+                </div>
+                <div className="h-[120px] w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={dailyEvolution}>
+                      <XAxis 
+                        dataKey="date" 
+                        tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }}
+                        tickLine={false}
+                        axisLine={false}
+                      />
+                      <YAxis 
+                        tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }}
+                        tickLine={false}
+                        axisLine={false}
+                        width={25}
+                        allowDecimals={false}
+                      />
+                      <Tooltip 
+                        formatter={(value: number) => [`${value} scans`, 'Scans']}
+                        contentStyle={{ 
+                          backgroundColor: 'hsl(var(--popover))', 
+                          border: '1px solid hsl(var(--border))',
+                          borderRadius: '8px',
+                          fontSize: '12px'
+                        }}
+                      />
+                      <Bar 
+                        dataKey="scans" 
+                        fill="hsl(187, 85%, 53%)" 
+                        radius={[4, 4, 0, 0]}
+                        name="Scans"
+                      />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+            )}
+          </>
         )}
 
         {/* Scan List */}
+        {(viewMode === "list" || viewMode === "both") && (
         <ScrollArea className="h-[350px] pr-4">
           {filteredScans.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
@@ -746,6 +785,7 @@ export const ScanHistory = ({ jobId, limit = 200 }: ScanHistoryProps) => {
             </div>
           )}
         </ScrollArea>
+        )}
       </CardContent>
     </Card>
   );
