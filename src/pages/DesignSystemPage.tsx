@@ -5157,6 +5157,35 @@ function NavigationSection() {
               </BreadcrumbList>
             </Breadcrumb>
           </div>
+
+          {/* Code Examples */}
+          <div className="space-y-4 pt-4 border-t">
+            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Exemplos de Código</h4>
+            <CodeBlock
+              label="Breadcrumb"
+              code={`<Breadcrumb>
+  <BreadcrumbList>
+    <BreadcrumbItem>
+      <BreadcrumbLink href="#">Home</BreadcrumbLink>
+    </BreadcrumbItem>
+    <BreadcrumbSeparator />
+    <BreadcrumbItem>
+      <BreadcrumbLink href="#">Categoria</BreadcrumbLink>
+    </BreadcrumbItem>
+    <BreadcrumbSeparator />
+    <BreadcrumbItem>
+      <BreadcrumbPage>Página Atual</BreadcrumbPage>
+    </BreadcrumbItem>
+  </BreadcrumbList>
+</Breadcrumb>
+
+{/* Com ícones */}
+<BreadcrumbLink href="#" className="flex items-center gap-1">
+  <Home className="h-4 w-4" />
+  Home
+</BreadcrumbLink>`}
+            />
+          </div>
         </CardContent>
       </Card>
 
@@ -5252,6 +5281,41 @@ function NavigationSection() {
                 <p className="text-sm text-muted-foreground">Lista de clientes</p>
               </TabsContent>
             </Tabs>
+          </div>
+
+          {/* Code Examples */}
+          <div className="space-y-4 pt-4 border-t">
+            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Exemplos de Código</h4>
+            <CodeBlock
+              label="Tabs"
+              code={`<Tabs defaultValue="tab1">
+  <TabsList>
+    <TabsTrigger value="tab1">Aba 1</TabsTrigger>
+    <TabsTrigger value="tab2">Aba 2</TabsTrigger>
+    <TabsTrigger value="tab3">Aba 3</TabsTrigger>
+  </TabsList>
+  <TabsContent value="tab1">
+    Conteúdo da aba 1
+  </TabsContent>
+  <TabsContent value="tab2">
+    Conteúdo da aba 2
+  </TabsContent>
+</Tabs>
+
+{/* Com ícones */}
+<TabsTrigger value="settings" className="flex items-center gap-2">
+  <Settings className="h-4 w-4" />
+  Configurações
+</TabsTrigger>
+
+{/* Com gradiente ativo */}
+<TabsTrigger 
+  value="home" 
+  className="data-[state=active]:gradient-primary data-[state=active]:text-white"
+>
+  Home
+</TabsTrigger>`}
+            />
           </div>
         </CardContent>
       </Card>
@@ -5422,6 +5486,41 @@ function NavigationSection() {
                 </NavigationMenuItem>
               </NavigationMenuList>
             </NavigationMenu>
+          </div>
+
+          {/* Code Examples */}
+          <div className="space-y-4 pt-4 border-t">
+            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Exemplos de Código</h4>
+            <CodeBlock
+              label="Navigation Menu"
+              code={`<NavigationMenu>
+  <NavigationMenuList>
+    {/* Link simples */}
+    <NavigationMenuItem>
+      <NavigationMenuLink className={navigationMenuTriggerStyle()} href="#">
+        Home
+      </NavigationMenuLink>
+    </NavigationMenuItem>
+
+    {/* Com dropdown */}
+    <NavigationMenuItem>
+      <NavigationMenuTrigger>Produtos</NavigationMenuTrigger>
+      <NavigationMenuContent>
+        <ul className="grid gap-3 p-4 w-[400px] md:grid-cols-2">
+          <li>
+            <NavigationMenuLink asChild>
+              <a href="#" className="block p-3 rounded-md hover:bg-accent">
+                <div className="text-sm font-medium">Título</div>
+                <p className="text-sm text-muted-foreground">Descrição</p>
+              </a>
+            </NavigationMenuLink>
+          </li>
+        </ul>
+      </NavigationMenuContent>
+    </NavigationMenuItem>
+  </NavigationMenuList>
+</NavigationMenu>`}
+            />
           </div>
         </CardContent>
       </Card>
