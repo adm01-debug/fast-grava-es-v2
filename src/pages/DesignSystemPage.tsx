@@ -8576,7 +8576,7 @@ function OverviewSection({ onNavigate }: OverviewSectionProps) {
             Categorias do Design System
           </CardTitle>
           <CardDescription>
-            Clique nas abas acima para explorar cada categoria em detalhes
+            Clique em qualquer card abaixo para navegar diretamente para a categoria
           </CardDescription>
         </CardHeader>
         <CardContent>
