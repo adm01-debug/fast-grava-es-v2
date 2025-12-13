@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { ThemeToggle } from '@/components/layout/ThemeToggle';
+import { CodeBlock } from '@/components/ui/code-block';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
@@ -203,36 +204,6 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/components/ui/pagination';
-
-// CodeBlock component for displaying copyable code snippets
-const CodeBlock = ({ code, label }: { code: string; label: string }) => {
-  const [copied, setCopied] = useState(false);
-  
-  const handleCopy = async () => {
-    await navigator.clipboard.writeText(code);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-  
-  return (
-    <div className="space-y-1.5">
-      <span className="text-[10px] text-muted-foreground font-medium">{label}</span>
-      <div className="relative group">
-        <pre className="bg-muted/50 dark:bg-black/30 border border-border rounded-md p-3 text-xs font-mono overflow-x-auto">
-          <code className="text-foreground/80">{code}</code>
-        </pre>
-        <Button
-          size="icon-sm"
-          variant="ghost"
-          className="absolute top-1.5 right-1.5 opacity-0 group-hover:opacity-100 transition-opacity"
-          onClick={handleCopy}
-        >
-          {copied ? <Check className="text-success" /> : <Copy />}
-        </Button>
-      </div>
-    </div>
-  );
-};
 
 export default function DesignSystemPage() {
   return (
