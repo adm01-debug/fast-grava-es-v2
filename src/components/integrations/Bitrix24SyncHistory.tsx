@@ -1,9 +1,11 @@
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { History, CheckCircle2, AlertCircle, AlertTriangle, ArrowDownToLine, ArrowUpFromLine, Webhook } from 'lucide-react';
-import { format, formatDistanceToNow } from 'date-fns';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { History, CheckCircle2, AlertCircle, AlertTriangle, ArrowDownToLine, ArrowUpFromLine, Webhook, Filter } from 'lucide-react';
+import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
 interface SyncHistoryItem {
@@ -19,13 +21,19 @@ interface SyncHistoryItem {
   triggered_by: string;
 }
 
+type TypeFilter = 'all' | 'pull' | 'push' | 'webhook';
+type StatusFilter = 'all' | 'success' | 'partial' | 'error';
+
 export const Bitrix24SyncHistory = () => {
+  const [typeFilter, setTypeFilter] = useState<TypeFilter>('all');
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
+
   const { data: history, isLoading } = useQuery({
     queryKey: ['bitrix24-sync-history'],
     queryFn: async () => {
       const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
       const response = await fetch(
-        `https://${projectId}.supabase.co/functions/v1/bitrix24-sync?action=history&limit=20`,
+        `https://${projectId}.supabase.co/functions/v1/bitrix24-sync?action=history&limit=50`,
         {
           headers: {
             'Content-Type': 'application/json',
@@ -37,6 +45,12 @@ export const Bitrix24SyncHistory = () => {
       return data.history as SyncHistoryItem[];
     },
     refetchInterval: 30000
+  });
+
+  const filteredHistory = history?.filter(item => {
+    const matchesType = typeFilter === 'all' || item.sync_type === typeFilter;
+    const matchesStatus = statusFilter === 'all' || item.status === statusFilter;
+    return matchesType && matchesStatus;
   });
 
   const getStatusIcon = (status: string) => {
@@ -109,22 +123,63 @@ export const Bitrix24SyncHistory = () => {
   return (
     <Card className="glass-card border-border/50">
       <CardHeader className="pb-3">
-        <CardTitle className="text-lg flex items-center gap-2">
-          <History className="h-5 w-5 text-primary" />
-          Histórico de Sincronização
-        </CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-lg flex items-center gap-2">
+            <History className="h-5 w-5 text-primary" />
+            Histórico de Sincronização
+          </CardTitle>
+          {filteredHistory && (
+            <Badge variant="outline" className="text-xs">
+              {filteredHistory.length} registros
+            </Badge>
+          )}
+        </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="space-y-4">
+        {/* Filters */}
+        <div className="flex gap-3">
+          <div className="flex-1">
+            <Select value={typeFilter} onValueChange={(v) => setTypeFilter(v as TypeFilter)}>
+              <SelectTrigger className="h-9 text-xs">
+                <Filter className="h-3 w-3 mr-2" />
+                <SelectValue placeholder="Tipo" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos os tipos</SelectItem>
+                <SelectItem value="pull">Importação</SelectItem>
+                <SelectItem value="push">Exportação</SelectItem>
+                <SelectItem value="webhook">Webhook</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex-1">
+            <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as StatusFilter)}>
+              <SelectTrigger className="h-9 text-xs">
+                <SelectValue placeholder="Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos os status</SelectItem>
+                <SelectItem value="success">Sucesso</SelectItem>
+                <SelectItem value="partial">Parcial</SelectItem>
+                <SelectItem value="error">Erro</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
         {isLoading ? (
           <div className="text-center py-4 text-muted-foreground">Carregando...</div>
-        ) : !history || history.length === 0 ? (
+        ) : !filteredHistory || filteredHistory.length === 0 ? (
           <div className="text-center py-4 text-muted-foreground">
-            Nenhuma sincronização registrada ainda.
+            {history && history.length > 0 
+              ? 'Nenhum registro encontrado com os filtros selecionados.'
+              : 'Nenhuma sincronização registrada ainda.'
+            }
           </div>
         ) : (
-          <ScrollArea className="h-[300px]">
+          <ScrollArea className="h-[280px]">
             <div className="space-y-2">
-              {history.map((item) => (
+              {filteredHistory.map((item) => (
                 <div
                   key={item.id}
                   className="p-3 rounded-lg bg-muted/20 border border-border/30 hover:bg-muted/30 transition-colors"
