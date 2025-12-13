@@ -178,8 +178,11 @@ export default {
           to: { backgroundPosition: "-200% 0" },
         },
         "float": {
-          "0%, 100%": { transform: "translateY(0)" },
-          "50%": { transform: "translateY(-5px)" },
+          "0%": { transform: "translate(0, 0)" },
+          "25%": { transform: "translate(5px, -8px)" },
+          "50%": { transform: "translate(-3px, -5px)" },
+          "75%": { transform: "translate(-6px, -10px)" },
+          "100%": { transform: "translate(0, 0)" },
         },
         "gradient-shift": {
           "0%": { backgroundPosition: "0% 50%" },
