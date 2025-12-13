@@ -8620,7 +8620,7 @@ function OverviewSection({ onNavigate }: OverviewSectionProps) {
           <CardContent className="p-4 relative">
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                <LayoutGrid className="h-5 w-5 text-primary" />
+                <LayoutGrid className="h-5 w-5 text-primary transition-transform duration-300 group-hover:rotate-12" />
               </div>
               <div>
                 <div className="text-2xl font-bold text-primary tabular-nums drop-shadow-[0_0_10px_hsl(var(--primary)/0.5)] animate-[glow-pulse_2s_ease-in-out_infinite]">{animatedValues.categories}</div>
@@ -8634,7 +8634,7 @@ function OverviewSection({ onNavigate }: OverviewSectionProps) {
           <CardContent className="p-4 relative">
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-lg bg-success/10 flex items-center justify-center shrink-0">
-                <Layers className="h-5 w-5 text-success" />
+                <Layers className="h-5 w-5 text-success transition-transform duration-300 group-hover:rotate-12" />
               </div>
               <div>
                 <div className="text-2xl font-bold text-success tabular-nums drop-shadow-[0_0_10px_hsl(var(--success)/0.5)] animate-[glow-pulse_2s_ease-in-out_infinite]">{animatedValues.components}+</div>
@@ -8648,7 +8648,7 @@ function OverviewSection({ onNavigate }: OverviewSectionProps) {
           <CardContent className="p-4 relative">
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-lg bg-warning/10 flex items-center justify-center shrink-0">
-                <Sparkles className="h-5 w-5 text-warning" />
+                <Sparkles className="h-5 w-5 text-warning transition-transform duration-300 group-hover:rotate-12" />
               </div>
               <div>
                 <div className="text-2xl font-bold text-warning tabular-nums drop-shadow-[0_0_10px_hsl(var(--warning)/0.5)] animate-[glow-pulse_2s_ease-in-out_infinite]">{animatedValues.variants}+</div>
@@ -8662,7 +8662,7 @@ function OverviewSection({ onNavigate }: OverviewSectionProps) {
           <CardContent className="p-4 relative">
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-lg bg-info/10 flex items-center justify-center shrink-0">
-                <Copy className="h-5 w-5 text-info" />
+                <Copy className="h-5 w-5 text-info transition-transform duration-300 group-hover:rotate-12" />
               </div>
               <div>
                 <div className="text-2xl font-bold text-info tabular-nums drop-shadow-[0_0_10px_hsl(var(--info)/0.5)] animate-[glow-pulse_2s_ease-in-out_infinite]">{animatedValues.copiable}%</div>
