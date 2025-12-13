@@ -8615,26 +8615,30 @@ function OverviewSection({ onNavigate }: OverviewSectionProps) {
     <div className="space-y-6">
       {/* Stats Overview */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <Card variant="stat" className="hover-lift-sm">
-          <CardContent className="p-4 text-center">
+        <Card variant="stat" className="hover-lift-sm group relative overflow-hidden">
+          <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+          <CardContent className="p-4 text-center relative">
             <div className="text-3xl font-bold text-primary tabular-nums">{animatedValues.categories}</div>
             <p className="text-sm text-muted-foreground">Categorias</p>
           </CardContent>
         </Card>
-        <Card variant="stat" className="hover-lift-sm">
-          <CardContent className="p-4 text-center">
+        <Card variant="stat" className="hover-lift-sm group relative overflow-hidden">
+          <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+          <CardContent className="p-4 text-center relative">
             <div className="text-3xl font-bold text-success tabular-nums">{animatedValues.components}+</div>
             <p className="text-sm text-muted-foreground">Componentes</p>
           </CardContent>
         </Card>
-        <Card variant="stat" className="hover-lift-sm">
-          <CardContent className="p-4 text-center">
+        <Card variant="stat" className="hover-lift-sm group relative overflow-hidden">
+          <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+          <CardContent className="p-4 text-center relative">
             <div className="text-3xl font-bold text-warning tabular-nums">{animatedValues.variants}+</div>
             <p className="text-sm text-muted-foreground">Variantes</p>
           </CardContent>
         </Card>
-        <Card variant="stat" className="hover-lift-sm">
-          <CardContent className="p-4 text-center">
+        <Card variant="stat" className="hover-lift-sm group relative overflow-hidden">
+          <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+          <CardContent className="p-4 text-center relative">
             <div className="text-3xl font-bold text-info tabular-nums">{animatedValues.copiable}%</div>
             <p className="text-sm text-muted-foreground">Copiável</p>
           </CardContent>
