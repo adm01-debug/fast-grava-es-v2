@@ -19,6 +19,7 @@ import TechnicalAssistantPage from "./pages/TechnicalAssistantPage";
 import QRScannerPage from "./pages/QRScannerPage";
 import Bitrix24ConfigPage from "./pages/Bitrix24ConfigPage";
 import TechnicalKnowledgeBase from "./pages/TechnicalKnowledgeBase";
+import DesignSystemPage from "./pages/DesignSystemPage";
 import AuthPage from "./pages/AuthPage";
 import NotFound from "./pages/NotFound";
 
@@ -97,6 +98,11 @@ const App = () => (
               <Route path="/knowledge" element={
                 <ProtectedRoute>
                   <TechnicalKnowledgeBase />
+                </ProtectedRoute>
+              } />
+              <Route path="/design-system" element={
+                <ProtectedRoute allowedRoles={['coordinator']}>
+                  <DesignSystemPage />
                 </ProtectedRoute>
               } />
               <Route path="*" element={<NotFound />} />
