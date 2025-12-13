@@ -21,7 +21,8 @@ import {
   Bot,
   QrCode,
   RefreshCw,
-  BookOpen
+  BookOpen,
+  Palette
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -55,6 +56,7 @@ const secondaryNavItems: NavItem[] = [
   { icon: Printer, label: 'Máquinas', href: '/machines' },
   { icon: Users, label: 'Operadores', href: '/operators' },
   { icon: RefreshCw, label: 'Bitrix24', href: '/integrations/bitrix24' },
+  { icon: Palette, label: 'Design System', href: '/design-system' },
   { icon: Settings, label: 'Configurações', href: '/settings' },
 ];
 
