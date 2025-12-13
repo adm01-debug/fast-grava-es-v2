@@ -1,0 +1,499 @@
+import { useState, useRef, useEffect } from "react";
+import { MainLayout } from "@/components/layout/MainLayout";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { 
+  Bot, 
+  Send, 
+  User, 
+  Loader2, 
+  Sparkles,
+  Zap,
+  Printer,
+  Sun,
+  Flame,
+  Scissors,
+  Plus,
+  MessageSquare,
+  Trash2,
+  Edit2,
+  Check,
+  X
+} from "lucide-react";
+import { toast } from "sonner";
+import { useTechnicalConversations, useTechnicalMessages, TechnicalMessage } from "@/hooks/useTechnicalConversations";
+import { formatDistanceToNow } from "date-fns";
+import { ptBR } from "date-fns/locale";
+
+const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/technical-assistant`;
+
+const techniqueSuggestions = [
+  { label: "Fiber Laser", icon: Zap, question: "Quais são os parâmetros ideais para gravar aço inox com Fiber Laser?" },
+  { label: "Serigrafia", icon: Printer, question: "Como preparar uma tela de serigrafia têxtil?" },
+  { label: "Sublimação", icon: Sun, question: "Qual temperatura e tempo para sublimação em canecas?" },
+  { label: "Hot Stamping", icon: Flame, question: "Como funciona o processo de hot stamping?" },
+  { label: "DTF", icon: Sparkles, question: "Qual a diferença entre DTF têxtil e DTF UV?" },
+  { label: "Corte", icon: Scissors, question: "Como ajustar a pressão da lâmina no plotter de recorte?" },
+];
+
+const TechnicalAssistantPage = () => {
+  const { 
+    conversations, 
+    isLoading: loadingConversations, 
+    createConversation, 
+    updateConversationTitle,
+    deleteConversation 
+  } = useTechnicalConversations();
+  
+  const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editTitle, setEditTitle] = useState("");
+  
+  const { messages, isLoading: loadingMessages, addMessage } = useTechnicalMessages(selectedConversationId);
+  
+  const [localMessages, setLocalMessages] = useState<TechnicalMessage[]>([]);
+  const [input, setInput] = useState("");
+  const [isStreaming, setIsStreaming] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  // Sync local messages with fetched messages
+  useEffect(() => {
+    if (!isStreaming) {
+      setLocalMessages(messages);
+    }
+  }, [messages, isStreaming]);
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [localMessages]);
+
+  const handleNewConversation = async () => {
+    try {
+      const result = await createConversation.mutateAsync("Nova conversa");
+      setSelectedConversationId(result.id);
+      setLocalMessages([]);
+    } catch (error) {
+      toast.error("Erro ao criar conversa");
+    }
+  };
+
+  const handleSelectConversation = (id: string) => {
+    setSelectedConversationId(id);
+  };
+
+  const handleDeleteConversation = async (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    try {
+      await deleteConversation.mutateAsync(id);
+      if (selectedConversationId === id) {
+        setSelectedConversationId(null);
+        setLocalMessages([]);
+      }
+      toast.success("Conversa excluída");
+    } catch (error) {
+      toast.error("Erro ao excluir conversa");
+    }
+  };
+
+  const startEditing = (id: string, currentTitle: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setEditingId(id);
+    setEditTitle(currentTitle);
+  };
+
+  const saveTitle = async (id: string) => {
+    try {
+      await updateConversationTitle.mutateAsync({ id, title: editTitle });
+      setEditingId(null);
+    } catch (error) {
+      toast.error("Erro ao atualizar título");
+    }
+  };
+
+  const streamChat = async (userMessages: { role: string; content: string }[]) => {
+    const resp = await fetch(CHAT_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+      },
+      body: JSON.stringify({ messages: userMessages }),
+    });
+
+    if (resp.status === 429) {
+      throw new Error("Limite de requisições excedido. Aguarde um momento.");
+    }
+    if (resp.status === 402) {
+      throw new Error("Créditos esgotados. Contate o administrador.");
+    }
+    if (!resp.ok || !resp.body) {
+      throw new Error("Falha ao conectar com o assistente");
+    }
+
+    const reader = resp.body.getReader();
+    const decoder = new TextDecoder();
+    let textBuffer = "";
+    let assistantContent = "";
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      textBuffer += decoder.decode(value, { stream: true });
+
+      let newlineIndex: number;
+      while ((newlineIndex = textBuffer.indexOf("\n")) !== -1) {
+        let line = textBuffer.slice(0, newlineIndex);
+        textBuffer = textBuffer.slice(newlineIndex + 1);
+
+        if (line.endsWith("\r")) line = line.slice(0, -1);
+        if (line.startsWith(":") || line.trim() === "") continue;
+        if (!line.startsWith("data: ")) continue;
+
+        const jsonStr = line.slice(6).trim();
+        if (jsonStr === "[DONE]") break;
+
+        try {
+          const parsed = JSON.parse(jsonStr);
+          const content = parsed.choices?.[0]?.delta?.content as string | undefined;
+          if (content) {
+            assistantContent += content;
+            setLocalMessages(prev => {
+              const last = prev[prev.length - 1];
+              if (last?.role === "assistant") {
+                return prev.map((m, i) => 
+                  i === prev.length - 1 ? { ...m, content: assistantContent } : m
+                );
+              }
+              return [...prev, { 
+                id: 'temp-' + Date.now(), 
+                conversation_id: selectedConversationId!, 
+                role: "assistant" as const, 
+                content: assistantContent,
+                created_at: new Date().toISOString()
+              }];
+            });
+          }
+        } catch {
+          textBuffer = line + "\n" + textBuffer;
+          break;
+        }
+      }
+    }
+
+    return assistantContent;
+  };
+
+  const sendMessage = async (text?: string) => {
+    const messageText = text || input.trim();
+    if (!messageText || !selectedConversationId) return;
+
+    // Create conversation if needed with first message as title
+    if (localMessages.length === 0) {
+      const shortTitle = messageText.slice(0, 50) + (messageText.length > 50 ? '...' : '');
+      updateConversationTitle.mutate({ id: selectedConversationId, title: shortTitle });
+    }
+
+    const userMsg: TechnicalMessage = { 
+      id: 'temp-user-' + Date.now(), 
+      conversation_id: selectedConversationId, 
+      role: "user", 
+      content: messageText,
+      created_at: new Date().toISOString()
+    };
+    
+    setLocalMessages(prev => [...prev, userMsg]);
+    setInput("");
+    setIsStreaming(true);
+
+    try {
+      // Save user message to database
+      await addMessage.mutateAsync({ role: "user", content: messageText });
+
+      // Get AI response
+      const messagesForAI = [...localMessages, userMsg].map(m => ({
+        role: m.role,
+        content: m.content
+      }));
+      
+      const assistantResponse = await streamChat(messagesForAI);
+      
+      // Save assistant message to database
+      await addMessage.mutateAsync({ role: "assistant", content: assistantResponse });
+    } catch (error) {
+      console.error("Error:", error);
+      toast.error(error instanceof Error ? error.message : "Erro ao processar mensagem");
+    } finally {
+      setIsStreaming(false);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  };
+
+  return (
+    <MainLayout>
+      <div className="flex h-[calc(100vh-2rem)] m-4 gap-4">
+        {/* Sidebar with conversations */}
+        <Card className="w-80 flex flex-col glass-card border-border/50">
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-lg flex items-center gap-2">
+                <MessageSquare className="h-5 w-5 text-primary" />
+                Conversas
+              </CardTitle>
+              <Button 
+                size="sm" 
+                onClick={handleNewConversation}
+                disabled={createConversation.isPending}
+              >
+                <Plus className="h-4 w-4 mr-1" />
+                Nova
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent className="flex-1 p-0 overflow-hidden">
+            <ScrollArea className="h-full px-4 pb-4">
+              {loadingConversations ? (
+                <div className="flex justify-center py-8">
+                  <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                </div>
+              ) : conversations.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  <MessageSquare className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                  <p className="text-sm">Nenhuma conversa ainda</p>
+                  <p className="text-xs">Clique em "Nova" para começar</p>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {conversations.map((conv) => (
+                    <div
+                      key={conv.id}
+                      onClick={() => handleSelectConversation(conv.id)}
+                      className={`p-3 rounded-lg cursor-pointer transition-colors group ${
+                        selectedConversationId === conv.id
+                          ? "bg-primary/10 border border-primary/30"
+                          : "hover:bg-muted/50 border border-transparent"
+                      }`}
+                    >
+                      {editingId === conv.id ? (
+                        <div className="flex items-center gap-2">
+                          <Input
+                            value={editTitle}
+                            onChange={(e) => setEditTitle(e.target.value)}
+                            className="h-7 text-sm"
+                            onClick={(e) => e.stopPropagation()}
+                          />
+                          <Button 
+                            size="icon" 
+                            variant="ghost" 
+                            className="h-7 w-7"
+                            onClick={(e) => { e.stopPropagation(); saveTitle(conv.id); }}
+                          >
+                            <Check className="h-3 w-3" />
+                          </Button>
+                          <Button 
+                            size="icon" 
+                            variant="ghost" 
+                            className="h-7 w-7"
+                            onClick={(e) => { e.stopPropagation(); setEditingId(null); }}
+                          >
+                            <X className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      ) : (
+                        <>
+                          <div className="flex items-start justify-between gap-2">
+                            <p className="text-sm font-medium truncate flex-1">
+                              {conv.title}
+                            </p>
+                            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                              <Button 
+                                size="icon" 
+                                variant="ghost" 
+                                className="h-6 w-6"
+                                onClick={(e) => startEditing(conv.id, conv.title, e)}
+                              >
+                                <Edit2 className="h-3 w-3" />
+                              </Button>
+                              <Button 
+                                size="icon" 
+                                variant="ghost" 
+                                className="h-6 w-6 text-destructive hover:text-destructive"
+                                onClick={(e) => handleDeleteConversation(conv.id, e)}
+                              >
+                                <Trash2 className="h-3 w-3" />
+                              </Button>
+                            </div>
+                          </div>
+                          <p className="text-xs text-muted-foreground">
+                            {formatDistanceToNow(new Date(conv.updated_at), { 
+                              addSuffix: true, 
+                              locale: ptBR 
+                            })}
+                          </p>
+                        </>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </ScrollArea>
+          </CardContent>
+        </Card>
+
+        {/* Chat area */}
+        <Card className="flex-1 flex flex-col glass-card border-border/50">
+          <CardHeader className="pb-3 border-b border-border/50">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-gradient-to-br from-primary/20 to-purple-500/20">
+                <Bot className="h-6 w-6 text-primary" />
+              </div>
+              <div>
+                <CardTitle className="flex items-center gap-2">
+                  Assistente Técnico IA
+                  <Badge variant="secondary">Beta</Badge>
+                </CardTitle>
+                <p className="text-sm text-muted-foreground">
+                  Especialista em técnicas de gravação e personalização
+                </p>
+              </div>
+            </div>
+          </CardHeader>
+
+          <CardContent className="flex-1 flex flex-col p-0 overflow-hidden">
+            <ScrollArea className="flex-1 p-4" ref={scrollRef}>
+              {!selectedConversationId ? (
+                <div className="h-full flex items-center justify-center">
+                  <div className="text-center space-y-4">
+                    <div className="p-4 rounded-full bg-gradient-to-br from-primary/10 to-purple-500/10 w-fit mx-auto">
+                      <Sparkles className="h-12 w-12 text-primary" />
+                    </div>
+                    <h3 className="text-xl font-medium text-foreground">
+                      Selecione ou crie uma conversa
+                    </h3>
+                    <p className="text-sm text-muted-foreground max-w-md">
+                      Use o painel lateral para criar uma nova conversa ou 
+                      retomar uma conversa anterior.
+                    </p>
+                    <Button onClick={handleNewConversation} disabled={createConversation.isPending}>
+                      <Plus className="h-4 w-4 mr-2" />
+                      Iniciar Nova Conversa
+                    </Button>
+                  </div>
+                </div>
+              ) : localMessages.length === 0 && !loadingMessages ? (
+                <div className="space-y-4">
+                  <div className="text-center py-8">
+                    <div className="p-4 rounded-full bg-gradient-to-br from-primary/10 to-purple-500/10 w-fit mx-auto mb-4">
+                      <Sparkles className="h-8 w-8 text-primary" />
+                    </div>
+                    <h3 className="text-lg font-medium text-foreground mb-2">
+                      Como posso ajudar?
+                    </h3>
+                    <p className="text-sm text-muted-foreground max-w-md mx-auto">
+                      Pergunte sobre Fiber Laser, Serigrafia, Sublimação, DTF, 
+                      Tampografia e muito mais!
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-2 max-w-2xl mx-auto">
+                    {techniqueSuggestions.map((suggestion, index) => (
+                      <Button
+                        key={index}
+                        variant="outline"
+                        className="h-auto py-3 px-4 justify-start text-left hover:bg-primary/5"
+                        onClick={() => sendMessage(suggestion.question)}
+                      >
+                        <suggestion.icon className="h-4 w-4 mr-2 flex-shrink-0" />
+                        <span className="text-xs">{suggestion.label}</span>
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {localMessages.map((message, index) => (
+                    <div
+                      key={message.id || index}
+                      className={`flex gap-3 ${
+                        message.role === "user" ? "justify-end" : "justify-start"
+                      }`}
+                    >
+                      {message.role === "assistant" && (
+                        <div className="p-2 rounded-lg bg-primary/20 h-fit">
+                          <Bot className="h-4 w-4 text-primary" />
+                        </div>
+                      )}
+                      <div
+                        className={`max-w-[75%] p-3 rounded-lg ${
+                          message.role === "user"
+                            ? "bg-primary text-primary-foreground"
+                            : "bg-muted/50 text-foreground"
+                        }`}
+                      >
+                        <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                      </div>
+                      {message.role === "user" && (
+                        <div className="p-2 rounded-lg bg-muted h-fit">
+                          <User className="h-4 w-4" />
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                  {isStreaming && localMessages[localMessages.length - 1]?.role === "user" && (
+                    <div className="flex gap-3">
+                      <div className="p-2 rounded-lg bg-primary/20 h-fit">
+                        <Bot className="h-4 w-4 text-primary" />
+                      </div>
+                      <div className="bg-muted/50 p-3 rounded-lg">
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </ScrollArea>
+
+            {selectedConversationId && (
+              <div className="p-4 border-t border-border/50">
+                <div className="flex gap-2">
+                  <Textarea
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                    placeholder="Digite sua dúvida técnica..."
+                    className="min-h-[44px] max-h-32 resize-none"
+                    disabled={isStreaming}
+                  />
+                  <Button 
+                    onClick={() => sendMessage()} 
+                    disabled={isStreaming || !input.trim()}
+                    className="shrink-0"
+                  >
+                    {isStreaming ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Send className="h-4 w-4" />
+                    )}
+                  </Button>
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    </MainLayout>
+  );
+};
+
+export default TechnicalAssistantPage;
