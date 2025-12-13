@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import { ThemeToggle } from '@/components/layout/ThemeToggle';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
@@ -273,6 +274,9 @@ export default function DesignSystemPage() {
             </TabsTrigger>
             <TabsTrigger value="errors" className="data-[state=active]:gradient-primary data-[state=active]:text-white">
               Error States
+            </TabsTrigger>
+            <TabsTrigger value="theme" className="data-[state=active]:gradient-primary data-[state=active]:text-white">
+              Theme Toggle
             </TabsTrigger>
           </TabsList>
 
@@ -1393,6 +1397,11 @@ export default function DesignSystemPage() {
           {/* Error States Tab */}
           <TabsContent value="errors" className="space-y-6">
             <ErrorStatesSection />
+          </TabsContent>
+
+          {/* Theme Toggle Tab */}
+          <TabsContent value="theme" className="space-y-6">
+            <ThemeToggleSection />
           </TabsContent>
         </Tabs>
       </div>
@@ -5917,6 +5926,152 @@ function ErrorStatesSection() {
                 00:42
               </div>
             </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+function ThemeToggleSection() {
+  return (
+    <div className="space-y-6">
+      {/* Overview Card */}
+      <Card className="card-interactive">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Sun className="h-5 w-5 text-warning" />
+            <Moon className="h-5 w-5 text-primary" />
+            Theme Toggle
+          </CardTitle>
+          <CardDescription>
+            Componente para alternar entre temas claro e escuro com animações cinematográficas e feedback sonoro.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          {/* Live Demo */}
+          <div className="space-y-3">
+            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Demonstração</h4>
+            <div className="flex items-center gap-4 p-6 bg-muted/30 rounded-xl border">
+              <ThemeToggle />
+              <div className="text-sm text-muted-foreground">
+                <p>Clique para trocar o tema ou use o dropdown para opções.</p>
+                <p className="text-xs mt-1">Clique com botão direito ou pressione para ver menu com opção de som.</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Features */}
+          <div className="space-y-3">
+            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Recursos</h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="p-4 rounded-lg bg-muted/20 border space-y-2">
+                <div className="flex items-center gap-2">
+                  <Sun className="h-4 w-4 text-warning animate-[spin_8s_linear_infinite]" />
+                  <span className="font-medium">Animação Solar</span>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Ícone do sol gira lentamente (8s) em modo claro com glow dourado.
+                </p>
+              </div>
+              
+              <div className="p-4 rounded-lg bg-muted/20 border space-y-2">
+                <div className="flex items-center gap-2">
+                  <Moon className="h-4 w-4 text-primary animate-pulse" />
+                  <span className="font-medium">Pulsação Lunar</span>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Ícone da lua pulsa suavemente (3s) em modo escuro com glow azulado.
+                </p>
+              </div>
+              
+              <div className="p-4 rounded-lg bg-muted/20 border space-y-2">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="h-4 w-4 text-primary" />
+                  <span className="font-medium">Overlay Cinematográfico</span>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Transição com gradiente radial e blur suave ao trocar de tema.
+                </p>
+              </div>
+              
+              <div className="p-4 rounded-lg bg-muted/20 border space-y-2">
+                <div className="flex items-center gap-2">
+                  <Volume2 className="h-4 w-4 text-success" />
+                  <span className="font-medium">Feedback Sonoro</span>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Sons distintos: chime ascendente (claro) e tom descendente (escuro).
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Sound Control */}
+          <div className="space-y-3">
+            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Controle de Som</h4>
+            <div className="p-4 rounded-lg bg-muted/20 border">
+              <div className="flex items-start gap-4">
+                <div className="p-2 rounded-lg bg-muted/40">
+                  <VolumeX className="h-5 w-5 text-muted-foreground" />
+                </div>
+                <div className="space-y-1">
+                  <p className="font-medium">Preferência Persistida</p>
+                  <p className="text-sm text-muted-foreground">
+                    A opção de som é salva em <code className="text-primary text-xs">localStorage</code> e 
+                    persiste entre sessões. Um indicador visual aparece quando o som está desativado.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Usage Code */}
+          <div className="space-y-3">
+            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Como Usar</h4>
+            <div className="p-4 rounded-lg bg-background border font-mono text-sm overflow-x-auto">
+              <pre className="text-muted-foreground">
+{`import { ThemeToggle } from '@/components/layout/ThemeToggle';
+
+// No seu componente:
+<ThemeToggle />`}
+              </pre>
+            </div>
+          </div>
+
+          {/* Hook Usage */}
+          <div className="space-y-3">
+            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Hook useThemeSound</h4>
+            <div className="p-4 rounded-lg bg-background border font-mono text-sm overflow-x-auto">
+              <pre className="text-muted-foreground">
+{`import { useThemeSound } from '@/hooks/useThemeSound';
+
+const { 
+  playLightModeSound,  // Toca som de tema claro
+  playDarkModeSound,   // Toca som de tema escuro
+  soundEnabled,        // Estado atual do som
+  toggleSound          // Alternar som on/off
+} = useThemeSound();`}
+              </pre>
+            </div>
+          </div>
+
+          {/* Transitions */}
+          <div className="space-y-3">
+            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Transições Globais</h4>
+            <p className="text-sm text-muted-foreground">
+              Ao trocar de tema, transições suaves são aplicadas automaticamente a:
+            </p>
+            <div className="flex flex-wrap gap-2">
+              <Badge variant="outline">background-color</Badge>
+              <Badge variant="outline">border-color</Badge>
+              <Badge variant="outline">color</Badge>
+              <Badge variant="outline">box-shadow</Badge>
+              <Badge variant="outline">filter</Badge>
+            </div>
+            <p className="text-xs text-muted-foreground mt-2">
+              Duração: 0.3s-0.4s com <code className="text-primary">cubic-bezier(0.4, 0, 0.2, 1)</code>
+            </p>
           </div>
         </CardContent>
       </Card>
