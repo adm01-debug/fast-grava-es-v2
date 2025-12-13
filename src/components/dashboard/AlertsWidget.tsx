@@ -1,4 +1,4 @@
-import { AlertTriangle, Clock, AlertCircle, Calendar, Settings2 } from 'lucide-react';
+import { AlertTriangle, Clock, AlertCircle, Calendar, Settings2, Sparkles } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
@@ -156,6 +156,77 @@ export function AlertsWidget() {
     return occupancy;
   }, [availableMachines, jobs, scheduleDate]);
 
+  // Calculate best suggestion (machine with lowest occupancy + first available time slot)
+  const suggestion = useMemo(() => {
+    if (!selectedJob || !scheduleDate || availableMachines.length === 0) return null;
+    
+    const WORK_START = 7 * 60; // 07:00
+    const WORK_END = 20 * 60;  // 20:00
+    const duration = selectedJob.estimated_duration;
+    
+    let bestMachine: string | null = null;
+    let bestTime: string | null = null;
+    let lowestOccupancy = Infinity;
+    
+    for (const machine of availableMachines) {
+      // Get all jobs for this machine on the selected date
+      const machineJobs = jobs
+        .filter(job => 
+          job.machine_id === machine.id && 
+          job.scheduled_date === scheduleDate &&
+          job.start_time &&
+          !['finished', 'cancelled'].includes(job.status)
+        )
+        .map(job => {
+          const [h, m] = job.start_time!.split(':').map(Number);
+          const start = h * 60 + m;
+          return { start, end: start + job.estimated_duration };
+        })
+        .sort((a, b) => a.start - b.start);
+      
+      // Find first available slot
+      let currentTime = WORK_START;
+      let foundSlot: number | null = null;
+      
+      for (const slot of machineJobs) {
+        if (currentTime + duration <= slot.start) {
+          foundSlot = currentTime;
+          break;
+        }
+        currentTime = Math.max(currentTime, slot.end);
+      }
+      
+      // Check if there's space after all jobs
+      if (foundSlot === null && currentTime + duration <= WORK_END) {
+        foundSlot = currentTime;
+      }
+      
+      if (foundSlot !== null) {
+        const occ = machineOccupancy[machine.id]?.percentage || 0;
+        if (occ < lowestOccupancy) {
+          lowestOccupancy = occ;
+          bestMachine = machine.id;
+          bestTime = `${String(Math.floor(foundSlot / 60)).padStart(2, '0')}:${String(foundSlot % 60).padStart(2, '0')}`;
+        }
+      }
+    }
+    
+    if (bestMachine && bestTime) {
+      const machine = availableMachines.find(m => m.id === bestMachine);
+      return { machineId: bestMachine, machineName: machine?.name || '', time: bestTime, occupancy: lowestOccupancy };
+    }
+    
+    return null;
+  }, [selectedJob, scheduleDate, availableMachines, jobs, machineOccupancy]);
+
+  const applySuggestion = () => {
+    if (suggestion) {
+      setSelectedMachineId(suggestion.machineId);
+      setStartTime(suggestion.time);
+      toast.success('Sugestão aplicada!');
+    }
+  };
+
   // Detect conflicts for the selected date/time/machine
   const conflicts = useMemo(() => {
     if (!selectedJob || !scheduleDate || !startTime) return [];
@@ -310,6 +381,29 @@ export function AlertsWidget() {
                   {selectedJob.quantity} peças • {selectedJob.estimated_duration} min estimados
                 </p>
               </div>
+
+              {/* Suggestion card */}
+              {suggestion && (
+                <div 
+                  onClick={applySuggestion}
+                  className="p-3 bg-primary/10 border border-primary/30 rounded-lg cursor-pointer hover:bg-primary/20 transition-colors group"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Sparkles className="w-4 h-4 text-primary" />
+                      <span className="text-sm font-medium text-primary">Sugestão Inteligente</span>
+                    </div>
+                    <Button size="sm" variant="ghost" className="h-6 text-xs group-hover:bg-primary group-hover:text-primary-foreground">
+                      Aplicar
+                    </Button>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    <span className="font-medium text-foreground">{suggestion.machineName}</span>
+                    {' às '}<span className="font-medium text-foreground">{suggestion.time}</span>
+                    {' • '}{suggestion.occupancy}% ocupação
+                  </p>
+                </div>
+              )}
               
               <div className="grid gap-4">
                 <div className="space-y-2">
