@@ -5807,6 +5807,45 @@ function FeedbackSection() {
               </Alert>
             </div>
           </div>
+
+          {/* Code Examples */}
+          <div className="space-y-4 pt-4 border-t">
+            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Exemplos de Código</h4>
+            <CodeBlock
+              label="Alert"
+              code={`{/* Default */}
+<Alert>
+  <Info className="h-4 w-4" />
+  <AlertTitle>Informação</AlertTitle>
+  <AlertDescription>
+    Mensagem informativa aqui.
+  </AlertDescription>
+</Alert>
+
+{/* Destructive */}
+<Alert variant="destructive">
+  <AlertCircle className="h-4 w-4" />
+  <AlertTitle>Erro</AlertTitle>
+  <AlertDescription>
+    Ocorreu um erro.
+  </AlertDescription>
+</Alert>
+
+{/* Custom Success */}
+<Alert className="border-success bg-success/10">
+  <CheckCircle className="h-4 w-4 text-success" />
+  <AlertTitle className="text-success">Sucesso</AlertTitle>
+  <AlertDescription>Operação realizada!</AlertDescription>
+</Alert>
+
+{/* Custom Warning */}
+<Alert className="border-warning bg-warning/10">
+  <AlertTriangle className="h-4 w-4 text-warning" />
+  <AlertTitle className="text-warning">Atenção</AlertTitle>
+  <AlertDescription>Verifique antes de prosseguir.</AlertDescription>
+</Alert>`}
+            />
+          </div>
         </CardContent>
       </Card>
 
@@ -5889,6 +5928,41 @@ function FeedbackSection() {
                 Toast Promise
               </Button>
             </div>
+          </div>
+
+          {/* Code Examples */}
+          <div className="space-y-4 pt-4 border-t">
+            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Exemplos de Código</h4>
+            <CodeBlock
+              label="Toast (Sonner)"
+              code={`import { toast } from "sonner";
+
+{/* Variantes básicas */}
+toast("Mensagem padrão", { description: "Descrição opcional" });
+toast.success("Sucesso!", { description: "Operação completada." });
+toast.error("Erro!", { description: "Algo deu errado." });
+toast.warning("Atenção!", { description: "Verifique esta ação." });
+toast.info("Informação", { description: "Detalhes importantes." });
+
+{/* Com ação */}
+toast("Confirmar?", {
+  description: "Deseja continuar?",
+  action: {
+    label: "Confirmar",
+    onClick: () => toast.success("Confirmado!")
+  }
+});
+
+{/* Promise (loading -> success/error) */}
+toast.promise(
+  fetch("/api/save"),
+  {
+    loading: "Salvando...",
+    success: "Dados salvos!",
+    error: "Erro ao salvar",
+  }
+);`}
+            />
           </div>
         </CardContent>
       </Card>
@@ -5973,6 +6047,40 @@ function FeedbackSection() {
                 </div>
               ))}
             </div>
+          </div>
+
+          {/* Code Examples */}
+          <div className="space-y-4 pt-4 border-t">
+            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Exemplos de Código</h4>
+            <CodeBlock
+              label="Skeleton"
+              code={`{/* Linha de texto */}
+<Skeleton className="h-4 w-[250px]" />
+
+{/* Avatar circular */}
+<Skeleton className="h-12 w-12 rounded-full" />
+
+{/* Botão */}
+<Skeleton className="h-8 w-24 rounded-md" />
+
+{/* Card Skeleton */}
+<div className="border rounded-lg p-4 space-y-3">
+  <div className="flex items-center gap-3">
+    <Skeleton className="h-10 w-10 rounded-full" />
+    <div className="space-y-2">
+      <Skeleton className="h-4 w-[150px]" />
+      <Skeleton className="h-3 w-[100px]" />
+    </div>
+  </div>
+  <Skeleton className="h-4 w-full" />
+  <Skeleton className="h-4 w-[80%]" />
+</div>
+
+{/* Múltiplas linhas */}
+{[1, 2, 3].map((i) => (
+  <Skeleton key={i} className="h-4 w-full" />
+))}`}
+            />
           </div>
         </CardContent>
       </Card>
