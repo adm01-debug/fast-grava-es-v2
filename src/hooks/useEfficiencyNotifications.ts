@@ -21,7 +21,7 @@ export function useEfficiencyNotifications(config: Partial<EfficiencyNotificatio
   
   const { alerts: bottleneckAlerts, criticalCount, warningCount } = useBottleneckPrediction();
   const { suggestions: loadBalancingSuggestions } = useLoadBalancing();
-  const { recordAlert } = useEfficiencyAlertHistory();
+  const { activeAlerts, recordAlert, resolveAlert } = useEfficiencyAlertHistory();
   
   // Track previous state to detect changes
   const prevBottleneckCount = useRef<number>(0);
@@ -29,6 +29,40 @@ export function useEfficiencyNotifications(config: Partial<EfficiencyNotificatio
   const prevBottleneckIds = useRef<Set<string>>(new Set());
   const prevSuggestionIds = useRef<Set<string>>(new Set());
   const hasInitialized = useRef(false);
+
+  // Auto-resolve alerts that are no longer detected
+  const autoResolveAlerts = useCallback(() => {
+    if (!hasInitialized.current) return;
+
+    const currentBottleneckKeys = new Set(bottleneckAlerts.map(a => `${a.techniqueId}-${a.date}`));
+    const currentSuggestionKeys = new Set(loadBalancingSuggestions.map(s => 
+      `${s.jobId}-${s.currentMachineId}-${s.suggestedMachineId}`
+    ));
+
+    activeAlerts.forEach(alert => {
+      const metadata = alert.metadata as Record<string, unknown> | null;
+      
+      if (alert.alert_type === 'bottleneck') {
+        const alertKey = `${alert.technique_id}-${metadata?.date || ''}`;
+        if (!currentBottleneckKeys.has(alertKey)) {
+          // Alert no longer exists in current analysis, resolve it
+          resolveAlert.mutate({
+            alertId: alert.id,
+            resolution_notes: 'Resolvido automaticamente: situação normalizada'
+          });
+        }
+      } else if (alert.alert_type === 'load_balancing') {
+        const alertKey = `${metadata?.jobId}-${metadata?.currentMachineId}-${metadata?.suggestedMachineId}`;
+        if (!currentSuggestionKeys.has(alertKey)) {
+          // Suggestion no longer relevant, resolve it
+          resolveAlert.mutate({
+            alertId: alert.id,
+            resolution_notes: 'Resolvido automaticamente: carga rebalanceada'
+          });
+        }
+      }
+    });
+  }, [activeAlerts, bottleneckAlerts, loadBalancingSuggestions, resolveAlert]);
 
   const checkBottleneckAlerts = useCallback(() => {
     if (!settings.enableBottleneckAlerts) return;
@@ -157,13 +191,14 @@ export function useEfficiencyNotifications(config: Partial<EfficiencyNotificatio
     return () => clearTimeout(initTimeout);
   }, []); // Only run once on mount
 
-  // Periodic checks for changes
+  // Periodic checks for changes and auto-resolution
   useEffect(() => {
     if (!hasInitialized.current) return;
     
     checkBottleneckAlerts();
     checkLoadBalancingAlerts();
-  }, [bottleneckAlerts, loadBalancingSuggestions, checkBottleneckAlerts, checkLoadBalancingAlerts]);
+    autoResolveAlerts();
+  }, [bottleneckAlerts, loadBalancingSuggestions, checkBottleneckAlerts, checkLoadBalancingAlerts, autoResolveAlerts]);
 
   // Manual check functions
   const forceCheckBottlenecks = useCallback(() => {
