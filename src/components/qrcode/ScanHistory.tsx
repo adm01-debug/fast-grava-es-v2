@@ -20,6 +20,12 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { 
   History, 
   Play, 
@@ -45,7 +51,7 @@ import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { DateRange } from "react-day-picker";
 import { useToast } from "@/hooks/use-toast";
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, BarChart, Bar, XAxis, YAxis } from "recharts";
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip, BarChart, Bar, XAxis, YAxis } from "recharts";
 
 interface ScanHistoryProps {
   jobId?: string;
@@ -620,7 +626,7 @@ export const ScanHistory = ({ jobId, limit = 200 }: ScanHistoryProps) => {
                             <Cell key={index} fill={entry.fill} />
                           ))}
                         </Pie>
-                        <Tooltip 
+                        <RechartsTooltip 
                           formatter={(value: number, name: string) => [`${value} scans`, name]}
                           contentStyle={{ 
                             backgroundColor: 'hsl(var(--popover))', 
@@ -679,7 +685,7 @@ export const ScanHistory = ({ jobId, limit = 200 }: ScanHistoryProps) => {
                         width={25}
                         allowDecimals={false}
                       />
-                      <Tooltip 
+                      <RechartsTooltip 
                         formatter={(value: number) => [`${value} scans`, 'Scans']}
                         contentStyle={{ 
                           backgroundColor: 'hsl(var(--popover))', 
@@ -731,55 +737,107 @@ export const ScanHistory = ({ jobId, limit = 200 }: ScanHistoryProps) => {
                 const isNew = newScanIds.has(scan.id);
                 
                 return (
-                  <div
-                    key={scan.id}
-                    className={cn(
-                      "p-3 rounded-lg border transition-all duration-500",
-                      isNew 
-                        ? "bg-primary/20 border-primary/50 animate-pulse shadow-lg shadow-primary/20 ring-2 ring-primary/30" 
-                        : "bg-muted/30 border-border/30 hover:bg-muted/50"
-                    )}
-                  >
-                    <div className="flex items-start gap-3">
-                      <div className={`p-2 rounded-lg ${config.color}`}>
-                        <Icon className="h-4 w-4" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <Badge variant="outline" className="text-xs">
-                            {config.label}
-                          </Badge>
-                          {!jobId && scan.jobs && (
-                            <span className="text-xs font-medium text-foreground truncate">
-                              OS: {scan.jobs.order_number}
-                            </span>
+                  <TooltipProvider key={scan.id}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div
+                          className={cn(
+                            "p-3 rounded-lg border transition-all duration-500 cursor-pointer",
+                            isNew 
+                              ? "bg-primary/20 border-primary/50 animate-pulse shadow-lg shadow-primary/20 ring-2 ring-primary/30" 
+                              : "bg-muted/30 border-border/30 hover:bg-muted/50"
+                          )}
+                        >
+                          <div className="flex items-start gap-3">
+                            <div className={`p-2 rounded-lg ${config.color}`}>
+                              <Icon className="h-4 w-4" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 mb-1">
+                                <Badge variant="outline" className="text-xs">
+                                  {config.label}
+                                </Badge>
+                                {!jobId && scan.jobs && (
+                                  <span className="text-xs font-medium text-foreground truncate">
+                                    OS: {scan.jobs.order_number}
+                                  </span>
+                                )}
+                              </div>
+                              
+                              {!jobId && scan.jobs && (
+                                <p className="text-xs text-muted-foreground truncate mb-1">
+                                  {scan.jobs.product} - {scan.jobs.client}
+                                </p>
+                              )}
+                              
+                              <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                                <div className="flex items-center gap-1">
+                                  <User className="h-3 w-3" />
+                                  <span>{scan.operator_name}</span>
+                                </div>
+                                <div className="flex items-center gap-1">
+                                  <Clock className="h-3 w-3" />
+                                  <span title={format(new Date(scan.scanned_at), "dd/MM/yyyy HH:mm:ss", { locale: ptBR })}>
+                                    {formatDistanceToNow(new Date(scan.scanned_at), { 
+                                      addSuffix: true, 
+                                      locale: ptBR 
+                                    })}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent side="right" className="max-w-xs p-3">
+                        <div className="space-y-2">
+                          <div className="font-semibold text-foreground">
+                            Detalhes do Job
+                          </div>
+                          {scan.jobs ? (
+                            <>
+                              <div className="text-xs space-y-1">
+                                <div className="flex justify-between gap-4">
+                                  <span className="text-muted-foreground">Ordem:</span>
+                                  <span className="font-medium">{scan.jobs.order_number}</span>
+                                </div>
+                                <div className="flex justify-between gap-4">
+                                  <span className="text-muted-foreground">Produto:</span>
+                                  <span className="font-medium truncate max-w-[150px]">{scan.jobs.product}</span>
+                                </div>
+                                <div className="flex justify-between gap-4">
+                                  <span className="text-muted-foreground">Cliente:</span>
+                                  <span className="font-medium truncate max-w-[150px]">{scan.jobs.client}</span>
+                                </div>
+                              </div>
+                              <div className="border-t border-border/50 pt-2 mt-2 text-xs space-y-1">
+                                <div className="flex justify-between gap-4">
+                                  <span className="text-muted-foreground">Operador:</span>
+                                  <span className="font-medium">{scan.operator_name}</span>
+                                </div>
+                                <div className="flex justify-between gap-4">
+                                  <span className="text-muted-foreground">Ação:</span>
+                                  <span className="font-medium">{config.label}</span>
+                                </div>
+                                <div className="flex justify-between gap-4">
+                                  <span className="text-muted-foreground">Data/Hora:</span>
+                                  <span className="font-medium">{format(new Date(scan.scanned_at), "dd/MM/yyyy HH:mm:ss", { locale: ptBR })}</span>
+                                </div>
+                              </div>
+                              {scan.notes && (
+                                <div className="border-t border-border/50 pt-2 mt-2 text-xs">
+                                  <span className="text-muted-foreground">Notas:</span>
+                                  <p className="font-medium mt-1">{scan.notes}</p>
+                                </div>
+                              )}
+                            </>
+                          ) : (
+                            <p className="text-xs text-muted-foreground">Job não encontrado</p>
                           )}
                         </div>
-                        
-                        {!jobId && scan.jobs && (
-                          <p className="text-xs text-muted-foreground truncate mb-1">
-                            {scan.jobs.product} - {scan.jobs.client}
-                          </p>
-                        )}
-                        
-                        <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                          <div className="flex items-center gap-1">
-                            <User className="h-3 w-3" />
-                            <span>{scan.operator_name}</span>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <Clock className="h-3 w-3" />
-                            <span title={format(new Date(scan.scanned_at), "dd/MM/yyyy HH:mm:ss", { locale: ptBR })}>
-                              {formatDistanceToNow(new Date(scan.scanned_at), { 
-                                addSuffix: true, 
-                                locale: ptBR 
-                              })}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 );
               })}
             </div>
