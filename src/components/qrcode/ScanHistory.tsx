@@ -35,14 +35,15 @@ import {
   Bell,
   Volume2,
   VolumeX,
-  PieChart as PieChartIcon
+  PieChart as PieChartIcon,
+  BarChart3
 } from "lucide-react";
-import { formatDistanceToNow, format, isWithinInterval, startOfDay, endOfDay } from "date-fns";
+import { formatDistanceToNow, format, isWithinInterval, startOfDay, endOfDay, subDays } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { DateRange } from "react-day-picker";
 import { useToast } from "@/hooks/use-toast";
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, BarChart, Bar, XAxis, YAxis } from "recharts";
 
 interface ScanHistoryProps {
   jobId?: string;
@@ -317,6 +318,32 @@ export const ScanHistory = ({ jobId, limit = 200 }: ScanHistoryProps) => {
     }));
   }, [filteredScans]);
 
+  // Daily evolution for bar chart (last 7 days)
+  const dailyEvolution = useMemo(() => {
+    if (!filteredScans || filteredScans.length === 0) return [];
+    
+    const stats = new Map<string, { date: string; fullDate: string; scans: number }>();
+    
+    // Initialize last 7 days
+    for (let i = 6; i >= 0; i--) {
+      const date = subDays(new Date(), i);
+      const dateKey = format(date, "yyyy-MM-dd");
+      const displayDate = format(date, "dd/MM", { locale: ptBR });
+      stats.set(dateKey, { date: displayDate, fullDate: dateKey, scans: 0 });
+    }
+    
+    // Count scans per day
+    filteredScans.forEach(scan => {
+      const dateKey = format(new Date(scan.scanned_at), "yyyy-MM-dd");
+      const existing = stats.get(dateKey);
+      if (existing) {
+        existing.scans += 1;
+      }
+    });
+    
+    return Array.from(stats.values());
+  }, [filteredScans]);
+
   const hasActiveFilters = operatorFilter !== "all" || actionFilter !== "all" || dateRange?.from;
 
   const clearFilters = () => {
@@ -589,6 +616,50 @@ export const ScanHistory = ({ jobId, limit = 200 }: ScanHistoryProps) => {
                   );
                 })}
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* Daily Evolution Bar Chart */}
+        {dailyEvolution.some(d => d.scans > 0) && (
+          <div className="p-4 rounded-lg bg-muted/20 border border-border/30">
+            <div className="flex items-center gap-2 mb-3">
+              <BarChart3 className="h-4 w-4 text-cyan-400" />
+              <span className="text-sm font-medium text-foreground">Evolução Diária (últimos 7 dias)</span>
+            </div>
+            <div className="h-[120px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={dailyEvolution}>
+                  <XAxis 
+                    dataKey="date" 
+                    tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }}
+                    tickLine={false}
+                    axisLine={false}
+                  />
+                  <YAxis 
+                    tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }}
+                    tickLine={false}
+                    axisLine={false}
+                    width={25}
+                    allowDecimals={false}
+                  />
+                  <Tooltip 
+                    formatter={(value: number) => [`${value} scans`, 'Scans']}
+                    contentStyle={{ 
+                      backgroundColor: 'hsl(var(--popover))', 
+                      border: '1px solid hsl(var(--border))',
+                      borderRadius: '8px',
+                      fontSize: '12px'
+                    }}
+                  />
+                  <Bar 
+                    dataKey="scans" 
+                    fill="hsl(187, 85%, 53%)" 
+                    radius={[4, 4, 0, 0]}
+                    name="Scans"
+                  />
+                </BarChart>
+              </ResponsiveContainer>
             </div>
           </div>
         )}
