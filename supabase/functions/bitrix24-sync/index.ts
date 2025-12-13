@@ -14,12 +14,71 @@ interface BitrixDeal {
   ID: string;
   TITLE: string;
   STAGE_ID: string;
-  UF_CRM_CLIENT?: string;
-  UF_CRM_PRODUCT?: string;
-  UF_CRM_QUANTITY?: string;
-  UF_CRM_TECHNIQUE?: string;
-  UF_CRM_PRIORITY?: string;
+  [key: string]: any; // Allow dynamic UF_CRM_* fields
 }
+
+// Configurable field mapping - maps Bitrix24 UF_CRM_* fields to our job fields
+// These can be customized based on your Bitrix24 configuration
+const FIELD_MAPPING = {
+  // Job fields <- Bitrix24 UF_CRM_* fields
+  client: ['UF_CRM_1702654321_CLIENT', 'UF_CRM_CLIENT', 'UF_CRM_CLIENTE', 'COMPANY_ID'],
+  product: ['UF_CRM_1702654321_PRODUCT', 'UF_CRM_PRODUCT', 'UF_CRM_PRODUTO', 'TITLE'],
+  quantity: ['UF_CRM_1702654321_QTY', 'UF_CRM_QUANTITY', 'UF_CRM_QUANTIDADE', 'UF_CRM_QTD'],
+  technique_id: ['UF_CRM_1702654321_TECHNIQUE', 'UF_CRM_TECHNIQUE', 'UF_CRM_TECNICA', 'UF_CRM_TIPO_GRAVACAO'],
+  priority: ['UF_CRM_1702654321_PRIORITY', 'UF_CRM_PRIORITY', 'UF_CRM_PRIORIDADE', 'UF_CRM_URGENCIA'],
+  scheduled_date: ['UF_CRM_1702654321_DATE', 'UF_CRM_SCHEDULED_DATE', 'UF_CRM_DATA_AGENDADA', 'UF_CRM_DATA_ENTREGA'],
+  gravure_color: ['UF_CRM_1702654321_COLOR', 'UF_CRM_GRAVURE_COLOR', 'UF_CRM_COR_GRAVURA', 'UF_CRM_COR'],
+  notes: ['UF_CRM_1702654321_NOTES', 'UF_CRM_NOTES', 'UF_CRM_OBSERVACOES', 'COMMENTS'],
+  estimated_duration: ['UF_CRM_1702654321_DURATION', 'UF_CRM_DURATION', 'UF_CRM_TEMPO_ESTIMADO'],
+};
+
+// Priority value mapping from Bitrix24 to our system
+const PRIORITY_MAPPING: Record<string, string> = {
+  'urgente': 'urgent',
+  'urgent': 'urgent',
+  'alta': 'high',
+  'high': 'high',
+  'media': 'medium',
+  'medium': 'medium',
+  'normal': 'medium',
+  'baixa': 'low',
+  'low': 'low',
+};
+
+// Technique ID mapping from Bitrix24 values to our system IDs
+const TECHNIQUE_MAPPING: Record<string, string> = {
+  'silk_textil': 'silk-textile',
+  'silk textil': 'silk-textile',
+  'silk têxtil': 'silk-textile',
+  'serigrafia_textil': 'silk-textile',
+  'silk_vinilico_plano': 'silk-vinyl-flat',
+  'silk_vinilico_rotativo': 'silk-vinyl-rotative',
+  'silk_decalque': 'silk-decal',
+  'fiber_laser': 'fiber-laser',
+  'fiber laser': 'fiber-laser',
+  'laser_co2': 'laser-co2',
+  'laser co2': 'laser-co2',
+  'laser_uv': 'laser-uv',
+  'laser uv': 'laser-uv',
+  'tampografia': 'tampo',
+  'tampo': 'tampo',
+  'hot_stamping': 'hot-stamp',
+  'hot stamping': 'hot-stamp',
+  'hot stamp': 'hot-stamp',
+  'prensa_termica': 'thermal-press',
+  'prensa térmica': 'thermal-press',
+  'sublimacao': 'sublimation-mug',
+  'sublimação': 'sublimation-mug',
+  'sublimacao_caneca': 'sublimation-mug',
+  'decalque_forno': 'decal-oven',
+  'dtf_textil': 'dtf-textile',
+  'dtf têxtil': 'dtf-textile',
+  'dtf_uv': 'dtf-uv',
+  'dtf uv': 'dtf-uv',
+  'dtf_uv_aplicacao': 'dtf-uv-application',
+  'corte_midia': 'cut-media',
+  'corte mídia': 'cut-media',
+};
 
 // Map Bitrix24 stages to our system status
 const stageToStatus: Record<string, string> = {
@@ -45,6 +104,31 @@ const statusToStage: Record<string, string> = {
   'paused': 'EXECUTING',
   'rework': 'EXECUTING'
 };
+
+// Helper function to get value from deal using field mapping
+function getMappedValue(deal: BitrixDeal, fieldName: keyof typeof FIELD_MAPPING, defaultValue: any = null): any {
+  const possibleFields = FIELD_MAPPING[fieldName];
+  for (const field of possibleFields) {
+    if (deal[field] !== undefined && deal[field] !== null && deal[field] !== '') {
+      return deal[field];
+    }
+  }
+  return defaultValue;
+}
+
+// Helper to normalize technique value
+function normalizeTechnique(value: string | null | undefined): string {
+  if (!value) return 'silk-textile';
+  const normalized = value.toLowerCase().trim().replace(/\s+/g, '_');
+  return TECHNIQUE_MAPPING[normalized] || TECHNIQUE_MAPPING[value.toLowerCase()] || 'silk-textile';
+}
+
+// Helper to normalize priority value
+function normalizePriority(value: string | null | undefined): string {
+  if (!value) return 'medium';
+  const normalized = value.toLowerCase().trim();
+  return PRIORITY_MAPPING[normalized] || 'medium';
+}
 
 async function callBitrix(method: string, params: Record<string, any> = {}) {
   if (!BITRIX24_WEBHOOK_URL) {
@@ -100,15 +184,25 @@ async function pullFromBitrix(supabase: any, categoryId?: string) {
 
       const status = stageToStatus[deal.STAGE_ID] || 'queue';
       
+      // Use configurable field mapping to extract values
+      const rawTechnique = getMappedValue(deal, 'technique_id');
+      const rawPriority = getMappedValue(deal, 'priority');
+      const rawQuantity = getMappedValue(deal, 'quantity');
+      const rawDuration = getMappedValue(deal, 'estimated_duration');
+      const rawDate = getMappedValue(deal, 'scheduled_date');
+
       const jobData = {
         order_number: orderNumber,
-        client: deal.UF_CRM_CLIENT || deal.TITLE || 'Cliente Bitrix',
-        product: deal.UF_CRM_PRODUCT || deal.TITLE || 'Produto',
-        quantity: parseInt(deal.UF_CRM_QUANTITY) || 1,
-        technique_id: deal.UF_CRM_TECHNIQUE || 'silk-textile',
+        client: getMappedValue(deal, 'client', deal.TITLE || 'Cliente Bitrix'),
+        product: getMappedValue(deal, 'product', deal.TITLE || 'Produto'),
+        quantity: parseInt(rawQuantity) || 1,
+        technique_id: normalizeTechnique(rawTechnique),
         status,
-        priority: deal.UF_CRM_PRIORITY || 'medium',
-        notes: `Importado do Bitrix24 - Deal ID: ${deal.ID}`
+        priority: normalizePriority(rawPriority),
+        gravure_color: getMappedValue(deal, 'gravure_color'),
+        scheduled_date: rawDate ? new Date(rawDate).toISOString().split('T')[0] : null,
+        estimated_duration: parseInt(rawDuration) || 60,
+        notes: getMappedValue(deal, 'notes', `Importado do Bitrix24 - Deal ID: ${deal.ID}`)
       };
 
       if (existingJob) {
@@ -223,15 +317,25 @@ async function handleBitrixWebhook(payload: any, supabase: any) {
       
       return { updated: orderNumber };
     } else {
+      // Use configurable field mapping to extract values
+      const rawTechnique = getMappedValue(deal, 'technique_id');
+      const rawPriority = getMappedValue(deal, 'priority');
+      const rawQuantity = getMappedValue(deal, 'quantity');
+      const rawDuration = getMappedValue(deal, 'estimated_duration');
+      const rawDate = getMappedValue(deal, 'scheduled_date');
+
       const jobData = {
         order_number: orderNumber,
-        client: deal.UF_CRM_CLIENT || deal.TITLE || 'Cliente Bitrix',
-        product: deal.UF_CRM_PRODUCT || deal.TITLE || 'Produto',
-        quantity: parseInt(deal.UF_CRM_QUANTITY) || 1,
-        technique_id: deal.UF_CRM_TECHNIQUE || 'silk-textile',
+        client: getMappedValue(deal, 'client', deal.TITLE || 'Cliente Bitrix'),
+        product: getMappedValue(deal, 'product', deal.TITLE || 'Produto'),
+        quantity: parseInt(rawQuantity) || 1,
+        technique_id: normalizeTechnique(rawTechnique),
         status,
-        priority: deal.UF_CRM_PRIORITY || 'medium',
-        notes: `Importado do Bitrix24 - Deal ID: ${dealId}`
+        priority: normalizePriority(rawPriority),
+        gravure_color: getMappedValue(deal, 'gravure_color'),
+        scheduled_date: rawDate ? new Date(rawDate).toISOString().split('T')[0] : null,
+        estimated_duration: parseInt(rawDuration) || 60,
+        notes: getMappedValue(deal, 'notes', `Importado do Bitrix24 - Deal ID: ${dealId}`)
       };
 
       await supabase.from('jobs').insert(jobData);
@@ -363,10 +467,48 @@ serve(async (req) => {
         result = { history };
         break;
 
+      case 'fields':
+        // Get deal custom fields from Bitrix24
+        const fieldsResult = await callBitrix('crm.deal.fields');
+        const allFields = fieldsResult.result || {};
+        
+        // Filter to show only UF_CRM_* fields (custom fields)
+        const customFields = Object.entries(allFields)
+          .filter(([key]) => key.startsWith('UF_CRM_'))
+          .reduce((acc: Record<string, any>, [key, value]) => {
+            acc[key] = value;
+            return acc;
+          }, {});
+        
+        result = { 
+          customFields,
+          totalCustomFields: Object.keys(customFields).length,
+          currentMapping: FIELD_MAPPING,
+          techniqueMapping: TECHNIQUE_MAPPING,
+          priorityMapping: PRIORITY_MAPPING,
+          stageMapping: stageToStatus
+        };
+        break;
+
+      case 'mapping':
+        // Return current field mapping configuration
+        result = {
+          fieldMapping: FIELD_MAPPING,
+          techniqueMapping: TECHNIQUE_MAPPING,
+          priorityMapping: PRIORITY_MAPPING,
+          stageToStatus,
+          statusToStage,
+          instructions: {
+            pt: 'Para atualizar o mapeamento, edite os valores em FIELD_MAPPING na Edge Function. Cada campo do job pode mapear múltiplos campos UF_CRM_* do Bitrix24, o primeiro encontrado com valor será usado.',
+            en: 'To update mapping, edit FIELD_MAPPING values in the Edge Function. Each job field can map to multiple Bitrix24 UF_CRM_* fields, the first one with a value will be used.'
+          }
+        };
+        break;
+
       default:
         result = { 
           error: 'Invalid action',
-          availableActions: ['pull', 'push', 'webhook', 'test', 'history']
+          availableActions: ['pull', 'push', 'webhook', 'test', 'history', 'fields', 'mapping']
         };
     }
 
