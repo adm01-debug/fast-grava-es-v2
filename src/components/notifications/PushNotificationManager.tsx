@@ -3,8 +3,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
-import { Bell, BellOff, BellRing, Check, X, AlertTriangle } from "lucide-react";
+import { Bell, BellOff, BellRing, Check, X, AlertTriangle, Volume2, VolumeX } from "lucide-react";
 import { usePushNotifications } from "@/hooks/usePushNotifications";
+import { useNotificationSounds } from "@/hooks/useNotificationSounds";
 import { cn } from "@/lib/utils";
 
 interface NotificationPreferences {
@@ -25,6 +26,8 @@ const defaultPreferences: NotificationPreferences = {
 
 export const PushNotificationManager = () => {
   const { permission, isSupported, requestPermission, sendNotification } = usePushNotifications();
+  const { isEnabled, setEnabled, playCompleteAlert } = useNotificationSounds();
+  const [soundsEnabled, setSoundsEnabled] = useState<boolean>(() => isEnabled());
   const [preferences, setPreferences] = useState<NotificationPreferences>(() => {
     const saved = localStorage.getItem('notification-preferences');
     return saved ? JSON.parse(saved) : defaultPreferences;
@@ -36,6 +39,15 @@ export const PushNotificationManager = () => {
 
   const handleToggle = (key: keyof NotificationPreferences) => {
     setPreferences(prev => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  const handleSoundsToggle = () => {
+    const newValue = !soundsEnabled;
+    setSoundsEnabled(newValue);
+    setEnabled(newValue);
+    if (newValue) {
+      playCompleteAlert();
+    }
   };
 
   const handleTestNotification = () => {
@@ -124,6 +136,27 @@ export const PushNotificationManager = () => {
           </div>
         ) : (
           <>
+            <div className="space-y-4">
+              <h4 className="text-sm font-medium text-foreground">Configurações gerais</h4>
+              
+              <div className="flex items-center justify-between p-3 rounded-lg bg-muted/20 border border-border/30">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    {soundsEnabled ? (
+                      <Volume2 className="h-4 w-4 text-primary" />
+                    ) : (
+                      <VolumeX className="h-4 w-4 text-muted-foreground" />
+                    )}
+                    <span className="text-sm font-medium text-foreground">Sons de Notificação</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Tocar sons distintos para cada tipo de alerta
+                  </p>
+                </div>
+                <Switch checked={soundsEnabled} onCheckedChange={handleSoundsToggle} />
+              </div>
+            </div>
+
             <div className="space-y-4">
               <h4 className="text-sm font-medium text-foreground">Tipos de alertas</h4>
               
