@@ -140,7 +140,7 @@ export const ScanHistory = ({ jobId, limit = 200 }: ScanHistoryProps) => {
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [newScanIds, setNewScanIds] = useState<Set<string>>(new Set());
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 15;
+  const [itemsPerPage, setItemsPerPage] = useState(15);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -865,11 +865,35 @@ export const ScanHistory = ({ jobId, limit = 200 }: ScanHistoryProps) => {
         </ScrollArea>
         
         {/* Pagination */}
-        {filteredScans.length > itemsPerPage && (
-          <div className="flex items-center justify-between pt-4 border-t border-border/30">
-            <div className="text-xs text-muted-foreground">
-              Mostrando {((currentPage - 1) * itemsPerPage) + 1} - {Math.min(currentPage * itemsPerPage, filteredScans.length)} de {filteredScans.length}
+        {filteredScans.length > 0 && (
+          <div className="flex items-center justify-between pt-4 border-t border-border/30 flex-wrap gap-3">
+            <div className="flex items-center gap-3">
+              <div className="text-xs text-muted-foreground">
+                Mostrando {((currentPage - 1) * itemsPerPage) + 1} - {Math.min(currentPage * itemsPerPage, filteredScans.length)} de {filteredScans.length}
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-muted-foreground">Por página:</span>
+                <Select 
+                  value={String(itemsPerPage)} 
+                  onValueChange={(value) => {
+                    setItemsPerPage(Number(value));
+                    setCurrentPage(1);
+                  }}
+                >
+                  <SelectTrigger className="h-8 w-[70px]">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="10">10</SelectItem>
+                    <SelectItem value="15">15</SelectItem>
+                    <SelectItem value="25">25</SelectItem>
+                    <SelectItem value="50">50</SelectItem>
+                    <SelectItem value="100">100</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
+            {totalPages > 1 && (
             <div className="flex items-center gap-1">
               <Button
                 variant="outline"
@@ -933,6 +957,7 @@ export const ScanHistory = ({ jobId, limit = 200 }: ScanHistoryProps) => {
                 <ChevronsRight className="h-4 w-4" />
               </Button>
             </div>
+            )}
           </div>
         )}
         </>
