@@ -98,11 +98,11 @@ export const Bitrix24SyncPanel = () => {
           <Button
             variant="outline"
             disabled
-            className="gap-2 opacity-50"
+            className="gap-2"
           >
-            <ArrowUpFromLine className="h-4 w-4" />
-            Push Automático
-            <Badge variant="secondary" className="text-xs">Ativo</Badge>
+            <RefreshCw className="h-4 w-4 animate-spin" />
+            Sync Automático
+            <Badge className="bg-green-500/20 text-green-400 border-green-500/30 text-xs">5min</Badge>
           </Button>
         </div>
 
