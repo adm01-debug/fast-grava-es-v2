@@ -1,15 +1,28 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { RefreshCw, Check, X, ArrowDownToLine, ArrowUpFromLine, Plug, Loader2 } from 'lucide-react';
+import { RefreshCw, Check, X, ArrowDownToLine, Plug, Loader2, KeyRound, ExternalLink, Trash2, AlertTriangle } from 'lucide-react';
 import { useBitrix24Sync } from '@/hooks/useBitrix24Sync';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 export const Bitrix24SyncPanel = () => {
-  const { isLoading, lastSync, testConnection, pullFromBitrix } = useBitrix24Sync();
+  const { 
+    isLoading, 
+    lastSync, 
+    oauthStatus, 
+    testConnection, 
+    pullFromBitrix, 
+    checkOAuthStatus,
+    clearTokens 
+  } = useBitrix24Sync();
   const [connectionStatus, setConnectionStatus] = useState<'unknown' | 'connected' | 'error'>('unknown');
+
+  useEffect(() => {
+    checkOAuthStatus();
+  }, []);
 
   const handleTestConnection = async () => {
     try {
@@ -24,7 +37,22 @@ export const Bitrix24SyncPanel = () => {
     await pullFromBitrix();
   };
 
+  const handleReauthorize = () => {
+    if (oauthStatus?.authorizationUrl) {
+      window.open(oauthStatus.authorizationUrl, '_blank');
+    }
+  };
+
   const getStatusBadge = () => {
+    if (oauthStatus?.needsReauthorization) {
+      return (
+        <Badge className="bg-orange-500/20 text-orange-400 border-orange-500/30">
+          <KeyRound className="h-3 w-3 mr-1" />
+          Reautorização Necessária
+        </Badge>
+      );
+    }
+    
     switch (connectionStatus) {
       case 'connected':
         return (
@@ -49,6 +77,31 @@ export const Bitrix24SyncPanel = () => {
     }
   };
 
+  const getTokenStatusBadge = () => {
+    if (!oauthStatus) return null;
+    
+    switch (oauthStatus.tokenStatus) {
+      case 'valid':
+        return (
+          <Badge variant="outline" className="text-green-400 border-green-500/30">
+            Token válido
+          </Badge>
+        );
+      case 'expired':
+        return (
+          <Badge variant="outline" className="text-orange-400 border-orange-500/30">
+            Token expirado
+          </Badge>
+        );
+      case 'no_tokens':
+        return (
+          <Badge variant="outline" className="text-red-400 border-red-500/30">
+            Sem tokens
+          </Badge>
+        );
+    }
+  };
+
   return (
     <Card className="glass-card border-border/50">
       <CardHeader>
@@ -62,11 +115,28 @@ export const Bitrix24SyncPanel = () => {
               Sincronização bidirecional de demandas e status
             </CardDescription>
           </div>
-          {getStatusBadge()}
+          <div className="flex items-center gap-2">
+            {getTokenStatusBadge()}
+            {getStatusBadge()}
+          </div>
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        {oauthStatus?.needsReauthorization && (
+          <Alert className="bg-orange-500/10 border-orange-500/30">
+            <AlertTriangle className="h-4 w-4 text-orange-400" />
+            <AlertTitle className="text-orange-400">Reautorização Necessária</AlertTitle>
+            <AlertDescription className="text-orange-300/80">
+              {oauthStatus.reauthorizationReason || 'Os tokens OAuth expiraram e precisam ser renovados.'}
+              <br />
+              <span className="text-xs text-muted-foreground mt-1 block">
+                Clique em "Reautorizar" para reconectar sua conta Bitrix24.
+              </span>
+            </AlertDescription>
+          </Alert>
+        )}
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           <Button
             variant="outline"
             onClick={handleTestConnection}
@@ -84,7 +154,7 @@ export const Bitrix24SyncPanel = () => {
           <Button
             variant="outline"
             onClick={handlePull}
-            disabled={isLoading || connectionStatus === 'error'}
+            disabled={isLoading || connectionStatus === 'error' || oauthStatus?.needsReauthorization}
             className="gap-2"
           >
             {isLoading ? (
@@ -96,21 +166,41 @@ export const Bitrix24SyncPanel = () => {
           </Button>
 
           <Button
-            variant="outline"
-            disabled
-            className="gap-2"
+            variant={oauthStatus?.needsReauthorization ? "default" : "outline"}
+            onClick={handleReauthorize}
+            disabled={isLoading || !oauthStatus?.authorizationUrl}
+            className={`gap-2 ${oauthStatus?.needsReauthorization ? 'bg-orange-500 hover:bg-orange-600' : ''}`}
           >
-            <RefreshCw className="h-4 w-4 animate-spin" />
-            Sync Automático
-            <Badge className="bg-green-500/20 text-green-400 border-green-500/30 text-xs">5min</Badge>
+            <KeyRound className="h-4 w-4" />
+            Reautorizar
+            <ExternalLink className="h-3 w-3" />
+          </Button>
+
+          <Button
+            variant="outline"
+            onClick={() => clearTokens()}
+            disabled={isLoading}
+            className="gap-2 text-destructive hover:text-destructive"
+          >
+            <Trash2 className="h-4 w-4" />
+            Limpar Tokens
           </Button>
         </div>
 
-        {lastSync && (
-          <p className="text-xs text-muted-foreground">
-            Última sincronização: {format(lastSync, "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
-          </p>
-        )}
+        <div className="flex items-center justify-between text-xs text-muted-foreground">
+          <div className="flex items-center gap-4">
+            {lastSync && (
+              <span>Última sincronização: {format(lastSync, "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}</span>
+            )}
+            {oauthStatus?.tokenExpiry && oauthStatus.tokenStatus === 'valid' && (
+              <span>Token expira: {format(new Date(oauthStatus.tokenExpiry), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}</span>
+            )}
+          </div>
+          <Badge className="bg-green-500/20 text-green-400 border-green-500/30 text-xs">
+            <RefreshCw className="h-3 w-3 mr-1 animate-spin" />
+            Sync Auto: 5min
+          </Badge>
+        </div>
 
         <div className="pt-3 border-t border-border/30">
           <h4 className="text-sm font-medium text-foreground mb-2">Mapeamento de Status</h4>
