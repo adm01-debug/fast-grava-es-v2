@@ -236,6 +236,29 @@ export const ScanHistory = ({ jobId, limit = 200 }: ScanHistoryProps) => {
     return Array.from(uniqueOps.entries()).map(([id, name]) => ({ id, name }));
   }, [scans]);
 
+  // Get scan counts by operator (real-time counter)
+  const operatorScanCounts = useMemo(() => {
+    if (!scans) return [];
+    const counts = new Map<string, { name: string; count: number; lastAction: string }>();
+    
+    scans.forEach(scan => {
+      const existing = counts.get(scan.operator_id);
+      if (existing) {
+        existing.count += 1;
+      } else {
+        counts.set(scan.operator_id, {
+          name: scan.operator_name,
+          count: 1,
+          lastAction: scan.action
+        });
+      }
+    });
+    
+    return Array.from(counts.entries())
+      .map(([id, data]) => ({ id, ...data }))
+      .sort((a, b) => b.count - a.count);
+  }, [scans]);
+
   // Filter scans
   const filteredScans = useMemo(() => {
     if (!scans) return [];
@@ -336,7 +359,43 @@ export const ScanHistory = ({ jobId, limit = 200 }: ScanHistoryProps) => {
                 </Badge>
               )}
             </Button>
+        </div>
+
+        {/* Real-time operator scan counters */}
+        {operatorScanCounts.length > 0 && (
+          <div className="mt-3 flex flex-wrap gap-2">
+            {operatorScanCounts.slice(0, 5).map((op) => {
+              const lastActionConfig = actionConfig[op.lastAction];
+              return (
+                <div
+                  key={op.id}
+                  className={cn(
+                    "flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium",
+                    "bg-muted/50 border border-border/50 transition-all duration-300",
+                    newScanIds.size > 0 && "animate-pulse"
+                  )}
+                >
+                  <User className="h-3 w-3 text-muted-foreground" />
+                  <span className="truncate max-w-[100px]">{op.name}</span>
+                  <Badge 
+                    variant="secondary" 
+                    className={cn(
+                      "h-5 min-w-[20px] px-1.5 flex items-center justify-center",
+                      lastActionConfig?.color
+                    )}
+                  >
+                    {op.count}
+                  </Badge>
+                </div>
+              );
+            })}
+            {operatorScanCounts.length > 5 && (
+              <div className="flex items-center px-2 py-1 text-xs text-muted-foreground">
+                +{operatorScanCounts.length - 5} mais
+              </div>
+            )}
           </div>
+        )}
         </div>
       </CardHeader>
       
