@@ -8563,13 +8563,23 @@ function OverviewSection({ onNavigate }: OverviewSectionProps) {
     const timer = setInterval(() => {
       step++;
       const progress = step / steps;
-      const eased = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+      // Bounce easing function
+      const eased = progress < 0.5
+        ? 4 * progress * progress * progress
+        : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+      
+      // Add overshoot for bounce effect at the end
+      const bounceProgress = progress >= 0.8 
+        ? 1 + Math.sin((progress - 0.8) * 5 * Math.PI) * 0.1 * (1 - progress) * 5
+        : eased;
+      
+      const finalProgress = Math.min(1, Math.max(0, progress >= 0.95 ? 1 : bounceProgress));
       
       setAnimatedValues({
-        categories: Math.round(targets.categories * eased),
-        components: Math.round(targets.components * eased),
-        variants: Math.round(targets.variants * eased),
-        copiable: Math.round(targets.copiable * eased),
+        categories: Math.round(targets.categories * finalProgress),
+        components: Math.round(targets.components * finalProgress),
+        variants: Math.round(targets.variants * finalProgress),
+        copiable: Math.round(targets.copiable * finalProgress),
       });
 
       if (step >= steps) clearInterval(timer);
