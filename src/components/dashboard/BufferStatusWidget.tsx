@@ -40,7 +40,7 @@ export function BufferStatusWidget() {
   const healthyCount = bufferByTechnique.filter(b => b.isHealthy).length;
 
   return (
-    <Card className="glass-card card-interactive animate-fade-in-up opacity-0 [animation-fill-mode:forwards] [animation-delay:0.1s]">
+    <Card className="glass-card card-interactive card-shine animate-fade-in-up opacity-0 [animation-fill-mode:forwards] [animation-delay:0.1s]">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg font-display flex items-center gap-2">

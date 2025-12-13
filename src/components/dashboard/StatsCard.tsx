@@ -74,9 +74,10 @@ export function StatsCard({
 
   return (
     <Card className={cn(
-      'p-6 rounded-xl animate-fade-in',
+      'p-6 rounded-xl animate-fade-in card-shine',
       'opacity-0 [animation-fill-mode:forwards]',
-      'border transition-all duration-300 hover:-translate-y-1',
+      'border transition-all duration-300 ease-out',
+      'hover:-translate-y-1.5 hover:scale-[1.01]',
       'dark:bg-card/60 dark:backdrop-blur-xl',
       styles.borderColor,
       styles.hoverBorder,
