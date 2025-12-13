@@ -1,9 +1,10 @@
 import { AlertTriangle, Clock, AlertCircle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { mockJobs } from '@/data/mockData';
 import { cn } from '@/lib/utils';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { useJobs } from '@/hooks/useJobs';
+import { useMemo } from 'react';
 
 interface Alert {
   id: string;
@@ -13,31 +14,62 @@ interface Alert {
   time: Date;
 }
 
-const alerts: Alert[] = [
-  {
-    id: '1',
-    type: 'delayed',
-    title: 'Job Atrasado',
-    description: 'OS-2024-0008 ultrapassou o prazo previsto em 45 min',
-    time: new Date(Date.now() - 1000 * 60 * 45),
-  },
-  {
-    id: '2',
-    type: 'conflict',
-    title: 'Conflito de Horário',
-    description: 'Máquina ST02 com sobreposição às 14:00',
-    time: new Date(Date.now() - 1000 * 60 * 15),
-  },
-  {
-    id: '3',
-    type: 'warning',
-    title: 'Baixa Ocupação',
-    description: 'Laser CO2 com apenas 23% de ocupação hoje',
-    time: new Date(Date.now() - 1000 * 60 * 120),
-  },
-];
-
 export function AlertsWidget() {
+  const { data: jobs = [] } = useJobs();
+
+  // Generate alerts from real job data
+  const alerts = useMemo(() => {
+    const alertList: Alert[] = [];
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+    // Delayed jobs
+    jobs.filter(job => job.status === 'delayed').forEach(job => {
+      alertList.push({
+        id: `delayed-${job.id}`,
+        type: 'delayed',
+        title: 'Job Atrasado',
+        description: `${job.order_number} ultrapassou o prazo previsto`,
+        time: job.updated_at ? new Date(job.updated_at) : now,
+      });
+    });
+
+    // Overdue jobs (past scheduled date)
+    jobs.filter(job => {
+      if (!job.scheduled_date) return false;
+      const jobDate = new Date(job.scheduled_date);
+      return jobDate < today && !['finished', 'cancelled'].includes(job.status);
+    }).forEach(job => {
+      alertList.push({
+        id: `overdue-${job.id}`,
+        type: 'conflict',
+        title: 'Job Vencido',
+        description: `${job.order_number} passou da data agendada`,
+        time: job.scheduled_date ? new Date(job.scheduled_date) : now,
+      });
+    });
+
+    // Low buffer warning - check techniques with few ready jobs
+    const techniqueReadyCounts: Record<string, number> = {};
+    jobs.filter(job => job.status === 'ready').forEach(job => {
+      techniqueReadyCounts[job.technique_id] = (techniqueReadyCounts[job.technique_id] || 0) + 1;
+    });
+
+    Object.entries(techniqueReadyCounts).forEach(([techniqueId, count]) => {
+      if (count < 3) {
+        alertList.push({
+          id: `buffer-${techniqueId}`,
+          type: 'warning',
+          title: 'Buffer Baixo',
+          description: `Técnica ${techniqueId} com apenas ${count} job(s) prontos`,
+          time: now,
+        });
+      }
+    });
+
+    return alertList.slice(0, 5); // Show max 5 alerts
+  }, [jobs]);
+
   const alertIcons = {
     delayed: AlertTriangle,
     conflict: AlertCircle,
@@ -61,33 +93,37 @@ export function AlertsWidget() {
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
-        {alerts.map((alert, index) => {
-          const Icon = alertIcons[alert.type];
-          
-          return (
-            <div 
-              key={alert.id}
-              className={cn(
-                "flex items-start gap-3 p-3 rounded-lg bg-secondary/50 hover:bg-secondary/80 transition-all cursor-pointer border border-border/20",
-                "hover:-translate-x-1 hover:border-primary/30"
-              )}
-            >
-              <div className={cn(
-                'w-8 h-8 rounded-lg flex items-center justify-center shrink-0',
-                alertColors[alert.type]
-              )}>
-                <Icon className="w-4 h-4" />
+        {alerts.length === 0 ? (
+          <p className="text-sm text-muted-foreground text-center py-4">Nenhum alerta no momento</p>
+        ) : (
+          alerts.map((alert) => {
+            const Icon = alertIcons[alert.type];
+            
+            return (
+              <div 
+                key={alert.id}
+                className={cn(
+                  "flex items-start gap-3 p-3 rounded-lg bg-secondary/50 hover:bg-secondary/80 transition-all cursor-pointer border border-border/20",
+                  "hover:-translate-x-1 hover:border-primary/30"
+                )}
+              >
+                <div className={cn(
+                  'w-8 h-8 rounded-lg flex items-center justify-center shrink-0',
+                  alertColors[alert.type]
+                )}>
+                  <Icon className="w-4 h-4" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-foreground">{alert.title}</p>
+                  <p className="text-xs text-muted-foreground truncate">{alert.description}</p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {formatDistanceToNow(alert.time, { addSuffix: true, locale: ptBR })}
+                  </p>
+                </div>
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-foreground">{alert.title}</p>
-                <p className="text-xs text-muted-foreground truncate">{alert.description}</p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  {formatDistanceToNow(alert.time, { addSuffix: true, locale: ptBR })}
-                </p>
-              </div>
-            </div>
-          );
-        })}
+            );
+          })
+        )}
       </CardContent>
     </Card>
   );

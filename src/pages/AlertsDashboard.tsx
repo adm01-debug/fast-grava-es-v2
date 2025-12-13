@@ -22,7 +22,7 @@ import {
   Scale,
   RefreshCw
 } from "lucide-react";
-import { mockJobs, getTechniqueById, getMachineById } from "@/data/mockData";
+import { useJobs, useTechniques, DbJob } from "@/hooks/useJobs";
 import { Job } from "@/types/scheduling";
 import { useBottleneckPrediction } from "@/hooks/useBottleneckPrediction";
 import { useLoadBalancing } from "@/hooks/useLoadBalancing";
@@ -46,38 +46,72 @@ export default function AlertsDashboard() {
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  // Fetch real data from Supabase
+  const { data: jobs = [], isLoading: isLoadingJobs } = useJobs();
+  const { data: techniques = [] } = useTechniques();
+
+  // Helper to get technique by ID
+  const getTechniqueById = (id: string) => techniques.find(t => t.id === id);
+
+  // Convert DbJob to Job format for modal
+  const dbJobToJob = (dbJob: DbJob): Job => ({
+    id: dbJob.id,
+    orderNumber: dbJob.order_number,
+    client: dbJob.client,
+    product: dbJob.product,
+    quantity: dbJob.quantity,
+    techniqueId: dbJob.technique_id as any,
+    machineId: dbJob.machine_id || '',
+    operatorId: '',
+    scheduledDate: dbJob.scheduled_date ? new Date(dbJob.scheduled_date) : new Date(),
+    startTime: dbJob.start_time || '',
+    endTime: dbJob.end_time || '',
+    estimatedDuration: dbJob.estimated_duration,
+    status: dbJob.status as any,
+    gravureColor: dbJob.gravure_color || undefined,
+    notes: dbJob.notes || undefined,
+    priority: dbJob.priority as any,
+    createdAt: new Date(dbJob.created_at),
+    updatedAt: new Date(dbJob.updated_at),
+    createdBy: '',
+    actualStartTime: dbJob.actual_start_time ? new Date(dbJob.actual_start_time) : undefined,
+    actualEndTime: dbJob.actual_end_time ? new Date(dbJob.actual_end_time) : undefined,
+  });
+
   // Filter jobs by alert categories
   const alertData = useMemo(() => {
     const now = new Date();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     
-    const delayed = mockJobs.filter(job => job.status === 'delayed');
-    const rework = mockJobs.filter(job => job.status === 'rework');
-    const urgent = mockJobs.filter(job => 
+    const delayed = jobs.filter(job => job.status === 'delayed');
+    const rework = jobs.filter(job => job.status === 'rework');
+    const urgent = jobs.filter(job => 
       job.priority === 'urgent' && 
       !['finished', 'cancelled'].includes(job.status)
     );
     
     // Jobs at risk: scheduled for today but not started yet
-    const atRisk = mockJobs.filter(job => {
-      const jobDate = new Date(job.scheduledDate);
+    const atRisk = jobs.filter(job => {
+      if (!job.scheduled_date) return false;
+      const jobDate = new Date(job.scheduled_date);
       const jobDateOnly = new Date(jobDate.getFullYear(), jobDate.getMonth(), jobDate.getDate());
       return jobDateOnly.getTime() === today.getTime() && 
              ['queue', 'ready', 'scheduled'].includes(job.status);
     });
 
     // Overdue: past scheduled date and not finished
-    const overdue = mockJobs.filter(job => {
-      const jobDate = new Date(job.scheduledDate);
+    const overdue = jobs.filter(job => {
+      if (!job.scheduled_date) return false;
+      const jobDate = new Date(job.scheduled_date);
       return jobDate < today && 
              !['finished', 'cancelled'].includes(job.status);
     });
 
     return { delayed, rework, urgent, atRisk, overdue };
-  }, []);
+  }, [jobs]);
 
-  const handleJobClick = (job: Job) => {
-    setSelectedJob(job);
+  const handleJobClick = (dbJob: DbJob) => {
+    setSelectedJob(dbJobToJob(dbJob));
     setIsModalOpen(true);
   };
 
@@ -86,14 +120,14 @@ export default function AlertsDashboard() {
     icon: Icon, 
     iconColor, 
     bgColor, 
-    jobs, 
+    jobs: cardJobs, 
     emptyMessage 
   }: { 
     title: string; 
     icon: any; 
     iconColor: string; 
     bgColor: string;
-    jobs: Job[]; 
+    jobs: DbJob[]; 
     emptyMessage: string;
   }) => (
     <Card className="bg-card/50 backdrop-blur-sm border-border/50">
@@ -106,17 +140,16 @@ export default function AlertsDashboard() {
             {title}
           </div>
           <Badge variant="outline" className="bg-muted/50 text-foreground border-border">
-            {jobs.length}
+            {cardJobs.length}
           </Badge>
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
-        {jobs.length === 0 ? (
+        {cardJobs.length === 0 ? (
           <p className="text-sm text-muted-foreground text-center py-4">{emptyMessage}</p>
         ) : (
-          jobs.slice(0, 5).map((job) => {
-            const technique = getTechniqueById(job.techniqueId);
-            const machine = getMachineById(job.machineId);
+          cardJobs.slice(0, 5).map((job) => {
+            const technique = getTechniqueById(job.technique_id);
             
             return (
               <div 
@@ -127,7 +160,7 @@ export default function AlertsDashboard() {
                 <div className="flex items-center justify-between">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className="font-medium text-foreground">{job.orderNumber}</span>
+                      <span className="font-medium text-foreground">{job.order_number}</span>
                       <Badge className={`${priorityColors[job.priority]} border text-xs`}>
                         {priorityLabels[job.priority]}
                       </Badge>
@@ -136,11 +169,11 @@ export default function AlertsDashboard() {
                     <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground">
                       <span className="flex items-center gap-1">
                         <Calendar className="h-3 w-3" />
-                        {new Date(job.scheduledDate).toLocaleDateString('pt-BR')}
+                        {job.scheduled_date ? new Date(job.scheduled_date).toLocaleDateString('pt-BR') : '-'}
                       </span>
                       <span className="flex items-center gap-1">
                         <Clock className="h-3 w-3" />
-                        {job.startTime}
+                        {job.start_time || '-'}
                       </span>
                       <Badge 
                         variant="outline" 
@@ -151,7 +184,7 @@ export default function AlertsDashboard() {
                           color: technique?.color 
                         }}
                       >
-                        {technique?.shortName}
+                        {technique?.short_name}
                       </Badge>
                     </div>
                   </div>
@@ -164,9 +197,9 @@ export default function AlertsDashboard() {
             );
           })
         )}
-        {jobs.length > 5 && (
+        {cardJobs.length > 5 && (
           <Button variant="ghost" className="w-full text-muted-foreground hover:text-foreground">
-            Ver todos ({jobs.length})
+            Ver todos ({cardJobs.length})
           </Button>
         )}
       </CardContent>
