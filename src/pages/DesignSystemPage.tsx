@@ -336,7 +336,29 @@ export default function DesignSystemPage() {
                     <Button size="default">Default</Button>
                     <Button size="lg">Large</Button>
                     <Button size="xl">Extra Large</Button>
-                    <Button size="icon"><Star className="h-4 w-4" /></Button>
+                  </div>
+                </div>
+
+                {/* Icon Sizes */}
+                <div className="space-y-3">
+                  <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Tamanhos de Ícone</h4>
+                  <div className="flex flex-wrap items-center gap-3">
+                    <Button size="icon-sm" variant="outline"><Star /></Button>
+                    <Button size="icon" variant="outline"><Star /></Button>
+                    <Button size="icon-lg" variant="outline"><Star /></Button>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
+                    <span className="w-8 text-center">icon-sm</span>
+                    <span className="w-10 text-center">icon</span>
+                    <span className="w-12 text-center">icon-lg</span>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-3 mt-2">
+                    <Button size="icon-sm" variant="gradient"><Plus /></Button>
+                    <Button size="icon" variant="gradient"><Plus /></Button>
+                    <Button size="icon-lg" variant="gradient"><Plus /></Button>
+                    <Button size="icon-sm" variant="destructive"><Trash2 /></Button>
+                    <Button size="icon" variant="destructive"><Trash2 /></Button>
+                    <Button size="icon-lg" variant="destructive"><Trash2 /></Button>
                   </div>
                 </div>
 
