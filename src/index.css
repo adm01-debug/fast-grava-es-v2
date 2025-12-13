@@ -37,24 +37,24 @@
 
     --radius: 0.75rem;
 
-    /* Custom colors for status - mais vibrantes */
-    --status-queue: 220 14% 85%;
-    --status-queue-foreground: 220 10% 40%;
-    --status-ready: 48 100% 45%;
-    --status-ready-foreground: 0 0% 100%;
-    --status-scheduled: 210 100% 50%;
+    /* Custom colors for status - mais vibrantes com melhor contraste */
+    --status-queue: 220 20% 78%;
+    --status-queue-foreground: 220 20% 25%;
+    --status-ready: 48 95% 42%;
+    --status-ready-foreground: 48 100% 10%;
+    --status-scheduled: 210 90% 45%;
     --status-scheduled-foreground: 0 0% 100%;
-    --status-production: 280 85% 55%;
+    --status-production: 280 80% 50%;
     --status-production-foreground: 0 0% 100%;
-    --status-finished: 145 80% 38%;
+    --status-finished: 145 75% 35%;
     --status-finished-foreground: 0 0% 100%;
-    --status-paused: 48 100% 45%;
-    --status-paused-foreground: 0 0% 100%;
-    --status-cancelled: 0 85% 55%;
+    --status-paused: 40 95% 45%;
+    --status-paused-foreground: 40 100% 10%;
+    --status-cancelled: 0 80% 50%;
     --status-cancelled-foreground: 0 0% 100%;
-    --status-delayed: 24 100% 50%;
+    --status-delayed: 24 95% 48%;
     --status-delayed-foreground: 0 0% 100%;
-    --status-rework: 290 90% 55%;
+    --status-rework: 290 85% 50%;
     --status-rework-foreground: 0 0% 100%;
 
     /* Cores dos ícones - vibrantes */
