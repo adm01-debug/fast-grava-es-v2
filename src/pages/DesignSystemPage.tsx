@@ -381,139 +381,214 @@ export default function DesignSystemPage() {
 
           {/* Cards Tab */}
           <TabsContent value="cards" className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {/* Interactive Card */}
-              <Card className="card-interactive card-shine">
-                <CardHeader>
-                  <CardTitle className="text-lg">Card Interactive + Shine</CardTitle>
-                  <CardDescription>Hover para ver o efeito de brilho passando</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">
-                    Classes: <code className="text-primary">card-interactive card-shine</code>
-                  </p>
-                </CardContent>
-              </Card>
+            {/* Card Variants Section */}
+            <Card variant="default">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Layers className="h-5 w-5 text-primary" />
+                  Variantes de Card
+                </CardTitle>
+                <CardDescription>
+                  O componente Card agora suporta variantes via prop: <code className="text-primary">variant="..."</code>
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {/* Default */}
+                  <Card variant="default">
+                    <CardHeader>
+                      <CardTitle className="text-lg">Default</CardTitle>
+                      <CardDescription>Variante padrão com sombra sutil</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <code className="text-xs text-primary">variant="default"</code>
+                    </CardContent>
+                  </Card>
 
-              {/* Float Card */}
-              <Card className="card-float">
-                <CardHeader>
-                  <CardTitle className="text-lg">Card Float</CardTitle>
-                  <CardDescription>Elevação suave no hover</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">
-                    Classe: <code className="text-primary">card-float</code>
-                  </p>
-                </CardContent>
-              </Card>
+                  {/* Elevated */}
+                  <Card variant="elevated">
+                    <CardHeader>
+                      <CardTitle className="text-lg">Elevated</CardTitle>
+                      <CardDescription>Maior elevação e profundidade</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <code className="text-xs text-primary">variant="elevated"</code>
+                    </CardContent>
+                  </Card>
 
-              {/* Pulse Border Card */}
-              <Card className="card-pulse-border">
-                <CardHeader>
-                  <CardTitle className="text-lg">Card Pulse Border</CardTitle>
-                  <CardDescription>Borda com animação pulsante</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">
-                    Classe: <code className="text-primary">card-pulse-border</code>
-                  </p>
-                </CardContent>
-              </Card>
+                  {/* Interactive */}
+                  <Card variant="interactive">
+                    <CardHeader>
+                      <CardTitle className="text-lg">Interactive</CardTitle>
+                      <CardDescription>Hover com lift e glow (clicável)</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <code className="text-xs text-primary">variant="interactive"</code>
+                    </CardContent>
+                  </Card>
 
-              {/* Glow Blue */}
-              <Card className="card-glow-blue">
-                <CardHeader>
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-[hsl(210,100%,55%)]" />
-                    Card Glow Blue
-                  </CardTitle>
-                  <CardDescription>Glow azul no hover</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">
-                    Classe: <code className="text-primary">card-glow-blue</code>
-                  </p>
-                </CardContent>
-              </Card>
+                  {/* Glass */}
+                  <Card variant="glass">
+                    <CardHeader>
+                      <CardTitle className="text-lg">Glass</CardTitle>
+                      <CardDescription>Glassmorphism com blur</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <code className="text-xs text-primary">variant="glass"</code>
+                    </CardContent>
+                  </Card>
 
-              {/* Glow Green */}
-              <Card className="card-glow-green">
-                <CardHeader>
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-[hsl(142,70%,45%)]" />
-                    Card Glow Green
-                  </CardTitle>
-                  <CardDescription>Glow verde no hover</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">
-                    Classe: <code className="text-primary">card-glow-green</code>
-                  </p>
-                </CardContent>
-              </Card>
+                  {/* Ghost */}
+                  <Card variant="ghost">
+                    <CardHeader>
+                      <CardTitle className="text-lg">Ghost</CardTitle>
+                      <CardDescription>Transparente, aparece no hover</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <code className="text-xs text-primary">variant="ghost"</code>
+                    </CardContent>
+                  </Card>
 
-              {/* Glow Purple */}
-              <Card className="card-glow-purple">
-                <CardHeader>
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-[hsl(280,80%,55%)]" />
-                    Card Glow Purple
-                  </CardTitle>
-                  <CardDescription>Glow roxo no hover</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">
-                    Classe: <code className="text-primary">card-glow-purple</code>
-                  </p>
-                </CardContent>
-              </Card>
+                  {/* Outline */}
+                  <Card variant="outline">
+                    <CardHeader>
+                      <CardTitle className="text-lg">Outline</CardTitle>
+                      <CardDescription>Apenas borda, sem preenchimento</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <code className="text-xs text-primary">variant="outline"</code>
+                    </CardContent>
+                  </Card>
+                </div>
+              </CardContent>
+            </Card>
 
-              {/* Glow Orange */}
-              <Card className="card-glow-orange">
-                <CardHeader>
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-[hsl(24,95%,50%)]" />
-                    Card Glow Orange
-                  </CardTitle>
-                  <CardDescription>Glow laranja no hover</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">
-                    Classe: <code className="text-primary">card-glow-orange</code>
-                  </p>
-                </CardContent>
-              </Card>
+            {/* CSS Class Cards Section */}
+            <Card variant="default">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Sparkles className="h-5 w-5 text-primary" />
+                  Classes CSS Utilitárias
+                </CardTitle>
+                <CardDescription>
+                  Classes adicionais para efeitos especiais via className
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {/* Interactive + Shine */}
+                  <Card className="card-interactive card-shine">
+                    <CardHeader>
+                      <CardTitle className="text-lg">Card Shine</CardTitle>
+                      <CardDescription>Efeito de brilho passando</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <code className="text-xs text-primary">card-interactive card-shine</code>
+                    </CardContent>
+                  </Card>
 
-              {/* Glow Yellow */}
-              <Card className="card-glow-yellow">
-                <CardHeader>
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-[hsl(45,100%,50%)]" />
-                    Card Glow Yellow
-                  </CardTitle>
-                  <CardDescription>Glow amarelo no hover</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">
-                    Classe: <code className="text-primary">card-glow-yellow</code>
-                  </p>
-                </CardContent>
-              </Card>
+                  {/* Float Card */}
+                  <Card className="card-float">
+                    <CardHeader>
+                      <CardTitle className="text-lg">Card Float</CardTitle>
+                      <CardDescription>Elevação suave no hover</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <code className="text-xs text-primary">card-float</code>
+                    </CardContent>
+                  </Card>
 
-              {/* Glass Card */}
-              <Card className="glass-card hover-lift">
-                <CardHeader>
-                  <CardTitle className="text-lg">Glass Card</CardTitle>
-                  <CardDescription>Efeito glassmorphism</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">
-                    Classe: <code className="text-primary">glass-card hover-lift</code>
-                  </p>
-                </CardContent>
-              </Card>
-            </div>
+                  {/* Pulse Border */}
+                  <Card className="card-pulse-border">
+                    <CardHeader>
+                      <CardTitle className="text-lg">Pulse Border</CardTitle>
+                      <CardDescription>Borda pulsante animada</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <code className="text-xs text-primary">card-pulse-border</code>
+                    </CardContent>
+                  </Card>
+
+                  {/* Glow Blue */}
+                  <Card className="card-glow-blue">
+                    <CardHeader>
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <div className="w-3 h-3 rounded-full bg-[hsl(210,100%,55%)]" />
+                        Glow Blue
+                      </CardTitle>
+                      <CardDescription>Glow azul no hover</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <code className="text-xs text-primary">card-glow-blue</code>
+                    </CardContent>
+                  </Card>
+
+                  {/* Glow Green */}
+                  <Card className="card-glow-green">
+                    <CardHeader>
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <div className="w-3 h-3 rounded-full bg-[hsl(142,70%,45%)]" />
+                        Glow Green
+                      </CardTitle>
+                      <CardDescription>Glow verde no hover</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <code className="text-xs text-primary">card-glow-green</code>
+                    </CardContent>
+                  </Card>
+
+                  {/* Glow Purple */}
+                  <Card className="card-glow-purple">
+                    <CardHeader>
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <div className="w-3 h-3 rounded-full bg-[hsl(280,80%,55%)]" />
+                        Glow Purple
+                      </CardTitle>
+                      <CardDescription>Glow roxo no hover</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <code className="text-xs text-primary">card-glow-purple</code>
+                    </CardContent>
+                  </Card>
+
+                  {/* Glow Orange */}
+                  <Card className="card-glow-orange">
+                    <CardHeader>
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <div className="w-3 h-3 rounded-full bg-[hsl(24,95%,50%)]" />
+                        Glow Orange
+                      </CardTitle>
+                      <CardDescription>Glow laranja no hover</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <code className="text-xs text-primary">card-glow-orange</code>
+                    </CardContent>
+                  </Card>
+
+                  {/* Glass Card */}
+                  <Card className="glass-card hover-lift">
+                    <CardHeader>
+                      <CardTitle className="text-lg">Glass Card</CardTitle>
+                      <CardDescription>Glassmorphism clássico</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <code className="text-xs text-primary">glass-card hover-lift</code>
+                    </CardContent>
+                  </Card>
+
+                  {/* Hover Lift */}
+                  <Card className="hover-lift">
+                    <CardHeader>
+                      <CardTitle className="text-lg">Hover Lift</CardTitle>
+                      <CardDescription>Eleva no hover com sombra</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <code className="text-xs text-primary">hover-lift</code>
+                    </CardContent>
+                  </Card>
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
 
           {/* Badges Tab */}
