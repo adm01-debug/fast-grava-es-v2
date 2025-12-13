@@ -420,13 +420,33 @@ export default function DesignSystemPage() {
                 </div>
 
                 {/* With Icons */}
-                <div className="space-y-3">
+                <div className="space-y-4">
                   <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Com Ícones</h4>
                   <div className="flex flex-wrap gap-3">
                     <Button variant="gradient"><Trophy className="h-4 w-4" /> Conquista</Button>
                     <Button variant="gradient-success"><Check className="h-4 w-4" /> Confirmar</Button>
                     <Button variant="destructive"><X className="h-4 w-4" /> Cancelar</Button>
                     <Button variant="outline"><Target className="h-4 w-4" /> Meta</Button>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <CodeBlock 
+                      code={'<Button variant="gradient">\n  <Trophy className="h-4 w-4" />\n  Conquista\n</Button>'} 
+                      label="Ícone à esquerda"
+                    />
+                    <CodeBlock 
+                      code={'<Button variant="gradient-success">\n  <Check className="h-4 w-4" />\n  Confirmar\n</Button>'} 
+                      label="Success com ícone"
+                    />
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <CodeBlock 
+                      code={'<Button variant="destructive">\n  <X className="h-4 w-4" />\n  Cancelar\n</Button>'} 
+                      label="Destructive com ícone"
+                    />
+                    <CodeBlock 
+                      code={'<Button variant="outline">\n  <Target className="h-4 w-4" />\n  Meta\n</Button>'} 
+                      label="Outline com ícone"
+                    />
                   </div>
                 </div>
               </CardContent>
