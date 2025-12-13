@@ -22,13 +22,16 @@ import {
   Scale,
   Filter,
   CalendarIcon,
-  X
+  X,
+  TrendingUp
 } from "lucide-react";
 import { useEfficiencyAlertHistory, EfficiencyAlertHistory } from "@/hooks/useEfficiencyAlertHistory";
-import { format, formatDistanceToNow, isAfter, isBefore, startOfDay, endOfDay } from "date-fns";
+import { format, formatDistanceToNow, isAfter, isBefore, startOfDay, endOfDay, subDays, eachDayOfInterval } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import { AreaChart, Area, XAxis, YAxis, ResponsiveContainer } from "recharts";
 
 const severityColors = {
   error: 'bg-red-500/20 text-red-400 border-red-500/30',
@@ -48,6 +51,123 @@ const typeLabels = {
 
 type AlertType = 'all' | 'bottleneck' | 'load_balancing';
 type SeverityType = 'all' | 'error' | 'warning' | 'info';
+
+const chartConfig = {
+  bottleneck: {
+    label: "Gargalo",
+    color: "hsl(var(--chart-1))",
+  },
+  load_balancing: {
+    label: "Balanceamento",
+    color: "hsl(var(--chart-2))",
+  },
+  total: {
+    label: "Total",
+    color: "hsl(var(--chart-3))",
+  },
+};
+
+const AlertTrendChart = ({ alerts }: { alerts: EfficiencyAlertHistory[] }) => {
+  const trendData = useMemo(() => {
+    const today = new Date();
+    const days = eachDayOfInterval({
+      start: subDays(today, 13),
+      end: today
+    });
+
+    return days.map(day => {
+      const dayStart = startOfDay(day);
+      const dayEnd = endOfDay(day);
+      
+      const dayAlerts = alerts.filter(alert => {
+        const alertDate = new Date(alert.detected_at);
+        return alertDate >= dayStart && alertDate <= dayEnd;
+      });
+
+      const bottleneckCount = dayAlerts.filter(a => a.alert_type === 'bottleneck').length;
+      const loadBalancingCount = dayAlerts.filter(a => a.alert_type === 'load_balancing').length;
+
+      return {
+        date: format(day, 'dd/MM', { locale: ptBR }),
+        bottleneck: bottleneckCount,
+        load_balancing: loadBalancingCount,
+        total: bottleneckCount + loadBalancingCount
+      };
+    });
+  }, [alerts]);
+
+  const hasData = trendData.some(d => d.total > 0);
+
+  if (!hasData) {
+    return (
+      <div className="flex flex-col items-center justify-center h-[300px] text-muted-foreground">
+        <TrendingUp className="h-12 w-12 mb-3" />
+        <p>Sem dados de tendência</p>
+        <p className="text-sm">Alertas aparecerão aqui quando forem detectados</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="h-[300px]">
+      <ChartContainer config={chartConfig} className="h-full w-full">
+        <AreaChart data={trendData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+          <defs>
+            <linearGradient id="fillBottleneck" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor="hsl(var(--chart-1))" stopOpacity={0.8} />
+              <stop offset="95%" stopColor="hsl(var(--chart-1))" stopOpacity={0.1} />
+            </linearGradient>
+            <linearGradient id="fillLoadBalancing" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor="hsl(var(--chart-2))" stopOpacity={0.8} />
+              <stop offset="95%" stopColor="hsl(var(--chart-2))" stopOpacity={0.1} />
+            </linearGradient>
+          </defs>
+          <XAxis 
+            dataKey="date" 
+            tickLine={false} 
+            axisLine={false}
+            tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
+          />
+          <YAxis 
+            tickLine={false} 
+            axisLine={false}
+            tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
+            allowDecimals={false}
+          />
+          <ChartTooltip
+            content={<ChartTooltipContent />}
+          />
+          <Area
+            type="monotone"
+            dataKey="bottleneck"
+            stackId="1"
+            stroke="hsl(var(--chart-1))"
+            fill="url(#fillBottleneck)"
+            name="Gargalo"
+          />
+          <Area
+            type="monotone"
+            dataKey="load_balancing"
+            stackId="1"
+            stroke="hsl(var(--chart-2))"
+            fill="url(#fillLoadBalancing)"
+            name="Balanceamento"
+          />
+        </AreaChart>
+      </ChartContainer>
+      <div className="flex items-center justify-center gap-6 mt-2">
+        <div className="flex items-center gap-2">
+          <div className="w-3 h-3 rounded-full" style={{ backgroundColor: 'hsl(var(--chart-1))' }} />
+          <span className="text-xs text-muted-foreground">Gargalo</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="w-3 h-3 rounded-full" style={{ backgroundColor: 'hsl(var(--chart-2))' }} />
+          <span className="text-xs text-muted-foreground">Balanceamento</span>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export const EfficiencyAlertHistoryWidget = () => {
   const { 
@@ -307,8 +427,12 @@ export const EfficiencyAlertHistoryWidget = () => {
         </div>
       </CardHeader>
       <CardContent>
-        <Tabs defaultValue="active" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-4">
+        <Tabs defaultValue="trend" className="w-full">
+          <TabsList className="grid w-full grid-cols-3 mb-4">
+            <TabsTrigger value="trend" className="flex items-center gap-2">
+              <TrendingUp className="h-4 w-4" />
+              Tendência
+            </TabsTrigger>
             <TabsTrigger value="active" className="flex items-center gap-2">
               <AlertTriangle className="h-4 w-4" />
               Ativos ({filteredActiveAlerts.length})
@@ -318,6 +442,10 @@ export const EfficiencyAlertHistoryWidget = () => {
               Resolvidos ({filteredResolvedAlerts.length})
             </TabsTrigger>
           </TabsList>
+          
+          <TabsContent value="trend">
+            <AlertTrendChart alerts={[...filteredActiveAlerts, ...filteredResolvedAlerts]} />
+          </TabsContent>
           
           <TabsContent value="active">
             <ScrollArea className="h-[300px] pr-4">
