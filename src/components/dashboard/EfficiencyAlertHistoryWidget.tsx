@@ -23,10 +23,12 @@ import {
   Filter,
   CalendarIcon,
   X,
-  TrendingUp
+  TrendingUp,
+  BarChart3,
+  Timer
 } from "lucide-react";
 import { useEfficiencyAlertHistory, EfficiencyAlertHistory } from "@/hooks/useEfficiencyAlertHistory";
-import { format, formatDistanceToNow, isAfter, isBefore, startOfDay, endOfDay, subDays, eachDayOfInterval } from "date-fns";
+import { format, formatDistanceToNow, isAfter, isBefore, startOfDay, endOfDay, subDays, eachDayOfInterval, differenceInMinutes } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -163,6 +165,210 @@ const AlertTrendChart = ({ alerts }: { alerts: EfficiencyAlertHistory[] }) => {
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded-full" style={{ backgroundColor: 'hsl(var(--chart-2))' }} />
           <span className="text-xs text-muted-foreground">Balanceamento</span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+interface AlertStats {
+  totalAlerts: number;
+  resolvedCount: number;
+  avgResolutionMinutes: number | null;
+  mostFrequentType: 'bottleneck' | 'load_balancing' | null;
+  mostFrequentSeverity: 'error' | 'warning' | 'info' | null;
+  criticalCount: number;
+  resolutionRate: number;
+}
+
+const AlertStatsPanel = ({ alerts, resolvedAlerts }: { alerts: EfficiencyAlertHistory[], resolvedAlerts: EfficiencyAlertHistory[] }) => {
+  const stats = useMemo<AlertStats>(() => {
+    const allAlerts = alerts;
+    const resolved = resolvedAlerts;
+    
+    // Calculate average resolution time
+    let totalResolutionMinutes = 0;
+    let resolvedWithTime = 0;
+    
+    resolved.forEach(alert => {
+      if (alert.resolved_at && alert.detected_at) {
+        const minutes = differenceInMinutes(new Date(alert.resolved_at), new Date(alert.detected_at));
+        if (minutes >= 0) {
+          totalResolutionMinutes += minutes;
+          resolvedWithTime++;
+        }
+      }
+    });
+    
+    const avgResolutionMinutes = resolvedWithTime > 0 
+      ? Math.round(totalResolutionMinutes / resolvedWithTime) 
+      : null;
+    
+    // Count by type
+    const bottleneckCount = allAlerts.filter(a => a.alert_type === 'bottleneck').length;
+    const loadBalancingCount = allAlerts.filter(a => a.alert_type === 'load_balancing').length;
+    const mostFrequentType = bottleneckCount > loadBalancingCount ? 'bottleneck' 
+      : loadBalancingCount > bottleneckCount ? 'load_balancing' 
+      : allAlerts.length > 0 ? 'bottleneck' : null;
+    
+    // Count by severity
+    const errorCount = allAlerts.filter(a => a.severity === 'error').length;
+    const warningCount = allAlerts.filter(a => a.severity === 'warning').length;
+    const infoCount = allAlerts.filter(a => a.severity === 'info').length;
+    const mostFrequentSeverity = errorCount >= warningCount && errorCount >= infoCount ? 'error'
+      : warningCount >= infoCount ? 'warning' 
+      : infoCount > 0 ? 'info' : null;
+    
+    const resolutionRate = allAlerts.length > 0 
+      ? Math.round((resolved.length / allAlerts.length) * 100) 
+      : 0;
+    
+    return {
+      totalAlerts: allAlerts.length,
+      resolvedCount: resolved.length,
+      avgResolutionMinutes,
+      mostFrequentType,
+      mostFrequentSeverity,
+      criticalCount: errorCount,
+      resolutionRate
+    };
+  }, [alerts, resolvedAlerts]);
+
+  const formatResolutionTime = (minutes: number | null) => {
+    if (minutes === null) return 'N/A';
+    if (minutes < 60) return `${minutes} min`;
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    if (hours < 24) return `${hours}h ${mins}m`;
+    const days = Math.floor(hours / 24);
+    return `${days}d ${hours % 24}h`;
+  };
+
+  if (stats.totalAlerts === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center h-[300px] text-muted-foreground">
+        <BarChart3 className="h-12 w-12 mb-3" />
+        <p>Sem estatísticas disponíveis</p>
+        <p className="text-sm">Dados aparecerão quando houver alertas registrados</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      {/* Main Stats Grid */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div className="p-4 rounded-lg border border-border/50 bg-card/30 backdrop-blur-sm text-center">
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <div className="p-1.5 rounded-lg bg-blue-500/20">
+              <AlertTriangle className="h-4 w-4 text-blue-400" />
+            </div>
+          </div>
+          <p className="text-2xl font-bold text-foreground">{stats.totalAlerts}</p>
+          <p className="text-xs text-muted-foreground">Total de Alertas</p>
+        </div>
+        
+        <div className="p-4 rounded-lg border border-border/50 bg-card/30 backdrop-blur-sm text-center">
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <div className="p-1.5 rounded-lg bg-green-500/20">
+              <CheckCircle className="h-4 w-4 text-green-400" />
+            </div>
+          </div>
+          <p className="text-2xl font-bold text-foreground">{stats.resolutionRate}%</p>
+          <p className="text-xs text-muted-foreground">Taxa de Resolução</p>
+        </div>
+        
+        <div className="p-4 rounded-lg border border-border/50 bg-card/30 backdrop-blur-sm text-center">
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <div className="p-1.5 rounded-lg bg-amber-500/20">
+              <Timer className="h-4 w-4 text-amber-400" />
+            </div>
+          </div>
+          <p className="text-2xl font-bold text-foreground">{formatResolutionTime(stats.avgResolutionMinutes)}</p>
+          <p className="text-xs text-muted-foreground">Tempo Médio Resolução</p>
+        </div>
+        
+        <div className="p-4 rounded-lg border border-border/50 bg-card/30 backdrop-blur-sm text-center">
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <div className="p-1.5 rounded-lg bg-red-500/20">
+              <AlertTriangle className="h-4 w-4 text-red-400" />
+            </div>
+          </div>
+          <p className="text-2xl font-bold text-foreground">{stats.criticalCount}</p>
+          <p className="text-xs text-muted-foreground">Alertas Críticos</p>
+        </div>
+      </div>
+      
+      {/* Frequency Analysis */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div className="p-4 rounded-lg border border-border/50 bg-card/30 backdrop-blur-sm">
+          <h4 className="text-sm font-medium text-foreground mb-3 flex items-center gap-2">
+            <Zap className="h-4 w-4 text-pink-400" />
+            Tipo Mais Frequente
+          </h4>
+          {stats.mostFrequentType ? (
+            <div className="flex items-center gap-3">
+              <div className={`p-2 rounded-lg ${
+                stats.mostFrequentType === 'bottleneck' 
+                  ? 'bg-pink-500/20' 
+                  : 'bg-teal-500/20'
+              }`}>
+                {stats.mostFrequentType === 'bottleneck' 
+                  ? <Zap className="h-5 w-5 text-pink-400" />
+                  : <Scale className="h-5 w-5 text-teal-400" />
+                }
+              </div>
+              <div>
+                <p className="font-medium text-foreground">
+                  {stats.mostFrequentType === 'bottleneck' ? 'Gargalo' : 'Balanceamento'}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {alerts.filter(a => a.alert_type === stats.mostFrequentType).length} ocorrências
+                </p>
+              </div>
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground">Sem dados</p>
+          )}
+        </div>
+        
+        <div className="p-4 rounded-lg border border-border/50 bg-card/30 backdrop-blur-sm">
+          <h4 className="text-sm font-medium text-foreground mb-3 flex items-center gap-2">
+            <AlertTriangle className="h-4 w-4 text-amber-400" />
+            Severidade Mais Comum
+          </h4>
+          {stats.mostFrequentSeverity ? (
+            <div className="flex items-center gap-3">
+              <Badge className={`${severityColors[stats.mostFrequentSeverity]} border`}>
+                {stats.mostFrequentSeverity === 'error' ? 'Crítico' 
+                  : stats.mostFrequentSeverity === 'warning' ? 'Alerta' 
+                  : 'Info'}
+              </Badge>
+              <p className="text-xs text-muted-foreground">
+                {alerts.filter(a => a.severity === stats.mostFrequentSeverity).length} ocorrências
+              </p>
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground">Sem dados</p>
+          )}
+        </div>
+      </div>
+      
+      {/* Resolution Summary */}
+      <div className="p-4 rounded-lg border border-border/50 bg-card/30 backdrop-blur-sm">
+        <h4 className="text-sm font-medium text-foreground mb-3">Resumo de Resolução</h4>
+        <div className="flex items-center gap-4">
+          <div className="flex-1">
+            <div className="h-2 bg-muted rounded-full overflow-hidden">
+              <div 
+                className="h-full bg-gradient-to-r from-green-500 to-emerald-400 transition-all duration-500"
+                style={{ width: `${stats.resolutionRate}%` }}
+              />
+            </div>
+          </div>
+          <div className="text-sm text-muted-foreground whitespace-nowrap">
+            {stats.resolvedCount} de {stats.totalAlerts} resolvidos
+          </div>
         </div>
       </div>
     </div>
@@ -427,8 +633,12 @@ export const EfficiencyAlertHistoryWidget = () => {
         </div>
       </CardHeader>
       <CardContent>
-        <Tabs defaultValue="trend" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 mb-4">
+        <Tabs defaultValue="stats" className="w-full">
+          <TabsList className="grid w-full grid-cols-4 mb-4">
+            <TabsTrigger value="stats" className="flex items-center gap-2">
+              <BarChart3 className="h-4 w-4" />
+              Estatísticas
+            </TabsTrigger>
             <TabsTrigger value="trend" className="flex items-center gap-2">
               <TrendingUp className="h-4 w-4" />
               Tendência
@@ -442,6 +652,13 @@ export const EfficiencyAlertHistoryWidget = () => {
               Resolvidos ({filteredResolvedAlerts.length})
             </TabsTrigger>
           </TabsList>
+          
+          <TabsContent value="stats">
+            <AlertStatsPanel 
+              alerts={[...filteredActiveAlerts, ...filteredResolvedAlerts]} 
+              resolvedAlerts={filteredResolvedAlerts} 
+            />
+          </TabsContent>
           
           <TabsContent value="trend">
             <AlertTrendChart alerts={[...filteredActiveAlerts, ...filteredResolvedAlerts]} />
