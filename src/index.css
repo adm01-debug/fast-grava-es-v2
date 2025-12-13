@@ -6,116 +6,116 @@
 
 @layer base {
   :root {
-    /* Light theme - Task Gifts Design System */
-    --background: 0 0% 100%;
-    --foreground: 225 25% 10%;
+    /* Light theme - Soft Gray Design System (não branco puro) */
+    --background: 220 15% 96%;
+    --foreground: 225 25% 12%;
 
-    --card: 0 0% 99%;
+    --card: 220 15% 98%;
     --card-foreground: 225 25% 10%;
 
-    --popover: 0 0% 100%;
+    --popover: 220 15% 99%;
     --popover-foreground: 225 25% 10%;
 
-    --primary: 24 95% 50%;
+    --primary: 24 95% 48%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 100% 55%;
+    --secondary: 210 100% 50%;
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 220 15% 95%;
-    --muted-foreground: 220 10% 45%;
+    --muted: 220 15% 92%;
+    --muted-foreground: 220 15% 40%;
 
-    --accent: 280 80% 55%;
+    --accent: 280 80% 50%;
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 80% 50%;
+    --destructive: 0 80% 48%;
     --destructive-foreground: 0 0% 100%;
 
-    --success: 142 70% 45%;
+    --success: 142 70% 40%;
     --success-foreground: 0 0% 100%;
 
-    --warning: 45 100% 50%;
+    --warning: 45 100% 48%;
     --warning-foreground: 225 25% 10%;
 
-    --border: 220 15% 90%;
-    --input: 220 15% 90%;
-    --ring: 24 95% 50%;
+    --border: 220 15% 85%;
+    --input: 220 15% 88%;
+    --ring: 24 95% 48%;
 
     --radius: 0.75rem;
 
-    /* Custom colors for status */
-    --status-queue: 220 15% 85%;
-    --status-queue-foreground: 220 20% 25%;
-    --status-ready: 45 100% 50%;
+    /* Custom colors for status - mais saturados para contraste */
+    --status-queue: 220 15% 82%;
+    --status-queue-foreground: 220 25% 20%;
+    --status-ready: 45 100% 45%;
     --status-ready-foreground: 225 25% 10%;
-    --status-scheduled: 210 100% 55%;
+    --status-scheduled: 210 100% 48%;
     --status-scheduled-foreground: 0 0% 100%;
-    --status-production: 280 80% 55%;
+    --status-production: 280 80% 50%;
     --status-production-foreground: 0 0% 100%;
-    --status-finished: 142 70% 45%;
+    --status-finished: 142 70% 38%;
     --status-finished-foreground: 0 0% 100%;
-    --status-paused: 45 100% 50%;
+    --status-paused: 45 100% 45%;
     --status-paused-foreground: 225 25% 10%;
-    --status-cancelled: 0 80% 50%;
+    --status-cancelled: 0 80% 48%;
     --status-cancelled-foreground: 0 0% 100%;
-    --status-delayed: 24 95% 50%;
+    --status-delayed: 24 95% 48%;
     --status-delayed-foreground: 0 0% 100%;
-    --status-rework: 280 80% 55%;
+    --status-rework: 280 80% 50%;
     --status-rework-foreground: 0 0% 100%;
 
-    /* Cores dos ícones */
-    --icon-blue: 210 100% 55%;
-    --icon-yellow: 45 100% 50%;
-    --icon-green: 142 70% 45%;
-    --icon-purple: 280 80% 55%;
-    --icon-orange: 24 95% 50%;
-    --icon-pink: 340 80% 55%;
+    /* Cores dos ícones - mais saturados */
+    --icon-blue: 210 100% 48%;
+    --icon-yellow: 45 100% 45%;
+    --icon-green: 142 70% 38%;
+    --icon-purple: 280 80% 50%;
+    --icon-orange: 24 95% 48%;
+    --icon-pink: 340 80% 50%;
 
-    /* Technique colors */
-    --tech-silk-textile: 210 100% 55%;
-    --tech-silk-vinyl: 195 100% 50%;
-    --tech-silk-rotative: 170 70% 45%;
-    --tech-silk-decal: 160 70% 42%;
-    --tech-fiber-laser: 0 80% 50%;
-    --tech-laser-co2: 24 95% 50%;
-    --tech-laser-uv: 45 100% 50%;
-    --tech-tampo: 265 80% 55%;
-    --tech-hot-stamp: 280 80% 55%;
-    --tech-thermal: 340 80% 55%;
-    --tech-sublimation: 340 75% 50%;
-    --tech-decal-oven: 142 70% 45%;
-    --tech-dtf-uv: 170 80% 45%;
-    --tech-dtf-textile: 195 100% 50%;
-    --tech-cut-media: 220 10% 45%;
+    /* Technique colors - melhor contraste */
+    --tech-silk-textile: 210 100% 48%;
+    --tech-silk-vinyl: 195 100% 45%;
+    --tech-silk-rotative: 170 70% 40%;
+    --tech-silk-decal: 160 70% 38%;
+    --tech-fiber-laser: 0 80% 48%;
+    --tech-laser-co2: 24 95% 48%;
+    --tech-laser-uv: 45 100% 45%;
+    --tech-tampo: 265 80% 50%;
+    --tech-hot-stamp: 280 80% 50%;
+    --tech-thermal: 340 80% 50%;
+    --tech-sublimation: 340 75% 45%;
+    --tech-decal-oven: 142 70% 38%;
+    --tech-dtf-uv: 170 80% 40%;
+    --tech-dtf-textile: 195 100% 45%;
+    --tech-cut-media: 220 15% 40%;
 
-    --sidebar-background: 220 15% 97%;
-    --sidebar-foreground: 225 25% 15%;
-    --sidebar-primary: 24 95% 50%;
+    --sidebar-background: 220 15% 94%;
+    --sidebar-foreground: 225 25% 12%;
+    --sidebar-primary: 24 95% 48%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 15% 93%;
-    --sidebar-accent-foreground: 225 25% 15%;
-    --sidebar-border: 220 15% 90%;
-    --sidebar-ring: 24 95% 50%;
-    --sidebar-muted: 220 15% 93%;
+    --sidebar-accent: 220 15% 90%;
+    --sidebar-accent-foreground: 225 25% 12%;
+    --sidebar-border: 220 15% 85%;
+    --sidebar-ring: 24 95% 48%;
+    --sidebar-muted: 220 15% 90%;
 
     /* Chart colors */
-    --chart-1: 24 95% 50%;
-    --chart-2: 280 80% 55%;
-    --chart-3: 142 70% 45%;
-    --chart-4: 210 100% 55%;
-    --chart-5: 45 100% 50%;
+    --chart-1: 24 95% 48%;
+    --chart-2: 280 80% 50%;
+    --chart-3: 142 70% 38%;
+    --chart-4: 210 100% 48%;
+    --chart-5: 45 100% 45%;
 
     /* Gradient */
-    --gradient-start: 24 95% 55%;
-    --gradient-end: 340 80% 55%;
+    --gradient-start: 24 95% 50%;
+    --gradient-end: 340 80% 50%;
 
     /* Gamification colors */
-    --xp: 142 70% 45%;
-    --coins: 45 100% 50%;
-    --streak: 24 95% 50%;
-    --gold: 45 100% 50%;
-    --silver: 220 10% 65%;
-    --bronze: 25 60% 45%;
+    --xp: 142 70% 40%;
+    --coins: 45 100% 48%;
+    --streak: 24 95% 48%;
+    --gold: 45 100% 48%;
+    --silver: 220 10% 60%;
+    --bronze: 25 60% 42%;
   }
 
   .dark {
