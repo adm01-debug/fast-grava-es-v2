@@ -1,7 +1,26 @@
-import { useCallback, useRef } from 'react';
+import { useCallback, useRef, useState, useEffect } from 'react';
+
+const SOUND_ENABLED_KEY = 'theme-sound-enabled';
 
 export function useThemeSound() {
   const audioContextRef = useRef<AudioContext | null>(null);
+  const [soundEnabled, setSoundEnabled] = useState(true);
+
+  // Load preference from localStorage on mount
+  useEffect(() => {
+    const stored = localStorage.getItem(SOUND_ENABLED_KEY);
+    if (stored !== null) {
+      setSoundEnabled(stored === 'true');
+    }
+  }, []);
+
+  const toggleSound = useCallback(() => {
+    setSoundEnabled(prev => {
+      const newValue = !prev;
+      localStorage.setItem(SOUND_ENABLED_KEY, String(newValue));
+      return newValue;
+    });
+  }, []);
 
   const getAudioContext = useCallback(() => {
     if (!audioContextRef.current) {
@@ -11,6 +30,8 @@ export function useThemeSound() {
   }, []);
 
   const playLightModeSound = useCallback(() => {
+    if (!soundEnabled) return;
+    
     try {
       const ctx = getAudioContext();
       const now = ctx.currentTime;
@@ -52,9 +73,11 @@ export function useThemeSound() {
     } catch (e) {
       // Silently fail if audio not available
     }
-  }, [getAudioContext]);
+  }, [getAudioContext, soundEnabled]);
 
   const playDarkModeSound = useCallback(() => {
+    if (!soundEnabled) return;
+    
     try {
       const ctx = getAudioContext();
       const now = ctx.currentTime;
@@ -96,7 +119,7 @@ export function useThemeSound() {
     } catch (e) {
       // Silently fail if audio not available
     }
-  }, [getAudioContext]);
+  }, [getAudioContext, soundEnabled]);
 
-  return { playLightModeSound, playDarkModeSound };
+  return { playLightModeSound, playDarkModeSound, soundEnabled, toggleSound };
 }
