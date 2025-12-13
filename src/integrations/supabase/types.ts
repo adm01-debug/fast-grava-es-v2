@@ -222,6 +222,44 @@ export type Database = {
         }
         Relationships: []
       }
+      qr_scan_history: {
+        Row: {
+          action: string
+          device_info: string | null
+          id: string
+          job_id: string
+          notes: string | null
+          operator_id: string
+          scanned_at: string
+        }
+        Insert: {
+          action: string
+          device_info?: string | null
+          id?: string
+          job_id: string
+          notes?: string | null
+          operator_id: string
+          scanned_at?: string
+        }
+        Update: {
+          action?: string
+          device_info?: string | null
+          id?: string
+          job_id?: string
+          notes?: string | null
+          operator_id?: string
+          scanned_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "qr_scan_history_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       technical_conversations: {
         Row: {
           created_at: string

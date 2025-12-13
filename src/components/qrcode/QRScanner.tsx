@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface ScannedJob {
   id: string;
@@ -28,12 +29,32 @@ interface ScannedJob {
 }
 
 export const QRScanner = () => {
+  const { user } = useAuth();
   const [isScanning, setIsScanning] = useState(false);
   const [scannedJob, setScannedJob] = useState<ScannedJob | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
   const scannerRef = useRef<Html5Qrcode | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // Function to record scan in history
+  const recordScan = async (jobId: string, action: string) => {
+    if (!user?.id) return;
+    
+    try {
+      const deviceInfo = navigator.userAgent;
+      await supabase
+        .from("qr_scan_history")
+        .insert({
+          job_id: jobId,
+          operator_id: user.id,
+          action,
+          device_info: deviceInfo
+        });
+    } catch (error) {
+      console.error("Error recording scan:", error);
+    }
+  };
 
   useEffect(() => {
     return () => {
@@ -108,6 +129,7 @@ export const QRScanner = () => {
       }
 
       setScannedJob(job);
+      await recordScan(job.id, 'view');
       toast.success(`Job ${job.order_number} identificado!`);
     } catch (error) {
       console.error("Error processing QR:", error);
@@ -132,6 +154,7 @@ export const QRScanner = () => {
 
       if (error) throw error;
 
+      await recordScan(scannedJob.id, 'start');
       setScannedJob({ ...scannedJob, status: "in_production" });
       toast.success("Produção iniciada!");
     } catch (error) {
@@ -154,6 +177,7 @@ export const QRScanner = () => {
 
       if (error) throw error;
 
+      await recordScan(scannedJob.id, 'pause');
       setScannedJob({ ...scannedJob, status: "paused" });
       toast.success("Produção pausada!");
     } catch (error) {
@@ -176,6 +200,7 @@ export const QRScanner = () => {
 
       if (error) throw error;
 
+      await recordScan(scannedJob.id, 'resume');
       setScannedJob({ ...scannedJob, status: "in_production" });
       toast.success("Produção retomada!");
     } catch (error) {
@@ -201,6 +226,7 @@ export const QRScanner = () => {
 
       if (error) throw error;
 
+      await recordScan(scannedJob.id, 'finish');
       setScannedJob({ ...scannedJob, status: "completed" });
       toast.success("Produção finalizada!");
     } catch (error) {
