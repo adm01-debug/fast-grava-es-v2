@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useLocation, Link } from 'react-router-dom';
+import { useLocation, Link, useNavigate } from 'react-router-dom';
 import { 
   Calendar, 
   CalendarDays, 
@@ -15,11 +15,13 @@ import {
   Home,
   Plus,
   BarChart3,
-  UserCircle
+  UserCircle,
+  LogOut
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface NavItem {
   icon: React.ElementType;
@@ -49,6 +51,26 @@ const secondaryNavItems: NavItem[] = [
 export function AppSidebar() {
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { profile, role, signOut, isCoordinator, isManager } = useAuth();
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/auth');
+  };
+
+  // Filter nav items based on role
+  const filteredMainNavItems = mainNavItems.filter(item => {
+    if (role === 'operator') {
+      return ['/operator', '/alerts'].includes(item.href);
+    }
+    if (role === 'manager') {
+      return ['/', '/calendar/daily', '/calendar/weekly', '/kpis', '/alerts'].includes(item.href);
+    }
+    return true; // coordinator sees all
+  });
+
+  const filteredSecondaryNavItems = isCoordinator ? secondaryNavItems : [];
 
   const isActive = (href: string) => {
     if (href === '/') return location.pathname === '/';
@@ -161,20 +183,24 @@ export function AppSidebar() {
             Navegação
           </p>
         )}
-        {mainNavItems.map((item) => (
+        {filteredMainNavItems.map((item) => (
           <NavButton key={item.href} item={item} />
         ))}
         
-        <div className="my-4 border-t border-sidebar-border/50" />
-        
-        {!collapsed && (
-          <p className="text-xs font-medium text-sidebar-foreground/30 uppercase tracking-wider px-3 py-2">
-            Administração
-          </p>
+        {filteredSecondaryNavItems.length > 0 && (
+          <>
+            <div className="my-4 border-t border-sidebar-border/50" />
+            
+            {!collapsed && (
+              <p className="text-xs font-medium text-sidebar-foreground/30 uppercase tracking-wider px-3 py-2">
+                Administração
+              </p>
+            )}
+            {filteredSecondaryNavItems.map((item) => (
+              <NavButton key={item.href} item={item} />
+            ))}
+          </>
         )}
-        {secondaryNavItems.map((item) => (
-          <NavButton key={item.href} item={item} />
-        ))}
       </nav>
 
       {/* User Profile */}
@@ -183,19 +209,36 @@ export function AppSidebar() {
         collapsed && 'p-2'
       )}>
         <div className={cn(
-          'flex items-center gap-3 rounded-lg p-2 hover:bg-sidebar-muted/50 transition-colors cursor-pointer',
+          'flex items-center gap-3 rounded-lg p-2',
           collapsed && 'justify-center p-2'
         )}>
           <div className="w-9 h-9 rounded-full gradient-primary flex items-center justify-center text-primary-foreground font-semibold text-sm">
-            CG
+            {profile?.full_name?.charAt(0)?.toUpperCase() || 'U'}
           </div>
           {!collapsed && (
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-sidebar-foreground truncate">Coordenador</p>
-              <p className="text-xs text-sidebar-foreground/40 truncate">coord@promobrindes.com</p>
+              <p className="text-sm font-medium text-sidebar-foreground truncate">
+                {profile?.full_name || 'Usuário'}
+              </p>
+              <p className="text-xs text-sidebar-foreground/40 truncate capitalize">
+                {role === 'coordinator' ? 'Coordenador' : role === 'manager' ? 'Gestão' : 'Operador'}
+              </p>
             </div>
           )}
         </div>
+        
+        <Button
+          variant="ghost"
+          size={collapsed ? "icon" : "sm"}
+          onClick={handleSignOut}
+          className={cn(
+            'w-full mt-2 text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-muted',
+            collapsed && 'px-0'
+          )}
+        >
+          <LogOut className="h-4 w-4" />
+          {!collapsed && <span className="ml-2">Sair</span>}
+        </Button>
       </div>
     </aside>
   );
