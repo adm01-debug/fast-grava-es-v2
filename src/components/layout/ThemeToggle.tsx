@@ -59,14 +59,13 @@ export function ThemeToggle() {
       <Moon 
         className={`
           absolute h-4 w-4
-          transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)]
           ${isDark 
-            ? 'rotate-0 scale-100 opacity-100' 
-            : '-rotate-90 scale-0 opacity-0'
+            ? 'rotate-0 scale-100 opacity-100 animate-[pulse_3s_ease-in-out_infinite]' 
+            : '-rotate-90 scale-0 opacity-0 transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)]'
           }
         `}
         style={{
-          filter: isDark ? 'drop-shadow(0 0 4px hsl(var(--primary) / 0.5))' : 'none'
+          filter: isDark ? 'drop-shadow(0 0 8px hsl(var(--primary) / 0.6))' : 'none'
         }}
       />
 
