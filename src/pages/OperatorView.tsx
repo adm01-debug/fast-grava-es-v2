@@ -8,6 +8,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useJobs, useTechniques, useMachines, useUpdateJobStatus, DbJob } from '@/hooks/useJobs';
 import { notifyStatusChange } from '@/hooks/useNotifications';
 import { JobDetailsModal } from '@/components/jobs/JobDetailsModal';
+import { ProductionRegistrationModal } from '@/components/operator/ProductionRegistrationModal';
 import { 
   User,
   Play,
@@ -16,7 +17,7 @@ import {
   Clock,
   AlertTriangle,
   Package,
-  Camera
+  ClipboardCheck
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Job } from '@/types/scheduling';
@@ -53,6 +54,8 @@ export default function OperatorView() {
   const [selectedMachine, setSelectedMachine] = useState<string>('all');
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [productionJob, setProductionJob] = useState<DbJob | null>(null);
+  const [isProductionModalOpen, setIsProductionModalOpen] = useState(false);
 
   const { data: jobs, isLoading: jobsLoading } = useJobs();
   const { data: techniques } = useTechniques();
@@ -93,13 +96,9 @@ export default function OperatorView() {
     }
   };
 
-  const handleFinishProduction = async (job: DbJob) => {
-    try {
-      await updateStatus.mutateAsync({ jobId: job.id, status: 'finished' });
-      notifyStatusChange(job.client, job.status, 'finished');
-    } catch (error) {
-      console.error('Error finishing production:', error);
-    }
+  const handleFinishProduction = (job: DbJob) => {
+    setProductionJob(job);
+    setIsProductionModalOpen(true);
   };
 
   const handleJobClick = (job: DbJob) => {
@@ -140,6 +139,11 @@ export default function OperatorView() {
         job={selectedJob} 
         open={isModalOpen} 
         onOpenChange={setIsModalOpen} 
+      />
+      <ProductionRegistrationModal
+        job={productionJob}
+        open={isProductionModalOpen}
+        onOpenChange={setIsProductionModalOpen}
       />
       
       <div className="p-8 space-y-6 animate-fade-in-up">
@@ -237,8 +241,8 @@ export default function OperatorView() {
                           className="flex-1 bg-green-600 hover:bg-green-700"
                           onClick={() => handleFinishProduction(job)}
                         >
-                          <CheckCircle2 className="h-4 w-4 mr-1" />
-                          Finalizar
+                          <ClipboardCheck className="h-4 w-4 mr-1" />
+                          Registrar Produção
                         </Button>
                       </div>
                     </CardContent>
