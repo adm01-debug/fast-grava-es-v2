@@ -10,14 +10,17 @@ import {
   AlertCircle,
   RotateCcw,
   Calendar,
-  Package,
   TrendingDown,
   Bell,
   ChevronRight,
-  Zap
+  Zap,
+  Activity,
+  Scale
 } from "lucide-react";
 import { mockJobs, getTechniqueById, getMachineById } from "@/data/mockData";
 import { Job } from "@/types/scheduling";
+import { useBottleneckPrediction } from "@/hooks/useBottleneckPrediction";
+import { useLoadBalancing } from "@/hooks/useLoadBalancing";
 
 const priorityColors = {
   urgent: 'bg-red-500/20 text-red-400 border-red-500/30',
@@ -164,8 +167,15 @@ export default function AlertsDashboard() {
     </Card>
   );
 
-  const totalAlerts = alertData.delayed.length + alertData.rework.length + 
+  // Efficiency alerts
+  const { alerts: bottleneckAlerts, criticalCount, warningCount } = useBottleneckPrediction();
+  const { suggestions: loadBalancingSuggestions } = useLoadBalancing();
+
+  const totalJobAlerts = alertData.delayed.length + alertData.rework.length + 
                       alertData.urgent.length + alertData.atRisk.length + alertData.overdue.length;
+  
+  const totalEfficiencyAlerts = criticalCount + warningCount + loadBalancingSuggestions.length;
+  const totalAlerts = totalJobAlerts + totalEfficiencyAlerts;
 
   return (
     <div className="min-h-screen bg-background p-6 space-y-6">
@@ -195,7 +205,7 @@ export default function AlertsDashboard() {
       </div>
 
       {/* Summary Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
         <Card className="bg-card/50 backdrop-blur-sm border-border/50">
           <CardContent className="p-4 flex items-center gap-3">
             <div className="p-3 rounded-xl bg-red-500/20">
@@ -251,6 +261,29 @@ export default function AlertsDashboard() {
             </div>
           </CardContent>
         </Card>
+        {/* Efficiency Stats */}
+        <Card className="bg-card/50 backdrop-blur-sm border-border/50">
+          <CardContent className="p-4 flex items-center gap-3">
+            <div className="p-3 rounded-xl bg-pink-500/20">
+              <Activity className="h-5 w-5 text-pink-400" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-foreground">{criticalCount + warningCount}</p>
+              <p className="text-xs text-muted-foreground">Gargalos</p>
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="bg-card/50 backdrop-blur-sm border-border/50">
+          <CardContent className="p-4 flex items-center gap-3">
+            <div className="p-3 rounded-xl bg-teal-500/20">
+              <Scale className="h-5 w-5 text-teal-400" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-foreground">{loadBalancingSuggestions.length}</p>
+              <p className="text-xs text-muted-foreground">Desbalanceamento</p>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Alert Cards Grid */}
@@ -300,8 +333,119 @@ export default function AlertsDashboard() {
           emptyMessage="Nenhum job aguardando retrabalho"
         />
 
+        {/* Bottleneck Alerts */}
+        <Card className="bg-card/50 backdrop-blur-sm border-border/50">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="p-2 rounded-lg bg-pink-500/20">
+                  <Activity className="h-5 w-5 text-pink-400" />
+                </div>
+                Previsão de Gargalos
+              </div>
+              <Badge variant="outline" className="bg-muted/50 text-foreground border-border">
+                {bottleneckAlerts.length}
+              </Badge>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {bottleneckAlerts.length === 0 ? (
+              <p className="text-sm text-muted-foreground text-center py-4">Nenhum gargalo previsto</p>
+            ) : (
+              bottleneckAlerts.slice(0, 5).map((alert, index) => (
+                <div 
+                  key={index}
+                  className="p-3 rounded-lg bg-muted/30 border border-border/30"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium text-foreground">{alert.techniqueName}</span>
+                        <Badge className={`${
+                          alert.severity === 'critical' 
+                            ? 'bg-red-500/20 text-red-400 border-red-500/30' 
+                            : 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30'
+                        } border text-xs`}>
+                          {alert.severity === 'critical' ? 'Crítico' : 'Atenção'}
+                        </Badge>
+                      </div>
+                      <p className="text-sm text-muted-foreground mt-1">{alert.message}</p>
+                      <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground">
+                        <span className="flex items-center gap-1">
+                          <Calendar className="h-3 w-3" />
+                          {new Date(alert.date).toLocaleDateString('pt-BR')}
+                        </span>
+                        <span>Ocupação: {alert.currentOccupancy.toFixed(0)}%</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
+            {bottleneckAlerts.length > 5 && (
+              <Button variant="ghost" className="w-full text-muted-foreground hover:text-foreground">
+                Ver todos ({bottleneckAlerts.length})
+              </Button>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Load Balancing Alerts */}
+        <Card className="bg-card/50 backdrop-blur-sm border-border/50">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="p-2 rounded-lg bg-teal-500/20">
+                  <Scale className="h-5 w-5 text-teal-400" />
+                </div>
+                Desbalanceamento de Carga
+              </div>
+              <Badge variant="outline" className="bg-muted/50 text-foreground border-border">
+                {loadBalancingSuggestions.length}
+              </Badge>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {loadBalancingSuggestions.length === 0 ? (
+              <p className="text-sm text-muted-foreground text-center py-4">Carga balanceada entre máquinas</p>
+            ) : (
+              loadBalancingSuggestions.slice(0, 5).map((suggestion, index) => (
+                <div 
+                  key={index}
+                  className="p-3 rounded-lg bg-muted/30 border border-border/30"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium text-foreground">
+                          {suggestion.currentMachineName} → {suggestion.suggestedMachineName}
+                        </span>
+                        <Badge className="bg-teal-500/20 text-teal-400 border-teal-500/30 border text-xs">
+                          Redistribuir
+                        </Badge>
+                      </div>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Mover job {suggestion.orderNumber} ({suggestion.client})
+                      </p>
+                      <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground">
+                        <span>Diferença: {suggestion.loadDifference.toFixed(0)}%</span>
+                        <span>Carga atual: {suggestion.currentLoad.toFixed(0)}%</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
+            {loadBalancingSuggestions.length > 5 && (
+              <Button variant="ghost" className="w-full text-muted-foreground hover:text-foreground">
+                Ver todos ({loadBalancingSuggestions.length})
+              </Button>
+            )}
+          </CardContent>
+        </Card>
+
         {/* Critical Alert Summary */}
-        <Card className="bg-gradient-to-br from-red-500/10 to-orange-500/10 border-red-500/30">
+        <Card className="bg-gradient-to-br from-red-500/10 to-orange-500/10 border-red-500/30 lg:col-span-2">
           <CardHeader>
             <CardTitle className="text-lg flex items-center gap-2">
               <TrendingDown className="h-5 w-5 text-red-400" />
@@ -309,31 +453,43 @@ export default function AlertsDashboard() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="p-3 rounded-lg bg-background/50 border border-border/30">
                 <p className="text-xs text-muted-foreground">Total de Alertas</p>
                 <p className="text-2xl font-bold text-foreground">{totalAlerts}</p>
               </div>
               <div className="p-3 rounded-lg bg-background/50 border border-border/30">
-                <p className="text-xs text-muted-foreground">Críticos (Atrasados + Vencidos)</p>
+                <p className="text-xs text-muted-foreground">Jobs Críticos</p>
                 <p className="text-2xl font-bold text-red-400">
                   {alertData.delayed.length + alertData.overdue.length}
                 </p>
               </div>
+              <div className="p-3 rounded-lg bg-background/50 border border-border/30">
+                <p className="text-xs text-muted-foreground">Gargalos Críticos</p>
+                <p className="text-2xl font-bold text-pink-400">{criticalCount}</p>
+              </div>
+              <div className="p-3 rounded-lg bg-background/50 border border-border/30">
+                <p className="text-xs text-muted-foreground">Sugestões de Balanceamento</p>
+                <p className="text-2xl font-bold text-teal-400">{loadBalancingSuggestions.length}</p>
+              </div>
             </div>
             <div className="p-3 rounded-lg bg-background/50 border border-border/30">
-              <p className="text-xs text-muted-foreground mb-2">Distribuição por Severidade</p>
+              <p className="text-xs text-muted-foreground mb-2">Distribuição por Categoria</p>
               <div className="flex gap-2">
-                <div className="flex-1 h-2 rounded-full bg-red-500/50" style={{ flex: alertData.delayed.length + alertData.overdue.length || 0.1 }} />
-                <div className="flex-1 h-2 rounded-full bg-yellow-500/50" style={{ flex: alertData.urgent.length || 0.1 }} />
-                <div className="flex-1 h-2 rounded-full bg-cyan-500/50" style={{ flex: alertData.atRisk.length || 0.1 }} />
-                <div className="flex-1 h-2 rounded-full bg-purple-500/50" style={{ flex: alertData.rework.length || 0.1 }} />
+                <div className="h-2 rounded-full bg-red-500/50" style={{ flex: alertData.delayed.length + alertData.overdue.length || 0.1 }} />
+                <div className="h-2 rounded-full bg-yellow-500/50" style={{ flex: alertData.urgent.length || 0.1 }} />
+                <div className="h-2 rounded-full bg-cyan-500/50" style={{ flex: alertData.atRisk.length || 0.1 }} />
+                <div className="h-2 rounded-full bg-purple-500/50" style={{ flex: alertData.rework.length || 0.1 }} />
+                <div className="h-2 rounded-full bg-pink-500/50" style={{ flex: criticalCount + warningCount || 0.1 }} />
+                <div className="h-2 rounded-full bg-teal-500/50" style={{ flex: loadBalancingSuggestions.length || 0.1 }} />
               </div>
-              <div className="flex justify-between mt-2 text-xs text-muted-foreground">
+              <div className="grid grid-cols-6 gap-1 mt-2 text-xs text-muted-foreground text-center">
                 <span>Crítico</span>
                 <span>Urgente</span>
-                <span>Em Risco</span>
+                <span>Risco</span>
                 <span>Retrabalho</span>
+                <span>Gargalos</span>
+                <span>Balanceamento</span>
               </div>
             </div>
           </CardContent>
