@@ -17,7 +17,8 @@ import {
   BarChart3,
   UserCircle,
   LogOut,
-  Zap
+  Zap,
+  Bot
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -42,6 +43,7 @@ const mainNavItems: NavItem[] = [
   { icon: BarChart3, label: 'KPIs', href: '/kpis' },
   { icon: AlertTriangle, label: 'Alertas', href: '/alerts', badge: 3 },
   { icon: UserCircle, label: 'Visão Operador', href: '/operator' },
+  { icon: Bot, label: 'Assistente IA', href: '/assistant' },
 ];
 
 const secondaryNavItems: NavItem[] = [
@@ -64,10 +66,10 @@ export function AppSidebar() {
   // Filter nav items based on role
   const filteredMainNavItems = mainNavItems.filter(item => {
     if (role === 'operator') {
-      return ['/operator', '/alerts'].includes(item.href);
+      return ['/operator', '/alerts', '/assistant'].includes(item.href);
     }
     if (role === 'manager') {
-      return ['/', '/calendar/daily', '/calendar/weekly', '/kpis', '/alerts', '/efficiency'].includes(item.href);
+      return ['/', '/calendar/daily', '/calendar/weekly', '/kpis', '/alerts', '/efficiency', '/assistant'].includes(item.href);
     }
     return true; // coordinator sees all
   });
