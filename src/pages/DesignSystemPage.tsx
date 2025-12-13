@@ -293,6 +293,7 @@ export default function DesignSystemPage() {
 
           {/* Buttons Tab */}
           <TabsContent value="buttons" className="space-y-6">
+            <BackToOverviewButton onNavigate={setActiveTab} />
             <Card className="card-interactive card-shine">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -480,31 +481,37 @@ export default function DesignSystemPage() {
 
           {/* Forms Tab */}
           <TabsContent value="forms" className="space-y-6">
+            <BackToOverviewButton onNavigate={setActiveTab} />
             <FormsSection />
           </TabsContent>
 
           {/* Modals Tab */}
           <TabsContent value="modals" className="space-y-6">
+            <BackToOverviewButton onNavigate={setActiveTab} />
             <ModalsSection />
           </TabsContent>
 
           {/* Tooltips Tab */}
           <TabsContent value="tooltips" className="space-y-6">
+            <BackToOverviewButton onNavigate={setActiveTab} />
             <TooltipsSection />
           </TabsContent>
 
           {/* Tables Tab */}
           <TabsContent value="tables" className="space-y-6">
+            <BackToOverviewButton onNavigate={setActiveTab} />
             <TablesSection />
           </TabsContent>
 
           {/* Navigation Tab */}
           <TabsContent value="navigation" className="space-y-6">
+            <BackToOverviewButton onNavigate={setActiveTab} />
             <NavigationSection />
           </TabsContent>
 
           {/* Cards Tab */}
           <TabsContent value="cards" className="space-y-6">
+            <BackToOverviewButton onNavigate={setActiveTab} />
             {/* Card Variants Section */}
             <Card variant="default">
               <CardHeader>
@@ -1006,6 +1013,7 @@ export default function DesignSystemPage() {
 
           {/* Badges Tab */}
           <TabsContent value="badges" className="space-y-6">
+            <BackToOverviewButton onNavigate={setActiveTab} />
             <Card className="card-interactive">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -1107,6 +1115,7 @@ export default function DesignSystemPage() {
 
           {/* Progress Tab */}
           <TabsContent value="progress" className="space-y-6">
+            <BackToOverviewButton onNavigate={setActiveTab} />
             <Card className="card-interactive">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -1232,11 +1241,13 @@ export default function DesignSystemPage() {
 
           {/* Icons Tab */}
           <TabsContent value="icons" className="space-y-6">
+            <BackToOverviewButton onNavigate={setActiveTab} />
             <IconsSection />
           </TabsContent>
 
           {/* Colors Tab */}
           <TabsContent value="colors" className="space-y-6">
+            <BackToOverviewButton onNavigate={setActiveTab} />
             <Card className="card-interactive">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -1364,6 +1375,7 @@ export default function DesignSystemPage() {
 
           {/* Typography Tab */}
           <TabsContent value="typography" className="space-y-6">
+            <BackToOverviewButton onNavigate={setActiveTab} />
             <Card className="card-interactive">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -1685,6 +1697,7 @@ export default function DesignSystemPage() {
 
           {/* Spacing Tab */}
           <TabsContent value="spacing" className="space-y-6">
+            <BackToOverviewButton onNavigate={setActiveTab} />
             {/* Spacing Scale */}
             <Card className="card-interactive">
               <CardHeader>
@@ -1979,36 +1992,43 @@ export default function DesignSystemPage() {
 
           {/* Shadows Tab */}
           <TabsContent value="shadows" className="space-y-6">
+            <BackToOverviewButton onNavigate={setActiveTab} />
             <ShadowsSection />
           </TabsContent>
 
           {/* Animations Tab */}
           <TabsContent value="animations" className="space-y-6">
+            <BackToOverviewButton onNavigate={setActiveTab} />
             <AnimationsSection />
           </TabsContent>
 
           {/* Feedback Tab */}
           <TabsContent value="feedback" className="space-y-6">
+            <BackToOverviewButton onNavigate={setActiveTab} />
             <FeedbackSection />
           </TabsContent>
 
           {/* Loading Tab */}
           <TabsContent value="loading" className="space-y-6">
+            <BackToOverviewButton onNavigate={setActiveTab} />
             <LoadingSection />
           </TabsContent>
 
           {/* Empty States Tab */}
           <TabsContent value="empty" className="space-y-6">
+            <BackToOverviewButton onNavigate={setActiveTab} />
             <EmptyStatesSection />
           </TabsContent>
 
           {/* Error States Tab */}
           <TabsContent value="errors" className="space-y-6">
+            <BackToOverviewButton onNavigate={setActiveTab} />
             <ErrorStatesSection />
           </TabsContent>
 
           {/* Theme Toggle Tab */}
           <TabsContent value="theme" className="space-y-6">
+            <BackToOverviewButton onNavigate={setActiveTab} />
             <ThemeToggleSection />
           </TabsContent>
         </Tabs>
@@ -8506,6 +8526,21 @@ html, body, .bg-background, .bg-card {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+// Back to Overview Button Component
+function BackToOverviewButton({ onNavigate }: { onNavigate: (tabId: string) => void }) {
+  return (
+    <Button 
+      variant="ghost" 
+      size="sm" 
+      onClick={() => onNavigate('overview')}
+      className="gap-2 text-muted-foreground hover:text-foreground"
+    >
+      <ArrowLeft className="h-4 w-4" />
+      Voltar ao Overview
+    </Button>
   );
 }
 
