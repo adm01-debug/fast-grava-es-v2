@@ -6375,6 +6375,36 @@ function LoadingSection() {
               </div>
             </div>
           </div>
+
+          {/* Code Examples */}
+          <div className="space-y-4 pt-4 border-t">
+            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Exemplos de Código</h4>
+            <CodeBlock
+              label="Spinners"
+              code={`{/* Spinner básico com Lucide */}
+<Loader2 className="h-6 w-6 animate-spin text-primary" />
+
+{/* Tamanhos */}
+<Loader2 className="h-4 w-4 animate-spin" />  {/* Small */}
+<Loader2 className="h-8 w-8 animate-spin" />  {/* Large */}
+<Loader2 className="h-12 w-12 animate-spin" /> {/* XL */}
+
+{/* Cores */}
+<Loader2 className="animate-spin text-success" />
+<Loader2 className="animate-spin text-warning" />
+<Loader2 className="animate-spin text-destructive" />
+
+{/* CSS Border Spinner */}
+<div className="h-6 w-6 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+
+{/* Dots Bounce */}
+<div className="flex gap-1">
+  <div className="h-2 w-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: "0ms" }} />
+  <div className="h-2 w-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: "150ms" }} />
+  <div className="h-2 w-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: "300ms" }} />
+</div>`}
+            />
+          </div>
         </CardContent>
       </Card>
 
@@ -6463,6 +6493,36 @@ function LoadingSection() {
               </div>
               <p className="text-xs text-muted-foreground">Para operações sem tempo definido</p>
             </div>
+          </div>
+
+          {/* Code Examples */}
+          <div className="space-y-4 pt-4 border-t">
+            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Exemplos de Código</h4>
+            <CodeBlock
+              label="Progress Bars"
+              code={`{/* Básico */}
+<Progress value={50} />
+
+{/* Com label */}
+<div className="space-y-1">
+  <div className="flex justify-between text-xs">
+    <span>50%</span>
+    <span className="text-muted-foreground">Processando</span>
+  </div>
+  <Progress value={50} />
+</div>
+
+{/* Animado com estado */}
+const [progress, setProgress] = useState(0);
+
+<Progress value={progress} className="transition-all duration-200" />
+
+{/* Variantes */}
+<Progress value={75} variant="xp" />
+<Progress value={50} variant="success" />
+<Progress value={30} variant="warning" />
+<Progress value={80} variant="destructive" />`}
+            />
           </div>
         </CardContent>
       </Card>
@@ -6563,6 +6623,44 @@ function LoadingSection() {
               </Button>
             </div>
           </div>
+
+          {/* Code Examples */}
+          <div className="space-y-4 pt-4 border-t">
+            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Exemplos de Código</h4>
+            <CodeBlock
+              label="Button Loading States"
+              code={`{/* Botão com loading */}
+<Button disabled>
+  <Loader2 className="h-4 w-4 animate-spin" />
+  Carregando...
+</Button>
+
+{/* Toggle loading com estado */}
+const [isLoading, setIsLoading] = useState(false);
+
+<Button 
+  disabled={isLoading}
+  onClick={handleAction}
+>
+  {isLoading ? (
+    <>
+      <Loader2 className="h-4 w-4 animate-spin" />
+      Processando...
+    </>
+  ) : (
+    <>
+      <Save className="h-4 w-4" />
+      Salvar
+    </>
+  )}
+</Button>
+
+{/* Icon button loading */}
+<Button size="icon" disabled>
+  <Loader2 className="h-4 w-4 animate-spin" />
+</Button>`}
+            />
+          </div>
         </CardContent>
       </Card>
 
@@ -6591,6 +6689,32 @@ function LoadingSection() {
           <p className="text-xs text-muted-foreground">
             Use este padrão para carregamentos que ocupam a tela inteira ou seções grandes.
           </p>
+
+          {/* Code Examples */}
+          <div className="space-y-4 pt-4 border-t">
+            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Exemplos de Código</h4>
+            <CodeBlock
+              label="Full Page Loading"
+              code={`{/* Spinner circular duplo */}
+<div className="flex flex-col items-center justify-center space-y-4">
+  <div className="relative">
+    <div className="h-16 w-16 rounded-full border-4 border-muted" />
+    <div className="absolute top-0 left-0 h-16 w-16 rounded-full border-4 border-primary border-t-transparent animate-spin" />
+  </div>
+  <div className="space-y-2 text-center">
+    <p className="text-sm font-medium">Carregando dados...</p>
+    <p className="text-xs text-muted-foreground">Por favor, aguarde</p>
+  </div>
+</div>
+
+{/* Overlay de loading */}
+{isLoading && (
+  <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center">
+    <Loader2 className="h-12 w-12 animate-spin text-primary" />
+  </div>
+)}`}
+            />
+          </div>
         </CardContent>
       </Card>
     </div>
