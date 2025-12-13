@@ -425,12 +425,11 @@ function normalizePriorityDynamic(value: string | null | undefined, priorityMapp
 }
 
 async function callBitrix(method: string, params: Record<string, any> = {}, supabase?: any) {
-  // Get valid OAuth tokens with automatic refresh
-  if (supabase) {
-    const tokens = await getValidTokens(supabase);
-    if (tokens) {
-      const url = `${BITRIX24_DOMAIN}/rest/${method}?auth=${tokens.access_token}`;
-      console.log(`Calling Bitrix24 (OAuth with auto-refresh): ${method}`, params);
+  // PRIORITY 1: Try webhook URL first (most reliable)
+  if (BITRIX24_WEBHOOK_URL) {
+    try {
+      const url = `${BITRIX24_WEBHOOK_URL}/${method}`;
+      console.log(`Calling Bitrix24 (Webhook - Primary): ${method}`, params);
       
       const response = await fetch(url, {
         method: 'POST',
@@ -440,7 +439,43 @@ async function callBitrix(method: string, params: Record<string, any> = {}, supa
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error('Bitrix24 API error response:', errorText);
+        console.error('Bitrix24 Webhook error response:', errorText);
+        // Don't throw, try OAuth fallback
+        console.log('Webhook failed, trying OAuth...');
+      } else {
+        const data = await response.json();
+        
+        if (data.error) {
+          console.error('Bitrix24 Webhook API error:', data.error, data.error_description);
+          // Don't throw, try OAuth fallback
+          console.log('Webhook returned error, trying OAuth...');
+        } else {
+          console.log(`Bitrix24 Webhook response success`);
+          return data;
+        }
+      }
+    } catch (webhookError) {
+      console.error('Webhook exception:', webhookError);
+      console.log('Trying OAuth fallback...');
+    }
+  }
+
+  // PRIORITY 2: Try OAuth tokens as fallback
+  if (supabase) {
+    const tokens = await getValidTokens(supabase);
+    if (tokens) {
+      const url = `${BITRIX24_DOMAIN}/rest/${method}?auth=${tokens.access_token}`;
+      console.log(`Calling Bitrix24 (OAuth fallback): ${method}`, params);
+      
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(params)
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Bitrix24 OAuth API error response:', errorText);
         throw new Error(`Bitrix24 API error: ${response.status} - ${errorText}`);
       }
 
@@ -458,44 +493,16 @@ async function callBitrix(method: string, params: Record<string, any> = {}, supa
       }
       
       if (data.error) {
-        console.error('Bitrix24 API error:', data.error, data.error_description);
+        console.error('Bitrix24 OAuth API error:', data.error, data.error_description);
         throw new Error(`Bitrix24 API error: ${data.error} - ${data.error_description || ''}`);
       }
 
-      console.log(`Bitrix24 response:`, data);
+      console.log(`Bitrix24 OAuth response success`);
       return data;
     }
   }
   
-  // Fallback to webhook URL if no OAuth tokens
-  if (BITRIX24_WEBHOOK_URL) {
-    const url = `${BITRIX24_WEBHOOK_URL}/${method}`;
-    console.log(`Calling Bitrix24 (Webhook): ${method}`, params);
-    
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(params)
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Bitrix24 API error response:', errorText);
-      throw new Error(`Bitrix24 API error: ${response.status} - ${errorText}`);
-    }
-
-    const data = await response.json();
-    
-    if (data.error) {
-      console.error('Bitrix24 API error:', data.error, data.error_description);
-      throw new Error(`Bitrix24 API error: ${data.error} - ${data.error_description || ''}`);
-    }
-
-    console.log(`Bitrix24 response:`, data);
-    return data;
-  }
-  
-  throw new Error('No valid Bitrix24 authentication configured');
+  throw new Error('No valid Bitrix24 authentication configured. Please configure BITRIX24_WEBHOOK_URL or OAuth tokens.');
 }
 
 // Pull deals from Bitrix24 and sync to our system
