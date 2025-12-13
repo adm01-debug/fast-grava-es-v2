@@ -6,14 +6,151 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// OAuth credentials
+// OAuth credentials from environment (initial values)
 const BITRIX24_WEBHOOK_URL = Deno.env.get('BITRIX24_WEBHOOK_URL');
-const BITRIX24_ACCESS_TOKEN = Deno.env.get('BITRIX24_ACCESS_TOKEN');
+const BITRIX24_CLIENT_ID = Deno.env.get('BITRIX24_CLIENT_ID');
+const BITRIX24_CLIENT_SECRET = Deno.env.get('BITRIX24_CLIENT_SECRET');
+const BITRIX24_ACCESS_TOKEN_ENV = Deno.env.get('BITRIX24_ACCESS_TOKEN');
+const BITRIX24_REFRESH_TOKEN_ENV = Deno.env.get('BITRIX24_REFRESH_TOKEN');
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
 
-// Base URL for Bitrix24 REST API (extracted from webhook URL or hardcoded)
+// Base URL for Bitrix24 REST API
 const BITRIX24_DOMAIN = 'https://promobrindes.bitrix24.com.br';
+
+// Token refresh buffer (refresh 5 minutes before expiry)
+const TOKEN_REFRESH_BUFFER_MS = 5 * 60 * 1000;
+
+interface OAuthTokens {
+  access_token: string;
+  refresh_token: string;
+  expires_at: Date;
+}
+
+// Get current valid tokens from database or environment
+async function getValidTokens(supabase: any): Promise<OAuthTokens | null> {
+  // First, check database for stored tokens
+  const { data: storedTokens, error } = await supabase
+    .from('bitrix24_oauth_tokens')
+    .select('*')
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (storedTokens) {
+    const expiresAt = new Date(storedTokens.expires_at);
+    const now = new Date();
+    
+    // Check if token is still valid (with buffer)
+    if (expiresAt.getTime() - now.getTime() > TOKEN_REFRESH_BUFFER_MS) {
+      console.log('Using stored token, expires at:', expiresAt.toISOString());
+      return {
+        access_token: storedTokens.access_token,
+        refresh_token: storedTokens.refresh_token,
+        expires_at: expiresAt
+      };
+    }
+    
+    // Token expired or about to expire, try to refresh
+    console.log('Stored token expired or expiring soon, refreshing...');
+    const refreshed = await refreshAccessToken(storedTokens.refresh_token, supabase);
+    if (refreshed) {
+      return refreshed;
+    }
+  }
+
+  // No stored tokens or refresh failed, try environment variables
+  if (BITRIX24_ACCESS_TOKEN_ENV && BITRIX24_REFRESH_TOKEN_ENV) {
+    console.log('Using environment tokens...');
+    // Store initial tokens from environment with 1 hour expiry
+    const expiresAt = new Date(Date.now() + 3600 * 1000);
+    
+    await saveTokens(supabase, {
+      access_token: BITRIX24_ACCESS_TOKEN_ENV,
+      refresh_token: BITRIX24_REFRESH_TOKEN_ENV,
+      expires_at: expiresAt
+    });
+    
+    return {
+      access_token: BITRIX24_ACCESS_TOKEN_ENV,
+      refresh_token: BITRIX24_REFRESH_TOKEN_ENV,
+      expires_at: expiresAt
+    };
+  }
+
+  return null;
+}
+
+// Refresh access token using refresh token
+async function refreshAccessToken(refreshToken: string, supabase: any): Promise<OAuthTokens | null> {
+  try {
+    console.log('Refreshing Bitrix24 access token...');
+    
+    const refreshUrl = `${BITRIX24_DOMAIN}/oauth/token/?` + new URLSearchParams({
+      grant_type: 'refresh_token',
+      client_id: BITRIX24_CLIENT_ID || '',
+      client_secret: BITRIX24_CLIENT_SECRET || '',
+      refresh_token: refreshToken
+    });
+
+    const response = await fetch(refreshUrl, { method: 'POST' });
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Token refresh failed:', response.status, errorText);
+      return null;
+    }
+
+    const data = await response.json();
+    
+    if (data.error) {
+      console.error('Token refresh error:', data.error, data.error_description);
+      return null;
+    }
+
+    // Bitrix24 returns expires_in in seconds (usually 3600)
+    const expiresIn = data.expires_in || 3600;
+    const expiresAt = new Date(Date.now() + expiresIn * 1000);
+
+    const tokens: OAuthTokens = {
+      access_token: data.access_token,
+      refresh_token: data.refresh_token,
+      expires_at: expiresAt
+    };
+
+    // Save new tokens to database
+    await saveTokens(supabase, tokens);
+    
+    console.log('Token refreshed successfully, expires at:', expiresAt.toISOString());
+    return tokens;
+  } catch (error) {
+    console.error('Token refresh exception:', error);
+    return null;
+  }
+}
+
+// Save tokens to database
+async function saveTokens(supabase: any, tokens: OAuthTokens): Promise<void> {
+  try {
+    // Delete old tokens first
+    await supabase.from('bitrix24_oauth_tokens').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+    
+    // Insert new tokens
+    const { error } = await supabase.from('bitrix24_oauth_tokens').insert({
+      access_token: tokens.access_token,
+      refresh_token: tokens.refresh_token,
+      expires_at: tokens.expires_at.toISOString()
+    });
+
+    if (error) {
+      console.error('Error saving tokens:', error);
+    } else {
+      console.log('Tokens saved to database');
+    }
+  } catch (error) {
+    console.error('Exception saving tokens:', error);
+  }
+}
 
 interface BitrixDeal {
   ID: string;
@@ -135,45 +272,78 @@ function normalizePriority(value: string | null | undefined): string {
   return PRIORITY_MAPPING[normalized] || 'medium';
 }
 
-async function callBitrix(method: string, params: Record<string, any> = {}) {
-  // Prefer OAuth access token, fall back to webhook URL
-  let url: string;
-  let headers: Record<string, string> = { 'Content-Type': 'application/json' };
+async function callBitrix(method: string, params: Record<string, any> = {}, supabase?: any) {
+  // Get valid OAuth tokens with automatic refresh
+  if (supabase) {
+    const tokens = await getValidTokens(supabase);
+    if (tokens) {
+      const url = `${BITRIX24_DOMAIN}/rest/${method}?auth=${tokens.access_token}`;
+      console.log(`Calling Bitrix24 (OAuth with auto-refresh): ${method}`, params);
+      
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(params)
+      });
 
-  if (BITRIX24_ACCESS_TOKEN) {
-    // OAuth method - use REST API with access token
-    url = `${BITRIX24_DOMAIN}/rest/${method}?auth=${BITRIX24_ACCESS_TOKEN}`;
-    console.log(`Calling Bitrix24 (OAuth): ${method}`, params);
-  } else if (BITRIX24_WEBHOOK_URL) {
-    // Webhook method - legacy
-    url = `${BITRIX24_WEBHOOK_URL}/${method}`;
-    console.log(`Calling Bitrix24 (Webhook): ${method}`, params);
-  } else {
-    throw new Error('BITRIX24_ACCESS_TOKEN or BITRIX24_WEBHOOK_URL not configured');
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Bitrix24 API error response:', errorText);
+        throw new Error(`Bitrix24 API error: ${response.status} - ${errorText}`);
+      }
+
+      const data = await response.json();
+      
+      // Check for expired_token error and try to refresh
+      if (data.error === 'expired_token' || data.error === 'invalid_token') {
+        console.log('Token expired, attempting refresh...');
+        const refreshedTokens = await refreshAccessToken(tokens.refresh_token, supabase);
+        if (refreshedTokens) {
+          // Retry with new token
+          return callBitrix(method, params, supabase);
+        }
+        throw new Error('Token refresh failed');
+      }
+      
+      if (data.error) {
+        console.error('Bitrix24 API error:', data.error, data.error_description);
+        throw new Error(`Bitrix24 API error: ${data.error} - ${data.error_description || ''}`);
+      }
+
+      console.log(`Bitrix24 response:`, data);
+      return data;
+    }
   }
-
-  const response = await fetch(url, {
-    method: 'POST',
-    headers,
-    body: JSON.stringify(params)
-  });
-
-  if (!response.ok) {
-    const errorText = await response.text();
-    console.error('Bitrix24 API error response:', errorText);
-    throw new Error(`Bitrix24 API error: ${response.status} - ${errorText}`);
-  }
-
-  const data = await response.json();
   
-  // Check for OAuth-specific errors
-  if (data.error) {
-    console.error('Bitrix24 API error:', data.error, data.error_description);
-    throw new Error(`Bitrix24 API error: ${data.error} - ${data.error_description || ''}`);
-  }
+  // Fallback to webhook URL if no OAuth tokens
+  if (BITRIX24_WEBHOOK_URL) {
+    const url = `${BITRIX24_WEBHOOK_URL}/${method}`;
+    console.log(`Calling Bitrix24 (Webhook): ${method}`, params);
+    
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(params)
+    });
 
-  console.log(`Bitrix24 response:`, data);
-  return data;
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Bitrix24 API error response:', errorText);
+      throw new Error(`Bitrix24 API error: ${response.status} - ${errorText}`);
+    }
+
+    const data = await response.json();
+    
+    if (data.error) {
+      console.error('Bitrix24 API error:', data.error, data.error_description);
+      throw new Error(`Bitrix24 API error: ${data.error} - ${data.error_description || ''}`);
+    }
+
+    console.log(`Bitrix24 response:`, data);
+    return data;
+  }
+  
+  throw new Error('No valid Bitrix24 authentication configured');
 }
 
 // Pull deals from Bitrix24 and sync to our system
@@ -188,7 +358,7 @@ async function pullFromBitrix(supabase: any, categoryId?: string) {
   const result = await callBitrix('crm.deal.list', {
     filter,
     select: ['ID', 'TITLE', 'STAGE_ID', 'UF_*']
-  });
+  }, supabase);
 
   const deals = result.result || [];
   const synced: string[] = [];
@@ -290,7 +460,7 @@ async function pushToBitrix(jobId: string, newStatus: string, supabase: any) {
     updateData.fields.UF_CRM_COMPLETED_AT = new Date().toISOString();
   }
 
-  const result = await callBitrix('crm.deal.update', updateData);
+  const result = await callBitrix('crm.deal.update', updateData, supabase);
 
   // Log the sync action
   console.log(`Bitrix24 deal ${dealId} updated to stage ${newStage}`);
@@ -315,7 +485,7 @@ async function handleBitrixWebhook(payload: any, supabase: any) {
     if (!dealId) return { error: 'No deal ID in webhook' };
 
     // Fetch full deal data
-    const dealResult = await callBitrix('crm.deal.get', { id: dealId });
+    const dealResult = await callBitrix('crm.deal.get', { id: dealId }, supabase);
     const deal = dealResult.result;
 
     if (!deal) return { error: 'Deal not found' };
@@ -473,7 +643,7 @@ serve(async (req) => {
 
       case 'test':
         // Test connection
-        const testResult = await callBitrix('app.info');
+        const testResult = await callBitrix('app.info', {}, supabase);
         result = { connected: true, info: testResult.result };
         break;
 
@@ -492,7 +662,7 @@ serve(async (req) => {
 
       case 'fields':
         // Get deal custom fields from Bitrix24
-        const fieldsResult = await callBitrix('crm.deal.fields');
+        const fieldsResult = await callBitrix('crm.deal.fields', {}, supabase);
         const allFields = fieldsResult.result || {};
         
         // Filter to show only UF_CRM_* fields (custom fields)
