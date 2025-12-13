@@ -4913,6 +4913,31 @@ function AnimationsSection() {
               <p className="text-xs text-muted-foreground text-center">.animate-enter</p>
             </div>
           </div>
+          
+          {/* Code Examples */}
+          <div className="space-y-3 pt-4 border-t border-border">
+            <h5 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Exemplos de Código</h5>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <CodeBlock 
+                code={'<div className="animate-fade-in">\n  Conteúdo com fade in\n</div>'} 
+                label="Fade In"
+              />
+              <CodeBlock 
+                code={'<div className="animate-scale-in">\n  Conteúdo com scale in\n</div>'} 
+                label="Scale In"
+              />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <CodeBlock 
+                code={'<div className="animate-slide-in-right">\n  Slide da direita\n</div>'} 
+                label="Slide In Right"
+              />
+              <CodeBlock 
+                code={'<div className="animate-enter">\n  Fade + Scale combinados\n</div>'} 
+                label="Enter (Combined)"
+              />
+            </div>
+          </div>
         </CardContent>
       </Card>
 
@@ -4939,6 +4964,40 @@ function AnimationsSection() {
           <p className="text-xs text-muted-foreground mt-3">
             Classes: <code className="text-primary">.stagger-1</code> até <code className="text-primary">.stagger-6</code>
           </p>
+          
+          {/* Code Examples */}
+          <div className="space-y-3 pt-4 border-t border-border">
+            <h5 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Exemplos de Código</h5>
+            <CodeBlock 
+              code={'{items.map((item, index) => (\n  <div \n    key={item.id}\n    className={`animate-fade-in stagger-${index + 1}`}\n  >\n    {item.content}\n  </div>\n))}'} 
+              label="Lista com Stagger"
+            />
+          </div>
+          
+          {/* Code Examples */}
+          <div className="space-y-3 pt-4 border-t border-border">
+            <h5 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Exemplos de Código</h5>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <CodeBlock 
+                code={'<div className="hover-lift">\n  Eleva no hover\n</div>'} 
+                label="Hover Lift"
+              />
+              <CodeBlock 
+                code={'<div className="hover-scale">\n  Escala no hover\n</div>'} 
+                label="Hover Scale"
+              />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <CodeBlock 
+                code={'<div className="hover-glow">\n  Brilha no hover\n</div>'} 
+                label="Hover Glow"
+              />
+              <CodeBlock 
+                code={'<Card className="card-interactive">\n  Card interativo\n</Card>'} 
+                label="Card Interactive"
+              />
+            </div>
+          </div>
         </CardContent>
       </Card>
 
@@ -4979,6 +5038,21 @@ function AnimationsSection() {
                 <span className="text-sm font-medium">Card Interactive</span>
               </div>
               <p className="text-xs text-muted-foreground text-center">.card-interactive</p>
+            </div>
+          </div>
+          
+          {/* Code Examples */}
+          <div className="space-y-3 pt-4 border-t border-border">
+            <h5 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Exemplos de Código</h5>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <CodeBlock 
+                code={'<div className="bg-primary glow-primary">\n  Glow Primary\n</div>'} 
+                label="Glow Primary"
+              />
+              <CodeBlock 
+                code={'<div className="bg-success glow-success">\n  Glow Success\n</div>'} 
+                label="Glow Success"
+              />
             </div>
           </div>
         </CardContent>
@@ -5028,6 +5102,51 @@ function AnimationsSection() {
                 <span className="text-sm font-medium text-foreground">Warning</span>
               </div>
               <p className="text-xs text-muted-foreground text-center">.glow-warning</p>
+            </div>
+          </div>
+          
+          {/* Code Examples */}
+          <div className="space-y-3 pt-4 border-t border-border">
+            <h5 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Exemplos de Código</h5>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <CodeBlock 
+                code={'<div className="xp-bar xp-bar-glow">\n  Barra de XP\n</div>'} 
+                label="XP Bar"
+              />
+              <CodeBlock 
+                code={'<div className="streak-fire">\n  <Flame /> 7\n</div>'} 
+                label="Streak Fire"
+              />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <CodeBlock 
+                code={'<div className="coin-shine">\n  <Coins />\n</div>'} 
+                label="Coin Shine"
+              />
+              <CodeBlock 
+                code={'<div className="animate-level-up">\n  LEVEL UP!\n</div>'} 
+                label="Level Up"
+              />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <CodeBlock 
+                code={'<div className="achievement-unlock">\n  <Trophy /> Conquista!\n</div>'} 
+                label="Achievement Unlock"
+              />
+              <CodeBlock 
+                code={'<div className="points-pop">\n  +100\n</div>'} 
+                label="Points Pop"
+              />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <CodeBlock 
+                code={'<div className="rank-gold">\n  <Trophy />\n</div>'} 
+                label="Rank Gold"
+              />
+              <CodeBlock 
+                code={'<div className="animate-float">\n  <Sparkles />\n</div>'} 
+                label="Float Animation"
+              />
             </div>
           </div>
         </CardContent>
@@ -5168,6 +5287,15 @@ function AnimationsSection() {
               <p className="text-xs text-muted-foreground">Classe: <code className="text-primary">.pulse-glow</code></p>
               <p className="text-xs text-muted-foreground">Efeito de pulsação contínua ideal para CTAs e notificações</p>
             </div>
+          </div>
+          
+          {/* Code Examples */}
+          <div className="space-y-3 pt-4 border-t border-border">
+            <h5 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Exemplos de Código</h5>
+            <CodeBlock 
+              code={'<div className="pulse-glow">\n  <Zap /> Ação importante\n</div>'} 
+              label="Pulse Glow"
+            />
           </div>
         </CardContent>
       </Card>
