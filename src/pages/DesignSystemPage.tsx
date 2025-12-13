@@ -3969,6 +3969,46 @@ function TooltipsSection() {
               </div>
             </div>
           </TooltipProvider>
+
+          {/* Code Examples */}
+          <div className="space-y-4 pt-4 border-t">
+            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Exemplos de Código</h4>
+            <CodeBlock
+              label="Tooltip"
+              code={`<TooltipProvider>
+  <Tooltip>
+    <TooltipTrigger asChild>
+      <Button variant="outline">Hover me</Button>
+    </TooltipTrigger>
+    <TooltipContent side="top">
+      <p>Tooltip no topo</p>
+    </TooltipContent>
+  </Tooltip>
+</TooltipProvider>
+
+{/* Posições: side="top" | "bottom" | "left" | "right" */}
+
+{/* Com atalho de teclado */}
+<TooltipContent className="flex items-center gap-2">
+  <p>Salvar</p>
+  <kbd className="inline-flex h-5 items-center rounded border bg-muted px-1.5 font-mono text-[10px]">
+    ⌘S
+  </kbd>
+</TooltipContent>
+
+{/* Em ícones */}
+<Tooltip>
+  <TooltipTrigger asChild>
+    <Button variant="ghost" size="icon">
+      <Settings className="h-5 w-5" />
+    </Button>
+  </TooltipTrigger>
+  <TooltipContent>
+    <p>Configurações</p>
+  </TooltipContent>
+</Tooltip>`}
+            />
+          </div>
         </CardContent>
       </Card>
 
@@ -4180,6 +4220,102 @@ function TooltipsSection() {
                 </Popover>
               </div>
             </div>
+          </div>
+
+          {/* Code Examples */}
+          <div className="space-y-4 pt-4 border-t">
+            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Exemplos de Código</h4>
+            <CodeBlock
+              label="Popover"
+              code={`<Popover>
+  <PopoverTrigger asChild>
+    <Button variant="outline">Abrir Popover</Button>
+  </PopoverTrigger>
+  <PopoverContent side="bottom" className="w-80">
+    <div className="space-y-2">
+      <h4 className="font-medium">Título</h4>
+      <p className="text-sm text-muted-foreground">
+        Conteúdo do popover aqui.
+      </p>
+    </div>
+  </PopoverContent>
+</Popover>
+
+{/* Posições: side="top" | "bottom" | "left" | "right" */}
+
+{/* Com formulário */}
+<PopoverContent className="w-80">
+  <div className="space-y-4">
+    <Label htmlFor="name">Nome</Label>
+    <Input id="name" placeholder="Digite..." />
+    <Button variant="gradient" className="w-full">Salvar</Button>
+  </div>
+</PopoverContent>
+
+{/* Com Calendar (DatePicker) */}
+<PopoverContent className="w-auto p-0" align="start">
+  <Calendar
+    mode="single"
+    selected={date}
+    onSelect={setDate}
+    className="pointer-events-auto"
+  />
+</PopoverContent>
+
+{/* Menu de ações */}
+<PopoverContent className="w-48 p-1">
+  <Button variant="ghost" className="w-full justify-start gap-2">
+    <Edit className="h-4 w-4" /> Editar
+  </Button>
+  <Button variant="ghost" className="w-full justify-start gap-2 text-destructive">
+    <Trash2 className="h-4 w-4" /> Excluir
+  </Button>
+</PopoverContent>`}
+            />
+          </div>
+
+          {/* Code Examples */}
+          <div className="space-y-4 pt-4 border-t">
+            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Exemplos de Código</h4>
+            <CodeBlock
+              label="HoverCard"
+              code={`<HoverCard>
+  <HoverCardTrigger asChild>
+    <span className="cursor-pointer underline">@username</span>
+  </HoverCardTrigger>
+  <HoverCardContent className="w-80">
+    <div className="flex space-x-4">
+      <Avatar>
+        <AvatarImage src="..." />
+        <AvatarFallback>JD</AvatarFallback>
+      </Avatar>
+      <div className="space-y-1">
+        <h4 className="text-sm font-semibold">Nome Completo</h4>
+        <p className="text-sm text-muted-foreground">@username</p>
+        <p className="text-sm">Bio do usuário aqui.</p>
+      </div>
+    </div>
+  </HoverCardContent>
+</HoverCard>
+
+{/* Com informações detalhadas */}
+<HoverCardContent className="w-80">
+  <div className="space-y-3">
+    <div className="flex items-center justify-between">
+      <h4 className="text-sm font-semibold">Pedido #001</h4>
+      <StatusBadge status="production" />
+    </div>
+    <div className="grid grid-cols-2 gap-2 text-sm">
+      <div>
+        <p className="text-muted-foreground">Cliente</p>
+        <p className="font-medium">Empresa ABC</p>
+      </div>
+      ...
+    </div>
+    <Progress value={65} variant="xp" className="h-2" />
+  </div>
+</HoverCardContent>`}
+            />
           </div>
         </CardContent>
       </Card>
