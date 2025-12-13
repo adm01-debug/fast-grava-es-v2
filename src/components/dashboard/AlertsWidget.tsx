@@ -1,4 +1,4 @@
-import { AlertTriangle, Clock, AlertCircle, Calendar, Settings2, Sparkles } from 'lucide-react';
+import { AlertTriangle, Clock, AlertCircle, Calendar, Settings2, Sparkles, ListTodo } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
@@ -226,6 +226,32 @@ export function AlertsWidget() {
       toast.success('Sugestão aplicada!');
     }
   };
+
+  // Jobs scheduled for the selected machine on the selected date
+  const machineScheduledJobs = useMemo(() => {
+    if (!selectedMachineId || !scheduleDate) return [];
+    
+    return jobs
+      .filter(job => 
+        job.machine_id === selectedMachineId && 
+        job.scheduled_date === scheduleDate &&
+        !['finished', 'cancelled'].includes(job.status)
+      )
+      .map(job => {
+        const startMinutes = job.start_time 
+          ? parseInt(job.start_time.split(':')[0]) * 60 + parseInt(job.start_time.split(':')[1])
+          : 0;
+        const endMinutes = startMinutes + job.estimated_duration;
+        const endTime = `${String(Math.floor(endMinutes / 60)).padStart(2, '0')}:${String(endMinutes % 60).padStart(2, '0')}`;
+        
+        return {
+          ...job,
+          endTime,
+          startMinutes,
+        };
+      })
+      .sort((a, b) => a.startMinutes - b.startMinutes);
+  }, [selectedMachineId, scheduleDate, jobs]);
 
   // Detect conflicts for the selected date/time/machine
   const conflicts = useMemo(() => {
@@ -473,6 +499,62 @@ export function AlertsWidget() {
                     </SelectContent>
                   </Select>
                 </div>
+
+                {/* Machine scheduled jobs list */}
+                {selectedMachineId && (
+                  <div className="space-y-2">
+                    <Label className="flex items-center gap-2">
+                      <ListTodo className="w-4 h-4 text-muted-foreground" />
+                      Jobs Agendados - {machines.find(m => m.id === selectedMachineId)?.code}
+                    </Label>
+                    {machineScheduledJobs.length === 0 ? (
+                      <div className="p-3 bg-status-ready/10 border border-status-ready/30 rounded-lg text-center">
+                        <p className="text-sm text-status-ready font-medium">Máquina livre nesta data</p>
+                        <p className="text-xs text-muted-foreground mt-1">Nenhum job agendado</p>
+                      </div>
+                    ) : (
+                      <div className="max-h-36 overflow-y-auto space-y-1.5 pr-1">
+                        {machineScheduledJobs.map(job => {
+                          // Check if this job conflicts with selected time
+                          const selectedStartMinutes = startTime 
+                            ? parseInt(startTime.split(':')[0]) * 60 + parseInt(startTime.split(':')[1])
+                            : 0;
+                          const selectedEndMinutes = selectedStartMinutes + (selectedJob?.estimated_duration || 0);
+                          const isConflicting = startTime && 
+                            selectedStartMinutes < job.startMinutes + job.estimated_duration && 
+                            selectedEndMinutes > job.startMinutes;
+
+                          return (
+                            <div 
+                              key={job.id}
+                              className={cn(
+                                "flex items-center gap-2 p-2 rounded-md text-xs transition-colors",
+                                isConflicting 
+                                  ? "bg-destructive/15 border border-destructive/40" 
+                                  : "bg-secondary/50 border border-border/20"
+                              )}
+                            >
+                              <Clock className={cn(
+                                "w-3.5 h-3.5 shrink-0",
+                                isConflicting ? "text-destructive" : "text-muted-foreground"
+                              )} />
+                              <span className={cn(
+                                "font-mono font-medium",
+                                isConflicting ? "text-destructive" : "text-foreground"
+                              )}>
+                                {job.start_time || '--:--'} - {job.endTime}
+                              </span>
+                              <span className="text-muted-foreground">•</span>
+                              <span className="font-medium truncate">{job.order_number}</span>
+                              <span className="text-muted-foreground truncate flex-1">{job.client}</span>
+                              <span className="text-muted-foreground shrink-0">{job.estimated_duration}min</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
 
               {/* Conflict warnings */}
