@@ -184,6 +184,23 @@ export function useUpdateJobStatus() {
         .eq('id', jobId);
       
       if (error) throw error;
+
+      // Push status update to Bitrix24 (fire and forget)
+      try {
+        const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+        if (projectId) {
+          fetch(`https://${projectId}.supabase.co/functions/v1/bitrix24-sync?action=push`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+            },
+            body: JSON.stringify({ jobId, status })
+          }).catch(console.error);
+        }
+      } catch (e) {
+        console.error('Bitrix24 sync error:', e);
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['jobs'] });
