@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { usePushNotifications } from "@/hooks/usePushNotifications";
+import { useNotificationSounds } from "@/hooks/useNotificationSounds";
 import { useAuth } from "@/contexts/AuthContext";
 
 interface NotificationPreferences {
@@ -34,6 +34,14 @@ export const NotificationIntegrator = () => {
     sendProductionCompleteAlert 
   } = usePushNotifications();
   
+  const {
+    playDelayedAlert,
+    playBufferAlert,
+    playBottleneckAlert,
+    playStatusChangeAlert,
+    playCompleteAlert
+  } = useNotificationSounds();
+  
   const previousJobsRef = useRef<Map<string, string>>(new Map());
   const notifiedAlertsRef = useRef<Set<string>>(new Set());
 
@@ -57,6 +65,7 @@ export const NotificationIntegrator = () => {
           
           // Status change notification
           if (prefs.statusChanges && oldJob.status !== newJob.status) {
+            playStatusChangeAlert();
             sendStatusChangeAlert({
               orderNumber: newJob.order_number,
               oldStatus: getStatusLabel(oldJob.status),
@@ -66,6 +75,7 @@ export const NotificationIntegrator = () => {
 
           // Production complete notification
           if (prefs.productionComplete && newJob.status === 'finished' && oldJob.status !== 'finished') {
+            playCompleteAlert();
             const { data: profile } = await supabase
               .from('profiles')
               .select('full_name')
@@ -84,6 +94,7 @@ export const NotificationIntegrator = () => {
             const alertKey = `delayed-${newJob.id}`;
             if (!notifiedAlertsRef.current.has(alertKey)) {
               notifiedAlertsRef.current.add(alertKey);
+              playDelayedAlert();
               sendDelayedJobAlert({
                 orderNumber: newJob.order_number,
                 product: newJob.product,
@@ -98,7 +109,7 @@ export const NotificationIntegrator = () => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [permission, user, sendStatusChangeAlert, sendProductionCompleteAlert, sendDelayedJobAlert]);
+  }, [permission, user, sendStatusChangeAlert, sendProductionCompleteAlert, sendDelayedJobAlert, playStatusChangeAlert, playCompleteAlert, playDelayedAlert]);
 
   // Listen to efficiency alerts
   useEffect(() => {
@@ -122,6 +133,7 @@ export const NotificationIntegrator = () => {
           notifiedAlertsRef.current.add(alertKey);
 
           if (prefs.bottleneck && alert.alert_type === 'bottleneck') {
+            playBottleneckAlert();
             const metadata = alert.metadata || {};
             sendBottleneckAlert(
               alert.title.replace('Gargalo: ', ''),
@@ -130,6 +142,7 @@ export const NotificationIntegrator = () => {
           }
 
           if (prefs.lowBuffer && alert.alert_type === 'load_balancing') {
+            playBufferAlert();
             sendLowBufferAlert(
               alert.title.replace('Carga Desbalanceada: ', ''),
               0
@@ -142,7 +155,7 @@ export const NotificationIntegrator = () => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [permission, user, sendBottleneckAlert, sendLowBufferAlert]);
+  }, [permission, user, sendBottleneckAlert, sendLowBufferAlert, playBottleneckAlert, playBufferAlert]);
 
   // Clean up old notification references periodically
   useEffect(() => {
