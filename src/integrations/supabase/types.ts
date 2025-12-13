@@ -294,6 +294,54 @@ export type Database = {
           },
         ]
       }
+      materials: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      product_categories: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -411,6 +459,194 @@ export type Database = {
             columns: ["conversation_id"]
             isOneToOne: false
             referencedRelation: "technical_conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      technical_sheet_materials: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          notes: string | null
+          quantity: string | null
+          specification: string | null
+          technical_sheet_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          notes?: string | null
+          quantity?: string | null
+          specification?: string | null
+          technical_sheet_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          notes?: string | null
+          quantity?: string | null
+          specification?: string | null
+          technical_sheet_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "technical_sheet_materials_technical_sheet_id_fkey"
+            columns: ["technical_sheet_id"]
+            isOneToOne: false
+            referencedRelation: "technical_sheets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      technical_sheet_steps: {
+        Row: {
+          created_at: string
+          description: string
+          id: string
+          step_number: number
+          technical_sheet_id: string
+          tips: string | null
+          title: string
+          warnings: string | null
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          id?: string
+          step_number: number
+          technical_sheet_id: string
+          tips?: string | null
+          title: string
+          warnings?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          id?: string
+          step_number?: number
+          technical_sheet_id?: string
+          tips?: string | null
+          title?: string
+          warnings?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "technical_sheet_steps_technical_sheet_id_fkey"
+            columns: ["technical_sheet_id"]
+            isOneToOne: false
+            referencedRelation: "technical_sheets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      technical_sheet_tips: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          technical_sheet_id: string
+          tip_type: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          technical_sheet_id: string
+          tip_type?: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          technical_sheet_id?: string
+          tip_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "technical_sheet_tips_technical_sheet_id_fkey"
+            columns: ["technical_sheet_id"]
+            isOneToOne: false
+            referencedRelation: "technical_sheets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      technical_sheets: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          estimated_time_minutes: number | null
+          id: string
+          is_active: boolean
+          material_id: string | null
+          product_category_id: string | null
+          recommended_machine_id: string | null
+          technique_id: string
+          title: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          estimated_time_minutes?: number | null
+          id?: string
+          is_active?: boolean
+          material_id?: string | null
+          product_category_id?: string | null
+          recommended_machine_id?: string | null
+          technique_id: string
+          title: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          estimated_time_minutes?: number | null
+          id?: string
+          is_active?: boolean
+          material_id?: string | null
+          product_category_id?: string | null
+          recommended_machine_id?: string | null
+          technique_id?: string
+          title?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "technical_sheets_material_id_fkey"
+            columns: ["material_id"]
+            isOneToOne: false
+            referencedRelation: "materials"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "technical_sheets_product_category_id_fkey"
+            columns: ["product_category_id"]
+            isOneToOne: false
+            referencedRelation: "product_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "technical_sheets_recommended_machine_id_fkey"
+            columns: ["recommended_machine_id"]
+            isOneToOne: false
+            referencedRelation: "machines"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "technical_sheets_technique_id_fkey"
+            columns: ["technique_id"]
+            isOneToOne: false
+            referencedRelation: "techniques"
             referencedColumns: ["id"]
           },
         ]
