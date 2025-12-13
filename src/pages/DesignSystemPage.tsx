@@ -3381,6 +3381,43 @@ function ModalsSection() {
               </DialogContent>
             </Dialog>
           </div>
+
+          {/* Code Examples */}
+          <div className="space-y-4 pt-4 border-t">
+            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Exemplos de Código</h4>
+            <CodeBlock
+              label="Dialog"
+              code={`<Dialog>
+  <DialogTrigger asChild>
+    <Button variant="outline">Abrir Dialog</Button>
+  </DialogTrigger>
+  <DialogContent>
+    <DialogHeader>
+      <DialogTitle>Título do Dialog</DialogTitle>
+      <DialogDescription>
+        Descrição do dialog aqui.
+      </DialogDescription>
+    </DialogHeader>
+    <div className="py-4">
+      {/* Conteúdo */}
+    </div>
+    <DialogFooter>
+      <Button variant="outline">Cancelar</Button>
+      <Button variant="gradient">Confirmar</Button>
+    </DialogFooter>
+  </DialogContent>
+</Dialog>
+
+{/* Dialog com largura customizada */}
+<DialogContent className="sm:max-w-md">
+  ...
+</DialogContent>
+
+<DialogContent className="sm:max-w-2xl">
+  ...
+</DialogContent>`}
+            />
+          </div>
         </CardContent>
       </Card>
 
@@ -3462,6 +3499,75 @@ function ModalsSection() {
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
+          </div>
+
+          {/* Code Examples */}
+          <div className="space-y-4 pt-4 border-t">
+            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Exemplos de Código</h4>
+            <CodeBlock
+              label="Alert Dialog"
+              code={`<AlertDialog>
+  <AlertDialogTrigger asChild>
+    <Button variant="destructive">Excluir</Button>
+  </AlertDialogTrigger>
+  <AlertDialogContent>
+    <AlertDialogHeader>
+      <AlertDialogTitle>Tem certeza?</AlertDialogTitle>
+      <AlertDialogDescription>
+        Esta ação não pode ser desfeita.
+      </AlertDialogDescription>
+    </AlertDialogHeader>
+    <AlertDialogFooter>
+      <AlertDialogCancel>Cancelar</AlertDialogCancel>
+      <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+        Excluir
+      </AlertDialogAction>
+    </AlertDialogFooter>
+  </AlertDialogContent>
+</AlertDialog>
+
+{/* Estilo success/warning */}
+<AlertDialogAction className="gradient-primary text-white">
+  Confirmar
+</AlertDialogAction>
+
+<AlertDialogAction className="bg-[hsl(var(--warning))] text-[hsl(var(--warning-foreground))]">
+  Continuar
+</AlertDialogAction>`}
+            />
+          </div>
+
+          {/* Code Examples */}
+          <div className="space-y-4 pt-4 border-t">
+            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Exemplos de Código</h4>
+            <CodeBlock
+              label="Sheet"
+              code={`<Sheet>
+  <SheetTrigger asChild>
+    <Button variant="outline">Abrir Sheet</Button>
+  </SheetTrigger>
+  <SheetContent side="right">
+    <SheetHeader>
+      <SheetTitle>Título</SheetTitle>
+      <SheetDescription>Descrição aqui.</SheetDescription>
+    </SheetHeader>
+    <div className="py-6">
+      {/* Conteúdo */}
+    </div>
+  </SheetContent>
+</Sheet>
+
+{/* Posições */}
+<SheetContent side="right">...</SheetContent>
+<SheetContent side="left">...</SheetContent>
+<SheetContent side="top" className="h-auto">...</SheetContent>
+<SheetContent side="bottom" className="h-auto">...</SheetContent>
+
+{/* Com largura customizada */}
+<SheetContent side="right" className="sm:max-w-lg">
+  ...
+</SheetContent>`}
+            />
           </div>
         </CardContent>
       </Card>
