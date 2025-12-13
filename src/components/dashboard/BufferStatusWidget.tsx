@@ -40,12 +40,14 @@ export function BufferStatusWidget() {
   const healthyCount = bufferByTechnique.filter(b => b.isHealthy).length;
 
   return (
-    <Card className="glass-card">
+    <Card className="glass-card card-interactive animate-fade-in-up opacity-0 [animation-fill-mode:forwards] [animation-delay:0.1s]">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-lg flex items-center gap-2">
-            <Package className="h-5 w-5 text-amber-400" />
-            Buffer "No Jeito"
+          <CardTitle className="text-lg font-display flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg bg-warning/20 flex items-center justify-center dark:glow-warning">
+              <Package className="h-4 w-4 text-warning" />
+            </div>
+            <span className="gradient-text">Buffer "No Jeito"</span>
           </CardTitle>
           <div className="flex items-center gap-2">
             {criticalCount > 0 && (

@@ -63,14 +63,14 @@ export function SmartSequencingWidget() {
   const { suggestions, totalSavings, hasSuggestions } = useSmartSequencing();
 
   return (
-    <Card className="bg-card/50 backdrop-blur-sm border-border/50">
+    <Card className="glass-card card-interactive animate-fade-in-up opacity-0 [animation-fill-mode:forwards] [animation-delay:0.15s] dark:hover:shadow-[0_8px_32px_-8px_hsl(280,80%,60%,0.25)]">
       <CardHeader className="pb-3">
         <CardTitle className="text-lg flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="p-2 rounded-lg bg-violet-500/20">
-              <Layers className="h-5 w-5 text-violet-400" />
+            <div className="p-2 rounded-lg bg-accent/20 dark:glow-accent">
+              <Layers className="h-5 w-5 text-accent" />
             </div>
-            Sequenciamento Inteligente
+            <span className="gradient-text">Sequenciamento Inteligente</span>
           </div>
           {hasSuggestions ? (
             <Badge className="bg-violet-500/20 text-violet-400 border-violet-500/30 border">

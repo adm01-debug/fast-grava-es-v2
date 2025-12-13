@@ -129,7 +129,7 @@ export function BottleneckWidget() {
 
   if (isLoading) {
     return (
-      <Card className="bg-card/50 backdrop-blur-sm border-border/50">
+      <Card className="glass-card">
         <CardContent className="p-6">
           <div className="animate-pulse space-y-3">
             <div className="h-4 bg-muted rounded w-1/2" />
@@ -143,14 +143,14 @@ export function BottleneckWidget() {
   const totalAlerts = alerts.length;
 
   return (
-    <Card className="bg-card/50 backdrop-blur-sm border-border/50">
+    <Card className="glass-card card-interactive animate-fade-in-up opacity-0 [animation-fill-mode:forwards] [animation-delay:0.25s] dark:hover:shadow-[0_8px_32px_-8px_hsl(45,100%,55%,0.25)]">
       <CardHeader className="pb-3">
         <CardTitle className="text-lg flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="p-2 rounded-lg bg-amber-500/20">
-              <TrendingUp className="h-5 w-5 text-amber-400" />
+            <div className="p-2 rounded-lg bg-warning/20 dark:glow-warning">
+              <TrendingUp className="h-5 w-5 text-warning" />
             </div>
-            Previsão de Gargalos
+            <span className="gradient-text">Previsão de Gargalos</span>
           </div>
           {totalAlerts > 0 ? (
             <div className="flex items-center gap-2">
