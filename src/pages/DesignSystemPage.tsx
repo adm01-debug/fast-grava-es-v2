@@ -8597,9 +8597,12 @@ function OverviewSection({ onNavigate }: OverviewSectionProps) {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between gap-2">
                         <h3 className="font-medium text-sm truncate">{category.title}</h3>
-                        <Badge variant="secondary" className="text-xs shrink-0">
-                          {category.count}
-                        </Badge>
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          <Badge variant="secondary" className="text-xs">
+                            {category.count}
+                          </Badge>
+                          <ChevronRight className="h-4 w-4 text-muted-foreground opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300" />
+                        </div>
                       </div>
                       <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
                         {category.description}
