@@ -253,6 +253,46 @@ export function AlertsWidget() {
       .sort((a, b) => a.startMinutes - b.startMinutes);
   }, [selectedMachineId, scheduleDate, jobs]);
 
+  // Calculate free time slots for the selected machine
+  const freeSlots = useMemo(() => {
+    if (!selectedMachineId || !scheduleDate) return [];
+    
+    const WORK_START = 7 * 60;  // 07:00
+    const WORK_END = 20 * 60;   // 20:00
+    const MIN_SLOT_DURATION = 15; // Minimum slot to show (15 min)
+    
+    const slots: { start: string; end: string; duration: number }[] = [];
+    let currentTime = WORK_START;
+    
+    for (const job of machineScheduledJobs) {
+      if (job.startMinutes > currentTime) {
+        const gapDuration = job.startMinutes - currentTime;
+        if (gapDuration >= MIN_SLOT_DURATION) {
+          slots.push({
+            start: `${String(Math.floor(currentTime / 60)).padStart(2, '0')}:${String(currentTime % 60).padStart(2, '0')}`,
+            end: `${String(Math.floor(job.startMinutes / 60)).padStart(2, '0')}:${String(job.startMinutes % 60).padStart(2, '0')}`,
+            duration: gapDuration,
+          });
+        }
+      }
+      currentTime = Math.max(currentTime, job.startMinutes + job.estimated_duration);
+    }
+    
+    // Check remaining time until end of day
+    if (currentTime < WORK_END) {
+      const remainingDuration = WORK_END - currentTime;
+      if (remainingDuration >= MIN_SLOT_DURATION) {
+        slots.push({
+          start: `${String(Math.floor(currentTime / 60)).padStart(2, '0')}:${String(currentTime % 60).padStart(2, '0')}`,
+          end: '20:00',
+          duration: remainingDuration,
+        });
+      }
+    }
+    
+    return slots;
+  }, [selectedMachineId, scheduleDate, machineScheduledJobs]);
+
   // Detect conflicts for the selected date/time/machine
   const conflicts = useMemo(() => {
     if (!selectedJob || !scheduleDate || !startTime) return [];
@@ -551,6 +591,33 @@ export function AlertsWidget() {
                             </div>
                           );
                         })}
+                      </div>
+                    )}
+                    
+                    {/* Free slots display */}
+                    {freeSlots.length > 0 && (
+                      <div className="mt-2 p-2 bg-status-ready/10 border border-status-ready/30 rounded-md">
+                        <p className="text-xs text-status-ready font-medium mb-1.5 flex items-center gap-1">
+                          <Clock className="w-3 h-3" />
+                          Horários Livres:
+                        </p>
+                        <div className="flex flex-wrap gap-1.5">
+                          {freeSlots.map((slot, idx) => (
+                            <button
+                              key={idx}
+                              type="button"
+                              onClick={() => setStartTime(slot.start)}
+                              className={cn(
+                                "px-2 py-1 text-xs font-mono rounded border transition-colors",
+                                startTime === slot.start
+                                  ? "bg-status-ready text-status-ready-foreground border-status-ready"
+                                  : "bg-status-ready/20 text-foreground border-status-ready/40 hover:bg-status-ready/30"
+                              )}
+                            >
+                              {slot.start} - {slot.end} ({slot.duration}min)
+                            </button>
+                          ))}
+                        </div>
                       </div>
                     )}
                   </div>
