@@ -1,9 +1,25 @@
+import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { 
   History, 
   Play, 
@@ -12,24 +28,15 @@ import {
   Eye,
   RotateCcw,
   User,
-  Clock
+  Clock,
+  Filter,
+  X,
+  CalendarIcon
 } from "lucide-react";
-import { formatDistanceToNow, format } from "date-fns";
+import { formatDistanceToNow, format, isWithinInterval, startOfDay, endOfDay } from "date-fns";
 import { ptBR } from "date-fns/locale";
-
-interface ScanHistoryItem {
-  id: string;
-  job_id: string;
-  operator_id: string;
-  action: string;
-  scanned_at: string;
-  device_info: string | null;
-  jobs: {
-    order_number: string;
-    product: string;
-    client: string;
-  } | null;
-}
+import { cn } from "@/lib/utils";
+import { DateRange } from "react-day-picker";
 
 interface ScanHistoryProps {
   jobId?: string;
@@ -44,7 +51,12 @@ const actionConfig: Record<string, { label: string; icon: typeof Play; color: st
   finish: { label: "Finalizou", icon: CheckCircle2, color: "text-purple-400 bg-purple-500/20" },
 };
 
-export const ScanHistory = ({ jobId, limit = 50 }: ScanHistoryProps) => {
+export const ScanHistory = ({ jobId, limit = 200 }: ScanHistoryProps) => {
+  const [operatorFilter, setOperatorFilter] = useState<string>("all");
+  const [actionFilter, setActionFilter] = useState<string>("all");
+  const [dateRange, setDateRange] = useState<DateRange | undefined>();
+  const [showFilters, setShowFilters] = useState(false);
+
   const { data: scans, isLoading } = useQuery({
     queryKey: ['scan-history', jobId, limit],
     queryFn: async () => {
@@ -80,6 +92,56 @@ export const ScanHistory = ({ jobId, limit = 50 }: ScanHistoryProps) => {
     }
   });
 
+  // Get unique operators for filter
+  const operators = useMemo(() => {
+    if (!scans) return [];
+    const uniqueOps = new Map<string, string>();
+    scans.forEach(scan => {
+      if (!uniqueOps.has(scan.operator_id)) {
+        uniqueOps.set(scan.operator_id, scan.operator_name);
+      }
+    });
+    return Array.from(uniqueOps.entries()).map(([id, name]) => ({ id, name }));
+  }, [scans]);
+
+  // Filter scans
+  const filteredScans = useMemo(() => {
+    if (!scans) return [];
+    
+    return scans.filter(scan => {
+      // Operator filter
+      if (operatorFilter !== "all" && scan.operator_id !== operatorFilter) {
+        return false;
+      }
+      
+      // Action filter
+      if (actionFilter !== "all" && scan.action !== actionFilter) {
+        return false;
+      }
+      
+      // Date range filter
+      if (dateRange?.from) {
+        const scanDate = new Date(scan.scanned_at);
+        const start = startOfDay(dateRange.from);
+        const end = dateRange.to ? endOfDay(dateRange.to) : endOfDay(dateRange.from);
+        
+        if (!isWithinInterval(scanDate, { start, end })) {
+          return false;
+        }
+      }
+      
+      return true;
+    });
+  }, [scans, operatorFilter, actionFilter, dateRange]);
+
+  const hasActiveFilters = operatorFilter !== "all" || actionFilter !== "all" || dateRange?.from;
+
+  const clearFilters = () => {
+    setOperatorFilter("all");
+    setActionFilter("all");
+    setDateRange(undefined);
+  };
+
   if (isLoading) {
     return (
       <Card className="glass-card border-border/50">
@@ -102,27 +164,162 @@ export const ScanHistory = ({ jobId, limit = 50 }: ScanHistoryProps) => {
 
   return (
     <Card className="glass-card border-border/50">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-lg">
-          <History className="h-5 w-5 text-primary" />
-          Histórico de Scans
-          {scans && scans.length > 0 && (
-            <Badge variant="secondary" className="ml-2">
-              {scans.length}
-            </Badge>
-          )}
-        </CardTitle>
+      <CardHeader className="pb-3">
+        <div className="flex items-center justify-between">
+          <CardTitle className="flex items-center gap-2 text-lg">
+            <History className="h-5 w-5 text-primary" />
+            Histórico de Scans
+            {filteredScans.length > 0 && (
+              <Badge variant="secondary" className="ml-2">
+                {filteredScans.length}
+                {hasActiveFilters && scans && ` / ${scans.length}`}
+              </Badge>
+            )}
+          </CardTitle>
+          <Button
+            variant={showFilters ? "secondary" : "outline"}
+            size="sm"
+            onClick={() => setShowFilters(!showFilters)}
+            className="gap-2"
+          >
+            <Filter className="h-4 w-4" />
+            Filtros
+            {hasActiveFilters && (
+              <Badge variant="default" className="h-5 w-5 p-0 flex items-center justify-center text-xs">
+                !
+              </Badge>
+            )}
+          </Button>
+        </div>
       </CardHeader>
-      <CardContent>
-        <ScrollArea className="h-[400px] pr-4">
-          {!scans || scans.length === 0 ? (
+      
+      <CardContent className="space-y-4">
+        {/* Filters */}
+        {showFilters && (
+          <div className="p-4 rounded-lg bg-muted/30 border border-border/30 space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-foreground">Filtros</span>
+              {hasActiveFilters && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={clearFilters}
+                  className="h-7 text-xs gap-1"
+                >
+                  <X className="h-3 w-3" />
+                  Limpar
+                </Button>
+              )}
+            </div>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              {/* Operator Filter */}
+              <div className="space-y-1">
+                <label className="text-xs text-muted-foreground">Operador</label>
+                <Select value={operatorFilter} onValueChange={setOperatorFilter}>
+                  <SelectTrigger className="h-9">
+                    <User className="h-3 w-3 mr-2 text-muted-foreground" />
+                    <SelectValue placeholder="Todos" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todos os operadores</SelectItem>
+                    {operators.map(op => (
+                      <SelectItem key={op.id} value={op.id}>
+                        {op.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              {/* Action Filter */}
+              <div className="space-y-1">
+                <label className="text-xs text-muted-foreground">Tipo de Ação</label>
+                <Select value={actionFilter} onValueChange={setActionFilter}>
+                  <SelectTrigger className="h-9">
+                    <Play className="h-3 w-3 mr-2 text-muted-foreground" />
+                    <SelectValue placeholder="Todas" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todas as ações</SelectItem>
+                    {Object.entries(actionConfig).map(([key, config]) => (
+                      <SelectItem key={key} value={key}>
+                        <div className="flex items-center gap-2">
+                          <config.icon className="h-3 w-3" />
+                          {config.label}
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              {/* Date Range Filter */}
+              <div className="space-y-1">
+                <label className="text-xs text-muted-foreground">Período</label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal h-9",
+                        !dateRange?.from && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="h-3 w-3 mr-2" />
+                      {dateRange?.from ? (
+                        dateRange.to ? (
+                          <span className="text-xs">
+                            {format(dateRange.from, "dd/MM", { locale: ptBR })} - {format(dateRange.to, "dd/MM", { locale: ptBR })}
+                          </span>
+                        ) : (
+                          <span className="text-xs">{format(dateRange.from, "dd/MM/yyyy", { locale: ptBR })}</span>
+                        )
+                      ) : (
+                        <span className="text-xs">Selecionar datas</span>
+                      )}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      initialFocus
+                      mode="range"
+                      defaultMonth={dateRange?.from}
+                      selected={dateRange}
+                      onSelect={setDateRange}
+                      numberOfMonths={1}
+                      locale={ptBR}
+                      className={cn("p-3 pointer-events-auto")}
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Scan List */}
+        <ScrollArea className="h-[350px] pr-4">
+          {filteredScans.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
               <History className="h-12 w-12 mx-auto mb-3 opacity-50" />
-              <p className="text-sm">Nenhum scan registrado</p>
+              <p className="text-sm">
+                {hasActiveFilters ? "Nenhum scan encontrado com os filtros aplicados" : "Nenhum scan registrado"}
+              </p>
+              {hasActiveFilters && (
+                <Button
+                  variant="link"
+                  size="sm"
+                  onClick={clearFilters}
+                  className="mt-2"
+                >
+                  Limpar filtros
+                </Button>
+              )}
             </div>
           ) : (
             <div className="space-y-3">
-              {scans.map((scan) => {
+              {filteredScans.map((scan) => {
                 const config = actionConfig[scan.action] || actionConfig.view;
                 const Icon = config.icon;
                 
