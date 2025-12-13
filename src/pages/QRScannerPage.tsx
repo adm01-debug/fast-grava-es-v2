@@ -2,8 +2,9 @@ import { useState } from "react";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { QRScanner } from "@/components/qrcode/QRScanner";
 import { ScanHistory } from "@/components/qrcode/ScanHistory";
+import { ScanStatsChart } from "@/components/qrcode/ScanStatsChart";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { QrCode, History } from "lucide-react";
+import { QrCode, History, BarChart3 } from "lucide-react";
 
 const QRScannerPage = () => {
   const [activeTab, setActiveTab] = useState("scanner");
@@ -21,7 +22,7 @@ const QRScannerPage = () => {
         </div>
         
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-4">
+          <TabsList className="grid w-full grid-cols-3 mb-4">
             <TabsTrigger value="scanner" className="flex items-center gap-2">
               <QrCode className="h-4 w-4" />
               Scanner
@@ -29,6 +30,10 @@ const QRScannerPage = () => {
             <TabsTrigger value="history" className="flex items-center gap-2">
               <History className="h-4 w-4" />
               Histórico
+            </TabsTrigger>
+            <TabsTrigger value="stats" className="flex items-center gap-2">
+              <BarChart3 className="h-4 w-4" />
+              Estatísticas
             </TabsTrigger>
           </TabsList>
           
@@ -38,6 +43,10 @@ const QRScannerPage = () => {
           
           <TabsContent value="history" className="mt-0">
             <ScanHistory limit={100} />
+          </TabsContent>
+          
+          <TabsContent value="stats" className="mt-0">
+            <ScanStatsChart />
           </TabsContent>
         </Tabs>
       </div>
