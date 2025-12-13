@@ -29,7 +29,9 @@ export type Database = {
           notes: string | null
           order_number: string
           priority: string
+          produced_quantity: number | null
           product: string
+          production_photos: string[] | null
           quantity: number
           scheduled_date: string | null
           start_time: string | null
@@ -51,7 +53,9 @@ export type Database = {
           notes?: string | null
           order_number: string
           priority?: string
+          produced_quantity?: number | null
           product: string
+          production_photos?: string[] | null
           quantity: number
           scheduled_date?: string | null
           start_time?: string | null
@@ -73,7 +77,9 @@ export type Database = {
           notes?: string | null
           order_number?: string
           priority?: string
+          produced_quantity?: number | null
           product?: string
+          production_photos?: string[] | null
           quantity?: number
           scheduled_date?: string | null
           start_time?: string | null
