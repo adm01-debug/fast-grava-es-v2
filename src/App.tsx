@@ -3,6 +3,8 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "@/contexts/AuthContext";
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import Index from "./pages/Index";
 import DailyCalendar from "./pages/DailyCalendar";
 import WeeklyCalendar from "./pages/WeeklyCalendar";
@@ -11,6 +13,7 @@ import AlertsDashboard from "./pages/AlertsDashboard";
 import KanbanBoard from "./pages/KanbanBoard";
 import KPIDashboard from "./pages/KPIDashboard";
 import OperatorView from "./pages/OperatorView";
+import AuthPage from "./pages/AuthPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -21,18 +24,52 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/calendar/daily" element={<DailyCalendar />} />
-          <Route path="/calendar/weekly" element={<WeeklyCalendar />} />
-          <Route path="/pending" element={<PendingQueue />} />
-          <Route path="/alerts" element={<AlertsDashboard />} />
-          <Route path="/kanban" element={<KanbanBoard />} />
-          <Route path="/kpis" element={<KPIDashboard />} />
-          <Route path="/operator" element={<OperatorView />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <AuthProvider>
+          <Routes>
+            <Route path="/auth" element={<AuthPage />} />
+            <Route path="/" element={
+              <ProtectedRoute allowedRoles={['coordinator', 'manager']}>
+                <Index />
+              </ProtectedRoute>
+            } />
+            <Route path="/calendar/daily" element={
+              <ProtectedRoute allowedRoles={['coordinator', 'manager']}>
+                <DailyCalendar />
+              </ProtectedRoute>
+            } />
+            <Route path="/calendar/weekly" element={
+              <ProtectedRoute allowedRoles={['coordinator', 'manager']}>
+                <WeeklyCalendar />
+              </ProtectedRoute>
+            } />
+            <Route path="/pending" element={
+              <ProtectedRoute allowedRoles={['coordinator']}>
+                <PendingQueue />
+              </ProtectedRoute>
+            } />
+            <Route path="/alerts" element={
+              <ProtectedRoute>
+                <AlertsDashboard />
+              </ProtectedRoute>
+            } />
+            <Route path="/kanban" element={
+              <ProtectedRoute allowedRoles={['coordinator']}>
+                <KanbanBoard />
+              </ProtectedRoute>
+            } />
+            <Route path="/kpis" element={
+              <ProtectedRoute allowedRoles={['coordinator', 'manager']}>
+                <KPIDashboard />
+              </ProtectedRoute>
+            } />
+            <Route path="/operator" element={
+              <ProtectedRoute>
+                <OperatorView />
+              </ProtectedRoute>
+            } />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
