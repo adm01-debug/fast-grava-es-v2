@@ -6,9 +6,14 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// OAuth credentials
 const BITRIX24_WEBHOOK_URL = Deno.env.get('BITRIX24_WEBHOOK_URL');
+const BITRIX24_ACCESS_TOKEN = Deno.env.get('BITRIX24_ACCESS_TOKEN');
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+
+// Base URL for Bitrix24 REST API (extracted from webhook URL or hardcoded)
+const BITRIX24_DOMAIN = 'https://promobrindes.bitrix24.com.br';
 
 interface BitrixDeal {
   ID: string;
@@ -131,24 +136,42 @@ function normalizePriority(value: string | null | undefined): string {
 }
 
 async function callBitrix(method: string, params: Record<string, any> = {}) {
-  if (!BITRIX24_WEBHOOK_URL) {
-    throw new Error('BITRIX24_WEBHOOK_URL not configured');
-  }
+  // Prefer OAuth access token, fall back to webhook URL
+  let url: string;
+  let headers: Record<string, string> = { 'Content-Type': 'application/json' };
 
-  const url = `${BITRIX24_WEBHOOK_URL}/${method}`;
-  console.log(`Calling Bitrix24: ${method}`, params);
+  if (BITRIX24_ACCESS_TOKEN) {
+    // OAuth method - use REST API with access token
+    url = `${BITRIX24_DOMAIN}/rest/${method}?auth=${BITRIX24_ACCESS_TOKEN}`;
+    console.log(`Calling Bitrix24 (OAuth): ${method}`, params);
+  } else if (BITRIX24_WEBHOOK_URL) {
+    // Webhook method - legacy
+    url = `${BITRIX24_WEBHOOK_URL}/${method}`;
+    console.log(`Calling Bitrix24 (Webhook): ${method}`, params);
+  } else {
+    throw new Error('BITRIX24_ACCESS_TOKEN or BITRIX24_WEBHOOK_URL not configured');
+  }
 
   const response = await fetch(url, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers,
     body: JSON.stringify(params)
   });
 
   if (!response.ok) {
-    throw new Error(`Bitrix24 API error: ${response.status}`);
+    const errorText = await response.text();
+    console.error('Bitrix24 API error response:', errorText);
+    throw new Error(`Bitrix24 API error: ${response.status} - ${errorText}`);
   }
 
   const data = await response.json();
+  
+  // Check for OAuth-specific errors
+  if (data.error) {
+    console.error('Bitrix24 API error:', data.error, data.error_description);
+    throw new Error(`Bitrix24 API error: ${data.error} - ${data.error_description || ''}`);
+  }
+
   console.log(`Bitrix24 response:`, data);
   return data;
 }
