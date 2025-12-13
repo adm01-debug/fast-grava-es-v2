@@ -100,11 +100,7 @@ const App = () => (
                   <TechnicalKnowledgeBase />
                 </ProtectedRoute>
               } />
-              <Route path="/design-system" element={
-                <ProtectedRoute allowedRoles={['coordinator']}>
-                  <DesignSystemPage />
-                </ProtectedRoute>
-              } />
+              <Route path="/design-system" element={<DesignSystemPage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </EfficiencyNotificationProvider>
