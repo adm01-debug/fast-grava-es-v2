@@ -17,6 +17,7 @@ import OperatorView from "./pages/OperatorView";
 import EfficiencyDashboard from "./pages/EfficiencyDashboard";
 import TechnicalAssistantPage from "./pages/TechnicalAssistantPage";
 import QRScannerPage from "./pages/QRScannerPage";
+import Bitrix24ConfigPage from "./pages/Bitrix24ConfigPage";
 import AuthPage from "./pages/AuthPage";
 import NotFound from "./pages/NotFound";
 
@@ -85,6 +86,11 @@ const App = () => (
               <Route path="/scanner" element={
                 <ProtectedRoute>
                   <QRScannerPage />
+                </ProtectedRoute>
+              } />
+              <Route path="/integrations/bitrix24" element={
+                <ProtectedRoute allowedRoles={['coordinator']}>
+                  <Bitrix24ConfigPage />
                 </ProtectedRoute>
               } />
               <Route path="*" element={<NotFound />} />
