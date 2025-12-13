@@ -1,9 +1,16 @@
-import { Moon, Sun } from 'lucide-react';
+import { Moon, Sun, Volume2, VolumeX } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useThemeSound } from '@/hooks/useThemeSound';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 function ThemeTransitionOverlay({ isVisible, isDark }: { isVisible: boolean; isDark: boolean }) {
   if (typeof document === 'undefined') return null;
@@ -31,7 +38,7 @@ export function ThemeToggle() {
   const [mounted, setMounted] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
   const [showOverlay, setShowOverlay] = useState(false);
-  const { playLightModeSound, playDarkModeSound } = useThemeSound();
+  const { playLightModeSound, playDarkModeSound, soundEnabled, toggleSound } = useThemeSound();
 
   useEffect(() => {
     setMounted(true);
@@ -76,62 +83,97 @@ export function ThemeToggle() {
     <>
       <ThemeTransitionOverlay isVisible={showOverlay} isDark={!isDark} />
       
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={handleToggle}
-        className={`
-          relative h-9 w-9 overflow-hidden
-          transition-all duration-300 ease-out
-          hover:bg-accent/80
-          ${isAnimating ? 'scale-95' : 'scale-100'}
-        `}
-        title={isDark ? 'Mudar para tema claro' : 'Mudar para tema escuro'}
-      >
-        {/* Sun icon */}
-        <Sun 
-          className={`
-            absolute h-4 w-4
-            ${isDark 
-              ? 'rotate-90 scale-0 opacity-0 transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)]' 
-              : 'scale-100 opacity-100 animate-[spin_8s_linear_infinite]'
-            }
-          `}
-          style={{
-            filter: isDark ? 'none' : 'drop-shadow(0 0 6px hsl(var(--warning) / 0.6))'
-          }}
-        />
-        
-        {/* Moon icon */}
-        <Moon 
-          className={`
-            absolute h-4 w-4
-            ${isDark 
-              ? 'rotate-0 scale-100 opacity-100 animate-[pulse_3s_ease-in-out_infinite]' 
-              : '-rotate-90 scale-0 opacity-0 transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)]'
-            }
-          `}
-          style={{
-            filter: isDark ? 'drop-shadow(0 0 8px hsl(var(--primary) / 0.6))' : 'none'
-          }}
-        />
-
-        {/* Ripple effect on click */}
-        {isAnimating && (
-          <span 
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon"
             className={`
-              absolute inset-0 rounded-md
-              animate-ping
-              ${isDark ? 'bg-primary/20' : 'bg-warning/20'}
+              relative h-9 w-9 overflow-hidden
+              transition-all duration-300 ease-out
+              hover:bg-accent/80
+              ${isAnimating ? 'scale-95' : 'scale-100'}
             `}
-            style={{ animationDuration: '400ms', animationIterationCount: 1 }}
-          />
-        )}
+            title={isDark ? 'Mudar para tema claro' : 'Mudar para tema escuro'}
+          >
+            {/* Sun icon */}
+            <Sun 
+              className={`
+                absolute h-4 w-4
+                ${isDark 
+                  ? 'rotate-90 scale-0 opacity-0 transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)]' 
+                  : 'scale-100 opacity-100 animate-[spin_8s_linear_infinite]'
+                }
+              `}
+              style={{
+                filter: isDark ? 'none' : 'drop-shadow(0 0 6px hsl(var(--warning) / 0.6))'
+              }}
+            />
+            
+            {/* Moon icon */}
+            <Moon 
+              className={`
+                absolute h-4 w-4
+                ${isDark 
+                  ? 'rotate-0 scale-100 opacity-100 animate-[pulse_3s_ease-in-out_infinite]' 
+                  : '-rotate-90 scale-0 opacity-0 transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)]'
+                }
+              `}
+              style={{
+                filter: isDark ? 'drop-shadow(0 0 8px hsl(var(--primary) / 0.6))' : 'none'
+              }}
+            />
 
-        <span className="sr-only">
-          {isDark ? 'Mudar para tema claro' : 'Mudar para tema escuro'}
-        </span>
-      </Button>
+            {/* Ripple effect on click */}
+            {isAnimating && (
+              <span 
+                className={`
+                  absolute inset-0 rounded-md
+                  animate-ping
+                  ${isDark ? 'bg-primary/20' : 'bg-warning/20'}
+                `}
+                style={{ animationDuration: '400ms', animationIterationCount: 1 }}
+              />
+            )}
+
+            <span className="sr-only">
+              {isDark ? 'Mudar para tema claro' : 'Mudar para tema escuro'}
+            </span>
+          </Button>
+        </DropdownMenuTrigger>
+        
+        <DropdownMenuContent align="end" className="min-w-[160px]">
+          <DropdownMenuItem onClick={handleToggle} className="cursor-pointer">
+            {isDark ? (
+              <>
+                <Sun className="mr-2 h-4 w-4" />
+                <span>Tema Claro</span>
+              </>
+            ) : (
+              <>
+                <Moon className="mr-2 h-4 w-4" />
+                <span>Tema Escuro</span>
+              </>
+            )}
+          </DropdownMenuItem>
+          
+          <DropdownMenuSeparator />
+          
+          <DropdownMenuItem onClick={toggleSound} className="cursor-pointer">
+            {soundEnabled ? (
+              <>
+                <VolumeX className="mr-2 h-4 w-4" />
+                <span>Desativar Som</span>
+              </>
+            ) : (
+              <>
+                <Volume2 className="mr-2 h-4 w-4" />
+                <span>Ativar Som</span>
+              </>
+            )}
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     </>
   );
 }
