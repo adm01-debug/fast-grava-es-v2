@@ -5,6 +5,7 @@ import { RecentJobsTable } from '@/components/dashboard/RecentJobsTable';
 import { CompactTimeline } from '@/components/dashboard/CompactTimeline';
 import { AlertsWidget } from '@/components/dashboard/AlertsWidget';
 import { BufferStatusWidget } from '@/components/dashboard/BufferStatusWidget';
+import { ConflictAlertsWidget } from '@/components/dashboard/ConflictAlertsWidget';
 import { 
   Calendar, 
   CheckCircle2, 
@@ -71,9 +72,10 @@ const Index = () => {
             <OccupancyChart />
           </div>
 
-          {/* Right - Buffer + Alerts */}
+          {/* Right - Buffer + Alerts + Conflicts */}
           <div className="xl:col-span-2 space-y-6">
             <BufferStatusWidget />
+            <ConflictAlertsWidget />
             <AlertsWidget />
           </div>
         </div>
