@@ -19,8 +19,13 @@ import {
   Check,
   X,
   AlertTriangle,
-  Info
+  Info,
+  Play,
+  MousePointer2,
+  Wand2,
+  RefreshCw
 } from 'lucide-react';
+import { useState } from 'react';
 
 export default function DesignSystemPage() {
   return (
@@ -35,7 +40,7 @@ export default function DesignSystemPage() {
         </div>
 
         <Tabs defaultValue="buttons" className="space-y-6">
-          <TabsList className="grid grid-cols-2 md:grid-cols-5 gap-2 h-auto p-1">
+          <TabsList className="grid grid-cols-2 md:grid-cols-6 gap-2 h-auto p-1">
             <TabsTrigger value="buttons" className="data-[state=active]:gradient-primary data-[state=active]:text-white">
               Botões
             </TabsTrigger>
@@ -47,6 +52,9 @@ export default function DesignSystemPage() {
             </TabsTrigger>
             <TabsTrigger value="progress" className="data-[state=active]:gradient-primary data-[state=active]:text-white">
               Progress
+            </TabsTrigger>
+            <TabsTrigger value="animations" className="data-[state=active]:gradient-primary data-[state=active]:text-white">
+              Animações
             </TabsTrigger>
             <TabsTrigger value="colors" className="data-[state=active]:gradient-primary data-[state=active]:text-white">
               Cores
@@ -540,8 +548,331 @@ export default function DesignSystemPage() {
               </CardContent>
             </Card>
           </TabsContent>
+
+          {/* Animations Tab */}
+          <TabsContent value="animations" className="space-y-6">
+            <AnimationsSection />
+          </TabsContent>
         </Tabs>
       </div>
     </MainLayout>
+  );
+}
+
+function AnimationsSection() {
+  const [animationKey, setAnimationKey] = useState(0);
+  
+  const replayAnimations = () => {
+    setAnimationKey(prev => prev + 1);
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Replay Button */}
+      <div className="flex justify-end">
+        <Button variant="outline" onClick={replayAnimations} className="gap-2">
+          <RefreshCw className="h-4 w-4" />
+          Replay Animações
+        </Button>
+      </div>
+
+      {/* Entry Animations */}
+      <Card className="card-interactive">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Play className="h-5 w-5 text-primary" />
+            Animações de Entrada
+          </CardTitle>
+          <CardDescription>Animações para elementos que aparecem na tela</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div key={animationKey} className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="space-y-2">
+              <div className="h-24 rounded-lg bg-muted flex items-center justify-center animate-fade-in opacity-0 [animation-fill-mode:forwards]">
+                <span className="text-sm font-medium">Fade In</span>
+              </div>
+              <p className="text-xs text-muted-foreground text-center">.animate-fade-in</p>
+            </div>
+            
+            <div className="space-y-2">
+              <div className="h-24 rounded-lg bg-muted flex items-center justify-center animate-scale-in opacity-0 [animation-fill-mode:forwards] [animation-delay:0.1s]">
+                <span className="text-sm font-medium">Scale In</span>
+              </div>
+              <p className="text-xs text-muted-foreground text-center">.animate-scale-in</p>
+            </div>
+            
+            <div className="space-y-2">
+              <div className="h-24 rounded-lg bg-muted flex items-center justify-center animate-slide-in-right opacity-0 [animation-fill-mode:forwards] [animation-delay:0.2s]">
+                <span className="text-sm font-medium">Slide Right</span>
+              </div>
+              <p className="text-xs text-muted-foreground text-center">.animate-slide-in-right</p>
+            </div>
+            
+            <div className="space-y-2">
+              <div className="h-24 rounded-lg bg-muted flex items-center justify-center animate-enter opacity-0 [animation-fill-mode:forwards] [animation-delay:0.3s]">
+                <span className="text-sm font-medium">Enter (Combined)</span>
+              </div>
+              <p className="text-xs text-muted-foreground text-center">.animate-enter</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Stagger Animations */}
+      <Card className="card-interactive">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Sparkles className="h-5 w-5 text-primary" />
+            Animações Stagger (Escalonadas)
+          </CardTitle>
+          <CardDescription>Delays sequenciais para listas de elementos</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div key={animationKey + 1} className="flex flex-wrap gap-3">
+            {[1, 2, 3, 4, 5, 6].map((num) => (
+              <div
+                key={num}
+                className={`h-16 w-16 rounded-lg gradient-primary flex items-center justify-center text-white font-bold animate-fade-in opacity-0 [animation-fill-mode:forwards] stagger-${num}`}
+              >
+                {num}
+              </div>
+            ))}
+          </div>
+          <p className="text-xs text-muted-foreground mt-3">
+            Classes: <code className="text-primary">.stagger-1</code> até <code className="text-primary">.stagger-6</code>
+          </p>
+        </CardContent>
+      </Card>
+
+      {/* Hover Effects */}
+      <Card className="card-interactive">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <MousePointer2 className="h-5 w-5 text-primary" />
+            Efeitos de Hover
+          </CardTitle>
+          <CardDescription>Interações visuais ao passar o mouse</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="space-y-2">
+              <div className="h-24 rounded-lg bg-muted flex items-center justify-center hover-lift cursor-pointer">
+                <span className="text-sm font-medium">Hover Lift</span>
+              </div>
+              <p className="text-xs text-muted-foreground text-center">.hover-lift</p>
+            </div>
+            
+            <div className="space-y-2">
+              <div className="h-24 rounded-lg bg-muted flex items-center justify-center hover-scale cursor-pointer">
+                <span className="text-sm font-medium">Hover Scale</span>
+              </div>
+              <p className="text-xs text-muted-foreground text-center">.hover-scale</p>
+            </div>
+            
+            <div className="space-y-2">
+              <div className="h-24 rounded-lg bg-primary/20 flex items-center justify-center hover-glow cursor-pointer">
+                <span className="text-sm font-medium">Hover Glow</span>
+              </div>
+              <p className="text-xs text-muted-foreground text-center">.hover-glow</p>
+            </div>
+            
+            <div className="space-y-2">
+              <div className="h-24 rounded-lg bg-muted flex items-center justify-center card-interactive cursor-pointer border">
+                <span className="text-sm font-medium">Card Interactive</span>
+              </div>
+              <p className="text-xs text-muted-foreground text-center">.card-interactive</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Glow Effects */}
+      <Card className="card-interactive">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Wand2 className="h-5 w-5 text-primary" />
+            Efeitos de Glow (Brilho)
+          </CardTitle>
+          <CardDescription>Efeitos de brilho e neon para destaque</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+            <div className="space-y-2">
+              <div className="h-20 rounded-lg bg-primary flex items-center justify-center glow-primary">
+                <span className="text-sm font-medium text-primary-foreground">Primary</span>
+              </div>
+              <p className="text-xs text-muted-foreground text-center">.glow-primary</p>
+            </div>
+            
+            <div className="space-y-2">
+              <div className="h-20 rounded-lg bg-secondary flex items-center justify-center glow-secondary">
+                <span className="text-sm font-medium text-secondary-foreground">Secondary</span>
+              </div>
+              <p className="text-xs text-muted-foreground text-center">.glow-secondary</p>
+            </div>
+            
+            <div className="space-y-2">
+              <div className="h-20 rounded-lg bg-[hsl(var(--success))] flex items-center justify-center glow-success">
+                <span className="text-sm font-medium text-white">Success</span>
+              </div>
+              <p className="text-xs text-muted-foreground text-center">.glow-success</p>
+            </div>
+            
+            <div className="space-y-2">
+              <div className="h-20 rounded-lg bg-accent flex items-center justify-center glow-accent">
+                <span className="text-sm font-medium text-accent-foreground">Accent</span>
+              </div>
+              <p className="text-xs text-muted-foreground text-center">.glow-accent</p>
+            </div>
+            
+            <div className="space-y-2">
+              <div className="h-20 rounded-lg bg-[hsl(var(--warning))] flex items-center justify-center glow-warning">
+                <span className="text-sm font-medium text-foreground">Warning</span>
+              </div>
+              <p className="text-xs text-muted-foreground text-center">.glow-warning</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Gamification Animations */}
+      <Card className="card-interactive">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Trophy className="h-5 w-5 text-primary" />
+            Animações de Gamificação
+          </CardTitle>
+          <CardDescription>Animações especiais para elementos de gamificação</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          {/* XP Bar */}
+          <div className="space-y-3">
+            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">XP Bar Shimmer</h4>
+            <div className="space-y-2">
+              <div className="h-4 rounded-full bg-muted overflow-hidden">
+                <div className="h-full w-3/4 rounded-full xp-bar xp-bar-glow" />
+              </div>
+              <p className="text-xs text-muted-foreground">Classes: <code className="text-primary">.xp-bar .xp-bar-glow</code></p>
+            </div>
+          </div>
+
+          {/* Fire Pulse */}
+          <div className="space-y-3">
+            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Streak Fire Pulse</h4>
+            <div className="flex gap-4">
+              <div className="flex items-center gap-2 streak-fire">
+                <Flame className="h-8 w-8 text-orange-500" />
+                <span className="text-2xl font-bold">7</span>
+              </div>
+              <p className="text-xs text-muted-foreground self-center">Classe: <code className="text-primary">.streak-fire</code></p>
+            </div>
+          </div>
+
+          {/* Coin Shine */}
+          <div className="space-y-3">
+            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Coin Shine</h4>
+            <div className="flex gap-4">
+              <div className="w-12 h-12 rounded-full bg-[hsl(var(--coins))] flex items-center justify-center coin-shine">
+                <Coins className="h-6 w-6 text-yellow-900" />
+              </div>
+              <p className="text-xs text-muted-foreground self-center">Classe: <code className="text-primary">.coin-shine</code></p>
+            </div>
+          </div>
+
+          {/* Level Up */}
+          <div className="space-y-3">
+            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Level Up Flash</h4>
+            <div key={animationKey + 2} className="flex gap-4">
+              <div className="px-6 py-3 rounded-lg bg-[hsl(var(--xp))] text-white font-bold animate-level-up">
+                LEVEL UP!
+              </div>
+              <p className="text-xs text-muted-foreground self-center">Classe: <code className="text-primary">.animate-level-up</code></p>
+            </div>
+          </div>
+
+          {/* Achievement Unlock */}
+          <div className="space-y-3">
+            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Achievement Unlock</h4>
+            <div key={animationKey + 3} className="flex gap-4">
+              <div className="flex items-center gap-3 px-4 py-3 rounded-lg bg-[hsl(var(--gold))] text-yellow-900 achievement-unlock">
+                <Trophy className="h-6 w-6" />
+                <span className="font-bold">Conquista Desbloqueada!</span>
+              </div>
+              <p className="text-xs text-muted-foreground self-center">Classe: <code className="text-primary">.achievement-unlock</code></p>
+            </div>
+          </div>
+
+          {/* Points Pop */}
+          <div className="space-y-3">
+            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Points Pop</h4>
+            <div key={animationKey + 4} className="flex gap-4">
+              <div className="text-2xl font-bold text-[hsl(var(--xp))] points-pop">
+                +100
+              </div>
+              <p className="text-xs text-muted-foreground self-center">Classe: <code className="text-primary">.points-pop</code></p>
+            </div>
+          </div>
+
+          {/* Badge Ranks */}
+          <div className="space-y-3">
+            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Ranking Badges</h4>
+            <div className="flex flex-wrap gap-4">
+              <div className="space-y-2 text-center">
+                <div className="w-16 h-16 rounded-full flex items-center justify-center rank-gold">
+                  <Trophy className="h-8 w-8 text-yellow-900" />
+                </div>
+                <p className="text-xs text-muted-foreground">.rank-gold</p>
+              </div>
+              <div className="space-y-2 text-center">
+                <div className="w-16 h-16 rounded-full flex items-center justify-center rank-silver">
+                  <Award className="h-8 w-8 text-gray-700" />
+                </div>
+                <p className="text-xs text-muted-foreground">.rank-silver</p>
+              </div>
+              <div className="space-y-2 text-center">
+                <div className="w-16 h-16 rounded-full flex items-center justify-center rank-bronze">
+                  <Star className="h-8 w-8 text-orange-900" />
+                </div>
+                <p className="text-xs text-muted-foreground">.rank-bronze</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Floating Animation */}
+          <div className="space-y-3">
+            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Floating Icon</h4>
+            <div className="flex gap-4">
+              <div className="w-12 h-12 rounded-full gradient-primary flex items-center justify-center animate-float">
+                <Sparkles className="h-6 w-6 text-white" />
+              </div>
+              <p className="text-xs text-muted-foreground self-center">Classe: <code className="text-primary">.animate-float</code></p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Pulse Animation */}
+      <Card className="card-interactive">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Zap className="h-5 w-5 text-primary" />
+            Animação Pulse Glow
+          </CardTitle>
+          <CardDescription>Pulsação contínua com glow</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex gap-6">
+            <div className="w-20 h-20 rounded-xl bg-primary flex items-center justify-center pulse-glow">
+              <Zap className="h-10 w-10 text-primary-foreground" />
+            </div>
+            <div className="space-y-2 self-center">
+              <p className="text-sm font-medium">Pulse Glow</p>
+              <p className="text-xs text-muted-foreground">Classe: <code className="text-primary">.pulse-glow</code></p>
+              <p className="text-xs text-muted-foreground">Efeito de pulsação contínua ideal para CTAs e notificações</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
