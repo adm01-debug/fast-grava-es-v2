@@ -255,97 +255,153 @@ interface BitrixDeal {
   [key: string]: any; // Allow dynamic UF_CRM_* fields
 }
 
-// Configurable field mapping - maps Bitrix24 UF_CRM_* fields to our job fields
-// These can be customized based on your Bitrix24 configuration
-const FIELD_MAPPING = {
-  // Job fields <- Bitrix24 UF_CRM_* fields
-  client: ['UF_CRM_1702654321_CLIENT', 'UF_CRM_CLIENT', 'UF_CRM_CLIENTE', 'COMPANY_ID'],
-  product: ['UF_CRM_1702654321_PRODUCT', 'UF_CRM_PRODUCT', 'UF_CRM_PRODUTO', 'TITLE'],
-  quantity: ['UF_CRM_1702654321_QTY', 'UF_CRM_QUANTITY', 'UF_CRM_QUANTIDADE', 'UF_CRM_QTD'],
-  technique_id: ['UF_CRM_1702654321_TECHNIQUE', 'UF_CRM_TECHNIQUE', 'UF_CRM_TECNICA', 'UF_CRM_TIPO_GRAVACAO'],
-  priority: ['UF_CRM_1702654321_PRIORITY', 'UF_CRM_PRIORITY', 'UF_CRM_PRIORIDADE', 'UF_CRM_URGENCIA'],
-  scheduled_date: ['UF_CRM_1702654321_DATE', 'UF_CRM_SCHEDULED_DATE', 'UF_CRM_DATA_AGENDADA', 'UF_CRM_DATA_ENTREGA'],
-  gravure_color: ['UF_CRM_1702654321_COLOR', 'UF_CRM_GRAVURE_COLOR', 'UF_CRM_COR_GRAVURA', 'UF_CRM_COR'],
-  notes: ['UF_CRM_1702654321_NOTES', 'UF_CRM_NOTES', 'UF_CRM_OBSERVACOES', 'COMMENTS'],
-  estimated_duration: ['UF_CRM_1702654321_DURATION', 'UF_CRM_DURATION', 'UF_CRM_TEMPO_ESTIMADO'],
-};
+// Dynamic mapping cache
+interface MappingCache {
+  fieldMapping: Record<string, string[]>;
+  techniqueMapping: Record<string, string>;
+  priorityMapping: Record<string, string>;
+  stageToStatus: Record<string, string>;
+  statusToStage: Record<string, string>;
+  loadedAt: number;
+}
 
-// Priority value mapping from Bitrix24 to our system
-const PRIORITY_MAPPING: Record<string, string> = {
-  'urgente': 'urgent',
-  'urgent': 'urgent',
-  'alta': 'high',
-  'high': 'high',
-  'media': 'medium',
-  'medium': 'medium',
-  'normal': 'medium',
-  'baixa': 'low',
-  'low': 'low',
-};
+let mappingCache: MappingCache | null = null;
+const CACHE_TTL_MS = 60 * 1000; // 1 minute cache
 
-// Technique ID mapping from Bitrix24 values to our system IDs
-const TECHNIQUE_MAPPING: Record<string, string> = {
-  'silk_textil': 'silk-textile',
-  'silk textil': 'silk-textile',
-  'silk têxtil': 'silk-textile',
-  'serigrafia_textil': 'silk-textile',
-  'silk_vinilico_plano': 'silk-vinyl-flat',
-  'silk_vinilico_rotativo': 'silk-vinyl-rotative',
-  'silk_decalque': 'silk-decal',
-  'fiber_laser': 'fiber-laser',
-  'fiber laser': 'fiber-laser',
-  'laser_co2': 'laser-co2',
-  'laser co2': 'laser-co2',
-  'laser_uv': 'laser-uv',
-  'laser uv': 'laser-uv',
-  'tampografia': 'tampo',
-  'tampo': 'tampo',
-  'hot_stamping': 'hot-stamp',
-  'hot stamping': 'hot-stamp',
-  'hot stamp': 'hot-stamp',
-  'prensa_termica': 'thermal-press',
-  'prensa térmica': 'thermal-press',
-  'sublimacao': 'sublimation-mug',
-  'sublimação': 'sublimation-mug',
-  'sublimacao_caneca': 'sublimation-mug',
-  'decalque_forno': 'decal-oven',
-  'dtf_textil': 'dtf-textile',
-  'dtf têxtil': 'dtf-textile',
-  'dtf_uv': 'dtf-uv',
-  'dtf uv': 'dtf-uv',
-  'dtf_uv_aplicacao': 'dtf-uv-application',
-  'corte_midia': 'cut-media',
-  'corte mídia': 'cut-media',
-};
+// Load mappings from database
+async function loadMappingsFromDB(supabase: any): Promise<MappingCache> {
+  // Check cache
+  if (mappingCache && Date.now() - mappingCache.loadedAt < CACHE_TTL_MS) {
+    return mappingCache;
+  }
 
-// Map Bitrix24 stages to our system status
-const stageToStatus: Record<string, string> = {
-  'NEW': 'queue',
-  'PREPARATION': 'queue',
-  'PREPAID_INVOICE': 'ready',
-  'EXECUTING': 'production',
-  'FINAL_INVOICE': 'production',
-  'WON': 'finished',
-  'LOSE': 'cancelled',
-  'APOLOGY': 'cancelled'
-};
+  console.log('Loading field mappings from database...');
+  
+  const { data: mappings, error } = await supabase
+    .from('bitrix24_field_mappings')
+    .select('*')
+    .eq('is_active', true)
+    .order('priority', { ascending: true });
 
-// Map our system status to Bitrix24 stages
-const statusToStage: Record<string, string> = {
-  'queue': 'NEW',
-  'ready': 'PREPAID_INVOICE',
-  'scheduled': 'PREPAID_INVOICE',
-  'production': 'EXECUTING',
-  'finished': 'WON',
-  'cancelled': 'LOSE',
-  'delayed': 'EXECUTING',
-  'paused': 'EXECUTING',
-  'rework': 'EXECUTING'
-};
+  if (error) {
+    console.error('Error loading mappings:', error);
+    // Return fallback defaults
+    return getDefaultMappings();
+  }
 
-// Helper function to get value from deal using field mapping
-function getMappedValue(deal: BitrixDeal, fieldName: keyof typeof FIELD_MAPPING, defaultValue: any = null): any {
-  const possibleFields = FIELD_MAPPING[fieldName];
+  const fieldMapping: Record<string, string[]> = {};
+  const techniqueMapping: Record<string, string> = {};
+  const priorityMapping: Record<string, string> = {};
+  const stageToStatus: Record<string, string> = {};
+  const statusToStage: Record<string, string> = {};
+
+  for (const mapping of mappings || []) {
+    switch (mapping.mapping_type) {
+      case 'field':
+        if (!fieldMapping[mapping.source_key]) {
+          fieldMapping[mapping.source_key] = [];
+        }
+        fieldMapping[mapping.source_key].push(mapping.target_key);
+        break;
+      case 'technique':
+        techniqueMapping[mapping.source_key.toLowerCase()] = mapping.target_key;
+        break;
+      case 'priority':
+        priorityMapping[mapping.source_key.toLowerCase()] = mapping.target_key;
+        break;
+      case 'stage':
+        stageToStatus[mapping.source_key] = mapping.target_key;
+        // Build reverse mapping
+        if (!statusToStage[mapping.target_key]) {
+          statusToStage[mapping.target_key] = mapping.source_key;
+        }
+        break;
+    }
+  }
+
+  mappingCache = {
+    fieldMapping,
+    techniqueMapping,
+    priorityMapping,
+    stageToStatus,
+    statusToStage,
+    loadedAt: Date.now()
+  };
+
+  console.log('Mappings loaded:', {
+    fieldMappings: Object.keys(fieldMapping).length,
+    techniqueMappings: Object.keys(techniqueMapping).length,
+    priorityMappings: Object.keys(priorityMapping).length,
+    stageMappings: Object.keys(stageToStatus).length
+  });
+
+  return mappingCache;
+}
+
+// Fallback default mappings if database is empty
+function getDefaultMappings(): MappingCache {
+  return {
+    fieldMapping: {
+      client: ['UF_CRM_CLIENT', 'UF_CRM_CLIENTE', 'COMPANY_ID'],
+      product: ['UF_CRM_PRODUCT', 'UF_CRM_PRODUTO', 'TITLE'],
+      quantity: ['UF_CRM_QUANTITY', 'UF_CRM_QUANTIDADE', 'UF_CRM_QTD'],
+      technique_id: ['UF_CRM_TECHNIQUE', 'UF_CRM_TECNICA', 'UF_CRM_TIPO_GRAVACAO'],
+      priority: ['UF_CRM_PRIORITY', 'UF_CRM_PRIORIDADE', 'UF_CRM_URGENCIA'],
+      scheduled_date: ['UF_CRM_SCHEDULED_DATE', 'UF_CRM_DATA_AGENDADA', 'UF_CRM_DATA_ENTREGA'],
+      gravure_color: ['UF_CRM_GRAVURE_COLOR', 'UF_CRM_COR_GRAVURA', 'UF_CRM_COR'],
+      notes: ['UF_CRM_NOTES', 'UF_CRM_OBSERVACOES', 'COMMENTS'],
+      estimated_duration: ['UF_CRM_DURATION', 'UF_CRM_TEMPO_ESTIMADO'],
+    },
+    techniqueMapping: {
+      'silk_textil': 'silk-textile',
+      'silk textil': 'silk-textile',
+      'fiber_laser': 'fiber-laser',
+      'fiber laser': 'fiber-laser',
+      'laser_co2': 'laser-co2',
+      'tampografia': 'tampo',
+      'sublimacao': 'sublimation-mug',
+    },
+    priorityMapping: {
+      'urgente': 'urgent',
+      'urgent': 'urgent',
+      'alta': 'high',
+      'high': 'high',
+      'media': 'medium',
+      'medium': 'medium',
+      'normal': 'medium',
+      'baixa': 'low',
+      'low': 'low',
+    },
+    stageToStatus: {
+      'NEW': 'queue',
+      'PREPARATION': 'queue',
+      'PREPAID_INVOICE': 'ready',
+      'EXECUTING': 'production',
+      'FINAL_INVOICE': 'production',
+      'WON': 'finished',
+      'LOSE': 'cancelled',
+      'APOLOGY': 'cancelled'
+    },
+    statusToStage: {
+      'queue': 'NEW',
+      'ready': 'PREPAID_INVOICE',
+      'scheduled': 'PREPAID_INVOICE',
+      'production': 'EXECUTING',
+      'finished': 'WON',
+      'cancelled': 'LOSE',
+    },
+    loadedAt: Date.now()
+  };
+}
+
+// Clear mapping cache (called when mappings are updated)
+function clearMappingCache() {
+  mappingCache = null;
+}
+
+// Helper function to get value from deal using dynamic field mapping
+function getMappedValueDynamic(deal: BitrixDeal, fieldName: string, fieldMapping: Record<string, string[]>, defaultValue: any = null): any {
+  const possibleFields = fieldMapping[fieldName] || [];
   for (const field of possibleFields) {
     if (deal[field] !== undefined && deal[field] !== null && deal[field] !== '') {
       return deal[field];
@@ -354,18 +410,18 @@ function getMappedValue(deal: BitrixDeal, fieldName: keyof typeof FIELD_MAPPING,
   return defaultValue;
 }
 
-// Helper to normalize technique value
-function normalizeTechnique(value: string | null | undefined): string {
+// Helper to normalize technique value using dynamic mapping
+function normalizeTechniqueDynamic(value: string | null | undefined, techniqueMapping: Record<string, string>): string {
   if (!value) return 'silk-textile';
   const normalized = value.toLowerCase().trim().replace(/\s+/g, '_');
-  return TECHNIQUE_MAPPING[normalized] || TECHNIQUE_MAPPING[value.toLowerCase()] || 'silk-textile';
+  return techniqueMapping[normalized] || techniqueMapping[value.toLowerCase()] || 'silk-textile';
 }
 
-// Helper to normalize priority value
-function normalizePriority(value: string | null | undefined): string {
+// Helper to normalize priority value using dynamic mapping
+function normalizePriorityDynamic(value: string | null | undefined, priorityMapping: Record<string, string>): string {
   if (!value) return 'medium';
   const normalized = value.toLowerCase().trim();
-  return PRIORITY_MAPPING[normalized] || 'medium';
+  return priorityMapping[normalized] || 'medium';
 }
 
 async function callBitrix(method: string, params: Record<string, any> = {}, supabase?: any) {
@@ -446,6 +502,9 @@ async function callBitrix(method: string, params: Record<string, any> = {}, supa
 async function pullFromBitrix(supabase: any, categoryId?: string) {
   console.log('Pulling deals from Bitrix24...');
   
+  // Load mappings from database
+  const mappings = await loadMappingsFromDB(supabase);
+  
   const filter: Record<string, any> = {};
   if (categoryId) {
     filter['CATEGORY_ID'] = categoryId;
@@ -471,27 +530,27 @@ async function pullFromBitrix(supabase: any, categoryId?: string) {
         .eq('order_number', orderNumber)
         .maybeSingle();
 
-      const status = stageToStatus[deal.STAGE_ID] || 'queue';
+      const status = mappings.stageToStatus[deal.STAGE_ID] || 'queue';
       
-      // Use configurable field mapping to extract values
-      const rawTechnique = getMappedValue(deal, 'technique_id');
-      const rawPriority = getMappedValue(deal, 'priority');
-      const rawQuantity = getMappedValue(deal, 'quantity');
-      const rawDuration = getMappedValue(deal, 'estimated_duration');
-      const rawDate = getMappedValue(deal, 'scheduled_date');
+      // Use dynamic field mapping to extract values
+      const rawTechnique = getMappedValueDynamic(deal, 'technique_id', mappings.fieldMapping);
+      const rawPriority = getMappedValueDynamic(deal, 'priority', mappings.fieldMapping);
+      const rawQuantity = getMappedValueDynamic(deal, 'quantity', mappings.fieldMapping);
+      const rawDuration = getMappedValueDynamic(deal, 'estimated_duration', mappings.fieldMapping);
+      const rawDate = getMappedValueDynamic(deal, 'scheduled_date', mappings.fieldMapping);
 
       const jobData = {
         order_number: orderNumber,
-        client: getMappedValue(deal, 'client', deal.TITLE || 'Cliente Bitrix'),
-        product: getMappedValue(deal, 'product', deal.TITLE || 'Produto'),
+        client: getMappedValueDynamic(deal, 'client', mappings.fieldMapping, deal.TITLE || 'Cliente Bitrix'),
+        product: getMappedValueDynamic(deal, 'product', mappings.fieldMapping, deal.TITLE || 'Produto'),
         quantity: parseInt(rawQuantity) || 1,
-        technique_id: normalizeTechnique(rawTechnique),
+        technique_id: normalizeTechniqueDynamic(rawTechnique, mappings.techniqueMapping),
         status,
-        priority: normalizePriority(rawPriority),
-        gravure_color: getMappedValue(deal, 'gravure_color'),
+        priority: normalizePriorityDynamic(rawPriority, mappings.priorityMapping),
+        gravure_color: getMappedValueDynamic(deal, 'gravure_color', mappings.fieldMapping),
         scheduled_date: rawDate ? new Date(rawDate).toISOString().split('T')[0] : null,
         estimated_duration: parseInt(rawDuration) || 60,
-        notes: getMappedValue(deal, 'notes', `Importado do Bitrix24 - Deal ID: ${deal.ID}`)
+        notes: getMappedValueDynamic(deal, 'notes', mappings.fieldMapping, `Importado do Bitrix24 - Deal ID: ${deal.ID}`)
       };
 
       if (existingJob) {
@@ -521,6 +580,9 @@ async function pullFromBitrix(supabase: any, categoryId?: string) {
 async function pushToBitrix(jobId: string, newStatus: string, supabase: any) {
   console.log(`Pushing status update to Bitrix24: ${jobId} -> ${newStatus}`);
 
+  // Load mappings from database
+  const mappings = await loadMappingsFromDB(supabase);
+
   // Get job details
   const { data: job, error } = await supabase
     .from('jobs')
@@ -539,7 +601,7 @@ async function pushToBitrix(jobId: string, newStatus: string, supabase: any) {
   }
 
   const dealId = job.order_number.replace('BTX-', '');
-  const newStage = statusToStage[newStatus] || 'EXECUTING';
+  const newStage = mappings.statusToStage[newStatus] || 'EXECUTING';
 
   // Update deal in Bitrix24
   const updateData: Record<string, any> = {
@@ -573,6 +635,9 @@ async function pushToBitrix(jobId: string, newStatus: string, supabase: any) {
 async function handleBitrixWebhook(payload: any, supabase: any) {
   console.log('Received Bitrix24 webhook:', payload);
 
+  // Load mappings from database
+  const mappings = await loadMappingsFromDB(supabase);
+
   const event = payload.event;
   const data = payload.data;
 
@@ -587,7 +652,7 @@ async function handleBitrixWebhook(payload: any, supabase: any) {
     if (!deal) return { error: 'Deal not found' };
 
     const orderNumber = `BTX-${dealId}`;
-    const status = stageToStatus[deal.STAGE_ID] || 'queue';
+    const status = mappings.stageToStatus[deal.STAGE_ID] || 'queue';
 
     const { data: existingJob } = await supabase
       .from('jobs')
@@ -606,25 +671,25 @@ async function handleBitrixWebhook(payload: any, supabase: any) {
       
       return { updated: orderNumber };
     } else {
-      // Use configurable field mapping to extract values
-      const rawTechnique = getMappedValue(deal, 'technique_id');
-      const rawPriority = getMappedValue(deal, 'priority');
-      const rawQuantity = getMappedValue(deal, 'quantity');
-      const rawDuration = getMappedValue(deal, 'estimated_duration');
-      const rawDate = getMappedValue(deal, 'scheduled_date');
+      // Use dynamic field mapping to extract values
+      const rawTechnique = getMappedValueDynamic(deal, 'technique_id', mappings.fieldMapping);
+      const rawPriority = getMappedValueDynamic(deal, 'priority', mappings.fieldMapping);
+      const rawQuantity = getMappedValueDynamic(deal, 'quantity', mappings.fieldMapping);
+      const rawDuration = getMappedValueDynamic(deal, 'estimated_duration', mappings.fieldMapping);
+      const rawDate = getMappedValueDynamic(deal, 'scheduled_date', mappings.fieldMapping);
 
       const jobData = {
         order_number: orderNumber,
-        client: getMappedValue(deal, 'client', deal.TITLE || 'Cliente Bitrix'),
-        product: getMappedValue(deal, 'product', deal.TITLE || 'Produto'),
+        client: getMappedValueDynamic(deal, 'client', mappings.fieldMapping, deal.TITLE || 'Cliente Bitrix'),
+        product: getMappedValueDynamic(deal, 'product', mappings.fieldMapping, deal.TITLE || 'Produto'),
         quantity: parseInt(rawQuantity) || 1,
-        technique_id: normalizeTechnique(rawTechnique),
+        technique_id: normalizeTechniqueDynamic(rawTechnique, mappings.techniqueMapping),
         status,
-        priority: normalizePriority(rawPriority),
-        gravure_color: getMappedValue(deal, 'gravure_color'),
+        priority: normalizePriorityDynamic(rawPriority, mappings.priorityMapping),
+        gravure_color: getMappedValueDynamic(deal, 'gravure_color', mappings.fieldMapping),
         scheduled_date: rawDate ? new Date(rawDate).toISOString().split('T')[0] : null,
         estimated_duration: parseInt(rawDuration) || 60,
-        notes: getMappedValue(deal, 'notes', `Importado do Bitrix24 - Deal ID: ${dealId}`)
+        notes: getMappedValueDynamic(deal, 'notes', mappings.fieldMapping, `Importado do Bitrix24 - Deal ID: ${dealId}`)
       };
 
       await supabase.from('jobs').insert(jobData);
@@ -757,9 +822,10 @@ serve(async (req) => {
         break;
 
       case 'fields':
-        // Get deal custom fields from Bitrix24
+        // Get deal custom fields from Bitrix24 and current mappings from database
         const fieldsResult = await callBitrix('crm.deal.fields', {}, supabase);
         const allFields = fieldsResult.result || {};
+        const fieldsMappings = await loadMappingsFromDB(supabase);
         
         // Filter to show only UF_CRM_* fields (custom fields)
         const customFields = Object.entries(allFields)
@@ -772,26 +838,104 @@ serve(async (req) => {
         result = { 
           customFields,
           totalCustomFields: Object.keys(customFields).length,
-          currentMapping: FIELD_MAPPING,
-          techniqueMapping: TECHNIQUE_MAPPING,
-          priorityMapping: PRIORITY_MAPPING,
-          stageMapping: stageToStatus
+          currentMapping: fieldsMappings.fieldMapping,
+          techniqueMapping: fieldsMappings.techniqueMapping,
+          priorityMapping: fieldsMappings.priorityMapping,
+          stageMapping: fieldsMappings.stageToStatus
         };
         break;
 
       case 'mapping':
-        // Return current field mapping configuration
+        // Return current field mapping configuration from database
+        const currentMappings = await loadMappingsFromDB(supabase);
         result = {
-          fieldMapping: FIELD_MAPPING,
-          techniqueMapping: TECHNIQUE_MAPPING,
-          priorityMapping: PRIORITY_MAPPING,
-          stageToStatus,
-          statusToStage,
+          fieldMapping: currentMappings.fieldMapping,
+          techniqueMapping: currentMappings.techniqueMapping,
+          priorityMapping: currentMappings.priorityMapping,
+          stageToStatus: currentMappings.stageToStatus,
+          statusToStage: currentMappings.statusToStage,
+          source: 'database',
           instructions: {
-            pt: 'Para atualizar o mapeamento, edite os valores em FIELD_MAPPING na Edge Function. Cada campo do job pode mapear múltiplos campos UF_CRM_* do Bitrix24, o primeiro encontrado com valor será usado.',
-            en: 'To update mapping, edit FIELD_MAPPING values in the Edge Function. Each job field can map to multiple Bitrix24 UF_CRM_* fields, the first one with a value will be used.'
+            pt: 'Mapeamentos carregados do banco de dados. Use as ações save-mapping e delete-mapping para gerenciar.',
+            en: 'Mappings loaded from database. Use save-mapping and delete-mapping actions to manage.'
           }
         };
+        break;
+
+      case 'save-mapping':
+        // Save or update a mapping
+        const saveBody = await req.json();
+        const { mapping_type, source_key, target_key, priority: mappingPriority = 0 } = saveBody;
+        
+        if (!mapping_type || !source_key || !target_key) {
+          result = { error: 'Missing required fields: mapping_type, source_key, target_key' };
+          break;
+        }
+
+        // Upsert mapping
+        const { error: saveError } = await supabase
+          .from('bitrix24_field_mappings')
+          .upsert({
+            mapping_type,
+            source_key,
+            target_key,
+            priority: mappingPriority,
+            is_active: true
+          }, {
+            onConflict: 'mapping_type,source_key,target_key'
+          });
+
+        if (saveError) {
+          result = { error: saveError.message };
+        } else {
+          clearMappingCache();
+          result = { success: true, message: 'Mapeamento salvo com sucesso' };
+        }
+        break;
+
+      case 'delete-mapping':
+        // Delete a mapping
+        const deleteBody = await req.json();
+        const { id: mappingId, mapping_type: delType, source_key: delSource, target_key: delTarget } = deleteBody;
+
+        let deleteQuery = supabase.from('bitrix24_field_mappings').delete();
+        
+        if (mappingId) {
+          deleteQuery = deleteQuery.eq('id', mappingId);
+        } else if (delType && delSource && delTarget) {
+          deleteQuery = deleteQuery
+            .eq('mapping_type', delType)
+            .eq('source_key', delSource)
+            .eq('target_key', delTarget);
+        } else {
+          result = { error: 'Missing id or (mapping_type, source_key, target_key)' };
+          break;
+        }
+
+        const { error: deleteError } = await deleteQuery;
+
+        if (deleteError) {
+          result = { error: deleteError.message };
+        } else {
+          clearMappingCache();
+          result = { success: true, message: 'Mapeamento removido com sucesso' };
+        }
+        break;
+
+      case 'list-mappings':
+        // List all mappings from database
+        const { data: allMappings, error: listError } = await supabase
+          .from('bitrix24_field_mappings')
+          .select('*')
+          .order('mapping_type')
+          .order('source_key')
+          .order('priority', { ascending: true });
+
+        if (listError) {
+          result = { error: listError.message };
+        } else {
+          result = { mappings: allMappings };
+        }
         break;
 
       case 'oauth-status':
@@ -880,7 +1024,7 @@ serve(async (req) => {
       default:
         result = { 
           error: 'Invalid action',
-          availableActions: ['pull', 'push', 'webhook', 'test', 'history', 'fields', 'mapping', 'oauth-status', 'oauth-callback', 'clear-tokens']
+          availableActions: ['pull', 'push', 'webhook', 'test', 'history', 'fields', 'mapping', 'save-mapping', 'delete-mapping', 'list-mappings', 'oauth-status', 'oauth-callback', 'clear-tokens']
         };
     }
 

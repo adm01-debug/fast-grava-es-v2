@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      bitrix24_field_mappings: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          mapping_type: string
+          priority: number
+          source_key: string
+          target_key: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          mapping_type: string
+          priority?: number
+          source_key: string
+          target_key: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          mapping_type?: string
+          priority?: number
+          source_key?: string
+          target_key?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       bitrix24_oauth_tokens: {
         Row: {
           access_token: string
