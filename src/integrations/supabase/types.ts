@@ -14,6 +14,62 @@ export type Database = {
   }
   public: {
     Tables: {
+      efficiency_alert_history: {
+        Row: {
+          alert_type: string
+          created_at: string
+          description: string
+          detected_at: string
+          id: string
+          machine_id: string | null
+          metadata: Json | null
+          resolution_notes: string | null
+          resolved_at: string | null
+          resolved_by: string | null
+          severity: string
+          technique_id: string | null
+          title: string
+        }
+        Insert: {
+          alert_type: string
+          created_at?: string
+          description: string
+          detected_at?: string
+          id?: string
+          machine_id?: string | null
+          metadata?: Json | null
+          resolution_notes?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity: string
+          technique_id?: string | null
+          title: string
+        }
+        Update: {
+          alert_type?: string
+          created_at?: string
+          description?: string
+          detected_at?: string
+          id?: string
+          machine_id?: string | null
+          metadata?: Json | null
+          resolution_notes?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity?: string
+          technique_id?: string | null
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "efficiency_alert_history_machine_id_fkey"
+            columns: ["machine_id"]
+            isOneToOne: false
+            referencedRelation: "machines"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       jobs: {
         Row: {
           actual_end_time: string | null
