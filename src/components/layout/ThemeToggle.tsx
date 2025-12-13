@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { useThemeSound } from '@/hooks/useThemeSound';
 
 function ThemeTransitionOverlay({ isVisible, isDark }: { isVisible: boolean; isDark: boolean }) {
   if (typeof document === 'undefined') return null;
@@ -30,18 +31,28 @@ export function ThemeToggle() {
   const [mounted, setMounted] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
   const [showOverlay, setShowOverlay] = useState(false);
+  const { playLightModeSound, playDarkModeSound } = useThemeSound();
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
   const handleToggle = () => {
+    const goingToDark = resolvedTheme !== 'dark';
+    
     setShowOverlay(true);
     setIsAnimating(true);
     
+    // Play appropriate sound
+    if (goingToDark) {
+      playDarkModeSound();
+    } else {
+      playLightModeSound();
+    }
+    
     // Slight delay before theme change for cinematic effect
     setTimeout(() => {
-      setTheme(resolvedTheme === 'dark' ? 'light' : 'dark');
+      setTheme(goingToDark ? 'dark' : 'light');
     }, 150);
     
     // Hide overlay after transition
