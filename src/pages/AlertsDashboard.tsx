@@ -6,6 +6,7 @@ import { StatusBadge } from "@/components/ui/status-badge";
 import { JobDetailsModal } from "@/components/jobs/JobDetailsModal";
 import { PushNotificationManager } from "@/components/notifications/PushNotificationManager";
 import { Bitrix24SyncPanel } from "@/components/integrations/Bitrix24SyncPanel";
+import { Bitrix24SyncHistory } from "@/components/integrations/Bitrix24SyncHistory";
 import { 
   AlertTriangle, 
   Clock, 
@@ -528,6 +529,9 @@ export default function AlertsDashboard() {
 
         {/* Bitrix24 Integration */}
         <Bitrix24SyncPanel />
+
+        {/* Bitrix24 Sync History */}
+        <Bitrix24SyncHistory />
 
         {/* Push Notifications Manager */}
         <PushNotificationManager />

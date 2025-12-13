@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      bitrix24_sync_history: {
+        Row: {
+          completed_at: string | null
+          details: Json | null
+          error_message: string | null
+          id: string
+          jobs_failed: number | null
+          jobs_synced: number | null
+          started_at: string
+          status: string
+          sync_type: string
+          triggered_by: string | null
+        }
+        Insert: {
+          completed_at?: string | null
+          details?: Json | null
+          error_message?: string | null
+          id?: string
+          jobs_failed?: number | null
+          jobs_synced?: number | null
+          started_at?: string
+          status: string
+          sync_type: string
+          triggered_by?: string | null
+        }
+        Update: {
+          completed_at?: string | null
+          details?: Json | null
+          error_message?: string | null
+          id?: string
+          jobs_failed?: number | null
+          jobs_synced?: number | null
+          started_at?: string
+          status?: string
+          sync_type?: string
+          triggered_by?: string | null
+        }
+        Relationships: []
+      }
       efficiency_alert_history: {
         Row: {
           alert_type: string
