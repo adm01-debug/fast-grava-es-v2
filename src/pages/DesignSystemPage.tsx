@@ -822,6 +822,51 @@ export default function DesignSystemPage() {
                     <StatusBadge status="rework" />
                   </div>
                 </div>
+
+                {/* Code Examples */}
+                <div className="space-y-3 pt-4 border-t border-border">
+                  <h5 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Exemplos de Código</h5>
+                  
+                  {/* Standard Badges */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                    <CodeBlock 
+                      code={'<Badge variant="default">Label</Badge>'} 
+                      label="Default"
+                    />
+                    <CodeBlock 
+                      code={'<Badge variant="success">Sucesso</Badge>'} 
+                      label="Success"
+                    />
+                    <CodeBlock 
+                      code={'<Badge variant="destructive">Erro</Badge>'} 
+                      label="Destructive"
+                    />
+                  </div>
+                  
+                  {/* Gamification Badges */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <CodeBlock 
+                      code={'<Badge variant="xp" animated>\n  <Sparkles className="h-3 w-3" />\n  +150 XP\n</Badge>'} 
+                      label="XP Badge"
+                    />
+                    <CodeBlock 
+                      code={'<Badge variant="gold" animated>\n  <Trophy className="h-3 w-3" />\n  Ouro\n</Badge>'} 
+                      label="Gold Badge"
+                    />
+                  </div>
+                  
+                  {/* Status Badges */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <CodeBlock 
+                      code={'<StatusBadge status="production" />'} 
+                      label="Status Badge"
+                    />
+                    <CodeBlock 
+                      code={'<StatusBadge status="finished" />'} 
+                      label="Status Finished"
+                    />
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
