@@ -3,21 +3,53 @@ import * as ProgressPrimitive from "@radix-ui/react-progress";
 
 import { cn } from "@/lib/utils";
 
+interface ProgressProps extends React.ComponentPropsWithoutRef<typeof ProgressPrimitive.Root> {
+  variant?: 'default' | 'xp' | 'success' | 'warning' | 'destructive';
+  animated?: boolean;
+  showGlow?: boolean;
+}
+
 const Progress = React.forwardRef<
   React.ElementRef<typeof ProgressPrimitive.Root>,
-  React.ComponentPropsWithoutRef<typeof ProgressPrimitive.Root>
->(({ className, value, ...props }, ref) => (
-  <ProgressPrimitive.Root
-    ref={ref}
-    className={cn("relative h-4 w-full overflow-hidden rounded-full bg-secondary", className)}
-    {...props}
-  >
-    <ProgressPrimitive.Indicator
-      className="h-full w-full flex-1 bg-primary transition-all"
-      style={{ transform: `translateX(-${100 - (value || 0)}%)` }}
-    />
-  </ProgressPrimitive.Root>
-));
+  ProgressProps
+>(({ className, value, variant = 'default', animated = false, showGlow = false, ...props }, ref) => {
+  const variantStyles = {
+    default: 'bg-primary',
+    xp: 'xp-bar',
+    success: 'bg-success',
+    warning: 'bg-warning',
+    destructive: 'bg-destructive',
+  };
+
+  const glowStyles = {
+    default: 'shadow-[0_0_20px_hsl(var(--primary)/0.5)]',
+    xp: 'xp-bar-glow',
+    success: 'shadow-[0_0_20px_hsl(142_70%_50%/0.5)]',
+    warning: 'shadow-[0_0_20px_hsl(45_100%_55%/0.5)]',
+    destructive: 'shadow-[0_0_20px_hsl(var(--destructive)/0.5)]',
+  };
+
+  return (
+    <ProgressPrimitive.Root
+      ref={ref}
+      className={cn(
+        "relative h-4 w-full overflow-hidden rounded-full bg-secondary dark:bg-muted",
+        className
+      )}
+      {...props}
+    >
+      <ProgressPrimitive.Indicator
+        className={cn(
+          "h-full w-full flex-1 transition-all duration-500 ease-out rounded-full",
+          variantStyles[variant],
+          animated && "progress-animated",
+          showGlow && glowStyles[variant]
+        )}
+        style={{ transform: `translateX(-${100 - (value || 0)}%)` }}
+      />
+    </ProgressPrimitive.Root>
+  );
+});
 Progress.displayName = ProgressPrimitive.Root.displayName;
 
 export { Progress };
