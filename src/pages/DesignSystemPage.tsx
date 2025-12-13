@@ -963,6 +963,35 @@ export default function DesignSystemPage() {
                     </div>
                   </div>
                 </div>
+
+                {/* Code Examples */}
+                <div className="space-y-3 pt-4 border-t border-border">
+                  <h5 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Exemplos de Código</h5>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <CodeBlock 
+                      code={'<Progress value={65} />'} 
+                      label="Default"
+                    />
+                    <CodeBlock 
+                      code={'<Progress \n  value={82} \n  variant="xp" \n  animated \n  showGlow \n/>'} 
+                      label="XP com Animação e Glow"
+                    />
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <CodeBlock 
+                      code={'<Progress \n  value={100} \n  variant="success" \n  animated \n  showGlow \n/>'} 
+                      label="Success"
+                    />
+                    <CodeBlock 
+                      code={'<Progress \n  value={75} \n  variant="warning" \n  animated \n/>'} 
+                      label="Warning"
+                    />
+                  </div>
+                  <CodeBlock 
+                    code={'<Progress \n  value={95} \n  variant="destructive" \n  animated \n  showGlow \n/>'} 
+                    label="Destructive (Crítico)"
+                  />
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
