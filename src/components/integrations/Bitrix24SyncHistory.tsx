@@ -4,8 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { History, CheckCircle2, AlertCircle, AlertTriangle, ArrowDownToLine, ArrowUpFromLine, Webhook, Filter, BarChart3 } from 'lucide-react';
-import { formatDistanceToNow, format, subDays, parseISO, startOfDay } from 'date-fns';
+import { History, CheckCircle2, AlertCircle, AlertTriangle, ArrowDownToLine, ArrowUpFromLine, Webhook, Filter, BarChart3, Clock, TrendingUp, Activity } from 'lucide-react';
+import { formatDistanceToNow, format, subDays, parseISO, startOfDay, differenceInSeconds } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
@@ -91,6 +91,47 @@ export const Bitrix24SyncHistory = () => {
     error: { label: 'Erro', color: 'hsl(0, 84%, 60%)' }
   };
 
+  const stats = useMemo(() => {
+    if (!history || history.length === 0) return null;
+
+    const total = history.length;
+    const successCount = history.filter(h => h.status === 'success').length;
+    const partialCount = history.filter(h => h.status === 'partial').length;
+    const errorCount = history.filter(h => h.status === 'error').length;
+    const successRate = total > 0 ? Math.round((successCount / total) * 100) : 0;
+
+    const completedSyncs = history.filter(h => h.completed_at && h.started_at);
+    let avgTimeSeconds = 0;
+    if (completedSyncs.length > 0) {
+      const totalSeconds = completedSyncs.reduce((acc, item) => {
+        const diff = differenceInSeconds(parseISO(item.completed_at!), parseISO(item.started_at));
+        return acc + Math.max(0, diff);
+      }, 0);
+      avgTimeSeconds = Math.round(totalSeconds / completedSyncs.length);
+    }
+
+    const totalJobsSynced = history.reduce((acc, h) => acc + (h.jobs_synced || 0), 0);
+    const totalJobsFailed = history.reduce((acc, h) => acc + (h.jobs_failed || 0), 0);
+
+    return {
+      total,
+      successCount,
+      partialCount,
+      errorCount,
+      successRate,
+      avgTimeSeconds,
+      totalJobsSynced,
+      totalJobsFailed
+    };
+  }, [history]);
+
+  const formatDuration = (seconds: number) => {
+    if (seconds < 60) return `${seconds}s`;
+    const minutes = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return secs > 0 ? `${minutes}m ${secs}s` : `${minutes}m`;
+  };
+
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'success':
@@ -172,6 +213,40 @@ export const Bitrix24SyncHistory = () => {
             </Badge>
           )}
         </div>
+
+        {/* Stats Summary */}
+        {stats && (
+          <div className="grid grid-cols-4 gap-2 mb-4">
+            <div className="p-2 rounded-lg bg-muted/20 border border-border/30 text-center">
+              <div className="flex items-center justify-center gap-1 mb-1">
+                <Activity className="h-3 w-3 text-primary" />
+              </div>
+              <div className="text-lg font-bold">{stats.total}</div>
+              <div className="text-[10px] text-muted-foreground">Total</div>
+            </div>
+            <div className="p-2 rounded-lg bg-green-500/10 border border-green-500/20 text-center">
+              <div className="flex items-center justify-center gap-1 mb-1">
+                <TrendingUp className="h-3 w-3 text-green-400" />
+              </div>
+              <div className="text-lg font-bold text-green-400">{stats.successRate}%</div>
+              <div className="text-[10px] text-muted-foreground">Taxa Sucesso</div>
+            </div>
+            <div className="p-2 rounded-lg bg-muted/20 border border-border/30 text-center">
+              <div className="flex items-center justify-center gap-1 mb-1">
+                <Clock className="h-3 w-3 text-cyan-400" />
+              </div>
+              <div className="text-lg font-bold text-cyan-400">{formatDuration(stats.avgTimeSeconds)}</div>
+              <div className="text-[10px] text-muted-foreground">Tempo Médio</div>
+            </div>
+            <div className="p-2 rounded-lg bg-muted/20 border border-border/30 text-center">
+              <div className="flex items-center justify-center gap-1 mb-1">
+                <CheckCircle2 className="h-3 w-3 text-blue-400" />
+              </div>
+              <div className="text-lg font-bold text-blue-400">{stats.totalJobsSynced}</div>
+              <div className="text-[10px] text-muted-foreground">Jobs Sync</div>
+            </div>
+          </div>
+        )}
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Filters */}
