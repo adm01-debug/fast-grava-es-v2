@@ -124,11 +124,37 @@ export function AlertsWidget() {
     return jobs.find(j => j.id === selectedJobId) || null;
   }, [selectedJobId, jobs]);
 
-  // Filter machines by selected job's technique
+  // Filter machines by selected job's technique and calculate occupancy
   const availableMachines = useMemo(() => {
     if (!selectedJob) return [];
     return machines.filter(m => m.technique_id === selectedJob.technique_id && m.is_active);
   }, [selectedJob, machines]);
+
+  // Calculate occupancy for each machine on selected date
+  const machineOccupancy = useMemo(() => {
+    if (!scheduleDate) return {};
+    
+    const WORK_DAY_MINUTES = 13 * 60; // 07:00 to 20:00 = 780 minutes
+    const occupancy: Record<string, { occupiedMinutes: number; jobCount: number; percentage: number }> = {};
+    
+    availableMachines.forEach(machine => {
+      const machineJobs = jobs.filter(job => 
+        job.machine_id === machine.id && 
+        job.scheduled_date === scheduleDate &&
+        !['finished', 'cancelled'].includes(job.status)
+      );
+      
+      const occupiedMinutes = machineJobs.reduce((total, job) => total + job.estimated_duration, 0);
+      
+      occupancy[machine.id] = {
+        occupiedMinutes,
+        jobCount: machineJobs.length,
+        percentage: Math.min(100, Math.round((occupiedMinutes / WORK_DAY_MINUTES) * 100)),
+      };
+    });
+    
+    return occupancy;
+  }, [availableMachines, jobs, scheduleDate]);
 
   // Detect conflicts for the selected date/time/machine
   const conflicts = useMemo(() => {
@@ -321,14 +347,34 @@ export function AlertsWidget() {
                           Nenhuma máquina disponível para esta técnica
                         </div>
                       ) : (
-                        availableMachines.map(machine => (
-                          <SelectItem key={machine.id} value={machine.id}>
-                            <div className="flex items-center gap-2">
-                              <Settings2 className="w-3 h-3 text-muted-foreground" />
-                              {machine.code} - {machine.name}
-                            </div>
-                          </SelectItem>
-                        ))
+                        availableMachines.map(machine => {
+                          const occ = machineOccupancy[machine.id] || { percentage: 0, jobCount: 0, occupiedMinutes: 0 };
+                          const occColor = occ.percentage >= 80 ? 'bg-destructive' : 
+                                          occ.percentage >= 50 ? 'bg-status-delayed' : 
+                                          'bg-status-ready';
+                          
+                          return (
+                            <SelectItem key={machine.id} value={machine.id}>
+                              <div className="flex items-center justify-between gap-3 w-full">
+                                <div className="flex items-center gap-2">
+                                  <Settings2 className="w-3 h-3 text-muted-foreground" />
+                                  <span>{machine.code} - {machine.name}</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <div className="w-16 h-2 bg-secondary rounded-full overflow-hidden">
+                                    <div 
+                                      className={cn("h-full rounded-full transition-all", occColor)}
+                                      style={{ width: `${occ.percentage}%` }}
+                                    />
+                                  </div>
+                                  <span className="text-xs text-muted-foreground min-w-[3ch]">
+                                    {occ.percentage}%
+                                  </span>
+                                </div>
+                              </div>
+                            </SelectItem>
+                          );
+                        })
                       )}
                     </SelectContent>
                   </Select>
