@@ -184,7 +184,7 @@ import {
   Warehouse,
   type LucideIcon
 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   Table, 
   TableBody, 
@@ -8550,6 +8550,34 @@ interface OverviewSectionProps {
 }
 
 function OverviewSection({ onNavigate }: OverviewSectionProps) {
+  const [animatedValues, setAnimatedValues] = useState({ categories: 0, components: 0, variants: 0, copiable: 0 });
+
+  useEffect(() => {
+    const duration = 1500;
+    const steps = 60;
+    const interval = duration / steps;
+    
+    const targets = { categories: 20, components: 150, variants: 50, copiable: 100 };
+    let step = 0;
+
+    const timer = setInterval(() => {
+      step++;
+      const progress = step / steps;
+      const eased = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+      
+      setAnimatedValues({
+        categories: Math.round(targets.categories * eased),
+        components: Math.round(targets.components * eased),
+        variants: Math.round(targets.variants * eased),
+        copiable: Math.round(targets.copiable * eased),
+      });
+
+      if (step >= steps) clearInterval(timer);
+    }, interval);
+
+    return () => clearInterval(timer);
+  }, []);
+
   const categories = [
     { id: 'buttons', icon: Zap, title: 'Botões', description: '12 variantes de botões incluindo gradient, glow e premium', count: 12 },
     { id: 'forms', icon: Edit, title: 'Formulários', description: 'Inputs, selects, checkboxes, radio buttons e mais', count: 8 },
@@ -8579,25 +8607,25 @@ function OverviewSection({ onNavigate }: OverviewSectionProps) {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <Card variant="stat" className="hover-lift-sm">
           <CardContent className="p-4 text-center">
-            <div className="text-3xl font-bold text-primary">20</div>
+            <div className="text-3xl font-bold text-primary tabular-nums">{animatedValues.categories}</div>
             <p className="text-sm text-muted-foreground">Categorias</p>
           </CardContent>
         </Card>
         <Card variant="stat" className="hover-lift-sm">
           <CardContent className="p-4 text-center">
-            <div className="text-3xl font-bold text-success">150+</div>
+            <div className="text-3xl font-bold text-success tabular-nums">{animatedValues.components}+</div>
             <p className="text-sm text-muted-foreground">Componentes</p>
           </CardContent>
         </Card>
         <Card variant="stat" className="hover-lift-sm">
           <CardContent className="p-4 text-center">
-            <div className="text-3xl font-bold text-warning">50+</div>
+            <div className="text-3xl font-bold text-warning tabular-nums">{animatedValues.variants}+</div>
             <p className="text-sm text-muted-foreground">Variantes</p>
           </CardContent>
         </Card>
         <Card variant="stat" className="hover-lift-sm">
           <CardContent className="p-4 text-center">
-            <div className="text-3xl font-bold text-info">100%</div>
+            <div className="text-3xl font-bold text-info tabular-nums">{animatedValues.copiable}%</div>
             <p className="text-sm text-muted-foreground">Copiável</p>
           </CardContent>
         </Card>
