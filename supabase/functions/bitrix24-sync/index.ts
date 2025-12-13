@@ -242,20 +242,48 @@ async function handleBitrixWebhook(payload: any, supabase: any) {
   return { ignored: event };
 }
 
+// Log sync operation to history
+async function logSyncHistory(
+  supabase: any,
+  syncType: 'pull' | 'push' | 'webhook',
+  status: 'success' | 'partial' | 'error',
+  jobsSynced: number,
+  jobsFailed: number,
+  errorMessage: string | null,
+  details: any,
+  triggeredBy: string
+) {
+  try {
+    await supabase.from('bitrix24_sync_history').insert({
+      sync_type: syncType,
+      status,
+      jobs_synced: jobsSynced,
+      jobs_failed: jobsFailed,
+      error_message: errorMessage,
+      details,
+      triggered_by: triggeredBy,
+      completed_at: new Date().toISOString()
+    });
+  } catch (e) {
+    console.error('Error logging sync history:', e);
+  }
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
+  const supabase = createClient(
+    SUPABASE_URL!,
+    SUPABASE_SERVICE_ROLE_KEY!
+  );
+
+  const url = new URL(req.url);
+  const action = url.searchParams.get('action');
+  const triggeredBy = url.searchParams.get('triggered_by') || 'manual';
+
   try {
-    const supabase = createClient(
-      SUPABASE_URL!,
-      SUPABASE_SERVICE_ROLE_KEY!
-    );
-
-    const url = new URL(req.url);
-    const action = url.searchParams.get('action');
-
     let result;
 
     switch (action) {
@@ -263,18 +291,57 @@ serve(async (req) => {
         // Pull deals from Bitrix24
         const categoryId = url.searchParams.get('categoryId') || undefined;
         result = await pullFromBitrix(supabase, categoryId);
+        
+        // Log the sync
+        const pullStatus = result.errors?.length > 0 
+          ? (result.synced?.length > 0 ? 'partial' : 'error')
+          : 'success';
+        await logSyncHistory(
+          supabase,
+          'pull',
+          pullStatus,
+          result.synced?.length || 0,
+          result.errors?.length || 0,
+          result.errors?.join('; ') || null,
+          { total: result.total, synced: result.synced },
+          triggeredBy
+        );
         break;
 
       case 'push':
         // Push status update to Bitrix24
         const body = await req.json();
         result = await pushToBitrix(body.jobId, body.status, supabase);
+        
+        if (!result.skipped && result.success !== undefined) {
+          await logSyncHistory(
+            supabase,
+            'push',
+            result.success ? 'success' : 'error',
+            result.success ? 1 : 0,
+            result.success ? 0 : 1,
+            null,
+            { dealId: result.dealId, newStage: result.newStage },
+            'auto'
+          );
+        }
         break;
 
       case 'webhook':
         // Handle incoming Bitrix24 webhook
         const webhookPayload = await req.json();
         result = await handleBitrixWebhook(webhookPayload, supabase);
+        
+        await logSyncHistory(
+          supabase,
+          'webhook',
+          result.error ? 'error' : 'success',
+          result.created || result.updated ? 1 : 0,
+          result.error ? 1 : 0,
+          result.error || null,
+          result,
+          'bitrix24'
+        );
         break;
 
       case 'test':
@@ -283,10 +350,23 @@ serve(async (req) => {
         result = { connected: true, info: testResult.result };
         break;
 
+      case 'history':
+        // Get sync history
+        const limit = parseInt(url.searchParams.get('limit') || '20');
+        const { data: history, error: historyError } = await supabase
+          .from('bitrix24_sync_history')
+          .select('*')
+          .order('started_at', { ascending: false })
+          .limit(limit);
+        
+        if (historyError) throw historyError;
+        result = { history };
+        break;
+
       default:
         result = { 
           error: 'Invalid action',
-          availableActions: ['pull', 'push', 'webhook', 'test']
+          availableActions: ['pull', 'push', 'webhook', 'test', 'history']
         };
     }
 
@@ -296,6 +376,21 @@ serve(async (req) => {
 
   } catch (error: any) {
     console.error('Bitrix24 sync error:', error);
+    
+    // Log error to history
+    if (action && ['pull', 'push', 'webhook'].includes(action)) {
+      await logSyncHistory(
+        supabase,
+        action as 'pull' | 'push' | 'webhook',
+        'error',
+        0,
+        1,
+        error.message,
+        { stack: error.stack },
+        triggeredBy
+      );
+    }
+
     return new Response(
       JSON.stringify({ error: error.message }),
       { 
