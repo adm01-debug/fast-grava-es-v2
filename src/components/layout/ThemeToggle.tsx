@@ -45,14 +45,13 @@ export function ThemeToggle() {
       <Sun 
         className={`
           absolute h-4 w-4
-          transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)]
           ${isDark 
-            ? 'rotate-90 scale-0 opacity-0' 
-            : 'rotate-0 scale-100 opacity-100'
+            ? 'rotate-90 scale-0 opacity-0 transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)]' 
+            : 'scale-100 opacity-100 animate-[spin_8s_linear_infinite]'
           }
         `}
         style={{
-          filter: isDark ? 'none' : 'drop-shadow(0 0 4px hsl(var(--warning) / 0.5))'
+          filter: isDark ? 'none' : 'drop-shadow(0 0 6px hsl(var(--warning) / 0.6))'
         }}
       />
       
