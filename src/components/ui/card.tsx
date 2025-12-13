@@ -46,6 +46,22 @@ const cardVariants = cva(
           "hover:bg-card/50",
           "dark:border-white/20 dark:hover:bg-card/30",
         ],
+        // New: Stat card for dashboards
+        stat: [
+          "bg-card border-border/60 overflow-hidden",
+          "shadow-[0_2px_8px_-2px_hsl(220_20%_20%/0.08),inset_0_1px_0_hsl(0_0%_100%/0.6)]",
+          "dark:border-white/8 dark:bg-card/85 dark:backdrop-blur-xl",
+          "dark:shadow-[0_6px_24px_-6px_hsl(0_0%_0%/0.45),inset_0_1px_0_hsl(0_0%_100%/0.04)]",
+          "hover:shadow-[0_4px_16px_-4px_hsl(220_20%_20%/0.12)]",
+          "dark:hover:shadow-[0_8px_32px_-8px_hsl(0_0%_0%/0.5)]",
+        ],
+        // New: Premium card with golden accent
+        premium: [
+          "bg-gradient-to-br from-card via-card to-amber-50/20 border-amber-200/50",
+          "shadow-[0_4px_20px_-4px_hsl(45_100%_50%/0.15),inset_0_1px_0_hsl(0_0%_100%/0.8)]",
+          "dark:from-card dark:via-card dark:to-amber-900/10 dark:border-amber-500/20",
+          "dark:shadow-[0_8px_32px_-8px_hsl(45_100%_50%/0.2),inset_0_1px_0_hsl(45_100%_50%/0.1)]",
+        ],
       },
     },
     defaultVariants: {

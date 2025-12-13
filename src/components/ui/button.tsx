@@ -85,6 +85,18 @@ const buttonVariants = cva(
           "dark:hover:shadow-[0_0_30px_-5px_hsl(var(--success)/0.6)]",
           "dark:hover:translate-y-[-1px]",
         ],
+        // New: Warning variant
+        warning: [
+          "bg-warning text-warning-foreground hover:bg-warning/90",
+          "shadow-sm hover:shadow-md",
+          "dark:shadow-[0_0_20px_-5px_hsl(var(--warning)/0.4)]",
+          "dark:hover:shadow-[0_0_30px_-5px_hsl(var(--warning)/0.6)]",
+        ],
+        // New: Subtle variant - minimal visual weight
+        subtle: [
+          "bg-transparent text-muted-foreground hover:text-foreground hover:bg-muted/50",
+          "dark:hover:bg-white/5",
+        ],
         premium: [
           "bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 text-amber-950 font-semibold",
           "border border-amber-400/50",
@@ -102,6 +114,7 @@ const buttonVariants = cva(
         lg: "h-11 rounded-lg px-8",
         xl: "h-12 rounded-lg px-10 text-base",
         icon: "h-10 w-10",
+        "icon-xs": "h-6 w-6 rounded-md [&_svg]:size-3",
         "icon-sm": "h-8 w-8 rounded-md [&_svg]:size-3.5",
         "icon-lg": "h-12 w-12 rounded-lg [&_svg]:size-5",
       },
