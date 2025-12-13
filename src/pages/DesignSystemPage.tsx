@@ -217,8 +217,11 @@ export default function DesignSystemPage() {
           </p>
         </div>
 
-        <Tabs defaultValue="buttons" className="space-y-6">
+        <Tabs defaultValue="overview" className="space-y-6">
           <TabsList className="flex flex-wrap gap-2 h-auto p-1">
+            <TabsTrigger value="overview" className="data-[state=active]:gradient-primary data-[state=active]:text-white">
+              Overview
+            </TabsTrigger>
             <TabsTrigger value="buttons" className="data-[state=active]:gradient-primary data-[state=active]:text-white">
               Botões
             </TabsTrigger>
@@ -280,6 +283,11 @@ export default function DesignSystemPage() {
               Theme Toggle
             </TabsTrigger>
           </TabsList>
+
+          {/* Overview Tab */}
+          <TabsContent value="overview" className="space-y-6">
+            <OverviewSection />
+          </TabsContent>
 
           {/* Buttons Tab */}
           <TabsContent value="buttons" className="space-y-6">
@@ -8490,6 +8498,143 @@ html, body, .bg-background, .bg-card {
                   <li><code className="text-primary">300-400ms</code> - Transições de tema</li>
                   <li><code className="text-primary">500-600ms</code> - Overlay cinematográfico</li>
                 </ul>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+// Overview Section Component
+function OverviewSection() {
+  const categories = [
+    { id: 'buttons', icon: Zap, title: 'Botões', description: '12 variantes de botões incluindo gradient, glow e premium', count: 12 },
+    { id: 'forms', icon: Edit, title: 'Formulários', description: 'Inputs, selects, checkboxes, radio buttons e mais', count: 8 },
+    { id: 'modals', icon: Layers, title: 'Modais', description: 'Dialog, AlertDialog, Sheet e Drawer', count: 4 },
+    { id: 'tooltips', icon: MessageSquare, title: 'Tooltips', description: 'Tooltips, Popovers e HoverCards', count: 3 },
+    { id: 'tables', icon: TableIcon, title: 'Tabelas', description: 'Tabelas com zebra, badges, ações e paginação', count: 5 },
+    { id: 'navigation', icon: Navigation, title: 'Navegação', description: 'Breadcrumbs, Tabs, Navigation Menu', count: 4 },
+    { id: 'cards', icon: Square, title: 'Cards', description: '8 variantes incluindo stat, premium e glass', count: 8 },
+    { id: 'badges', icon: Tag, title: 'Badges', description: 'Status badges com variantes coloridas', count: 6 },
+    { id: 'progress', icon: Activity, title: 'Progress', description: 'Barras de progresso com variantes', count: 4 },
+    { id: 'icons', icon: Sparkles, title: 'Ícones', description: 'Biblioteca completa de ícones Lucide', count: 150 },
+    { id: 'typography', icon: Type, title: 'Tipografia', description: 'Hierarquia tipográfica e fontes', count: 6 },
+    { id: 'spacing', icon: Ruler, title: 'Spacing', description: 'Escala de espaçamentos e gaps', count: 12 },
+    { id: 'shadows', icon: Layers, title: 'Sombras', description: 'Sombras e elevações para cards', count: 5 },
+    { id: 'animations', icon: Play, title: 'Animações', description: 'Entry, hover, stagger e glow effects', count: 20 },
+    { id: 'colors', icon: Palette, title: 'Cores', description: 'Paleta de cores semânticas do sistema', count: 16 },
+    { id: 'feedback', icon: Bell, title: 'Feedback', description: 'Alerts, Toasts e Skeletons', count: 6 },
+    { id: 'loading', icon: Loader2, title: 'Loading', description: 'Spinners, progress e estados de loading', count: 5 },
+    { id: 'empty', icon: Package, title: 'Empty States', description: 'Estados vazios com CTAs e ilustrações', count: 8 },
+    { id: 'errors', icon: AlertCircle, title: 'Error States', description: 'Páginas de erro HTTP e inline', count: 10 },
+    { id: 'theme', icon: Sun, title: 'Theme Toggle', description: 'Alternador de tema com animações', count: 2 },
+  ];
+
+  return (
+    <div className="space-y-6">
+      {/* Stats Overview */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <Card variant="stat" className="hover-lift-sm">
+          <CardContent className="p-4 text-center">
+            <div className="text-3xl font-bold text-primary">20</div>
+            <p className="text-sm text-muted-foreground">Categorias</p>
+          </CardContent>
+        </Card>
+        <Card variant="stat" className="hover-lift-sm">
+          <CardContent className="p-4 text-center">
+            <div className="text-3xl font-bold text-success">150+</div>
+            <p className="text-sm text-muted-foreground">Componentes</p>
+          </CardContent>
+        </Card>
+        <Card variant="stat" className="hover-lift-sm">
+          <CardContent className="p-4 text-center">
+            <div className="text-3xl font-bold text-warning">50+</div>
+            <p className="text-sm text-muted-foreground">Variantes</p>
+          </CardContent>
+        </Card>
+        <Card variant="stat" className="hover-lift-sm">
+          <CardContent className="p-4 text-center">
+            <div className="text-3xl font-bold text-info">100%</div>
+            <p className="text-sm text-muted-foreground">Copiável</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Categories Grid */}
+      <Card variant="elevated">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <LayoutGrid className="h-5 w-5 text-primary" />
+            Categorias do Design System
+          </CardTitle>
+          <CardDescription>
+            Clique nas abas acima para explorar cada categoria em detalhes
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {categories.map((category, index) => {
+              const Icon = category.icon;
+              return (
+                <div
+                  key={category.id}
+                  className="group p-4 rounded-xl border bg-card/50 hover:bg-card hover:border-primary/30 hover:shadow-lg transition-all duration-300 cursor-pointer hover-lift-sm"
+                  style={{ animationDelay: `${index * 50}ms` }}
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                      <Icon className="h-5 w-5 text-primary" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-2">
+                        <h3 className="font-medium text-sm truncate">{category.title}</h3>
+                        <Badge variant="secondary" className="text-xs shrink-0">
+                          {category.count}
+                        </Badge>
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                        {category.description}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Quick Start */}
+      <Card variant="premium">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Wand2 className="h-5 w-5 text-amber-500" />
+            Como Usar
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="flex items-start gap-3 p-4 rounded-lg bg-background/50">
+              <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">1</div>
+              <div>
+                <h4 className="font-medium text-sm">Navegue pelas abas</h4>
+                <p className="text-xs text-muted-foreground mt-1">Explore cada categoria usando o menu de abas acima</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3 p-4 rounded-lg bg-background/50">
+              <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">2</div>
+              <div>
+                <h4 className="font-medium text-sm">Visualize exemplos</h4>
+                <p className="text-xs text-muted-foreground mt-1">Veja os componentes renderizados com suas variantes</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3 p-4 rounded-lg bg-background/50">
+              <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">3</div>
+              <div>
+                <h4 className="font-medium text-sm">Copie o código</h4>
+                <p className="text-xs text-muted-foreground mt-1">Use os CodeBlocks para copiar e colar no seu projeto</p>
               </div>
             </div>
           </div>
