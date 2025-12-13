@@ -8587,7 +8587,7 @@ function OverviewSection({ onNavigate }: OverviewSectionProps) {
                 <div
                   key={category.id}
                   onClick={() => onNavigate(category.id)}
-                  className="group p-4 rounded-xl border bg-card/50 hover:bg-card hover:border-primary/30 hover:shadow-lg transition-all duration-300 cursor-pointer hover-lift-sm animate-fade-in"
+                  className="group p-4 rounded-xl border bg-card/50 hover:bg-primary/5 hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10 transition-all duration-300 cursor-pointer hover-lift-sm animate-fade-in"
                   style={{ animationDelay: `${index * 50}ms` }}
                 >
                   <div className="flex items-start gap-3">
