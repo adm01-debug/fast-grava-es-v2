@@ -13,6 +13,7 @@ import AlertsDashboard from "./pages/AlertsDashboard";
 import KanbanBoard from "./pages/KanbanBoard";
 import KPIDashboard from "./pages/KPIDashboard";
 import OperatorView from "./pages/OperatorView";
+import EfficiencyDashboard from "./pages/EfficiencyDashboard";
 import AuthPage from "./pages/AuthPage";
 import NotFound from "./pages/NotFound";
 
@@ -65,6 +66,11 @@ const App = () => (
             <Route path="/operator" element={
               <ProtectedRoute>
                 <OperatorView />
+              </ProtectedRoute>
+            } />
+            <Route path="/efficiency" element={
+              <ProtectedRoute allowedRoles={['coordinator', 'manager']}>
+                <EfficiencyDashboard />
               </ProtectedRoute>
             } />
             <Route path="*" element={<NotFound />} />

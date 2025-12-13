@@ -16,7 +16,8 @@ import {
   Plus,
   BarChart3,
   UserCircle,
-  LogOut
+  LogOut,
+  Zap
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -36,6 +37,7 @@ const mainNavItems: NavItem[] = [
   { icon: CalendarDays, label: 'Calendário Semanal', href: '/calendar/weekly' },
   { icon: LayoutGrid, label: 'Kanban', href: '/kanban' },
   { icon: List, label: 'Lista de Pendências', href: '/pending' },
+  { icon: Zap, label: 'Eficiência', href: '/efficiency' },
   { icon: PieChart, label: 'Ocupação', href: '/occupancy' },
   { icon: BarChart3, label: 'KPIs', href: '/kpis' },
   { icon: AlertTriangle, label: 'Alertas', href: '/alerts', badge: 3 },
@@ -65,7 +67,7 @@ export function AppSidebar() {
       return ['/operator', '/alerts'].includes(item.href);
     }
     if (role === 'manager') {
-      return ['/', '/calendar/daily', '/calendar/weekly', '/kpis', '/alerts'].includes(item.href);
+      return ['/', '/calendar/daily', '/calendar/weekly', '/kpis', '/alerts', '/efficiency'].includes(item.href);
     }
     return true; // coordinator sees all
   });
