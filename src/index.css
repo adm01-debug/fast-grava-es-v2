@@ -430,9 +430,145 @@
     @apply transition-shadow duration-300 hover:shadow-[0_0_40px_-10px_hsl(var(--primary)/0.5)];
   }
 
-  /* Card animations */
+  /* Card animations - Enhanced hover effects */
   .card-interactive {
-    @apply transition-all duration-300 hover:border-primary/40 hover:-translate-y-0.5 hover:shadow-[0_10px_40px_-15px_hsl(var(--primary)/0.3)];
+    @apply relative transition-all duration-300 ease-out;
+    @apply hover:-translate-y-1 hover:border-primary/40;
+    @apply hover:shadow-[0_20px_50px_-15px_hsl(var(--primary)/0.25)];
+  }
+
+  .card-interactive::before {
+    content: '';
+    @apply absolute inset-0 rounded-xl opacity-0 transition-opacity duration-300 pointer-events-none;
+    background: linear-gradient(135deg, hsl(var(--primary) / 0.05), hsl(var(--accent) / 0.05));
+  }
+
+  .card-interactive:hover::before {
+    @apply opacity-100;
+  }
+
+  .dark .card-interactive {
+    @apply hover:shadow-[0_20px_60px_-15px_hsl(var(--primary)/0.35),0_0_30px_-10px_hsl(var(--primary)/0.2)];
+  }
+
+  .dark .card-interactive::before {
+    background: linear-gradient(135deg, hsl(var(--primary) / 0.08), hsl(var(--accent) / 0.08));
+  }
+
+  /* Card with colored glow variants */
+  .card-glow-blue {
+    @apply transition-all duration-300 hover:-translate-y-1;
+    @apply hover:border-[hsl(210,100%,55%)]/40;
+    @apply hover:shadow-[0_20px_50px_-15px_hsl(210,100%,55%,0.2)];
+  }
+  .dark .card-glow-blue {
+    @apply hover:shadow-[0_20px_60px_-15px_hsl(210,100%,60%,0.35),0_0_40px_-10px_hsl(210,100%,60%,0.25)];
+  }
+
+  .card-glow-green {
+    @apply transition-all duration-300 hover:-translate-y-1;
+    @apply hover:border-[hsl(142,70%,45%)]/40;
+    @apply hover:shadow-[0_20px_50px_-15px_hsl(142,70%,45%,0.2)];
+  }
+  .dark .card-glow-green {
+    @apply hover:shadow-[0_20px_60px_-15px_hsl(142,70%,50%,0.35),0_0_40px_-10px_hsl(142,70%,50%,0.25)];
+  }
+
+  .card-glow-purple {
+    @apply transition-all duration-300 hover:-translate-y-1;
+    @apply hover:border-[hsl(280,80%,55%)]/40;
+    @apply hover:shadow-[0_20px_50px_-15px_hsl(280,80%,55%,0.2)];
+  }
+  .dark .card-glow-purple {
+    @apply hover:shadow-[0_20px_60px_-15px_hsl(280,80%,60%,0.35),0_0_40px_-10px_hsl(280,80%,60%,0.25)];
+  }
+
+  .card-glow-orange {
+    @apply transition-all duration-300 hover:-translate-y-1;
+    @apply hover:border-[hsl(24,95%,50%)]/40;
+    @apply hover:shadow-[0_20px_50px_-15px_hsl(24,95%,50%,0.2)];
+  }
+  .dark .card-glow-orange {
+    @apply hover:shadow-[0_20px_60px_-15px_hsl(24,95%,55%,0.35),0_0_40px_-10px_hsl(24,95%,55%,0.25)];
+  }
+
+  .card-glow-yellow {
+    @apply transition-all duration-300 hover:-translate-y-1;
+    @apply hover:border-[hsl(45,100%,50%)]/40;
+    @apply hover:shadow-[0_20px_50px_-15px_hsl(45,100%,50%,0.2)];
+  }
+  .dark .card-glow-yellow {
+    @apply hover:shadow-[0_20px_60px_-15px_hsl(45,100%,55%,0.35),0_0_40px_-10px_hsl(45,100%,55%,0.25)];
+  }
+
+  /* Card shine effect on hover */
+  .card-shine {
+    @apply relative overflow-hidden;
+  }
+
+  .card-shine::after {
+    content: '';
+    @apply absolute inset-0 opacity-0 transition-opacity duration-500 pointer-events-none;
+    background: linear-gradient(
+      105deg,
+      transparent 40%,
+      hsl(var(--primary) / 0.06) 45%,
+      hsl(var(--primary) / 0.12) 50%,
+      hsl(var(--primary) / 0.06) 55%,
+      transparent 60%
+    );
+    transform: translateX(-100%);
+  }
+
+  .card-shine:hover::after {
+    @apply opacity-100;
+    animation: card-shine-sweep 0.8s ease-out forwards;
+  }
+
+  @keyframes card-shine-sweep {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+
+  /* Floating card effect */
+  .card-float {
+    @apply transition-all duration-500 ease-out;
+  }
+
+  .card-float:hover {
+    @apply -translate-y-2;
+    box-shadow: 
+      0 25px 50px -12px hsl(var(--primary) / 0.15),
+      0 0 0 1px hsl(var(--primary) / 0.1);
+  }
+
+  .dark .card-float:hover {
+    box-shadow: 
+      0 25px 60px -12px hsl(var(--primary) / 0.3),
+      0 0 40px -10px hsl(var(--primary) / 0.2),
+      0 0 0 1px hsl(var(--primary) / 0.2);
+  }
+
+  /* Pulse border effect */
+  .card-pulse-border {
+    @apply relative;
+  }
+
+  .card-pulse-border::before {
+    content: '';
+    @apply absolute -inset-px rounded-xl opacity-0 transition-opacity duration-300 pointer-events-none;
+    background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
+    z-index: -1;
+  }
+
+  .card-pulse-border:hover::before {
+    @apply opacity-100;
+    animation: pulse-border 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse-border {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.6; }
   }
 
   /* Button effects */
