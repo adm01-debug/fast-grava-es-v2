@@ -23,7 +23,7 @@ import { Job } from "@/types/scheduling";
 import { useBottleneckPrediction } from "@/hooks/useBottleneckPrediction";
 import { useLoadBalancing } from "@/hooks/useLoadBalancing";
 import { useEfficiencyNotifications } from "@/hooks/useEfficiencyNotifications";
-
+import { EfficiencyAlertHistoryWidget } from "@/components/dashboard/EfficiencyAlertHistoryWidget";
 const priorityColors = {
   urgent: 'bg-red-500/20 text-red-400 border-red-500/30',
   high: 'bg-orange-500/20 text-orange-400 border-orange-500/30',
@@ -520,6 +520,9 @@ export default function AlertsDashboard() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Efficiency Alert History */}
+        <EfficiencyAlertHistoryWidget />
       </div>
     </div>
   );
