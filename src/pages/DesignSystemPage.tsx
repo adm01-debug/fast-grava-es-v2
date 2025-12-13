@@ -204,6 +204,36 @@ import {
   PaginationPrevious,
 } from '@/components/ui/pagination';
 
+// CodeBlock component for displaying copyable code snippets
+const CodeBlock = ({ code, label }: { code: string; label: string }) => {
+  const [copied, setCopied] = useState(false);
+  
+  const handleCopy = async () => {
+    await navigator.clipboard.writeText(code);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+  
+  return (
+    <div className="space-y-1.5">
+      <span className="text-[10px] text-muted-foreground font-medium">{label}</span>
+      <div className="relative group">
+        <pre className="bg-muted/50 dark:bg-black/30 border border-border rounded-md p-3 text-xs font-mono overflow-x-auto">
+          <code className="text-foreground/80">{code}</code>
+        </pre>
+        <Button
+          size="icon-sm"
+          variant="ghost"
+          className="absolute top-1.5 right-1.5 opacity-0 group-hover:opacity-100 transition-opacity"
+          onClick={handleCopy}
+        >
+          {copied ? <Check className="text-success" /> : <Copy />}
+        </Button>
+      </div>
+    </div>
+  );
+};
+
 export default function DesignSystemPage() {
   return (
     <MainLayout>
@@ -340,25 +370,55 @@ export default function DesignSystemPage() {
                 </div>
 
                 {/* Icon Sizes */}
-                <div className="space-y-3">
+                <div className="space-y-4">
                   <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Tamanhos de Ícone</h4>
+                  
+                  {/* Visual Examples */}
+                  <div className="flex flex-wrap items-end gap-4">
+                    <div className="flex flex-col items-center gap-2">
+                      <Button size="icon-sm" variant="outline"><Star /></Button>
+                      <span className="text-xs text-muted-foreground">icon-sm</span>
+                      <span className="text-[10px] text-muted-foreground/60">32×32px</span>
+                    </div>
+                    <div className="flex flex-col items-center gap-2">
+                      <Button size="icon" variant="outline"><Star /></Button>
+                      <span className="text-xs text-muted-foreground">icon</span>
+                      <span className="text-[10px] text-muted-foreground/60">40×40px</span>
+                    </div>
+                    <div className="flex flex-col items-center gap-2">
+                      <Button size="icon-lg" variant="outline"><Star /></Button>
+                      <span className="text-xs text-muted-foreground">icon-lg</span>
+                      <span className="text-[10px] text-muted-foreground/60">48×48px</span>
+                    </div>
+                  </div>
+
+                  {/* Examples with variants */}
                   <div className="flex flex-wrap items-center gap-3">
-                    <Button size="icon-sm" variant="outline"><Star /></Button>
-                    <Button size="icon" variant="outline"><Star /></Button>
-                    <Button size="icon-lg" variant="outline"><Star /></Button>
-                  </div>
-                  <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
-                    <span className="w-8 text-center">icon-sm</span>
-                    <span className="w-10 text-center">icon</span>
-                    <span className="w-12 text-center">icon-lg</span>
-                  </div>
-                  <div className="flex flex-wrap items-center gap-3 mt-2">
                     <Button size="icon-sm" variant="gradient"><Plus /></Button>
                     <Button size="icon" variant="gradient"><Plus /></Button>
                     <Button size="icon-lg" variant="gradient"><Plus /></Button>
                     <Button size="icon-sm" variant="destructive"><Trash2 /></Button>
                     <Button size="icon" variant="destructive"><Trash2 /></Button>
                     <Button size="icon-lg" variant="destructive"><Trash2 /></Button>
+                  </div>
+
+                  {/* Code Examples */}
+                  <div className="space-y-3 mt-4">
+                    <h5 className="text-xs font-medium text-muted-foreground">Código de Uso</h5>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                      <CodeBlock 
+                        code={'<Button size="icon-sm">\n  <Plus />\n</Button>'} 
+                        label="Icon Small (32px)"
+                      />
+                      <CodeBlock 
+                        code={'<Button size="icon">\n  <Plus />\n</Button>'} 
+                        label="Icon Default (40px)"
+                      />
+                      <CodeBlock 
+                        code={'<Button size="icon-lg">\n  <Plus />\n</Button>'} 
+                        label="Icon Large (48px)"
+                      />
+                    </div>
                   </div>
                 </div>
 
