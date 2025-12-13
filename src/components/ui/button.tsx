@@ -102,6 +102,8 @@ const buttonVariants = cva(
         lg: "h-11 rounded-lg px-8",
         xl: "h-12 rounded-lg px-10 text-base",
         icon: "h-10 w-10",
+        "icon-sm": "h-8 w-8 rounded-md [&_svg]:size-3.5",
+        "icon-lg": "h-12 w-12 rounded-lg [&_svg]:size-5",
       },
       shimmer: {
         true: "relative overflow-hidden",
