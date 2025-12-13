@@ -136,6 +136,16 @@ export function ThemeToggle() {
               />
             )}
 
+            {/* Sound muted indicator */}
+            {!soundEnabled && (
+              <span 
+                className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-muted-foreground/60 flex items-center justify-center"
+                title="Som desativado"
+              >
+                <VolumeX className="h-1.5 w-1.5 text-background" />
+              </span>
+            )}
+
             <span className="sr-only">
               {isDark ? 'Mudar para tema claro' : 'Mudar para tema escuro'}
             </span>
