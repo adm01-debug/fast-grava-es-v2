@@ -322,7 +322,7 @@ export default function DesignSystemPage() {
               </CardHeader>
               <CardContent className="space-y-6">
                 {/* Standard Variants */}
-                <div className="space-y-3">
+                <div className="space-y-4">
                   <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Variantes Padrão</h4>
                   <div className="flex flex-wrap gap-3">
                     <Button variant="default">Default</Button>
@@ -333,10 +333,21 @@ export default function DesignSystemPage() {
                     <Button variant="destructive">Destructive</Button>
                     <Button variant="success">Success</Button>
                   </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                    <CodeBlock code={'<Button variant="default">\n  Texto\n</Button>'} label="Default" />
+                    <CodeBlock code={'<Button variant="secondary">\n  Texto\n</Button>'} label="Secondary" />
+                    <CodeBlock code={'<Button variant="outline">\n  Texto\n</Button>'} label="Outline" />
+                    <CodeBlock code={'<Button variant="destructive">\n  Texto\n</Button>'} label="Destructive" />
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    <CodeBlock code={'<Button variant="ghost">\n  Texto\n</Button>'} label="Ghost" />
+                    <CodeBlock code={'<Button variant="link">\n  Texto\n</Button>'} label="Link" />
+                    <CodeBlock code={'<Button variant="success">\n  Texto\n</Button>'} label="Success" />
+                  </div>
                 </div>
 
                 {/* Gaming/Gradient Variants */}
-                <div className="space-y-3">
+                <div className="space-y-4">
                   <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Variantes Gaming/Gradiente</h4>
                   <div className="flex flex-wrap gap-3">
                     <Button variant="gradient">Gradient</Button>
@@ -346,15 +357,30 @@ export default function DesignSystemPage() {
                     <Button variant="glass">Glass</Button>
                     <Button variant="premium">Premium</Button>
                   </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    <CodeBlock code={'<Button variant="gradient">\n  Texto\n</Button>'} label="Gradient" />
+                    <CodeBlock code={'<Button variant="gradient-secondary">\n  Texto\n</Button>'} label="Gradient Secondary" />
+                    <CodeBlock code={'<Button variant="gradient-success">\n  Texto\n</Button>'} label="Gradient Success" />
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    <CodeBlock code={'<Button variant="glow">\n  Texto\n</Button>'} label="Glow" />
+                    <CodeBlock code={'<Button variant="glass">\n  Texto\n</Button>'} label="Glass" />
+                    <CodeBlock code={'<Button variant="premium">\n  Texto\n</Button>'} label="Premium" />
+                  </div>
                 </div>
 
                 {/* With Shimmer */}
-                <div className="space-y-3">
+                <div className="space-y-4">
                   <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Com Efeito Shimmer</h4>
                   <div className="flex flex-wrap gap-3">
                     <Button variant="gradient" shimmer>Gradient + Shimmer</Button>
                     <Button variant="default" shimmer>Default + Shimmer</Button>
                     <Button variant="gradient-success" shimmer>Success + Shimmer</Button>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    <CodeBlock code={'<Button variant="gradient" shimmer>\n  Texto\n</Button>'} label="Gradient + Shimmer" />
+                    <CodeBlock code={'<Button variant="default" shimmer>\n  Texto\n</Button>'} label="Default + Shimmer" />
+                    <CodeBlock code={'<Button variant="gradient-success" shimmer>\n  Texto\n</Button>'} label="Success + Shimmer" />
                   </div>
                 </div>
 
