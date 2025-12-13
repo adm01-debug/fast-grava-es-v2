@@ -18,6 +18,7 @@ import EfficiencyDashboard from "./pages/EfficiencyDashboard";
 import TechnicalAssistantPage from "./pages/TechnicalAssistantPage";
 import QRScannerPage from "./pages/QRScannerPage";
 import Bitrix24ConfigPage from "./pages/Bitrix24ConfigPage";
+import TechnicalKnowledgeBase from "./pages/TechnicalKnowledgeBase";
 import AuthPage from "./pages/AuthPage";
 import NotFound from "./pages/NotFound";
 
@@ -91,6 +92,11 @@ const App = () => (
               <Route path="/integrations/bitrix24" element={
                 <ProtectedRoute allowedRoles={['coordinator']}>
                   <Bitrix24ConfigPage />
+                </ProtectedRoute>
+              } />
+              <Route path="/knowledge" element={
+                <ProtectedRoute>
+                  <TechnicalKnowledgeBase />
                 </ProtectedRoute>
               } />
               <Route path="*" element={<NotFound />} />
