@@ -2,19 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap');
 
 @layer base {
   :root {
-    /* Light theme - Soft Gray Design System (não branco puro) */
-    --background: 220 15% 96%;
-    --foreground: 225 25% 12%;
+    /* Light theme - Improved Contrast Design System */
+    --background: 220 20% 94%;
+    --foreground: 225 30% 8%;
 
-    --card: 220 15% 98%;
-    --card-foreground: 225 25% 10%;
+    --card: 0 0% 100%;
+    --card-foreground: 225 30% 8%;
 
-    --popover: 220 15% 99%;
-    --popover-foreground: 225 25% 10%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 225 30% 8%;
 
     --primary: 24 95% 48%;
     --primary-foreground: 0 0% 100%;
@@ -22,8 +22,8 @@
     --secondary: 210 100% 50%;
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 220 15% 92%;
-    --muted-foreground: 220 15% 40%;
+    --muted: 220 20% 88%;
+    --muted-foreground: 220 20% 35%;
 
     --accent: 280 80% 50%;
     --accent-foreground: 0 0% 100%;
@@ -35,10 +35,10 @@
     --success-foreground: 0 0% 100%;
 
     --warning: 45 100% 48%;
-    --warning-foreground: 225 25% 10%;
+    --warning-foreground: 225 30% 8%;
 
-    --border: 220 15% 85%;
-    --input: 220 15% 88%;
+    --border: 220 20% 82%;
+    --input: 220 20% 85%;
     --ring: 24 95% 48%;
 
     --radius: 0.75rem;
@@ -88,15 +88,15 @@
     --tech-dtf-textile: 195 100% 45%;
     --tech-cut-media: 220 15% 40%;
 
-    --sidebar-background: 220 15% 94%;
-    --sidebar-foreground: 225 25% 12%;
+    --sidebar-background: 220 20% 92%;
+    --sidebar-foreground: 225 30% 8%;
     --sidebar-primary: 24 95% 48%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 15% 90%;
-    --sidebar-accent-foreground: 225 25% 12%;
-    --sidebar-border: 220 15% 85%;
+    --sidebar-accent: 220 20% 88%;
+    --sidebar-accent-foreground: 225 30% 8%;
+    --sidebar-border: 220 20% 82%;
     --sidebar-ring: 24 95% 48%;
-    --sidebar-muted: 220 15% 90%;
+    --sidebar-muted: 220 20% 88%;
 
     /* Chart colors */
     --chart-1: 24 95% 48%;
@@ -109,13 +109,16 @@
     --gradient-start: 24 95% 50%;
     --gradient-end: 340 80% 50%;
 
-    /* Gamification colors */
+    /* Gamification colors with foreground */
     --xp: 142 70% 40%;
     --coins: 45 100% 48%;
     --streak: 24 95% 48%;
-    --gold: 45 100% 48%;
-    --silver: 220 10% 60%;
-    --bronze: 25 60% 42%;
+    --gold: 45 90% 50%;
+    --gold-foreground: 35 60% 15%;
+    --silver: 220 10% 65%;
+    --silver-foreground: 220 15% 20%;
+    --bronze: 25 60% 45%;
+    --bronze-foreground: 25 40% 12%;
   }
 
   .dark {
@@ -220,13 +223,16 @@
     --gradient-start: 24 95% 55%;
     --gradient-end: 340 80% 55%;
 
-    /* Gamification colors */
+    /* Gamification colors with foreground */
     --xp: 142 70% 50%;
     --coins: 45 100% 55%;
     --streak: 24 95% 55%;
     --gold: 45 100% 55%;
+    --gold-foreground: 35 60% 10%;
     --silver: 220 10% 70%;
+    --silver-foreground: 220 15% 15%;
     --bronze: 25 60% 50%;
+    --bronze-foreground: 25 40% 10%;
   }
 }
 
@@ -240,9 +246,20 @@
     font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
   }
 
-  h1, h2, h3, h4, h5, h6 {
-    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  h1, h2, h3 {
+    font-family: 'Space Grotesk', 'Plus Jakarta Sans', system-ui, sans-serif;
     font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  h4, h5, h6 {
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    font-weight: 600;
+  }
+
+  /* Focus visible improvements */
+  *:focus-visible {
+    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
   }
 }
 
