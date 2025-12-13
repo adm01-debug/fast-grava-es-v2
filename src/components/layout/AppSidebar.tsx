@@ -141,6 +141,7 @@ export function AppSidebar() {
     <aside
       className={cn(
         'flex flex-col h-screen bg-sidebar border-r border-sidebar-border transition-all duration-300',
+        'shadow-[2px_0_12px_-4px_hsl(220_20%_20%/0.08)] dark:shadow-none',
         collapsed ? 'w-16' : 'w-64'
       )}
     >
