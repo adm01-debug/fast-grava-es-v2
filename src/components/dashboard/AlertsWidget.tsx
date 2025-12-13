@@ -23,6 +23,21 @@ export function AlertsWidget() {
     const now = new Date();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
+    // Urgent jobs without scheduling (highest priority)
+    jobs.filter(job => 
+      job.priority === 'urgent' && 
+      !job.scheduled_date && 
+      !['finished', 'cancelled'].includes(job.status)
+    ).forEach(job => {
+      alertList.push({
+        id: `urgent-${job.id}`,
+        type: 'conflict',
+        title: 'Urgente Sem Agendamento',
+        description: `${job.order_number} (${job.client}) precisa ser agendado`,
+        time: job.created_at ? new Date(job.created_at) : now,
+      });
+    });
+
     // Delayed jobs
     jobs.filter(job => job.status === 'delayed').forEach(job => {
       alertList.push({
@@ -49,6 +64,21 @@ export function AlertsWidget() {
       });
     });
 
+    // High priority jobs without scheduling
+    jobs.filter(job => 
+      job.priority === 'high' && 
+      !job.scheduled_date && 
+      !['finished', 'cancelled'].includes(job.status)
+    ).forEach(job => {
+      alertList.push({
+        id: `high-priority-${job.id}`,
+        type: 'warning',
+        title: 'Alta Prioridade Sem Data',
+        description: `${job.order_number} aguarda agendamento`,
+        time: job.created_at ? new Date(job.created_at) : now,
+      });
+    });
+
     // Low buffer warning - check techniques with few ready jobs
     const techniqueReadyCounts: Record<string, number> = {};
     jobs.filter(job => job.status === 'ready').forEach(job => {
@@ -67,7 +97,7 @@ export function AlertsWidget() {
       }
     });
 
-    return alertList.slice(0, 5); // Show max 5 alerts
+    return alertList.slice(0, 6); // Show max 6 alerts
   }, [jobs]);
 
   const alertIcons = {
