@@ -78,6 +78,23 @@ const buttonVariants = cva(
           "dark:hover:bg-white/20 dark:hover:border-white/20",
           "dark:hover:shadow-[0_0_20px_-8px_hsl(0_0%_100%/0.2)]",
         ],
+        success: [
+          "bg-success text-success-foreground hover:bg-success/90",
+          "shadow-sm hover:shadow-md",
+          "dark:shadow-[0_0_20px_-5px_hsl(var(--success)/0.4)]",
+          "dark:hover:shadow-[0_0_30px_-5px_hsl(var(--success)/0.6)]",
+          "dark:hover:translate-y-[-1px]",
+        ],
+        premium: [
+          "bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 text-amber-950 font-semibold",
+          "border border-amber-400/50",
+          "shadow-[0_4px_20px_-5px_hsl(45_100%_50%/0.4)]",
+          "hover:shadow-[0_8px_30px_-5px_hsl(45_100%_50%/0.6)]",
+          "hover:translate-y-[-2px]",
+          "dark:border-amber-300/30",
+          "dark:shadow-[0_4px_25px_-5px_hsl(45_100%_50%/0.5)]",
+          "dark:hover:shadow-[0_8px_40px_-5px_hsl(45_100%_50%/0.7)]",
+        ],
       },
       size: {
         default: "h-10 px-4 py-2",
