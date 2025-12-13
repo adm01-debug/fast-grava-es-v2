@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,6 +6,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { 
   Bot, 
   Send, 
@@ -22,11 +29,14 @@ import {
   Trash2,
   Edit2,
   Check,
-  X
+  X,
+  Search,
+  Filter,
+  Calendar
 } from "lucide-react";
 import { toast } from "sonner";
 import { useTechnicalConversations, useTechnicalMessages, TechnicalMessage } from "@/hooks/useTechnicalConversations";
-import { formatDistanceToNow } from "date-fns";
+import { formatDistanceToNow, isToday, isThisWeek, isThisMonth, subDays } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/technical-assistant`;
@@ -53,12 +63,50 @@ const TechnicalAssistantPage = () => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editTitle, setEditTitle] = useState("");
   
+  // Search and filter states
+  const [searchQuery, setSearchQuery] = useState("");
+  const [dateFilter, setDateFilter] = useState<string>("all");
+  
   const { messages, isLoading: loadingMessages, addMessage } = useTechnicalMessages(selectedConversationId);
   
   const [localMessages, setLocalMessages] = useState<TechnicalMessage[]>([]);
   const [input, setInput] = useState("");
   const [isStreaming, setIsStreaming] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  // Filter conversations based on search and date
+  const filteredConversations = useMemo(() => {
+    return conversations.filter(conv => {
+      // Search filter
+      if (searchQuery.trim()) {
+        const query = searchQuery.toLowerCase();
+        if (!conv.title.toLowerCase().includes(query)) {
+          return false;
+        }
+      }
+      
+      // Date filter
+      if (dateFilter !== "all") {
+        const convDate = new Date(conv.updated_at);
+        switch (dateFilter) {
+          case "today":
+            if (!isToday(convDate)) return false;
+            break;
+          case "week":
+            if (!isThisWeek(convDate, { locale: ptBR })) return false;
+            break;
+          case "month":
+            if (!isThisMonth(convDate)) return false;
+            break;
+          case "older":
+            if (isThisMonth(convDate)) return false;
+            break;
+        }
+      }
+      
+      return true;
+    });
+  }, [conversations, searchQuery, dateFilter]);
 
   // Sync local messages with fetched messages
   useEffect(() => {
@@ -261,21 +309,70 @@ const TechnicalAssistantPage = () => {
               </Button>
             </div>
           </CardHeader>
-          <CardContent className="flex-1 p-0 overflow-hidden">
-            <ScrollArea className="h-full px-4 pb-4">
+          <CardContent className="flex-1 p-0 overflow-hidden flex flex-col">
+            {/* Search and Filters */}
+            <div className="px-4 pb-3 space-y-2">
+              <div className="relative">
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Buscar conversas..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-9 h-9 text-sm"
+                />
+              </div>
+              <Select value={dateFilter} onValueChange={setDateFilter}>
+                <SelectTrigger className="h-8 text-xs">
+                  <Calendar className="h-3 w-3 mr-2" />
+                  <SelectValue placeholder="Filtrar por data" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todas as datas</SelectItem>
+                  <SelectItem value="today">Hoje</SelectItem>
+                  <SelectItem value="week">Esta semana</SelectItem>
+                  <SelectItem value="month">Este mês</SelectItem>
+                  <SelectItem value="older">Mais antigas</SelectItem>
+                </SelectContent>
+              </Select>
+              {(searchQuery || dateFilter !== "all") && (
+                <div className="flex items-center justify-between text-xs text-muted-foreground">
+                  <span>{filteredConversations.length} conversa(s) encontrada(s)</span>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-6 text-xs"
+                    onClick={() => { setSearchQuery(""); setDateFilter("all"); }}
+                  >
+                    Limpar
+                  </Button>
+                </div>
+              )}
+            </div>
+            
+            <ScrollArea className="flex-1 px-4 pb-4">
               {loadingConversations ? (
                 <div className="flex justify-center py-8">
                   <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
                 </div>
-              ) : conversations.length === 0 ? (
+              ) : filteredConversations.length === 0 ? (
                 <div className="text-center py-8 text-muted-foreground">
-                  <MessageSquare className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                  <p className="text-sm">Nenhuma conversa ainda</p>
-                  <p className="text-xs">Clique em "Nova" para começar</p>
+                  {conversations.length === 0 ? (
+                    <>
+                      <MessageSquare className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                      <p className="text-sm">Nenhuma conversa ainda</p>
+                      <p className="text-xs">Clique em "Nova" para começar</p>
+                    </>
+                  ) : (
+                    <>
+                      <Search className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                      <p className="text-sm">Nenhum resultado encontrado</p>
+                      <p className="text-xs">Tente ajustar sua busca</p>
+                    </>
+                  )}
                 </div>
               ) : (
                 <div className="space-y-2">
-                  {conversations.map((conv) => (
+                  {filteredConversations.map((conv) => (
                     <div
                       key={conv.id}
                       onClick={() => handleSelectConversation(conv.id)}
