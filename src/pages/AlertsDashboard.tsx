@@ -15,12 +15,14 @@ import {
   ChevronRight,
   Zap,
   Activity,
-  Scale
+  Scale,
+  RefreshCw
 } from "lucide-react";
 import { mockJobs, getTechniqueById, getMachineById } from "@/data/mockData";
 import { Job } from "@/types/scheduling";
 import { useBottleneckPrediction } from "@/hooks/useBottleneckPrediction";
 import { useLoadBalancing } from "@/hooks/useLoadBalancing";
+import { useEfficiencyNotifications } from "@/hooks/useEfficiencyNotifications";
 
 const priorityColors = {
   urgent: 'bg-red-500/20 text-red-400 border-red-500/30',
@@ -170,6 +172,10 @@ export default function AlertsDashboard() {
   // Efficiency alerts
   const { alerts: bottleneckAlerts, criticalCount, warningCount } = useBottleneckPrediction();
   const { suggestions: loadBalancingSuggestions } = useLoadBalancing();
+  const { 
+    checkBottleneckAlerts, 
+    checkLoadBalancingAlerts 
+  } = useEfficiencyNotifications();
 
   const totalJobAlerts = alertData.delayed.length + alertData.rework.length + 
                       alertData.urgent.length + alertData.atRisk.length + alertData.overdue.length;
@@ -196,12 +202,32 @@ export default function AlertsDashboard() {
           </h1>
           <p className="text-muted-foreground mt-1">Monitoramento de jobs atrasados e produções em risco</p>
         </div>
-        <Badge 
-          className={`${totalAlerts > 0 ? 'bg-red-500/20 text-red-400 border-red-500/30' : 'bg-green-500/20 text-green-400 border-green-500/30'} border px-4 py-2`}
-        >
-          <AlertTriangle className="h-4 w-4 mr-2" />
-          {totalAlerts} alertas ativos
-        </Badge>
+        <div className="flex items-center gap-3">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={checkBottleneckAlerts}
+            className="border-pink-500/30 text-pink-400 hover:bg-pink-500/10"
+          >
+            <RefreshCw className="h-4 w-4 mr-2" />
+            Verificar Gargalos
+          </Button>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={checkLoadBalancingAlerts}
+            className="border-teal-500/30 text-teal-400 hover:bg-teal-500/10"
+          >
+            <RefreshCw className="h-4 w-4 mr-2" />
+            Verificar Balanceamento
+          </Button>
+          <Badge 
+            className={`${totalAlerts > 0 ? 'bg-red-500/20 text-red-400 border-red-500/30' : 'bg-green-500/20 text-green-400 border-green-500/30'} border px-4 py-2`}
+          >
+            <AlertTriangle className="h-4 w-4 mr-2" />
+            {totalAlerts} alertas ativos
+          </Badge>
+        </div>
       </div>
 
       {/* Summary Stats */}
