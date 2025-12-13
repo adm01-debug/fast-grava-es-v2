@@ -16,10 +16,12 @@ import {
   RotateCcw,
   FileText,
   Hash,
-  Building
+  Building,
+  QrCode
 } from "lucide-react";
 import { Job } from "@/types/scheduling";
 import { getTechniqueById, getMachineById, getOperatorById } from "@/data/mockData";
+import { JobQRCode } from "@/components/qrcode/JobQRCode";
 
 interface JobDetailsModalProps {
   job: Job | null;
@@ -180,6 +182,17 @@ export function JobDetailsModal({ job, open, onOpenChange, onStatusChange }: Job
                 {machine?.code} - {machine?.name}
               </p>
             </div>
+          </div>
+
+          {/* QR Code Section */}
+          <div className="flex justify-center">
+            <JobQRCode 
+              jobId={job.id}
+              orderNumber={job.orderNumber}
+              product={job.product}
+              client={job.client}
+              size={120}
+            />
           </div>
 
           {/* Notes */}

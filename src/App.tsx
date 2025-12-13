@@ -16,6 +16,7 @@ import KPIDashboard from "./pages/KPIDashboard";
 import OperatorView from "./pages/OperatorView";
 import EfficiencyDashboard from "./pages/EfficiencyDashboard";
 import TechnicalAssistantPage from "./pages/TechnicalAssistantPage";
+import QRScannerPage from "./pages/QRScannerPage";
 import AuthPage from "./pages/AuthPage";
 import NotFound from "./pages/NotFound";
 
@@ -79,6 +80,11 @@ const App = () => (
               <Route path="/assistant" element={
                 <ProtectedRoute>
                   <TechnicalAssistantPage />
+                </ProtectedRoute>
+              } />
+              <Route path="/scanner" element={
+                <ProtectedRoute>
+                  <QRScannerPage />
                 </ProtectedRoute>
               } />
               <Route path="*" element={<NotFound />} />
