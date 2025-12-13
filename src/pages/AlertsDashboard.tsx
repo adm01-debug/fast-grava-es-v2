@@ -7,6 +7,7 @@ import { JobDetailsModal } from "@/components/jobs/JobDetailsModal";
 import { PushNotificationManager } from "@/components/notifications/PushNotificationManager";
 import { Bitrix24SyncPanel } from "@/components/integrations/Bitrix24SyncPanel";
 import { Bitrix24SyncHistory } from "@/components/integrations/Bitrix24SyncHistory";
+import { Bitrix24FieldMapping } from "@/components/integrations/Bitrix24FieldMapping";
 import { 
   AlertTriangle, 
   Clock, 
@@ -532,6 +533,9 @@ export default function AlertsDashboard() {
 
         {/* Bitrix24 Sync History */}
         <Bitrix24SyncHistory />
+
+        {/* Bitrix24 Field Mapping */}
+        <Bitrix24FieldMapping />
 
         {/* Push Notifications Manager */}
         <PushNotificationManager />
