@@ -121,6 +121,32 @@ export function AlertsWidget() {
     return jobs.find(j => j.id === selectedJobId) || null;
   }, [selectedJobId, jobs]);
 
+  // Detect conflicts for the selected date/time
+  const conflicts = useMemo(() => {
+    if (!selectedJob || !scheduleDate || !startTime) return [];
+    
+    const selectedStartMinutes = parseInt(startTime.split(':')[0]) * 60 + parseInt(startTime.split(':')[1]);
+    const selectedEndMinutes = selectedStartMinutes + selectedJob.estimated_duration;
+
+    return jobs.filter(job => {
+      // Skip the job being scheduled and non-scheduled jobs
+      if (job.id === selectedJobId) return false;
+      if (job.scheduled_date !== scheduleDate) return false;
+      if (['finished', 'cancelled'].includes(job.status)) return false;
+      
+      // Check if same technique (potential resource conflict)
+      if (job.technique_id !== selectedJob.technique_id) return false;
+      
+      // Check time overlap
+      if (!job.start_time) return false;
+      const jobStartMinutes = parseInt(job.start_time.split(':')[0]) * 60 + parseInt(job.start_time.split(':')[1]);
+      const jobEndMinutes = jobStartMinutes + job.estimated_duration;
+      
+      // Check if times overlap
+      return (selectedStartMinutes < jobEndMinutes && selectedEndMinutes > jobStartMinutes);
+    });
+  }, [selectedJob, scheduleDate, startTime, jobs, selectedJobId]);
+
   const handleAlertClick = (alert: Alert) => {
     if (alert.canSchedule && alert.jobId) {
       setSelectedJobId(alert.jobId);
@@ -269,6 +295,37 @@ export function AlertsWidget() {
                   />
                 </div>
               </div>
+
+              {/* Conflict warnings */}
+              {conflicts.length > 0 && (
+                <div className="p-3 bg-destructive/10 border border-destructive/30 rounded-lg">
+                  <div className="flex items-center gap-2 text-destructive mb-2">
+                    <AlertCircle className="w-4 h-4" />
+                    <span className="font-medium text-sm">
+                      {conflicts.length} conflito{conflicts.length > 1 ? 's' : ''} detectado{conflicts.length > 1 ? 's' : ''}
+                    </span>
+                  </div>
+                  <div className="space-y-2">
+                    {conflicts.map(conflict => (
+                      <div key={conflict.id} className="text-xs text-muted-foreground">
+                        <span className="font-medium text-foreground">{conflict.order_number}</span>
+                        {' - '}{conflict.client}
+                        {conflict.start_time && (
+                          <span className="text-destructive/80">
+                            {' '}({conflict.start_time} - {
+                              (() => {
+                                const [h, m] = conflict.start_time.split(':').map(Number);
+                                const endMin = h * 60 + m + conflict.estimated_duration;
+                                return `${String(Math.floor(endMin / 60)).padStart(2, '0')}:${String(endMin % 60).padStart(2, '0')}`
+                              })()
+                            })
+                          </span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
           
@@ -276,8 +333,12 @@ export function AlertsWidget() {
             <Button variant="outline" onClick={() => setIsScheduleModalOpen(false)}>
               Cancelar
             </Button>
-            <Button onClick={handleScheduleSubmit} disabled={isSubmitting}>
-              {isSubmitting ? 'Agendando...' : 'Agendar'}
+            <Button 
+              onClick={handleScheduleSubmit} 
+              disabled={isSubmitting}
+              variant={conflicts.length > 0 ? "destructive" : "default"}
+            >
+              {isSubmitting ? 'Agendando...' : conflicts.length > 0 ? 'Agendar Mesmo Assim' : 'Agendar'}
             </Button>
           </DialogFooter>
         </DialogContent>
