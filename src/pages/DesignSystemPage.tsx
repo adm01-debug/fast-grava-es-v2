@@ -8626,8 +8626,8 @@ function OverviewSection({ onNavigate }: OverviewSectionProps) {
                   style={{ animationDelay: `${index * 50}ms` }}
                 >
                   <div className="flex items-start gap-3">
-                    <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                      <Icon className="h-5 w-5 text-primary" />
+                    <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-all duration-300">
+                      <Icon className="h-5 w-5 text-primary group-hover:animate-pulse transition-transform" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between gap-2">
