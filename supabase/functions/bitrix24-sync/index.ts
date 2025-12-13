@@ -57,11 +57,16 @@ async function getValidTokens(supabase: any): Promise<OAuthTokens | null> {
     if (refreshed) {
       return refreshed;
     }
+    
+    // Refresh failed - don't fallback to env tokens if we had stored tokens
+    // This prevents using stale env tokens when reauthorization is needed
+    return null;
   }
 
-  // No stored tokens or refresh failed, try environment variables
-  if (BITRIX24_ACCESS_TOKEN_ENV && BITRIX24_REFRESH_TOKEN_ENV) {
-    console.log('Using environment tokens...');
+  // No stored tokens, check if we should try environment variables
+  // Only use env tokens on first setup, not after reauthorization failures
+  if (BITRIX24_ACCESS_TOKEN_ENV && BITRIX24_REFRESH_TOKEN_ENV && !needsReauthorization) {
+    console.log('Using environment tokens for initial setup...');
     // Store initial tokens from environment with 1 hour expiry
     const expiresAt = new Date(Date.now() + 3600 * 1000);
     
@@ -81,30 +86,55 @@ async function getValidTokens(supabase: any): Promise<OAuthTokens | null> {
   return null;
 }
 
+// Track if reauthorization is needed
+let needsReauthorization = false;
+let reauthorizationReason = '';
+
 // Refresh access token using refresh token
 async function refreshAccessToken(refreshToken: string, supabase: any): Promise<OAuthTokens | null> {
   try {
     console.log('Refreshing Bitrix24 access token...');
     
+    if (!BITRIX24_CLIENT_ID || !BITRIX24_CLIENT_SECRET) {
+      console.error('Missing OAuth credentials (CLIENT_ID or CLIENT_SECRET)');
+      needsReauthorization = true;
+      reauthorizationReason = 'Credenciais OAuth não configuradas (CLIENT_ID ou CLIENT_SECRET)';
+      return null;
+    }
+    
     const refreshUrl = `${BITRIX24_DOMAIN}/oauth/token/?` + new URLSearchParams({
       grant_type: 'refresh_token',
-      client_id: BITRIX24_CLIENT_ID || '',
-      client_secret: BITRIX24_CLIENT_SECRET || '',
+      client_id: BITRIX24_CLIENT_ID,
+      client_secret: BITRIX24_CLIENT_SECRET,
       refresh_token: refreshToken
     });
 
     const response = await fetch(refreshUrl, { method: 'POST' });
+    const responseText = await response.text();
     
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Token refresh failed:', response.status, errorText);
+    let data;
+    try {
+      data = JSON.parse(responseText);
+    } catch {
+      console.error('Invalid JSON response from token refresh:', responseText);
+      needsReauthorization = true;
+      reauthorizationReason = 'Resposta inválida do servidor Bitrix24';
       return null;
     }
-
-    const data = await response.json();
     
-    if (data.error) {
-      console.error('Token refresh error:', data.error, data.error_description);
+    if (!response.ok || data.error) {
+      console.error('Token refresh failed:', response.status, data);
+      
+      // Check for specific errors that require reauthorization
+      if (data.error === 'invalid_token' || data.error === 'invalid_grant' || 
+          data.error === 'expired_token' || data.error === 'invalid_request') {
+        needsReauthorization = true;
+        reauthorizationReason = `Token inválido ou expirado: ${data.error_description || data.error}. Reautorização necessária.`;
+        
+        // Clear invalid tokens from database
+        await supabase.from('bitrix24_oauth_tokens').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+        console.log('Invalid tokens cleared from database');
+      }
       return null;
     }
 
@@ -121,10 +151,76 @@ async function refreshAccessToken(refreshToken: string, supabase: any): Promise<
     // Save new tokens to database
     await saveTokens(supabase, tokens);
     
+    // Reset reauthorization flag on success
+    needsReauthorization = false;
+    reauthorizationReason = '';
+    
     console.log('Token refreshed successfully, expires at:', expiresAt.toISOString());
     return tokens;
   } catch (error) {
     console.error('Token refresh exception:', error);
+    needsReauthorization = true;
+    reauthorizationReason = `Erro ao renovar token: ${error}`;
+    return null;
+  }
+}
+
+// Generate OAuth authorization URL for reauthorization
+function getAuthorizationUrl(redirectUri: string): string {
+  const params = new URLSearchParams({
+    client_id: BITRIX24_CLIENT_ID || '',
+    response_type: 'code',
+    redirect_uri: redirectUri
+  });
+  return `${BITRIX24_DOMAIN}/oauth/authorize/?${params.toString()}`;
+}
+
+// Exchange authorization code for tokens
+async function exchangeCodeForTokens(code: string, redirectUri: string, supabase: any): Promise<OAuthTokens | null> {
+  try {
+    console.log('Exchanging authorization code for tokens...');
+    
+    if (!BITRIX24_CLIENT_ID || !BITRIX24_CLIENT_SECRET) {
+      console.error('Missing OAuth credentials');
+      return null;
+    }
+    
+    const tokenUrl = `${BITRIX24_DOMAIN}/oauth/token/?` + new URLSearchParams({
+      grant_type: 'authorization_code',
+      client_id: BITRIX24_CLIENT_ID,
+      client_secret: BITRIX24_CLIENT_SECRET,
+      code: code,
+      redirect_uri: redirectUri
+    });
+
+    const response = await fetch(tokenUrl, { method: 'POST' });
+    const data = await response.json();
+    
+    if (!response.ok || data.error) {
+      console.error('Token exchange failed:', data);
+      return null;
+    }
+
+    const expiresIn = data.expires_in || 3600;
+    const expiresAt = new Date(Date.now() + expiresIn * 1000);
+
+    const tokens: OAuthTokens = {
+      access_token: data.access_token,
+      refresh_token: data.refresh_token,
+      expires_at: expiresAt
+    };
+
+    // Save new tokens to database
+    await saveTokens(supabase, tokens);
+    
+    // Reset reauthorization flag
+    needsReauthorization = false;
+    reauthorizationReason = '';
+    
+    console.log('Token exchange successful, expires at:', expiresAt.toISOString());
+    return tokens;
+  } catch (error) {
+    console.error('Token exchange exception:', error);
     return null;
   }
 }
@@ -698,10 +794,93 @@ serve(async (req) => {
         };
         break;
 
+      case 'oauth-status':
+        // Check OAuth status and if reauthorization is needed
+        const { data: currentTokens } = await supabase
+          .from('bitrix24_oauth_tokens')
+          .select('*')
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+        
+        let tokenStatus = 'no_tokens';
+        let tokenExpiry = null;
+        
+        if (currentTokens) {
+          const expiresAt = new Date(currentTokens.expires_at);
+          tokenExpiry = expiresAt.toISOString();
+          
+          if (expiresAt.getTime() > Date.now()) {
+            tokenStatus = 'valid';
+          } else {
+            tokenStatus = 'expired';
+          }
+        }
+        
+        const redirectUri = url.searchParams.get('redirect_uri') || `${url.origin}/bitrix24-sync?action=oauth-callback`;
+        
+        result = {
+          tokenStatus,
+          tokenExpiry,
+          needsReauthorization,
+          reauthorizationReason,
+          hasClientCredentials: !!(BITRIX24_CLIENT_ID && BITRIX24_CLIENT_SECRET),
+          authorizationUrl: getAuthorizationUrl(redirectUri),
+          instructions: {
+            pt: needsReauthorization 
+              ? 'Reautorização necessária. Acesse a URL de autorização para reconectar sua conta Bitrix24.'
+              : 'Tokens OAuth configurados. A renovação automática está ativa.',
+            en: needsReauthorization
+              ? 'Reauthorization required. Access the authorization URL to reconnect your Bitrix24 account.'
+              : 'OAuth tokens configured. Automatic refresh is active.'
+          }
+        };
+        break;
+
+      case 'oauth-callback':
+        // Handle OAuth callback with authorization code
+        const code = url.searchParams.get('code');
+        const callbackRedirectUri = url.searchParams.get('redirect_uri') || `${url.origin}/bitrix24-sync?action=oauth-callback`;
+        
+        if (!code) {
+          result = { 
+            error: 'No authorization code provided',
+            message: 'Use action=oauth-status to get the authorization URL'
+          };
+          break;
+        }
+        
+        const exchangedTokens = await exchangeCodeForTokens(code, callbackRedirectUri, supabase);
+        
+        if (exchangedTokens) {
+          result = {
+            success: true,
+            message: 'Autorização concluída com sucesso! Tokens OAuth renovados.',
+            expiresAt: exchangedTokens.expires_at.toISOString()
+          };
+        } else {
+          result = {
+            error: 'Token exchange failed',
+            message: 'Falha ao trocar código de autorização por tokens. Verifique as credenciais OAuth.'
+          };
+        }
+        break;
+
+      case 'clear-tokens':
+        // Clear all stored tokens (for troubleshooting)
+        await supabase.from('bitrix24_oauth_tokens').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+        needsReauthorization = true;
+        reauthorizationReason = 'Tokens limpos manualmente';
+        result = {
+          success: true,
+          message: 'Tokens OAuth removidos. Reautorização necessária.'
+        };
+        break;
+
       default:
         result = { 
           error: 'Invalid action',
-          availableActions: ['pull', 'push', 'webhook', 'test', 'history', 'fields', 'mapping']
+          availableActions: ['pull', 'push', 'webhook', 'test', 'history', 'fields', 'mapping', 'oauth-status', 'oauth-callback', 'clear-tokens']
         };
     }
 

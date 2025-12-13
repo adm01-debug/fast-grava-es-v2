@@ -12,13 +12,23 @@ interface SyncResult {
   error?: string;
 }
 
+interface OAuthStatus {
+  tokenStatus: 'valid' | 'expired' | 'no_tokens';
+  tokenExpiry: string | null;
+  needsReauthorization: boolean;
+  reauthorizationReason: string;
+  hasClientCredentials: boolean;
+  authorizationUrl: string;
+}
+
 export const useBitrix24Sync = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [lastSync, setLastSync] = useState<Date | null>(null);
+  const [oauthStatus, setOAuthStatus] = useState<OAuthStatus | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const callBitrixSync = useCallback(async (action: string, body?: any): Promise<SyncResult> => {
+  const callBitrixSync = useCallback(async (action: string, body?: any): Promise<any> => {
     const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
     const url = `https://${projectId}.supabase.co/functions/v1/bitrix24-sync?action=${action}`;
 
@@ -31,13 +41,54 @@ export const useBitrix24Sync = () => {
       body: body ? JSON.stringify(body) : undefined
     });
 
+    const result = await response.json();
+    
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || 'Sync failed');
+      throw new Error(result.error || 'Sync failed');
     }
 
-    return response.json();
+    return result;
   }, []);
+
+  const checkOAuthStatus = useCallback(async (): Promise<OAuthStatus> => {
+    setIsLoading(true);
+    try {
+      const result = await callBitrixSync('oauth-status');
+      setOAuthStatus(result);
+      return result;
+    } catch (error: any) {
+      toast({
+        title: 'Erro ao verificar OAuth',
+        description: error.message,
+        variant: 'destructive'
+      });
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  }, [callBitrixSync, toast]);
+
+  const clearTokens = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const result = await callBitrixSync('clear-tokens');
+      toast({
+        title: 'Tokens removidos',
+        description: result.message
+      });
+      await checkOAuthStatus();
+      return result;
+    } catch (error: any) {
+      toast({
+        title: 'Erro ao limpar tokens',
+        description: error.message,
+        variant: 'destructive'
+      });
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  }, [callBitrixSync, toast, checkOAuthStatus]);
 
   const testConnection = useCallback(async () => {
     setIsLoading(true);
@@ -49,16 +100,26 @@ export const useBitrix24Sync = () => {
       });
       return result;
     } catch (error: any) {
-      toast({
-        title: 'Erro de conexão',
-        description: error.message,
-        variant: 'destructive'
-      });
+      // Check if it's an auth error
+      if (error.message.includes('invalid_token') || error.message.includes('expired')) {
+        await checkOAuthStatus();
+        toast({
+          title: 'Token expirado',
+          description: 'Reautorização necessária. Use o botão "Reautorizar" abaixo.',
+          variant: 'destructive'
+        });
+      } else {
+        toast({
+          title: 'Erro de conexão',
+          description: error.message,
+          variant: 'destructive'
+        });
+      }
       throw error;
     } finally {
       setIsLoading(false);
     }
-  }, [callBitrixSync, toast]);
+  }, [callBitrixSync, toast, checkOAuthStatus]);
 
   const pullFromBitrix = useCallback(async (categoryId?: string) => {
     setIsLoading(true);
@@ -75,16 +136,26 @@ export const useBitrix24Sync = () => {
       
       return result;
     } catch (error: any) {
-      toast({
-        title: 'Erro na sincronização',
-        description: error.message,
-        variant: 'destructive'
-      });
+      // Check if it's an auth error
+      if (error.message.includes('invalid_token') || error.message.includes('expired') || error.message.includes('authentication')) {
+        await checkOAuthStatus();
+        toast({
+          title: 'Token expirado',
+          description: 'Reautorização necessária. Use o botão "Reautorizar" abaixo.',
+          variant: 'destructive'
+        });
+      } else {
+        toast({
+          title: 'Erro na sincronização',
+          description: error.message,
+          variant: 'destructive'
+        });
+      }
       throw error;
     } finally {
       setIsLoading(false);
     }
-  }, [callBitrixSync, toast, queryClient]);
+  }, [callBitrixSync, toast, queryClient, checkOAuthStatus]);
 
   const pushToBitrix = useCallback(async (jobId: string, status: string) => {
     try {
@@ -108,8 +179,11 @@ export const useBitrix24Sync = () => {
   return {
     isLoading,
     lastSync,
+    oauthStatus,
     testConnection,
     pullFromBitrix,
-    pushToBitrix
+    pushToBitrix,
+    checkOAuthStatus,
+    clearTokens
   };
 };
