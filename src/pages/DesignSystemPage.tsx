@@ -8616,6 +8616,7 @@ function OverviewSection({ onNavigate }: OverviewSectionProps) {
       {/* Stats Overview */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <Card variant="stat" className="hover-lift-sm group relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/10 bg-[length:200%_200%] animate-[gradient-shift_4s_ease_infinite]" />
           <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
           <CardContent className="p-4 relative">
             <div className="flex items-center gap-3">
@@ -8630,6 +8631,7 @@ function OverviewSection({ onNavigate }: OverviewSectionProps) {
           </CardContent>
         </Card>
         <Card variant="stat" className="hover-lift-sm group relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-success/5 via-transparent to-success/10 bg-[length:200%_200%] animate-[gradient-shift_4s_ease_infinite]" />
           <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
           <CardContent className="p-4 relative">
             <div className="flex items-center gap-3">
@@ -8644,6 +8646,7 @@ function OverviewSection({ onNavigate }: OverviewSectionProps) {
           </CardContent>
         </Card>
         <Card variant="stat" className="hover-lift-sm group relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-warning/5 via-transparent to-warning/10 bg-[length:200%_200%] animate-[gradient-shift_4s_ease_infinite]" />
           <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
           <CardContent className="p-4 relative">
             <div className="flex items-center gap-3">
@@ -8658,6 +8661,7 @@ function OverviewSection({ onNavigate }: OverviewSectionProps) {
           </CardContent>
         </Card>
         <Card variant="stat" className="hover-lift-sm group relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-info/5 via-transparent to-info/10 bg-[length:200%_200%] animate-[gradient-shift_4s_ease_infinite]" />
           <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
           <CardContent className="p-4 relative">
             <div className="flex items-center gap-3">
