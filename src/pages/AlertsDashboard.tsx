@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { JobDetailsModal } from "@/components/jobs/JobDetailsModal";
+import { PushNotificationManager } from "@/components/notifications/PushNotificationManager";
 import { 
   AlertTriangle, 
   Clock, 
@@ -523,6 +524,9 @@ export default function AlertsDashboard() {
 
         {/* Efficiency Alert History */}
         <EfficiencyAlertHistoryWidget />
+
+        {/* Push Notifications Manager */}
+        <PushNotificationManager />
       </div>
     </div>
   );

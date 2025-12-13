@@ -1,6 +1,7 @@
 import { ReactNode } from 'react';
 import { AppSidebar } from './AppSidebar';
 import { AssistantButton } from '../assistant/AssistantButton';
+import { NotificationIntegrator } from '../notifications/NotificationIntegrator';
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -14,6 +15,7 @@ export function MainLayout({ children }: MainLayoutProps) {
         {children}
       </main>
       <AssistantButton />
+      <NotificationIntegrator />
     </div>
   );
 }
