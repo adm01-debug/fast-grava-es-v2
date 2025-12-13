@@ -8620,7 +8620,7 @@ function OverviewSection({ onNavigate }: OverviewSectionProps) {
           <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
           <CardContent className="p-4 relative">
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+              <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-110">
                 <LayoutGrid className="h-5 w-5 text-primary transition-transform duration-300 group-hover:rotate-12" />
               </div>
               <div>
@@ -8635,7 +8635,7 @@ function OverviewSection({ onNavigate }: OverviewSectionProps) {
           <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
           <CardContent className="p-4 relative">
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-lg bg-success/10 flex items-center justify-center shrink-0">
+              <div className="h-10 w-10 rounded-lg bg-success/10 flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-110">
                 <Layers className="h-5 w-5 text-success transition-transform duration-300 group-hover:rotate-12" />
               </div>
               <div>
@@ -8650,7 +8650,7 @@ function OverviewSection({ onNavigate }: OverviewSectionProps) {
           <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
           <CardContent className="p-4 relative">
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-lg bg-warning/10 flex items-center justify-center shrink-0">
+              <div className="h-10 w-10 rounded-lg bg-warning/10 flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-110">
                 <Sparkles className="h-5 w-5 text-warning transition-transform duration-300 group-hover:rotate-12" />
               </div>
               <div>
@@ -8665,7 +8665,7 @@ function OverviewSection({ onNavigate }: OverviewSectionProps) {
           <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
           <CardContent className="p-4 relative">
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-lg bg-info/10 flex items-center justify-center shrink-0">
+              <div className="h-10 w-10 rounded-lg bg-info/10 flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-110">
                 <Copy className="h-5 w-5 text-info transition-transform duration-300 group-hover:rotate-12" />
               </div>
               <div>
