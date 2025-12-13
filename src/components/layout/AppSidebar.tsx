@@ -18,7 +18,8 @@ import {
   UserCircle,
   LogOut,
   Zap,
-  Bot
+  Bot,
+  QrCode
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -43,6 +44,7 @@ const mainNavItems: NavItem[] = [
   { icon: BarChart3, label: 'KPIs', href: '/kpis' },
   { icon: AlertTriangle, label: 'Alertas', href: '/alerts', badge: 3 },
   { icon: UserCircle, label: 'Visão Operador', href: '/operator' },
+  { icon: QrCode, label: 'Scanner QR', href: '/scanner' },
   { icon: Bot, label: 'Assistente IA', href: '/assistant' },
 ];
 
@@ -66,7 +68,7 @@ export function AppSidebar() {
   // Filter nav items based on role
   const filteredMainNavItems = mainNavItems.filter(item => {
     if (role === 'operator') {
-      return ['/operator', '/alerts', '/assistant'].includes(item.href);
+      return ['/operator', '/alerts', '/assistant', '/scanner'].includes(item.href);
     }
     if (role === 'manager') {
       return ['/', '/calendar/daily', '/calendar/weekly', '/kpis', '/alerts', '/efficiency', '/assistant'].includes(item.href);
