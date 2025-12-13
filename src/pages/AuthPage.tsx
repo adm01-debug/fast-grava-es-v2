@@ -7,8 +7,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
-import { Loader2, LogIn, UserPlus, Printer } from 'lucide-react';
+import { Loader2, LogIn, UserPlus, Printer, Moon, Sun } from 'lucide-react';
 import { z } from 'zod';
+import { useTheme } from 'next-themes';
 
 const loginSchema = z.object({
   email: z.string().email('Email inválido'),
@@ -28,6 +29,7 @@ const signupSchema = z.object({
 export default function AuthPage() {
   const navigate = useNavigate();
   const { signIn, signUp, user } = useAuth();
+  const { theme, setTheme } = useTheme();
   
   const [isLoading, setIsLoading] = useState(false);
   const [loginEmail, setLoginEmail] = useState('');
@@ -120,11 +122,23 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-muted/50 p-4 relative">
+      {/* Theme toggle */}
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+        className="absolute top-4 right-4 h-9 w-9"
+        title={theme === 'dark' ? 'Mudar para tema claro' : 'Mudar para tema escuro'}
+      >
+        <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+        <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+      </Button>
+
       <div className="w-full max-w-md space-y-8 animate-fade-in">
         {/* Logo/Header */}
         <div className="text-center space-y-2">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl gradient-primary mb-4">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl gradient-primary mb-4 shadow-lg shadow-primary/30">
             <Printer className="h-8 w-8 text-white" />
           </div>
           <h1 className="text-3xl font-display font-bold">
@@ -136,7 +150,7 @@ export default function AuthPage() {
         </div>
 
         {/* Auth Card */}
-        <Card className="glass-card border-border/50">
+        <Card className="glass-card border-border/50 card-shadow">
           <CardContent className="pt-6">
             <Tabs defaultValue="login" className="w-full">
               <TabsList className="grid w-full grid-cols-2 mb-6">
