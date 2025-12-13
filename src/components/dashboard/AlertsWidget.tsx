@@ -1,10 +1,16 @@
-import { AlertTriangle, Clock, AlertCircle } from 'lucide-react';
+import { AlertTriangle, Clock, AlertCircle, Calendar } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
-import { formatDistanceToNow } from 'date-fns';
+import { format, formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useJobs } from '@/hooks/useJobs';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 interface Alert {
   id: string;
@@ -12,10 +18,17 @@ interface Alert {
   title: string;
   description: string;
   time: Date;
+  jobId?: string;
+  canSchedule?: boolean;
 }
 
 export function AlertsWidget() {
-  const { data: jobs = [] } = useJobs();
+  const { data: jobs = [], refetch } = useJobs();
+  const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
+  const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
+  const [scheduleDate, setScheduleDate] = useState('');
+  const [startTime, setStartTime] = useState('08:00');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Generate alerts from real job data
   const alerts = useMemo(() => {
@@ -35,6 +48,8 @@ export function AlertsWidget() {
         title: 'Urgente Sem Agendamento',
         description: `${job.order_number} (${job.client}) precisa ser agendado`,
         time: job.created_at ? new Date(job.created_at) : now,
+        jobId: job.id,
+        canSchedule: true,
       });
     });
 
@@ -64,7 +79,6 @@ export function AlertsWidget() {
       });
     });
 
-    // High priority jobs without scheduling
     jobs.filter(job => 
       job.priority === 'high' && 
       !job.scheduled_date && 
@@ -76,6 +90,8 @@ export function AlertsWidget() {
         title: 'Alta Prioridade Sem Data',
         description: `${job.order_number} aguarda agendamento`,
         time: job.created_at ? new Date(job.created_at) : now,
+        jobId: job.id,
+        canSchedule: true,
       });
     });
 
@@ -100,6 +116,51 @@ export function AlertsWidget() {
     return alertList.slice(0, 6); // Show max 6 alerts
   }, [jobs]);
 
+  const selectedJob = useMemo(() => {
+    if (!selectedJobId) return null;
+    return jobs.find(j => j.id === selectedJobId) || null;
+  }, [selectedJobId, jobs]);
+
+  const handleAlertClick = (alert: Alert) => {
+    if (alert.canSchedule && alert.jobId) {
+      setSelectedJobId(alert.jobId);
+      setScheduleDate(format(new Date(), 'yyyy-MM-dd'));
+      setStartTime('08:00');
+      setIsScheduleModalOpen(true);
+    }
+  };
+
+  const handleScheduleSubmit = async () => {
+    if (!selectedJobId || !scheduleDate) {
+      toast.error('Selecione uma data');
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const { error } = await supabase
+        .from('jobs')
+        .update({
+          scheduled_date: scheduleDate,
+          start_time: startTime,
+          status: 'scheduled',
+        })
+        .eq('id', selectedJobId);
+
+      if (error) throw error;
+
+      toast.success('Job agendado com sucesso!');
+      setIsScheduleModalOpen(false);
+      setSelectedJobId(null);
+      refetch();
+    } catch (error) {
+      console.error('Error scheduling job:', error);
+      toast.error('Erro ao agendar job');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const alertIcons = {
     delayed: AlertTriangle,
     conflict: AlertCircle,
@@ -113,48 +174,114 @@ export function AlertsWidget() {
   };
 
   return (
-    <Card className="glass-card card-interactive animate-fade-in-up opacity-0 [animation-fill-mode:forwards] [animation-delay:0.15s]">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-lg font-display flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-status-delayed/20 flex items-center justify-center animate-glow-pulse">
-            <AlertTriangle className="w-4 h-4 text-status-delayed" />
-          </div>
-          <span className="gradient-text">Alertas</span>
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-3">
-        {alerts.length === 0 ? (
-          <p className="text-sm text-muted-foreground text-center py-4">Nenhum alerta no momento</p>
-        ) : (
-          alerts.map((alert) => {
-            const Icon = alertIcons[alert.type];
-            
-            return (
-              <div 
-                key={alert.id}
-                className={cn(
-                  "flex items-start gap-3 p-3 rounded-lg bg-secondary/50 hover:bg-secondary/80 transition-all cursor-pointer border border-border/20",
-                  "hover:-translate-x-1 hover:border-primary/30"
-                )}
-              >
-                <div className={cn(
-                  'w-8 h-8 rounded-lg flex items-center justify-center shrink-0',
-                  alertColors[alert.type]
-                )}>
-                  <Icon className="w-4 h-4" />
+    <>
+      <Card className="glass-card card-interactive animate-fade-in-up opacity-0 [animation-fill-mode:forwards] [animation-delay:0.15s]">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-lg font-display flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg bg-status-delayed/20 flex items-center justify-center animate-glow-pulse">
+              <AlertTriangle className="w-4 h-4 text-status-delayed" />
+            </div>
+            <span className="gradient-text">Alertas</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          {alerts.length === 0 ? (
+            <p className="text-sm text-muted-foreground text-center py-4">Nenhum alerta no momento</p>
+          ) : (
+            alerts.map((alert) => {
+              const Icon = alertIcons[alert.type];
+              
+              return (
+                <div 
+                  key={alert.id}
+                  onClick={() => handleAlertClick(alert)}
+                  className={cn(
+                    "flex items-start gap-3 p-3 rounded-lg bg-secondary/50 hover:bg-secondary/80 transition-all cursor-pointer border border-border/20",
+                    "hover:-translate-x-1 hover:border-primary/30",
+                    alert.canSchedule && "group"
+                  )}
+                >
+                  <div className={cn(
+                    'w-8 h-8 rounded-lg flex items-center justify-center shrink-0',
+                    alertColors[alert.type]
+                  )}>
+                    <Icon className="w-4 h-4" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-foreground">{alert.title}</p>
+                    <p className="text-xs text-muted-foreground truncate">{alert.description}</p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {formatDistanceToNow(alert.time, { addSuffix: true, locale: ptBR })}
+                    </p>
+                  </div>
+                  {alert.canSchedule && (
+                    <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Calendar className="w-4 h-4 text-primary" />
+                    </div>
+                  )}
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-foreground">{alert.title}</p>
-                  <p className="text-xs text-muted-foreground truncate">{alert.description}</p>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    {formatDistanceToNow(alert.time, { addSuffix: true, locale: ptBR })}
-                  </p>
+              );
+            })
+          )}
+        </CardContent>
+      </Card>
+
+      <Dialog open={isScheduleModalOpen} onOpenChange={setIsScheduleModalOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Calendar className="w-5 h-5 text-primary" />
+              Agendar Job
+            </DialogTitle>
+          </DialogHeader>
+          
+          {selectedJob && (
+            <div className="space-y-4">
+              <div className="p-3 bg-secondary/50 rounded-lg">
+                <p className="font-medium">{selectedJob.order_number}</p>
+                <p className="text-sm text-muted-foreground">{selectedJob.client} - {selectedJob.product}</p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {selectedJob.quantity} peças • {selectedJob.estimated_duration} min estimados
+                </p>
+              </div>
+              
+              <div className="grid gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="schedule-date">Data</Label>
+                  <Input
+                    id="schedule-date"
+                    type="date"
+                    value={scheduleDate}
+                    onChange={(e) => setScheduleDate(e.target.value)}
+                    min={format(new Date(), 'yyyy-MM-dd')}
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="start-time">Horário de Início</Label>
+                  <Input
+                    id="start-time"
+                    type="time"
+                    value={startTime}
+                    onChange={(e) => setStartTime(e.target.value)}
+                    min="07:00"
+                    max="20:00"
+                  />
                 </div>
               </div>
-            );
-          })
-        )}
-      </CardContent>
-    </Card>
+            </div>
+          )}
+          
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsScheduleModalOpen(false)}>
+              Cancelar
+            </Button>
+            <Button onClick={handleScheduleSubmit} disabled={isSubmitting}>
+              {isSubmitting ? 'Agendando...' : 'Agendar'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
