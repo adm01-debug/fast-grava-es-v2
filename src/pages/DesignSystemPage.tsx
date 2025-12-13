@@ -4600,6 +4600,41 @@ function TablesSection() {
               </TableRow>
             </TableFooter>
           </Table>
+
+          {/* Code Examples */}
+          <div className="space-y-4 pt-4 border-t">
+            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Exemplos de Código</h4>
+            <CodeBlock
+              label="Tabela Básica"
+              code={`<Table>
+  <TableCaption>Lista de faturas</TableCaption>
+  <TableHeader>
+    <TableRow>
+      <TableHead className="w-[100px]">Fatura</TableHead>
+      <TableHead>Status</TableHead>
+      <TableHead>Método</TableHead>
+      <TableHead className="text-right">Valor</TableHead>
+    </TableRow>
+  </TableHeader>
+  <TableBody>
+    {data.map((item) => (
+      <TableRow key={item.id}>
+        <TableCell className="font-medium">{item.id}</TableCell>
+        <TableCell>{item.status}</TableCell>
+        <TableCell>{item.method}</TableCell>
+        <TableCell className="text-right">{item.amount}</TableCell>
+      </TableRow>
+    ))}
+  </TableBody>
+  <TableFooter>
+    <TableRow>
+      <TableCell colSpan={3}>Total</TableCell>
+      <TableCell className="text-right">R$ 1.750,00</TableCell>
+    </TableRow>
+  </TableFooter>
+</Table>`}
+            />
+          </div>
         </CardContent>
       </Card>
 
@@ -4633,6 +4668,26 @@ function TablesSection() {
               ))}
             </TableBody>
           </Table>
+
+          {/* Code Examples */}
+          <div className="space-y-4 pt-4 border-t">
+            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Exemplos de Código</h4>
+            <CodeBlock
+              label="Tabela Zebrada"
+              code={`{/* Aplique bg-muted/50 em linhas alternadas */}
+<TableBody>
+  {data.map((item, index) => (
+    <TableRow 
+      key={item.id} 
+      className={index % 2 === 0 ? "bg-muted/50" : ""}
+    >
+      <TableCell>{item.id}</TableCell>
+      ...
+    </TableRow>
+  ))}
+</TableBody>`}
+            />
+          </div>
         </CardContent>
       </Card>
 
@@ -4670,6 +4725,28 @@ function TablesSection() {
               ))}
             </TableBody>
           </Table>
+
+          {/* Code Examples */}
+          <div className="space-y-4 pt-4 border-t">
+            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Exemplos de Código</h4>
+            <CodeBlock
+              label="Tabela com Badges"
+              code={`{/* Helper function para badges de status */}
+const getStatusBadge = (status: string) => {
+  const statusMap = {
+    production: { label: "Em Produção", variant: "default" },
+    queue: { label: "Na Fila", variant: "secondary" },
+    finished: { label: "Finalizado", variant: "outline" },
+    delayed: { label: "Atrasado", variant: "destructive" },
+  };
+  const { label, variant } = statusMap[status];
+  return <Badge variant={variant}>{label}</Badge>;
+};
+
+{/* Na tabela */}
+<TableCell>{getStatusBadge(job.status)}</TableCell>`}
+            />
+          </div>
         </CardContent>
       </Card>
 
@@ -4721,6 +4798,33 @@ function TablesSection() {
               ))}
             </TableBody>
           </Table>
+
+          {/* Code Examples */}
+          <div className="space-y-4 pt-4 border-t">
+            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Exemplos de Código</h4>
+            <CodeBlock
+              label="Tabela com Ações"
+              code={`<TableHead className="text-center">Ações</TableHead>
+
+<TableCell className="text-center">
+  <div className="flex items-center justify-center gap-2">
+    <Button variant="ghost" size="icon" className="h-8 w-8">
+      <Eye className="h-4 w-4" />
+    </Button>
+    <Button variant="ghost" size="icon" className="h-8 w-8">
+      <Edit className="h-4 w-4" />
+    </Button>
+    <Button 
+      variant="ghost" 
+      size="icon" 
+      className="h-8 w-8 text-destructive hover:text-destructive"
+    >
+      <Trash2 className="h-4 w-4" />
+    </Button>
+  </div>
+</TableCell>`}
+            />
+          </div>
         </CardContent>
       </Card>
 
@@ -4754,6 +4858,43 @@ function TablesSection() {
               ))}
             </TableBody>
           </Table>
+
+          {/* Code Examples */}
+          <div className="space-y-4 pt-4 border-t">
+            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Exemplos de Código</h4>
+            <CodeBlock
+              label="Tabela com Seleção"
+              code={`<TableHeader>
+  <TableRow>
+    <TableHead className="w-[50px]">
+      <Checkbox 
+        checked={allSelected}
+        onCheckedChange={handleSelectAll}
+      />
+    </TableHead>
+    ...
+  </TableRow>
+</TableHeader>
+
+<TableBody>
+  {data.map((item) => (
+    <TableRow 
+      key={item.id} 
+      className="cursor-pointer"
+      data-state={selected.includes(item.id) ? "selected" : undefined}
+    >
+      <TableCell>
+        <Checkbox 
+          checked={selected.includes(item.id)}
+          onCheckedChange={() => handleSelect(item.id)}
+        />
+      </TableCell>
+      ...
+    </TableRow>
+  ))}
+</TableBody>`}
+            />
+          </div>
         </CardContent>
       </Card>
 
@@ -4848,6 +4989,33 @@ function TablesSection() {
               </PaginationItem>
             </PaginationContent>
           </Pagination>
+
+          {/* Code Examples */}
+          <div className="space-y-4 pt-4 border-t">
+            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Exemplos de Código</h4>
+            <CodeBlock
+              label="Paginação"
+              code={`<Pagination>
+  <PaginationContent>
+    <PaginationItem>
+      <PaginationPrevious href="#" />
+    </PaginationItem>
+    <PaginationItem>
+      <PaginationLink href="#" isActive>1</PaginationLink>
+    </PaginationItem>
+    <PaginationItem>
+      <PaginationLink href="#">2</PaginationLink>
+    </PaginationItem>
+    <PaginationItem>
+      <PaginationEllipsis />
+    </PaginationItem>
+    <PaginationItem>
+      <PaginationNext href="#" />
+    </PaginationItem>
+  </PaginationContent>
+</Pagination>`}
+            />
+          </div>
         </CardContent>
       </Card>
 
