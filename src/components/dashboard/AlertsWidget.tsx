@@ -1,13 +1,14 @@
-import { AlertTriangle, Clock, AlertCircle, Calendar } from 'lucide-react';
+import { AlertTriangle, Clock, AlertCircle, Calendar, Settings2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 import { format, formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { useJobs } from '@/hooks/useJobs';
+import { useJobs, useMachines } from '@/hooks/useJobs';
 import { useMemo, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -24,10 +25,12 @@ interface Alert {
 
 export function AlertsWidget() {
   const { data: jobs = [], refetch } = useJobs();
+  const { data: machines = [] } = useMachines();
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
   const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
   const [scheduleDate, setScheduleDate] = useState('');
   const [startTime, setStartTime] = useState('08:00');
+  const [selectedMachineId, setSelectedMachineId] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Generate alerts from real job data
@@ -121,7 +124,13 @@ export function AlertsWidget() {
     return jobs.find(j => j.id === selectedJobId) || null;
   }, [selectedJobId, jobs]);
 
-  // Detect conflicts for the selected date/time
+  // Filter machines by selected job's technique
+  const availableMachines = useMemo(() => {
+    if (!selectedJob) return [];
+    return machines.filter(m => m.technique_id === selectedJob.technique_id && m.is_active);
+  }, [selectedJob, machines]);
+
+  // Detect conflicts for the selected date/time/machine
   const conflicts = useMemo(() => {
     if (!selectedJob || !scheduleDate || !startTime) return [];
     
@@ -134,8 +143,11 @@ export function AlertsWidget() {
       if (job.scheduled_date !== scheduleDate) return false;
       if (['finished', 'cancelled'].includes(job.status)) return false;
       
-      // Check if same technique (potential resource conflict)
-      if (job.technique_id !== selectedJob.technique_id) return false;
+      // If machine is selected, check for same machine conflict
+      if (selectedMachineId && job.machine_id !== selectedMachineId) return false;
+      
+      // If no machine selected, check for same technique conflict
+      if (!selectedMachineId && job.technique_id !== selectedJob.technique_id) return false;
       
       // Check time overlap
       if (!job.start_time) return false;
@@ -145,13 +157,14 @@ export function AlertsWidget() {
       // Check if times overlap
       return (selectedStartMinutes < jobEndMinutes && selectedEndMinutes > jobStartMinutes);
     });
-  }, [selectedJob, scheduleDate, startTime, jobs, selectedJobId]);
+  }, [selectedJob, scheduleDate, startTime, jobs, selectedJobId, selectedMachineId]);
 
   const handleAlertClick = (alert: Alert) => {
     if (alert.canSchedule && alert.jobId) {
       setSelectedJobId(alert.jobId);
       setScheduleDate(format(new Date(), 'yyyy-MM-dd'));
       setStartTime('08:00');
+      setSelectedMachineId('');
       setIsScheduleModalOpen(true);
     }
   };
@@ -170,6 +183,7 @@ export function AlertsWidget() {
           scheduled_date: scheduleDate,
           start_time: startTime,
           status: 'scheduled',
+          machine_id: selectedMachineId || null,
         })
         .eq('id', selectedJobId);
 
@@ -293,6 +307,31 @@ export function AlertsWidget() {
                     min="07:00"
                     max="20:00"
                   />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="machine-select">Máquina</Label>
+                  <Select value={selectedMachineId} onValueChange={setSelectedMachineId}>
+                    <SelectTrigger id="machine-select">
+                      <SelectValue placeholder="Selecione uma máquina (opcional)" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {availableMachines.length === 0 ? (
+                        <div className="p-2 text-sm text-muted-foreground text-center">
+                          Nenhuma máquina disponível para esta técnica
+                        </div>
+                      ) : (
+                        availableMachines.map(machine => (
+                          <SelectItem key={machine.id} value={machine.id}>
+                            <div className="flex items-center gap-2">
+                              <Settings2 className="w-3 h-3 text-muted-foreground" />
+                              {machine.code} - {machine.name}
+                            </div>
+                          </SelectItem>
+                        ))
+                      )}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
 
