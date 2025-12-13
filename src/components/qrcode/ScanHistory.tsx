@@ -32,7 +32,9 @@ import {
   Filter,
   X,
   CalendarIcon,
-  Bell
+  Bell,
+  Volume2,
+  VolumeX
 } from "lucide-react";
 import { formatDistanceToNow, format, isWithinInterval, startOfDay, endOfDay } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -53,11 +55,35 @@ const actionConfig: Record<string, { label: string; icon: typeof Play; color: st
   finish: { label: "Finalizou", icon: CheckCircle2, color: "text-purple-400 bg-purple-500/20" },
 };
 
+// Function to play notification sound using Web Audio API
+const playNotificationSound = () => {
+  try {
+    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+
+    oscillator.frequency.setValueAtTime(880, audioContext.currentTime); // A5 note
+    oscillator.frequency.setValueAtTime(1046.5, audioContext.currentTime + 0.1); // C6 note
+    
+    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 0.3);
+  } catch (error) {
+    console.log('Could not play notification sound:', error);
+  }
+};
+
 export const ScanHistory = ({ jobId, limit = 200 }: ScanHistoryProps) => {
   const [operatorFilter, setOperatorFilter] = useState<string>("all");
   const [actionFilter, setActionFilter] = useState<string>("all");
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
   const [showFilters, setShowFilters] = useState(false);
+  const [soundEnabled, setSoundEnabled] = useState(true);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -112,6 +138,11 @@ export const ScanHistory = ({ jobId, limit = 200 }: ScanHistoryProps) => {
           
           // Only show notification if not filtering by specific job, or if it's for this job
           if (jobId && newScan.job_id !== jobId) return;
+
+          // Play notification sound
+          if (soundEnabled) {
+            playNotificationSound();
+          }
 
           // Fetch operator name
           const { data: profile } = await supabase
@@ -226,20 +257,35 @@ export const ScanHistory = ({ jobId, limit = 200 }: ScanHistoryProps) => {
               </Badge>
             )}
           </CardTitle>
-          <Button
-            variant={showFilters ? "secondary" : "outline"}
-            size="sm"
-            onClick={() => setShowFilters(!showFilters)}
-            className="gap-2"
-          >
-            <Filter className="h-4 w-4" />
-            Filtros
-            {hasActiveFilters && (
-              <Badge variant="default" className="h-5 w-5 p-0 flex items-center justify-center text-xs">
-                !
-              </Badge>
-            )}
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant={soundEnabled ? "secondary" : "ghost"}
+              size="sm"
+              onClick={() => setSoundEnabled(!soundEnabled)}
+              className="gap-1"
+              title={soundEnabled ? "Som ativado" : "Som desativado"}
+            >
+              {soundEnabled ? (
+                <Volume2 className="h-4 w-4 text-primary" />
+              ) : (
+                <VolumeX className="h-4 w-4 text-muted-foreground" />
+              )}
+            </Button>
+            <Button
+              variant={showFilters ? "secondary" : "outline"}
+              size="sm"
+              onClick={() => setShowFilters(!showFilters)}
+              className="gap-2"
+            >
+              <Filter className="h-4 w-4" />
+              Filtros
+              {hasActiveFilters && (
+                <Badge variant="default" className="h-5 w-5 p-0 flex items-center justify-center text-xs">
+                  !
+                </Badge>
+              )}
+            </Button>
+          </div>
         </div>
       </CardHeader>
       
