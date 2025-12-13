@@ -303,6 +303,8 @@ export default function DesignSystemPage() {
                     <Button variant="link">Link</Button>
                     <Button variant="destructive">Destructive</Button>
                     <Button variant="success">Success</Button>
+                    <Button variant="warning">Warning</Button>
+                    <Button variant="subtle">Subtle</Button>
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                     <CodeBlock code={'<Button variant="default">\n  Texto\n</Button>'} label="Default" />
@@ -314,6 +316,10 @@ export default function DesignSystemPage() {
                     <CodeBlock code={'<Button variant="ghost">\n  Texto\n</Button>'} label="Ghost" />
                     <CodeBlock code={'<Button variant="link">\n  Texto\n</Button>'} label="Link" />
                     <CodeBlock code={'<Button variant="success">\n  Texto\n</Button>'} label="Success" />
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <CodeBlock code={'<Button variant="warning">\n  Texto\n</Button>'} label="Warning" />
+                    <CodeBlock code={'<Button variant="subtle">\n  Texto\n</Button>'} label="Subtle" />
                   </div>
                 </div>
 
@@ -373,6 +379,11 @@ export default function DesignSystemPage() {
                   {/* Visual Examples */}
                   <div className="flex flex-wrap items-end gap-4">
                     <div className="flex flex-col items-center gap-2">
+                      <Button size="icon-xs" variant="outline"><Star className="h-3 w-3" /></Button>
+                      <span className="text-xs text-muted-foreground">icon-xs</span>
+                      <span className="text-[10px] text-muted-foreground/60">24×24px</span>
+                    </div>
+                    <div className="flex flex-col items-center gap-2">
                       <Button size="icon-sm" variant="outline"><Star /></Button>
                       <span className="text-xs text-muted-foreground">icon-sm</span>
                       <span className="text-[10px] text-muted-foreground/60">32×32px</span>
@@ -402,7 +413,11 @@ export default function DesignSystemPage() {
                   {/* Code Examples */}
                   <div className="space-y-3 mt-4">
                     <h5 className="text-xs font-medium text-muted-foreground">Código de Uso</h5>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+                      <CodeBlock 
+                        code={'<Button size="icon-xs">\n  <Star className="h-3 w-3" />\n</Button>'} 
+                        label="Icon XS (24px)"
+                      />
                       <CodeBlock 
                         code={'<Button size="icon-sm">\n  <Plus />\n</Button>'} 
                         label="Icon Small (32px)"
@@ -558,6 +573,35 @@ export default function DesignSystemPage() {
                       <code className="text-xs text-primary">variant="outline"</code>
                     </CardContent>
                   </Card>
+
+                  {/* Stat */}
+                  <Card variant="stat">
+                    <CardHeader>
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <TrendingUp className="h-4 w-4 text-success" />
+                        Stat
+                      </CardTitle>
+                      <CardDescription>Para dashboards e KPIs</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-2xl font-bold text-foreground">1,234</div>
+                      <code className="text-xs text-primary mt-2 block">variant="stat"</code>
+                    </CardContent>
+                  </Card>
+
+                  {/* Premium */}
+                  <Card variant="premium">
+                    <CardHeader>
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <Coins className="h-4 w-4 text-amber-500" />
+                        Premium
+                      </CardTitle>
+                      <CardDescription>Destaque especial com acento dourado</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <code className="text-xs text-primary">variant="premium"</code>
+                    </CardContent>
+                  </Card>
                 </div>
 
                 {/* Code Examples for Card Variants */}
@@ -589,6 +633,16 @@ export default function DesignSystemPage() {
                     <CodeBlock 
                       code={'<Card variant="outline">\n  ...\n</Card>'} 
                       label="Outline"
+                    />
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <CodeBlock 
+                      code={'<Card variant="stat">\n  <CardHeader>\n    <CardTitle>Vendas</CardTitle>\n  </CardHeader>\n  <CardContent>\n    <div className="text-2xl font-bold">1,234</div>\n  </CardContent>\n</Card>'} 
+                      label="Stat (Dashboard)"
+                    />
+                    <CodeBlock 
+                      code={'<Card variant="premium">\n  <CardHeader>\n    <CardTitle>Premium</CardTitle>\n  </CardHeader>\n  <CardContent>\n    Conteúdo especial\n  </CardContent>\n</Card>'} 
+                      label="Premium (Destaque)"
                     />
                   </div>
                 </div>
