@@ -491,7 +491,7 @@ export default function DesignSystemPage() {
                   O componente Card agora suporta variantes via prop: <code className="text-primary">variant="..."</code>
                 </CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {/* Default */}
                   <Card variant="default">
@@ -558,6 +558,39 @@ export default function DesignSystemPage() {
                       <code className="text-xs text-primary">variant="outline"</code>
                     </CardContent>
                   </Card>
+                </div>
+
+                {/* Code Examples for Card Variants */}
+                <div className="space-y-3 pt-4 border-t border-border">
+                  <h5 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Exemplos de Código</h5>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                    <CodeBlock 
+                      code={'<Card variant="default">\n  <CardHeader>\n    <CardTitle>Título</CardTitle>\n  </CardHeader>\n  <CardContent>\n    Conteúdo\n  </CardContent>\n</Card>'} 
+                      label="Default"
+                    />
+                    <CodeBlock 
+                      code={'<Card variant="elevated">\n  <CardHeader>\n    <CardTitle>Título</CardTitle>\n  </CardHeader>\n  <CardContent>\n    Conteúdo\n  </CardContent>\n</Card>'} 
+                      label="Elevated"
+                    />
+                    <CodeBlock 
+                      code={'<Card variant="interactive">\n  <CardHeader>\n    <CardTitle>Título</CardTitle>\n  </CardHeader>\n  <CardContent>\n    Conteúdo\n  </CardContent>\n</Card>'} 
+                      label="Interactive"
+                    />
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <CodeBlock 
+                      code={'<Card variant="glass">\n  ...\n</Card>'} 
+                      label="Glass"
+                    />
+                    <CodeBlock 
+                      code={'<Card variant="ghost">\n  ...\n</Card>'} 
+                      label="Ghost"
+                    />
+                    <CodeBlock 
+                      code={'<Card variant="outline">\n  ...\n</Card>'} 
+                      label="Outline"
+                    />
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -685,6 +718,53 @@ export default function DesignSystemPage() {
                       <code className="text-xs text-primary">hover-lift</code>
                     </CardContent>
                   </Card>
+                </div>
+
+                {/* Code Examples for CSS Classes */}
+                <div className="space-y-3 pt-4 border-t border-border">
+                  <h5 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Exemplos de Código</h5>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                    <CodeBlock 
+                      code={'<Card className="card-interactive card-shine">\n  ...\n</Card>'} 
+                      label="Interactive + Shine"
+                    />
+                    <CodeBlock 
+                      code={'<Card className="card-float">\n  ...\n</Card>'} 
+                      label="Float"
+                    />
+                    <CodeBlock 
+                      code={'<Card className="card-pulse-border">\n  ...\n</Card>'} 
+                      label="Pulse Border"
+                    />
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+                    <CodeBlock 
+                      code={'<Card className="card-glow-blue">\n  ...\n</Card>'} 
+                      label="Glow Blue"
+                    />
+                    <CodeBlock 
+                      code={'<Card className="card-glow-green">\n  ...\n</Card>'} 
+                      label="Glow Green"
+                    />
+                    <CodeBlock 
+                      code={'<Card className="card-glow-purple">\n  ...\n</Card>'} 
+                      label="Glow Purple"
+                    />
+                    <CodeBlock 
+                      code={'<Card className="card-glow-orange">\n  ...\n</Card>'} 
+                      label="Glow Orange"
+                    />
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <CodeBlock 
+                      code={'<Card className="glass-card hover-lift">\n  ...\n</Card>'} 
+                      label="Glass + Hover Lift"
+                    />
+                    <CodeBlock 
+                      code={'<Card className="hover-lift">\n  ...\n</Card>'} 
+                      label="Hover Lift"
+                    />
+                  </div>
                 </div>
               </CardContent>
             </Card>
