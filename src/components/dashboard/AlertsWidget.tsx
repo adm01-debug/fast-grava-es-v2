@@ -498,47 +498,61 @@ export function AlertsWidget() {
 
                 <div className="space-y-2">
                   <Label htmlFor="machine-select">Máquina</Label>
-                  <Select value={selectedMachineId} onValueChange={setSelectedMachineId}>
-                    <SelectTrigger id="machine-select">
-                      <SelectValue placeholder="Selecione uma máquina (opcional)" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {availableMachines.length === 0 ? (
-                        <div className="p-2 text-sm text-muted-foreground text-center">
-                          Nenhuma máquina disponível para esta técnica
-                        </div>
-                      ) : (
-                        availableMachines.map(machine => {
-                          const occ = machineOccupancy[machine.id] || { percentage: 0, jobCount: 0, occupiedMinutes: 0 };
-                          const occColor = occ.percentage >= 80 ? 'bg-destructive' : 
-                                          occ.percentage >= 50 ? 'bg-status-delayed' : 
-                                          'bg-status-ready';
-                          
-                          return (
-                            <SelectItem key={machine.id} value={machine.id}>
-                              <div className="flex items-center justify-between gap-3 w-full">
-                                <div className="flex items-center gap-2">
-                                  <Settings2 className="w-3 h-3 text-muted-foreground" />
-                                  <span>{machine.code} - {machine.name}</span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                  <div className="w-16 h-2 bg-secondary rounded-full overflow-hidden">
-                                    <div 
-                                      className={cn("h-full rounded-full transition-all", occColor)}
-                                      style={{ width: `${occ.percentage}%` }}
-                                    />
+                  <div className="flex gap-2">
+                    <Select value={selectedMachineId} onValueChange={setSelectedMachineId}>
+                      <SelectTrigger id="machine-select" className="flex-1">
+                        <SelectValue placeholder="Selecione uma máquina (opcional)" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {availableMachines.length === 0 ? (
+                          <div className="p-2 text-sm text-muted-foreground text-center">
+                            Nenhuma máquina disponível para esta técnica
+                          </div>
+                        ) : (
+                          availableMachines.map(machine => {
+                            const occ = machineOccupancy[machine.id] || { percentage: 0, jobCount: 0, occupiedMinutes: 0 };
+                            const occColor = occ.percentage >= 80 ? 'bg-destructive' : 
+                                            occ.percentage >= 50 ? 'bg-status-delayed' : 
+                                            'bg-status-ready';
+                            
+                            return (
+                              <SelectItem key={machine.id} value={machine.id}>
+                                <div className="flex items-center justify-between gap-3 w-full">
+                                  <div className="flex items-center gap-2">
+                                    <Settings2 className="w-3 h-3 text-muted-foreground" />
+                                    <span>{machine.code} - {machine.name}</span>
                                   </div>
-                                  <span className="text-xs text-muted-foreground min-w-[3ch]">
-                                    {occ.percentage}%
-                                  </span>
+                                  <div className="flex items-center gap-2">
+                                    <div className="w-16 h-2 bg-secondary rounded-full overflow-hidden">
+                                      <div 
+                                        className={cn("h-full rounded-full transition-all", occColor)}
+                                        style={{ width: `${occ.percentage}%` }}
+                                      />
+                                    </div>
+                                    <span className="text-xs text-muted-foreground min-w-[3ch]">
+                                      {occ.percentage}%
+                                    </span>
+                                  </div>
                                 </div>
-                              </div>
-                            </SelectItem>
-                          );
-                        })
-                      )}
-                    </SelectContent>
-                  </Select>
+                              </SelectItem>
+                            );
+                          })
+                        )}
+                      </SelectContent>
+                    </Select>
+                    {selectedMachineId && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        onClick={() => setSelectedMachineId('')}
+                        className="shrink-0"
+                        title="Limpar seleção"
+                      >
+                        <X className="w-4 h-4" />
+                      </Button>
+                    )}
+                  </div>
                 </div>
 
                 {/* Machine scheduled jobs list */}
