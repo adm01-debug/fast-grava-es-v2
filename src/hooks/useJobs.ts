@@ -42,7 +42,9 @@ export interface DbMachine {
 }
 
 export function useTechniques() {
-  return useQuery({
+  const queryClient = useQueryClient();
+
+  const query = useQuery({
     queryKey: ['techniques'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -54,10 +56,36 @@ export function useTechniques() {
       return data as DbTechnique[];
     },
   });
+
+  // Subscribe to realtime updates
+  useEffect(() => {
+    const channel = supabase
+      .channel('techniques-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'techniques'
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['techniques'] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
+
+  return query;
 }
 
 export function useMachines() {
-  return useQuery({
+  const queryClient = useQueryClient();
+
+  const query = useQuery({
     queryKey: ['machines'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -70,6 +98,30 @@ export function useMachines() {
       return data as DbMachine[];
     },
   });
+
+  // Subscribe to realtime updates
+  useEffect(() => {
+    const channel = supabase
+      .channel('machines-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'machines'
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['machines'] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
+
+  return query;
 }
 
 export function useJobs() {
