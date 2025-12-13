@@ -34,13 +34,15 @@ import {
   CalendarIcon,
   Bell,
   Volume2,
-  VolumeX
+  VolumeX,
+  PieChart as PieChartIcon
 } from "lucide-react";
 import { formatDistanceToNow, format, isWithinInterval, startOfDay, endOfDay } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { DateRange } from "react-day-picker";
 import { useToast } from "@/hooks/use-toast";
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 
 interface ScanHistoryProps {
   jobId?: string;
@@ -289,6 +291,32 @@ export const ScanHistory = ({ jobId, limit = 200 }: ScanHistoryProps) => {
     });
   }, [scans, operatorFilter, actionFilter, dateRange]);
 
+  // Action distribution for pie chart
+  const actionDistribution = useMemo(() => {
+    if (!filteredScans || filteredScans.length === 0) return [];
+    
+    const counts = new Map<string, number>();
+    filteredScans.forEach(scan => {
+      counts.set(scan.action, (counts.get(scan.action) || 0) + 1);
+    });
+    
+    const actionColors: Record<string, string> = {
+      view: "hsl(217, 91%, 60%)",
+      start: "hsl(142, 76%, 36%)",
+      pause: "hsl(45, 93%, 47%)",
+      resume: "hsl(187, 85%, 53%)",
+      finish: "hsl(271, 91%, 65%)",
+    };
+    
+    return Array.from(counts.entries()).map(([action, count]) => ({
+      action,
+      label: actionConfig[action]?.label || action,
+      count,
+      fill: actionColors[action] || "hsl(var(--primary))",
+      percentage: ((count / filteredScans.length) * 100).toFixed(0)
+    }));
+  }, [filteredScans]);
+
   const hasActiveFilters = operatorFilter !== "all" || actionFilter !== "all" || dateRange?.from;
 
   const clearFilters = () => {
@@ -499,6 +527,67 @@ export const ScanHistory = ({ jobId, limit = 200 }: ScanHistoryProps) => {
                     />
                   </PopoverContent>
                 </Popover>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Action Distribution Mini Pie Chart */}
+        {actionDistribution.length > 0 && (
+          <div className="p-4 rounded-lg bg-muted/20 border border-border/30">
+            <div className="flex items-center gap-2 mb-3">
+              <PieChartIcon className="h-4 w-4 text-primary" />
+              <span className="text-sm font-medium text-foreground">Distribuição de Ações</span>
+            </div>
+            <div className="flex items-center gap-4">
+              {/* Mini Pie Chart */}
+              <div className="h-[100px] w-[100px] flex-shrink-0">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={actionDistribution}
+                      dataKey="count"
+                      nameKey="label"
+                      cx="50%"
+                      cy="50%"
+                      outerRadius={40}
+                      innerRadius={20}
+                    >
+                      {actionDistribution.map((entry, index) => (
+                        <Cell key={index} fill={entry.fill} />
+                      ))}
+                    </Pie>
+                    <Tooltip 
+                      formatter={(value: number, name: string) => [`${value} scans`, name]}
+                      contentStyle={{ 
+                        backgroundColor: 'hsl(var(--popover))', 
+                        border: '1px solid hsl(var(--border))',
+                        borderRadius: '8px',
+                        fontSize: '12px'
+                      }}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+              {/* Legend */}
+              <div className="flex-1 grid grid-cols-2 sm:grid-cols-3 gap-2">
+                {actionDistribution.map((item) => {
+                  const Icon = actionConfig[item.action]?.icon || Eye;
+                  return (
+                    <div 
+                      key={item.action}
+                      className="flex items-center gap-2 text-xs"
+                    >
+                      <div 
+                        className="w-2.5 h-2.5 rounded-full flex-shrink-0" 
+                        style={{ backgroundColor: item.fill }}
+                      />
+                      <Icon className="h-3 w-3 text-muted-foreground flex-shrink-0" />
+                      <span className="text-muted-foreground truncate">{item.label}</span>
+                      <span className="font-medium text-foreground ml-auto">{item.percentage}%</span>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </div>
