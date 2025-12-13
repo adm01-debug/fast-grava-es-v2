@@ -66,6 +66,8 @@ const TechnicalAssistantPage = () => {
   // Search and filter states
   const [searchQuery, setSearchQuery] = useState("");
   const [dateFilter, setDateFilter] = useState<string>("all");
+  const [messageSearchQuery, setMessageSearchQuery] = useState("");
+  const [messageSearchActive, setMessageSearchActive] = useState(false);
   
   const { messages, isLoading: loadingMessages, addMessage } = useTechnicalMessages(selectedConversationId);
   
@@ -108,12 +110,36 @@ const TechnicalAssistantPage = () => {
     });
   }, [conversations, searchQuery, dateFilter]);
 
+  // Filter messages based on search
+  const filteredMessages = useMemo(() => {
+    if (!messageSearchQuery.trim()) return localMessages;
+    const query = messageSearchQuery.toLowerCase();
+    return localMessages.filter(msg => 
+      msg.content.toLowerCase().includes(query)
+    );
+  }, [localMessages, messageSearchQuery]);
+
+  // Count search matches
+  const searchMatchCount = useMemo(() => {
+    if (!messageSearchQuery.trim()) return 0;
+    const query = messageSearchQuery.toLowerCase();
+    return localMessages.filter(msg => 
+      msg.content.toLowerCase().includes(query)
+    ).length;
+  }, [localMessages, messageSearchQuery]);
+
   // Sync local messages with fetched messages
   useEffect(() => {
     if (!isStreaming) {
       setLocalMessages(messages);
     }
   }, [messages, isStreaming]);
+
+  // Clear message search when changing conversations
+  useEffect(() => {
+    setMessageSearchQuery("");
+    setMessageSearchActive(false);
+  }, [selectedConversationId]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -451,19 +477,64 @@ const TechnicalAssistantPage = () => {
         {/* Chat area */}
         <Card className="flex-1 flex flex-col glass-card border-border/50">
           <CardHeader className="pb-3 border-b border-border/50">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-gradient-to-br from-primary/20 to-purple-500/20">
-                <Bot className="h-6 w-6 text-primary" />
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-gradient-to-br from-primary/20 to-purple-500/20">
+                  <Bot className="h-6 w-6 text-primary" />
+                </div>
+                <div>
+                  <CardTitle className="flex items-center gap-2">
+                    Assistente Técnico IA
+                    <Badge variant="secondary">Beta</Badge>
+                  </CardTitle>
+                  <p className="text-sm text-muted-foreground">
+                    Especialista em técnicas de gravação e personalização
+                  </p>
+                </div>
               </div>
-              <div>
-                <CardTitle className="flex items-center gap-2">
-                  Assistente Técnico IA
-                  <Badge variant="secondary">Beta</Badge>
-                </CardTitle>
-                <p className="text-sm text-muted-foreground">
-                  Especialista em técnicas de gravação e personalização
-                </p>
-              </div>
+              {selectedConversationId && localMessages.length > 0 && (
+                <div className="flex items-center gap-2">
+                  {messageSearchActive ? (
+                    <div className="flex items-center gap-2">
+                      <div className="relative">
+                        <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          placeholder="Buscar nas mensagens..."
+                          value={messageSearchQuery}
+                          onChange={(e) => setMessageSearchQuery(e.target.value)}
+                          className="pl-9 h-8 w-56 text-sm"
+                          autoFocus
+                        />
+                      </div>
+                      {messageSearchQuery && (
+                        <span className="text-xs text-muted-foreground whitespace-nowrap">
+                          {searchMatchCount} resultado(s)
+                        </span>
+                      )}
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="h-8 w-8"
+                        onClick={() => {
+                          setMessageSearchActive(false);
+                          setMessageSearchQuery("");
+                        }}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="h-8 w-8"
+                      onClick={() => setMessageSearchActive(true)}
+                    >
+                      <Search className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
+              )}
             </div>
           </CardHeader>
 
@@ -519,34 +590,55 @@ const TechnicalAssistantPage = () => {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {localMessages.map((message, index) => (
-                    <div
-                      key={message.id || index}
-                      className={`flex gap-3 ${
-                        message.role === "user" ? "justify-end" : "justify-start"
-                      }`}
-                    >
-                      {message.role === "assistant" && (
-                        <div className="p-2 rounded-lg bg-primary/20 h-fit">
-                          <Bot className="h-4 w-4 text-primary" />
-                        </div>
-                      )}
-                      <div
-                        className={`max-w-[75%] p-3 rounded-lg ${
-                          message.role === "user"
-                            ? "bg-primary text-primary-foreground"
-                            : "bg-muted/50 text-foreground"
-                        }`}
-                      >
-                        <p className="text-sm whitespace-pre-wrap">{message.content}</p>
-                      </div>
-                      {message.role === "user" && (
-                        <div className="p-2 rounded-lg bg-muted h-fit">
-                          <User className="h-4 w-4" />
-                        </div>
-                      )}
+                  {messageSearchQuery && filteredMessages.length === 0 ? (
+                    <div className="text-center py-8 text-muted-foreground">
+                      <Search className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                      <p className="text-sm">Nenhuma mensagem encontrada</p>
+                      <p className="text-xs">Tente ajustar sua busca</p>
                     </div>
-                  ))}
+                  ) : (
+                    (messageSearchQuery ? filteredMessages : localMessages).map((message, index) => {
+                      const highlightText = (text: string) => {
+                        if (!messageSearchQuery.trim()) return text;
+                        const regex = new RegExp(`(${messageSearchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+                        const parts = text.split(regex);
+                        return parts.map((part, i) => 
+                          regex.test(part) ? (
+                            <mark key={i} className="bg-yellow-400/50 text-inherit rounded px-0.5">{part}</mark>
+                          ) : part
+                        );
+                      };
+
+                      return (
+                        <div
+                          key={message.id || index}
+                          className={`flex gap-3 ${
+                            message.role === "user" ? "justify-end" : "justify-start"
+                          }`}
+                        >
+                          {message.role === "assistant" && (
+                            <div className="p-2 rounded-lg bg-primary/20 h-fit">
+                              <Bot className="h-4 w-4 text-primary" />
+                            </div>
+                          )}
+                          <div
+                            className={`max-w-[75%] p-3 rounded-lg ${
+                              message.role === "user"
+                                ? "bg-primary text-primary-foreground"
+                                : "bg-muted/50 text-foreground"
+                            }`}
+                          >
+                            <p className="text-sm whitespace-pre-wrap">{highlightText(message.content)}</p>
+                          </div>
+                          {message.role === "user" && (
+                            <div className="p-2 rounded-lg bg-muted h-fit">
+                              <User className="h-4 w-4" />
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })
+                  )}
                   {isStreaming && localMessages[localMessages.length - 1]?.role === "user" && (
                     <div className="flex gap-3">
                       <div className="p-2 rounded-lg bg-primary/20 h-fit">
