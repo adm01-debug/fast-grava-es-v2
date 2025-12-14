@@ -97,29 +97,31 @@ const TechnicalKnowledgeBase = () => {
 
   return (
     <MainLayout>
-      <div className="flex flex-col h-[calc(100vh-4rem)]">
+      <div className="flex flex-col h-[calc(100vh-4rem)] p-4 sm:p-6">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 sm:mb-6 gap-3">
           <div>
-            <h1 className="text-2xl font-display font-bold text-foreground flex items-center gap-3">
-              <BookOpen className="h-7 w-7 text-primary" />
-              Base de Conhecimento Técnico
+            <h1 className="text-xl sm:text-2xl font-display font-bold text-foreground flex items-center gap-2 sm:gap-3">
+              <BookOpen className="h-5 w-5 sm:h-7 sm:w-7 text-primary" />
+              <span className="text-base sm:text-2xl">Base de Conhecimento</span>
             </h1>
-            <p className="text-muted-foreground mt-1">
-              Fichas técnicas para personalização de produtos
+            <p className="text-xs sm:text-base text-muted-foreground mt-1">
+              Fichas técnicas para personalização
             </p>
           </div>
           {canEdit && (
-            <Button onClick={handleCreateNew} className="gap-2">
+            <Button onClick={handleCreateNew} className="gap-2 self-start sm:self-auto" size="sm">
               <Plus className="h-4 w-4" />
-              Nova Ficha Técnica
+              <span className="hidden sm:inline">Nova Ficha Técnica</span>
+              <span className="sm:hidden">Nova Ficha</span>
             </Button>
           )}
         </div>
 
-        <div className="flex gap-6 flex-1 min-h-0">
+        {/* Mobile: Stacked layout, Desktop: Side by side */}
+        <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 flex-1 min-h-0">
           {/* Left Panel - List */}
-          <div className="w-80 flex-shrink-0 flex flex-col">
+          <div className={`${selectedSheet || isCreating || isEditing ? 'hidden lg:flex' : 'flex'} w-full lg:w-80 flex-shrink-0 flex-col`}>
             <Card className="glass-card border-border/50 flex-1 flex flex-col">
               <CardHeader className="pb-3">
                 <div className="space-y-3">
@@ -241,7 +243,23 @@ const TechnicalKnowledgeBase = () => {
           </div>
 
           {/* Right Panel - Viewer/Editor */}
-          <div className="flex-1 min-w-0">
+          <div className={`${!selectedSheet && !isCreating && !isEditing ? 'hidden lg:block' : 'block'} flex-1 min-w-0`}>
+            {/* Back button for mobile */}
+            {(selectedSheet || isCreating || isEditing) && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="lg:hidden mb-3"
+                onClick={() => {
+                  setSelectedSheet(null);
+                  setIsCreating(false);
+                  setIsEditing(false);
+                }}
+              >
+                ← Voltar para lista
+              </Button>
+            )}
+            
             {isCreating ? (
               <TechnicalSheetEditor
                 techniques={techniques}
@@ -264,13 +282,13 @@ const TechnicalKnowledgeBase = () => {
               />
             ) : (
               <Card className="glass-card border-border/50 h-full flex items-center justify-center">
-                <div className="text-center">
-                  <Lightbulb className="h-16 w-16 text-muted-foreground/30 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-muted-foreground">
+                <div className="text-center p-8">
+                  <Lightbulb className="h-12 w-12 sm:h-16 sm:w-16 text-muted-foreground/30 mx-auto mb-4" />
+                  <h3 className="text-base sm:text-lg font-medium text-muted-foreground">
                     Selecione uma ficha técnica
                   </h3>
-                  <p className="text-sm text-muted-foreground/70 mt-1">
-                    Escolha uma ficha na lista ao lado para visualizar os detalhes
+                  <p className="text-xs sm:text-sm text-muted-foreground/70 mt-1">
+                    Escolha uma ficha na lista para visualizar
                   </p>
                 </div>
               </Card>
