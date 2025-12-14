@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, memo } from 'react';
 import { useLocation, Link, useNavigate } from 'react-router-dom';
 import { 
   Calendar, 
@@ -27,6 +27,7 @@ import {
   X
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { prefetchRoute } from '@/lib/prefetch';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useAuth } from '@/contexts/AuthContext';
@@ -63,12 +64,78 @@ const secondaryNavItems: NavItem[] = [
   { icon: Settings, label: 'Configurações', href: '/settings' },
 ];
 
+interface NavButtonProps {
+  item: NavItem;
+  collapsed: boolean;
+  isMobile: boolean;
+  isActive: boolean;
+}
+
+const NavButton = memo(function NavButton({ item, collapsed, isMobile, isActive }: NavButtonProps) {
+  const Icon = item.icon;
+  
+  const handlePrefetch = useCallback(() => {
+    prefetchRoute(item.href);
+  }, [item.href]);
+
+  const button = (
+    <Link 
+      to={item.href} 
+      className="block"
+      onMouseEnter={handlePrefetch}
+      onFocus={handlePrefetch}
+    >
+      <Button
+        variant="ghost"
+        className={cn(
+          'w-full justify-start gap-3 h-11 px-3 relative transition-all duration-200',
+          'hover:bg-sidebar-muted/50 hover:text-sidebar-foreground',
+          isActive && 'bg-gradient-to-r from-primary/20 to-accent/10 text-primary font-medium border-l-2 border-primary',
+          collapsed && !isMobile && 'justify-center px-0'
+        )}
+      >
+        <Icon className={cn('h-5 w-5 shrink-0', isActive && 'text-primary')} />
+        {(!collapsed || isMobile) && <span className="truncate">{item.label}</span>}
+        {(!collapsed || isMobile) && item.badge && (
+          <span className="ml-auto gradient-primary text-primary-foreground text-xs font-semibold px-2 py-0.5 rounded-full">
+            {item.badge}
+          </span>
+        )}
+        {(collapsed && !isMobile) && item.badge && (
+          <span className="absolute -top-1 -right-1 gradient-primary text-primary-foreground text-xs font-semibold w-5 h-5 rounded-full flex items-center justify-center">
+            {item.badge}
+          </span>
+        )}
+      </Button>
+    </Link>
+  );
+
+  if (collapsed && !isMobile) {
+    return (
+      <Tooltip delayDuration={0}>
+        <TooltipTrigger asChild>{button}</TooltipTrigger>
+        <TooltipContent side="right" className="flex items-center gap-2 bg-card border-border">
+          {item.label}
+          {item.badge && (
+            <span className="gradient-primary text-primary-foreground text-xs font-semibold px-2 py-0.5 rounded-full">
+              {item.badge}
+            </span>
+          )}
+        </TooltipContent>
+      </Tooltip>
+    );
+  }
+
+  return button;
+});
+NavButton.displayName = 'NavButton';
+
 export function AppSidebar() {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const { profile, role, signOut, isCoordinator, isManager } = useAuth();
+  const { profile, role, signOut, isCoordinator } = useAuth();
   const isMobile = useIsMobile();
 
   // Close mobile menu on route change
@@ -83,10 +150,10 @@ export function AppSidebar() {
     }
   }, [isMobile]);
 
-  const handleSignOut = async () => {
+  const handleSignOut = useCallback(async () => {
     await signOut();
     navigate('/auth');
-  };
+  }, [signOut, navigate]);
 
   // Filter nav items based on role
   const filteredMainNavItems = mainNavItems.filter(item => {
@@ -101,60 +168,14 @@ export function AppSidebar() {
 
   const filteredSecondaryNavItems = isCoordinator ? secondaryNavItems : [];
 
-  const isActive = (href: string) => {
+  const isActive = useCallback((href: string) => {
     if (href === '/') return location.pathname === '/';
     return location.pathname.startsWith(href);
-  };
+  }, [location.pathname]);
 
-  const NavButton = ({ item }: { item: NavItem }) => {
-    const active = isActive(item.href);
-    const Icon = item.icon;
-
-    const button = (
-      <Link to={item.href} className="block">
-        <Button
-          variant="ghost"
-          className={cn(
-            'w-full justify-start gap-3 h-11 px-3 relative transition-all duration-200',
-            'hover:bg-sidebar-muted/50 hover:text-sidebar-foreground',
-            active && 'bg-gradient-to-r from-primary/20 to-accent/10 text-primary font-medium border-l-2 border-primary',
-            collapsed && 'justify-center px-0'
-          )}
-        >
-          <Icon className={cn('h-5 w-5 shrink-0', active && 'text-primary')} />
-          {!collapsed && <span className="truncate">{item.label}</span>}
-          {!collapsed && item.badge && (
-            <span className="ml-auto gradient-primary text-primary-foreground text-xs font-semibold px-2 py-0.5 rounded-full">
-              {item.badge}
-            </span>
-          )}
-          {collapsed && item.badge && (
-            <span className="absolute -top-1 -right-1 gradient-primary text-primary-foreground text-xs font-semibold w-5 h-5 rounded-full flex items-center justify-center">
-              {item.badge}
-            </span>
-          )}
-        </Button>
-      </Link>
-    );
-
-    if (collapsed) {
-      return (
-        <Tooltip delayDuration={0}>
-          <TooltipTrigger asChild>{button}</TooltipTrigger>
-          <TooltipContent side="right" className="flex items-center gap-2 bg-card border-border">
-            {item.label}
-            {item.badge && (
-              <span className="gradient-primary text-primary-foreground text-xs font-semibold px-2 py-0.5 rounded-full">
-                {item.badge}
-              </span>
-            )}
-          </TooltipContent>
-        </Tooltip>
-      );
-    }
-
-    return button;
-  };
+  const handleNewJobPrefetch = useCallback(() => {
+    prefetchRoute('/new-job');
+  }, []);
 
   // Mobile hamburger button
   const MobileMenuButton = () => (
@@ -227,7 +248,11 @@ export function AppSidebar() {
 
         {/* New Job Button */}
         <div className={cn('p-3', collapsed && !isMobile && 'px-2')}>
-          <Link to="/new-job">
+          <Link 
+            to="/new-job"
+            onMouseEnter={handleNewJobPrefetch}
+            onFocus={handleNewJobPrefetch}
+          >
             <Button 
               className={cn(
                 'w-full gap-2 gradient-primary hover:opacity-90 transition-opacity glow-primary',
@@ -248,7 +273,13 @@ export function AppSidebar() {
             </p>
           )}
           {filteredMainNavItems.map((item) => (
-            <NavButton key={item.href} item={item} />
+            <NavButton 
+              key={item.href} 
+              item={item}
+              collapsed={collapsed}
+              isMobile={isMobile}
+              isActive={isActive(item.href)}
+            />
           ))}
           
           {filteredSecondaryNavItems.length > 0 && (
@@ -261,7 +292,13 @@ export function AppSidebar() {
                 </p>
               )}
               {filteredSecondaryNavItems.map((item) => (
-                <NavButton key={item.href} item={item} />
+                <NavButton 
+                  key={item.href} 
+                  item={item}
+                  collapsed={collapsed}
+                  isMobile={isMobile}
+                  isActive={isActive(item.href)}
+                />
               ))}
             </>
           )}
