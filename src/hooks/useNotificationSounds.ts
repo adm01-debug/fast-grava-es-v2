@@ -107,7 +107,9 @@ export const useNotificationSounds = () => {
         playTone(config.frequency, config.duration, config.type, config.volume || 0.2);
       }
     } catch (error) {
-      console.error('Error playing notification sound:', error);
+      if (import.meta.env.DEV) {
+        console.error('Error playing notification sound:', error);
+      }
     }
   }, [playTone]);
 

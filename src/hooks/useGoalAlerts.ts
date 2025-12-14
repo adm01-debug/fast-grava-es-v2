@@ -2,6 +2,7 @@ import { useMemo, useEffect, useRef, useCallback } from 'react';
 import { toast } from 'sonner';
 import { useOperatorGoals, calculateGoalProgress, GOAL_TYPE_LABELS, GoalType, GoalWithProgress } from './useOperatorGoals';
 import { useOperatorProductivity } from './useOperatorProductivity';
+import { navigateTo } from '@/lib/navigation';
 
 export interface GoalAlert {
   goalId: string;
@@ -127,7 +128,7 @@ export function useGoalAlerts(config: Partial<GoalAlertConfig> = {}) {
             description: alert.message,
             action: {
               label: 'Ver Metas',
-              onClick: () => window.location.href = '/kpis',
+              onClick: () => navigateTo('/kpis'),
             },
             duration: 10000,
           });
@@ -136,7 +137,7 @@ export function useGoalAlerts(config: Partial<GoalAlertConfig> = {}) {
             description: alert.message,
             action: {
               label: 'Ver Metas',
-              onClick: () => window.location.href = '/kpis',
+              onClick: () => navigateTo('/kpis'),
             },
             duration: 8000,
           });
@@ -152,7 +153,7 @@ export function useGoalAlerts(config: Partial<GoalAlertConfig> = {}) {
         description: goalAlerts.find(a => a.riskLevel === 'critical')?.message,
         action: {
           label: 'Ver Metas',
-          onClick: () => window.location.href = '/kpis',
+          onClick: () => navigateTo('/kpis'),
         },
       });
     } else if (warningCount > 0) {
@@ -160,7 +161,7 @@ export function useGoalAlerts(config: Partial<GoalAlertConfig> = {}) {
         description: goalAlerts.find(a => a.riskLevel === 'warning')?.message,
         action: {
           label: 'Ver Metas',
-          onClick: () => window.location.href = '/kpis',
+          onClick: () => navigateTo('/kpis'),
         },
       });
     } else if (activeGoals.length > 0) {

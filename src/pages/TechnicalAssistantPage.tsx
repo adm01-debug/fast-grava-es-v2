@@ -340,7 +340,9 @@ const TechnicalAssistantPage = () => {
       // Save assistant message to database
       await addMessage.mutateAsync({ role: "assistant", content: assistantResponse });
     } catch (error) {
-      console.error("Error:", error);
+      if (import.meta.env.DEV) {
+        console.error("Error:", error);
+      }
       toast.error(error instanceof Error ? error.message : "Erro ao processar mensagem");
     } finally {
       setIsStreaming(false);
