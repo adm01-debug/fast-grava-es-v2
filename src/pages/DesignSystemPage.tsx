@@ -8549,9 +8549,34 @@ interface OverviewSectionProps {
   onNavigate: (tabId: string) => void;
 }
 
+interface ConfettiParticle {
+  id: number;
+  x: number;
+  y: number;
+  color: string;
+  angle: number;
+  velocity: number;
+  size: number;
+  rotation: number;
+}
+
 function OverviewSection({ onNavigate }: OverviewSectionProps) {
   const [animatedValues, setAnimatedValues] = useState({ categories: 0, components: 0, variants: 0, copiable: 0 });
   const [ripples, setRipples] = useState<{ id: number; x: number; y: number; color: string }[]>([]);
+  const [confetti, setConfetti] = useState<ConfettiParticle[]>([]);
+
+  const confettiColors = [
+    'hsl(var(--primary))',
+    'hsl(var(--success))',
+    'hsl(var(--warning))',
+    'hsl(var(--info))',
+    'hsl(var(--destructive))',
+    '#FFD700',
+    '#FF6B6B',
+    '#4ECDC4',
+    '#A855F7',
+    '#F472B6',
+  ];
 
   const handleRipple = (e: React.MouseEvent<HTMLDivElement>, color: string) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -8563,6 +8588,29 @@ function OverviewSection({ onNavigate }: OverviewSectionProps) {
     setTimeout(() => {
       setRipples(prev => prev.filter(r => r.id !== id));
     }, 600);
+
+    // Generate confetti particles
+    const particles: ConfettiParticle[] = [];
+    const particleCount = 25;
+    
+    for (let i = 0; i < particleCount; i++) {
+      particles.push({
+        id: id + i,
+        x,
+        y,
+        color: confettiColors[Math.floor(Math.random() * confettiColors.length)],
+        angle: (Math.PI * 2 / particleCount) * i + (Math.random() - 0.5) * 0.5,
+        velocity: 80 + Math.random() * 80,
+        size: 4 + Math.random() * 6,
+        rotation: Math.random() * 360,
+      });
+    }
+    
+    setConfetti(prev => [...prev, ...particles]);
+    
+    setTimeout(() => {
+      setConfetti(prev => prev.filter(p => p.id < id || p.id >= id + particleCount));
+    }, 1000);
   };
 
   useEffect(() => {
@@ -8659,6 +8707,24 @@ function OverviewSection({ onNavigate }: OverviewSectionProps) {
               style={{ left: ripple.x, top: ripple.y, width: 20, height: 20, marginLeft: -10, marginTop: -10 }}
             />
           ))}
+          {confetti.map(particle => (
+            <span
+              key={particle.id}
+              className="absolute pointer-events-none rounded-sm"
+              style={{
+                left: particle.x,
+                top: particle.y,
+                width: particle.size,
+                height: particle.size,
+                backgroundColor: particle.color,
+                transform: `translate(-50%, -50%)`,
+                animation: 'confetti-burst 1s ease-out forwards',
+                '--confetti-x': `${Math.cos(particle.angle) * particle.velocity}px`,
+                '--confetti-y': `${Math.sin(particle.angle) * particle.velocity - 50}px`,
+                '--confetti-rotation': `${particle.rotation + 720}deg`,
+              } as React.CSSProperties}
+            />
+          ))}
           <CardContent className="p-4 relative">
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 transition-all duration-300 group-hover:scale-110 group-hover:shadow-[0_0_20px_hsl(var(--primary)/0.4)]">
@@ -8679,6 +8745,24 @@ function OverviewSection({ onNavigate }: OverviewSectionProps) {
               key={ripple.id}
               className="absolute rounded-full bg-success/30 animate-ripple pointer-events-none"
               style={{ left: ripple.x, top: ripple.y, width: 20, height: 20, marginLeft: -10, marginTop: -10 }}
+            />
+          ))}
+          {confetti.map(particle => (
+            <span
+              key={particle.id}
+              className="absolute pointer-events-none rounded-sm"
+              style={{
+                left: particle.x,
+                top: particle.y,
+                width: particle.size,
+                height: particle.size,
+                backgroundColor: particle.color,
+                transform: `translate(-50%, -50%)`,
+                animation: 'confetti-burst 1s ease-out forwards',
+                '--confetti-x': `${Math.cos(particle.angle) * particle.velocity}px`,
+                '--confetti-y': `${Math.sin(particle.angle) * particle.velocity - 50}px`,
+                '--confetti-rotation': `${particle.rotation + 720}deg`,
+              } as React.CSSProperties}
             />
           ))}
           <CardContent className="p-4 relative">
@@ -8703,6 +8787,24 @@ function OverviewSection({ onNavigate }: OverviewSectionProps) {
               style={{ left: ripple.x, top: ripple.y, width: 20, height: 20, marginLeft: -10, marginTop: -10 }}
             />
           ))}
+          {confetti.map(particle => (
+            <span
+              key={particle.id}
+              className="absolute pointer-events-none rounded-sm"
+              style={{
+                left: particle.x,
+                top: particle.y,
+                width: particle.size,
+                height: particle.size,
+                backgroundColor: particle.color,
+                transform: `translate(-50%, -50%)`,
+                animation: 'confetti-burst 1s ease-out forwards',
+                '--confetti-x': `${Math.cos(particle.angle) * particle.velocity}px`,
+                '--confetti-y': `${Math.sin(particle.angle) * particle.velocity - 50}px`,
+                '--confetti-rotation': `${particle.rotation + 720}deg`,
+              } as React.CSSProperties}
+            />
+          ))}
           <CardContent className="p-4 relative">
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-lg bg-warning/10 flex items-center justify-center shrink-0 transition-all duration-300 group-hover:scale-110 group-hover:shadow-[0_0_20px_hsl(var(--warning)/0.4)]">
@@ -8723,6 +8825,24 @@ function OverviewSection({ onNavigate }: OverviewSectionProps) {
               key={ripple.id}
               className="absolute rounded-full bg-info/30 animate-ripple pointer-events-none"
               style={{ left: ripple.x, top: ripple.y, width: 20, height: 20, marginLeft: -10, marginTop: -10 }}
+            />
+          ))}
+          {confetti.map(particle => (
+            <span
+              key={particle.id}
+              className="absolute pointer-events-none rounded-sm"
+              style={{
+                left: particle.x,
+                top: particle.y,
+                width: particle.size,
+                height: particle.size,
+                backgroundColor: particle.color,
+                transform: `translate(-50%, -50%)`,
+                animation: 'confetti-burst 1s ease-out forwards',
+                '--confetti-x': `${Math.cos(particle.angle) * particle.velocity}px`,
+                '--confetti-y': `${Math.sin(particle.angle) * particle.velocity - 50}px`,
+                '--confetti-rotation': `${particle.rotation + 720}deg`,
+              } as React.CSSProperties}
             />
           ))}
           <CardContent className="p-4 relative">
