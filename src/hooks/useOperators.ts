@@ -79,7 +79,7 @@ export function useOperators() {
         .from('profiles')
         .select('full_name')
         .eq('id', user.id)
-        .single();
+        .maybeSingle();
 
       // First, remove all machine assignments for this operator
       const { error: assignmentsError } = await supabase
@@ -138,7 +138,7 @@ export function useOperators() {
         .from('profiles')
         .select('full_name')
         .eq('id', user.id)
-        .single();
+        .maybeSingle();
 
       const { error } = await supabase
         .from('user_roles')
