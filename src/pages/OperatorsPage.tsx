@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Users, UserCheck, Phone, Calendar, Settings2, Search, X, UserPlus, Pencil } from 'lucide-react';
 import { useOperators, OperatorWithProfile } from '@/hooks/useOperators';
+import { useOperatorPresence } from '@/hooks/useOperatorPresence';
 import { useOperatorMachines } from '@/hooks/useOperatorMachines';
 import { useSchedulingData } from '@/hooks/useSchedulingData';
 import { MachineAssignmentModal } from '@/components/operators/MachineAssignmentModal';
@@ -22,6 +23,7 @@ export default function OperatorsPage() {
   const { data: operators = [], isLoading } = useOperators();
   const { assignments } = useOperatorMachines();
   const { machines } = useSchedulingData();
+  const { isOnline, onlineCount } = useOperatorPresence();
   const [selectedOperator, setSelectedOperator] = useState<OperatorWithProfile | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -30,7 +32,7 @@ export default function OperatorsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [machineFilter, setMachineFilter] = useState<string>('all');
 
-  const activeOperators = operators.length;
+  
 
   const getAssignedMachineIds = (operatorId: string) => {
     return (assignments || []).filter(a => a.operator_id === operatorId).map(a => a.machine_id);
@@ -112,12 +114,12 @@ export default function OperatorsPage() {
                   <UserCheck className="h-6 w-6 text-success" />
                 </div>
                 <div>
-                  {isLoading ? (
+                {isLoading ? (
                     <Skeleton className="h-9 w-16" />
                   ) : (
-                    <p className="text-3xl font-bold">{activeOperators}</p>
+                    <p className="text-3xl font-bold">{onlineCount}</p>
                   )}
-                  <p className="text-sm text-muted-foreground">Operadores Ativos</p>
+                  <p className="text-sm text-muted-foreground">Online Agora</p>
                 </div>
               </div>
             </CardContent>
@@ -202,14 +204,22 @@ export default function OperatorsPage() {
                     className="flex items-center gap-4 p-4 rounded-lg border border-border/50 bg-card/50 hover:bg-accent/5 transition-colors animate-fade-in"
                     style={{ animationDelay: `${index * 50}ms` }}
                   >
-                    <Avatar className="h-12 w-12">
-                      <AvatarImage src={operator.avatar_url || undefined} />
-                      <AvatarFallback className="bg-primary/10 text-primary">
-                        {operator.full_name
-                          ? operator.full_name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
-                          : 'OP'}
-                      </AvatarFallback>
-                    </Avatar>
+                    <div className="relative">
+                      <Avatar className="h-12 w-12">
+                        <AvatarImage src={operator.avatar_url || undefined} />
+                        <AvatarFallback className="bg-primary/10 text-primary">
+                          {operator.full_name
+                            ? operator.full_name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
+                            : 'OP'}
+                        </AvatarFallback>
+                      </Avatar>
+                      <span 
+                        className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-background ${
+                          isOnline(operator.user_id) ? 'bg-success' : 'bg-muted-foreground/50'
+                        }`}
+                        title={isOnline(operator.user_id) ? 'Online' : 'Offline'}
+                      />
+                    </div>
                     
                     <div className="flex-1 min-w-0">
                       <p className="font-medium truncate">
