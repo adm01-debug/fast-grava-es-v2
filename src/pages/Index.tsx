@@ -1,9 +1,13 @@
-import { Suspense, lazy } from 'react';
+import { Suspense, lazy, useMemo } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { StatsCard } from '@/components/dashboard/StatsCard';
 import { useSchedulingData } from '@/hooks/useSchedulingData';
+import { useDashboardLayout } from '@/hooks/useDashboardLayout';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { DraggableWidget } from '@/components/dashboard/DraggableWidget';
+import { DashboardEditControls } from '@/components/dashboard/DashboardEditControls';
+import { SortableWidgetSection } from '@/components/dashboard/SortableWidgetSection';
 import { 
   Calendar, 
   CheckCircle2, 
@@ -36,21 +40,83 @@ function WidgetSkeleton({ className = "h-64" }: { className?: string }) {
   );
 }
 
+// Widget component mapping
+const WIDGET_COMPONENTS: Record<string, { component: React.LazyExoticComponent<any>; skeletonHeight: string }> = {
+  occupancy: { component: OccupancyChart, skeletonHeight: 'h-[320px]' },
+  buffer: { component: BufferStatusWidget, skeletonHeight: 'h-32' },
+  conflicts: { component: ConflictAlertsWidget, skeletonHeight: 'h-32' },
+  alerts: { component: AlertsWidget, skeletonHeight: 'h-48' },
+  sequencing: { component: SmartSequencingWidget, skeletonHeight: 'h-48' },
+  loadbalancing: { component: LoadBalancingWidget, skeletonHeight: 'h-48' },
+  bottleneck: { component: BottleneckWidget, skeletonHeight: 'h-48' },
+  timeline: { component: CompactTimeline, skeletonHeight: 'h-40' },
+  jobs: { component: RecentJobsTable, skeletonHeight: 'h-64' },
+};
+
 const Index = () => {
   const { stats, machines, isLoading } = useSchedulingData();
+  const {
+    widgets,
+    isEditMode,
+    setIsEditMode,
+    reorderWidgets,
+    toggleWidgetVisibility,
+    resetLayout,
+    getWidgetsBySection,
+  } = useDashboardLayout();
+
+  const mainWidgets = useMemo(() => getWidgetsBySection('main'), [getWidgetsBySection]);
+  const sidebarWidgets = useMemo(() => getWidgetsBySection('sidebar'), [getWidgetsBySection]);
+  const efficiencyWidgets = useMemo(() => getWidgetsBySection('efficiency'), [getWidgetsBySection]);
+  const bottomWidgets = useMemo(() => getWidgetsBySection('bottom'), [getWidgetsBySection]);
+
+  const renderWidget = (widgetId: string) => {
+    const config = WIDGET_COMPONENTS[widgetId];
+    if (!config) return null;
+
+    const Component = config.component;
+    return (
+      <DraggableWidget
+        key={widgetId}
+        id={widgetId}
+        isEditMode={isEditMode}
+        onToggleVisibility={() => toggleWidgetVisibility(widgetId)}
+      >
+        <Suspense fallback={<WidgetSkeleton className={config.skeletonHeight} />}>
+          <Component />
+        </Suspense>
+      </DraggableWidget>
+    );
+  };
 
   return (
     <MainLayout>
       <div className="p-4 sm:p-6 lg:p-8 space-y-6 lg:space-y-8">
         {/* Page Header */}
-        <div className="flex flex-col gap-2 animate-fade-in">
-          <h1 className="text-3xl font-display font-bold">
-            <span className="gradient-text">Dashboard</span>
-          </h1>
-          <p className="text-muted-foreground">
-            Visão geral do departamento de gravação
-          </p>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 animate-fade-in">
+          <div>
+            <h1 className="text-3xl font-display font-bold">
+              <span className="gradient-text">Dashboard</span>
+            </h1>
+            <p className="text-muted-foreground">
+              Visão geral do departamento de gravação
+            </p>
+          </div>
+          <DashboardEditControls
+            isEditMode={isEditMode}
+            widgets={widgets}
+            onToggleEditMode={() => setIsEditMode(!isEditMode)}
+            onResetLayout={resetLayout}
+            onToggleWidget={toggleWidgetVisibility}
+          />
         </div>
+
+        {/* Edit Mode Indicator */}
+        {isEditMode && (
+          <div className="bg-primary/10 border border-primary/20 rounded-lg p-3 text-center text-sm text-primary animate-fade-in">
+            Modo de edição ativo - Arraste os widgets para reorganizar
+          </div>
+        )}
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
@@ -100,24 +166,28 @@ const Index = () => {
 
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 xl:grid-cols-5 gap-6">
-          {/* Left - Occupancy Chart */}
+          {/* Left - Main widgets */}
           <div className="xl:col-span-3">
-            <Suspense fallback={<WidgetSkeleton className="h-[320px]" />}>
-              <OccupancyChart />
-            </Suspense>
+            <SortableWidgetSection
+              widgets={mainWidgets}
+              section="main"
+              onReorder={reorderWidgets}
+              className="space-y-6"
+            >
+              {mainWidgets.map(widget => renderWidget(widget.id))}
+            </SortableWidgetSection>
           </div>
 
-          {/* Right - Buffer + Alerts + Conflicts */}
-          <div className="xl:col-span-2 space-y-6">
-            <Suspense fallback={<WidgetSkeleton className="h-32" />}>
-              <BufferStatusWidget />
-            </Suspense>
-            <Suspense fallback={<WidgetSkeleton className="h-32" />}>
-              <ConflictAlertsWidget />
-            </Suspense>
-            <Suspense fallback={<WidgetSkeleton className="h-48" />}>
-              <AlertsWidget />
-            </Suspense>
+          {/* Right - Sidebar widgets */}
+          <div className="xl:col-span-2">
+            <SortableWidgetSection
+              widgets={sidebarWidgets}
+              section="sidebar"
+              onReorder={reorderWidgets}
+              className="space-y-6"
+            >
+              {sidebarWidgets.map(widget => renderWidget(widget.id))}
+            </SortableWidgetSection>
           </div>
         </div>
 
@@ -126,28 +196,26 @@ const Index = () => {
           <h2 className="text-xl font-display font-semibold text-foreground">
             Eficiência Operacional
           </h2>
-          <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-            <Suspense fallback={<WidgetSkeleton className="h-48" />}>
-              <SmartSequencingWidget />
-            </Suspense>
-            <Suspense fallback={<WidgetSkeleton className="h-48" />}>
-              <LoadBalancingWidget />
-            </Suspense>
-            <Suspense fallback={<WidgetSkeleton className="h-48" />}>
-              <BottleneckWidget />
-            </Suspense>
-          </div>
+          <SortableWidgetSection
+            widgets={efficiencyWidgets}
+            section="efficiency"
+            direction="horizontal"
+            onReorder={reorderWidgets}
+            className="grid grid-cols-1 xl:grid-cols-3 gap-6"
+          >
+            {efficiencyWidgets.map(widget => renderWidget(widget.id))}
+          </SortableWidgetSection>
         </div>
 
-        {/* Timeline */}
-        <Suspense fallback={<WidgetSkeleton className="h-40" />}>
-          <CompactTimeline />
-        </Suspense>
-
-        {/* Jobs Table - Full Width */}
-        <Suspense fallback={<WidgetSkeleton className="h-64" />}>
-          <RecentJobsTable />
-        </Suspense>
+        {/* Bottom Section */}
+        <SortableWidgetSection
+          widgets={bottomWidgets}
+          section="bottom"
+          onReorder={reorderWidgets}
+          className="space-y-6"
+        >
+          {bottomWidgets.map(widget => renderWidget(widget.id))}
+        </SortableWidgetSection>
       </div>
     </MainLayout>
   );
