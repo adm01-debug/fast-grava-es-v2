@@ -1,13 +1,15 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { toast } from 'sonner';
-import { Loader2, LogIn, UserPlus, Printer, Moon, Sun } from 'lucide-react';
+import { Loader2, LogIn, UserPlus, Printer, Moon, Sun, KeyRound } from 'lucide-react';
 import { z } from 'zod';
 import { useTheme } from 'next-themes';
 
@@ -39,6 +41,11 @@ export default function AuthPage() {
   const [signupPassword, setSignupPassword] = useState('');
   const [signupConfirmPassword, setSignupConfirmPassword] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
+  
+  // Forgot password state
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState('');
+  const [isSendingReset, setIsSendingReset] = useState(false);
 
   // Redirect if already logged in
   if (user) {
@@ -79,6 +86,39 @@ export default function AuthPage() {
 
     toast.success('Login realizado com sucesso!');
     navigate('/');
+  };
+
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!forgotEmail.trim()) {
+      toast.error('Por favor, insira seu email');
+      return;
+    }
+
+    try {
+      z.string().email().parse(forgotEmail);
+    } catch {
+      toast.error('Email inválido');
+      return;
+    }
+
+    setIsSendingReset(true);
+
+    const { error } = await supabase.auth.resetPasswordForEmail(forgotEmail, {
+      redirectTo: `${window.location.origin}/auth`,
+    });
+
+    if (error) {
+      toast.error('Erro ao enviar email de recuperação');
+      setIsSendingReset(false);
+      return;
+    }
+
+    toast.success('Email de recuperação enviado! Verifique sua caixa de entrada.');
+    setShowForgotPassword(false);
+    setForgotEmail('');
+    setIsSendingReset(false);
   };
 
   const handleSignup = async (e: React.FormEvent) => {
@@ -209,6 +249,15 @@ export default function AuthPage() {
                       </>
                     )}
                   </Button>
+
+                  <Button
+                    type="button"
+                    variant="link"
+                    className="w-full text-muted-foreground hover:text-primary"
+                    onClick={() => setShowForgotPassword(true)}
+                  >
+                    Esqueci minha senha
+                  </Button>
                 </form>
               </TabsContent>
 
@@ -307,6 +356,55 @@ export default function AuthPage() {
           Contate um Coordenador para alterar permissões.
         </p>
       </div>
+
+      {/* Forgot Password Modal */}
+      <Dialog open={showForgotPassword} onOpenChange={setShowForgotPassword}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <KeyRound className="h-5 w-5 text-primary" />
+              Recuperar Senha
+            </DialogTitle>
+            <DialogDescription>
+              Insira seu email para receber um link de recuperação de senha.
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleForgotPassword} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="forgot-email">Email</Label>
+              <Input
+                id="forgot-email"
+                type="email"
+                placeholder="seu@email.com"
+                value={forgotEmail}
+                onChange={(e) => setForgotEmail(e.target.value)}
+                disabled={isSendingReset}
+                autoFocus
+              />
+            </div>
+            <div className="flex gap-2 justify-end">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setShowForgotPassword(false)}
+                disabled={isSendingReset}
+              >
+                Cancelar
+              </Button>
+              <Button type="submit" disabled={isSendingReset}>
+                {isSendingReset ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Enviando...
+                  </>
+                ) : (
+                  'Enviar Link'
+                )}
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
