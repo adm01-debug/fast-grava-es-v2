@@ -3,8 +3,9 @@ import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
-import { mockJobs, getTechniqueById, getMachineById } from '@/data/mockData';
+import { useJobs, useTechniques, useMachines, DbJob, DbTechnique, DbMachine } from '@/hooks/useJobs';
 import { StatusBadge } from '@/components/ui/status-badge';
+import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 
 const hours = Array.from({ length: 14 }, (_, i) => i + 7); // 07:00 to 20:00
@@ -14,14 +15,32 @@ export function TodayTimeline() {
   const currentHour = today.getHours();
   const currentMinute = today.getMinutes();
 
+  const { data: jobs = [], isLoading: isLoadingJobs } = useJobs();
+  const { data: techniques = [] } = useTechniques();
+  const { data: machines = [], isLoading: isLoadingMachines } = useMachines();
+
+  const isLoading = isLoadingJobs || isLoadingMachines;
+
+  const getTechniqueById = (id: string): DbTechnique | undefined => {
+    return techniques.find(t => t.id === id);
+  };
+
+  const getMachineById = (id: string): DbMachine | undefined => {
+    return machines.find(m => m.id === id);
+  };
+
   const todayJobs = useMemo(() => {
-    return mockJobs.filter(job => {
-      const jobDate = new Date(job.scheduledDate);
+    return jobs.filter(job => {
+      if (!job.scheduled_date) return false;
+      const jobDate = new Date(job.scheduled_date);
       return jobDate.toDateString() === today.toDateString();
     });
-  }, []);
+  }, [jobs, today]);
 
-  const getJobPosition = (startTime: string, endTime: string) => {
+  const getJobPosition = (startTime: string | null, endTime: string | null) => {
+    if (!startTime || !endTime) {
+      return { left: 0, width: 60 };
+    }
     const [startHour, startMin] = startTime.split(':').map(Number);
     const [endHour, endMin] = endTime.split(':').map(Number);
     
@@ -43,17 +62,31 @@ export function TodayTimeline() {
 
   // Group jobs by machine
   const jobsByMachine = useMemo(() => {
-    const grouped: Record<string, typeof todayJobs> = {};
+    const grouped: Record<string, DbJob[]> = {};
     todayJobs.forEach(job => {
-      if (!grouped[job.machineId]) {
-        grouped[job.machineId] = [];
+      if (!job.machine_id) return;
+      if (!grouped[job.machine_id]) {
+        grouped[job.machine_id] = [];
       }
-      grouped[job.machineId].push(job);
+      grouped[job.machine_id].push(job);
     });
     return grouped;
   }, [todayJobs]);
 
   const machineIds = Object.keys(jobsByMachine);
+
+  if (isLoading) {
+    return (
+      <Card className="col-span-3 glass-card card-interactive animate-fade-in-up">
+        <CardHeader className="pb-2">
+          <Skeleton className="h-6 w-48" />
+        </CardHeader>
+        <CardContent>
+          <Skeleton className="h-[200px] w-full" />
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className="col-span-3 glass-card card-interactive animate-fade-in-up opacity-0 [animation-fill-mode:forwards] [animation-delay:0.05s]">
@@ -93,66 +126,72 @@ export function TodayTimeline() {
                 </div>
               )}
 
-              {machineIds.map(machineId => {
-                const machine = getMachineById(machineId);
-                const technique = machine ? getTechniqueById(machine.techniqueId) : null;
-                const jobs = jobsByMachine[machineId];
+              {machineIds.length === 0 ? (
+                <div className="text-center text-muted-foreground py-8 text-sm">
+                  Nenhum job agendado para hoje
+                </div>
+              ) : (
+                machineIds.map(machineId => {
+                  const machine = getMachineById(machineId);
+                  const technique = machine ? getTechniqueById(machine.technique_id) : null;
+                  const machineJobs = jobsByMachine[machineId];
 
-                return (
-                  <div key={machineId} className="flex items-center">
-                    <div className="w-24 shrink-0 pr-3">
-                      <span className="text-xs font-mono font-medium text-muted-foreground">
-                        {machine?.code}
-                      </span>
-                    </div>
-                    <div className="flex-1 relative h-12 bg-secondary/30 rounded-lg">
-                      {/* Hour grid lines */}
-                      {hours.map((hour, i) => (
-                        <div
-                          key={hour}
-                          className="absolute top-0 bottom-0 w-px bg-border/30"
-                          style={{ left: `${i * 80}px` }}
-                        />
-                      ))}
-
-                      {/* Jobs */}
-                      {jobs.map(job => {
-                        const pos = getJobPosition(job.startTime, job.endTime);
-                        const statusColors: Record<string, string> = {
-                          production: 'gradient-primary',
-                          scheduled: 'bg-status-scheduled',
-                          finished: 'bg-status-finished',
-                          delayed: 'bg-status-delayed',
-                          ready: 'bg-status-ready',
-                          queue: 'bg-muted-foreground',
-                          paused: 'bg-status-paused',
-                          cancelled: 'bg-status-cancelled',
-                          rework: 'bg-status-rework',
-                        };
-
-                        return (
+                  return (
+                    <div key={machineId} className="flex items-center">
+                      <div className="w-24 shrink-0 pr-3">
+                        <span className="text-xs font-mono font-medium text-muted-foreground">
+                          {machine?.code}
+                        </span>
+                      </div>
+                      <div className="flex-1 relative h-12 bg-secondary/30 rounded-lg">
+                        {/* Hour grid lines */}
+                        {hours.map((hour, i) => (
                           <div
-                            key={job.id}
-                            className={cn(
-                              'absolute top-1.5 bottom-1.5 rounded-md cursor-pointer',
-                              'flex items-center px-2 text-xs font-medium text-white',
-                              'hover:ring-2 hover:ring-primary/50 hover:ring-offset-1 hover:ring-offset-card',
-                              'transition-all hover:scale-[1.02] hover:z-10',
-                              statusColors[job.status]
-                            )}
-                            style={{ left: `${pos.left}px`, width: `${pos.width}px` }}
-                            title={`${job.orderNumber} - ${job.client}`}
-                          >
-                            <span className="truncate">
-                              {job.orderNumber.split('-').pop()}
-                            </span>
-                          </div>
-                        );
-                      })}
+                            key={hour}
+                            className="absolute top-0 bottom-0 w-px bg-border/30"
+                            style={{ left: `${i * 80}px` }}
+                          />
+                        ))}
+
+                        {/* Jobs */}
+                        {machineJobs.map(job => {
+                          const pos = getJobPosition(job.start_time, job.end_time);
+                          const statusColors: Record<string, string> = {
+                            production: 'gradient-primary',
+                            scheduled: 'bg-status-scheduled',
+                            finished: 'bg-status-finished',
+                            delayed: 'bg-status-delayed',
+                            ready: 'bg-status-ready',
+                            queue: 'bg-muted-foreground',
+                            paused: 'bg-status-paused',
+                            cancelled: 'bg-status-cancelled',
+                            rework: 'bg-status-rework',
+                          };
+
+                          return (
+                            <div
+                              key={job.id}
+                              className={cn(
+                                'absolute top-1.5 bottom-1.5 rounded-md cursor-pointer',
+                                'flex items-center px-2 text-xs font-medium text-white',
+                                'hover:ring-2 hover:ring-primary/50 hover:ring-offset-1 hover:ring-offset-card',
+                                'transition-all hover:scale-[1.02] hover:z-10',
+                                statusColors[job.status]
+                              )}
+                              style={{ left: `${pos.left}px`, width: `${pos.width}px` }}
+                              title={`${job.order_number} - ${job.client}`}
+                            >
+                              <span className="truncate">
+                                {job.order_number.split('-').pop()}
+                              </span>
+                            </div>
+                          );
+                        })}
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })
+              )}
             </div>
           </div>
           <ScrollBar orientation="horizontal" />
