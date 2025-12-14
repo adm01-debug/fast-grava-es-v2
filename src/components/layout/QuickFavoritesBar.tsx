@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
   Home, Calendar, CalendarDays, LayoutGrid, List, Zap, BarChart3, 
   AlertTriangle, BookOpen, UserCircle, QrCode, Bot, Printer, Users, 
-  Plus, Star, Settings2, X, RotateCcw, RefreshCw, GripVertical
+  Plus, Star, Settings2, X, RotateCcw, RefreshCw, GripVertical, Volume2, VolumeX
 } from 'lucide-react';
 import { arrayMove } from '@dnd-kit/sortable';
 import {
@@ -164,6 +164,10 @@ export const QuickFavoritesBar = memo(function QuickFavoritesBar() {
   const [isEditing, setIsEditing] = useState(false);
   const [activeDragId, setActiveDragId] = useState<string | null>(null);
   const [triggeredFavId, setTriggeredFavId] = useState<string | null>(null);
+  const [soundEnabled, setSoundEnabled] = useState(() => {
+    const stored = localStorage.getItem('quick_favorites_sound_enabled');
+    return stored !== null ? stored === 'true' : true;
+  });
   const { 
     favorites, 
     availableShortcuts, 
@@ -183,6 +187,8 @@ export const QuickFavoritesBar = memo(function QuickFavoritesBar() {
 
   // Play subtle click sound for keyboard shortcut
   const playShortcutSound = useCallback(() => {
+    if (!soundEnabled) return;
+    
     try {
       if (!audioContextRef.current) {
         audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
@@ -207,7 +213,7 @@ export const QuickFavoritesBar = memo(function QuickFavoritesBar() {
     } catch (error) {
       // Silently fail if audio is not available
     }
-  }, []);
+  }, [soundEnabled]);
 
   // Keyboard shortcuts: Alt+1 to Alt+6 navigate to favorites
   useEffect(() => {
@@ -411,6 +417,36 @@ export const QuickFavoritesBar = memo(function QuickFavoritesBar() {
                 })}
               </div>
             )}
+            
+            <div className="border-t border-border pt-3">
+              <div className="flex items-center justify-between mb-2">
+                <div className="text-xs text-muted-foreground">
+                  Som do atalho
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 px-2 text-xs gap-1.5"
+                  onClick={() => {
+                    const newValue = !soundEnabled;
+                    setSoundEnabled(newValue);
+                    localStorage.setItem('quick_favorites_sound_enabled', String(newValue));
+                  }}
+                >
+                  {soundEnabled ? (
+                    <>
+                      <Volume2 className="h-3 w-3 text-primary" />
+                      <span>Ativado</span>
+                    </>
+                  ) : (
+                    <>
+                      <VolumeX className="h-3 w-3 text-muted-foreground" />
+                      <span>Desativado</span>
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
             
             <div className="border-t border-border pt-3">
               <div className="text-xs text-muted-foreground mb-2">
