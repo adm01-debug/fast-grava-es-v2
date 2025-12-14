@@ -14,6 +14,186 @@ export type Database = {
   }
   public: {
     Tables: {
+      abc_activities: {
+        Row: {
+          cost_driver: string
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          name: string
+          technique_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          cost_driver: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          technique_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          cost_driver?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          technique_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "abc_activities_technique_id_fkey"
+            columns: ["technique_id"]
+            isOneToOne: false
+            referencedRelation: "techniques"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      abc_activity_rates: {
+        Row: {
+          activity_id: string
+          cost_pool_id: string
+          created_at: string
+          id: string
+          period_end: string
+          period_start: string
+          rate_per_unit: number
+          updated_at: string
+        }
+        Insert: {
+          activity_id: string
+          cost_pool_id: string
+          created_at?: string
+          id?: string
+          period_end: string
+          period_start: string
+          rate_per_unit?: number
+          updated_at?: string
+        }
+        Update: {
+          activity_id?: string
+          cost_pool_id?: string
+          created_at?: string
+          id?: string
+          period_end?: string
+          period_start?: string
+          rate_per_unit?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "abc_activity_rates_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "abc_activities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "abc_activity_rates_cost_pool_id_fkey"
+            columns: ["cost_pool_id"]
+            isOneToOne: false
+            referencedRelation: "abc_cost_pools"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      abc_cost_pools: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          monthly_budget: number
+          name: string
+          pool_type: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          monthly_budget?: number
+          name: string
+          pool_type: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          monthly_budget?: number
+          name?: string
+          pool_type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      abc_job_costs: {
+        Row: {
+          activity_id: string
+          calculated_at: string
+          cost_pool_id: string
+          created_at: string
+          driver_quantity: number
+          id: string
+          job_id: string
+          total_cost: number
+          unit_rate: number
+        }
+        Insert: {
+          activity_id: string
+          calculated_at?: string
+          cost_pool_id: string
+          created_at?: string
+          driver_quantity?: number
+          id?: string
+          job_id: string
+          total_cost?: number
+          unit_rate?: number
+        }
+        Update: {
+          activity_id?: string
+          calculated_at?: string
+          cost_pool_id?: string
+          created_at?: string
+          driver_quantity?: number
+          id?: string
+          job_id?: string
+          total_cost?: number
+          unit_rate?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "abc_job_costs_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "abc_activities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "abc_job_costs_cost_pool_id_fkey"
+            columns: ["cost_pool_id"]
+            isOneToOne: false
+            referencedRelation: "abc_cost_pools"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "abc_job_costs_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       bitrix24_field_mappings: {
         Row: {
           created_at: string

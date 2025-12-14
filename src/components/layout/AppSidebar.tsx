@@ -15,6 +15,7 @@ import {
   Plus,
   BarChart3,
   Gauge,
+  Coins,
   UserCircle,
   LogOut,
   Zap,
@@ -49,6 +50,7 @@ const baseMainNavItems: Omit<NavItem, 'badge'>[] = [
   { icon: List, label: 'Lista de Pendências', href: '/pending' },
   { icon: Zap, label: 'Eficiência', href: '/efficiency' },
   { icon: Gauge, label: 'OEE', href: '/oee' },
+  { icon: Coins, label: 'Custeio ABC', href: '/abc' },
   { icon: BarChart3, label: 'KPIs e Ocupação', href: '/kpis' },
   { icon: AlertTriangle, label: 'Alertas', href: '/alerts' },
   { icon: BookOpen, label: 'Base de Conhecimento', href: '/knowledge' },
@@ -171,7 +173,7 @@ export function AppSidebar() {
       return ['/operator', '/alerts', '/assistant', '/scanner', '/knowledge'].includes(item.href);
     }
     if (role === 'manager') {
-      return ['/', '/calendar/daily', '/calendar/weekly', '/kpis', '/oee', '/alerts', '/efficiency', '/assistant', '/knowledge'].includes(item.href);
+      return ['/', '/calendar/daily', '/calendar/weekly', '/kpis', '/oee', '/abc', '/alerts', '/efficiency', '/assistant', '/knowledge'].includes(item.href);
     }
     return true; // coordinator sees all
   });
