@@ -140,9 +140,10 @@ export function useOEE(daysBack: number = 30) {
         // Estimated time (ideal cycle time)
         totalEstimatedMinutes += job.estimated_duration || 60;
         
-        // Quality metrics
-        totalProducedPieces += (job as any).produced_quantity || job.quantity || 0;
-        totalLostPieces += job.lost_pieces || 0;
+        // Quality metrics - use produced_quantity if available, otherwise use quantity
+        const producedQty = job.produced_quantity ?? job.quantity ?? 0;
+        totalProducedPieces += producedQty;
+        totalLostPieces += job.lost_pieces ?? 0;
         totalQuantity += job.quantity || 0;
       }
       
@@ -282,9 +283,9 @@ export function useOEE(daysBack: number = 30) {
         if (job.actual_start_time && job.actual_end_time) {
           dayActual += differenceInMinutes(parseISO(job.actual_end_time), parseISO(job.actual_start_time));
         }
-        dayEstimated += job.estimated_duration || 60;
-        dayProduced += (job as any).produced_quantity || job.quantity || 0;
-        dayLost += job.lost_pieces || 0;
+        dayEstimated += job.estimated_duration ?? 60;
+        dayProduced += job.produced_quantity ?? job.quantity ?? 0;
+        dayLost += job.lost_pieces ?? 0;
       }
       
       const dayPlanned = Math.max(PLANNED_MINUTES_PER_DAY, dayEstimated);

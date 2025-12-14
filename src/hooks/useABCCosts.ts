@@ -212,7 +212,7 @@ export function useABCCosts() {
       const techniqueCosts = jobCosts.filter(jc => techniqueJobIds.includes(jc.job_id));
       
       const totalCost = techniqueCosts.reduce((sum, c) => sum + Number(c.total_cost), 0);
-      const totalQuantity = techniqueJobs.reduce((sum, j) => sum + (j.produced_quantity || j.quantity), 0);
+      const totalQuantity = techniqueJobs.reduce((sum, j) => sum + (j.produced_quantity ?? j.quantity ?? 0), 0);
 
       const costByPool = costPools.map(pool => {
         const poolCosts = techniqueCosts.filter(c => c.cost_pool_id === pool.id);
@@ -274,7 +274,7 @@ export function useABCCosts() {
             driverQuantity = 1; // One setup per job
             break;
           case 'quantity':
-            driverQuantity = job.produced_quantity || job.quantity;
+            driverQuantity = job.produced_quantity ?? job.quantity ?? 0;
             break;
           case 'labor_hours':
             driverQuantity = durationHours * 1.2; // Labor includes prep time
@@ -371,8 +371,9 @@ export function useABCCosts() {
   // Calculate totals
   const totalBudget = costPools.reduce((sum, p) => sum + Number(p.monthly_budget), 0);
   const totalAllocatedCost = jobCosts.reduce((sum, c) => sum + Number(c.total_cost), 0);
-  const averageUnitCost = jobs.length > 0
-    ? totalAllocatedCost / jobs.reduce((sum, j) => sum + (j.produced_quantity || j.quantity), 0)
+  const totalPiecesProduced = jobs.reduce((sum, j) => sum + (j.produced_quantity ?? j.quantity ?? 0), 0);
+  const averageUnitCost = totalPiecesProduced > 0
+    ? totalAllocatedCost / totalPiecesProduced
     : 0;
 
   return {

@@ -8,6 +8,7 @@ export interface DbJob {
   client: string;
   product: string;
   quantity: number;
+  produced_quantity: number | null;
   technique_id: string;
   machine_id: string | null;
   scheduled_date: string | null;

@@ -216,15 +216,23 @@ export function useTPM() {
       performed_by: string;
       performed_by_name: string;
     }) => {
-      const schedule = schedules.find(s => s.id === data.schedule_id);
-      if (!schedule) throw new Error('Agendamento não encontrado');
+      // Fetch fresh schedule data to avoid stale state issues
+      const { data: scheduleData, error: scheduleError } = await supabase
+        .from('maintenance_schedules')
+        .select('*')
+        .eq('id', data.schedule_id)
+        .single();
+      
+      if (scheduleError || !scheduleData) {
+        throw new Error('Agendamento não encontrado');
+      }
 
       const { data: record, error } = await supabase
         .from('maintenance_records')
         .insert({
           schedule_id: data.schedule_id,
-          machine_id: schedule.machine_id,
-          maintenance_type_id: schedule.maintenance_type_id,
+          machine_id: scheduleData.machine_id,
+          maintenance_type_id: scheduleData.maintenance_type_id,
           performed_by: data.performed_by,
           performed_by_name: data.performed_by_name,
           status: 'in_progress',
@@ -249,8 +257,16 @@ export function useTPM() {
       total_cost?: number;
       downtime_minutes?: number;
     }) => {
-      const record = records.find(r => r.id === data.record_id);
-      if (!record) throw new Error('Registro não encontrado');
+      // Fetch fresh record data to avoid stale state issues
+      const { data: recordData, error: recordFetchError } = await supabase
+        .from('maintenance_records')
+        .select('*')
+        .eq('id', data.record_id)
+        .single();
+      
+      if (recordFetchError || !recordData) {
+        throw new Error('Registro não encontrado');
+      }
 
       // Update record
       const { error: recordError } = await supabase
@@ -265,17 +281,22 @@ export function useTPM() {
         .eq('id', data.record_id);
       if (recordError) throw recordError;
 
-      // Update schedule with next due date
-      const schedule = schedules.find(s => s.id === record.schedule_id);
-      if (schedule) {
-        const nextDue = addDays(new Date(), schedule.interval_days).toISOString();
+      // Update schedule with next due date - fetch fresh schedule data
+      const { data: scheduleData } = await supabase
+        .from('maintenance_schedules')
+        .select('interval_days')
+        .eq('id', recordData.schedule_id)
+        .single();
+      
+      if (scheduleData) {
+        const nextDue = addDays(new Date(), scheduleData.interval_days).toISOString();
         const { error: scheduleError } = await supabase
           .from('maintenance_schedules')
           .update({
             last_completed_at: new Date().toISOString(),
             next_due_at: nextDue,
           })
-          .eq('id', record.schedule_id);
+          .eq('id', recordData.schedule_id);
         if (scheduleError) throw scheduleError;
       }
 
@@ -283,7 +304,7 @@ export function useTPM() {
       await supabase
         .from('maintenance_alerts')
         .update({ is_resolved: true, resolved_at: new Date().toISOString() })
-        .eq('schedule_id', record.schedule_id)
+        .eq('schedule_id', recordData.schedule_id)
         .eq('is_resolved', false);
     },
     onSuccess: () => {
