@@ -194,6 +194,13 @@ export function useSmartSequencingWithActions() {
 
     const result: SequencingSuggestion[] = [];
     const today = new Date();
+    
+    // Validate date before using
+    if (!today || isNaN(today.getTime())) {
+      console.warn('[useSmartSequencingWithActions] Invalid current date');
+      return [];
+    }
+    
     today.setHours(0, 0, 0, 0);
     const tomorrow = new Date(today);
     tomorrow.setDate(tomorrow.getDate() + 1);
@@ -206,7 +213,10 @@ export function useSmartSequencingWithActions() {
       if (!job.machine_id || !job.scheduled_date) return;
       if (!['scheduled', 'ready', 'queue'].includes(job.status)) return;
       
+      // Validate job scheduled_date
       const jobDate = new Date(job.scheduled_date);
+      if (isNaN(jobDate.getTime())) return; // Skip jobs with invalid dates
+      
       jobDate.setHours(0, 0, 0, 0);
       
       if (jobDate < today || jobDate > tomorrow) return;

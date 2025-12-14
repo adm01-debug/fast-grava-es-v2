@@ -83,13 +83,21 @@ export function useABCData() {
   const { data: jobCosts = [], isLoading: loadingJobCosts } = useQuery({
     queryKey: ['abc-job-costs'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('abc_job_costs')
-        .select('*')
-        .order('calculated_at', { ascending: false });
-      
-      if (error) throw error;
-      return data as ABCJobCost[];
+      try {
+        const { data, error } = await supabase
+          .from('abc_job_costs')
+          .select('*')
+          .order('calculated_at', { ascending: false });
+        
+        if (error) {
+          console.error('[useABCCosts] jobCosts fetch failed:', categorizeError(error), error);
+          throw error;
+        }
+        return data as ABCJobCost[];
+      } catch (err) {
+        console.error('[useABCCosts] jobCosts error:', err);
+        throw err;
+      }
     },
     staleTime: STALE_TIMES.DYNAMIC,
     ...defaultQueryOptions,
@@ -99,29 +107,49 @@ export function useABCData() {
   const { data: jobs = [] } = useQuery({
     queryKey: ['jobs-for-abc'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('jobs')
-        .select('*')
-        .in('status', ['finished', 'production'])
-        .order('updated_at', { ascending: false })
-        .limit(100);
-      
-      if (error) throw error;
-      return data;
+      try {
+        const { data, error } = await supabase
+          .from('jobs')
+          .select('*')
+          .in('status', ['finished', 'production'])
+          .order('updated_at', { ascending: false })
+          .limit(200);
+        
+        if (error) {
+          console.error('[useABCCosts] jobs fetch failed:', categorizeError(error), error);
+          throw error;
+        }
+        return data;
+      } catch (err) {
+        console.error('[useABCCosts] jobs error:', err);
+        throw err;
+      }
     },
+    staleTime: STALE_TIMES.DYNAMIC,
+    ...defaultQueryOptions,
   });
 
   // Fetch techniques
   const { data: techniques = [] } = useQuery({
     queryKey: ['techniques-for-abc'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('techniques')
-        .select('*');
-      
-      if (error) throw error;
-      return data;
+      try {
+        const { data, error } = await supabase
+          .from('techniques')
+          .select('*');
+        
+        if (error) {
+          console.error('[useABCCosts] techniques fetch failed:', categorizeError(error), error);
+          throw error;
+        }
+        return data;
+      } catch (err) {
+        console.error('[useABCCosts] techniques error:', err);
+        throw err;
+      }
     },
+    staleTime: STALE_TIMES.STATIC,
+    ...defaultQueryOptions,
   });
 
   return {

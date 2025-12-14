@@ -3,7 +3,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useJobs, useMachines, useTechniques, DbJob, DbMachine, DbTechnique } from './useJobs';
 import { toast } from 'sonner';
-import { parseISO, format, isValid } from 'date-fns';
+import { format, isValid as isValidDate } from 'date-fns';
 import { showErrorToast, createAppError } from '@/lib/errorHandling';
 
 const LOAD_BALANCING_ERROR_CONTEXT = {
@@ -158,7 +158,8 @@ export function useLoadBalancingWithActions(targetDate?: Date) {
       return { byTechnique: [], suggestions: [], isLoading: true };
     }
 
-    const date = targetDate || new Date();
+    // Validate and use targetDate, fallback to today if invalid
+    const date = targetDate && isValidDate(targetDate) ? targetDate : new Date();
     const dateStr = format(date, 'yyyy-MM-dd');
 
     // Calculate load per machine
