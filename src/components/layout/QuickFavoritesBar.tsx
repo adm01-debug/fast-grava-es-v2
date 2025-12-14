@@ -1,4 +1,4 @@
-import { memo, useState, useCallback, useEffect } from 'react';
+import { memo, useState, useCallback, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
   Home, Calendar, CalendarDays, LayoutGrid, List, Zap, BarChart3, 
@@ -178,6 +178,37 @@ export const QuickFavoritesBar = memo(function QuickFavoritesBar() {
   } = useQuickFavorites();
   const alertCount = useAlertCount();
 
+  // Audio context ref for shortcut sounds
+  const audioContextRef = useRef<AudioContext | null>(null);
+
+  // Play subtle click sound for keyboard shortcut
+  const playShortcutSound = useCallback(() => {
+    try {
+      if (!audioContextRef.current) {
+        audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+      }
+      const ctx = audioContextRef.current;
+      const oscillator = ctx.createOscillator();
+      const gainNode = ctx.createGain();
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(ctx.destination);
+      
+      // Soft, pleasant click sound
+      oscillator.type = 'sine';
+      oscillator.frequency.setValueAtTime(880, ctx.currentTime);
+      oscillator.frequency.exponentialRampToValueAtTime(1100, ctx.currentTime + 0.05);
+      
+      gainNode.gain.setValueAtTime(0.1, ctx.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.08);
+      
+      oscillator.start(ctx.currentTime);
+      oscillator.stop(ctx.currentTime + 0.08);
+    } catch (error) {
+      // Silently fail if audio is not available
+    }
+  }, []);
+
   // Keyboard shortcuts: Alt+1 to Alt+6 navigate to favorites
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -195,6 +226,8 @@ export const QuickFavoritesBar = memo(function QuickFavoritesBar() {
         const favIndex = keyNum - 1;
         if (favorites[favIndex]) {
           e.preventDefault();
+          // Play sound feedback
+          playShortcutSound();
           // Trigger visual feedback
           setTriggeredFavId(favorites[favIndex].id);
           // Navigate after brief delay for visual effect
@@ -207,7 +240,7 @@ export const QuickFavoritesBar = memo(function QuickFavoritesBar() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [favorites, navigate]);
+  }, [favorites, navigate, playShortcutSound]);
 
   // Clear triggered state after animation
   useEffect(() => {
