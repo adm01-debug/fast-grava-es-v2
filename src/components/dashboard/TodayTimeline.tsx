@@ -1,18 +1,95 @@
-import { useMemo } from 'react';
+import { memo, useMemo, useCallback } from 'react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { useSchedulingData } from '@/hooks/useSchedulingData';
-import { DbJob } from '@/hooks/useJobs';
+import { DbJob, DbMachine, DbTechnique } from '@/hooks/useJobs';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 
 const hours = Array.from({ length: 14 }, (_, i) => i + 7); // 07:00 to 20:00
 
-export function TodayTimeline() {
-  const today = new Date();
+const statusColors: Record<string, string> = {
+  production: 'gradient-primary',
+  scheduled: 'bg-status-scheduled',
+  finished: 'bg-status-finished',
+  delayed: 'bg-status-delayed',
+  ready: 'bg-status-ready',
+  queue: 'bg-muted-foreground',
+  paused: 'bg-status-paused',
+  cancelled: 'bg-status-cancelled',
+  rework: 'bg-status-rework',
+};
+
+interface TimelineJobProps {
+  job: DbJob;
+  position: { left: number; width: number };
+}
+
+const TimelineJob = memo(function TimelineJob({ job, position }: TimelineJobProps) {
+  return (
+    <div
+      className={cn(
+        'absolute top-1.5 bottom-1.5 rounded-md cursor-pointer',
+        'flex items-center px-2 text-xs font-medium text-white',
+        'hover:ring-2 hover:ring-primary/50 hover:ring-offset-1 hover:ring-offset-card',
+        'transition-all hover:scale-[1.02] hover:z-10',
+        statusColors[job.status]
+      )}
+      style={{ left: `${position.left}px`, width: `${position.width}px` }}
+      title={`${job.order_number} - ${job.client}`}
+    >
+      <span className="truncate">
+        {job.order_number.split('-').pop()}
+      </span>
+    </div>
+  );
+});
+TimelineJob.displayName = 'TimelineJob';
+
+interface MachineRowProps {
+  machineId: string;
+  machine: DbMachine | undefined;
+  jobs: DbJob[];
+  getJobPosition: (startTime: string | null, endTime: string | null) => { left: number; width: number };
+}
+
+const MachineRow = memo(function MachineRow({ machineId, machine, jobs, getJobPosition }: MachineRowProps) {
+  return (
+    <div className="flex items-center">
+      <div className="w-24 shrink-0 pr-3">
+        <span className="text-xs font-mono font-medium text-muted-foreground">
+          {machine?.code}
+        </span>
+      </div>
+      <div className="flex-1 relative h-12 bg-secondary/30 rounded-lg">
+        {/* Hour grid lines */}
+        {hours.map((hour, i) => (
+          <div
+            key={hour}
+            className="absolute top-0 bottom-0 w-px bg-border/30"
+            style={{ left: `${i * 80}px` }}
+          />
+        ))}
+
+        {/* Jobs */}
+        {jobs.map(job => (
+          <TimelineJob
+            key={job.id}
+            job={job}
+            position={getJobPosition(job.start_time, job.end_time)}
+          />
+        ))}
+      </div>
+    </div>
+  );
+});
+MachineRow.displayName = 'MachineRow';
+
+function TodayTimelineComponent() {
+  const today = useMemo(() => new Date(), []);
   const currentHour = today.getHours();
   const currentMinute = today.getMinutes();
 
@@ -26,7 +103,7 @@ export function TodayTimeline() {
     });
   }, [jobs, today]);
 
-  const getJobPosition = (startTime: string | null, endTime: string | null) => {
+  const getJobPosition = useCallback((startTime: string | null, endTime: string | null) => {
     if (!startTime || !endTime) {
       return { left: 0, width: 60 };
     }
@@ -40,7 +117,7 @@ export function TodayTimeline() {
       left: Math.max(0, startOffset),
       width: Math.max(60, endOffset - startOffset),
     };
-  };
+  }, []);
 
   const currentTimePosition = useMemo(() => {
     if (currentHour >= 7 && currentHour <= 20) {
@@ -62,7 +139,12 @@ export function TodayTimeline() {
     return grouped;
   }, [todayJobs]);
 
-  const machineIds = Object.keys(jobsByMachine);
+  const machineIds = useMemo(() => Object.keys(jobsByMachine), [jobsByMachine]);
+
+  const formattedDate = useMemo(() => 
+    format(today, "EEEE, d 'de' MMMM", { locale: ptBR }),
+    [today]
+  );
 
   if (isLoading) {
     return (
@@ -82,9 +164,7 @@ export function TodayTimeline() {
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg font-display gradient-text">Timeline de Hoje</CardTitle>
-          <span className="text-sm text-muted-foreground">
-            {format(today, "EEEE, d 'de' MMMM", { locale: ptBR })}
-          </span>
+          <span className="text-sm text-muted-foreground">{formattedDate}</span>
         </div>
       </CardHeader>
       <CardContent>
@@ -120,66 +200,15 @@ export function TodayTimeline() {
                   Nenhum job agendado para hoje
                 </div>
               ) : (
-                machineIds.map(machineId => {
-                  const machine = getMachineById(machineId);
-                  const technique = machine ? getTechniqueById(machine.technique_id) : null;
-                  const machineJobs = jobsByMachine[machineId];
-
-                  return (
-                    <div key={machineId} className="flex items-center">
-                      <div className="w-24 shrink-0 pr-3">
-                        <span className="text-xs font-mono font-medium text-muted-foreground">
-                          {machine?.code}
-                        </span>
-                      </div>
-                      <div className="flex-1 relative h-12 bg-secondary/30 rounded-lg">
-                        {/* Hour grid lines */}
-                        {hours.map((hour, i) => (
-                          <div
-                            key={hour}
-                            className="absolute top-0 bottom-0 w-px bg-border/30"
-                            style={{ left: `${i * 80}px` }}
-                          />
-                        ))}
-
-                        {/* Jobs */}
-                        {machineJobs.map(job => {
-                          const pos = getJobPosition(job.start_time, job.end_time);
-                          const statusColors: Record<string, string> = {
-                            production: 'gradient-primary',
-                            scheduled: 'bg-status-scheduled',
-                            finished: 'bg-status-finished',
-                            delayed: 'bg-status-delayed',
-                            ready: 'bg-status-ready',
-                            queue: 'bg-muted-foreground',
-                            paused: 'bg-status-paused',
-                            cancelled: 'bg-status-cancelled',
-                            rework: 'bg-status-rework',
-                          };
-
-                          return (
-                            <div
-                              key={job.id}
-                              className={cn(
-                                'absolute top-1.5 bottom-1.5 rounded-md cursor-pointer',
-                                'flex items-center px-2 text-xs font-medium text-white',
-                                'hover:ring-2 hover:ring-primary/50 hover:ring-offset-1 hover:ring-offset-card',
-                                'transition-all hover:scale-[1.02] hover:z-10',
-                                statusColors[job.status]
-                              )}
-                              style={{ left: `${pos.left}px`, width: `${pos.width}px` }}
-                              title={`${job.order_number} - ${job.client}`}
-                            >
-                              <span className="truncate">
-                                {job.order_number.split('-').pop()}
-                              </span>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  );
-                })
+                machineIds.map(machineId => (
+                  <MachineRow
+                    key={machineId}
+                    machineId={machineId}
+                    machine={getMachineById(machineId)}
+                    jobs={jobsByMachine[machineId]}
+                    getJobPosition={getJobPosition}
+                  />
+                ))
               )}
             </div>
           </div>
@@ -189,3 +218,6 @@ export function TodayTimeline() {
     </Card>
   );
 }
+
+export const TodayTimeline = memo(TodayTimelineComponent);
+TodayTimeline.displayName = 'TodayTimeline';
