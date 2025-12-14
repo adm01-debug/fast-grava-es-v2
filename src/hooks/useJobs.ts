@@ -41,6 +41,10 @@ export interface DbMachine {
   is_active: boolean;
 }
 
+// Stale time configuration
+const STATIC_STALE_TIME = 5 * 60 * 1000; // 5 minutes for techniques/machines
+const JOBS_STALE_TIME = 30 * 1000; // 30 seconds for jobs
+
 export function useTechniques() {
   const queryClient = useQueryClient();
 
@@ -55,9 +59,10 @@ export function useTechniques() {
       if (error) throw error;
       return data as DbTechnique[];
     },
+    staleTime: STATIC_STALE_TIME,
   });
 
-  // Subscribe to realtime updates
+  // Subscribe to realtime updates only once per queryClient
   useEffect(() => {
     const channel = supabase
       .channel('techniques-changes')
@@ -97,6 +102,7 @@ export function useMachines() {
       if (error) throw error;
       return data as DbMachine[];
     },
+    staleTime: STATIC_STALE_TIME,
   });
 
   // Subscribe to realtime updates
@@ -138,6 +144,7 @@ export function useJobs() {
       if (error) throw error;
       return data as DbJob[];
     },
+    staleTime: JOBS_STALE_TIME,
   });
 
   // Subscribe to realtime updates
