@@ -40,6 +40,7 @@ export function useQuickFavorites() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [hasMigrated, setHasMigrated] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
   
   // Fetch favorites from database
   const { data: dbFavorites, isLoading, isFetched } = useQuery({
@@ -230,5 +231,6 @@ export function useQuickFavorites() {
     isFavorite,
     maxFavorites: MAX_FAVORITES,
     isLoading,
+    isSyncing: isSyncing || saveMutation.isPending,
   };
 }

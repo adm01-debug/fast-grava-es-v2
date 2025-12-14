@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { 
   Home, Calendar, CalendarDays, LayoutGrid, List, Zap, BarChart3, 
   AlertTriangle, BookOpen, UserCircle, QrCode, Bot, Printer, Users, 
-  Plus, Star, Settings2, X, RotateCcw
+  Plus, Star, Settings2, X, RotateCcw, RefreshCw
 } from 'lucide-react';
 import { arrayMove } from '@dnd-kit/sortable';
 import {
@@ -119,7 +119,8 @@ export const QuickFavoritesBar = memo(function QuickFavoritesBar() {
     resetToDefault,
     isFavorite,
     reorderFavorites,
-    maxFavorites 
+    maxFavorites,
+    isSyncing
   } = useQuickFavorites();
   const alertCount = useAlertCount();
 
@@ -153,6 +154,18 @@ export const QuickFavoritesBar = memo(function QuickFavoritesBar() {
 
   return (
     <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-muted/30 border border-border/50">
+      {isSyncing && (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div className="flex items-center justify-center h-8 w-8">
+              <RefreshCw className="h-3.5 w-3.5 text-primary animate-spin" />
+            </div>
+          </TooltipTrigger>
+          <TooltipContent side="bottom" className="text-xs">
+            Sincronizando...
+          </TooltipContent>
+        </Tooltip>
+      )}
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
