@@ -8608,9 +8608,61 @@ function OverviewSection({ onNavigate }: OverviewSectionProps) {
     
     setConfetti(prev => [...prev, ...particles]);
     
+    // Play confetti sound
+    playConfettiSound();
+    
     setTimeout(() => {
       setConfetti(prev => prev.filter(p => p.id < id || p.id >= id + particleCount));
     }, 1000);
+  };
+
+  const playConfettiSound = () => {
+    try {
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const now = audioContext.currentTime;
+      
+      // Create multiple quick ascending notes for celebration effect
+      const notes = [523.25, 659.25, 783.99, 1046.50, 1318.51]; // C5, E5, G5, C6, E6
+      
+      notes.forEach((freq, i) => {
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        oscillator.type = 'triangle';
+        oscillator.frequency.setValueAtTime(freq, now + i * 0.04);
+        
+        gainNode.gain.setValueAtTime(0, now + i * 0.04);
+        gainNode.gain.linearRampToValueAtTime(0.15, now + i * 0.04 + 0.02);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, now + i * 0.04 + 0.2);
+        
+        oscillator.start(now + i * 0.04);
+        oscillator.stop(now + i * 0.04 + 0.25);
+      });
+      
+      // Add a sparkle effect with high frequency
+      for (let i = 0; i < 6; i++) {
+        const sparkle = audioContext.createOscillator();
+        const sparkleGain = audioContext.createGain();
+        
+        sparkle.connect(sparkleGain);
+        sparkleGain.connect(audioContext.destination);
+        
+        sparkle.type = 'sine';
+        sparkle.frequency.setValueAtTime(2000 + Math.random() * 2000, now + i * 0.05);
+        
+        sparkleGain.gain.setValueAtTime(0, now + i * 0.05);
+        sparkleGain.gain.linearRampToValueAtTime(0.05, now + i * 0.05 + 0.01);
+        sparkleGain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.05 + 0.15);
+        
+        sparkle.start(now + i * 0.05);
+        sparkle.stop(now + i * 0.05 + 0.2);
+      }
+    } catch (e) {
+      console.log('Audio not supported');
+    }
   };
 
   useEffect(() => {
