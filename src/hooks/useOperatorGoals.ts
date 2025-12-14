@@ -4,6 +4,15 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { format, isWithinInterval, parseISO, startOfMonth, endOfMonth } from 'date-fns';
+import { showErrorToast, categorizeError } from '@/lib/errorHandling';
+
+// Error context for debugging
+const GOALS_ERROR_CONTEXT = {
+  fetch: { hook: 'useOperatorGoals', entity: 'operator_goals', operation: 'fetch' },
+  create: { hook: 'useOperatorGoals', entity: 'operator_goals', operation: 'create' },
+  update: { hook: 'useOperatorGoals', entity: 'operator_goals', operation: 'update' },
+  delete: { hook: 'useOperatorGoals', entity: 'operator_goals', operation: 'delete' },
+};
 
 export type GoalType = 'efficiency' | 'jobs_completed' | 'pieces_produced' | 'loss_rate';
 
@@ -56,13 +65,21 @@ export function useOperatorGoals() {
   const { data: goals, isLoading } = useQuery({
     queryKey: ['operator-goals'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('operator_goals')
-        .select('*')
-        .order('period_start', { ascending: false });
+      try {
+        const { data, error } = await supabase
+          .from('operator_goals')
+          .select('*')
+          .order('period_start', { ascending: false });
 
-      if (error) throw error;
-      return (data || []) as OperatorGoal[];
+        if (error) {
+          console.error('[useOperatorGoals] fetch failed:', categorizeError(error), error);
+          throw error;
+        }
+        return (data || []) as OperatorGoal[];
+      } catch (err) {
+        console.error('[useOperatorGoals] error:', err);
+        throw err;
+      }
     },
     staleTime: 1000 * 60 * 2,
   });
@@ -113,8 +130,8 @@ export function useOperatorGoals() {
       toast.success('Meta criada com sucesso');
     },
     onError: (error) => {
-      console.error('Error creating goal:', error);
-      toast.error('Erro ao criar meta');
+      console.error('[useOperatorGoals] create failed:', categorizeError(error), error);
+      showErrorToast(error, 'Erro ao criar meta', GOALS_ERROR_CONTEXT.create);
     },
   });
 
@@ -136,8 +153,8 @@ export function useOperatorGoals() {
       toast.success('Meta atualizada com sucesso');
     },
     onError: (error) => {
-      console.error('Error updating goal:', error);
-      toast.error('Erro ao atualizar meta');
+      console.error('[useOperatorGoals] update failed:', categorizeError(error), error);
+      showErrorToast(error, 'Erro ao atualizar meta', GOALS_ERROR_CONTEXT.update);
     },
   });
 
@@ -156,8 +173,8 @@ export function useOperatorGoals() {
       toast.success('Meta removida com sucesso');
     },
     onError: (error) => {
-      console.error('Error deleting goal:', error);
-      toast.error('Erro ao remover meta');
+      console.error('[useOperatorGoals] delete failed:', categorizeError(error), error);
+      showErrorToast(error, 'Erro ao remover meta', GOALS_ERROR_CONTEXT.delete);
     },
   });
 

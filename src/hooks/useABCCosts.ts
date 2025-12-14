@@ -1,6 +1,16 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { showErrorToast, categorizeError } from '@/lib/errorHandling';
+
+// Error context for debugging
+const ABC_ERROR_CONTEXT = {
+  activities: { hook: 'useABCCosts', entity: 'abc_activities' },
+  pools: { hook: 'useABCCosts', entity: 'abc_cost_pools' },
+  rates: { hook: 'useABCCosts', entity: 'abc_activity_rates' },
+  jobCosts: { hook: 'useABCCosts', entity: 'abc_job_costs' },
+  calculation: { hook: 'useABCCosts', operation: 'cost_calculation' },
+};
 
 export interface ABCActivity {
   id: string;
@@ -89,14 +99,22 @@ export function useABCCosts() {
   const { data: activities = [], isLoading: loadingActivities } = useQuery({
     queryKey: ['abc-activities'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('abc_activities')
-        .select('*')
-        .eq('is_active', true)
-        .order('name');
-      
-      if (error) throw error;
-      return data as ABCActivity[];
+      try {
+        const { data, error } = await supabase
+          .from('abc_activities')
+          .select('*')
+          .eq('is_active', true)
+          .order('name');
+        
+        if (error) {
+          console.error('[useABCCosts] activities fetch failed:', categorizeError(error), error);
+          throw error;
+        }
+        return data as ABCActivity[];
+      } catch (err) {
+        console.error('[useABCCosts] activities error:', err);
+        throw err;
+      }
     },
   });
 
@@ -104,14 +122,22 @@ export function useABCCosts() {
   const { data: costPools = [], isLoading: loadingPools } = useQuery({
     queryKey: ['abc-cost-pools'],
     queryFn: async () => {
+      try {
       const { data, error } = await supabase
         .from('abc_cost_pools')
         .select('*')
         .eq('is_active', true)
         .order('name');
       
-      if (error) throw error;
-      return data as ABCCostPool[];
+        if (error) {
+          console.error('[useABCCosts] pools fetch failed:', categorizeError(error), error);
+          throw error;
+        }
+        return data as ABCCostPool[];
+      } catch (err) {
+        console.error('[useABCCosts] pools error:', err);
+        throw err;
+      }
     },
   });
 
@@ -119,13 +145,21 @@ export function useABCCosts() {
   const { data: activityRates = [], isLoading: loadingRates } = useQuery({
     queryKey: ['abc-activity-rates'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('abc_activity_rates')
-        .select('*')
-        .order('period_start', { ascending: false });
-      
-      if (error) throw error;
-      return data as ABCActivityRate[];
+      try {
+        const { data, error } = await supabase
+          .from('abc_activity_rates')
+          .select('*')
+          .order('period_start', { ascending: false });
+        
+        if (error) {
+          console.error('[useABCCosts] rates fetch failed:', categorizeError(error), error);
+          throw error;
+        }
+        return data as ABCActivityRate[];
+      } catch (err) {
+        console.error('[useABCCosts] rates error:', err);
+        throw err;
+      }
     },
   });
 
@@ -308,7 +342,8 @@ export function useABCCosts() {
       toast.success('Custo do job calculado com sucesso');
     },
     onError: (error) => {
-      toast.error('Erro ao calcular custo: ' + error.message);
+      console.error('[useABCCosts] calculateJobCost failed:', categorizeError(error), error);
+      showErrorToast(error, 'Erro ao calcular custo do job', ABC_ERROR_CONTEXT.calculation);
     },
   });
 
