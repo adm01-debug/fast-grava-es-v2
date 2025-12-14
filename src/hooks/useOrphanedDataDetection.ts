@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { useJobs, useTechniques, useMachines, DbJob, DbTechnique } from './useJobs';
+import { useJobs, useTechniques, useMachines, DbJob, DbTechnique, DbMachine } from './useJobs';
 
 export interface OrphanedTechnique {
   technique: DbTechnique;
@@ -16,16 +16,23 @@ export interface DataIntegrityIssue {
 }
 
 export function useOrphanedDataDetection() {
-  const { data: jobs } = useJobs();
-  const { data: techniques } = useTechniques();
-  const { data: machines } = useMachines();
+  const { data: jobsData } = useJobs();
+  const { data: techniquesData } = useTechniques();
+  const { data: machinesData } = useMachines();
+  
+  // Ensure we have arrays even if data is undefined
+  const jobs = jobsData || [];
+  const techniques = techniquesData || [];
+  const machines = machinesData || [];
 
   const analysis = useMemo(() => {
-    if (!jobs || !techniques || !machines) {
+    if (!jobsData || !techniquesData || !machinesData) {
       return { 
         orphanedTechniques: [], 
         issues: [], 
-        isLoading: true 
+        isLoading: true,
+        errorCount: 0,
+        warningCount: 0,
       };
     }
 

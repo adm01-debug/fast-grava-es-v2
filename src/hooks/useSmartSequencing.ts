@@ -103,8 +103,10 @@ export function useSmartSequencing() {
 
       sortedColorGroups.forEach(([_, groupJobs]) => {
         const sortedGroup = groupJobs.sort((a, b) => {
-          const priorityOrder = { urgent: 0, high: 1, medium: 2, low: 3 };
-          return (priorityOrder[a.priority] || 2) - (priorityOrder[b.priority] || 2);
+          const priorityOrder: Record<string, number> = { urgent: 0, high: 1, medium: 2, low: 3 };
+          const priorityA = priorityOrder[a.priority] ?? 2;
+          const priorityB = priorityOrder[b.priority] ?? 2;
+          return priorityA - priorityB;
         });
         optimizedSequence.push(...sortedGroup);
       });
