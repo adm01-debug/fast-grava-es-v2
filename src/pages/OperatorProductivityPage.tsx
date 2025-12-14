@@ -9,8 +9,9 @@ import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useOperatorProductivity, OperatorProductivityMetrics, ProductivityPeriod } from '@/hooks/useOperatorProductivity';
+import { useOperatorEvolution } from '@/hooks/useOperatorEvolution';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { CalendarDays } from 'lucide-react';
+import { CalendarDays, TrendingUp as TrendingUpIcon } from 'lucide-react';
 import { 
   Users, 
   TrendingUp, 
@@ -44,7 +45,13 @@ import {
   PolarRadiusAxis,
   Radar,
   Legend,
+  LineChart,
+  Line,
+  Area,
+  AreaChart,
 } from 'recharts';
+import { format, subDays, eachDayOfInterval, startOfDay, parseISO, isAfter, isBefore, isSameDay } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 
 function StatCard({ 
   title, 
@@ -306,13 +313,150 @@ function ProductionRadarChart({ operator }: { operator: OperatorProductivityMetr
   );
 }
 
+interface EvolutionChartProps {
+  evolutionData: { operatorId: string; operatorName: string; dailyData: { dateLabel: string; efficiencyScore: number; jobsCompleted: number; piecesProduced: number }[] }[];
+  overallDailyData: { dateLabel: string; efficiencyScore: number; jobsCompleted: number; piecesProduced: number }[];
+  selectedOperatorId: string | 'all';
+  onOperatorChange: (id: string | 'all') => void;
+  isLoading: boolean;
+}
+
+function EvolutionChart({ evolutionData, overallDailyData, selectedOperatorId, onOperatorChange, isLoading }: EvolutionChartProps) {
+  const chartData = useMemo(() => {
+    if (selectedOperatorId === 'all') {
+      return overallDailyData.map(d => ({
+        ...d,
+        efficiency: Math.round(d.efficiencyScore * 10) / 10,
+      }));
+    }
+    
+    const operator = evolutionData.find(o => o.operatorId === selectedOperatorId);
+    if (!operator) return [];
+    
+    return operator.dailyData.map(d => ({
+      ...d,
+      efficiency: Math.round(d.efficiencyScore * 10) / 10,
+    }));
+  }, [selectedOperatorId, evolutionData, overallDailyData]);
+
+  const operatorOptions = useMemo(() => {
+    return [
+      { id: 'all', name: 'Média Geral' },
+      ...evolutionData.map(o => ({ id: o.operatorId, name: o.operatorName })),
+    ];
+  }, [evolutionData]);
+
+  if (isLoading) {
+    return (
+      <Card className="card-elevated col-span-full">
+        <CardHeader>
+          <Skeleton className="h-6 w-48" />
+        </CardHeader>
+        <CardContent className="h-[300px]">
+          <Skeleton className="h-full w-full" />
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const hasData = chartData.some(d => d.efficiencyScore > 0);
+
+  return (
+    <Card className="card-elevated col-span-full">
+      <CardHeader>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <CardTitle className="flex items-center gap-2">
+              <TrendingUpIcon className="h-5 w-5" />
+              Evolução da Eficiência
+            </CardTitle>
+            <CardDescription>
+              Acompanhamento diário do desempenho ao longo do tempo
+            </CardDescription>
+          </div>
+          <Select value={selectedOperatorId} onValueChange={onOperatorChange}>
+            <SelectTrigger className="w-[200px]">
+              <SelectValue placeholder="Selecionar operador" />
+            </SelectTrigger>
+            <SelectContent>
+              {operatorOptions.map(op => (
+                <SelectItem key={op.id} value={op.id}>
+                  {op.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </CardHeader>
+      <CardContent className="h-[300px]">
+        {!hasData ? (
+          <div className="h-full flex items-center justify-center text-muted-foreground">
+            Nenhum dado de produção disponível para o período
+          </div>
+        ) : (
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={chartData}>
+              <defs>
+                <linearGradient id="efficiencyGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3}/>
+                  <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/>
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+              <XAxis 
+                dataKey="dateLabel" 
+                className="text-xs"
+                tick={{ fill: 'hsl(var(--muted-foreground))' }}
+              />
+              <YAxis 
+                domain={[0, 100]} 
+                className="text-xs"
+                tick={{ fill: 'hsl(var(--muted-foreground))' }}
+                tickFormatter={(v) => `${v}%`}
+              />
+              <RechartsTooltip
+                contentStyle={{
+                  backgroundColor: 'hsl(var(--card))',
+                  border: '1px solid hsl(var(--border))',
+                  borderRadius: '8px',
+                }}
+                formatter={(value: number, name: string) => {
+                  if (name === 'efficiency') return [`${value}%`, 'Eficiência'];
+                  if (name === 'jobsCompleted') return [value, 'Jobs'];
+                  if (name === 'piecesProduced') return [value.toLocaleString(), 'Peças'];
+                  return [value, name];
+                }}
+                labelFormatter={(label) => `Data: ${label}`}
+              />
+              <Area
+                type="monotone"
+                dataKey="efficiency"
+                stroke="hsl(var(--primary))"
+                strokeWidth={2}
+                fill="url(#efficiencyGradient)"
+                dot={{ fill: 'hsl(var(--primary))', strokeWidth: 0, r: 3 }}
+                activeDot={{ r: 5, fill: 'hsl(var(--primary))' }}
+              />
+            </AreaChart>
+          </ResponsiveContainer>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
 export default function OperatorProductivityPage() {
-  const [period, setPeriod] = useState<ProductivityPeriod>('all');
+  const [period, setPeriod] = useState<ProductivityPeriod>(30);
   const { operators, overallStats, isLoading } = useOperatorProductivity(period);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
   const [sortBy, setSortBy] = useState<'efficiency' | 'jobs' | 'pieces' | 'loss'>('efficiency');
   const [selectedOperator, setSelectedOperator] = useState<OperatorProductivityMetrics | null>(null);
+  const [evolutionOperatorId, setEvolutionOperatorId] = useState<string | 'all'>('all');
+  
+  // Use period for evolution chart (default to 30 if 'all')
+  const evolutionDays = period === 'all' ? 30 : period;
+  const { evolutionData, overallDailyData, isLoading: isLoadingEvolution } = useOperatorEvolution(evolutionDays);
 
   const periodLabels: Record<ProductivityPeriod, string> = {
     7: 'Últimos 7 dias',
@@ -473,6 +617,15 @@ export default function OperatorProductivityPage() {
             </CardContent>
           </Card>
         )}
+
+        {/* Evolution Chart */}
+        <EvolutionChart
+          evolutionData={evolutionData}
+          overallDailyData={overallDailyData}
+          selectedOperatorId={evolutionOperatorId}
+          onOperatorChange={setEvolutionOperatorId}
+          isLoading={isLoadingEvolution}
+        />
 
         {/* Charts Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
