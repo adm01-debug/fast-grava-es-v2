@@ -46,82 +46,82 @@ export default function EfficiencyDashboard() {
 
   return (
     <MainLayout>
-      <div className="space-y-6 animate-fade-in">
+      <div className="p-4 sm:p-6 space-y-4 sm:space-y-6 animate-fade-in">
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div className="flex flex-col gap-3 sm:gap-4">
           <div>
-            <h1 className="text-2xl font-display font-bold text-foreground">
+            <h1 className="text-xl sm:text-2xl font-display font-bold text-foreground">
               Eficiência Operacional
             </h1>
-            <p className="text-muted-foreground mt-1">
-              Análises detalhadas e otimizações para maximizar produtividade
+            <p className="text-xs sm:text-sm text-muted-foreground mt-1">
+              Análises e otimizações para maximizar produtividade
             </p>
           </div>
-          <div className="flex gap-2">
-            <Button variant="outline" className="gap-2">
-              <History className="h-4 w-4" />
+          <div className="flex gap-2 flex-wrap">
+            <Button variant="outline" size="sm" className="gap-1.5 sm:gap-2 text-xs sm:text-sm">
+              <History className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
               Histórico
             </Button>
-            <Button className="gap-2 gradient-primary">
-              <TrendingUp className="h-4 w-4" />
-              Aplicar Otimizações
+            <Button size="sm" className="gap-1.5 sm:gap-2 gradient-primary text-xs sm:text-sm">
+              <TrendingUp className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+              Otimizar
             </Button>
           </div>
         </div>
 
         {/* KPI Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           <Card className="glass-card border-border/50">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3">
-                <div className="p-2.5 rounded-xl bg-primary/10">
-                  <Timer className="h-5 w-5 text-primary" />
+            <CardContent className="p-3 sm:p-4">
+              <div className="flex items-center gap-2 sm:gap-3">
+                <div className="p-2 sm:p-2.5 rounded-xl bg-primary/10">
+                  <Timer className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
                 </div>
-                <div>
-                  <p className="text-2xl font-bold text-foreground">{totalSetupSaved}min</p>
-                  <p className="text-xs text-muted-foreground">Setup Economizado</p>
+                <div className="min-w-0">
+                  <p className="text-lg sm:text-2xl font-bold text-foreground truncate">{totalSetupSaved}min</p>
+                  <p className="text-[10px] sm:text-xs text-muted-foreground">Setup Economizado</p>
                 </div>
               </div>
             </CardContent>
           </Card>
 
           <Card className="glass-card border-border/50">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3">
-                <div className="p-2.5 rounded-xl bg-success/10">
-                  <Scale className="h-5 w-5 text-success" />
+            <CardContent className="p-3 sm:p-4">
+              <div className="flex items-center gap-2 sm:gap-3">
+                <div className="p-2 sm:p-2.5 rounded-xl bg-success/10">
+                  <Scale className="h-4 w-4 sm:h-5 sm:w-5 text-success" />
                 </div>
-                <div>
-                  <p className="text-2xl font-bold text-foreground">{balancedMachines}/{totalMachines}</p>
-                  <p className="text-xs text-muted-foreground">Máquinas Balanceadas</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="glass-card border-border/50">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3">
-                <div className="p-2.5 rounded-xl bg-warning/10">
-                  <AlertTriangle className="h-5 w-5 text-warning" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold text-foreground">{criticalBottlenecks}</p>
-                  <p className="text-xs text-muted-foreground">Gargalos Críticos</p>
+                <div className="min-w-0">
+                  <p className="text-lg sm:text-2xl font-bold text-foreground">{balancedMachines}/{totalMachines}</p>
+                  <p className="text-[10px] sm:text-xs text-muted-foreground">Balanceadas</p>
                 </div>
               </div>
             </CardContent>
           </Card>
 
           <Card className="glass-card border-border/50">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3">
-                <div className="p-2.5 rounded-xl bg-accent/10">
-                  <BarChart3 className="h-5 w-5 text-accent" />
+            <CardContent className="p-3 sm:p-4">
+              <div className="flex items-center gap-2 sm:gap-3">
+                <div className="p-2 sm:p-2.5 rounded-xl bg-warning/10">
+                  <AlertTriangle className="h-4 w-4 sm:h-5 sm:w-5 text-warning" />
                 </div>
-                <div>
-                  <p className="text-2xl font-bold text-foreground">{avgOccupancy}%</p>
-                  <p className="text-xs text-muted-foreground">Ocupação Média</p>
+                <div className="min-w-0">
+                  <p className="text-lg sm:text-2xl font-bold text-foreground">{criticalBottlenecks}</p>
+                  <p className="text-[10px] sm:text-xs text-muted-foreground">Gargalos</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="glass-card border-border/50">
+            <CardContent className="p-3 sm:p-4">
+              <div className="flex items-center gap-2 sm:gap-3">
+                <div className="p-2 sm:p-2.5 rounded-xl bg-accent/10">
+                  <BarChart3 className="h-4 w-4 sm:h-5 sm:w-5 text-accent" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-lg sm:text-2xl font-bold text-foreground">{avgOccupancy}%</p>
+                  <p className="text-[10px] sm:text-xs text-muted-foreground">Ocupação</p>
                 </div>
               </div>
             </CardContent>
@@ -130,24 +130,26 @@ export default function EfficiencyDashboard() {
 
         {/* Main Content Tabs */}
         <Tabs defaultValue="sequencing" className="space-y-4">
-          <TabsList className="glass-card p-1">
-            <TabsTrigger value="sequencing" className="gap-2">
-              <Layers className="h-4 w-4" />
-              Sequenciamento
-            </TabsTrigger>
-            <TabsTrigger value="balancing" className="gap-2">
-              <Scale className="h-4 w-4" />
-              Balanceamento
-            </TabsTrigger>
-            <TabsTrigger value="bottlenecks" className="gap-2">
-              <AlertTriangle className="h-4 w-4" />
-              Gargalos
-            </TabsTrigger>
-            <TabsTrigger value="history" className="gap-2">
-              <History className="h-4 w-4" />
-              Histórico
-            </TabsTrigger>
-          </TabsList>
+          <div className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
+            <TabsList className="glass-card p-1 inline-flex w-auto min-w-full sm:min-w-0">
+              <TabsTrigger value="sequencing" className="gap-1.5 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3">
+                <Layers className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                <span className="hidden xs:inline">Sequenc.</span>
+              </TabsTrigger>
+              <TabsTrigger value="balancing" className="gap-1.5 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3">
+                <Scale className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                <span className="hidden xs:inline">Balanc.</span>
+              </TabsTrigger>
+              <TabsTrigger value="bottlenecks" className="gap-1.5 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3">
+                <AlertTriangle className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                <span className="hidden xs:inline">Gargalos</span>
+              </TabsTrigger>
+              <TabsTrigger value="history" className="gap-1.5 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3">
+                <History className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                <span className="hidden xs:inline">Histórico</span>
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
           {/* Sequencing Tab */}
           <TabsContent value="sequencing" className="space-y-4">
