@@ -46,7 +46,7 @@ export function useQuickFavorites() {
   const { data: dbFavorites, isLoading, isFetched } = useQuery({
     queryKey: ['user-favorites', user?.id],
     queryFn: async () => {
-      if (!user?.id) return null;
+      if (!user?.id) return DEFAULT_FAVORITES;
       
       const { data, error } = await supabase
         .from('user_favorites')
@@ -56,10 +56,15 @@ export function useQuickFavorites() {
       
       if (error) {
         console.error('Error fetching favorites:', error);
-        return null;
+        return DEFAULT_FAVORITES;
       }
       
-      return data?.favorites as unknown as QuickFavorite[] | null;
+      // Return default favorites if no data or null
+      if (!data?.favorites) {
+        return DEFAULT_FAVORITES;
+      }
+      
+      return data.favorites as unknown as QuickFavorite[];
     },
     enabled: !!user?.id,
     staleTime: 1000 * 60 * 5, // 5 minutes
@@ -69,8 +74,12 @@ export function useQuickFavorites() {
   useEffect(() => {
     if (!user?.id || !isFetched || hasMigrated) return;
     
-    // Only migrate if no favorites exist in database
-    if (dbFavorites === null) {
+    // Only migrate if favorites are still default (no custom saved)
+    const isDefaultFavorites = dbFavorites && 
+      dbFavorites.length === DEFAULT_FAVORITES.length &&
+      dbFavorites.every((f, i) => f.id === DEFAULT_FAVORITES[i]?.id);
+    
+    if (isDefaultFavorites) {
       const storageKey = `quick-favorites-${user.id}`;
       const localStorageFavorites = localStorage.getItem(storageKey);
       
@@ -83,10 +92,10 @@ export function useQuickFavorites() {
             // Save to database
             supabase
               .from('user_favorites')
-              .insert([{
+              .upsert([{
                 user_id: user.id,
                 favorites: JSON.parse(JSON.stringify(parsed)),
-              }])
+              }], { onConflict: 'user_id' })
               .then(({ error }) => {
                 if (error) {
                   console.error('Error migrating favorites:', error);
@@ -153,7 +162,7 @@ export function useQuickFavorites() {
     };
   }, [user?.id, queryClient]);
 
-  const favorites = dbFavorites ?? DEFAULT_FAVORITES;
+  const favorites = dbFavorites || DEFAULT_FAVORITES;
 
   // Mutation to save favorites
   const saveMutation = useMutation({
@@ -195,7 +204,7 @@ export function useQuickFavorites() {
   });
 
   const addFavorite = useCallback((shortcut: QuickFavorite) => {
-    const currentFavorites = dbFavorites ?? DEFAULT_FAVORITES;
+    const currentFavorites = dbFavorites || DEFAULT_FAVORITES;
     if (currentFavorites.some(f => f.id === shortcut.id)) return;
     if (currentFavorites.length >= MAX_FAVORITES) return;
     
@@ -204,7 +213,7 @@ export function useQuickFavorites() {
   }, [dbFavorites, saveMutation]);
 
   const removeFavorite = useCallback((id: string) => {
-    const currentFavorites = dbFavorites ?? DEFAULT_FAVORITES;
+    const currentFavorites = dbFavorites || DEFAULT_FAVORITES;
     const newFavorites = currentFavorites.filter(f => f.id !== id);
     saveMutation.mutate(newFavorites);
   }, [dbFavorites, saveMutation]);
