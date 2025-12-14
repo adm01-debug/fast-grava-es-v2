@@ -9055,7 +9055,17 @@ function OverviewSection({ onNavigate }: OverviewSectionProps) {
             <CardTitle className="flex items-center gap-2">
               <Sparkles className="h-5 w-5 text-primary animate-pulse" />
               Novidades
-              <Badge variant="default" className="ml-2 text-xs animate-scale-in" style={{ animationDelay: '300ms' }}>v2.0</Badge>
+              <Badge 
+                variant="default" 
+                className="ml-2 text-xs animate-scale-in relative overflow-hidden group/badge" 
+                style={{ animationDelay: '300ms' }}
+              >
+                {/* Shimmer effect */}
+                <span className="absolute inset-0 -translate-x-full group-hover/badge:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/30 to-transparent" />
+                {/* Glow pulse animation */}
+                <span className="absolute inset-0 rounded-md animate-[glow-pulse_2s_ease-in-out_infinite] opacity-60" style={{ boxShadow: '0 0 12px hsl(var(--primary) / 0.6)' }} />
+                <span className="relative z-10">v2.0</span>
+              </Badge>
             </CardTitle>
             <span className="text-xs text-muted-foreground animate-fade-in" style={{ animationDelay: '400ms' }}>Dezembro 2024</span>
           </div>
