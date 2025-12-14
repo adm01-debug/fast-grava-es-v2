@@ -28,26 +28,47 @@ export const useBitrix24Sync = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const callBitrixSync = useCallback(async (action: string, body?: any): Promise<any> => {
+  const callBitrixSync = useCallback(async (action: string, body?: any, retryCount = 0): Promise<any> => {
+    const MAX_RETRIES = 3;
+    const RETRY_DELAY_MS = 1000;
     const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
     const url = `https://${projectId}.supabase.co/functions/v1/bitrix24-sync?action=${action}`;
 
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-      },
-      body: body ? JSON.stringify(body) : undefined
-    });
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+        },
+        body: body ? JSON.stringify(body) : undefined
+      });
 
-    const result = await response.json();
-    
-    if (!response.ok) {
-      throw new Error(result.error || 'Sync failed');
+      const result = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(result.error || 'Sync failed');
+      }
+
+      return result;
+    } catch (error: any) {
+      // Retry on network errors or 5xx server errors
+      const isRetryable = error.message?.includes('fetch') || 
+                          error.message?.includes('network') ||
+                          error.message?.includes('timeout') ||
+                          error.message?.includes('500') ||
+                          error.message?.includes('502') ||
+                          error.message?.includes('503') ||
+                          error.message?.includes('504');
+      
+      if (isRetryable && retryCount < MAX_RETRIES) {
+        console.log(`Bitrix24 sync retry ${retryCount + 1}/${MAX_RETRIES} for action: ${action}`);
+        await new Promise(resolve => setTimeout(resolve, RETRY_DELAY_MS * Math.pow(2, retryCount)));
+        return callBitrixSync(action, body, retryCount + 1);
+      }
+      
+      throw error;
     }
-
-    return result;
   }, []);
 
   const checkOAuthStatus = useCallback(async (): Promise<OAuthStatus> => {

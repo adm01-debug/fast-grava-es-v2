@@ -19,21 +19,37 @@ export interface EfficiencyAlertHistory {
   created_at: string;
 }
 
-export const useEfficiencyAlertHistory = () => {
+export const useEfficiencyAlertHistory = (options?: { limit?: number; offset?: number }) => {
   const queryClient = useQueryClient();
+  const limit = options?.limit ?? 100;
+  const offset = options?.offset ?? 0;
 
-  const { data: alerts = [], isLoading } = useQuery({
-    queryKey: ['efficiency-alert-history'],
+  const { data: alerts = [], isLoading, refetch } = useQuery({
+    queryKey: ['efficiency-alert-history', limit, offset],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('efficiency_alert_history')
         .select('*')
         .order('detected_at', { ascending: false })
-        .limit(100);
+        .range(offset, offset + limit - 1);
 
       if (error) throw error;
       return data as EfficiencyAlertHistory[];
     }
+  });
+
+  // Fetch total count for pagination
+  const { data: totalCount = 0 } = useQuery({
+    queryKey: ['efficiency-alert-history-count'],
+    queryFn: async () => {
+      const { count, error } = await supabase
+        .from('efficiency_alert_history')
+        .select('*', { count: 'exact', head: true });
+
+      if (error) throw error;
+      return count ?? 0;
+    },
+    staleTime: 1000 * 60 * 5,
   });
 
   // Subscribe to realtime updates
@@ -120,6 +136,9 @@ export const useEfficiencyAlertHistory = () => {
     resolvedAlerts,
     isLoading,
     recordAlert,
-    resolveAlert
+    resolveAlert,
+    refetch,
+    totalCount,
+    hasMore: offset + limit < totalCount,
   };
 };
