@@ -6,7 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Users, UserCheck, Phone, Calendar, Cpu, Settings2, Search, X } from 'lucide-react';
+import { Users, UserCheck, Phone, Calendar, Settings2, Search, X } from 'lucide-react';
 import { useOperators, OperatorWithProfile } from '@/hooks/useOperators';
 import { useOperatorMachines } from '@/hooks/useOperatorMachines';
 import { useSchedulingData } from '@/hooks/useSchedulingData';
@@ -26,12 +26,13 @@ export default function OperatorsPage() {
 
   const activeOperators = operators.length;
 
-  const getMachineCount = (operatorId: string) => {
-    return (assignments || []).filter(a => a.operator_id === operatorId).length;
-  };
-
   const getAssignedMachineIds = (operatorId: string) => {
     return (assignments || []).filter(a => a.operator_id === operatorId).map(a => a.machine_id);
+  };
+
+  const getAssignedMachines = (operatorId: string) => {
+    const machineIds = getAssignedMachineIds(operatorId);
+    return machines.filter(m => machineIds.includes(m.id));
   };
 
   const filteredOperators = useMemo(() => {
@@ -211,11 +212,25 @@ export default function OperatorsPage() {
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-2 shrink-0">
-                      <Badge variant="outline" className="flex items-center gap-1">
-                        <Cpu className="h-3 w-3" />
-                        {getMachineCount(operator.user_id)} máquinas
-                      </Badge>
+                    <div className="flex items-center gap-2 shrink-0 flex-wrap justify-end">
+                      {getAssignedMachines(operator.user_id).length > 0 ? (
+                        <div className="flex flex-wrap gap-1 max-w-xs">
+                          {getAssignedMachines(operator.user_id).slice(0, 3).map((machine) => (
+                            <Badge key={machine.id} variant="secondary" className="text-xs">
+                              {machine.code}
+                            </Badge>
+                          ))}
+                          {getAssignedMachines(operator.user_id).length > 3 && (
+                            <Badge variant="outline" className="text-xs">
+                              +{getAssignedMachines(operator.user_id).length - 3}
+                            </Badge>
+                          )}
+                        </div>
+                      ) : (
+                        <Badge variant="outline" className="text-muted-foreground">
+                          Sem máquinas
+                        </Badge>
+                      )}
                       <Button
                         size="sm"
                         variant="outline"
