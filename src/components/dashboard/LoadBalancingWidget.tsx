@@ -3,20 +3,31 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Button } from "@/components/ui/button";
 import { 
   Scale, 
   ArrowRight,
   AlertTriangle,
   CheckCircle2,
-  Cpu
+  Cpu,
+  Play,
+  Loader2
 } from "lucide-react";
-import { useLoadBalancing, TechniqueLoadSummary } from "@/hooks/useLoadBalancing";
+import { useLoadBalancingWithActions, TechniqueLoadSummary, LoadBalancingSuggestion } from "@/hooks/useLoadBalancingWithActions";
 
 interface TechniqueLoadCardProps {
   summary: TechniqueLoadSummary;
+  onApplySuggestion: (suggestion: LoadBalancingSuggestion) => void;
+  onApplyAll: () => void;
+  isApplying: boolean;
 }
 
-const TechniqueLoadCard = memo(function TechniqueLoadCard({ summary }: TechniqueLoadCardProps) {
+const TechniqueLoadCard = memo(function TechniqueLoadCard({ 
+  summary, 
+  onApplySuggestion, 
+  onApplyAll,
+  isApplying 
+}: TechniqueLoadCardProps) {
   return (
     <div className="p-4 rounded-lg bg-muted/30 border border-border/30 space-y-3">
       <div className="flex items-center justify-between">
@@ -73,13 +84,43 @@ const TechniqueLoadCard = memo(function TechniqueLoadCard({ summary }: Technique
 
       {summary.suggestions.length > 0 && (
         <div className="pt-2 border-t border-border/30 space-y-2">
-          <p className="text-xs text-muted-foreground">Sugestões de redistribuição:</p>
-          {summary.suggestions.slice(0, 2).map((suggestion, idx) => (
-            <div key={idx} className="text-xs flex items-center gap-1 text-muted-foreground">
-              <span className="font-medium text-foreground">{suggestion.orderNumber}</span>
-              <ArrowRight className="h-3 w-3" />
-              <span className="text-cyan-400">{suggestion.suggestedMachineName}</span>
-              <span className="text-green-400">(-{Math.round(suggestion.loadDifference)}%)</span>
+          <div className="flex items-center justify-between">
+            <p className="text-xs text-muted-foreground">Sugestões de redistribuição:</p>
+            <Button 
+              size="sm" 
+              variant="ghost" 
+              className="h-6 text-xs text-cyan-400 hover:text-cyan-300 hover:bg-cyan-500/10"
+              onClick={onApplyAll}
+              disabled={isApplying}
+            >
+              {isApplying ? (
+                <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+              ) : (
+                <Play className="h-3 w-3 mr-1" />
+              )}
+              Aplicar Todas
+            </Button>
+          </div>
+          {summary.suggestions.slice(0, 2).map((suggestion) => (
+            <div 
+              key={suggestion.id} 
+              className="text-xs flex items-center justify-between gap-1 text-muted-foreground group"
+            >
+              <div className="flex items-center gap-1">
+                <span className="font-medium text-foreground">{suggestion.orderNumber}</span>
+                <ArrowRight className="h-3 w-3" />
+                <span className="text-cyan-400">{suggestion.suggestedMachineName}</span>
+                <span className="text-green-400">(-{Math.round(suggestion.loadDifference)}%)</span>
+              </div>
+              <Button
+                size="sm"
+                variant="ghost"
+                className="h-5 px-1.5 opacity-0 group-hover:opacity-100 transition-opacity text-xs"
+                onClick={() => onApplySuggestion(suggestion)}
+                disabled={isApplying}
+              >
+                <Play className="h-3 w-3" />
+              </Button>
             </div>
           ))}
         </div>
@@ -90,7 +131,15 @@ const TechniqueLoadCard = memo(function TechniqueLoadCard({ summary }: Technique
 TechniqueLoadCard.displayName = 'TechniqueLoadCard';
 
 function LoadBalancingWidgetComponent() {
-  const { byTechnique, suggestions, isLoading } = useLoadBalancing();
+  const { 
+    byTechnique, 
+    suggestions, 
+    isLoading, 
+    applySuggestion, 
+    applyAllForTechnique,
+    applyAllSuggestions,
+    isApplying 
+  } = useLoadBalancingWithActions();
 
   const unbalancedCount = useMemo(() => 
     byTechnique.filter(t => t.isUnbalanced).length,
@@ -125,15 +174,33 @@ function LoadBalancingWidgetComponent() {
             </div>
             <span className="gradient-text text-sm sm:text-base">Balanceamento de Carga</span>
           </div>
-          <Badge 
-            className={`border text-xs self-start sm:self-auto ${unbalancedCount > 0 
-              ? 'bg-orange-500/20 text-orange-400 border-orange-500/30' 
-              : 'bg-green-500/20 text-green-400 border-green-500/30'}`}
-          >
-            {unbalancedCount > 0 
-              ? `${unbalancedCount} desbal.` 
-              : 'Equilibrado'}
-          </Badge>
+          <div className="flex items-center gap-2 self-start sm:self-auto">
+            {suggestions.length > 0 && (
+              <Button
+                size="sm"
+                variant="outline"
+                className="h-7 text-xs border-cyan-500/50 text-cyan-400 hover:bg-cyan-500/10"
+                onClick={() => applyAllSuggestions()}
+                disabled={isApplying}
+              >
+                {isApplying ? (
+                  <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                ) : (
+                  <Play className="h-3 w-3 mr-1" />
+                )}
+                Aplicar Tudo
+              </Button>
+            )}
+            <Badge 
+              className={`border text-xs ${unbalancedCount > 0 
+                ? 'bg-orange-500/20 text-orange-400 border-orange-500/30' 
+                : 'bg-green-500/20 text-green-400 border-green-500/30'}`}
+            >
+              {unbalancedCount > 0 
+                ? `${unbalancedCount} desbal.` 
+                : 'Equilibrado'}
+            </Badge>
+          </div>
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -146,7 +213,13 @@ function LoadBalancingWidgetComponent() {
           <ScrollArea className="h-[320px] pr-2">
             <div className="space-y-3">
               {filteredTechniques.map((summary) => (
-                <TechniqueLoadCard key={summary.technique.id} summary={summary} />
+                <TechniqueLoadCard 
+                  key={summary.technique.id} 
+                  summary={summary}
+                  onApplySuggestion={applySuggestion}
+                  onApplyAll={() => applyAllForTechnique(summary.technique.id)}
+                  isApplying={isApplying}
+                />
               ))}
             </div>
           </ScrollArea>

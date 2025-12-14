@@ -2,21 +2,26 @@ import { memo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Button } from "@/components/ui/button";
 import { 
   Layers, 
   Clock, 
   Palette, 
   ArrowRight,
   Sparkles,
-  CheckCircle2
+  CheckCircle2,
+  Play,
+  Loader2
 } from "lucide-react";
-import { useSmartSequencing, SequencingSuggestion } from "@/hooks/useSmartSequencing";
+import { useSmartSequencingWithActions, SequencingSuggestion } from "@/hooks/useSmartSequencingWithActions";
 
 interface SequencingCardProps {
   suggestion: SequencingSuggestion;
+  onApply: () => void;
+  isApplying: boolean;
 }
 
-const SequencingCard = memo(function SequencingCard({ suggestion }: SequencingCardProps) {
+const SequencingCard = memo(function SequencingCard({ suggestion, onApply, isApplying }: SequencingCardProps) {
   return (
     <div className="p-4 rounded-lg bg-muted/30 border border-border/30 space-y-3">
       <div className="flex items-center justify-between">
@@ -50,10 +55,26 @@ const SequencingCard = memo(function SequencingCard({ suggestion }: SequencingCa
         </div>
       </div>
 
-      <div className="flex items-center gap-2 text-xs text-muted-foreground pt-2 border-t border-border/30">
-        <span>{suggestion.currentSequence.length} jobs</span>
-        <ArrowRight className="h-3 w-3" />
-        <span className="text-green-400">Sequência otimizada disponível</span>
+      <div className="flex items-center justify-between pt-2 border-t border-border/30">
+        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+          <span>{suggestion.currentSequence.length} jobs</span>
+          <ArrowRight className="h-3 w-3" />
+          <span className="text-green-400">Sequência otimizada</span>
+        </div>
+        <Button
+          size="sm"
+          variant="ghost"
+          className="h-6 text-xs text-violet-400 hover:text-violet-300 hover:bg-violet-500/10"
+          onClick={onApply}
+          disabled={isApplying}
+        >
+          {isApplying ? (
+            <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+          ) : (
+            <Play className="h-3 w-3 mr-1" />
+          )}
+          Aplicar
+        </Button>
       </div>
     </div>
   );
@@ -61,7 +82,7 @@ const SequencingCard = memo(function SequencingCard({ suggestion }: SequencingCa
 SequencingCard.displayName = 'SequencingCard';
 
 function SmartSequencingWidgetComponent() {
-  const { suggestions, totalSavings, hasSuggestions } = useSmartSequencing();
+  const { suggestions, totalSavings, hasSuggestions, applySequencing, applyAllSequencing, isApplying } = useSmartSequencingWithActions();
 
   return (
     <Card className="glass-card card-interactive animate-fade-in-up opacity-0 [animation-fill-mode:forwards] [animation-delay:0.15s] dark:hover:shadow-[0_8px_32px_-8px_hsl(280,80%,60%,0.25)]">
@@ -73,17 +94,35 @@ function SmartSequencingWidgetComponent() {
             </div>
             <span className="gradient-text text-sm sm:text-base">Sequenciamento Inteligente</span>
           </div>
-          {hasSuggestions ? (
-            <Badge className="bg-violet-500/20 text-violet-400 border-violet-500/30 border text-xs self-start sm:self-auto">
-              <Sparkles className="h-3 w-3 mr-1" />
-              {totalSavings} min
-            </Badge>
-          ) : (
-            <Badge className="bg-green-500/20 text-green-400 border-green-500/30 border text-xs self-start sm:self-auto">
-              <CheckCircle2 className="h-3 w-3 mr-1" />
-              Otimizado
-            </Badge>
-          )}
+          <div className="flex items-center gap-2 self-start sm:self-auto">
+            {hasSuggestions && (
+              <Button
+                size="sm"
+                variant="outline"
+                className="h-7 text-xs border-violet-500/50 text-violet-400 hover:bg-violet-500/10"
+                onClick={() => applyAllSequencing()}
+                disabled={isApplying}
+              >
+                {isApplying ? (
+                  <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                ) : (
+                  <Play className="h-3 w-3 mr-1" />
+                )}
+                Aplicar Tudo
+              </Button>
+            )}
+            {hasSuggestions ? (
+              <Badge className="bg-violet-500/20 text-violet-400 border-violet-500/30 border text-xs">
+                <Sparkles className="h-3 w-3 mr-1" />
+                {totalSavings} min
+              </Badge>
+            ) : (
+              <Badge className="bg-green-500/20 text-green-400 border-green-500/30 border text-xs">
+                <CheckCircle2 className="h-3 w-3 mr-1" />
+                Otimizado
+              </Badge>
+            )}
+          </div>
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -97,7 +136,12 @@ function SmartSequencingWidgetComponent() {
           <ScrollArea className="h-[280px] pr-2">
             <div className="space-y-3">
               {suggestions.slice(0, 5).map((suggestion) => (
-                <SequencingCard key={suggestion.machineId} suggestion={suggestion} />
+                <SequencingCard 
+                  key={suggestion.id} 
+                  suggestion={suggestion}
+                  onApply={() => applySequencing(suggestion)}
+                  isApplying={isApplying}
+                />
               ))}
             </div>
           </ScrollArea>
