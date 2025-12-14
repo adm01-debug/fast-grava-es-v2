@@ -8712,9 +8712,15 @@ function ChangelogSection() {
         'Redesign completo do tema claro com tons de cinza suaves',
         'Refinamento do tema escuro com bordas e glows aprimorados',
         'Transições cinematográficas de tema com overlay e som',
-        'Novo Design System Overview com navegação interativa'
+        'Novas animações interativas importadas do TASK GIFTS'
       ],
       changes: [
+        { type: 'new', category: 'Animations', description: 'bounce-in - Entrada com efeito elástico para cards' },
+        { type: 'new', category: 'Animations', description: 'wiggle / wiggle-infinite - Balanço para chamar atenção' },
+        { type: 'new', category: 'Animations', description: 'pulse-ring - Anel pulsante para indicadores de status' },
+        { type: 'new', category: 'Animations', description: 'bounce-attention - Pulo suave para alertas críticos' },
+        { type: 'new', category: 'Animations', description: 'pop - Entrada rápida com elasticidade para badges' },
+        { type: 'new', category: 'Animations', description: 'press-scale - Feedback tátil em todos os botões' },
         { type: 'new', category: 'Cards', description: 'Variantes stat e premium adicionadas' },
         { type: 'new', category: 'Buttons', description: 'Variantes warning, subtle e tamanho icon-xs' },
         { type: 'new', category: 'Utilities', description: 'Classes hover-lift-sm, hover-scale, gradient-text-success' },
@@ -8724,6 +8730,10 @@ function ChangelogSection() {
         { type: 'improved', category: 'ThemeToggle', description: 'Animações cinematográficas com overlay radial' },
         { type: 'improved', category: 'ThemeToggle', description: 'Feedback sonoro integrado (Web Audio API)' },
         { type: 'improved', category: 'Overview', description: 'Cards interativos com ripple, confetti e explosões' },
+        { type: 'improved', category: 'StatusBadge', description: 'Animação pop automática ao mudar status' },
+        { type: 'improved', category: 'StatsCard', description: 'Animação bounce-in na entrada' },
+        { type: 'improved', category: 'RealtimeIndicator', description: 'Pulse-ring quando conectado' },
+        { type: 'improved', category: 'AlertsDashboard', description: 'Bounce-attention em alertas críticos' },
         { type: 'improved', category: 'Documentation', description: 'CodeBlocks copiáveis em todas as seções' },
         { type: 'fixed', category: 'Colors', description: 'Contraste de texto secundário no modo claro' },
         { type: 'fixed', category: 'Focus', description: 'Estados de foco mais elegantes e consistentes' },
