@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -101,6 +102,48 @@ export interface MaintenanceAlert {
 
 export function useTPM() {
   const queryClient = useQueryClient();
+
+  // Realtime subscriptions for TPM data
+  useEffect(() => {
+    const schedulesChannel = supabase
+      .channel('tpm-schedules-changes')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'maintenance_schedules' },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['maintenance-schedules'] });
+        }
+      )
+      .subscribe();
+
+    const recordsChannel = supabase
+      .channel('tpm-records-changes')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'maintenance_records' },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['maintenance-records'] });
+        }
+      )
+      .subscribe();
+
+    const alertsChannel = supabase
+      .channel('tpm-alerts-changes')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'maintenance_alerts' },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['maintenance-alerts'] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(schedulesChannel);
+      supabase.removeChannel(recordsChannel);
+      supabase.removeChannel(alertsChannel);
+    };
+  }, [queryClient]);
 
   // Fetch maintenance types
   const { data: maintenanceTypes = [], isLoading: loadingTypes } = useQuery({

@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -101,6 +102,24 @@ export const useTechnicalSheets = () => {
     staleTime: STALE_TIMES.STATIC,
     ...defaultQueryOptions,
   });
+
+  // Realtime subscription for technical sheets
+  useEffect(() => {
+    const channel = supabase
+      .channel('technical-sheets-changes')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'technical_sheets' },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['technical-sheets'] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
 
   // Fetch product categories
   const categoriesQuery = useQuery({
