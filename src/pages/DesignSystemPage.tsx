@@ -1,4 +1,5 @@
 import { MainLayout } from '@/components/layout/MainLayout';
+import { HooksExamplesSection } from '@/components/design-system/HooksExamplesSection';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -362,6 +363,9 @@ export default function DesignSystemPage() {
             </TabsTrigger>
             <TabsTrigger value="changelog" className="data-[state=active]:gradient-primary data-[state=active]:text-white">
               Changelog
+            </TabsTrigger>
+            <TabsTrigger value="hooks" className="data-[state=active]:gradient-primary data-[state=active]:text-white">
+              Hooks
             </TabsTrigger>
           </TabsList>
 
@@ -2190,6 +2194,12 @@ export default function DesignSystemPage() {
           <TabsContent value="changelog" className="space-y-6">
             <BackToOverviewButton onNavigate={setActiveTab} />
             <ChangelogSection />
+          </TabsContent>
+
+          {/* Hooks Tab */}
+          <TabsContent value="hooks" className="space-y-6">
+            <BackToOverviewButton onNavigate={setActiveTab} />
+            <HooksExamplesSection />
           </TabsContent>
         </Tabs>
       </div>
