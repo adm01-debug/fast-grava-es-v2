@@ -15,15 +15,24 @@ export function useStuckJobsDetection() {
   const { data: jobs } = useJobs();
 
   const stuckJobs = useMemo(() => {
-    if (!jobs) return [];
+    if (!jobs || jobs.length === 0) return [];
 
-    const now = new Date();
+    const now = Date.now();
     const result: StuckJob[] = [];
 
     jobs.forEach(job => {
+      // Only check jobs in production with a valid start time
       if (job.status === 'production' && job.actual_start_time) {
-        const startTime = new Date(job.actual_start_time);
-        const hoursInProduction = (now.getTime() - startTime.getTime()) / (1000 * 60 * 60);
+        const startTime = new Date(job.actual_start_time).getTime();
+        
+        // Validate the date is valid
+        if (isNaN(startTime)) return;
+        
+        // Ensure we don't calculate negative hours (future start times)
+        const elapsedMs = now - startTime;
+        if (elapsedMs <= 0) return;
+        
+        const hoursInProduction = elapsedMs / (1000 * 60 * 60);
 
         if (hoursInProduction >= CRITICAL_HOURS) {
           result.push({

@@ -87,7 +87,7 @@ export function useOrphanedDataDetection() {
       errorCount: issues.filter(i => i.severity === 'error').length,
       warningCount: issues.filter(i => i.severity === 'warning').length,
     };
-  }, [jobs, techniques, machines]);
+  }, [jobsData, techniquesData, machinesData]); // Use original data for dependency tracking
 
   return analysis;
 }
