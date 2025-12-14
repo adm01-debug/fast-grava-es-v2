@@ -17,6 +17,7 @@ import { Button } from '@/components/ui/button';
 import { CreateGoalModal } from '@/components/operators/CreateGoalModal';
 import { OperatorGoalsCard, GoalsSummary } from '@/components/operators/OperatorGoalsCard';
 import { GoalsHistoryCard } from '@/components/operators/GoalsHistoryCard';
+import { GoalAlertsWidget } from '@/components/operators/GoalAlertsWidget';
 import { 
   Users, 
   TrendingUp, 
@@ -778,9 +779,12 @@ export default function OperatorProductivityPage() {
           />
         </div>
 
-        {/* Goals Summary */}
+        {/* Goals Summary and Alerts */}
         {activeGoals.length > 0 && (
-          <GoalsSummary allGoals={activeGoals} allMetrics={operators} />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <GoalsSummary allGoals={activeGoals} allMetrics={operators} />
+            <GoalAlertsWidget maxVisible={3} />
+          </div>
         )}
 
         {/* Top Performer Highlight */}
