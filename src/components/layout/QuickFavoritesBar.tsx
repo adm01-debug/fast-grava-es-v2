@@ -59,6 +59,7 @@ interface SortableFavoriteProps {
   showBadge: boolean;
   alertCount: number;
   index: number;
+  isTriggered: boolean;
 }
 
 const SortableFavorite = memo(function SortableFavorite({ 
@@ -66,7 +67,8 @@ const SortableFavorite = memo(function SortableFavorite({
   isActive, 
   showBadge, 
   alertCount,
-  index
+  index,
+  isTriggered
 }: SortableFavoriteProps) {
   const {
     attributes,
@@ -92,10 +94,17 @@ const SortableFavorite = memo(function SortableFavorite({
         animationDelay: `${index * 50}ms`,
       }}
       className={cn(
-        'flex items-center animate-scale-in',
+        'flex items-center animate-scale-in relative',
         isDragging && 'z-50 opacity-30 scale-95'
       )}
     >
+      {/* Pulse ring animation when triggered */}
+      {isTriggered && (
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <div className="absolute h-10 w-10 rounded-lg bg-primary/30 animate-ping" />
+          <div className="absolute h-8 w-8 rounded-md ring-2 ring-primary ring-offset-2 ring-offset-background animate-pulse" />
+        </div>
+      )}
       <Tooltip>
         <TooltipTrigger asChild>
           <Link to={fav.href}>
@@ -154,6 +163,7 @@ export const QuickFavoritesBar = memo(function QuickFavoritesBar() {
   const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
   const [activeDragId, setActiveDragId] = useState<string | null>(null);
+  const [triggeredFavId, setTriggeredFavId] = useState<string | null>(null);
   const { 
     favorites, 
     availableShortcuts, 
@@ -185,7 +195,12 @@ export const QuickFavoritesBar = memo(function QuickFavoritesBar() {
         const favIndex = keyNum - 1;
         if (favorites[favIndex]) {
           e.preventDefault();
-          navigate(favorites[favIndex].href);
+          // Trigger visual feedback
+          setTriggeredFavId(favorites[favIndex].id);
+          // Navigate after brief delay for visual effect
+          setTimeout(() => {
+            navigate(favorites[favIndex].href);
+          }, 150);
         }
       }
     };
@@ -193,6 +208,14 @@ export const QuickFavoritesBar = memo(function QuickFavoritesBar() {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [favorites, navigate]);
+
+  // Clear triggered state after animation
+  useEffect(() => {
+    if (triggeredFavId) {
+      const timer = setTimeout(() => setTriggeredFavId(null), 500);
+      return () => clearTimeout(timer);
+    }
+  }, [triggeredFavId]);
 
   // Hooks must be called before any conditional returns
   const sensors = useSensors(
@@ -276,6 +299,7 @@ export const QuickFavoritesBar = memo(function QuickFavoritesBar() {
               showBadge={fav.id === 'alerts' && alertCount > 0}
               alertCount={alertCount}
               index={index}
+              isTriggered={triggeredFavId === fav.id}
             />
           ))}
         </SortableContext>
