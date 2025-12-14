@@ -100,10 +100,19 @@ const actionSounds: Record<string, { frequencies: number[]; durations: number[];
   },
 };
 
+// Extended window interface for WebkitAudioContext compatibility
+interface WebkitWindow extends Window {
+  webkitAudioContext?: typeof AudioContext;
+}
+
 // Function to play notification sound using Web Audio API
 const playNotificationSound = (action: string) => {
   try {
-    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+    const windowWithWebkit = window as WebkitWindow;
+    const AudioContextClass = window.AudioContext || windowWithWebkit.webkitAudioContext;
+    if (!AudioContextClass) return;
+    
+    const audioContext = new AudioContextClass();
     const soundConfig = actionSounds[action] || actionSounds.view;
     
     let currentTime = audioContext.currentTime;
@@ -192,8 +201,13 @@ export const ScanHistory = ({ jobId, limit = 200 }: ScanHistoryProps) => {
           schema: 'public',
           table: 'qr_scan_history'
         },
-        async (payload) => {
-          const newScan = payload.new as any;
+        async (payload: { new: Record<string, unknown> }) => {
+          const newScan = payload.new as {
+            id: string;
+            job_id: string;
+            operator_id: string;
+            action: string;
+          };
           
           // Only show notification if not filtering by specific job, or if it's for this job
           if (jobId && newScan.job_id !== jobId) return;

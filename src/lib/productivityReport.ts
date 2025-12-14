@@ -5,6 +5,13 @@ import { ptBR } from 'date-fns/locale';
 import { OperatorProductivityMetrics } from '@/hooks/useOperatorProductivity';
 import { OperatorGoal, calculateGoalProgress, GOAL_TYPE_LABELS, GoalType } from '@/hooks/useOperatorGoals';
 
+// Extend jsPDF type to include lastAutoTable from jspdf-autotable
+interface jsPDFWithAutoTable extends jsPDF {
+  lastAutoTable: {
+    finalY: number;
+  };
+}
+
 interface ProductivityReportData {
   operators: OperatorProductivityMetrics[];
   goals: OperatorGoal[];
@@ -86,7 +93,7 @@ export function generateProductivityReport(data: ProductivityReportData): void {
     margin: { left: margin, right: margin },
   });
 
-  yPosition = (doc as any).lastAutoTable.finalY + 15;
+  yPosition = (doc as jsPDFWithAutoTable).lastAutoTable.finalY + 15;
 
   // Operators Table
   checkPageBreak(60);
@@ -146,7 +153,7 @@ export function generateProductivityReport(data: ProductivityReportData): void {
     },
   });
 
-  yPosition = (doc as any).lastAutoTable.finalY + 15;
+  yPosition = (doc as jsPDFWithAutoTable).lastAutoTable.finalY + 15;
 
   // Goals Section
   if (data.goals.length > 0) {
@@ -246,7 +253,7 @@ export function generateProductivityReport(data: ProductivityReportData): void {
         },
       });
 
-      yPosition = (doc as any).lastAutoTable.finalY + 10;
+      yPosition = (doc as jsPDFWithAutoTable).lastAutoTable.finalY + 10;
     });
 
     // Goals Summary

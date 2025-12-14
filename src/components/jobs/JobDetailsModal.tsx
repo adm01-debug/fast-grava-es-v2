@@ -52,7 +52,7 @@ export function JobDetailsModal({ job, open, onOpenChange, onStatusChange }: Job
   const technique = getTechniqueById(job.technique_id);
   const machine = getMachineById(job.machine_id);
 
-  const InfoRow = ({ icon: Icon, label, value, color }: { icon: any; label: string; value: string; color?: string }) => (
+  const InfoRow = ({ icon: Icon, label, value, color }: { icon: React.ElementType; label: string; value: string; color?: string }) => (
     <div className="flex items-center gap-3 py-2">
       <div className={`p-2 rounded-lg ${color || 'bg-muted/50'}`}>
         <Icon className="h-4 w-4 text-foreground" />
