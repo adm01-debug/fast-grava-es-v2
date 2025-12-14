@@ -8561,6 +8561,7 @@ interface ConfettiParticle {
   size: number;
   rotation: number;
   shape: ConfettiShape;
+  duration: number;
 }
 
 const getConfettiShapeStyle = (shape: ConfettiShape, size: number, color: string): React.CSSProperties => {
@@ -8641,16 +8642,21 @@ function OverviewSection({ onNavigate }: OverviewSectionProps) {
     const particleCount = 40;
     
     for (let i = 0; i < particleCount; i++) {
+      // Vary velocity more dramatically for organic movement
+      const baseVelocity = 50 + Math.random() * 120;
+      const velocityVariation = Math.random() > 0.7 ? 1.5 : 1; // Some particles go faster
+      
       particles.push({
         id: id + i,
         x,
         y,
         color: confettiColors[Math.floor(Math.random() * confettiColors.length)],
-        angle: (Math.PI * 2 / particleCount) * i + (Math.random() - 0.5) * 0.5,
-        velocity: 80 + Math.random() * 80,
-        size: 4 + Math.random() * 6,
+        angle: (Math.PI * 2 / particleCount) * i + (Math.random() - 0.5) * 0.8,
+        velocity: baseVelocity * velocityVariation,
+        size: 3 + Math.random() * 8,
         rotation: Math.random() * 360,
         shape: confettiShapes[Math.floor(Math.random() * confettiShapes.length)],
+        duration: 0.8 + Math.random() * 0.8, // 0.8s to 1.6s
       });
     }
     
@@ -8819,7 +8825,7 @@ function OverviewSection({ onNavigate }: OverviewSectionProps) {
                 backgroundColor: particle.shape === 'star' ? 'transparent' : particle.color,
                 color: particle.color,
                 transform: `translate(-50%, -50%)`,
-                animation: 'confetti-burst 1.2s ease-out forwards',
+                animation: `confetti-burst ${particle.duration}s ease-out forwards`,
                 '--confetti-x': `${Math.cos(particle.angle) * particle.velocity}px`,
                 '--confetti-y': `${Math.sin(particle.angle) * particle.velocity - 50}px`,
                 '--confetti-rotation': `${particle.rotation + 720}deg`,
@@ -8862,7 +8868,7 @@ function OverviewSection({ onNavigate }: OverviewSectionProps) {
                 backgroundColor: particle.shape === 'star' ? 'transparent' : particle.color,
                 color: particle.color,
                 transform: `translate(-50%, -50%)`,
-                animation: 'confetti-burst 1.2s ease-out forwards',
+                animation: `confetti-burst ${particle.duration}s ease-out forwards`,
                 '--confetti-x': `${Math.cos(particle.angle) * particle.velocity}px`,
                 '--confetti-y': `${Math.sin(particle.angle) * particle.velocity - 50}px`,
                 '--confetti-rotation': `${particle.rotation + 720}deg`,
@@ -8905,7 +8911,7 @@ function OverviewSection({ onNavigate }: OverviewSectionProps) {
                 backgroundColor: particle.shape === 'star' ? 'transparent' : particle.color,
                 color: particle.color,
                 transform: `translate(-50%, -50%)`,
-                animation: 'confetti-burst 1.2s ease-out forwards',
+                animation: `confetti-burst ${particle.duration}s ease-out forwards`,
                 '--confetti-x': `${Math.cos(particle.angle) * particle.velocity}px`,
                 '--confetti-y': `${Math.sin(particle.angle) * particle.velocity - 50}px`,
                 '--confetti-rotation': `${particle.rotation + 720}deg`,
@@ -8948,7 +8954,7 @@ function OverviewSection({ onNavigate }: OverviewSectionProps) {
                 backgroundColor: particle.shape === 'star' ? 'transparent' : particle.color,
                 color: particle.color,
                 transform: `translate(-50%, -50%)`,
-                animation: 'confetti-burst 1.2s ease-out forwards',
+                animation: `confetti-burst ${particle.duration}s ease-out forwards`,
                 '--confetti-x': `${Math.cos(particle.angle) * particle.velocity}px`,
                 '--confetti-y': `${Math.sin(particle.angle) * particle.velocity - 50}px`,
                 '--confetti-rotation': `${particle.rotation + 720}deg`,
