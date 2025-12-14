@@ -9638,6 +9638,35 @@ function OverviewSection({ onNavigate }: OverviewSectionProps) {
                 </div>
               </div>
             </div>
+            
+            {/* Animation Variants */}
+            <div className="p-3 rounded-lg bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/30 space-y-2 animate-fade-in hover-lift-sm transition-all" style={{ animationDelay: '500ms' }}>
+              <div className="flex items-center gap-2">
+                <Play className="h-4 w-4 text-primary animate-bounce-attention" />
+                <span className="text-sm font-medium">Novas Animações</span>
+                <Badge className="text-xs bg-primary/20 text-primary border-primary/30 wiggle-infinite">TASK GIFTS</Badge>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <Badge variant="outline" className="text-xs animate-scale-in" style={{ animationDelay: '600ms' }}>
+                  <code>bounce-in</code>
+                </Badge>
+                <Badge variant="outline" className="text-xs animate-scale-in" style={{ animationDelay: '650ms' }}>
+                  <code>wiggle</code>
+                </Badge>
+                <Badge variant="outline" className="text-xs animate-scale-in" style={{ animationDelay: '700ms' }}>
+                  <code>pulse-ring</code>
+                </Badge>
+                <Badge variant="outline" className="text-xs animate-scale-in" style={{ animationDelay: '750ms' }}>
+                  <code>bounce-attention</code>
+                </Badge>
+                <Badge variant="outline" className="text-xs animate-scale-in" style={{ animationDelay: '800ms' }}>
+                  <code>pop</code>
+                </Badge>
+                <Badge variant="outline" className="text-xs animate-scale-in" style={{ animationDelay: '850ms' }}>
+                  <code>press-scale</code>
+                </Badge>
+              </div>
+            </div>
           </div>
 
           {/* Design Improvements */}
@@ -9675,13 +9704,15 @@ function OverviewSection({ onNavigate }: OverviewSectionProps) {
             </h4>
             <div className="flex flex-wrap gap-2">
               {[
+                '.animate-bounce-in',
+                '.wiggle-infinite',
+                '.pulse-ring',
+                '.animate-bounce-attention',
+                '.animate-pop',
+                '.press-scale',
                 '.hover-lift-sm',
                 '.hover-scale',
-                '.hover-scale-sm',
                 '.gradient-text-success',
-                '.text-display',
-                '.text-display-lg',
-                '.text-display-xl',
               ].map((utility, index) => (
                 <code 
                   key={utility}
@@ -9698,17 +9729,21 @@ function OverviewSection({ onNavigate }: OverviewSectionProps) {
           <div className="pt-3 border-t border-border/50 animate-fade-in" style={{ animationDelay: '1100ms' }}>
             <div className="flex flex-wrap items-center gap-3">
               <span className="text-xs text-muted-foreground">Preview:</span>
-              <Card variant="stat" className="p-2 inline-flex items-center gap-2 animate-scale-in hover-lift-sm" style={{ animationDelay: '1200ms' }}>
+              <Card variant="stat" className="p-2 inline-flex items-center gap-2 animate-bounce-in hover-lift-sm" style={{ animationDelay: '1200ms' }}>
                 <TrendingUp className="h-3 w-3 text-success" />
                 <span className="text-xs font-medium">Stat Card</span>
               </Card>
-              <Card variant="premium" className="p-2 inline-flex items-center gap-2 animate-scale-in hover-lift-sm" style={{ animationDelay: '1250ms' }}>
+              <Card variant="premium" className="p-2 inline-flex items-center gap-2 animate-bounce-in hover-lift-sm" style={{ animationDelay: '1250ms' }}>
                 <Coins className="h-3 w-3 text-amber-500" />
                 <span className="text-xs font-medium">Premium</span>
               </Card>
-              <Button variant="warning" size="sm" className="animate-scale-in" style={{ animationDelay: '1300ms' }}>Warning</Button>
-              <Button variant="subtle" size="sm" className="animate-scale-in" style={{ animationDelay: '1350ms' }}>Subtle</Button>
-              <Button size="icon-xs" variant="outline" className="animate-scale-in" style={{ animationDelay: '1400ms' }}><Star className="h-3 w-3" /></Button>
+              <div className="flex items-center gap-1.5 animate-fade-in" style={{ animationDelay: '1300ms' }}>
+                <span className="h-2 w-2 rounded-full bg-success pulse-ring" />
+                <span className="text-xs text-success">Online</span>
+              </div>
+              <Badge className="animate-pop wiggle-infinite bg-warning/20 text-warning border-warning/30" style={{ animationDelay: '1350ms' }}>Urgente</Badge>
+              <Button variant="warning" size="sm" className="animate-scale-in" style={{ animationDelay: '1400ms' }}>Warning</Button>
+              <Button size="icon-xs" variant="outline" className="animate-scale-in" style={{ animationDelay: '1450ms' }}><Star className="h-3 w-3" /></Button>
             </div>
           </div>
         </CardContent>
