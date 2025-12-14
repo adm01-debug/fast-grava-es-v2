@@ -350,6 +350,39 @@ export type Database = {
           },
         ]
       }
+      operator_status_audit: {
+        Row: {
+          action: string
+          created_at: string
+          id: string
+          operator_id: string
+          operator_name: string | null
+          performed_by: string
+          performed_by_name: string | null
+          reason: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          id?: string
+          operator_id: string
+          operator_name?: string | null
+          performed_by: string
+          performed_by_name?: string | null
+          reason?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          id?: string
+          operator_id?: string
+          operator_name?: string | null
+          performed_by?: string
+          performed_by_name?: string | null
+          reason?: string | null
+        }
+        Relationships: []
+      }
       product_categories: {
         Row: {
           created_at: string
