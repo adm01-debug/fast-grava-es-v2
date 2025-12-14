@@ -37,16 +37,20 @@ export function useOperators() {
 
       if (error) throw error;
 
-      return (data || []).map(item => ({
-        id: item.id,
-        user_id: item.user_id,
-        role: item.role as 'operator',
-        full_name: (item.profiles as any)?.full_name || null,
-        avatar_url: (item.profiles as any)?.avatar_url || null,
-        phone: (item.profiles as any)?.phone || null,
-        created_at: item.created_at,
-        is_active: (item as any).is_active ?? true,
-      })) as OperatorWithProfile[];
+      // Type-safe mapping with proper profile extraction
+      return (data || []).map(item => {
+        const profile = item.profiles as { full_name?: string | null; avatar_url?: string | null; phone?: string | null } | null;
+        return {
+          id: item.id,
+          user_id: item.user_id,
+          role: item.role as 'operator',
+          full_name: profile?.full_name ?? null,
+          avatar_url: profile?.avatar_url ?? null,
+          phone: profile?.phone ?? null,
+          created_at: item.created_at,
+          is_active: item.is_active ?? true,
+        };
+      }) as OperatorWithProfile[];
     },
     staleTime: 1000 * 60 * 5, // 5 minutes
   });

@@ -75,8 +75,12 @@ export function useKPIs(): { data: KPIData | null; isLoading: boolean } {
     const completedPieces = jobs
       .filter(j => j.status === 'finished')
       .reduce((sum, j) => sum + j.quantity, 0);
-    const lostPieces = jobs.reduce((sum, j) => sum + (j.lost_pieces || 0), 0);
-    const lossRate = completedPieces > 0 ? (lostPieces / completedPieces) * 100 : 0;
+    const lostPieces = jobs
+      .filter(j => j.status === 'finished') // Only count losses from finished jobs
+      .reduce((sum, j) => sum + (j.lost_pieces || 0), 0);
+    // Loss rate should be lostPieces / (completedPieces + lostPieces) for accurate percentage
+    const totalAttempted = completedPieces + lostPieces;
+    const lossRate = totalAttempted > 0 ? (lostPieces / totalAttempted) * 100 : 0;
 
     // Today stats
     const todayJobs = jobs.filter(j => j.scheduled_date === today);

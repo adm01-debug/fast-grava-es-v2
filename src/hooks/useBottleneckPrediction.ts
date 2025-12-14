@@ -79,9 +79,10 @@ export function useBottleneckPrediction() {
 
         // Get pending jobs (queue/ready without scheduled date)
         // Also include jobs in production for "today" to account for active work
+        // Exclude paused jobs from capacity calculations as they are temporarily stopped
         const pendingJobs = jobs.filter(job => {
           if (job.technique_id !== technique.id) return false;
-          if (['finished', 'cancelled'].includes(job.status)) return false;
+          if (['finished', 'cancelled', 'paused'].includes(job.status)) return false;
           
           // For today (dayOffset === 0), include production jobs without scheduled_date
           if (dayOffset === 0 && job.status === 'production' && !job.scheduled_date) {

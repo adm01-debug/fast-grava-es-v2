@@ -148,6 +148,9 @@ export function useLoadBalancing(targetDate?: Date) {
         });
       }
 
+      // Sort suggestions by load difference (most impactful first)
+      const sortedSuggestions = suggestions.sort((a, b) => b.loadDifference - a.loadDifference);
+      
       techniqueMap.set(technique.id, {
         technique,
         machines: techniqueMachines.sort((a, b) => b.occupancyRate - a.occupancyRate),
@@ -155,7 +158,7 @@ export function useLoadBalancing(targetDate?: Date) {
         maxOccupancy,
         minOccupancy,
         isUnbalanced,
-        suggestions: suggestions.slice(0, 3) // Top 3 suggestions per technique
+        suggestions: sortedSuggestions // Return all suggestions, not limited to 3
       });
     });
 

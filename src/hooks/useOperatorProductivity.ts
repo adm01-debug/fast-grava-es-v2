@@ -158,17 +158,24 @@ export function useOperatorProductivity(period: ProductivityPeriod = 'all') {
         .filter((name): name is string => !!name);
 
       // Get jobs on operator's machines that are finished (using filtered jobs)
-      const operatorJobs = filteredJobs.filter(j => 
-        j.machine_id && 
-        machineIds.includes(j.machine_id) && 
-        j.status === 'finished'
-      );
+      // Also include jobs without machine_id if operator has no machine assignments (fallback)
+      const operatorJobs = filteredJobs.filter(j => {
+        if (j.status !== 'finished') return false;
+        // If operator has machines assigned, filter by those machines
+        if (machineIds.length > 0) {
+          return j.machine_id && machineIds.includes(j.machine_id);
+        }
+        // If no machine assignments, don't count any jobs for this operator
+        return false;
+      });
 
-      const inProgressJobs = filteredJobs.filter(j =>
-        j.machine_id &&
-        machineIds.includes(j.machine_id) &&
-        j.status === 'production'
-      );
+      const inProgressJobs = filteredJobs.filter(j => {
+        if (j.status !== 'production') return false;
+        if (machineIds.length > 0) {
+          return j.machine_id && machineIds.includes(j.machine_id);
+        }
+        return false;
+      });
 
       // Calculate production metrics (quantity - lost_pieces = produced)
       const totalPiecesProduced = operatorJobs.reduce((sum, j) => sum + (j.quantity - (j.lost_pieces || 0)), 0);
