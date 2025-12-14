@@ -2,7 +2,8 @@ import { useMemo } from 'react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useJobs, useMachines, DbJob, DbMachine } from '@/hooks/useJobs';
+import { useSchedulingData } from '@/hooks/useSchedulingData';
+import { DbJob } from '@/hooks/useJobs';
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -10,14 +11,7 @@ const hours = ['07:00', '08:00', '09:00', '10:00', '11:00'];
 
 export function CompactTimeline() {
   const today = new Date();
-  const { data: jobs = [], isLoading: isLoadingJobs } = useJobs();
-  const { data: machines = [], isLoading: isLoadingMachines } = useMachines();
-
-  const isLoading = isLoadingJobs || isLoadingMachines;
-
-  const getMachineById = (id: string): DbMachine | undefined => {
-    return machines.find(m => m.id === id);
-  };
+  const { jobs, isLoading, getMachineById } = useSchedulingData();
 
   const todayJobs = useMemo(() => {
     return jobs.filter(job => {

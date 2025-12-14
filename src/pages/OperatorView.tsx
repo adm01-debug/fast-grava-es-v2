@@ -5,7 +5,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useJobs, useTechniques, useMachines, useUpdateJobStatus, DbJob } from '@/hooks/useJobs';
+import { useSchedulingData } from '@/hooks/useSchedulingData';
+import { useUpdateJobStatus, DbJob } from '@/hooks/useJobs';
 import { notifyStatusChange } from '@/hooks/useNotifications';
 import { JobDetailsModal } from '@/components/jobs/JobDetailsModal';
 import { ProductionRegistrationModal } from '@/components/operator/ProductionRegistrationModal';
@@ -29,12 +30,8 @@ export default function OperatorView() {
   const [productionJob, setProductionJob] = useState<DbJob | null>(null);
   const [isProductionModalOpen, setIsProductionModalOpen] = useState(false);
 
-  const { data: jobs, isLoading: jobsLoading } = useJobs();
-  const { data: techniques } = useTechniques();
-  const { data: machines, isLoading: machinesLoading } = useMachines();
+  const { jobs, techniques, machines, isLoading, getTechniqueById, getMachineById } = useSchedulingData();
   const updateStatus = useUpdateJobStatus();
-
-  const isLoading = jobsLoading || machinesLoading;
 
   const filteredJobs = useMemo(() => {
     if (!jobs) return [];
@@ -78,13 +75,8 @@ export default function OperatorView() {
     setIsModalOpen(true);
   };
 
-  const getTechnique = (techniqueId: string) => {
-    return techniques?.find(t => t.id === techniqueId);
-  };
-
-  const getMachine = (machineId: string | null) => {
-    return machines?.find(m => m.id === machineId);
-  };
+  const getTechnique = getTechniqueById;
+  const getMachine = getMachineById;
 
   if (isLoading) {
     return (

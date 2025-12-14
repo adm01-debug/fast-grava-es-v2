@@ -3,7 +3,8 @@ import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
-import { useJobs, useTechniques, useMachines, DbJob, DbTechnique, DbMachine } from '@/hooks/useJobs';
+import { useSchedulingData } from '@/hooks/useSchedulingData';
+import { DbJob } from '@/hooks/useJobs';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
@@ -15,19 +16,7 @@ export function TodayTimeline() {
   const currentHour = today.getHours();
   const currentMinute = today.getMinutes();
 
-  const { data: jobs = [], isLoading: isLoadingJobs } = useJobs();
-  const { data: techniques = [] } = useTechniques();
-  const { data: machines = [], isLoading: isLoadingMachines } = useMachines();
-
-  const isLoading = isLoadingJobs || isLoadingMachines;
-
-  const getTechniqueById = (id: string): DbTechnique | undefined => {
-    return techniques.find(t => t.id === id);
-  };
-
-  const getMachineById = (id: string): DbMachine | undefined => {
-    return machines.find(m => m.id === id);
-  };
+  const { jobs, machines, isLoading, getTechniqueById, getMachineById } = useSchedulingData();
 
   const todayJobs = useMemo(() => {
     return jobs.filter(job => {

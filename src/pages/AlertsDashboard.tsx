@@ -22,7 +22,8 @@ import {
   Scale,
   RefreshCw
 } from "lucide-react";
-import { useJobs, useTechniques, DbJob } from "@/hooks/useJobs";
+import { useSchedulingData } from "@/hooks/useSchedulingData";
+import { DbJob } from "@/hooks/useJobs";
 import { Job } from "@/types/scheduling";
 import { useBottleneckPrediction } from "@/hooks/useBottleneckPrediction";
 import { useLoadBalancing } from "@/hooks/useLoadBalancing";
@@ -47,11 +48,7 @@ export default function AlertsDashboard() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Fetch real data from Supabase
-  const { data: jobs = [], isLoading: isLoadingJobs } = useJobs();
-  const { data: techniques = [] } = useTechniques();
-
-  // Helper to get technique by ID
-  const getTechniqueById = (id: string) => techniques.find(t => t.id === id);
+  const { jobs, getTechniqueById } = useSchedulingData();
 
   // Convert DbJob to Job format for modal
   const dbJobToJob = (dbJob: DbJob): Job => ({
