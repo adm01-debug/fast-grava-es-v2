@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, memo } from 'react';
+import { useState, useEffect, useCallback, memo, useMemo } from 'react';
 import { useLocation, Link, useNavigate } from 'react-router-dom';
 import { 
   Calendar, 
@@ -31,6 +31,7 @@ import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useAuth } from '@/contexts/AuthContext';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useAlertCount } from '@/hooks/useAlertCount';
 
 interface NavItem {
   icon: React.ElementType;
@@ -39,7 +40,7 @@ interface NavItem {
   badge?: number;
 }
 
-const mainNavItems: NavItem[] = [
+const baseMainNavItems: Omit<NavItem, 'badge'>[] = [
   { icon: Home, label: 'Dashboard', href: '/' },
   { icon: Calendar, label: 'Calendário Diário', href: '/calendar/daily' },
   { icon: CalendarDays, label: 'Calendário Semanal', href: '/calendar/weekly' },
@@ -47,7 +48,7 @@ const mainNavItems: NavItem[] = [
   { icon: List, label: 'Lista de Pendências', href: '/pending' },
   { icon: Zap, label: 'Eficiência', href: '/efficiency' },
   { icon: BarChart3, label: 'KPIs e Ocupação', href: '/kpis' },
-  { icon: AlertTriangle, label: 'Alertas', href: '/alerts', badge: 3 },
+  { icon: AlertTriangle, label: 'Alertas', href: '/alerts' },
   { icon: BookOpen, label: 'Base de Conhecimento', href: '/knowledge' },
   { icon: UserCircle, label: 'Visão Operador', href: '/operator' },
   { icon: QrCode, label: 'Scanner QR', href: '/scanner' },
@@ -135,6 +136,14 @@ export function AppSidebar() {
   const navigate = useNavigate();
   const { profile, role, signOut, isCoordinator } = useAuth();
   const isMobile = useIsMobile();
+  const alertCount = useAlertCount();
+
+  // Build nav items with dynamic badge
+  const mainNavItems: NavItem[] = useMemo(() => 
+    baseMainNavItems.map(item => ({
+      ...item,
+      badge: item.href === '/alerts' && alertCount > 0 ? alertCount : undefined
+    })), [alertCount]);
 
   // Close mobile menu on route change
   useEffect(() => {
