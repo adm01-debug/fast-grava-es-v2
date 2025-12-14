@@ -8,7 +8,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { useOperatorProductivity, OperatorProductivityMetrics } from '@/hooks/useOperatorProductivity';
+import { useOperatorProductivity, OperatorProductivityMetrics, ProductivityPeriod } from '@/hooks/useOperatorProductivity';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { CalendarDays } from 'lucide-react';
 import { 
   Users, 
   TrendingUp, 
@@ -305,11 +307,19 @@ function ProductionRadarChart({ operator }: { operator: OperatorProductivityMetr
 }
 
 export default function OperatorProductivityPage() {
-  const { operators, overallStats, isLoading } = useOperatorProductivity();
+  const [period, setPeriod] = useState<ProductivityPeriod>('all');
+  const { operators, overallStats, isLoading } = useOperatorProductivity(period);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
   const [sortBy, setSortBy] = useState<'efficiency' | 'jobs' | 'pieces' | 'loss'>('efficiency');
   const [selectedOperator, setSelectedOperator] = useState<OperatorProductivityMetrics | null>(null);
+
+  const periodLabels: Record<ProductivityPeriod, string> = {
+    7: 'Últimos 7 dias',
+    30: 'Últimos 30 dias',
+    90: 'Últimos 90 dias',
+    'all': 'Todo o período',
+  };
 
   const filteredOperators = useMemo(() => {
     let result = operators;
@@ -382,7 +392,31 @@ export default function OperatorProductivityPage() {
               Métricas individuais de desempenho e eficiência
             </p>
           </div>
+          
+          {/* Period Filter */}
+          <div className="flex items-center gap-2">
+            <CalendarDays className="h-4 w-4 text-muted-foreground" />
+            <Tabs value={String(period)} onValueChange={(v) => setPeriod(v === 'all' ? 'all' : Number(v) as ProductivityPeriod)}>
+              <TabsList className="bg-muted/50">
+                <TabsTrigger value="7" className="text-xs px-3">7 dias</TabsTrigger>
+                <TabsTrigger value="30" className="text-xs px-3">30 dias</TabsTrigger>
+                <TabsTrigger value="90" className="text-xs px-3">90 dias</TabsTrigger>
+                <TabsTrigger value="all" className="text-xs px-3">Tudo</TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </div>
         </div>
+
+        {/* Period Indicator */}
+        {period !== 'all' && (
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Badge variant="outline" className="font-normal">
+              {periodLabels[period]}
+            </Badge>
+            <span>•</span>
+            <span>Dados filtrados por período de conclusão</span>
+          </div>
+        )}
 
         {/* Summary Stats */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
