@@ -6,11 +6,12 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Users, UserCheck, Phone, Calendar, Settings2, Search, X } from 'lucide-react';
+import { Users, UserCheck, Phone, Calendar, Settings2, Search, X, UserPlus } from 'lucide-react';
 import { useOperators, OperatorWithProfile } from '@/hooks/useOperators';
 import { useOperatorMachines } from '@/hooks/useOperatorMachines';
 import { useSchedulingData } from '@/hooks/useSchedulingData';
 import { MachineAssignmentModal } from '@/components/operators/MachineAssignmentModal';
+import { CreateOperatorModal } from '@/components/operators/CreateOperatorModal';
 import { Skeleton } from '@/components/ui/skeleton';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -21,6 +22,7 @@ export default function OperatorsPage() {
   const { machines } = useSchedulingData();
   const [selectedOperator, setSelectedOperator] = useState<OperatorWithProfile | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [machineFilter, setMachineFilter] = useState<string>('all');
 
@@ -64,9 +66,15 @@ export default function OperatorsPage() {
   return (
     <MainLayout>
       <div className="space-y-6">
-        <div>
-          <h1 className="text-2xl font-display font-bold gradient-text">Operadores</h1>
-          <p className="text-muted-foreground">Gerencie os operadores e suas permissões de máquinas</p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-display font-bold gradient-text">Operadores</h1>
+            <p className="text-muted-foreground">Gerencie os operadores e suas permissões de máquinas</p>
+          </div>
+          <Button onClick={() => setIsCreateModalOpen(true)}>
+            <UserPlus className="h-4 w-4 mr-2" />
+            Novo Operador
+          </Button>
         </div>
 
         <div className="grid gap-4 md:grid-cols-2">
@@ -251,6 +259,11 @@ export default function OperatorsPage() {
           operator={selectedOperator}
           open={isModalOpen}
           onOpenChange={setIsModalOpen}
+        />
+
+        <CreateOperatorModal
+          open={isCreateModalOpen}
+          onOpenChange={setIsCreateModalOpen}
         />
       </div>
     </MainLayout>
