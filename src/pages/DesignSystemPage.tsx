@@ -9286,7 +9286,7 @@ function OverviewSection({ onNavigate }: OverviewSectionProps) {
     { id: 'typography', icon: Type, title: 'Tipografia', description: 'Hierarquia tipográfica e fontes', count: 6 },
     { id: 'spacing', icon: Ruler, title: 'Spacing', description: 'Escala de espaçamentos e gaps', count: 12 },
     { id: 'shadows', icon: Layers, title: 'Sombras', description: 'Sombras e elevações para cards', count: 5 },
-    { id: 'animations', icon: Play, title: 'Animações', description: 'Entry, hover, stagger e glow effects', count: 20 },
+    { id: 'animations', icon: Play, title: 'Animações', description: 'Entry, hover, stagger, glow e interativas', count: 26 },
     { id: 'colors', icon: Palette, title: 'Cores', description: 'Paleta de cores semânticas do sistema', count: 16 },
     { id: 'feedback', icon: Bell, title: 'Feedback', description: 'Alerts, Toasts e Skeletons', count: 6 },
     { id: 'loading', icon: Loader2, title: 'Loading', description: 'Spinners, progress e estados de loading', count: 5 },
