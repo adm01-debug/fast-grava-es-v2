@@ -312,18 +312,39 @@ export function useABCCosts() {
     },
   });
 
-  // Calculate costs for all jobs
+  // Calculate costs for all jobs with parallel batching
   const calculateAllJobsCosts = useMutation({
     mutationFn: async () => {
+      const BATCH_SIZE = 5; // Process 5 jobs in parallel
       let calculated = 0;
-      for (const job of jobs) {
-        await calculateJobCost.mutateAsync(job.id);
-        calculated++;
+      
+      // Process jobs in batches for better performance
+      for (let i = 0; i < jobs.length; i += BATCH_SIZE) {
+        const batch = jobs.slice(i, i + BATCH_SIZE);
+        
+        // Run batch in parallel using Promise.allSettled to handle individual failures
+        const results = await Promise.allSettled(
+          batch.map(job => calculateJobCost.mutateAsync(job.id))
+        );
+        
+        // Count successful calculations
+        calculated += results.filter(r => r.status === 'fulfilled').length;
+        
+        // Log any failures for debugging
+        results.forEach((result, idx) => {
+          if (result.status === 'rejected') {
+            console.warn(`Failed to calculate cost for job ${batch[idx].id}:`, result.reason);
+          }
+        });
       }
+      
       return calculated;
     },
     onSuccess: (count) => {
       toast.success(`Custos calculados para ${count} jobs`);
+    },
+    onError: (error) => {
+      toast.error('Erro ao calcular custos em lote: ' + (error as Error).message);
     },
   });
 
