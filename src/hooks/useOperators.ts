@@ -52,7 +52,18 @@ export function useOperators() {
   });
 
   const removeOperatorMutation = useMutation({
-    mutationFn: async (operatorId: string) => {
+    mutationFn: async ({ operatorId, operatorName }: { operatorId: string; operatorName: string | null }) => {
+      // Get current user info for audit
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('User not authenticated');
+
+      // Get performer name
+      const { data: performerProfile } = await supabase
+        .from('profiles')
+        .select('full_name')
+        .eq('id', user.id)
+        .single();
+
       // First, remove all machine assignments for this operator
       const { error: assignmentsError } = await supabase
         .from('operator_machines')
@@ -70,11 +81,23 @@ export function useOperators() {
 
       if (roleError) throw roleError;
 
+      // Log the action in audit table
+      await supabase
+        .from('operator_status_audit')
+        .insert({
+          operator_id: operatorId,
+          operator_name: operatorName,
+          action: 'removed',
+          performed_by: user.id,
+          performed_by_name: performerProfile?.full_name || null,
+        } as any);
+
       return operatorId;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['operators'] });
       queryClient.invalidateQueries({ queryKey: ['operator-machines'] });
+      queryClient.invalidateQueries({ queryKey: ['operator-status-audit'] });
       toast({
         title: 'Operador removido',
         description: 'O operador foi removido do sistema com sucesso.',
@@ -91,7 +114,18 @@ export function useOperators() {
   });
 
   const toggleActiveMutation = useMutation({
-    mutationFn: async ({ operatorId, isActive }: { operatorId: string; isActive: boolean }) => {
+    mutationFn: async ({ operatorId, operatorName, isActive }: { operatorId: string; operatorName: string | null; isActive: boolean }) => {
+      // Get current user info for audit
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('User not authenticated');
+
+      // Get performer name
+      const { data: performerProfile } = await supabase
+        .from('profiles')
+        .select('full_name')
+        .eq('id', user.id)
+        .single();
+
       const { error } = await supabase
         .from('user_roles')
         .update({ is_active: isActive } as any)
@@ -99,10 +133,23 @@ export function useOperators() {
         .eq('role', 'operator');
 
       if (error) throw error;
+
+      // Log the action in audit table
+      await supabase
+        .from('operator_status_audit')
+        .insert({
+          operator_id: operatorId,
+          operator_name: operatorName,
+          action: isActive ? 'activated' : 'deactivated',
+          performed_by: user.id,
+          performed_by_name: performerProfile?.full_name || null,
+        } as any);
+
       return { operatorId, isActive };
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['operators'] });
+      queryClient.invalidateQueries({ queryKey: ['operator-status-audit'] });
       toast({
         title: data.isActive ? 'Operador ativado' : 'Operador desativado',
         description: data.isActive 

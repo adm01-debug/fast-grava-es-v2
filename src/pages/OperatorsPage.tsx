@@ -472,7 +472,10 @@ export default function OperatorsPage() {
               <AlertDialogAction
                 onClick={() => {
                   if (operatorToRemove) {
-                    removeOperator(operatorToRemove.user_id);
+                    removeOperator({
+                      operatorId: operatorToRemove.user_id,
+                      operatorName: operatorToRemove.full_name,
+                    });
                     setOperatorToRemove(null);
                   }
                 }}
@@ -515,6 +518,7 @@ export default function OperatorsPage() {
                   if (operatorToToggle) {
                     toggleActive({ 
                       operatorId: operatorToToggle.user_id, 
+                      operatorName: operatorToToggle.full_name,
                       isActive: !operatorToToggle.is_active 
                     });
                     setOperatorToToggle(null);
