@@ -20,39 +20,11 @@ import {
   ClipboardCheck
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Job } from '@/types/scheduling';
-
-// Convert DbJob to Job for modal compatibility
-function dbJobToJob(dbJob: DbJob): Job {
-  return {
-    id: dbJob.id,
-    orderNumber: dbJob.order_number,
-    client: dbJob.client,
-    product: dbJob.product,
-    quantity: dbJob.quantity,
-    techniqueId: dbJob.technique_id as Job['techniqueId'],
-    machineId: dbJob.machine_id || '',
-    operatorId: '',
-    scheduledDate: dbJob.scheduled_date ? new Date(dbJob.scheduled_date) : new Date(),
-    startTime: dbJob.start_time || '',
-    endTime: dbJob.end_time || '',
-    estimatedDuration: dbJob.estimated_duration,
-    status: dbJob.status as Job['status'],
-    gravureColor: dbJob.gravure_color || '',
-    notes: dbJob.notes || undefined,
-    actualStartTime: dbJob.actual_start_time ? new Date(dbJob.actual_start_time) : undefined,
-    actualEndTime: dbJob.actual_end_time ? new Date(dbJob.actual_end_time) : undefined,
-    lostPieces: dbJob.lost_pieces || undefined,
-    priority: dbJob.priority as Job['priority'],
-    createdAt: new Date(dbJob.created_at),
-    updatedAt: new Date(dbJob.updated_at),
-    createdBy: '',
-  };
-}
+import { JobStatus } from '@/types/scheduling';
 
 export default function OperatorView() {
   const [selectedMachine, setSelectedMachine] = useState<string>('all');
-  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+  const [selectedJob, setSelectedJob] = useState<DbJob | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [productionJob, setProductionJob] = useState<DbJob | null>(null);
   const [isProductionModalOpen, setIsProductionModalOpen] = useState(false);
@@ -102,7 +74,7 @@ export default function OperatorView() {
   };
 
   const handleJobClick = (job: DbJob) => {
-    setSelectedJob(dbJobToJob(job));
+    setSelectedJob(job);
     setIsModalOpen(true);
   };
 

@@ -19,15 +19,14 @@ import {
   Building,
   QrCode
 } from "lucide-react";
-import { Job } from "@/types/scheduling";
-import { getTechniqueById, getMachineById, getOperatorById } from "@/data/mockData";
+import { DbJob, DbTechnique, DbMachine, useTechniques, useMachines } from "@/hooks/useJobs";
 import { JobQRCode } from "@/components/qrcode/JobQRCode";
 
 interface JobDetailsModalProps {
-  job: Job | null;
+  job: DbJob | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onStatusChange?: (jobId: string, newStatus: Job['status']) => void;
+  onStatusChange?: (jobId: string, newStatus: DbJob['status']) => void;
 }
 
 const priorityColors = {
@@ -45,11 +44,13 @@ const priorityLabels = {
 };
 
 export function JobDetailsModal({ job, open, onOpenChange, onStatusChange }: JobDetailsModalProps) {
+  const { data: techniques = [] } = useTechniques();
+  const { data: machines = [] } = useMachines();
+
   if (!job) return null;
 
-  const technique = getTechniqueById(job.techniqueId);
-  const machine = getMachineById(job.machineId);
-  const operator = getOperatorById(job.operatorId);
+  const technique = techniques.find(t => t.id === job.technique_id);
+  const machine = machines.find(m => m.id === job.machine_id);
 
   const InfoRow = ({ icon: Icon, label, value, color }: { icon: any; label: string; value: string; color?: string }) => (
     <div className="flex items-center gap-3 py-2">
@@ -90,7 +91,7 @@ export function JobDetailsModal({ job, open, onOpenChange, onStatusChange }: Job
           <div className="flex items-center justify-between">
             <DialogTitle className="text-xl font-bold text-foreground flex items-center gap-2">
               <Hash className="h-5 w-5 text-primary" />
-              {job.orderNumber}
+              {job.order_number}
             </DialogTitle>
             <div className="flex items-center gap-2">
               <Badge className={`${priorityColors[job.priority]} border`}>
@@ -127,13 +128,13 @@ export function JobDetailsModal({ job, open, onOpenChange, onStatusChange }: Job
               <InfoRow 
                 icon={Palette} 
                 label="Cor da Gravura" 
-                value={job.gravureColor}
+                value={job.gravure_color || 'Não definida'}
                 color="bg-purple-500/20"
               />
               <InfoRow 
                 icon={Clock} 
                 label="Duração Estimada" 
-                value={`${job.estimatedDuration} minutos`}
+                value={`${job.estimated_duration} minutos`}
                 color="bg-orange-500/20"
               />
             </div>
@@ -142,19 +143,19 @@ export function JobDetailsModal({ job, open, onOpenChange, onStatusChange }: Job
               <InfoRow 
                 icon={Calendar} 
                 label="Data Agendada" 
-                value={new Date(job.scheduledDate).toLocaleDateString('pt-BR')}
+                value={job.scheduled_date ? new Date(job.scheduled_date).toLocaleDateString('pt-BR') : 'Não agendada'}
                 color="bg-cyan-500/20"
               />
               <InfoRow 
                 icon={Clock} 
                 label="Horário" 
-                value={`${job.startTime} - ${job.endTime}`}
+                value={job.start_time && job.end_time ? `${job.start_time} - ${job.end_time}` : 'Não definido'}
                 color="bg-yellow-500/20"
               />
               <InfoRow 
                 icon={User} 
-                label="Operador" 
-                value={operator?.name || 'Não atribuído'}
+                label="Máquina" 
+                value={machine ? `${machine.code} - ${machine.name}` : 'Não atribuída'}
                 color="bg-pink-500/20"
               />
             </div>
@@ -173,13 +174,13 @@ export function JobDetailsModal({ job, open, onOpenChange, onStatusChange }: Job
                   color: technique?.color 
                 }}
               >
-                {technique?.name}
+                {technique?.name || 'Não definida'}
               </Badge>
             </div>
             <div className="flex-1 p-4 rounded-xl bg-muted/20 border border-border/30">
               <p className="text-xs text-muted-foreground mb-1">Máquina</p>
               <p className="text-sm font-medium text-foreground">
-                {machine?.code} - {machine?.name}
+                {machine ? `${machine.code} - ${machine.name}` : 'Não atribuída'}
               </p>
             </div>
           </div>
@@ -188,7 +189,7 @@ export function JobDetailsModal({ job, open, onOpenChange, onStatusChange }: Job
           <div className="flex justify-center">
             <JobQRCode 
               jobId={job.id}
-              orderNumber={job.orderNumber}
+              orderNumber={job.order_number}
               product={job.product}
               client={job.client}
               size={120}

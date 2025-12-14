@@ -13,8 +13,9 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Calendar } from '@/components/ui/calendar';
 import { JobDetailsModal } from '@/components/jobs/JobDetailsModal';
 import { cn } from '@/lib/utils';
-import { mockJobs, machines, techniques, getTechniqueById } from '@/data/mockData';
-import { Job, JobStatus } from '@/types/scheduling';
+import { useJobs, useTechniques, useMachines, DbJob } from '@/hooks/useJobs';
+import { JobStatus } from '@/types/scheduling';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const statusColors: Record<JobStatus, string> = {
   queue: 'bg-status-queue/80 border-status-queue',
@@ -43,8 +44,16 @@ const statusLabels: Record<JobStatus, string> = {
 export default function WeeklyCalendar() {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [selectedTechnique, setSelectedTechnique] = useState<string>('all');
-  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+  const [selectedJob, setSelectedJob] = useState<DbJob | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const { data: jobs = [], isLoading: jobsLoading } = useJobs();
+  const { data: techniques = [], isLoading: techniquesLoading } = useTechniques();
+  const { data: machines = [], isLoading: machinesLoading } = useMachines();
+
+  const isLoading = jobsLoading || techniquesLoading || machinesLoading;
+
+  const getTechniqueById = (id: string) => techniques.find(t => t.id === id);
 
   const weekStart = startOfWeek(selectedDate, { weekStartsOn: 1 }); // Monday
   const weekEnd = endOfWeek(selectedDate, { weekStartsOn: 1 });
@@ -56,36 +65,38 @@ export default function WeeklyCalendar() {
 
   // Filter jobs for the week
   const weekJobs = useMemo(() => {
-    return mockJobs.filter(job => {
-      const jobDate = new Date(job.scheduledDate);
+    return jobs.filter(job => {
+      if (!job.scheduled_date) return false;
+      const jobDate = new Date(job.scheduled_date);
       const isInWeek = jobDate >= weekStart && jobDate <= weekEnd;
       
       if (selectedTechnique !== 'all') {
-        return isInWeek && job.techniqueId === selectedTechnique;
+        return isInWeek && job.technique_id === selectedTechnique;
       }
       return isInWeek;
     });
-  }, [weekStart, weekEnd, selectedTechnique]);
+  }, [jobs, weekStart, weekEnd, selectedTechnique]);
 
   // Filter machines by technique
   const filteredMachines = useMemo(() => {
     if (selectedTechnique === 'all') return machines.slice(0, 20); // Limit for performance
-    return machines.filter(m => m.techniqueId === selectedTechnique);
-  }, [selectedTechnique]);
+    return machines.filter(m => m.technique_id === selectedTechnique);
+  }, [machines, selectedTechnique]);
 
   // Group jobs by machine and day
   const jobsByMachineAndDay = useMemo(() => {
-    const grouped: Record<string, Record<string, Job[]>> = {};
+    const grouped: Record<string, Record<string, DbJob[]>> = {};
     
     weekJobs.forEach(job => {
-      if (!grouped[job.machineId]) {
-        grouped[job.machineId] = {};
+      if (!job.machine_id || !job.scheduled_date) return;
+      if (!grouped[job.machine_id]) {
+        grouped[job.machine_id] = {};
       }
-      const dayKey = format(new Date(job.scheduledDate), 'yyyy-MM-dd');
-      if (!grouped[job.machineId][dayKey]) {
-        grouped[job.machineId][dayKey] = [];
+      const dayKey = format(new Date(job.scheduled_date), 'yyyy-MM-dd');
+      if (!grouped[job.machine_id][dayKey]) {
+        grouped[job.machine_id][dayKey] = [];
       }
-      grouped[job.machineId][dayKey].push(job);
+      grouped[job.machine_id][dayKey].push(job);
     });
     
     return grouped;
@@ -100,7 +111,7 @@ export default function WeeklyCalendar() {
     return jobsByMachineAndDay[machineId]?.[dayKey] || [];
   };
 
-  const handleJobClick = (job: Job) => {
+  const handleJobClick = (job: DbJob) => {
     setSelectedJob(job);
     setIsModalOpen(true);
   };
@@ -225,7 +236,7 @@ export default function WeeklyCalendar() {
 
                 {/* Machine Rows */}
                 {filteredMachines.map((machine, index) => {
-                  const technique = getTechniqueById(machine.techniqueId);
+                  const technique = getTechniqueById(machine.technique_id);
                   
                   return (
                     <div 
@@ -244,7 +255,7 @@ export default function WeeklyCalendar() {
                         <div className="min-w-0">
                           <div className="text-sm font-semibold text-foreground">{machine.code}</div>
                           <div className="text-xs text-muted-foreground truncate">
-                            {technique?.shortName}
+                            {technique?.short_name}
                           </div>
                         </div>
                       </div>
@@ -270,11 +281,11 @@ export default function WeeklyCalendar() {
                                       className={cn(
                                         "px-1.5 py-1 rounded text-xs font-medium truncate cursor-pointer",
                                         "border transition-all duration-200 hover:scale-[1.02]",
-                                        statusColors[job.status]
+                                        statusColors[job.status as JobStatus]
                                       )}
                                     >
                                       <span className="text-white/90">
-                                        {job.orderNumber.replace('OS-2024-', '')}
+                                        {job.order_number.replace('OS-2024-', '')}
                                       </span>
                                     </div>
                                   </TooltipTrigger>
@@ -283,15 +294,15 @@ export default function WeeklyCalendar() {
                                     className="bg-card border-border/40 shadow-xl max-w-xs"
                                   >
                                     <div className="space-y-1.5">
-                                      <div className="font-semibold text-foreground">{job.orderNumber}</div>
+                                      <div className="font-semibold text-foreground">{job.order_number}</div>
                                       <div className="text-sm text-muted-foreground">{job.client}</div>
                                       <div className="text-sm">{job.product}</div>
                                       <div className="flex items-center gap-2 text-xs">
                                         <span className="text-muted-foreground">
-                                          {job.startTime} - {job.endTime}
+                                          {job.start_time || '00:00'} - {job.end_time || '00:00'}
                                         </span>
                                         <Badge variant="outline" className="text-xs">
-                                          {statusLabels[job.status]}
+                                          {statusLabels[job.status as JobStatus]}
                                         </Badge>
                                       </div>
                                       <div className="text-xs text-muted-foreground">

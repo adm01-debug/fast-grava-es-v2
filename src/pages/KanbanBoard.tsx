@@ -67,7 +67,7 @@ const dbJobToJob = (dbJob: DbJob): Job => ({
 export default function KanbanBoard() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTechnique, setSelectedTechnique] = useState<string>('all');
-  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+  const [selectedJob, setSelectedJob] = useState<DbJob | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Fetch real data from Supabase
@@ -102,7 +102,7 @@ export default function KanbanBoard() {
   };
 
   const handleJobClick = (dbJob: DbJob) => {
-    setSelectedJob(dbJobToJob(dbJob));
+    setSelectedJob(dbJob);
     setIsModalOpen(true);
   };
 
