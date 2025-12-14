@@ -54,13 +54,18 @@ function OccupancyChartComponent() {
     return techniques.slice(0, 10).map((tech, index) => {
       // Count jobs for this technique
       const techniqueJobs = jobs.filter(job => job.technique_id === tech.id);
+      const activeJobs = techniqueJobs.filter(job => 
+        ['production', 'scheduled', 'ready'].includes(job.status)
+      );
       const finishedJobs = techniqueJobs.filter(job => job.status === 'finished');
-      const productionJobs = techniqueJobs.filter(job => job.status === 'production');
       
-      // Calculate occupancy as percentage of active jobs
-      const activeJobs = productionJobs.length + finishedJobs.length;
-      const totalJobs = techniqueJobs.length || 1;
-      const occupancy = Math.min(100, Math.round((activeJobs / totalJobs) * 100) || Math.floor(Math.random() * 40) + 30);
+      // Calculate occupancy based on jobs distribution
+      // If no jobs at all, show 0% occupancy (real data, not fake)
+      let occupancy = 0;
+      if (techniqueJobs.length > 0) {
+        const activeAndFinished = activeJobs.length + finishedJobs.length;
+        occupancy = Math.min(100, Math.round((activeAndFinished / techniqueJobs.length) * 100));
+      }
 
       return {
         technique: tech.name,
@@ -68,7 +73,7 @@ function OccupancyChartComponent() {
         occupancy,
         color: tech.color || vibrantColors[index % vibrantColors.length],
       };
-    });
+    }).filter(item => item.occupancy > 0 || jobs.some(j => j.technique_id === techniques.find(t => t.short_name === item.shortName)?.id));
   }, [techniques, jobs]);
 
   // Memoized tooltip formatter
