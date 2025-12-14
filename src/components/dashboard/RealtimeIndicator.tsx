@@ -15,24 +15,28 @@ export function RealtimeIndicator() {
       label: 'Conectando...',
       className: 'text-yellow-500 animate-spin',
       dotClass: 'bg-yellow-500 animate-pulse',
+      ringClass: '',
     },
     connected: {
       icon: Wifi,
       label: 'Tempo real ativo',
       className: 'text-green-500',
       dotClass: 'bg-green-500',
+      ringClass: 'pulse-ring',
     },
     disconnected: {
       icon: WifiOff,
       label: 'Desconectado',
       className: 'text-muted-foreground',
       dotClass: 'bg-muted-foreground',
+      ringClass: '',
     },
     error: {
       icon: WifiOff,
       label: 'Erro de conexão',
       className: 'text-destructive',
       dotClass: 'bg-destructive',
+      ringClass: '',
     },
   };
 
@@ -45,7 +49,7 @@ export function RealtimeIndicator() {
         <TooltipTrigger asChild>
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-1.5">
-              <span className={cn('h-2 w-2 rounded-full', config.dotClass)} />
+              <span className={cn('h-2 w-2 rounded-full', config.dotClass, config.ringClass)} />
               <Icon className={cn('h-4 w-4', config.className)} />
             </div>
             {!isConnected && status !== 'connecting' && (
