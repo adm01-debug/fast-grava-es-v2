@@ -6,12 +6,13 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Users, UserCheck, Phone, Calendar, Settings2, Search, X, UserPlus } from 'lucide-react';
+import { Users, UserCheck, Phone, Calendar, Settings2, Search, X, UserPlus, Pencil } from 'lucide-react';
 import { useOperators, OperatorWithProfile } from '@/hooks/useOperators';
 import { useOperatorMachines } from '@/hooks/useOperatorMachines';
 import { useSchedulingData } from '@/hooks/useSchedulingData';
 import { MachineAssignmentModal } from '@/components/operators/MachineAssignmentModal';
 import { CreateOperatorModal } from '@/components/operators/CreateOperatorModal';
+import { EditOperatorModal } from '@/components/operators/EditOperatorModal';
 import { Skeleton } from '@/components/ui/skeleton';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -23,6 +24,8 @@ export default function OperatorsPage() {
   const [selectedOperator, setSelectedOperator] = useState<OperatorWithProfile | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [editOperator, setEditOperator] = useState<OperatorWithProfile | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [machineFilter, setMachineFilter] = useState<string>('all');
 
@@ -54,6 +57,11 @@ export default function OperatorsPage() {
   const handleOpenAssignment = (operator: OperatorWithProfile) => {
     setSelectedOperator(operator);
     setIsModalOpen(true);
+  };
+
+  const handleOpenEdit = (operator: OperatorWithProfile) => {
+    setEditOperator(operator);
+    setIsEditModalOpen(true);
   };
 
   const clearFilters = () => {
@@ -240,6 +248,14 @@ export default function OperatorsPage() {
                         </Badge>
                       )}
                       <Button
+                        size="icon"
+                        variant="ghost"
+                        onClick={() => handleOpenEdit(operator)}
+                        className="h-8 w-8"
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button
                         size="sm"
                         variant="outline"
                         onClick={() => handleOpenAssignment(operator)}
@@ -264,6 +280,12 @@ export default function OperatorsPage() {
         <CreateOperatorModal
           open={isCreateModalOpen}
           onOpenChange={setIsCreateModalOpen}
+        />
+
+        <EditOperatorModal
+          operator={editOperator}
+          open={isEditModalOpen}
+          onOpenChange={setIsEditModalOpen}
         />
       </div>
     </MainLayout>
