@@ -474,6 +474,359 @@ export type Database = {
           },
         ]
       }
+      maintenance_alerts: {
+        Row: {
+          alert_type: string
+          created_at: string
+          id: string
+          is_read: boolean
+          is_resolved: boolean
+          machine_id: string
+          message: string
+          resolved_at: string | null
+          resolved_by: string | null
+          schedule_id: string
+        }
+        Insert: {
+          alert_type: string
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          is_resolved?: boolean
+          machine_id: string
+          message: string
+          resolved_at?: string | null
+          resolved_by?: string | null
+          schedule_id: string
+        }
+        Update: {
+          alert_type?: string
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          is_resolved?: boolean
+          machine_id?: string
+          message?: string
+          resolved_at?: string | null
+          resolved_by?: string | null
+          schedule_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "maintenance_alerts_machine_id_fkey"
+            columns: ["machine_id"]
+            isOneToOne: false
+            referencedRelation: "machines"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "maintenance_alerts_schedule_id_fkey"
+            columns: ["schedule_id"]
+            isOneToOne: false
+            referencedRelation: "maintenance_schedules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      maintenance_checklist_items: {
+        Row: {
+          checklist_id: string
+          created_at: string
+          description: string
+          id: string
+          is_critical: boolean
+          item_order: number
+          max_value: number | null
+          measurement_unit: string | null
+          min_value: number | null
+          requires_measurement: boolean
+          requires_photo: boolean
+        }
+        Insert: {
+          checklist_id: string
+          created_at?: string
+          description: string
+          id?: string
+          is_critical?: boolean
+          item_order?: number
+          max_value?: number | null
+          measurement_unit?: string | null
+          min_value?: number | null
+          requires_measurement?: boolean
+          requires_photo?: boolean
+        }
+        Update: {
+          checklist_id?: string
+          created_at?: string
+          description?: string
+          id?: string
+          is_critical?: boolean
+          item_order?: number
+          max_value?: number | null
+          measurement_unit?: string | null
+          min_value?: number | null
+          requires_measurement?: boolean
+          requires_photo?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "maintenance_checklist_items_checklist_id_fkey"
+            columns: ["checklist_id"]
+            isOneToOne: false
+            referencedRelation: "maintenance_checklists"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      maintenance_checklists: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          maintenance_type_id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          maintenance_type_id: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          maintenance_type_id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "maintenance_checklists_maintenance_type_id_fkey"
+            columns: ["maintenance_type_id"]
+            isOneToOne: false
+            referencedRelation: "maintenance_types"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      maintenance_item_responses: {
+        Row: {
+          checklist_item_id: string
+          id: string
+          is_checked: boolean
+          measurement_value: number | null
+          notes: string | null
+          photo_url: string | null
+          record_id: string
+          responded_at: string
+        }
+        Insert: {
+          checklist_item_id: string
+          id?: string
+          is_checked?: boolean
+          measurement_value?: number | null
+          notes?: string | null
+          photo_url?: string | null
+          record_id: string
+          responded_at?: string
+        }
+        Update: {
+          checklist_item_id?: string
+          id?: string
+          is_checked?: boolean
+          measurement_value?: number | null
+          notes?: string | null
+          photo_url?: string | null
+          record_id?: string
+          responded_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "maintenance_item_responses_checklist_item_id_fkey"
+            columns: ["checklist_item_id"]
+            isOneToOne: false
+            referencedRelation: "maintenance_checklist_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "maintenance_item_responses_record_id_fkey"
+            columns: ["record_id"]
+            isOneToOne: false
+            referencedRelation: "maintenance_records"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      maintenance_records: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          downtime_minutes: number | null
+          id: string
+          machine_id: string
+          maintenance_type_id: string
+          notes: string | null
+          performed_by: string | null
+          performed_by_name: string | null
+          photos: string[] | null
+          schedule_id: string
+          started_at: string
+          status: string
+          total_cost: number | null
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          downtime_minutes?: number | null
+          id?: string
+          machine_id: string
+          maintenance_type_id: string
+          notes?: string | null
+          performed_by?: string | null
+          performed_by_name?: string | null
+          photos?: string[] | null
+          schedule_id: string
+          started_at?: string
+          status?: string
+          total_cost?: number | null
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          downtime_minutes?: number | null
+          id?: string
+          machine_id?: string
+          maintenance_type_id?: string
+          notes?: string | null
+          performed_by?: string | null
+          performed_by_name?: string | null
+          photos?: string[] | null
+          schedule_id?: string
+          started_at?: string
+          status?: string
+          total_cost?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "maintenance_records_machine_id_fkey"
+            columns: ["machine_id"]
+            isOneToOne: false
+            referencedRelation: "machines"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "maintenance_records_maintenance_type_id_fkey"
+            columns: ["maintenance_type_id"]
+            isOneToOne: false
+            referencedRelation: "maintenance_types"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "maintenance_records_schedule_id_fkey"
+            columns: ["schedule_id"]
+            isOneToOne: false
+            referencedRelation: "maintenance_schedules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      maintenance_schedules: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          estimated_duration_minutes: number
+          id: string
+          interval_days: number
+          is_active: boolean
+          last_completed_at: string | null
+          machine_id: string
+          maintenance_type_id: string
+          name: string
+          next_due_at: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          estimated_duration_minutes?: number
+          id?: string
+          interval_days?: number
+          is_active?: boolean
+          last_completed_at?: string | null
+          machine_id: string
+          maintenance_type_id: string
+          name: string
+          next_due_at: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          estimated_duration_minutes?: number
+          id?: string
+          interval_days?: number
+          is_active?: boolean
+          last_completed_at?: string | null
+          machine_id?: string
+          maintenance_type_id?: string
+          name?: string
+          next_due_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "maintenance_schedules_machine_id_fkey"
+            columns: ["machine_id"]
+            isOneToOne: false
+            referencedRelation: "machines"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "maintenance_schedules_maintenance_type_id_fkey"
+            columns: ["maintenance_type_id"]
+            isOneToOne: false
+            referencedRelation: "maintenance_types"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      maintenance_types: {
+        Row: {
+          color: string
+          created_at: string
+          default_interval_days: number
+          description: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          color?: string
+          created_at?: string
+          default_interval_days?: number
+          description?: string | null
+          id: string
+          name: string
+        }
+        Update: {
+          color?: string
+          created_at?: string
+          default_interval_days?: number
+          description?: string | null
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
       materials: {
         Row: {
           created_at: string
