@@ -2,6 +2,7 @@ import { useEffect, useCallback } from 'react';
 import { useJobs, useTechniques } from './useJobs';
 import { toast } from 'sonner';
 import { createAppError } from '@/lib/errorHandling';
+import { navigateTo } from '@/lib/navigation';
 
 const NOTIFICATIONS_ERROR_CONTEXT = {
   delayedCheck: { entity: 'notifications', operation: 'check_delayed' },
@@ -38,7 +39,7 @@ export function useNotifications(config: Partial<NotificationConfig> = {}) {
           description: delayedJobs.slice(0, 3).map(j => j.client).join(', '),
           action: {
             label: 'Ver Alertas',
-            onClick: () => window.location.href = '/alerts',
+            onClick: () => navigateTo('/alerts'),
           },
         });
       }

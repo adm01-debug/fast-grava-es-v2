@@ -9,6 +9,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { EfficiencyNotificationProvider } from "@/components/notifications/EfficiencyNotificationProvider";
 import { PageTransition } from "@/components/layout/PageTransition";
+import { NavigationListener } from "@/components/navigation/NavigationListener";
 import {
   DashboardPageSkeleton,
   CalendarPageSkeleton,
@@ -295,6 +296,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <NavigationListener />
         <AuthProvider>
           <EfficiencyNotificationProvider>
             <AnimatedRoutes />
