@@ -1,0 +1,163 @@
+import { memo, useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { 
+  Home, Calendar, CalendarDays, LayoutGrid, List, Zap, BarChart3, 
+  AlertTriangle, BookOpen, UserCircle, QrCode, Bot, Printer, Users, 
+  Plus, Star, Settings2, X, RotateCcw
+} from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import { useQuickFavorites, QuickFavorite } from '@/hooks/useQuickFavorites';
+import { useAlertCount } from '@/hooks/useAlertCount';
+
+const iconMap: Record<string, React.ElementType> = {
+  Home, Calendar, CalendarDays, LayoutGrid, List, Zap, BarChart3,
+  AlertTriangle, BookOpen, UserCircle, QrCode, Bot, Printer, Users, Plus, Star
+};
+
+export const QuickFavoritesBar = memo(function QuickFavoritesBar() {
+  const location = useLocation();
+  const [isEditing, setIsEditing] = useState(false);
+  const { 
+    favorites, 
+    availableShortcuts, 
+    addFavorite, 
+    removeFavorite, 
+    resetToDefault,
+    isFavorite,
+    maxFavorites 
+  } = useQuickFavorites();
+  const alertCount = useAlertCount();
+
+  const isActive = (href: string) => {
+    if (href === '/') return location.pathname === '/';
+    return location.pathname.startsWith(href);
+  };
+
+  return (
+    <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-muted/30 border border-border/50">
+      {favorites.map((fav) => {
+        const Icon = iconMap[fav.icon] || Star;
+        const active = isActive(fav.href);
+        const showBadge = fav.id === 'alerts' && alertCount > 0;
+        
+        return (
+          <Tooltip key={fav.id}>
+            <TooltipTrigger asChild>
+              <Link to={fav.href}>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className={cn(
+                    'h-8 w-8 relative transition-all',
+                    active && 'bg-primary/20 text-primary',
+                    !active && 'hover:bg-muted'
+                  )}
+                >
+                  <Icon className="h-4 w-4" />
+                  {showBadge && (
+                    <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-destructive text-destructive-foreground text-[10px] flex items-center justify-center font-medium">
+                      {alertCount > 9 ? '9+' : alertCount}
+                    </span>
+                  )}
+                </Button>
+              </Link>
+            </TooltipTrigger>
+            <TooltipContent side="bottom" className="text-xs">
+              {fav.label}
+            </TooltipContent>
+          </Tooltip>
+        );
+      })}
+      
+      <div className="w-px h-5 bg-border/50 mx-1" />
+      
+      <Popover open={isEditing} onOpenChange={setIsEditing}>
+        <PopoverTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-muted-foreground hover:text-foreground"
+          >
+            <Settings2 className="h-4 w-4" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent align="end" className="w-72 p-3 bg-popover border-border">
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <h4 className="font-medium text-sm">Editar Favoritos</h4>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={resetToDefault}
+                className="h-7 text-xs text-muted-foreground"
+              >
+                <RotateCcw className="h-3 w-3 mr-1" />
+                Resetar
+              </Button>
+            </div>
+            
+            <div className="text-xs text-muted-foreground">
+              Seus favoritos ({favorites.length}/{maxFavorites})
+            </div>
+            
+            {favorites.length > 0 && (
+              <div className="flex flex-wrap gap-1">
+                {favorites.map((fav) => {
+                  const Icon = iconMap[fav.icon] || Star;
+                  return (
+                    <Badge
+                      key={fav.id}
+                      variant="secondary"
+                      className="gap-1 pr-1 cursor-pointer hover:bg-destructive/20"
+                      onClick={() => removeFavorite(fav.id)}
+                    >
+                      <Icon className="h-3 w-3" />
+                      {fav.label}
+                      <X className="h-3 w-3 ml-1" />
+                    </Badge>
+                  );
+                })}
+              </div>
+            )}
+            
+            <div className="border-t border-border pt-3">
+              <div className="text-xs text-muted-foreground mb-2">
+                Adicionar atalho
+              </div>
+              <div className="grid grid-cols-2 gap-1 max-h-48 overflow-y-auto">
+                {availableShortcuts
+                  .filter(s => !isFavorite(s.id))
+                  .map((shortcut) => {
+                    const Icon = iconMap[shortcut.icon] || Star;
+                    const disabled = favorites.length >= maxFavorites;
+                    
+                    return (
+                      <Button
+                        key={shortcut.id}
+                        variant="ghost"
+                        size="sm"
+                        disabled={disabled}
+                        onClick={() => addFavorite(shortcut)}
+                        className="justify-start h-8 text-xs px-2"
+                      >
+                        <Icon className="h-3 w-3 mr-1.5" />
+                        <span className="truncate">{shortcut.label}</span>
+                      </Button>
+                    );
+                  })}
+              </div>
+            </div>
+          </div>
+        </PopoverContent>
+      </Popover>
+    </div>
+  );
+});

@@ -5,6 +5,7 @@ import { NotificationIntegrator } from '../notifications/NotificationIntegrator'
 import { RealtimeIndicator } from '../dashboard/RealtimeIndicator';
 import { ThemeToggle } from './ThemeToggle';
 import { OperatorMachinesIndicator } from './OperatorMachinesIndicator';
+import { QuickFavoritesBar } from './QuickFavoritesBar';
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -16,6 +17,7 @@ export function MainLayout({ children }: MainLayoutProps) {
       <AppSidebar />
       <main className="flex-1 overflow-auto relative md:ml-0">
         <div className="fixed top-4 right-4 z-40 flex items-center gap-2">
+          <QuickFavoritesBar />
           <OperatorMachinesIndicator />
           <ThemeToggle />
           <RealtimeIndicator />
