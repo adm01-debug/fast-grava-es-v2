@@ -12,12 +12,13 @@ import { useOperatorProductivity, OperatorProductivityMetrics, ProductivityPerio
 import { useOperatorEvolution } from '@/hooks/useOperatorEvolution';
 import { useOperatorGoals } from '@/hooks/useOperatorGoals';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { CalendarDays, TrendingUp as TrendingUpIcon, Plus } from 'lucide-react';
+import { CalendarDays, TrendingUp as TrendingUpIcon, Plus, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CreateGoalModal } from '@/components/operators/CreateGoalModal';
 import { OperatorGoalsCard, GoalsSummary } from '@/components/operators/OperatorGoalsCard';
 import { GoalsHistoryCard } from '@/components/operators/GoalsHistoryCard';
 import { GoalAlertsWidget } from '@/components/operators/GoalAlertsWidget';
+import { generateProductivityReport } from '@/lib/productivityReport';
 import { 
   Users, 
   TrendingUp, 
@@ -624,6 +625,7 @@ export default function OperatorProductivityPage() {
   const [evolutionOperatorId, setEvolutionOperatorId] = useState<string | 'all'>('all');
   const [showCreateGoalModal, setShowCreateGoalModal] = useState(false);
   const [goalOperatorId, setGoalOperatorId] = useState<string | undefined>(undefined);
+  const [isExporting, setIsExporting] = useState(false);
   
   // Use period for evolution chart (default to 30 if 'all')
   const evolutionDays = period === 'all' ? 30 : period;
@@ -669,6 +671,27 @@ export default function OperatorProductivityPage() {
   // Select first operator with data for radar chart
   const displayOperator = selectedOperator || filteredOperators.find(o => o.totalJobsCompleted > 0) || filteredOperators[0];
 
+  // Export report handler
+  const handleExportReport = () => {
+    setIsExporting(true);
+    try {
+      const periodLabel = period === 'all' ? 'Todo o período' : `Últimos ${period} dias`;
+      generateProductivityReport({
+        operators,
+        goals,
+        period: periodLabel,
+        overallStats: {
+          averageEfficiency: overallStats.averageEfficiency,
+          totalJobsCompleted: overallStats.totalJobsCompleted,
+          totalPiecesProduced: overallStats.totalPiecesProduced,
+          averageLossRate: overallStats.averageLossRate,
+        },
+      });
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
   if (isLoading) {
     return (
       <MainLayout>
@@ -710,6 +733,15 @@ export default function OperatorProductivityPage() {
           
           {/* Actions */}
           <div className="flex items-center gap-3">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleExportReport}
+              disabled={isExporting}
+            >
+              <Download className="h-4 w-4 mr-2" />
+              {isExporting ? 'Exportando...' : 'Exportar PDF'}
+            </Button>
             <Button
               variant="outline"
               size="sm"
