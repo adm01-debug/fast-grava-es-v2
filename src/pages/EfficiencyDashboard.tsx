@@ -5,6 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
+import { Skeleton } from '@/components/ui/skeleton';
 import { 
   Layers, 
   Scale, 
@@ -22,6 +23,7 @@ import {
 import { useSmartSequencing } from '@/hooks/useSmartSequencing';
 import { useLoadBalancing } from '@/hooks/useLoadBalancing';
 import { useBottleneckPrediction } from '@/hooks/useBottleneckPrediction';
+import { useEfficiencyAlertHistory } from '@/hooks/useEfficiencyAlertHistory';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
@@ -29,6 +31,7 @@ export default function EfficiencyDashboard() {
   const { suggestions: sequencingSuggestions, totalSavings } = useSmartSequencing();
   const { byTechnique, suggestions: balancingSuggestions, isLoading: loadBalancingLoading } = useLoadBalancing();
   const { alerts, capacityByDate, isLoading: bottleneckLoading, criticalCount } = useBottleneckPrediction();
+  const { resolvedAlerts, isLoading: historyLoading } = useEfficiencyAlertHistory();
 
   const isLoading = loadBalancingLoading || bottleneckLoading;
 
@@ -365,41 +368,60 @@ export default function EfficiencyDashboard() {
             <Card className="glass-card border-border/50">
               <CardHeader>
                 <CardTitle className="text-lg">Histórico de Otimizações</CardTitle>
-                <CardDescription>Ações aplicadas nos últimos dias</CardDescription>
+                <CardDescription>Alertas resolvidos e ações aplicadas</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {[
-                    { date: new Date(), type: 'sequencing', description: 'Agrupamento de 5 jobs por cor similar', savings: 45 },
-                    { date: new Date(Date.now() - 86400000), type: 'balancing', description: 'Redistribuição para Silk-01', savings: 30 },
-                    { date: new Date(Date.now() - 172800000), type: 'bottleneck', description: 'Antecipação de jobs em Laser', savings: 60 },
-                    { date: new Date(Date.now() - 259200000), type: 'sequencing', description: 'Otimização de setup Tampografia', savings: 25 },
-                    { date: new Date(Date.now() - 345600000), type: 'balancing', description: 'Balanceamento Hot Stamping', savings: 40 },
-                  ].map((item, index) => (
-                    <div 
-                      key={index}
-                      className="flex items-center gap-4 p-3 rounded-lg bg-muted/30 border border-border/50"
-                    >
-                      <div className={`p-2 rounded-lg ${
-                        item.type === 'sequencing' ? 'bg-primary/10' :
-                        item.type === 'balancing' ? 'bg-success/10' : 'bg-warning/10'
-                      }`}>
-                        {item.type === 'sequencing' ? <Layers className="h-4 w-4 text-primary" /> :
-                         item.type === 'balancing' ? <Scale className="h-4 w-4 text-success" /> :
-                         <AlertTriangle className="h-4 w-4 text-warning" />}
+                {historyLoading ? (
+                  <div className="space-y-4">
+                    {[1, 2, 3].map(i => (
+                      <Skeleton key={i} className="h-16 w-full" />
+                    ))}
+                  </div>
+                ) : resolvedAlerts.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center py-12 text-center">
+                    <History className="h-12 w-12 text-muted-foreground/30 mb-4" />
+                    <h3 className="font-semibold text-foreground">Nenhum histórico</h3>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Alertas resolvidos aparecerão aqui
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {resolvedAlerts.slice(0, 10).map((item) => (
+                      <div 
+                        key={item.id}
+                        className="flex items-center gap-4 p-3 rounded-lg bg-muted/30 border border-border/50"
+                      >
+                        <div className={`p-2 rounded-lg ${
+                          item.alert_type === 'load_balancing' ? 'bg-success/10' : 'bg-warning/10'
+                        }`}>
+                          {item.alert_type === 'load_balancing' ? (
+                            <Scale className="h-4 w-4 text-success" />
+                          ) : (
+                            <AlertTriangle className="h-4 w-4 text-warning" />
+                          )}
+                        </div>
+                        <div className="flex-1">
+                          <p className="font-medium text-sm">{item.title}</p>
+                          <p className="text-xs text-muted-foreground line-clamp-1">
+                            {item.resolution_notes || item.description}
+                          </p>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            Resolvido em {format(new Date(item.resolved_at!), "dd 'de' MMMM, HH:mm", { locale: ptBR })}
+                          </p>
+                        </div>
+                        <Badge variant="outline" className={`${
+                          item.severity === 'error' ? 'border-destructive text-destructive' :
+                          item.severity === 'warning' ? 'border-warning text-warning' :
+                          'border-muted-foreground text-muted-foreground'
+                        }`}>
+                          {item.severity === 'error' ? 'Crítico' :
+                           item.severity === 'warning' ? 'Alerta' : 'Info'}
+                        </Badge>
                       </div>
-                      <div className="flex-1">
-                        <p className="font-medium text-sm">{item.description}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {format(item.date, "dd 'de' MMMM, HH:mm", { locale: ptBR })}
-                        </p>
-                      </div>
-                      <Badge variant="outline" className="bg-success/10 text-success border-success/30">
-                        -{item.savings}min
-                      </Badge>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
