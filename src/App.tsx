@@ -38,6 +38,7 @@ const DesignSystemPage = lazy(() => import("./pages/DesignSystemPage"));
 const NewJobPage = lazy(() => import("./pages/NewJobPage"));
 const MachinesPage = lazy(() => import("./pages/MachinesPage"));
 const OperatorsPage = lazy(() => import("./pages/OperatorsPage"));
+const OperatorProductivityPage = lazy(() => import("./pages/OperatorProductivityPage"));
 const SettingsPage = lazy(() => import("./pages/SettingsPage"));
 const AuthPage = lazy(() => import("./pages/AuthPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
@@ -204,6 +205,15 @@ function AnimatedRoutes() {
             <PageTransition>
               <Suspense fallback={<ListPageSkeleton />}>
                 <OperatorsPage />
+              </Suspense>
+            </PageTransition>
+          </ProtectedRoute>
+        } />
+        <Route path="/operators/productivity" element={
+          <ProtectedRoute allowedRoles={['coordinator', 'manager']}>
+            <PageTransition>
+              <Suspense fallback={<KPIPageSkeleton />}>
+                <OperatorProductivityPage />
               </Suspense>
             </PageTransition>
           </ProtectedRoute>

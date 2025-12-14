@@ -58,6 +58,7 @@ const baseMainNavItems: Omit<NavItem, 'badge'>[] = [
 const secondaryNavItems: NavItem[] = [
   { icon: Printer, label: 'Máquinas', href: '/machines' },
   { icon: Users, label: 'Operadores', href: '/operators' },
+  { icon: BarChart3, label: 'Produtividade', href: '/operators/productivity' },
   { icon: RefreshCw, label: 'Bitrix24', href: '/integrations/bitrix24' },
   { icon: Palette, label: 'Design System', href: '/design-system' },
   { icon: Settings, label: 'Configurações', href: '/settings' },
