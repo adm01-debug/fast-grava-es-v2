@@ -1,12 +1,15 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Users, UserCheck, Phone, Calendar, Cpu, Settings2 } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Users, UserCheck, Phone, Calendar, Cpu, Settings2, Search, X } from 'lucide-react';
 import { useOperators, OperatorWithProfile } from '@/hooks/useOperators';
 import { useOperatorMachines } from '@/hooks/useOperatorMachines';
+import { useSchedulingData } from '@/hooks/useSchedulingData';
 import { MachineAssignmentModal } from '@/components/operators/MachineAssignmentModal';
 import { Skeleton } from '@/components/ui/skeleton';
 import { format } from 'date-fns';
@@ -15,8 +18,11 @@ import { ptBR } from 'date-fns/locale';
 export default function OperatorsPage() {
   const { data: operators = [], isLoading } = useOperators();
   const { assignments } = useOperatorMachines();
+  const { machines } = useSchedulingData();
   const [selectedOperator, setSelectedOperator] = useState<OperatorWithProfile | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [machineFilter, setMachineFilter] = useState<string>('all');
 
   const activeOperators = operators.length;
 
@@ -24,11 +30,35 @@ export default function OperatorsPage() {
     return (assignments || []).filter(a => a.operator_id === operatorId).length;
   };
 
+  const getAssignedMachineIds = (operatorId: string) => {
+    return (assignments || []).filter(a => a.operator_id === operatorId).map(a => a.machine_id);
+  };
+
+  const filteredOperators = useMemo(() => {
+    return operators.filter((operator) => {
+      // Filter by name
+      const nameMatch = !searchQuery || 
+        (operator.full_name?.toLowerCase().includes(searchQuery.toLowerCase()));
+      
+      // Filter by assigned machine
+      const machineMatch = machineFilter === 'all' || 
+        getAssignedMachineIds(operator.user_id).includes(machineFilter);
+      
+      return nameMatch && machineMatch;
+    });
+  }, [operators, searchQuery, machineFilter, assignments]);
+
   const handleOpenAssignment = (operator: OperatorWithProfile) => {
     setSelectedOperator(operator);
     setIsModalOpen(true);
   };
 
+  const clearFilters = () => {
+    setSearchQuery('');
+    setMachineFilter('all');
+  };
+
+  const hasActiveFilters = searchQuery || machineFilter !== 'all';
 
   return (
     <MainLayout>
@@ -83,7 +113,45 @@ export default function OperatorsPage() {
               Lista de Operadores
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-4">
+            {/* Search and Filters */}
+            <div className="flex flex-col sm:flex-row gap-3">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Buscar por nome..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-9"
+                />
+              </div>
+              <Select value={machineFilter} onValueChange={setMachineFilter}>
+                <SelectTrigger className="w-full sm:w-[200px]">
+                  <SelectValue placeholder="Filtrar por máquina" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todas as máquinas</SelectItem>
+                  {machines.map((machine) => (
+                    <SelectItem key={machine.id} value={machine.id}>
+                      {machine.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {hasActiveFilters && (
+                <Button variant="outline" size="icon" onClick={clearFilters}>
+                  <X className="h-4 w-4" />
+                </Button>
+              )}
+            </div>
+
+            {/* Results count */}
+            {hasActiveFilters && !isLoading && (
+              <p className="text-sm text-muted-foreground">
+                {filteredOperators.length} de {operators.length} operadores
+              </p>
+            )}
+
             {isLoading ? (
               <div className="space-y-4">
                 {[1, 2, 3].map((i) => (
@@ -96,17 +164,21 @@ export default function OperatorsPage() {
                   </div>
                 ))}
               </div>
-            ) : operators.length === 0 ? (
+            ) : filteredOperators.length === 0 ? (
               <div className="py-12 text-center">
                 <Users className="h-12 w-12 mx-auto text-muted-foreground/50 mb-4" />
-                <p className="text-muted-foreground">Nenhum operador cadastrado</p>
-                <p className="text-sm text-muted-foreground/70 mt-1">
-                  Operadores aparecerão aqui quando forem registrados no sistema
+                <p className="text-muted-foreground">
+                  {hasActiveFilters ? 'Nenhum operador encontrado com os filtros aplicados' : 'Nenhum operador cadastrado'}
                 </p>
+                {hasActiveFilters && (
+                  <Button variant="link" onClick={clearFilters} className="mt-2">
+                    Limpar filtros
+                  </Button>
+                )}
               </div>
             ) : (
               <div className="space-y-3">
-                {operators.map((operator, index) => (
+                {filteredOperators.map((operator, index) => (
                   <div
                     key={operator.id}
                     className="flex items-center gap-4 p-4 rounded-lg border border-border/50 bg-card/50 hover:bg-accent/5 transition-colors animate-fade-in"
