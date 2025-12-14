@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { createAppError } from '@/lib/errorHandling';
+import { navigateTo } from '@/lib/navigation';
 
 const PUSH_NOTIFICATIONS_ERROR_CONTEXT = {
   requestPermission: { entity: 'push_notifications', operation: 'request_permission' },
@@ -92,13 +93,9 @@ export const usePushNotifications = () => {
         notification.close();
         
         // Navigate to specific page if data contains a route
-        // Using history.pushState to avoid full page reload
+        // Using navigateTo helper for React Router integration
         if (options.data?.route) {
-          const targetRoute = options.data.route;
-          if (window.location.pathname !== targetRoute) {
-            window.history.pushState({}, '', targetRoute);
-            window.dispatchEvent(new PopStateEvent('popstate'));
-          }
+          navigateTo(options.data.route);
         }
       };
 
