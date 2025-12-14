@@ -142,6 +142,18 @@ export const QuickFavoritesBar = memo(function QuickFavoritesBar() {
   } = useQuickFavorites();
   const alertCount = useAlertCount();
 
+  // Hooks must be called before any conditional returns
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 5,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
   // Show skeleton while loading
   if (isLoading) {
     return (
@@ -154,17 +166,6 @@ export const QuickFavoritesBar = memo(function QuickFavoritesBar() {
       </div>
     );
   }
-
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 5,
-      },
-    }),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
-  );
 
   const handleDragEnd = useCallback((event: DragEndEvent) => {
     const { active, over } = event;
