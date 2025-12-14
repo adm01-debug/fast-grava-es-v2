@@ -163,7 +163,7 @@ export default function AlertsDashboard() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                       <span className="font-medium text-foreground">{job.order_number}</span>
-                      <Badge className={`${priorityColors[job.priority]} border text-xs`}>
+                      <Badge className={`${priorityColors[job.priority]} border text-xs ${job.priority === 'urgent' ? 'wiggle-infinite' : ''}`}>
                         {priorityLabels[job.priority]}
                       </Badge>
                     </div>
