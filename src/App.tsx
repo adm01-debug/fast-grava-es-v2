@@ -10,6 +10,7 @@ import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { EfficiencyNotificationProvider } from "@/components/notifications/EfficiencyNotificationProvider";
 import { PageTransition } from "@/components/layout/PageTransition";
 import { NavigationListener } from "@/components/navigation/NavigationListener";
+import { ErrorBoundary } from "@/components/ui/error-boundary";
 import {
   DashboardPageSkeleton,
   CalendarPageSkeleton,
@@ -291,20 +292,22 @@ function AnimatedRoutes() {
 }
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <NavigationListener />
-        <AuthProvider>
-          <EfficiencyNotificationProvider>
-            <AnimatedRoutes />
-          </EfficiencyNotificationProvider>
-        </AuthProvider>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
+  <ErrorBoundary>
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <NavigationListener />
+          <AuthProvider>
+            <EfficiencyNotificationProvider>
+              <AnimatedRoutes />
+            </EfficiencyNotificationProvider>
+          </AuthProvider>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  </ErrorBoundary>
 );
 
 export default App;
