@@ -1,3 +1,4 @@
+import { memo, useMemo } from 'react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -7,11 +8,56 @@ import { useSchedulingData } from '@/hooks/useSchedulingData';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { JobStatus } from '@/types/scheduling';
+import { DbJob, DbTechnique, DbMachine } from '@/hooks/useJobs';
 
-export function RecentJobsTable() {
+interface JobRowProps {
+  job: DbJob;
+  technique: DbTechnique | undefined;
+  machine: DbMachine | undefined;
+}
+
+const JobRow = memo(function JobRow({ job, technique, machine }: JobRowProps) {
+  return (
+    <TableRow 
+      className="border-border/20 hover:bg-secondary/50 transition-all hover:-translate-x-0.5 cursor-pointer"
+    >
+      <TableCell className="font-mono text-sm font-medium text-primary">
+        {job.order_number}
+      </TableCell>
+      <TableCell className="font-medium max-w-[150px] truncate">
+        {job.client}
+      </TableCell>
+      <TableCell className="max-w-[150px] truncate text-muted-foreground hidden sm:table-cell">
+        {job.product}
+      </TableCell>
+      <TableCell className="text-center">
+        <Badge variant="secondary" className="font-mono bg-secondary/80">
+          {job.quantity.toLocaleString('pt-BR')}
+        </Badge>
+      </TableCell>
+      <TableCell>
+        <span className="text-sm">{technique?.short_name}</span>
+      </TableCell>
+      <TableCell className="hidden lg:table-cell">
+        <Badge variant="outline" className="font-mono text-xs border-border/50">
+          {machine?.code || 'N/A'}
+        </Badge>
+      </TableCell>
+      <TableCell className="text-sm text-muted-foreground hidden md:table-cell">
+        {job.start_time && job.end_time ? `${job.start_time} - ${job.end_time}` : 'N/A'}
+      </TableCell>
+      <TableCell>
+        <StatusBadge status={job.status as JobStatus} size="sm" />
+      </TableCell>
+    </TableRow>
+  );
+});
+JobRow.displayName = 'JobRow';
+
+function RecentJobsTableComponent() {
   const { jobs, isLoadingJobs, getTechniqueById, getMachineById } = useSchedulingData();
 
-  const recentJobs = jobs.slice(0, 6);
+  const recentJobs = useMemo(() => jobs.slice(0, 6), [jobs]);
 
   if (isLoadingJobs) {
     return (
@@ -58,46 +104,14 @@ export function RecentJobsTable() {
                   </TableCell>
                 </TableRow>
               ) : (
-                recentJobs.map((job) => {
-                  const technique = getTechniqueById(job.technique_id);
-                  const machine = getMachineById(job.machine_id);
-
-                  return (
-                    <TableRow 
-                      key={job.id} 
-                      className="border-border/20 hover:bg-secondary/50 transition-all hover:-translate-x-0.5 cursor-pointer"
-                    >
-                      <TableCell className="font-mono text-sm font-medium text-primary">
-                        {job.order_number}
-                      </TableCell>
-                      <TableCell className="font-medium max-w-[150px] truncate">
-                        {job.client}
-                      </TableCell>
-                      <TableCell className="max-w-[150px] truncate text-muted-foreground hidden sm:table-cell">
-                        {job.product}
-                      </TableCell>
-                      <TableCell className="text-center">
-                        <Badge variant="secondary" className="font-mono bg-secondary/80">
-                          {job.quantity.toLocaleString('pt-BR')}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <span className="text-sm">{technique?.short_name}</span>
-                      </TableCell>
-                      <TableCell className="hidden lg:table-cell">
-                        <Badge variant="outline" className="font-mono text-xs border-border/50">
-                          {machine?.code || 'N/A'}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-sm text-muted-foreground hidden md:table-cell">
-                        {job.start_time && job.end_time ? `${job.start_time} - ${job.end_time}` : 'N/A'}
-                      </TableCell>
-                      <TableCell>
-                        <StatusBadge status={job.status as JobStatus} size="sm" />
-                      </TableCell>
-                    </TableRow>
-                  );
-                })
+                recentJobs.map((job) => (
+                  <JobRow
+                    key={job.id}
+                    job={job}
+                    technique={getTechniqueById(job.technique_id)}
+                    machine={getMachineById(job.machine_id)}
+                  />
+                ))
               )}
             </TableBody>
           </Table>
@@ -106,3 +120,6 @@ export function RecentJobsTable() {
     </Card>
   );
 }
+
+export const RecentJobsTable = memo(RecentJobsTableComponent);
+RecentJobsTable.displayName = 'RecentJobsTable';
