@@ -235,6 +235,35 @@ export default {
             filter: "brightness(1) drop-shadow(0 0 0px var(--confetti-glow))"
           },
         },
+        "explosion-flash": {
+          "0%": { 
+            transform: "translate(-50%, -50%) scale(0)", 
+            opacity: "1",
+            boxShadow: "0 0 60px 30px rgba(255,255,255,0.9), 0 0 100px 60px rgba(255,200,100,0.6)"
+          },
+          "50%": { 
+            transform: "translate(-50%, -50%) scale(1.5)", 
+            opacity: "0.8",
+            boxShadow: "0 0 80px 40px rgba(255,255,255,0.6), 0 0 120px 80px rgba(255,200,100,0.3)"
+          },
+          "100%": { 
+            transform: "translate(-50%, -50%) scale(2.5)", 
+            opacity: "0",
+            boxShadow: "0 0 0px 0px rgba(255,255,255,0), 0 0 0px 0px rgba(255,200,100,0)"
+          },
+        },
+        "shockwave": {
+          "0%": { 
+            transform: "translate(-50%, -50%) scale(0)", 
+            opacity: "0.8",
+            borderWidth: "4px"
+          },
+          "100%": { 
+            transform: "translate(-50%, -50%) scale(3)", 
+            opacity: "0",
+            borderWidth: "1px"
+          },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -250,6 +279,8 @@ export default {
         "enter": "fade-in 0.3s ease-out, scale-in 0.2s ease-out",
         "gradient-shift": "gradient-shift 2s ease infinite",
         "ripple": "ripple 0.6s ease-out forwards",
+        "explosion-flash": "explosion-flash 0.4s ease-out forwards",
+        "shockwave": "shockwave 0.5s ease-out forwards",
       },
     },
   },

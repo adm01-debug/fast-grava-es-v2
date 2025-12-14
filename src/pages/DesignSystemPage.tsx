@@ -8612,6 +8612,7 @@ function OverviewSection({ onNavigate }: OverviewSectionProps) {
   const [animatedValues, setAnimatedValues] = useState({ categories: 0, components: 0, variants: 0, copiable: 0 });
   const [ripples, setRipples] = useState<{ id: number; x: number; y: number; color: string }[]>([]);
   const [confetti, setConfetti] = useState<ConfettiParticle[]>([]);
+  const [explosionFlash, setExplosionFlash] = useState<{ id: number; x: number; y: number } | null>(null);
 
   const confettiColors = [
     'hsl(var(--primary))',
@@ -8662,12 +8663,16 @@ function OverviewSection({ onNavigate }: OverviewSectionProps) {
     
     setConfetti(prev => [...prev, ...particles]);
     
+    // Trigger explosion flash
+    setExplosionFlash({ id, x, y });
+    setTimeout(() => setExplosionFlash(null), 400);
+    
     // Play confetti sound
     playConfettiSound();
     
     setTimeout(() => {
       setConfetti(prev => prev.filter(p => p.id < id || p.id >= id + particleCount));
-    }, 1000);
+    }, 1600);
   };
 
   const playConfettiSound = () => {
@@ -8813,6 +8818,22 @@ function OverviewSection({ onNavigate }: OverviewSectionProps) {
               style={{ left: ripple.x, top: ripple.y, width: 20, height: 20, marginLeft: -10, marginTop: -10 }}
             />
           ))}
+          {explosionFlash && (
+            <>
+              <span
+                className="absolute rounded-full bg-white pointer-events-none animate-explosion-flash z-10"
+                style={{ left: explosionFlash.x, top: explosionFlash.y, width: 20, height: 20 }}
+              />
+              <span
+                className="absolute rounded-full border-white/60 pointer-events-none animate-shockwave z-10"
+                style={{ left: explosionFlash.x, top: explosionFlash.y, width: 40, height: 40, borderStyle: 'solid' }}
+              />
+              <span
+                className="absolute rounded-full border-primary/40 pointer-events-none animate-shockwave z-10"
+                style={{ left: explosionFlash.x, top: explosionFlash.y, width: 60, height: 60, borderStyle: 'solid', animationDelay: '0.1s' }}
+              />
+            </>
+          )}
           {confetti.map(particle => (
             <span
               key={particle.id}
@@ -8856,6 +8877,22 @@ function OverviewSection({ onNavigate }: OverviewSectionProps) {
               style={{ left: ripple.x, top: ripple.y, width: 20, height: 20, marginLeft: -10, marginTop: -10 }}
             />
           ))}
+          {explosionFlash && (
+            <>
+              <span
+                className="absolute rounded-full bg-white pointer-events-none animate-explosion-flash z-10"
+                style={{ left: explosionFlash.x, top: explosionFlash.y, width: 20, height: 20 }}
+              />
+              <span
+                className="absolute rounded-full border-white/60 pointer-events-none animate-shockwave z-10"
+                style={{ left: explosionFlash.x, top: explosionFlash.y, width: 40, height: 40, borderStyle: 'solid' }}
+              />
+              <span
+                className="absolute rounded-full border-success/40 pointer-events-none animate-shockwave z-10"
+                style={{ left: explosionFlash.x, top: explosionFlash.y, width: 60, height: 60, borderStyle: 'solid', animationDelay: '0.1s' }}
+              />
+            </>
+          )}
           {confetti.map(particle => (
             <span
               key={particle.id}
@@ -8899,6 +8936,38 @@ function OverviewSection({ onNavigate }: OverviewSectionProps) {
               style={{ left: ripple.x, top: ripple.y, width: 20, height: 20, marginLeft: -10, marginTop: -10 }}
             />
           ))}
+          {explosionFlash && (
+            <>
+              <span
+                className="absolute rounded-full bg-white pointer-events-none animate-explosion-flash z-10"
+                style={{ left: explosionFlash.x, top: explosionFlash.y, width: 20, height: 20 }}
+              />
+              <span
+                className="absolute rounded-full border-white/60 pointer-events-none animate-shockwave z-10"
+                style={{ left: explosionFlash.x, top: explosionFlash.y, width: 40, height: 40, borderStyle: 'solid' }}
+              />
+              <span
+                className="absolute rounded-full border-warning/40 pointer-events-none animate-shockwave z-10"
+                style={{ left: explosionFlash.x, top: explosionFlash.y, width: 60, height: 60, borderStyle: 'solid', animationDelay: '0.1s' }}
+              />
+            </>
+          )}
+          {explosionFlash && (
+            <>
+              <span
+                className="absolute rounded-full bg-white pointer-events-none animate-explosion-flash z-10"
+                style={{ left: explosionFlash.x, top: explosionFlash.y, width: 20, height: 20 }}
+              />
+              <span
+                className="absolute rounded-full border-white/60 pointer-events-none animate-shockwave z-10"
+                style={{ left: explosionFlash.x, top: explosionFlash.y, width: 40, height: 40, borderStyle: 'solid' }}
+              />
+              <span
+                className="absolute rounded-full border-info/40 pointer-events-none animate-shockwave z-10"
+                style={{ left: explosionFlash.x, top: explosionFlash.y, width: 60, height: 60, borderStyle: 'solid', animationDelay: '0.1s' }}
+              />
+            </>
+          )}
           {confetti.map(particle => (
             <span
               key={particle.id}
