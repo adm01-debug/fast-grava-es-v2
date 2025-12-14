@@ -121,7 +121,8 @@ export default function AlertsDashboard() {
     iconColor, 
     bgColor, 
     jobs: cardJobs, 
-    emptyMessage 
+    emptyMessage,
+    isCritical = false
   }: { 
     title: string; 
     icon: any; 
@@ -129,12 +130,13 @@ export default function AlertsDashboard() {
     bgColor: string;
     jobs: DbJob[]; 
     emptyMessage: string;
+    isCritical?: boolean;
   }) => (
     <Card className="bg-card/50 backdrop-blur-sm border-border/50">
       <CardHeader className="pb-3">
         <CardTitle className="text-lg flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className={`p-2 rounded-lg ${bgColor}`}>
+            <div className={`p-2 rounded-lg ${bgColor} ${isCritical && cardJobs.length > 0 ? 'animate-bounce-attention' : ''}`}>
               <Icon className={`h-5 w-5 ${iconColor}`} />
             </div>
             {title}
@@ -358,6 +360,7 @@ export default function AlertsDashboard() {
           bgColor="bg-red-500/20"
           jobs={alertData.delayed}
           emptyMessage="Nenhum job atrasado no momento"
+          isCritical={true}
         />
         
         <AlertCard 
@@ -367,6 +370,7 @@ export default function AlertsDashboard() {
           bgColor="bg-orange-500/20"
           jobs={alertData.overdue}
           emptyMessage="Nenhum job vencido no momento"
+          isCritical={true}
         />
 
         <AlertCard 
