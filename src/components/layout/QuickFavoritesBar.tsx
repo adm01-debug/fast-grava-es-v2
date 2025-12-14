@@ -45,13 +45,15 @@ interface SortableFavoriteProps {
   isActive: boolean;
   showBadge: boolean;
   alertCount: number;
+  index: number;
 }
 
 const SortableFavorite = memo(function SortableFavorite({ 
   fav, 
   isActive, 
   showBadge, 
-  alertCount 
+  alertCount,
+  index
 }: SortableFavoriteProps) {
   const {
     attributes,
@@ -72,9 +74,12 @@ const SortableFavorite = memo(function SortableFavorite({
   return (
     <div
       ref={setNodeRef}
-      style={style}
+      style={{
+        ...style,
+        animationDelay: `${index * 50}ms`,
+      }}
       className={cn(
-        'flex items-center',
+        'flex items-center animate-scale-in',
         isDragging && 'z-50 opacity-80'
       )}
     >
@@ -190,13 +195,14 @@ export const QuickFavoritesBar = memo(function QuickFavoritesBar() {
           items={favorites.map(f => f.id)}
           strategy={horizontalListSortingStrategy}
         >
-          {favorites.map((fav) => (
+          {favorites.map((fav, index) => (
             <SortableFavorite
               key={fav.id}
               fav={fav}
               isActive={isActive(fav.href)}
               showBadge={fav.id === 'alerts' && alertCount > 0}
               alertCount={alertCount}
+              index={index}
             />
           ))}
         </SortableContext>
