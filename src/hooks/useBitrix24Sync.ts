@@ -19,6 +19,7 @@ interface SyncResult {
   success?: boolean;
   skipped?: boolean;
   error?: string;
+  message?: string;
 }
 
 interface OAuthStatus {
@@ -30,6 +31,10 @@ interface OAuthStatus {
   authorizationUrl: string;
 }
 
+interface ClearTokensResult {
+  message: string;
+}
+
 export const useBitrix24Sync = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [lastSync, setLastSync] = useState<Date | null>(null);
@@ -37,7 +42,7 @@ export const useBitrix24Sync = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const callBitrixSync = useCallback(async (action: string, body?: any, retryCount = 0): Promise<any> => {
+  const callBitrixSync = useCallback(async <T = SyncResult>(action: string, body?: Record<string, unknown>, retryCount = 0): Promise<T> => {
     const MAX_RETRIES = 3;
     const RETRY_DELAY_MS = 1000;
     const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
@@ -87,13 +92,14 @@ export const useBitrix24Sync = () => {
   const checkOAuthStatus = useCallback(async (): Promise<OAuthStatus> => {
     setIsLoading(true);
     try {
-      const result = await callBitrixSync('oauth-status');
+      const result = await callBitrixSync<OAuthStatus>('oauth-status');
       setOAuthStatus(result);
       return result;
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
       toast({
         title: 'Erro ao verificar OAuth',
-        description: error.message,
+        description: errorMessage,
         variant: 'destructive'
       });
       throw error;
@@ -105,17 +111,18 @@ export const useBitrix24Sync = () => {
   const clearTokens = useCallback(async () => {
     setIsLoading(true);
     try {
-      const result = await callBitrixSync('clear-tokens');
+      const result = await callBitrixSync<ClearTokensResult>('clear-tokens');
       toast({
         title: 'Tokens removidos',
         description: result.message
       });
       await checkOAuthStatus();
       return result;
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
       toast({
         title: 'Erro ao limpar tokens',
-        description: error.message,
+        description: errorMessage,
         variant: 'destructive'
       });
       throw error;
@@ -133,9 +140,10 @@ export const useBitrix24Sync = () => {
         description: 'Conexão com Bitrix24 estabelecida com sucesso.'
       });
       return result;
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
       // Check if it's an auth error
-      if (error.message.includes('invalid_token') || error.message.includes('expired')) {
+      if (errorMessage.includes('invalid_token') || errorMessage.includes('expired')) {
         await checkOAuthStatus();
         toast({
           title: 'Token expirado',
@@ -145,7 +153,7 @@ export const useBitrix24Sync = () => {
       } else {
         toast({
           title: 'Erro de conexão',
-          description: error.message,
+          description: errorMessage,
           variant: 'destructive'
         });
       }
@@ -169,9 +177,10 @@ export const useBitrix24Sync = () => {
       });
       
       return result;
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
       // Check if it's an auth error
-      if (error.message.includes('invalid_token') || error.message.includes('expired') || error.message.includes('authentication')) {
+      if (errorMessage.includes('invalid_token') || errorMessage.includes('expired') || errorMessage.includes('authentication')) {
         await checkOAuthStatus();
         toast({
           title: 'Token expirado',
@@ -181,7 +190,7 @@ export const useBitrix24Sync = () => {
       } else {
         toast({
           title: 'Erro na sincronização',
-          description: error.message,
+          description: errorMessage,
           variant: 'destructive'
         });
       }
@@ -203,10 +212,11 @@ export const useBitrix24Sync = () => {
       }
       
       return result;
-    } catch (error: any) {
-      console.error('Bitrix24 push error:', error);
+    } catch (error: unknown) {
+      if (import.meta.env.DEV) console.error('Bitrix24 push error:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
       // Don't show error toast for non-Bitrix jobs
-      return { error: error.message };
+      return { error: errorMessage };
     }
   }, [callBitrixSync, toast]);
 
