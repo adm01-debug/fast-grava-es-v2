@@ -10,6 +10,7 @@ import { TPMAlertsPanel } from '@/components/tpm/TPMAlertsPanel';
 import { TPMCalendar } from '@/components/tpm/TPMCalendar';
 import { TPMScheduleList } from '@/components/tpm/TPMScheduleList';
 import { CreateScheduleModal } from '@/components/tpm/CreateScheduleModal';
+import { MTBFMTTRWidget } from '@/components/reliability/MTBFMTTRWidget';
 import { toast } from 'sonner';
 
 export default function TPMDashboard() {
@@ -157,6 +158,9 @@ export default function TPMDashboard() {
             </CardContent>
           </Card>
         </div>
+
+        {/* MTBF/MTTR Widget */}
+        <MTBFMTTRWidget />
 
         {/* Main Content */}
         <Tabs defaultValue="calendar" className="space-y-6">
