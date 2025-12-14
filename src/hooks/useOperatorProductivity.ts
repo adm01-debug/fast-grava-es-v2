@@ -2,7 +2,9 @@ import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useSchedulingData } from './useSchedulingData';
+import { subDays, isAfter, parseISO } from 'date-fns';
 
+export type ProductivityPeriod = 7 | 30 | 90 | 'all';
 export interface OperatorProductivityMetrics {
   operatorId: string;
   operatorName: string;
@@ -39,6 +41,7 @@ export interface OperatorProductivityMetrics {
 interface ScanHistoryItem {
   operator_id: string;
   action: string;
+  scanned_at: string;
 }
 
 interface OperatorMachineItem {
@@ -49,8 +52,14 @@ interface OperatorMachineItem {
   } | null;
 }
 
-export function useOperatorProductivity() {
+export function useOperatorProductivity(period: ProductivityPeriod = 'all') {
   const { jobs, machines, isLoading: isLoadingScheduling } = useSchedulingData();
+  
+  // Calculate period start date
+  const periodStartDate = useMemo(() => {
+    if (period === 'all') return null;
+    return subDays(new Date(), period);
+  }, [period]);
 
   // Fetch operators with profiles
   const { data: operators, isLoading: isLoadingOperators } = useQuery({
@@ -85,12 +94,17 @@ export function useOperatorProductivity() {
 
   // Fetch QR scan history for activity metrics
   const { data: scanHistory, isLoading: isLoadingScans } = useQuery({
-    queryKey: ['scan-history-productivity'],
+    queryKey: ['scan-history-productivity', period],
     queryFn: async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from('qr_scan_history')
-        .select('operator_id, action');
+        .select('operator_id, action, scanned_at');
+      
+      if (periodStartDate) {
+        query = query.gte('scanned_at', periodStartDate.toISOString());
+      }
 
+      const { data, error } = await query;
       if (error) throw error;
       return (data || []) as ScanHistoryItem[];
     },
@@ -117,6 +131,17 @@ export function useOperatorProductivity() {
     staleTime: 1000 * 60 * 5,
   });
 
+  // Filter jobs by period
+  const filteredJobs = useMemo(() => {
+    if (!periodStartDate) return jobs;
+    return jobs.filter(job => {
+      // Use actual_end_time for finished jobs, otherwise use created_at
+      const dateToCheck = job.actual_end_time || job.created_at;
+      if (!dateToCheck) return false;
+      return isAfter(parseISO(dateToCheck), periodStartDate);
+    });
+  }, [jobs, periodStartDate]);
+
   // Calculate productivity metrics for each operator
   const operatorMetrics = useMemo((): OperatorProductivityMetrics[] => {
     if (!operators) return [];
@@ -132,14 +157,14 @@ export function useOperatorProductivity() {
         .map(ma => ma.machines?.name)
         .filter((name): name is string => !!name);
 
-      // Get jobs on operator's machines that are finished
-      const operatorJobs = jobs.filter(j => 
+      // Get jobs on operator's machines that are finished (using filtered jobs)
+      const operatorJobs = filteredJobs.filter(j => 
         j.machine_id && 
         machineIds.includes(j.machine_id) && 
         j.status === 'finished'
       );
 
-      const inProgressJobs = jobs.filter(j =>
+      const inProgressJobs = filteredJobs.filter(j =>
         j.machine_id &&
         machineIds.includes(j.machine_id) &&
         j.status === 'production'
@@ -224,7 +249,7 @@ export function useOperatorProductivity() {
         machineNames,
       };
     });
-  }, [operators, jobs, scanHistory, machineAssignments]);
+  }, [operators, filteredJobs, scanHistory, machineAssignments]);
 
   // Sort by efficiency score (highest first)
   const sortedMetrics = useMemo(() => {
