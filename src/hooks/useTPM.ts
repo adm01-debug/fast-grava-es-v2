@@ -250,7 +250,7 @@ export function useTPM() {
         .from('maintenance_schedules')
         .select('*')
         .eq('id', data.schedule_id)
-        .single();
+        .maybeSingle();
       
       if (scheduleError || !scheduleData) {
         throw new Error('Agendamento não encontrado');
@@ -294,7 +294,7 @@ export function useTPM() {
         .from('maintenance_records')
         .select('*')
         .eq('id', data.record_id)
-        .single();
+        .maybeSingle();
       
       if (recordFetchError || !recordData) {
         throw new Error('Registro não encontrado');
@@ -318,7 +318,7 @@ export function useTPM() {
         .from('maintenance_schedules')
         .select('interval_days')
         .eq('id', recordData.schedule_id)
-        .single();
+        .maybeSingle();
       
       if (scheduleData) {
         const nextDue = addDays(new Date(), scheduleData.interval_days).toISOString();

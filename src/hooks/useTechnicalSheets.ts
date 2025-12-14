@@ -165,9 +165,10 @@ export const useTechnicalSheetDetails = (sheetId: string | null) => {
           machines (id, name, code)
         `)
         .eq('id', sheetId)
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
+      if (!data) throw new Error('Ficha técnica não encontrada');
       return data as TechnicalSheet;
     },
     enabled: !!sheetId
