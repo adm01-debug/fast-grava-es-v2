@@ -1,6 +1,14 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { showErrorToast, categorizeError, ErrorCodes } from '@/lib/errorHandling';
+
+// Error context for debugging
+const ML_ERROR_CONTEXT = {
+  predictions: { hook: 'useMLPredictions', entity: 'machine_predictions' },
+  history: { hook: 'useMLPredictions', entity: 'prediction_history' },
+  generate: { hook: 'useMLPredictions', operation: 'generate_predictions' },
+};
 
 export interface MachinePrediction {
   id: string;
@@ -46,19 +54,27 @@ export function useMLPredictions() {
   const { data: predictions = [], isLoading: loadingPredictions, refetch } = useQuery({
     queryKey: ['ml-predictions'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('machine_predictions')
-        .select('*, machines(id, name, code)')
-        .eq('is_active', true)
-        .order('risk_score', { ascending: false });
-      
-      if (error) throw error;
-      return data.map((p: any) => ({
-        ...p,
-        machine: p.machines,
-        factors: Array.isArray(p.factors) ? p.factors : [],
-        recommendations: Array.isArray(p.recommendations) ? p.recommendations : [],
-      })) as MachinePrediction[];
+      try {
+        const { data, error } = await supabase
+          .from('machine_predictions')
+          .select('*, machines(id, name, code)')
+          .eq('is_active', true)
+          .order('risk_score', { ascending: false });
+        
+        if (error) {
+          console.error('[useMLPredictions] predictions fetch failed:', categorizeError(error), error);
+          throw error;
+        }
+        return data.map((p: any) => ({
+          ...p,
+          machine: p.machines,
+          factors: Array.isArray(p.factors) ? p.factors : [],
+          recommendations: Array.isArray(p.recommendations) ? p.recommendations : [],
+        })) as MachinePrediction[];
+      } catch (err) {
+        console.error('[useMLPredictions] predictions error:', err);
+        throw err;
+      }
     },
   });
 
@@ -66,14 +82,22 @@ export function useMLPredictions() {
   const { data: predictionHistory = [], isLoading: loadingHistory } = useQuery({
     queryKey: ['ml-prediction-history'],
     queryFn: async () => {
-      const { data, error } = await supabase
+      try {
+        const { data, error } = await supabase
         .from('prediction_history')
         .select('*')
         .order('created_at', { ascending: false })
         .limit(100);
       
-      if (error) throw error;
+      if (error) {
+        console.error('[useMLPredictions] history fetch failed:', categorizeError(error), error);
+        throw error;
+      }
       return data as PredictionHistory[];
+      } catch (err) {
+        console.error('[useMLPredictions] history error:', err);
+        throw err;
+      }
     },
   });
 

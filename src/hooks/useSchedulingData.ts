@@ -2,6 +2,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useEffect, useMemo, useCallback } from 'react';
 import { DbJob, DbTechnique, DbMachine } from './useJobs';
+import { categorizeError, ErrorCodes, createAppError } from '@/lib/errorHandling';
 
 // Stale time for static data (techniques, machines change less frequently)
 const STATIC_DATA_STALE_TIME = 5 * 60 * 1000; // 5 minutes
@@ -13,12 +14,19 @@ const RETRY_CONFIG = {
   retryDelay: (attemptIndex: number) => Math.min(1000 * 2 ** attemptIndex, 30000),
 };
 
+// Context-specific error messages for debugging
+const ERROR_CONTEXT = {
+  techniques: { entity: 'técnicas', operation: 'fetch' },
+  machines: { entity: 'máquinas', operation: 'fetch' },
+  jobs: { entity: 'jobs', operation: 'fetch' },
+};
+
 /**
  * Combined hook that fetches all scheduling data in a single place
  * and provides derived data and helper functions.
  * 
  * This reduces duplicate subscriptions and provides a centralized data layer.
- * Includes automatic retry on connection failures.
+ * Includes automatic retry on connection failures and specific error handling.
  */
 export function useSchedulingData() {
   const queryClient = useQueryClient();
@@ -27,13 +35,22 @@ export function useSchedulingData() {
   const techniquesQuery = useQuery({
     queryKey: ['techniques'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('techniques')
-        .select('*')
-        .order('name');
-      
-      if (error) throw error;
-      return data as DbTechnique[];
+      try {
+        const { data, error } = await supabase
+          .from('techniques')
+          .select('*')
+          .order('name');
+        
+        if (error) {
+          const appError = createAppError(error, ERROR_CONTEXT.techniques);
+          console.error('[useSchedulingData] Techniques fetch failed:', appError);
+          throw error;
+        }
+        return data as DbTechnique[];
+      } catch (err) {
+        console.error('[useSchedulingData] Techniques error:', categorizeError(err), err);
+        throw err;
+      }
     },
     staleTime: STATIC_DATA_STALE_TIME,
     ...RETRY_CONFIG,
@@ -43,14 +60,23 @@ export function useSchedulingData() {
   const machinesQuery = useQuery({
     queryKey: ['machines'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('machines')
-        .select('*')
-        .eq('is_active', true)
-        .order('code');
-      
-      if (error) throw error;
-      return data as DbMachine[];
+      try {
+        const { data, error } = await supabase
+          .from('machines')
+          .select('*')
+          .eq('is_active', true)
+          .order('code');
+        
+        if (error) {
+          const appError = createAppError(error, ERROR_CONTEXT.machines);
+          console.error('[useSchedulingData] Machines fetch failed:', appError);
+          throw error;
+        }
+        return data as DbMachine[];
+      } catch (err) {
+        console.error('[useSchedulingData] Machines error:', categorizeError(err), err);
+        throw err;
+      }
     },
     staleTime: STATIC_DATA_STALE_TIME,
     ...RETRY_CONFIG,
@@ -60,13 +86,22 @@ export function useSchedulingData() {
   const jobsQuery = useQuery({
     queryKey: ['jobs'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('jobs')
-        .select('*')
-        .order('created_at', { ascending: false });
-      
-      if (error) throw error;
-      return data as DbJob[];
+      try {
+        const { data, error } = await supabase
+          .from('jobs')
+          .select('*')
+          .order('created_at', { ascending: false });
+        
+        if (error) {
+          const appError = createAppError(error, ERROR_CONTEXT.jobs);
+          console.error('[useSchedulingData] Jobs fetch failed:', appError);
+          throw error;
+        }
+        return data as DbJob[];
+      } catch (err) {
+        console.error('[useSchedulingData] Jobs error:', categorizeError(err), err);
+        throw err;
+      }
     },
     staleTime: JOBS_STALE_TIME,
     ...RETRY_CONFIG,

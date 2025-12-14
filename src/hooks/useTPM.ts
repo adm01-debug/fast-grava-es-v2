@@ -2,6 +2,16 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { addDays, differenceInDays, isPast, isToday, isFuture } from 'date-fns';
+import { showErrorToast, categorizeError, ErrorCodes } from '@/lib/errorHandling';
+
+// Error context for debugging
+const TPM_ERROR_CONTEXT = {
+  types: { hook: 'useTPM', entity: 'maintenance_types' },
+  schedules: { hook: 'useTPM', entity: 'maintenance_schedules' },
+  checklists: { hook: 'useTPM', entity: 'maintenance_checklists' },
+  records: { hook: 'useTPM', entity: 'maintenance_records' },
+  alerts: { hook: 'useTPM', entity: 'maintenance_alerts' },
+};
 
 export interface MaintenanceType {
   id: string;
@@ -96,12 +106,20 @@ export function useTPM() {
   const { data: maintenanceTypes = [], isLoading: loadingTypes } = useQuery({
     queryKey: ['maintenance-types'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('maintenance_types')
-        .select('*')
-        .order('name');
-      if (error) throw error;
-      return data as MaintenanceType[];
+      try {
+        const { data, error } = await supabase
+          .from('maintenance_types')
+          .select('*')
+          .order('name');
+        if (error) {
+          console.error('[useTPM] maintenance_types fetch failed:', categorizeError(error), error);
+          throw error;
+        }
+        return data as MaintenanceType[];
+      } catch (err) {
+        console.error('[useTPM] maintenance_types error:', err);
+        throw err;
+      }
     },
   });
 
@@ -109,17 +127,25 @@ export function useTPM() {
   const { data: schedules = [], isLoading: loadingSchedules } = useQuery({
     queryKey: ['maintenance-schedules'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('maintenance_schedules')
+      try {
+        const { data, error } = await supabase
+          .from('maintenance_schedules')
         .select('*, machines(id, name, code), maintenance_types(*)')
         .eq('is_active', true)
         .order('next_due_at');
-      if (error) throw error;
+      if (error) {
+        console.error('[useTPM] schedules fetch failed:', categorizeError(error), error);
+        throw error;
+      }
       return data.map((s: any) => ({
         ...s,
         machine: s.machines,
         maintenance_type: s.maintenance_types,
       })) as MaintenanceSchedule[];
+      } catch (err) {
+        console.error('[useTPM] schedules error:', err);
+        throw err;
+      }
     },
   });
 
@@ -206,7 +232,10 @@ export function useTPM() {
       queryClient.invalidateQueries({ queryKey: ['maintenance-schedules'] });
       toast.success('Manutenção agendada com sucesso');
     },
-    onError: (error) => toast.error('Erro ao agendar: ' + error.message),
+    onError: (error) => {
+      console.error('[useTPM] createSchedule failed:', categorizeError(error), error);
+      showErrorToast(error, 'Erro ao agendar manutenção', TPM_ERROR_CONTEXT.schedules);
+    },
   });
 
   // Start maintenance mutation
@@ -246,7 +275,10 @@ export function useTPM() {
       queryClient.invalidateQueries({ queryKey: ['maintenance-records'] });
       toast.success('Manutenção iniciada');
     },
-    onError: (error) => toast.error('Erro: ' + error.message),
+    onError: (error) => {
+      console.error('[useTPM] startMaintenance failed:', categorizeError(error), error);
+      showErrorToast(error, 'Erro ao iniciar manutenção', TPM_ERROR_CONTEXT.records);
+    },
   });
 
   // Complete maintenance mutation
@@ -313,7 +345,10 @@ export function useTPM() {
       queryClient.invalidateQueries({ queryKey: ['maintenance-alerts'] });
       toast.success('Manutenção concluída');
     },
-    onError: (error) => toast.error('Erro: ' + error.message),
+    onError: (error) => {
+      console.error('[useTPM] completeMaintenance failed:', categorizeError(error), error);
+      showErrorToast(error, 'Erro ao concluir manutenção', TPM_ERROR_CONTEXT.records);
+    },
   });
 
   // Generate alerts for due maintenance
