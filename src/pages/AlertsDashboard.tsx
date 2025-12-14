@@ -8,6 +8,8 @@ import { PushNotificationManager } from "@/components/notifications/PushNotifica
 import { Bitrix24SyncPanel } from "@/components/integrations/Bitrix24SyncPanel";
 import { Bitrix24SyncHistory } from "@/components/integrations/Bitrix24SyncHistory";
 import { Bitrix24FieldMapping } from "@/components/integrations/Bitrix24FieldMapping";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { 
   AlertTriangle, 
   Clock, 
@@ -27,29 +29,42 @@ import {
 import { useSchedulingData } from "@/hooks/useSchedulingData";
 import { DbJob } from "@/hooks/useJobs";
 import { Job } from "@/types/scheduling";
-import { useBottleneckPrediction } from "@/hooks/useBottleneckPrediction";
-import { useLoadBalancing } from "@/hooks/useLoadBalancing";
+import { useBottleneckPrediction, BottleneckAlert } from "@/hooks/useBottleneckPrediction";
+import { useLoadBalancing, LoadBalancingSuggestion } from "@/hooks/useLoadBalancing";
 import { useEfficiencyNotifications } from "@/hooks/useEfficiencyNotifications";
 import { EfficiencyAlertHistoryWidget } from "@/components/dashboard/EfficiencyAlertHistoryWidget";
-import { useStuckJobsDetection } from "@/hooks/useStuckJobsDetection";
+import { useStuckJobsDetection, StuckJob } from "@/hooks/useStuckJobsDetection";
 import { useOrphanedDataDetection } from "@/hooks/useOrphanedDataDetection";
-const priorityColors = {
+
+const priorityColors: Record<string, string> = {
   urgent: 'bg-red-500/20 text-red-400 border-red-500/30',
   high: 'bg-orange-500/20 text-orange-400 border-orange-500/30',
   medium: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
   low: 'bg-green-500/20 text-green-400 border-green-500/30'
 };
 
-const priorityLabels = {
+const priorityLabels: Record<string, string> = {
   urgent: 'Urgente',
   high: 'Alta',
   medium: 'Média',
   low: 'Baixa'
 };
 
+type ViewAllModalType = 'jobs' | 'bottleneck' | 'loadBalancing' | 'stuckJobs' | null;
+
+interface ViewAllModalData {
+  type: ViewAllModalType;
+  title: string;
+  jobs?: DbJob[];
+  bottleneckAlerts?: BottleneckAlert[];
+  loadBalancingSuggestions?: LoadBalancingSuggestion[];
+  stuckJobs?: StuckJob[];
+}
+
 export default function AlertsDashboard() {
   const [selectedJob, setSelectedJob] = useState<DbJob | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [viewAllModal, setViewAllModal] = useState<ViewAllModalData | null>(null);
 
   // Fetch real data from Supabase
   const { jobs, getTechniqueById } = useSchedulingData();
@@ -61,17 +76,17 @@ export default function AlertsDashboard() {
     client: dbJob.client,
     product: dbJob.product,
     quantity: dbJob.quantity,
-    techniqueId: dbJob.technique_id as any,
+    techniqueId: dbJob.technique_id as Job['techniqueId'],
     machineId: dbJob.machine_id || '',
     operatorId: '',
     scheduledDate: dbJob.scheduled_date ? new Date(dbJob.scheduled_date) : new Date(),
     startTime: dbJob.start_time || '',
     endTime: dbJob.end_time || '',
     estimatedDuration: dbJob.estimated_duration,
-    status: dbJob.status as any,
+    status: dbJob.status as Job['status'],
     gravureColor: dbJob.gravure_color || undefined,
     notes: dbJob.notes || undefined,
-    priority: dbJob.priority as any,
+    priority: dbJob.priority as Job['priority'],
     createdAt: new Date(dbJob.created_at),
     updatedAt: new Date(dbJob.updated_at),
     createdBy: '',
@@ -116,6 +131,15 @@ export default function AlertsDashboard() {
     setIsModalOpen(true);
   };
 
+  const handleViewAll = (type: ViewAllModalType, title: string, data: {
+    jobs?: DbJob[];
+    bottleneckAlerts?: BottleneckAlert[];
+    loadBalancingSuggestions?: LoadBalancingSuggestion[];
+    stuckJobs?: StuckJob[];
+  }) => {
+    setViewAllModal({ type, title, ...data });
+  };
+
   const AlertCard = ({ 
     title, 
     icon: Icon, 
@@ -126,7 +150,7 @@ export default function AlertsDashboard() {
     isCritical = false
   }: { 
     title: string; 
-    icon: any; 
+    icon: React.ElementType; 
     iconColor: string; 
     bgColor: string;
     jobs: DbJob[]; 
@@ -164,8 +188,8 @@ export default function AlertsDashboard() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                       <span className="font-medium text-foreground">{job.order_number}</span>
-                      <Badge className={`${priorityColors[job.priority]} border text-xs ${job.priority === 'urgent' ? 'wiggle-infinite' : ''}`}>
-                        {priorityLabels[job.priority]}
+                      <Badge className={`${priorityColors[job.priority] || priorityColors.medium} border text-xs ${job.priority === 'urgent' ? 'wiggle-infinite' : ''}`}>
+                        {priorityLabels[job.priority] || 'Média'}
                       </Badge>
                     </div>
                     <p className="text-sm text-muted-foreground truncate mt-1">{job.client}</p>
@@ -201,12 +225,175 @@ export default function AlertsDashboard() {
           })
         )}
         {cardJobs.length > 5 && (
-          <Button variant="ghost" className="w-full text-muted-foreground hover:text-foreground">
+          <Button 
+            variant="ghost" 
+            className="w-full text-muted-foreground hover:text-foreground"
+            onClick={() => handleViewAll('jobs', title, { jobs: cardJobs })}
+          >
             Ver todos ({cardJobs.length})
           </Button>
         )}
       </CardContent>
     </Card>
+  );
+
+  // View All Modal for Jobs
+  const JobsViewAllModal = ({ jobs: modalJobs, title }: { jobs: DbJob[]; title: string }) => (
+    <ScrollArea className="max-h-[60vh]">
+      <div className="space-y-3 pr-4">
+        {modalJobs.map((job) => {
+          const technique = getTechniqueById(job.technique_id);
+          return (
+            <div 
+              key={job.id}
+              onClick={() => {
+                setViewAllModal(null);
+                handleJobClick(job);
+              }}
+              className="p-3 rounded-lg bg-muted/30 border border-border/30 hover:bg-muted/50 transition-colors cursor-pointer group"
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium text-foreground">{job.order_number}</span>
+                    <Badge className={`${priorityColors[job.priority] || priorityColors.medium} border text-xs`}>
+                      {priorityLabels[job.priority] || 'Média'}
+                    </Badge>
+                  </div>
+                  <p className="text-sm text-muted-foreground truncate mt-1">{job.client} - {job.product}</p>
+                  <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground">
+                    <span className="flex items-center gap-1">
+                      <Calendar className="h-3 w-3" />
+                      {job.scheduled_date ? new Date(job.scheduled_date).toLocaleDateString('pt-BR') : '-'}
+                    </span>
+                    <Badge 
+                      variant="outline" 
+                      className="text-xs"
+                      style={{ 
+                        backgroundColor: `${technique?.color}20`,
+                        borderColor: `${technique?.color}50`,
+                        color: technique?.color 
+                      }}
+                    >
+                      {technique?.short_name}
+                    </Badge>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <StatusBadge status={job.status} />
+                  <ChevronRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </ScrollArea>
+  );
+
+  // View All Modal for Bottleneck Alerts
+  const BottleneckViewAllModal = ({ alerts }: { alerts: BottleneckAlert[] }) => (
+    <ScrollArea className="max-h-[60vh]">
+      <div className="space-y-3 pr-4">
+        {alerts.map((alert, index) => (
+          <div key={index} className="p-3 rounded-lg bg-muted/30 border border-border/30">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="font-medium text-foreground">{alert.techniqueName}</span>
+              <Badge className={`${
+                alert.severity === 'critical' 
+                  ? 'bg-red-500/20 text-red-400 border-red-500/30' 
+                  : 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30'
+              } border text-xs`}>
+                {alert.severity === 'critical' ? 'Crítico' : 'Atenção'}
+              </Badge>
+            </div>
+            <p className="text-sm text-muted-foreground">{alert.message}</p>
+            <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground">
+              <span className="flex items-center gap-1">
+                <Calendar className="h-3 w-3" />
+                {new Date(alert.date).toLocaleDateString('pt-BR')}
+              </span>
+              <span>Ocupação: {alert.currentCapacity.toFixed(0)}%</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </ScrollArea>
+  );
+
+  // View All Modal for Load Balancing
+  const LoadBalancingViewAllModal = ({ suggestions }: { suggestions: LoadBalancingSuggestion[] }) => (
+    <ScrollArea className="max-h-[60vh]">
+      <div className="space-y-3 pr-4">
+        {suggestions.map((suggestion, index) => (
+          <div key={index} className="p-3 rounded-lg bg-muted/30 border border-border/30">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="font-medium text-foreground">
+                {suggestion.currentMachineName} → {suggestion.suggestedMachineName}
+              </span>
+              <Badge className="bg-teal-500/20 text-teal-400 border-teal-500/30 border text-xs">
+                Redistribuir
+              </Badge>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              Mover job {suggestion.orderNumber} ({suggestion.client})
+            </p>
+            <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground">
+              <span>Diferença: {suggestion.loadDifference.toFixed(0)}%</span>
+              <span>Carga atual: {suggestion.currentLoad.toFixed(0)}%</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </ScrollArea>
+  );
+
+  // View All Modal for Stuck Jobs
+  const StuckJobsViewAllModal = ({ stuckJobs: modalStuckJobs }: { stuckJobs: StuckJob[] }) => (
+    <ScrollArea className="max-h-[60vh]">
+      <div className="space-y-3 pr-4">
+        {modalStuckJobs.map((stuck) => {
+          const technique = getTechniqueById(stuck.job.technique_id);
+          return (
+            <div 
+              key={stuck.job.id}
+              onClick={() => {
+                setViewAllModal(null);
+                handleJobClick(stuck.job);
+              }}
+              className={`p-3 rounded-lg border cursor-pointer transition-colors ${
+                stuck.severity === 'critical' 
+                  ? 'bg-red-500/10 border-red-500/30 hover:bg-red-500/20' 
+                  : 'bg-amber-500/10 border-amber-500/30 hover:bg-amber-500/20'
+              }`}
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium">{stuck.job.order_number}</span>
+                    <Badge variant={stuck.severity === 'critical' ? 'destructive' : 'outline'} className="text-xs">
+                      {Math.round(stuck.hoursInProduction)}h em produção
+                    </Badge>
+                  </div>
+                  <p className="text-sm text-muted-foreground mt-1">{stuck.job.client} - {stuck.job.product}</p>
+                </div>
+                <Badge 
+                  variant="outline" 
+                  className="text-xs"
+                  style={{ 
+                    backgroundColor: `${technique?.color}20`,
+                    borderColor: `${technique?.color}50`,
+                    color: technique?.color 
+                  }}
+                >
+                  {technique?.short_name}
+                </Badge>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </ScrollArea>
   );
 
   // Efficiency alerts
@@ -235,6 +422,35 @@ export default function AlertsDashboard() {
         open={isModalOpen} 
         onOpenChange={setIsModalOpen} 
       />
+
+      {/* View All Modal */}
+      <Dialog open={viewAllModal !== null} onOpenChange={(open) => !open && setViewAllModal(null)}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              {viewAllModal?.title}
+              <Badge variant="outline" className="ml-2">
+                {viewAllModal?.type === 'jobs' && viewAllModal.jobs?.length}
+                {viewAllModal?.type === 'bottleneck' && viewAllModal.bottleneckAlerts?.length}
+                {viewAllModal?.type === 'loadBalancing' && viewAllModal.loadBalancingSuggestions?.length}
+                {viewAllModal?.type === 'stuckJobs' && viewAllModal.stuckJobs?.length}
+              </Badge>
+            </DialogTitle>
+          </DialogHeader>
+          {viewAllModal?.type === 'jobs' && viewAllModal.jobs && (
+            <JobsViewAllModal jobs={viewAllModal.jobs} title={viewAllModal.title} />
+          )}
+          {viewAllModal?.type === 'bottleneck' && viewAllModal.bottleneckAlerts && (
+            <BottleneckViewAllModal alerts={viewAllModal.bottleneckAlerts} />
+          )}
+          {viewAllModal?.type === 'loadBalancing' && viewAllModal.loadBalancingSuggestions && (
+            <LoadBalancingViewAllModal suggestions={viewAllModal.loadBalancingSuggestions} />
+          )}
+          {viewAllModal?.type === 'stuckJobs' && viewAllModal.stuckJobs && (
+            <StuckJobsViewAllModal stuckJobs={viewAllModal.stuckJobs} />
+          )}
+        </DialogContent>
+      </Dialog>
 
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -449,43 +665,54 @@ export default function AlertsDashboard() {
             {stuckJobs.length === 0 ? (
               <p className="text-sm text-muted-foreground text-center py-4">Nenhum job travado em produção</p>
             ) : (
-              stuckJobs.slice(0, 5).map((stuck) => {
-                const technique = getTechniqueById(stuck.job.technique_id);
-                return (
-                  <div 
-                    key={stuck.job.id}
-                    onClick={() => handleJobClick(stuck.job)}
-                    className={`p-3 rounded-lg border cursor-pointer transition-colors ${
-                      stuck.severity === 'critical' 
-                        ? 'bg-red-500/10 border-red-500/30 hover:bg-red-500/20' 
-                        : 'bg-amber-500/10 border-amber-500/30 hover:bg-amber-500/20'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <span className="font-medium">{stuck.job.order_number}</span>
-                          <Badge variant={stuck.severity === 'critical' ? 'destructive' : 'outline'} className="text-xs">
-                            {Math.round(stuck.hoursInProduction)}h em produção
-                          </Badge>
+              <>
+                {stuckJobs.slice(0, 5).map((stuck) => {
+                  const technique = getTechniqueById(stuck.job.technique_id);
+                  return (
+                    <div 
+                      key={stuck.job.id}
+                      onClick={() => handleJobClick(stuck.job)}
+                      className={`p-3 rounded-lg border cursor-pointer transition-colors ${
+                        stuck.severity === 'critical' 
+                          ? 'bg-red-500/10 border-red-500/30 hover:bg-red-500/20' 
+                          : 'bg-amber-500/10 border-amber-500/30 hover:bg-amber-500/20'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="font-medium">{stuck.job.order_number}</span>
+                            <Badge variant={stuck.severity === 'critical' ? 'destructive' : 'outline'} className="text-xs">
+                              {Math.round(stuck.hoursInProduction)}h em produção
+                            </Badge>
+                          </div>
+                          <p className="text-sm text-muted-foreground mt-1">{stuck.job.client}</p>
                         </div>
-                        <p className="text-sm text-muted-foreground mt-1">{stuck.job.client}</p>
+                        <Badge 
+                          variant="outline" 
+                          className="text-xs"
+                          style={{ 
+                            backgroundColor: `${technique?.color}20`,
+                            borderColor: `${technique?.color}50`,
+                            color: technique?.color 
+                          }}
+                        >
+                          {technique?.short_name}
+                        </Badge>
                       </div>
-                      <Badge 
-                        variant="outline" 
-                        className="text-xs"
-                        style={{ 
-                          backgroundColor: `${technique?.color}20`,
-                          borderColor: `${technique?.color}50`,
-                          color: technique?.color 
-                        }}
-                      >
-                        {technique?.short_name}
-                      </Badge>
                     </div>
-                  </div>
-                );
-              })
+                  );
+                })}
+                {stuckJobs.length > 5 && (
+                  <Button 
+                    variant="ghost" 
+                    className="w-full text-muted-foreground hover:text-foreground"
+                    onClick={() => handleViewAll('stuckJobs', 'Jobs Travados', { stuckJobs })}
+                  >
+                    Ver todos ({stuckJobs.length})
+                  </Button>
+                )}
+              </>
             )}
           </CardContent>
         </Card>
@@ -566,40 +793,46 @@ export default function AlertsDashboard() {
             {bottleneckAlerts.length === 0 ? (
               <p className="text-sm text-muted-foreground text-center py-4">Nenhum gargalo previsto</p>
             ) : (
-              bottleneckAlerts.slice(0, 5).map((alert, index) => (
-                <div 
-                  key={index}
-                  className="p-3 rounded-lg bg-muted/30 border border-border/30"
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium text-foreground">{alert.techniqueName}</span>
-                        <Badge className={`${
-                          alert.severity === 'critical' 
-                            ? 'bg-red-500/20 text-red-400 border-red-500/30' 
-                            : 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30'
-                        } border text-xs`}>
-                          {alert.severity === 'critical' ? 'Crítico' : 'Atenção'}
-                        </Badge>
-                      </div>
-                      <p className="text-sm text-muted-foreground mt-1">{alert.message}</p>
-                      <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground">
-                        <span className="flex items-center gap-1">
-                          <Calendar className="h-3 w-3" />
-                          {new Date(alert.date).toLocaleDateString('pt-BR')}
-                        </span>
-                        <span>Ocupação: {alert.currentOccupancy.toFixed(0)}%</span>
+              <>
+                {bottleneckAlerts.slice(0, 5).map((alert, index) => (
+                  <div 
+                    key={index}
+                    className="p-3 rounded-lg bg-muted/30 border border-border/30"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium text-foreground">{alert.techniqueName}</span>
+                          <Badge className={`${
+                            alert.severity === 'critical' 
+                              ? 'bg-red-500/20 text-red-400 border-red-500/30' 
+                              : 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30'
+                          } border text-xs`}>
+                            {alert.severity === 'critical' ? 'Crítico' : 'Atenção'}
+                          </Badge>
+                        </div>
+                        <p className="text-sm text-muted-foreground mt-1">{alert.message}</p>
+                        <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground">
+                          <span className="flex items-center gap-1">
+                            <Calendar className="h-3 w-3" />
+                            {new Date(alert.date).toLocaleDateString('pt-BR')}
+                          </span>
+                          <span>Ocupação: {alert.currentCapacity.toFixed(0)}%</span>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))
-            )}
-            {bottleneckAlerts.length > 5 && (
-              <Button variant="ghost" className="w-full text-muted-foreground hover:text-foreground">
-                Ver todos ({bottleneckAlerts.length})
-              </Button>
+                ))}
+                {bottleneckAlerts.length > 5 && (
+                  <Button 
+                    variant="ghost" 
+                    className="w-full text-muted-foreground hover:text-foreground"
+                    onClick={() => handleViewAll('bottleneck', 'Previsão de Gargalos', { bottleneckAlerts })}
+                  >
+                    Ver todos ({bottleneckAlerts.length})
+                  </Button>
+                )}
+              </>
             )}
           </CardContent>
         </Card>
@@ -623,37 +856,43 @@ export default function AlertsDashboard() {
             {loadBalancingSuggestions.length === 0 ? (
               <p className="text-sm text-muted-foreground text-center py-4">Carga balanceada entre máquinas</p>
             ) : (
-              loadBalancingSuggestions.slice(0, 5).map((suggestion, index) => (
-                <div 
-                  key={index}
-                  className="p-3 rounded-lg bg-muted/30 border border-border/30"
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium text-foreground">
-                          {suggestion.currentMachineName} → {suggestion.suggestedMachineName}
-                        </span>
-                        <Badge className="bg-teal-500/20 text-teal-400 border-teal-500/30 border text-xs">
-                          Redistribuir
-                        </Badge>
-                      </div>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        Mover job {suggestion.orderNumber} ({suggestion.client})
-                      </p>
-                      <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground">
-                        <span>Diferença: {suggestion.loadDifference.toFixed(0)}%</span>
-                        <span>Carga atual: {suggestion.currentLoad.toFixed(0)}%</span>
+              <>
+                {loadBalancingSuggestions.slice(0, 5).map((suggestion, index) => (
+                  <div 
+                    key={index}
+                    className="p-3 rounded-lg bg-muted/30 border border-border/30"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium text-foreground">
+                            {suggestion.currentMachineName} → {suggestion.suggestedMachineName}
+                          </span>
+                          <Badge className="bg-teal-500/20 text-teal-400 border-teal-500/30 border text-xs">
+                            Redistribuir
+                          </Badge>
+                        </div>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          Mover job {suggestion.orderNumber} ({suggestion.client})
+                        </p>
+                        <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground">
+                          <span>Diferença: {suggestion.loadDifference.toFixed(0)}%</span>
+                          <span>Carga atual: {suggestion.currentLoad.toFixed(0)}%</span>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))
-            )}
-            {loadBalancingSuggestions.length > 5 && (
-              <Button variant="ghost" className="w-full text-muted-foreground hover:text-foreground">
-                Ver todos ({loadBalancingSuggestions.length})
-              </Button>
+                ))}
+                {loadBalancingSuggestions.length > 5 && (
+                  <Button 
+                    variant="ghost" 
+                    className="w-full text-muted-foreground hover:text-foreground"
+                    onClick={() => handleViewAll('loadBalancing', 'Desbalanceamento de Carga', { loadBalancingSuggestions })}
+                  >
+                    Ver todos ({loadBalancingSuggestions.length})
+                  </Button>
+                )}
+              </>
             )}
           </CardContent>
         </Card>
