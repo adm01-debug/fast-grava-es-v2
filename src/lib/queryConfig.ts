@@ -1,0 +1,177 @@
+import { QueryClient } from '@tanstack/react-query';
+
+// ============================================
+// Query Configuration with Retry Mechanisms
+// ============================================
+
+// Stale time configuration
+export const STALE_TIMES = {
+  STATIC: 5 * 60 * 1000,    // 5 minutes for static data (techniques, machines)
+  DYNAMIC: 30 * 1000,        // 30 seconds for dynamic data (jobs)
+  REALTIME: 10 * 1000,       // 10 seconds for realtime data
+  USER: 2 * 60 * 1000,       // 2 minutes for user data
+} as const;
+
+// Retry configuration
+export const RETRY_CONFIG = {
+  maxRetries: 3,
+  baseDelay: 1000,  // 1 second
+  maxDelay: 30000,  // 30 seconds
+} as const;
+
+/**
+ * Exponential backoff retry delay calculator
+ * @param attemptIndex - The current retry attempt (0-based)
+ * @returns Delay in milliseconds before next retry
+ */
+export function calculateRetryDelay(attemptIndex: number): number {
+  const delay = Math.min(
+    RETRY_CONFIG.baseDelay * Math.pow(2, attemptIndex),
+    RETRY_CONFIG.maxDelay
+  );
+  // Add jitter (±25%) to prevent thundering herd
+  const jitter = delay * 0.25 * (Math.random() * 2 - 1);
+  return Math.round(delay + jitter);
+}
+
+/**
+ * Determines if an error should trigger a retry
+ * @param error - The error to check
+ * @returns true if the error is retryable
+ */
+export function shouldRetry(error: unknown): boolean {
+  // Don't retry on 4xx errors (client errors) except 408 (timeout) and 429 (rate limit)
+  if (error instanceof Error) {
+    const message = error.message.toLowerCase();
+    
+    // Network errors - always retry
+    if (message.includes('network') || message.includes('fetch')) {
+      return true;
+    }
+    
+    // Timeout errors - retry
+    if (message.includes('timeout') || message.includes('408')) {
+      return true;
+    }
+    
+    // Rate limit - retry with backoff
+    if (message.includes('rate limit') || message.includes('429') || message.includes('too many')) {
+      return true;
+    }
+    
+    // Server errors (5xx) - retry
+    if (message.includes('500') || message.includes('502') || message.includes('503') || message.includes('504')) {
+      return true;
+    }
+    
+    // Auth errors - don't retry
+    if (message.includes('401') || message.includes('403') || message.includes('unauthorized') || message.includes('forbidden')) {
+      return false;
+    }
+    
+    // Not found - don't retry
+    if (message.includes('404') || message.includes('not found')) {
+      return false;
+    }
+    
+    // Validation errors - don't retry
+    if (message.includes('400') || message.includes('422') || message.includes('validation')) {
+      return false;
+    }
+  }
+  
+  // Default: retry up to max retries
+  return true;
+}
+
+/**
+ * Default query options with retry configuration
+ */
+export const defaultQueryOptions = {
+  retry: (failureCount: number, error: unknown) => {
+    if (failureCount >= RETRY_CONFIG.maxRetries) return false;
+    return shouldRetry(error);
+  },
+  retryDelay: calculateRetryDelay,
+  refetchOnWindowFocus: false,
+  refetchOnReconnect: true,
+} as const;
+
+/**
+ * Creates a configured QueryClient with global defaults
+ */
+export function createQueryClient(): QueryClient {
+  return new QueryClient({
+    defaultOptions: {
+      queries: {
+        ...defaultQueryOptions,
+        staleTime: STALE_TIMES.DYNAMIC,
+        gcTime: 10 * 60 * 1000, // 10 minutes garbage collection
+      },
+      mutations: {
+        retry: 1, // Mutations retry once by default
+        retryDelay: RETRY_CONFIG.baseDelay,
+      },
+    },
+  });
+}
+
+// ============================================
+// Pagination Utilities
+// ============================================
+
+export interface PaginationParams {
+  page: number;
+  pageSize: number;
+}
+
+export interface PaginatedResult<T> {
+  data: T[];
+  totalCount: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+}
+
+export const DEFAULT_PAGE_SIZE = 50;
+export const MAX_PAGE_SIZE = 200;
+
+/**
+ * Calculates pagination range for Supabase queries
+ * @param page - Current page (1-indexed)
+ * @param pageSize - Items per page
+ * @returns Object with from and to values for .range()
+ */
+export function calculateRange(page: number, pageSize: number): { from: number; to: number } {
+  const validPage = Math.max(1, page);
+  const validPageSize = Math.min(Math.max(1, pageSize), MAX_PAGE_SIZE);
+  
+  const from = (validPage - 1) * validPageSize;
+  const to = from + validPageSize - 1;
+  
+  return { from, to };
+}
+
+/**
+ * Creates a paginated result object from query data
+ */
+export function createPaginatedResult<T>(
+  data: T[],
+  totalCount: number,
+  page: number,
+  pageSize: number
+): PaginatedResult<T> {
+  const totalPages = Math.ceil(totalCount / pageSize);
+  
+  return {
+    data,
+    totalCount,
+    page,
+    pageSize,
+    totalPages,
+    hasNextPage: page < totalPages,
+    hasPreviousPage: page > 1,
+  };
+}
