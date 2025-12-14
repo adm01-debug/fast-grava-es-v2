@@ -20,7 +20,8 @@ import {
   GripVertical
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useJobs, useTechniques, useMachines, DbJob, DbTechnique, DbMachine } from '@/hooks/useJobs';
+import { useSchedulingData } from '@/hooks/useSchedulingData';
+import { DbJob, DbTechnique, DbMachine } from '@/hooks/useJobs';
 import { Job, JobStatus } from '@/types/scheduling';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -71,18 +72,14 @@ export default function KanbanBoard() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Fetch real data from Supabase
-  const { data: jobs = [], isLoading: isLoadingJobs } = useJobs();
-  const { data: techniques = [], isLoading: isLoadingTechniques } = useTechniques();
-  const { data: machines = [] } = useMachines();
-
-  // Helper functions
-  const getTechniqueById = (id: string): DbTechnique | undefined => {
-    return techniques.find(t => t.id === id);
-  };
-
-  const getMachineById = (id: string): DbMachine | undefined => {
-    return machines.find(m => m.id === id);
-  };
+  const { 
+    jobs, 
+    techniques, 
+    isLoading: isLoadingJobs,
+    isLoadingTechniques,
+    getTechniqueById,
+    getMachineById
+  } = useSchedulingData();
 
   const filteredJobs = useMemo(() => {
     return jobs.filter(job => {

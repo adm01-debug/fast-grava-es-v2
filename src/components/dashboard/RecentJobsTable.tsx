@@ -3,24 +3,13 @@ import { ptBR } from 'date-fns/locale';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { StatusBadge } from '@/components/ui/status-badge';
-import { useJobs, useTechniques, useMachines, DbJob, DbTechnique, DbMachine } from '@/hooks/useJobs';
+import { useSchedulingData } from '@/hooks/useSchedulingData';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { JobStatus } from '@/types/scheduling';
 
 export function RecentJobsTable() {
-  const { data: jobs = [], isLoading: isLoadingJobs } = useJobs();
-  const { data: techniques = [] } = useTechniques();
-  const { data: machines = [] } = useMachines();
-
-  const getTechniqueById = (id: string): DbTechnique | undefined => {
-    return techniques.find(t => t.id === id);
-  };
-
-  const getMachineById = (id: string | null): DbMachine | undefined => {
-    if (!id) return undefined;
-    return machines.find(m => m.id === id);
-  };
+  const { jobs, isLoadingJobs, getTechniqueById, getMachineById } = useSchedulingData();
 
   const recentJobs = jobs.slice(0, 6);
 

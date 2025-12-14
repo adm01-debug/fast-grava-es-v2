@@ -21,7 +21,8 @@ import {
   ChevronDown,
   RotateCcw
 } from "lucide-react";
-import { useJobs, useTechniques, useMachines, DbJob, DbTechnique, DbMachine } from "@/hooks/useJobs";
+import { useSchedulingData } from "@/hooks/useSchedulingData";
+import { DbJob, DbTechnique, DbMachine } from "@/hooks/useJobs";
 import { JobStatus } from "@/types/scheduling";
 
 type SortField = 'orderNumber' | 'client' | 'scheduledDate' | 'priority' | 'quantity';
@@ -53,18 +54,14 @@ export default function PendingQueue() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Fetch real data from Supabase
-  const { data: jobs = [], isLoading: isLoadingJobs } = useJobs();
-  const { data: techniques = [], isLoading: isLoadingTechniques } = useTechniques();
-  const { data: machines = [] } = useMachines();
-
-  // Helper functions
-  const getTechniqueById = (id: string): DbTechnique | undefined => {
-    return techniques.find(t => t.id === id);
-  };
-
-  const getMachineById = (id: string): DbMachine | undefined => {
-    return machines.find(m => m.id === id);
-  };
+  const { 
+    jobs, 
+    techniques, 
+    isLoading: isLoadingJobs,
+    isLoadingTechniques,
+    getTechniqueById,
+    getMachineById
+  } = useSchedulingData();
 
   // Filter pending jobs (queue, ready, scheduled, delayed, rework)
   const pendingStatuses: JobStatus[] = ['queue', 'ready', 'scheduled', 'delayed', 'rework'];

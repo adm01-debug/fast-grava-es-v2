@@ -8,8 +8,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { cn } from '@/lib/utils';
 import { format, formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { useJobs, useMachines } from '@/hooks/useJobs';
 import { useMemo, useState } from 'react';
+import { useSchedulingData } from '@/hooks/useSchedulingData';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -24,8 +24,7 @@ interface Alert {
 }
 
 export function AlertsWidget() {
-  const { data: jobs = [], refetch } = useJobs();
-  const { data: machines = [] } = useMachines();
+  const { jobs, machines, refetchJobs: refetch } = useSchedulingData();
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
   const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
   const [scheduleDate, setScheduleDate] = useState('');

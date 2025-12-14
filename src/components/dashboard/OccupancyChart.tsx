@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Cell } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useTechniques, useJobs, DbTechnique } from '@/hooks/useJobs';
+import { useSchedulingData } from '@/hooks/useSchedulingData';
 import { Skeleton } from '@/components/ui/skeleton';
 
 interface OccupancyData {
@@ -26,10 +26,7 @@ const vibrantColors = [
 ];
 
 export function OccupancyChart() {
-  const { data: techniques = [], isLoading: isLoadingTechniques } = useTechniques();
-  const { data: jobs = [], isLoading: isLoadingJobs } = useJobs();
-
-  const isLoading = isLoadingTechniques || isLoadingJobs;
+  const { techniques, jobs, isLoading } = useSchedulingData();
 
   // Calculate real occupancy data based on jobs
   const occupancyData: OccupancyData[] = useMemo(() => {

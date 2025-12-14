@@ -13,7 +13,8 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Calendar } from '@/components/ui/calendar';
 import { JobDetailsModal } from '@/components/jobs/JobDetailsModal';
 import { cn } from '@/lib/utils';
-import { useJobs, useTechniques, useMachines, DbJob } from '@/hooks/useJobs';
+import { useSchedulingData } from '@/hooks/useSchedulingData';
+import { DbJob } from '@/hooks/useJobs';
 import { JobStatus } from '@/types/scheduling';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -47,13 +48,7 @@ export default function WeeklyCalendar() {
   const [selectedJob, setSelectedJob] = useState<DbJob | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const { data: jobs = [], isLoading: jobsLoading } = useJobs();
-  const { data: techniques = [], isLoading: techniquesLoading } = useTechniques();
-  const { data: machines = [], isLoading: machinesLoading } = useMachines();
-
-  const isLoading = jobsLoading || techniquesLoading || machinesLoading;
-
-  const getTechniqueById = (id: string) => techniques.find(t => t.id === id);
+  const { jobs, techniques, machines, isLoading, getTechniqueById } = useSchedulingData();
 
   const weekStart = startOfWeek(selectedDate, { weekStartsOn: 1 }); // Monday
   const weekEnd = endOfWeek(selectedDate, { weekStartsOn: 1 });

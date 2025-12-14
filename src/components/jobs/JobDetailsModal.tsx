@@ -19,7 +19,8 @@ import {
   Building,
   QrCode
 } from "lucide-react";
-import { DbJob, DbTechnique, DbMachine, useTechniques, useMachines } from "@/hooks/useJobs";
+import { useSchedulingData } from "@/hooks/useSchedulingData";
+import { DbJob } from "@/hooks/useJobs";
 import { JobQRCode } from "@/components/qrcode/JobQRCode";
 
 interface JobDetailsModalProps {
@@ -44,13 +45,12 @@ const priorityLabels = {
 };
 
 export function JobDetailsModal({ job, open, onOpenChange, onStatusChange }: JobDetailsModalProps) {
-  const { data: techniques = [] } = useTechniques();
-  const { data: machines = [] } = useMachines();
+  const { getTechniqueById, getMachineById } = useSchedulingData();
 
   if (!job) return null;
 
-  const technique = techniques.find(t => t.id === job.technique_id);
-  const machine = machines.find(m => m.id === job.machine_id);
+  const technique = getTechniqueById(job.technique_id);
+  const machine = getMachineById(job.machine_id);
 
   const InfoRow = ({ icon: Icon, label, value, color }: { icon: any; label: string; value: string; color?: string }) => (
     <div className="flex items-center gap-3 py-2">
