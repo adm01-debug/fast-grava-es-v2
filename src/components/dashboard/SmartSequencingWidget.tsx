@@ -65,20 +65,20 @@ export function SmartSequencingWidget() {
   return (
     <Card className="glass-card card-interactive animate-fade-in-up opacity-0 [animation-fill-mode:forwards] [animation-delay:0.15s] dark:hover:shadow-[0_8px_32px_-8px_hsl(280,80%,60%,0.25)]">
       <CardHeader className="pb-3">
-        <CardTitle className="text-lg flex items-center justify-between">
+        <CardTitle className="text-base sm:text-lg flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div className="flex items-center gap-2">
-            <div className="p-2 rounded-lg bg-accent/20 dark:glow-accent">
-              <Layers className="h-5 w-5 text-accent" />
+            <div className="p-1.5 sm:p-2 rounded-lg bg-accent/20 dark:glow-accent">
+              <Layers className="h-4 w-4 sm:h-5 sm:w-5 text-accent" />
             </div>
-            <span className="gradient-text">Sequenciamento Inteligente</span>
+            <span className="gradient-text text-sm sm:text-base">Sequenciamento Inteligente</span>
           </div>
           {hasSuggestions ? (
-            <Badge className="bg-violet-500/20 text-violet-400 border-violet-500/30 border">
+            <Badge className="bg-violet-500/20 text-violet-400 border-violet-500/30 border text-xs self-start sm:self-auto">
               <Sparkles className="h-3 w-3 mr-1" />
-              {totalSavings} min economizáveis
+              {totalSavings} min
             </Badge>
           ) : (
-            <Badge className="bg-green-500/20 text-green-400 border-green-500/30 border">
+            <Badge className="bg-green-500/20 text-green-400 border-green-500/30 border text-xs self-start sm:self-auto">
               <CheckCircle2 className="h-3 w-3 mr-1" />
               Otimizado
             </Badge>

@@ -381,14 +381,14 @@ export function AlertsWidget() {
     <>
       <Card className="glass-card card-interactive animate-fade-in-up opacity-0 [animation-fill-mode:forwards] [animation-delay:0.15s]">
         <CardHeader className="pb-2">
-          <CardTitle className="text-lg font-display flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-status-delayed/20 flex items-center justify-center animate-glow-pulse">
-              <AlertTriangle className="w-4 h-4 text-status-delayed" />
+          <CardTitle className="text-base sm:text-lg font-display flex items-center gap-2">
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-status-delayed/20 flex items-center justify-center animate-glow-pulse">
+              <AlertTriangle className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-status-delayed" />
             </div>
-            <span className="gradient-text">Alertas</span>
+            <span className="gradient-text text-sm sm:text-base">Alertas</span>
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-3">
+        <CardContent className="space-y-2 sm:space-y-3">
           {alerts.length === 0 ? (
             <p className="text-sm text-muted-foreground text-center py-4">Nenhum alerta no momento</p>
           ) : (
@@ -400,27 +400,27 @@ export function AlertsWidget() {
                   key={alert.id}
                   onClick={() => handleAlertClick(alert)}
                   className={cn(
-                    "flex items-start gap-3 p-3 rounded-lg bg-secondary/50 hover:bg-secondary/80 transition-all cursor-pointer border border-border/20",
+                    "flex items-start gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg bg-secondary/50 hover:bg-secondary/80 transition-all cursor-pointer border border-border/20",
                     "hover:-translate-x-1 hover:border-primary/30",
                     alert.canSchedule && "group"
                   )}
                 >
                   <div className={cn(
-                    'w-8 h-8 rounded-lg flex items-center justify-center shrink-0',
+                    'w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center shrink-0',
                     alertColors[alert.type]
                   )}>
-                    <Icon className="w-4 h-4" />
+                    <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-foreground">{alert.title}</p>
-                    <p className="text-xs text-muted-foreground truncate">{alert.description}</p>
-                    <p className="text-xs text-muted-foreground mt-1">
+                    <p className="text-xs sm:text-sm font-medium text-foreground">{alert.title}</p>
+                    <p className="text-[10px] sm:text-xs text-muted-foreground truncate">{alert.description}</p>
+                    <p className="text-[10px] sm:text-xs text-muted-foreground mt-1">
                       {formatDistanceToNow(alert.time, { addSuffix: true, locale: ptBR })}
                     </p>
                   </div>
                   {alert.canSchedule && (
                     <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                      <Calendar className="w-4 h-4 text-primary" />
+                      <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary" />
                     </div>
                   )}
                 </div>

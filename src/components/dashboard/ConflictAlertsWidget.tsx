@@ -60,16 +60,16 @@ export const ConflictAlertsWidget = () => {
   return (
     <Card className="bg-card/50 backdrop-blur border-border/50">
       <CardHeader className="pb-3">
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-base font-semibold flex items-center gap-2">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <CardTitle className="text-sm sm:text-base font-semibold flex items-center gap-2">
             <AlertTriangle className="h-4 w-4 text-yellow-500" />
-            Conflitos de Agendamento
+            <span className="text-xs sm:text-sm">Conflitos de Agendamento</span>
           </CardTitle>
           {hasConflicts && (
-            <div className="flex gap-1">
+            <div className="flex gap-1 flex-wrap">
               {errorCount > 0 && (
                 <Badge variant="destructive" className="text-xs">
-                  {errorCount} crítico{errorCount > 1 ? 's' : ''}
+                  {errorCount} crít.
                 </Badge>
               )}
               {warningCount > 0 && (
