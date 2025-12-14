@@ -143,7 +143,7 @@ export default function KanbanBoard() {
     const jobs = getJobsByStatus(status);
     
     return (
-      <div className="flex flex-col min-w-[280px] max-w-[320px]">
+      <div className="flex flex-col min-w-[240px] sm:min-w-[280px] max-w-[320px]">
         <div className="flex items-center gap-2 mb-3 px-1">
           <Icon className={cn("h-4 w-4", color)} />
           <h3 className="font-semibold text-sm">{label}</h3>
@@ -196,7 +196,7 @@ export default function KanbanBoard() {
         onOpenChange={setIsModalOpen} 
       />
       
-      <div className="p-8 space-y-6 animate-fade-in-up">
+      <div className="p-4 sm:p-6 lg:p-8 space-y-4 sm:space-y-6 animate-fade-in-up">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
@@ -208,19 +208,19 @@ export default function KanbanBoard() {
             </p>
           </div>
           
-          <div className="flex items-center gap-3">
-            <div className="relative">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+            <div className="relative flex-1 sm:flex-initial">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Buscar jobs..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-9 w-[200px] bg-card/50 border-border/50"
+                className="pl-9 w-full sm:w-[200px] bg-card/50 border-border/50"
               />
             </div>
             
             <Select value={selectedTechnique} onValueChange={setSelectedTechnique}>
-              <SelectTrigger className="w-[180px] bg-card/50 border-border/50">
+              <SelectTrigger className="w-full sm:w-[180px] bg-card/50 border-border/50">
                 <Filter className="h-4 w-4 mr-2" />
                 <SelectValue placeholder="Técnica" />
               </SelectTrigger>

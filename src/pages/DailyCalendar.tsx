@@ -123,20 +123,20 @@ export default function DailyCalendar() {
         open={isModalOpen} 
         onOpenChange={setIsModalOpen} 
       />
-      <div className="space-y-6 animate-fade-in-up">
+      <div className="p-4 sm:p-6 space-y-4 sm:space-y-6 animate-fade-in-up">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex flex-col gap-4">
           <div>
-            <h1 className="text-2xl font-display font-bold gradient-text">Calendário Diário</h1>
+            <h1 className="text-xl sm:text-2xl font-display font-bold gradient-text">Calendário Diário</h1>
             <p className="text-muted-foreground text-sm mt-1">
               Visualização completa da agenda por máquina
             </p>
           </div>
           
-          <div className="flex items-center gap-3">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
             {/* Technique Filter */}
             <Select value={selectedTechnique} onValueChange={setSelectedTechnique}>
-              <SelectTrigger className="w-[180px] bg-card border-border/40">
+              <SelectTrigger className="w-full sm:w-[180px] bg-card border-border/40">
                 <Filter className="w-4 h-4 mr-2 text-muted-foreground" />
                 <SelectValue placeholder="Filtrar técnica" />
               </SelectTrigger>
@@ -149,21 +149,21 @@ export default function DailyCalendar() {
             </Select>
 
             {/* Date Navigation */}
-            <div className="flex items-center gap-1 bg-card border border-border/40 rounded-lg p-1">
+            <div className="flex items-center justify-between sm:justify-start gap-1 bg-card border border-border/40 rounded-lg p-1 w-full sm:w-auto">
               <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handlePrevDay}>
                 <ChevronLeft className="h-4 w-4" />
               </Button>
               
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button variant="ghost" className="h-8 px-3 gap-2">
+                  <Button variant="ghost" className="h-8 px-2 sm:px-3 gap-1 sm:gap-2 flex-1 sm:flex-initial">
                     <CalendarIcon className="h-4 w-4" />
-                    <span className="font-medium">
-                      {format(selectedDate, "dd 'de' MMMM", { locale: ptBR })}
+                    <span className="font-medium text-sm sm:text-base">
+                      {format(selectedDate, "dd MMM", { locale: ptBR })}
                     </span>
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="end">
+                <PopoverContent className="w-auto p-0" align="center">
                   <Calendar
                     mode="single"
                     selected={selectedDate}
@@ -177,31 +177,32 @@ export default function DailyCalendar() {
               <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handleNextDay}>
                 <ChevronRight className="h-4 w-4" />
               </Button>
+              
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={handleToday}
+                className={cn(
+                  "border-border/40 ml-1",
+                  isToday(selectedDate) && "bg-primary/10 text-primary border-primary/30"
+                )}
+              >
+                Hoje
+              </Button>
             </div>
-            
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={handleToday}
-              className={cn(
-                "border-border/40",
-                isToday(selectedDate) && "bg-primary/10 text-primary border-primary/30"
-              )}
-            >
-              Hoje
-            </Button>
           </div>
         </div>
 
         {/* Calendar Grid */}
         <Card className="bg-card border border-border/40 rounded-xl overflow-hidden">
-          <CardHeader className="border-b border-border/40 pb-3">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-lg font-display gradient-text flex items-center gap-2">
-                <Clock className="w-5 h-5" />
-                {format(selectedDate, "EEEE, dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
+          <CardHeader className="border-b border-border/40 pb-3 px-3 sm:px-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <CardTitle className="text-sm sm:text-lg font-display gradient-text flex items-center gap-2">
+                <Clock className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" />
+                <span className="hidden sm:inline">{format(selectedDate, "EEEE, dd 'de' MMMM 'de' yyyy", { locale: ptBR })}</span>
+                <span className="sm:hidden">{format(selectedDate, "EEEE, dd MMM", { locale: ptBR })}</span>
               </CardTitle>
-              <Badge variant="outline" className="border-primary/30 text-primary">
+              <Badge variant="outline" className="border-primary/30 text-primary w-fit">
                 {dayJobs.length} agendamento{dayJobs.length !== 1 ? 's' : ''}
               </Badge>
             </div>

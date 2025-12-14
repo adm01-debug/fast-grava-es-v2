@@ -112,20 +112,20 @@ export default function WeeklyCalendar() {
         open={isModalOpen} 
         onOpenChange={setIsModalOpen} 
       />
-      <div className="space-y-6 animate-fade-in-up">
+      <div className="p-4 sm:p-6 space-y-4 sm:space-y-6 animate-fade-in-up">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex flex-col gap-4">
           <div>
-            <h1 className="text-2xl font-display font-bold gradient-text">Calendário Semanal</h1>
+            <h1 className="text-xl sm:text-2xl font-display font-bold gradient-text">Calendário Semanal</h1>
             <p className="text-muted-foreground text-sm mt-1">
               Visualização panorâmica da semana por máquina
             </p>
           </div>
           
-          <div className="flex items-center gap-3">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
             {/* Technique Filter */}
             <Select value={selectedTechnique} onValueChange={setSelectedTechnique}>
-              <SelectTrigger className="w-[180px] bg-card border-border/40">
+              <SelectTrigger className="w-full sm:w-[180px] bg-card border-border/40">
                 <Filter className="w-4 h-4 mr-2 text-muted-foreground" />
                 <SelectValue placeholder="Filtrar técnica" />
               </SelectTrigger>
