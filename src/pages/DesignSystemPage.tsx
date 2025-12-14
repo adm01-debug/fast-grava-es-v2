@@ -6446,7 +6446,7 @@ function AnimationsSection() {
             Componentes com Bounce-In
             <Badge className="ml-2 bg-success/20 text-success border-success/30">Integrado</Badge>
           </CardTitle>
-          <CardDescription>Componentes UI que usam animate-bounce-in por padrão para entrada dinâmica</CardDescription>
+          <CardDescription>10 componentes UI que usam animate-bounce-in por padrão para entrada dinâmica</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <Alert className="border-info bg-info/10">
@@ -6612,13 +6612,91 @@ function AnimationsSection() {
                 Alertas aparecem com bounce-in para chamar atenção.
               </p>
             </div>
+
+            {/* Alert Dialog */}
+            <div className="p-4 rounded-lg border border-border bg-muted/30 space-y-2">
+              <div className="flex items-center gap-2">
+                <div className="h-8 w-8 rounded-md bg-destructive/20 flex items-center justify-center">
+                  <AlertTriangle className="h-4 w-4 text-destructive" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-semibold">Alert Dialog</h4>
+                  <p className="text-xs text-muted-foreground">Confirmações críticas</p>
+                </div>
+              </div>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="outline" size="sm" className="w-full">
+                    <Eye className="h-3 w-3 mr-2" />
+                    Testar AlertDialog
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>AlertDialog com Bounce-In</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Este diálogo de confirmação aparece com animação elástica.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                    <AlertDialogAction>Confirmar</AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </div>
+
+            {/* Sheet */}
+            <div className="p-4 rounded-lg border border-border bg-muted/30 space-y-2">
+              <div className="flex items-center gap-2">
+                <div className="h-8 w-8 rounded-md bg-info/20 flex items-center justify-center">
+                  <Layers className="h-4 w-4 text-info" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-semibold">Sheet</h4>
+                  <p className="text-xs text-muted-foreground">Painéis laterais</p>
+                </div>
+              </div>
+              <Sheet>
+                <SheetTrigger asChild>
+                  <Button variant="outline" size="sm" className="w-full">
+                    <Eye className="h-3 w-3 mr-2" />
+                    Testar Sheet
+                  </Button>
+                </SheetTrigger>
+                <SheetContent>
+                  <SheetHeader>
+                    <SheetTitle>Sheet com Bounce-In</SheetTitle>
+                    <SheetDescription>
+                      Painel lateral com animação elástica ao abrir.
+                    </SheetDescription>
+                  </SheetHeader>
+                </SheetContent>
+              </Sheet>
+            </div>
+
+            {/* Context Menu */}
+            <div className="p-4 rounded-lg border border-border bg-muted/30 space-y-2">
+              <div className="flex items-center gap-2">
+                <div className="h-8 w-8 rounded-md bg-primary/20 flex items-center justify-center">
+                  <MoreHorizontal className="h-4 w-4 text-primary" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-semibold">Context Menu</h4>
+                  <p className="text-xs text-muted-foreground">Menu de contexto</p>
+                </div>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Clique direito em elementos para ver o bounce-in no menu.
+              </p>
+            </div>
           </div>
 
           {/* Code Example */}
           <div className="space-y-3 pt-4 border-t border-border">
             <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Como foi implementado</h4>
             <CodeBlock 
-              code={`// Dialog - data-[state=open]:animate-bounce-in
+              code={`// Dialog & AlertDialog - data-[state=open]:animate-bounce-in
 <DialogContent className={cn(
   "... data-[state=open]:animate-bounce-in ...",
   className
@@ -6626,6 +6704,18 @@ function AnimationsSection() {
 
 // Popover - data-[state=open]:animate-bounce-in
 <PopoverContent className={cn(
+  "... data-[state=open]:animate-bounce-in ...",
+  className
+)}>
+
+// Sheet - data-[state=open]:animate-bounce-in
+const sheetVariants = cva(
+  "... data-[state=open]:animate-bounce-in ...",
+  { variants: { ... } }
+);
+
+// ContextMenu - data-[state=open]:animate-bounce-in
+<ContextMenuContent className={cn(
   "... data-[state=open]:animate-bounce-in ...",
   className
 )}>
@@ -6641,7 +6731,7 @@ const alertVariants = cva(
   "... animate-bounce-in ...",
   { variants: { ... } }
 );`} 
-              label="Implementação nos componentes"
+              label="Implementação nos 10 componentes"
             />
           </div>
 
