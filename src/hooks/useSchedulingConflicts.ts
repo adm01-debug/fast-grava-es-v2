@@ -41,11 +41,13 @@ export const useSchedulingConflicts = () => {
       job.machine_id
     );
 
-    // Group jobs by machine and date
+    // Group jobs by machine and date using a compound key
+    // Use a separator that won't appear in UUIDs or dates
+    const KEY_SEPARATOR = '|||';
     const jobsByMachineAndDate = new Map<string, typeof activeJobs>();
     
     activeJobs.forEach(job => {
-      const key = `${job.machine_id}-${job.scheduled_date}`;
+      const key = `${job.machine_id}${KEY_SEPARATOR}${job.scheduled_date}`;
       const existing = jobsByMachineAndDate.get(key) || [];
       existing.push(job);
       jobsByMachineAndDate.set(key, existing);
@@ -55,14 +57,16 @@ export const useSchedulingConflicts = () => {
     jobsByMachineAndDate.forEach((groupJobs, key) => {
       if (groupJobs.length < 2) return;
 
-      const [machineId, dateStr] = key.split('-').slice(0, 2);
-      const actualMachineId = key.substring(0, key.lastIndexOf('-' + dateStr.split('-')[0]));
-      const actualDateStr = key.substring(actualMachineId.length + 1);
+      // Safely split using our separator
+      const parts = key.split(KEY_SEPARATOR);
+      if (parts.length !== 2) return;
       
-      const machine = machines.find(m => m.id === actualMachineId);
+      const [machineId, dateStr] = parts;
+      
+      const machine = machines.find(m => m.id === machineId);
       if (!machine) return;
 
-      const date = parseISO(actualDateStr);
+      const date = parseISO(dateStr);
       if (!isValid(date)) return;
 
       const conflictingJobs: ConflictingJob[] = [];
@@ -122,8 +126,8 @@ export const useSchedulingConflicts = () => {
         const hasProductionConflict = conflictingJobs.some(j => j.status === 'production');
         
         detectedConflicts.push({
-          id: `conflict-${actualMachineId}-${actualDateStr}`,
-          machineId: actualMachineId,
+          id: `conflict-${machineId}-${dateStr}`,
+          machineId: machineId,
           machineName: machine.name,
           machineCode: machine.code,
           date,

@@ -184,7 +184,7 @@ export function useGoalAlerts(config: Partial<GoalAlertConfig> = {}) {
     }, 3000);
 
     return () => clearTimeout(timeout);
-  }, []);
+  }, [settings.checkOnMount, showNotifications]);
 
   // Show notifications when alerts change
   useEffect(() => {
