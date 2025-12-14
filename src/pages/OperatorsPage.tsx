@@ -31,6 +31,7 @@ export default function OperatorsPage() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [machineFilter, setMachineFilter] = useState<string>('all');
+  const [statusFilter, setStatusFilter] = useState<string>('all');
 
   
 
@@ -53,9 +54,14 @@ export default function OperatorsPage() {
       const machineMatch = machineFilter === 'all' || 
         getAssignedMachineIds(operator.user_id).includes(machineFilter);
       
-      return nameMatch && machineMatch;
+      // Filter by online status
+      const statusMatch = statusFilter === 'all' ||
+        (statusFilter === 'online' && isOnline(operator.user_id)) ||
+        (statusFilter === 'offline' && !isOnline(operator.user_id));
+      
+      return nameMatch && machineMatch && statusMatch;
     });
-  }, [operators, searchQuery, machineFilter, assignments]);
+  }, [operators, searchQuery, machineFilter, statusFilter, assignments, isOnline]);
 
   const handleOpenAssignment = (operator: OperatorWithProfile) => {
     setSelectedOperator(operator);
@@ -70,9 +76,10 @@ export default function OperatorsPage() {
   const clearFilters = () => {
     setSearchQuery('');
     setMachineFilter('all');
+    setStatusFilter('all');
   };
 
-  const hasActiveFilters = searchQuery || machineFilter !== 'all';
+  const hasActiveFilters = searchQuery || machineFilter !== 'all' || statusFilter !== 'all';
 
   return (
     <MainLayout>
@@ -156,6 +163,26 @@ export default function OperatorsPage() {
                       {machine.name}
                     </SelectItem>
                   ))}
+                </SelectContent>
+              </Select>
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger className="w-full sm:w-[140px]">
+                  <SelectValue placeholder="Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todos</SelectItem>
+                  <SelectItem value="online">
+                    <span className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-success" />
+                      Online
+                    </span>
+                  </SelectItem>
+                  <SelectItem value="offline">
+                    <span className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-muted-foreground/50" />
+                      Offline
+                    </span>
+                  </SelectItem>
                 </SelectContent>
               </Select>
               {hasActiveFilters && (
