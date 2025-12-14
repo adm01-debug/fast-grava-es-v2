@@ -1,14 +1,16 @@
 import { memo } from 'react';
-import { Printer } from 'lucide-react';
+import { Printer, Wifi, WifiOff } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useAuth } from '@/contexts/AuthContext';
 import { useOperatorMachines } from '@/hooks/useOperatorMachines';
+import { useOperatorPresence } from '@/hooks/useOperatorPresence';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
 export const OperatorMachinesIndicator = memo(function OperatorMachinesIndicator() {
   const { user, role } = useAuth();
+  const { isTracking } = useOperatorPresence();
   
   const { assignments, isLoading: assignmentsLoading } = useOperatorMachines(user?.id);
   
@@ -45,6 +47,7 @@ export const OperatorMachinesIndicator = memo(function OperatorMachinesIndicator
       <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-destructive/10 border border-destructive/20">
         <Printer className="h-4 w-4 text-destructive" />
         <span className="text-sm text-destructive">Sem máquinas atribuídas</span>
+        <StatusBadge isOnline={isTracking} />
       </div>
     );
   }
@@ -57,9 +60,7 @@ export const OperatorMachinesIndicator = memo(function OperatorMachinesIndicator
           <span className="text-sm font-medium text-foreground">
             {assignedMachines.length} {assignedMachines.length === 1 ? 'máquina' : 'máquinas'}
           </span>
-          <Badge variant="secondary" className="text-xs bg-primary/20 text-primary border-0">
-            Ativas
-          </Badge>
+          <StatusBadge isOnline={isTracking} />
         </div>
       </TooltipTrigger>
       <TooltipContent side="bottom" className="max-w-xs">
@@ -73,6 +74,38 @@ export const OperatorMachinesIndicator = memo(function OperatorMachinesIndicator
             ))}
           </div>
         </div>
+      </TooltipContent>
+    </Tooltip>
+  );
+});
+
+const StatusBadge = memo(function StatusBadge({ isOnline }: { isOnline: boolean }) {
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <div className={`flex items-center gap-1 px-1.5 py-0.5 rounded-full text-xs font-medium ${
+          isOnline 
+            ? 'bg-green-500/20 text-green-600 dark:text-green-400' 
+            : 'bg-muted text-muted-foreground'
+        }`}>
+          {isOnline ? (
+            <>
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+              </span>
+              <Wifi className="h-3 w-3" />
+            </>
+          ) : (
+            <>
+              <span className="h-2 w-2 rounded-full bg-muted-foreground/50"></span>
+              <WifiOff className="h-3 w-3" />
+            </>
+          )}
+        </div>
+      </TooltipTrigger>
+      <TooltipContent side="bottom">
+        {isOnline ? 'Conectado em tempo real' : 'Desconectado'}
       </TooltipContent>
     </Tooltip>
   );
