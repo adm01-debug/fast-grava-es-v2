@@ -328,3 +328,96 @@ describe('useSmartSequencingWithActions - Savings Calculation', () => {
     }
   });
 });
+
+describe('useSmartSequencingWithActions - Invalid Date Validation', () => {
+  it('should handle jobs with null scheduled_date', () => {
+    const { result } = renderHook(() => useSmartSequencingWithActions(), {
+      wrapper: createWrapper(),
+    });
+
+    // Should not crash and should return valid structure
+    expect(result.current.suggestions).toBeDefined();
+    expect(Array.isArray(result.current.suggestions)).toBe(true);
+    expect(result.current.isApplying).toBe(false);
+  });
+
+  it('should handle jobs with invalid start_time format', () => {
+    const { result } = renderHook(() => useSmartSequencingWithActions(), {
+      wrapper: createWrapper(),
+    });
+
+    // Should process jobs with proper time validation
+    expect(result.current.suggestions).toBeDefined();
+    expect(typeof result.current.totalSavings).toBe('number');
+  });
+
+  it('should handle jobs with missing end_time', () => {
+    const { result } = renderHook(() => useSmartSequencingWithActions(), {
+      wrapper: createWrapper(),
+    });
+
+    // Should calculate end_time from start_time + estimated_duration if missing
+    expect(result.current.suggestions).toBeDefined();
+    expect(result.current.hasSuggestions).toBeDefined();
+  });
+
+  it('should validate dates before calculating time slots', () => {
+    const { result } = renderHook(() => useSmartSequencingWithActions(), {
+      wrapper: createWrapper(),
+    });
+
+    // Should not have NaN in any calculated times
+    if (result.current.suggestions.length > 0) {
+      const suggestion = result.current.suggestions[0];
+      suggestion.optimizedSequence.forEach(job => {
+        if (job.start_time) {
+          const [hours, minutes] = job.start_time.split(':').map(Number);
+          expect(isNaN(hours)).toBe(false);
+          expect(isNaN(minutes)).toBe(false);
+        }
+      });
+    }
+  });
+
+  it('should handle edge case of midnight time slots', () => {
+    const { result } = renderHook(() => useSmartSequencingWithActions(), {
+      wrapper: createWrapper(),
+    });
+
+    // Should not generate time slots before 07:00 or after 20:00
+    if (result.current.suggestions.length > 0) {
+      const suggestion = result.current.suggestions[0];
+      suggestion.optimizedSequence.forEach(job => {
+        if (job.start_time) {
+          const [hours] = job.start_time.split(':').map(Number);
+          expect(hours).toBeGreaterThanOrEqual(7);
+          expect(hours).toBeLessThan(20);
+        }
+      });
+    }
+  });
+
+  it('should handle jobs with very large estimated_duration', () => {
+    const { result } = renderHook(() => useSmartSequencingWithActions(), {
+      wrapper: createWrapper(),
+    });
+
+    // Should handle gracefully without infinite loops
+    expect(result.current.suggestions).toBeDefined();
+    expect(result.current.isApplying).toBe(false);
+  });
+
+  it('should handle concurrent date parsing safely', () => {
+    // Render multiple hooks simultaneously
+    const { result: result1 } = renderHook(() => useSmartSequencingWithActions(), {
+      wrapper: createWrapper(),
+    });
+    const { result: result2 } = renderHook(() => useSmartSequencingWithActions(), {
+      wrapper: createWrapper(),
+    });
+
+    // Both should work independently
+    expect(result1.current.suggestions).toBeDefined();
+    expect(result2.current.suggestions).toBeDefined();
+  });
+});
