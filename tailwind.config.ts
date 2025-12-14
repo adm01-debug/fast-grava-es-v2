@@ -198,16 +198,28 @@ export default {
             transform: "translate(0, 0) rotate(0deg) scale(1)", 
             opacity: "1" 
           },
-          "30%": { 
-            transform: "translate(calc(var(--confetti-x) * 0.6), calc(var(--confetti-y) * 0.8)) rotate(calc(var(--confetti-rotation) * 0.4)) scale(1.1)", 
+          "15%": { 
+            transform: "translate(calc(var(--confetti-x) * 0.3), calc(var(--confetti-y) * 0.5)) rotate(180deg) scale(1.1)", 
             opacity: "1" 
           },
+          "30%": { 
+            transform: "translate(calc(var(--confetti-x) * 0.6), calc(var(--confetti-y) * 0.8)) rotate(360deg) scale(1.05)", 
+            opacity: "1" 
+          },
+          "45%": { 
+            transform: "translate(calc(var(--confetti-x) * 0.8), calc(var(--confetti-y) * 0.5 + 10px)) rotate(540deg) scale(0.95)", 
+            opacity: "0.9" 
+          },
           "60%": { 
-            transform: "translate(calc(var(--confetti-x) * 0.9), calc(var(--confetti-y) * 0.3 + 20px)) rotate(calc(var(--confetti-rotation) * 0.7)) scale(0.9)", 
-            opacity: "0.8" 
+            transform: "translate(calc(var(--confetti-x) * 0.9), calc(var(--confetti-y) * 0.3 + 40px)) rotate(720deg) scale(0.85)", 
+            opacity: "0.7" 
+          },
+          "80%": { 
+            transform: "translate(calc(var(--confetti-x) * 0.95), calc(var(--confetti-y) + 100px)) rotate(900deg) scale(0.6)", 
+            opacity: "0.4" 
           },
           "100%": { 
-            transform: "translate(var(--confetti-x), calc(var(--confetti-y) + 150px)) rotate(var(--confetti-rotation)) scale(0.5)", 
+            transform: "translate(var(--confetti-x), calc(var(--confetti-y) + 180px)) rotate(1080deg) scale(0.3)", 
             opacity: "0" 
           },
         },
