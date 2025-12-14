@@ -1242,6 +1242,62 @@
 }
 
 /* ============================================
+   SIMULATE REDUCED MOTION (for testing)
+   ============================================ */
+
+/* This class simulates prefers-reduced-motion for testing purposes */
+html.simulate-reduced-motion,
+html.simulate-reduced-motion *,
+html.simulate-reduced-motion *::before,
+html.simulate-reduced-motion *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+html.simulate-reduced-motion .animate-float,
+html.simulate-reduced-motion .animate-pulse,
+html.simulate-reduced-motion .animate-pulse-soft,
+html.simulate-reduced-motion .animate-bounce-in,
+html.simulate-reduced-motion .animate-fade-in,
+html.simulate-reduced-motion .animate-scale-in,
+html.simulate-reduced-motion .animate-slide-in-right,
+html.simulate-reduced-motion .animate-slide-in-up,
+html.simulate-reduced-motion .animate-accordion-down,
+html.simulate-reduced-motion .animate-accordion-up,
+html.simulate-reduced-motion .pulse-glow,
+html.simulate-reduced-motion .pulse-ring,
+html.simulate-reduced-motion .bounce-attention,
+html.simulate-reduced-motion .wiggle,
+html.simulate-reduced-motion .wiggle-infinite,
+html.simulate-reduced-motion .xp-bar,
+html.simulate-reduced-motion .coin-shine,
+html.simulate-reduced-motion .streak-fire {
+  animation: none !important;
+}
+
+html.simulate-reduced-motion .hover-lift:hover,
+html.simulate-reduced-motion .hover-lift-sm:hover,
+html.simulate-reduced-motion .hover-scale:hover,
+html.simulate-reduced-motion .hover-scale-sm:hover {
+  transform: none !important;
+}
+
+html.simulate-reduced-motion [class*="stagger-"] {
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+html.simulate-reduced-motion .hover-glow:hover,
+html.simulate-reduced-motion .glow-primary,
+html.simulate-reduced-motion .glow-success,
+html.simulate-reduced-motion .glow-warning,
+html.simulate-reduced-motion .glow-info {
+  box-shadow: none !important;
+}
+
+/* ============================================
    SCROLLBAR OPTIMIZATION
    ============================================ */
 
