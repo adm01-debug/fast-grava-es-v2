@@ -1,8 +1,8 @@
-import { Suspense, lazy, useMemo } from 'react';
+import { Suspense, lazy, useMemo, ComponentType } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { StatsCard } from '@/components/dashboard/StatsCard';
 import { useOperatorDashboardData } from '@/hooks/useOperatorDashboardData';
-import { useDashboardLayout } from '@/hooks/useDashboardLayout';
+import { useDashboardLayout, WidgetConfig } from '@/hooks/useDashboardLayout';
 import { useAuth } from '@/contexts/AuthContext';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
@@ -17,6 +17,12 @@ import {
   Printer,
   User
 } from 'lucide-react';
+
+// Type definitions for widget components
+interface WidgetComponentConfig {
+  component: React.LazyExoticComponent<ComponentType<Record<string, never>>>;
+  skeletonHeight: string;
+}
 
 // Lazy load heavy dashboard widgets
 const OccupancyChart = lazy(() => import('@/components/dashboard/OccupancyChart').then(m => ({ default: m.OccupancyChart })));
@@ -43,8 +49,8 @@ function WidgetSkeleton({ className = "h-64" }: { className?: string }) {
   );
 }
 
-// Widget component mapping
-const WIDGET_COMPONENTS: Record<string, { component: React.LazyExoticComponent<any>; skeletonHeight: string }> = {
+// Widget component mapping with strict typing
+const WIDGET_COMPONENTS: Record<string, WidgetComponentConfig> = {
   occupancy: { component: OccupancyChart, skeletonHeight: 'h-[320px]' },
   buffer: { component: BufferStatusWidget, skeletonHeight: 'h-32' },
   conflicts: { component: ConflictAlertsWidget, skeletonHeight: 'h-32' },
@@ -72,16 +78,23 @@ const Index = () => {
     getWidgetsBySection,
   } = useDashboardLayout();
 
-  // Filter widgets based on role
-  const filterWidgetsForRole = (widgetsList: ReturnType<typeof getWidgetsBySection>) => {
-    if (!isOperator) return widgetsList;
-    return widgetsList.filter(w => !COORDINATOR_ONLY_WIDGETS.includes(w.id));
-  };
+  // Centralized filter for role-based widget visibility
+  const filterWidgetsForRole = useMemo(() => {
+    return (widgetsList: WidgetConfig[]) => {
+      if (!isOperator) return widgetsList;
+      return widgetsList.filter(w => !COORDINATOR_ONLY_WIDGETS.includes(w.id));
+    };
+  }, [isOperator]);
 
-  const mainWidgets = useMemo(() => filterWidgetsForRole(getWidgetsBySection('main')), [getWidgetsBySection, isOperator]);
-  const sidebarWidgets = useMemo(() => filterWidgetsForRole(getWidgetsBySection('sidebar')), [getWidgetsBySection, isOperator]);
-  const efficiencyWidgets = useMemo(() => filterWidgetsForRole(getWidgetsBySection('efficiency')), [getWidgetsBySection, isOperator]);
-  const bottomWidgets = useMemo(() => filterWidgetsForRole(getWidgetsBySection('bottom')), [getWidgetsBySection, isOperator]);
+  // Filtered widgets for DashboardEditControls (centralized, avoiding repetition)
+  const filteredWidgetsForControls = useMemo(() => {
+    return filterWidgetsForRole(widgets);
+  }, [widgets, filterWidgetsForRole]);
+
+  const mainWidgets = useMemo(() => filterWidgetsForRole(getWidgetsBySection('main')), [getWidgetsBySection, filterWidgetsForRole]);
+  const sidebarWidgets = useMemo(() => filterWidgetsForRole(getWidgetsBySection('sidebar')), [getWidgetsBySection, filterWidgetsForRole]);
+  const efficiencyWidgets = useMemo(() => filterWidgetsForRole(getWidgetsBySection('efficiency')), [getWidgetsBySection, filterWidgetsForRole]);
+  const bottomWidgets = useMemo(() => filterWidgetsForRole(getWidgetsBySection('bottom')), [getWidgetsBySection, filterWidgetsForRole]);
 
   const renderWidget = (widgetId: string) => {
     const config = WIDGET_COMPONENTS[widgetId];
@@ -128,7 +141,7 @@ const Index = () => {
           </div>
           <DashboardEditControls
             isEditMode={isEditMode}
-            widgets={isOperator ? widgets.filter(w => !COORDINATOR_ONLY_WIDGETS.includes(w.id)) : widgets}
+            widgets={filteredWidgetsForControls}
             onToggleEditMode={() => setIsEditMode(!isEditMode)}
             onResetLayout={resetLayout}
             onToggleWidget={toggleWidgetVisibility}
