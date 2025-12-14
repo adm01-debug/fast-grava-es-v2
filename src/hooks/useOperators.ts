@@ -10,6 +10,7 @@ export interface OperatorWithProfile {
   avatar_url: string | null;
   phone: string | null;
   created_at: string;
+  is_active: boolean;
 }
 
 export function useOperators() {
@@ -25,6 +26,7 @@ export function useOperators() {
           user_id,
           role,
           created_at,
+          is_active,
           profiles!inner (
             full_name,
             avatar_url,
@@ -43,6 +45,7 @@ export function useOperators() {
         avatar_url: (item.profiles as any)?.avatar_url || null,
         phone: (item.profiles as any)?.phone || null,
         created_at: item.created_at,
+        is_active: (item as any).is_active ?? true,
       })) as OperatorWithProfile[];
     },
     staleTime: 1000 * 60 * 5, // 5 minutes
@@ -87,9 +90,41 @@ export function useOperators() {
     },
   });
 
+  const toggleActiveMutation = useMutation({
+    mutationFn: async ({ operatorId, isActive }: { operatorId: string; isActive: boolean }) => {
+      const { error } = await supabase
+        .from('user_roles')
+        .update({ is_active: isActive } as any)
+        .eq('user_id', operatorId)
+        .eq('role', 'operator');
+
+      if (error) throw error;
+      return { operatorId, isActive };
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['operators'] });
+      toast({
+        title: data.isActive ? 'Operador ativado' : 'Operador desativado',
+        description: data.isActive 
+          ? 'O operador foi reativado e pode acessar o sistema.'
+          : 'O operador foi desativado temporariamente.',
+      });
+    },
+    onError: (error) => {
+      console.error('Error toggling operator status:', error);
+      toast({
+        title: 'Erro ao alterar status',
+        description: 'Não foi possível alterar o status do operador.',
+        variant: 'destructive',
+      });
+    },
+  });
+
   return {
     ...query,
     removeOperator: removeOperatorMutation.mutate,
     isRemoving: removeOperatorMutation.isPending,
+    toggleActive: toggleActiveMutation.mutate,
+    isToggling: toggleActiveMutation.isPending,
   };
 }
