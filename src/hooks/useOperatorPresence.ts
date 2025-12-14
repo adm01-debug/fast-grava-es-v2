@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -12,6 +12,7 @@ interface PresenceState {
 export function useOperatorPresence() {
   const { user } = useAuth();
   const [onlineUsers, setOnlineUsers] = useState<Set<string>>(new Set());
+  const [lastSeen, setLastSeen] = useState<Map<string, Date>>(new Map());
   const [isTracking, setIsTracking] = useState(false);
 
   useEffect(() => {
@@ -46,11 +47,18 @@ export function useOperatorPresence() {
         });
       })
       .on('presence', { event: 'leave' }, ({ leftPresences }) => {
+        const now = new Date();
         setOnlineUsers((prev) => {
           const updated = new Set(prev);
           leftPresences.forEach((presence: any) => {
             if (presence.user_id) {
               updated.delete(presence.user_id);
+              // Track last seen time when user leaves
+              setLastSeen((prevLastSeen) => {
+                const newMap = new Map(prevLastSeen);
+                newMap.set(presence.user_id, now);
+                return newMap;
+              });
             }
           });
           return updated;
@@ -72,12 +80,16 @@ export function useOperatorPresence() {
     };
   }, [user]);
 
-  const isOnline = (userId: string) => onlineUsers.has(userId);
+  const isOnline = useCallback((userId: string) => onlineUsers.has(userId), [onlineUsers]);
+  
+  const getLastSeen = useCallback((userId: string) => lastSeen.get(userId), [lastSeen]);
 
   return {
     onlineUsers,
     isOnline,
     isTracking,
     onlineCount: onlineUsers.size,
+    lastSeen,
+    getLastSeen,
   };
 }
