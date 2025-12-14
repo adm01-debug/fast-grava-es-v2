@@ -3,10 +3,12 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { AnimatePresence } from "framer-motion";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { EfficiencyNotificationProvider } from "@/components/notifications/EfficiencyNotificationProvider";
+import { PageTransition } from "@/components/layout/PageTransition";
 import {
   DashboardPageSkeleton,
   CalendarPageSkeleton,
@@ -38,6 +40,155 @@ const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
 
+function AnimatedRoutes() {
+  const location = useLocation();
+
+  return (
+    <AnimatePresence mode="wait">
+      <Routes location={location} key={location.pathname}>
+        <Route path="/auth" element={
+          <PageTransition>
+            <Suspense fallback={<AuthPageSkeleton />}>
+              <AuthPage />
+            </Suspense>
+          </PageTransition>
+        } />
+        <Route path="/" element={
+          <ProtectedRoute allowedRoles={['coordinator', 'manager']}>
+            <PageTransition>
+              <Suspense fallback={<DashboardPageSkeleton />}>
+                <Index />
+              </Suspense>
+            </PageTransition>
+          </ProtectedRoute>
+        } />
+        <Route path="/calendar/daily" element={
+          <ProtectedRoute allowedRoles={['coordinator', 'manager']}>
+            <PageTransition>
+              <Suspense fallback={<CalendarPageSkeleton />}>
+                <DailyCalendar />
+              </Suspense>
+            </PageTransition>
+          </ProtectedRoute>
+        } />
+        <Route path="/calendar/weekly" element={
+          <ProtectedRoute allowedRoles={['coordinator', 'manager']}>
+            <PageTransition>
+              <Suspense fallback={<CalendarPageSkeleton />}>
+                <WeeklyCalendar />
+              </Suspense>
+            </PageTransition>
+          </ProtectedRoute>
+        } />
+        <Route path="/pending" element={
+          <ProtectedRoute allowedRoles={['coordinator']}>
+            <PageTransition>
+              <Suspense fallback={<ListPageSkeleton />}>
+                <PendingQueue />
+              </Suspense>
+            </PageTransition>
+          </ProtectedRoute>
+        } />
+        <Route path="/alerts" element={
+          <ProtectedRoute>
+            <PageTransition>
+              <Suspense fallback={<DashboardPageSkeleton />}>
+                <AlertsDashboard />
+              </Suspense>
+            </PageTransition>
+          </ProtectedRoute>
+        } />
+        <Route path="/kanban" element={
+          <ProtectedRoute allowedRoles={['coordinator']}>
+            <PageTransition>
+              <Suspense fallback={<KanbanPageSkeleton />}>
+                <KanbanBoard />
+              </Suspense>
+            </PageTransition>
+          </ProtectedRoute>
+        } />
+        <Route path="/kpis" element={
+          <ProtectedRoute allowedRoles={['coordinator', 'manager']}>
+            <PageTransition>
+              <Suspense fallback={<KPIPageSkeleton />}>
+                <KPIDashboard />
+              </Suspense>
+            </PageTransition>
+          </ProtectedRoute>
+        } />
+        <Route path="/operator" element={
+          <ProtectedRoute>
+            <PageTransition>
+              <Suspense fallback={<ListPageSkeleton />}>
+                <OperatorView />
+              </Suspense>
+            </PageTransition>
+          </ProtectedRoute>
+        } />
+        <Route path="/efficiency" element={
+          <ProtectedRoute allowedRoles={['coordinator', 'manager']}>
+            <PageTransition>
+              <Suspense fallback={<EfficiencyPageSkeleton />}>
+                <EfficiencyDashboard />
+              </Suspense>
+            </PageTransition>
+          </ProtectedRoute>
+        } />
+        <Route path="/assistant" element={
+          <ProtectedRoute>
+            <PageTransition>
+              <Suspense fallback={<DashboardPageSkeleton />}>
+                <TechnicalAssistantPage />
+              </Suspense>
+            </PageTransition>
+          </ProtectedRoute>
+        } />
+        <Route path="/scanner" element={
+          <ProtectedRoute>
+            <PageTransition>
+              <Suspense fallback={<DashboardPageSkeleton />}>
+                <QRScannerPage />
+              </Suspense>
+            </PageTransition>
+          </ProtectedRoute>
+        } />
+        <Route path="/integrations/bitrix24" element={
+          <ProtectedRoute allowedRoles={['coordinator']}>
+            <PageTransition>
+              <Suspense fallback={<TablePageSkeleton />}>
+                <Bitrix24ConfigPage />
+              </Suspense>
+            </PageTransition>
+          </ProtectedRoute>
+        } />
+        <Route path="/knowledge" element={
+          <ProtectedRoute>
+            <PageTransition>
+              <Suspense fallback={<ListPageSkeleton />}>
+                <TechnicalKnowledgeBase />
+              </Suspense>
+            </PageTransition>
+          </ProtectedRoute>
+        } />
+        <Route path="/design-system" element={
+          <PageTransition>
+            <Suspense fallback={<DashboardPageSkeleton />}>
+              <DesignSystemPage />
+            </Suspense>
+          </PageTransition>
+        } />
+        <Route path="*" element={
+          <PageTransition>
+            <Suspense fallback={<AuthPageSkeleton />}>
+              <NotFound />
+            </Suspense>
+          </PageTransition>
+        } />
+      </Routes>
+    </AnimatePresence>
+  );
+}
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -46,114 +197,7 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <EfficiencyNotificationProvider>
-            <Routes>
-              <Route path="/auth" element={
-                <Suspense fallback={<AuthPageSkeleton />}>
-                  <AuthPage />
-                </Suspense>
-              } />
-              <Route path="/" element={
-                <ProtectedRoute allowedRoles={['coordinator', 'manager']}>
-                  <Suspense fallback={<DashboardPageSkeleton />}>
-                    <Index />
-                  </Suspense>
-                </ProtectedRoute>
-              } />
-              <Route path="/calendar/daily" element={
-                <ProtectedRoute allowedRoles={['coordinator', 'manager']}>
-                  <Suspense fallback={<CalendarPageSkeleton />}>
-                    <DailyCalendar />
-                  </Suspense>
-                </ProtectedRoute>
-              } />
-              <Route path="/calendar/weekly" element={
-                <ProtectedRoute allowedRoles={['coordinator', 'manager']}>
-                  <Suspense fallback={<CalendarPageSkeleton />}>
-                    <WeeklyCalendar />
-                  </Suspense>
-                </ProtectedRoute>
-              } />
-              <Route path="/pending" element={
-                <ProtectedRoute allowedRoles={['coordinator']}>
-                  <Suspense fallback={<ListPageSkeleton />}>
-                    <PendingQueue />
-                  </Suspense>
-                </ProtectedRoute>
-              } />
-              <Route path="/alerts" element={
-                <ProtectedRoute>
-                  <Suspense fallback={<DashboardPageSkeleton />}>
-                    <AlertsDashboard />
-                  </Suspense>
-                </ProtectedRoute>
-              } />
-              <Route path="/kanban" element={
-                <ProtectedRoute allowedRoles={['coordinator']}>
-                  <Suspense fallback={<KanbanPageSkeleton />}>
-                    <KanbanBoard />
-                  </Suspense>
-                </ProtectedRoute>
-              } />
-              <Route path="/kpis" element={
-                <ProtectedRoute allowedRoles={['coordinator', 'manager']}>
-                  <Suspense fallback={<KPIPageSkeleton />}>
-                    <KPIDashboard />
-                  </Suspense>
-                </ProtectedRoute>
-              } />
-              <Route path="/operator" element={
-                <ProtectedRoute>
-                  <Suspense fallback={<ListPageSkeleton />}>
-                    <OperatorView />
-                  </Suspense>
-                </ProtectedRoute>
-              } />
-              <Route path="/efficiency" element={
-                <ProtectedRoute allowedRoles={['coordinator', 'manager']}>
-                  <Suspense fallback={<EfficiencyPageSkeleton />}>
-                    <EfficiencyDashboard />
-                  </Suspense>
-                </ProtectedRoute>
-              } />
-              <Route path="/assistant" element={
-                <ProtectedRoute>
-                  <Suspense fallback={<DashboardPageSkeleton />}>
-                    <TechnicalAssistantPage />
-                  </Suspense>
-                </ProtectedRoute>
-              } />
-              <Route path="/scanner" element={
-                <ProtectedRoute>
-                  <Suspense fallback={<DashboardPageSkeleton />}>
-                    <QRScannerPage />
-                  </Suspense>
-                </ProtectedRoute>
-              } />
-              <Route path="/integrations/bitrix24" element={
-                <ProtectedRoute allowedRoles={['coordinator']}>
-                  <Suspense fallback={<TablePageSkeleton />}>
-                    <Bitrix24ConfigPage />
-                  </Suspense>
-                </ProtectedRoute>
-              } />
-              <Route path="/knowledge" element={
-                <ProtectedRoute>
-                  <Suspense fallback={<ListPageSkeleton />}>
-                    <TechnicalKnowledgeBase />
-                  </Suspense>
-                </ProtectedRoute>
-              } />
-              <Route path="/design-system" element={
-                <Suspense fallback={<DashboardPageSkeleton />}>
-                  <DesignSystemPage />
-                </Suspense>
-              } />
-              <Route path="*" element={
-                <Suspense fallback={<AuthPageSkeleton />}>
-                  <NotFound />
-                </Suspense>
-              } />
-            </Routes>
+            <AnimatedRoutes />
           </EfficiencyNotificationProvider>
         </AuthProvider>
       </BrowserRouter>
