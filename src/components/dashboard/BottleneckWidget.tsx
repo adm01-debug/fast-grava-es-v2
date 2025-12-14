@@ -1,3 +1,4 @@
+import { memo, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -16,31 +17,31 @@ interface AlertCardProps {
   alert: BottleneckAlert;
 }
 
-function AlertCard({ alert }: AlertCardProps) {
-  const severityConfig = {
-    critical: {
-      icon: AlertTriangle,
-      bg: 'bg-red-500/20',
-      border: 'border-red-500/30',
-      text: 'text-red-400',
-      label: 'Crítico'
-    },
-    warning: {
-      icon: AlertCircle,
-      bg: 'bg-orange-500/20',
-      border: 'border-orange-500/30',
-      text: 'text-orange-400',
-      label: 'Atenção'
-    },
-    info: {
-      icon: Info,
-      bg: 'bg-blue-500/20',
-      border: 'border-blue-500/30',
-      text: 'text-blue-400',
-      label: 'Informativo'
-    }
-  };
+const severityConfig = {
+  critical: {
+    icon: AlertTriangle,
+    bg: 'bg-red-500/20',
+    border: 'border-red-500/30',
+    text: 'text-red-400',
+    label: 'Crítico'
+  },
+  warning: {
+    icon: AlertCircle,
+    bg: 'bg-orange-500/20',
+    border: 'border-orange-500/30',
+    text: 'text-orange-400',
+    label: 'Atenção'
+  },
+  info: {
+    icon: Info,
+    bg: 'bg-blue-500/20',
+    border: 'border-blue-500/30',
+    text: 'text-blue-400',
+    label: 'Informativo'
+  }
+};
 
+const AlertCard = memo(function AlertCard({ alert }: AlertCardProps) {
   const config = severityConfig[alert.severity];
   const Icon = config.icon;
 
@@ -122,10 +123,13 @@ function AlertCard({ alert }: AlertCardProps) {
       </div>
     </div>
   );
-}
+});
+AlertCard.displayName = 'AlertCard';
 
-export function BottleneckWidget() {
+function BottleneckWidgetComponent() {
   const { alerts, criticalCount, warningCount, infoCount, isLoading } = useBottleneckPrediction();
+
+  const totalAlerts = useMemo(() => alerts.length, [alerts]);
 
   if (isLoading) {
     return (
@@ -139,8 +143,6 @@ export function BottleneckWidget() {
       </Card>
     );
   }
-
-  const totalAlerts = alerts.length;
 
   return (
     <Card className="glass-card card-interactive animate-fade-in-up opacity-0 [animation-fill-mode:forwards] [animation-delay:0.25s] dark:hover:shadow-[0_8px_32px_-8px_hsl(45,100%,55%,0.25)]">
@@ -193,3 +195,6 @@ export function BottleneckWidget() {
     </Card>
   );
 }
+
+export const BottleneckWidget = memo(BottleneckWidgetComponent);
+BottleneckWidget.displayName = 'BottleneckWidget';

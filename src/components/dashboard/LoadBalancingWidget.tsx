@@ -1,3 +1,4 @@
+import { memo, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -15,14 +16,7 @@ interface TechniqueLoadCardProps {
   summary: TechniqueLoadSummary;
 }
 
-function TechniqueLoadCard({ summary }: TechniqueLoadCardProps) {
-  const getOccupancyColor = (rate: number) => {
-    if (rate >= 90) return 'bg-red-500';
-    if (rate >= 75) return 'bg-orange-500';
-    if (rate >= 50) return 'bg-yellow-500';
-    return 'bg-green-500';
-  };
-
+const TechniqueLoadCard = memo(function TechniqueLoadCard({ summary }: TechniqueLoadCardProps) {
   return (
     <div className="p-4 rounded-lg bg-muted/30 border border-border/30 space-y-3">
       <div className="flex items-center justify-between">
@@ -92,12 +86,21 @@ function TechniqueLoadCard({ summary }: TechniqueLoadCardProps) {
       )}
     </div>
   );
-}
+});
+TechniqueLoadCard.displayName = 'TechniqueLoadCard';
 
-export function LoadBalancingWidget() {
+function LoadBalancingWidgetComponent() {
   const { byTechnique, suggestions, isLoading } = useLoadBalancing();
 
-  const unbalancedCount = byTechnique.filter(t => t.isUnbalanced).length;
+  const unbalancedCount = useMemo(() => 
+    byTechnique.filter(t => t.isUnbalanced).length,
+    [byTechnique]
+  );
+
+  const filteredTechniques = useMemo(() => 
+    byTechnique.filter(t => t.machines.some(m => m.jobCount > 0)).slice(0, 6),
+    [byTechnique]
+  );
 
   if (isLoading) {
     return (
@@ -142,12 +145,9 @@ export function LoadBalancingWidget() {
         ) : (
           <ScrollArea className="h-[320px] pr-2">
             <div className="space-y-3">
-              {byTechnique
-                .filter(t => t.machines.some(m => m.jobCount > 0))
-                .slice(0, 6)
-                .map((summary) => (
-                  <TechniqueLoadCard key={summary.technique.id} summary={summary} />
-                ))}
+              {filteredTechniques.map((summary) => (
+                <TechniqueLoadCard key={summary.technique.id} summary={summary} />
+              ))}
             </div>
           </ScrollArea>
         )}
@@ -155,3 +155,6 @@ export function LoadBalancingWidget() {
     </Card>
   );
 }
+
+export const LoadBalancingWidget = memo(LoadBalancingWidgetComponent);
+LoadBalancingWidget.displayName = 'LoadBalancingWidget';

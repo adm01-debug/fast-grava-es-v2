@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { memo, useMemo } from 'react';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Cell } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useSchedulingData } from '@/hooks/useSchedulingData';
@@ -25,7 +25,28 @@ const vibrantColors = [
   'hsl(195, 100%, 50%)',  // Ciano claro
 ];
 
-export function OccupancyChart() {
+// Memoized tooltip content style
+const tooltipContentStyle = {
+  backgroundColor: 'hsl(222, 18%, 10%)',
+  border: '1px solid hsl(222, 15%, 20%)',
+  borderRadius: '8px',
+  boxShadow: '0 8px 32px -4px rgb(0 0 0 / 0.5)',
+  color: 'hsl(0, 0%, 95%)',
+};
+
+const tooltipLabelStyle = { color: 'hsl(0, 0%, 95%)' };
+
+// Memoized cell renderer
+const OccupancyCell = memo(({ color, index }: { color: string; index: number }) => (
+  <Cell 
+    key={`cell-${index}`} 
+    fill={color}
+    style={{ filter: 'brightness(1.1)' }}
+  />
+));
+OccupancyCell.displayName = 'OccupancyCell';
+
+function OccupancyChartComponent() {
   const { techniques, jobs, isLoading } = useSchedulingData();
 
   // Calculate real occupancy data based on jobs
@@ -49,6 +70,13 @@ export function OccupancyChart() {
       };
     });
   }, [techniques, jobs]);
+
+  // Memoized tooltip formatter
+  const tooltipFormatter = useMemo(() => (value: number) => [`${value}%`, 'Ocupação'], []);
+  const tooltipLabelFormatter = useMemo(() => 
+    (label: string) => occupancyData.find(d => d.shortName === label)?.technique || label,
+    [occupancyData]
+  );
 
   if (isLoading) {
     return (
@@ -104,24 +132,14 @@ export function OccupancyChart() {
                   axisLine={false}
                 />
                 <Tooltip 
-                  formatter={(value: number) => [`${value}%`, 'Ocupação']}
-                  labelFormatter={(label) => occupancyData.find(d => d.shortName === label)?.technique || label}
-                  contentStyle={{
-                    backgroundColor: 'hsl(222, 18%, 10%)',
-                    border: '1px solid hsl(222, 15%, 20%)',
-                    borderRadius: '8px',
-                    boxShadow: '0 8px 32px -4px rgb(0 0 0 / 0.5)',
-                    color: 'hsl(0, 0%, 95%)',
-                  }}
-                  labelStyle={{ color: 'hsl(0, 0%, 95%)' }}
+                  formatter={tooltipFormatter}
+                  labelFormatter={tooltipLabelFormatter}
+                  contentStyle={tooltipContentStyle}
+                  labelStyle={tooltipLabelStyle}
                 />
                 <Bar dataKey="occupancy" radius={[0, 6, 6, 0]} maxBarSize={24}>
                   {occupancyData.map((entry, index) => (
-                    <Cell 
-                      key={`cell-${index}`} 
-                      fill={entry.color}
-                      style={{ filter: 'brightness(1.1)' }}
-                    />
+                    <OccupancyCell key={`cell-${index}`} color={entry.color} index={index} />
                   ))}
                 </Bar>
               </BarChart>
@@ -132,3 +150,6 @@ export function OccupancyChart() {
     </Card>
   );
 }
+
+export const OccupancyChart = memo(OccupancyChartComponent);
+OccupancyChart.displayName = 'OccupancyChart';

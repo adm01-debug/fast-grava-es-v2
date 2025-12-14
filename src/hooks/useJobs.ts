@@ -215,15 +215,24 @@ export function useUpdateJobStatus() {
   });
 }
 
+export interface BufferTechniqueStatus {
+  technique: DbTechnique;
+  readyCount: number;
+  queueCount: number;
+  isHealthy: boolean;
+  isCritical: boolean;
+  isWarning: boolean;
+}
+
 export function useBufferStatus() {
   const { data: jobs } = useJobs();
   const { data: techniques } = useTechniques();
 
   if (!jobs || !techniques) {
-    return { bufferByTechnique: [], isLoading: true };
+    return { bufferByTechnique: [] as BufferTechniqueStatus[], isLoading: true };
   }
 
-  const bufferByTechnique = techniques.map(technique => {
+  const bufferByTechnique: BufferTechniqueStatus[] = techniques.map(technique => {
     const readyJobs = jobs.filter(
       job => job.technique_id === technique.id && job.status === 'ready'
     );
