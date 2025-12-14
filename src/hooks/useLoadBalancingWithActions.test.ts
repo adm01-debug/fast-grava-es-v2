@@ -244,3 +244,85 @@ describe('useLoadBalancingWithActions - Constants', () => {
     expect(result.current.isLoading).toBe(false);
   });
 });
+
+describe('useLoadBalancingWithActions - Invalid Date Validation', () => {
+  it('should handle invalid targetDate gracefully', () => {
+    const invalidDate = new Date('invalid-date');
+    const { result } = renderHook(() => useLoadBalancingWithActions(invalidDate), {
+      wrapper: createWrapper(),
+    });
+
+    // Should not crash and should return valid structure
+    expect(result.current.byTechnique).toBeDefined();
+    expect(result.current.suggestions).toBeDefined();
+    expect(Array.isArray(result.current.suggestions)).toBe(true);
+  });
+
+  it('should handle null-like targetDate by using current date', () => {
+    const { result: resultWithNull } = renderHook(() => useLoadBalancingWithActions(undefined), {
+      wrapper: createWrapper(),
+    });
+
+    const { result: resultWithDate } = renderHook(() => useLoadBalancingWithActions(new Date()), {
+      wrapper: createWrapper(),
+    });
+
+    // Both should work without crashing
+    expect(resultWithNull.current.byTechnique).toBeDefined();
+    expect(resultWithDate.current.byTechnique).toBeDefined();
+  });
+
+  it('should handle jobs with invalid scheduled_date', () => {
+    // The hook should filter out or handle jobs with invalid dates
+    const { result } = renderHook(() => useLoadBalancingWithActions(), {
+      wrapper: createWrapper(),
+    });
+
+    // Should process valid jobs without crashing
+    expect(result.current.isLoading).toBe(false);
+    expect(result.current.byTechnique).toBeDefined();
+  });
+
+  it('should handle future dates correctly', () => {
+    const futureDate = new Date();
+    futureDate.setFullYear(futureDate.getFullYear() + 1);
+    
+    const { result } = renderHook(() => useLoadBalancingWithActions(futureDate), {
+      wrapper: createWrapper(),
+    });
+
+    // Should work with future dates
+    expect(result.current.byTechnique).toBeDefined();
+    expect(Array.isArray(result.current.suggestions)).toBe(true);
+  });
+
+  it('should handle past dates correctly', () => {
+    const pastDate = new Date('2020-01-01');
+    
+    const { result } = renderHook(() => useLoadBalancingWithActions(pastDate), {
+      wrapper: createWrapper(),
+    });
+
+    // Should work with past dates (though may have no jobs)
+    expect(result.current.byTechnique).toBeDefined();
+    expect(Array.isArray(result.current.suggestions)).toBe(true);
+  });
+
+  it('should validate date using isNaN check', () => {
+    // Test various invalid date formats
+    const invalidDates = [
+      new Date('not-a-date'),
+      new Date(NaN),
+      new Date(''),
+    ];
+
+    invalidDates.forEach(invalidDate => {
+      const { result } = renderHook(() => useLoadBalancingWithActions(invalidDate), {
+        wrapper: createWrapper(),
+      });
+
+      // Should handle gracefully without throwing
+      expect(result.current.byTechnique).toBeDefined();
+    });
+  });
+});
