@@ -4,6 +4,12 @@ import { supabase } from '@/integrations/supabase/client';
 import { useJobs, useMachines, useTechniques, DbJob, DbMachine, DbTechnique } from './useJobs';
 import { toast } from 'sonner';
 import { parseISO, format, isValid } from 'date-fns';
+import { showErrorToast, createAppError } from '@/lib/errorHandling';
+
+const LOAD_BALANCING_ERROR_CONTEXT = {
+  applySuggestion: { entity: 'jobs', operation: 'apply_load_balancing' },
+  applyMultiple: { entity: 'jobs', operation: 'apply_multiple_load_balancing' },
+};
 
 export interface MachineLoad {
   machine: DbMachine;
@@ -60,20 +66,26 @@ export function useLoadBalancingWithActions(targetDate?: Date) {
   // Mutation to apply a single suggestion
   const applySuggestionMutation = useMutation({
     mutationFn: async (suggestion: LoadBalancingSuggestion): Promise<ApplySuggestionResult> => {
-      const { error } = await supabase
-        .from('jobs')
-        .update({ machine_id: suggestion.suggestedMachineId })
-        .eq('id', suggestion.jobId);
-      
-      if (error) throw error;
-      
-      return {
-        success: true,
-        jobId: suggestion.jobId,
-        orderNumber: suggestion.orderNumber,
-        fromMachine: suggestion.currentMachineName,
-        toMachine: suggestion.suggestedMachineName,
-      };
+      try {
+        const { error } = await supabase
+          .from('jobs')
+          .update({ machine_id: suggestion.suggestedMachineId })
+          .eq('id', suggestion.jobId);
+        
+        if (error) throw error;
+        
+        return {
+          success: true,
+          jobId: suggestion.jobId,
+          orderNumber: suggestion.orderNumber,
+          fromMachine: suggestion.currentMachineName,
+          toMachine: suggestion.suggestedMachineName,
+        };
+      } catch (error) {
+        const appError = createAppError(error, LOAD_BALANCING_ERROR_CONTEXT.applySuggestion);
+        if (import.meta.env.DEV) console.error('[applySuggestion]', appError);
+        throw error;
+      }
     },
     onSuccess: (result) => {
       queryClient.invalidateQueries({ queryKey: ['jobs'] });
@@ -82,9 +94,7 @@ export function useLoadBalancingWithActions(targetDate?: Date) {
       });
     },
     onError: (error, suggestion) => {
-      toast.error(`Erro ao mover job ${suggestion.orderNumber}`, {
-        description: error instanceof Error ? error.message : 'Erro desconhecido',
-      });
+      showErrorToast(error, `Erro ao mover job ${suggestion.orderNumber}`);
     },
   });
 
@@ -110,6 +120,8 @@ export function useLoadBalancingWithActions(targetDate?: Date) {
             toMachine: suggestion.suggestedMachineName,
           });
         } catch (error) {
+          const appError = createAppError(error, LOAD_BALANCING_ERROR_CONTEXT.applyMultiple);
+          if (import.meta.env.DEV) console.error('[applyMultipleSuggestions]', appError);
           results.push({
             success: false,
             jobId: suggestion.jobId,
@@ -135,6 +147,9 @@ export function useLoadBalancingWithActions(targetDate?: Date) {
       } else {
         toast.error('Nenhum job foi redistribuído');
       }
+    },
+    onError: (error) => {
+      showErrorToast(error, 'Erro ao redistribuir jobs');
     },
   });
 

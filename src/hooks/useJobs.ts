@@ -1,6 +1,17 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useEffect } from 'react';
+import { showErrorToast, createAppError, createMutationErrorHandler } from '@/lib/errorHandling';
+
+// Error context for debugging
+const JOBS_ERROR_CONTEXT = {
+  hooks: {
+    techniques: { entity: 'techniques', operation: 'fetch' },
+    machines: { entity: 'machines', operation: 'fetch' },
+    jobs: { entity: 'jobs', operation: 'fetch' },
+    updateStatus: { entity: 'jobs', operation: 'update_status' },
+  }
+};
 
 export interface DbJob {
   id: string;
@@ -52,13 +63,19 @@ export function useTechniques() {
   const query = useQuery({
     queryKey: ['techniques'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('techniques')
-        .select('*')
-        .order('name');
-      
-      if (error) throw error;
-      return data as DbTechnique[];
+      try {
+        const { data, error } = await supabase
+          .from('techniques')
+          .select('*')
+          .order('name');
+        
+        if (error) throw error;
+        return data as DbTechnique[];
+      } catch (error) {
+        const appError = createAppError(error, JOBS_ERROR_CONTEXT.hooks.techniques);
+        if (import.meta.env.DEV) console.error('[useTechniques]', appError);
+        throw error;
+      }
     },
     staleTime: STATIC_STALE_TIME,
   });
@@ -94,14 +111,20 @@ export function useMachines() {
   const query = useQuery({
     queryKey: ['machines'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('machines')
-        .select('*')
-        .eq('is_active', true)
-        .order('code');
-      
-      if (error) throw error;
-      return data as DbMachine[];
+      try {
+        const { data, error } = await supabase
+          .from('machines')
+          .select('*')
+          .eq('is_active', true)
+          .order('code');
+        
+        if (error) throw error;
+        return data as DbMachine[];
+      } catch (error) {
+        const appError = createAppError(error, JOBS_ERROR_CONTEXT.hooks.machines);
+        if (import.meta.env.DEV) console.error('[useMachines]', appError);
+        throw error;
+      }
     },
     staleTime: STATIC_STALE_TIME,
   });
@@ -137,13 +160,19 @@ export function useJobs() {
   const query = useQuery({
     queryKey: ['jobs'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('jobs')
-        .select('*')
-        .order('created_at', { ascending: false });
-      
-      if (error) throw error;
-      return data as DbJob[];
+      try {
+        const { data, error } = await supabase
+          .from('jobs')
+          .select('*')
+          .order('created_at', { ascending: false });
+        
+        if (error) throw error;
+        return data as DbJob[];
+      } catch (error) {
+        const appError = createAppError(error, JOBS_ERROR_CONTEXT.hooks.jobs);
+        if (import.meta.env.DEV) console.error('[useJobs]', appError);
+        throw error;
+      }
     },
     staleTime: JOBS_STALE_TIME,
   });
@@ -178,41 +207,48 @@ export function useUpdateJobStatus() {
 
   return useMutation({
     mutationFn: async ({ jobId, status }: { jobId: string; status: DbJob['status'] }) => {
-      const updateData: Partial<DbJob> = { status };
-      
-      if (status === 'production') {
-        updateData.actual_start_time = new Date().toISOString();
-      } else if (status === 'finished') {
-        updateData.actual_end_time = new Date().toISOString();
-      }
-
-      const { error } = await supabase
-        .from('jobs')
-        .update(updateData)
-        .eq('id', jobId);
-      
-      if (error) throw error;
-
-      // Push status update to Bitrix24 (fire and forget)
       try {
-        const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
-        if (projectId) {
-          fetch(`https://${projectId}.supabase.co/functions/v1/bitrix24-sync?action=push`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-            },
-            body: JSON.stringify({ jobId, status })
-          }).catch(console.error);
+        const updateData: Partial<DbJob> = { status };
+        
+        if (status === 'production') {
+          updateData.actual_start_time = new Date().toISOString();
+        } else if (status === 'finished') {
+          updateData.actual_end_time = new Date().toISOString();
         }
-      } catch (e) {
-        console.error('Bitrix24 sync error:', e);
+
+        const { error } = await supabase
+          .from('jobs')
+          .update(updateData)
+          .eq('id', jobId);
+        
+        if (error) throw error;
+
+        // Push status update to Bitrix24 (fire and forget)
+        try {
+          const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+          if (projectId) {
+            fetch(`https://${projectId}.supabase.co/functions/v1/bitrix24-sync?action=push`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+              },
+              body: JSON.stringify({ jobId, status })
+            }).catch(console.error);
+          }
+        } catch (e) {
+          if (import.meta.env.DEV) console.error('[useUpdateJobStatus] Bitrix24 sync error:', e);
+        }
+      } catch (error) {
+        const appError = createAppError(error, JOBS_ERROR_CONTEXT.hooks.updateStatus);
+        if (import.meta.env.DEV) console.error('[useUpdateJobStatus]', appError);
+        throw error;
       }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['jobs'] });
     },
+    onError: createMutationErrorHandler('Erro ao atualizar status do job'),
   });
 }
 
