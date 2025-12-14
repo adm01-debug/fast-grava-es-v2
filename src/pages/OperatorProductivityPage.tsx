@@ -10,8 +10,12 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useOperatorProductivity, OperatorProductivityMetrics, ProductivityPeriod } from '@/hooks/useOperatorProductivity';
 import { useOperatorEvolution } from '@/hooks/useOperatorEvolution';
+import { useOperatorGoals } from '@/hooks/useOperatorGoals';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { CalendarDays, TrendingUp as TrendingUpIcon } from 'lucide-react';
+import { CalendarDays, TrendingUp as TrendingUpIcon, Plus } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { CreateGoalModal } from '@/components/operators/CreateGoalModal';
+import { OperatorGoalsCard, GoalsSummary } from '@/components/operators/OperatorGoalsCard';
 import { 
   Users, 
   TrendingUp, 
@@ -92,7 +96,13 @@ function StatCard({
   );
 }
 
-function OperatorCard({ operator }: { operator: OperatorProductivityMetrics }) {
+interface OperatorCardProps {
+  operator: OperatorProductivityMetrics;
+  goals?: ReturnType<typeof useOperatorGoals>['activeGoals'];
+  onAddGoal?: () => void;
+}
+
+function OperatorCard({ operator, goals = [], onAddGoal }: OperatorCardProps) {
   const getEfficiencyColor = (score: number) => {
     if (score >= 80) return 'text-success';
     if (score >= 60) return 'text-warning';
@@ -159,6 +169,13 @@ function OperatorCard({ operator }: { operator: OperatorProductivityMetrics }) {
               />
             </div>
 
+            {/* Operator Goals */}
+            {goals.length > 0 && (
+              <div className="mb-4">
+                <OperatorGoalsCard goals={goals} metrics={operator} compact />
+              </div>
+            )}
+
             {/* Metrics Grid */}
             <div className="grid grid-cols-2 gap-3 text-sm">
               <div className="flex items-center gap-2">
@@ -193,6 +210,22 @@ function OperatorCard({ operator }: { operator: OperatorProductivityMetrics }) {
                   <span className="text-warning">⏸ {operator.pauseActions}</span>
                 </div>
               </div>
+            )}
+
+            {/* Add Goal Button */}
+            {onAddGoal && goals.length === 0 && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="mt-3 w-full text-xs"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onAddGoal();
+                }}
+              >
+                <Target className="h-3 w-3 mr-1" />
+                Definir meta
+              </Button>
             )}
           </div>
         </div>
@@ -581,11 +614,14 @@ function EvolutionChart({ evolutionData, overallDailyData, selectedOperatorId, o
 export default function OperatorProductivityPage() {
   const [period, setPeriod] = useState<ProductivityPeriod>(30);
   const { operators, overallStats, isLoading } = useOperatorProductivity(period);
+  const { activeGoals, getGoalsByOperator, isLoading: isLoadingGoals } = useOperatorGoals();
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
   const [sortBy, setSortBy] = useState<'efficiency' | 'jobs' | 'pieces' | 'loss'>('efficiency');
   const [selectedOperator, setSelectedOperator] = useState<OperatorProductivityMetrics | null>(null);
   const [evolutionOperatorId, setEvolutionOperatorId] = useState<string | 'all'>('all');
+  const [showCreateGoalModal, setShowCreateGoalModal] = useState(false);
+  const [goalOperatorId, setGoalOperatorId] = useState<string | undefined>(undefined);
   
   // Use period for evolution chart (default to 30 if 'all')
   const evolutionDays = period === 'all' ? 30 : period;
@@ -670,17 +706,32 @@ export default function OperatorProductivityPage() {
             </p>
           </div>
           
-          {/* Period Filter */}
-          <div className="flex items-center gap-2">
-            <CalendarDays className="h-4 w-4 text-muted-foreground" />
-            <Tabs value={String(period)} onValueChange={(v) => setPeriod(v === 'all' ? 'all' : Number(v) as ProductivityPeriod)}>
-              <TabsList className="bg-muted/50">
-                <TabsTrigger value="7" className="text-xs px-3">7 dias</TabsTrigger>
-                <TabsTrigger value="30" className="text-xs px-3">30 dias</TabsTrigger>
-                <TabsTrigger value="90" className="text-xs px-3">90 dias</TabsTrigger>
-                <TabsTrigger value="all" className="text-xs px-3">Tudo</TabsTrigger>
-              </TabsList>
-            </Tabs>
+          {/* Actions */}
+          <div className="flex items-center gap-3">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                setGoalOperatorId(undefined);
+                setShowCreateGoalModal(true);
+              }}
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Nova Meta
+            </Button>
+            
+            {/* Period Filter */}
+            <div className="flex items-center gap-2">
+              <CalendarDays className="h-4 w-4 text-muted-foreground" />
+              <Tabs value={String(period)} onValueChange={(v) => setPeriod(v === 'all' ? 'all' : Number(v) as ProductivityPeriod)}>
+                <TabsList className="bg-muted/50">
+                  <TabsTrigger value="7" className="text-xs px-3">7 dias</TabsTrigger>
+                  <TabsTrigger value="30" className="text-xs px-3">30 dias</TabsTrigger>
+                  <TabsTrigger value="90" className="text-xs px-3">90 dias</TabsTrigger>
+                  <TabsTrigger value="all" className="text-xs px-3">Tudo</TabsTrigger>
+                </TabsList>
+              </Tabs>
+            </div>
           </div>
         </div>
 
@@ -725,6 +776,11 @@ export default function OperatorProductivityPage() {
             trend={overallStats.averageLossRate <= 5 ? 'up' : 'down'}
           />
         </div>
+
+        {/* Goals Summary */}
+        {activeGoals.length > 0 && (
+          <GoalsSummary allGoals={activeGoals} allMetrics={operators} />
+        )}
 
         {/* Top Performer Highlight */}
         {overallStats.topPerformer && overallStats.topPerformer.totalJobsCompleted > 0 && (
@@ -822,12 +878,26 @@ export default function OperatorProductivityPage() {
                 style={{ animationDelay: `${index * 50}ms` }}
                 onClick={() => setSelectedOperator(operator)}
               >
-                <OperatorCard operator={operator} />
+                <OperatorCard 
+                  operator={operator} 
+                  goals={getGoalsByOperator(operator.operatorId)}
+                  onAddGoal={() => {
+                    setGoalOperatorId(operator.operatorId);
+                    setShowCreateGoalModal(true);
+                  }}
+                />
               </div>
             ))}
           </div>
         )}
       </div>
+
+      {/* Create Goal Modal */}
+      <CreateGoalModal
+        open={showCreateGoalModal}
+        onOpenChange={setShowCreateGoalModal}
+        defaultOperatorId={goalOperatorId}
+      />
     </MainLayout>
   );
 }
