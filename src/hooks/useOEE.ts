@@ -1,6 +1,26 @@
 import { useMemo } from 'react';
 import { useSchedulingData } from './useSchedulingData';
-import { startOfDay, endOfDay, subDays, differenceInMinutes, parseISO, isWithinInterval } from 'date-fns';
+import { startOfDay, endOfDay, subDays, differenceInMinutes, parseISO, isWithinInterval, isValid } from 'date-fns';
+
+// Data validation helpers
+function isValidDate(dateStr: string | null | undefined): boolean {
+  if (!dateStr) return false;
+  try {
+    const date = parseISO(dateStr);
+    return isValid(date);
+  } catch {
+    return false;
+  }
+}
+
+function sanitizeNumber(value: unknown, fallback = 0): number {
+  if (typeof value !== 'number' || !Number.isFinite(value)) return fallback;
+  return Math.max(0, value);
+}
+
+function clampPercentage(value: number): number {
+  return Math.min(100, Math.max(0, value));
+}
 
 export interface MachineOEE {
   machineId: string;
@@ -100,17 +120,24 @@ export function useOEE(daysBack: number = 30) {
   const data = useMemo<OEEData | null>(() => {
     if (!jobs || !machines || !techniques) return null;
     
+    // Validate daysBack parameter
+    const validDaysBack = Math.max(1, Math.min(365, daysBack));
+    
     const now = new Date();
-    const startDate = startOfDay(subDays(now, daysBack));
+    const startDate = startOfDay(subDays(now, validDaysBack));
     const endDate = endOfDay(now);
     
-    // Filter completed jobs within the period
+    // Filter completed jobs within the period with validation
     const periodJobs = jobs.filter(job => {
       if (job.status !== 'finished') return false;
-      if (!job.actual_end_time) return false;
+      if (!isValidDate(job.actual_end_time)) return false;
       
-      const endTime = parseISO(job.actual_end_time);
-      return isWithinInterval(endTime, { start: startDate, end: endDate });
+      try {
+        const endTime = parseISO(job.actual_end_time!);
+        return isWithinInterval(endTime, { start: startDate, end: endDate });
+      } catch {
+        return false;
+      }
     });
     
     // Calculate OEE per machine
@@ -130,21 +157,26 @@ export function useOEE(daysBack: number = 30) {
       let totalQuantity = 0;
       
       for (const job of machineJobs) {
-        // Actual operating time
-        if (job.actual_start_time && job.actual_end_time) {
-          const start = parseISO(job.actual_start_time);
-          const end = parseISO(job.actual_end_time);
-          totalActualMinutes += differenceInMinutes(end, start);
+        // Actual operating time with validation
+        if (isValidDate(job.actual_start_time) && isValidDate(job.actual_end_time)) {
+          try {
+            const start = parseISO(job.actual_start_time!);
+            const end = parseISO(job.actual_end_time!);
+            const minutes = differenceInMinutes(end, start);
+            totalActualMinutes += sanitizeNumber(minutes);
+          } catch {
+            // Skip invalid date pairs
+          }
         }
         
         // Estimated time (ideal cycle time)
-        totalEstimatedMinutes += job.estimated_duration || 60;
+        totalEstimatedMinutes += sanitizeNumber(job.estimated_duration, 60);
         
         // Quality metrics - use produced_quantity if available, otherwise use quantity
-        const producedQty = job.produced_quantity ?? job.quantity ?? 0;
+        const producedQty = sanitizeNumber(job.produced_quantity ?? job.quantity);
         totalProducedPieces += producedQty;
-        totalLostPieces += job.lost_pieces ?? 0;
-        totalQuantity += job.quantity || 0;
+        totalLostPieces += sanitizeNumber(job.lost_pieces);
+        totalQuantity += sanitizeNumber(job.quantity);
       }
       
       // Calculate planned production time (days with jobs × hours per day)

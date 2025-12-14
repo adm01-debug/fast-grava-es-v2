@@ -1,6 +1,21 @@
 import { useMemo } from 'react';
 import { useJobs, useMachines, useTechniques, DbJob, DbTechnique } from './useJobs';
-import { format, addDays, parseISO } from 'date-fns';
+import { format, addDays, parseISO, isValid } from 'date-fns';
+
+// Data validation helpers
+function isValidJob(job: DbJob): boolean {
+  return (
+    typeof job.id === 'string' && job.id.length > 0 &&
+    typeof job.technique_id === 'string' &&
+    typeof job.estimated_duration === 'number' && job.estimated_duration >= 0 &&
+    typeof job.status === 'string'
+  );
+}
+
+function sanitizeNumber(value: unknown, fallback = 0): number {
+  if (typeof value !== 'number' || !Number.isFinite(value)) return fallback;
+  return Math.max(0, value);
+}
 
 export interface BottleneckAlert {
   id: string;
@@ -47,6 +62,19 @@ export function useBottleneckPrediction() {
       return { alerts: [], capacityByDate: [], isLoading: true };
     }
 
+    // Validate input data
+    const validJobs = jobs.filter(isValidJob);
+    const validMachines = machines.filter(m => 
+      typeof m.id === 'string' && typeof m.technique_id === 'string'
+    );
+    const validTechniques = techniques.filter(t =>
+      typeof t.id === 'string' && typeof t.name === 'string'
+    );
+
+    if (validJobs.length === 0 && jobs.length > 0) {
+      console.warn('[useBottleneckPrediction] All jobs failed validation');
+    }
+
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     
@@ -62,8 +90,8 @@ export function useBottleneckPrediction() {
                         format(targetDate, 'dd/MM');
 
       // Analyze each technique
-      techniques.forEach(technique => {
-        const techniqueMachines = machines.filter(m => m.technique_id === technique.id);
+      validTechniques.forEach(technique => {
+        const techniqueMachines = validMachines.filter(m => m.technique_id === technique.id);
         const machineCount = techniqueMachines.length;
         
         if (machineCount === 0) return;
@@ -71,30 +99,28 @@ export function useBottleneckPrediction() {
         const totalCapacityMinutes = machineCount * DAILY_CAPACITY_MINUTES;
 
         // Get scheduled jobs for this technique and date
-        const scheduledJobs = jobs.filter(job => 
+        const scheduledJobs = validJobs.filter(job => 
           job.technique_id === technique.id &&
           job.scheduled_date === dateStr &&
           !['finished', 'cancelled'].includes(job.status)
         );
 
         // Get pending jobs (queue/ready without scheduled date)
-        // Also include jobs in production for "today" to account for active work
-        // Exclude paused jobs from capacity calculations as they are temporarily stopped
-        const pendingJobs = jobs.filter(job => {
+        // Exclude paused jobs from capacity calculations
+        const pendingJobs = validJobs.filter(job => {
           if (job.technique_id !== technique.id) return false;
           if (['finished', 'cancelled', 'paused'].includes(job.status)) return false;
           
-          // For today (dayOffset === 0), include production jobs without scheduled_date
+          // For today, include production jobs without scheduled_date
           if (dayOffset === 0 && job.status === 'production' && !job.scheduled_date) {
             return true;
           }
           
-          // Include queue/ready jobs without scheduled date
           return ['queue', 'ready'].includes(job.status) && !job.scheduled_date;
         });
 
-        const usedMinutes = scheduledJobs.reduce((acc, job) => acc + job.estimated_duration, 0);
-        const pendingMinutes = pendingJobs.reduce((acc, job) => acc + job.estimated_duration, 0);
+        const usedMinutes = scheduledJobs.reduce((acc, job) => acc + sanitizeNumber(job.estimated_duration), 0);
+        const pendingMinutes = pendingJobs.reduce((acc, job) => acc + sanitizeNumber(job.estimated_duration), 0);
         
         const occupancyRate = (usedMinutes / totalCapacityMinutes) * 100;
         const projectedOccupancy = ((usedMinutes + pendingMinutes) / totalCapacityMinutes) * 100;

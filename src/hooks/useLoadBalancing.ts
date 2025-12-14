@@ -2,6 +2,31 @@ import { useMemo } from 'react';
 import { useJobs, useMachines, useTechniques, DbJob, DbMachine, DbTechnique } from './useJobs';
 import { parseISO, format, isValid } from 'date-fns';
 
+// Data validation helpers
+function isValidJob(job: DbJob): boolean {
+  return (
+    typeof job.id === 'string' && job.id.length > 0 &&
+    typeof job.estimated_duration === 'number' && job.estimated_duration >= 0 &&
+    typeof job.status === 'string'
+  );
+}
+
+function isValidMachine(machine: DbMachine): boolean {
+  return (
+    typeof machine.id === 'string' && machine.id.length > 0 &&
+    typeof machine.technique_id === 'string'
+  );
+}
+
+function sanitizeNumber(value: unknown, fallback = 0): number {
+  if (typeof value !== 'number' || !Number.isFinite(value)) return fallback;
+  return Math.max(0, value);
+}
+
+function clampPercentage(value: number): number {
+  return Math.min(100, Math.max(0, value));
+}
+
 export interface MachineLoad {
   machine: DbMachine;
   technique: DbTechnique;
@@ -47,14 +72,25 @@ export function useLoadBalancing(targetDate?: Date) {
       return { byTechnique: [], suggestions: [], isLoading: true };
     }
 
+    // Validate input data
+    const validJobs = jobs.filter(isValidJob);
+    const validMachines = machines.filter(isValidMachine);
+    const validTechniques = techniques.filter(t =>
+      typeof t.id === 'string' && typeof t.name === 'string'
+    );
+
+    if (validJobs.length === 0 && jobs.length > 0) {
+      console.warn('[useLoadBalancing] All jobs failed validation');
+    }
+
     const date = targetDate || new Date();
     const dateStr = format(date, 'yyyy-MM-dd');
 
     // Calculate load per machine
     const machineLoads = new Map<string, MachineLoad>();
 
-    machines.forEach(machine => {
-      const technique = techniques.find(t => t.id === machine.technique_id);
+    validMachines.forEach(machine => {
+      const technique = validTechniques.find(t => t.id === machine.technique_id);
       if (!technique) return;
 
       machineLoads.set(machine.id, {
@@ -68,8 +104,8 @@ export function useLoadBalancing(targetDate?: Date) {
       });
     });
 
-    // Assign jobs to machines
-    jobs.forEach(job => {
+    // Assign jobs to machines with validation
+    validJobs.forEach(job => {
       if (!job.machine_id || !job.scheduled_date) return;
       if (['finished', 'cancelled'].includes(job.status)) return;
 
@@ -79,21 +115,21 @@ export function useLoadBalancing(targetDate?: Date) {
       const load = machineLoads.get(job.machine_id);
       if (!load) return;
 
-      load.scheduledMinutes += job.estimated_duration;
+      load.scheduledMinutes += sanitizeNumber(job.estimated_duration);
       load.jobCount++;
       load.jobs.push(job);
     });
 
-    // Calculate occupancy rates
+    // Calculate occupancy rates with clamping
     machineLoads.forEach(load => {
-      load.occupancyRate = Math.min(100, (load.scheduledMinutes / DAILY_CAPACITY_MINUTES) * 100);
+      load.occupancyRate = clampPercentage((load.scheduledMinutes / DAILY_CAPACITY_MINUTES) * 100);
       load.availableMinutes = Math.max(0, DAILY_CAPACITY_MINUTES - load.scheduledMinutes);
     });
 
     // Group by technique and find imbalances
     const techniqueMap = new Map<string, TechniqueLoadSummary>();
 
-    techniques.forEach(technique => {
+    validTechniques.forEach(technique => {
       const techniqueMachines = Array.from(machineLoads.values())
         .filter(l => l.technique.id === technique.id);
 
