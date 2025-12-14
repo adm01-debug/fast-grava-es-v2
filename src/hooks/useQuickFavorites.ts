@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { toast } from '@/hooks/use-toast';
 
 export interface QuickFavorite {
   id: string;
@@ -88,12 +89,21 @@ export function useQuickFavorites() {
               .then(({ error }) => {
                 if (error) {
                   console.error('Error migrating favorites:', error);
+                  toast({
+                    title: 'Erro na migração',
+                    description: 'Não foi possível migrar seus favoritos para a nuvem.',
+                    variant: 'destructive',
+                  });
                 } else {
                   console.log('Successfully migrated favorites to database');
                   // Update query cache
                   queryClient.setQueryData(['user-favorites', user.id], parsed);
                   // Clean up localStorage
                   localStorage.removeItem(storageKey);
+                  toast({
+                    title: 'Favoritos sincronizados',
+                    description: 'Seus atalhos foram migrados para a nuvem e agora sincronizam entre dispositivos.',
+                  });
                 }
               });
           }
