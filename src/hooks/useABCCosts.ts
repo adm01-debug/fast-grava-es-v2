@@ -1,12 +1,10 @@
 // Main ABC Costing hook - combines data, mutations, and calculations
 // Refactored into smaller modules for maintainability
 
-import { useABCData } from './abc/useABCData';
-import { useABCMutations } from './abc/useABCMutations';
-import { useABCCalculations } from './abc/useABCCalculations';
+import { useABCData, useABCMutations, useABCCalculations } from './abc';
 
 // Re-export types for backward compatibility
-export * from './abc/types';
+export * from './abc';
 
 export function useABCCosts() {
   // Data fetching
