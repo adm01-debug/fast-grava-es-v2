@@ -321,22 +321,86 @@ interface EvolutionChartProps {
   isLoading: boolean;
 }
 
+// Linear regression calculation for trend line
+function calculateLinearRegression(data: { x: number; y: number }[]) {
+  const n = data.length;
+  if (n < 2) return { slope: 0, intercept: 0 };
+  
+  const sumX = data.reduce((sum, d) => sum + d.x, 0);
+  const sumY = data.reduce((sum, d) => sum + d.y, 0);
+  const sumXY = data.reduce((sum, d) => sum + d.x * d.y, 0);
+  const sumXX = data.reduce((sum, d) => sum + d.x * d.x, 0);
+  
+  const slope = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
+  const intercept = (sumY - slope * sumX) / n;
+  
+  return { slope, intercept };
+}
+
 function EvolutionChart({ evolutionData, overallDailyData, selectedOperatorId, onOperatorChange, isLoading }: EvolutionChartProps) {
-  const chartData = useMemo(() => {
+  const FORECAST_DAYS = 7;
+
+  const { chartData, trendDirection, forecastValue } = useMemo(() => {
+    let baseData: { dateLabel: string; efficiencyScore: number; jobsCompleted: number; piecesProduced: number }[];
+    
     if (selectedOperatorId === 'all') {
-      return overallDailyData.map(d => ({
+      baseData = overallDailyData;
+    } else {
+      const operator = evolutionData.find(o => o.operatorId === selectedOperatorId);
+      baseData = operator?.dailyData || [];
+    }
+
+    // Filter data points with activity for regression
+    const dataWithActivity = baseData
+      .map((d, i) => ({ x: i, y: d.efficiencyScore, ...d }))
+      .filter(d => d.efficiencyScore > 0);
+
+    // Calculate linear regression
+    const { slope, intercept } = calculateLinearRegression(dataWithActivity);
+    
+    // Calculate trend value for each point
+    const dataWithTrend = baseData.map((d, i) => {
+      const trendValue = Math.max(0, Math.min(100, intercept + slope * i));
+      return {
         ...d,
         efficiency: Math.round(d.efficiencyScore * 10) / 10,
-      }));
+        trend: Math.round(trendValue * 10) / 10,
+        isForecast: false,
+      };
+    });
+
+    // Generate forecast data points
+    const lastIndex = baseData.length - 1;
+    const forecastData = [];
+    for (let i = 1; i <= FORECAST_DAYS; i++) {
+      const forecastIndex = lastIndex + i;
+      const forecastEfficiency = Math.max(0, Math.min(100, intercept + slope * forecastIndex));
+      const futureDate = new Date();
+      futureDate.setDate(futureDate.getDate() + i);
+      
+      forecastData.push({
+        dateLabel: format(futureDate, 'dd/MM'),
+        efficiencyScore: 0,
+        jobsCompleted: 0,
+        piecesProduced: 0,
+        efficiency: null as number | null,
+        trend: Math.round(forecastEfficiency * 10) / 10,
+        isForecast: true,
+        forecast: Math.round(forecastEfficiency * 10) / 10,
+      });
     }
+
+    const combinedData = [...dataWithTrend, ...forecastData];
     
-    const operator = evolutionData.find(o => o.operatorId === selectedOperatorId);
-    if (!operator) return [];
-    
-    return operator.dailyData.map(d => ({
-      ...d,
-      efficiency: Math.round(d.efficiencyScore * 10) / 10,
-    }));
+    // Determine trend direction
+    const trendDir = slope > 0.5 ? 'up' : slope < -0.5 ? 'down' : 'stable';
+    const lastForecast = forecastData[forecastData.length - 1]?.forecast || 0;
+
+    return {
+      chartData: combinedData,
+      trendDirection: trendDir as 'up' | 'down' | 'stable',
+      forecastValue: lastForecast,
+    };
   }, [selectedOperatorId, evolutionData, overallDailyData]);
 
   const operatorOptions = useMemo(() => {
@@ -370,22 +434,50 @@ function EvolutionChart({ evolutionData, overallDailyData, selectedOperatorId, o
               <TrendingUpIcon className="h-5 w-5" />
               Evolução da Eficiência
             </CardTitle>
-            <CardDescription>
-              Acompanhamento diário do desempenho ao longo do tempo
+            <CardDescription className="flex items-center gap-2 mt-1">
+              Acompanhamento diário com tendência e previsão de {FORECAST_DAYS} dias
+              {hasData && (
+                <Badge 
+                  variant="outline" 
+                  className={
+                    trendDirection === 'up' ? 'text-success border-success' :
+                    trendDirection === 'down' ? 'text-destructive border-destructive' :
+                    'text-muted-foreground'
+                  }
+                >
+                  {trendDirection === 'up' ? '↑ Tendência de alta' :
+                   trendDirection === 'down' ? '↓ Tendência de queda' :
+                   '→ Estável'}
+                </Badge>
+              )}
             </CardDescription>
           </div>
-          <Select value={selectedOperatorId} onValueChange={onOperatorChange}>
-            <SelectTrigger className="w-[200px]">
-              <SelectValue placeholder="Selecionar operador" />
-            </SelectTrigger>
-            <SelectContent>
-              {operatorOptions.map(op => (
-                <SelectItem key={op.id} value={op.id}>
-                  {op.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <div className="flex items-center gap-3">
+            {hasData && (
+              <div className="text-right hidden sm:block">
+                <p className="text-xs text-muted-foreground">Previsão em {FORECAST_DAYS} dias</p>
+                <p className={`text-lg font-bold ${
+                  forecastValue >= 70 ? 'text-success' : 
+                  forecastValue >= 50 ? 'text-warning' : 
+                  'text-destructive'
+                }`}>
+                  {forecastValue}%
+                </p>
+              </div>
+            )}
+            <Select value={selectedOperatorId} onValueChange={onOperatorChange}>
+              <SelectTrigger className="w-[200px]">
+                <SelectValue placeholder="Selecionar operador" />
+              </SelectTrigger>
+              <SelectContent>
+                {operatorOptions.map(op => (
+                  <SelectItem key={op.id} value={op.id}>
+                    {op.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
       </CardHeader>
       <CardContent className="h-[300px]">
@@ -400,6 +492,10 @@ function EvolutionChart({ evolutionData, overallDailyData, selectedOperatorId, o
                 <linearGradient id="efficiencyGradient" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3}/>
                   <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/>
+                </linearGradient>
+                <linearGradient id="forecastGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="hsl(var(--success))" stopOpacity={0.2}/>
+                  <stop offset="95%" stopColor="hsl(var(--success))" stopOpacity={0}/>
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
@@ -420,14 +516,28 @@ function EvolutionChart({ evolutionData, overallDailyData, selectedOperatorId, o
                   border: '1px solid hsl(var(--border))',
                   borderRadius: '8px',
                 }}
-                formatter={(value: number, name: string) => {
+                formatter={(value: number | null, name: string) => {
+                  if (value === null) return ['-', ''];
                   if (name === 'efficiency') return [`${value}%`, 'Eficiência'];
-                  if (name === 'jobsCompleted') return [value, 'Jobs'];
-                  if (name === 'piecesProduced') return [value.toLocaleString(), 'Peças'];
+                  if (name === 'trend') return [`${value}%`, 'Tendência'];
+                  if (name === 'forecast') return [`${value}%`, 'Previsão'];
                   return [value, name];
                 }}
-                labelFormatter={(label) => `Data: ${label}`}
+                labelFormatter={(label, payload) => {
+                  const point = payload?.[0]?.payload;
+                  return point?.isForecast ? `Previsão: ${label}` : `Data: ${label}`;
+                }}
               />
+              <Legend 
+                wrapperStyle={{ paddingTop: '10px' }}
+                formatter={(value) => {
+                  if (value === 'efficiency') return 'Eficiência Real';
+                  if (value === 'trend') return 'Linha de Tendência';
+                  if (value === 'forecast') return 'Previsão';
+                  return value;
+                }}
+              />
+              {/* Actual efficiency area */}
               <Area
                 type="monotone"
                 dataKey="efficiency"
@@ -436,6 +546,29 @@ function EvolutionChart({ evolutionData, overallDailyData, selectedOperatorId, o
                 fill="url(#efficiencyGradient)"
                 dot={{ fill: 'hsl(var(--primary))', strokeWidth: 0, r: 3 }}
                 activeDot={{ r: 5, fill: 'hsl(var(--primary))' }}
+                connectNulls={false}
+              />
+              {/* Trend line */}
+              <Line
+                type="monotone"
+                dataKey="trend"
+                stroke="hsl(var(--warning))"
+                strokeWidth={2}
+                strokeDasharray="5 5"
+                dot={false}
+                activeDot={{ r: 4, fill: 'hsl(var(--warning))' }}
+              />
+              {/* Forecast area */}
+              <Area
+                type="monotone"
+                dataKey="forecast"
+                stroke="hsl(var(--success))"
+                strokeWidth={2}
+                strokeDasharray="3 3"
+                fill="url(#forecastGradient)"
+                dot={{ fill: 'hsl(var(--success))', strokeWidth: 0, r: 3 }}
+                activeDot={{ r: 5, fill: 'hsl(var(--success))' }}
+                connectNulls={false}
               />
             </AreaChart>
           </ResponsiveContainer>
