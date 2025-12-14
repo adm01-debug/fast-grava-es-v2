@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { AlertTriangle, Clock, AlertOctagon } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -6,7 +7,7 @@ import { useSchedulingConflicts, SchedulingConflict } from '@/hooks/useSchedulin
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
-const ConflictCard = ({ conflict }: { conflict: SchedulingConflict }) => {
+const ConflictCard = memo(function ConflictCard({ conflict }: { conflict: SchedulingConflict }) {
   const isError = conflict.severity === 'error';
   
   return (
@@ -52,9 +53,10 @@ const ConflictCard = ({ conflict }: { conflict: SchedulingConflict }) => {
       </div>
     </div>
   );
-};
+});
+ConflictCard.displayName = 'ConflictCard';
 
-export const ConflictAlertsWidget = () => {
+function ConflictAlertsWidgetComponent() {
   const { conflicts, hasConflicts, errorCount, warningCount } = useSchedulingConflicts();
 
   return (
@@ -100,4 +102,7 @@ export const ConflictAlertsWidget = () => {
       </CardContent>
     </Card>
   );
-};
+}
+
+export const ConflictAlertsWidget = memo(ConflictAlertsWidgetComponent);
+ConflictAlertsWidget.displayName = 'ConflictAlertsWidget';

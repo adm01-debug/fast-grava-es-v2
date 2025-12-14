@@ -1,6 +1,6 @@
+import { memo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { 
   Layers, 
@@ -16,7 +16,7 @@ interface SequencingCardProps {
   suggestion: SequencingSuggestion;
 }
 
-function SequencingCard({ suggestion }: SequencingCardProps) {
+const SequencingCard = memo(function SequencingCard({ suggestion }: SequencingCardProps) {
   return (
     <div className="p-4 rounded-lg bg-muted/30 border border-border/30 space-y-3">
       <div className="flex items-center justify-between">
@@ -57,9 +57,10 @@ function SequencingCard({ suggestion }: SequencingCardProps) {
       </div>
     </div>
   );
-}
+});
+SequencingCard.displayName = 'SequencingCard';
 
-export function SmartSequencingWidget() {
+function SmartSequencingWidgetComponent() {
   const { suggestions, totalSavings, hasSuggestions } = useSmartSequencing();
 
   return (
@@ -105,3 +106,6 @@ export function SmartSequencingWidget() {
     </Card>
   );
 }
+
+export const SmartSequencingWidget = memo(SmartSequencingWidgetComponent);
+SmartSequencingWidget.displayName = 'SmartSequencingWidget';
