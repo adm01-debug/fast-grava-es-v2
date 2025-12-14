@@ -20,7 +20,9 @@ import {
   Zap,
   Activity,
   Scale,
-  RefreshCw
+  RefreshCw,
+  Timer,
+  Database
 } from "lucide-react";
 import { useSchedulingData } from "@/hooks/useSchedulingData";
 import { DbJob } from "@/hooks/useJobs";
@@ -29,6 +31,8 @@ import { useBottleneckPrediction } from "@/hooks/useBottleneckPrediction";
 import { useLoadBalancing } from "@/hooks/useLoadBalancing";
 import { useEfficiencyNotifications } from "@/hooks/useEfficiencyNotifications";
 import { EfficiencyAlertHistoryWidget } from "@/components/dashboard/EfficiencyAlertHistoryWidget";
+import { useStuckJobsDetection } from "@/hooks/useStuckJobsDetection";
+import { useOrphanedDataDetection } from "@/hooks/useOrphanedDataDetection";
 const priorityColors = {
   urgent: 'bg-red-500/20 text-red-400 border-red-500/30',
   high: 'bg-orange-500/20 text-orange-400 border-orange-500/30',
@@ -212,12 +216,17 @@ export default function AlertsDashboard() {
     checkBottleneckAlerts, 
     checkLoadBalancingAlerts 
   } = useEfficiencyNotifications();
+  
+  // Stuck jobs and data integrity
+  const { stuckJobs, criticalCount: stuckCritical, warningCount: stuckWarning } = useStuckJobsDetection();
+  const { issues: dataIssues, orphanedTechniques } = useOrphanedDataDetection();
 
   const totalJobAlerts = alertData.delayed.length + alertData.rework.length + 
                       alertData.urgent.length + alertData.atRisk.length + alertData.overdue.length;
   
   const totalEfficiencyAlerts = criticalCount + warningCount + loadBalancingSuggestions.length;
-  const totalAlerts = totalJobAlerts + totalEfficiencyAlerts;
+  const totalSystemAlerts = stuckJobs.length + dataIssues.length;
+  const totalAlerts = totalJobAlerts + totalEfficiencyAlerts + totalSystemAlerts;
 
   return (
     <div className="min-h-screen bg-background p-4 sm:p-6 space-y-4 sm:space-y-6">
@@ -267,7 +276,7 @@ export default function AlertsDashboard() {
       </div>
 
       {/* Summary Stats */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2 sm:gap-4">
+      <div className="grid grid-cols-3 sm:grid-cols-5 lg:grid-cols-9 gap-2 sm:gap-4">
         <Card className="bg-card/50 backdrop-blur-sm border-border/50">
           <CardContent className="p-3 sm:p-4 flex items-center gap-2 sm:gap-3">
             <div className="p-2 sm:p-3 rounded-xl bg-red-500/20">
@@ -346,6 +355,30 @@ export default function AlertsDashboard() {
             </div>
           </CardContent>
         </Card>
+        {/* Stuck Jobs Stat */}
+        <Card className="bg-card/50 backdrop-blur-sm border-border/50">
+          <CardContent className="p-3 sm:p-4 flex items-center gap-2 sm:gap-3">
+            <div className={`p-2 sm:p-3 rounded-xl ${stuckCritical > 0 ? 'bg-red-500/20' : 'bg-indigo-500/20'}`}>
+              <Timer className={`h-4 w-4 sm:h-5 sm:w-5 ${stuckCritical > 0 ? 'text-red-400' : 'text-indigo-400'}`} />
+            </div>
+            <div>
+              <p className="text-lg sm:text-2xl font-bold text-foreground">{stuckJobs.length}</p>
+              <p className="text-[10px] sm:text-xs text-muted-foreground">Travados</p>
+            </div>
+          </CardContent>
+        </Card>
+        {/* Data Issues Stat */}
+        <Card className="bg-card/50 backdrop-blur-sm border-border/50">
+          <CardContent className="p-3 sm:p-4 flex items-center gap-2 sm:gap-3">
+            <div className={`p-2 sm:p-3 rounded-xl ${dataIssues.length > 0 ? 'bg-amber-500/20' : 'bg-slate-500/20'}`}>
+              <Database className={`h-4 w-4 sm:h-5 sm:w-5 ${dataIssues.length > 0 ? 'text-amber-400' : 'text-slate-400'}`} />
+            </div>
+            <div>
+              <p className="text-lg sm:text-2xl font-bold text-foreground">{dataIssues.length}</p>
+              <p className="text-[10px] sm:text-xs text-muted-foreground">Integridade</p>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Alert Cards Grid */}
@@ -396,6 +429,123 @@ export default function AlertsDashboard() {
           jobs={alertData.rework}
           emptyMessage="Nenhum job aguardando retrabalho"
         />
+
+        {/* Stuck Jobs Alert */}
+        <Card className="bg-card/50 backdrop-blur-sm border-border/50">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className={`p-2 rounded-lg ${stuckCritical > 0 ? 'bg-red-500/20 animate-pulse' : 'bg-indigo-500/20'}`}>
+                  <Timer className={`h-5 w-5 ${stuckCritical > 0 ? 'text-red-400' : 'text-indigo-400'}`} />
+                </div>
+                Jobs Travados
+              </div>
+              <Badge variant="outline" className={`${stuckCritical > 0 ? 'bg-red-500/20 text-red-400 border-red-500/30' : 'bg-muted/50 text-foreground border-border'}`}>
+                {stuckJobs.length}
+              </Badge>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {stuckJobs.length === 0 ? (
+              <p className="text-sm text-muted-foreground text-center py-4">Nenhum job travado em produção</p>
+            ) : (
+              stuckJobs.slice(0, 5).map((stuck) => {
+                const technique = getTechniqueById(stuck.job.technique_id);
+                return (
+                  <div 
+                    key={stuck.job.id}
+                    onClick={() => handleJobClick(stuck.job)}
+                    className={`p-3 rounded-lg border cursor-pointer transition-colors ${
+                      stuck.severity === 'critical' 
+                        ? 'bg-red-500/10 border-red-500/30 hover:bg-red-500/20' 
+                        : 'bg-amber-500/10 border-amber-500/30 hover:bg-amber-500/20'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium">{stuck.job.order_number}</span>
+                          <Badge variant={stuck.severity === 'critical' ? 'destructive' : 'outline'} className="text-xs">
+                            {Math.round(stuck.hoursInProduction)}h em produção
+                          </Badge>
+                        </div>
+                        <p className="text-sm text-muted-foreground mt-1">{stuck.job.client}</p>
+                      </div>
+                      <Badge 
+                        variant="outline" 
+                        className="text-xs"
+                        style={{ 
+                          backgroundColor: `${technique?.color}20`,
+                          borderColor: `${technique?.color}50`,
+                          color: technique?.color 
+                        }}
+                      >
+                        {technique?.short_name}
+                      </Badge>
+                    </div>
+                  </div>
+                );
+              })
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Data Integrity Issues */}
+        <Card className="bg-card/50 backdrop-blur-sm border-border/50">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className={`p-2 rounded-lg ${dataIssues.length > 0 ? 'bg-amber-500/20' : 'bg-slate-500/20'}`}>
+                  <Database className={`h-5 w-5 ${dataIssues.length > 0 ? 'text-amber-400' : 'text-slate-400'}`} />
+                </div>
+                Integridade de Dados
+              </div>
+              <Badge variant="outline" className={`${dataIssues.length > 0 ? 'bg-amber-500/20 text-amber-400 border-amber-500/30' : 'bg-muted/50 text-foreground border-border'}`}>
+                {dataIssues.length + orphanedTechniques.length}
+              </Badge>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {dataIssues.length === 0 && orphanedTechniques.length === 0 ? (
+              <p className="text-sm text-muted-foreground text-center py-4">Nenhum problema de integridade detectado</p>
+            ) : (
+              <>
+                {orphanedTechniques.map((item) => (
+                  <div 
+                    key={item.technique.id}
+                    className="p-3 rounded-lg bg-amber-500/10 border border-amber-500/30"
+                  >
+                    <div className="flex items-center gap-2 mb-1">
+                      <div 
+                        className="w-3 h-3 rounded-full"
+                        style={{ backgroundColor: item.technique.color }}
+                      />
+                      <span className="font-medium text-amber-400">{item.technique.name}</span>
+                    </div>
+                    <p className="text-sm text-muted-foreground">{item.issue}</p>
+                    <p className="text-xs text-amber-400 mt-1">
+                      Cadastre máquinas para esta técnica para resolver.
+                    </p>
+                  </div>
+                ))}
+                {dataIssues.map((issue, index) => (
+                  <div 
+                    key={index}
+                    className={`p-3 rounded-lg border ${
+                      issue.severity === 'error' 
+                        ? 'bg-red-500/10 border-red-500/30' 
+                        : 'bg-amber-500/10 border-amber-500/30'
+                    }`}
+                  >
+                    <p className={`text-sm ${issue.severity === 'error' ? 'text-red-400' : 'text-amber-400'}`}>
+                      {issue.message}
+                    </p>
+                  </div>
+                ))}
+              </>
+            )}
+          </CardContent>
+        </Card>
 
         {/* Bottleneck Alerts */}
         <Card className="bg-card/50 backdrop-blur-sm border-border/50">
