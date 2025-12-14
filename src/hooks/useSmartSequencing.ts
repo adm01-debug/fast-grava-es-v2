@@ -1,6 +1,28 @@
 import { useMemo } from 'react';
 import { useJobs, useMachines, useTechniques, DbJob, DbMachine, DbTechnique } from './useJobs';
 
+// Data validation helpers
+function isValidJob(job: DbJob): boolean {
+  return (
+    typeof job.id === 'string' && job.id.length > 0 &&
+    typeof job.status === 'string' &&
+    typeof job.estimated_duration === 'number' && job.estimated_duration >= 0
+  );
+}
+
+function isValidMachine(machine: DbMachine): boolean {
+  return (
+    typeof machine.id === 'string' && machine.id.length > 0 &&
+    typeof machine.technique_id === 'string' &&
+    typeof machine.name === 'string'
+  );
+}
+
+function sanitizeNumber(value: unknown, fallback = 0): number {
+  if (typeof value !== 'number' || !Number.isFinite(value)) return fallback;
+  return Math.max(0, value);
+}
+
 export interface SequencingSuggestion {
   machineId: string;
   machineName: string;
@@ -49,6 +71,17 @@ export function useSmartSequencing() {
   const suggestions = useMemo(() => {
     if (!jobs || !machines || !techniques) return [];
 
+    // Validate input data
+    const validJobs = jobs.filter(isValidJob);
+    const validMachines = machines.filter(isValidMachine);
+    const validTechniques = techniques.filter(t =>
+      typeof t.id === 'string' && typeof t.name === 'string' && typeof t.setup_time === 'number'
+    );
+
+    if (validJobs.length === 0 && jobs.length > 0) {
+      console.warn('[useSmartSequencing] All jobs failed validation');
+    }
+
     const result: SequencingSuggestion[] = [];
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -58,29 +91,36 @@ export function useSmartSequencing() {
     // Group scheduled jobs by machine for today and tomorrow
     const jobsByMachine = new Map<string, DbJob[]>();
     
-    jobs.forEach(job => {
+    validJobs.forEach(job => {
       if (!job.machine_id || !job.scheduled_date) return;
       if (!['scheduled', 'ready', 'queue'].includes(job.status)) return;
       
-      const jobDate = new Date(job.scheduled_date);
-      jobDate.setHours(0, 0, 0, 0);
-      
-      if (jobDate < today || jobDate > tomorrow) return;
+      try {
+        const jobDate = new Date(job.scheduled_date);
+        if (!isFinite(jobDate.getTime())) return; // Invalid date
+        jobDate.setHours(0, 0, 0, 0);
+        
+        if (jobDate < today || jobDate > tomorrow) return;
 
-      const existing = jobsByMachine.get(job.machine_id) || [];
-      existing.push(job);
-      jobsByMachine.set(job.machine_id, existing);
+        const existing = jobsByMachine.get(job.machine_id) || [];
+        existing.push(job);
+        jobsByMachine.set(job.machine_id, existing);
+      } catch {
+        // Skip jobs with invalid dates
+      }
     });
 
     // Analyze each machine
     jobsByMachine.forEach((machineJobs, machineId) => {
       if (machineJobs.length < 2) return;
 
-      const machine = machines.find(m => m.id === machineId);
+      const machine = validMachines.find(m => m.id === machineId);
       if (!machine) return;
 
-      const technique = techniques.find(t => t.id === machine.technique_id);
+      const technique = validTechniques.find(t => t.id === machine.technique_id);
       if (!technique) return;
+
+      const setupTime = sanitizeNumber(technique.setup_time, 10);
 
       // Current sequence (by start time)
       const currentSequence = [...machineJobs].sort((a, b) => 
@@ -111,7 +151,7 @@ export function useSmartSequencing() {
         optimizedSequence.push(...sortedGroup);
       });
 
-      const estimatedSavings = calculateSetupSavings(currentSequence, optimizedSequence, technique.setup_time);
+      const estimatedSavings = calculateSetupSavings(currentSequence, optimizedSequence, setupTime);
 
       if (estimatedSavings > 0) {
         result.push({
