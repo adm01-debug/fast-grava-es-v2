@@ -13,6 +13,16 @@ interface CreateOperatorModalProps {
   onOpenChange: (open: boolean) => void;
 }
 
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const PHONE_REGEX = /^\(?[0-9]{2}\)?[\s.-]?[0-9]{4,5}[\s.-]?[0-9]{4}$/;
+
+interface FormErrors {
+  full_name?: string;
+  email?: string;
+  password?: string;
+  phone?: string;
+}
+
 export function CreateOperatorModal({ open, onOpenChange }: CreateOperatorModalProps) {
   const queryClient = useQueryClient();
   const [isLoading, setIsLoading] = useState(false);
@@ -22,17 +32,41 @@ export function CreateOperatorModal({ open, onOpenChange }: CreateOperatorModalP
     password: '',
     phone: '',
   });
+  const [errors, setErrors] = useState<FormErrors>({});
+
+  const validateForm = (): boolean => {
+    const newErrors: FormErrors = {};
+
+    if (!formData.full_name.trim()) {
+      newErrors.full_name = 'Nome é obrigatório';
+    } else if (formData.full_name.trim().length < 3) {
+      newErrors.full_name = 'Nome deve ter pelo menos 3 caracteres';
+    }
+
+    if (!formData.email.trim()) {
+      newErrors.email = 'Email é obrigatório';
+    } else if (!EMAIL_REGEX.test(formData.email)) {
+      newErrors.email = 'Formato de email inválido';
+    }
+
+    if (!formData.password) {
+      newErrors.password = 'Senha é obrigatória';
+    } else if (formData.password.length < 6) {
+      newErrors.password = 'Senha deve ter pelo menos 6 caracteres';
+    }
+
+    if (formData.phone && !PHONE_REGEX.test(formData.phone.replace(/\s/g, ''))) {
+      newErrors.phone = 'Formato inválido. Use: (11) 99999-9999';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.full_name || !formData.email || !formData.password) {
-      toast.error('Preencha todos os campos obrigatórios');
-      return;
-    }
-
-    if (formData.password.length < 6) {
-      toast.error('A senha deve ter pelo menos 6 caracteres');
+    if (!validateForm()) {
       return;
     }
 
@@ -81,10 +115,17 @@ export function CreateOperatorModal({ open, onOpenChange }: CreateOperatorModalP
             <Input
               id="full_name"
               value={formData.full_name}
-              onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
+              onChange={(e) => {
+                setFormData({ ...formData, full_name: e.target.value });
+                if (errors.full_name) setErrors({ ...errors, full_name: undefined });
+              }}
               placeholder="Nome do operador"
               disabled={isLoading}
+              className={errors.full_name ? 'border-destructive' : ''}
             />
+            {errors.full_name && (
+              <p className="text-sm text-destructive">{errors.full_name}</p>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -93,10 +134,17 @@ export function CreateOperatorModal({ open, onOpenChange }: CreateOperatorModalP
               id="email"
               type="email"
               value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              onChange={(e) => {
+                setFormData({ ...formData, email: e.target.value });
+                if (errors.email) setErrors({ ...errors, email: undefined });
+              }}
               placeholder="email@exemplo.com"
               disabled={isLoading}
+              className={errors.email ? 'border-destructive' : ''}
             />
+            {errors.email && (
+              <p className="text-sm text-destructive">{errors.email}</p>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -105,10 +153,17 @@ export function CreateOperatorModal({ open, onOpenChange }: CreateOperatorModalP
               id="password"
               type="password"
               value={formData.password}
-              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+              onChange={(e) => {
+                setFormData({ ...formData, password: e.target.value });
+                if (errors.password) setErrors({ ...errors, password: undefined });
+              }}
               placeholder="Mínimo 6 caracteres"
               disabled={isLoading}
+              className={errors.password ? 'border-destructive' : ''}
             />
+            {errors.password && (
+              <p className="text-sm text-destructive">{errors.password}</p>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -116,10 +171,17 @@ export function CreateOperatorModal({ open, onOpenChange }: CreateOperatorModalP
             <Input
               id="phone"
               value={formData.phone}
-              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+              onChange={(e) => {
+                setFormData({ ...formData, phone: e.target.value });
+                if (errors.phone) setErrors({ ...errors, phone: undefined });
+              }}
               placeholder="(11) 99999-9999"
               disabled={isLoading}
+              className={errors.phone ? 'border-destructive' : ''}
             />
+            {errors.phone && (
+              <p className="text-sm text-destructive">{errors.phone}</p>
+            )}
           </div>
 
           <div className="flex justify-end gap-3 pt-4">
