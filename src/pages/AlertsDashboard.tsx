@@ -223,7 +223,7 @@ export default function AlertsDashboard() {
   const totalAlerts = totalJobAlerts + totalEfficiencyAlerts;
 
   return (
-    <div className="min-h-screen bg-background p-6 space-y-6">
+    <div className="min-h-screen bg-background p-4 sm:p-6 space-y-4 sm:space-y-6">
       <JobDetailsModal 
         job={selectedJob} 
         open={isModalOpen} 
@@ -231,128 +231,128 @@ export default function AlertsDashboard() {
       />
 
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-foreground flex items-center gap-3">
-            <div className="p-2 rounded-xl bg-red-500/20">
-              <Bell className="h-7 w-7 text-red-400" />
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground flex items-center gap-2 sm:gap-3">
+            <div className="p-1.5 sm:p-2 rounded-xl bg-red-500/20">
+              <Bell className="h-5 w-5 sm:h-6 sm:w-6 lg:h-7 lg:w-7 text-red-400" />
             </div>
             Dashboard de Alertas
           </h1>
-          <p className="text-muted-foreground mt-1">Monitoramento de jobs atrasados e produções em risco</p>
+          <p className="text-muted-foreground mt-1 text-sm sm:text-base">Monitoramento de jobs atrasados e produções em risco</p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
           <Button 
             variant="outline" 
             size="sm" 
             onClick={checkBottleneckAlerts}
-            className="border-pink-500/30 text-pink-400 hover:bg-pink-500/10"
+            className="border-pink-500/30 text-pink-400 hover:bg-pink-500/10 text-xs sm:text-sm"
           >
-            <RefreshCw className="h-4 w-4 mr-2" />
-            Verificar Gargalos
+            <RefreshCw className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+            <span className="hidden xs:inline">Verificar</span> Gargalos
           </Button>
           <Button 
             variant="outline" 
             size="sm" 
             onClick={checkLoadBalancingAlerts}
-            className="border-teal-500/30 text-teal-400 hover:bg-teal-500/10"
+            className="border-teal-500/30 text-teal-400 hover:bg-teal-500/10 text-xs sm:text-sm"
           >
-            <RefreshCw className="h-4 w-4 mr-2" />
-            Verificar Balanceamento
+            <RefreshCw className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+            <span className="hidden xs:inline">Verificar</span> Balanc.
           </Button>
           <Badge 
-            className={`${totalAlerts > 0 ? 'bg-red-500/20 text-red-400 border-red-500/30' : 'bg-green-500/20 text-green-400 border-green-500/30'} border px-4 py-2`}
+            className={`${totalAlerts > 0 ? 'bg-red-500/20 text-red-400 border-red-500/30' : 'bg-green-500/20 text-green-400 border-green-500/30'} border px-2 sm:px-4 py-1 sm:py-2 text-xs sm:text-sm`}
           >
-            <AlertTriangle className="h-4 w-4 mr-2" />
-            {totalAlerts} alertas ativos
+            <AlertTriangle className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+            {totalAlerts} alertas
           </Badge>
         </div>
       </div>
 
       {/* Summary Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2 sm:gap-4">
         <Card className="bg-card/50 backdrop-blur-sm border-border/50">
-          <CardContent className="p-4 flex items-center gap-3">
-            <div className="p-3 rounded-xl bg-red-500/20">
-              <AlertTriangle className="h-5 w-5 text-red-400" />
+          <CardContent className="p-3 sm:p-4 flex items-center gap-2 sm:gap-3">
+            <div className="p-2 sm:p-3 rounded-xl bg-red-500/20">
+              <AlertTriangle className="h-4 w-4 sm:h-5 sm:w-5 text-red-400" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-foreground">{alertData.delayed.length}</p>
-              <p className="text-xs text-muted-foreground">Atrasados</p>
+              <p className="text-lg sm:text-2xl font-bold text-foreground">{alertData.delayed.length}</p>
+              <p className="text-[10px] sm:text-xs text-muted-foreground">Atrasados</p>
             </div>
           </CardContent>
         </Card>
         <Card className="bg-card/50 backdrop-blur-sm border-border/50">
-          <CardContent className="p-4 flex items-center gap-3">
-            <div className="p-3 rounded-xl bg-orange-500/20">
-              <Clock className="h-5 w-5 text-orange-400" />
+          <CardContent className="p-3 sm:p-4 flex items-center gap-2 sm:gap-3">
+            <div className="p-2 sm:p-3 rounded-xl bg-orange-500/20">
+              <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-orange-400" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-foreground">{alertData.overdue.length}</p>
-              <p className="text-xs text-muted-foreground">Vencidos</p>
+              <p className="text-lg sm:text-2xl font-bold text-foreground">{alertData.overdue.length}</p>
+              <p className="text-[10px] sm:text-xs text-muted-foreground">Vencidos</p>
             </div>
           </CardContent>
         </Card>
         <Card className="bg-card/50 backdrop-blur-sm border-border/50">
-          <CardContent className="p-4 flex items-center gap-3">
-            <div className="p-3 rounded-xl bg-yellow-500/20">
-              <Zap className="h-5 w-5 text-yellow-400" />
+          <CardContent className="p-3 sm:p-4 flex items-center gap-2 sm:gap-3">
+            <div className="p-2 sm:p-3 rounded-xl bg-yellow-500/20">
+              <Zap className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-400" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-foreground">{alertData.urgent.length}</p>
-              <p className="text-xs text-muted-foreground">Urgentes</p>
+              <p className="text-lg sm:text-2xl font-bold text-foreground">{alertData.urgent.length}</p>
+              <p className="text-[10px] sm:text-xs text-muted-foreground">Urgentes</p>
             </div>
           </CardContent>
         </Card>
         <Card className="bg-card/50 backdrop-blur-sm border-border/50">
-          <CardContent className="p-4 flex items-center gap-3">
-            <div className="p-3 rounded-xl bg-cyan-500/20">
-              <AlertCircle className="h-5 w-5 text-cyan-400" />
+          <CardContent className="p-3 sm:p-4 flex items-center gap-2 sm:gap-3">
+            <div className="p-2 sm:p-3 rounded-xl bg-cyan-500/20">
+              <AlertCircle className="h-4 w-4 sm:h-5 sm:w-5 text-cyan-400" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-foreground">{alertData.atRisk.length}</p>
-              <p className="text-xs text-muted-foreground">Em Risco</p>
+              <p className="text-lg sm:text-2xl font-bold text-foreground">{alertData.atRisk.length}</p>
+              <p className="text-[10px] sm:text-xs text-muted-foreground">Em Risco</p>
             </div>
           </CardContent>
         </Card>
         <Card className="bg-card/50 backdrop-blur-sm border-border/50">
-          <CardContent className="p-4 flex items-center gap-3">
-            <div className="p-3 rounded-xl bg-purple-500/20">
-              <RotateCcw className="h-5 w-5 text-purple-400" />
+          <CardContent className="p-3 sm:p-4 flex items-center gap-2 sm:gap-3">
+            <div className="p-2 sm:p-3 rounded-xl bg-purple-500/20">
+              <RotateCcw className="h-4 w-4 sm:h-5 sm:w-5 text-purple-400" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-foreground">{alertData.rework.length}</p>
-              <p className="text-xs text-muted-foreground">Retrabalho</p>
+              <p className="text-lg sm:text-2xl font-bold text-foreground">{alertData.rework.length}</p>
+              <p className="text-[10px] sm:text-xs text-muted-foreground">Retrabalho</p>
             </div>
           </CardContent>
         </Card>
         {/* Efficiency Stats */}
         <Card className="bg-card/50 backdrop-blur-sm border-border/50">
-          <CardContent className="p-4 flex items-center gap-3">
-            <div className="p-3 rounded-xl bg-pink-500/20">
-              <Activity className="h-5 w-5 text-pink-400" />
+          <CardContent className="p-3 sm:p-4 flex items-center gap-2 sm:gap-3">
+            <div className="p-2 sm:p-3 rounded-xl bg-pink-500/20">
+              <Activity className="h-4 w-4 sm:h-5 sm:w-5 text-pink-400" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-foreground">{criticalCount + warningCount}</p>
-              <p className="text-xs text-muted-foreground">Gargalos</p>
+              <p className="text-lg sm:text-2xl font-bold text-foreground">{criticalCount + warningCount}</p>
+              <p className="text-[10px] sm:text-xs text-muted-foreground">Gargalos</p>
             </div>
           </CardContent>
         </Card>
         <Card className="bg-card/50 backdrop-blur-sm border-border/50">
-          <CardContent className="p-4 flex items-center gap-3">
-            <div className="p-3 rounded-xl bg-teal-500/20">
-              <Scale className="h-5 w-5 text-teal-400" />
+          <CardContent className="p-3 sm:p-4 flex items-center gap-2 sm:gap-3">
+            <div className="p-2 sm:p-3 rounded-xl bg-teal-500/20">
+              <Scale className="h-4 w-4 sm:h-5 sm:w-5 text-teal-400" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-foreground">{loadBalancingSuggestions.length}</p>
-              <p className="text-xs text-muted-foreground">Desbalanceamento</p>
+              <p className="text-lg sm:text-2xl font-bold text-foreground">{loadBalancingSuggestions.length}</p>
+              <p className="text-[10px] sm:text-xs text-muted-foreground truncate">Desbalanc.</p>
             </div>
           </CardContent>
         </Card>
       </div>
 
       {/* Alert Cards Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         <AlertCard 
           title="Jobs Atrasados" 
           icon={AlertTriangle} 
