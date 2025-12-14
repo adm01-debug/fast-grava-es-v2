@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -232,14 +233,37 @@ export default function OperatorsPage() {
                       {getAssignedMachines(operator.user_id).length > 0 ? (
                         <div className="flex flex-wrap gap-1 max-w-xs">
                           {getAssignedMachines(operator.user_id).slice(0, 3).map((machine) => (
-                            <Badge key={machine.id} variant="secondary" className="text-xs">
-                              {machine.code}
-                            </Badge>
+                            <TooltipProvider key={machine.id}>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Badge variant="secondary" className="text-xs cursor-default">
+                                    {machine.code}
+                                  </Badge>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>{machine.name}</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
                           ))}
                           {getAssignedMachines(operator.user_id).length > 3 && (
-                            <Badge variant="outline" className="text-xs">
-                              +{getAssignedMachines(operator.user_id).length - 3}
-                            </Badge>
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Badge variant="outline" className="text-xs cursor-default">
+                                    +{getAssignedMachines(operator.user_id).length - 3}
+                                  </Badge>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>
+                                    {getAssignedMachines(operator.user_id)
+                                      .slice(3)
+                                      .map(m => m.name)
+                                      .join(', ')}
+                                  </p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
                           )}
                         </div>
                       ) : (
