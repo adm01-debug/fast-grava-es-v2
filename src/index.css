@@ -1154,6 +1154,7 @@
    ============================================ */
 
 @media (prefers-reduced-motion: reduce) {
+  /* Disable all animations and transitions globally */
   *,
   *::before,
   *::after {
@@ -1163,12 +1164,80 @@
     scroll-behavior: auto !important;
   }
   
+  /* Disable specific animation classes */
   .animate-float,
   .animate-pulse,
   .animate-pulse-soft,
+  .animate-bounce-in,
+  .animate-fade-in,
+  .animate-scale-in,
+  .animate-slide-in-right,
+  .animate-slide-in-up,
+  .animate-accordion-down,
+  .animate-accordion-up,
   .pulse-glow,
-  .xp-bar {
+  .pulse-ring,
+  .bounce-attention,
+  .wiggle,
+  .wiggle-infinite,
+  .xp-bar,
+  .coin-shine,
+  .streak-fire {
     animation: none !important;
+  }
+
+  /* Disable hover transforms */
+  .hover-lift:hover,
+  .hover-lift-sm:hover,
+  .hover-scale:hover,
+  .hover-scale-sm:hover {
+    transform: none !important;
+  }
+
+  /* Keep content visible but without animation */
+  [class*="stagger-"] {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  /* Disable glow effects */
+  .hover-glow:hover,
+  .glow-primary,
+  .glow-success,
+  .glow-warning,
+  .glow-info {
+    box-shadow: none !important;
+  }
+
+  /* StatusBadge - disable animated prop effects */
+  .status-badge-animated {
+    animation: none !important;
+  }
+}
+
+/* Utility class to force animations even with reduced-motion preference */
+.motion-safe-only {
+  @media (prefers-reduced-motion: reduce) {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* Utility class to enable animations regardless of preference */
+.motion-reduce-override {
+  animation-duration: inherit !important;
+  transition-duration: inherit !important;
+}
+
+/* Utility class to apply alternative static styles when motion is reduced */
+@media (prefers-reduced-motion: reduce) {
+  .reduced-motion-visible {
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+  
+  .reduced-motion-border {
+    border: 2px solid hsl(var(--primary)) !important;
   }
 }
 
