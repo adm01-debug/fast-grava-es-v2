@@ -146,21 +146,21 @@ export default function OperatorView() {
         onOpenChange={setIsProductionModalOpen}
       />
       
-      <div className="p-8 space-y-6 animate-fade-in-up">
+      <div className="p-4 sm:p-6 lg:p-8 space-y-4 sm:space-y-6 animate-fade-in-up">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex flex-col gap-4">
           <div>
-            <h1 className="text-3xl font-display font-bold">
+            <h1 className="text-2xl sm:text-3xl font-display font-bold">
               <span className="gradient-text">Visão do Operador</span>
             </h1>
-            <p className="text-muted-foreground">
+            <p className="text-muted-foreground text-sm">
               Gerencie suas produções
             </p>
           </div>
           
-          <div className="flex items-center gap-3">
+          <div className="flex items-center">
             <Select value={selectedMachine} onValueChange={setSelectedMachine}>
-              <SelectTrigger className="w-[220px] bg-card/50 border-border/50">
+              <SelectTrigger className="w-full sm:w-[220px] bg-card/50 border-border/50">
                 <User className="h-4 w-4 mr-2" />
                 <SelectValue placeholder="Selecionar máquina" />
               </SelectTrigger>
@@ -178,12 +178,12 @@ export default function OperatorView() {
 
         {/* In Production */}
         {inProductionJobs.length > 0 && (
-          <div className="space-y-4">
-            <h2 className="text-xl font-semibold flex items-center gap-2">
+          <div className="space-y-3 sm:space-y-4">
+            <h2 className="text-lg sm:text-xl font-semibold flex items-center gap-2">
               <Play className="h-5 w-5 text-cyan-400" />
               Em Produção
             </h2>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 gap-3 sm:gap-4">
               {inProductionJobs.map(job => {
                 const technique = getTechnique(job.technique_id);
                 const machine = getMachine(job.machine_id);
