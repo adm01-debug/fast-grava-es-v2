@@ -233,23 +233,26 @@ export function useBufferStatus() {
   }
 
   const bufferByTechnique: BufferTechniqueStatus[] = techniques.map(technique => {
-    const readyJobs = jobs.filter(
-      job => job.technique_id === technique.id && job.status === 'ready'
-    );
+    const techniqueJobs = jobs.filter(job => job.technique_id === technique.id);
     
-    const queueJobs = jobs.filter(
-      job => job.technique_id === technique.id && job.status === 'queue'
+    const readyJobs = techniqueJobs.filter(job => job.status === 'ready');
+    const queueJobs = techniqueJobs.filter(job => job.status === 'queue');
+    const activeJobs = techniqueJobs.filter(job => 
+      ['production', 'scheduled', 'delayed', 'paused', 'rework'].includes(job.status)
     );
+
+    // Check if this technique has ANY work (active, queued, or ready)
+    const hasWork = readyJobs.length > 0 || queueJobs.length > 0 || activeJobs.length > 0;
 
     return {
       technique,
       readyCount: readyJobs.length,
       queueCount: queueJobs.length,
       isHealthy: readyJobs.length >= 3,
-      isCritical: readyJobs.length === 0,
-      isWarning: readyJobs.length > 0 && readyJobs.length < 3,
+      isCritical: hasWork && readyJobs.length === 0, // Critical if has work but no ready jobs
+      isWarning: hasWork && readyJobs.length > 0 && readyJobs.length < 3,
     };
-  }).filter(item => item.queueCount > 0 || item.readyCount > 0);
+  }).filter(item => item.queueCount > 0 || item.readyCount > 0 || item.isCritical);
 
   return { bufferByTechnique, isLoading: false };
 }
