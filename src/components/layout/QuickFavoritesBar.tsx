@@ -1,5 +1,5 @@
-import { memo, useState, useCallback } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { memo, useState, useCallback, useEffect } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
   Home, Calendar, CalendarDays, LayoutGrid, List, Zap, BarChart3, 
   AlertTriangle, BookOpen, UserCircle, QrCode, Bot, Printer, Users, 
@@ -119,8 +119,13 @@ const SortableFavorite = memo(function SortableFavorite({
             </Button>
           </Link>
         </TooltipTrigger>
-        <TooltipContent side="bottom" className="text-xs">
-          {fav.label}
+        <TooltipContent side="bottom" className="text-xs flex items-center gap-2">
+          <span>{fav.label}</span>
+          {index < 6 && (
+            <kbd className="px-1.5 py-0.5 text-[10px] font-mono bg-muted rounded border border-border">
+              Alt+{index + 1}
+            </kbd>
+          )}
         </TooltipContent>
       </Tooltip>
     </div>
@@ -146,6 +151,7 @@ const DragOverlayItem = memo(function DragOverlayItem({ fav }: DragOverlayItemPr
 
 export const QuickFavoritesBar = memo(function QuickFavoritesBar() {
   const location = useLocation();
+  const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
   const [activeDragId, setActiveDragId] = useState<string | null>(null);
   const { 
@@ -161,6 +167,32 @@ export const QuickFavoritesBar = memo(function QuickFavoritesBar() {
     isLoading
   } = useQuickFavorites();
   const alertCount = useAlertCount();
+
+  // Keyboard shortcuts: Alt+1 to Alt+6 navigate to favorites
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Only trigger with Alt key held
+      if (!e.altKey) return;
+      
+      // Check if user is typing in an input
+      const target = e.target as HTMLElement;
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) {
+        return;
+      }
+      
+      const keyNum = parseInt(e.key);
+      if (keyNum >= 1 && keyNum <= 6) {
+        const favIndex = keyNum - 1;
+        if (favorites[favIndex]) {
+          e.preventDefault();
+          navigate(favorites[favIndex].href);
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [favorites, navigate]);
 
   // Hooks must be called before any conditional returns
   const sensors = useSensors(
