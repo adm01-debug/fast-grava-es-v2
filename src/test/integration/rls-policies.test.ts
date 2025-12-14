@@ -10,14 +10,15 @@ interface User {
 
 interface RLSContext {
   currentUser: User | null;
+  operatorMachines?: string[]; // Machine IDs assigned to operator
 }
 
 // Simulate RLS policy evaluation
 class RLSPolicyEvaluator {
   private context: RLSContext;
 
-  constructor(user: User | null) {
-    this.context = { currentUser: user };
+  constructor(user: User | null, operatorMachines: string[] = []) {
+    this.context = { currentUser: user, operatorMachines };
   }
 
   // Simulate has_role function
@@ -27,23 +28,35 @@ class RLSPolicyEvaluator {
 
   // Jobs table policies
   canSelectJobs(): boolean {
-    // "Anyone can view jobs" - all authenticated users
+    // "Authenticated users can view jobs"
     return this.context.currentUser !== null;
   }
 
   canInsertJobs(): boolean {
-    // "Authenticated users can insert jobs" - but business logic restricts to coordinator
-    return this.hasRole('coordinator');
+    // "Coordinators and managers can insert jobs"
+    return this.hasRole('coordinator') || this.hasRole('manager');
   }
 
-  canUpdateJobs(): boolean {
-    // "Authenticated users can update jobs"
-    return this.context.currentUser !== null;
+  canUpdateJobs(jobMachineId?: string | null): boolean {
+    if (!this.context.currentUser) return false;
+    
+    // Coordinators and managers can update any job
+    if (this.hasRole('coordinator') || this.hasRole('manager')) {
+      return true;
+    }
+    
+    // Operators can only update jobs on their assigned machines
+    if (this.hasRole('operator')) {
+      if (!jobMachineId) return false;
+      return this.context.operatorMachines?.includes(jobMachineId) ?? false;
+    }
+    
+    return false;
   }
 
   canDeleteJobs(): boolean {
-    // "Authenticated users can delete jobs" - but business logic restricts to coordinator
-    return this.hasRole('coordinator');
+    // "Coordinators and managers can delete jobs"
+    return this.hasRole('coordinator') || this.hasRole('manager');
   }
 
   // Machines table policies
@@ -154,16 +167,51 @@ describe('RLS Policy Tests', () => {
       expect(new RLSPolicyEvaluator(null).canSelectJobs()).toBe(false);
     });
 
-    it('should only allow coordinator to create jobs', () => {
+    it('should only allow coordinator and manager to create jobs', () => {
       expect(new RLSPolicyEvaluator(coordinator).canInsertJobs()).toBe(true);
+      expect(new RLSPolicyEvaluator(manager).canInsertJobs()).toBe(true);
       expect(new RLSPolicyEvaluator(operator).canInsertJobs()).toBe(false);
-      expect(new RLSPolicyEvaluator(manager).canInsertJobs()).toBe(false);
     });
 
-    it('should only allow coordinator to delete jobs', () => {
+    it('should only allow coordinator and manager to delete jobs', () => {
       expect(new RLSPolicyEvaluator(coordinator).canDeleteJobs()).toBe(true);
+      expect(new RLSPolicyEvaluator(manager).canDeleteJobs()).toBe(true);
       expect(new RLSPolicyEvaluator(operator).canDeleteJobs()).toBe(false);
-      expect(new RLSPolicyEvaluator(manager).canDeleteJobs()).toBe(false);
+    });
+
+    it('should allow coordinator and manager to update any job', () => {
+      expect(new RLSPolicyEvaluator(coordinator).canUpdateJobs('any-machine')).toBe(true);
+      expect(new RLSPolicyEvaluator(coordinator).canUpdateJobs(null)).toBe(true);
+      expect(new RLSPolicyEvaluator(manager).canUpdateJobs('any-machine')).toBe(true);
+      expect(new RLSPolicyEvaluator(manager).canUpdateJobs(null)).toBe(true);
+    });
+
+    it('should allow operator to update jobs only on assigned machines', () => {
+      const assignedMachines = ['machine-1', 'machine-2'];
+      const evaluator = new RLSPolicyEvaluator(operator, assignedMachines);
+
+      // Can update jobs on assigned machines
+      expect(evaluator.canUpdateJobs('machine-1')).toBe(true);
+      expect(evaluator.canUpdateJobs('machine-2')).toBe(true);
+
+      // Cannot update jobs on unassigned machines
+      expect(evaluator.canUpdateJobs('machine-3')).toBe(false);
+      expect(evaluator.canUpdateJobs('other-machine')).toBe(false);
+    });
+
+    it('should deny operator from updating jobs without machine assignment', () => {
+      const assignedMachines = ['machine-1'];
+      const evaluator = new RLSPolicyEvaluator(operator, assignedMachines);
+
+      expect(evaluator.canUpdateJobs(null)).toBe(false);
+      expect(evaluator.canUpdateJobs(undefined)).toBe(false);
+    });
+
+    it('should deny operator with no machine assignments from updating any job', () => {
+      const evaluator = new RLSPolicyEvaluator(operator, []);
+
+      expect(evaluator.canUpdateJobs('machine-1')).toBe(false);
+      expect(evaluator.canUpdateJobs('any-machine')).toBe(false);
     });
   });
 
