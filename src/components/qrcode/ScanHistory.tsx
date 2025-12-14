@@ -1,5 +1,6 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useVirtualizer } from "@tanstack/react-virtual";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -141,6 +142,7 @@ export const ScanHistory = ({ jobId, limit = 200 }: ScanHistoryProps) => {
   const [newScanIds, setNewScanIds] = useState<Set<string>>(new Set());
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(15);
+  const listParentRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -366,9 +368,23 @@ export const ScanHistory = ({ jobId, limit = 200 }: ScanHistoryProps) => {
     return filteredScans.slice(startIndex, startIndex + itemsPerPage);
   }, [filteredScans, currentPage, itemsPerPage]);
 
+  // Virtualization for the list
+  const rowVirtualizer = useVirtualizer({
+    count: paginatedScans.length,
+    getScrollElement: () => listParentRef.current,
+    estimateSize: () => 88, // Estimated row height
+    overscan: 5,
+  });
+
+  const virtualItems = rowVirtualizer.getVirtualItems();
+  const totalVirtualSize = rowVirtualizer.getTotalSize();
+
   // Reset to page 1 when filters change
   useEffect(() => {
     setCurrentPage(1);
+    if (listParentRef.current) {
+      listParentRef.current.scrollTop = 0;
+    }
   }, [operatorFilter, actionFilter, dateRange]);
 
   const hasActiveFilters = operatorFilter !== "all" || actionFilter !== "all" || dateRange?.from;

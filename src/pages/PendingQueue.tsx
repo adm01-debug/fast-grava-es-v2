@@ -1,4 +1,5 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef } from "react";
+import { useVirtualizer } from "@tanstack/react-virtual";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -140,6 +141,15 @@ export default function PendingQueue() {
     delayed: filteredJobs.filter(j => j.status === 'delayed').length,
     rework: filteredJobs.filter(j => j.status === 'rework').length,
   }), [filteredJobs]);
+
+  // Virtualization
+  const tableContainerRef = useRef<HTMLDivElement>(null);
+  const rowVirtualizer = useVirtualizer({
+    count: filteredJobs.length,
+    getScrollElement: () => tableContainerRef.current,
+    estimateSize: () => 52,
+    overscan: 10,
+  });
 
   const handleJobClick = (dbJob: DbJob) => {
     setSelectedJob(dbJob);
@@ -312,15 +322,16 @@ export default function PendingQueue() {
           </CardContent>
         </Card>
 
-        {/* Table */}
+        {/* Virtualized Table */}
         <Card className="bg-card/50 backdrop-blur-sm border-border/50">
           <CardContent className="p-0">
             <div className="overflow-x-auto">
+              {/* Fixed Header */}
               <Table>
                 <TableHeader>
                   <TableRow className="border-border/50 hover:bg-transparent">
                     <TableHead 
-                      className="cursor-pointer hover:text-foreground transition-colors"
+                      className="cursor-pointer hover:text-foreground transition-colors w-[100px]"
                       onClick={() => handleSort('orderNumber')}
                     >
                       <div className="flex items-center gap-2">
@@ -367,72 +378,107 @@ export default function PendingQueue() {
                     <TableHead>Status</TableHead>
                   </TableRow>
                 </TableHeader>
-                <TableBody>
-                  {filteredJobs.length === 0 ? (
-                    <TableRow>
-                      <TableCell colSpan={9} className="text-center py-8 text-muted-foreground">
-                        Nenhum job pendente encontrado.
-                      </TableCell>
-                    </TableRow>
-                  ) : (
-                    filteredJobs.map((job) => {
-                      const technique = getTechniqueById(job.technique_id);
-                      const machine = job.machine_id ? getMachineById(job.machine_id) : null;
-                      
-                      return (
-                        <TableRow 
-                          key={job.id} 
-                          className="border-border/50 hover:bg-muted/30 transition-colors cursor-pointer"
-                          onClick={() => handleJobClick(job)}
-                        >
-                          <TableCell className="font-medium text-foreground text-xs sm:text-sm">
-                            {job.order_number}
-                          </TableCell>
-                          <TableCell className="text-foreground text-xs sm:text-sm max-w-[120px] truncate">{job.client}</TableCell>
-                          <TableCell className="text-muted-foreground max-w-[150px] truncate hidden md:table-cell text-xs sm:text-sm">
-                            {job.product}
-                          </TableCell>
-                          <TableCell className="text-foreground hidden sm:table-cell text-xs sm:text-sm">
-                            {job.quantity.toLocaleString()}
-                          </TableCell>
-                          <TableCell className="hidden lg:table-cell">
-                            <Badge 
-                              variant="outline" 
-                              className="text-xs"
-                              style={{ 
-                                backgroundColor: `${technique?.color}20`,
-                                borderColor: `${technique?.color}50`,
-                                color: technique?.color 
+              </Table>
+
+              {/* Virtualized Body */}
+              {filteredJobs.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  Nenhum job pendente encontrado.
+                </div>
+              ) : (
+                <div
+                  ref={tableContainerRef}
+                  className="max-h-[600px] overflow-auto"
+                >
+                  <div
+                    style={{
+                      height: `${rowVirtualizer.getTotalSize()}px`,
+                      width: "100%",
+                      position: "relative",
+                    }}
+                  >
+                    <Table>
+                      <TableBody>
+                        {rowVirtualizer.getVirtualItems().map((virtualRow) => {
+                          const job = filteredJobs[virtualRow.index];
+                          const technique = getTechniqueById(job.technique_id);
+                          const machine = job.machine_id ? getMachineById(job.machine_id) : null;
+
+                          return (
+                            <TableRow
+                              key={job.id}
+                              data-index={virtualRow.index}
+                              ref={rowVirtualizer.measureElement}
+                              className="border-border/50 hover:bg-muted/30 transition-colors cursor-pointer"
+                              onClick={() => handleJobClick(job)}
+                              style={{
+                                position: "absolute",
+                                top: 0,
+                                left: 0,
+                                width: "100%",
+                                height: `${virtualRow.size}px`,
+                                transform: `translateY(${virtualRow.start}px)`,
                               }}
                             >
-                              {technique?.short_name || technique?.name}
-                            </Badge>
-                          </TableCell>
-                          <TableCell className="text-muted-foreground hidden xl:table-cell text-xs sm:text-sm">
-                            {machine?.code || '-'}
-                          </TableCell>
-                          <TableCell className="text-foreground hidden sm:table-cell text-xs sm:text-sm">
-                            <div className="flex items-center gap-1">
-                              <Calendar className="h-3 w-3 text-muted-foreground" />
-                              {job.scheduled_date ? new Date(job.scheduled_date).toLocaleDateString('pt-BR') : '-'}
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            <Badge className={`${priorityColors[job.priority]} border text-xs`}>
-                              <span className="hidden sm:inline">{priorityLabels[job.priority]}</span>
-                              <span className="sm:hidden">{job.priority.charAt(0).toUpperCase()}</span>
-                            </Badge>
-                          </TableCell>
-                          <TableCell>
-                            <StatusBadge status={job.status} />
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })
-                  )}
-                </TableBody>
-              </Table>
+                              <TableCell className="font-medium text-foreground text-xs sm:text-sm w-[100px]">
+                                {job.order_number}
+                              </TableCell>
+                              <TableCell className="text-foreground text-xs sm:text-sm max-w-[120px] truncate">
+                                {job.client}
+                              </TableCell>
+                              <TableCell className="text-muted-foreground max-w-[150px] truncate hidden md:table-cell text-xs sm:text-sm">
+                                {job.product}
+                              </TableCell>
+                              <TableCell className="text-foreground hidden sm:table-cell text-xs sm:text-sm">
+                                {job.quantity.toLocaleString()}
+                              </TableCell>
+                              <TableCell className="hidden lg:table-cell">
+                                <Badge 
+                                  variant="outline" 
+                                  className="text-xs"
+                                  style={{ 
+                                    backgroundColor: `${technique?.color}20`,
+                                    borderColor: `${technique?.color}50`,
+                                    color: technique?.color 
+                                  }}
+                                >
+                                  {technique?.short_name || technique?.name}
+                                </Badge>
+                              </TableCell>
+                              <TableCell className="text-muted-foreground hidden xl:table-cell text-xs sm:text-sm">
+                                {machine?.code || '-'}
+                              </TableCell>
+                              <TableCell className="text-foreground hidden sm:table-cell text-xs sm:text-sm">
+                                <div className="flex items-center gap-1">
+                                  <Calendar className="h-3 w-3 text-muted-foreground" />
+                                  {job.scheduled_date ? new Date(job.scheduled_date).toLocaleDateString('pt-BR') : '-'}
+                                </div>
+                              </TableCell>
+                              <TableCell>
+                                <Badge className={`${priorityColors[job.priority]} border text-xs`}>
+                                  <span className="hidden sm:inline">{priorityLabels[job.priority]}</span>
+                                  <span className="sm:hidden">{job.priority.charAt(0).toUpperCase()}</span>
+                                </Badge>
+                              </TableCell>
+                              <TableCell>
+                                <StatusBadge status={job.status} />
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
+                      </TableBody>
+                    </Table>
+                  </div>
+                </div>
+              )}
             </div>
+            
+            {/* Info */}
+            {filteredJobs.length > 0 && (
+              <div className="px-4 py-3 border-t border-border/30 text-xs text-muted-foreground">
+                {filteredJobs.length} jobs pendentes
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
