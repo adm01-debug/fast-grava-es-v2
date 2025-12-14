@@ -193,6 +193,10 @@ export default {
           "0%": { transform: "scale(0)", opacity: "0.5" },
           "100%": { transform: "scale(4)", opacity: "0" },
         },
+        "confetti-burst": {
+          "0%": { transform: "translate(0, 0) rotate(0deg)", opacity: "1" },
+          "100%": { transform: "translate(var(--confetti-x), var(--confetti-y)) rotate(var(--confetti-rotation))", opacity: "0" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
