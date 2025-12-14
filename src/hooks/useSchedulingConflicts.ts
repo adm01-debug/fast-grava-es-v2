@@ -116,7 +116,7 @@ export const useSchedulingConflicts = () => {
               }
             }
           } catch (e) {
-            console.error('Error parsing times for conflict detection:', e);
+            if (import.meta.env.DEV) console.error('Error parsing times for conflict detection:', e);
           }
         }
       }
