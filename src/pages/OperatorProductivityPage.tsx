@@ -1,0 +1,513 @@
+import { useState, useMemo } from 'react';
+import { MainLayout } from '@/components/layout/MainLayout';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Progress } from '@/components/ui/progress';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { useOperatorProductivity, OperatorProductivityMetrics } from '@/hooks/useOperatorProductivity';
+import { 
+  Users, 
+  TrendingUp, 
+  Package, 
+  AlertTriangle, 
+  Clock, 
+  Zap, 
+  Search,
+  Trophy,
+  Target,
+  Activity,
+  BarChart3,
+  Timer,
+  CheckCircle2,
+  XCircle,
+  Gauge,
+  Loader2
+} from 'lucide-react';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip as RechartsTooltip,
+  ResponsiveContainer,
+  Cell,
+  RadarChart,
+  PolarGrid,
+  PolarAngleAxis,
+  PolarRadiusAxis,
+  Radar,
+  Legend,
+} from 'recharts';
+
+function StatCard({ 
+  title, 
+  value, 
+  subtitle, 
+  icon: Icon, 
+  trend,
+  className = '' 
+}: { 
+  title: string; 
+  value: string | number; 
+  subtitle?: string;
+  icon: typeof Users;
+  trend?: 'up' | 'down' | 'neutral';
+  className?: string;
+}) {
+  return (
+    <Card className={`card-elevated hover-lift ${className}`}>
+      <CardContent className="p-6">
+        <div className="flex items-start justify-between">
+          <div className="space-y-2">
+            <p className="text-sm text-muted-foreground">{title}</p>
+            <p className="text-3xl font-bold font-display">{value}</p>
+            {subtitle && (
+              <p className="text-xs text-muted-foreground">{subtitle}</p>
+            )}
+          </div>
+          <div className={`p-3 rounded-xl ${
+            trend === 'up' ? 'bg-success/10 text-success' :
+            trend === 'down' ? 'bg-destructive/10 text-destructive' :
+            'bg-primary/10 text-primary'
+          }`}>
+            <Icon className="h-6 w-6" />
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function OperatorCard({ operator }: { operator: OperatorProductivityMetrics }) {
+  const getEfficiencyColor = (score: number) => {
+    if (score >= 80) return 'text-success';
+    if (score >= 60) return 'text-warning';
+    return 'text-destructive';
+  };
+
+  const getEfficiencyBg = (score: number) => {
+    if (score >= 80) return 'bg-success/10';
+    if (score >= 60) return 'bg-warning/10';
+    return 'bg-destructive/10';
+  };
+
+  return (
+    <Card className="card-elevated hover-lift transition-all duration-300">
+      <CardContent className="p-6">
+        <div className="flex items-start gap-4">
+          <Avatar className="h-14 w-14 border-2 border-border">
+            <AvatarImage src={operator.avatarUrl || undefined} />
+            <AvatarFallback className="bg-primary/10 text-primary font-semibold">
+              {operator.operatorName.slice(0, 2).toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
+          
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 mb-1">
+              <h3 className="font-semibold truncate">{operator.operatorName}</h3>
+              <Badge variant={operator.isActive ? 'default' : 'secondary'} className="shrink-0">
+                {operator.isActive ? 'Ativo' : 'Inativo'}
+              </Badge>
+            </div>
+            
+            <div className="flex items-center gap-2 text-sm text-muted-foreground mb-3">
+              <span>{operator.assignedMachines} máquina(s)</span>
+              {operator.machineNames.length > 0 && (
+                <Tooltip>
+                  <TooltipTrigger>
+                    <Badge variant="outline" className="text-xs">
+                      Ver máquinas
+                    </Badge>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p className="font-medium mb-1">Máquinas atribuídas:</p>
+                    <ul className="text-xs space-y-0.5">
+                      {operator.machineNames.map((name, i) => (
+                        <li key={i}>• {name}</li>
+                      ))}
+                    </ul>
+                  </TooltipContent>
+                </Tooltip>
+              )}
+            </div>
+
+            {/* Efficiency Score */}
+            <div className="mb-4">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-sm font-medium">Eficiência</span>
+                <span className={`text-sm font-bold ${getEfficiencyColor(operator.efficiencyScore)}`}>
+                  {operator.efficiencyScore.toFixed(1)}%
+                </span>
+              </div>
+              <Progress 
+                value={operator.efficiencyScore} 
+                className={`h-2 ${getEfficiencyBg(operator.efficiencyScore)}`}
+              />
+            </div>
+
+            {/* Metrics Grid */}
+            <div className="grid grid-cols-2 gap-3 text-sm">
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="h-4 w-4 text-success" />
+                <span className="text-muted-foreground">Concluídos:</span>
+                <span className="font-medium">{operator.totalJobsCompleted}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Package className="h-4 w-4 text-primary" />
+                <span className="text-muted-foreground">Peças:</span>
+                <span className="font-medium">{operator.totalPiecesProduced.toLocaleString()}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <XCircle className="h-4 w-4 text-destructive" />
+                <span className="text-muted-foreground">Perdas:</span>
+                <span className="font-medium">{operator.lossRate.toFixed(1)}%</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Zap className="h-4 w-4 text-warning" />
+                <span className="text-muted-foreground">Veloc.:</span>
+                <span className="font-medium">{operator.productionVelocity.toFixed(1)}/h</span>
+              </div>
+            </div>
+
+            {/* Scan Activity */}
+            {operator.totalScans > 0 && (
+              <div className="mt-3 pt-3 border-t border-border">
+                <p className="text-xs text-muted-foreground mb-2">Atividade de Scans</p>
+                <div className="flex gap-4 text-xs">
+                  <span className="text-success">▶ {operator.startActions}</span>
+                  <span className="text-primary">✓ {operator.finishActions}</span>
+                  <span className="text-warning">⏸ {operator.pauseActions}</span>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function EfficiencyChart({ operators }: { operators: OperatorProductivityMetrics[] }) {
+  const chartData = operators
+    .filter(o => o.isActive && o.totalJobsCompleted > 0)
+    .slice(0, 10)
+    .map(o => ({
+      name: o.operatorName.split(' ')[0],
+      efficiency: Math.round(o.efficiencyScore),
+      jobs: o.totalJobsCompleted,
+      pieces: o.totalPiecesProduced,
+    }));
+
+  if (chartData.length === 0) {
+    return (
+      <Card className="card-elevated">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <BarChart3 className="h-5 w-5" />
+            Comparativo de Eficiência
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="h-[300px] flex items-center justify-center text-muted-foreground">
+          Nenhum dado de produção disponível
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <Card className="card-elevated">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <BarChart3 className="h-5 w-5" />
+          Comparativo de Eficiência
+        </CardTitle>
+        <CardDescription>Top 10 operadores por score de eficiência</CardDescription>
+      </CardHeader>
+      <CardContent className="h-[300px]">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart data={chartData} layout="vertical">
+            <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+            <XAxis type="number" domain={[0, 100]} className="text-xs" />
+            <YAxis dataKey="name" type="category" width={80} className="text-xs" />
+            <RechartsTooltip
+              contentStyle={{
+                backgroundColor: 'hsl(var(--card))',
+                border: '1px solid hsl(var(--border))',
+                borderRadius: '8px',
+              }}
+              formatter={(value: number, name: string) => [
+                `${value}${name === 'efficiency' ? '%' : ''}`,
+                name === 'efficiency' ? 'Eficiência' : name === 'jobs' ? 'Jobs' : 'Peças'
+              ]}
+            />
+            <Bar dataKey="efficiency" radius={[0, 4, 4, 0]}>
+              {chartData.map((entry, index) => (
+                <Cell 
+                  key={`cell-${index}`}
+                  fill={
+                    entry.efficiency >= 80 ? 'hsl(var(--success))' :
+                    entry.efficiency >= 60 ? 'hsl(var(--warning))' :
+                    'hsl(var(--destructive))'
+                  }
+                />
+              ))}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      </CardContent>
+    </Card>
+  );
+}
+
+function ProductionRadarChart({ operator }: { operator: OperatorProductivityMetrics }) {
+  const radarData = [
+    { metric: 'Eficiência', value: operator.efficiencyScore, fullMark: 100 },
+    { metric: 'Volume', value: Math.min(100, operator.totalJobsCompleted * 10), fullMark: 100 },
+    { metric: 'Qualidade', value: Math.max(0, 100 - operator.lossRate * 5), fullMark: 100 },
+    { metric: 'Velocidade', value: Math.min(100, operator.productionVelocity * 2), fullMark: 100 },
+    { metric: 'Atividade', value: Math.min(100, operator.totalScans * 5), fullMark: 100 },
+  ];
+
+  return (
+    <Card className="card-elevated">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Target className="h-5 w-5" />
+          Perfil de Performance
+        </CardTitle>
+        <CardDescription>
+          {operator.operatorName}
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="h-[300px]">
+        <ResponsiveContainer width="100%" height="100%">
+          <RadarChart data={radarData}>
+            <PolarGrid className="stroke-border" />
+            <PolarAngleAxis dataKey="metric" className="text-xs" />
+            <PolarRadiusAxis angle={30} domain={[0, 100]} className="text-xs" />
+            <Radar
+              name={operator.operatorName}
+              dataKey="value"
+              stroke="hsl(var(--primary))"
+              fill="hsl(var(--primary))"
+              fillOpacity={0.3}
+            />
+          </RadarChart>
+        </ResponsiveContainer>
+      </CardContent>
+    </Card>
+  );
+}
+
+export default function OperatorProductivityPage() {
+  const { operators, overallStats, isLoading } = useOperatorProductivity();
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
+  const [sortBy, setSortBy] = useState<'efficiency' | 'jobs' | 'pieces' | 'loss'>('efficiency');
+  const [selectedOperator, setSelectedOperator] = useState<OperatorProductivityMetrics | null>(null);
+
+  const filteredOperators = useMemo(() => {
+    let result = operators;
+
+    // Filter by search
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      result = result.filter(o => 
+        o.operatorName.toLowerCase().includes(query) ||
+        o.machineNames.some(m => m.toLowerCase().includes(query))
+      );
+    }
+
+    // Filter by status
+    if (statusFilter === 'active') {
+      result = result.filter(o => o.isActive);
+    } else if (statusFilter === 'inactive') {
+      result = result.filter(o => !o.isActive);
+    }
+
+    // Sort
+    return [...result].sort((a, b) => {
+      switch (sortBy) {
+        case 'jobs': return b.totalJobsCompleted - a.totalJobsCompleted;
+        case 'pieces': return b.totalPiecesProduced - a.totalPiecesProduced;
+        case 'loss': return a.lossRate - b.lossRate;
+        default: return b.efficiencyScore - a.efficiencyScore;
+      }
+    });
+  }, [operators, searchQuery, statusFilter, sortBy]);
+
+  // Select first operator with data for radar chart
+  const displayOperator = selectedOperator || filteredOperators.find(o => o.totalJobsCompleted > 0) || filteredOperators[0];
+
+  if (isLoading) {
+    return (
+      <MainLayout>
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <Skeleton className="h-8 w-64 mb-2" />
+              <Skeleton className="h-4 w-96" />
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            {[1, 2, 3, 4].map(i => (
+              <Skeleton key={i} className="h-32" />
+            ))}
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <Skeleton className="h-[400px]" />
+            <Skeleton className="h-[400px]" />
+          </div>
+        </div>
+      </MainLayout>
+    );
+  }
+
+  return (
+    <MainLayout>
+      <div className="space-y-6 animate-fade-in">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold font-display flex items-center gap-3">
+              <Users className="h-8 w-8 text-primary" />
+              Produtividade por Operador
+            </h1>
+            <p className="text-muted-foreground mt-1">
+              Métricas individuais de desempenho e eficiência
+            </p>
+          </div>
+        </div>
+
+        {/* Summary Stats */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <StatCard
+            title="Operadores Ativos"
+            value={operators.filter(o => o.isActive).length}
+            subtitle={`${operators.length} total cadastrados`}
+            icon={Users}
+          />
+          <StatCard
+            title="Eficiência Média"
+            value={`${overallStats.averageEfficiency.toFixed(1)}%`}
+            subtitle="Baseada em qualidade e tempo"
+            icon={Gauge}
+            trend={overallStats.averageEfficiency >= 70 ? 'up' : 'down'}
+          />
+          <StatCard
+            title="Jobs Concluídos"
+            value={overallStats.totalJobsCompleted.toLocaleString()}
+            subtitle="Total de todos os operadores"
+            icon={CheckCircle2}
+            trend="up"
+          />
+          <StatCard
+            title="Taxa de Perda Média"
+            value={`${overallStats.averageLossRate.toFixed(1)}%`}
+            subtitle="Índice de refugo geral"
+            icon={AlertTriangle}
+            trend={overallStats.averageLossRate <= 5 ? 'up' : 'down'}
+          />
+        </div>
+
+        {/* Top Performer Highlight */}
+        {overallStats.topPerformer && overallStats.topPerformer.totalJobsCompleted > 0 && (
+          <Card className="bg-gradient-to-r from-primary/10 via-primary/5 to-transparent border-primary/20">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-primary/20 rounded-full">
+                  <Trophy className="h-8 w-8 text-primary" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm text-muted-foreground">Destaque do Período</p>
+                  <p className="text-xl font-bold">{overallStats.topPerformer.operatorName}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {overallStats.topPerformer.efficiencyScore.toFixed(1)}% de eficiência • {' '}
+                    {overallStats.topPerformer.totalJobsCompleted} jobs • {' '}
+                    {overallStats.topPerformer.totalPiecesProduced.toLocaleString()} peças
+                  </p>
+                </div>
+                <Badge variant="default" className="bg-primary text-primary-foreground">
+                  Top Performance
+                </Badge>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Charts Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <EfficiencyChart operators={operators} />
+          {displayOperator && <ProductionRadarChart operator={displayOperator} />}
+        </div>
+
+        {/* Filters */}
+        <div className="flex flex-col sm:flex-row gap-4">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Buscar operador ou máquina..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10"
+            />
+          </div>
+          <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as typeof statusFilter)}>
+            <SelectTrigger className="w-[160px]">
+              <SelectValue placeholder="Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todos</SelectItem>
+              <SelectItem value="active">Ativos</SelectItem>
+              <SelectItem value="inactive">Inativos</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={sortBy} onValueChange={(v) => setSortBy(v as typeof sortBy)}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Ordenar por" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="efficiency">Eficiência</SelectItem>
+              <SelectItem value="jobs">Jobs Concluídos</SelectItem>
+              <SelectItem value="pieces">Peças Produzidas</SelectItem>
+              <SelectItem value="loss">Menor Perda</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Operators Grid */}
+        {filteredOperators.length === 0 ? (
+          <Card className="card-elevated">
+            <CardContent className="py-12 text-center">
+              <Users className="h-12 w-12 mx-auto text-muted-foreground/50 mb-4" />
+              <h3 className="text-lg font-medium mb-2">Nenhum operador encontrado</h3>
+              <p className="text-muted-foreground">
+                {searchQuery || statusFilter !== 'all' 
+                  ? 'Tente ajustar os filtros de busca'
+                  : 'Cadastre operadores para visualizar métricas de produtividade'}
+              </p>
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+            {filteredOperators.map((operator, index) => (
+              <div 
+                key={operator.operatorId}
+                className="animate-fade-in cursor-pointer"
+                style={{ animationDelay: `${index * 50}ms` }}
+                onClick={() => setSelectedOperator(operator)}
+              >
+                <OperatorCard operator={operator} />
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </MainLayout>
+  );
+}
