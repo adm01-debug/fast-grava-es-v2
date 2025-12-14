@@ -1,5 +1,5 @@
 import { useEffect, useCallback } from 'react';
-import { useJobs } from './useJobs';
+import { useJobs, useTechniques } from './useJobs';
 import { toast } from 'sonner';
 
 interface NotificationConfig {
@@ -18,6 +18,7 @@ const defaultConfig: NotificationConfig = {
 
 export function useNotifications(config: Partial<NotificationConfig> = {}) {
   const { data: jobs } = useJobs();
+  const { data: techniques } = useTechniques();
   const settings = { ...defaultConfig, ...config };
 
   const checkDelayedJobs = useCallback(() => {
@@ -37,7 +38,7 @@ export function useNotifications(config: Partial<NotificationConfig> = {}) {
   }, [jobs, settings.enableDelayedAlerts]);
 
   const checkReadyJobs = useCallback(() => {
-    if (!jobs || !settings.enableReadyAlerts) return;
+    if (!jobs || !techniques || !settings.enableReadyAlerts) return;
 
     const readyJobs = jobs.filter(job => job.status === 'ready');
     const activeJobs = jobs.filter(job => !['finished', 'cancelled'].includes(job.status));
@@ -55,12 +56,16 @@ export function useNotifications(config: Partial<NotificationConfig> = {}) {
     techniquesWithActiveJobs.forEach(techniqueId => {
       const count = techniqueReadyCounts[techniqueId] || 0;
       if (count < 3) {
-        toast.warning(`Buffer baixo para ${techniqueId}`, {
+        // Get technique name for readable notification
+        const technique = techniques.find(t => t.id === techniqueId);
+        const techniqueName = technique?.name || technique?.short_name || techniqueId;
+        
+        toast.warning(`Buffer baixo: ${techniqueName}`, {
           description: `Apenas ${count} job(s) no jeito. Meta: 3`,
         });
       }
     });
-  }, [jobs, settings.enableReadyAlerts]);
+  }, [jobs, techniques, settings.enableReadyAlerts]);
 
   // Initial check on mount
   useEffect(() => {

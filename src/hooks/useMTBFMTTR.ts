@@ -90,6 +90,7 @@ export function useMTBFMTTR(periodDays: number = 90) {
 
     const periodHours = periodDays * 24;
 
+    // machines already filtered to is_active=true in the query
     return machines.map(machine => {
       // Get corrective maintenance records (failures) for this machine
       const machineRecords = records.filter(r => r.machine_id === machine.id);
@@ -107,7 +108,9 @@ export function useMTBFMTTR(periodDays: number = 90) {
       const mttr = totalFailures > 0 ? totalRepairTime / totalFailures : null;
       
       // Availability = (Operating Time / Total Time) * 100
-      const availability = ((periodHours - (totalRepairTime / 60)) / periodHours) * 100;
+      // Clamp to 0-100 range to handle edge cases
+      const availabilityRaw = ((periodHours - (totalRepairTime / 60)) / periodHours) * 100;
+      const availability = Math.max(0, Math.min(100, availabilityRaw));
       
       // Last failure
       const sortedFailures = [...failures].sort((a, b) => 
@@ -128,7 +131,7 @@ export function useMTBFMTTR(periodDays: number = 90) {
         lastFailure,
         reliabilityScore: calculateReliabilityScore(mtbf, mttr),
       };
-    }).filter(m => m.totalFailures > 0 || m.mtbf !== null);
+    }).filter(m => m.totalFailures > 0);
   }, [records, machines, periodDays]);
 
   const summary = useMemo((): MTBFMTTRSummary => {
