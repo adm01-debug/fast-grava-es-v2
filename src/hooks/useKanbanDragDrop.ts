@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { DragEndEvent, DragOverEvent, DragStartEvent } from '@dnd-kit/core';
+import { arrayMove } from '@dnd-kit/sortable';
 import { DbJob } from '@/hooks/useJobs';
 import { JobStatus } from '@/types/scheduling';
 import { supabase } from '@/integrations/supabase/client';
@@ -9,6 +10,14 @@ interface UseKanbanDragDropProps {
   jobs: DbJob[];
   onJobsUpdate: () => void;
 }
+
+// Priority order for sorting (higher = more priority)
+const priorityOrder: Record<string, number> = {
+  'urgent': 4,
+  'high': 3,
+  'medium': 2,
+  'low': 1,
+};
 
 export function useKanbanDragDrop({ jobs, onJobsUpdate }: UseKanbanDragDropProps) {
   const [activeJob, setActiveJob] = useState<DbJob | null>(null);
@@ -22,7 +31,7 @@ export function useKanbanDragDrop({ jobs, onJobsUpdate }: UseKanbanDragDropProps
     }
   }, [jobs]);
 
-  const handleDragOver = useCallback((event: DragOverEvent) => {
+  const handleDragOver = useCallback((_event: DragOverEvent) => {
     // Visual feedback is handled by DroppableColumn component
   }, []);
 
@@ -34,16 +43,23 @@ export function useKanbanDragDrop({ jobs, onJobsUpdate }: UseKanbanDragDropProps
     if (!over) return;
     
     const activeJobId = active.id as string;
+    const overId = over.id as string;
     const overData = over.data.current;
+    
+    const draggedJob = jobs.find(job => job.id === activeJobId);
+    if (!draggedJob) return;
+    
+    // Check if dropping on a column or another job
+    const isColumn = overData?.type === 'column';
+    const isJob = overData?.type === 'job';
     
     // Determine target status
     let targetStatus: JobStatus | null = null;
     
-    if (overData?.type === 'column') {
+    if (isColumn) {
       targetStatus = overData.status as JobStatus;
-    } else if (overData?.type === 'job') {
-      // Dropped on another job - get its status
-      const targetJob = jobs.find(job => job.id === over.id);
+    } else if (isJob) {
+      const targetJob = jobs.find(job => job.id === overId);
       if (targetJob) {
         targetStatus = targetJob.status as JobStatus;
       }
@@ -51,11 +67,87 @@ export function useKanbanDragDrop({ jobs, onJobsUpdate }: UseKanbanDragDropProps
     
     if (!targetStatus) return;
     
-    const draggedJob = jobs.find(job => job.id === activeJobId);
-    if (!draggedJob) return;
+    const currentStatus = draggedJob.status as JobStatus;
     
-    // If same status, no update needed
-    if (draggedJob.status === targetStatus) return;
+    // Same status - reorder within column
+    if (currentStatus === targetStatus && isJob && activeJobId !== overId) {
+      await handleReorderWithinColumn(activeJobId, overId, targetStatus);
+      return;
+    }
+    
+    // Different status - change status
+    if (currentStatus !== targetStatus) {
+      await handleStatusChange(draggedJob, targetStatus);
+    }
+  }, [jobs, onJobsUpdate]);
+
+  const handleReorderWithinColumn = async (
+    activeJobId: string, 
+    overJobId: string, 
+    status: JobStatus
+  ) => {
+    // Get jobs in this column, sorted by priority then date
+    const columnJobs = jobs
+      .filter(job => job.status === status)
+      .sort((a, b) => {
+        // First by priority
+        const priorityDiff = (priorityOrder[b.priority] || 0) - (priorityOrder[a.priority] || 0);
+        if (priorityDiff !== 0) return priorityDiff;
+        // Then by created date
+        return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+      });
+    
+    const oldIndex = columnJobs.findIndex(job => job.id === activeJobId);
+    const newIndex = columnJobs.findIndex(job => job.id === overJobId);
+    
+    if (oldIndex === -1 || newIndex === -1 || oldIndex === newIndex) return;
+    
+    const reorderedJobs = arrayMove(columnJobs, oldIndex, newIndex);
+    
+    setIsUpdating(true);
+    
+    try {
+      // Update priorities based on new order
+      // Jobs at the top get higher priority
+      const priorityValues = ['urgent', 'high', 'medium', 'low'];
+      const updates = reorderedJobs.map((job, index) => {
+        // Calculate new priority based on position
+        // Top positions get urgent/high, bottom get medium/low
+        const totalJobs = reorderedJobs.length;
+        const priorityIndex = Math.min(
+          Math.floor((index / totalJobs) * priorityValues.length),
+          priorityValues.length - 1
+        );
+        const newPriority = priorityValues[priorityIndex];
+        
+        return supabase
+          .from('jobs')
+          .update({ 
+            priority: newPriority,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', job.id);
+      });
+      
+      await Promise.all(updates);
+      
+      toast.success('Cards reordenados', {
+        description: 'A ordem dos jobs foi atualizada'
+      });
+      
+      onJobsUpdate();
+    } catch (error) {
+      console.error('Error reordering jobs:', error);
+      toast.error('Erro ao reordenar', {
+        description: 'Não foi possível reordenar os cards. Tente novamente.'
+      });
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const handleStatusChange = async (draggedJob: DbJob, targetStatus: JobStatus) => {
+    const currentStatus = draggedJob.status as JobStatus;
     
     // Validate status transitions
     const validTransitions: Record<string, JobStatus[]> = {
@@ -70,7 +162,6 @@ export function useKanbanDragDrop({ jobs, onJobsUpdate }: UseKanbanDragDropProps
       'cancelled': [], // Cannot transition from cancelled
     };
     
-    const currentStatus = draggedJob.status as JobStatus;
     const allowedTransitions = validTransitions[currentStatus] || [];
     
     if (!allowedTransitions.includes(targetStatus)) {
@@ -80,7 +171,6 @@ export function useKanbanDragDrop({ jobs, onJobsUpdate }: UseKanbanDragDropProps
       return;
     }
     
-    // Update job status in database
     setIsUpdating(true);
     
     try {
@@ -102,7 +192,7 @@ export function useKanbanDragDrop({ jobs, onJobsUpdate }: UseKanbanDragDropProps
       const { error } = await supabase
         .from('jobs')
         .update(updateData)
-        .eq('id', activeJobId);
+        .eq('id', draggedJob.id);
       
       if (error) throw error;
       
@@ -119,7 +209,7 @@ export function useKanbanDragDrop({ jobs, onJobsUpdate }: UseKanbanDragDropProps
     } finally {
       setIsUpdating(false);
     }
-  }, [jobs, onJobsUpdate]);
+  };
 
   const handleDragCancel = useCallback(() => {
     setActiveJob(null);

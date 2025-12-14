@@ -1,7 +1,7 @@
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, GripVertical } from 'lucide-react';
+import { Calendar, GripVertical, AlertCircle, ArrowUp, ArrowDown, Minus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { DbJob, DbTechnique, DbMachine } from '@/hooks/useJobs';
 import { format } from 'date-fns';
@@ -14,6 +14,13 @@ interface DraggableJobCardProps {
   onClick: () => void;
 }
 
+const priorityConfig: Record<string, { label: string; color: string; icon: React.ElementType }> = {
+  'urgent': { label: 'Urgente', color: 'text-red-400 bg-red-400/10 border-red-400/30', icon: AlertCircle },
+  'high': { label: 'Alta', color: 'text-orange-400 bg-orange-400/10 border-orange-400/30', icon: ArrowUp },
+  'medium': { label: 'Média', color: 'text-yellow-400 bg-yellow-400/10 border-yellow-400/30', icon: Minus },
+  'low': { label: 'Baixa', color: 'text-green-400 bg-green-400/10 border-green-400/30', icon: ArrowDown },
+};
+
 export function DraggableJobCard({ job, technique, machine, onClick }: DraggableJobCardProps) {
   const {
     attributes,
@@ -22,6 +29,7 @@ export function DraggableJobCard({ job, technique, machine, onClick }: Draggable
     transform,
     transition,
     isDragging,
+    isSorting,
   } = useSortable({ 
     id: job.id,
     data: {
@@ -35,6 +43,9 @@ export function DraggableJobCard({ job, technique, machine, onClick }: Draggable
     transition,
   };
 
+  const priority = priorityConfig[job.priority] || priorityConfig['medium'];
+  const PriorityIcon = priority.icon;
+
   return (
     <div
       ref={setNodeRef}
@@ -44,7 +55,8 @@ export function DraggableJobCard({ job, technique, machine, onClick }: Draggable
         "bg-card/50 backdrop-blur-sm border-border/50",
         "hover:bg-card hover:border-border hover:shadow-lg",
         "group touch-none",
-        isDragging && "opacity-50 shadow-2xl scale-105 z-50 ring-2 ring-primary"
+        isDragging && "opacity-50 shadow-2xl scale-105 z-50 ring-2 ring-primary",
+        isSorting && "cursor-grabbing"
       )}
       onClick={onClick}
     >
@@ -52,10 +64,16 @@ export function DraggableJobCard({ job, technique, machine, onClick }: Draggable
         <div 
           {...attributes}
           {...listeners}
-          className="flex items-center gap-2 cursor-grab active:cursor-grabbing"
+          className="flex items-center gap-1 cursor-grab active:cursor-grabbing"
           onClick={(e) => e.stopPropagation()}
         >
           <GripVertical className="h-4 w-4 text-muted-foreground hover:text-foreground transition-colors" />
+          <Badge 
+            variant="outline" 
+            className={cn("text-[10px] px-1.5 py-0 h-5 gap-0.5", priority.color)}
+          >
+            <PriorityIcon className="h-3 w-3" />
+          </Badge>
         </div>
         <Badge 
           variant="outline" 

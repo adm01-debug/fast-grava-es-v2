@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils';
 import { DbJob } from '@/hooks/useJobs';
 import { JobStatus } from '@/types/scheduling';
 import { DraggableJobCard } from './DraggableJobCard';
+import { useMemo } from 'react';
 
 interface DroppableColumnProps {
   status: JobStatus;
@@ -16,6 +17,14 @@ interface DroppableColumnProps {
   getMachineById: (id: string) => { id: string; code: string; name: string; technique_id: string; is_active: boolean } | undefined;
   onJobClick: (job: DbJob) => void;
 }
+
+// Priority order for sorting (higher = more priority)
+const priorityOrder: Record<string, number> = {
+  'urgent': 4,
+  'high': 3,
+  'medium': 2,
+  'low': 1,
+};
 
 export function DroppableColumn({
   status,
@@ -35,7 +44,18 @@ export function DroppableColumn({
     }
   });
 
-  const jobIds = jobs.map(job => job.id);
+  // Sort jobs by priority (urgent first) then by date
+  const sortedJobs = useMemo(() => {
+    return [...jobs].sort((a, b) => {
+      // First by priority
+      const priorityDiff = (priorityOrder[b.priority] || 0) - (priorityOrder[a.priority] || 0);
+      if (priorityDiff !== 0) return priorityDiff;
+      // Then by created date (older first)
+      return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+    });
+  }, [jobs]);
+
+  const jobIds = sortedJobs.map(job => job.id);
 
   return (
     <div className="flex flex-col min-w-[240px] sm:min-w-[280px] max-w-[320px]">
@@ -59,7 +79,7 @@ export function DroppableColumn({
         )}
       >
         <SortableContext items={jobIds} strategy={verticalListSortingStrategy}>
-          {jobs.length === 0 ? (
+          {sortedJobs.length === 0 ? (
             <div className={cn(
               "flex items-center justify-center h-24 text-xs text-muted-foreground",
               "border-2 border-dashed rounded-lg transition-colors",
@@ -68,7 +88,7 @@ export function DroppableColumn({
               {isOver ? "Soltar aqui" : "Nenhum job"}
             </div>
           ) : (
-            jobs.map((job, index) => (
+            sortedJobs.map((job, index) => (
               <div 
                 key={job.id} 
                 className="animate-fade-in"
