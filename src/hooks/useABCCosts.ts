@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { showErrorToast, categorizeError } from '@/lib/errorHandling';
+import { defaultQueryOptions, STALE_TIMES } from '@/lib/queryConfig';
 
 // Error context for debugging
 const ABC_ERROR_CONTEXT = {
@@ -116,6 +117,8 @@ export function useABCCosts() {
         throw err;
       }
     },
+    staleTime: STALE_TIMES.STATIC,
+    ...defaultQueryOptions,
   });
 
   // Fetch cost pools
@@ -139,6 +142,8 @@ export function useABCCosts() {
         throw err;
       }
     },
+    staleTime: STALE_TIMES.STATIC,
+    ...defaultQueryOptions,
   });
 
   // Fetch activity rates
@@ -161,6 +166,8 @@ export function useABCCosts() {
         throw err;
       }
     },
+    staleTime: STALE_TIMES.STATIC,
+    ...defaultQueryOptions,
   });
 
   // Fetch job costs
@@ -175,6 +182,8 @@ export function useABCCosts() {
       if (error) throw error;
       return data as ABCJobCost[];
     },
+    staleTime: STALE_TIMES.DYNAMIC,
+    ...defaultQueryOptions,
   });
 
   // Fetch jobs for cost calculation

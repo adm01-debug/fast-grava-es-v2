@@ -5,6 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { format, isWithinInterval, parseISO, startOfMonth, endOfMonth } from 'date-fns';
 import { showErrorToast, categorizeError } from '@/lib/errorHandling';
+import { defaultQueryOptions, STALE_TIMES } from '@/lib/queryConfig';
 
 // Error context for debugging
 const GOALS_ERROR_CONTEXT = {
@@ -81,7 +82,8 @@ export function useOperatorGoals() {
         throw err;
       }
     },
-    staleTime: 1000 * 60 * 2,
+    staleTime: STALE_TIMES.USER,
+    ...defaultQueryOptions,
   });
 
   // Subscribe to realtime updates for operator goals

@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { showErrorToast, createAppError, createMutationErrorHandler } from '@/lib/errorHandling';
+import { defaultQueryOptions, STALE_TIMES } from '@/lib/queryConfig';
 
 const CONVERSATIONS_ERROR_CONTEXT = {
   conversations: { entity: 'technical_conversations', operation: 'fetch' },
@@ -50,7 +51,9 @@ export const useTechnicalConversations = () => {
         throw error;
       }
     },
-    enabled: !!user?.id
+    enabled: !!user?.id,
+    staleTime: STALE_TIMES.USER,
+    ...defaultQueryOptions,
   });
 
   const createConversation = useMutation({

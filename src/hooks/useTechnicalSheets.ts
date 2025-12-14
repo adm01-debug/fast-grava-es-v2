@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { showErrorToast, createAppError } from '@/lib/errorHandling';
+import { defaultQueryOptions, STALE_TIMES } from '@/lib/queryConfig';
 
 const SHEETS_ERROR_CONTEXT = {
   sheets: { entity: 'technical_sheets', operation: 'fetch' },
@@ -96,7 +97,9 @@ export const useTechnicalSheets = () => {
         if (import.meta.env.DEV) console.error('[useTechnicalSheets]', appError);
         throw error;
       }
-    }
+    },
+    staleTime: STALE_TIMES.STATIC,
+    ...defaultQueryOptions,
   });
 
   // Fetch product categories
