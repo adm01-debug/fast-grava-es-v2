@@ -8549,6 +8549,8 @@ interface OverviewSectionProps {
   onNavigate: (tabId: string) => void;
 }
 
+type ConfettiShape = 'circle' | 'square' | 'rectangle' | 'star';
+
 interface ConfettiParticle {
   id: number;
   x: number;
@@ -8558,7 +8560,37 @@ interface ConfettiParticle {
   velocity: number;
   size: number;
   rotation: number;
+  shape: ConfettiShape;
 }
+
+const getConfettiShapeStyle = (shape: ConfettiShape, size: number): React.CSSProperties => {
+  switch (shape) {
+    case 'circle':
+      return { borderRadius: '50%' };
+    case 'square':
+      return { borderRadius: '2px' };
+    case 'rectangle':
+      return { 
+        width: size * 0.5, 
+        height: size * 1.5, 
+        borderRadius: '1px' 
+      };
+    case 'star':
+      return {
+        width: 0,
+        height: 0,
+        backgroundColor: 'transparent',
+        borderLeft: `${size * 0.5}px solid transparent`,
+        borderRight: `${size * 0.5}px solid transparent`,
+        borderBottom: `${size}px solid currentColor`,
+        clipPath: 'polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)',
+      };
+    default:
+      return {};
+  }
+};
+
+const confettiShapes: ConfettiShape[] = ['circle', 'square', 'rectangle', 'star'];
 
 function OverviewSection({ onNavigate }: OverviewSectionProps) {
   const [animatedValues, setAnimatedValues] = useState({ categories: 0, components: 0, variants: 0, copiable: 0 });
@@ -8603,6 +8635,7 @@ function OverviewSection({ onNavigate }: OverviewSectionProps) {
         velocity: 80 + Math.random() * 80,
         size: 4 + Math.random() * 6,
         rotation: Math.random() * 360,
+        shape: confettiShapes[Math.floor(Math.random() * confettiShapes.length)],
       });
     }
     
@@ -8762,18 +8795,20 @@ function OverviewSection({ onNavigate }: OverviewSectionProps) {
           {confetti.map(particle => (
             <span
               key={particle.id}
-              className="absolute pointer-events-none rounded-sm"
+              className="absolute pointer-events-none"
               style={{
                 left: particle.x,
                 top: particle.y,
                 width: particle.size,
                 height: particle.size,
-                backgroundColor: particle.color,
+                backgroundColor: particle.shape === 'star' ? 'transparent' : particle.color,
+                color: particle.color,
                 transform: `translate(-50%, -50%)`,
                 animation: 'confetti-burst 1s ease-out forwards',
                 '--confetti-x': `${Math.cos(particle.angle) * particle.velocity}px`,
                 '--confetti-y': `${Math.sin(particle.angle) * particle.velocity - 50}px`,
                 '--confetti-rotation': `${particle.rotation + 720}deg`,
+                ...getConfettiShapeStyle(particle.shape, particle.size),
               } as React.CSSProperties}
             />
           ))}
@@ -8802,18 +8837,20 @@ function OverviewSection({ onNavigate }: OverviewSectionProps) {
           {confetti.map(particle => (
             <span
               key={particle.id}
-              className="absolute pointer-events-none rounded-sm"
+              className="absolute pointer-events-none"
               style={{
                 left: particle.x,
                 top: particle.y,
                 width: particle.size,
                 height: particle.size,
-                backgroundColor: particle.color,
+                backgroundColor: particle.shape === 'star' ? 'transparent' : particle.color,
+                color: particle.color,
                 transform: `translate(-50%, -50%)`,
                 animation: 'confetti-burst 1s ease-out forwards',
                 '--confetti-x': `${Math.cos(particle.angle) * particle.velocity}px`,
                 '--confetti-y': `${Math.sin(particle.angle) * particle.velocity - 50}px`,
                 '--confetti-rotation': `${particle.rotation + 720}deg`,
+                ...getConfettiShapeStyle(particle.shape, particle.size),
               } as React.CSSProperties}
             />
           ))}
@@ -8842,18 +8879,20 @@ function OverviewSection({ onNavigate }: OverviewSectionProps) {
           {confetti.map(particle => (
             <span
               key={particle.id}
-              className="absolute pointer-events-none rounded-sm"
+              className="absolute pointer-events-none"
               style={{
                 left: particle.x,
                 top: particle.y,
                 width: particle.size,
                 height: particle.size,
-                backgroundColor: particle.color,
+                backgroundColor: particle.shape === 'star' ? 'transparent' : particle.color,
+                color: particle.color,
                 transform: `translate(-50%, -50%)`,
                 animation: 'confetti-burst 1s ease-out forwards',
                 '--confetti-x': `${Math.cos(particle.angle) * particle.velocity}px`,
                 '--confetti-y': `${Math.sin(particle.angle) * particle.velocity - 50}px`,
                 '--confetti-rotation': `${particle.rotation + 720}deg`,
+                ...getConfettiShapeStyle(particle.shape, particle.size),
               } as React.CSSProperties}
             />
           ))}
@@ -8882,18 +8921,20 @@ function OverviewSection({ onNavigate }: OverviewSectionProps) {
           {confetti.map(particle => (
             <span
               key={particle.id}
-              className="absolute pointer-events-none rounded-sm"
+              className="absolute pointer-events-none"
               style={{
                 left: particle.x,
                 top: particle.y,
                 width: particle.size,
                 height: particle.size,
-                backgroundColor: particle.color,
+                backgroundColor: particle.shape === 'star' ? 'transparent' : particle.color,
+                color: particle.color,
                 transform: `translate(-50%, -50%)`,
                 animation: 'confetti-burst 1s ease-out forwards',
                 '--confetti-x': `${Math.cos(particle.angle) * particle.velocity}px`,
                 '--confetti-y': `${Math.sin(particle.angle) * particle.velocity - 50}px`,
                 '--confetti-rotation': `${particle.rotation + 720}deg`,
+                ...getConfettiShapeStyle(particle.shape, particle.size),
               } as React.CSSProperties}
             />
           ))}
