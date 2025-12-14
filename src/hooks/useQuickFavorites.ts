@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
-import { arrayMove } from '@dnd-kit/sortable';
 import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 export interface QuickFavorite {
   id: string;
@@ -14,7 +15,7 @@ const DEFAULT_FAVORITES: QuickFavorite[] = [
   { id: 'alerts', label: 'Alertas', href: '/alerts', icon: 'AlertTriangle' },
 ];
 
-const AVAILABLE_SHORTCUTS = [
+const AVAILABLE_SHORTCUTS: QuickFavorite[] = [
   { id: 'dashboard', label: 'Dashboard', href: '/', icon: 'Home' },
   { id: 'daily-calendar', label: 'Calendário Diário', href: '/calendar/daily', icon: 'Calendar' },
   { id: 'weekly-calendar', label: 'Calendário Semanal', href: '/calendar/weekly', icon: 'CalendarDays' },
@@ -32,50 +33,98 @@ const AVAILABLE_SHORTCUTS = [
   { id: 'new-job', label: 'Novo Agendamento', href: '/new-job', icon: 'Plus' },
 ];
 
+const MAX_FAVORITES = 6;
+
 export function useQuickFavorites() {
   const { user } = useAuth();
-  const storageKey = `quick-favorites-${user?.id || 'guest'}`;
+  const queryClient = useQueryClient();
   
-  const [favorites, setFavorites] = useState<QuickFavorite[]>(() => {
-    if (typeof window === 'undefined') return DEFAULT_FAVORITES;
-    const stored = localStorage.getItem(storageKey);
-    return stored ? JSON.parse(stored) : DEFAULT_FAVORITES;
+  // Fetch favorites from database
+  const { data: dbFavorites, isLoading } = useQuery({
+    queryKey: ['user-favorites', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null;
+      
+      const { data, error } = await supabase
+        .from('user_favorites')
+        .select('favorites')
+        .eq('user_id', user.id)
+        .maybeSingle();
+      
+      if (error) {
+        console.error('Error fetching favorites:', error);
+        return null;
+      }
+      
+      return data?.favorites as unknown as QuickFavorite[] | null;
+    },
+    enabled: !!user?.id,
+    staleTime: 1000 * 60 * 5, // 5 minutes
   });
 
-  useEffect(() => {
-    if (user?.id) {
-      const stored = localStorage.getItem(storageKey);
-      if (stored) {
-        setFavorites(JSON.parse(stored));
-      } else {
-        setFavorites(DEFAULT_FAVORITES);
-      }
-    }
-  }, [user?.id, storageKey]);
+  const favorites = dbFavorites ?? DEFAULT_FAVORITES;
 
-  useEffect(() => {
-    localStorage.setItem(storageKey, JSON.stringify(favorites));
-  }, [favorites, storageKey]);
+  // Mutation to save favorites
+  const saveMutation = useMutation({
+    mutationFn: async (newFavorites: QuickFavorite[]) => {
+      if (!user?.id) throw new Error('User not authenticated');
+      
+      // Check if record exists
+      const { data: existing } = await supabase
+        .from('user_favorites')
+        .select('id')
+        .eq('user_id', user.id)
+        .maybeSingle();
+      
+      if (existing) {
+        // Update existing record
+        const { error } = await supabase
+          .from('user_favorites')
+          .update({ favorites: JSON.parse(JSON.stringify(newFavorites)) })
+          .eq('user_id', user.id);
+        
+        if (error) throw error;
+      } else {
+        // Insert new record
+        const { error } = await supabase
+          .from('user_favorites')
+          .insert([{
+            user_id: user.id,
+            favorites: JSON.parse(JSON.stringify(newFavorites)),
+          }]);
+        
+        if (error) throw error;
+      }
+      
+      return newFavorites;
+    },
+    onSuccess: (newFavorites) => {
+      queryClient.setQueryData(['user-favorites', user?.id], newFavorites);
+    },
+  });
 
   const addFavorite = useCallback((shortcut: QuickFavorite) => {
-    setFavorites(prev => {
-      if (prev.some(f => f.id === shortcut.id)) return prev;
-      if (prev.length >= 6) return prev; // Max 6 favorites
-      return [...prev, shortcut];
-    });
-  }, []);
+    const currentFavorites = dbFavorites ?? DEFAULT_FAVORITES;
+    if (currentFavorites.some(f => f.id === shortcut.id)) return;
+    if (currentFavorites.length >= MAX_FAVORITES) return;
+    
+    const newFavorites = [...currentFavorites, shortcut];
+    saveMutation.mutate(newFavorites);
+  }, [dbFavorites, saveMutation]);
 
   const removeFavorite = useCallback((id: string) => {
-    setFavorites(prev => prev.filter(f => f.id !== id));
-  }, []);
+    const currentFavorites = dbFavorites ?? DEFAULT_FAVORITES;
+    const newFavorites = currentFavorites.filter(f => f.id !== id);
+    saveMutation.mutate(newFavorites);
+  }, [dbFavorites, saveMutation]);
 
   const reorderFavorites = useCallback((newOrder: QuickFavorite[]) => {
-    setFavorites(newOrder);
-  }, []);
+    saveMutation.mutate(newOrder);
+  }, [saveMutation]);
 
   const resetToDefault = useCallback(() => {
-    setFavorites(DEFAULT_FAVORITES);
-  }, []);
+    saveMutation.mutate(DEFAULT_FAVORITES);
+  }, [saveMutation]);
 
   const isFavorite = useCallback((id: string) => {
     return favorites.some(f => f.id === id);
@@ -89,6 +138,7 @@ export function useQuickFavorites() {
     reorderFavorites,
     resetToDefault,
     isFavorite,
-    maxFavorites: 6,
+    maxFavorites: MAX_FAVORITES,
+    isLoading,
   };
 }
