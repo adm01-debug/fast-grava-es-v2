@@ -1,6 +1,16 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { showErrorToast, createAppError } from '@/lib/errorHandling';
+
+const SHEETS_ERROR_CONTEXT = {
+  sheets: { entity: 'technical_sheets', operation: 'fetch' },
+  sheetDetails: { entity: 'technical_sheets', operation: 'fetch_details' },
+  categories: { entity: 'product_categories', operation: 'fetch' },
+  materials: { entity: 'materials', operation: 'fetch' },
+  steps: { entity: 'technical_sheet_steps', operation: 'fetch' },
+  tips: { entity: 'technical_sheet_tips', operation: 'fetch' },
+};
 
 export interface TechnicalSheet {
   id: string;
@@ -66,20 +76,26 @@ export const useTechnicalSheets = () => {
   const sheetsQuery = useQuery({
     queryKey: ['technical-sheets'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('technical_sheets')
-        .select(`
-          *,
-          techniques (id, name, color, short_name),
-          product_categories (id, name),
-          materials (id, name),
-          machines (id, name, code)
-        `)
-        .eq('is_active', true)
-        .order('technique_id', { ascending: true });
+      try {
+        const { data, error } = await supabase
+          .from('technical_sheets')
+          .select(`
+            *,
+            techniques (id, name, color, short_name),
+            product_categories (id, name),
+            materials (id, name),
+            machines (id, name, code)
+          `)
+          .eq('is_active', true)
+          .order('technique_id', { ascending: true });
 
-      if (error) throw error;
-      return data as TechnicalSheet[];
+        if (error) throw error;
+        return data as TechnicalSheet[];
+      } catch (error) {
+        const appError = createAppError(error, SHEETS_ERROR_CONTEXT.sheets);
+        if (import.meta.env.DEV) console.error('[useTechnicalSheets]', appError);
+        throw error;
+      }
     }
   });
 
@@ -87,13 +103,19 @@ export const useTechnicalSheets = () => {
   const categoriesQuery = useQuery({
     queryKey: ['product-categories'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('product_categories')
-        .select('*')
-        .order('name');
+      try {
+        const { data, error } = await supabase
+          .from('product_categories')
+          .select('*')
+          .order('name');
 
-      if (error) throw error;
-      return data as ProductCategory[];
+        if (error) throw error;
+        return data as ProductCategory[];
+      } catch (error) {
+        const appError = createAppError(error, SHEETS_ERROR_CONTEXT.categories);
+        if (import.meta.env.DEV) console.error('[useTechnicalSheets:categories]', appError);
+        throw error;
+      }
     }
   });
 
@@ -101,13 +123,19 @@ export const useTechnicalSheets = () => {
   const materialsQuery = useQuery({
     queryKey: ['materials'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('materials')
-        .select('*')
-        .order('name');
+      try {
+        const { data, error } = await supabase
+          .from('materials')
+          .select('*')
+          .order('name');
 
-      if (error) throw error;
-      return data as Material[];
+        if (error) throw error;
+        return data as Material[];
+      } catch (error) {
+        const appError = createAppError(error, SHEETS_ERROR_CONTEXT.materials);
+        if (import.meta.env.DEV) console.error('[useTechnicalSheets:materials]', appError);
+        throw error;
+      }
     }
   });
 

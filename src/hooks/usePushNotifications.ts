@@ -1,5 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useToast } from '@/hooks/use-toast';
+import { createAppError } from '@/lib/errorHandling';
+
+const PUSH_NOTIFICATIONS_ERROR_CONTEXT = {
+  requestPermission: { entity: 'push_notifications', operation: 'request_permission' },
+  sendNotification: { entity: 'push_notifications', operation: 'send' },
+};
 
 interface NotificationOptions {
   title: string;
@@ -55,19 +61,20 @@ export const usePushNotifications = () => {
       }
       return false;
     } catch (error) {
-      console.error('Error requesting notification permission:', error);
+      const appError = createAppError(error, PUSH_NOTIFICATIONS_ERROR_CONTEXT.requestPermission);
+      if (import.meta.env.DEV) console.error('[requestPermission]', appError);
       return false;
     }
   }, [isSupported, toast]);
 
   const sendNotification = useCallback((options: NotificationOptions) => {
     if (!isSupported) {
-      console.log('Notifications not supported');
+      if (import.meta.env.DEV) console.log('[sendNotification] Notifications not supported');
       return null;
     }
 
     if (permission !== 'granted') {
-      console.log('Notification permission not granted');
+      if (import.meta.env.DEV) console.log('[sendNotification] Notification permission not granted');
       return null;
     }
 
@@ -92,7 +99,8 @@ export const usePushNotifications = () => {
 
       return notification;
     } catch (error) {
-      console.error('Error sending notification:', error);
+      const appError = createAppError(error, PUSH_NOTIFICATIONS_ERROR_CONTEXT.sendNotification);
+      if (import.meta.env.DEV) console.error('[sendNotification]', appError);
       return null;
     }
   }, [isSupported, permission]);

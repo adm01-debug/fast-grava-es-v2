@@ -3,6 +3,12 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useJobs, useMachines, useTechniques, DbJob, DbMachine, DbTechnique } from './useJobs';
 import { toast } from 'sonner';
+import { showErrorToast, createAppError } from '@/lib/errorHandling';
+
+const SEQUENCING_ERROR_CONTEXT = {
+  applySequencing: { entity: 'jobs', operation: 'apply_sequencing' },
+  applyAllSequencing: { entity: 'jobs', operation: 'apply_all_sequencing' },
+};
 
 export interface SequencingSuggestion {
   id: string;
@@ -82,26 +88,32 @@ export function useSmartSequencingWithActions() {
   // Mutation to apply sequencing for a machine
   const applySequencingMutation = useMutation({
     mutationFn: async (suggestion: SequencingSuggestion): Promise<ApplySequencingResult> => {
-      const timeSlots = generateTimeSlots(7, suggestion.optimizedSequence); // Start at 07:00
-      
-      for (const slot of timeSlots) {
-        const { error } = await supabase
-          .from('jobs')
-          .update({ 
-            start_time: slot.startTime,
-            end_time: slot.endTime 
-          })
-          .eq('id', slot.jobId);
+      try {
+        const timeSlots = generateTimeSlots(7, suggestion.optimizedSequence); // Start at 07:00
         
-        if (error) throw error;
+        for (const slot of timeSlots) {
+          const { error } = await supabase
+            .from('jobs')
+            .update({ 
+              start_time: slot.startTime,
+              end_time: slot.endTime 
+            })
+            .eq('id', slot.jobId);
+          
+          if (error) throw error;
+        }
+        
+        return {
+          machineId: suggestion.machineId,
+          machineName: suggestion.machineName,
+          appliedJobs: timeSlots.length,
+          estimatedSavings: suggestion.estimatedSavings,
+        };
+      } catch (error) {
+        const appError = createAppError(error, SEQUENCING_ERROR_CONTEXT.applySequencing);
+        if (import.meta.env.DEV) console.error('[applySequencing]', appError);
+        throw error;
       }
-      
-      return {
-        machineId: suggestion.machineId,
-        machineName: suggestion.machineName,
-        appliedJobs: timeSlots.length,
-        estimatedSavings: suggestion.estimatedSavings,
-      };
     },
     onSuccess: (result) => {
       queryClient.invalidateQueries({ queryKey: ['jobs'] });
@@ -110,9 +122,7 @@ export function useSmartSequencingWithActions() {
       });
     },
     onError: (error, suggestion) => {
-      toast.error(`Erro ao aplicar sequência para ${suggestion.machineName}`, {
-        description: error instanceof Error ? error.message : 'Erro desconhecido',
-      });
+      showErrorToast(error, `Erro ao aplicar sequência para ${suggestion.machineName}`);
     },
   });
 
@@ -144,7 +154,8 @@ export function useSmartSequencingWithActions() {
             estimatedSavings: suggestion.estimatedSavings,
           });
         } catch (error) {
-          console.error(`Failed to apply sequencing for ${suggestion.machineName}:`, error);
+          const appError = createAppError(error, SEQUENCING_ERROR_CONTEXT.applyAllSequencing);
+          if (import.meta.env.DEV) console.error(`[applyAllSequencing] Failed for ${suggestion.machineName}:`, appError);
         }
       }
       
@@ -162,6 +173,9 @@ export function useSmartSequencingWithActions() {
       } else {
         toast.error('Nenhuma máquina foi otimizada');
       }
+    },
+    onError: (error) => {
+      showErrorToast(error, 'Erro ao otimizar sequências');
     },
   });
 

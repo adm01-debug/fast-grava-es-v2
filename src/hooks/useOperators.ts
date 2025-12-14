@@ -1,6 +1,13 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
+import { showErrorToast, createAppError } from '@/lib/errorHandling';
+
+const OPERATORS_ERROR_CONTEXT = {
+  fetch: { entity: 'operators', operation: 'fetch' },
+  remove: { entity: 'operators', operation: 'remove' },
+  toggleActive: { entity: 'operators', operation: 'toggle_active' },
+};
 
 export interface OperatorWithProfile {
   id: string;
@@ -19,38 +26,44 @@ export function useOperators() {
   const query = useQuery({
     queryKey: ['operators'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('user_roles')
-        .select(`
-          id,
-          user_id,
-          role,
-          created_at,
-          is_active,
-          profiles!inner (
-            full_name,
-            avatar_url,
-            phone
-          )
-        `)
-        .eq('role', 'operator');
+      try {
+        const { data, error } = await supabase
+          .from('user_roles')
+          .select(`
+            id,
+            user_id,
+            role,
+            created_at,
+            is_active,
+            profiles!inner (
+              full_name,
+              avatar_url,
+              phone
+            )
+          `)
+          .eq('role', 'operator');
 
-      if (error) throw error;
+        if (error) throw error;
 
-      // Type-safe mapping with proper profile extraction
-      return (data || []).map(item => {
-        const profile = item.profiles as { full_name?: string | null; avatar_url?: string | null; phone?: string | null } | null;
-        return {
-          id: item.id,
-          user_id: item.user_id,
-          role: item.role as 'operator',
-          full_name: profile?.full_name ?? null,
-          avatar_url: profile?.avatar_url ?? null,
-          phone: profile?.phone ?? null,
-          created_at: item.created_at,
-          is_active: item.is_active ?? true,
-        };
-      }) as OperatorWithProfile[];
+        // Type-safe mapping with proper profile extraction
+        return (data || []).map(item => {
+          const profile = item.profiles as { full_name?: string | null; avatar_url?: string | null; phone?: string | null } | null;
+          return {
+            id: item.id,
+            user_id: item.user_id,
+            role: item.role as 'operator',
+            full_name: profile?.full_name ?? null,
+            avatar_url: profile?.avatar_url ?? null,
+            phone: profile?.phone ?? null,
+            created_at: item.created_at,
+            is_active: item.is_active ?? true,
+          };
+        }) as OperatorWithProfile[];
+      } catch (error) {
+        const appError = createAppError(error, OPERATORS_ERROR_CONTEXT.fetch);
+        if (import.meta.env.DEV) console.error('[useOperators]', appError);
+        throw error;
+      }
     },
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
@@ -108,12 +121,9 @@ export function useOperators() {
       });
     },
     onError: (error) => {
-      console.error('Error removing operator:', error);
-      toast({
-        title: 'Erro ao remover operador',
-        description: 'Não foi possível remover o operador. Tente novamente.',
-        variant: 'destructive',
-      });
+      const appError = createAppError(error, OPERATORS_ERROR_CONTEXT.remove);
+      if (import.meta.env.DEV) console.error('[removeOperator]', appError);
+      showErrorToast(error, 'Erro ao remover operador');
     },
   });
 
@@ -162,12 +172,9 @@ export function useOperators() {
       });
     },
     onError: (error) => {
-      console.error('Error toggling operator status:', error);
-      toast({
-        title: 'Erro ao alterar status',
-        description: 'Não foi possível alterar o status do operador.',
-        variant: 'destructive',
-      });
+      const appError = createAppError(error, OPERATORS_ERROR_CONTEXT.toggleActive);
+      if (import.meta.env.DEV) console.error('[toggleActive]', appError);
+      showErrorToast(error, 'Erro ao alterar status do operador');
     },
   });
 

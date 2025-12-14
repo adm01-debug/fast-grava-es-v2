@@ -1,6 +1,12 @@
 import { useEffect, useCallback } from 'react';
 import { useJobs, useTechniques } from './useJobs';
 import { toast } from 'sonner';
+import { createAppError } from '@/lib/errorHandling';
+
+const NOTIFICATIONS_ERROR_CONTEXT = {
+  delayedCheck: { entity: 'notifications', operation: 'check_delayed' },
+  bufferCheck: { entity: 'notifications', operation: 'check_buffer' },
+};
 
 interface NotificationConfig {
   enableDelayedAlerts: boolean;
@@ -22,49 +28,59 @@ export function useNotifications(config: Partial<NotificationConfig> = {}) {
   const settings = { ...defaultConfig, ...config };
 
   const checkDelayedJobs = useCallback(() => {
-    if (!jobs || !settings.enableDelayedAlerts) return;
+    try {
+      if (!jobs || !settings.enableDelayedAlerts) return;
 
-    const delayedJobs = jobs.filter(job => job.status === 'delayed');
-    
-    if (delayedJobs.length > 0) {
-      toast.error(`${delayedJobs.length} job(s) atrasado(s)`, {
-        description: delayedJobs.slice(0, 3).map(j => j.client).join(', '),
-        action: {
-          label: 'Ver Alertas',
-          onClick: () => window.location.href = '/alerts',
-        },
-      });
+      const delayedJobs = jobs.filter(job => job.status === 'delayed');
+      
+      if (delayedJobs.length > 0) {
+        toast.error(`${delayedJobs.length} job(s) atrasado(s)`, {
+          description: delayedJobs.slice(0, 3).map(j => j.client).join(', '),
+          action: {
+            label: 'Ver Alertas',
+            onClick: () => window.location.href = '/alerts',
+          },
+        });
+      }
+    } catch (error) {
+      const appError = createAppError(error, NOTIFICATIONS_ERROR_CONTEXT.delayedCheck);
+      if (import.meta.env.DEV) console.error('[checkDelayedJobs]', appError);
     }
   }, [jobs, settings.enableDelayedAlerts]);
 
   const checkReadyJobs = useCallback(() => {
-    if (!jobs || !techniques || !settings.enableReadyAlerts) return;
+    try {
+      if (!jobs || !techniques || !settings.enableReadyAlerts) return;
 
-    const readyJobs = jobs.filter(job => job.status === 'ready');
-    const activeJobs = jobs.filter(job => !['finished', 'cancelled'].includes(job.status));
-    
-    // Get all unique techniques that have active jobs (need buffer monitoring)
-    const techniquesWithActiveJobs = new Set(activeJobs.map(job => job.technique_id));
-    
-    // Count ready jobs per technique
-    const techniqueReadyCounts = readyJobs.reduce((acc, job) => {
-      acc[job.technique_id] = (acc[job.technique_id] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
+      const readyJobs = jobs.filter(job => job.status === 'ready');
+      const activeJobs = jobs.filter(job => !['finished', 'cancelled'].includes(job.status));
+      
+      // Get all unique techniques that have active jobs (need buffer monitoring)
+      const techniquesWithActiveJobs = new Set(activeJobs.map(job => job.technique_id));
+      
+      // Count ready jobs per technique
+      const techniqueReadyCounts = readyJobs.reduce((acc, job) => {
+        acc[job.technique_id] = (acc[job.technique_id] || 0) + 1;
+        return acc;
+      }, {} as Record<string, number>);
 
-    // Check ALL techniques that have active work - not just those with ready jobs
-    techniquesWithActiveJobs.forEach(techniqueId => {
-      const count = techniqueReadyCounts[techniqueId] || 0;
-      if (count < 3) {
-        // Get technique name for readable notification
-        const technique = techniques.find(t => t.id === techniqueId);
-        const techniqueName = technique?.name || technique?.short_name || techniqueId;
-        
-        toast.warning(`Buffer baixo: ${techniqueName}`, {
-          description: `Apenas ${count} job(s) no jeito. Meta: 3`,
-        });
-      }
-    });
+      // Check ALL techniques that have active work - not just those with ready jobs
+      techniquesWithActiveJobs.forEach(techniqueId => {
+        const count = techniqueReadyCounts[techniqueId] || 0;
+        if (count < 3) {
+          // Get technique name for readable notification
+          const technique = techniques.find(t => t.id === techniqueId);
+          const techniqueName = technique?.name || technique?.short_name || techniqueId;
+          
+          toast.warning(`Buffer baixo: ${techniqueName}`, {
+            description: `Apenas ${count} job(s) no jeito. Meta: 3`,
+          });
+        }
+      });
+    } catch (error) {
+      const appError = createAppError(error, NOTIFICATIONS_ERROR_CONTEXT.bufferCheck);
+      if (import.meta.env.DEV) console.error('[checkReadyJobs]', appError);
+    }
   }, [jobs, techniques, settings.enableReadyAlerts]);
 
   // Initial check on mount

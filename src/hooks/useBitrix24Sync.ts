@@ -2,6 +2,15 @@ import { useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useQueryClient } from '@tanstack/react-query';
+import { createAppError } from '@/lib/errorHandling';
+
+const BITRIX_ERROR_CONTEXT = {
+  call: { entity: 'bitrix24', operation: 'api_call' },
+  oauth: { entity: 'bitrix24', operation: 'oauth_status' },
+  pull: { entity: 'bitrix24', operation: 'pull' },
+  push: { entity: 'bitrix24', operation: 'push' },
+  test: { entity: 'bitrix24', operation: 'test_connection' },
+};
 
 interface SyncResult {
   synced?: string[];
@@ -51,22 +60,26 @@ export const useBitrix24Sync = () => {
       }
 
       return result;
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const appError = createAppError(error, { ...BITRIX_ERROR_CONTEXT.call, action });
+      
       // Retry on network errors or 5xx server errors
-      const isRetryable = error.message?.includes('fetch') || 
-                          error.message?.includes('network') ||
-                          error.message?.includes('timeout') ||
-                          error.message?.includes('500') ||
-                          error.message?.includes('502') ||
-                          error.message?.includes('503') ||
-                          error.message?.includes('504');
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      const isRetryable = errorMessage.includes('fetch') || 
+                          errorMessage.includes('network') ||
+                          errorMessage.includes('timeout') ||
+                          errorMessage.includes('500') ||
+                          errorMessage.includes('502') ||
+                          errorMessage.includes('503') ||
+                          errorMessage.includes('504');
       
       if (isRetryable && retryCount < MAX_RETRIES) {
-        console.log(`Bitrix24 sync retry ${retryCount + 1}/${MAX_RETRIES} for action: ${action}`);
+        if (import.meta.env.DEV) console.log(`[Bitrix24] Retry ${retryCount + 1}/${MAX_RETRIES} for action: ${action}`);
         await new Promise(resolve => setTimeout(resolve, RETRY_DELAY_MS * Math.pow(2, retryCount)));
         return callBitrixSync(action, body, retryCount + 1);
       }
       
+      if (import.meta.env.DEV) console.error('[callBitrixSync]', appError);
       throw error;
     }
   }, []);

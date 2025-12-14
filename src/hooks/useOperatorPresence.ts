@@ -1,6 +1,12 @@
 import { useEffect, useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { createAppError } from '@/lib/errorHandling';
+
+const PRESENCE_ERROR_CONTEXT = {
+  track: { entity: 'operator_presence', operation: 'track' },
+  sync: { entity: 'operator_presence', operation: 'sync' },
+};
 
 interface PresenceState {
   [key: string]: {
@@ -66,11 +72,16 @@ export function useOperatorPresence() {
       })
       .subscribe(async (status) => {
         if (status === 'SUBSCRIBED') {
-          await channel.track({
-            user_id: user.id,
-            online_at: new Date().toISOString(),
-          });
-          setIsTracking(true);
+          try {
+            await channel.track({
+              user_id: user.id,
+              online_at: new Date().toISOString(),
+            });
+            setIsTracking(true);
+          } catch (error) {
+            const appError = createAppError(error, PRESENCE_ERROR_CONTEXT.track);
+            if (import.meta.env.DEV) console.error('[useOperatorPresence:track]', appError);
+          }
         }
       });
 

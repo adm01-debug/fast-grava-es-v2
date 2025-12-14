@@ -1,6 +1,14 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { showErrorToast, createAppError, createMutationErrorHandler } from '@/lib/errorHandling';
+
+const CONVERSATIONS_ERROR_CONTEXT = {
+  conversations: { entity: 'technical_conversations', operation: 'fetch' },
+  messages: { entity: 'technical_messages', operation: 'fetch' },
+  createConversation: { entity: 'technical_conversations', operation: 'create' },
+  addMessage: { entity: 'technical_messages', operation: 'create' },
+};
 
 export interface TechnicalConversation {
   id: string;
@@ -27,14 +35,20 @@ export const useTechnicalConversations = () => {
     queryFn: async () => {
       if (!user?.id) return [];
       
-      const { data, error } = await supabase
-        .from('technical_conversations')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('updated_at', { ascending: false });
+      try {
+        const { data, error } = await supabase
+          .from('technical_conversations')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('updated_at', { ascending: false });
 
-      if (error) throw error;
-      return data as TechnicalConversation[];
+        if (error) throw error;
+        return data as TechnicalConversation[];
+      } catch (error) {
+        const appError = createAppError(error, CONVERSATIONS_ERROR_CONTEXT.conversations);
+        if (import.meta.env.DEV) console.error('[useTechnicalConversations]', appError);
+        throw error;
+      }
     },
     enabled: !!user?.id
   });
@@ -43,21 +57,28 @@ export const useTechnicalConversations = () => {
     mutationFn: async (title?: string) => {
       if (!user?.id) throw new Error('User not authenticated');
       
-      const { data, error } = await supabase
-        .from('technical_conversations')
-        .insert([{ 
-          user_id: user.id, 
-          title: title || 'Nova conversa' 
-        }])
-        .select()
-        .single();
+      try {
+        const { data, error } = await supabase
+          .from('technical_conversations')
+          .insert([{ 
+            user_id: user.id, 
+            title: title || 'Nova conversa' 
+          }])
+          .select()
+          .single();
 
-      if (error) throw error;
-      return data as TechnicalConversation;
+        if (error) throw error;
+        return data as TechnicalConversation;
+      } catch (error) {
+        const appError = createAppError(error, CONVERSATIONS_ERROR_CONTEXT.createConversation);
+        if (import.meta.env.DEV) console.error('[createConversation]', appError);
+        throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['technical-conversations'] });
-    }
+    },
+    onError: createMutationErrorHandler('Erro ao criar conversa'),
   });
 
   const updateConversationTitle = useMutation({

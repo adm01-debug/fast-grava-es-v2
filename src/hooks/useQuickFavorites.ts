@@ -3,6 +3,12 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from '@/hooks/use-toast';
+import { showErrorToast, createAppError } from '@/lib/errorHandling';
+
+const FAVORITES_ERROR_CONTEXT = {
+  fetch: { entity: 'user_favorites', operation: 'fetch' },
+  save: { entity: 'user_favorites', operation: 'save' },
+};
 
 export interface QuickFavorite {
   id: string;
@@ -48,23 +54,30 @@ export function useQuickFavorites() {
     queryFn: async () => {
       if (!user?.id) return DEFAULT_FAVORITES;
       
-      const { data, error } = await supabase
-        .from('user_favorites')
-        .select('favorites')
-        .eq('user_id', user.id)
-        .maybeSingle();
-      
-      if (error) {
-        console.error('Error fetching favorites:', error);
+      try {
+        const { data, error } = await supabase
+          .from('user_favorites')
+          .select('favorites')
+          .eq('user_id', user.id)
+          .maybeSingle();
+        
+        if (error) {
+          const appError = createAppError(error, FAVORITES_ERROR_CONTEXT.fetch);
+          if (import.meta.env.DEV) console.error('[useQuickFavorites]', appError);
+          return DEFAULT_FAVORITES;
+        }
+        
+        // Return default favorites if no data or null
+        if (!data?.favorites) {
+          return DEFAULT_FAVORITES;
+        }
+        
+        return data.favorites as unknown as QuickFavorite[];
+      } catch (error) {
+        const appError = createAppError(error, FAVORITES_ERROR_CONTEXT.fetch);
+        if (import.meta.env.DEV) console.error('[useQuickFavorites]', appError);
         return DEFAULT_FAVORITES;
       }
-      
-      // Return default favorites if no data or null
-      if (!data?.favorites) {
-        return DEFAULT_FAVORITES;
-      }
-      
-      return data.favorites as unknown as QuickFavorite[];
     },
     enabled: !!user?.id,
     staleTime: 1000 * 60 * 5, // 5 minutes

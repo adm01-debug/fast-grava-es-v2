@@ -1,6 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useMemo } from 'react';
+import { createAppError } from '@/lib/errorHandling';
+
+const MTBF_ERROR_CONTEXT = {
+  records: { entity: 'maintenance_records', operation: 'fetch' },
+  machines: { entity: 'machines', operation: 'fetch_for_mtbf' },
+};
 
 export interface MaintenanceRecord {
   id: string;
@@ -54,18 +60,24 @@ export function useMTBFMTTR(periodDays: number = 90) {
   const { data: records, isLoading: isLoadingRecords } = useQuery({
     queryKey: ['maintenance-records', periodDays],
     queryFn: async () => {
-      const startDate = new Date();
-      startDate.setDate(startDate.getDate() - periodDays);
-      
-      const { data, error } = await supabase
-        .from('maintenance_records')
-        .select('*')
-        .gte('started_at', startDate.toISOString())
-        .eq('status', 'completed')
-        .order('started_at', { ascending: true });
-      
-      if (error) throw error;
-      return data as MaintenanceRecord[];
+      try {
+        const startDate = new Date();
+        startDate.setDate(startDate.getDate() - periodDays);
+        
+        const { data, error } = await supabase
+          .from('maintenance_records')
+          .select('*')
+          .gte('started_at', startDate.toISOString())
+          .eq('status', 'completed')
+          .order('started_at', { ascending: true });
+        
+        if (error) throw error;
+        return data as MaintenanceRecord[];
+      } catch (error) {
+        const appError = createAppError(error, MTBF_ERROR_CONTEXT.records);
+        if (import.meta.env.DEV) console.error('[useMTBFMTTR:records]', appError);
+        throw error;
+      }
     },
     staleTime: 5 * 60 * 1000,
   });
@@ -74,13 +86,19 @@ export function useMTBFMTTR(periodDays: number = 90) {
   const { data: machines, isLoading: isLoadingMachines } = useQuery({
     queryKey: ['machines-for-mtbf'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('machines')
-        .select('id, name, code, technique_id')
-        .eq('is_active', true);
-      
-      if (error) throw error;
-      return data;
+      try {
+        const { data, error } = await supabase
+          .from('machines')
+          .select('id, name, code, technique_id')
+          .eq('is_active', true);
+        
+        if (error) throw error;
+        return data;
+      } catch (error) {
+        const appError = createAppError(error, MTBF_ERROR_CONTEXT.machines);
+        if (import.meta.env.DEV) console.error('[useMTBFMTTR:machines]', appError);
+        throw error;
+      }
     },
     staleTime: 5 * 60 * 1000,
   });
