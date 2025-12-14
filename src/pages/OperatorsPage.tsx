@@ -17,7 +17,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { Users, UserCheck, Phone, Calendar, Settings2, Search, X, UserPlus, Pencil, Clock, Trash2 } from 'lucide-react';
+import { Users, UserCheck, Phone, Calendar, Settings2, Search, X, UserPlus, Pencil, Clock, Trash2, UserX, Power } from 'lucide-react';
 import { useOperators, OperatorWithProfile } from '@/hooks/useOperators';
 import { useOperatorPresence } from '@/hooks/useOperatorPresence';
 import { useOperatorMachines } from '@/hooks/useOperatorMachines';
@@ -35,7 +35,7 @@ const formatLastSeen = (date: Date | undefined) => {
 };
 
 export default function OperatorsPage() {
-  const { data: operators = [], isLoading, removeOperator, isRemoving } = useOperators();
+  const { data: operators = [], isLoading, removeOperator, isRemoving, toggleActive, isToggling } = useOperators();
   const { assignments } = useOperatorMachines();
   const { machines } = useSchedulingData();
   const { isOnline, onlineCount, getLastSeen } = useOperatorPresence();
@@ -48,6 +48,10 @@ export default function OperatorsPage() {
   const [machineFilter, setMachineFilter] = useState<string>('all');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [operatorToRemove, setOperatorToRemove] = useState<OperatorWithProfile | null>(null);
+  const [operatorToToggle, setOperatorToToggle] = useState<OperatorWithProfile | null>(null);
+
+  const activeOperators = operators.filter(op => op.is_active);
+  const inactiveOperators = operators.filter(op => !op.is_active);
 
   
 
@@ -70,10 +74,10 @@ export default function OperatorsPage() {
       const machineMatch = machineFilter === 'all' || 
         getAssignedMachineIds(operator.user_id).includes(machineFilter);
       
-      // Filter by online status
+      // Filter by active status
       const statusMatch = statusFilter === 'all' ||
-        (statusFilter === 'online' && isOnline(operator.user_id)) ||
-        (statusFilter === 'offline' && !isOnline(operator.user_id));
+        (statusFilter === 'active' && operator.is_active) ||
+        (statusFilter === 'inactive' && !operator.is_active);
       
       return nameMatch && machineMatch && statusMatch;
     });
@@ -111,7 +115,7 @@ export default function OperatorsPage() {
           </Button>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid gap-4 md:grid-cols-3">
           <Card className="glass-card">
             <CardContent className="pt-6">
               <div className="flex items-center gap-4">
@@ -140,9 +144,27 @@ export default function OperatorsPage() {
                 {isLoading ? (
                     <Skeleton className="h-9 w-16" />
                   ) : (
-                    <p className="text-3xl font-bold">{onlineCount}</p>
+                    <p className="text-3xl font-bold">{activeOperators.length}</p>
                   )}
-                  <p className="text-sm text-muted-foreground">Online Agora</p>
+                  <p className="text-sm text-muted-foreground">Ativos</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="glass-card">
+            <CardContent className="pt-6">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-xl bg-warning/20 flex items-center justify-center">
+                  <UserX className="h-6 w-6 text-warning" />
+                </div>
+                <div>
+                {isLoading ? (
+                    <Skeleton className="h-9 w-16" />
+                  ) : (
+                    <p className="text-3xl font-bold">{inactiveOperators.length}</p>
+                  )}
+                  <p className="text-sm text-muted-foreground">Inativos</p>
                 </div>
               </div>
             </CardContent>
@@ -182,21 +204,21 @@ export default function OperatorsPage() {
                 </SelectContent>
               </Select>
               <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="w-full sm:w-[140px]">
+                <SelectTrigger className="w-full sm:w-[160px]">
                   <SelectValue placeholder="Status" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Todos</SelectItem>
-                  <SelectItem value="online">
+                  <SelectItem value="all">Todos os status</SelectItem>
+                  <SelectItem value="active">
                     <span className="flex items-center gap-2">
                       <span className="w-2 h-2 rounded-full bg-success" />
-                      Online
+                      Ativos
                     </span>
                   </SelectItem>
-                  <SelectItem value="offline">
+                  <SelectItem value="inactive">
                     <span className="flex items-center gap-2">
-                      <span className="w-2 h-2 rounded-full bg-muted-foreground/50" />
-                      Offline
+                      <span className="w-2 h-2 rounded-full bg-warning" />
+                      Inativos
                     </span>
                   </SelectItem>
                 </SelectContent>
@@ -244,7 +266,9 @@ export default function OperatorsPage() {
                 {filteredOperators.map((operator, index) => (
                   <div
                     key={operator.id}
-                    className="flex items-center gap-4 p-4 rounded-lg border border-border/50 bg-card/50 hover:bg-accent/5 transition-colors animate-fade-in"
+                    className={`flex items-center gap-4 p-4 rounded-lg border border-border/50 bg-card/50 hover:bg-accent/5 transition-colors animate-fade-in ${
+                      !operator.is_active ? 'opacity-60' : ''
+                    }`}
                     style={{ animationDelay: `${index * 50}ms` }}
                   >
                     <div className="relative">
@@ -278,9 +302,16 @@ export default function OperatorsPage() {
                     </div>
                     
                     <div className="flex-1 min-w-0">
-                      <p className="font-medium truncate">
-                        {operator.full_name || 'Nome não informado'}
-                      </p>
+                      <div className="flex items-center gap-2">
+                        <p className="font-medium truncate">
+                          {operator.full_name || 'Nome não informado'}
+                        </p>
+                        {!operator.is_active && (
+                          <Badge variant="outline" className="text-warning border-warning/50 text-xs">
+                            Inativo
+                          </Badge>
+                        )}
+                      </div>
                       <div className="flex items-center gap-4 text-sm text-muted-foreground flex-wrap">
                         {operator.phone && (
                           <span className="flex items-center gap-1">
@@ -343,6 +374,27 @@ export default function OperatorsPage() {
                           Sem máquinas
                         </Badge>
                       )}
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              onClick={() => setOperatorToToggle(operator)}
+                              className={`h-8 w-8 ${
+                                operator.is_active 
+                                  ? 'text-muted-foreground hover:text-warning hover:bg-warning/10' 
+                                  : 'text-success hover:text-success hover:bg-success/10'
+                              }`}
+                            >
+                              <Power className="h-4 w-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            {operator.is_active ? 'Desativar operador' : 'Reativar operador'}
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
@@ -428,6 +480,58 @@ export default function OperatorsPage() {
                 className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               >
                 {isRemoving ? 'Removendo...' : 'Remover operador'}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
+        <AlertDialog open={!!operatorToToggle} onOpenChange={(open) => !open && setOperatorToToggle(null)}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>
+                {operatorToToggle?.is_active ? 'Desativar operador' : 'Reativar operador'}
+              </AlertDialogTitle>
+              <AlertDialogDescription>
+                {operatorToToggle?.is_active ? (
+                  <>
+                    Tem certeza que deseja desativar <strong>{operatorToToggle?.full_name || 'este operador'}</strong>?
+                    <br /><br />
+                    O operador não poderá acessar as funcionalidades de operador enquanto estiver inativo.
+                    As atribuições de máquinas serão mantidas.
+                  </>
+                ) : (
+                  <>
+                    Deseja reativar <strong>{operatorToToggle?.full_name || 'este operador'}</strong>?
+                    <br /><br />
+                    O operador poderá acessar novamente as funcionalidades e suas máquinas atribuídas.
+                  </>
+                )}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel disabled={isToggling}>Cancelar</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={() => {
+                  if (operatorToToggle) {
+                    toggleActive({ 
+                      operatorId: operatorToToggle.user_id, 
+                      isActive: !operatorToToggle.is_active 
+                    });
+                    setOperatorToToggle(null);
+                  }
+                }}
+                disabled={isToggling}
+                className={operatorToToggle?.is_active 
+                  ? 'bg-warning text-warning-foreground hover:bg-warning/90' 
+                  : 'bg-success text-success-foreground hover:bg-success/90'
+                }
+              >
+                {isToggling 
+                  ? 'Processando...' 
+                  : operatorToToggle?.is_active 
+                    ? 'Desativar' 
+                    : 'Reativar'
+                }
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
