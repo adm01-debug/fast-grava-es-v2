@@ -13,12 +13,15 @@ export function MainLayout({ children }: MainLayoutProps) {
   return (
     <div className="flex min-h-screen w-full bg-background">
       <AppSidebar />
-      <main className="flex-1 overflow-auto relative">
-        <div className="fixed top-4 right-4 z-50 flex items-center gap-2">
+      <main className="flex-1 overflow-auto relative md:ml-0">
+        <div className="fixed top-4 right-4 z-40 flex items-center gap-2">
           <ThemeToggle />
           <RealtimeIndicator />
         </div>
-        {children}
+        {/* Add top padding on mobile for hamburger menu */}
+        <div className="pt-16 md:pt-0">
+          {children}
+        </div>
       </main>
       <AssistantButton />
       <NotificationIntegrator />
