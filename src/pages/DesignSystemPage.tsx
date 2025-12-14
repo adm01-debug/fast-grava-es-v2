@@ -1054,7 +1054,8 @@ export default function DesignSystemPage() {
 
                 {/* Status Badges */}
                 <div className="space-y-3">
-                  <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Status Badges</h4>
+                  <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Status Badges (9 variantes)</h4>
+                  <p className="text-xs text-muted-foreground">Badges específicas para status de jobs no sistema de agendamento</p>
                   <div className="flex flex-wrap gap-3">
                     <StatusBadge status="queue" />
                     <StatusBadge status="ready" />
@@ -1065,6 +1066,65 @@ export default function DesignSystemPage() {
                     <StatusBadge status="cancelled" />
                     <StatusBadge status="delayed" />
                     <StatusBadge status="rework" />
+                  </div>
+                </div>
+
+                {/* StatusBadge Sizes */}
+                <div className="space-y-3">
+                  <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Tamanhos de StatusBadge</h4>
+                  <div className="flex flex-wrap items-center gap-4">
+                    <div className="flex flex-col items-center gap-2">
+                      <StatusBadge status="production" size="sm" />
+                      <span className="text-xs text-muted-foreground">sm</span>
+                    </div>
+                    <div className="flex flex-col items-center gap-2">
+                      <StatusBadge status="production" size="md" />
+                      <span className="text-xs text-muted-foreground">md (default)</span>
+                    </div>
+                    <div className="flex flex-col items-center gap-2">
+                      <StatusBadge status="production" size="lg" />
+                      <span className="text-xs text-muted-foreground">lg</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* StatusBadge with Animation */}
+                <div className="space-y-3">
+                  <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">StatusBadge Animadas</h4>
+                  <p className="text-xs text-muted-foreground">Prop <code className="text-primary">animated</code> ativa animações específicas por status</p>
+                  <div className="flex flex-wrap gap-3">
+                    <StatusBadge status="ready" animated />
+                    <StatusBadge status="production" animated />
+                    <StatusBadge status="delayed" animated />
+                  </div>
+                  <div className="p-3 rounded-lg bg-muted/50 border border-border">
+                    <p className="text-xs text-muted-foreground">
+                      <strong className="text-foreground">Animações por status:</strong><br />
+                      • <code className="text-primary">ready</code>: pulse suave (animate-pulse-soft)<br />
+                      • <code className="text-primary">production</code>: streak de fogo (streak-fire)<br />
+                      • <code className="text-primary">delayed</code>: streak de fogo (streak-fire)
+                    </p>
+                  </div>
+                </div>
+
+                {/* StatusBadge without Icon */}
+                <div className="space-y-3">
+                  <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">StatusBadge sem Ícone</h4>
+                  <div className="flex flex-wrap gap-3">
+                    <StatusBadge status="production" showIcon={false} />
+                    <StatusBadge status="finished" showIcon={false} />
+                    <StatusBadge status="delayed" showIcon={false} />
+                  </div>
+                </div>
+
+                {/* StatusBadge Pop Animation */}
+                <div className="space-y-3">
+                  <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Animação Pop Automática</h4>
+                  <p className="text-xs text-muted-foreground">StatusBadge detecta mudanças de status e aplica <code className="text-primary">animate-pop</code> automaticamente</p>
+                  <div className="p-3 rounded-lg bg-info/10 border border-info/30">
+                    <p className="text-xs text-info">
+                      Quando o status muda, a badge automaticamente executa uma animação pop para chamar atenção do usuário.
+                    </p>
                   </div>
                 </div>
 
@@ -1100,15 +1160,30 @@ export default function DesignSystemPage() {
                     />
                   </div>
                   
-                  {/* Status Badges */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {/* Status Badges - Expanded */}
+                  <h5 className="text-xs font-medium text-muted-foreground uppercase tracking-wider pt-2">StatusBadge Props</h5>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                     <CodeBlock 
                       code={'<StatusBadge status="production" />'} 
-                      label="Status Badge"
+                      label="Básico"
                     />
                     <CodeBlock 
-                      code={'<StatusBadge status="finished" />'} 
-                      label="Status Finished"
+                      code={'<StatusBadge \n  status="production" \n  size="lg" \n/>'} 
+                      label="Com tamanho"
+                    />
+                    <CodeBlock 
+                      code={'<StatusBadge \n  status="production" \n  animated \n/>'} 
+                      label="Com animação"
+                    />
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <CodeBlock 
+                      code={'<StatusBadge \n  status="finished" \n  showIcon={false} \n/>'} 
+                      label="Sem ícone"
+                    />
+                    <CodeBlock 
+                      code={'// Status disponíveis:\n// queue, ready, scheduled,\n// production, finished, paused,\n// cancelled, delayed, rework'} 
+                      label="Lista de status"
                     />
                   </div>
                 </div>
