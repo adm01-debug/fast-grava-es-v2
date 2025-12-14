@@ -32,6 +32,17 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import { useQuickFavorites, QuickFavorite } from '@/hooks/useQuickFavorites';
 import { useAlertCount } from '@/hooks/useAlertCount';
 
@@ -224,15 +235,32 @@ export const QuickFavoritesBar = memo(function QuickFavoritesBar() {
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <h4 className="font-medium text-sm">Editar Favoritos</h4>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={resetToDefault}
-                className="h-7 text-xs text-muted-foreground"
-              >
-                <RotateCcw className="h-3 w-3 mr-1" />
-                Resetar
-              </Button>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-7 text-xs text-muted-foreground"
+                  >
+                    <RotateCcw className="h-3 w-3 mr-1" />
+                    Resetar
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Resetar favoritos?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Isso irá restaurar seus atalhos rápidos para a configuração padrão. Esta ação não pode ser desfeita.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                    <AlertDialogAction onClick={resetToDefault}>
+                      Resetar
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </div>
             
             <div className="text-xs text-muted-foreground">
