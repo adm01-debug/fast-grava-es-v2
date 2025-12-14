@@ -264,6 +264,31 @@ export default {
             borderWidth: "1px"
           },
         },
+        "bounce-in": {
+          "0%": { transform: "scale(0.3)", opacity: "0" },
+          "50%": { transform: "scale(1.05)" },
+          "70%": { transform: "scale(0.9)" },
+          "100%": { transform: "scale(1)", opacity: "1" },
+        },
+        "wiggle": {
+          "0%, 100%": { transform: "rotate(-3deg)" },
+          "50%": { transform: "rotate(3deg)" },
+        },
+        "pulse-ring": {
+          "0%": { transform: "scale(0.8)", opacity: "1" },
+          "100%": { transform: "scale(2)", opacity: "0" },
+        },
+        "bounce-attention": {
+          "0%, 100%": { transform: "translateY(0)" },
+          "25%": { transform: "translateY(-6px)" },
+          "50%": { transform: "translateY(0)" },
+          "75%": { transform: "translateY(-3px)" },
+        },
+        "pop": {
+          "0%": { transform: "scale(0.5)", opacity: "0" },
+          "70%": { transform: "scale(1.1)" },
+          "100%": { transform: "scale(1)", opacity: "1" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -281,6 +306,11 @@ export default {
         "ripple": "ripple 0.6s ease-out forwards",
         "explosion-flash": "explosion-flash 0.4s ease-out forwards",
         "shockwave": "shockwave 0.5s ease-out forwards",
+        "bounce-in": "bounce-in 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55)",
+        "wiggle": "wiggle 0.5s ease-in-out",
+        "pulse-ring": "pulse-ring 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+        "bounce-attention": "bounce-attention 1s ease-in-out infinite",
+        "pop": "pop 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55)",
       },
     },
   },

@@ -420,6 +420,41 @@
     transform: scale(1.01);
   }
 
+  /* Press scale - feedback de clique */
+  .press-scale {
+    @apply transition-transform duration-150;
+  }
+
+  .press-scale:active {
+    transform: scale(0.95);
+  }
+
+  /* Pulse ring indicator */
+  .pulse-ring {
+    @apply relative;
+  }
+
+  .pulse-ring::before {
+    content: '';
+    @apply absolute inset-0 rounded-full;
+    animation: pulse-ring 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    border: 2px solid currentColor;
+  }
+
+  /* Bounce attention for alerts */
+  .bounce-attention {
+    animation: bounce-attention 1s ease-in-out infinite;
+  }
+
+  /* Wiggle for warnings */
+  .wiggle {
+    animation: wiggle 0.5s ease-in-out;
+  }
+
+  .wiggle-infinite {
+    animation: wiggle 0.5s ease-in-out infinite;
+  }
+
   /* Gradient text for gold effect */
   .gradient-text-gold {
     background: linear-gradient(135deg, hsl(45 100% 50%) 0%, hsl(35 90% 45%) 50%, hsl(45 100% 55%) 100%);
