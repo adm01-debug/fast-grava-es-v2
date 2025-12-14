@@ -16,6 +16,7 @@ import { CalendarDays, TrendingUp as TrendingUpIcon, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CreateGoalModal } from '@/components/operators/CreateGoalModal';
 import { OperatorGoalsCard, GoalsSummary } from '@/components/operators/OperatorGoalsCard';
+import { GoalsHistoryCard } from '@/components/operators/GoalsHistoryCard';
 import { 
   Users, 
   TrendingUp, 
@@ -614,7 +615,7 @@ function EvolutionChart({ evolutionData, overallDailyData, selectedOperatorId, o
 export default function OperatorProductivityPage() {
   const [period, setPeriod] = useState<ProductivityPeriod>(30);
   const { operators, overallStats, isLoading } = useOperatorProductivity(period);
-  const { activeGoals, getGoalsByOperator, isLoading: isLoadingGoals } = useOperatorGoals();
+  const { goals, activeGoals, getGoalsByOperator, isLoading: isLoadingGoals } = useOperatorGoals();
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
   const [sortBy, setSortBy] = useState<'efficiency' | 'jobs' | 'pieces' | 'loss'>('efficiency');
@@ -815,6 +816,11 @@ export default function OperatorProductivityPage() {
           onOperatorChange={setEvolutionOperatorId}
           isLoading={isLoadingEvolution}
         />
+
+        {/* Goals History */}
+        {goals.length > 0 && (
+          <GoalsHistoryCard goals={goals} operators={operators} />
+        )}
 
         {/* Charts Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
