@@ -1,18 +1,21 @@
 import { Suspense, lazy, useMemo } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { StatsCard } from '@/components/dashboard/StatsCard';
-import { useSchedulingData } from '@/hooks/useSchedulingData';
+import { useOperatorDashboardData } from '@/hooks/useOperatorDashboardData';
 import { useDashboardLayout } from '@/hooks/useDashboardLayout';
+import { useAuth } from '@/contexts/AuthContext';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { DraggableWidget } from '@/components/dashboard/DraggableWidget';
 import { DashboardEditControls } from '@/components/dashboard/DashboardEditControls';
 import { SortableWidgetSection } from '@/components/dashboard/SortableWidgetSection';
+import { Badge } from '@/components/ui/badge';
 import { 
   Calendar, 
   CheckCircle2, 
   AlertTriangle, 
-  Printer
+  Printer,
+  User
 } from 'lucide-react';
 
 // Lazy load heavy dashboard widgets
@@ -53,8 +56,12 @@ const WIDGET_COMPONENTS: Record<string, { component: React.LazyExoticComponent<a
   jobs: { component: RecentJobsTable, skeletonHeight: 'h-64' },
 };
 
+// Widgets that operators should NOT see (coordinator/manager only)
+const COORDINATOR_ONLY_WIDGETS = ['sequencing', 'loadbalancing', 'bottleneck', 'conflicts'];
+
 const Index = () => {
-  const { stats, machines, isLoading } = useSchedulingData();
+  const { stats, machines, isLoading, isOperator } = useOperatorDashboardData();
+  const { profile } = useAuth();
   const {
     widgets,
     isEditMode,
@@ -65,10 +72,16 @@ const Index = () => {
     getWidgetsBySection,
   } = useDashboardLayout();
 
-  const mainWidgets = useMemo(() => getWidgetsBySection('main'), [getWidgetsBySection]);
-  const sidebarWidgets = useMemo(() => getWidgetsBySection('sidebar'), [getWidgetsBySection]);
-  const efficiencyWidgets = useMemo(() => getWidgetsBySection('efficiency'), [getWidgetsBySection]);
-  const bottomWidgets = useMemo(() => getWidgetsBySection('bottom'), [getWidgetsBySection]);
+  // Filter widgets based on role
+  const filterWidgetsForRole = (widgetsList: ReturnType<typeof getWidgetsBySection>) => {
+    if (!isOperator) return widgetsList;
+    return widgetsList.filter(w => !COORDINATOR_ONLY_WIDGETS.includes(w.id));
+  };
+
+  const mainWidgets = useMemo(() => filterWidgetsForRole(getWidgetsBySection('main')), [getWidgetsBySection, isOperator]);
+  const sidebarWidgets = useMemo(() => filterWidgetsForRole(getWidgetsBySection('sidebar')), [getWidgetsBySection, isOperator]);
+  const efficiencyWidgets = useMemo(() => filterWidgetsForRole(getWidgetsBySection('efficiency')), [getWidgetsBySection, isOperator]);
+  const bottomWidgets = useMemo(() => filterWidgetsForRole(getWidgetsBySection('bottom')), [getWidgetsBySection, isOperator]);
 
   const renderWidget = (widgetId: string) => {
     const config = WIDGET_COMPONENTS[widgetId];
@@ -98,13 +111,24 @@ const Index = () => {
             <h1 className="text-3xl font-display font-bold">
               <span className="gradient-text">Dashboard</span>
             </h1>
-            <p className="text-muted-foreground">
-              Visão geral do departamento de gravação
-            </p>
+            <div className="flex items-center gap-2">
+              <p className="text-muted-foreground">
+                {isOperator 
+                  ? `Suas máquinas atribuídas (${machines.length})`
+                  : 'Visão geral do departamento de gravação'
+                }
+              </p>
+              {isOperator && (
+                <Badge variant="secondary" className="gap-1">
+                  <User className="h-3 w-3" />
+                  {profile?.full_name || 'Operador'}
+                </Badge>
+              )}
+            </div>
           </div>
           <DashboardEditControls
             isEditMode={isEditMode}
-            widgets={widgets}
+            widgets={isOperator ? widgets.filter(w => !COORDINATOR_ONLY_WIDGETS.includes(w.id)) : widgets}
             onToggleEditMode={() => setIsEditMode(!isEditMode)}
             onResetLayout={resetLayout}
             onToggleWidget={toggleWidgetVisibility}
@@ -191,21 +215,23 @@ const Index = () => {
           </div>
         </div>
 
-        {/* Operational Efficiency Section */}
-        <div className="space-y-4">
-          <h2 className="text-xl font-display font-semibold text-foreground">
-            Eficiência Operacional
-          </h2>
-          <SortableWidgetSection
-            widgets={efficiencyWidgets}
-            section="efficiency"
-            direction="horizontal"
-            onReorder={reorderWidgets}
-            className="grid grid-cols-1 xl:grid-cols-3 gap-6"
-          >
-            {efficiencyWidgets.map(widget => renderWidget(widget.id))}
-          </SortableWidgetSection>
-        </div>
+        {/* Operational Efficiency Section - Coordinators and Managers only */}
+        {!isOperator && efficiencyWidgets.length > 0 && (
+          <div className="space-y-4">
+            <h2 className="text-xl font-display font-semibold text-foreground">
+              Eficiência Operacional
+            </h2>
+            <SortableWidgetSection
+              widgets={efficiencyWidgets}
+              section="efficiency"
+              direction="horizontal"
+              onReorder={reorderWidgets}
+              className="grid grid-cols-1 xl:grid-cols-3 gap-6"
+            >
+              {efficiencyWidgets.map(widget => renderWidget(widget.id))}
+            </SortableWidgetSection>
+          </div>
+        )}
 
         {/* Bottom Section */}
         <SortableWidgetSection
