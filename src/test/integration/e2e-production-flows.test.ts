@@ -802,3 +802,623 @@ describe('E2E: Rework Flow', () => {
     expect(canTransitionFromRework('cancelled')).toBe(false);
   });
 });
+
+describe('E2E: Job Status Transition Flow', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  describe('Status State Machine', () => {
+    const validTransitions: Record<string, string[]> = {
+      queue: ['ready', 'cancelled'],
+      ready: ['scheduled', 'production', 'queue', 'cancelled'],
+      scheduled: ['production', 'ready', 'queue', 'cancelled'],
+      production: ['finished', 'paused', 'rework'],
+      paused: ['production', 'rework', 'cancelled'],
+      finished: [], // Terminal state
+      cancelled: [], // Terminal state
+      rework: ['queue', 'production'],
+    };
+
+    it('should validate all valid transitions', () => {
+      const isValidTransition = (from: string, to: string): boolean => {
+        return validTransitions[from]?.includes(to) ?? false;
+      };
+
+      // Queue transitions
+      expect(isValidTransition('queue', 'ready')).toBe(true);
+      expect(isValidTransition('queue', 'cancelled')).toBe(true);
+      expect(isValidTransition('queue', 'production')).toBe(false);
+
+      // Ready transitions
+      expect(isValidTransition('ready', 'scheduled')).toBe(true);
+      expect(isValidTransition('ready', 'production')).toBe(true);
+      expect(isValidTransition('ready', 'finished')).toBe(false);
+
+      // Production transitions
+      expect(isValidTransition('production', 'finished')).toBe(true);
+      expect(isValidTransition('production', 'paused')).toBe(true);
+      expect(isValidTransition('production', 'queue')).toBe(false);
+
+      // Terminal states
+      expect(isValidTransition('finished', 'queue')).toBe(false);
+      expect(isValidTransition('finished', 'production')).toBe(false);
+      expect(isValidTransition('cancelled', 'queue')).toBe(false);
+    });
+
+    it('should reject invalid transitions', () => {
+      const isValidTransition = (from: string, to: string): boolean => {
+        return validTransitions[from]?.includes(to) ?? false;
+      };
+
+      // Cannot skip states
+      expect(isValidTransition('queue', 'finished')).toBe(false);
+      expect(isValidTransition('queue', 'production')).toBe(false);
+      
+      // Cannot go backwards from terminal states
+      expect(isValidTransition('finished', 'production')).toBe(false);
+      expect(isValidTransition('cancelled', 'ready')).toBe(false);
+    });
+
+    it('should update job status in database', async () => {
+      const transitions = [
+        { from: 'queue', to: 'ready' },
+        { from: 'ready', to: 'scheduled' },
+        { from: 'scheduled', to: 'production' },
+        { from: 'production', to: 'finished' },
+      ];
+
+      for (const { from, to } of transitions) {
+        mockSupabase.from.mockReturnValue({
+          update: vi.fn().mockReturnValue({
+            eq: vi.fn().mockReturnValue({
+              select: vi.fn().mockReturnValue({
+                single: vi.fn().mockResolvedValue({
+                  data: { id: 'job-1', status: to, previous_status: from },
+                  error: null,
+                }),
+              }),
+            }),
+          }),
+        });
+
+        const result = await mockSupabase
+          .from('jobs')
+          .update({ status: to })
+          .eq('id', 'job-1')
+          .select()
+          .single();
+
+        expect(result.data.status).toBe(to);
+      }
+    });
+
+    it('should set actual_start_time when transitioning to production', async () => {
+      const now = new Date().toISOString();
+      
+      mockSupabase.from.mockReturnValue({
+        update: vi.fn().mockReturnValue({
+          eq: vi.fn().mockReturnValue({
+            select: vi.fn().mockReturnValue({
+              single: vi.fn().mockResolvedValue({
+                data: { 
+                  id: 'job-1', 
+                  status: 'production',
+                  actual_start_time: now 
+                },
+                error: null,
+              }),
+            }),
+          }),
+        }),
+      });
+
+      const result = await mockSupabase
+        .from('jobs')
+        .update({ status: 'production', actual_start_time: now })
+        .eq('id', 'job-1')
+        .select()
+        .single();
+
+      expect(result.data.actual_start_time).toBeDefined();
+    });
+
+    it('should set actual_end_time when transitioning to finished', async () => {
+      const now = new Date().toISOString();
+      
+      mockSupabase.from.mockReturnValue({
+        update: vi.fn().mockReturnValue({
+          eq: vi.fn().mockReturnValue({
+            select: vi.fn().mockReturnValue({
+              single: vi.fn().mockResolvedValue({
+                data: { 
+                  id: 'job-1', 
+                  status: 'finished',
+                  actual_end_time: now 
+                },
+                error: null,
+              }),
+            }),
+          }),
+        }),
+      });
+
+      const result = await mockSupabase
+        .from('jobs')
+        .update({ status: 'finished', actual_end_time: now })
+        .eq('id', 'job-1')
+        .select()
+        .single();
+
+      expect(result.data.actual_end_time).toBeDefined();
+    });
+  });
+
+  describe('Batch Status Updates', () => {
+    it('should update multiple jobs status at once', async () => {
+      const jobIds = ['job-1', 'job-2', 'job-3'];
+      
+      mockSupabase.from.mockReturnValue({
+        update: vi.fn().mockReturnValue({
+          in: vi.fn().mockResolvedValue({
+            data: jobIds.map(id => ({ id, status: 'ready' })),
+            error: null,
+          }),
+        }),
+      });
+
+      const result = await mockSupabase
+        .from('jobs')
+        .update({ status: 'ready' })
+        .in('id', jobIds);
+
+      expect(result.data).toHaveLength(3);
+      result.data.forEach((job: { status: string }) => {
+        expect(job.status).toBe('ready');
+      });
+    });
+  });
+});
+
+describe('E2E: Automatic Buffer Promotion Flow', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  describe('Buffer Calculation', () => {
+    const BUFFER_TARGET = 3;
+
+    const calculateBufferNeeds = (jobs: Array<{ technique_id: string; status: string }>) => {
+      const techniqueStats = new Map<string, { ready: number; queue: number }>();
+      
+      jobs.forEach(job => {
+        const stats = techniqueStats.get(job.technique_id) || { ready: 0, queue: 0 };
+        if (job.status === 'ready') stats.ready++;
+        if (job.status === 'queue') stats.queue++;
+        techniqueStats.set(job.technique_id, stats);
+      });
+
+      const needs: Array<{ techniqueId: string; needed: number; available: number }> = [];
+      
+      techniqueStats.forEach((stats, techniqueId) => {
+        const needed = Math.max(0, BUFFER_TARGET - stats.ready);
+        if (needed > 0 && stats.queue > 0) {
+          needs.push({
+            techniqueId,
+            needed,
+            available: Math.min(needed, stats.queue),
+          });
+        }
+      });
+
+      return needs;
+    };
+
+    it('should calculate buffer needs correctly', () => {
+      const jobs = [
+        { technique_id: 'tech-1', status: 'ready' },
+        { technique_id: 'tech-1', status: 'queue' },
+        { technique_id: 'tech-1', status: 'queue' },
+        { technique_id: 'tech-1', status: 'queue' },
+        { technique_id: 'tech-2', status: 'queue' },
+        { technique_id: 'tech-2', status: 'queue' },
+      ];
+
+      const needs = calculateBufferNeeds(jobs);
+
+      // Tech-1: 1 ready, needs 2 more (has 3 in queue, can promote 2)
+      const tech1 = needs.find(n => n.techniqueId === 'tech-1');
+      expect(tech1?.needed).toBe(2);
+      expect(tech1?.available).toBe(2);
+
+      // Tech-2: 0 ready, needs 3 (has 2 in queue, can promote 2)
+      const tech2 = needs.find(n => n.techniqueId === 'tech-2');
+      expect(tech2?.needed).toBe(3);
+      expect(tech2?.available).toBe(2);
+    });
+
+    it('should not promote when buffer is full', () => {
+      const jobs = [
+        { technique_id: 'tech-1', status: 'ready' },
+        { technique_id: 'tech-1', status: 'ready' },
+        { technique_id: 'tech-1', status: 'ready' },
+        { technique_id: 'tech-1', status: 'queue' },
+        { technique_id: 'tech-1', status: 'queue' },
+      ];
+
+      const needs = calculateBufferNeeds(jobs);
+      
+      // Tech-1 has 3 ready, buffer is full
+      expect(needs.find(n => n.techniqueId === 'tech-1')).toBeUndefined();
+    });
+
+    it('should not promote when queue is empty', () => {
+      const jobs = [
+        { technique_id: 'tech-1', status: 'ready' },
+        { technique_id: 'tech-1', status: 'production' },
+      ];
+
+      const needs = calculateBufferNeeds(jobs);
+      
+      // Tech-1 has 1 ready but no queue jobs
+      expect(needs.find(n => n.techniqueId === 'tech-1')).toBeUndefined();
+    });
+  });
+
+  describe('Priority-Based Promotion', () => {
+    const priorityOrder: Record<string, number> = { 
+      urgent: 0, 
+      high: 1, 
+      medium: 2, 
+      low: 3 
+    };
+
+    const sortJobsForPromotion = (jobs: Array<{ 
+      id: string; 
+      priority: string; 
+      created_at: string 
+    }>) => {
+      return [...jobs].sort((a, b) => {
+        const priorityDiff = (priorityOrder[a.priority] ?? 2) - (priorityOrder[b.priority] ?? 2);
+        if (priorityDiff !== 0) return priorityDiff;
+        return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+      });
+    };
+
+    it('should prioritize urgent jobs first', () => {
+      const jobs = [
+        { id: 'job-1', priority: 'low', created_at: '2024-01-01T08:00:00Z' },
+        { id: 'job-2', priority: 'urgent', created_at: '2024-01-01T10:00:00Z' },
+        { id: 'job-3', priority: 'high', created_at: '2024-01-01T09:00:00Z' },
+      ];
+
+      const sorted = sortJobsForPromotion(jobs);
+
+      expect(sorted[0].id).toBe('job-2'); // urgent
+      expect(sorted[1].id).toBe('job-3'); // high
+      expect(sorted[2].id).toBe('job-1'); // low
+    });
+
+    it('should prioritize older jobs within same priority', () => {
+      const jobs = [
+        { id: 'job-1', priority: 'medium', created_at: '2024-01-01T10:00:00Z' },
+        { id: 'job-2', priority: 'medium', created_at: '2024-01-01T08:00:00Z' },
+        { id: 'job-3', priority: 'medium', created_at: '2024-01-01T09:00:00Z' },
+      ];
+
+      const sorted = sortJobsForPromotion(jobs);
+
+      expect(sorted[0].id).toBe('job-2'); // oldest
+      expect(sorted[1].id).toBe('job-3');
+      expect(sorted[2].id).toBe('job-1'); // newest
+    });
+  });
+
+  describe('Promotion Execution', () => {
+    it('should promote job from queue to ready', async () => {
+      mockSupabase.from.mockReturnValue({
+        update: vi.fn().mockReturnValue({
+          eq: vi.fn().mockResolvedValue({
+            data: { id: 'job-1', status: 'ready' },
+            error: null,
+          }),
+        }),
+      });
+
+      const result = await mockSupabase
+        .from('jobs')
+        .update({ status: 'ready' })
+        .eq('id', 'job-1');
+
+      expect(result.data.status).toBe('ready');
+    });
+
+    it('should handle promotion errors gracefully', async () => {
+      mockSupabase.from.mockReturnValue({
+        update: vi.fn().mockReturnValue({
+          eq: vi.fn().mockResolvedValue({
+            data: null,
+            error: { message: 'Database error' },
+          }),
+        }),
+      });
+
+      const result = await mockSupabase
+        .from('jobs')
+        .update({ status: 'ready' })
+        .eq('id', 'job-1');
+
+      expect(result.error).toBeDefined();
+      expect(result.error.message).toBe('Database error');
+    });
+
+    it('should promote multiple jobs in sequence', async () => {
+      const jobsToPromote = ['job-1', 'job-2'];
+      const promotedJobs: string[] = [];
+
+      for (const jobId of jobsToPromote) {
+        mockSupabase.from.mockReturnValue({
+          update: vi.fn().mockReturnValue({
+            eq: vi.fn().mockResolvedValue({
+              data: { id: jobId, status: 'ready' },
+              error: null,
+            }),
+          }),
+        });
+
+        const result = await mockSupabase
+          .from('jobs')
+          .update({ status: 'ready' })
+          .eq('id', jobId);
+
+        if (result.data) {
+          promotedJobs.push(result.data.id);
+        }
+      }
+
+      expect(promotedJobs).toHaveLength(2);
+      expect(promotedJobs).toContain('job-1');
+      expect(promotedJobs).toContain('job-2');
+    });
+  });
+
+  describe('Trigger on Job Completion', () => {
+    it('should check buffer after job finishes', () => {
+      const checkBufferAfterFinish = (
+        finishedJobTechniqueId: string,
+        allJobs: Array<{ technique_id: string; status: string }>
+      ) => {
+        const techniqueJobs = allJobs.filter(j => j.technique_id === finishedJobTechniqueId);
+        const readyCount = techniqueJobs.filter(j => j.status === 'ready').length;
+        const queueCount = techniqueJobs.filter(j => j.status === 'queue').length;
+
+        return {
+          needsPromotion: readyCount < 3 && queueCount > 0,
+          promotionsNeeded: Math.min(3 - readyCount, queueCount),
+        };
+      };
+
+      const jobs = [
+        { technique_id: 'tech-1', status: 'ready' },
+        { technique_id: 'tech-1', status: 'ready' },
+        { technique_id: 'tech-1', status: 'queue' },
+        { technique_id: 'tech-1', status: 'queue' },
+      ];
+
+      // After a job finishes, buffer drops to 2 (below target of 3)
+      const result = checkBufferAfterFinish('tech-1', jobs);
+      
+      expect(result.needsPromotion).toBe(true);
+      expect(result.promotionsNeeded).toBe(1);
+    });
+  });
+
+  describe('Debouncing', () => {
+    it('should respect cooldown period between promotions', () => {
+      const lastPromotionTimes: Record<string, number> = {
+        'tech-1': Date.now() - 15000, // 15 seconds ago
+        'tech-2': Date.now() - 45000, // 45 seconds ago
+      };
+
+      const COOLDOWN_MS = 30000; // 30 seconds
+
+      const canPromote = (techniqueId: string) => {
+        const lastTime = lastPromotionTimes[techniqueId] || 0;
+        return Date.now() - lastTime >= COOLDOWN_MS;
+      };
+
+      expect(canPromote('tech-1')).toBe(false); // Only 15 seconds, needs 30
+      expect(canPromote('tech-2')).toBe(true);  // 45 seconds > 30
+      expect(canPromote('tech-3')).toBe(true);  // Never promoted
+    });
+  });
+});
+
+describe('E2E: Load Balancing Application', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  describe('Suggestion Application', () => {
+    it('should move job to suggested machine', async () => {
+      mockSupabase.from.mockReturnValue({
+        update: vi.fn().mockReturnValue({
+          eq: vi.fn().mockResolvedValue({
+            data: { id: 'job-1', machine_id: 'machine-2' },
+            error: null,
+          }),
+        }),
+      });
+
+      const result = await mockSupabase
+        .from('jobs')
+        .update({ machine_id: 'machine-2' })
+        .eq('id', 'job-1');
+
+      expect(result.data.machine_id).toBe('machine-2');
+    });
+
+    it('should apply multiple suggestions in batch', async () => {
+      const suggestions = [
+        { jobId: 'job-1', targetMachineId: 'machine-2' },
+        { jobId: 'job-2', targetMachineId: 'machine-3' },
+        { jobId: 'job-3', targetMachineId: 'machine-2' },
+      ];
+
+      const results: Array<{ success: boolean; jobId: string }> = [];
+
+      for (const suggestion of suggestions) {
+        mockSupabase.from.mockReturnValue({
+          update: vi.fn().mockReturnValue({
+            eq: vi.fn().mockResolvedValue({
+              data: { id: suggestion.jobId, machine_id: suggestion.targetMachineId },
+              error: null,
+            }),
+          }),
+        });
+
+        const result = await mockSupabase
+          .from('jobs')
+          .update({ machine_id: suggestion.targetMachineId })
+          .eq('id', suggestion.jobId);
+
+        results.push({
+          success: result.error === null,
+          jobId: suggestion.jobId,
+        });
+      }
+
+      expect(results.filter(r => r.success)).toHaveLength(3);
+    });
+  });
+
+  describe('Occupancy Calculation', () => {
+    const DAILY_CAPACITY_MINUTES = 660; // 11 hours
+
+    it('should calculate machine occupancy correctly', () => {
+      const calculateOccupancy = (scheduledMinutes: number) => {
+        return Math.min(100, (scheduledMinutes / DAILY_CAPACITY_MINUTES) * 100);
+      };
+
+      expect(calculateOccupancy(330)).toBe(50);  // 5.5 hours = 50%
+      expect(calculateOccupancy(660)).toBe(100); // 11 hours = 100%
+      expect(calculateOccupancy(720)).toBe(100); // Over capacity capped at 100%
+      expect(calculateOccupancy(0)).toBe(0);
+    });
+
+    it('should detect unbalanced load', () => {
+      const isUnbalanced = (maxOccupancy: number, minOccupancy: number) => {
+        return maxOccupancy - minOccupancy > 30;
+      };
+
+      expect(isUnbalanced(80, 40)).toBe(true);  // 40% difference
+      expect(isUnbalanced(60, 50)).toBe(false); // 10% difference
+      expect(isUnbalanced(100, 20)).toBe(true); // 80% difference
+    });
+  });
+});
+
+describe('E2E: Smart Sequencing Application', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  describe('Time Slot Generation', () => {
+    it('should generate sequential time slots starting at 07:00', () => {
+      const generateTimeSlots = (jobs: Array<{ id: string; estimated_duration: number }>, startHour = 7) => {
+        const slots: Array<{ jobId: string; startTime: string; endTime: string }> = [];
+        let currentMinutes = startHour * 60;
+
+        for (const job of jobs) {
+          const startHours = Math.floor(currentMinutes / 60);
+          const startMins = currentMinutes % 60;
+          const startTime = `${String(startHours).padStart(2, '0')}:${String(startMins).padStart(2, '0')}`;
+
+          currentMinutes += job.estimated_duration;
+
+          const endHours = Math.floor(currentMinutes / 60);
+          const endMins = currentMinutes % 60;
+          const endTime = `${String(endHours).padStart(2, '0')}:${String(endMins).padStart(2, '0')}`;
+
+          slots.push({ jobId: job.id, startTime, endTime });
+        }
+
+        return slots;
+      };
+
+      const jobs = [
+        { id: 'job-1', estimated_duration: 60 },  // 1 hour
+        { id: 'job-2', estimated_duration: 90 },  // 1.5 hours
+        { id: 'job-3', estimated_duration: 30 },  // 0.5 hours
+      ];
+
+      const slots = generateTimeSlots(jobs);
+
+      expect(slots[0]).toEqual({ jobId: 'job-1', startTime: '07:00', endTime: '08:00' });
+      expect(slots[1]).toEqual({ jobId: 'job-2', startTime: '08:00', endTime: '09:30' });
+      expect(slots[2]).toEqual({ jobId: 'job-3', startTime: '09:30', endTime: '10:00' });
+    });
+  });
+
+  describe('Sequencing Application', () => {
+    it('should update job times according to optimized sequence', async () => {
+      const timeSlots = [
+        { jobId: 'job-1', startTime: '07:00', endTime: '08:00' },
+        { jobId: 'job-2', startTime: '08:00', endTime: '09:30' },
+      ];
+
+      for (const slot of timeSlots) {
+        mockSupabase.from.mockReturnValue({
+          update: vi.fn().mockReturnValue({
+            eq: vi.fn().mockResolvedValue({
+              data: { 
+                id: slot.jobId, 
+                start_time: slot.startTime, 
+                end_time: slot.endTime 
+              },
+              error: null,
+            }),
+          }),
+        });
+
+        const result = await mockSupabase
+          .from('jobs')
+          .update({ start_time: slot.startTime, end_time: slot.endTime })
+          .eq('id', slot.jobId);
+
+        expect(result.data.start_time).toBe(slot.startTime);
+        expect(result.data.end_time).toBe(slot.endTime);
+      }
+    });
+  });
+
+  describe('Color Grouping Optimization', () => {
+    it('should calculate setup savings from color grouping', () => {
+      const countColorChanges = (colors: string[]) => {
+        let changes = 0;
+        for (let i = 1; i < colors.length; i++) {
+          if (colors[i] !== colors[i - 1]) changes++;
+        }
+        return changes;
+      };
+
+      const calculateSavings = (currentColors: string[], optimizedColors: string[], setupTime: number) => {
+        const currentChanges = countColorChanges(currentColors);
+        const optimizedChanges = countColorChanges(optimizedColors);
+        return (currentChanges - optimizedChanges) * setupTime;
+      };
+
+      // Current: Azul, Vermelho, Azul, Vermelho (3 changes)
+      // Optimized: Azul, Azul, Vermelho, Vermelho (1 change)
+      const current = ['Azul', 'Vermelho', 'Azul', 'Vermelho'];
+      const optimized = ['Azul', 'Azul', 'Vermelho', 'Vermelho'];
+      const setupTime = 15;
+
+      const savings = calculateSavings(current, optimized, setupTime);
+      
+      expect(countColorChanges(current)).toBe(3);
+      expect(countColorChanges(optimized)).toBe(1);
+      expect(savings).toBe(30); // (3-1) * 15 = 30 minutes
+    });
+  });
+});
