@@ -42,30 +42,30 @@ export function BufferStatusWidget() {
   return (
     <Card className="glass-card card-interactive card-shine animate-fade-in-up opacity-0 [animation-fill-mode:forwards] [animation-delay:0.1s]">
       <CardHeader className="pb-3">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <CardTitle className="text-lg font-display flex items-center gap-2">
             <div className="w-8 h-8 rounded-lg bg-warning/20 flex items-center justify-center dark:glow-warning">
               <Package className="h-4 w-4 text-warning" />
             </div>
             <span className="gradient-text">Buffer "No Jeito"</span>
           </CardTitle>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
             {criticalCount > 0 && (
-              <Badge variant="destructive" className="gap-1">
+              <Badge variant="destructive" className="gap-1 text-xs">
                 <AlertCircle className="h-3 w-3" />
-                {criticalCount} crítico
+                {criticalCount}
               </Badge>
             )}
             {warningCount > 0 && (
-              <Badge variant="outline" className="border-amber-500 text-amber-500 gap-1">
+              <Badge variant="outline" className="border-amber-500 text-amber-500 gap-1 text-xs">
                 <AlertTriangle className="h-3 w-3" />
-                {warningCount} atenção
+                {warningCount}
               </Badge>
             )}
             {healthyCount > 0 && (
-              <Badge variant="outline" className="border-green-500 text-green-500 gap-1">
+              <Badge variant="outline" className="border-green-500 text-green-500 gap-1 text-xs">
                 <CheckCircle2 className="h-3 w-3" />
-                {healthyCount} ok
+                {healthyCount}
               </Badge>
             )}
           </div>
