@@ -6977,6 +6977,148 @@ function AnimationsSection() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Accessibility - Reduced Motion */}
+      <Card className="card-interactive border-warning/30">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Pause className="h-5 w-5 text-warning" />
+            Acessibilidade - Reduced Motion
+            <Badge className="ml-2 bg-warning/20 text-warning border-warning/30">A11y</Badge>
+          </CardTitle>
+          <CardDescription>Suporte a usuários que preferem menos movimento nas animações</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <Alert className="border-warning bg-warning/10">
+            <AlertTriangle className="h-4 w-4 text-warning" />
+            <AlertTitle className="text-warning">Importante para Acessibilidade</AlertTitle>
+            <AlertDescription>
+              Algumas pessoas têm sensibilidade a animações e podem experienciar náuseas, tonturas ou desconforto. 
+              O sistema respeita automaticamente a preferência <code className="text-primary">prefers-reduced-motion</code>.
+            </AlertDescription>
+          </Alert>
+
+          {/* Como funciona */}
+          <div className="space-y-3">
+            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Como Funciona</h4>
+            <div className="grid gap-3 md:grid-cols-2">
+              <div className="p-4 rounded-lg border border-border bg-muted/30 space-y-2">
+                <h5 className="text-sm font-medium flex items-center gap-2">
+                  <Settings className="h-4 w-4 text-muted-foreground" />
+                  Preferência do Sistema
+                </h5>
+                <p className="text-xs text-muted-foreground">
+                  Quando o usuário ativa "Reduzir Movimento" nas configurações do sistema operacional, 
+                  todas as animações são automaticamente desabilitadas via CSS media query.
+                </p>
+              </div>
+              <div className="p-4 rounded-lg border border-border bg-muted/30 space-y-2">
+                <h5 className="text-sm font-medium flex items-center gap-2">
+                  <Zap className="h-4 w-4 text-muted-foreground" />
+                  Toggle de Simulação
+                </h5>
+                <p className="text-xs text-muted-foreground">
+                  Use o toggle "Simular Reduced Motion" no topo desta página para testar 
+                  como a interface se comporta sem animações.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Classes Utilitárias */}
+          <div className="space-y-3">
+            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Classes Utilitárias</h4>
+            <div className="grid gap-3">
+              <CodeBlock 
+                code={'/* Aplicar apenas quando motion é seguro */\n.motion-safe-only {\n  @media (prefers-reduced-motion: reduce) {\n    animation: none !important;\n    transition: none !important;\n  }\n}'} 
+                label=".motion-safe-only"
+              />
+              <CodeBlock 
+                code={'/* Forçar animação mesmo com reduced-motion */\n.motion-reduce-override {\n  animation-duration: inherit !important;\n  transition-duration: inherit !important;\n}'} 
+                label=".motion-reduce-override (usar com cuidado)"
+              />
+              <CodeBlock 
+                code={'/* Estilos alternativos quando motion é reduzido */\n.reduced-motion-visible {\n  /* Garante visibilidade sem animação */\n  opacity: 1 !important;\n  visibility: visible !important;\n}\n\n.reduced-motion-border {\n  /* Destaque via borda ao invés de animação */\n  border: 2px solid hsl(var(--primary)) !important;\n}'} 
+                label="Estilos Alternativos"
+              />
+            </div>
+          </div>
+
+          {/* O que é desabilitado */}
+          <div className="space-y-3">
+            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">O que é Desabilitado</h4>
+            <div className="grid gap-2 md:grid-cols-3">
+              <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20">
+                <h5 className="text-xs font-semibold text-destructive mb-2">Animações de Entrada</h5>
+                <ul className="text-xs text-muted-foreground space-y-1">
+                  <li>• animate-fade-in</li>
+                  <li>• animate-scale-in</li>
+                  <li>• animate-bounce-in</li>
+                  <li>• animate-slide-in-*</li>
+                </ul>
+              </div>
+              <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20">
+                <h5 className="text-xs font-semibold text-destructive mb-2">Animações Contínuas</h5>
+                <ul className="text-xs text-muted-foreground space-y-1">
+                  <li>• animate-pulse</li>
+                  <li>• animate-float</li>
+                  <li>• pulse-ring</li>
+                  <li>• wiggle-infinite</li>
+                </ul>
+              </div>
+              <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20">
+                <h5 className="text-xs font-semibold text-destructive mb-2">Efeitos Hover</h5>
+                <ul className="text-xs text-muted-foreground space-y-1">
+                  <li>• hover-lift</li>
+                  <li>• hover-scale</li>
+                  <li>• hover-glow</li>
+                  <li>• glow-* effects</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          {/* Boas Práticas */}
+          <div className="space-y-3">
+            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Boas Práticas</h4>
+            <div className="grid gap-3 md:grid-cols-2">
+              <div className="p-3 rounded-lg bg-success/10 border border-success/20">
+                <div className="flex items-center gap-2 mb-2">
+                  <Check className="h-4 w-4 text-success" />
+                  <h5 className="text-sm font-medium text-success">Fazer</h5>
+                </div>
+                <ul className="text-xs text-muted-foreground space-y-1">
+                  <li>• Usar CSS transforms (performático)</li>
+                  <li>• Manter animações opcionais</li>
+                  <li>• Fornecer alternativas estáticas</li>
+                  <li>• Testar com reduced-motion ativo</li>
+                </ul>
+              </div>
+              <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20">
+                <div className="flex items-center gap-2 mb-2">
+                  <X className="h-4 w-4 text-destructive" />
+                  <h5 className="text-sm font-medium text-destructive">Evitar</h5>
+                </div>
+                <ul className="text-xs text-muted-foreground space-y-1">
+                  <li>• Animações que obscurecem conteúdo</li>
+                  <li>• Flashings rápidos (&lt; 3 por segundo)</li>
+                  <li>• Movimento parallax intenso</li>
+                  <li>• Animações obrigatórias para funcionalidade</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          {/* Implementação */}
+          <div className="space-y-3">
+            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Implementação no Código</h4>
+            <CodeBlock 
+              code={'// Detectar preferência do sistema em React\nconst [prefersReducedMotion, setPrefersReducedMotion] = useState(false);\n\nuseEffect(() => {\n  const mediaQuery = window.matchMedia(\'(prefers-reduced-motion: reduce)\');\n  setPrefersReducedMotion(mediaQuery.matches);\n  \n  const handler = (e) => setPrefersReducedMotion(e.matches);\n  mediaQuery.addEventListener(\'change\', handler);\n  return () => mediaQuery.removeEventListener(\'change\', handler);\n}, []);\n\n// Uso condicional\n<div className={prefersReducedMotion ? \'\' : \'animate-bounce-in\'}>\n  Conteúdo\n</div>'} 
+              label="Detecção em React"
+            />
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }
