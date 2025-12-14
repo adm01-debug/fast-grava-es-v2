@@ -137,6 +137,11 @@ export function useQuickFavorites() {
               ['user-favorites', user.id],
               payload.new.favorites as unknown as QuickFavorite[]
             );
+            toast({
+              title: '🔄 Favoritos atualizados',
+              description: 'Seus atalhos foram sincronizados de outro dispositivo.',
+              duration: 3000,
+            });
           }
         }
       )
