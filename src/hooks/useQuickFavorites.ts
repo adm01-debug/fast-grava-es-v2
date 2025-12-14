@@ -62,6 +62,37 @@ export function useQuickFavorites() {
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
 
+  // Real-time subscription for cross-tab/device sync
+  useEffect(() => {
+    if (!user?.id) return;
+
+    const channel = supabase
+      .channel(`user-favorites-${user.id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'user_favorites',
+          filter: `user_id=eq.${user.id}`,
+        },
+        (payload) => {
+          console.log('Favorites updated from another device/tab:', payload);
+          if (payload.new && 'favorites' in payload.new) {
+            queryClient.setQueryData(
+              ['user-favorites', user.id],
+              payload.new.favorites as unknown as QuickFavorite[]
+            );
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user?.id, queryClient]);
+
   const favorites = dbFavorites ?? DEFAULT_FAVORITES;
 
   // Mutation to save favorites
