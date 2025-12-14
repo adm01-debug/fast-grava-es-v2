@@ -176,10 +176,11 @@ describe('useKPIs Hook', () => {
       });
 
       const data = result.current.data;
-      // Loss rate = (lostPieces / completedPieces) * 100
+      // Loss rate = (lostPieces / (completedPieces + lostPieces)) * 100
       // completedPieces = 100 (only job-1 is finished)
       // lostPieces from completed = 5
-      expect(data?.lossRate).toBe(5); // 5%
+      // Formula: 5 / (100 + 5) * 100 = 4.76%
+      expect(data?.lossRate).toBeCloseTo(4.76, 1);
     });
   });
 });
