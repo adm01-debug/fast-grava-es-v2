@@ -7,11 +7,18 @@ import { DbJob, DbTechnique, DbMachine } from './useJobs';
 const STATIC_DATA_STALE_TIME = 5 * 60 * 1000; // 5 minutes
 const JOBS_STALE_TIME = 30 * 1000; // 30 seconds
 
+// Retry configuration for connection failures
+const RETRY_CONFIG = {
+  retry: 3,
+  retryDelay: (attemptIndex: number) => Math.min(1000 * 2 ** attemptIndex, 30000),
+};
+
 /**
  * Combined hook that fetches all scheduling data in a single place
  * and provides derived data and helper functions.
  * 
  * This reduces duplicate subscriptions and provides a centralized data layer.
+ * Includes automatic retry on connection failures.
  */
 export function useSchedulingData() {
   const queryClient = useQueryClient();
@@ -29,6 +36,7 @@ export function useSchedulingData() {
       return data as DbTechnique[];
     },
     staleTime: STATIC_DATA_STALE_TIME,
+    ...RETRY_CONFIG,
   });
 
   // Fetch machines with longer stale time
@@ -45,6 +53,7 @@ export function useSchedulingData() {
       return data as DbMachine[];
     },
     staleTime: STATIC_DATA_STALE_TIME,
+    ...RETRY_CONFIG,
   });
 
   // Fetch jobs with shorter stale time (they change frequently)
@@ -60,6 +69,7 @@ export function useSchedulingData() {
       return data as DbJob[];
     },
     staleTime: JOBS_STALE_TIME,
+    ...RETRY_CONFIG,
   });
 
   // Single realtime subscription for all tables

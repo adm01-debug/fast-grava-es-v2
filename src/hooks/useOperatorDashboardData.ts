@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSchedulingData } from './useSchedulingData';
 import { useOperatorMachines } from './useOperatorMachines';
@@ -71,6 +71,23 @@ export function useOperatorDashboardData() {
     };
   }, [jobs]);
 
+  // Helper functions that work with filtered data for operators
+  const getJobsByStatus = useCallback((status: string) => {
+    return jobs.filter(j => j.status === status);
+  }, [jobs]);
+
+  const getJobsByMachine = useCallback((machineId: string) => {
+    return jobs.filter(j => j.machine_id === machineId);
+  }, [jobs]);
+
+  const getJobsByTechnique = useCallback((techniqueId: string) => {
+    return jobs.filter(j => j.technique_id === techniqueId);
+  }, [jobs]);
+
+  const getMachinesByTechnique = useCallback((techniqueId: string) => {
+    return machines.filter(m => m.technique_id === techniqueId);
+  }, [machines]);
+
   return {
     // Filtered data
     jobs,
@@ -81,13 +98,13 @@ export function useOperatorDashboardData() {
     // Loading states
     isLoading: schedulingData.isLoading || (isOperator && isLoadingAssignments),
 
-    // Original helper functions (using filtered data where needed)
+    // Helper functions using filtered data (consistent for operators)
     getTechniqueById: schedulingData.getTechniqueById,
     getMachineById: schedulingData.getMachineById,
-    getMachinesByTechnique: schedulingData.getMachinesByTechnique,
-    getJobsByStatus: schedulingData.getJobsByStatus,
-    getJobsByMachine: schedulingData.getJobsByMachine,
-    getJobsByTechnique: schedulingData.getJobsByTechnique,
+    getMachinesByTechnique,
+    getJobsByStatus,
+    getJobsByMachine,
+    getJobsByTechnique,
 
     // Role info
     isOperator,
