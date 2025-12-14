@@ -1,0 +1,281 @@
+import { useMemo, useCallback } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { useJobs, useMachines, useTechniques, DbJob, DbMachine, DbTechnique } from './useJobs';
+import { toast } from 'sonner';
+
+export interface SequencingSuggestion {
+  id: string;
+  machineId: string;
+  machineName: string;
+  machineCode: string;
+  techniqueId: string;
+  techniqueName: string;
+  currentSequence: DbJob[];
+  optimizedSequence: DbJob[];
+  estimatedSavings: number; // minutes saved
+  colorGroups: ColorGroup[];
+}
+
+export interface ColorGroup {
+  color: string;
+  jobs: DbJob[];
+  jobCount: number;
+}
+
+export interface ApplySequencingResult {
+  machineId: string;
+  machineName: string;
+  appliedJobs: number;
+  estimatedSavings: number;
+}
+
+function normalizeColor(color: string | null): string {
+  if (!color) return 'sem-cor';
+  return color.toLowerCase().trim().replace(/\s+/g, '-');
+}
+
+function calculateSetupSavings(currentSequence: DbJob[], optimizedSequence: DbJob[], setupTime: number): number {
+  const countColorChanges = (jobs: DbJob[]): number => {
+    let changes = 0;
+    for (let i = 1; i < jobs.length; i++) {
+      if (normalizeColor(jobs[i].gravure_color) !== normalizeColor(jobs[i - 1].gravure_color)) {
+        changes++;
+      }
+    }
+    return changes;
+  };
+
+  const currentChanges = countColorChanges(currentSequence);
+  const optimizedChanges = countColorChanges(optimizedSequence);
+  
+  return (currentChanges - optimizedChanges) * setupTime;
+}
+
+function generateTimeSlots(startHour: number, jobs: DbJob[]): { jobId: string; startTime: string; endTime: string }[] {
+  const slots: { jobId: string; startTime: string; endTime: string }[] = [];
+  let currentMinutes = startHour * 60;
+  
+  for (const job of jobs) {
+    const startHours = Math.floor(currentMinutes / 60);
+    const startMins = currentMinutes % 60;
+    const startTime = `${String(startHours).padStart(2, '0')}:${String(startMins).padStart(2, '0')}`;
+    
+    currentMinutes += job.estimated_duration;
+    
+    const endHours = Math.floor(currentMinutes / 60);
+    const endMins = currentMinutes % 60;
+    const endTime = `${String(endHours).padStart(2, '0')}:${String(endMins).padStart(2, '0')}`;
+    
+    slots.push({ jobId: job.id, startTime, endTime });
+  }
+  
+  return slots;
+}
+
+export function useSmartSequencingWithActions() {
+  const { data: jobs } = useJobs();
+  const { data: machines } = useMachines();
+  const { data: techniques } = useTechniques();
+  const queryClient = useQueryClient();
+
+  // Mutation to apply sequencing for a machine
+  const applySequencingMutation = useMutation({
+    mutationFn: async (suggestion: SequencingSuggestion): Promise<ApplySequencingResult> => {
+      const timeSlots = generateTimeSlots(7, suggestion.optimizedSequence); // Start at 07:00
+      
+      for (const slot of timeSlots) {
+        const { error } = await supabase
+          .from('jobs')
+          .update({ 
+            start_time: slot.startTime,
+            end_time: slot.endTime 
+          })
+          .eq('id', slot.jobId);
+        
+        if (error) throw error;
+      }
+      
+      return {
+        machineId: suggestion.machineId,
+        machineName: suggestion.machineName,
+        appliedJobs: timeSlots.length,
+        estimatedSavings: suggestion.estimatedSavings,
+      };
+    },
+    onSuccess: (result) => {
+      queryClient.invalidateQueries({ queryKey: ['jobs'] });
+      toast.success(`Sequência otimizada aplicada`, {
+        description: `${result.machineName}: ${result.appliedJobs} jobs reordenados, ~${result.estimatedSavings}min economizados`,
+      });
+    },
+    onError: (error, suggestion) => {
+      toast.error(`Erro ao aplicar sequência para ${suggestion.machineName}`, {
+        description: error instanceof Error ? error.message : 'Erro desconhecido',
+      });
+    },
+  });
+
+  // Mutation to apply all sequencing suggestions
+  const applyAllSequencingMutation = useMutation({
+    mutationFn: async (suggestions: SequencingSuggestion[]): Promise<ApplySequencingResult[]> => {
+      const results: ApplySequencingResult[] = [];
+      
+      for (const suggestion of suggestions) {
+        try {
+          const timeSlots = generateTimeSlots(7, suggestion.optimizedSequence);
+          
+          for (const slot of timeSlots) {
+            const { error } = await supabase
+              .from('jobs')
+              .update({ 
+                start_time: slot.startTime,
+                end_time: slot.endTime 
+              })
+              .eq('id', slot.jobId);
+            
+            if (error) throw error;
+          }
+          
+          results.push({
+            machineId: suggestion.machineId,
+            machineName: suggestion.machineName,
+            appliedJobs: timeSlots.length,
+            estimatedSavings: suggestion.estimatedSavings,
+          });
+        } catch (error) {
+          console.error(`Failed to apply sequencing for ${suggestion.machineName}:`, error);
+        }
+      }
+      
+      return results;
+    },
+    onSuccess: (results) => {
+      queryClient.invalidateQueries({ queryKey: ['jobs'] });
+      
+      if (results.length > 0) {
+        const totalJobs = results.reduce((sum, r) => sum + r.appliedJobs, 0);
+        const totalSavings = results.reduce((sum, r) => sum + r.estimatedSavings, 0);
+        toast.success(`${results.length} máquina(s) otimizada(s)`, {
+          description: `${totalJobs} jobs reordenados, ~${totalSavings}min economizados`,
+        });
+      } else {
+        toast.error('Nenhuma máquina foi otimizada');
+      }
+    },
+  });
+
+  const suggestions = useMemo(() => {
+    if (!jobs || !machines || !techniques) return [];
+
+    const result: SequencingSuggestion[] = [];
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    let suggestionId = 0;
+
+    // Group scheduled jobs by machine for today and tomorrow
+    const jobsByMachine = new Map<string, DbJob[]>();
+    
+    jobs.forEach(job => {
+      if (!job.machine_id || !job.scheduled_date) return;
+      if (!['scheduled', 'ready', 'queue'].includes(job.status)) return;
+      
+      const jobDate = new Date(job.scheduled_date);
+      jobDate.setHours(0, 0, 0, 0);
+      
+      if (jobDate < today || jobDate > tomorrow) return;
+
+      const existing = jobsByMachine.get(job.machine_id) || [];
+      existing.push(job);
+      jobsByMachine.set(job.machine_id, existing);
+    });
+
+    // Analyze each machine
+    jobsByMachine.forEach((machineJobs, machineId) => {
+      if (machineJobs.length < 2) return;
+
+      const machine = machines.find(m => m.id === machineId);
+      if (!machine) return;
+
+      const technique = techniques.find(t => t.id === machine.technique_id);
+      if (!technique) return;
+
+      // Current sequence (by start time)
+      const currentSequence = [...machineJobs].sort((a, b) => 
+        (a.start_time || '').localeCompare(b.start_time || '')
+      );
+
+      // Group by color
+      const colorGroups = new Map<string, DbJob[]>();
+      machineJobs.forEach(job => {
+        const color = normalizeColor(job.gravure_color);
+        const group = colorGroups.get(color) || [];
+        group.push(job);
+        colorGroups.set(color, group);
+      });
+
+      // Create optimized sequence (grouped by color, maintaining priority within groups)
+      const optimizedSequence: DbJob[] = [];
+      const sortedColorGroups = Array.from(colorGroups.entries())
+        .sort((a, b) => b[1].length - a[1].length); // Larger groups first
+
+      sortedColorGroups.forEach(([_, groupJobs]) => {
+        const sortedGroup = groupJobs.sort((a, b) => {
+          const priorityOrder: Record<string, number> = { urgent: 0, high: 1, medium: 2, low: 3 };
+          const priorityA = priorityOrder[a.priority] ?? 2;
+          const priorityB = priorityOrder[b.priority] ?? 2;
+          return priorityA - priorityB;
+        });
+        optimizedSequence.push(...sortedGroup);
+      });
+
+      const estimatedSavings = calculateSetupSavings(currentSequence, optimizedSequence, technique.setup_time);
+
+      if (estimatedSavings > 0) {
+        result.push({
+          id: `seq-${++suggestionId}`,
+          machineId,
+          machineName: machine.name,
+          machineCode: machine.code,
+          techniqueId: machine.technique_id,
+          techniqueName: technique.name,
+          currentSequence,
+          optimizedSequence,
+          estimatedSavings,
+          colorGroups: Array.from(colorGroups.entries()).map(([color, jobs]) => ({
+            color,
+            jobs,
+            jobCount: jobs.length
+          }))
+        });
+      }
+    });
+
+    return result.sort((a, b) => b.estimatedSavings - a.estimatedSavings);
+  }, [jobs, machines, techniques]);
+
+  // Apply sequencing for a single machine
+  const applySequencing = useCallback((suggestion: SequencingSuggestion) => {
+    return applySequencingMutation.mutateAsync(suggestion);
+  }, [applySequencingMutation]);
+
+  // Apply all sequencing suggestions
+  const applyAllSequencing = useCallback(() => {
+    if (suggestions.length === 0) {
+      toast.info('Nenhuma sugestão de sequenciamento disponível');
+      return Promise.resolve([]);
+    }
+    return applyAllSequencingMutation.mutateAsync(suggestions);
+  }, [suggestions, applyAllSequencingMutation]);
+
+  return {
+    suggestions,
+    totalSavings: suggestions.reduce((acc, s) => acc + s.estimatedSavings, 0),
+    hasSuggestions: suggestions.length > 0,
+    applySequencing,
+    applyAllSequencing,
+    isApplying: applySequencingMutation.isPending || applyAllSequencingMutation.isPending,
+  };
+}

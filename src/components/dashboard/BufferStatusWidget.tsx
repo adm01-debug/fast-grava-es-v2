@@ -2,26 +2,34 @@ import { memo, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import { Button } from '@/components/ui/button';
 import { 
   Package, 
   AlertTriangle, 
   CheckCircle2, 
   AlertCircle,
-  ArrowRight
+  ArrowRight,
+  RefreshCw,
+  Loader2,
+  Zap
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useBufferStatus, BufferTechniqueStatus } from '@/hooks/useJobs';
+import { useAutoBufferPromotion } from '@/hooks/useAutoBufferPromotion';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const BUFFER_TARGET = 3;
 
 interface BufferRowProps {
   data: BufferTechniqueStatus;
+  onPromote: () => void;
+  isPromoting: boolean;
 }
 
-const BufferRow = memo(function BufferRow({ data }: BufferRowProps) {
+const BufferRow = memo(function BufferRow({ data, onPromote, isPromoting }: BufferRowProps) {
   const { technique, readyCount, queueCount, isHealthy, isCritical } = data;
   const progress = Math.min((readyCount / BUFFER_TARGET) * 100, 100);
+  const canPromote = !isHealthy && queueCount > 0;
   
   return (
     <div
@@ -68,18 +76,42 @@ const BufferRow = memo(function BufferRow({ data }: BufferRowProps) {
         )}
       />
       
-      {isCritical && (
-        <p className="text-xs text-red-400 mt-2 flex items-center gap-1">
-          <AlertCircle className="h-3 w-3" />
-          Buffer vazio! Preparar jobs urgentemente.
-        </p>
-      )}
-      {!isCritical && !isHealthy && (
-        <p className="text-xs text-amber-400 mt-2 flex items-center gap-1">
-          <AlertTriangle className="h-3 w-3" />
-          Buffer abaixo do ideal. Preparar mais {BUFFER_TARGET - readyCount} job(s).
-        </p>
-      )}
+      <div className="flex items-center justify-between mt-2">
+        <div>
+          {isCritical && (
+            <p className="text-xs text-red-400 flex items-center gap-1">
+              <AlertCircle className="h-3 w-3" />
+              Buffer vazio! Preparar jobs urgentemente.
+            </p>
+          )}
+          {!isCritical && !isHealthy && (
+            <p className="text-xs text-amber-400 flex items-center gap-1">
+              <AlertTriangle className="h-3 w-3" />
+              Buffer abaixo do ideal. Preparar mais {BUFFER_TARGET - readyCount} job(s).
+            </p>
+          )}
+        </div>
+        {canPromote && (
+          <Button
+            size="sm"
+            variant="ghost"
+            className={cn(
+              "h-6 text-xs",
+              isCritical && "text-red-400 hover:text-red-300 hover:bg-red-500/10",
+              !isCritical && "text-amber-400 hover:text-amber-300 hover:bg-amber-500/10"
+            )}
+            onClick={onPromote}
+            disabled={isPromoting}
+          >
+            {isPromoting ? (
+              <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+            ) : (
+              <Zap className="h-3 w-3 mr-1" />
+            )}
+            Promover
+          </Button>
+        )}
+      </div>
     </div>
   );
 });
@@ -87,11 +119,16 @@ BufferRow.displayName = 'BufferRow';
 
 function BufferStatusWidgetComponent() {
   const { bufferByTechnique, isLoading } = useBufferStatus();
+  const { triggerPromotion, promoteForTechnique, isPromoting } = useAutoBufferPromotion({ 
+    enabled: true, 
+    showToasts: true 
+  });
 
-  const { criticalCount, warningCount, healthyCount } = useMemo(() => ({
+  const { criticalCount, warningCount, healthyCount, hasUnhealthyTechniques } = useMemo(() => ({
     criticalCount: bufferByTechnique.filter(b => b.isCritical).length,
     warningCount: bufferByTechnique.filter(b => b.isWarning).length,
     healthyCount: bufferByTechnique.filter(b => b.isHealthy).length,
+    hasUnhealthyTechniques: bufferByTechnique.some(b => !b.isHealthy && b.queueCount > 0),
   }), [bufferByTechnique]);
 
   if (isLoading) {
@@ -123,6 +160,22 @@ function BufferStatusWidgetComponent() {
             <span className="gradient-text">Buffer "No Jeito"</span>
           </CardTitle>
           <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+            {hasUnhealthyTechniques && (
+              <Button
+                size="sm"
+                variant="outline"
+                className="h-7 text-xs border-amber-500/50 text-amber-400 hover:bg-amber-500/10"
+                onClick={() => triggerPromotion()}
+                disabled={isPromoting}
+              >
+                {isPromoting ? (
+                  <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                ) : (
+                  <RefreshCw className="h-3 w-3 mr-1" />
+                )}
+                Promover Todos
+              </Button>
+            )}
             {criticalCount > 0 && (
               <Badge variant="destructive" className="gap-1 text-xs">
                 <AlertCircle className="h-3 w-3" />
@@ -144,7 +197,7 @@ function BufferStatusWidgetComponent() {
           </div>
         </div>
         <p className="text-xs text-muted-foreground mt-1">
-          Meta: manter {BUFFER_TARGET} jobs preparados por técnica
+          Meta: manter {BUFFER_TARGET} jobs preparados por técnica (promoção automática ativada)
         </p>
       </CardHeader>
       <CardContent className="space-y-3">
@@ -155,7 +208,12 @@ function BufferStatusWidgetComponent() {
           </div>
         ) : (
           bufferByTechnique.map((data) => (
-            <BufferRow key={data.technique.id} data={data} />
+            <BufferRow 
+              key={data.technique.id} 
+              data={data}
+              onPromote={() => promoteForTechnique(data.technique.id)}
+              isPromoting={isPromoting}
+            />
           ))
         )}
       </CardContent>
