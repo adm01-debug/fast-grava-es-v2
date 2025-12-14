@@ -318,6 +318,42 @@ export type Database = {
         }
         Relationships: []
       }
+      operator_goals: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          goal_type: string
+          id: string
+          operator_id: string
+          period_end: string
+          period_start: string
+          target_value: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          goal_type: string
+          id?: string
+          operator_id: string
+          period_end: string
+          period_start: string
+          target_value: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          goal_type?: string
+          id?: string
+          operator_id?: string
+          period_end?: string
+          period_start?: string
+          target_value?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       operator_machines: {
         Row: {
           assigned_at: string
