@@ -25,7 +25,7 @@ export function QuickActions() {
               <Button 
                 variant="outline"
                 className={cn(
-                  "w-full h-auto py-4 flex-col gap-2 border-border/30 transition-all group",
+                  "w-full h-auto py-4 flex-col gap-2 border-border/30 transition-all group press-scale",
                   "hover:border-primary/50 hover:-translate-y-1 hover:shadow-lg",
                   action.primary && "gradient-primary border-0 text-primary-foreground hover:opacity-90 animate-glow-pulse"
                 )}
