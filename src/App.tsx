@@ -35,6 +35,10 @@ const QRScannerPage = lazy(() => import("./pages/QRScannerPage"));
 const Bitrix24ConfigPage = lazy(() => import("./pages/Bitrix24ConfigPage"));
 const TechnicalKnowledgeBase = lazy(() => import("./pages/TechnicalKnowledgeBase"));
 const DesignSystemPage = lazy(() => import("./pages/DesignSystemPage"));
+const NewJobPage = lazy(() => import("./pages/NewJobPage"));
+const MachinesPage = lazy(() => import("./pages/MachinesPage"));
+const OperatorsPage = lazy(() => import("./pages/OperatorsPage"));
+const SettingsPage = lazy(() => import("./pages/SettingsPage"));
 const AuthPage = lazy(() => import("./pages/AuthPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
@@ -176,6 +180,42 @@ function AnimatedRoutes() {
               <DesignSystemPage />
             </Suspense>
           </PageTransition>
+        } />
+        <Route path="/new-job" element={
+          <ProtectedRoute allowedRoles={['coordinator']}>
+            <PageTransition>
+              <Suspense fallback={<DashboardPageSkeleton />}>
+                <NewJobPage />
+              </Suspense>
+            </PageTransition>
+          </ProtectedRoute>
+        } />
+        <Route path="/machines" element={
+          <ProtectedRoute allowedRoles={['coordinator']}>
+            <PageTransition>
+              <Suspense fallback={<ListPageSkeleton />}>
+                <MachinesPage />
+              </Suspense>
+            </PageTransition>
+          </ProtectedRoute>
+        } />
+        <Route path="/operators" element={
+          <ProtectedRoute allowedRoles={['coordinator']}>
+            <PageTransition>
+              <Suspense fallback={<ListPageSkeleton />}>
+                <OperatorsPage />
+              </Suspense>
+            </PageTransition>
+          </ProtectedRoute>
+        } />
+        <Route path="/settings" element={
+          <ProtectedRoute allowedRoles={['coordinator']}>
+            <PageTransition>
+              <Suspense fallback={<DashboardPageSkeleton />}>
+                <SettingsPage />
+              </Suspense>
+            </PageTransition>
+          </ProtectedRoute>
         } />
         <Route path="*" element={
           <PageTransition>

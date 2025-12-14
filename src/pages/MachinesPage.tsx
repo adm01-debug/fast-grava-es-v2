@@ -1,0 +1,125 @@
+import { MainLayout } from '@/components/layout/MainLayout';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Printer, CheckCircle2, XCircle } from 'lucide-react';
+import { useSchedulingData } from '@/hooks/useSchedulingData';
+import { Skeleton } from '@/components/ui/skeleton';
+
+export default function MachinesPage() {
+  const { machines, techniques, isLoadingMachines, getTechniqueById } = useSchedulingData();
+
+  // Group machines by technique
+  const machinesByTechnique = machines.reduce((acc, machine) => {
+    const techniqueId = machine.technique_id;
+    if (!acc[techniqueId]) {
+      acc[techniqueId] = [];
+    }
+    acc[techniqueId].push(machine);
+    return acc;
+  }, {} as Record<string, typeof machines>);
+
+  if (isLoadingMachines) {
+    return (
+      <MainLayout>
+        <div className="space-y-6">
+          <Skeleton className="h-10 w-48" />
+          <div className="grid gap-4">
+            {[1, 2, 3].map((i) => (
+              <Skeleton key={i} className="h-32 w-full" />
+            ))}
+          </div>
+        </div>
+      </MainLayout>
+    );
+  }
+
+  return (
+    <MainLayout>
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-display font-bold gradient-text">Máquinas</h1>
+          <p className="text-muted-foreground">Gerencie as máquinas de produção por técnica</p>
+        </div>
+
+        <div className="grid gap-4 md:grid-cols-2">
+          <Card className="glass-card">
+            <CardContent className="pt-6">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-xl gradient-primary flex items-center justify-center">
+                  <Printer className="h-6 w-6 text-primary-foreground" />
+                </div>
+                <div>
+                  <p className="text-3xl font-bold">{machines.length}</p>
+                  <p className="text-sm text-muted-foreground">Total de Máquinas</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card className="glass-card">
+            <CardContent className="pt-6">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-xl bg-success/20 flex items-center justify-center">
+                  <CheckCircle2 className="h-6 w-6 text-success" />
+                </div>
+                <div>
+                  <p className="text-3xl font-bold">{machines.filter(m => m.is_active).length}</p>
+                  <p className="text-sm text-muted-foreground">Máquinas Ativas</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="space-y-6">
+          {Object.entries(machinesByTechnique).map(([techniqueId, techMachines]) => {
+            const technique = getTechniqueById(techniqueId);
+            return (
+              <Card key={techniqueId} className="glass-card">
+                <CardHeader className="pb-3">
+                  <CardTitle className="flex items-center gap-3">
+                    <div 
+                      className="w-3 h-3 rounded-full"
+                      style={{ backgroundColor: technique?.color || '#888' }}
+                    />
+                    <span>{technique?.name || 'Técnica Desconhecida'}</span>
+                    <Badge variant="secondary" className="ml-2">
+                      {techMachines.length} máquina{techMachines.length !== 1 ? 's' : ''}
+                    </Badge>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+                    {techMachines.map((machine) => (
+                      <div 
+                        key={machine.id}
+                        className="flex items-center justify-between p-3 rounded-lg bg-secondary/30 border border-border/30"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center">
+                            <Printer className="h-5 w-5 text-muted-foreground" />
+                          </div>
+                          <div>
+                            <p className="font-mono font-medium">{machine.code}</p>
+                            <p className="text-xs text-muted-foreground truncate max-w-[150px]">
+                              {machine.name}
+                            </p>
+                          </div>
+                        </div>
+                        {machine.is_active ? (
+                          <CheckCircle2 className="h-5 w-5 text-success" />
+                        ) : (
+                          <XCircle className="h-5 w-5 text-destructive" />
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+      </div>
+    </MainLayout>
+  );
+}
