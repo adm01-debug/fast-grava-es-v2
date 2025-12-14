@@ -351,51 +351,62 @@ export function useTPM() {
     },
   });
 
-  // Generate alerts for due maintenance
+  // Generate alerts for due maintenance (parallel execution)
   const checkAndGenerateAlerts = useMutation({
     mutationFn: async () => {
       const now = new Date();
-      let alertsGenerated = 0;
 
-      for (const schedule of schedules) {
-        const dueDate = new Date(schedule.next_due_at);
-        const daysUntilDue = differenceInDays(dueDate, now);
+      // Filter schedules that need alerts and prepare alert data
+      const alertsToCreate = schedules
+        .filter(schedule => {
+          // Check if alert already exists
+          const existingAlert = alerts.find(
+            a => a.schedule_id === schedule.id && !a.is_resolved
+          );
+          return !existingAlert;
+        })
+        .map(schedule => {
+          const dueDate = new Date(schedule.next_due_at);
+          const daysUntilDue = differenceInDays(dueDate, now);
 
-        // Check if alert already exists
-        const existingAlert = alerts.find(
-          a => a.schedule_id === schedule.id && !a.is_resolved
-        );
-        if (existingAlert) continue;
+          let alertType: MaintenanceAlert['alert_type'] | null = null;
+          let message = '';
 
-        let alertType: MaintenanceAlert['alert_type'] | null = null;
-        let message = '';
+          if (daysUntilDue < -7) {
+            alertType = 'critical';
+            message = `Manutenção CRÍTICA atrasada há ${Math.abs(daysUntilDue)} dias: ${schedule.name}`;
+          } else if (daysUntilDue < 0) {
+            alertType = 'overdue';
+            message = `Manutenção atrasada há ${Math.abs(daysUntilDue)} dias: ${schedule.name}`;
+          } else if (daysUntilDue === 0) {
+            alertType = 'due';
+            message = `Manutenção vence HOJE: ${schedule.name}`;
+          } else if (daysUntilDue <= 3) {
+            alertType = 'upcoming';
+            message = `Manutenção próxima (${daysUntilDue} dias): ${schedule.name}`;
+          }
 
-        if (daysUntilDue < -7) {
-          alertType = 'critical';
-          message = `Manutenção CRÍTICA atrasada há ${Math.abs(daysUntilDue)} dias: ${schedule.name}`;
-        } else if (daysUntilDue < 0) {
-          alertType = 'overdue';
-          message = `Manutenção atrasada há ${Math.abs(daysUntilDue)} dias: ${schedule.name}`;
-        } else if (daysUntilDue === 0) {
-          alertType = 'due';
-          message = `Manutenção vence HOJE: ${schedule.name}`;
-        } else if (daysUntilDue <= 3) {
-          alertType = 'upcoming';
-          message = `Manutenção próxima (${daysUntilDue} dias): ${schedule.name}`;
-        }
+          if (alertType) {
+            return {
+              schedule_id: schedule.id,
+              machine_id: schedule.machine_id,
+              alert_type: alertType,
+              message,
+            };
+          }
+          return null;
+        })
+        .filter((alert): alert is NonNullable<typeof alert> => alert !== null);
 
-        if (alertType) {
-          await supabase.from('maintenance_alerts').insert({
-            schedule_id: schedule.id,
-            machine_id: schedule.machine_id,
-            alert_type: alertType,
-            message,
-          });
-          alertsGenerated++;
-        }
-      }
+      // Insert all alerts in parallel
+      const results = await Promise.all(
+        alertsToCreate.map(async (alertData) => {
+          const { error } = await supabase.from('maintenance_alerts').insert(alertData);
+          return error ? null : alertData;
+        })
+      );
 
-      return alertsGenerated;
+      return results.filter(r => r !== null).length;
     },
     onSuccess: (count) => {
       queryClient.invalidateQueries({ queryKey: ['maintenance-alerts'] });

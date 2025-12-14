@@ -85,28 +85,32 @@ export function useSmartSequencingWithActions() {
   const { data: techniques } = useTechniques();
   const queryClient = useQueryClient();
 
-  // Mutation to apply sequencing for a machine
+  // Mutation to apply sequencing for a machine (parallel execution)
   const applySequencingMutation = useMutation({
     mutationFn: async (suggestion: SequencingSuggestion): Promise<ApplySequencingResult> => {
       try {
         const timeSlots = generateTimeSlots(7, suggestion.optimizedSequence); // Start at 07:00
         
-        for (const slot of timeSlots) {
-          const { error } = await supabase
-            .from('jobs')
-            .update({ 
-              start_time: slot.startTime,
-              end_time: slot.endTime 
-            })
-            .eq('id', slot.jobId);
-          
-          if (error) throw error;
-        }
+        // Execute all updates in parallel
+        const results = await Promise.all(
+          timeSlots.map(async (slot) => {
+            const { error } = await supabase
+              .from('jobs')
+              .update({ 
+                start_time: slot.startTime,
+                end_time: slot.endTime 
+              })
+              .eq('id', slot.jobId);
+            
+            if (error) throw error;
+            return slot;
+          })
+        );
         
         return {
           machineId: suggestion.machineId,
           machineName: suggestion.machineName,
-          appliedJobs: timeSlots.length,
+          appliedJobs: results.length,
           estimatedSavings: suggestion.estimatedSavings,
         };
       } catch (error) {
@@ -126,40 +130,46 @@ export function useSmartSequencingWithActions() {
     },
   });
 
-  // Mutation to apply all sequencing suggestions
+  // Mutation to apply all sequencing suggestions (parallel execution)
   const applyAllSequencingMutation = useMutation({
     mutationFn: async (suggestions: SequencingSuggestion[]): Promise<ApplySequencingResult[]> => {
-      const results: ApplySequencingResult[] = [];
-      
-      for (const suggestion of suggestions) {
-        try {
-          const timeSlots = generateTimeSlots(7, suggestion.optimizedSequence);
-          
-          for (const slot of timeSlots) {
-            const { error } = await supabase
-              .from('jobs')
-              .update({ 
-                start_time: slot.startTime,
-                end_time: slot.endTime 
-              })
-              .eq('id', slot.jobId);
+      // Process all suggestions in parallel
+      const results = await Promise.all(
+        suggestions.map(async (suggestion): Promise<ApplySequencingResult | null> => {
+          try {
+            const timeSlots = generateTimeSlots(7, suggestion.optimizedSequence);
             
-            if (error) throw error;
+            // Execute all slot updates in parallel for this suggestion
+            await Promise.all(
+              timeSlots.map(async (slot) => {
+                const { error } = await supabase
+                  .from('jobs')
+                  .update({ 
+                    start_time: slot.startTime,
+                    end_time: slot.endTime 
+                  })
+                  .eq('id', slot.jobId);
+                
+                if (error) throw error;
+              })
+            );
+            
+            return {
+              machineId: suggestion.machineId,
+              machineName: suggestion.machineName,
+              appliedJobs: timeSlots.length,
+              estimatedSavings: suggestion.estimatedSavings,
+            };
+          } catch (error) {
+            const appError = createAppError(error, SEQUENCING_ERROR_CONTEXT.applyAllSequencing);
+            if (import.meta.env.DEV) console.error(`[applyAllSequencing] Failed for ${suggestion.machineName}:`, appError);
+            return null;
           }
-          
-          results.push({
-            machineId: suggestion.machineId,
-            machineName: suggestion.machineName,
-            appliedJobs: timeSlots.length,
-            estimatedSavings: suggestion.estimatedSavings,
-          });
-        } catch (error) {
-          const appError = createAppError(error, SEQUENCING_ERROR_CONTEXT.applyAllSequencing);
-          if (import.meta.env.DEV) console.error(`[applyAllSequencing] Failed for ${suggestion.machineName}:`, appError);
-        }
-      }
+        })
+      );
       
-      return results;
+      // Filter out failed results
+      return results.filter((r): r is ApplySequencingResult => r !== null);
     },
     onSuccess: (results) => {
       queryClient.invalidateQueries({ queryKey: ['jobs'] });

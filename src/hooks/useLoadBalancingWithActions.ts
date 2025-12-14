@@ -98,39 +98,39 @@ export function useLoadBalancingWithActions(targetDate?: Date) {
     },
   });
 
-  // Mutation to apply multiple suggestions
+  // Mutation to apply multiple suggestions (parallel execution)
   const applyMultipleSuggestionsMutation = useMutation({
     mutationFn: async (suggestions: LoadBalancingSuggestion[]): Promise<ApplySuggestionResult[]> => {
-      const results: ApplySuggestionResult[] = [];
-      
-      for (const suggestion of suggestions) {
-        try {
-          const { error } = await supabase
-            .from('jobs')
-            .update({ machine_id: suggestion.suggestedMachineId })
-            .eq('id', suggestion.jobId);
-          
-          if (error) throw error;
-          
-          results.push({
-            success: true,
-            jobId: suggestion.jobId,
-            orderNumber: suggestion.orderNumber,
-            fromMachine: suggestion.currentMachineName,
-            toMachine: suggestion.suggestedMachineName,
-          });
-        } catch (error) {
-          const appError = createAppError(error, LOAD_BALANCING_ERROR_CONTEXT.applyMultiple);
-          if (import.meta.env.DEV) console.error('[applyMultipleSuggestions]', appError);
-          results.push({
-            success: false,
-            jobId: suggestion.jobId,
-            orderNumber: suggestion.orderNumber,
-            fromMachine: suggestion.currentMachineName,
-            toMachine: suggestion.suggestedMachineName,
-          });
-        }
-      }
+      const results = await Promise.all(
+        suggestions.map(async (suggestion): Promise<ApplySuggestionResult> => {
+          try {
+            const { error } = await supabase
+              .from('jobs')
+              .update({ machine_id: suggestion.suggestedMachineId })
+              .eq('id', suggestion.jobId);
+            
+            if (error) throw error;
+            
+            return {
+              success: true,
+              jobId: suggestion.jobId,
+              orderNumber: suggestion.orderNumber,
+              fromMachine: suggestion.currentMachineName,
+              toMachine: suggestion.suggestedMachineName,
+            };
+          } catch (error) {
+            const appError = createAppError(error, LOAD_BALANCING_ERROR_CONTEXT.applyMultiple);
+            if (import.meta.env.DEV) console.error('[applyMultipleSuggestions]', appError);
+            return {
+              success: false,
+              jobId: suggestion.jobId,
+              orderNumber: suggestion.orderNumber,
+              fromMachine: suggestion.currentMachineName,
+              toMachine: suggestion.suggestedMachineName,
+            };
+          }
+        })
+      );
       
       return results;
     },
