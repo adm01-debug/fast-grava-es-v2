@@ -138,21 +138,21 @@ export default function WeeklyCalendar() {
             </Select>
 
             {/* Week Navigation */}
-            <div className="flex items-center gap-1 bg-card border border-border/40 rounded-lg p-1">
+            <div className="flex items-center justify-between sm:justify-start gap-1 bg-card border border-border/40 rounded-lg p-1 w-full sm:w-auto">
               <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handlePrevWeek}>
                 <ChevronLeft className="h-4 w-4" />
               </Button>
               
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button variant="ghost" className="h-8 px-3 gap-2">
+                  <Button variant="ghost" className="h-8 px-2 sm:px-3 gap-1 sm:gap-2 flex-1 sm:flex-initial">
                     <CalendarIcon className="h-4 w-4" />
-                    <span className="font-medium text-sm">
+                    <span className="font-medium text-xs sm:text-sm">
                       {format(weekStart, "dd MMM", { locale: ptBR })} - {format(weekEnd, "dd MMM", { locale: ptBR })}
                     </span>
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="end">
+                <PopoverContent className="w-auto p-0" align="center">
                   <Calendar
                     mode="single"
                     selected={selectedDate}
@@ -166,28 +166,29 @@ export default function WeeklyCalendar() {
               <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handleNextWeek}>
                 <ChevronRight className="h-4 w-4" />
               </Button>
+              
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={handleToday}
+                className="border-border/40 ml-1 text-xs sm:text-sm"
+              >
+                <span className="hidden xs:inline">Esta </span>Semana
+              </Button>
             </div>
-            
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={handleToday}
-              className="border-border/40"
-            >
-              Esta Semana
-            </Button>
           </div>
         </div>
 
         {/* Weekly Grid */}
         <Card className="bg-card border border-border/40 rounded-xl overflow-hidden">
-          <CardHeader className="border-b border-border/40 pb-3">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-lg font-display gradient-text flex items-center gap-2">
-                <CalendarDays className="w-5 h-5" />
-                Semana {format(weekStart, "ww", { locale: ptBR })} de {format(weekStart, "yyyy")}
+          <CardHeader className="border-b border-border/40 pb-3 px-3 sm:px-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <CardTitle className="text-sm sm:text-lg font-display gradient-text flex items-center gap-2">
+                <CalendarDays className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" />
+                <span className="hidden sm:inline">Semana {format(weekStart, "ww", { locale: ptBR })} de {format(weekStart, "yyyy")}</span>
+                <span className="sm:hidden">Sem. {format(weekStart, "ww", { locale: ptBR })}/{format(weekStart, "yyyy")}</span>
               </CardTitle>
-              <Badge variant="outline" className="border-primary/30 text-primary">
+              <Badge variant="outline" className="border-primary/30 text-primary w-fit">
                 {weekJobs.length} agendamento{weekJobs.length !== 1 ? 's' : ''}
               </Badge>
             </div>
@@ -326,16 +327,16 @@ export default function WeeklyCalendar() {
 
         {/* Legend */}
         <Card className="bg-card border border-border/40 rounded-xl">
-          <CardContent className="py-4">
-            <div className="flex flex-wrap items-center gap-4">
-              <span className="text-xs font-medium text-muted-foreground uppercase">Legenda:</span>
+          <CardContent className="py-3 sm:py-4 px-3 sm:px-6">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-4">
+              <span className="text-xs font-medium text-muted-foreground uppercase w-full sm:w-auto">Legenda:</span>
               {Object.entries(statusLabels).slice(0, 6).map(([status, label]) => (
-                <div key={status} className="flex items-center gap-2">
+                <div key={status} className="flex items-center gap-1.5 sm:gap-2">
                   <div className={cn(
-                    "w-3 h-3 rounded-sm border",
+                    "w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-sm border",
                     statusColors[status as JobStatus]
                   )} />
-                  <span className="text-xs text-muted-foreground">{label}</span>
+                  <span className="text-[10px] sm:text-xs text-muted-foreground">{label}</span>
                 </div>
               ))}
             </div>
