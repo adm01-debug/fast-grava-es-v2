@@ -170,16 +170,24 @@ export const useTechnicalMessages = (conversationId: string | null) => {
     queryFn: async () => {
       if (!conversationId) return [];
       
-      const { data, error } = await supabase
-        .from('technical_messages')
-        .select('*')
-        .eq('conversation_id', conversationId)
-        .order('created_at', { ascending: true });
+      try {
+        const { data, error } = await supabase
+          .from('technical_messages')
+          .select('*')
+          .eq('conversation_id', conversationId)
+          .order('created_at', { ascending: true });
 
-      if (error) throw error;
-      return data as TechnicalMessage[];
+        if (error) throw error;
+        return data as TechnicalMessage[];
+      } catch (error) {
+        const appError = createAppError(error, CONVERSATIONS_ERROR_CONTEXT.messages);
+        if (import.meta.env.DEV) console.error('[useTechnicalMessages]', appError);
+        throw error;
+      }
     },
-    enabled: !!conversationId
+    enabled: !!conversationId,
+    staleTime: STALE_TIMES.DYNAMIC,
+    ...defaultQueryOptions,
   });
 
   const addMessage = useMutation({

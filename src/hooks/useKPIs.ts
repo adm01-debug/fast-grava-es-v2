@@ -136,6 +136,7 @@ export function useKPIs(): { data: KPIData | null; isLoading: boolean } {
       const completed = machineJobs.filter(j => j.status === 'finished');
       const totalPcs = machineJobs.reduce((sum, j) => sum + sanitizeNumber(j.quantity), 0);
       const lostPcs = machineJobs.reduce((sum, j) => sum + sanitizeNumber(j.lost_pieces), 0);
+      const machineTotalAttempted = totalPcs + lostPcs;
       
       return {
         machineId: machine.id,
@@ -145,7 +146,8 @@ export function useKPIs(): { data: KPIData | null; isLoading: boolean } {
         completedJobs: completed.length,
         totalPieces: totalPcs,
         lostPieces: lostPcs,
-        lossRate: totalPcs > 0 ? (lostPcs / totalPcs) * 100 : 0,
+        // Use consistent formula: lostPieces / (totalPieces + lostPieces) 
+        lossRate: machineTotalAttempted > 0 ? (lostPcs / machineTotalAttempted) * 100 : 0,
         avgDuration: machineJobs.length > 0 
           ? machineJobs.reduce((sum, j) => sum + sanitizeNumber(j.estimated_duration), 0) / machineJobs.length 
           : 0,

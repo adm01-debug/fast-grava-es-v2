@@ -90,7 +90,7 @@ export function useMLPredictions() {
         .from('prediction_history')
         .select('*')
         .order('created_at', { ascending: false })
-        .limit(100);
+        .limit(200);
       
       if (error) {
         console.error('[useMLPredictions] history fetch failed:', categorizeError(error), error);
@@ -102,20 +102,32 @@ export function useMLPredictions() {
         throw err;
       }
     },
+    staleTime: STALE_TIMES.DYNAMIC,
+    ...defaultQueryOptions,
   });
 
   // Fetch machines
   const { data: machines = [] } = useQuery({
     queryKey: ['machines-for-ml'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('machines')
-        .select('*')
-        .eq('is_active', true)
-        .order('name');
-      if (error) throw error;
-      return data;
+      try {
+        const { data, error } = await supabase
+          .from('machines')
+          .select('*')
+          .eq('is_active', true)
+          .order('name');
+        if (error) {
+          console.error('[useMLPredictions] machines fetch failed:', categorizeError(error), error);
+          throw error;
+        }
+        return data;
+      } catch (err) {
+        console.error('[useMLPredictions] machines error:', err);
+        throw err;
+      }
     },
+    staleTime: STALE_TIMES.STATIC,
+    ...defaultQueryOptions,
   });
 
   // Generate predictions mutation

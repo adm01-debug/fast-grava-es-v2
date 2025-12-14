@@ -138,7 +138,9 @@ export const useTechnicalSheets = () => {
         if (import.meta.env.DEV) console.error('[useTechnicalSheets:categories]', appError);
         throw error;
       }
-    }
+    },
+    staleTime: STALE_TIMES.STATIC,
+    ...defaultQueryOptions,
   });
 
   // Fetch materials
@@ -158,7 +160,9 @@ export const useTechnicalSheets = () => {
         if (import.meta.env.DEV) console.error('[useTechnicalSheets:materials]', appError);
         throw error;
       }
-    }
+    },
+    staleTime: STALE_TIMES.STATIC,
+    ...defaultQueryOptions,
   });
 
   return {
@@ -177,23 +181,31 @@ export const useTechnicalSheetDetails = (sheetId: string | null) => {
     queryFn: async () => {
       if (!sheetId) return null;
       
-      const { data, error } = await supabase
-        .from('technical_sheets')
-        .select(`
-          *,
-          techniques (id, name, color, short_name),
-          product_categories (id, name),
-          materials (id, name),
-          machines (id, name, code)
-        `)
-        .eq('id', sheetId)
-        .maybeSingle();
+      try {
+        const { data, error } = await supabase
+          .from('technical_sheets')
+          .select(`
+            *,
+            techniques (id, name, color, short_name),
+            product_categories (id, name),
+            materials (id, name),
+            machines (id, name, code)
+          `)
+          .eq('id', sheetId)
+          .maybeSingle();
 
-      if (error) throw error;
-      if (!data) throw new Error('Ficha técnica não encontrada');
-      return data as TechnicalSheet;
+        if (error) throw error;
+        if (!data) return null;
+        return data as TechnicalSheet;
+      } catch (error) {
+        const appError = createAppError(error, SHEETS_ERROR_CONTEXT.sheetDetails);
+        if (import.meta.env.DEV) console.error('[useTechnicalSheetDetails]', appError);
+        throw error;
+      }
     },
-    enabled: !!sheetId
+    enabled: !!sheetId,
+    staleTime: STALE_TIMES.DYNAMIC,
+    ...defaultQueryOptions,
   });
 
   // Fetch steps
@@ -202,16 +214,24 @@ export const useTechnicalSheetDetails = (sheetId: string | null) => {
     queryFn: async () => {
       if (!sheetId) return [];
       
-      const { data, error } = await supabase
-        .from('technical_sheet_steps')
-        .select('*')
-        .eq('technical_sheet_id', sheetId)
-        .order('step_number');
+      try {
+        const { data, error } = await supabase
+          .from('technical_sheet_steps')
+          .select('*')
+          .eq('technical_sheet_id', sheetId)
+          .order('step_number');
 
-      if (error) throw error;
-      return data as TechnicalSheetStep[];
+        if (error) throw error;
+        return data as TechnicalSheetStep[];
+      } catch (error) {
+        const appError = createAppError(error, SHEETS_ERROR_CONTEXT.steps);
+        if (import.meta.env.DEV) console.error('[useTechnicalSheetDetails:steps]', appError);
+        throw error;
+      }
     },
-    enabled: !!sheetId
+    enabled: !!sheetId,
+    staleTime: STALE_TIMES.DYNAMIC,
+    ...defaultQueryOptions,
   });
 
   // Fetch materials/supplies
@@ -220,15 +240,23 @@ export const useTechnicalSheetDetails = (sheetId: string | null) => {
     queryFn: async () => {
       if (!sheetId) return [];
       
-      const { data, error } = await supabase
-        .from('technical_sheet_materials')
-        .select('*')
-        .eq('technical_sheet_id', sheetId);
+      try {
+        const { data, error } = await supabase
+          .from('technical_sheet_materials')
+          .select('*')
+          .eq('technical_sheet_id', sheetId);
 
-      if (error) throw error;
-      return data as TechnicalSheetMaterial[];
+        if (error) throw error;
+        return data as TechnicalSheetMaterial[];
+      } catch (error) {
+        const appError = createAppError(error, { entity: 'technical_sheet_materials', operation: 'fetch' });
+        if (import.meta.env.DEV) console.error('[useTechnicalSheetDetails:materials]', appError);
+        throw error;
+      }
     },
-    enabled: !!sheetId
+    enabled: !!sheetId,
+    staleTime: STALE_TIMES.DYNAMIC,
+    ...defaultQueryOptions,
   });
 
   // Fetch tips
@@ -237,15 +265,23 @@ export const useTechnicalSheetDetails = (sheetId: string | null) => {
     queryFn: async () => {
       if (!sheetId) return [];
       
-      const { data, error } = await supabase
-        .from('technical_sheet_tips')
-        .select('*')
-        .eq('technical_sheet_id', sheetId);
+      try {
+        const { data, error } = await supabase
+          .from('technical_sheet_tips')
+          .select('*')
+          .eq('technical_sheet_id', sheetId);
 
-      if (error) throw error;
-      return data as TechnicalSheetTip[];
+        if (error) throw error;
+        return data as TechnicalSheetTip[];
+      } catch (error) {
+        const appError = createAppError(error, SHEETS_ERROR_CONTEXT.tips);
+        if (import.meta.env.DEV) console.error('[useTechnicalSheetDetails:tips]', appError);
+        throw error;
+      }
     },
-    enabled: !!sheetId
+    enabled: !!sheetId,
+    staleTime: STALE_TIMES.DYNAMIC,
+    ...defaultQueryOptions,
   });
 
   return {

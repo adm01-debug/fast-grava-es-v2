@@ -109,4 +109,5 @@ export const TPM_ERROR_CONTEXT = {
   checklists: { hook: 'useTPM', entity: 'maintenance_checklists' },
   records: { hook: 'useTPM', entity: 'maintenance_records' },
   alerts: { hook: 'useTPM', entity: 'maintenance_alerts' },
+  machines: { hook: 'useTPM', entity: 'machines' },
 };
