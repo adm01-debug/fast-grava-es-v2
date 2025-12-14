@@ -43,6 +43,7 @@ const OEEDashboard = lazy(() => import("./pages/OEEDashboard"));
 const ABCCostingDashboard = lazy(() => import("./pages/ABCCostingDashboard"));
 const TPMDashboard = lazy(() => import("./pages/TPMDashboard"));
 const MLPredictionsDashboard = lazy(() => import("./pages/MLPredictionsDashboard"));
+const CodeQualityDashboard = lazy(() => import("./pages/CodeQualityDashboard"));
 const SettingsPage = lazy(() => import("./pages/SettingsPage"));
 const AuthPage = lazy(() => import("./pages/AuthPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
@@ -254,6 +255,15 @@ function AnimatedRoutes() {
             <PageTransition>
               <Suspense fallback={<KPIPageSkeleton />}>
                 <MLPredictionsDashboard />
+              </Suspense>
+            </PageTransition>
+          </ProtectedRoute>
+        } />
+        <Route path="/code-quality" element={
+          <ProtectedRoute allowedRoles={['coordinator', 'manager']}>
+            <PageTransition>
+              <Suspense fallback={<KPIPageSkeleton />}>
+                <CodeQualityDashboard />
               </Suspense>
             </PageTransition>
           </ProtectedRoute>
