@@ -1,6 +1,59 @@
-# Welcome to your Lovable project
+# Sistema de Agendamento de Produção
 
-## Project info
+![Coverage](https://img.shields.io/badge/coverage-checking-yellow)
+![Tests](https://img.shields.io/badge/tests-passing-brightgreen)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)
+![React](https://img.shields.io/badge/React-18.3-61dafb)
+![Vite](https://img.shields.io/badge/Vite-5.0-646cff)
+
+## Visão Geral
+
+Sistema completo de agendamento e gerenciamento de produção para personalização de produtos, com suporte a 16 técnicas de gravação e 52 máquinas.
+
+### Funcionalidades Principais
+
+- 📅 **Calendário de Produção** - Visualização diária/semanal com drag-and-drop
+- 🎯 **Gestão de Buffer** - Manutenção automática de 3 jobs prontos por técnica
+- ⚡ **Smart Sequencing** - Otimização automática por cor/material
+- ⚖️ **Load Balancing** - Redistribuição inteligente de carga entre máquinas
+- 🔮 **ML Predictions** - Previsão de falhas com machine learning
+- 📊 **OEE Dashboard** - Métricas de eficiência operacional
+- 🔧 **TPM** - Manutenção produtiva total
+- 💰 **ABC Costing** - Custeio baseado em atividades
+- 🤖 **Assistente Técnico IA** - Suporte técnico com IA
+
+## Testes
+
+```bash
+# Executar todos os testes
+npm test
+
+# Executar com coverage report
+npm test -- --coverage
+
+# Executar testes específicos
+npm test -- --run useLoadBalancingWithActions
+```
+
+### Estrutura de Testes
+
+| Categoria | Arquivos | Cobertura |
+|-----------|----------|-----------|
+| Hooks | `src/hooks/*.test.ts` | Unitários |
+| Componentes | `src/components/**/*.test.tsx` | Componentes |
+| Integração | `src/test/integration/*.test.ts` | E2E |
+
+### Padrões Implementados
+
+- ✅ Error Handling centralizado (`src/lib/errorHandling.ts`)
+- ✅ Retry automático com exponential backoff (`src/lib/queryConfig.ts`)
+- ✅ Validação de dados em hooks críticos
+- ✅ Real-time subscriptions para sincronização
+- ✅ Paginação para grandes conjuntos de dados
+
+📖 Documentação completa: [`docs/ERROR_HANDLING_PATTERNS.md`](docs/ERROR_HANDLING_PATTERNS.md)
+
+## Project Info
 
 **URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
 
