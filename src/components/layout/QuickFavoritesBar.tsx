@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { 
   Home, Calendar, CalendarDays, LayoutGrid, List, Zap, BarChart3, 
   AlertTriangle, BookOpen, UserCircle, QrCode, Bot, Printer, Users, 
-  Plus, Star, Settings2, X, RotateCcw, RefreshCw
+  Plus, Star, Settings2, X, RotateCcw, RefreshCw, GripVertical
 } from 'lucide-react';
 import { arrayMove } from '@dnd-kit/sortable';
 import {
@@ -14,6 +14,8 @@ import {
   useSensor,
   useSensors,
   DragEndEvent,
+  DragStartEvent,
+  DragOverlay,
 } from '@dnd-kit/core';
 import {
   SortableContext,
@@ -91,7 +93,7 @@ const SortableFavorite = memo(function SortableFavorite({
       }}
       className={cn(
         'flex items-center animate-scale-in',
-        isDragging && 'z-50 opacity-80'
+        isDragging && 'z-50 opacity-30 scale-95'
       )}
     >
       <Tooltip>
@@ -125,9 +127,27 @@ const SortableFavorite = memo(function SortableFavorite({
   );
 });
 
+// Drag overlay component for visual feedback
+interface DragOverlayItemProps {
+  fav: QuickFavorite;
+}
+
+const DragOverlayItem = memo(function DragOverlayItem({ fav }: DragOverlayItemProps) {
+  const Icon = iconMap[fav.icon] || Star;
+  
+  return (
+    <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-primary/20 border-2 border-primary shadow-lg shadow-primary/20 backdrop-blur-sm animate-scale-in">
+      <GripVertical className="h-3 w-3 text-primary/60" />
+      <Icon className="h-4 w-4 text-primary" />
+      <span className="text-sm font-medium text-primary">{fav.label}</span>
+    </div>
+  );
+});
+
 export const QuickFavoritesBar = memo(function QuickFavoritesBar() {
   const location = useLocation();
   const [isEditing, setIsEditing] = useState(false);
+  const [activeDragId, setActiveDragId] = useState<string | null>(null);
   const { 
     favorites, 
     availableShortcuts, 
@@ -167,8 +187,14 @@ export const QuickFavoritesBar = memo(function QuickFavoritesBar() {
     );
   }
 
-  const handleDragEnd = useCallback((event: DragEndEvent) => {
+  const handleDragStart = (event: DragStartEvent) => {
+    setActiveDragId(event.active.id as string);
+  };
+
+  const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
+    setActiveDragId(null);
+    
     if (over && active.id !== over.id) {
       const oldIndex = favorites.findIndex(f => f.id === active.id);
       const newIndex = favorites.findIndex(f => f.id === over.id);
@@ -177,7 +203,9 @@ export const QuickFavoritesBar = memo(function QuickFavoritesBar() {
         reorderFavorites(newOrder);
       }
     }
-  }, [favorites, reorderFavorites]);
+  };
+
+  const activeDragFav = activeDragId ? favorites.find(f => f.id === activeDragId) : null;
 
   const isActive = (href: string) => {
     if (href === '/') return location.pathname === '/';
@@ -201,6 +229,7 @@ export const QuickFavoritesBar = memo(function QuickFavoritesBar() {
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
+        onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
       >
         <SortableContext
@@ -218,6 +247,12 @@ export const QuickFavoritesBar = memo(function QuickFavoritesBar() {
             />
           ))}
         </SortableContext>
+        <DragOverlay dropAnimation={{
+          duration: 200,
+          easing: 'cubic-bezier(0.18, 0.67, 0.6, 1.22)',
+        }}>
+          {activeDragFav ? <DragOverlayItem fav={activeDragFav} /> : null}
+        </DragOverlay>
       </DndContext>
       
       <div className="w-px h-5 bg-border/50 mx-1" />
