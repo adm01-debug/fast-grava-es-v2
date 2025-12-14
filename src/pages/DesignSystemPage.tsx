@@ -182,7 +182,8 @@ import {
   Building,
   Factory,
   Warehouse,
-  type LucideIcon
+  type LucideIcon,
+  Pause
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { 
@@ -208,6 +209,17 @@ import {
 export default function DesignSystemPage() {
   const [activeTab, setActiveTab] = useState("overview");
   const [reducedMotion, setReducedMotion] = useState(false);
+  const [systemPrefersReducedMotion, setSystemPrefersReducedMotion] = useState(false);
+
+  // Detect system preference for reduced motion
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    setSystemPrefersReducedMotion(mediaQuery.matches);
+    
+    const handler = (e: MediaQueryListEvent) => setSystemPrefersReducedMotion(e.matches);
+    mediaQuery.addEventListener('change', handler);
+    return () => mediaQuery.removeEventListener('change', handler);
+  }, []);
 
   // Apply/remove reduced motion simulation class
   useEffect(() => {
@@ -221,9 +233,32 @@ export default function DesignSystemPage() {
     };
   }, [reducedMotion]);
 
+  const isReducedMotionActive = reducedMotion || systemPrefersReducedMotion;
+
   return (
     <MainLayout>
       <div className="p-6 space-y-8 max-w-7xl mx-auto">
+        {/* Floating Reduced Motion Indicator */}
+        {isReducedMotionActive && (
+          <div className="fixed bottom-4 left-4 z-50 flex items-center gap-2 px-3 py-2 rounded-full bg-warning/90 text-warning-foreground shadow-lg border border-warning/50 backdrop-blur-sm">
+            <Pause className="h-4 w-4" />
+            <span className="text-xs font-medium">
+              {systemPrefersReducedMotion && !reducedMotion 
+                ? 'Reduced Motion (Sistema)' 
+                : 'Reduced Motion (Simulado)'}
+            </span>
+            {reducedMotion && (
+              <button 
+                onClick={() => setReducedMotion(false)}
+                className="ml-1 p-0.5 rounded-full hover:bg-warning-foreground/20 transition-colors"
+                title="Desativar simulação"
+              >
+                <X className="h-3 w-3" />
+              </button>
+            )}
+          </div>
+        )}
+
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="space-y-2">
@@ -236,7 +271,7 @@ export default function DesignSystemPage() {
           {/* Reduced Motion Toggle */}
           <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50 border border-border">
             <div className="flex items-center gap-2">
-              <Activity className={`h-4 w-4 ${reducedMotion ? 'text-muted-foreground' : 'text-primary animate-pulse'}`} />
+              <Activity className={`h-4 w-4 ${isReducedMotionActive ? 'text-muted-foreground' : 'text-primary animate-pulse'}`} />
               <Label htmlFor="reduced-motion-toggle" className="text-sm font-medium cursor-pointer">
                 Simular Reduced Motion
               </Label>
@@ -245,8 +280,14 @@ export default function DesignSystemPage() {
               id="reduced-motion-toggle"
               checked={reducedMotion}
               onCheckedChange={setReducedMotion}
+              disabled={systemPrefersReducedMotion}
             />
-            {reducedMotion && (
+            {systemPrefersReducedMotion && (
+              <Badge variant="outline" className="text-xs border-warning text-warning">
+                Sistema
+              </Badge>
+            )}
+            {reducedMotion && !systemPrefersReducedMotion && (
               <Badge variant="secondary" className="text-xs">
                 Ativo
               </Badge>
