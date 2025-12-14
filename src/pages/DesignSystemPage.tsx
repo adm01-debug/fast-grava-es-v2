@@ -9047,60 +9047,60 @@ function OverviewSection({ onNavigate }: OverviewSectionProps) {
       </div>
 
       {/* What's New Section */}
-      <Card variant="glass" className="border-primary/20 relative overflow-hidden">
+      <Card variant="glass" className="border-primary/20 relative overflow-hidden animate-fade-in">
         <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-primary/10 to-transparent rounded-bl-full" />
         <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-success/10 to-transparent rounded-tr-full" />
-        <CardHeader>
+        <CardHeader className="animate-fade-in" style={{ animationDelay: '100ms' }}>
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">
               <Sparkles className="h-5 w-5 text-primary animate-pulse" />
               Novidades
-              <Badge variant="default" className="ml-2 text-xs">v2.0</Badge>
+              <Badge variant="default" className="ml-2 text-xs animate-scale-in" style={{ animationDelay: '300ms' }}>v2.0</Badge>
             </CardTitle>
-            <span className="text-xs text-muted-foreground">Dezembro 2024</span>
+            <span className="text-xs text-muted-foreground animate-fade-in" style={{ animationDelay: '400ms' }}>Dezembro 2024</span>
           </div>
-          <CardDescription>
+          <CardDescription className="animate-fade-in" style={{ animationDelay: '200ms' }}>
             Últimas adições e melhorias no Design System
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4 relative">
           {/* New Variants */}
-          <div className="space-y-3">
+          <div className="space-y-3 animate-fade-in" style={{ animationDelay: '300ms' }}>
             <h4 className="text-sm font-semibold text-foreground flex items-center gap-2">
               <Plus className="h-4 w-4 text-success" />
               Novas Variantes
             </h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {/* Card Variants */}
-              <div className="p-3 rounded-lg bg-card/50 border border-border/50 space-y-2">
+              <div className="p-3 rounded-lg bg-card/50 border border-border/50 space-y-2 animate-fade-in hover-lift-sm transition-all" style={{ animationDelay: '400ms' }}>
                 <div className="flex items-center gap-2">
                   <Square className="h-4 w-4 text-primary" />
                   <span className="text-sm font-medium">Cards</span>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  <Badge variant="outline" className="text-xs">
+                  <Badge variant="outline" className="text-xs animate-scale-in" style={{ animationDelay: '500ms' }}>
                     <code>stat</code> - KPIs e dashboards
                   </Badge>
-                  <Badge variant="outline" className="text-xs">
+                  <Badge variant="outline" className="text-xs animate-scale-in" style={{ animationDelay: '550ms' }}>
                     <code>premium</code> - Destaque dourado
                   </Badge>
                 </div>
               </div>
               
               {/* Button Variants */}
-              <div className="p-3 rounded-lg bg-card/50 border border-border/50 space-y-2">
+              <div className="p-3 rounded-lg bg-card/50 border border-border/50 space-y-2 animate-fade-in hover-lift-sm transition-all" style={{ animationDelay: '450ms' }}>
                 <div className="flex items-center gap-2">
                   <Zap className="h-4 w-4 text-warning" />
                   <span className="text-sm font-medium">Botões</span>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  <Badge variant="outline" className="text-xs">
+                  <Badge variant="outline" className="text-xs animate-scale-in" style={{ animationDelay: '600ms' }}>
                     <code>warning</code> - Alertas
                   </Badge>
-                  <Badge variant="outline" className="text-xs">
+                  <Badge variant="outline" className="text-xs animate-scale-in" style={{ animationDelay: '650ms' }}>
                     <code>subtle</code> - Discreto
                   </Badge>
-                  <Badge variant="outline" className="text-xs">
+                  <Badge variant="outline" className="text-xs animate-scale-in" style={{ animationDelay: '700ms' }}>
                     <code>icon-xs</code> - Ícone mini
                   </Badge>
                 </div>
@@ -9109,71 +9109,74 @@ function OverviewSection({ onNavigate }: OverviewSectionProps) {
           </div>
 
           {/* Design Improvements */}
-          <div className="space-y-3">
+          <div className="space-y-3 animate-fade-in" style={{ animationDelay: '500ms' }}>
             <h4 className="text-sm font-semibold text-foreground flex items-center gap-2">
               <TrendingUp className="h-4 w-4 text-info" />
               Melhorias de Design
             </h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <Check className="h-3 w-3 text-success shrink-0" />
-                <span>Light mode com tons mais quentes</span>
-              </div>
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <Check className="h-3 w-3 text-success shrink-0" />
-                <span>Dark mode refinado com glows</span>
-              </div>
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <Check className="h-3 w-3 text-success shrink-0" />
-                <span>Transições de tema cinematográficas</span>
-              </div>
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <Check className="h-3 w-3 text-success shrink-0" />
-                <span>Typography com Outfit para headers</span>
-              </div>
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <Check className="h-3 w-3 text-success shrink-0" />
-                <span>Focus states elegantes com glow</span>
-              </div>
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <Check className="h-3 w-3 text-success shrink-0" />
-                <span>Melhor contraste de texto secundário</span>
-              </div>
+              {[
+                'Light mode com tons mais quentes',
+                'Dark mode refinado com glows',
+                'Transições de tema cinematográficas',
+                'Typography com Outfit para headers',
+                'Focus states elegantes com glow',
+                'Melhor contraste de texto secundário',
+              ].map((item, index) => (
+                <div 
+                  key={item}
+                  className="flex items-center gap-2 text-xs text-muted-foreground animate-fade-in"
+                  style={{ animationDelay: `${600 + index * 80}ms` }}
+                >
+                  <Check className="h-3 w-3 text-success shrink-0" />
+                  <span>{item}</span>
+                </div>
+              ))}
             </div>
           </div>
 
           {/* New Utilities */}
-          <div className="space-y-3">
+          <div className="space-y-3 animate-fade-in" style={{ animationDelay: '800ms' }}>
             <h4 className="text-sm font-semibold text-foreground flex items-center gap-2">
               <Wand2 className="h-4 w-4 text-accent" />
               Novas Utilities
             </h4>
             <div className="flex flex-wrap gap-2">
-              <code className="text-xs bg-muted px-2 py-1 rounded">.hover-lift-sm</code>
-              <code className="text-xs bg-muted px-2 py-1 rounded">.hover-scale</code>
-              <code className="text-xs bg-muted px-2 py-1 rounded">.hover-scale-sm</code>
-              <code className="text-xs bg-muted px-2 py-1 rounded">.gradient-text-success</code>
-              <code className="text-xs bg-muted px-2 py-1 rounded">.text-display</code>
-              <code className="text-xs bg-muted px-2 py-1 rounded">.text-display-lg</code>
-              <code className="text-xs bg-muted px-2 py-1 rounded">.text-display-xl</code>
+              {[
+                '.hover-lift-sm',
+                '.hover-scale',
+                '.hover-scale-sm',
+                '.gradient-text-success',
+                '.text-display',
+                '.text-display-lg',
+                '.text-display-xl',
+              ].map((utility, index) => (
+                <code 
+                  key={utility}
+                  className="text-xs bg-muted px-2 py-1 rounded animate-scale-in hover:bg-primary/20 transition-colors cursor-default"
+                  style={{ animationDelay: `${900 + index * 60}ms` }}
+                >
+                  {utility}
+                </code>
+              ))}
             </div>
           </div>
 
           {/* Quick Preview */}
-          <div className="pt-3 border-t border-border/50">
+          <div className="pt-3 border-t border-border/50 animate-fade-in" style={{ animationDelay: '1100ms' }}>
             <div className="flex flex-wrap items-center gap-3">
               <span className="text-xs text-muted-foreground">Preview:</span>
-              <Card variant="stat" className="p-2 inline-flex items-center gap-2">
+              <Card variant="stat" className="p-2 inline-flex items-center gap-2 animate-scale-in hover-lift-sm" style={{ animationDelay: '1200ms' }}>
                 <TrendingUp className="h-3 w-3 text-success" />
                 <span className="text-xs font-medium">Stat Card</span>
               </Card>
-              <Card variant="premium" className="p-2 inline-flex items-center gap-2">
+              <Card variant="premium" className="p-2 inline-flex items-center gap-2 animate-scale-in hover-lift-sm" style={{ animationDelay: '1250ms' }}>
                 <Coins className="h-3 w-3 text-amber-500" />
                 <span className="text-xs font-medium">Premium</span>
               </Card>
-              <Button variant="warning" size="sm">Warning</Button>
-              <Button variant="subtle" size="sm">Subtle</Button>
-              <Button size="icon-xs" variant="outline"><Star className="h-3 w-3" /></Button>
+              <Button variant="warning" size="sm" className="animate-scale-in" style={{ animationDelay: '1300ms' }}>Warning</Button>
+              <Button variant="subtle" size="sm" className="animate-scale-in" style={{ animationDelay: '1350ms' }}>Subtle</Button>
+              <Button size="icon-xs" variant="outline" className="animate-scale-in" style={{ animationDelay: '1400ms' }}><Star className="h-3 w-3" /></Button>
             </div>
           </div>
         </CardContent>
