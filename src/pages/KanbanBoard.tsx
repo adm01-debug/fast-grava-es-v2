@@ -2,10 +2,10 @@ import { useState, useMemo } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { JobDetailsModal } from '@/components/jobs/JobDetailsModal';
+import { Skeleton } from '@/components/ui/skeleton';
 import { 
   Search, 
   Filter,
@@ -20,7 +20,7 @@ import {
   GripVertical
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { mockJobs, getTechniqueById, getMachineById } from '@/data/mockData';
+import { useJobs, useTechniques, useMachines, DbJob, DbTechnique, DbMachine } from '@/hooks/useJobs';
 import { Job, JobStatus } from '@/types/scheduling';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -39,37 +39,76 @@ const exceptionStatuses: { status: JobStatus; label: string; icon: React.Element
   { status: 'rework', label: 'Retrabalho', icon: RotateCcw, color: 'text-pink-400' },
 ];
 
+// Helper to convert DbJob to Job format for modal
+const dbJobToJob = (dbJob: DbJob): Job => ({
+  id: dbJob.id,
+  orderNumber: dbJob.order_number,
+  client: dbJob.client,
+  product: dbJob.product,
+  quantity: dbJob.quantity,
+  techniqueId: dbJob.technique_id as any,
+  machineId: dbJob.machine_id || '',
+  operatorId: '',
+  scheduledDate: dbJob.scheduled_date ? new Date(dbJob.scheduled_date) : new Date(),
+  startTime: dbJob.start_time || '',
+  endTime: dbJob.end_time || '',
+  estimatedDuration: dbJob.estimated_duration,
+  status: dbJob.status as any,
+  gravureColor: dbJob.gravure_color || undefined,
+  notes: dbJob.notes || undefined,
+  priority: dbJob.priority as any,
+  createdAt: new Date(dbJob.created_at),
+  updatedAt: new Date(dbJob.updated_at),
+  createdBy: '',
+  actualStartTime: dbJob.actual_start_time ? new Date(dbJob.actual_start_time) : undefined,
+  actualEndTime: dbJob.actual_end_time ? new Date(dbJob.actual_end_time) : undefined,
+});
+
 export default function KanbanBoard() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTechnique, setSelectedTechnique] = useState<string>('all');
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  // Fetch real data from Supabase
+  const { data: jobs = [], isLoading: isLoadingJobs } = useJobs();
+  const { data: techniques = [], isLoading: isLoadingTechniques } = useTechniques();
+  const { data: machines = [] } = useMachines();
+
+  // Helper functions
+  const getTechniqueById = (id: string): DbTechnique | undefined => {
+    return techniques.find(t => t.id === id);
+  };
+
+  const getMachineById = (id: string): DbMachine | undefined => {
+    return machines.find(m => m.id === id);
+  };
+
   const filteredJobs = useMemo(() => {
-    return mockJobs.filter(job => {
+    return jobs.filter(job => {
       const matchesSearch = searchTerm === '' || 
         job.client.toLowerCase().includes(searchTerm.toLowerCase()) ||
         job.product.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        job.orderNumber.toLowerCase().includes(searchTerm.toLowerCase());
+        job.order_number.toLowerCase().includes(searchTerm.toLowerCase());
       
-      const matchesTechnique = selectedTechnique === 'all' || job.techniqueId === selectedTechnique;
+      const matchesTechnique = selectedTechnique === 'all' || job.technique_id === selectedTechnique;
       
       return matchesSearch && matchesTechnique;
     });
-  }, [searchTerm, selectedTechnique]);
+  }, [jobs, searchTerm, selectedTechnique]);
 
   const getJobsByStatus = (status: JobStatus) => {
     return filteredJobs.filter(job => job.status === status);
   };
 
-  const handleJobClick = (job: Job) => {
-    setSelectedJob(job);
+  const handleJobClick = (dbJob: DbJob) => {
+    setSelectedJob(dbJobToJob(dbJob));
     setIsModalOpen(true);
   };
 
-  const JobCard = ({ job }: { job: Job }) => {
-    const technique = getTechniqueById(job.techniqueId);
-    const machine = job.machineId ? getMachineById(job.machineId) : null;
+  const JobCard = ({ job }: { job: DbJob }) => {
+    const technique = getTechniqueById(job.technique_id);
+    const machine = job.machine_id ? getMachineById(job.machine_id) : null;
     
     return (
       <div
@@ -106,16 +145,16 @@ export default function KanbanBoard() {
         </p>
         
         <div className="flex items-center justify-between text-xs text-muted-foreground">
-          <span className="font-mono">OS {job.orderNumber}</span>
+          <span className="font-mono">OS {job.order_number}</span>
           <span>{job.quantity.toLocaleString()} pçs</span>
         </div>
         
-        {job.scheduledDate && (
+        {job.scheduled_date && (
           <div className="mt-2 pt-2 border-t border-border/50 flex items-center gap-1 text-xs text-muted-foreground">
             <Calendar className="h-3 w-3" />
-            <span>{format(new Date(job.scheduledDate), "dd/MM", { locale: ptBR })}</span>
-            {job.startTime && (
-              <span className="ml-1">{job.startTime}</span>
+            <span>{format(new Date(job.scheduled_date), "dd/MM", { locale: ptBR })}</span>
+            {job.start_time && (
+              <span className="ml-1">{job.start_time}</span>
             )}
           </div>
         )}
@@ -140,7 +179,7 @@ export default function KanbanBoard() {
     icon: React.ElementType;
     color: string;
   }) => {
-    const jobs = getJobsByStatus(status);
+    const columnJobs = getJobsByStatus(status);
     
     return (
       <div className="flex flex-col min-w-[240px] sm:min-w-[280px] max-w-[320px]">
@@ -148,7 +187,7 @@ export default function KanbanBoard() {
           <Icon className={cn("h-4 w-4", color)} />
           <h3 className="font-semibold text-sm">{label}</h3>
           <Badge variant="secondary" className="ml-auto text-xs">
-            {jobs.length}
+            {columnJobs.length}
           </Badge>
         </div>
         
@@ -157,12 +196,12 @@ export default function KanbanBoard() {
           "bg-gradient-to-b from-muted/20 to-muted/5",
           "space-y-2 min-h-[400px] overflow-y-auto scrollbar-thin"
         )}>
-          {jobs.length === 0 ? (
+          {columnJobs.length === 0 ? (
             <div className="flex items-center justify-center h-24 text-xs text-muted-foreground">
               Nenhum job
             </div>
           ) : (
-            jobs.map((job, index) => (
+            columnJobs.map((job, index) => (
               <div 
                 key={job.id} 
                 className="animate-fade-in"
@@ -177,16 +216,20 @@ export default function KanbanBoard() {
     );
   };
 
-  const techniques = useMemo(() => {
-    const uniqueTechniques = new Map();
-    mockJobs.forEach(job => {
-      const technique = getTechniqueById(job.techniqueId);
-      if (technique && !uniqueTechniques.has(technique.id)) {
-        uniqueTechniques.set(technique.id, technique);
-      }
-    });
-    return Array.from(uniqueTechniques.values());
-  }, []);
+  if (isLoadingJobs || isLoadingTechniques) {
+    return (
+      <MainLayout>
+        <div className="p-4 sm:p-6 lg:p-8 space-y-4 sm:space-y-6">
+          <Skeleton className="h-10 w-48" />
+          <div className="flex gap-4">
+            {[1, 2, 3, 4, 5].map(i => (
+              <Skeleton key={i} className="h-[400px] w-[280px]" />
+            ))}
+          </div>
+        </div>
+      </MainLayout>
+    );
+  }
 
   return (
     <MainLayout>
@@ -200,10 +243,10 @@ export default function KanbanBoard() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-display font-bold">
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-display font-bold">
               <span className="gradient-text">Kanban</span>
             </h1>
-            <p className="text-muted-foreground">
+            <p className="text-muted-foreground text-sm sm:text-base">
               Visualização por status dos jobs
             </p>
           </div>
@@ -245,7 +288,7 @@ export default function KanbanBoard() {
         {/* Main Kanban Board */}
         <Card className="glass-card">
           <CardHeader className="pb-4">
-            <CardTitle className="text-lg flex items-center gap-2">
+            <CardTitle className="text-base sm:text-lg flex items-center gap-2">
               Fluxo Principal
             </CardTitle>
           </CardHeader>
@@ -261,8 +304,8 @@ export default function KanbanBoard() {
         {/* Exception Statuses */}
         <Card className="glass-card border-orange-500/20">
           <CardHeader className="pb-4">
-            <CardTitle className="text-lg flex items-center gap-2">
-              <AlertTriangle className="h-5 w-5 text-orange-400" />
+            <CardTitle className="text-base sm:text-lg flex items-center gap-2">
+              <AlertTriangle className="h-4 w-4 sm:h-5 sm:w-5 text-orange-400" />
               Status de Exceção
             </CardTitle>
           </CardHeader>
