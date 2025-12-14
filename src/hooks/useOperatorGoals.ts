@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -66,6 +66,28 @@ export function useOperatorGoals() {
     },
     staleTime: 1000 * 60 * 2,
   });
+
+  // Subscribe to realtime updates for operator goals
+  useEffect(() => {
+    const channel = supabase
+      .channel('operator-goals-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'operator_goals'
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['operator-goals'] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
 
   // Create goal mutation
   const createGoalMutation = useMutation({

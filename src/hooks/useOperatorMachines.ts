@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { useEffect } from 'react';
 
 export interface OperatorMachine {
   id: string;
@@ -30,6 +31,28 @@ export function useOperatorMachines(operatorId?: string) {
     },
     staleTime: 1000 * 60 * 5,
   });
+
+  // Subscribe to realtime updates for operator machine assignments
+  useEffect(() => {
+    const channel = supabase
+      .channel('operator-machines-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'operator_machines'
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['operator-machines'] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
 
   const assignMachine = useMutation({
     mutationFn: async ({ operatorId, machineId }: { operatorId: string; machineId: string }) => {
