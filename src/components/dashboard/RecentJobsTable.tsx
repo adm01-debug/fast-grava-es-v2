@@ -16,12 +16,13 @@ interface JobRowProps {
   technique: DbTechnique | undefined;
   machine: DbMachine | undefined;
   onClick: () => void;
+  isLoading?: boolean;
 }
 
-const JobRow = memo(function JobRow({ job, technique, machine, onClick }: JobRowProps) {
+const JobRow = memo(function JobRow({ job, technique, machine, onClick, isLoading }: JobRowProps) {
   return (
     <TableRow 
-      className="border-border/20 hover:bg-secondary/50 transition-all hover:-translate-x-0.5 cursor-pointer"
+      className={`border-border/20 hover:bg-secondary/50 transition-all hover:-translate-x-0.5 cursor-pointer ${isLoading ? 'opacity-60 pointer-events-none animate-pulse' : ''}`}
       onClick={onClick}
     >
       <TableCell className="font-mono text-sm font-medium text-primary">
@@ -61,12 +62,18 @@ function RecentJobsTableComponent() {
   const { jobs, isLoadingJobs, getTechniqueById, getMachineById, refetchJobs } = useSchedulingData();
   const [selectedJob, setSelectedJob] = useState<DbJob | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [loadingJobId, setLoadingJobId] = useState<string | null>(null);
 
   const recentJobs = useMemo(() => jobs.slice(0, 6), [jobs]);
 
   const handleJobClick = (job: DbJob) => {
-    setSelectedJob(job);
-    setIsModalOpen(true);
+    setLoadingJobId(job.id);
+    // Simula um breve delay para feedback visual
+    setTimeout(() => {
+      setSelectedJob(job);
+      setIsModalOpen(true);
+      setLoadingJobId(null);
+    }, 150);
   };
 
   const handleStatusChange = async (jobId: string, newStatus: DbJob['status']) => {
@@ -147,6 +154,7 @@ function RecentJobsTableComponent() {
                       technique={getTechniqueById(job.technique_id)}
                       machine={getMachineById(job.machine_id)}
                       onClick={() => handleJobClick(job)}
+                      isLoading={loadingJobId === job.id}
                     />
                   ))
                 )}
