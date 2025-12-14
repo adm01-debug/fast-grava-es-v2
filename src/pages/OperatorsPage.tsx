@@ -7,7 +7,17 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Users, UserCheck, Phone, Calendar, Settings2, Search, X, UserPlus, Pencil, Clock } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { Users, UserCheck, Phone, Calendar, Settings2, Search, X, UserPlus, Pencil, Clock, Trash2 } from 'lucide-react';
 import { useOperators, OperatorWithProfile } from '@/hooks/useOperators';
 import { useOperatorPresence } from '@/hooks/useOperatorPresence';
 import { useOperatorMachines } from '@/hooks/useOperatorMachines';
@@ -25,7 +35,7 @@ const formatLastSeen = (date: Date | undefined) => {
 };
 
 export default function OperatorsPage() {
-  const { data: operators = [], isLoading } = useOperators();
+  const { data: operators = [], isLoading, removeOperator, isRemoving } = useOperators();
   const { assignments } = useOperatorMachines();
   const { machines } = useSchedulingData();
   const { isOnline, onlineCount, getLastSeen } = useOperatorPresence();
@@ -37,6 +47,7 @@ export default function OperatorsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [machineFilter, setMachineFilter] = useState<string>('all');
   const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [operatorToRemove, setOperatorToRemove] = useState<OperatorWithProfile | null>(null);
 
   
 
@@ -332,6 +343,21 @@ export default function OperatorsPage() {
                           Sem máquinas
                         </Badge>
                       )}
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              onClick={() => setOperatorToRemove(operator)}
+                              className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>Remover operador</TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                       <Button
                         size="icon"
                         variant="ghost"
@@ -372,6 +398,40 @@ export default function OperatorsPage() {
           open={isEditModalOpen}
           onOpenChange={setIsEditModalOpen}
         />
+
+        <AlertDialog open={!!operatorToRemove} onOpenChange={(open) => !open && setOperatorToRemove(null)}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Remover operador</AlertDialogTitle>
+              <AlertDialogDescription>
+                Tem certeza que deseja remover <strong>{operatorToRemove?.full_name || 'este operador'}</strong> do sistema?
+                <br /><br />
+                Esta ação irá:
+                <ul className="list-disc list-inside mt-2 space-y-1">
+                  <li>Remover todas as atribuições de máquinas</li>
+                  <li>Remover o papel de operador do usuário</li>
+                </ul>
+                <br />
+                O usuário ainda poderá acessar o sistema se tiver outras funções atribuídas.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel disabled={isRemoving}>Cancelar</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={() => {
+                  if (operatorToRemove) {
+                    removeOperator(operatorToRemove.user_id);
+                    setOperatorToRemove(null);
+                  }
+                }}
+                disabled={isRemoving}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                {isRemoving ? 'Removendo...' : 'Remover operador'}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </MainLayout>
   );
