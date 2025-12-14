@@ -25,6 +25,7 @@ import { useSchedulingData } from '@/hooks/useSchedulingData';
 import { MachineAssignmentModal } from '@/components/operators/MachineAssignmentModal';
 import { CreateOperatorModal } from '@/components/operators/CreateOperatorModal';
 import { EditOperatorModal } from '@/components/operators/EditOperatorModal';
+import { OperatorAuditHistory } from '@/components/operators/OperatorAuditHistory';
 import { Skeleton } from '@/components/ui/skeleton';
 import { format, formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -433,6 +434,8 @@ export default function OperatorsPage() {
             )}
           </CardContent>
         </Card>
+
+        <OperatorAuditHistory />
 
         <MachineAssignmentModal
           operator={selectedOperator}
