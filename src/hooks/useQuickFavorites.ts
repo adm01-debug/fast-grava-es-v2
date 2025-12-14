@@ -38,9 +38,10 @@ const MAX_FAVORITES = 6;
 export function useQuickFavorites() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const [hasMigrated, setHasMigrated] = useState(false);
   
   // Fetch favorites from database
-  const { data: dbFavorites, isLoading } = useQuery({
+  const { data: dbFavorites, isLoading, isFetched } = useQuery({
     queryKey: ['user-favorites', user?.id],
     queryFn: async () => {
       if (!user?.id) return null;
@@ -61,6 +62,49 @@ export function useQuickFavorites() {
     enabled: !!user?.id,
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
+
+  // Migrate from localStorage to database on first access
+  useEffect(() => {
+    if (!user?.id || !isFetched || hasMigrated) return;
+    
+    // Only migrate if no favorites exist in database
+    if (dbFavorites === null) {
+      const storageKey = `quick-favorites-${user.id}`;
+      const localStorageFavorites = localStorage.getItem(storageKey);
+      
+      if (localStorageFavorites) {
+        try {
+          const parsed = JSON.parse(localStorageFavorites) as QuickFavorite[];
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            console.log('Migrating favorites from localStorage to database:', parsed);
+            
+            // Save to database
+            supabase
+              .from('user_favorites')
+              .insert([{
+                user_id: user.id,
+                favorites: JSON.parse(JSON.stringify(parsed)),
+              }])
+              .then(({ error }) => {
+                if (error) {
+                  console.error('Error migrating favorites:', error);
+                } else {
+                  console.log('Successfully migrated favorites to database');
+                  // Update query cache
+                  queryClient.setQueryData(['user-favorites', user.id], parsed);
+                  // Clean up localStorage
+                  localStorage.removeItem(storageKey);
+                }
+              });
+          }
+        } catch (e) {
+          console.error('Error parsing localStorage favorites:', e);
+        }
+      }
+    }
+    
+    setHasMigrated(true);
+  }, [user?.id, isFetched, dbFavorites, hasMigrated, queryClient]);
 
   // Real-time subscription for cross-tab/device sync
   useEffect(() => {
