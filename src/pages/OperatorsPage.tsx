@@ -7,7 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Users, UserCheck, Phone, Calendar, Settings2, Search, X, UserPlus, Pencil } from 'lucide-react';
+import { Users, UserCheck, Phone, Calendar, Settings2, Search, X, UserPlus, Pencil, Clock } from 'lucide-react';
 import { useOperators, OperatorWithProfile } from '@/hooks/useOperators';
 import { useOperatorPresence } from '@/hooks/useOperatorPresence';
 import { useOperatorMachines } from '@/hooks/useOperatorMachines';
@@ -16,14 +16,19 @@ import { MachineAssignmentModal } from '@/components/operators/MachineAssignment
 import { CreateOperatorModal } from '@/components/operators/CreateOperatorModal';
 import { EditOperatorModal } from '@/components/operators/EditOperatorModal';
 import { Skeleton } from '@/components/ui/skeleton';
-import { format } from 'date-fns';
+import { format, formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+
+const formatLastSeen = (date: Date | undefined) => {
+  if (!date) return null;
+  return formatDistanceToNow(date, { addSuffix: true, locale: ptBR });
+};
 
 export default function OperatorsPage() {
   const { data: operators = [], isLoading } = useOperators();
   const { assignments } = useOperatorMachines();
   const { machines } = useSchedulingData();
-  const { isOnline, onlineCount } = useOperatorPresence();
+  const { isOnline, onlineCount, getLastSeen } = useOperatorPresence();
   const [selectedOperator, setSelectedOperator] = useState<OperatorWithProfile | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -240,19 +245,32 @@ export default function OperatorsPage() {
                             : 'OP'}
                         </AvatarFallback>
                       </Avatar>
-                      <span 
-                        className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-background ${
-                          isOnline(operator.user_id) ? 'bg-success' : 'bg-muted-foreground/50'
-                        }`}
-                        title={isOnline(operator.user_id) ? 'Online' : 'Offline'}
-                      />
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span 
+                              className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-background cursor-default ${
+                                isOnline(operator.user_id) ? 'bg-success' : 'bg-muted-foreground/50'
+                              }`}
+                            />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            {isOnline(operator.user_id) 
+                              ? 'Online agora' 
+                              : getLastSeen(operator.user_id)
+                                ? `Visto ${formatLastSeen(getLastSeen(operator.user_id))}`
+                                : 'Offline'
+                            }
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                     </div>
                     
                     <div className="flex-1 min-w-0">
                       <p className="font-medium truncate">
                         {operator.full_name || 'Nome não informado'}
                       </p>
-                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                      <div className="flex items-center gap-4 text-sm text-muted-foreground flex-wrap">
                         {operator.phone && (
                           <span className="flex items-center gap-1">
                             <Phone className="h-3 w-3" />
@@ -263,6 +281,12 @@ export default function OperatorsPage() {
                           <Calendar className="h-3 w-3" />
                           Desde {format(new Date(operator.created_at), "MMM yyyy", { locale: ptBR })}
                         </span>
+                        {!isOnline(operator.user_id) && getLastSeen(operator.user_id) && (
+                          <span className="flex items-center gap-1 text-muted-foreground/70">
+                            <Clock className="h-3 w-3" />
+                            Visto {formatLastSeen(getLastSeen(operator.user_id))}
+                          </span>
+                        )}
                       </div>
                     </div>
 
