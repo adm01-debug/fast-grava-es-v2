@@ -481,6 +481,237 @@ await toggleActive(operatorId, true);`}
   );
 };
 
+// Demo: useBottleneckPrediction
+const UseBottleneckPredictionDemo = () => {
+  const [predictions] = useState([
+    { technique: "Serigrafia", capacity: 92, severity: "critical", pending: 8 },
+    { technique: "Laser CO2", capacity: 78, severity: "high", pending: 5 },
+    { technique: "Tampografia", capacity: 45, severity: "low", pending: 2 },
+  ]);
+
+  const getSeverityColor = (severity: string) => {
+    switch (severity) {
+      case "critical": return "text-destructive";
+      case "high": return "text-warning";
+      case "medium": return "text-yellow-500";
+      default: return "text-success";
+    }
+  };
+
+  const getSeverityBg = (severity: string) => {
+    switch (severity) {
+      case "critical": return "bg-destructive/10 border-destructive/30";
+      case "high": return "bg-warning/10 border-warning/30";
+      default: return "bg-muted";
+    }
+  };
+
+  return (
+    <HookDemo
+      title="useBottleneckPrediction"
+      description="Previsão de gargalos por técnica"
+      icon={AlertCircle}
+      code={`const { 
+  predictions, 
+  hasBottlenecks,
+  criticalCount 
+} = useBottleneckPrediction();
+
+// Verificar gargalos críticos
+if (hasBottlenecks) {
+  predictions.filter(p => p.severity === 'critical');
+}`}
+    >
+      <div className="space-y-3">
+        {predictions.map((p, i) => (
+          <div 
+            key={i} 
+            className={`flex items-center justify-between p-3 rounded-lg border ${getSeverityBg(p.severity)}`}
+          >
+            <div className="flex items-center gap-3">
+              <div className={`w-3 h-3 rounded-full ${
+                p.severity === "critical" ? "bg-destructive animate-pulse" : 
+                p.severity === "high" ? "bg-warning" : "bg-success"
+              }`} />
+              <span className="font-medium">{p.technique}</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <Badge variant="outline" className="text-xs">
+                {p.pending} pendentes
+              </Badge>
+              <div className="w-20">
+                <div className="flex justify-between text-xs mb-1">
+                  <span className={getSeverityColor(p.severity)}>{p.capacity}%</span>
+                </div>
+                <Progress 
+                  value={p.capacity} 
+                  className={`h-1.5 ${p.severity === "critical" ? "[&>div]:bg-destructive" : p.severity === "high" ? "[&>div]:bg-warning" : ""}`} 
+                />
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </HookDemo>
+  );
+};
+
+// Demo: useMLPredictions
+const UseMLPredictionsDemo = () => {
+  const [predictions] = useState([
+    { machine: "SER-01", risk: 85, type: "failure", confidence: 78, daysUntil: 3 },
+    { machine: "LASER-02", risk: 62, type: "maintenance", confidence: 82, daysUntil: 7 },
+    { machine: "TAMP-01", risk: 28, type: "degradation", confidence: 91, daysUntil: 14 },
+  ]);
+  const [generating, setGenerating] = useState(false);
+
+  const getRiskColor = (risk: number) => {
+    if (risk >= 75) return "text-destructive";
+    if (risk >= 50) return "text-warning";
+    return "text-success";
+  };
+
+  const generatePredictions = () => {
+    setGenerating(true);
+    setTimeout(() => setGenerating(false), 1500);
+  };
+
+  return (
+    <HookDemo
+      title="useMLPredictions"
+      description="Predições de falha com Machine Learning"
+      icon={Brain}
+      code={`const { 
+  predictions,
+  generatePredictions,
+  acknowledgePrediction,
+  getRiskLevel 
+} = useMLPredictions();
+
+// Gerar novas predições
+await generatePredictions();
+
+// Verificar nível de risco
+const { label, color } = getRiskLevel(85);`}
+    >
+      <div className="space-y-4">
+        <div className="flex justify-end">
+          <Button 
+            size="sm" 
+            variant="outline" 
+            onClick={generatePredictions}
+            disabled={generating}
+          >
+            {generating ? (
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+            ) : (
+              <Brain className="h-4 w-4 mr-2" />
+            )}
+            Gerar Predições
+          </Button>
+        </div>
+
+        <div className="space-y-2">
+          {predictions.map((p, i) => (
+            <div 
+              key={i} 
+              className="flex items-center justify-between p-3 rounded-lg bg-background border"
+            >
+              <div className="flex items-center gap-3">
+                <Badge variant="outline" className="font-mono">{p.machine}</Badge>
+                <Badge variant="secondary" className="text-xs capitalize">
+                  {p.type}
+                </Badge>
+              </div>
+              <div className="flex items-center gap-4">
+                <div className="text-right">
+                  <div className={`text-lg font-bold ${getRiskColor(p.risk)}`}>
+                    {p.risk}%
+                  </div>
+                  <div className="text-xs text-muted-foreground">risco</div>
+                </div>
+                <div className="text-right">
+                  <div className="text-sm font-medium">{p.confidence}%</div>
+                  <div className="text-xs text-muted-foreground">confiança</div>
+                </div>
+                <Badge 
+                  variant={p.daysUntil <= 3 ? "destructive" : p.daysUntil <= 7 ? "outline" : "secondary"}
+                  className="text-xs"
+                >
+                  {p.daysUntil}d
+                </Badge>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </HookDemo>
+  );
+};
+
+// Demo: useTPMData
+const UseTPMDataDemo = () => {
+  const [schedules] = useState([
+    { machine: "SER-01", type: "Preventiva", nextDue: "Hoje", status: "overdue" },
+    { machine: "LASER-01", type: "Lubrificação", nextDue: "Amanhã", status: "upcoming" },
+    { machine: "TAMP-02", type: "Calibração", nextDue: "3 dias", status: "scheduled" },
+  ]);
+  const [alerts] = useState(2);
+
+  return (
+    <HookDemo
+      title="useTPMData"
+      description="Dados de Manutenção Produtiva Total"
+      icon={Wrench}
+      code={`const { 
+  schedules,
+  records,
+  alerts,
+  types,
+  isLoading 
+} = useTPMData();
+
+// Verificar manutenções pendentes
+const overdue = schedules.filter(s => 
+  new Date(s.next_due_at) < new Date()
+);`}
+    >
+      <div className="space-y-4">
+        {alerts > 0 && (
+          <Alert variant="destructive" className="py-2">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle className="text-sm">{alerts} alertas de manutenção</AlertTitle>
+          </Alert>
+        )}
+
+        <div className="space-y-2">
+          {schedules.map((s, i) => (
+            <div 
+              key={i} 
+              className={`flex items-center justify-between p-3 rounded-lg border ${
+                s.status === "overdue" ? "bg-destructive/10 border-destructive/30" : "bg-background"
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <Wrench className={`h-4 w-4 ${s.status === "overdue" ? "text-destructive" : "text-muted-foreground"}`} />
+                <div>
+                  <div className="font-medium text-sm">{s.machine}</div>
+                  <div className="text-xs text-muted-foreground">{s.type}</div>
+                </div>
+              </div>
+              <Badge 
+                variant={s.status === "overdue" ? "destructive" : s.status === "upcoming" ? "outline" : "secondary"}
+              >
+                {s.nextDue}
+              </Badge>
+            </div>
+          ))}
+        </div>
+      </div>
+    </HookDemo>
+  );
+};
+
 // Main Section Component
 export function HooksExamplesSection() {
   const [activeCategory, setActiveCategory] = useState("data");
@@ -488,6 +719,8 @@ export function HooksExamplesSection() {
   const categories = [
     { id: "data", label: "Dados", icon: Database },
     { id: "efficiency", label: "Eficiência", icon: Activity },
+    { id: "predictions", label: "Predições", icon: Brain },
+    { id: "maintenance", label: "Manutenção", icon: Wrench },
     { id: "operators", label: "Operadores", icon: Users },
     { id: "utilities", label: "Utilitários", icon: Zap },
   ];
@@ -512,7 +745,7 @@ export function HooksExamplesSection() {
       </div>
 
       <Tabs value={activeCategory} onValueChange={setActiveCategory}>
-        <TabsList>
+        <TabsList className="flex-wrap h-auto gap-1">
           {categories.map(cat => (
             <TabsTrigger key={cat.id} value={cat.id} className="flex items-center gap-2">
               <cat.icon className="h-4 w-4" />
@@ -533,6 +766,17 @@ export function HooksExamplesSection() {
             <UseLoadBalancingDemo />
             <UseOEEDemo />
           </div>
+        </TabsContent>
+
+        <TabsContent value="predictions" className="space-y-6 mt-6">
+          <div className="grid gap-6 lg:grid-cols-2">
+            <UseBottleneckPredictionDemo />
+            <UseMLPredictionsDemo />
+          </div>
+        </TabsContent>
+
+        <TabsContent value="maintenance" className="space-y-6 mt-6">
+          <UseTPMDataDemo />
         </TabsContent>
 
         <TabsContent value="operators" className="space-y-6 mt-6">
