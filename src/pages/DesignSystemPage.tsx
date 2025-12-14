@@ -8819,10 +8819,11 @@ function OverviewSection({ onNavigate }: OverviewSectionProps) {
                 backgroundColor: particle.shape === 'star' ? 'transparent' : particle.color,
                 color: particle.color,
                 transform: `translate(-50%, -50%)`,
-                animation: 'confetti-burst 1s ease-out forwards',
+                animation: 'confetti-burst 1.2s ease-out forwards',
                 '--confetti-x': `${Math.cos(particle.angle) * particle.velocity}px`,
                 '--confetti-y': `${Math.sin(particle.angle) * particle.velocity - 50}px`,
                 '--confetti-rotation': `${particle.rotation + 720}deg`,
+                '--confetti-glow': particle.color,
                 ...getConfettiShapeStyle(particle.shape, particle.size, particle.color),
               } as React.CSSProperties}
             />
@@ -8861,10 +8862,11 @@ function OverviewSection({ onNavigate }: OverviewSectionProps) {
                 backgroundColor: particle.shape === 'star' ? 'transparent' : particle.color,
                 color: particle.color,
                 transform: `translate(-50%, -50%)`,
-                animation: 'confetti-burst 1s ease-out forwards',
+                animation: 'confetti-burst 1.2s ease-out forwards',
                 '--confetti-x': `${Math.cos(particle.angle) * particle.velocity}px`,
                 '--confetti-y': `${Math.sin(particle.angle) * particle.velocity - 50}px`,
                 '--confetti-rotation': `${particle.rotation + 720}deg`,
+                '--confetti-glow': particle.color,
                 ...getConfettiShapeStyle(particle.shape, particle.size, particle.color),
               } as React.CSSProperties}
             />
@@ -8903,10 +8905,11 @@ function OverviewSection({ onNavigate }: OverviewSectionProps) {
                 backgroundColor: particle.shape === 'star' ? 'transparent' : particle.color,
                 color: particle.color,
                 transform: `translate(-50%, -50%)`,
-                animation: 'confetti-burst 1s ease-out forwards',
+                animation: 'confetti-burst 1.2s ease-out forwards',
                 '--confetti-x': `${Math.cos(particle.angle) * particle.velocity}px`,
                 '--confetti-y': `${Math.sin(particle.angle) * particle.velocity - 50}px`,
                 '--confetti-rotation': `${particle.rotation + 720}deg`,
+                '--confetti-glow': particle.color,
                 ...getConfettiShapeStyle(particle.shape, particle.size, particle.color),
               } as React.CSSProperties}
             />
@@ -8945,10 +8948,11 @@ function OverviewSection({ onNavigate }: OverviewSectionProps) {
                 backgroundColor: particle.shape === 'star' ? 'transparent' : particle.color,
                 color: particle.color,
                 transform: `translate(-50%, -50%)`,
-                animation: 'confetti-burst 1s ease-out forwards',
+                animation: 'confetti-burst 1.2s ease-out forwards',
                 '--confetti-x': `${Math.cos(particle.angle) * particle.velocity}px`,
                 '--confetti-y': `${Math.sin(particle.angle) * particle.velocity - 50}px`,
                 '--confetti-rotation': `${particle.rotation + 720}deg`,
+                '--confetti-glow': particle.color,
                 ...getConfettiShapeStyle(particle.shape, particle.size, particle.color),
               } as React.CSSProperties}
             />
