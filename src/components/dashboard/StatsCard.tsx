@@ -74,7 +74,7 @@ export function StatsCard({
 
   return (
     <Card className={cn(
-      'p-6 rounded-xl animate-bounce-in card-shine',
+      'p-4 sm:p-5 lg:p-6 rounded-xl animate-bounce-in card-shine',
       'opacity-0 [animation-fill-mode:forwards]',
       'border transition-all duration-300 ease-out',
       'hover:-translate-y-1.5 hover:scale-[1.01]',
@@ -84,30 +84,30 @@ export function StatsCard({
       styles.hoverGlow,
       className
     )}>
-      <div className="flex items-start justify-between">
-        <div className="space-y-1">
-          <p className="text-sm font-medium text-muted-foreground">{title}</p>
-          <p className="text-4xl font-display font-bold tracking-tight text-foreground">{value}</p>
+      <div className="flex items-start justify-between gap-3">
+        <div className="space-y-1 min-w-0 flex-1">
+          <p className="text-xs sm:text-sm font-medium text-muted-foreground truncate">{title}</p>
+          <p className="text-2xl sm:text-3xl lg:text-4xl font-display font-bold tracking-tight text-foreground">{value}</p>
           {subtitle && (
-            <p className="text-sm text-muted-foreground mt-1">{subtitle}</p>
+            <p className="text-xs sm:text-sm text-muted-foreground mt-1 truncate">{subtitle}</p>
           )}
           {trend && (
             <div className="flex items-center gap-1.5 pt-1">
               <span className={cn(
-                'text-sm font-semibold',
+                'text-xs sm:text-sm font-semibold',
                 trend.isPositive ? 'text-[hsl(145,80%,50%)]' : 'text-destructive'
               )}>
                 {trend.isPositive ? '+' : ''}{trend.value}%
               </span>
-              <span className="text-xs text-muted-foreground">vs. ontem</span>
+              <span className="text-xs text-muted-foreground hidden sm:inline">vs. ontem</span>
             </div>
           )}
         </div>
         <div className={cn(
-          'w-14 h-14 rounded-2xl flex items-center justify-center transition-transform hover:scale-105',
+          'w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 rounded-xl sm:rounded-2xl flex items-center justify-center transition-transform hover:scale-105 shrink-0',
           styles.iconBg
         )}>
-          <Icon className={cn('w-7 h-7', styles.iconColor)} />
+          <Icon className={cn('w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7', styles.iconColor)} />
         </div>
       </div>
     </Card>
