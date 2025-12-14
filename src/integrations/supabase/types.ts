@@ -439,6 +439,124 @@ export type Database = {
           },
         ]
       }
+      machine_health_metrics: {
+        Row: {
+          avg_repair_time: number | null
+          avg_time_between_failures: number | null
+          calculated_at: string
+          corrective_maintenance_count: number
+          id: string
+          machine_id: string
+          maintenance_count: number
+          oee_score: number | null
+          period_end: string
+          period_start: string
+          total_jobs: number
+          total_losses: number
+          total_produced: number
+          total_production_hours: number
+        }
+        Insert: {
+          avg_repair_time?: number | null
+          avg_time_between_failures?: number | null
+          calculated_at?: string
+          corrective_maintenance_count?: number
+          id?: string
+          machine_id: string
+          maintenance_count?: number
+          oee_score?: number | null
+          period_end: string
+          period_start: string
+          total_jobs?: number
+          total_losses?: number
+          total_produced?: number
+          total_production_hours?: number
+        }
+        Update: {
+          avg_repair_time?: number | null
+          avg_time_between_failures?: number | null
+          calculated_at?: string
+          corrective_maintenance_count?: number
+          id?: string
+          machine_id?: string
+          maintenance_count?: number
+          oee_score?: number | null
+          period_end?: string
+          period_start?: string
+          total_jobs?: number
+          total_losses?: number
+          total_produced?: number
+          total_production_hours?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "machine_health_metrics_machine_id_fkey"
+            columns: ["machine_id"]
+            isOneToOne: false
+            referencedRelation: "machines"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      machine_predictions: {
+        Row: {
+          acknowledged_at: string | null
+          acknowledged_by: string | null
+          confidence: number
+          created_at: string
+          expires_at: string
+          factors: Json
+          id: string
+          is_active: boolean
+          machine_id: string
+          model_version: string
+          predicted_failure_date: string | null
+          prediction_type: string
+          recommendations: string[] | null
+          risk_score: number
+        }
+        Insert: {
+          acknowledged_at?: string | null
+          acknowledged_by?: string | null
+          confidence: number
+          created_at?: string
+          expires_at?: string
+          factors?: Json
+          id?: string
+          is_active?: boolean
+          machine_id: string
+          model_version?: string
+          predicted_failure_date?: string | null
+          prediction_type: string
+          recommendations?: string[] | null
+          risk_score: number
+        }
+        Update: {
+          acknowledged_at?: string | null
+          acknowledged_by?: string | null
+          confidence?: number
+          created_at?: string
+          expires_at?: string
+          factors?: Json
+          id?: string
+          is_active?: boolean
+          machine_id?: string
+          model_version?: string
+          predicted_failure_date?: string | null
+          prediction_type?: string
+          recommendations?: string[] | null
+          risk_score?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "machine_predictions_machine_id_fkey"
+            columns: ["machine_id"]
+            isOneToOne: false
+            referencedRelation: "machines"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       machines: {
         Row: {
           code: string
@@ -951,6 +1069,60 @@ export type Database = {
           reason?: string | null
         }
         Relationships: []
+      }
+      prediction_history: {
+        Row: {
+          accuracy_notes: string | null
+          actual_failure_date: string | null
+          created_at: string
+          id: string
+          machine_id: string
+          predicted_failure_date: string | null
+          predicted_risk_score: number
+          prediction_id: string
+          resolved_at: string | null
+          was_accurate: boolean | null
+        }
+        Insert: {
+          accuracy_notes?: string | null
+          actual_failure_date?: string | null
+          created_at?: string
+          id?: string
+          machine_id: string
+          predicted_failure_date?: string | null
+          predicted_risk_score: number
+          prediction_id: string
+          resolved_at?: string | null
+          was_accurate?: boolean | null
+        }
+        Update: {
+          accuracy_notes?: string | null
+          actual_failure_date?: string | null
+          created_at?: string
+          id?: string
+          machine_id?: string
+          predicted_failure_date?: string | null
+          predicted_risk_score?: number
+          prediction_id?: string
+          resolved_at?: string | null
+          was_accurate?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prediction_history_machine_id_fkey"
+            columns: ["machine_id"]
+            isOneToOne: false
+            referencedRelation: "machines"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "prediction_history_prediction_id_fkey"
+            columns: ["prediction_id"]
+            isOneToOne: false
+            referencedRelation: "machine_predictions"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       product_categories: {
         Row: {

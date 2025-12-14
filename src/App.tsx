@@ -42,6 +42,7 @@ const OperatorProductivityPage = lazy(() => import("./pages/OperatorProductivity
 const OEEDashboard = lazy(() => import("./pages/OEEDashboard"));
 const ABCCostingDashboard = lazy(() => import("./pages/ABCCostingDashboard"));
 const TPMDashboard = lazy(() => import("./pages/TPMDashboard"));
+const MLPredictionsDashboard = lazy(() => import("./pages/MLPredictionsDashboard"));
 const SettingsPage = lazy(() => import("./pages/SettingsPage"));
 const AuthPage = lazy(() => import("./pages/AuthPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
@@ -244,6 +245,15 @@ function AnimatedRoutes() {
             <PageTransition>
               <Suspense fallback={<KPIPageSkeleton />}>
                 <TPMDashboard />
+              </Suspense>
+            </PageTransition>
+          </ProtectedRoute>
+        } />
+        <Route path="/ml-predictions" element={
+          <ProtectedRoute allowedRoles={['coordinator', 'manager']}>
+            <PageTransition>
+              <Suspense fallback={<KPIPageSkeleton />}>
+                <MLPredictionsDashboard />
               </Suspense>
             </PageTransition>
           </ProtectedRoute>

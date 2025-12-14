@@ -5,3 +5,6 @@ verify_jwt = true
 
 [functions.bitrix24-sync]
 verify_jwt = false
+
+[functions.ml-predictions]
+verify_jwt = false
