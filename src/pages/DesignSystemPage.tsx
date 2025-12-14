@@ -6446,7 +6446,7 @@ function AnimationsSection() {
             Componentes com Bounce-In
             <Badge className="ml-2 bg-success/20 text-success border-success/30">Integrado</Badge>
           </CardTitle>
-          <CardDescription>10 componentes UI que usam animate-bounce-in por padrão para entrada dinâmica</CardDescription>
+          <CardDescription>16 componentes UI com bounce-in + 3 sub-menus + Collapsible com accordion</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <Alert className="border-info bg-info/10">
@@ -6690,48 +6690,113 @@ function AnimationsSection() {
                 Clique direito em elementos para ver o bounce-in no menu.
               </p>
             </div>
+
+            {/* Menubar */}
+            <div className="p-4 rounded-lg border border-border bg-muted/30 space-y-2">
+              <div className="flex items-center gap-2">
+                <div className="h-8 w-8 rounded-md bg-info/20 flex items-center justify-center">
+                  <Menu className="h-4 w-4 text-info" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-semibold">Menubar</h4>
+                  <p className="text-xs text-muted-foreground">Barra de menu</p>
+                </div>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Menus e sub-menus com bounce-in.
+              </p>
+            </div>
+
+            {/* NavigationMenu */}
+            <div className="p-4 rounded-lg border border-border bg-muted/30 space-y-2">
+              <div className="flex items-center gap-2">
+                <div className="h-8 w-8 rounded-md bg-success/20 flex items-center justify-center">
+                  <Navigation className="h-4 w-4 text-success" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-semibold">NavigationMenu</h4>
+                  <p className="text-xs text-muted-foreground">Menu de navegação</p>
+                </div>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Conteúdo de navegação com bounce-in.
+              </p>
+            </div>
+
+            {/* Select */}
+            <div className="p-4 rounded-lg border border-border bg-muted/30 space-y-2">
+              <div className="flex items-center gap-2">
+                <div className="h-8 w-8 rounded-md bg-warning/20 flex items-center justify-center">
+                  <ChevronDown className="h-4 w-4 text-warning" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-semibold">Select</h4>
+                  <p className="text-xs text-muted-foreground">Dropdown de seleção</p>
+                </div>
+              </div>
+              <Select>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Testar Select" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="1">Opção 1</SelectItem>
+                  <SelectItem value="2">Opção 2</SelectItem>
+                  <SelectItem value="3">Opção 3</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          {/* Sub-menus section */}
+          <div className="space-y-3 pt-4 border-t border-border">
+            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Sub-menus (também com bounce-in)</h4>
+            <div className="flex flex-wrap gap-2">
+              <Badge variant="outline" className="text-xs">MenubarSubContent</Badge>
+              <Badge variant="outline" className="text-xs">DropdownMenuSubContent</Badge>
+              <Badge variant="outline" className="text-xs">ContextMenuSubContent</Badge>
+            </div>
+          </div>
+
+          {/* Collapsible section */}
+          <div className="space-y-3 pt-4 border-t border-border">
+            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Animação de Expansão (Accordion)</h4>
+            <div className="flex items-center gap-4">
+              <Badge className="bg-secondary text-secondary-foreground">Collapsible</Badge>
+              <Badge className="bg-secondary text-secondary-foreground">Accordion</Badge>
+              <span className="text-xs text-muted-foreground">Usam animate-accordion-down/up</span>
+            </div>
           </div>
 
           {/* Code Example */}
           <div className="space-y-3 pt-4 border-t border-border">
             <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Como foi implementado</h4>
             <CodeBlock 
-              code={`// Dialog & AlertDialog - data-[state=open]:animate-bounce-in
+              code={`// Componentes flutuantes (16 total)
+// Dialog, AlertDialog, Popover, Tooltip, DropdownMenu,
+// HoverCard, Drawer, Alert, Sheet, ContextMenu,
+// Menubar, NavigationMenu, Select
+
+// Padrão: data-[state=open]:animate-bounce-in
 <DialogContent className={cn(
   "... data-[state=open]:animate-bounce-in ...",
   className
 )}>
 
-// Popover - data-[state=open]:animate-bounce-in
-<PopoverContent className={cn(
+// Sub-menus (3 total)
+// MenubarSubContent, DropdownMenuSubContent, ContextMenuSubContent
+<DropdownMenuSubContent className={cn(
   "... data-[state=open]:animate-bounce-in ...",
   className
 )}>
 
-// Sheet - data-[state=open]:animate-bounce-in
-const sheetVariants = cva(
-  "... data-[state=open]:animate-bounce-in ...",
-  { variants: { ... } }
-);
-
-// ContextMenu - data-[state=open]:animate-bounce-in
-<ContextMenuContent className={cn(
-  "... data-[state=open]:animate-bounce-in ...",
+// Componentes de expansão
+// Collapsible, Accordion
+<CollapsibleContent className={cn(
+  "... data-[state=open]:animate-accordion-down ...",
+  "... data-[state=closed]:animate-accordion-up ...",
   className
-)}>
-
-// Tooltip - animate-bounce-in direto
-<TooltipContent className={cn(
-  "... animate-bounce-in ...",
-  className
-)}>
-
-// Alert - animate-bounce-in no base
-const alertVariants = cva(
-  "... animate-bounce-in ...",
-  { variants: { ... } }
-);`} 
-              label="Implementação nos 10 componentes"
+)}>`} 
+              label="Implementação - 16 bounce-in + 3 sub-menus + 2 accordion"
             />
           </div>
 
