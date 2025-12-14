@@ -6437,6 +6437,240 @@ function AnimationsSection() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Componentes com animate-bounce-in */}
+      <Card className="card-interactive">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Layers className="h-5 w-5 text-primary" />
+            Componentes com Bounce-In
+            <Badge className="ml-2 bg-success/20 text-success border-success/30">Integrado</Badge>
+          </CardTitle>
+          <CardDescription>Componentes UI que usam animate-bounce-in por padrão para entrada dinâmica</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <Alert className="border-info bg-info/10">
+            <Info className="h-4 w-4 text-info" />
+            <AlertTitle className="text-info">Animação Automática</AlertTitle>
+            <AlertDescription>
+              Os componentes abaixo já possuem <code className="text-primary">.animate-bounce-in</code> aplicado automaticamente ao abrir.
+            </AlertDescription>
+          </Alert>
+
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {/* Dialog */}
+            <div className="p-4 rounded-lg border border-border bg-muted/30 space-y-2">
+              <div className="flex items-center gap-2">
+                <div className="h-8 w-8 rounded-md bg-primary/20 flex items-center justify-center">
+                  <Square className="h-4 w-4 text-primary" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-semibold">Dialog</h4>
+                  <p className="text-xs text-muted-foreground">Modais e diálogos</p>
+                </div>
+              </div>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button variant="outline" size="sm" className="w-full">
+                    <Eye className="h-3 w-3 mr-2" />
+                    Testar Dialog
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Dialog com Bounce-In</DialogTitle>
+                    <DialogDescription>
+                      Este modal aparece com animação elástica suave.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <p className="text-sm text-muted-foreground">
+                    A animação <code className="text-primary">animate-bounce-in</code> é aplicada automaticamente.
+                  </p>
+                </DialogContent>
+              </Dialog>
+            </div>
+
+            {/* Popover */}
+            <div className="p-4 rounded-lg border border-border bg-muted/30 space-y-2">
+              <div className="flex items-center gap-2">
+                <div className="h-8 w-8 rounded-md bg-info/20 flex items-center justify-center">
+                  <MessageSquare className="h-4 w-4 text-info" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-semibold">Popover</h4>
+                  <p className="text-xs text-muted-foreground">Painéis flutuantes</p>
+                </div>
+              </div>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" size="sm" className="w-full">
+                    <Eye className="h-3 w-3 mr-2" />
+                    Testar Popover
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent>
+                  <p className="text-sm">Popover com bounce-in!</p>
+                </PopoverContent>
+              </Popover>
+            </div>
+
+            {/* Tooltip */}
+            <div className="p-4 rounded-lg border border-border bg-muted/30 space-y-2">
+              <div className="flex items-center gap-2">
+                <div className="h-8 w-8 rounded-md bg-warning/20 flex items-center justify-center">
+                  <HelpCircle className="h-4 w-4 text-warning" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-semibold">Tooltip</h4>
+                  <p className="text-xs text-muted-foreground">Dicas de contexto</p>
+                </div>
+              </div>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button variant="outline" size="sm" className="w-full">
+                      <Eye className="h-3 w-3 mr-2" />
+                      Passe o mouse
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Tooltip com bounce-in!</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
+
+            {/* Dropdown Menu */}
+            <div className="p-4 rounded-lg border border-border bg-muted/30 space-y-2">
+              <div className="flex items-center gap-2">
+                <div className="h-8 w-8 rounded-md bg-success/20 flex items-center justify-center">
+                  <Menu className="h-4 w-4 text-success" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-semibold">Dropdown Menu</h4>
+                  <p className="text-xs text-muted-foreground">Menus suspensos</p>
+                </div>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Abra qualquer dropdown para ver a animação bounce-in.
+              </p>
+            </div>
+
+            {/* Hover Card */}
+            <div className="p-4 rounded-lg border border-border bg-muted/30 space-y-2">
+              <div className="flex items-center gap-2">
+                <div className="h-8 w-8 rounded-md bg-destructive/20 flex items-center justify-center">
+                  <MousePointer2 className="h-4 w-4 text-destructive" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-semibold">Hover Card</h4>
+                  <p className="text-xs text-muted-foreground">Cards ao passar o mouse</p>
+                </div>
+              </div>
+              <HoverCard>
+                <HoverCardTrigger asChild>
+                  <Button variant="outline" size="sm" className="w-full">
+                    <Eye className="h-3 w-3 mr-2" />
+                    Hover aqui
+                  </Button>
+                </HoverCardTrigger>
+                <HoverCardContent>
+                  <p className="text-sm font-medium">Hover Card</p>
+                  <p className="text-xs text-muted-foreground">Com bounce-in suave!</p>
+                </HoverCardContent>
+              </HoverCard>
+            </div>
+
+            {/* Drawer */}
+            <div className="p-4 rounded-lg border border-border bg-muted/30 space-y-2">
+              <div className="flex items-center gap-2">
+                <div className="h-8 w-8 rounded-md bg-muted flex items-center justify-center">
+                  <ChevronUp className="h-4 w-4 text-foreground" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-semibold">Drawer</h4>
+                  <p className="text-xs text-muted-foreground">Painéis deslizantes</p>
+                </div>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Drawer bottom sheet também usa bounce-in.
+              </p>
+            </div>
+
+            {/* Alert */}
+            <div className="p-4 rounded-lg border border-border bg-muted/30 space-y-2">
+              <div className="flex items-center gap-2">
+                <div className="h-8 w-8 rounded-md bg-warning/20 flex items-center justify-center">
+                  <AlertCircle className="h-4 w-4 text-warning" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-semibold">Alert</h4>
+                  <p className="text-xs text-muted-foreground">Mensagens de alerta</p>
+                </div>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Alertas aparecem com bounce-in para chamar atenção.
+              </p>
+            </div>
+          </div>
+
+          {/* Code Example */}
+          <div className="space-y-3 pt-4 border-t border-border">
+            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Como foi implementado</h4>
+            <CodeBlock 
+              code={`// Dialog - data-[state=open]:animate-bounce-in
+<DialogContent className={cn(
+  "... data-[state=open]:animate-bounce-in ...",
+  className
+)}>
+
+// Popover - data-[state=open]:animate-bounce-in
+<PopoverContent className={cn(
+  "... data-[state=open]:animate-bounce-in ...",
+  className
+)}>
+
+// Tooltip - animate-bounce-in direto
+<TooltipContent className={cn(
+  "... animate-bounce-in ...",
+  className
+)}>
+
+// Alert - animate-bounce-in no base
+const alertVariants = cva(
+  "... animate-bounce-in ...",
+  { variants: { ... } }
+);`} 
+              label="Implementação nos componentes"
+            />
+          </div>
+
+          {/* Benefits */}
+          <div className="grid gap-3 md:grid-cols-3 pt-4 border-t border-border">
+            <div className="p-3 rounded-lg bg-success/10 border border-success/20">
+              <div className="flex items-center gap-2 mb-1">
+                <CheckCircle className="h-4 w-4 text-success" />
+                <h5 className="text-sm font-medium text-success">Feedback Visual</h5>
+              </div>
+              <p className="text-xs text-muted-foreground">Entradas dinâmicas criam sensação de responsividade</p>
+            </div>
+            <div className="p-3 rounded-lg bg-info/10 border border-info/20">
+              <div className="flex items-center gap-2 mb-1">
+                <Zap className="h-4 w-4 text-info" />
+                <h5 className="text-sm font-medium text-info">Performance</h5>
+              </div>
+              <p className="text-xs text-muted-foreground">Animação leve usando transforms e opacity</p>
+            </div>
+            <div className="p-3 rounded-lg bg-primary/10 border border-primary/20">
+              <div className="flex items-center gap-2 mb-1">
+                <Sparkles className="h-4 w-4 text-primary" />
+                <h5 className="text-sm font-medium text-primary">Consistência</h5>
+              </div>
+              <p className="text-xs text-muted-foreground">Mesma animação em todos os componentes flutuantes</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }
