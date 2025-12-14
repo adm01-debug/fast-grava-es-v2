@@ -1,38 +1,38 @@
 import { describe, it, expect } from 'vitest';
-import { render, screen } from '@/test/utils';
+import { render } from '@testing-library/react';
 import { Badge } from './badge';
 
 describe('Badge Component', () => {
   it('should render with default variant', () => {
-    render(<Badge>Default</Badge>);
+    const { getByText } = render(<Badge>Default</Badge>);
     
-    expect(screen.getByText('Default')).toBeInTheDocument();
+    expect(getByText('Default')).toBeInTheDocument();
   });
 
   it('should render with different variants', () => {
-    const { rerender } = render(<Badge variant="secondary">Secondary</Badge>);
-    expect(screen.getByText('Secondary')).toBeInTheDocument();
+    const { getByText, rerender } = render(<Badge variant="secondary">Secondary</Badge>);
+    expect(getByText('Secondary')).toBeInTheDocument();
 
     rerender(<Badge variant="destructive">Destructive</Badge>);
-    expect(screen.getByText('Destructive')).toBeInTheDocument();
+    expect(getByText('Destructive')).toBeInTheDocument();
 
     rerender(<Badge variant="outline">Outline</Badge>);
-    expect(screen.getByText('Outline')).toBeInTheDocument();
+    expect(getByText('Outline')).toBeInTheDocument();
   });
 
   it('should apply custom className', () => {
-    render(<Badge className="custom-class">Custom</Badge>);
+    const { getByText } = render(<Badge className="custom-class">Custom</Badge>);
     
-    expect(screen.getByText('Custom')).toHaveClass('custom-class');
+    expect(getByText('Custom')).toHaveClass('custom-class');
   });
 
   it('should render children correctly', () => {
-    render(
+    const { getByTestId } = render(
       <Badge>
         <span data-testid="child">Child Element</span>
       </Badge>
     );
     
-    expect(screen.getByTestId('child')).toBeInTheDocument();
+    expect(getByTestId('child')).toBeInTheDocument();
   });
 });

@@ -1,49 +1,48 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@/test/utils';
+import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Input } from './input';
 
 describe('Input Component', () => {
   it('should render input element', () => {
-    render(<Input placeholder="Enter text" />);
+    const { getByPlaceholderText } = render(<Input placeholder="Enter text" />);
     
-    expect(screen.getByPlaceholderText('Enter text')).toBeInTheDocument();
+    expect(getByPlaceholderText('Enter text')).toBeInTheDocument();
   });
 
   it('should handle value changes', async () => {
     const handleChange = vi.fn();
     const user = userEvent.setup();
     
-    render(<Input onChange={handleChange} />);
+    const { getByRole } = render(<Input onChange={handleChange} />);
     
-    const input = screen.getByRole('textbox');
+    const input = getByRole('textbox');
     await user.type(input, 'test');
     
     expect(handleChange).toHaveBeenCalled();
   });
 
   it('should be disabled when disabled prop is true', () => {
-    render(<Input disabled />);
+    const { getByRole } = render(<Input disabled />);
     
-    expect(screen.getByRole('textbox')).toBeDisabled();
+    expect(getByRole('textbox')).toBeDisabled();
   });
 
   it('should render with different types', () => {
-    const { rerender } = render(<Input type="email" />);
-    expect(screen.getByRole('textbox')).toHaveAttribute('type', 'email');
+    const { getByRole, rerender, container } = render(<Input type="email" />);
+    expect(getByRole('textbox')).toHaveAttribute('type', 'email');
 
     rerender(<Input type="password" />);
-    // Password inputs don't have textbox role
-    expect(document.querySelector('input[type="password"]')).toBeInTheDocument();
+    expect(container.querySelector('input[type="password"]')).toBeInTheDocument();
 
     rerender(<Input type="number" />);
-    expect(screen.getByRole('spinbutton')).toBeInTheDocument();
+    expect(getByRole('spinbutton')).toBeInTheDocument();
   });
 
   it('should apply custom className', () => {
-    render(<Input className="custom-class" />);
+    const { getByRole } = render(<Input className="custom-class" />);
     
-    expect(screen.getByRole('textbox')).toHaveClass('custom-class');
+    expect(getByRole('textbox')).toHaveClass('custom-class');
   });
 
   it('should forward ref correctly', () => {
@@ -56,9 +55,9 @@ describe('Input Component', () => {
   it('should display typed value', async () => {
     const user = userEvent.setup();
     
-    render(<Input />);
+    const { getByRole } = render(<Input />);
     
-    const input = screen.getByRole('textbox');
+    const input = getByRole('textbox');
     await user.type(input, 'Hello World');
     
     expect(input).toHaveValue('Hello World');
@@ -69,9 +68,9 @@ describe('Input Component', () => {
     const handleBlur = vi.fn();
     const user = userEvent.setup();
     
-    render(<Input onFocus={handleFocus} onBlur={handleBlur} />);
+    const { getByRole } = render(<Input onFocus={handleFocus} onBlur={handleBlur} />);
     
-    const input = screen.getByRole('textbox');
+    const input = getByRole('textbox');
     await user.click(input);
     expect(handleFocus).toHaveBeenCalled();
     
