@@ -6275,6 +6275,168 @@ function AnimationsSection() {
           </div>
         </CardContent>
       </Card>
+
+      {/* New Interactive Animations */}
+      <Card className="card-interactive">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Sparkles className="h-5 w-5 text-primary" />
+            Novas Animações Interativas
+            <Badge className="ml-2 bg-primary/20 text-primary border-primary/30">Novo</Badge>
+          </CardTitle>
+          <CardDescription>Animações importadas do projeto TASK GIFTS - clique para testar</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-8">
+          {/* Bounce In */}
+          <div className="space-y-3">
+            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Bounce In</h4>
+            <div className="flex items-center gap-6">
+              <div key={animationKey + 10} className="h-20 w-20 rounded-xl bg-primary flex items-center justify-center animate-bounce-in text-primary-foreground font-bold">
+                Bounce
+              </div>
+              <div className="space-y-1">
+                <p className="text-sm font-medium">Entrada com efeito elástico</p>
+                <p className="text-xs text-muted-foreground">Classe: <code className="text-primary">.animate-bounce-in</code></p>
+                <p className="text-xs text-muted-foreground">Ideal para cards e modais aparecendo</p>
+              </div>
+            </div>
+            <CodeBlock 
+              code={'<div className="animate-bounce-in">\n  Conteúdo com bounce\n</div>'} 
+              label="Bounce In"
+            />
+          </div>
+
+          {/* Wiggle */}
+          <div className="space-y-3">
+            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Wiggle</h4>
+            <div className="flex items-center gap-6">
+              <Button 
+                variant="outline" 
+                className="wiggle-infinite border-warning text-warning hover:bg-warning/10"
+              >
+                <AlertTriangle className="h-4 w-4 mr-2" />
+                Atenção!
+              </Button>
+              <div className="space-y-1">
+                <p className="text-sm font-medium">Balanço para chamar atenção</p>
+                <p className="text-xs text-muted-foreground">Classes: <code className="text-primary">.wiggle</code> (único) ou <code className="text-primary">.wiggle-infinite</code></p>
+                <p className="text-xs text-muted-foreground">Ideal para alertas e badges urgentes</p>
+              </div>
+            </div>
+            <CodeBlock 
+              code={'<Badge className="wiggle-infinite">\n  Urgente\n</Badge>'} 
+              label="Wiggle Infinite"
+            />
+          </div>
+
+          {/* Pulse Ring */}
+          <div className="space-y-3">
+            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Pulse Ring</h4>
+            <div className="flex items-center gap-6">
+              <div className="relative flex items-center gap-3">
+                <span className="h-3 w-3 rounded-full bg-success pulse-ring" />
+                <span className="text-sm font-medium text-success">Online</span>
+              </div>
+              <div className="space-y-1">
+                <p className="text-sm font-medium">Anel pulsante com ondas</p>
+                <p className="text-xs text-muted-foreground">Classe: <code className="text-primary">.pulse-ring</code></p>
+                <p className="text-xs text-muted-foreground">Ideal para indicadores de status online/conectado</p>
+              </div>
+            </div>
+            <CodeBlock 
+              code={'<span className="h-3 w-3 rounded-full bg-success pulse-ring" />'} 
+              label="Pulse Ring"
+            />
+          </div>
+
+          {/* Bounce Attention */}
+          <div className="space-y-3">
+            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Bounce Attention</h4>
+            <div className="flex items-center gap-6">
+              <div className="p-3 rounded-xl bg-destructive/20 animate-bounce-attention">
+                <AlertCircle className="h-6 w-6 text-destructive" />
+              </div>
+              <div className="space-y-1">
+                <p className="text-sm font-medium">Pulo suave para atenção</p>
+                <p className="text-xs text-muted-foreground">Classe: <code className="text-primary">.animate-bounce-attention</code></p>
+                <p className="text-xs text-muted-foreground">Ideal para ícones de alertas críticos</p>
+              </div>
+            </div>
+            <CodeBlock 
+              code={'<div className="animate-bounce-attention">\n  <AlertIcon />\n</div>'} 
+              label="Bounce Attention"
+            />
+          </div>
+
+          {/* Pop */}
+          <div className="space-y-3">
+            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Pop</h4>
+            <div className="flex items-center gap-6">
+              <div key={animationKey + 11} className="animate-pop">
+                <Badge className="bg-success text-success-foreground">
+                  <CheckCircle className="h-3 w-3 mr-1" />
+                  Sucesso
+                </Badge>
+              </div>
+              <div className="space-y-1">
+                <p className="text-sm font-medium">Entrada com elasticidade rápida</p>
+                <p className="text-xs text-muted-foreground">Classe: <code className="text-primary">.animate-pop</code></p>
+                <p className="text-xs text-muted-foreground">Ideal para badges e notificações que mudam</p>
+              </div>
+            </div>
+            <CodeBlock 
+              code={'<Badge className="animate-pop">\n  Novo!\n</Badge>'} 
+              label="Pop"
+            />
+          </div>
+
+          {/* Press Scale */}
+          <div className="space-y-3">
+            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Press Scale (Feedback Tátil)</h4>
+            <div className="flex items-center gap-6">
+              <Button className="press-scale">
+                Clique e segure
+              </Button>
+              <div className="space-y-1">
+                <p className="text-sm font-medium">Escala ao pressionar</p>
+                <p className="text-xs text-muted-foreground">Classe: <code className="text-primary">.press-scale</code></p>
+                <p className="text-xs text-muted-foreground">Já aplicado em todos os botões por padrão</p>
+              </div>
+            </div>
+            <CodeBlock 
+              code={'<button className="press-scale">\n  Botão com feedback\n</button>'} 
+              label="Press Scale"
+            />
+          </div>
+
+          {/* Interactive Demo */}
+          <div className="space-y-3 pt-4 border-t border-border">
+            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Demo Interativo</h4>
+            <p className="text-xs text-muted-foreground mb-4">Clique no botão "Replay Animações" acima para ver todas as animações novamente</p>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+              <div key={animationKey + 20} className="h-16 rounded-lg bg-primary/20 flex items-center justify-center animate-bounce-in text-xs font-medium" style={{ animationDelay: '0s' }}>
+                bounce-in
+              </div>
+              <div className="h-16 rounded-lg bg-warning/20 flex items-center justify-center text-xs font-medium wiggle-infinite">
+                wiggle
+              </div>
+              <div className="h-16 rounded-lg bg-success/20 flex items-center justify-center text-xs font-medium">
+                <span className="h-2 w-2 rounded-full bg-success pulse-ring mr-2" />
+                pulse-ring
+              </div>
+              <div className="h-16 rounded-lg bg-destructive/20 flex items-center justify-center text-xs font-medium animate-bounce-attention">
+                bounce-att
+              </div>
+              <div key={animationKey + 21} className="h-16 rounded-lg bg-info/20 flex items-center justify-center text-xs font-medium animate-pop" style={{ animationDelay: '0.2s' }}>
+                pop
+              </div>
+              <div className="h-16 rounded-lg bg-muted flex items-center justify-center text-xs font-medium press-scale cursor-pointer hover:bg-muted/80 active:scale-95">
+                press-scale
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }
