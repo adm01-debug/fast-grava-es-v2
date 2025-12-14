@@ -76,6 +76,14 @@ const TEST_FILES: TestFile[] = [
   { name: 'useLoadBalancingWithActions.test.ts', path: 'src/hooks/useLoadBalancingWithActions.test.ts', testCount: 7, category: 'unit' },
   { name: 'useSmartSequencingWithActions.test.ts', path: 'src/hooks/useSmartSequencingWithActions.test.ts', testCount: 6, category: 'unit' },
   
+  // Bug fix validation tests (new)
+  { name: 'useOEE.test.ts', path: 'src/hooks/useOEE.test.ts', testCount: 6, category: 'unit' },
+  { name: 'useOperatorProductivity.test.ts', path: 'src/hooks/useOperatorProductivity.test.ts', testCount: 5, category: 'unit' },
+  { name: 'useABCCosts.test.ts', path: 'src/hooks/useABCCosts.test.ts', testCount: 5, category: 'unit' },
+  { name: 'useBottleneckPrediction.test.ts', path: 'src/hooks/useBottleneckPrediction.test.ts', testCount: 5, category: 'unit' },
+  { name: 'useLoadBalancing.test.ts', path: 'src/hooks/useLoadBalancing.test.ts', testCount: 5, category: 'unit' },
+  { name: 'useOperators.test.ts', path: 'src/hooks/useOperators.test.ts', testCount: 4, category: 'unit' },
+  
   // Integration tests
   { name: 'authentication.test.ts', path: 'src/test/integration/authentication.test.ts', testCount: 15, category: 'integration' },
   { name: 'bitrix24-integration.test.ts', path: 'src/test/integration/bitrix24-integration.test.ts', testCount: 12, category: 'integration' },
@@ -113,7 +121,8 @@ const HOOKS = [
 const HOOKS_WITH_TESTS = [
   'useJobs', 'useKPIs', 'useGoalAlerts', 'useOperatorMachines',
   'useSchedulingData', 'useAutoBufferPromotion', 'useLoadBalancingWithActions',
-  'useSmartSequencingWithActions'
+  'useSmartSequencingWithActions', 'useOEE', 'useOperatorProductivity',
+  'useABCCosts', 'useBottleneckPrediction', 'useLoadBalancing', 'useOperators'
 ];
 
 // Component complexity analysis (simplified estimation)
