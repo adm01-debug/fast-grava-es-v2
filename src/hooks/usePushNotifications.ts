@@ -92,8 +92,13 @@ export const usePushNotifications = () => {
         notification.close();
         
         // Navigate to specific page if data contains a route
+        // Using history.pushState to avoid full page reload
         if (options.data?.route) {
-          window.location.href = options.data.route;
+          const targetRoute = options.data.route;
+          if (window.location.pathname !== targetRoute) {
+            window.history.pushState({}, '', targetRoute);
+            window.dispatchEvent(new PopStateEvent('popstate'));
+          }
         }
       };
 

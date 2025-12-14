@@ -289,7 +289,9 @@ export const useTechnicalSheetMutations = () => {
       queryClient.invalidateQueries({ queryKey: ['technical-sheets'] });
       toast({ title: 'Ficha técnica criada com sucesso!' });
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
+      const appError = createAppError(error, { entity: 'technical_sheets', operation: 'create' });
+      if (import.meta.env.DEV) console.error('[createSheet]', appError);
       toast({ title: 'Erro ao criar ficha', description: error.message, variant: 'destructive' });
     }
   });
@@ -311,7 +313,9 @@ export const useTechnicalSheetMutations = () => {
       queryClient.invalidateQueries({ queryKey: ['technical-sheet'] });
       toast({ title: 'Ficha técnica atualizada!' });
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
+      const appError = createAppError(error, { entity: 'technical_sheets', operation: 'update' });
+      if (import.meta.env.DEV) console.error('[updateSheet]', appError);
       toast({ title: 'Erro ao atualizar', description: error.message, variant: 'destructive' });
     }
   });
@@ -330,7 +334,9 @@ export const useTechnicalSheetMutations = () => {
       queryClient.invalidateQueries({ queryKey: ['technical-sheets'] });
       toast({ title: 'Ficha técnica removida!' });
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
+      const appError = createAppError(error, { entity: 'technical_sheets', operation: 'delete' });
+      if (import.meta.env.DEV) console.error('[deleteSheet]', appError);
       toast({ title: 'Erro ao remover', description: error.message, variant: 'destructive' });
     }
   });
