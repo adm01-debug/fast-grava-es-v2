@@ -5,7 +5,6 @@ import {
   CalendarDays, 
   LayoutGrid, 
   List, 
-  PieChart, 
   AlertTriangle,
   Settings,
   Users,

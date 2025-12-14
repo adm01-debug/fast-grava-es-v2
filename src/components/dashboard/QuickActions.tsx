@@ -8,7 +8,7 @@ const actions = [
   { icon: Plus, label: 'Novo Job', href: '/new-job', primary: true },
   { icon: Calendar, label: 'Calendário', href: '/calendar/daily', primary: false },
   { icon: LayoutGrid, label: 'Kanban', href: '/kanban', primary: false },
-  { icon: BarChart3, label: 'Relatórios', href: '/occupancy', primary: false },
+  { icon: BarChart3, label: 'KPIs', href: '/kpis', primary: false },
 ];
 
 export function QuickActions() {

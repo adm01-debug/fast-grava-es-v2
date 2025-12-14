@@ -1,6 +1,4 @@
-import { memo, useMemo } from 'react';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+import { memo, useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { StatusBadge } from '@/components/ui/status-badge';
@@ -9,17 +7,22 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { JobStatus } from '@/types/scheduling';
 import { DbJob, DbTechnique, DbMachine } from '@/hooks/useJobs';
+import { JobDetailsModal } from '@/components/jobs/JobDetailsModal';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 interface JobRowProps {
   job: DbJob;
   technique: DbTechnique | undefined;
   machine: DbMachine | undefined;
+  onClick: () => void;
 }
 
-const JobRow = memo(function JobRow({ job, technique, machine }: JobRowProps) {
+const JobRow = memo(function JobRow({ job, technique, machine, onClick }: JobRowProps) {
   return (
     <TableRow 
       className="border-border/20 hover:bg-secondary/50 transition-all hover:-translate-x-0.5 cursor-pointer"
+      onClick={onClick}
     >
       <TableCell className="font-mono text-sm font-medium text-primary">
         {job.order_number}
@@ -55,9 +58,41 @@ const JobRow = memo(function JobRow({ job, technique, machine }: JobRowProps) {
 JobRow.displayName = 'JobRow';
 
 function RecentJobsTableComponent() {
-  const { jobs, isLoadingJobs, getTechniqueById, getMachineById } = useSchedulingData();
+  const { jobs, isLoadingJobs, getTechniqueById, getMachineById, refetchJobs } = useSchedulingData();
+  const [selectedJob, setSelectedJob] = useState<DbJob | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const recentJobs = useMemo(() => jobs.slice(0, 6), [jobs]);
+
+  const handleJobClick = (job: DbJob) => {
+    setSelectedJob(job);
+    setIsModalOpen(true);
+  };
+
+  const handleStatusChange = async (jobId: string, newStatus: DbJob['status']) => {
+    try {
+      const updateData: Partial<DbJob> = { status: newStatus };
+      
+      if (newStatus === 'production') {
+        updateData.actual_start_time = new Date().toISOString();
+      } else if (newStatus === 'finished') {
+        updateData.actual_end_time = new Date().toISOString();
+      }
+
+      const { error } = await supabase
+        .from('jobs')
+        .update(updateData)
+        .eq('id', jobId);
+
+      if (error) throw error;
+
+      toast.success(`Status alterado para ${newStatus}`);
+      refetchJobs();
+    } catch (error) {
+      console.error('Error updating job status:', error);
+      toast.error('Erro ao atualizar status');
+    }
+  };
 
   if (isLoadingJobs) {
     return (
@@ -77,47 +112,57 @@ function RecentJobsTableComponent() {
   }
 
   return (
-    <Card className="col-span-3 glass-card card-interactive animate-fade-in-up opacity-0 [animation-fill-mode:forwards] [animation-delay:0.15s]">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-lg font-display gradient-text">Jobs Recentes</CardTitle>
-      </CardHeader>
-      <CardContent className="overflow-x-auto">
-        <div className="min-w-[700px]">
-          <Table>
-            <TableHeader>
-              <TableRow className="border-border/30 hover:bg-transparent">
-                <TableHead className="w-[100px] text-muted-foreground">OS</TableHead>
-                <TableHead className="text-muted-foreground">Cliente</TableHead>
-                <TableHead className="text-muted-foreground hidden sm:table-cell">Produto</TableHead>
-                <TableHead className="text-center text-muted-foreground">Qtd</TableHead>
-                <TableHead className="text-muted-foreground">Técnica</TableHead>
-                <TableHead className="text-muted-foreground hidden lg:table-cell">Máquina</TableHead>
-                <TableHead className="text-muted-foreground hidden md:table-cell">Horário</TableHead>
-                <TableHead className="text-muted-foreground">Status</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {recentJobs.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={8} className="text-center text-muted-foreground py-8">
-                    Nenhum job encontrado
-                  </TableCell>
+    <>
+      <Card className="col-span-3 glass-card card-interactive animate-fade-in-up opacity-0 [animation-fill-mode:forwards] [animation-delay:0.15s]">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-lg font-display gradient-text">Jobs Recentes</CardTitle>
+        </CardHeader>
+        <CardContent className="overflow-x-auto">
+          <div className="min-w-[700px]">
+            <Table>
+              <TableHeader>
+                <TableRow className="border-border/30 hover:bg-transparent">
+                  <TableHead className="w-[100px] text-muted-foreground">OS</TableHead>
+                  <TableHead className="text-muted-foreground">Cliente</TableHead>
+                  <TableHead className="text-muted-foreground hidden sm:table-cell">Produto</TableHead>
+                  <TableHead className="text-center text-muted-foreground">Qtd</TableHead>
+                  <TableHead className="text-muted-foreground">Técnica</TableHead>
+                  <TableHead className="text-muted-foreground hidden lg:table-cell">Máquina</TableHead>
+                  <TableHead className="text-muted-foreground hidden md:table-cell">Horário</TableHead>
+                  <TableHead className="text-muted-foreground">Status</TableHead>
                 </TableRow>
-              ) : (
-                recentJobs.map((job) => (
-                  <JobRow
-                    key={job.id}
-                    job={job}
-                    technique={getTechniqueById(job.technique_id)}
-                    machine={getMachineById(job.machine_id)}
-                  />
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </div>
-      </CardContent>
-    </Card>
+              </TableHeader>
+              <TableBody>
+                {recentJobs.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={8} className="text-center text-muted-foreground py-8">
+                      Nenhum job encontrado
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  recentJobs.map((job) => (
+                    <JobRow
+                      key={job.id}
+                      job={job}
+                      technique={getTechniqueById(job.technique_id)}
+                      machine={getMachineById(job.machine_id)}
+                      onClick={() => handleJobClick(job)}
+                    />
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
+        </CardContent>
+      </Card>
+
+      <JobDetailsModal
+        job={selectedJob}
+        open={isModalOpen}
+        onOpenChange={setIsModalOpen}
+        onStatusChange={handleStatusChange}
+      />
+    </>
   );
 }
 
