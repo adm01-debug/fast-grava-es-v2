@@ -1,5 +1,6 @@
 import { JobStatus } from '@/types/scheduling';
 import { cn } from '@/lib/utils';
+import { useEffect, useRef, useState } from 'react';
 import { 
   Clock, 
   Target, 
@@ -96,6 +97,18 @@ const statusConfig: Record<JobStatus, {
 export function StatusBadge({ status, size = 'md', showIcon = true, animated = false, className }: StatusBadgeProps) {
   const config = statusConfig[status];
   const Icon = config.icon;
+  const prevStatusRef = useRef(status);
+  const [isPop, setIsPop] = useState(false);
+
+  // Trigger pop animation when status changes
+  useEffect(() => {
+    if (prevStatusRef.current !== status) {
+      setIsPop(true);
+      prevStatusRef.current = status;
+      const timer = setTimeout(() => setIsPop(false), 300);
+      return () => clearTimeout(timer);
+    }
+  }, [status]);
 
   const sizeClasses = {
     sm: 'text-xs px-2 py-0.5 gap-1',
@@ -117,6 +130,7 @@ export function StatusBadge({ status, size = 'md', showIcon = true, animated = f
         config.textClass,
         config.glowClass,
         animated && config.animationClass,
+        isPop && 'animate-pop',
         sizeClasses[size],
         className
       )}
