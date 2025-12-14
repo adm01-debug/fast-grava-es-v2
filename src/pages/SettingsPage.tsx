@@ -15,17 +15,37 @@ import {
   Palette
 } from 'lucide-react';
 import { useTheme } from 'next-themes';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
+import { useAuth } from '@/contexts/AuthContext';
+
+// Settings persistence hook
+function usePersistedSettings() {
+  const { user } = useAuth();
+  const storageKey = `app-settings-${user?.id || 'guest'}`;
+  
+  const [settings, setSettings] = useState(() => {
+    if (typeof window === 'undefined') {
+      return { notifications: true, sounds: true, autoRefresh: true };
+    }
+    const stored = localStorage.getItem(storageKey);
+    return stored ? JSON.parse(stored) : { notifications: true, sounds: true, autoRefresh: true };
+  });
+  
+  useEffect(() => {
+    localStorage.setItem(storageKey, JSON.stringify(settings));
+  }, [settings, storageKey]);
+  
+  return [settings, setSettings] as const;
+}
 
 export default function SettingsPage() {
   const { theme, setTheme } = useTheme();
-  const [notifications, setNotifications] = useState(true);
-  const [sounds, setSounds] = useState(true);
-  const [autoRefresh, setAutoRefresh] = useState(true);
+  const [settings, setSettings] = usePersistedSettings();
 
-  const handleSave = () => {
-    toast.success('Configurações salvas com sucesso!');
+  const handleSettingChange = (key: string, value: boolean) => {
+    setSettings((prev: typeof settings) => ({ ...prev, [key]: value }));
+    toast.success('Configuração salva automaticamente');
   };
 
   return (
@@ -82,8 +102,8 @@ export default function SettingsPage() {
                 </p>
               </div>
               <Switch
-                checked={notifications}
-                onCheckedChange={setNotifications}
+                checked={settings.notifications}
+                onCheckedChange={(checked) => handleSettingChange('notifications', checked)}
               />
             </div>
             <Separator />
@@ -98,8 +118,8 @@ export default function SettingsPage() {
                 </p>
               </div>
               <Switch
-                checked={sounds}
-                onCheckedChange={setSounds}
+                checked={settings.sounds}
+                onCheckedChange={(checked) => handleSettingChange('sounds', checked)}
               />
             </div>
           </CardContent>
@@ -126,8 +146,8 @@ export default function SettingsPage() {
                 </p>
               </div>
               <Switch
-                checked={autoRefresh}
-                onCheckedChange={setAutoRefresh}
+                checked={settings.autoRefresh}
+                onCheckedChange={(checked) => handleSettingChange('autoRefresh', checked)}
               />
             </div>
           </CardContent>
@@ -165,8 +185,8 @@ export default function SettingsPage() {
         </div>
 
         <div className="flex justify-end">
-          <Button onClick={handleSave} className="gradient-primary">
-            Salvar Configurações
+          <Button onClick={() => toast.success('Todas as configurações estão salvas!')} className="gradient-primary">
+            Configurações Atualizadas
           </Button>
         </div>
       </div>
