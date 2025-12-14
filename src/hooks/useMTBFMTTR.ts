@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useMemo } from 'react';
 import { createAppError } from '@/lib/errorHandling';
+import { defaultQueryOptions, STALE_TIMES } from '@/lib/queryConfig';
 
 const MTBF_ERROR_CONTEXT = {
   records: { entity: 'maintenance_records', operation: 'fetch' },
@@ -79,7 +80,8 @@ export function useMTBFMTTR(periodDays: number = 90) {
         throw error;
       }
     },
-    staleTime: 5 * 60 * 1000,
+    staleTime: STALE_TIMES.STATIC,
+    ...defaultQueryOptions,
   });
 
   // Fetch machines
@@ -100,7 +102,8 @@ export function useMTBFMTTR(periodDays: number = 90) {
         throw error;
       }
     },
-    staleTime: 5 * 60 * 1000,
+    staleTime: STALE_TIMES.STATIC,
+    ...defaultQueryOptions,
   });
 
   const metrics = useMemo((): MachineReliabilityMetrics[] => {

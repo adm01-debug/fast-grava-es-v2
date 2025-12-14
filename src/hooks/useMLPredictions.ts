@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { showErrorToast, categorizeError, ErrorCodes } from '@/lib/errorHandling';
+import { defaultQueryOptions, STALE_TIMES } from '@/lib/queryConfig';
 
 // Error context for debugging
 const ML_ERROR_CONTEXT = {
@@ -76,6 +77,8 @@ export function useMLPredictions() {
         throw err;
       }
     },
+    staleTime: STALE_TIMES.DYNAMIC,
+    ...defaultQueryOptions,
   });
 
   // Fetch prediction history

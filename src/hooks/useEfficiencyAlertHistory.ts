@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import type { Json } from "@/integrations/supabase/types";
 import { useEffect } from "react";
 import { showErrorToast, createAppError, createMutationErrorHandler } from '@/lib/errorHandling';
+import { defaultQueryOptions, STALE_TIMES } from '@/lib/queryConfig';
 
 const EFFICIENCY_ALERTS_CONTEXT = {
   fetch: { entity: 'efficiency_alert_history', operation: 'fetch' },
@@ -49,7 +50,9 @@ export const useEfficiencyAlertHistory = (options?: { limit?: number; offset?: n
         if (import.meta.env.DEV) console.error('[useEfficiencyAlertHistory]', appError);
         throw error;
       }
-    }
+    },
+    staleTime: STALE_TIMES.DYNAMIC,
+    ...defaultQueryOptions,
   });
 
   // Fetch total count for pagination
@@ -69,7 +72,8 @@ export const useEfficiencyAlertHistory = (options?: { limit?: number; offset?: n
         throw error;
       }
     },
-    staleTime: 1000 * 60 * 5,
+    staleTime: STALE_TIMES.STATIC,
+    ...defaultQueryOptions,
   });
 
   // Subscribe to realtime updates
