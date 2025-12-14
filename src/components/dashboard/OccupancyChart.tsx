@@ -32,14 +32,14 @@ const mockOccupancyData: OccupancyData[] = techniques.slice(0, 10).map((tech, in
 
 export function OccupancyChart() {
   return (
-    <Card className="col-span-2 glass-card card-interactive animate-fade-in-up opacity-0 [animation-fill-mode:forwards] [animation-delay:0.1s] dark:hover:shadow-[0_8px_32px_-8px_hsl(142,70%,50%,0.2)]">
+    <Card className="glass-card card-interactive animate-fade-in-up opacity-0 [animation-fill-mode:forwards] [animation-delay:0.1s] dark:hover:shadow-[0_8px_32px_-8px_hsl(142,70%,50%,0.2)]">
       <CardHeader className="pb-2">
         <CardTitle className="text-lg font-display flex items-center gap-2">
           <span className="gradient-text">Ocupação por Técnica</span>
         </CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className="h-[320px]">
+      <CardContent className="overflow-x-auto">
+        <div className="h-[320px] min-w-[400px]">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={mockOccupancyData} layout="vertical" margin={{ left: 0, right: 20 }}>
               <CartesianGrid 

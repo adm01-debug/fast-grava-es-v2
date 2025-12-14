@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useLocation, Link, useNavigate } from 'react-router-dom';
 import { 
   Calendar, 
@@ -22,12 +22,15 @@ import {
   QrCode,
   RefreshCw,
   BookOpen,
-  Palette
+  Palette,
+  Menu,
+  X
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useAuth } from '@/contexts/AuthContext';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface NavItem {
   icon: React.ElementType;
@@ -62,9 +65,23 @@ const secondaryNavItems: NavItem[] = [
 
 export function AppSidebar() {
   const [collapsed, setCollapsed] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const { profile, role, signOut, isCoordinator, isManager } = useAuth();
+  const isMobile = useIsMobile();
+
+  // Close mobile menu on route change
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [location.pathname]);
+
+  // Close mobile menu on resize to desktop
+  useEffect(() => {
+    if (!isMobile) {
+      setMobileOpen(false);
+    }
+  }, [isMobile]);
 
   const handleSignOut = async () => {
     await signOut();
@@ -139,120 +156,155 @@ export function AppSidebar() {
     return button;
   };
 
-  return (
-    <aside
-      className={cn(
-        'flex flex-col h-screen bg-sidebar border-r border-sidebar-border transition-all duration-300',
-        'shadow-[2px_0_12px_-4px_hsl(220_20%_20%/0.08)] dark:shadow-none',
-        collapsed ? 'w-16' : 'w-64'
-      )}
+  // Mobile hamburger button
+  const MobileMenuButton = () => (
+    <Button
+      variant="ghost"
+      size="icon"
+      onClick={() => setMobileOpen(!mobileOpen)}
+      className="fixed top-4 left-4 z-50 md:hidden h-10 w-10 bg-background/80 backdrop-blur-sm border border-border shadow-lg"
     >
-      {/* Header */}
-      <div className={cn(
-        'flex items-center h-16 px-4 border-b border-sidebar-border',
-        collapsed ? 'justify-center' : 'justify-between'
-      )}>
-        {!collapsed && (
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center glow-primary">
-              <Printer className="w-5 h-5 text-primary-foreground" />
-            </div>
-            <div>
-              <h1 className="font-display font-bold text-sidebar-foreground text-base">Gravação</h1>
-              <p className="text-xs text-sidebar-foreground/50">Promo Brindes</p>
-            </div>
-          </div>
-        )}
-        
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => setCollapsed(!collapsed)}
-          className="h-8 w-8 text-sidebar-foreground/50 hover:text-sidebar-foreground hover:bg-sidebar-muted"
-        >
-          {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
-        </Button>
-      </div>
+      {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+    </Button>
+  );
 
-      {/* New Job Button */}
-      <div className={cn('p-3', collapsed && 'px-2')}>
-        <Link to="/new-job">
-          <Button 
-            className={cn(
-              'w-full gap-2 gradient-primary hover:opacity-90 transition-opacity glow-primary',
-              collapsed && 'px-0'
-            )}
-          >
-            <Plus className="h-4 w-4" />
-            {!collapsed && <span>Novo Agendamento</span>}
-          </Button>
-        </Link>
-      </div>
+  // Mobile overlay
+  const MobileOverlay = () => (
+    <div
+      className={cn(
+        'fixed inset-0 bg-background/80 backdrop-blur-sm z-40 md:hidden transition-opacity duration-300',
+        mobileOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
+      )}
+      onClick={() => setMobileOpen(false)}
+    />
+  );
 
-      {/* Main Navigation */}
-      <nav className="flex-1 overflow-y-auto scrollbar-thin p-2 space-y-1">
-        {!collapsed && (
-          <p className="text-xs font-medium text-sidebar-foreground/30 uppercase tracking-wider px-3 py-2">
-            Navegação
-          </p>
+  return (
+    <>
+      <MobileMenuButton />
+      <MobileOverlay />
+      <aside
+        className={cn(
+          'flex flex-col h-screen bg-sidebar border-r border-sidebar-border transition-all duration-300',
+          'shadow-[2px_0_12px_-4px_hsl(220_20%_20%/0.08)] dark:shadow-none',
+          // Desktop styles
+          'hidden md:flex',
+          collapsed ? 'w-16' : 'w-64',
+          // Mobile styles
+          isMobile && 'fixed inset-y-0 left-0 z-50 w-72',
+          isMobile && (mobileOpen ? 'translate-x-0' : '-translate-x-full'),
+          isMobile && 'flex'
         )}
-        {filteredMainNavItems.map((item) => (
-          <NavButton key={item.href} item={item} />
-        ))}
-        
-        {filteredSecondaryNavItems.length > 0 && (
-          <>
-            <div className="my-4 border-t border-sidebar-border/50" />
-            
-            {!collapsed && (
-              <p className="text-xs font-medium text-sidebar-foreground/30 uppercase tracking-wider px-3 py-2">
-                Administração
-              </p>
-            )}
-            {filteredSecondaryNavItems.map((item) => (
-              <NavButton key={item.href} item={item} />
-            ))}
-          </>
-        )}
-      </nav>
-
-      {/* User Profile */}
-      <div className={cn(
-        'p-3 border-t border-sidebar-border/50',
-        collapsed && 'p-2'
-      )}>
+      >
+        {/* Header */}
         <div className={cn(
-          'flex items-center gap-3 rounded-lg p-2',
-          collapsed && 'justify-center p-2'
+          'flex items-center h-16 px-4 border-b border-sidebar-border',
+          collapsed && !isMobile ? 'justify-center' : 'justify-between'
         )}>
-          <div className="w-9 h-9 rounded-full gradient-primary flex items-center justify-center text-primary-foreground font-semibold text-sm">
-            {profile?.full_name?.charAt(0)?.toUpperCase() || 'U'}
-          </div>
-          {!collapsed && (
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-sidebar-foreground truncate">
-                {profile?.full_name || 'Usuário'}
-              </p>
-              <p className="text-xs text-sidebar-foreground/40 truncate capitalize">
-                {role === 'coordinator' ? 'Coordenador' : role === 'manager' ? 'Gestão' : 'Operador'}
-              </p>
+          {(!collapsed || isMobile) && (
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center glow-primary">
+                <Printer className="w-5 h-5 text-primary-foreground" />
+              </div>
+              <div>
+                <h1 className="font-display font-bold text-sidebar-foreground text-base">Gravação</h1>
+                <p className="text-xs text-sidebar-foreground/50">Promo Brindes</p>
+              </div>
             </div>
+          )}
+          
+          {!isMobile && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setCollapsed(!collapsed)}
+              className="h-8 w-8 text-sidebar-foreground/50 hover:text-sidebar-foreground hover:bg-sidebar-muted"
+            >
+              {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+            </Button>
           )}
         </div>
-        
-        <Button
-          variant="ghost"
-          size={collapsed ? "icon" : "sm"}
-          onClick={handleSignOut}
-          className={cn(
-            'w-full mt-2 text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-muted',
-            collapsed && 'px-0'
+
+        {/* New Job Button */}
+        <div className={cn('p-3', collapsed && !isMobile && 'px-2')}>
+          <Link to="/new-job">
+            <Button 
+              className={cn(
+                'w-full gap-2 gradient-primary hover:opacity-90 transition-opacity glow-primary',
+                collapsed && !isMobile && 'px-0'
+              )}
+            >
+              <Plus className="h-4 w-4" />
+              {(!collapsed || isMobile) && <span>Novo Agendamento</span>}
+            </Button>
+          </Link>
+        </div>
+
+        {/* Main Navigation */}
+        <nav className="flex-1 overflow-y-auto scrollbar-thin p-2 space-y-1">
+          {(!collapsed || isMobile) && (
+            <p className="text-xs font-medium text-sidebar-foreground/30 uppercase tracking-wider px-3 py-2">
+              Navegação
+            </p>
           )}
-        >
-          <LogOut className="h-4 w-4" />
-          {!collapsed && <span className="ml-2">Sair</span>}
-        </Button>
-      </div>
-    </aside>
+          {filteredMainNavItems.map((item) => (
+            <NavButton key={item.href} item={item} />
+          ))}
+          
+          {filteredSecondaryNavItems.length > 0 && (
+            <>
+              <div className="my-4 border-t border-sidebar-border/50" />
+              
+              {(!collapsed || isMobile) && (
+                <p className="text-xs font-medium text-sidebar-foreground/30 uppercase tracking-wider px-3 py-2">
+                  Administração
+                </p>
+              )}
+              {filteredSecondaryNavItems.map((item) => (
+                <NavButton key={item.href} item={item} />
+              ))}
+            </>
+          )}
+        </nav>
+
+        {/* User Profile */}
+        <div className={cn(
+          'p-3 border-t border-sidebar-border/50',
+          collapsed && !isMobile && 'p-2'
+        )}>
+          <div className={cn(
+            'flex items-center gap-3 rounded-lg p-2',
+            collapsed && !isMobile && 'justify-center p-2'
+          )}>
+            <div className="w-9 h-9 rounded-full gradient-primary flex items-center justify-center text-primary-foreground font-semibold text-sm">
+              {profile?.full_name?.charAt(0)?.toUpperCase() || 'U'}
+            </div>
+            {(!collapsed || isMobile) && (
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-sidebar-foreground truncate">
+                  {profile?.full_name || 'Usuário'}
+                </p>
+                <p className="text-xs text-sidebar-foreground/40 truncate capitalize">
+                  {role === 'coordinator' ? 'Coordenador' : role === 'manager' ? 'Gestão' : 'Operador'}
+                </p>
+              </div>
+            )}
+          </div>
+          
+          <Button
+            variant="ghost"
+            size={(collapsed && !isMobile) ? "icon" : "sm"}
+            onClick={handleSignOut}
+            className={cn(
+              'w-full mt-2 text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-muted',
+              collapsed && !isMobile && 'px-0'
+            )}
+          >
+            <LogOut className="h-4 w-4" />
+            {(!collapsed || isMobile) && <span className="ml-2">Sair</span>}
+          </Button>
+        </div>
+      </aside>
+    </>
   );
 }
