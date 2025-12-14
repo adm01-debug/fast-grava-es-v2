@@ -40,14 +40,20 @@ export function useNotifications(config: Partial<NotificationConfig> = {}) {
     if (!jobs || !settings.enableReadyAlerts) return;
 
     const readyJobs = jobs.filter(job => job.status === 'ready');
+    const activeJobs = jobs.filter(job => !['finished', 'cancelled'].includes(job.status));
     
-    // Alert if there are jobs ready but buffer is low for any technique
+    // Get all unique techniques that have active jobs (need buffer monitoring)
+    const techniquesWithActiveJobs = new Set(activeJobs.map(job => job.technique_id));
+    
+    // Count ready jobs per technique
     const techniqueReadyCounts = readyJobs.reduce((acc, job) => {
       acc[job.technique_id] = (acc[job.technique_id] || 0) + 1;
       return acc;
     }, {} as Record<string, number>);
 
-    Object.entries(techniqueReadyCounts).forEach(([techniqueId, count]) => {
+    // Check ALL techniques that have active work - not just those with ready jobs
+    techniquesWithActiveJobs.forEach(techniqueId => {
+      const count = techniqueReadyCounts[techniqueId] || 0;
       if (count < 3) {
         toast.warning(`Buffer baixo para ${techniqueId}`, {
           description: `Apenas ${count} job(s) no jeito. Meta: 3`,

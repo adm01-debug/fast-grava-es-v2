@@ -78,11 +78,19 @@ export function useBottleneckPrediction() {
         );
 
         // Get pending jobs (queue/ready without scheduled date)
-        const pendingJobs = jobs.filter(job => 
-          job.technique_id === technique.id &&
-          ['queue', 'ready'].includes(job.status) &&
-          !job.scheduled_date
-        );
+        // Also include jobs in production for "today" to account for active work
+        const pendingJobs = jobs.filter(job => {
+          if (job.technique_id !== technique.id) return false;
+          if (['finished', 'cancelled'].includes(job.status)) return false;
+          
+          // For today (dayOffset === 0), include production jobs without scheduled_date
+          if (dayOffset === 0 && job.status === 'production' && !job.scheduled_date) {
+            return true;
+          }
+          
+          // Include queue/ready jobs without scheduled date
+          return ['queue', 'ready'].includes(job.status) && !job.scheduled_date;
+        });
 
         const usedMinutes = scheduledJobs.reduce((acc, job) => acc + job.estimated_duration, 0);
         const pendingMinutes = pendingJobs.reduce((acc, job) => acc + job.estimated_duration, 0);

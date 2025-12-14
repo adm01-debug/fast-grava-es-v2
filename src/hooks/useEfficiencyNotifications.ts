@@ -34,7 +34,9 @@ export function useEfficiencyNotifications(config: Partial<EfficiencyNotificatio
   const autoResolveAlerts = useCallback(() => {
     if (!hasInitialized.current) return;
 
-    const currentBottleneckKeys = new Set(bottleneckAlerts.map(a => `${a.techniqueId}-${a.date}`));
+    const currentBottleneckKeys = new Set(bottleneckAlerts.map(a => 
+      `${a.techniqueId}-${a.date.toISOString().split('T')[0]}`
+    ));
     const currentSuggestionKeys = new Set(loadBalancingSuggestions.map(s => 
       `${s.jobId}-${s.currentMachineId}-${s.suggestedMachineId}`
     ));
@@ -43,7 +45,17 @@ export function useEfficiencyNotifications(config: Partial<EfficiencyNotificatio
       const metadata = alert.metadata as Record<string, unknown> | null;
       
       if (alert.alert_type === 'bottleneck') {
-        const alertKey = `${alert.technique_id}-${metadata?.date || ''}`;
+        // Extract date from metadata (could be ISO string or Date object)
+        let dateStr = '';
+        if (metadata?.date) {
+          const dateValue = metadata.date;
+          if (typeof dateValue === 'string') {
+            dateStr = dateValue.split('T')[0];
+          } else if (dateValue instanceof Date) {
+            dateStr = dateValue.toISOString().split('T')[0];
+          }
+        }
+        const alertKey = `${alert.technique_id}-${dateStr}`;
         if (!currentBottleneckKeys.has(alertKey)) {
           // Alert no longer exists in current analysis, resolve it
           resolveAlert.mutate({
@@ -68,12 +80,14 @@ export function useEfficiencyNotifications(config: Partial<EfficiencyNotificatio
     if (!settings.enableBottleneckAlerts) return;
     
     const currentCount = criticalCount + warningCount;
-    const currentIds = new Set(bottleneckAlerts.map(a => `${a.techniqueId}-${a.date}`));
+    const currentIds = new Set(bottleneckAlerts.map(a => 
+      `${a.techniqueId}-${a.date.toISOString().split('T')[0]}`
+    ));
     
     // Find new alerts that weren't in the previous set
     if (hasInitialized.current) {
       bottleneckAlerts.forEach(alert => {
-        const alertId = `${alert.techniqueId}-${alert.date}`;
+        const alertId = `${alert.techniqueId}-${alert.date.toISOString().split('T')[0]}`;
         if (!prevBottleneckIds.current.has(alertId)) {
           // Record new alert to history
           recordAlert.mutate({
@@ -83,10 +97,11 @@ export function useEfficiencyNotifications(config: Partial<EfficiencyNotificatio
             description: alert.message,
             technique_id: alert.techniqueId,
             metadata: {
-              date: alert.date,
-              occupancy: alert.occupancy,
-              projectedOccupancy: alert.projectedOccupancy,
+              date: alert.date.toISOString(),
+              currentCapacity: alert.currentCapacity,
+              projectedCapacity: alert.projectedCapacity,
               jobCount: alert.jobCount,
+              pendingJobCount: alert.pendingJobCount,
               machineCount: alert.machineCount
             }
           });
@@ -181,7 +196,7 @@ export function useEfficiencyNotifications(config: Partial<EfficiencyNotificatio
     // Set initial values without triggering notifications
     prevBottleneckCount.current = criticalCount + warningCount;
     prevLoadBalancingCount.current = loadBalancingSuggestions.length;
-    prevBottleneckIds.current = new Set(bottleneckAlerts.map(a => `${a.techniqueId}-${a.date}`));
+    prevBottleneckIds.current = new Set(bottleneckAlerts.map(a => `${a.techniqueId}-${a.date.toISOString().split('T')[0]}`));
     prevSuggestionIds.current = new Set(loadBalancingSuggestions.map(s => `${s.jobId}-${s.currentMachineId}-${s.suggestedMachineId}`));
     
     const initTimeout = setTimeout(() => {
