@@ -93,12 +93,17 @@ export function OEEMachineTable({ machines }: OEEMachineTableProps) {
     const color = getOEEColor(value);
     const trend = value >= benchmark ? 'up' : value >= benchmark - 10 ? 'stable' : 'down';
     
+    // Using CSS custom property for progress color
+    const progressStyle: React.CSSProperties & { '--progress-color'?: string } = {
+      '--progress-color': color
+    };
+    
     return (
       <div className="flex items-center gap-2">
         <Progress 
           value={value} 
           className="h-2 w-16"
-          style={{ '--progress-color': color } as any}
+          style={progressStyle}
         />
         <span className="text-sm font-medium w-12" style={{ color }}>
           {value.toFixed(1)}%

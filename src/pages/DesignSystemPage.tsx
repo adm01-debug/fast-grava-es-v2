@@ -9891,7 +9891,11 @@ function OverviewSection({ onNavigate }: OverviewSectionProps) {
 
   const playConfettiSound = () => {
     try {
-      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const windowWithWebkit = window as Window & { webkitAudioContext?: typeof AudioContext };
+      const AudioContextClass = window.AudioContext || windowWithWebkit.webkitAudioContext;
+      if (!AudioContextClass) return;
+      
+      const audioContext = new AudioContextClass();
       const now = audioContext.currentTime;
       
       // Create multiple quick ascending notes for celebration effect

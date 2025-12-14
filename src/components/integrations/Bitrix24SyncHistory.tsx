@@ -10,6 +10,12 @@ import { ptBR } from 'date-fns/locale';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
 
+interface SyncDetails {
+  synced_ids?: string[];
+  failed_ids?: string[];
+  [key: string]: unknown;
+}
+
 interface SyncHistoryItem {
   id: string;
   sync_type: 'pull' | 'push' | 'webhook';
@@ -17,7 +23,7 @@ interface SyncHistoryItem {
   jobs_synced: number;
   jobs_failed: number;
   error_message: string | null;
-  details: any;
+  details: SyncDetails | null;
   started_at: string;
   completed_at: string | null;
   triggered_by: string;
