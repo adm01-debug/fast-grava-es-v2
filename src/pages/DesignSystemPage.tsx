@@ -207,16 +207,51 @@ import {
 
 export default function DesignSystemPage() {
   const [activeTab, setActiveTab] = useState("overview");
+  const [reducedMotion, setReducedMotion] = useState(false);
+
+  // Apply/remove reduced motion simulation class
+  useEffect(() => {
+    if (reducedMotion) {
+      document.documentElement.classList.add('simulate-reduced-motion');
+    } else {
+      document.documentElement.classList.remove('simulate-reduced-motion');
+    }
+    return () => {
+      document.documentElement.classList.remove('simulate-reduced-motion');
+    };
+  }, [reducedMotion]);
 
   return (
     <MainLayout>
       <div className="p-6 space-y-8 max-w-7xl mx-auto">
         {/* Header */}
-        <div className="space-y-2">
-          <h1 className="text-4xl font-display font-bold gradient-text">Design System</h1>
-          <p className="text-muted-foreground">
-            Biblioteca completa de componentes, variantes e animações do sistema.
-          </p>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="space-y-2">
+            <h1 className="text-4xl font-display font-bold gradient-text">Design System</h1>
+            <p className="text-muted-foreground">
+              Biblioteca completa de componentes, variantes e animações do sistema.
+            </p>
+          </div>
+          
+          {/* Reduced Motion Toggle */}
+          <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50 border border-border">
+            <div className="flex items-center gap-2">
+              <Activity className={`h-4 w-4 ${reducedMotion ? 'text-muted-foreground' : 'text-primary animate-pulse'}`} />
+              <Label htmlFor="reduced-motion-toggle" className="text-sm font-medium cursor-pointer">
+                Simular Reduced Motion
+              </Label>
+            </div>
+            <Switch 
+              id="reduced-motion-toggle"
+              checked={reducedMotion}
+              onCheckedChange={setReducedMotion}
+            />
+            {reducedMotion && (
+              <Badge variant="secondary" className="text-xs">
+                Ativo
+              </Badge>
+            )}
+          </div>
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
