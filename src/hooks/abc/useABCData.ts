@@ -9,22 +9,19 @@ export function useABCData() {
   const { data: activities = [], isLoading: loadingActivities } = useQuery({
     queryKey: ['abc-activities'],
     queryFn: async () => {
-      try {
-        const { data, error } = await supabase
-          .from('abc_activities')
-          .select('*')
-          .eq('is_active', true)
-          .order('name');
-        
-        if (error) {
+      const { data, error } = await supabase
+        .from('abc_activities')
+        .select('*')
+        .eq('is_active', true)
+        .order('name');
+      
+      if (error) {
+        if (import.meta.env.DEV) {
           console.error('[useABCCosts] activities fetch failed:', categorizeError(error), error);
-          throw error;
         }
-        return data as ABCActivity[];
-      } catch (err) {
-        console.error('[useABCCosts] activities error:', err);
-        throw err;
+        throw error;
       }
+      return data as ABCActivity[];
     },
     staleTime: STALE_TIMES.STATIC,
     ...defaultQueryOptions,
@@ -34,22 +31,19 @@ export function useABCData() {
   const { data: costPools = [], isLoading: loadingPools } = useQuery({
     queryKey: ['abc-cost-pools'],
     queryFn: async () => {
-      try {
-        const { data, error } = await supabase
-          .from('abc_cost_pools')
-          .select('*')
-          .eq('is_active', true)
-          .order('name');
-        
-        if (error) {
+      const { data, error } = await supabase
+        .from('abc_cost_pools')
+        .select('*')
+        .eq('is_active', true)
+        .order('name');
+      
+      if (error) {
+        if (import.meta.env.DEV) {
           console.error('[useABCCosts] pools fetch failed:', categorizeError(error), error);
-          throw error;
         }
-        return data as ABCCostPool[];
-      } catch (err) {
-        console.error('[useABCCosts] pools error:', err);
-        throw err;
+        throw error;
       }
+      return data as ABCCostPool[];
     },
     staleTime: STALE_TIMES.STATIC,
     ...defaultQueryOptions,
@@ -59,21 +53,18 @@ export function useABCData() {
   const { data: activityRates = [], isLoading: loadingRates } = useQuery({
     queryKey: ['abc-activity-rates'],
     queryFn: async () => {
-      try {
-        const { data, error } = await supabase
-          .from('abc_activity_rates')
-          .select('*')
-          .order('period_start', { ascending: false });
-        
-        if (error) {
+      const { data, error } = await supabase
+        .from('abc_activity_rates')
+        .select('*')
+        .order('period_start', { ascending: false });
+      
+      if (error) {
+        if (import.meta.env.DEV) {
           console.error('[useABCCosts] rates fetch failed:', categorizeError(error), error);
-          throw error;
         }
-        return data as ABCActivityRate[];
-      } catch (err) {
-        console.error('[useABCCosts] rates error:', err);
-        throw err;
+        throw error;
       }
+      return data as ABCActivityRate[];
     },
     staleTime: STALE_TIMES.STATIC,
     ...defaultQueryOptions,
@@ -83,21 +74,18 @@ export function useABCData() {
   const { data: jobCosts = [], isLoading: loadingJobCosts } = useQuery({
     queryKey: ['abc-job-costs'],
     queryFn: async () => {
-      try {
-        const { data, error } = await supabase
-          .from('abc_job_costs')
-          .select('*')
-          .order('calculated_at', { ascending: false });
-        
-        if (error) {
+      const { data, error } = await supabase
+        .from('abc_job_costs')
+        .select('*')
+        .order('calculated_at', { ascending: false });
+      
+      if (error) {
+        if (import.meta.env.DEV) {
           console.error('[useABCCosts] jobCosts fetch failed:', categorizeError(error), error);
-          throw error;
         }
-        return data as ABCJobCost[];
-      } catch (err) {
-        console.error('[useABCCosts] jobCosts error:', err);
-        throw err;
+        throw error;
       }
+      return data as ABCJobCost[];
     },
     staleTime: STALE_TIMES.DYNAMIC,
     ...defaultQueryOptions,
@@ -107,23 +95,20 @@ export function useABCData() {
   const { data: jobs = [] } = useQuery({
     queryKey: ['jobs-for-abc'],
     queryFn: async () => {
-      try {
-        const { data, error } = await supabase
-          .from('jobs')
-          .select('*')
-          .in('status', ['finished', 'production'])
-          .order('updated_at', { ascending: false })
-          .limit(200);
-        
-        if (error) {
+      const { data, error } = await supabase
+        .from('jobs')
+        .select('*')
+        .in('status', ['finished', 'production'])
+        .order('updated_at', { ascending: false })
+        .limit(200);
+      
+      if (error) {
+        if (import.meta.env.DEV) {
           console.error('[useABCCosts] jobs fetch failed:', categorizeError(error), error);
-          throw error;
         }
-        return data;
-      } catch (err) {
-        console.error('[useABCCosts] jobs error:', err);
-        throw err;
+        throw error;
       }
+      return data;
     },
     staleTime: STALE_TIMES.DYNAMIC,
     ...defaultQueryOptions,
@@ -133,20 +118,17 @@ export function useABCData() {
   const { data: techniques = [] } = useQuery({
     queryKey: ['techniques-for-abc'],
     queryFn: async () => {
-      try {
-        const { data, error } = await supabase
-          .from('techniques')
-          .select('*');
-        
-        if (error) {
+      const { data, error } = await supabase
+        .from('techniques')
+        .select('*');
+      
+      if (error) {
+        if (import.meta.env.DEV) {
           console.error('[useABCCosts] techniques fetch failed:', categorizeError(error), error);
-          throw error;
         }
-        return data;
-      } catch (err) {
-        console.error('[useABCCosts] techniques error:', err);
-        throw err;
+        throw error;
       }
+      return data;
     },
     staleTime: STALE_TIMES.STATIC,
     ...defaultQueryOptions,

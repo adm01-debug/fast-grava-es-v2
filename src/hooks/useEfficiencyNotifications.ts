@@ -3,6 +3,7 @@ import { toast } from 'sonner';
 import { useBottleneckPrediction } from './useBottleneckPrediction';
 import { useLoadBalancing } from './useLoadBalancing';
 import { useEfficiencyAlertHistory } from './useEfficiencyAlertHistory';
+import { navigateTo } from '@/lib/navigation';
 
 interface EfficiencyNotificationConfig {
   enableBottleneckAlerts: boolean;
@@ -118,7 +119,7 @@ export function useEfficiencyNotifications(config: Partial<EfficiencyNotificatio
             description: criticalAlerts[0]?.message || 'Técnica próxima da saturação',
             action: {
               label: 'Ver Alertas',
-              onClick: () => window.location.href = '/alerts',
+              onClick: () => navigateTo('/alerts'),
             },
             duration: 8000,
           });
@@ -127,7 +128,7 @@ export function useEfficiencyNotifications(config: Partial<EfficiencyNotificatio
             description: bottleneckAlerts[0]?.message || 'Atenção à capacidade',
             action: {
               label: 'Ver Alertas',
-              onClick: () => window.location.href = '/alerts',
+              onClick: () => navigateTo('/alerts'),
             },
             duration: 6000,
           });
@@ -180,7 +181,7 @@ export function useEfficiencyNotifications(config: Partial<EfficiencyNotificatio
             : 'Carga desbalanceada detectada',
           action: {
             label: 'Ver Sugestões',
-            onClick: () => window.location.href = '/alerts',
+            onClick: () => navigateTo('/alerts'),
           },
           duration: 6000,
         });
@@ -222,7 +223,7 @@ export function useEfficiencyNotifications(config: Partial<EfficiencyNotificatio
         description: bottleneckAlerts.find(a => a.severity === 'critical')?.message,
         action: {
           label: 'Ver Alertas',
-          onClick: () => window.location.href = '/alerts',
+          onClick: () => navigateTo('/alerts'),
         },
       });
     } else if (warningCount > 0) {
@@ -230,7 +231,7 @@ export function useEfficiencyNotifications(config: Partial<EfficiencyNotificatio
         description: bottleneckAlerts[0]?.message,
         action: {
           label: 'Ver Alertas',
-          onClick: () => window.location.href = '/alerts',
+          onClick: () => navigateTo('/alerts'),
         },
       });
     } else {
@@ -246,7 +247,7 @@ export function useEfficiencyNotifications(config: Partial<EfficiencyNotificatio
         description: 'Redistribuição pode otimizar a produção',
         action: {
           label: 'Ver Sugestões',
-          onClick: () => window.location.href = '/alerts',
+          onClick: () => navigateTo('/alerts'),
         },
       });
     } else {
