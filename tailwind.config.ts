@@ -194,8 +194,22 @@ export default {
           "100%": { transform: "scale(4)", opacity: "0" },
         },
         "confetti-burst": {
-          "0%": { transform: "translate(0, 0) rotate(0deg)", opacity: "1" },
-          "100%": { transform: "translate(var(--confetti-x), var(--confetti-y)) rotate(var(--confetti-rotation))", opacity: "0" },
+          "0%": { 
+            transform: "translate(0, 0) rotate(0deg) scale(1)", 
+            opacity: "1" 
+          },
+          "30%": { 
+            transform: "translate(calc(var(--confetti-x) * 0.6), calc(var(--confetti-y) * 0.8)) rotate(calc(var(--confetti-rotation) * 0.4)) scale(1.1)", 
+            opacity: "1" 
+          },
+          "60%": { 
+            transform: "translate(calc(var(--confetti-x) * 0.9), calc(var(--confetti-y) * 0.3 + 20px)) rotate(calc(var(--confetti-rotation) * 0.7)) scale(0.9)", 
+            opacity: "0.8" 
+          },
+          "100%": { 
+            transform: "translate(var(--confetti-x), calc(var(--confetti-y) + 150px)) rotate(var(--confetti-rotation)) scale(0.5)", 
+            opacity: "0" 
+          },
         },
       },
       animation: {
