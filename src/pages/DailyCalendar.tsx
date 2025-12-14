@@ -13,8 +13,9 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Calendar } from '@/components/ui/calendar';
 import { JobDetailsModal } from '@/components/jobs/JobDetailsModal';
 import { cn } from '@/lib/utils';
-import { mockJobs, machines, techniques, getMachineById, getTechniqueById } from '@/data/mockData';
-import { Job, JobStatus } from '@/types/scheduling';
+import { useJobs, useTechniques, useMachines, DbJob } from '@/hooks/useJobs';
+import { JobStatus } from '@/types/scheduling';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const hours = Array.from({ length: 14 }, (_, i) => i + 7); // 07:00 to 20:00
 
@@ -45,47 +46,60 @@ const statusLabels: Record<JobStatus, string> = {
 export default function DailyCalendar() {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [selectedTechnique, setSelectedTechnique] = useState<string>('all');
-  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+  const [selectedJob, setSelectedJob] = useState<DbJob | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const { data: jobs = [], isLoading: jobsLoading } = useJobs();
+  const { data: techniques = [], isLoading: techniquesLoading } = useTechniques();
+  const { data: machines = [], isLoading: machinesLoading } = useMachines();
+
+  const isLoading = jobsLoading || techniquesLoading || machinesLoading;
+
+  const getTechniqueById = (id: string) => techniques.find(t => t.id === id);
 
   // Filter jobs for selected date
   const dayJobs = useMemo(() => {
-    return mockJobs.filter(job => {
-      const jobDate = new Date(job.scheduledDate);
+    return jobs.filter(job => {
+      if (!job.scheduled_date) return false;
+      const jobDate = new Date(job.scheduled_date);
       const isSameDay = 
         jobDate.getDate() === selectedDate.getDate() &&
         jobDate.getMonth() === selectedDate.getMonth() &&
         jobDate.getFullYear() === selectedDate.getFullYear();
       
       if (selectedTechnique !== 'all') {
-        return isSameDay && job.techniqueId === selectedTechnique;
+        return isSameDay && job.technique_id === selectedTechnique;
       }
       return isSameDay;
     });
-  }, [selectedDate, selectedTechnique]);
+  }, [jobs, selectedDate, selectedTechnique]);
 
   // Filter machines by technique
   const filteredMachines = useMemo(() => {
     if (selectedTechnique === 'all') return machines;
-    return machines.filter(m => m.techniqueId === selectedTechnique);
-  }, [selectedTechnique]);
+    return machines.filter(m => m.technique_id === selectedTechnique);
+  }, [machines, selectedTechnique]);
 
   // Group jobs by machine
   const jobsByMachine = useMemo(() => {
-    const grouped: Record<string, Job[]> = {};
+    const grouped: Record<string, DbJob[]> = {};
     dayJobs.forEach(job => {
-      if (!grouped[job.machineId]) {
-        grouped[job.machineId] = [];
+      if (!job.machine_id) return;
+      if (!grouped[job.machine_id]) {
+        grouped[job.machine_id] = [];
       }
-      grouped[job.machineId].push(job);
+      grouped[job.machine_id].push(job);
     });
     return grouped;
   }, [dayJobs]);
 
   // Calculate job position on timeline
-  const getJobPosition = (job: Job) => {
-    const [startHour, startMin] = job.startTime.split(':').map(Number);
-    const [endHour, endMin] = job.endTime.split(':').map(Number);
+  const getJobPosition = (job: DbJob) => {
+    if (!job.start_time || !job.end_time) {
+      return { left: '0%', width: '5%' };
+    }
+    const [startHour, startMin] = job.start_time.split(':').map(Number);
+    const [endHour, endMin] = job.end_time.split(':').map(Number);
     
     const startMinutes = (startHour - 7) * 60 + startMin;
     const endMinutes = (endHour - 7) * 60 + endMin;
@@ -111,7 +125,7 @@ export default function DailyCalendar() {
   const handleNextDay = () => setSelectedDate(addDays(selectedDate, 1));
   const handleToday = () => setSelectedDate(new Date());
   
-  const handleJobClick = (job: Job) => {
+  const handleJobClick = (job: DbJob) => {
     setSelectedJob(job);
     setIsModalOpen(true);
   };
@@ -230,7 +244,7 @@ export default function DailyCalendar() {
                 {/* Machine Rows */}
                 {filteredMachines.map((machine, index) => {
                   const machineJobs = jobsByMachine[machine.id] || [];
-                  const technique = getTechniqueById(machine.techniqueId);
+                  const technique = getTechniqueById(machine.technique_id);
                   
                   return (
                     <div 
@@ -249,7 +263,7 @@ export default function DailyCalendar() {
                         <div>
                           <div className="text-sm font-semibold text-foreground">{machine.code}</div>
                           <div className="text-xs text-muted-foreground truncate max-w-[80px]">
-                            {technique?.shortName}
+                            {technique?.short_name}
                           </div>
                         </div>
                       </div>
@@ -287,12 +301,12 @@ export default function DailyCalendar() {
                                     "flex items-center justify-center overflow-hidden",
                                     "transition-all duration-200 hover:scale-[1.02] hover:z-10",
                                     "shadow-sm hover:shadow-md",
-                                    statusColors[job.status]
+                                    statusColors[job.status as JobStatus]
                                   )}
                                   style={position}
                                 >
                                   <div className="px-2 text-xs font-medium truncate">
-                                    {job.orderNumber.replace('OS-2024-', '')}
+                                    {job.order_number.replace('OS-2024-', '')}
                                   </div>
                                 </div>
                               </TooltipTrigger>
@@ -301,22 +315,22 @@ export default function DailyCalendar() {
                                 className="bg-card border-border/40 shadow-xl max-w-xs"
                               >
                                 <div className="space-y-1.5">
-                                  <div className="font-semibold text-foreground">{job.orderNumber}</div>
+                                  <div className="font-semibold text-foreground">{job.order_number}</div>
                                   <div className="text-sm text-muted-foreground">{job.client}</div>
                                   <div className="text-sm">{job.product}</div>
                                   <div className="flex items-center gap-2 text-xs">
                                     <span className="text-muted-foreground">
-                                      {job.startTime} - {job.endTime}
+                                      {job.start_time || '00:00'} - {job.end_time || '00:00'}
                                     </span>
                                     <Badge 
                                       variant="outline" 
-                                      className={cn("text-xs", statusColors[job.status])}
+                                      className={cn("text-xs", statusColors[job.status as JobStatus])}
                                     >
-                                      {statusLabels[job.status]}
+                                      {statusLabels[job.status as JobStatus]}
                                     </Badge>
                                   </div>
                                   <div className="text-xs text-muted-foreground">
-                                    {job.quantity.toLocaleString()} peças • {job.gravureColor}
+                                    {job.quantity.toLocaleString()} peças • {job.gravure_color || 'Sem cor'}
                                   </div>
                                 </div>
                               </TooltipContent>

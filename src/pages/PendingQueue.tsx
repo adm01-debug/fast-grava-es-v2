@@ -22,7 +22,7 @@ import {
   RotateCcw
 } from "lucide-react";
 import { useJobs, useTechniques, useMachines, DbJob, DbTechnique, DbMachine } from "@/hooks/useJobs";
-import { Job, JobStatus } from "@/types/scheduling";
+import { JobStatus } from "@/types/scheduling";
 
 type SortField = 'orderNumber' | 'client' | 'scheduledDate' | 'priority' | 'quantity';
 type SortDirection = 'asc' | 'desc';
@@ -42,39 +42,14 @@ const priorityLabels = {
   low: 'Baixa'
 };
 
-// Helper to convert DbJob to Job format for modal
-const dbJobToJob = (dbJob: DbJob): Job => ({
-  id: dbJob.id,
-  orderNumber: dbJob.order_number,
-  client: dbJob.client,
-  product: dbJob.product,
-  quantity: dbJob.quantity,
-  techniqueId: dbJob.technique_id as any,
-  machineId: dbJob.machine_id || '',
-  operatorId: '',
-  scheduledDate: dbJob.scheduled_date ? new Date(dbJob.scheduled_date) : new Date(),
-  startTime: dbJob.start_time || '',
-  endTime: dbJob.end_time || '',
-  estimatedDuration: dbJob.estimated_duration,
-  status: dbJob.status as any,
-  gravureColor: dbJob.gravure_color || undefined,
-  notes: dbJob.notes || undefined,
-  priority: dbJob.priority as any,
-  createdAt: new Date(dbJob.created_at),
-  updatedAt: new Date(dbJob.updated_at),
-  createdBy: '',
-  actualStartTime: dbJob.actual_start_time ? new Date(dbJob.actual_start_time) : undefined,
-  actualEndTime: dbJob.actual_end_time ? new Date(dbJob.actual_end_time) : undefined,
-});
-
 export default function PendingQueue() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTechnique, setSelectedTechnique] = useState<string>("all");
-  const [selectedStatus, setSelectedStatus] = useState<string>("all");
   const [selectedPriority, setSelectedPriority] = useState<string>("all");
-  const [sortField, setSortField] = useState<SortField>('scheduledDate');
+  const [sortField, setSortField] = useState<SortField>('priority');
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
-  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+  const [selectedStatus, setSelectedStatus] = useState<string>("all");
+  const [selectedJob, setSelectedJob] = useState<DbJob | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Fetch real data from Supabase
@@ -170,7 +145,7 @@ export default function PendingQueue() {
   }), [filteredJobs]);
 
   const handleJobClick = (dbJob: DbJob) => {
-    setSelectedJob(dbJobToJob(dbJob));
+    setSelectedJob(dbJob);
     setIsModalOpen(true);
   };
 

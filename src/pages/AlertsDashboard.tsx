@@ -43,7 +43,7 @@ const priorityLabels = {
 };
 
 export default function AlertsDashboard() {
-  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+  const [selectedJob, setSelectedJob] = useState<DbJob | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Fetch real data from Supabase
@@ -111,7 +111,7 @@ export default function AlertsDashboard() {
   }, [jobs]);
 
   const handleJobClick = (dbJob: DbJob) => {
-    setSelectedJob(dbJobToJob(dbJob));
+    setSelectedJob(dbJob);
     setIsModalOpen(true);
   };
 
