@@ -8638,7 +8638,7 @@ function OverviewSection({ onNavigate }: OverviewSectionProps) {
 
     // Generate confetti particles
     const particles: ConfettiParticle[] = [];
-    const particleCount = 25;
+    const particleCount = 40;
     
     for (let i = 0; i < particleCount; i++) {
       particles.push({
