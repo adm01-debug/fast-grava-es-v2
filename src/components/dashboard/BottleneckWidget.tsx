@@ -145,28 +145,28 @@ export function BottleneckWidget() {
   return (
     <Card className="glass-card card-interactive animate-fade-in-up opacity-0 [animation-fill-mode:forwards] [animation-delay:0.25s] dark:hover:shadow-[0_8px_32px_-8px_hsl(45,100%,55%,0.25)]">
       <CardHeader className="pb-3">
-        <CardTitle className="text-lg flex items-center justify-between">
+        <CardTitle className="text-base sm:text-lg flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div className="flex items-center gap-2">
-            <div className="p-2 rounded-lg bg-warning/20 dark:glow-warning">
-              <TrendingUp className="h-5 w-5 text-warning" />
+            <div className="p-1.5 sm:p-2 rounded-lg bg-warning/20 dark:glow-warning">
+              <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-warning" />
             </div>
-            <span className="gradient-text">Previsão de Gargalos</span>
+            <span className="gradient-text text-sm sm:text-base">Previsão de Gargalos</span>
           </div>
           {totalAlerts > 0 ? (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 flex-wrap self-start sm:self-auto">
               {criticalCount > 0 && (
-                <Badge className="bg-red-500/20 text-red-400 border-red-500/30 border">
-                  {criticalCount} críticos
+                <Badge className="bg-red-500/20 text-red-400 border-red-500/30 border text-xs">
+                  {criticalCount} crít.
                 </Badge>
               )}
               {warningCount > 0 && (
-                <Badge className="bg-orange-500/20 text-orange-400 border-orange-500/30 border">
+                <Badge className="bg-orange-500/20 text-orange-400 border-orange-500/30 border text-xs">
                   {warningCount} avisos
                 </Badge>
               )}
             </div>
           ) : (
-            <Badge className="bg-green-500/20 text-green-400 border-green-500/30 border">
+            <Badge className="bg-green-500/20 text-green-400 border-green-500/30 border text-xs self-start sm:self-auto">
               <CheckCircle2 className="h-3 w-3 mr-1" />
               Sem gargalos
             </Badge>

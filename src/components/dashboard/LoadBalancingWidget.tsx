@@ -115,21 +115,21 @@ export function LoadBalancingWidget() {
   return (
     <Card className="glass-card card-interactive animate-fade-in-up opacity-0 [animation-fill-mode:forwards] [animation-delay:0.2s] dark:hover:shadow-[0_8px_32px_-8px_hsl(180,100%,50%,0.25)]">
       <CardHeader className="pb-3">
-        <CardTitle className="text-lg flex items-center justify-between">
+        <CardTitle className="text-base sm:text-lg flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div className="flex items-center gap-2">
-            <div className="p-2 rounded-lg bg-[hsl(180,100%,45%)]/20 dark:shadow-[0_0_20px_-5px_hsl(180,100%,50%,0.4)]">
-              <Scale className="h-5 w-5 text-[hsl(180,100%,50%)]" />
+            <div className="p-1.5 sm:p-2 rounded-lg bg-[hsl(180,100%,45%)]/20 dark:shadow-[0_0_20px_-5px_hsl(180,100%,50%,0.4)]">
+              <Scale className="h-4 w-4 sm:h-5 sm:w-5 text-[hsl(180,100%,50%)]" />
             </div>
-            <span className="gradient-text">Balanceamento de Carga</span>
+            <span className="gradient-text text-sm sm:text-base">Balanceamento de Carga</span>
           </div>
           <Badge 
-            className={`border ${unbalancedCount > 0 
+            className={`border text-xs self-start sm:self-auto ${unbalancedCount > 0 
               ? 'bg-orange-500/20 text-orange-400 border-orange-500/30' 
               : 'bg-green-500/20 text-green-400 border-green-500/30'}`}
           >
             {unbalancedCount > 0 
-              ? `${unbalancedCount} técnicas desbalanceadas` 
-              : 'Todas equilibradas'}
+              ? `${unbalancedCount} desbal.` 
+              : 'Equilibrado'}
           </Badge>
         </CardTitle>
       </CardHeader>

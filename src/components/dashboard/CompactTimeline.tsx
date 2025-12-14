@@ -46,61 +46,63 @@ export function CompactTimeline() {
   return (
     <Card className="glass-card card-interactive animate-fade-in-up opacity-0 [animation-fill-mode:forwards] [animation-delay:0.1s]">
       <CardHeader className="pb-3">
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-lg font-display gradient-text">Timeline de Hoje</CardTitle>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+          <CardTitle className="text-base sm:text-lg font-display gradient-text">Timeline de Hoje</CardTitle>
           <span className="text-xs text-muted-foreground">
             {format(today, "EEEE, d 'de' MMMM", { locale: ptBR })}
           </span>
         </div>
       </CardHeader>
-      <CardContent className="space-y-0">
-        {/* Hours header */}
-        <div className="flex border-b border-border/30 pb-2 mb-3">
-          <div className="w-14 shrink-0" />
-          {hours.map(hour => (
-            <div 
-              key={hour} 
-              className="flex-1 text-center text-xs text-muted-foreground font-medium"
-            >
-              {hour}
-            </div>
-          ))}
-        </div>
-
-        {/* Timeline rows */}
-        <div className="space-y-2">
-          {machineIds.map(machineId => {
-            const machine = getMachineById(machineId);
-            const jobs = jobsByMachine[machineId];
-            const firstJob = jobs[0];
-
-            return (
-              <div key={machineId} className="flex items-center gap-2">
-                <div className="w-14 shrink-0">
-                  <span className="text-xs font-mono font-medium text-muted-foreground">
-                    {machine?.code}
-                  </span>
-                </div>
-                <div className="flex-1 flex gap-1">
-                  {jobs.slice(0, 1).map(job => (
-                    <div
-                      key={job.id}
-                      className={cn(
-                        'h-8 rounded-md flex items-center px-3 text-xs font-medium text-white',
-                        'hover:ring-2 hover:ring-primary/50 transition-all cursor-pointer flex-1',
-                        statusColors[job.status]
-                      )}
-                      title={`${job.orderNumber} - ${job.client}`}
-                    >
-                      <span className="truncate">
-                        {job.orderNumber.split('-').pop()}
-                      </span>
-                    </div>
-                  ))}
-                </div>
+      <CardContent className="space-y-0 overflow-x-auto">
+        <div className="min-w-[400px]">
+          {/* Hours header */}
+          <div className="flex border-b border-border/30 pb-2 mb-3">
+            <div className="w-12 sm:w-14 shrink-0" />
+            {hours.map(hour => (
+              <div 
+                key={hour} 
+                className="flex-1 text-center text-[10px] sm:text-xs text-muted-foreground font-medium"
+              >
+                {hour}
               </div>
-            );
-          })}
+            ))}
+          </div>
+
+          {/* Timeline rows */}
+          <div className="space-y-2">
+            {machineIds.map(machineId => {
+              const machine = getMachineById(machineId);
+              const jobs = jobsByMachine[machineId];
+              const firstJob = jobs[0];
+
+              return (
+                <div key={machineId} className="flex items-center gap-2">
+                  <div className="w-12 sm:w-14 shrink-0">
+                    <span className="text-[10px] sm:text-xs font-mono font-medium text-muted-foreground">
+                      {machine?.code}
+                    </span>
+                  </div>
+                  <div className="flex-1 flex gap-1">
+                    {jobs.slice(0, 1).map(job => (
+                      <div
+                        key={job.id}
+                        className={cn(
+                          'h-6 sm:h-8 rounded-md flex items-center px-2 sm:px-3 text-[10px] sm:text-xs font-medium text-white',
+                          'hover:ring-2 hover:ring-primary/50 transition-all cursor-pointer flex-1',
+                          statusColors[job.status]
+                        )}
+                        title={`${job.orderNumber} - ${job.client}`}
+                      >
+                        <span className="truncate">
+                          {job.orderNumber.split('-').pop()}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </CardContent>
     </Card>
