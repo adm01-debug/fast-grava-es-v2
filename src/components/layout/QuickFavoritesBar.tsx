@@ -25,6 +25,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import {
   Popover,
@@ -120,9 +121,23 @@ export const QuickFavoritesBar = memo(function QuickFavoritesBar() {
     isFavorite,
     reorderFavorites,
     maxFavorites,
-    isSyncing
+    isSyncing,
+    isLoading
   } = useQuickFavorites();
   const alertCount = useAlertCount();
+
+  // Show skeleton while loading
+  if (isLoading) {
+    return (
+      <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-muted/30 border border-border/50">
+        {[1, 2].map((i) => (
+          <Skeleton key={i} className="h-8 w-8 rounded-md" />
+        ))}
+        <div className="w-px h-5 bg-border/50 mx-1" />
+        <Skeleton className="h-8 w-8 rounded-md" />
+      </div>
+    );
+  }
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
