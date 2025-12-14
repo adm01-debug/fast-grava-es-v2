@@ -318,6 +318,38 @@ export type Database = {
         }
         Relationships: []
       }
+      operator_machines: {
+        Row: {
+          assigned_at: string
+          assigned_by: string | null
+          id: string
+          machine_id: string
+          operator_id: string
+        }
+        Insert: {
+          assigned_at?: string
+          assigned_by?: string | null
+          id?: string
+          machine_id: string
+          operator_id: string
+        }
+        Update: {
+          assigned_at?: string
+          assigned_by?: string | null
+          id?: string
+          machine_id?: string
+          operator_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "operator_machines_machine_id_fkey"
+            columns: ["machine_id"]
+            isOneToOne: false
+            referencedRelation: "machines"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       product_categories: {
         Row: {
           created_at: string

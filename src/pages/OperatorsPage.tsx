@@ -1,17 +1,34 @@
+import { useState } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Users, UserCheck, Phone, Calendar } from 'lucide-react';
-import { useOperators } from '@/hooks/useOperators';
+import { Button } from '@/components/ui/button';
+import { Users, UserCheck, Phone, Calendar, Cpu, Settings2 } from 'lucide-react';
+import { useOperators, OperatorWithProfile } from '@/hooks/useOperators';
+import { useOperatorMachines } from '@/hooks/useOperatorMachines';
+import { MachineAssignmentModal } from '@/components/operators/MachineAssignmentModal';
 import { Skeleton } from '@/components/ui/skeleton';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
 export default function OperatorsPage() {
   const { data: operators = [], isLoading } = useOperators();
+  const { assignments } = useOperatorMachines();
+  const [selectedOperator, setSelectedOperator] = useState<OperatorWithProfile | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const activeOperators = operators.length;
+
+  const getMachineCount = (operatorId: string) => {
+    return (assignments || []).filter(a => a.operator_id === operatorId).length;
+  };
+
+  const handleOpenAssignment = (operator: OperatorWithProfile) => {
+    setSelectedOperator(operator);
+    setIsModalOpen(true);
+  };
+
 
   return (
     <MainLayout>
@@ -122,15 +139,32 @@ export default function OperatorsPage() {
                       </div>
                     </div>
 
-                    <Badge variant="secondary" className="shrink-0">
-                      Operador
-                    </Badge>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <Badge variant="outline" className="flex items-center gap-1">
+                        <Cpu className="h-3 w-3" />
+                        {getMachineCount(operator.user_id)} máquinas
+                      </Badge>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleOpenAssignment(operator)}
+                      >
+                        <Settings2 className="h-4 w-4 mr-1" />
+                        Atribuir
+                      </Button>
+                    </div>
                   </div>
                 ))}
               </div>
             )}
           </CardContent>
         </Card>
+
+        <MachineAssignmentModal
+          operator={selectedOperator}
+          open={isModalOpen}
+          onOpenChange={setIsModalOpen}
+        />
       </div>
     </MainLayout>
   );
