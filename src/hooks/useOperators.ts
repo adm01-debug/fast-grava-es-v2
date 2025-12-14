@@ -98,8 +98,8 @@ export function useOperators() {
 
       if (roleError) throw roleError;
 
-      // Log the action in audit table
-      await supabase
+      // Log the action in audit table with error handling
+      const { error: auditError } = await supabase
         .from('operator_status_audit')
         .insert({
           operator_id: operatorId,
@@ -107,7 +107,13 @@ export function useOperators() {
           action: 'removed',
           performed_by: user.id,
           performed_by_name: performerProfile?.full_name || null,
-        } as any);
+        });
+
+      if (auditError) {
+        // Log audit failure but don't fail the whole operation
+        const appError = createAppError(auditError, { entity: 'operator_status_audit', operation: 'insert' });
+        if (import.meta.env.DEV) console.error('[removeOperator:audit]', appError);
+      }
 
       return operatorId;
     },
@@ -142,14 +148,14 @@ export function useOperators() {
 
       const { error } = await supabase
         .from('user_roles')
-        .update({ is_active: isActive } as any)
+        .update({ is_active: isActive })
         .eq('user_id', operatorId)
         .eq('role', 'operator');
 
       if (error) throw error;
 
-      // Log the action in audit table
-      await supabase
+      // Log the action in audit table with error handling
+      const { error: auditError } = await supabase
         .from('operator_status_audit')
         .insert({
           operator_id: operatorId,
@@ -157,7 +163,13 @@ export function useOperators() {
           action: isActive ? 'activated' : 'deactivated',
           performed_by: user.id,
           performed_by_name: performerProfile?.full_name || null,
-        } as any);
+        });
+
+      if (auditError) {
+        // Log audit failure but don't fail the whole operation
+        const appError = createAppError(auditError, { entity: 'operator_status_audit', operation: 'insert' });
+        if (import.meta.env.DEV) console.error('[toggleActive:audit]', appError);
+      }
 
       return { operatorId, isActive };
     },

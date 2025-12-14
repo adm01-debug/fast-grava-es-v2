@@ -3,6 +3,11 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useJobs, useTechniques, DbJob } from './useJobs';
 import { toast } from 'sonner';
+import { createAppError } from '@/lib/errorHandling';
+
+const BUFFER_PROMOTION_CONTEXT = {
+  promote: { entity: 'jobs', operation: 'buffer_promotion' },
+};
 
 const BUFFER_TARGET = 3; // Target number of "ready" jobs per technique
 
@@ -23,13 +28,19 @@ export function useAutoBufferPromotion(options?: { enabled?: boolean; showToasts
   // Mutation to promote a single job
   const promoteJobMutation = useMutation({
     mutationFn: async (jobId: string) => {
-      const { error } = await supabase
-        .from('jobs')
-        .update({ status: 'ready' })
-        .eq('id', jobId);
-      
-      if (error) throw error;
-      return jobId;
+      try {
+        const { error } = await supabase
+          .from('jobs')
+          .update({ status: 'ready' })
+          .eq('id', jobId);
+        
+        if (error) throw error;
+        return jobId;
+      } catch (error) {
+        const appError = createAppError(error, BUFFER_PROMOTION_CONTEXT.promote);
+        if (import.meta.env.DEV) console.error('[promoteJob]', appError);
+        throw error;
+      }
     },
   });
 

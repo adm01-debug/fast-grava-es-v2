@@ -83,14 +83,15 @@ export function useNotifications(config: Partial<NotificationConfig> = {}) {
     }
   }, [jobs, techniques, settings.enableReadyAlerts]);
 
-  // Initial check on mount
+  // Initial check on mount for both delayed and ready jobs
   useEffect(() => {
     const timeout = setTimeout(() => {
       checkDelayedJobs();
+      checkReadyJobs();
     }, 2000); // Delay initial check
 
     return () => clearTimeout(timeout);
-  }, [checkDelayedJobs]);
+  }, [checkDelayedJobs, checkReadyJobs]);
 
   // Periodic checks
   useEffect(() => {
