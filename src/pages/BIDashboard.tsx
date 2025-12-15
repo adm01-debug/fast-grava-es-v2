@@ -1,8 +1,11 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@/components/ui/button';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
 import { useKPIs } from '@/hooks/useKPIs';
 import { useOEE } from '@/hooks/useOEE';
 import { useSchedulingData } from '@/hooks/useSchedulingData';
@@ -13,7 +16,6 @@ import {
   Gauge, 
   Package, 
   AlertTriangle,
-  Users,
   Printer,
   CheckCircle,
   Clock,
@@ -23,7 +25,9 @@ import {
   LineChart,
   ArrowUp,
   ArrowDown,
-  Minus
+  Minus,
+  CalendarIcon,
+  Filter
 } from 'lucide-react';
 import { 
   AreaChart, 
@@ -39,11 +43,18 @@ import {
   YAxis, 
   CartesianGrid, 
   Tooltip, 
-  ResponsiveContainer,
-  Legend
+  ResponsiveContainer
 } from 'recharts';
-import { format, subDays, startOfDay, endOfDay, isWithinInterval, parseISO } from 'date-fns';
+import { format, subDays, startOfDay, endOfDay, isWithinInterval, parseISO, differenceInDays } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { cn } from '@/lib/utils';
+
+type PeriodFilter = '7d' | '30d' | '90d' | 'custom';
+
+interface DateRange {
+  from: Date;
+  to: Date;
+}
 
 // Color palette for charts
 const CHART_COLORS = {
@@ -131,56 +142,91 @@ function LoadingSkeleton() {
 }
 
 export default function BIDashboard() {
+  const [periodFilter, setPeriodFilter] = useState<PeriodFilter>('30d');
+  const [customRange, setCustomRange] = useState<DateRange>({
+    from: subDays(new Date(), 30),
+    to: new Date()
+  });
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+
+  // Get period days for OEE hook
+  const periodDays = useMemo(() => {
+    if (periodFilter === 'custom') {
+      return differenceInDays(customRange.to, customRange.from) || 30;
+    }
+    return periodFilter === '7d' ? 7 : periodFilter === '90d' ? 90 : 30;
+  }, [periodFilter, customRange]);
+
   const { data: kpis, isLoading: kpisLoading } = useKPIs();
-  const { data: oeeData, isLoading: oeeLoading } = useOEE(30);
+  const { data: oeeData, isLoading: oeeLoading } = useOEE(periodDays);
   const { jobs, machines, techniques, isLoading: schedulingLoading } = useSchedulingData();
 
   const isLoading = kpisLoading || oeeLoading || schedulingLoading;
+
+  // Get date range based on filter
+  const dateRange = useMemo((): DateRange => {
+    const now = new Date();
+    if (periodFilter === 'custom') {
+      return customRange;
+    }
+    const days = periodFilter === '7d' ? 7 : periodFilter === '90d' ? 90 : 30;
+    return { from: subDays(now, days), to: now };
+  }, [periodFilter, customRange]);
+
+  // Filter jobs by selected period
+  const filteredJobs = useMemo(() => {
+    if (!jobs) return [];
+    return jobs.filter(j => {
+      if (!j.created_at) return false;
+      try {
+        const created = parseISO(j.created_at);
+        return isWithinInterval(created, { start: startOfDay(dateRange.from), end: endOfDay(dateRange.to) });
+      } catch {
+        return false;
+      }
+    });
+  }, [jobs, dateRange]);
 
   // Calculate additional BI metrics
   const biMetrics = useMemo(() => {
     if (!jobs || !machines || !techniques || !kpis || !oeeData) return null;
 
     const now = new Date();
-    const last7Days = subDays(now, 7);
-    const last30Days = subDays(now, 30);
+    const periodStart = dateRange.from;
+    const halfPeriod = subDays(periodStart, differenceInDays(dateRange.to, dateRange.from));
 
-    // Jobs by period
-    const recentJobs = jobs.filter(j => {
+    // Jobs in selected period
+    const periodJobs = filteredJobs;
+
+    // Jobs in previous period (for trend calculation)
+    const prevPeriodJobs = jobs.filter(j => {
       if (!j.created_at) return false;
       try {
-        return parseISO(j.created_at) >= last30Days;
+        const created = parseISO(j.created_at);
+        return isWithinInterval(created, { start: startOfDay(halfPeriod), end: endOfDay(subDays(periodStart, 1)) });
       } catch {
         return false;
       }
     });
 
-    const last7DaysJobs = jobs.filter(j => {
-      if (!j.created_at) return false;
-      try {
-        return parseISO(j.created_at) >= last7Days;
-      } catch {
-        return false;
-      }
-    });
-
-    // Status distribution
+    // Status distribution (filtered by period)
     const statusDistribution = [
-      { name: 'Finalizados', value: jobs.filter(j => j.status === 'finished').length, color: PIE_COLORS[0] },
-      { name: 'Em Produção', value: jobs.filter(j => j.status === 'production').length, color: PIE_COLORS[1] },
-      { name: 'Agendados', value: jobs.filter(j => j.status === 'scheduled').length, color: PIE_COLORS[2] },
-      { name: 'Na Fila', value: jobs.filter(j => j.status === 'queue').length, color: PIE_COLORS[3] },
-      { name: 'Atrasados', value: jobs.filter(j => j.status === 'delayed').length, color: PIE_COLORS[4] },
+      { name: 'Finalizados', value: periodJobs.filter(j => j.status === 'finished').length, color: PIE_COLORS[0] },
+      { name: 'Em Produção', value: periodJobs.filter(j => j.status === 'production').length, color: PIE_COLORS[1] },
+      { name: 'Agendados', value: periodJobs.filter(j => j.status === 'scheduled').length, color: PIE_COLORS[2] },
+      { name: 'Na Fila', value: periodJobs.filter(j => j.status === 'queue').length, color: PIE_COLORS[3] },
+      { name: 'Atrasados', value: periodJobs.filter(j => j.status === 'delayed').length, color: PIE_COLORS[4] },
     ].filter(s => s.value > 0);
 
-    // Daily production trend (last 14 days)
+    // Daily production trend (based on period)
+    const trendDays = Math.min(differenceInDays(dateRange.to, dateRange.from), 30); // Max 30 data points
     const dailyTrend = [];
-    for (let i = 13; i >= 0; i--) {
-      const date = subDays(now, i);
+    for (let i = trendDays - 1; i >= 0; i--) {
+      const date = subDays(dateRange.to, i);
       const dayStart = startOfDay(date);
       const dayEnd = endOfDay(date);
       
-      const dayJobs = jobs.filter(j => {
+      const dayJobs = periodJobs.filter(j => {
         if (!j.actual_end_time) return false;
         try {
           const endTime = parseISO(j.actual_end_time);
@@ -203,9 +249,9 @@ export default function BIDashboard() {
       });
     }
 
-    // Technique performance
+    // Technique performance (filtered by period)
     const techniquePerformance = techniques.map(tech => {
-      const techJobs = jobs.filter(j => j.technique_id === tech.id && j.status === 'finished');
+      const techJobs = periodJobs.filter(j => j.technique_id === tech.id && j.status === 'finished');
       const totalProduced = techJobs.reduce((sum, j) => sum + (j.produced_quantity ?? j.quantity ?? 0), 0);
       const totalLost = techJobs.reduce((sum, j) => sum + (j.lost_pieces ?? 0), 0);
       const techMachines = machines.filter(m => m.technique_id === tech.id);
@@ -222,9 +268,9 @@ export default function BIDashboard() {
       };
     }).filter(t => t.jobs > 0).sort((a, b) => b.produced - a.produced);
 
-    // Machine utilization
+    // Machine utilization (filtered by period)
     const machineUtilization = machines.map(machine => {
-      const machineJobs = jobs.filter(j => j.machine_id === machine.id);
+      const machineJobs = periodJobs.filter(j => j.machine_id === machine.id);
       const completedJobs = machineJobs.filter(j => j.status === 'finished');
       const technique = techniques.find(t => t.id === machine.technique_id);
       
@@ -238,24 +284,23 @@ export default function BIDashboard() {
       };
     }).filter(m => m.totalJobs > 0).sort((a, b) => b.utilization - a.utilization);
 
-    // Calculate trends (compare last 7 days vs previous 7 days)
-    const prev7Days = subDays(last7Days, 7);
-    const prev7DaysJobs = jobs.filter(j => {
-      if (!j.created_at) return false;
-      try {
-        const created = parseISO(j.created_at);
-        return created >= prev7Days && created < last7Days;
-      } catch {
-        return false;
-      }
-    });
-
-    const productionTrend = last7DaysJobs.length > prev7DaysJobs.length ? 'up' : 
-                            last7DaysJobs.length < prev7DaysJobs.length ? 'down' : 'neutral';
+    // Calculate trends (current period vs previous period)
+    const productionTrend = periodJobs.length > prevPeriodJobs.length ? 'up' : 
+                            periodJobs.length < prevPeriodJobs.length ? 'down' : 'neutral';
     
-    const trendPercentage = prev7DaysJobs.length > 0 
-      ? Math.abs(((last7DaysJobs.length - prev7DaysJobs.length) / prev7DaysJobs.length) * 100).toFixed(0)
+    const trendPercentage = prevPeriodJobs.length > 0 
+      ? Math.abs(((periodJobs.length - prevPeriodJobs.length) / prevPeriodJobs.length) * 100).toFixed(0)
       : '0';
+
+    // Period-specific KPIs
+    const periodCompletedJobs = periodJobs.filter(j => j.status === 'finished').length;
+    const periodCompletedPieces = periodJobs
+      .filter(j => j.status === 'finished')
+      .reduce((sum, j) => sum + (j.produced_quantity ?? j.quantity ?? 0), 0);
+    const periodLostPieces = periodJobs.reduce((sum, j) => sum + (j.lost_pieces ?? 0), 0);
+    const periodLossRate = (periodCompletedPieces + periodLostPieces) > 0 
+      ? (periodLostPieces / (periodCompletedPieces + periodLostPieces)) * 100 
+      : 0;
 
     return {
       statusDistribution,
@@ -264,11 +309,15 @@ export default function BIDashboard() {
       machineUtilization: machineUtilization.slice(0, 10), // Top 10
       productionTrend,
       trendPercentage,
-      last7DaysJobs: last7DaysJobs.length,
+      periodJobs: periodJobs.length,
+      periodCompletedJobs,
+      periodCompletedPieces,
+      periodLostPieces,
+      periodLossRate,
       activeMachines: machines.filter(m => m.is_active).length,
       activeTechniques: techniques.length,
     };
-  }, [jobs, machines, techniques, kpis, oeeData]);
+  }, [jobs, machines, techniques, kpis, oeeData, dateRange, filteredJobs]);
 
   if (isLoading || !biMetrics || !kpis || !oeeData) {
     return (
@@ -283,6 +332,14 @@ export default function BIDashboard() {
       </MainLayout>
     );
   }
+
+  // Period label helper
+  const getPeriodLabel = () => {
+    if (periodFilter === 'custom') {
+      return `${format(customRange.from, 'dd/MM/yyyy')} - ${format(customRange.to, 'dd/MM/yyyy')}`;
+    }
+    return periodFilter === '7d' ? 'Últimos 7 dias' : periodFilter === '90d' ? 'Últimos 90 dias' : 'Últimos 30 dias';
+  };
 
   return (
     <MainLayout>
@@ -306,6 +363,92 @@ export default function BIDashboard() {
           </div>
         </div>
 
+        {/* Period Filters */}
+        <Card className="border-primary/20 bg-primary/5">
+          <CardContent className="pt-4 pb-4">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+              <div className="flex items-center gap-2">
+                <Filter className="h-4 w-4 text-primary" />
+                <span className="text-sm font-medium">Período:</span>
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <Button 
+                  variant={periodFilter === '7d' ? 'default' : 'outline'} 
+                  size="sm"
+                  onClick={() => setPeriodFilter('7d')}
+                >
+                  7 dias
+                </Button>
+                <Button 
+                  variant={periodFilter === '30d' ? 'default' : 'outline'} 
+                  size="sm"
+                  onClick={() => setPeriodFilter('30d')}
+                >
+                  30 dias
+                </Button>
+                <Button 
+                  variant={periodFilter === '90d' ? 'default' : 'outline'} 
+                  size="sm"
+                  onClick={() => setPeriodFilter('90d')}
+                >
+                  90 dias
+                </Button>
+                <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
+                  <PopoverTrigger asChild>
+                    <Button 
+                      variant={periodFilter === 'custom' ? 'default' : 'outline'} 
+                      size="sm"
+                      className="gap-2"
+                    >
+                      <CalendarIcon className="h-4 w-4" />
+                      Personalizado
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="end">
+                    <div className="p-4 space-y-4">
+                      <p className="text-sm font-medium">Selecione o período</p>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <p className="text-xs text-muted-foreground">De:</p>
+                          <Calendar
+                            mode="single"
+                            selected={customRange.from}
+                            onSelect={(date) => date && setCustomRange(prev => ({ ...prev, from: date }))}
+                            disabled={(date) => date > new Date() || date > customRange.to}
+                            className={cn("p-3 pointer-events-auto")}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <p className="text-xs text-muted-foreground">Até:</p>
+                          <Calendar
+                            mode="single"
+                            selected={customRange.to}
+                            onSelect={(date) => date && setCustomRange(prev => ({ ...prev, to: date }))}
+                            disabled={(date) => date > new Date() || date < customRange.from}
+                            className={cn("p-3 pointer-events-auto")}
+                          />
+                        </div>
+                      </div>
+                      <Button 
+                        className="w-full" 
+                        onClick={() => {
+                          setPeriodFilter('custom');
+                          setIsCalendarOpen(false);
+                        }}
+                      >
+                        Aplicar
+                      </Button>
+                    </div>
+                  </PopoverContent>
+                </Popover>
+              </div>
+              <Badge variant="secondary" className="ml-auto">
+                {getPeriodLabel()} • {biMetrics.periodJobs} jobs
+              </Badge>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* KPI Cards - Top Row */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <StatCard
@@ -318,24 +461,24 @@ export default function BIDashboard() {
           <StatCard
             title="Taxa de Qualidade"
             value={`${oeeData.overallQuality.toFixed(1)}%`}
-            subtitle={`${kpis.lostPieces.toLocaleString()} peças perdidas`}
+            subtitle={`${biMetrics.periodLostPieces.toLocaleString()} peças perdidas`}
             icon={Target}
             variant={oeeData.overallQuality >= 95 ? 'success' : oeeData.overallQuality >= 85 ? 'warning' : 'danger'}
           />
           <StatCard
             title="Jobs Concluídos"
-            value={kpis.completedJobs}
-            subtitle={`de ${kpis.totalJobs} total`}
+            value={biMetrics.periodCompletedJobs}
+            subtitle={`de ${biMetrics.periodJobs} no período`}
             icon={CheckCircle}
             trend={biMetrics.productionTrend as 'up' | 'down' | 'neutral'}
-            trendValue={`${biMetrics.trendPercentage}% vs semana anterior`}
+            trendValue={`${biMetrics.trendPercentage}% vs período anterior`}
           />
           <StatCard
             title="Peças Produzidas"
-            value={kpis.completedPieces.toLocaleString()}
-            subtitle={`Taxa de perda: ${kpis.lossRate.toFixed(2)}%`}
+            value={biMetrics.periodCompletedPieces.toLocaleString()}
+            subtitle={`Taxa de perda: ${biMetrics.periodLossRate.toFixed(2)}%`}
             icon={Package}
-            variant={kpis.lossRate > 5 ? 'warning' : 'success'}
+            variant={biMetrics.periodLossRate > 5 ? 'warning' : 'success'}
           />
         </div>
 
@@ -404,7 +547,7 @@ export default function BIDashboard() {
                 <LineChart className="h-5 w-5 text-primary" />
                 Tendência de Produção
               </CardTitle>
-              <CardDescription>Últimos 14 dias</CardDescription>
+              <CardDescription>{getPeriodLabel()}</CardDescription>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={280}>
