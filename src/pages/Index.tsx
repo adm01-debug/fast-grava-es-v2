@@ -194,7 +194,7 @@ const Index = () => {
                 value={stats.delayed.toString()}
                 subtitle={stats.delayed > 0 ? "Atenção necessária" : "Tudo em dia"}
                 icon={AlertTriangle}
-                variant="purple"
+                variant="orange"
                 className="stagger-4"
               />
             </>
