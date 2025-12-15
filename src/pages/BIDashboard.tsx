@@ -6,6 +6,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 import { useKPIs } from '@/hooks/useKPIs';
 import { useOEE } from '@/hooks/useOEE';
 import { useSchedulingData } from '@/hooks/useSchedulingData';
@@ -27,7 +29,9 @@ import {
   ArrowDown,
   Minus,
   CalendarIcon,
-  Filter
+  Filter,
+  GitCompare,
+  ArrowRight
 } from 'lucide-react';
 import { 
   AreaChart, 
@@ -43,7 +47,8 @@ import {
   YAxis, 
   CartesianGrid, 
   Tooltip, 
-  ResponsiveContainer
+  ResponsiveContainer,
+  Legend
 } from 'recharts';
 import { format, subDays, startOfDay, endOfDay, isWithinInterval, parseISO, differenceInDays } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -148,6 +153,15 @@ export default function BIDashboard() {
     to: new Date()
   });
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  
+  // Comparison mode state
+  const [comparisonMode, setComparisonMode] = useState(false);
+  const [periodFilter2, setPeriodFilter2] = useState<PeriodFilter>('30d');
+  const [customRange2, setCustomRange2] = useState<DateRange>({
+    from: subDays(new Date(), 60),
+    to: subDays(new Date(), 31)
+  });
+  const [isCalendarOpen2, setIsCalendarOpen2] = useState(false);
 
   // Get period days for OEE hook
   const periodDays = useMemo(() => {
@@ -173,43 +187,33 @@ export default function BIDashboard() {
     return { from: subDays(now, days), to: now };
   }, [periodFilter, customRange]);
 
-  // Filter jobs by selected period
-  const filteredJobs = useMemo(() => {
-    if (!jobs) return [];
-    return jobs.filter(j => {
-      if (!j.created_at) return false;
-      try {
-        const created = parseISO(j.created_at);
-        return isWithinInterval(created, { start: startOfDay(dateRange.from), end: endOfDay(dateRange.to) });
-      } catch {
-        return false;
-      }
-    });
-  }, [jobs, dateRange]);
-
-  // Calculate additional BI metrics
-  const biMetrics = useMemo(() => {
-    if (!jobs || !machines || !techniques || !kpis || !oeeData) return null;
-
+  // Get date range for comparison period
+  const dateRange2 = useMemo((): DateRange => {
     const now = new Date();
-    const periodStart = dateRange.from;
-    const halfPeriod = subDays(periodStart, differenceInDays(dateRange.to, dateRange.from));
+    if (periodFilter2 === 'custom') {
+      return customRange2;
+    }
+    const days = periodFilter2 === '7d' ? 7 : periodFilter2 === '90d' ? 90 : 30;
+    // Default to previous equivalent period
+    const endDate = subDays(dateRange.from, 1);
+    return { from: subDays(endDate, days), to: endDate };
+  }, [periodFilter2, customRange2, dateRange.from]);
 
-    // Jobs in selected period
-    const periodJobs = filteredJobs;
+  // Helper function to calculate metrics for a date range
+  const calculatePeriodMetrics = (range: DateRange) => {
+    if (!jobs || !machines || !techniques) return null;
 
-    // Jobs in previous period (for trend calculation)
-    const prevPeriodJobs = jobs.filter(j => {
+    const periodJobs = jobs.filter(j => {
       if (!j.created_at) return false;
       try {
         const created = parseISO(j.created_at);
-        return isWithinInterval(created, { start: startOfDay(halfPeriod), end: endOfDay(subDays(periodStart, 1)) });
+        return isWithinInterval(created, { start: startOfDay(range.from), end: endOfDay(range.to) });
       } catch {
         return false;
       }
     });
 
-    // Status distribution (filtered by period)
+    // Status distribution
     const statusDistribution = [
       { name: 'Finalizados', value: periodJobs.filter(j => j.status === 'finished').length, color: PIE_COLORS[0] },
       { name: 'Em Produção', value: periodJobs.filter(j => j.status === 'production').length, color: PIE_COLORS[1] },
@@ -218,11 +222,11 @@ export default function BIDashboard() {
       { name: 'Atrasados', value: periodJobs.filter(j => j.status === 'delayed').length, color: PIE_COLORS[4] },
     ].filter(s => s.value > 0);
 
-    // Daily production trend (based on period)
-    const trendDays = Math.min(differenceInDays(dateRange.to, dateRange.from), 30); // Max 30 data points
+    // Daily production trend
+    const trendDays = Math.min(differenceInDays(range.to, range.from), 30);
     const dailyTrend = [];
     for (let i = trendDays - 1; i >= 0; i--) {
-      const date = subDays(dateRange.to, i);
+      const date = subDays(range.to, i);
       const dayStart = startOfDay(date);
       const dayEnd = endOfDay(date);
       
@@ -249,7 +253,7 @@ export default function BIDashboard() {
       });
     }
 
-    // Technique performance (filtered by period)
+    // Technique performance
     const techniquePerformance = techniques.map(tech => {
       const techJobs = periodJobs.filter(j => j.technique_id === tech.id && j.status === 'finished');
       const totalProduced = techJobs.reduce((sum, j) => sum + (j.produced_quantity ?? j.quantity ?? 0), 0);
@@ -268,7 +272,7 @@ export default function BIDashboard() {
       };
     }).filter(t => t.jobs > 0).sort((a, b) => b.produced - a.produced);
 
-    // Machine utilization (filtered by period)
+    // Machine utilization
     const machineUtilization = machines.map(machine => {
       const machineJobs = periodJobs.filter(j => j.machine_id === machine.id);
       const completedJobs = machineJobs.filter(j => j.status === 'finished');
@@ -284,14 +288,6 @@ export default function BIDashboard() {
       };
     }).filter(m => m.totalJobs > 0).sort((a, b) => b.utilization - a.utilization);
 
-    // Calculate trends (current period vs previous period)
-    const productionTrend = periodJobs.length > prevPeriodJobs.length ? 'up' : 
-                            periodJobs.length < prevPeriodJobs.length ? 'down' : 'neutral';
-    
-    const trendPercentage = prevPeriodJobs.length > 0 
-      ? Math.abs(((periodJobs.length - prevPeriodJobs.length) / prevPeriodJobs.length) * 100).toFixed(0)
-      : '0';
-
     // Period-specific KPIs
     const periodCompletedJobs = periodJobs.filter(j => j.status === 'finished').length;
     const periodCompletedPieces = periodJobs
@@ -306,9 +302,7 @@ export default function BIDashboard() {
       statusDistribution,
       dailyTrend,
       techniquePerformance,
-      machineUtilization: machineUtilization.slice(0, 10), // Top 10
-      productionTrend,
-      trendPercentage,
+      machineUtilization: machineUtilization.slice(0, 10),
       periodJobs: periodJobs.length,
       periodCompletedJobs,
       periodCompletedPieces,
@@ -317,7 +311,62 @@ export default function BIDashboard() {
       activeMachines: machines.filter(m => m.is_active).length,
       activeTechniques: techniques.length,
     };
-  }, [jobs, machines, techniques, kpis, oeeData, dateRange, filteredJobs]);
+  };
+
+  // Filter jobs by selected period
+  const filteredJobs = useMemo(() => {
+    if (!jobs) return [];
+    return jobs.filter(j => {
+      if (!j.created_at) return false;
+      try {
+        const created = parseISO(j.created_at);
+        return isWithinInterval(created, { start: startOfDay(dateRange.from), end: endOfDay(dateRange.to) });
+      } catch {
+        return false;
+      }
+    });
+  }, [jobs, dateRange]);
+
+  // Calculate metrics for period 1
+  const biMetrics = useMemo(() => {
+    if (!jobs || !machines || !techniques || !kpis || !oeeData) return null;
+
+    const metrics = calculatePeriodMetrics(dateRange);
+    if (!metrics) return null;
+
+    const periodStart = dateRange.from;
+    const halfPeriod = subDays(periodStart, differenceInDays(dateRange.to, dateRange.from));
+
+    // Jobs in previous period (for trend calculation)
+    const prevPeriodJobs = jobs.filter(j => {
+      if (!j.created_at) return false;
+      try {
+        const created = parseISO(j.created_at);
+        return isWithinInterval(created, { start: startOfDay(halfPeriod), end: endOfDay(subDays(periodStart, 1)) });
+      } catch {
+        return false;
+      }
+    });
+
+    const productionTrend = metrics.periodJobs > prevPeriodJobs.length ? 'up' : 
+                            metrics.periodJobs < prevPeriodJobs.length ? 'down' : 'neutral';
+    
+    const trendPercentage = prevPeriodJobs.length > 0 
+      ? Math.abs(((metrics.periodJobs - prevPeriodJobs.length) / prevPeriodJobs.length) * 100).toFixed(0)
+      : '0';
+
+    return {
+      ...metrics,
+      productionTrend,
+      trendPercentage,
+    };
+  }, [jobs, machines, techniques, kpis, oeeData, dateRange]);
+
+  // Calculate metrics for period 2 (comparison)
+  const biMetrics2 = useMemo(() => {
+    if (!comparisonMode || !jobs || !machines || !techniques) return null;
+    return calculatePeriodMetrics(dateRange2);
+  }, [comparisonMode, jobs, machines, techniques, dateRange2]);
 
   if (isLoading || !biMetrics || !kpis || !oeeData) {
     return (
@@ -334,11 +383,73 @@ export default function BIDashboard() {
   }
 
   // Period label helper
-  const getPeriodLabel = () => {
-    if (periodFilter === 'custom') {
-      return `${format(customRange.from, 'dd/MM/yyyy')} - ${format(customRange.to, 'dd/MM/yyyy')}`;
+  const getPeriodLabel = (filter: PeriodFilter = periodFilter, range: DateRange = customRange) => {
+    if (filter === 'custom') {
+      return `${format(range.from, 'dd/MM/yyyy')} - ${format(range.to, 'dd/MM/yyyy')}`;
     }
-    return periodFilter === '7d' ? 'Últimos 7 dias' : periodFilter === '90d' ? 'Últimos 90 dias' : 'Últimos 30 dias';
+    return filter === '7d' ? 'Últimos 7 dias' : filter === '90d' ? 'Últimos 90 dias' : 'Últimos 30 dias';
+  };
+
+  // Calculate comparison percentages
+  const getComparisonDelta = (current: number, previous: number) => {
+    if (previous === 0) return { delta: 0, trend: 'neutral' as const };
+    const delta = ((current - previous) / previous) * 100;
+    return {
+      delta: Math.abs(delta),
+      trend: delta > 0 ? 'up' as const : delta < 0 ? 'down' as const : 'neutral' as const,
+    };
+  };
+
+  // Comparison KPI Card component
+  const ComparisonKPICard = ({ 
+    title, 
+    value1, 
+    value2, 
+    icon: Icon, 
+    format: formatFn = (v: number) => v.toLocaleString(),
+    higherIsBetter = true 
+  }: { 
+    title: string; 
+    value1: number; 
+    value2: number; 
+    icon: React.ElementType;
+    format?: (v: number) => string;
+    higherIsBetter?: boolean;
+  }) => {
+    const { delta, trend } = getComparisonDelta(value1, value2);
+    const isPositive = higherIsBetter ? trend === 'up' : trend === 'down';
+    
+    return (
+      <Card className="overflow-hidden">
+        <CardContent className="pt-6">
+          <div className="flex items-start justify-between mb-4">
+            <p className="text-sm font-medium text-muted-foreground">{title}</p>
+            <div className="p-2 rounded-lg bg-primary/10">
+              <Icon className="h-5 w-5 text-primary" />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-1">
+              <p className="text-xs text-muted-foreground">Período 1</p>
+              <p className="text-2xl font-bold text-primary">{formatFn(value1)}</p>
+            </div>
+            <div className="space-y-1">
+              <p className="text-xs text-muted-foreground">Período 2</p>
+              <p className="text-2xl font-bold text-muted-foreground">{formatFn(value2)}</p>
+            </div>
+          </div>
+          <div className={cn(
+            "mt-4 flex items-center gap-2 text-sm",
+            isPositive ? "text-green-500" : trend === 'neutral' ? "text-muted-foreground" : "text-red-500"
+          )}>
+            {trend === 'up' ? <ArrowUp className="h-4 w-4" /> : 
+             trend === 'down' ? <ArrowDown className="h-4 w-4" /> : 
+             <Minus className="h-4 w-4" />}
+            <span>{delta.toFixed(1)}% {trend === 'up' ? 'maior' : trend === 'down' ? 'menor' : 'igual'}</span>
+          </div>
+        </CardContent>
+      </Card>
+    );
   };
 
   return (
@@ -355,7 +466,18 @@ export default function BIDashboard() {
               Visão executiva consolidada • Atualizado em {format(new Date(), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
             </p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <Switch 
+                id="comparison-mode" 
+                checked={comparisonMode} 
+                onCheckedChange={setComparisonMode}
+              />
+              <Label htmlFor="comparison-mode" className="text-sm cursor-pointer flex items-center gap-2">
+                <GitCompare className="h-4 w-4" />
+                Comparar Períodos
+              </Label>
+            </div>
             <Badge variant="outline" className="text-sm">
               <Activity className="h-3 w-3 mr-1" />
               Dados em tempo real
@@ -366,90 +488,405 @@ export default function BIDashboard() {
         {/* Period Filters */}
         <Card className="border-primary/20 bg-primary/5">
           <CardContent className="pt-4 pb-4">
-            <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-              <div className="flex items-center gap-2">
-                <Filter className="h-4 w-4 text-primary" />
-                <span className="text-sm font-medium">Período:</span>
-              </div>
-              <div className="flex flex-wrap items-center gap-2">
-                <Button 
-                  variant={periodFilter === '7d' ? 'default' : 'outline'} 
-                  size="sm"
-                  onClick={() => setPeriodFilter('7d')}
-                >
-                  7 dias
-                </Button>
-                <Button 
-                  variant={periodFilter === '30d' ? 'default' : 'outline'} 
-                  size="sm"
-                  onClick={() => setPeriodFilter('30d')}
-                >
-                  30 dias
-                </Button>
-                <Button 
-                  variant={periodFilter === '90d' ? 'default' : 'outline'} 
-                  size="sm"
-                  onClick={() => setPeriodFilter('90d')}
-                >
-                  90 dias
-                </Button>
-                <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
-                  <PopoverTrigger asChild>
-                    <Button 
-                      variant={periodFilter === 'custom' ? 'default' : 'outline'} 
-                      size="sm"
-                      className="gap-2"
-                    >
-                      <CalendarIcon className="h-4 w-4" />
-                      Personalizado
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="end">
-                    <div className="p-4 space-y-4">
-                      <p className="text-sm font-medium">Selecione o período</p>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <p className="text-xs text-muted-foreground">De:</p>
-                          <Calendar
-                            mode="single"
-                            selected={customRange.from}
-                            onSelect={(date) => date && setCustomRange(prev => ({ ...prev, from: date }))}
-                            disabled={(date) => date > new Date() || date > customRange.to}
-                            className={cn("p-3 pointer-events-auto")}
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <p className="text-xs text-muted-foreground">Até:</p>
-                          <Calendar
-                            mode="single"
-                            selected={customRange.to}
-                            onSelect={(date) => date && setCustomRange(prev => ({ ...prev, to: date }))}
-                            disabled={(date) => date > new Date() || date < customRange.from}
-                            className={cn("p-3 pointer-events-auto")}
-                          />
-                        </div>
-                      </div>
+            <div className="space-y-4">
+              {/* Period 1 */}
+              <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <Badge variant="default" className="h-6 w-6 rounded-full p-0 flex items-center justify-center text-xs">1</Badge>
+                  <Filter className="h-4 w-4 text-primary" />
+                  <span className="text-sm font-medium">Período 1:</span>
+                </div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <Button 
+                    variant={periodFilter === '7d' ? 'default' : 'outline'} 
+                    size="sm"
+                    onClick={() => setPeriodFilter('7d')}
+                  >
+                    7 dias
+                  </Button>
+                  <Button 
+                    variant={periodFilter === '30d' ? 'default' : 'outline'} 
+                    size="sm"
+                    onClick={() => setPeriodFilter('30d')}
+                  >
+                    30 dias
+                  </Button>
+                  <Button 
+                    variant={periodFilter === '90d' ? 'default' : 'outline'} 
+                    size="sm"
+                    onClick={() => setPeriodFilter('90d')}
+                  >
+                    90 dias
+                  </Button>
+                  <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
+                    <PopoverTrigger asChild>
                       <Button 
-                        className="w-full" 
-                        onClick={() => {
-                          setPeriodFilter('custom');
-                          setIsCalendarOpen(false);
-                        }}
+                        variant={periodFilter === 'custom' ? 'default' : 'outline'} 
+                        size="sm"
+                        className="gap-2"
                       >
-                        Aplicar
+                        <CalendarIcon className="h-4 w-4" />
+                        Personalizado
                       </Button>
-                    </div>
-                  </PopoverContent>
-                </Popover>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="end">
+                      <div className="p-4 space-y-4">
+                        <p className="text-sm font-medium">Selecione o período 1</p>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <p className="text-xs text-muted-foreground">De:</p>
+                            <Calendar
+                              mode="single"
+                              selected={customRange.from}
+                              onSelect={(date) => date && setCustomRange(prev => ({ ...prev, from: date }))}
+                              disabled={(date) => date > new Date() || date > customRange.to}
+                              className={cn("p-3 pointer-events-auto")}
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <p className="text-xs text-muted-foreground">Até:</p>
+                            <Calendar
+                              mode="single"
+                              selected={customRange.to}
+                              onSelect={(date) => date && setCustomRange(prev => ({ ...prev, to: date }))}
+                              disabled={(date) => date > new Date() || date < customRange.from}
+                              className={cn("p-3 pointer-events-auto")}
+                            />
+                          </div>
+                        </div>
+                        <Button 
+                          className="w-full" 
+                          onClick={() => {
+                            setPeriodFilter('custom');
+                            setIsCalendarOpen(false);
+                          }}
+                        >
+                          Aplicar
+                        </Button>
+                      </div>
+                    </PopoverContent>
+                  </Popover>
+                </div>
+                <Badge variant="secondary" className="ml-auto">
+                  {getPeriodLabel()} • {biMetrics.periodJobs} jobs
+                </Badge>
               </div>
-              <Badge variant="secondary" className="ml-auto">
-                {getPeriodLabel()} • {biMetrics.periodJobs} jobs
-              </Badge>
+
+              {/* Period 2 (only shown in comparison mode) */}
+              {comparisonMode && (
+                <div className="flex flex-col sm:flex-row sm:items-center gap-4 pt-4 border-t border-border/50">
+                  <div className="flex items-center gap-2">
+                    <Badge variant="secondary" className="h-6 w-6 rounded-full p-0 flex items-center justify-center text-xs">2</Badge>
+                    <Filter className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm font-medium">Período 2:</span>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Button 
+                      variant={periodFilter2 === '7d' ? 'secondary' : 'outline'} 
+                      size="sm"
+                      onClick={() => setPeriodFilter2('7d')}
+                    >
+                      7 dias
+                    </Button>
+                    <Button 
+                      variant={periodFilter2 === '30d' ? 'secondary' : 'outline'} 
+                      size="sm"
+                      onClick={() => setPeriodFilter2('30d')}
+                    >
+                      30 dias
+                    </Button>
+                    <Button 
+                      variant={periodFilter2 === '90d' ? 'secondary' : 'outline'} 
+                      size="sm"
+                      onClick={() => setPeriodFilter2('90d')}
+                    >
+                      90 dias
+                    </Button>
+                    <Popover open={isCalendarOpen2} onOpenChange={setIsCalendarOpen2}>
+                      <PopoverTrigger asChild>
+                        <Button 
+                          variant={periodFilter2 === 'custom' ? 'secondary' : 'outline'} 
+                          size="sm"
+                          className="gap-2"
+                        >
+                          <CalendarIcon className="h-4 w-4" />
+                          Personalizado
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="end">
+                        <div className="p-4 space-y-4">
+                          <p className="text-sm font-medium">Selecione o período 2</p>
+                          <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                              <p className="text-xs text-muted-foreground">De:</p>
+                              <Calendar
+                                mode="single"
+                                selected={customRange2.from}
+                                onSelect={(date) => date && setCustomRange2(prev => ({ ...prev, from: date }))}
+                                disabled={(date) => date > new Date() || date > customRange2.to}
+                                className={cn("p-3 pointer-events-auto")}
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <p className="text-xs text-muted-foreground">Até:</p>
+                              <Calendar
+                                mode="single"
+                                selected={customRange2.to}
+                                onSelect={(date) => date && setCustomRange2(prev => ({ ...prev, to: date }))}
+                                disabled={(date) => date > new Date() || date < customRange2.from}
+                                className={cn("p-3 pointer-events-auto")}
+                              />
+                            </div>
+                          </div>
+                          <Button 
+                            className="w-full" 
+                            onClick={() => {
+                              setPeriodFilter2('custom');
+                              setIsCalendarOpen2(false);
+                            }}
+                          >
+                            Aplicar
+                          </Button>
+                        </div>
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+                  <Badge variant="outline" className="ml-auto">
+                    {getPeriodLabel(periodFilter2, customRange2)} • {biMetrics2?.periodJobs ?? 0} jobs
+                  </Badge>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
 
-        {/* KPI Cards - Top Row */}
+        {/* Comparison View */}
+        {comparisonMode && biMetrics2 ? (
+          <>
+            {/* Comparison Header */}
+            <div className="flex items-center justify-center gap-4 py-4">
+              <Badge variant="default" className="text-lg py-2 px-4">
+                {getPeriodLabel()}
+              </Badge>
+              <ArrowRight className="h-6 w-6 text-muted-foreground" />
+              <span className="text-sm text-muted-foreground">vs</span>
+              <ArrowRight className="h-6 w-6 text-muted-foreground rotate-180" />
+              <Badge variant="secondary" className="text-lg py-2 px-4">
+                {getPeriodLabel(periodFilter2, customRange2)}
+              </Badge>
+            </div>
+
+            {/* Comparison KPI Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <ComparisonKPICard
+                title="Jobs Concluídos"
+                value1={biMetrics.periodCompletedJobs}
+                value2={biMetrics2.periodCompletedJobs}
+                icon={CheckCircle}
+                higherIsBetter={true}
+              />
+              <ComparisonKPICard
+                title="Peças Produzidas"
+                value1={biMetrics.periodCompletedPieces}
+                value2={biMetrics2.periodCompletedPieces}
+                icon={Package}
+                higherIsBetter={true}
+              />
+              <ComparisonKPICard
+                title="Peças Perdidas"
+                value1={biMetrics.periodLostPieces}
+                value2={biMetrics2.periodLostPieces}
+                icon={AlertTriangle}
+                higherIsBetter={false}
+              />
+              <ComparisonKPICard
+                title="Taxa de Perda"
+                value1={biMetrics.periodLossRate}
+                value2={biMetrics2.periodLossRate}
+                icon={Target}
+                format={(v) => `${v.toFixed(2)}%`}
+                higherIsBetter={false}
+              />
+            </div>
+
+            {/* Comparison Charts */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Jobs by Status Comparison */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <PieChart className="h-5 w-5 text-primary" />
+                    Distribuição por Status
+                  </CardTitle>
+                  <CardDescription>Comparativo entre períodos</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-sm text-center text-muted-foreground mb-2">Período 1</p>
+                      <ResponsiveContainer width="100%" height={200}>
+                        <RechartsPieChart>
+                          <Pie
+                            data={biMetrics.statusDistribution}
+                            cx="50%"
+                            cy="50%"
+                            innerRadius={40}
+                            outerRadius={70}
+                            paddingAngle={2}
+                            dataKey="value"
+                          >
+                            {biMetrics.statusDistribution.map((entry, index) => (
+                              <Cell key={`cell-1-${index}`} fill={entry.color} />
+                            ))}
+                          </Pie>
+                          <Tooltip />
+                        </RechartsPieChart>
+                      </ResponsiveContainer>
+                    </div>
+                    <div>
+                      <p className="text-sm text-center text-muted-foreground mb-2">Período 2</p>
+                      <ResponsiveContainer width="100%" height={200}>
+                        <RechartsPieChart>
+                          <Pie
+                            data={biMetrics2.statusDistribution}
+                            cx="50%"
+                            cy="50%"
+                            innerRadius={40}
+                            outerRadius={70}
+                            paddingAngle={2}
+                            dataKey="value"
+                          >
+                            {biMetrics2.statusDistribution.map((entry, index) => (
+                              <Cell key={`cell-2-${index}`} fill={entry.color} />
+                            ))}
+                          </Pie>
+                          <Tooltip />
+                        </RechartsPieChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </div>
+                  {/* Legend */}
+                  <div className="flex flex-wrap justify-center gap-4 mt-4">
+                    {biMetrics.statusDistribution.map((entry) => (
+                      <div key={entry.name} className="flex items-center gap-2">
+                        <div className="w-3 h-3 rounded-full" style={{ backgroundColor: entry.color }} />
+                        <span className="text-xs">{entry.name}</span>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Technique Performance Comparison */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <BarChart3 className="h-5 w-5 text-primary" />
+                    Performance por Técnica
+                  </CardTitle>
+                  <CardDescription>Produção comparativa</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ResponsiveContainer width="100%" height={280}>
+                    <BarChart 
+                      data={biMetrics.techniquePerformance.slice(0, 6).map(t1 => {
+                        const t2 = biMetrics2?.techniquePerformance.find(t => t.id === t1.id);
+                        return {
+                          name: t1.name,
+                          'Período 1': t1.produced,
+                          'Período 2': t2?.produced ?? 0,
+                        };
+                      })}
+                      layout="vertical"
+                    >
+                      <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+                      <XAxis type="number" tick={{ fill: 'hsl(var(--muted-foreground))' }} />
+                      <YAxis 
+                        dataKey="name" 
+                        type="category" 
+                        width={80} 
+                        tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }} 
+                      />
+                      <Tooltip 
+                        contentStyle={{ 
+                          backgroundColor: 'hsl(var(--card))',
+                          border: '1px solid hsl(var(--border))',
+                          borderRadius: '8px'
+                        }}
+                      />
+                      <Legend />
+                      <Bar dataKey="Período 1" fill={CHART_COLORS.primary} radius={[0, 4, 4, 0]} />
+                      <Bar dataKey="Período 2" fill={CHART_COLORS.muted} radius={[0, 4, 4, 0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Machine Utilization Comparison Table */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Printer className="h-5 w-5 text-primary" />
+                  Comparativo de Utilização por Máquina
+                </CardTitle>
+                <CardDescription>Top 10 máquinas em ambos os períodos</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="border-b border-border">
+                        <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Máquina</th>
+                        <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Técnica</th>
+                        <th className="text-center py-3 px-4 text-sm font-medium text-primary">P1 Jobs</th>
+                        <th className="text-center py-3 px-4 text-sm font-medium text-primary">P1 Util.</th>
+                        <th className="text-center py-3 px-4 text-sm font-medium text-muted-foreground">P2 Jobs</th>
+                        <th className="text-center py-3 px-4 text-sm font-medium text-muted-foreground">P2 Util.</th>
+                        <th className="text-right py-3 px-4 text-sm font-medium text-muted-foreground">Variação</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {biMetrics.machineUtilization.map((m1) => {
+                        const m2 = biMetrics2?.machineUtilization.find(m => m.id === m1.id);
+                        const { delta, trend } = getComparisonDelta(m1.utilization, m2?.utilization ?? 0);
+                        
+                        return (
+                          <tr 
+                            key={m1.id} 
+                            className="border-b border-border/50 hover:bg-muted/30 transition-colors"
+                          >
+                            <td className="py-3 px-4 font-medium">{m1.name}</td>
+                            <td className="py-3 px-4">
+                              <Badge variant="outline" className="text-xs">{m1.technique}</Badge>
+                            </td>
+                            <td className="py-3 px-4 text-center text-primary">{m1.totalJobs}</td>
+                            <td className="py-3 px-4 text-center text-primary font-medium">{m1.utilization.toFixed(0)}%</td>
+                            <td className="py-3 px-4 text-center text-muted-foreground">{m2?.totalJobs ?? 0}</td>
+                            <td className="py-3 px-4 text-center text-muted-foreground">{(m2?.utilization ?? 0).toFixed(0)}%</td>
+                            <td className="py-3 px-4 text-right">
+                              <span className={cn(
+                                "flex items-center justify-end gap-1 text-sm",
+                                trend === 'up' ? "text-green-500" : trend === 'down' ? "text-red-500" : "text-muted-foreground"
+                              )}>
+                                {trend === 'up' ? <ArrowUp className="h-3 w-3" /> : 
+                                 trend === 'down' ? <ArrowDown className="h-3 w-3" /> : 
+                                 <Minus className="h-3 w-3" />}
+                                {delta.toFixed(1)}%
+                              </span>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </CardContent>
+            </Card>
+          </>
+        ) : (
+          /* Normal View (non-comparison) */
+          <>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <StatCard
             title="OEE Geral"
@@ -839,6 +1276,8 @@ export default function BIDashboard() {
             </CardContent>
           </Card>
         </div>
+          </>
+        )}
       </div>
     </MainLayout>
   );
