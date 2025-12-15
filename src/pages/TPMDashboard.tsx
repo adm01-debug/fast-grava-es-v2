@@ -11,6 +11,7 @@ import { TPMCalendar } from '@/components/tpm/TPMCalendar';
 import { TPMScheduleList } from '@/components/tpm/TPMScheduleList';
 import { CreateScheduleModal } from '@/components/tpm/CreateScheduleModal';
 import { MTBFMTTRWidget } from '@/components/reliability/MTBFMTTRWidget';
+import { MainLayout } from '@/components/layout/MainLayout';
 import { toast } from 'sonner';
 
 export default function TPMDashboard() {
@@ -43,27 +44,31 @@ export default function TPMDashboard() {
 
   if (isLoading) {
     return (
-      <div className="space-y-6 p-6">
-        <Skeleton className="h-10 w-64" />
-        <div className="grid grid-cols-4 gap-4">
-          {[...Array(4)].map((_, i) => <Skeleton key={i} className="h-28" />)}
+      <MainLayout>
+        <div className="p-4 sm:p-6 lg:p-8 space-y-6 animate-pulse">
+          <Skeleton className="h-10 w-64" />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+            {[...Array(5)].map((_, i) => <Skeleton key={i} className="h-28" />)}
+          </div>
+          <Skeleton className="h-[400px]" />
         </div>
-        <Skeleton className="h-[400px]" />
-      </div>
+      </MainLayout>
     );
   }
 
   return (
-    <>
+    <MainLayout>
       <Helmet>
         <title>TPM - Manutenção Preventiva | Sistema de Gravação</title>
       </Helmet>
 
-      <div className="space-y-6">
+      <div className="p-4 sm:p-6 lg:p-8 space-y-6 lg:space-y-8">
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 animate-fade-in">
           <div>
-            <h1 className="text-3xl font-display font-bold">TPM - Manutenção Preventiva</h1>
+            <h1 className="text-3xl font-display font-bold">
+              <span className="gradient-text">TPM - Manutenção Preventiva</span>
+            </h1>
             <p className="text-muted-foreground">
               Total Productive Maintenance - Gestão de manutenções programadas
             </p>
@@ -73,6 +78,7 @@ export default function TPMDashboard() {
               variant="outline" 
               onClick={() => checkAndGenerateAlerts.mutate()}
               disabled={checkAndGenerateAlerts.isPending}
+              className="hover:shadow-glow-primary transition-all"
             >
               <RefreshCw className={`h-4 w-4 mr-2 ${checkAndGenerateAlerts.isPending ? 'animate-spin' : ''}`} />
               Verificar Alertas
@@ -88,7 +94,7 @@ export default function TPMDashboard() {
 
         {/* KPI Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-          <Card className="card-glass hover-lift">
+          <Card className="glass-card hover-lift stagger-1">
             <CardContent className="pt-6">
               <div className="flex items-center gap-4">
                 <div className="p-3 rounded-xl bg-primary/10">
@@ -102,7 +108,7 @@ export default function TPMDashboard() {
             </CardContent>
           </Card>
 
-          <Card className="card-glass hover-lift">
+          <Card className="glass-card hover-lift stagger-2">
             <CardContent className="pt-6">
               <div className="flex items-center gap-4">
                 <div className="p-3 rounded-xl bg-blue-500/10">
@@ -116,7 +122,7 @@ export default function TPMDashboard() {
             </CardContent>
           </Card>
 
-          <Card className="card-glass hover-lift">
+          <Card className="glass-card hover-lift stagger-3">
             <CardContent className="pt-6">
               <div className="flex items-center gap-4">
                 <div className="p-3 rounded-xl bg-amber-500/10">
@@ -130,7 +136,7 @@ export default function TPMDashboard() {
             </CardContent>
           </Card>
 
-          <Card className="card-glass hover-lift">
+          <Card className="glass-card hover-lift stagger-4">
             <CardContent className="pt-6">
               <div className="flex items-center gap-4">
                 <div className="p-3 rounded-xl bg-red-500/10">
@@ -144,7 +150,7 @@ export default function TPMDashboard() {
             </CardContent>
           </Card>
 
-          <Card className="card-glass hover-lift">
+          <Card className="glass-card hover-lift stagger-5">
             <CardContent className="pt-6">
               <div className="flex items-center gap-4">
                 <div className="p-3 rounded-xl bg-emerald-500/10">
@@ -164,7 +170,7 @@ export default function TPMDashboard() {
 
         {/* Main Content */}
         <Tabs defaultValue="calendar" className="space-y-6">
-          <TabsList className="bg-muted/50">
+          <TabsList className="glass-card">
             <TabsTrigger value="calendar">Calendário</TabsTrigger>
             <TabsTrigger value="list">Lista</TabsTrigger>
             <TabsTrigger value="alerts">
@@ -209,6 +215,6 @@ export default function TPMDashboard() {
           </TabsContent>
         </Tabs>
       </div>
-    </>
+    </MainLayout>
   );
 }
