@@ -67,7 +67,7 @@ export default function TPMDashboard() {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 animate-fade-in">
           <div>
             <h1 className="text-3xl font-display font-bold">
-              <span className="gradient-text">TPM - Manutenção Preventiva</span>
+              <span className="gradient-text animate-pulse-glow">TPM - Manutenção Preventiva</span>
             </h1>
             <p className="text-muted-foreground">
               Total Productive Maintenance - Gestão de manutenções programadas
@@ -78,7 +78,7 @@ export default function TPMDashboard() {
               variant="outline" 
               onClick={() => checkAndGenerateAlerts.mutate()}
               disabled={checkAndGenerateAlerts.isPending}
-              className="hover:shadow-glow-primary transition-all"
+              className="hover:shadow-glow-primary hover:border-primary/50 transition-all duration-300"
             >
               <RefreshCw className={`h-4 w-4 mr-2 ${checkAndGenerateAlerts.isPending ? 'animate-spin' : ''}`} />
               Verificar Alertas
@@ -94,24 +94,24 @@ export default function TPMDashboard() {
 
         {/* KPI Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-          <Card className="glass-card hover-lift stagger-1">
+          <Card className="glass-card hover-lift stagger-1 hover:shadow-glow-primary hover:border-primary/30 transition-all duration-300 group">
             <CardContent className="pt-6">
               <div className="flex items-center gap-4">
-                <div className="p-3 rounded-xl bg-primary/10">
+                <div className="p-3 rounded-xl bg-primary/10 group-hover:bg-primary/20 group-hover:shadow-glow-primary transition-all duration-300">
                   <CalendarCheck className="h-6 w-6 text-primary" />
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Agendadas</p>
-                  <p className="text-2xl font-bold font-display">{stats.totalScheduled}</p>
+                  <p className="text-2xl font-bold font-display gradient-text">{stats.totalScheduled}</p>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="glass-card hover-lift stagger-2">
+          <Card className="glass-card hover-lift stagger-2 hover:shadow-[0_0_20px_hsl(210_90%_50%/0.3)] hover:border-blue-500/30 transition-all duration-300 group">
             <CardContent className="pt-6">
               <div className="flex items-center gap-4">
-                <div className="p-3 rounded-xl bg-blue-500/10">
+                <div className="p-3 rounded-xl bg-blue-500/10 group-hover:bg-blue-500/20 group-hover:shadow-[0_0_15px_hsl(210_90%_50%/0.4)] transition-all duration-300">
                   <Wrench className="h-6 w-6 text-blue-500" />
                 </div>
                 <div>
@@ -122,10 +122,10 @@ export default function TPMDashboard() {
             </CardContent>
           </Card>
 
-          <Card className="glass-card hover-lift stagger-3">
+          <Card className="glass-card hover-lift stagger-3 hover:shadow-[0_0_20px_hsl(38_92%_50%/0.3)] hover:border-amber-500/30 transition-all duration-300 group">
             <CardContent className="pt-6">
               <div className="flex items-center gap-4">
-                <div className="p-3 rounded-xl bg-amber-500/10">
+                <div className="p-3 rounded-xl bg-amber-500/10 group-hover:bg-amber-500/20 group-hover:shadow-[0_0_15px_hsl(38_92%_50%/0.4)] transition-all duration-300">
                   <Clock className="h-6 w-6 text-amber-500" />
                 </div>
                 <div>
@@ -136,10 +136,10 @@ export default function TPMDashboard() {
             </CardContent>
           </Card>
 
-          <Card className="glass-card hover-lift stagger-4">
+          <Card className="glass-card hover-lift stagger-4 hover:shadow-[0_0_20px_hsl(0_72%_51%/0.3)] hover:border-red-500/30 transition-all duration-300 group">
             <CardContent className="pt-6">
               <div className="flex items-center gap-4">
-                <div className="p-3 rounded-xl bg-red-500/10">
+                <div className="p-3 rounded-xl bg-red-500/10 group-hover:bg-red-500/20 group-hover:shadow-[0_0_15px_hsl(0_72%_51%/0.4)] transition-all duration-300">
                   <AlertTriangle className="h-6 w-6 text-red-500" />
                 </div>
                 <div>
@@ -150,10 +150,10 @@ export default function TPMDashboard() {
             </CardContent>
           </Card>
 
-          <Card className="glass-card hover-lift stagger-5">
+          <Card className="glass-card hover-lift stagger-5 hover:shadow-glow-success hover:border-emerald-500/30 transition-all duration-300 group">
             <CardContent className="pt-6">
               <div className="flex items-center gap-4">
-                <div className="p-3 rounded-xl bg-emerald-500/10">
+                <div className="p-3 rounded-xl bg-emerald-500/10 group-hover:bg-emerald-500/20 group-hover:shadow-glow-success transition-all duration-300">
                   <CheckCircle className="h-6 w-6 text-emerald-500" />
                 </div>
                 <div>
@@ -170,20 +170,24 @@ export default function TPMDashboard() {
 
         {/* Main Content */}
         <Tabs defaultValue="calendar" className="space-y-6">
-          <TabsList className="glass-card">
-            <TabsTrigger value="calendar">Calendário</TabsTrigger>
-            <TabsTrigger value="list">Lista</TabsTrigger>
-            <TabsTrigger value="alerts">
+          <TabsList className="glass-card p-1">
+            <TabsTrigger value="calendar" className="data-[state=active]:shadow-glow-primary data-[state=active]:bg-primary/10 transition-all duration-300">
+              Calendário
+            </TabsTrigger>
+            <TabsTrigger value="list" className="data-[state=active]:shadow-glow-primary data-[state=active]:bg-primary/10 transition-all duration-300">
+              Lista
+            </TabsTrigger>
+            <TabsTrigger value="alerts" className="data-[state=active]:shadow-glow-primary data-[state=active]:bg-primary/10 transition-all duration-300">
               Alertas
               {stats.activeAlerts > 0 && (
-                <span className="ml-2 px-2 py-0.5 text-xs rounded-full bg-destructive text-destructive-foreground">
+                <span className="ml-2 px-2 py-0.5 text-xs rounded-full bg-destructive text-destructive-foreground animate-pulse">
                   {stats.activeAlerts}
                 </span>
               )}
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="calendar" className="space-y-6">
+          <TabsContent value="calendar" className="space-y-6 animate-fade-in">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <div className="lg:col-span-2">
                 <TPMCalendar 
@@ -199,14 +203,14 @@ export default function TPMDashboard() {
             </div>
           </TabsContent>
 
-          <TabsContent value="list">
+          <TabsContent value="list" className="animate-fade-in">
             <TPMScheduleList
               schedules={schedules}
               onStartMaintenance={handleStartMaintenance}
             />
           </TabsContent>
 
-          <TabsContent value="alerts">
+          <TabsContent value="alerts" className="animate-fade-in">
             <TPMAlertsPanel
               alerts={alerts}
               onResolve={(id) => resolveAlert.mutate(id)}
