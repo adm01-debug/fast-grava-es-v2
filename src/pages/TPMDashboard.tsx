@@ -136,15 +136,15 @@ export default function TPMDashboard() {
             </CardContent>
           </Card>
 
-          <Card className="glass-card hover-lift stagger-4 hover:shadow-[0_0_20px_hsl(0_72%_51%/0.3)] hover:border-red-500/30 transition-all duration-300 group">
+          <Card className="glass-card hover-lift stagger-4 hover:shadow-glow-primary hover:border-primary/30 transition-all duration-300 group">
             <CardContent className="pt-6">
               <div className="flex items-center gap-4">
-                <div className="p-3 rounded-xl bg-red-500/10 group-hover:bg-red-500/20 group-hover:shadow-[0_0_15px_hsl(0_72%_51%/0.4)] transition-all duration-300">
-                  <AlertTriangle className="h-6 w-6 text-red-500" />
+                <div className="p-3 rounded-xl bg-primary/10 group-hover:bg-primary/20 group-hover:shadow-glow-primary transition-all duration-300">
+                  <AlertTriangle className="h-6 w-6 text-primary" />
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Atrasadas</p>
-                  <p className="text-2xl font-bold font-display text-red-500">{stats.overdue}</p>
+                  <p className="text-2xl font-bold font-display text-primary">{stats.overdue}</p>
                 </div>
               </div>
             </CardContent>
