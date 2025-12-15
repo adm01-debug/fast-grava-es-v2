@@ -67,7 +67,7 @@ const CHART_COLORS = {
   primaryGlow: 'hsl(var(--primary-glow))',
   success: 'hsl(var(--success))',
   warning: 'hsl(var(--warning))',
-  danger: 'hsl(var(--destructive))',
+  danger: 'hsl(var(--primary))', // Changed from destructive to primary (orange)
   info: 'hsl(var(--chart-1))',
   muted: 'hsl(var(--muted-foreground))',
   xp: 'hsl(var(--xp))',
@@ -79,7 +79,7 @@ const PIE_COLORS = [
   'hsl(var(--success))', 
   'hsl(var(--primary))', 
   'hsl(var(--coins))', 
-  'hsl(var(--destructive))', 
+  'hsl(var(--primary-glow))', // Changed from destructive to primary-glow (orange)
   'hsl(var(--xp))', 
   'hsl(var(--streak))'
 ];
@@ -98,12 +98,12 @@ function StatCard({ title, value, subtitle, icon: Icon, trend, trendValue, varia
   const variantStyles = {
     default: 'border-border/50 hover:border-primary/30',
     success: 'border-success/30 bg-success/5 hover:shadow-glow-success',
-    warning: 'border-warning/30 bg-warning/5',
-    danger: 'border-destructive/30 bg-destructive/5',
+    warning: 'border-warning/30 bg-warning/5 hover:shadow-glow-primary',
+    danger: 'border-primary/30 bg-primary/5 hover:shadow-glow-primary', // Changed to primary (orange)
   };
 
   const TrendIcon = trend === 'up' ? ArrowUp : trend === 'down' ? ArrowDown : Minus;
-  const trendColor = trend === 'up' ? 'text-success' : trend === 'down' ? 'text-destructive' : 'text-muted-foreground';
+  const trendColor = trend === 'up' ? 'text-success' : trend === 'down' ? 'text-primary' : 'text-muted-foreground'; // Changed to primary
 
   return (
     <Card className={cn(
@@ -454,7 +454,7 @@ export default function BIDashboard() {
           </div>
           <div className={cn(
             "mt-4 flex items-center gap-2 text-sm font-medium",
-            isPositive ? "text-success" : trend === 'neutral' ? "text-muted-foreground" : "text-destructive"
+            isPositive ? "text-success" : trend === 'neutral' ? "text-muted-foreground" : "text-primary"
           )}>
             {trend === 'up' ? <ArrowUp className="h-4 w-4" /> : 
              trend === 'down' ? <ArrowDown className="h-4 w-4" /> : 
