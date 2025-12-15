@@ -66,7 +66,7 @@ export default function KPIDashboard() {
   const statusData = [
     { name: 'Finalizados', value: kpis.completedJobs, color: '#10B981' },
     { name: 'Em Produção', value: kpis.inProgressJobs, color: '#06B6D4' },
-    { name: 'Atrasados', value: kpis.delayedJobs, color: '#EF4444' },
+    { name: 'Atrasados', value: kpis.delayedJobs, color: 'hsl(25, 95%, 53%)' }, // Orange instead of red
     { name: 'Outros', value: kpis.totalJobs - kpis.completedJobs - kpis.inProgressJobs - kpis.delayedJobs, color: '#6B7280' },
   ].filter(d => d.value > 0);
 
@@ -128,7 +128,7 @@ export default function KPIDashboard() {
                   <p className="text-xs sm:text-sm text-muted-foreground">Índice de Perdas</p>
                   <p className={cn(
                     "text-2xl sm:text-3xl font-bold",
-                    kpis.lossRate > 5 ? "text-red-400" : kpis.lossRate > 2 ? "text-amber-400" : "text-green-400"
+                    kpis.lossRate > 5 ? "text-primary" : kpis.lossRate > 2 ? "text-amber-400" : "text-green-400"
                   )}>
                     {kpis.lossRate.toFixed(2)}%
                   </p>
@@ -138,10 +138,10 @@ export default function KPIDashboard() {
                 </div>
                 <div className={cn(
                   "h-10 w-10 sm:h-12 sm:w-12 rounded-xl flex items-center justify-center flex-shrink-0",
-                  kpis.lossRate > 5 ? "bg-red-500/20" : kpis.lossRate > 2 ? "bg-amber-500/20" : "bg-green-500/20"
+                  kpis.lossRate > 5 ? "bg-primary/20" : kpis.lossRate > 2 ? "bg-amber-500/20" : "bg-green-500/20"
                 )}>
                   {kpis.lossRate > 2 ? (
-                    <TrendingDown className={cn("h-5 w-5 sm:h-6 sm:w-6", kpis.lossRate > 5 ? "text-red-400" : "text-amber-400")} />
+                    <TrendingDown className={cn("h-5 w-5 sm:h-6 sm:w-6", kpis.lossRate > 5 ? "text-primary" : "text-amber-400")} />
                   ) : (
                     <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 text-green-400" />
                   )}
@@ -157,7 +157,7 @@ export default function KPIDashboard() {
                   <p className="text-xs sm:text-sm text-muted-foreground">Jobs Atrasados</p>
                   <p className={cn(
                     "text-2xl sm:text-3xl font-bold",
-                    kpis.delayedJobs > 0 ? "text-red-400" : "text-green-400"
+                    kpis.delayedJobs > 0 ? "text-primary" : "text-green-400"
                   )}>
                     {kpis.delayedJobs}
                   </p>
@@ -167,9 +167,9 @@ export default function KPIDashboard() {
                 </div>
                 <div className={cn(
                   "h-10 w-10 sm:h-12 sm:w-12 rounded-xl flex items-center justify-center flex-shrink-0",
-                  kpis.delayedJobs > 0 ? "bg-red-500/20" : "bg-green-500/20"
+                  kpis.delayedJobs > 0 ? "bg-primary/20" : "bg-green-500/20"
                 )}>
-                  <AlertTriangle className={cn("h-5 w-5 sm:h-6 sm:w-6", kpis.delayedJobs > 0 ? "text-red-400" : "text-green-400")} />
+                  <AlertTriangle className={cn("h-5 w-5 sm:h-6 sm:w-6", kpis.delayedJobs > 0 ? "text-primary" : "text-green-400")} />
                 </div>
               </div>
             </CardContent>
@@ -296,7 +296,7 @@ export default function KPIDashboard() {
                       </td>
                       <td className="text-center py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm">{tech.totalPieces.toLocaleString()}</td>
                       <td className="text-center py-2 sm:py-3 px-2 sm:px-4">
-                        <span className={`text-xs sm:text-sm ${tech.lostPieces > 0 ? "text-red-400" : "text-muted-foreground"}`}>
+                        <span className={`text-xs sm:text-sm ${tech.lostPieces > 0 ? "text-primary" : "text-muted-foreground"}`}>
                           {tech.lostPieces}
                         </span>
                       </td>
@@ -345,8 +345,8 @@ export default function KPIDashboard() {
                 <p className="text-xl sm:text-2xl font-bold text-green-400">{kpis.todayStats.completed}</p>
                 <p className="text-xs sm:text-sm text-muted-foreground">Concluídos</p>
               </div>
-              <div className="text-center p-3 sm:p-4 rounded-lg bg-red-500/10">
-                <p className="text-xl sm:text-2xl font-bold text-red-400">{kpis.todayStats.delayed}</p>
+              <div className="text-center p-3 sm:p-4 rounded-lg bg-primary/10">
+                <p className="text-xl sm:text-2xl font-bold text-primary">{kpis.todayStats.delayed}</p>
                 <p className="text-xs sm:text-sm text-muted-foreground">Atrasados</p>
               </div>
             </div>

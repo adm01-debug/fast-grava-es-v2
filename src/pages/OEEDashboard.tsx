@@ -177,8 +177,8 @@ export default function OEEDashboard() {
           <Card>
             <CardContent className="pt-4">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-destructive/10">
-                  <AlertTriangle className="h-5 w-5 text-destructive" />
+                <div className="p-2 rounded-lg bg-primary/10">
+                  <AlertTriangle className="h-5 w-5 text-primary" />
                 </div>
                 <div>
                   <p className="text-2xl font-bold">{machinesBelowTarget}</p>
@@ -266,7 +266,7 @@ export default function OEEDashboard() {
                   <div><span className="text-green-600 font-medium">75-84%</span> Excelente</div>
                   <div><span className="text-yellow-500 font-medium">65-74%</span> Bom</div>
                   <div><span className="text-orange-500 font-medium">50-64%</span> Aceitável</div>
-                  <div><span className="text-destructive font-medium">&lt;50%</span> Crítico</div>
+                  <div><span className="text-primary font-medium">&lt;50%</span> Crítico</div>
                 </div>
               </div>
             </div>

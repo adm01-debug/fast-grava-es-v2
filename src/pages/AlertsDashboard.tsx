@@ -37,7 +37,7 @@ import { useStuckJobsDetection, StuckJob } from "@/hooks/useStuckJobsDetection";
 import { useOrphanedDataDetection } from "@/hooks/useOrphanedDataDetection";
 
 const priorityColors: Record<string, string> = {
-  urgent: 'bg-red-500/20 text-red-400 border-red-500/30',
+  urgent: 'bg-primary/20 text-primary border-primary/30',
   high: 'bg-orange-500/20 text-orange-400 border-orange-500/30',
   medium: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
   low: 'bg-green-500/20 text-green-400 border-green-500/30'
@@ -301,7 +301,7 @@ export default function AlertsDashboard() {
               <span className="font-medium text-foreground">{alert.techniqueName}</span>
               <Badge className={`${
                 alert.severity === 'critical' 
-                  ? 'bg-red-500/20 text-red-400 border-red-500/30' 
+                  ? 'bg-primary/20 text-primary border-primary/30' 
                   : 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30'
               } border text-xs`}>
                 {alert.severity === 'critical' ? 'Crítico' : 'Atenção'}
@@ -363,7 +363,7 @@ export default function AlertsDashboard() {
               }}
               className={`p-3 rounded-lg border cursor-pointer transition-colors ${
                 stuck.severity === 'critical' 
-                  ? 'bg-red-500/10 border-red-500/30 hover:bg-red-500/20' 
+                  ? 'bg-primary/10 border-primary/30 hover:bg-primary/20' 
                   : 'bg-amber-500/10 border-amber-500/30 hover:bg-amber-500/20'
               }`}
             >
