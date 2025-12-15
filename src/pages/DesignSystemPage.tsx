@@ -422,6 +422,8 @@ export default function DesignSystemPage() {
                   <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Variantes Gaming/Gradiente</h4>
                   <div className="flex flex-wrap gap-3">
                     <Button variant="gradient">Gradient</Button>
+                    <Button variant="gradient-subtle">Gradient Subtle</Button>
+                    <Button variant="gradient-intense">Gradient Intense</Button>
                     <Button variant="gradient-secondary">Gradient Secondary</Button>
                     <Button variant="gradient-success">Gradient Success</Button>
                     <Button variant="glow">Glow</Button>
@@ -430,13 +432,49 @@ export default function DesignSystemPage() {
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                     <CodeBlock code={'<Button variant="gradient">\n  Texto\n</Button>'} label="Gradient" />
-                    <CodeBlock code={'<Button variant="gradient-secondary">\n  Texto\n</Button>'} label="Gradient Secondary" />
-                    <CodeBlock code={'<Button variant="gradient-success">\n  Texto\n</Button>'} label="Gradient Success" />
+                    <CodeBlock code={'<Button variant="gradient-subtle">\n  Texto\n</Button>'} label="Gradient Subtle (Novo)" />
+                    <CodeBlock code={'<Button variant="gradient-intense">\n  Texto\n</Button>'} label="Gradient Intense (Novo)" />
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    <CodeBlock code={'<Button variant="gradient-secondary">\n  Texto\n</Button>'} label="Gradient Secondary" />
+                    <CodeBlock code={'<Button variant="gradient-success">\n  Texto\n</Button>'} label="Gradient Success" />
                     <CodeBlock code={'<Button variant="glow">\n  Texto\n</Button>'} label="Glow" />
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <CodeBlock code={'<Button variant="glass">\n  Texto\n</Button>'} label="Glass" />
                     <CodeBlock code={'<Button variant="premium">\n  Texto\n</Button>'} label="Premium" />
+                  </div>
+                </div>
+
+                {/* Gradient States */}
+                <div className="space-y-4">
+                  <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Estados de Gradiente</h4>
+                  <p className="text-sm text-muted-foreground">Os botões gradient agora possuem transições de cor para estados hover, active e disabled.</p>
+                  <div className="flex flex-wrap gap-3 items-center">
+                    <Button variant="gradient">Normal</Button>
+                    <span className="text-muted-foreground">→</span>
+                    <Button variant="gradient" className="gradient-primary-hover">Hover</Button>
+                    <span className="text-muted-foreground">→</span>
+                    <Button variant="gradient" className="gradient-primary-active">Active</Button>
+                    <span className="text-muted-foreground">→</span>
+                    <Button variant="gradient" disabled>Disabled</Button>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <CodeBlock 
+                      code={`.gradient-primary { /* Normal state */ }
+.gradient-primary-hover { /* Hover: lighter tones */ }
+.gradient-primary-active { /* Active: darker tones */ }
+.gradient-primary-disabled { /* Disabled: desaturated */ }`} 
+                      label="Classes CSS de Estado" 
+                    />
+                    <CodeBlock 
+                      code={`// Aplicado automaticamente no Button
+variant="gradient" // Usa transições automáticas
+                      
+// Para uso manual em outros elementos:
+className="gradient-primary-subtle"`} 
+                      label="Uso" 
+                    />
                   </div>
                 </div>
 
