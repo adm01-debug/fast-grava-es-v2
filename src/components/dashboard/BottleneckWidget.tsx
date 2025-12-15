@@ -20,9 +20,9 @@ interface AlertCardProps {
 const severityConfig = {
   critical: {
     icon: AlertTriangle,
-    bg: 'bg-red-500/20',
-    border: 'border-red-500/30',
-    text: 'text-red-400',
+    bg: 'bg-primary/20',
+    border: 'border-primary/30',
+    text: 'text-primary',
     label: 'Crítico'
   },
   warning: {
@@ -98,8 +98,8 @@ const AlertCard = memo(function AlertCard({ alert }: AlertCardProps) {
         <div className="h-2 bg-background/50 rounded-full overflow-hidden">
           <div 
             className={`h-full transition-all ${
-              alert.currentCapacity >= 90 ? 'bg-red-500' :
-              alert.currentCapacity >= 75 ? 'bg-orange-500' :
+              alert.currentCapacity >= 90 ? 'bg-primary' :
+              alert.currentCapacity >= 75 ? 'bg-primary/70' :
               'bg-green-500'
             }`}
             style={{ width: `${Math.min(100, alert.currentCapacity)}%` }}
@@ -157,7 +157,7 @@ function BottleneckWidgetComponent() {
           {totalAlerts > 0 ? (
             <div className="flex items-center gap-1.5 flex-wrap self-start sm:self-auto">
               {criticalCount > 0 && (
-                <Badge className="bg-red-500/20 text-red-400 border-red-500/30 border text-xs">
+                <Badge className="bg-primary/20 text-primary border-primary/30 border text-xs">
                   {criticalCount} crít.
                 </Badge>
               )}

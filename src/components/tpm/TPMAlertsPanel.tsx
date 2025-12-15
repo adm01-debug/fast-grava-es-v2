@@ -13,7 +13,7 @@ interface TPMAlertsPanelProps {
 }
 
 const alertTypeConfig: Record<string, { icon: React.ElementType; color: string; label: string }> = {
-  critical: { icon: AlertTriangle, color: 'text-red-500 bg-red-500/10', label: 'Crítico' },
+  critical: { icon: AlertTriangle, color: 'text-primary bg-primary/10', label: 'Crítico' },
   overdue: { icon: Clock, color: 'text-amber-500 bg-amber-500/10', label: 'Atrasado' },
   due: { icon: Wrench, color: 'text-blue-500 bg-blue-500/10', label: 'Vence Hoje' },
   upcoming: { icon: Clock, color: 'text-emerald-500 bg-emerald-500/10', label: 'Próximo' },
@@ -58,7 +58,7 @@ export function TPMAlertsPanel({ alerts, onResolve, onStartMaintenance }: TPMAle
             <div 
               key={alert.id} 
               className={`p-4 rounded-lg border border-border/50 ${
-                alert.alert_type === 'critical' ? 'bg-red-500/5 border-red-500/30' : 'bg-card/50'
+                alert.alert_type === 'critical' ? 'bg-primary/5 border-primary/30' : 'bg-card/50'
               }`}
             >
               <div className="flex items-start gap-3">

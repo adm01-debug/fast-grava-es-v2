@@ -23,7 +23,7 @@ export function OEEGaugeCard({
     const percentage = Math.min(100, Math.max(0, value));
     const rotation = (percentage / 100) * 180;
     
-    let color = 'hsl(var(--destructive))';
+    let color = 'hsl(var(--primary))';
     if (percentage >= 85) color = 'hsl(var(--success))';
     else if (percentage >= 75) color = 'hsl(142 76% 46%)';
     else if (percentage >= 65) color = 'hsl(48 96% 53%)';

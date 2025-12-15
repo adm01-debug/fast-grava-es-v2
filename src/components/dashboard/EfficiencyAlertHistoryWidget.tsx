@@ -36,7 +36,7 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/
 import { AreaChart, Area, XAxis, YAxis, ResponsiveContainer } from "recharts";
 
 const severityColors = {
-  error: 'bg-red-500/20 text-red-400 border-red-500/30',
+  error: 'bg-primary/20 text-primary border-primary/30',
   warning: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
   info: 'bg-blue-500/20 text-blue-400 border-blue-500/30'
 };
@@ -290,8 +290,8 @@ const AlertStatsPanel = ({ alerts, resolvedAlerts }: { alerts: EfficiencyAlertHi
         
         <div className="p-4 rounded-lg border border-border/50 bg-card/30 backdrop-blur-sm text-center">
           <div className="flex items-center justify-center gap-2 mb-2">
-            <div className="p-1.5 rounded-lg bg-red-500/20">
-              <AlertTriangle className="h-4 w-4 text-red-400" />
+            <div className="p-1.5 rounded-lg bg-primary/20">
+              <AlertTriangle className="h-4 w-4 text-primary" />
             </div>
           </div>
           <p className="text-2xl font-bold text-foreground">{stats.criticalCount}</p>

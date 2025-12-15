@@ -10,7 +10,7 @@ const reliabilityColors: Record<MachineReliabilityMetrics['reliabilityScore'], s
   good: 'bg-green-500/20 text-green-400 border-green-500/30',
   moderate: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
   poor: 'bg-orange-500/20 text-orange-400 border-orange-500/30',
-  critical: 'bg-red-500/20 text-red-400 border-red-500/30',
+  critical: 'bg-primary/20 text-primary border-primary/30',
 };
 
 const reliabilityLabels: Record<MachineReliabilityMetrics['reliabilityScore'], string> = {
@@ -146,12 +146,12 @@ export function MTBFMTTRWidget() {
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20">
+                <div className="p-3 rounded-lg bg-primary/10 border border-primary/20">
                   <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
                     <AlertTriangle className="h-3.5 w-3.5" />
                     Total Falhas
                   </div>
-                  <div className="text-xl font-bold text-red-400">
+                  <div className="text-xl font-bold text-primary">
                     {summary.totalFailures}
                   </div>
                 </div>
@@ -196,7 +196,7 @@ export function MTBFMTTRWidget() {
                     </div>
                     <div className="text-right">
                       <div className="text-muted-foreground">Falhas</div>
-                      <div className="font-medium text-red-400">{machine.totalFailures}</div>
+                      <div className="font-medium text-primary">{machine.totalFailures}</div>
                     </div>
                   </div>
                 </div>
@@ -227,7 +227,7 @@ export function MTBFMTTRWidget() {
                           machine.reliabilityScore === 'good' ? 'bg-green-500' :
                           machine.reliabilityScore === 'moderate' ? 'bg-yellow-500' :
                           machine.reliabilityScore === 'poor' ? 'bg-orange-500' :
-                          'bg-red-500'
+                          'bg-primary'
                         }`}
                       />
                       <span className="font-mono text-xs">{machine.machineCode}</span>
