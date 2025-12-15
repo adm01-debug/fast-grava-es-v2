@@ -21,6 +21,65 @@ import {
   Loader2
 } from 'lucide-react';
 
+// Campos que operadores podem atualizar (conforme RLS policy)
+const ALLOWED_OPERATOR_FIELDS = [
+  'produced_quantity',
+  'lost_pieces',
+  'actual_start_time',
+  'actual_end_time',
+  'production_photos',
+  'notes'
+] as const;
+
+type AllowedField = typeof ALLOWED_OPERATOR_FIELDS[number];
+
+// Tipo para o payload sanitizado
+interface SanitizedPayload {
+  produced_quantity?: number;
+  lost_pieces?: number;
+  actual_start_time?: string;
+  actual_end_time?: string;
+  production_photos?: string[] | null;
+  notes?: string | null;
+}
+
+/**
+ * Sanitiza o payload para garantir que apenas campos permitidos sejam enviados.
+ * Isso é uma camada adicional de segurança além do RLS no banco de dados.
+ */
+function sanitizeOperatorPayload(data: {
+  produced_quantity?: number;
+  lost_pieces?: number;
+  actual_start_time?: string;
+  actual_end_time?: string;
+  production_photos?: string[] | null;
+  notes?: string | null;
+  [key: string]: unknown;
+}): SanitizedPayload {
+  const sanitized: SanitizedPayload = {};
+  
+  if (data.produced_quantity !== undefined) {
+    sanitized.produced_quantity = data.produced_quantity;
+  }
+  if (data.lost_pieces !== undefined) {
+    sanitized.lost_pieces = data.lost_pieces;
+  }
+  if (data.actual_start_time !== undefined) {
+    sanitized.actual_start_time = data.actual_start_time;
+  }
+  if (data.actual_end_time !== undefined) {
+    sanitized.actual_end_time = data.actual_end_time;
+  }
+  if (data.production_photos !== undefined) {
+    sanitized.production_photos = data.production_photos;
+  }
+  if (data.notes !== undefined) {
+    sanitized.notes = data.notes;
+  }
+  
+  return sanitized;
+}
+
 interface ProductionRegistrationModalProps {
   job: DbJob | null;
   open: boolean;
@@ -102,29 +161,53 @@ export function ProductionRegistrationModal({
   const handleSave = async () => {
     if (!job) return;
 
+    // Validar campos numéricos
+    if (producedQuantity < 0 || lostPieces < 0) {
+      toast.error('Quantidades não podem ser negativas');
+      return;
+    }
+
     setIsSaving(true);
 
     try {
+      // Montar payload com todos os campos desejados
+      const rawPayload = {
+        actual_end_time: new Date().toISOString(),
+        lost_pieces: lostPieces,
+        notes: notes || null,
+        produced_quantity: producedQuantity,
+        production_photos: photos.length > 0 ? photos : null,
+        // Campos que NÃO devem ser atualizados por operadores (serão filtrados)
+        status: 'finished', // Será removido pelo sanitizer
+      };
+
+      // SANITIZAR: garantir que apenas campos permitidos sejam enviados
+      const sanitizedPayload = sanitizeOperatorPayload(rawPayload);
+
+      // Log em desenvolvimento para debugging
+      if (import.meta.env.DEV) {
+        console.log('Raw payload:', rawPayload);
+        console.log('Sanitized payload (allowed fields only):', sanitizedPayload);
+      }
+
       const { error } = await supabase
         .from('jobs')
-        .update({
-          status: 'finished',
-          actual_end_time: new Date().toISOString(),
-          lost_pieces: lostPieces,
-          notes: notes || null,
-          produced_quantity: producedQuantity,
-          production_photos: photos,
-        })
+        .update(sanitizedPayload)
         .eq('id', job.id);
 
       if (error) throw error;
 
       queryClient.invalidateQueries({ queryKey: ['jobs'] });
+      queryClient.invalidateQueries({ queryKey: ['scheduling-data'] });
       toast.success('Produção finalizada com sucesso!');
       onOpenChange(false);
     } catch (error) {
-      console.error('Error saving production:', error);
-      toast.error('Erro ao salvar registro de produção');
+      const message = error instanceof Error ? error.message : 'Erro desconhecido';
+      toast.error(`Erro ao salvar registro de produção: ${message}`);
+      
+      if (import.meta.env.DEV) {
+        console.error('Error saving production:', error);
+      }
     } finally {
       setIsSaving(false);
     }
