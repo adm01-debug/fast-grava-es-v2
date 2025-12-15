@@ -740,6 +740,27 @@
     background: linear-gradient(135deg, hsl(25 95% 53%) 0%, hsl(38 92% 50%) 100%);
   }
 
+  .gradient-primary-hover {
+    background: linear-gradient(135deg, hsl(25 95% 58%) 0%, hsl(38 92% 55%) 100%);
+  }
+
+  .gradient-primary-active {
+    background: linear-gradient(135deg, hsl(25 95% 48%) 0%, hsl(38 92% 45%) 100%);
+  }
+
+  .gradient-primary-disabled {
+    background: linear-gradient(135deg, hsl(25 30% 60%) 0%, hsl(38 30% 55%) 100%);
+    opacity: 0.6;
+  }
+
+  .gradient-primary-subtle {
+    background: linear-gradient(135deg, hsl(25 95% 53% / 0.15) 0%, hsl(38 92% 50% / 0.15) 100%);
+  }
+
+  .gradient-primary-intense {
+    background: linear-gradient(135deg, hsl(20 100% 50%) 0%, hsl(35 100% 45%) 100%);
+  }
+
   .gradient-secondary {
     background: linear-gradient(135deg, hsl(210 100% 60%) 0%, hsl(280 80% 60%) 100%);
   }
