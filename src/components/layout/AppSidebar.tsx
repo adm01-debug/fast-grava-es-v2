@@ -47,6 +47,7 @@ interface NavItem {
 
 const baseMainNavItems: Omit<NavItem, 'badge'>[] = [
   { icon: Home, label: 'Dashboard', href: '/' },
+  { icon: BarChart3, label: 'BI Executivo', href: '/bi' },
   { icon: Calendar, label: 'Calendário Diário', href: '/calendar/daily' },
   { icon: CalendarDays, label: 'Calendário Semanal', href: '/calendar/weekly' },
   { icon: LayoutGrid, label: 'Kanban', href: '/kanban' },
@@ -179,7 +180,7 @@ export function AppSidebar() {
       return ['/operator', '/alerts', '/assistant', '/scanner', '/knowledge'].includes(item.href);
     }
     if (role === 'manager') {
-      return ['/', '/calendar/daily', '/calendar/weekly', '/kpis', '/oee', '/abc', '/tpm', '/ml-predictions', '/alerts', '/efficiency', '/assistant', '/knowledge'].includes(item.href);
+      return ['/', '/bi', '/calendar/daily', '/calendar/weekly', '/kpis', '/oee', '/abc', '/tpm', '/ml-predictions', '/alerts', '/efficiency', '/assistant', '/knowledge'].includes(item.href);
     }
     return true; // coordinator sees all
   });

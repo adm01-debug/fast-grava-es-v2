@@ -45,6 +45,7 @@ const OEEDashboard = lazy(() => import("./pages/OEEDashboard"));
 const ABCCostingDashboard = lazy(() => import("./pages/ABCCostingDashboard"));
 const TPMDashboard = lazy(() => import("./pages/TPMDashboard"));
 const MLPredictionsDashboard = lazy(() => import("./pages/MLPredictionsDashboard"));
+const BIDashboard = lazy(() => import("./pages/BIDashboard"));
 const CodeQualityDashboard = lazy(() => import("./pages/CodeQualityDashboard"));
 const SettingsPage = lazy(() => import("./pages/SettingsPage"));
 const AuthPage = lazy(() => import("./pages/AuthPage"));
@@ -257,6 +258,15 @@ function AnimatedRoutes() {
             <PageTransition>
               <Suspense fallback={<KPIPageSkeleton />}>
                 <MLPredictionsDashboard />
+              </Suspense>
+            </PageTransition>
+          </ProtectedRoute>
+        } />
+        <Route path="/bi" element={
+          <ProtectedRoute allowedRoles={['manager', 'coordinator']}>
+            <PageTransition>
+              <Suspense fallback={<KPIPageSkeleton />}>
+                <BIDashboard />
               </Suspense>
             </PageTransition>
           </ProtectedRoute>
