@@ -35,7 +35,7 @@ const BufferRow = memo(function BufferRow({ data, onPromote, isPromoting }: Buff
     <div
       className={cn(
         "p-3 rounded-lg border transition-all duration-200",
-        isCritical && "bg-red-500/10 border-red-500/30",
+        isCritical && "bg-primary/10 border-primary/30",
         !isCritical && !isHealthy && "bg-amber-500/10 border-amber-500/30",
         isHealthy && "bg-green-500/10 border-green-500/30"
       )}
@@ -56,7 +56,7 @@ const BufferRow = memo(function BufferRow({ data, onPromote, isPromoting }: Buff
           <ArrowRight className="h-3 w-3 text-muted-foreground" />
           <div className={cn(
             "flex items-center gap-1",
-            isCritical && "text-red-400",
+            isCritical && "text-primary",
             !isCritical && !isHealthy && "text-amber-400",
             isHealthy && "text-green-400"
           )}>
@@ -70,7 +70,7 @@ const BufferRow = memo(function BufferRow({ data, onPromote, isPromoting }: Buff
         value={progress} 
         className={cn(
           "h-2",
-          isCritical && "[&>div]:bg-red-500",
+          isCritical && "[&>div]:bg-primary",
           !isCritical && !isHealthy && "[&>div]:bg-amber-500",
           isHealthy && "[&>div]:bg-green-500"
         )}
@@ -79,7 +79,7 @@ const BufferRow = memo(function BufferRow({ data, onPromote, isPromoting }: Buff
       <div className="flex items-center justify-between mt-2">
         <div>
           {isCritical && (
-            <p className="text-xs text-red-400 flex items-center gap-1">
+            <p className="text-xs text-primary flex items-center gap-1">
               <AlertCircle className="h-3 w-3" />
               Buffer vazio! Preparar jobs urgentemente.
             </p>
@@ -97,7 +97,7 @@ const BufferRow = memo(function BufferRow({ data, onPromote, isPromoting }: Buff
             variant="ghost"
             className={cn(
               "h-6 text-xs",
-              isCritical && "text-red-400 hover:text-red-300 hover:bg-red-500/10",
+              isCritical && "text-primary hover:text-primary/80 hover:bg-primary/10",
               !isCritical && "text-amber-400 hover:text-amber-300 hover:bg-amber-500/10"
             )}
             onClick={onPromote}

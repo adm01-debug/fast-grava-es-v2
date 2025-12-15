@@ -14,7 +14,7 @@ export function MLRiskDistributionChart({ predictions }: MLRiskDistributionChart
     { range: '20-40', label: 'Baixo', color: '#84cc16', count: 0 },
     { range: '40-60', label: 'Médio', color: '#eab308', count: 0 },
     { range: '60-80', label: 'Alto', color: '#f97316', count: 0 },
-    { range: '80-100', label: 'Crítico', color: '#ef4444', count: 0 },
+    { range: '80-100', label: 'Crítico', color: 'hsl(24, 95%, 50%)', count: 0 },
   ];
 
   predictions.forEach(p => {
@@ -32,7 +32,7 @@ export function MLRiskDistributionChart({ predictions }: MLRiskDistributionChart
   const highRiskPercentage = totalCount > 0 ? (highRiskCount / totalCount) * 100 : 0;
 
   const getTrendIcon = () => {
-    if (highRiskPercentage > 30) return <TrendingUp className="h-4 w-4 text-red-500" />;
+    if (highRiskPercentage > 30) return <TrendingUp className="h-4 w-4 text-primary" />;
     if (highRiskPercentage > 15) return <Minus className="h-4 w-4 text-amber-500" />;
     return <TrendingDown className="h-4 w-4 text-emerald-500" />;
   };

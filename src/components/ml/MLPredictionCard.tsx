@@ -15,7 +15,7 @@ interface MLPredictionCardProps {
 }
 
 const impactColors = {
-  high: 'text-red-500 bg-red-500/10',
+  high: 'text-primary bg-primary/10',
   medium: 'text-amber-500 bg-amber-500/10',
   low: 'text-blue-500 bg-blue-500/10',
 };
@@ -30,7 +30,7 @@ export function MLPredictionCard({
   const isHighRisk = Number(prediction.risk_score) >= 60;
 
   return (
-    <Card className={`card-glass ${isHighRisk ? 'border-red-500/50 bg-red-500/5' : ''}`}>
+    <Card className={`card-glass ${isHighRisk ? 'border-primary/50 bg-primary/5' : ''}`}>
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           <div>
@@ -61,7 +61,7 @@ export function MLPredictionCard({
           </div>
           <Progress 
             value={Number(prediction.risk_score)} 
-            className={`h-3 ${isHighRisk ? '[&>div]:bg-red-500' : ''}`}
+            className={`h-3 ${isHighRisk ? '[&>div]:bg-primary' : ''}`}
           />
         </div>
 
@@ -76,8 +76,8 @@ export function MLPredictionCard({
 
         {/* Predicted Failure Date */}
         {prediction.predicted_failure_date && (
-          <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/30">
-            <div className="flex items-center gap-2 text-destructive">
+          <div className="p-3 rounded-lg bg-primary/10 border border-primary/30">
+            <div className="flex items-center gap-2 text-primary">
               <AlertTriangle className="h-4 w-4" />
               <span className="text-sm font-medium">
                 Falha prevista: {format(new Date(prediction.predicted_failure_date), "dd/MM/yyyy", { locale: ptBR })}

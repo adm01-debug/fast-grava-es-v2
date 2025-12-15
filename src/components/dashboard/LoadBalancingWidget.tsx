@@ -65,7 +65,7 @@ const TechniqueLoadCard = memo(function TechniqueLoadCard({
                 <Cpu className="h-3 w-3" />
                 {load.machine.code}
               </span>
-              <span className={`font-medium ${load.occupancyRate >= 90 ? 'text-red-400' : load.occupancyRate >= 75 ? 'text-orange-400' : 'text-foreground'}`}>
+              <span className={`font-medium ${load.occupancyRate >= 90 ? 'text-primary' : load.occupancyRate >= 75 ? 'text-primary/70' : 'text-foreground'}`}>
                 {Math.round(load.occupancyRate)}%
               </span>
             </div>

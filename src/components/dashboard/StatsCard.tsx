@@ -105,7 +105,7 @@ function StatsCardComponent({
             <div className="flex items-center gap-1.5 pt-1">
               <span className={cn(
                 'text-xs sm:text-sm font-semibold',
-                trend.isPositive ? 'text-[hsl(145,80%,50%)]' : 'text-destructive'
+                trend.isPositive ? 'text-[hsl(145,80%,50%)]' : 'text-primary'
               )}>
                 {trend.isPositive ? '+' : ''}{trend.value}%
               </span>
