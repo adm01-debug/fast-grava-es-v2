@@ -40,14 +40,29 @@ const buttonVariants = cva(
           "dark:hover:bg-white/5 dark:hover:text-foreground",
         ],
         link: "text-primary underline-offset-4 hover:underline font-semibold",
-        // Gaming/Gradient variants
+        // Gaming/Gradient variants with state transitions
         gradient: [
           "gradient-primary text-white border-0",
-          "shadow-md hover:shadow-lg",
+          "shadow-md",
           "dark:shadow-[0_4px_20px_-5px_hsl(var(--primary)/0.4)]",
+          "hover:gradient-primary-hover hover:shadow-lg hover:translate-y-[-2px]",
           "dark:hover:shadow-[0_8px_30px_-5px_hsl(var(--primary)/0.6)]",
-          "hover:translate-y-[-2px]",
-          "active:translate-y-0",
+          "active:gradient-primary-active active:translate-y-0 active:shadow-sm",
+          "disabled:gradient-primary-disabled disabled:translate-y-0 disabled:shadow-none",
+        ],
+        "gradient-subtle": [
+          "gradient-primary-subtle text-primary border border-primary/20",
+          "hover:border-primary/40 hover:shadow-sm",
+          "active:bg-primary/20",
+          "disabled:opacity-50",
+        ],
+        "gradient-intense": [
+          "gradient-primary-intense text-white border-0",
+          "shadow-lg",
+          "dark:shadow-[0_6px_25px_-5px_hsl(var(--primary)/0.5)]",
+          "hover:shadow-xl hover:translate-y-[-2px]",
+          "dark:hover:shadow-[0_10px_40px_-5px_hsl(var(--primary)/0.7)]",
+          "active:translate-y-0 active:shadow-md",
         ],
         "gradient-secondary": [
           "gradient-secondary text-white border-0",
@@ -55,6 +70,7 @@ const buttonVariants = cva(
           "dark:shadow-[0_4px_20px_-5px_hsl(210_100%_60%/0.4)]",
           "dark:hover:shadow-[0_8px_30px_-5px_hsl(210_100%_60%/0.6)]",
           "hover:translate-y-[-2px]",
+          "active:translate-y-0",
         ],
         "gradient-success": [
           "gradient-success text-white border-0",
@@ -62,6 +78,7 @@ const buttonVariants = cva(
           "dark:shadow-[0_4px_20px_-5px_hsl(142_70%_50%/0.4)]",
           "dark:hover:shadow-[0_8px_30px_-5px_hsl(142_70%_50%/0.6)]",
           "hover:translate-y-[-2px]",
+          "active:translate-y-0",
         ],
         glow: [
           "bg-primary text-primary-foreground",
