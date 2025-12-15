@@ -61,17 +61,28 @@ interface DateRange {
   to: Date;
 }
 
-// Color palette for charts
+// Color palette for charts - using design system tokens
 const CHART_COLORS = {
   primary: 'hsl(var(--primary))',
-  success: 'hsl(142 76% 46%)',
-  warning: 'hsl(48 96% 53%)',
+  primaryGlow: 'hsl(var(--primary-glow))',
+  success: 'hsl(var(--success))',
+  warning: 'hsl(var(--warning))',
   danger: 'hsl(var(--destructive))',
-  info: 'hsl(217 91% 60%)',
+  info: 'hsl(var(--chart-1))',
   muted: 'hsl(var(--muted-foreground))',
+  xp: 'hsl(var(--xp))',
+  coins: 'hsl(var(--coins))',
+  streak: 'hsl(var(--streak))',
 };
 
-const PIE_COLORS = ['#22c55e', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4'];
+const PIE_COLORS = [
+  'hsl(var(--success))', 
+  'hsl(var(--primary))', 
+  'hsl(var(--coins))', 
+  'hsl(var(--destructive))', 
+  'hsl(var(--xp))', 
+  'hsl(var(--streak))'
+];
 
 interface StatCardProps {
   title: string;
@@ -85,32 +96,35 @@ interface StatCardProps {
 
 function StatCard({ title, value, subtitle, icon: Icon, trend, trendValue, variant = 'default' }: StatCardProps) {
   const variantStyles = {
-    default: 'border-border/50',
-    success: 'border-green-500/30 bg-green-500/5',
-    warning: 'border-yellow-500/30 bg-yellow-500/5',
-    danger: 'border-red-500/30 bg-red-500/5',
+    default: 'border-border/50 hover:border-primary/30',
+    success: 'border-success/30 bg-success/5 hover:shadow-glow-success',
+    warning: 'border-warning/30 bg-warning/5',
+    danger: 'border-destructive/30 bg-destructive/5',
   };
 
   const TrendIcon = trend === 'up' ? ArrowUp : trend === 'down' ? ArrowDown : Minus;
-  const trendColor = trend === 'up' ? 'text-green-500' : trend === 'down' ? 'text-red-500' : 'text-muted-foreground';
+  const trendColor = trend === 'up' ? 'text-success' : trend === 'down' ? 'text-destructive' : 'text-muted-foreground';
 
   return (
-    <Card className={`${variantStyles[variant]} transition-all hover:shadow-lg`}>
+    <Card className={cn(
+      variantStyles[variant],
+      "card-interactive group transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
+    )}>
       <CardContent className="pt-6">
         <div className="flex items-start justify-between">
           <div className="space-y-2">
-            <p className="text-sm text-muted-foreground">{title}</p>
-            <p className="text-3xl font-bold font-display">{value}</p>
+            <p className="text-sm text-muted-foreground font-medium">{title}</p>
+            <p className="text-3xl font-bold font-display bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/80">{value}</p>
             {subtitle && <p className="text-xs text-muted-foreground">{subtitle}</p>}
             {trend && trendValue && (
-              <div className={`flex items-center gap-1 text-sm ${trendColor}`}>
+              <div className={cn("flex items-center gap-1 text-sm font-medium", trendColor)}>
                 <TrendIcon className="h-4 w-4" />
                 <span>{trendValue}</span>
               </div>
             )}
           </div>
-          <div className="p-3 rounded-xl bg-primary/10">
-            <Icon className="h-6 w-6 text-primary" />
+          <div className="p-3 rounded-xl bg-primary/10 group-hover:bg-primary/20 group-hover:shadow-glow-primary transition-all duration-300">
+            <Icon className="h-6 w-6 text-primary group-hover:scale-110 transition-transform duration-300" />
           </div>
         </div>
       </CardContent>
@@ -120,24 +134,24 @@ function StatCard({ title, value, subtitle, icon: Icon, trend, trendValue, varia
 
 function LoadingSkeleton() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fade-in">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {[...Array(4)].map((_, i) => (
-          <Card key={i}>
+          <Card key={i} className="glass-card overflow-hidden" style={{ animationDelay: `${i * 100}ms` }}>
             <CardContent className="pt-6">
-              <Skeleton className="h-24 w-full" />
+              <Skeleton className="h-24 w-full rounded-lg" />
             </CardContent>
           </Card>
         ))}
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {[...Array(4)].map((_, i) => (
-          <Card key={i}>
+          <Card key={i} className="glass-card" style={{ animationDelay: `${(i + 4) * 100}ms` }}>
             <CardHeader>
-              <Skeleton className="h-6 w-48" />
+              <Skeleton className="h-6 w-48 rounded-lg" />
             </CardHeader>
             <CardContent>
-              <Skeleton className="h-64 w-full" />
+              <Skeleton className="h-64 w-full rounded-lg" />
             </CardContent>
           </Card>
         ))}
@@ -420,18 +434,18 @@ export default function BIDashboard() {
     const isPositive = higherIsBetter ? trend === 'up' : trend === 'down';
     
     return (
-      <Card className="overflow-hidden">
+      <Card className="card-interactive overflow-hidden group hover:shadow-glow-primary transition-all duration-300">
         <CardContent className="pt-6">
           <div className="flex items-start justify-between mb-4">
             <p className="text-sm font-medium text-muted-foreground">{title}</p>
-            <div className="p-2 rounded-lg bg-primary/10">
-              <Icon className="h-5 w-5 text-primary" />
+            <div className="p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 group-hover:shadow-glow-primary transition-all duration-300">
+              <Icon className="h-5 w-5 text-primary group-hover:scale-110 transition-transform" />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1">
               <p className="text-xs text-muted-foreground">Período 1</p>
-              <p className="text-2xl font-bold text-primary">{formatFn(value1)}</p>
+              <p className="text-2xl font-bold gradient-text">{formatFn(value1)}</p>
             </div>
             <div className="space-y-1">
               <p className="text-xs text-muted-foreground">Período 2</p>
@@ -439,8 +453,8 @@ export default function BIDashboard() {
             </div>
           </div>
           <div className={cn(
-            "mt-4 flex items-center gap-2 text-sm",
-            isPositive ? "text-green-500" : trend === 'neutral' ? "text-muted-foreground" : "text-red-500"
+            "mt-4 flex items-center gap-2 text-sm font-medium",
+            isPositive ? "text-success" : trend === 'neutral' ? "text-muted-foreground" : "text-destructive"
           )}>
             {trend === 'up' ? <ArrowUp className="h-4 w-4" /> : 
              trend === 'down' ? <ArrowDown className="h-4 w-4" /> : 
@@ -454,39 +468,41 @@ export default function BIDashboard() {
 
   return (
     <MainLayout>
-      <div className="p-6 space-y-8">
+      <div className="p-6 space-y-8 animate-fade-in">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div>
+          <div className="animate-slide-up">
             <h1 className="text-3xl font-bold font-display flex items-center gap-3">
-              <BarChart3 className="h-8 w-8 text-primary" />
-              Business Intelligence
+              <div className="p-2 rounded-xl bg-primary/10 shadow-glow-primary">
+                <BarChart3 className="h-8 w-8 text-primary" />
+              </div>
+              <span className="gradient-text">Business Intelligence</span>
             </h1>
-            <p className="text-muted-foreground">
+            <p className="text-muted-foreground mt-1">
               Visão executiva consolidada • Atualizado em {format(new Date(), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
             </p>
           </div>
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
+          <div className="flex items-center gap-4 animate-slide-left">
+            <div className="flex items-center gap-2 glass-card px-4 py-2 rounded-lg">
               <Switch 
                 id="comparison-mode" 
                 checked={comparisonMode} 
                 onCheckedChange={setComparisonMode}
               />
               <Label htmlFor="comparison-mode" className="text-sm cursor-pointer flex items-center gap-2">
-                <GitCompare className="h-4 w-4" />
+                <GitCompare className="h-4 w-4 text-primary" />
                 Comparar Períodos
               </Label>
             </div>
-            <Badge variant="outline" className="text-sm">
-              <Activity className="h-3 w-3 mr-1" />
+            <Badge variant="outline" className="text-sm border-primary/30 bg-primary/5 animate-pulse-glow">
+              <Activity className="h-3 w-3 mr-1 text-primary" />
               Dados em tempo real
             </Badge>
           </div>
         </div>
 
         {/* Period Filters */}
-        <Card className="border-primary/20 bg-primary/5">
+        <Card className="border-primary/20 bg-gradient-to-r from-primary/5 via-primary/10 to-xp/5 glass-card">
           <CardContent className="pt-4 pb-4">
             <div className="space-y-4">
               {/* Period 1 */}
@@ -664,14 +680,16 @@ export default function BIDashboard() {
         {comparisonMode && biMetrics2 ? (
           <>
             {/* Comparison Header */}
-            <div className="flex items-center justify-center gap-4 py-4">
-              <Badge variant="default" className="text-lg py-2 px-4">
+            <div className="flex items-center justify-center gap-4 py-6 animate-bounce-in">
+              <Badge variant="default" className="text-lg py-3 px-6 shadow-glow-primary animate-pulse-glow">
                 {getPeriodLabel()}
               </Badge>
-              <ArrowRight className="h-6 w-6 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">vs</span>
-              <ArrowRight className="h-6 w-6 text-muted-foreground rotate-180" />
-              <Badge variant="secondary" className="text-lg py-2 px-4">
+              <div className="flex items-center gap-2">
+                <ArrowRight className="h-6 w-6 text-primary animate-slide-right" />
+                <span className="text-sm font-medium text-muted-foreground">vs</span>
+                <ArrowRight className="h-6 w-6 text-primary rotate-180 animate-slide-left" />
+              </div>
+              <Badge variant="secondary" className="text-lg py-3 px-6">
                 {getPeriodLabel(periodFilter2, customRange2)}
               </Badge>
             </div>
@@ -712,7 +730,7 @@ export default function BIDashboard() {
             {/* Comparison Charts */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Jobs by Status Comparison */}
-              <Card>
+              <Card className="card-elevated hover:shadow-glow-primary transition-all duration-300">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <PieChart className="h-5 w-5 text-primary" />
@@ -778,7 +796,7 @@ export default function BIDashboard() {
               </Card>
 
               {/* Technique Performance Comparison */}
-              <Card>
+              <Card className="card-elevated hover:shadow-glow-primary transition-all duration-300">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <BarChart3 className="h-5 w-5 text-primary" />
@@ -824,7 +842,7 @@ export default function BIDashboard() {
             </div>
 
             {/* Machine Utilization Comparison Table */}
-            <Card>
+            <Card className="card-elevated overflow-hidden">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Printer className="h-5 w-5 text-primary" />
@@ -921,53 +939,53 @@ export default function BIDashboard() {
 
         {/* Secondary KPIs */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <Card className="bg-gradient-to-br from-primary/5 to-transparent">
+          <Card className="card-interactive bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border-primary/20 group hover:shadow-glow-primary">
             <CardContent className="pt-4 pb-4">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-primary/10">
-                  <Printer className="h-5 w-5 text-primary" />
+                <div className="p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-all">
+                  <Printer className="h-5 w-5 text-primary group-hover:scale-110 transition-transform" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold">{biMetrics.activeMachines}</p>
+                  <p className="text-2xl font-bold font-display">{biMetrics.activeMachines}</p>
                   <p className="text-xs text-muted-foreground">Máquinas Ativas</p>
                 </div>
               </div>
             </CardContent>
           </Card>
-          <Card className="bg-gradient-to-br from-blue-500/5 to-transparent">
+          <Card className="card-interactive bg-gradient-to-br from-xp/10 via-xp/5 to-transparent border-xp/20 group hover:shadow-[0_0_20px_hsl(var(--xp)/0.3)]">
             <CardContent className="pt-4 pb-4">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-blue-500/10">
-                  <Activity className="h-5 w-5 text-blue-500" />
+                <div className="p-2 rounded-lg bg-xp/10 group-hover:bg-xp/20 transition-all">
+                  <Activity className="h-5 w-5 text-xp group-hover:scale-110 transition-transform" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold">{biMetrics.activeTechniques}</p>
+                  <p className="text-2xl font-bold font-display">{biMetrics.activeTechniques}</p>
                   <p className="text-xs text-muted-foreground">Técnicas</p>
                 </div>
               </div>
             </CardContent>
           </Card>
-          <Card className="bg-gradient-to-br from-green-500/5 to-transparent">
+          <Card className="card-interactive bg-gradient-to-br from-success/10 via-success/5 to-transparent border-success/20 group hover:shadow-glow-success">
             <CardContent className="pt-4 pb-4">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-green-500/10">
-                  <TrendingUp className="h-5 w-5 text-green-500" />
+                <div className="p-2 rounded-lg bg-success/10 group-hover:bg-success/20 transition-all">
+                  <TrendingUp className="h-5 w-5 text-success group-hover:scale-110 transition-transform" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold">{kpis.inProgressJobs}</p>
+                  <p className="text-2xl font-bold font-display">{kpis.inProgressJobs}</p>
                   <p className="text-xs text-muted-foreground">Em Produção</p>
                 </div>
               </div>
             </CardContent>
           </Card>
-          <Card className="bg-gradient-to-br from-yellow-500/5 to-transparent">
+          <Card className="card-interactive bg-gradient-to-br from-warning/10 via-warning/5 to-transparent border-warning/20 group hover:shadow-[0_0_20px_hsl(var(--warning)/0.3)]">
             <CardContent className="pt-4 pb-4">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-yellow-500/10">
-                  <AlertTriangle className="h-5 w-5 text-yellow-500" />
+                <div className="p-2 rounded-lg bg-warning/10 group-hover:bg-warning/20 transition-all">
+                  <AlertTriangle className="h-5 w-5 text-warning group-hover:scale-110 transition-transform" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold">{kpis.delayedJobs}</p>
+                  <p className="text-2xl font-bold font-display">{kpis.delayedJobs}</p>
                   <p className="text-xs text-muted-foreground">Atrasados</p>
                 </div>
               </div>
@@ -978,10 +996,12 @@ export default function BIDashboard() {
         {/* Charts Row 1 */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Production Trend */}
-          <Card>
+          <Card className="card-elevated hover:shadow-glow-primary transition-all duration-300 group">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <LineChart className="h-5 w-5 text-primary" />
+                <div className="p-1.5 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-all">
+                  <LineChart className="h-5 w-5 text-primary" />
+                </div>
                 Tendência de Produção
               </CardTitle>
               <CardDescription>{getPeriodLabel()}</CardDescription>
@@ -991,18 +1011,23 @@ export default function BIDashboard() {
                 <AreaChart data={biMetrics.dailyTrend}>
                   <defs>
                     <linearGradient id="colorProduced" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor={CHART_COLORS.success} stopOpacity={0.3}/>
+                      <stop offset="5%" stopColor={CHART_COLORS.success} stopOpacity={0.4}/>
                       <stop offset="95%" stopColor={CHART_COLORS.success} stopOpacity={0}/>
                     </linearGradient>
+                    <linearGradient id="colorPrimary" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor={CHART_COLORS.primary} stopOpacity={0.3}/>
+                      <stop offset="95%" stopColor={CHART_COLORS.primary} stopOpacity={0}/>
+                    </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+                  <CartesianGrid strokeDasharray="3 3" className="stroke-border/50" />
                   <XAxis dataKey="date" className="text-xs" tick={{ fill: 'hsl(var(--muted-foreground))' }} />
                   <YAxis className="text-xs" tick={{ fill: 'hsl(var(--muted-foreground))' }} />
                   <Tooltip 
                     contentStyle={{ 
                       backgroundColor: 'hsl(var(--card))',
                       border: '1px solid hsl(var(--border))',
-                      borderRadius: '8px'
+                      borderRadius: '12px',
+                      boxShadow: '0 10px 40px -10px hsl(var(--primary) / 0.2)'
                     }}
                     labelFormatter={(label) => `Data: ${label}`}
                   />
@@ -1010,6 +1035,7 @@ export default function BIDashboard() {
                     type="monotone" 
                     dataKey="produced" 
                     stroke={CHART_COLORS.success} 
+                    strokeWidth={2}
                     fillOpacity={1} 
                     fill="url(#colorProduced)"
                     name="Produzidas"
@@ -1017,9 +1043,9 @@ export default function BIDashboard() {
                   <Line 
                     type="monotone" 
                     dataKey="jobs" 
-                    stroke={CHART_COLORS.info} 
-                    strokeWidth={2}
-                    dot={{ r: 3 }}
+                    stroke={CHART_COLORS.primary} 
+                    strokeWidth={3}
+                    dot={{ r: 4, fill: CHART_COLORS.primary, strokeWidth: 2 }}
                     name="Jobs"
                   />
                 </AreaChart>
@@ -1028,7 +1054,7 @@ export default function BIDashboard() {
           </Card>
 
           {/* Status Distribution */}
-          <Card>
+          <Card className="card-elevated hover:shadow-glow-primary transition-all duration-300 group">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <PieChart className="h-5 w-5 text-primary" />
@@ -1070,10 +1096,12 @@ export default function BIDashboard() {
         {/* Charts Row 2 */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Technique Performance */}
-          <Card>
+          <Card className="card-elevated hover:shadow-glow-primary transition-all duration-300 group">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <BarChart3 className="h-5 w-5 text-primary" />
+                <div className="p-1.5 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-all">
+                  <BarChart3 className="h-5 w-5 text-primary" />
+                </div>
                 Performance por Técnica
               </CardTitle>
               <CardDescription>Peças produzidas por técnica</CardDescription>
@@ -1081,7 +1109,7 @@ export default function BIDashboard() {
             <CardContent>
               <ResponsiveContainer width="100%" height={280}>
                 <BarChart data={biMetrics.techniquePerformance.slice(0, 8)} layout="vertical">
-                  <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+                  <CartesianGrid strokeDasharray="3 3" className="stroke-border/50" />
                   <XAxis type="number" tick={{ fill: 'hsl(var(--muted-foreground))' }} />
                   <YAxis 
                     dataKey="name" 
@@ -1093,19 +1121,20 @@ export default function BIDashboard() {
                     contentStyle={{ 
                       backgroundColor: 'hsl(var(--card))',
                       border: '1px solid hsl(var(--border))',
-                      borderRadius: '8px'
+                      borderRadius: '12px',
+                      boxShadow: '0 10px 40px -10px hsl(var(--primary) / 0.2)'
                     }}
                     formatter={(value: number, name: string) => [value.toLocaleString(), name === 'produced' ? 'Produzidas' : 'Perdidas']}
                   />
-                  <Bar dataKey="produced" fill={CHART_COLORS.success} name="Produzidas" radius={[0, 4, 4, 0]} />
-                  <Bar dataKey="lost" fill={CHART_COLORS.danger} name="Perdidas" radius={[0, 4, 4, 0]} />
+                  <Bar dataKey="produced" fill={CHART_COLORS.success} name="Produzidas" radius={[0, 6, 6, 0]} />
+                  <Bar dataKey="lost" fill={CHART_COLORS.danger} name="Perdidas" radius={[0, 6, 6, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </CardContent>
           </Card>
 
           {/* OEE Trend */}
-          <Card>
+          <Card className="card-elevated hover:shadow-glow-primary transition-all duration-300 group">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Gauge className="h-5 w-5 text-primary" />
@@ -1166,10 +1195,12 @@ export default function BIDashboard() {
         </div>
 
         {/* Machine Utilization Table */}
-        <Card>
+        <Card className="card-elevated overflow-hidden">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Printer className="h-5 w-5 text-primary" />
+              <div className="p-1.5 rounded-lg bg-primary/10">
+                <Printer className="h-5 w-5 text-primary" />
+              </div>
               Top 10 Máquinas por Utilização
             </CardTitle>
             <CardDescription>Taxa de conclusão de jobs por máquina</CardDescription>
@@ -1178,47 +1209,49 @@ export default function BIDashboard() {
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-border">
-                    <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Máquina</th>
-                    <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Técnica</th>
-                    <th className="text-center py-3 px-4 text-sm font-medium text-muted-foreground">Jobs</th>
-                    <th className="text-center py-3 px-4 text-sm font-medium text-muted-foreground">Concluídos</th>
-                    <th className="text-right py-3 px-4 text-sm font-medium text-muted-foreground">Utilização</th>
+                  <tr className="border-b border-primary/20 bg-primary/5">
+                    <th className="text-left py-3 px-4 text-sm font-semibold text-foreground">Máquina</th>
+                    <th className="text-left py-3 px-4 text-sm font-semibold text-foreground">Técnica</th>
+                    <th className="text-center py-3 px-4 text-sm font-semibold text-foreground">Jobs</th>
+                    <th className="text-center py-3 px-4 text-sm font-semibold text-foreground">Concluídos</th>
+                    <th className="text-right py-3 px-4 text-sm font-semibold text-foreground">Utilização</th>
                   </tr>
                 </thead>
                 <tbody>
                   {biMetrics.machineUtilization.map((machine, index) => (
                     <tr 
                       key={machine.id} 
-                      className="border-b border-border/50 hover:bg-muted/30 transition-colors"
+                      className="border-b border-border/50 hover:bg-primary/5 transition-all duration-200 group"
                     >
                       <td className="py-3 px-4">
                         <div className="flex items-center gap-2">
-                          <span className="text-xs text-muted-foreground w-5">{index + 1}.</span>
-                          <span className="font-medium">{machine.name}</span>
+                          <span className="text-xs text-muted-foreground w-5 font-medium">{index + 1}.</span>
+                          <span className="font-medium group-hover:text-primary transition-colors">{machine.name}</span>
                         </div>
                       </td>
                       <td className="py-3 px-4">
-                        <Badge variant="outline" className="text-xs">
+                        <Badge variant="outline" className="text-xs border-primary/30">
                           {machine.technique}
                         </Badge>
                       </td>
-                      <td className="py-3 px-4 text-center">{machine.totalJobs}</td>
-                      <td className="py-3 px-4 text-center">{machine.completedJobs}</td>
+                      <td className="py-3 px-4 text-center font-medium">{machine.totalJobs}</td>
+                      <td className="py-3 px-4 text-center font-medium">{machine.completedJobs}</td>
                       <td className="py-3 px-4 text-right">
                         <div className="flex items-center justify-end gap-2">
-                          <div className="w-20 h-2 bg-muted rounded-full overflow-hidden">
+                          <div className="w-24 h-2.5 bg-muted rounded-full overflow-hidden">
                             <div 
-                              className="h-full rounded-full transition-all"
+                              className="h-full rounded-full transition-all duration-500"
                               style={{ 
                                 width: `${machine.utilization}%`,
-                                backgroundColor: machine.utilization >= 80 ? CHART_COLORS.success : 
-                                                  machine.utilization >= 50 ? CHART_COLORS.warning : 
-                                                  CHART_COLORS.danger
+                                background: machine.utilization >= 80 
+                                  ? 'linear-gradient(90deg, hsl(var(--success)), hsl(var(--success) / 0.8))' 
+                                  : machine.utilization >= 50 
+                                  ? 'linear-gradient(90deg, hsl(var(--warning)), hsl(var(--warning) / 0.8))'
+                                  : 'linear-gradient(90deg, hsl(var(--destructive)), hsl(var(--destructive) / 0.8))'
                               }}
                             />
                           </div>
-                          <span className="text-sm font-medium w-12 text-right">
+                          <span className="text-sm font-bold w-12 text-right">
                             {machine.utilization.toFixed(0)}%
                           </span>
                         </div>
@@ -1233,43 +1266,49 @@ export default function BIDashboard() {
 
         {/* OEE Breakdown */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card className="bg-gradient-to-br from-blue-500/10 to-transparent border-blue-500/20">
+          <Card className="card-interactive bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border-primary/20 group hover:shadow-glow-primary">
             <CardContent className="pt-6">
               <div className="text-center">
-                <Clock className="h-8 w-8 mx-auto text-blue-500 mb-2" />
-                <p className="text-sm text-muted-foreground">Disponibilidade</p>
-                <p className="text-4xl font-bold font-display text-blue-500">
+                <div className="p-3 rounded-xl bg-primary/10 w-fit mx-auto mb-3 group-hover:bg-primary/20 group-hover:scale-110 transition-all duration-300">
+                  <Clock className="h-8 w-8 text-primary" />
+                </div>
+                <p className="text-sm text-muted-foreground font-medium">Disponibilidade</p>
+                <p className="text-4xl font-bold font-display gradient-text mt-1">
                   {oeeData.overallAvailability.toFixed(1)}%
                 </p>
-                <p className="text-xs text-muted-foreground mt-1">
+                <p className="text-xs text-muted-foreground mt-2">
                   Perda: {oeeData.availabilityLosses.toFixed(1)}%
                 </p>
               </div>
             </CardContent>
           </Card>
-          <Card className="bg-gradient-to-br from-purple-500/10 to-transparent border-purple-500/20">
+          <Card className="card-interactive bg-gradient-to-br from-xp/10 via-xp/5 to-transparent border-xp/20 group hover:shadow-[0_0_30px_hsl(var(--xp)/0.3)]">
             <CardContent className="pt-6">
               <div className="text-center">
-                <TrendingUp className="h-8 w-8 mx-auto text-purple-500 mb-2" />
-                <p className="text-sm text-muted-foreground">Performance</p>
-                <p className="text-4xl font-bold font-display text-purple-500">
+                <div className="p-3 rounded-xl bg-xp/10 w-fit mx-auto mb-3 group-hover:bg-xp/20 group-hover:scale-110 transition-all duration-300">
+                  <TrendingUp className="h-8 w-8 text-xp" />
+                </div>
+                <p className="text-sm text-muted-foreground font-medium">Performance</p>
+                <p className="text-4xl font-bold font-display text-xp mt-1">
                   {oeeData.overallPerformance.toFixed(1)}%
                 </p>
-                <p className="text-xs text-muted-foreground mt-1">
+                <p className="text-xs text-muted-foreground mt-2">
                   Perda: {oeeData.performanceLosses.toFixed(1)}%
                 </p>
               </div>
             </CardContent>
           </Card>
-          <Card className="bg-gradient-to-br from-green-500/10 to-transparent border-green-500/20">
+          <Card className="card-interactive bg-gradient-to-br from-success/10 via-success/5 to-transparent border-success/20 group hover:shadow-glow-success">
             <CardContent className="pt-6">
               <div className="text-center">
-                <Target className="h-8 w-8 mx-auto text-green-500 mb-2" />
-                <p className="text-sm text-muted-foreground">Qualidade</p>
-                <p className="text-4xl font-bold font-display text-green-500">
+                <div className="p-3 rounded-xl bg-success/10 w-fit mx-auto mb-3 group-hover:bg-success/20 group-hover:scale-110 transition-all duration-300">
+                  <Target className="h-8 w-8 text-success" />
+                </div>
+                <p className="text-sm text-muted-foreground font-medium">Qualidade</p>
+                <p className="text-4xl font-bold font-display text-success mt-1">
                   {oeeData.overallQuality.toFixed(1)}%
                 </p>
-                <p className="text-xs text-muted-foreground mt-1">
+                <p className="text-xs text-muted-foreground mt-2">
                   Perda: {oeeData.qualityLosses.toFixed(1)}%
                 </p>
               </div>
