@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useCallback } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -8,9 +8,13 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Calendar } from '@/components/ui/calendar';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { useKPIs } from '@/hooks/useKPIs';
 import { useOEE } from '@/hooks/useOEE';
 import { useSchedulingData } from '@/hooks/useSchedulingData';
+import { toast } from 'sonner';
 import { 
   TrendingUp, 
   TrendingDown, 
@@ -31,7 +35,12 @@ import {
   CalendarIcon,
   Filter,
   GitCompare,
-  ArrowRight
+  ArrowRight,
+  Download,
+  FileText,
+  ChevronRight,
+  X,
+  Eye
 } from 'lucide-react';
 import { 
   AreaChart, 
@@ -167,6 +176,19 @@ export default function BIDashboard() {
     to: new Date()
   });
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  
+  // Advanced filters
+  const [techniqueFilter, setTechniqueFilter] = useState<string>('all');
+  const [machineFilter, setMachineFilter] = useState<string>('all');
+  const [statusFilter, setStatusFilter] = useState<string>('all');
+  
+  // Drill-down state
+  const [drillDownData, setDrillDownData] = useState<{
+    type: 'technique' | 'machine' | 'status' | null;
+    id: string;
+    name: string;
+    jobs: any[];
+  } | null>(null);
   
   // Comparison mode state
   const [comparisonMode, setComparisonMode] = useState(false);
@@ -1314,6 +1336,32 @@ export default function BIDashboard() {
               </div>
             </CardContent>
           </Card>
+        </div>
+
+        {/* Export Button */}
+        <div className="flex justify-end">
+          <Button 
+            onClick={() => {
+              const exportData = {
+                exportedAt: new Date().toISOString(),
+                period: getPeriodLabel(),
+                metrics: biMetrics,
+                oee: oeeData,
+              };
+              const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = `bi-report-${format(new Date(), 'yyyy-MM-dd')}.json`;
+              a.click();
+              URL.revokeObjectURL(url);
+              toast.success('Relatório exportado com sucesso!');
+            }}
+            className="gap-2"
+          >
+            <Download className="h-4 w-4" />
+            Exportar Relatório
+          </Button>
         </div>
           </>
         )}

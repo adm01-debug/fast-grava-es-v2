@@ -1743,6 +1743,75 @@ export type Database = {
         }
         Relationships: []
       }
+      push_notifications: {
+        Row: {
+          body: string
+          created_at: string
+          data: Json | null
+          error_message: string | null
+          icon: string | null
+          id: string
+          sent_at: string | null
+          status: string
+          title: string
+          user_id: string | null
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          data?: Json | null
+          error_message?: string | null
+          icon?: string | null
+          id?: string
+          sent_at?: string | null
+          status?: string
+          title: string
+          user_id?: string | null
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          data?: Json | null
+          error_message?: string | null
+          icon?: string | null
+          id?: string
+          sent_at?: string | null
+          status?: string
+          title?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      push_subscriptions: {
+        Row: {
+          auth: string
+          created_at: string
+          endpoint: string
+          id: string
+          p256dh: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          auth: string
+          created_at?: string
+          endpoint: string
+          id?: string
+          p256dh: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          auth?: string
+          created_at?: string
+          endpoint?: string
+          id?: string
+          p256dh?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       qr_scan_history: {
         Row: {
           action: string
