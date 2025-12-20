@@ -8,6 +8,7 @@ import { AnimatePresence } from "framer-motion";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { EfficiencyNotificationProvider } from "@/components/notifications/EfficiencyNotificationProvider";
+import { OfflineSyncProvider } from "@/contexts/OfflineSyncContext";
 import { PageTransition } from "@/components/layout/PageTransition";
 import { NavigationListener } from "@/components/navigation/NavigationListener";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
@@ -52,6 +53,8 @@ const TraceabilityPage = lazy(() => import("./pages/TraceabilityPage"));
 const SPCDashboard = lazy(() => import("./pages/SPCDashboard"));
 const ShiftHandoverPage = lazy(() => import("./pages/ShiftHandoverPage"));
 const ExecutiveDashboard = lazy(() => import("./pages/ExecutiveDashboard"));
+const GamificationPage = lazy(() => import("./pages/GamificationPage"));
+const EnergyDashboard = lazy(() => import("./pages/EnergyDashboard"));
 const SettingsPage = lazy(() => import("./pages/SettingsPage"));
 const AuthPage = lazy(() => import("./pages/AuthPage"));
 const InstallAppPage = lazy(() => import("./pages/InstallAppPage"));
@@ -331,6 +334,24 @@ function AnimatedRoutes() {
             </PageTransition>
           </ProtectedRoute>
         } />
+        <Route path="/energy" element={
+          <ProtectedRoute allowedRoles={['coordinator', 'manager']}>
+            <PageTransition>
+              <Suspense fallback={<KPIPageSkeleton />}>
+                <EnergyDashboard />
+              </Suspense>
+            </PageTransition>
+          </ProtectedRoute>
+        } />
+        <Route path="/gamification" element={
+          <ProtectedRoute>
+            <PageTransition>
+              <Suspense fallback={<KPIPageSkeleton />}>
+                <GamificationPage />
+              </Suspense>
+            </PageTransition>
+          </ProtectedRoute>
+        } />
         <Route path="/settings" element={
           <ProtectedRoute allowedRoles={['coordinator']}>
             <PageTransition>
@@ -368,9 +389,11 @@ const App = () => (
         <BrowserRouter>
           <NavigationListener />
           <AuthProvider>
-            <EfficiencyNotificationProvider>
-              <AnimatedRoutes />
-            </EfficiencyNotificationProvider>
+            <OfflineSyncProvider>
+              <EfficiencyNotificationProvider>
+                <AnimatedRoutes />
+              </EfficiencyNotificationProvider>
+            </OfflineSyncProvider>
           </AuthProvider>
         </BrowserRouter>
       </TooltipProvider>

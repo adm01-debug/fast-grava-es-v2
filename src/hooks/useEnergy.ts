@@ -1,0 +1,258 @@
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { startOfMonth, endOfMonth, subMonths, format } from 'date-fns';
+
+export interface EnergyConsumption {
+  id: string;
+  machine_id: string | null;
+  recorded_at: string;
+  consumption_kwh: number;
+  power_factor: number | null;
+  voltage: number | null;
+  current_amps: number | null;
+  peak_demand_kw: number | null;
+  cost_per_kwh: number;
+  total_cost: number;
+  reading_type: string;
+  notes: string | null;
+  machine?: { name: string; code: string };
+}
+
+export interface EnergyAlert {
+  id: string;
+  machine_id: string | null;
+  alert_type: string;
+  threshold_value: number;
+  current_value: number;
+  severity: string;
+  message: string;
+  is_resolved: boolean;
+  resolved_at: string | null;
+  created_at: string;
+  machine?: { name: string };
+}
+
+export interface EnergyTarget {
+  id: string;
+  machine_id: string | null;
+  technique_id: string | null;
+  target_type: string;
+  target_value: number;
+  period_start: string;
+  period_end: string;
+  is_active: boolean;
+}
+
+export interface EnergyStats {
+  totalConsumption: number;
+  totalCost: number;
+  avgDailyConsumption: number;
+  peakDemand: number;
+  avgPowerFactor: number;
+  costTrend: number;
+  consumptionByMachine: { machineId: string; machineName: string; consumption: number; cost: number }[];
+  dailyConsumption: { date: string; consumption: number; cost: number }[];
+  hourlyPattern: { hour: number; avgConsumption: number }[];
+}
+
+export function useEnergy(dateRange?: { start: Date; end: Date }) {
+  const queryClient = useQueryClient();
+  const now = new Date();
+  const start = dateRange?.start || startOfMonth(now);
+  const end = dateRange?.end || endOfMonth(now);
+
+  // Fetch consumption data
+  const consumptionQuery = useQuery({
+    queryKey: ['energy-consumption', start.toISOString(), end.toISOString()],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('energy_consumption')
+        .select('*, machine:machines(name, code)')
+        .gte('recorded_at', start.toISOString())
+        .lte('recorded_at', end.toISOString())
+        .order('recorded_at', { ascending: false });
+
+      if (error) throw error;
+      return data as EnergyConsumption[];
+    },
+    staleTime: 60000,
+  });
+
+  // Fetch alerts
+  const alertsQuery = useQuery({
+    queryKey: ['energy-alerts'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('energy_alerts')
+        .select('*, machine:machines(name)')
+        .eq('is_resolved', false)
+        .order('created_at', { ascending: false })
+        .limit(50);
+
+      if (error) throw error;
+      return data as EnergyAlert[];
+    },
+    staleTime: 30000,
+  });
+
+  // Fetch targets
+  const targetsQuery = useQuery({
+    queryKey: ['energy-targets'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('energy_targets')
+        .select('*')
+        .eq('is_active', true);
+
+      if (error) throw error;
+      return data as EnergyTarget[];
+    },
+    staleTime: 60000,
+  });
+
+  // Calculate stats
+  const stats: EnergyStats = (() => {
+    const consumption = consumptionQuery.data || [];
+    
+    const totalConsumption = consumption.reduce((sum, c) => sum + Number(c.consumption_kwh), 0);
+    const totalCost = consumption.reduce((sum, c) => sum + Number(c.total_cost), 0);
+    const peakDemand = Math.max(...consumption.map(c => Number(c.peak_demand_kw) || 0), 0);
+    const avgPowerFactor = consumption.length > 0
+      ? consumption.reduce((sum, c) => sum + (Number(c.power_factor) || 0), 0) / consumption.filter(c => c.power_factor).length
+      : 0;
+
+    // Days in range
+    const days = Math.max(1, Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)));
+    const avgDailyConsumption = totalConsumption / days;
+
+    // Compare with previous month
+    const prevStart = subMonths(start, 1);
+    const prevData = consumption.filter(c => 
+      new Date(c.recorded_at) >= prevStart && new Date(c.recorded_at) < start
+    );
+    const prevTotal = prevData.reduce((sum, c) => sum + Number(c.total_cost), 0);
+    const costTrend = prevTotal > 0 ? ((totalCost - prevTotal) / prevTotal) * 100 : 0;
+
+    // Group by machine
+    const byMachine = new Map<string, { name: string; consumption: number; cost: number }>();
+    consumption.forEach(c => {
+      if (c.machine_id) {
+        const existing = byMachine.get(c.machine_id) || { 
+          name: c.machine?.name || 'Desconhecida', 
+          consumption: 0, 
+          cost: 0 
+        };
+        existing.consumption += Number(c.consumption_kwh);
+        existing.cost += Number(c.total_cost);
+        byMachine.set(c.machine_id, existing);
+      }
+    });
+    const consumptionByMachine = Array.from(byMachine.entries()).map(([id, data]) => ({
+      machineId: id,
+      machineName: data.name,
+      consumption: data.consumption,
+      cost: data.cost,
+    })).sort((a, b) => b.consumption - a.consumption);
+
+    // Group by day
+    const byDay = new Map<string, { consumption: number; cost: number }>();
+    consumption.forEach(c => {
+      const date = format(new Date(c.recorded_at), 'yyyy-MM-dd');
+      const existing = byDay.get(date) || { consumption: 0, cost: 0 };
+      existing.consumption += Number(c.consumption_kwh);
+      existing.cost += Number(c.total_cost);
+      byDay.set(date, existing);
+    });
+    const dailyConsumption = Array.from(byDay.entries())
+      .map(([date, data]) => ({ date, ...data }))
+      .sort((a, b) => a.date.localeCompare(b.date));
+
+    // Hourly pattern
+    const byHour = new Map<number, number[]>();
+    consumption.forEach(c => {
+      const hour = new Date(c.recorded_at).getHours();
+      const existing = byHour.get(hour) || [];
+      existing.push(Number(c.consumption_kwh));
+      byHour.set(hour, existing);
+    });
+    const hourlyPattern = Array.from({ length: 24 }, (_, i) => {
+      const values = byHour.get(i) || [];
+      return {
+        hour: i,
+        avgConsumption: values.length > 0 ? values.reduce((a, b) => a + b, 0) / values.length : 0,
+      };
+    });
+
+    return {
+      totalConsumption,
+      totalCost,
+      avgDailyConsumption,
+      peakDemand,
+      avgPowerFactor,
+      costTrend,
+      consumptionByMachine,
+      dailyConsumption,
+      hourlyPattern,
+    };
+  })();
+
+  // Add consumption reading
+  const addConsumption = useMutation({
+    mutationFn: async (data: {
+      machine_id: string;
+      consumption_kwh: number;
+      power_factor?: number;
+      voltage?: number;
+      current_amps?: number;
+      peak_demand_kw?: number;
+      reading_type?: string;
+      notes?: string;
+    }) => {
+      const { error } = await supabase
+        .from('energy_consumption')
+        .insert(data);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['energy-consumption'] });
+    },
+  });
+
+  // Resolve alert
+  const resolveAlert = useMutation({
+    mutationFn: async (alertId: string) => {
+      const { error } = await supabase
+        .from('energy_alerts')
+        .update({ is_resolved: true, resolved_at: new Date().toISOString() })
+        .eq('id', alertId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['energy-alerts'] });
+    },
+  });
+
+  // Create target
+  const createTarget = useMutation({
+    mutationFn: async (data: Omit<EnergyTarget, 'id'>) => {
+      const { error } = await supabase
+        .from('energy_targets')
+        .insert(data);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['energy-targets'] });
+    },
+  });
+
+  return {
+    consumption: consumptionQuery.data || [],
+    alerts: alertsQuery.data || [],
+    targets: targetsQuery.data || [],
+    stats,
+    isLoading: consumptionQuery.isLoading || alertsQuery.isLoading,
+    addConsumption,
+    resolveAlert,
+    createTarget,
+  };
+}

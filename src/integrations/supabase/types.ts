@@ -373,6 +373,162 @@ export type Database = {
           },
         ]
       }
+      energy_alerts: {
+        Row: {
+          alert_type: string
+          created_at: string
+          current_value: number
+          id: string
+          is_resolved: boolean
+          machine_id: string | null
+          message: string
+          resolved_at: string | null
+          resolved_by: string | null
+          severity: string
+          threshold_value: number
+        }
+        Insert: {
+          alert_type: string
+          created_at?: string
+          current_value: number
+          id?: string
+          is_resolved?: boolean
+          machine_id?: string | null
+          message: string
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity?: string
+          threshold_value: number
+        }
+        Update: {
+          alert_type?: string
+          created_at?: string
+          current_value?: number
+          id?: string
+          is_resolved?: boolean
+          machine_id?: string | null
+          message?: string
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity?: string
+          threshold_value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "energy_alerts_machine_id_fkey"
+            columns: ["machine_id"]
+            isOneToOne: false
+            referencedRelation: "machines"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      energy_consumption: {
+        Row: {
+          consumption_kwh: number
+          cost_per_kwh: number | null
+          created_at: string
+          current_amps: number | null
+          id: string
+          machine_id: string | null
+          notes: string | null
+          peak_demand_kw: number | null
+          power_factor: number | null
+          reading_type: string
+          recorded_at: string
+          total_cost: number | null
+          voltage: number | null
+        }
+        Insert: {
+          consumption_kwh?: number
+          cost_per_kwh?: number | null
+          created_at?: string
+          current_amps?: number | null
+          id?: string
+          machine_id?: string | null
+          notes?: string | null
+          peak_demand_kw?: number | null
+          power_factor?: number | null
+          reading_type?: string
+          recorded_at?: string
+          total_cost?: number | null
+          voltage?: number | null
+        }
+        Update: {
+          consumption_kwh?: number
+          cost_per_kwh?: number | null
+          created_at?: string
+          current_amps?: number | null
+          id?: string
+          machine_id?: string | null
+          notes?: string | null
+          peak_demand_kw?: number | null
+          power_factor?: number | null
+          reading_type?: string
+          recorded_at?: string
+          total_cost?: number | null
+          voltage?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "energy_consumption_machine_id_fkey"
+            columns: ["machine_id"]
+            isOneToOne: false
+            referencedRelation: "machines"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      energy_targets: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          is_active: boolean
+          machine_id: string | null
+          period_end: string
+          period_start: string
+          target_type: string
+          target_value: number
+          technique_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_active?: boolean
+          machine_id?: string | null
+          period_end: string
+          period_start: string
+          target_type: string
+          target_value: number
+          technique_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_active?: boolean
+          machine_id?: string | null
+          period_end?: string
+          period_start?: string
+          target_type?: string
+          target_value?: number
+          technique_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "energy_targets_machine_id_fkey"
+            columns: ["machine_id"]
+            isOneToOne: false
+            referencedRelation: "machines"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       gamification_settings: {
         Row: {
           created_at: string
