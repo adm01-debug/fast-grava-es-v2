@@ -293,6 +293,30 @@ export type Database = {
         }
         Relationships: []
       }
+      daily_summaries: {
+        Row: {
+          created_at: string
+          data: Json
+          date: string
+          id: string
+          summary_type: string
+        }
+        Insert: {
+          created_at?: string
+          data?: Json
+          date: string
+          id?: string
+          summary_type: string
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          date?: string
+          id?: string
+          summary_type?: string
+        }
+        Relationships: []
+      }
       efficiency_alert_history: {
         Row: {
           alert_type: string
