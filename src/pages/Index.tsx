@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { DraggableWidget } from '@/components/dashboard/DraggableWidget';
 import { DashboardEditControls } from '@/components/dashboard/DashboardEditControls';
 import { SortableWidgetSection } from '@/components/dashboard/SortableWidgetSection';
+import { DailySummaryCard } from '@/components/notifications/DailySummaryCard';
 import { Badge } from '@/components/ui/badge';
 import { 
   Calendar, 
@@ -216,7 +217,10 @@ const Index = () => {
           </div>
 
           {/* Right - Sidebar widgets */}
-          <div className="xl:col-span-2">
+          <div className="xl:col-span-2 space-y-6">
+            {/* Daily Summary Card - visible to all */}
+            <DailySummaryCard />
+            
             <SortableWidgetSection
               widgets={sidebarWidgets}
               section="sidebar"
