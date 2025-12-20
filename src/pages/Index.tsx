@@ -1,4 +1,5 @@
 import { Suspense, lazy, useMemo, ComponentType } from 'react';
+import { useTranslation } from 'react-i18next';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { StatsCard } from '@/components/dashboard/StatsCard';
 import { useOperatorDashboardData } from '@/hooks/useOperatorDashboardData';
@@ -67,6 +68,7 @@ const WIDGET_COMPONENTS: Record<string, WidgetComponentConfig> = {
 const COORDINATOR_ONLY_WIDGETS = ['sequencing', 'loadbalancing', 'bottleneck', 'conflicts'];
 
 const Index = () => {
+  const { t } = useTranslation();
   const { stats, machines, isLoading, isOperator } = useOperatorDashboardData();
   const { profile } = useAuth();
   const {
@@ -123,19 +125,19 @@ const Index = () => {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 animate-fade-in">
           <div>
             <h1 className="text-3xl font-display font-bold">
-              <span className="gradient-text">Dashboard</span>
+              <span className="gradient-text">{t('dashboard.title')}</span>
             </h1>
             <div className="flex items-center gap-2">
               <p className="text-muted-foreground">
                 {isOperator 
-                  ? `Suas máquinas atribuídas (${machines.length})`
-                  : 'Visão geral do departamento de gravação'
+                  ? `${t('operators.assignedMachines')} (${machines.length})`
+                  : t('dashboard.weeklyOverview')
                 }
               </p>
               {isOperator && (
                 <Badge variant="secondary" className="gap-1">
                   <User className="h-3 w-3" />
-                  {profile?.full_name || 'Operador'}
+                  {profile?.full_name || t('operators.title')}
                 </Badge>
               )}
             </div>
@@ -152,7 +154,7 @@ const Index = () => {
         {/* Edit Mode Indicator */}
         {isEditMode && (
           <div className="bg-primary/10 border border-primary/20 rounded-lg p-3 text-center text-sm text-primary animate-fade-in">
-            Modo de edição ativo - Arraste os widgets para reorganizar
+            {t('common.edit')} - {t('kanban.dragHint')}
           </div>
         )}
 
@@ -167,33 +169,33 @@ const Index = () => {
           ) : (
             <>
               <StatsCard
-                title="Agendados Hoje"
+                title={t('dashboard.jobsQueue')}
                 value={stats.todayScheduled.toString()}
-                subtitle={`${stats.scheduled} total agendados`}
+                subtitle={`${stats.scheduled} ${t('jobs.statuses.scheduled')}`}
                 icon={Calendar}
                 variant="blue"
                 className="stagger-1"
               />
               <StatsCard
-                title="Em Produção"
+                title={t('dashboard.jobsInProduction')}
                 value={stats.inProgress.toString()}
-                subtitle={`de ${machines.length} máquinas`}
+                subtitle={`${machines.length} ${t('machines.title')}`}
                 icon={Printer}
                 variant="cyan"
                 className="stagger-2"
               />
               <StatsCard
-                title="Finalizados Hoje"
+                title={t('dashboard.jobsFinished')}
                 value={stats.todayCompleted.toString()}
-                subtitle={`${stats.completedPieces.toLocaleString('pt-BR')} peças total`}
+                subtitle={`${stats.completedPieces.toLocaleString('pt-BR')} ${t('jobs.producedQuantity')}`}
                 icon={CheckCircle2}
                 variant="green"
                 className="stagger-3"
               />
               <StatsCard
-                title="Atrasados"
+                title={t('alerts.types.warning')}
                 value={stats.delayed.toString()}
-                subtitle={stats.delayed > 0 ? "Atenção necessária" : "Tudo em dia"}
+                subtitle={stats.delayed > 0 ? t('alerts.types.warning') : t('common.success')}
                 icon={AlertTriangle}
                 variant="orange"
                 className="stagger-4"
@@ -236,7 +238,7 @@ const Index = () => {
         {!isOperator && efficiencyWidgets.length > 0 && (
           <div className="space-y-4">
             <h2 className="text-xl font-display font-semibold text-foreground">
-              Eficiência Operacional
+              {t('dashboard.efficiency')}
             </h2>
             <SortableWidgetSection
               widgets={efficiencyWidgets}
