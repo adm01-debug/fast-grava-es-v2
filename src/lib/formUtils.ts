@@ -9,9 +9,6 @@ import { z } from 'zod';
 import { useCallback, useMemo } from 'react';
 import { useToast } from '@/hooks/use-toast';
 
-// Re-export schemas for convenience
-export * from '@/lib/schemas';
-
 /**
  * Type-safe form hook with Zod validation
  */
@@ -180,9 +177,9 @@ export function transformFormData<TInput, TOutput>(
 ): TOutput {
   const result = { ...data } as any;
 
-  for (const [key, transform] of Object.entries(transforms)) {
-    if (transform && key in result) {
-      result[key] = transform(result[key]);
+  for (const [key, transformFn] of Object.entries(transforms)) {
+    if (typeof transformFn === 'function' && key in result) {
+      result[key] = transformFn(result[key]);
     }
   }
 

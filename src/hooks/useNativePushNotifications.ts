@@ -170,7 +170,7 @@ export function useNativePushNotifications() {
 
       const subscription = await swRegistrationRef.current.pushManager.subscribe({
         userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
+        applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY) as BufferSource,
       });
 
       const subscriptionJson = subscription.toJSON();
@@ -268,7 +268,6 @@ export function useNativePushNotifications() {
         await swRegistrationRef.current.showNotification(title, {
           icon: '/icons/icon-192x192.png',
           badge: '/icons/icon-96x96.png',
-          vibrate: [200, 100, 200],
           ...options,
         });
         return true;

@@ -4,7 +4,7 @@ import { Search, X, Loader2 } from 'lucide-react';
 import { useDebounce, useSearchDebounce } from '@/hooks/useDebounce';
 import { cn } from '@/lib/utils';
 
-export interface SearchInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange'> {
+export interface SearchInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'size'> {
   /** Callback when debounced value changes */
   onSearch: (value: string) => void;
   /** Debounce delay in milliseconds (default: 300) */
