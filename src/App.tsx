@@ -47,6 +47,7 @@ const TPMDashboard = lazy(() => import("./pages/TPMDashboard"));
 const MLPredictionsDashboard = lazy(() => import("./pages/MLPredictionsDashboard"));
 const BIDashboard = lazy(() => import("./pages/BIDashboard"));
 const CodeQualityDashboard = lazy(() => import("./pages/CodeQualityDashboard"));
+const NotificationsPage = lazy(() => import("./pages/NotificationsPage"));
 const SettingsPage = lazy(() => import("./pages/SettingsPage"));
 const AuthPage = lazy(() => import("./pages/AuthPage"));
 const InstallAppPage = lazy(() => import("./pages/InstallAppPage"));
@@ -277,6 +278,15 @@ function AnimatedRoutes() {
             <PageTransition>
               <Suspense fallback={<KPIPageSkeleton />}>
                 <CodeQualityDashboard />
+              </Suspense>
+            </PageTransition>
+          </ProtectedRoute>
+        } />
+        <Route path="/notifications" element={
+          <ProtectedRoute>
+            <PageTransition>
+              <Suspense fallback={<DashboardPageSkeleton />}>
+                <NotificationsPage />
               </Suspense>
             </PageTransition>
           </ProtectedRoute>

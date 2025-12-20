@@ -29,7 +29,8 @@ import {
   Palette,
   Menu,
   X,
-  Download
+  Download,
+  Bell
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { prefetchRoute } from '@/lib/prefetch';
@@ -60,6 +61,7 @@ const baseMainNavItems: Omit<NavItem, 'badge'>[] = [
   { icon: Brain, label: 'ML Preditivo', href: '/ml-predictions' },
   { icon: BarChart3, label: 'KPIs e Ocupação', href: '/kpis' },
   { icon: AlertTriangle, label: 'Alertas', href: '/alerts' },
+  { icon: Bell, label: 'Notificações', href: '/notifications' },
   { icon: BookOpen, label: 'Base de Conhecimento', href: '/knowledge' },
   { icon: UserCircle, label: 'Visão Operador', href: '/operator' },
   { icon: QrCode, label: 'Scanner QR', href: '/scanner' },
@@ -182,7 +184,7 @@ export function AppSidebar() {
       return ['/operator', '/alerts', '/assistant', '/scanner', '/knowledge'].includes(item.href);
     }
     if (role === 'manager') {
-      return ['/', '/bi', '/calendar/daily', '/calendar/weekly', '/kpis', '/oee', '/abc', '/tpm', '/ml-predictions', '/alerts', '/efficiency', '/assistant', '/knowledge'].includes(item.href);
+      return ['/', '/bi', '/calendar/daily', '/calendar/weekly', '/kpis', '/oee', '/abc', '/tpm', '/ml-predictions', '/alerts', '/notifications', '/efficiency', '/assistant', '/knowledge'].includes(item.href);
     }
     return true; // coordinator sees all
   });
