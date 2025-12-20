@@ -1,6 +1,6 @@
 import { useCallback, useRef } from 'react';
 
-type SoundType = 'delayed' | 'buffer' | 'bottleneck' | 'statusChange' | 'complete' | 'scan';
+type SoundType = 'delayed' | 'buffer' | 'bottleneck' | 'statusChange' | 'complete' | 'scan' | 'alert';
 
 interface SoundConfig {
   frequency: number;
@@ -51,6 +51,13 @@ const soundConfigs: Record<SoundType, SoundConfig> = {
     duration: 0.1,
     type: 'sine',
     volume: 0.15
+  },
+  alert: {
+    frequency: 660,
+    duration: 0.3,
+    type: 'square',
+    pattern: [0.12, 0.08, 0.12, 0.08, 0.2],
+    volume: 0.35
   }
 };
 
@@ -119,6 +126,7 @@ export const useNotificationSounds = () => {
   const playStatusChangeAlert = useCallback(() => playSound('statusChange'), [playSound]);
   const playCompleteAlert = useCallback(() => playSound('complete'), [playSound]);
   const playScanSound = useCallback(() => playSound('scan'), [playSound]);
+  const playAlertSound = useCallback(() => playSound('alert'), [playSound]);
 
   const setEnabled = useCallback((enabled: boolean) => {
     isEnabledRef.current = enabled;
@@ -141,6 +149,7 @@ export const useNotificationSounds = () => {
     playStatusChangeAlert,
     playCompleteAlert,
     playScanSound,
+    playAlertSound,
     setEnabled,
     isEnabled
   };
