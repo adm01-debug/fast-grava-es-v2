@@ -7,7 +7,8 @@ import {
   GripVertical, 
   X, 
   ClipboardList,
-  Save
+  Save,
+  Copy
 } from 'lucide-react';
 import {
   Dialog,
@@ -188,6 +189,30 @@ export default function ChecklistTemplatesManager() {
     },
     onError: (error) => {
       toast.error('Erro ao remover: ' + error.message);
+    }
+  });
+
+  // Duplicate template mutation
+  const duplicateTemplate = useMutation({
+    mutationFn: async (template: ChecklistTemplate) => {
+      const { error } = await supabase
+        .from('shift_checklist_templates')
+        .insert({
+          name: `${template.name} (Cópia)`,
+          description: template.description || null,
+          technique_id: template.technique_id || null,
+          items: template.items as unknown as import('@/integrations/supabase/types').Json,
+          is_active: true
+        });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['checklist-templates'] });
+      queryClient.invalidateQueries({ queryKey: ['checklist-templates-all'] });
+      toast.success('Template duplicado com sucesso');
+    },
+    onError: (error) => {
+      toast.error('Erro ao duplicar template: ' + error.message);
     }
   });
 
@@ -414,7 +439,18 @@ export default function ChecklistTemplatesManager() {
                         variant="ghost" 
                         size="icon" 
                         className="h-8 w-8"
+                        onClick={() => duplicateTemplate.mutate(template)}
+                        disabled={duplicateTemplate.isPending}
+                        title="Duplicar template"
+                      >
+                        <Copy className="h-4 w-4" />
+                      </Button>
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="h-8 w-8"
                         onClick={() => openEditModal(template)}
+                        title="Editar template"
                       >
                         <Edit2 className="h-4 w-4" />
                       </Button>
@@ -423,6 +459,7 @@ export default function ChecklistTemplatesManager() {
                         size="icon" 
                         className="h-8 w-8 text-destructive"
                         onClick={() => setDeleteConfirm(template.id)}
+                        title="Excluir template"
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
