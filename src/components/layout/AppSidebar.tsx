@@ -28,7 +28,8 @@ import {
   BookOpen,
   Palette,
   Menu,
-  X
+  X,
+  Download
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { prefetchRoute } from '@/lib/prefetch';
@@ -72,6 +73,7 @@ const secondaryNavItems: NavItem[] = [
   { icon: Code2, label: 'Qualidade de Código', href: '/code-quality' },
   { icon: RefreshCw, label: 'Bitrix24', href: '/integrations/bitrix24' },
   { icon: Palette, label: 'Design System', href: '/design-system' },
+  { icon: Download, label: 'Instalar App', href: '/install' },
   { icon: Settings, label: 'Configurações', href: '/settings' },
 ];
 
