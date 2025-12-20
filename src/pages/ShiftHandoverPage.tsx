@@ -11,7 +11,8 @@ import {
   ListTodo,
   History,
   Filter,
-  RefreshCw
+  RefreshCw,
+  Settings
 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -36,6 +37,7 @@ import CreateHandoverModal from '@/components/shift/CreateHandoverModal';
 import HandoverDetailsModal from '@/components/shift/HandoverDetailsModal';
 import PendingTasksPanel from '@/components/shift/PendingTasksPanel';
 import OccurrencesPanel from '@/components/shift/OccurrencesPanel';
+import ChecklistTemplatesManager from '@/components/shift/ChecklistTemplatesManager';
 
 const STATUS_LABELS: Record<string, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }> = {
   open: { label: 'Em andamento', variant: 'default' },
@@ -228,6 +230,10 @@ export default function ShiftHandoverPage() {
           <TabsTrigger value="history" className="gap-2">
             <History className="h-4 w-4" />
             Histórico
+          </TabsTrigger>
+          <TabsTrigger value="templates" className="gap-2">
+            <Settings className="h-4 w-4" />
+            Templates
           </TabsTrigger>
         </TabsList>
 
@@ -443,6 +449,10 @@ export default function ShiftHandoverPage() {
               </div>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="templates">
+          <ChecklistTemplatesManager />
         </TabsContent>
       </Tabs>
 
