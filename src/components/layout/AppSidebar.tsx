@@ -76,6 +76,7 @@ const baseMainNavItems: Omit<NavItem, 'badge'>[] = [
   { icon: Bell, label: 'Notificações', href: '/notifications' },
   { icon: ArrowRightLeft, label: 'Passagem de Turno', href: '/shift-handover' },
   { icon: BookOpen, label: 'Base de Conhecimento', href: '/knowledge' },
+  { icon: FileText, label: 'Documentos', href: '/documents' },
   { icon: UserCircle, label: 'Visão Operador', href: '/operator' },
   { icon: QrCode, label: 'Scanner QR', href: '/scanner' },
   { icon: Bot, label: 'Assistente IA', href: '/assistant' },
