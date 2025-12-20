@@ -32,7 +32,8 @@ import {
   Download,
   Bell,
   ArrowRightLeft,
-  Package
+  Package,
+  Activity
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { prefetchRoute } from '@/lib/prefetch';
@@ -60,6 +61,7 @@ const baseMainNavItems: Omit<NavItem, 'badge'>[] = [
   { icon: Gauge, label: 'OEE', href: '/oee' },
   { icon: Coins, label: 'Custeio ABC', href: '/abc' },
   { icon: Package, label: 'Rastreabilidade', href: '/traceability' },
+  { icon: Activity, label: 'SPC Qualidade', href: '/spc' },
   { icon: Wrench, label: 'TPM', href: '/tpm' },
   { icon: Brain, label: 'ML Preditivo', href: '/ml-predictions' },
   { icon: BarChart3, label: 'KPIs e Ocupação', href: '/kpis' },
