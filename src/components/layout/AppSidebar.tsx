@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, memo, useMemo } from 'react';
 import { useLocation, Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { 
   Calendar, 
   CalendarDays, 
@@ -46,6 +47,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { useAuth } from '@/contexts/AuthContext';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useAlertCount } from '@/hooks/useAlertCount';
+import { LanguageSwitcher } from './LanguageSwitcher';
 
 interface NavItem {
   icon: React.ElementType;
@@ -160,6 +162,7 @@ const NavButton = memo(function NavButton({ item, collapsed, isMobile, isActive 
 NavButton.displayName = 'NavButton';
 
 export function AppSidebar() {
+  const { t } = useTranslation();
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
@@ -346,6 +349,13 @@ export function AppSidebar() {
           'p-3 border-t border-sidebar-border/50',
           collapsed && !isMobile && 'p-2'
         )}>
+          {/* Language Switcher */}
+          {(!collapsed || isMobile) && (
+            <div className="mb-2 px-1">
+              <LanguageSwitcher />
+            </div>
+          )}
+          
           <div className={cn(
             'flex items-center gap-3 rounded-lg p-2',
             collapsed && !isMobile && 'justify-center p-2'
@@ -375,7 +385,7 @@ export function AppSidebar() {
             )}
           >
             <LogOut className="h-4 w-4" />
-            {(!collapsed || isMobile) && <span className="ml-2">Sair</span>}
+            {(!collapsed || isMobile) && <span className="ml-2">{t('common.logout')}</span>}
           </Button>
         </div>
       </aside>
