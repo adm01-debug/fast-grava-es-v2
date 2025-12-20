@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -8,8 +8,10 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useSchedulingData } from '@/hooks/useSchedulingData';
 import { useUpdateJobStatus, DbJob } from '@/hooks/useJobs';
 import { notifyStatusChange } from '@/hooks/useNotifications';
+import { useOfflineSync } from '@/hooks/useOfflineSync';
 import { JobDetailsModal } from '@/components/jobs/JobDetailsModal';
 import { ProductionRegistrationModal } from '@/components/operator/ProductionRegistrationModal';
+import { OfflineSyncIndicator } from '@/components/offline/OfflineSyncIndicator';
 import { 
   User,
   Play,
@@ -32,6 +34,12 @@ export default function OperatorView() {
 
   const { jobs, techniques, machines, isLoading, getTechniqueById, getMachineById } = useSchedulingData();
   const updateStatus = useUpdateJobStatus();
+  const { isOnline, cacheData, getCachedJobs, getCachedMachines } = useOfflineSync();
+
+  // Cache data on mount for offline use
+  useEffect(() => {
+    cacheData();
+  }, []);
 
   const filteredJobs = useMemo(() => {
     if (!jobs) return [];
@@ -111,6 +119,9 @@ export default function OperatorView() {
       />
       
       <div className="p-4 sm:p-6 lg:p-8 space-y-4 sm:space-y-6 animate-fade-in-up">
+        {/* Offline Sync Indicator */}
+        <OfflineSyncIndicator variant="full" />
+
         {/* Header */}
         <div className="flex flex-col gap-4">
           <div>
@@ -118,7 +129,7 @@ export default function OperatorView() {
               <span className="gradient-text">Visão do Operador</span>
             </h1>
             <p className="text-muted-foreground text-sm">
-              Gerencie suas produções
+              Gerencie suas produções {!isOnline && '(Modo Offline)'}
             </p>
           </div>
           
