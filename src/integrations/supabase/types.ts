@@ -373,6 +373,36 @@ export type Database = {
           },
         ]
       }
+      gamification_settings: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          setting_key: string
+          setting_value: Json
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          setting_key: string
+          setting_value?: Json
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          setting_key?: string
+          setting_value?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
       jobs: {
         Row: {
           actual_end_time: string | null
@@ -1167,6 +1197,51 @@ export type Database = {
         }
         Relationships: []
       }
+      operator_achievements: {
+        Row: {
+          achieved_at: string
+          achievement_name: string
+          achievement_type: string
+          created_at: string
+          description: string | null
+          icon: string
+          id: string
+          metadata: Json | null
+          operator_id: string
+          period_end: string | null
+          period_start: string | null
+          points: number
+        }
+        Insert: {
+          achieved_at?: string
+          achievement_name: string
+          achievement_type: string
+          created_at?: string
+          description?: string | null
+          icon?: string
+          id?: string
+          metadata?: Json | null
+          operator_id: string
+          period_end?: string | null
+          period_start?: string | null
+          points?: number
+        }
+        Update: {
+          achieved_at?: string
+          achievement_name?: string
+          achievement_type?: string
+          created_at?: string
+          description?: string | null
+          icon?: string
+          id?: string
+          metadata?: Json | null
+          operator_id?: string
+          period_end?: string | null
+          period_start?: string | null
+          points?: number
+        }
+        Relationships: []
+      }
       operator_goals: {
         Row: {
           created_at: string
@@ -1234,6 +1309,48 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      operator_rankings: {
+        Row: {
+          calculated_at: string
+          efficiency_rate: number | null
+          id: string
+          operator_id: string
+          period_end: string
+          period_start: string
+          position: number
+          quality_rate: number | null
+          ranking_type: string
+          total_points: number
+          total_produced: number
+        }
+        Insert: {
+          calculated_at?: string
+          efficiency_rate?: number | null
+          id?: string
+          operator_id: string
+          period_end: string
+          period_start: string
+          position: number
+          quality_rate?: number | null
+          ranking_type: string
+          total_points?: number
+          total_produced?: number
+        }
+        Update: {
+          calculated_at?: string
+          efficiency_rate?: number | null
+          id?: string
+          operator_id?: string
+          period_end?: string
+          period_start?: string
+          position?: number
+          quality_rate?: number | null
+          ranking_type?: string
+          total_points?: number
+          total_produced?: number
+        }
+        Relationships: []
       }
       operator_status_audit: {
         Row: {

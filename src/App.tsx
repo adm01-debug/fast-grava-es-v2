@@ -51,6 +51,7 @@ const NotificationsPage = lazy(() => import("./pages/NotificationsPage"));
 const TraceabilityPage = lazy(() => import("./pages/TraceabilityPage"));
 const SPCDashboard = lazy(() => import("./pages/SPCDashboard"));
 const ShiftHandoverPage = lazy(() => import("./pages/ShiftHandoverPage"));
+const ExecutiveDashboard = lazy(() => import("./pages/ExecutiveDashboard"));
 const SettingsPage = lazy(() => import("./pages/SettingsPage"));
 const AuthPage = lazy(() => import("./pages/AuthPage"));
 const InstallAppPage = lazy(() => import("./pages/InstallAppPage"));
@@ -317,6 +318,15 @@ function AnimatedRoutes() {
             <PageTransition>
               <Suspense fallback={<KPIPageSkeleton />}>
                 <SPCDashboard />
+              </Suspense>
+            </PageTransition>
+          </ProtectedRoute>
+        } />
+        <Route path="/executive" element={
+          <ProtectedRoute allowedRoles={['manager', 'coordinator']}>
+            <PageTransition>
+              <Suspense fallback={<KPIPageSkeleton />}>
+                <ExecutiveDashboard />
               </Suspense>
             </PageTransition>
           </ProtectedRoute>
