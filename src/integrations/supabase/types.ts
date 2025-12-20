@@ -463,6 +463,180 @@ export type Database = {
           },
         ]
       }
+      lot_components: {
+        Row: {
+          batch_number: string | null
+          component_lot_id: string | null
+          component_name: string
+          created_at: string
+          id: string
+          lot_id: string
+          material_id: string | null
+          notes: string | null
+          quantity_used: number
+          supplier: string | null
+          unit: string | null
+        }
+        Insert: {
+          batch_number?: string | null
+          component_lot_id?: string | null
+          component_name: string
+          created_at?: string
+          id?: string
+          lot_id: string
+          material_id?: string | null
+          notes?: string | null
+          quantity_used?: number
+          supplier?: string | null
+          unit?: string | null
+        }
+        Update: {
+          batch_number?: string | null
+          component_lot_id?: string | null
+          component_name?: string
+          created_at?: string
+          id?: string
+          lot_id?: string
+          material_id?: string | null
+          notes?: string | null
+          quantity_used?: number
+          supplier?: string | null
+          unit?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lot_components_component_lot_id_fkey"
+            columns: ["component_lot_id"]
+            isOneToOne: false
+            referencedRelation: "production_lots"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lot_components_lot_id_fkey"
+            columns: ["lot_id"]
+            isOneToOne: false
+            referencedRelation: "production_lots"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lot_components_material_id_fkey"
+            columns: ["material_id"]
+            isOneToOne: false
+            referencedRelation: "materials"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lot_movements: {
+        Row: {
+          created_at: string
+          from_location: string | null
+          id: string
+          job_id: string | null
+          lot_id: string
+          movement_type: string
+          performed_by: string | null
+          performed_by_name: string | null
+          quantity: number
+          reason: string | null
+          to_location: string | null
+        }
+        Insert: {
+          created_at?: string
+          from_location?: string | null
+          id?: string
+          job_id?: string | null
+          lot_id: string
+          movement_type: string
+          performed_by?: string | null
+          performed_by_name?: string | null
+          quantity: number
+          reason?: string | null
+          to_location?: string | null
+        }
+        Update: {
+          created_at?: string
+          from_location?: string | null
+          id?: string
+          job_id?: string | null
+          lot_id?: string
+          movement_type?: string
+          performed_by?: string | null
+          performed_by_name?: string | null
+          quantity?: number
+          reason?: string | null
+          to_location?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lot_movements_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lot_movements_lot_id_fkey"
+            columns: ["lot_id"]
+            isOneToOne: false
+            referencedRelation: "production_lots"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lot_quality_inspections: {
+        Row: {
+          created_at: string
+          defects_found: number | null
+          id: string
+          inspected_at: string
+          inspection_type: string
+          inspector_id: string | null
+          inspector_name: string | null
+          lot_id: string
+          notes: string | null
+          photos: string[] | null
+          result: string
+          sample_size: number | null
+        }
+        Insert: {
+          created_at?: string
+          defects_found?: number | null
+          id?: string
+          inspected_at?: string
+          inspection_type: string
+          inspector_id?: string | null
+          inspector_name?: string | null
+          lot_id: string
+          notes?: string | null
+          photos?: string[] | null
+          result: string
+          sample_size?: number | null
+        }
+        Update: {
+          created_at?: string
+          defects_found?: number | null
+          id?: string
+          inspected_at?: string
+          inspection_type?: string
+          inspector_id?: string | null
+          inspector_name?: string | null
+          lot_id?: string
+          notes?: string | null
+          photos?: string[] | null
+          result?: string
+          sample_size?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lot_quality_inspections_lot_id_fkey"
+            columns: ["lot_id"]
+            isOneToOne: false
+            referencedRelation: "production_lots"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       machine_health_metrics: {
         Row: {
           avg_repair_time: number | null
@@ -1171,6 +1345,59 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      production_lots: {
+        Row: {
+          created_at: string
+          expiration_date: string | null
+          id: string
+          job_id: string | null
+          lot_number: string
+          notes: string | null
+          produced_quantity: number
+          product_name: string
+          production_date: string
+          quantity: number
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          expiration_date?: string | null
+          id?: string
+          job_id?: string | null
+          lot_number: string
+          notes?: string | null
+          produced_quantity?: number
+          product_name: string
+          production_date?: string
+          quantity?: number
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          expiration_date?: string | null
+          id?: string
+          job_id?: string | null
+          lot_number?: string
+          notes?: string | null
+          produced_quantity?: number
+          product_name?: string
+          production_date?: string
+          quantity?: number
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "production_lots_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
