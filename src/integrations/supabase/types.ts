@@ -1237,6 +1237,293 @@ export type Database = {
           },
         ]
       }
+      shift_checklist_templates: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          is_active: boolean
+          items: Json
+          machine_id: string | null
+          name: string
+          technique_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          items?: Json
+          machine_id?: string | null
+          name: string
+          technique_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          items?: Json
+          machine_id?: string | null
+          name?: string
+          technique_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shift_checklist_templates_machine_id_fkey"
+            columns: ["machine_id"]
+            isOneToOne: false
+            referencedRelation: "machines"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      shift_handover_checklist: {
+        Row: {
+          checked_at: string | null
+          created_at: string
+          handover_id: string
+          id: string
+          is_checked: boolean
+          item_description: string
+          item_order: number
+          notes: string | null
+        }
+        Insert: {
+          checked_at?: string | null
+          created_at?: string
+          handover_id: string
+          id?: string
+          is_checked?: boolean
+          item_description: string
+          item_order?: number
+          notes?: string | null
+        }
+        Update: {
+          checked_at?: string | null
+          created_at?: string
+          handover_id?: string
+          id?: string
+          is_checked?: boolean
+          item_description?: string
+          item_order?: number
+          notes?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shift_handover_checklist_handover_id_fkey"
+            columns: ["handover_id"]
+            isOneToOne: false
+            referencedRelation: "shift_handovers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      shift_handovers: {
+        Row: {
+          accepted_at: string | null
+          completed_at: string | null
+          created_at: string
+          general_notes: string | null
+          id: string
+          incoming_operator_id: string | null
+          machine_id: string | null
+          outgoing_operator_id: string
+          shift_date: string
+          shift_type: string
+          started_at: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          completed_at?: string | null
+          created_at?: string
+          general_notes?: string | null
+          id?: string
+          incoming_operator_id?: string | null
+          machine_id?: string | null
+          outgoing_operator_id: string
+          shift_date?: string
+          shift_type: string
+          started_at?: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          accepted_at?: string | null
+          completed_at?: string | null
+          created_at?: string
+          general_notes?: string | null
+          id?: string
+          incoming_operator_id?: string | null
+          machine_id?: string | null
+          outgoing_operator_id?: string
+          shift_date?: string
+          shift_type?: string
+          started_at?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shift_handovers_machine_id_fkey"
+            columns: ["machine_id"]
+            isOneToOne: false
+            referencedRelation: "machines"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      shift_occurrences: {
+        Row: {
+          created_at: string
+          description: string
+          handover_id: string
+          id: string
+          job_id: string | null
+          machine_id: string | null
+          occurred_at: string
+          occurrence_type: string
+          photos: string[] | null
+          resolution: string | null
+          resolved_at: string | null
+          resolved_by: string | null
+          severity: string
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          handover_id: string
+          id?: string
+          job_id?: string | null
+          machine_id?: string | null
+          occurred_at?: string
+          occurrence_type: string
+          photos?: string[] | null
+          resolution?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity?: string
+          title: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          handover_id?: string
+          id?: string
+          job_id?: string | null
+          machine_id?: string | null
+          occurred_at?: string
+          occurrence_type?: string
+          photos?: string[] | null
+          resolution?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shift_occurrences_handover_id_fkey"
+            columns: ["handover_id"]
+            isOneToOne: false
+            referencedRelation: "shift_handovers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shift_occurrences_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shift_occurrences_machine_id_fkey"
+            columns: ["machine_id"]
+            isOneToOne: false
+            referencedRelation: "machines"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      shift_pending_tasks: {
+        Row: {
+          completed_at: string | null
+          completed_by: string | null
+          created_at: string
+          description: string | null
+          due_date: string | null
+          handover_id: string
+          id: string
+          job_id: string | null
+          machine_id: string | null
+          priority: string
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          completed_at?: string | null
+          completed_by?: string | null
+          created_at?: string
+          description?: string | null
+          due_date?: string | null
+          handover_id: string
+          id?: string
+          job_id?: string | null
+          machine_id?: string | null
+          priority?: string
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          completed_at?: string | null
+          completed_by?: string | null
+          created_at?: string
+          description?: string | null
+          due_date?: string | null
+          handover_id?: string
+          id?: string
+          job_id?: string | null
+          machine_id?: string | null
+          priority?: string
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shift_pending_tasks_handover_id_fkey"
+            columns: ["handover_id"]
+            isOneToOne: false
+            referencedRelation: "shift_handovers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shift_pending_tasks_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shift_pending_tasks_machine_id_fkey"
+            columns: ["machine_id"]
+            isOneToOne: false
+            referencedRelation: "machines"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       technical_conversations: {
         Row: {
           created_at: string
