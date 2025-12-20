@@ -317,6 +317,50 @@ export type Database = {
         }
         Relationships: []
       }
+      document_versions: {
+        Row: {
+          change_notes: string | null
+          created_at: string
+          document_id: string
+          file_name: string
+          file_size: number
+          file_url: string
+          id: string
+          uploaded_by: string | null
+          version: number
+        }
+        Insert: {
+          change_notes?: string | null
+          created_at?: string
+          document_id: string
+          file_name: string
+          file_size?: number
+          file_url: string
+          id?: string
+          uploaded_by?: string | null
+          version: number
+        }
+        Update: {
+          change_notes?: string | null
+          created_at?: string
+          document_id?: string
+          file_name?: string
+          file_size?: number
+          file_url?: string
+          id?: string
+          uploaded_by?: string | null
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "document_versions_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "technical_documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       efficiency_alert_history: {
         Row: {
           alert_type: string
@@ -2313,6 +2357,74 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      technical_documents: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          created_at: string
+          description: string | null
+          file_name: string
+          file_size: number
+          file_type: string
+          file_url: string
+          id: string
+          is_current: boolean
+          rejection_reason: string | null
+          status: string
+          technical_sheet_id: string | null
+          title: string
+          updated_at: string
+          uploaded_by: string | null
+          version: number
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          description?: string | null
+          file_name: string
+          file_size?: number
+          file_type?: string
+          file_url: string
+          id?: string
+          is_current?: boolean
+          rejection_reason?: string | null
+          status?: string
+          technical_sheet_id?: string | null
+          title: string
+          updated_at?: string
+          uploaded_by?: string | null
+          version?: number
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          description?: string | null
+          file_name?: string
+          file_size?: number
+          file_type?: string
+          file_url?: string
+          id?: string
+          is_current?: boolean
+          rejection_reason?: string | null
+          status?: string
+          technical_sheet_id?: string | null
+          title?: string
+          updated_at?: string
+          uploaded_by?: string | null
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "technical_documents_technical_sheet_id_fkey"
+            columns: ["technical_sheet_id"]
+            isOneToOne: false
+            referencedRelation: "technical_sheets"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       technical_messages: {
         Row: {

@@ -55,6 +55,7 @@ const ShiftHandoverPage = lazy(() => import("./pages/ShiftHandoverPage"));
 const ExecutiveDashboard = lazy(() => import("./pages/ExecutiveDashboard"));
 const GamificationPage = lazy(() => import("./pages/GamificationPage"));
 const EnergyDashboard = lazy(() => import("./pages/EnergyDashboard"));
+const DocumentsPage = lazy(() => import("./pages/DocumentsPage"));
 const SettingsPage = lazy(() => import("./pages/SettingsPage"));
 const AuthPage = lazy(() => import("./pages/AuthPage"));
 const InstallAppPage = lazy(() => import("./pages/InstallAppPage"));
@@ -348,6 +349,15 @@ function AnimatedRoutes() {
             <PageTransition>
               <Suspense fallback={<KPIPageSkeleton />}>
                 <GamificationPage />
+              </Suspense>
+            </PageTransition>
+          </ProtectedRoute>
+        } />
+        <Route path="/documents" element={
+          <ProtectedRoute>
+            <PageTransition>
+              <Suspense fallback={<ListPageSkeleton />}>
+                <DocumentsPage />
               </Suspense>
             </PageTransition>
           </ProtectedRoute>
