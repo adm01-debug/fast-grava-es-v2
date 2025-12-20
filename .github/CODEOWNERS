@@ -1,0 +1,19 @@
+# Proprietários do código Fast-Grava-ES
+
+# Todos os arquivos
+* @adm01-debug
+
+# Frontend
+/src/components/ @adm01-debug
+/src/pages/ @adm01-debug
+
+# Backend/Supabase
+/supabase/ @adm01-debug
+
+# Testes
+**/*.test.ts @adm01-debug
+**/*.test.tsx @adm01-debug
+
+# Documentação
+/docs/ @adm01-debug
+*.md @adm01-debug
