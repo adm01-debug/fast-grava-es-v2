@@ -30,7 +30,8 @@ import {
   Menu,
   X,
   Download,
-  Bell
+  Bell,
+  ArrowRightLeft
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { prefetchRoute } from '@/lib/prefetch';
@@ -62,6 +63,7 @@ const baseMainNavItems: Omit<NavItem, 'badge'>[] = [
   { icon: BarChart3, label: 'KPIs e Ocupação', href: '/kpis' },
   { icon: AlertTriangle, label: 'Alertas', href: '/alerts' },
   { icon: Bell, label: 'Notificações', href: '/notifications' },
+  { icon: ArrowRightLeft, label: 'Passagem de Turno', href: '/shift-handover' },
   { icon: BookOpen, label: 'Base de Conhecimento', href: '/knowledge' },
   { icon: UserCircle, label: 'Visão Operador', href: '/operator' },
   { icon: QrCode, label: 'Scanner QR', href: '/scanner' },
@@ -181,10 +183,10 @@ export function AppSidebar() {
   // Filter nav items based on role
   const filteredMainNavItems = mainNavItems.filter(item => {
     if (role === 'operator') {
-      return ['/operator', '/alerts', '/assistant', '/scanner', '/knowledge'].includes(item.href);
+      return ['/operator', '/alerts', '/assistant', '/scanner', '/knowledge', '/shift-handover'].includes(item.href);
     }
     if (role === 'manager') {
-      return ['/', '/bi', '/calendar/daily', '/calendar/weekly', '/kpis', '/oee', '/abc', '/tpm', '/ml-predictions', '/alerts', '/notifications', '/efficiency', '/assistant', '/knowledge'].includes(item.href);
+      return ['/', '/bi', '/calendar/daily', '/calendar/weekly', '/kpis', '/oee', '/abc', '/tpm', '/ml-predictions', '/alerts', '/notifications', '/efficiency', '/assistant', '/knowledge', '/shift-handover'].includes(item.href);
     }
     return true; // coordinator sees all
   });
