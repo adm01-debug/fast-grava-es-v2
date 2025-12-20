@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -12,27 +13,29 @@ import { toast } from 'sonner';
 import { Loader2, LogIn, UserPlus, Printer, Moon, Sun, KeyRound } from 'lucide-react';
 import { z } from 'zod';
 import { useTheme } from 'next-themes';
-
-const loginSchema = z.object({
-  email: z.string().email('Email inválido'),
-  password: z.string().min(6, 'Senha deve ter pelo menos 6 caracteres'),
-});
-
-const signupSchema = z.object({
-  fullName: z.string().min(2, 'Nome deve ter pelo menos 2 caracteres'),
-  email: z.string().email('Email inválido'),
-  password: z.string().min(6, 'Senha deve ter pelo menos 6 caracteres'),
-  confirmPassword: z.string(),
-}).refine(data => data.password === data.confirmPassword, {
-  message: 'Senhas não coincidem',
-  path: ['confirmPassword'],
-});
+import { LanguageSwitcher } from '@/components/layout/LanguageSwitcher';
 
 export default function AuthPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { signIn, signUp, user } = useAuth();
   const { theme, setTheme } = useTheme();
   
+  const loginSchema = z.object({
+    email: z.string().email(t('auth.invalidEmail')),
+    password: z.string().min(6, t('auth.passwordMinLength', { min: 6 })),
+  });
+
+  const signupSchema = z.object({
+    fullName: z.string().min(2, t('validation.minLength', { min: 2 })),
+    email: z.string().email(t('auth.invalidEmail')),
+    password: z.string().min(6, t('auth.passwordMinLength', { min: 6 })),
+    confirmPassword: z.string(),
+  }).refine(data => data.password === data.confirmPassword, {
+    message: t('auth.passwordMismatch'),
+    path: ['confirmPassword'],
+  });
+
   const [isLoading, setIsLoading] = useState(false);
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
@@ -42,12 +45,10 @@ export default function AuthPage() {
   const [signupConfirmPassword, setSignupConfirmPassword] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
   
-  // Forgot password state
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [forgotEmail, setForgotEmail] = useState('');
   const [isSendingReset, setIsSendingReset] = useState(false);
 
-  // Redirect if already logged in
   if (user) {
     navigate('/');
     return null;
@@ -71,20 +72,15 @@ export default function AuthPage() {
     }
 
     setIsLoading(true);
-
     const { error } = await signIn(loginEmail, loginPassword);
 
     if (error) {
-      if (error.message.includes('Invalid login credentials')) {
-        toast.error('Email ou senha incorretos');
-      } else {
-        toast.error('Erro ao fazer login. Tente novamente.');
-      }
+      toast.error(t('auth.loginError'));
       setIsLoading(false);
       return;
     }
 
-    toast.success('Login realizado com sucesso!');
+    toast.success(t('auth.loginSuccess'));
     navigate('/');
   };
 
@@ -92,30 +88,29 @@ export default function AuthPage() {
     e.preventDefault();
     
     if (!forgotEmail.trim()) {
-      toast.error('Por favor, insira seu email');
+      toast.error(t('validation.required'));
       return;
     }
 
     try {
       z.string().email().parse(forgotEmail);
     } catch {
-      toast.error('Email inválido');
+      toast.error(t('auth.invalidEmail'));
       return;
     }
 
     setIsSendingReset(true);
-
     const { error } = await supabase.auth.resetPasswordForEmail(forgotEmail, {
       redirectTo: `${window.location.origin}/auth`,
     });
 
     if (error) {
-      toast.error('Erro ao enviar email de recuperação');
+      toast.error(t('errors.generic'));
       setIsSendingReset(false);
       return;
     }
 
-    toast.success('Email de recuperação enviado! Verifique sua caixa de entrada.');
+    toast.success(t('common.success'));
     setShowForgotPassword(false);
     setForgotEmail('');
     setIsSendingReset(false);
@@ -144,68 +139,62 @@ export default function AuthPage() {
     }
 
     setIsLoading(true);
-
     const { error } = await signUp(signupEmail, signupPassword, signupName);
 
     if (error) {
-      if (error.message.includes('already registered')) {
-        toast.error('Este email já está cadastrado');
-      } else {
-        toast.error('Erro ao criar conta. Tente novamente.');
-      }
+      toast.error(t('errors.generic'));
       setIsLoading(false);
       return;
     }
 
-    toast.success('Conta criada com sucesso! Verifique seu email.');
+    toast.success(t('common.success'));
     setIsLoading(false);
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-muted/50 p-4 relative">
-      {/* Theme toggle */}
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-        className="absolute top-4 right-4 h-9 w-9"
-        title={theme === 'dark' ? 'Mudar para tema claro' : 'Mudar para tema escuro'}
-      >
-        <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-        <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-      </Button>
+      <div className="absolute top-4 right-4 flex items-center gap-2">
+        <LanguageSwitcher />
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+          className="h-9 w-9"
+        >
+          <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+          <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+        </Button>
+      </div>
 
       <div className="w-full max-w-md space-y-8 animate-fade-in">
-        {/* Logo/Header */}
         <div className="text-center space-y-2">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl gradient-primary mb-4 shadow-lg shadow-primary/30">
             <Printer className="h-8 w-8 text-white" />
           </div>
           <h1 className="text-3xl font-display font-bold">
-            <span className="gradient-text">Sistema de Gravação</span>
+            <span className="gradient-text">{t('common.appName')}</span>
           </h1>
           <p className="text-muted-foreground">
-            Acesse sua conta para continuar
+            {t('dashboard.welcome', { name: '' }).replace(', !', '')}
           </p>
         </div>
 
-        {/* Auth Card */}
         <Card className="glass-card border-border/50 card-shadow">
           <CardContent className="pt-6">
             <Tabs defaultValue="login" className="w-full">
               <TabsList className="grid w-full grid-cols-2 mb-6">
-                <TabsTrigger value="login">Entrar</TabsTrigger>
-                <TabsTrigger value="signup">Criar Conta</TabsTrigger>
+                <TabsTrigger value="login">{t('auth.login')}</TabsTrigger>
+                <TabsTrigger value="signup">{t('auth.register')}</TabsTrigger>
               </TabsList>
 
               <TabsContent value="login">
                 <form onSubmit={handleLogin} className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="login-email">Email</Label>
+                    <Label htmlFor="login-email">{t('auth.email')}</Label>
                     <Input
                       id="login-email"
                       type="email"
-                      placeholder="seu@email.com"
+                      placeholder={t('auth.email')}
                       value={loginEmail}
                       onChange={(e) => setLoginEmail(e.target.value)}
                       className="bg-background"
@@ -217,7 +206,7 @@ export default function AuthPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="login-password">Senha</Label>
+                    <Label htmlFor="login-password">{t('auth.password')}</Label>
                     <Input
                       id="login-password"
                       type="password"
@@ -232,20 +221,16 @@ export default function AuthPage() {
                     )}
                   </div>
 
-                  <Button 
-                    type="submit" 
-                    className="w-full gradient-primary"
-                    disabled={isLoading}
-                  >
+                  <Button type="submit" className="w-full gradient-primary" disabled={isLoading}>
                     {isLoading ? (
                       <>
                         <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                        Entrando...
+                        {t('common.loading')}
                       </>
                     ) : (
                       <>
                         <LogIn className="h-4 w-4 mr-2" />
-                        Entrar
+                        {t('auth.login')}
                       </>
                     )}
                   </Button>
@@ -256,7 +241,7 @@ export default function AuthPage() {
                     className="w-full text-muted-foreground hover:text-primary"
                     onClick={() => setShowForgotPassword(true)}
                   >
-                    Esqueci minha senha
+                    {t('auth.forgotPassword')}
                   </Button>
                 </form>
               </TabsContent>
@@ -264,11 +249,11 @@ export default function AuthPage() {
               <TabsContent value="signup">
                 <form onSubmit={handleSignup} className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="signup-name">Nome Completo</Label>
+                    <Label htmlFor="signup-name">{t('operators.fullName')}</Label>
                     <Input
                       id="signup-name"
                       type="text"
-                      placeholder="Seu nome"
+                      placeholder={t('operators.fullName')}
                       value={signupName}
                       onChange={(e) => setSignupName(e.target.value)}
                       className="bg-background"
@@ -280,11 +265,11 @@ export default function AuthPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="signup-email">Email</Label>
+                    <Label htmlFor="signup-email">{t('auth.email')}</Label>
                     <Input
                       id="signup-email"
                       type="email"
-                      placeholder="seu@email.com"
+                      placeholder={t('auth.email')}
                       value={signupEmail}
                       onChange={(e) => setSignupEmail(e.target.value)}
                       className="bg-background"
@@ -296,7 +281,7 @@ export default function AuthPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="signup-password">Senha</Label>
+                    <Label htmlFor="signup-password">{t('auth.password')}</Label>
                     <Input
                       id="signup-password"
                       type="password"
@@ -312,7 +297,7 @@ export default function AuthPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="signup-confirm">Confirmar Senha</Label>
+                    <Label htmlFor="signup-confirm">{t('auth.confirmPassword')}</Label>
                     <Input
                       id="signup-confirm"
                       type="password"
@@ -327,20 +312,16 @@ export default function AuthPage() {
                     )}
                   </div>
 
-                  <Button 
-                    type="submit" 
-                    className="w-full gradient-primary"
-                    disabled={isLoading}
-                  >
+                  <Button type="submit" className="w-full gradient-primary" disabled={isLoading}>
                     {isLoading ? (
                       <>
                         <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                        Criando conta...
+                        {t('common.loading')}
                       </>
                     ) : (
                       <>
                         <UserPlus className="h-4 w-4 mr-2" />
-                        Criar Conta
+                        {t('auth.register')}
                       </>
                     )}
                   </Button>
@@ -349,33 +330,26 @@ export default function AuthPage() {
             </Tabs>
           </CardContent>
         </Card>
-
-        <p className="text-center text-xs text-muted-foreground">
-          Novos usuários são cadastrados como Operador.
-          <br />
-          Contate um Coordenador para alterar permissões.
-        </p>
       </div>
 
-      {/* Forgot Password Modal */}
       <Dialog open={showForgotPassword} onOpenChange={setShowForgotPassword}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <KeyRound className="h-5 w-5 text-primary" />
-              Recuperar Senha
+              {t('auth.resetPassword')}
             </DialogTitle>
             <DialogDescription>
-              Insira seu email para receber um link de recuperação de senha.
+              {t('auth.forgotPassword')}
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleForgotPassword} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="forgot-email">Email</Label>
+              <Label htmlFor="forgot-email">{t('auth.email')}</Label>
               <Input
                 id="forgot-email"
                 type="email"
-                placeholder="seu@email.com"
+                placeholder={t('auth.email')}
                 value={forgotEmail}
                 onChange={(e) => setForgotEmail(e.target.value)}
                 disabled={isSendingReset}
@@ -389,16 +363,16 @@ export default function AuthPage() {
                 onClick={() => setShowForgotPassword(false)}
                 disabled={isSendingReset}
               >
-                Cancelar
+                {t('common.cancel')}
               </Button>
               <Button type="submit" disabled={isSendingReset}>
                 {isSendingReset ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Enviando...
+                    {t('common.loading')}
                   </>
                 ) : (
-                  'Enviar Link'
+                  t('common.confirm')
                 )}
               </Button>
             </div>
