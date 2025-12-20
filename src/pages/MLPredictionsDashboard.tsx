@@ -1,13 +1,16 @@
 import { Helmet } from 'react-helmet';
-import { Brain, RefreshCw, AlertTriangle, Shield, TrendingUp, Zap } from 'lucide-react';
+import { Brain, RefreshCw, AlertTriangle, Shield, TrendingUp, Zap, Settings } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { useMLPredictions } from '@/hooks/useMLPredictions';
+import { useMLPredictionNotifications } from '@/hooks/useMLPredictionNotifications';
 import { MLPredictionCard } from '@/components/ml/MLPredictionCard';
 import { MLRiskDistributionChart } from '@/components/ml/MLRiskDistributionChart';
+import { MLNotificationSettings } from '@/components/ml/MLNotificationSettings';
 
 export default function MLPredictionsDashboard() {
   const {
@@ -19,6 +22,9 @@ export default function MLPredictionsDashboard() {
     getRiskLevel,
     getPredictionTypeLabel,
   } = useMLPredictions();
+  
+  // Initialize ML prediction notifications listener
+  useMLPredictionNotifications();
 
   if (isLoading) {
     return (
@@ -54,14 +60,26 @@ export default function MLPredictionsDashboard() {
               Previsão de falhas baseada em histórico de manutenções e produção
             </p>
           </div>
-          <Button 
-            onClick={() => generatePredictions.mutate(undefined)}
-            disabled={generatePredictions.isPending}
-            className="gap-2"
-          >
-            <RefreshCw className={`h-4 w-4 ${generatePredictions.isPending ? 'animate-spin' : ''}`} />
-            {generatePredictions.isPending ? 'Analisando...' : 'Gerar Previsões'}
-          </Button>
+          <div className="flex gap-3">
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="outline" size="icon">
+                  <Settings className="h-4 w-4" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent className="w-full sm:max-w-lg overflow-y-auto">
+                <MLNotificationSettings />
+              </SheetContent>
+            </Sheet>
+            <Button 
+              onClick={() => generatePredictions.mutate(undefined)}
+              disabled={generatePredictions.isPending}
+              className="gap-2"
+            >
+              <RefreshCw className={`h-4 w-4 ${generatePredictions.isPending ? 'animate-spin' : ''}`} />
+              {generatePredictions.isPending ? 'Analisando...' : 'Gerar Previsões'}
+            </Button>
+          </div>
         </div>
 
         {/* KPI Cards */}
