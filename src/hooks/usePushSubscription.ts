@@ -1,9 +1,10 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 
-const VAPID_PUBLIC_KEY = 'BEl62iUYgUivxIkv69yViEuiBIa-Ib9-SkvMeAtA3LFgDzkrxZJjSgSnfckjBJuBkr3qBUYIHBQFLXYp5Nksh8U';
+// Default VAPID public key - should be overridden by environment variable
+const DEFAULT_VAPID_PUBLIC_KEY = 'BEl62iUYgUivxIkv69yViEuiBIa-Ib9-SkvMeAtA3LFgDzkrxZJjSgSnfckjBJuBkr3qBUYIHBQFLXYp5Nksh8U';
 
 function urlBase64ToUint8Array(base64String: string): Uint8Array {
   const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
@@ -20,22 +21,35 @@ export function usePushSubscription() {
   const { user } = useAuth();
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isSupported, setIsSupported] = useState(false);
+
+  // Get VAPID key from environment or use default
+  const vapidPublicKey = import.meta.env.VITE_VAPID_PUBLIC_KEY || DEFAULT_VAPID_PUBLIC_KEY;
+
+  useEffect(() => {
+    // Check if push notifications are supported
+    const supported = 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
+    setIsSupported(supported);
+    
+    if (supported && user) {
+      checkSubscription();
+    }
+  }, [user]);
 
   const checkSubscription = useCallback(async () => {
-    if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
-      return false;
-    }
+    if (!isSupported) return false;
 
     try {
       const registration = await navigator.serviceWorker.ready;
       const subscription = await registration.pushManager.getSubscription();
-      setIsSubscribed(!!subscription);
-      return !!subscription;
+      const subscribed = !!subscription;
+      setIsSubscribed(subscribed);
+      return subscribed;
     } catch (error) {
       console.error('Error checking subscription:', error);
       return false;
     }
-  }, []);
+  }, [isSupported]);
 
   const subscribe = useCallback(async () => {
     if (!user) {
@@ -43,7 +57,7 @@ export function usePushSubscription() {
       return false;
     }
 
-    if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+    if (!isSupported) {
       toast.error('Push notifications não são suportadas neste navegador');
       return false;
     }
@@ -51,32 +65,41 @@ export function usePushSubscription() {
     setIsLoading(true);
 
     try {
+      // Request notification permission
       const permission = await Notification.requestPermission();
       if (permission !== 'granted') {
         toast.error('Permissão para notificações negada');
+        setIsLoading(false);
         return false;
       }
 
+      // Get service worker registration
       const registration = await navigator.serviceWorker.ready;
       
-      // Verificar se já existe subscription
+      // Check for existing subscription
       let subscription = await registration.pushManager.getSubscription();
       
+      // Create new subscription if none exists
       if (!subscription) {
-      subscription = await registration.pushManager.subscribe({
+        const applicationServerKey = urlBase64ToUint8Array(vapidPublicKey);
+        subscription = await registration.pushManager.subscribe({
           userVisibleOnly: true,
-          applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY) as BufferSource,
+          applicationServerKey: applicationServerKey.buffer as ArrayBuffer,
         });
       }
 
       const subscriptionJson = subscription.toJSON();
 
-      // Salvar no Supabase
+      if (!subscriptionJson.endpoint || !subscriptionJson.keys?.p256dh || !subscriptionJson.keys?.auth) {
+        throw new Error('Invalid subscription data');
+      }
+
+      // Save to Supabase
       const { error } = await supabase.from('push_subscriptions').upsert({
         user_id: user.id,
-        endpoint: subscriptionJson.endpoint!,
-        p256dh: subscriptionJson.keys!.p256dh,
-        auth: subscriptionJson.keys!.auth,
+        endpoint: subscriptionJson.endpoint,
+        p256dh: subscriptionJson.keys.p256dh,
+        auth: subscriptionJson.keys.auth,
       }, {
         onConflict: 'user_id,endpoint',
       });
@@ -97,7 +120,7 @@ export function usePushSubscription() {
     } finally {
       setIsLoading(false);
     }
-  }, [user]);
+  }, [user, isSupported, vapidPublicKey]);
 
   const unsubscribe = useCallback(async () => {
     if (!user) return false;
@@ -111,7 +134,7 @@ export function usePushSubscription() {
       if (subscription) {
         await subscription.unsubscribe();
 
-        // Remover do Supabase
+        // Remove from Supabase
         const { error } = await supabase
           .from('push_subscriptions')
           .delete()
@@ -139,7 +162,7 @@ export function usePushSubscription() {
     if (!user) return;
 
     try {
-      const { error } = await supabase.functions.invoke('send-push-notification', {
+      const { data, error } = await supabase.functions.invoke('send-push-notification', {
         body: {
           user_id: user.id,
           title: 'Teste de Notificação',
@@ -151,6 +174,11 @@ export function usePushSubscription() {
       if (error) {
         console.error('Error sending test notification:', error);
         toast.error('Erro ao enviar notificação de teste');
+        return;
+      }
+
+      if (data?.vapid_configured === false) {
+        toast.warning('VAPID keys não configuradas. Notificações em modo simulado.');
       } else {
         toast.success('Notificação de teste enviada!');
       }
@@ -160,12 +188,38 @@ export function usePushSubscription() {
     }
   }, [user]);
 
+  const broadcastNotification = useCallback(async (title: string, body: string, data?: Record<string, unknown>) => {
+    try {
+      const { error } = await supabase.functions.invoke('send-push-notification', {
+        body: {
+          broadcast: true,
+          title,
+          body,
+          icon: '/pwa-icons/icon-192x192.png',
+          data,
+        },
+      });
+
+      if (error) {
+        console.error('Error broadcasting notification:', error);
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      console.error('Error:', error);
+      return false;
+    }
+  }, []);
+
   return {
     isSubscribed,
     isLoading,
+    isSupported,
     subscribe,
     unsubscribe,
     checkSubscription,
     sendTestNotification,
+    broadcastNotification,
   };
 }
