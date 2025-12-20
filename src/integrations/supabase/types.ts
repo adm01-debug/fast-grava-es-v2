@@ -1751,6 +1751,272 @@ export type Database = {
           },
         ]
       }
+      spc_alerts: {
+        Row: {
+          acknowledged_at: string | null
+          acknowledged_by: string | null
+          alert_type: string
+          created_at: string
+          description: string
+          id: string
+          is_acknowledged: boolean
+          measurement_id: string | null
+          parameter_id: string
+          resolution: string | null
+          resolved_at: string | null
+          severity: string
+          title: string
+          value: number | null
+        }
+        Insert: {
+          acknowledged_at?: string | null
+          acknowledged_by?: string | null
+          alert_type: string
+          created_at?: string
+          description: string
+          id?: string
+          is_acknowledged?: boolean
+          measurement_id?: string | null
+          parameter_id: string
+          resolution?: string | null
+          resolved_at?: string | null
+          severity?: string
+          title: string
+          value?: number | null
+        }
+        Update: {
+          acknowledged_at?: string | null
+          acknowledged_by?: string | null
+          alert_type?: string
+          created_at?: string
+          description?: string
+          id?: string
+          is_acknowledged?: boolean
+          measurement_id?: string | null
+          parameter_id?: string
+          resolution?: string | null
+          resolved_at?: string | null
+          severity?: string
+          title?: string
+          value?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "spc_alerts_measurement_id_fkey"
+            columns: ["measurement_id"]
+            isOneToOne: false
+            referencedRelation: "spc_measurements"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "spc_alerts_parameter_id_fkey"
+            columns: ["parameter_id"]
+            isOneToOne: false
+            referencedRelation: "spc_control_parameters"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      spc_capability_history: {
+        Row: {
+          calculated_at: string
+          cp: number | null
+          cpk: number | null
+          id: string
+          mean: number
+          parameter_id: string
+          period_end: string
+          period_start: string
+          pp: number | null
+          ppk: number | null
+          sample_count: number
+          std_deviation: number
+        }
+        Insert: {
+          calculated_at?: string
+          cp?: number | null
+          cpk?: number | null
+          id?: string
+          mean: number
+          parameter_id: string
+          period_end: string
+          period_start: string
+          pp?: number | null
+          ppk?: number | null
+          sample_count: number
+          std_deviation: number
+        }
+        Update: {
+          calculated_at?: string
+          cp?: number | null
+          cpk?: number | null
+          id?: string
+          mean?: number
+          parameter_id?: string
+          period_end?: string
+          period_start?: string
+          pp?: number | null
+          ppk?: number | null
+          sample_count?: number
+          std_deviation?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "spc_capability_history_parameter_id_fkey"
+            columns: ["parameter_id"]
+            isOneToOne: false
+            referencedRelation: "spc_control_parameters"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      spc_control_parameters: {
+        Row: {
+          created_at: string
+          frequency_minutes: number
+          id: string
+          is_active: boolean
+          lower_control_limit: number | null
+          lower_spec_limit: number
+          machine_id: string | null
+          measurement_type: string
+          name: string
+          product_name: string | null
+          sample_size: number
+          target_value: number
+          technique_id: string | null
+          unit: string
+          updated_at: string
+          upper_control_limit: number | null
+          upper_spec_limit: number
+        }
+        Insert: {
+          created_at?: string
+          frequency_minutes?: number
+          id?: string
+          is_active?: boolean
+          lower_control_limit?: number | null
+          lower_spec_limit: number
+          machine_id?: string | null
+          measurement_type: string
+          name: string
+          product_name?: string | null
+          sample_size?: number
+          target_value: number
+          technique_id?: string | null
+          unit?: string
+          updated_at?: string
+          upper_control_limit?: number | null
+          upper_spec_limit: number
+        }
+        Update: {
+          created_at?: string
+          frequency_minutes?: number
+          id?: string
+          is_active?: boolean
+          lower_control_limit?: number | null
+          lower_spec_limit?: number
+          machine_id?: string | null
+          measurement_type?: string
+          name?: string
+          product_name?: string | null
+          sample_size?: number
+          target_value?: number
+          technique_id?: string | null
+          unit?: string
+          updated_at?: string
+          upper_control_limit?: number | null
+          upper_spec_limit?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "spc_control_parameters_machine_id_fkey"
+            columns: ["machine_id"]
+            isOneToOne: false
+            referencedRelation: "machines"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      spc_measurements: {
+        Row: {
+          created_at: string
+          id: string
+          is_in_control: boolean
+          job_id: string | null
+          lot_id: string | null
+          mean_value: number
+          measured_at: string
+          notes: string | null
+          operator_id: string | null
+          operator_name: string | null
+          out_of_control_type: string | null
+          parameter_id: string
+          range_value: number
+          sample_number: number
+          std_deviation: number | null
+          values: number[]
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_in_control?: boolean
+          job_id?: string | null
+          lot_id?: string | null
+          mean_value: number
+          measured_at?: string
+          notes?: string | null
+          operator_id?: string | null
+          operator_name?: string | null
+          out_of_control_type?: string | null
+          parameter_id: string
+          range_value: number
+          sample_number: number
+          std_deviation?: number | null
+          values: number[]
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_in_control?: boolean
+          job_id?: string | null
+          lot_id?: string | null
+          mean_value?: number
+          measured_at?: string
+          notes?: string | null
+          operator_id?: string | null
+          operator_name?: string | null
+          out_of_control_type?: string | null
+          parameter_id?: string
+          range_value?: number
+          sample_number?: number
+          std_deviation?: number | null
+          values?: number[]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "spc_measurements_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "spc_measurements_lot_id_fkey"
+            columns: ["lot_id"]
+            isOneToOne: false
+            referencedRelation: "production_lots"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "spc_measurements_parameter_id_fkey"
+            columns: ["parameter_id"]
+            isOneToOne: false
+            referencedRelation: "spc_control_parameters"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       technical_conversations: {
         Row: {
           created_at: string
