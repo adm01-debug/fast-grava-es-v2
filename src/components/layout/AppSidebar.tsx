@@ -33,7 +33,11 @@ import {
   Bell,
   ArrowRightLeft,
   Package,
-  Activity
+  Activity,
+  FileDown,
+  Trophy,
+  BatteryCharging,
+  FileText
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { prefetchRoute } from '@/lib/prefetch';
@@ -53,6 +57,7 @@ interface NavItem {
 const baseMainNavItems: Omit<NavItem, 'badge'>[] = [
   { icon: Home, label: 'Dashboard', href: '/' },
   { icon: BarChart3, label: 'BI Executivo', href: '/bi' },
+  { icon: FileDown, label: 'Dashboard Executivo', href: '/executive' },
   { icon: Calendar, label: 'Calendário Diário', href: '/calendar/daily' },
   { icon: CalendarDays, label: 'Calendário Semanal', href: '/calendar/weekly' },
   { icon: LayoutGrid, label: 'Kanban', href: '/kanban' },
