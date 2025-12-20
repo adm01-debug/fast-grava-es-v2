@@ -1,5 +1,5 @@
-import { useState, useEffect, useMemo } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -22,13 +22,17 @@ import {
   Filter,
   RefreshCw,
   BellOff,
-  TrendingUp
+  TrendingUp,
+  Wifi,
+  WifiOff
 } from 'lucide-react';
 import { format, formatDistanceToNow, subDays } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useDailySummaryNotifications } from '@/hooks/useDailySummaryNotifications';
 import { usePushNotifications } from '@/hooks/usePushNotifications';
+import { useNotificationSounds } from '@/hooks/useNotificationSounds';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
 
 interface MaintenanceAlert {
   id: string;
@@ -92,9 +96,113 @@ const NotificationsPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [severityFilter, setSeverityFilter] = useState<string>('all');
   const [dateRange, setDateRange] = useState('7');
+  const [isRealtimeConnected, setIsRealtimeConnected] = useState(false);
+  const [newNotificationsCount, setNewNotificationsCount] = useState(0);
   
-  const { permission, requestPermission } = usePushNotifications();
+  const queryClient = useQueryClient();
+  const { permission, requestPermission, sendNotification } = usePushNotifications();
   const { manualRefresh, isLoading: isSummaryLoading } = useDailySummaryNotifications();
+  const { playSound, isEnabled: isSoundEnabled } = useNotificationSounds();
+
+  // Handle new realtime notification
+  const handleNewNotification = useCallback((type: 'maintenance' | 'prediction' | 'summary', payload: unknown) => {
+    console.log(`[Realtime] New ${type} notification:`, payload);
+    
+    // Increment counter
+    setNewNotificationsCount(prev => prev + 1);
+    
+    // Play sound
+    if (isSoundEnabled()) {
+      playSound('alert');
+    }
+    
+    // Show toast
+    toast.info('Nova notificação', {
+      description: `Uma nova ${type === 'maintenance' ? 'manutenção' : type === 'prediction' ? 'predição' : 'resumo'} foi adicionada.`,
+      action: {
+        label: 'Ver',
+        onClick: () => {
+          setNewNotificationsCount(0);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        },
+      },
+    });
+    
+    // Invalidate queries to refetch data
+    if (type === 'maintenance') {
+      queryClient.invalidateQueries({ queryKey: ['maintenance-alerts-history'] });
+    } else if (type === 'prediction') {
+      queryClient.invalidateQueries({ queryKey: ['ml-predictions-history'] });
+    } else {
+      queryClient.invalidateQueries({ queryKey: ['daily-summaries-history'] });
+    }
+  }, [queryClient, playSound, isSoundEnabled]);
+
+  // Realtime subscriptions
+  useEffect(() => {
+    console.log('[Realtime] Setting up notification subscriptions...');
+    
+    const channel = supabase
+      .channel('notifications-realtime')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'maintenance_alerts',
+        },
+        (payload) => handleNewNotification('maintenance', payload.new)
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'machine_predictions',
+        },
+        (payload) => handleNewNotification('prediction', payload.new)
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'daily_summaries',
+        },
+        (payload) => handleNewNotification('summary', payload.new)
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'maintenance_alerts',
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['maintenance-alerts-history'] });
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'machine_predictions',
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['ml-predictions-history'] });
+        }
+      )
+      .subscribe((status) => {
+        console.log('[Realtime] Subscription status:', status);
+        setIsRealtimeConnected(status === 'SUBSCRIBED');
+      });
+
+    return () => {
+      console.log('[Realtime] Cleaning up notification subscriptions...');
+      supabase.removeChannel(channel);
+    };
+  }, [handleNewNotification, queryClient]);
 
   // Fetch maintenance alerts
   const { data: maintenanceAlerts, isLoading: isLoadingAlerts, refetch: refetchAlerts } = useQuery({
@@ -295,9 +403,38 @@ const NotificationsPage = () => {
             <h1 className="text-3xl font-display font-bold">
               <span className="gradient-text">Central de Notificações</span>
             </h1>
-            <p className="text-muted-foreground">
-              Histórico unificado de alertas, predições e resumos
-            </p>
+            <div className="flex items-center gap-2">
+              <p className="text-muted-foreground">
+                Histórico unificado de alertas, predições e resumos
+              </p>
+              {/* Realtime indicator */}
+              <Badge 
+                variant={isRealtimeConnected ? "secondary" : "outline"} 
+                className={cn(
+                  "gap-1 text-xs",
+                  isRealtimeConnected 
+                    ? "bg-green-500/20 text-green-600 border-green-500/30" 
+                    : "text-muted-foreground"
+                )}
+              >
+                {isRealtimeConnected ? (
+                  <>
+                    <Wifi className="h-3 w-3" />
+                    Ao vivo
+                  </>
+                ) : (
+                  <>
+                    <WifiOff className="h-3 w-3" />
+                    Offline
+                  </>
+                )}
+              </Badge>
+              {newNotificationsCount > 0 && (
+                <Badge variant="destructive" className="animate-pulse">
+                  {newNotificationsCount} nova{newNotificationsCount > 1 ? 's' : ''}
+                </Badge>
+              )}
+            </div>
           </div>
           <div className="flex gap-2">
             {permission !== 'granted' && (
@@ -308,7 +445,10 @@ const NotificationsPage = () => {
             )}
             <Button 
               variant="outline" 
-              onClick={handleRefreshAll}
+              onClick={() => {
+                setNewNotificationsCount(0);
+                handleRefreshAll();
+              }}
               disabled={isLoading || isSummaryLoading}
               className="gap-2"
             >
