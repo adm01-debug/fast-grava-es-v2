@@ -49,6 +49,7 @@ const BIDashboard = lazy(() => import("./pages/BIDashboard"));
 const CodeQualityDashboard = lazy(() => import("./pages/CodeQualityDashboard"));
 const SettingsPage = lazy(() => import("./pages/SettingsPage"));
 const AuthPage = lazy(() => import("./pages/AuthPage"));
+const InstallAppPage = lazy(() => import("./pages/InstallAppPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -288,6 +289,13 @@ function AnimatedRoutes() {
               </Suspense>
             </PageTransition>
           </ProtectedRoute>
+        } />
+        <Route path="/install" element={
+          <PageTransition>
+            <Suspense fallback={<DashboardPageSkeleton />}>
+              <InstallAppPage />
+            </Suspense>
+          </PageTransition>
         } />
         <Route path="*" element={
           <PageTransition>
