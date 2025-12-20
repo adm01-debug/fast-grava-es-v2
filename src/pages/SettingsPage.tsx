@@ -34,6 +34,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { usePushSubscription } from '@/hooks/usePushSubscription';
+import { UserManagement } from '@/components/settings/UserManagement';
 
 // Settings persistence hook
 function usePersistedSettings() {
@@ -427,48 +428,7 @@ export default function SettingsPage() {
 
           {/* Users Tab */}
           <TabsContent value="users" className="space-y-4">
-            <Card className="glass-card">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Users className="h-5 w-5 text-primary" />
-                  Gerenciamento de Usuários
-                </CardTitle>
-                <CardDescription>Visualize e gerencie usuários do sistema</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {usersLoading ? (
-                  <div className="text-center py-8 text-muted-foreground">Carregando...</div>
-                ) : users.length === 0 ? (
-                  <div className="text-center py-8 text-muted-foreground">Nenhum usuário encontrado</div>
-                ) : (
-                  <div className="space-y-3">
-                    {users.map((u) => (
-                      <div key={u.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/30">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
-                            <span className="text-sm font-medium">
-                              {u.full_name?.charAt(0) || '?'}
-                            </span>
-                          </div>
-                          <div>
-                            <p className="font-medium">{u.full_name || 'Sem nome'}</p>
-                            <p className="text-sm text-muted-foreground">{u.phone || 'Sem telefone'}</p>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Badge variant={getUserRole(u.id) === 'manager' ? 'default' : 'secondary'}>
-                            {getUserRole(u.id)}
-                          </Badge>
-                          {u.id === user?.id && (
-                            <Badge variant="outline">Você</Badge>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+            <UserManagement />
           </TabsContent>
 
           {/* Backup Tab */}
