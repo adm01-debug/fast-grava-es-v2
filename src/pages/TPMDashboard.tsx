@@ -1,15 +1,18 @@
 import { Helmet } from 'react-helmet';
-import { Wrench, AlertTriangle, CheckCircle, Clock, CalendarCheck, RefreshCw } from 'lucide-react';
+import { Wrench, AlertTriangle, CheckCircle, Clock, CalendarCheck, RefreshCw, Settings } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { useTPM } from '@/hooks/useTPM';
+import { useTPMNotifications } from '@/hooks/useTPMNotifications';
 import { useAuth } from '@/contexts/AuthContext';
 import { TPMAlertsPanel } from '@/components/tpm/TPMAlertsPanel';
 import { TPMCalendar } from '@/components/tpm/TPMCalendar';
 import { TPMScheduleList } from '@/components/tpm/TPMScheduleList';
 import { CreateScheduleModal } from '@/components/tpm/CreateScheduleModal';
+import { TPMNotificationSettings } from '@/components/tpm/TPMNotificationSettings';
 import { MTBFMTTRWidget } from '@/components/reliability/MTBFMTTRWidget';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { toast } from 'sonner';
@@ -29,6 +32,9 @@ export default function TPMDashboard() {
     checkAndGenerateAlerts,
     resolveAlert,
   } = useTPM();
+  
+  // Initialize TPM notifications listener
+  useTPMNotifications();
 
   const handleStartMaintenance = (scheduleId: string) => {
     if (!user || !profile) {
@@ -74,6 +80,16 @@ export default function TPMDashboard() {
             </p>
           </div>
           <div className="flex gap-3">
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="outline" size="icon" className="hover:shadow-glow-primary hover:border-primary/50 transition-all duration-300">
+                  <Settings className="h-4 w-4" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent className="w-full sm:max-w-lg overflow-y-auto">
+                <TPMNotificationSettings />
+              </SheetContent>
+            </Sheet>
             <Button 
               variant="outline" 
               onClick={() => checkAndGenerateAlerts.mutate()}
