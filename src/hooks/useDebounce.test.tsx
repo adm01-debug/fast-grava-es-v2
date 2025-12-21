@@ -1,8 +1,9 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
+import React from 'react';
 
 // Mock implementation of useDebounce
-const useDebounce = <T>(value: T, delay: number): T => {
+function useDebounce<T>(value: T, delay: number): T {
   const [debouncedValue, setDebouncedValue] = React.useState(value);
 
   React.useEffect(() => {
@@ -16,9 +17,7 @@ const useDebounce = <T>(value: T, delay: number): T => {
   }, [value, delay]);
 
   return debouncedValue;
-};
-
-import React from 'react';
+}
 
 describe('useDebounce', () => {
   beforeEach(() => {

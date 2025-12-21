@@ -28,7 +28,7 @@ serve(async (req) => {
         throw new Error(`Unknown report type: ${type}`);
     }
 
-    return new Response(pdfContent, {
+    return new Response(pdfContent.buffer as ArrayBuffer, {
       headers: {
         ...corsHeaders,
         "Content-Type": "application/pdf",
@@ -36,7 +36,8 @@ serve(async (req) => {
       },
     });
   } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    return new Response(JSON.stringify({ error: message }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

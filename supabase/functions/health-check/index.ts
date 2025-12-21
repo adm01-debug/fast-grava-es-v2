@@ -45,10 +45,11 @@ serve(async (req) => {
       }
     );
   } catch (error) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
     return new Response(
       JSON.stringify({
         status: "unhealthy",
-        error: error.message,
+        error: message,
         timestamp: new Date().toISOString(),
       }),
       { status: 503, headers: { "Content-Type": "application/json" } }
