@@ -1,0 +1,61 @@
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+serve(async (req) => {
+  try {
+    const supabase = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
+    );
+
+    const results = {
+      deletedLogs: 0,
+      deletedNotifications: 0,
+      deletedSessions: 0,
+      archivedJobs: 0,
+    };
+
+    // Delete old audit logs (> 90 days)
+    const { count: logsCount } = await supabase
+      .from("audit_logs")
+      .delete()
+      .lt("created_at", new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString());
+    results.deletedLogs = logsCount || 0;
+
+    // Delete old notifications (> 30 days)
+    const { count: notifsCount } = await supabase
+      .from("notifications")
+      .delete()
+      .eq("read", true)
+      .lt("created_at", new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString());
+    results.deletedNotifications = notifsCount || 0;
+
+    // Delete expired sessions
+    const { count: sessionsCount } = await supabase
+      .from("sessions")
+      .delete()
+      .lt("expires_at", new Date().toISOString());
+    results.deletedSessions = sessionsCount || 0;
+
+    // Archive completed jobs older than 6 months
+    const sixMonthsAgo = new Date(Date.now() - 180 * 24 * 60 * 60 * 1000).toISOString();
+    const { data: oldJobs } = await supabase
+      .from("jobs")
+      .select("*")
+      .eq("status", "completed")
+      .lt("completed_at", sixMonthsAgo);
+
+    if (oldJobs?.length) {
+      await supabase.from("archived_jobs").insert(oldJobs);
+      await supabase.from("jobs").delete().in("id", oldJobs.map((j: any) => j.id));
+      results.archivedJobs = oldJobs.length;
+    }
+
+    console.log("Cleanup completed:", results);
+    return new Response(JSON.stringify({ success: true, results }), {
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (error) {
+    return new Response(JSON.stringify({ error: error.message }), { status: 500 });
+  }
+});
