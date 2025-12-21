@@ -1,15 +1,34 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
-import { useAuditLog } from './useAuditLog';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import React from 'react';
 
-const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
-const wrapper = ({ children }: any) => <QueryClientProvider client={qc}>{children}</QueryClientProvider>;
+vi.mock('@/integrations/supabase/client', () => ({
+  supabase: { from: vi.fn(() => ({ select: vi.fn(() => ({ eq: vi.fn(() => Promise.resolve({ data: [], error: null })), order: vi.fn(() => Promise.resolve({ data: [], error: null })) })), insert: vi.fn(() => Promise.resolve({ data: null, error: null })), update: vi.fn(() => ({ eq: vi.fn(() => Promise.resolve({ data: null, error: null })) })) })) },
+}));
+
+import { useAuditLog } from './useAuditLog';
+
+const createWrapper = () => {
+  const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  return ({ children }: { children: React.ReactNode }) => (<QueryClientProvider client={queryClient}>{children}</QueryClientProvider>);
+};
 
 describe('useAuditLog', () => {
-  it('should be defined', () => { expect(useAuditLog).toBeDefined(); });
-  it('should return expected interface', () => {
-    const { result } = renderHook(() => useAuditLog(), { wrapper });
+  beforeEach(() => vi.clearAllMocks());
+
+  it('should initialize correctly', async () => {
+    const { result } = renderHook(() => useAuditLog(), { wrapper: createWrapper() });
     expect(result.current).toBeDefined();
+  });
+
+  it('should track loading state', () => {
+    const { result } = renderHook(() => useAuditLog(), { wrapper: createWrapper() });
+    expect(typeof result.current.isLoading).toBe('boolean');
+  });
+
+  it('should have refetch function', () => {
+    const { result } = renderHook(() => useAuditLog(), { wrapper: createWrapper() });
+    expect(typeof result.current.refetch).toBe('function');
   });
 });

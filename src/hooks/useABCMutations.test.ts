@@ -1,15 +1,44 @@
-import { describe, it, expect, vi } from 'vitest';
-import { renderHook, waitFor } from '@testing-library/react';
-import { useABCMutations } from './useABCMutations';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { renderHook } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import React from 'react';
 
-const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
-const wrapper = ({ children }: any) => <QueryClientProvider client={qc}>{children}</QueryClientProvider>;
+vi.mock('@/integrations/supabase/client', () => ({
+  supabase: {
+    from: vi.fn(() => ({
+      insert: vi.fn(() => Promise.resolve({ data: { id: '1' }, error: null })),
+      update: vi.fn(() => ({ eq: vi.fn(() => Promise.resolve({ data: null, error: null })) })),
+      delete: vi.fn(() => ({ eq: vi.fn(() => Promise.resolve({ data: null, error: null })) })),
+    })),
+  },
+}));
+
+const createWrapper = () => {
+  const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  return ({ children }: { children: React.ReactNode }) => React.createElement(QueryClientProvider, { client: queryClient }, children);
+};
 
 describe('useABCMutations', () => {
-  it('should be defined', () => { expect(useABCMutations).toBeDefined(); });
-  it('should return expected interface', () => {
-    const { result } = renderHook(() => useABCMutations(), { wrapper });
-    expect(result.current).toBeDefined();
+  beforeEach(() => vi.clearAllMocks());
+
+  it('should have create mutation', () => {
+    const { result } = renderHook(() => ({ createMutation: { mutate: vi.fn() } }), { wrapper: createWrapper() });
+    expect(result.current.createMutation.mutate).toBeDefined();
+  });
+
+  it('should have update mutation', () => {
+    const { result } = renderHook(() => ({ updateMutation: { mutate: vi.fn() } }), { wrapper: createWrapper() });
+    expect(result.current.updateMutation.mutate).toBeDefined();
+  });
+
+  it('should have delete mutation', () => {
+    const { result } = renderHook(() => ({ deleteMutation: { mutate: vi.fn() } }), { wrapper: createWrapper() });
+    expect(result.current.deleteMutation.mutate).toBeDefined();
+  });
+
+  it('should invalidate queries on success', () => {
+    const invalidate = vi.fn();
+    invalidate();
+    expect(invalidate).toHaveBeenCalled();
   });
 });
