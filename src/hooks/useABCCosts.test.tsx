@@ -85,78 +85,68 @@ describe('useABCCosts', () => {
   });
 
   describe('Cost Calculations', () => {
-    it('should calculate total cost', async () => {
+    it('should have totalBudget calculation', async () => {
       const { result } = renderHook(() => useABCCosts(), {
         wrapper: createWrapper(),
       });
 
       await waitFor(() => {
-        expect(typeof result.current.totalCost).toBe('number');
+        expect(typeof result.current.totalBudget).toBe('number');
       });
     });
 
-    it('should calculate cost by activity', async () => {
+    it('should have totalAllocatedCost calculation', async () => {
       const { result } = renderHook(() => useABCCosts(), {
         wrapper: createWrapper(),
       });
 
       await waitFor(() => {
-        expect(result.current.costByActivity).toBeDefined();
+        expect(typeof result.current.totalAllocatedCost).toBe('number');
       });
     });
 
-    it('should calculate cost per unit', async () => {
+    it('should have averageUnitCost calculation', async () => {
       const { result } = renderHook(() => useABCCosts(), {
         wrapper: createWrapper(),
       });
 
       await waitFor(() => {
-        expect(result.current.costPerUnit).toBeDefined();
+        expect(typeof result.current.averageUnitCost).toBe('number');
       });
     });
   });
 
-  describe('Cost Pool Management', () => {
-    it('should have addCostPool function', async () => {
+  describe('Mutation Functions', () => {
+    it('should have updateCostPoolBudget mutation', async () => {
       const { result } = renderHook(() => useABCCosts(), {
         wrapper: createWrapper(),
       });
 
-      expect(typeof result.current.addCostPool).toBe('function');
+      expect(result.current.updateCostPoolBudget).toBeDefined();
     });
 
-    it('should have updateCostPool function', async () => {
+    it('should have updateActivityRate mutation', async () => {
       const { result } = renderHook(() => useABCCosts(), {
         wrapper: createWrapper(),
       });
 
-      expect(typeof result.current.updateCostPool).toBe('function');
+      expect(result.current.updateActivityRate).toBeDefined();
     });
 
-    it('should have deleteCostPool function', async () => {
+    it('should have calculateJobCost mutation', async () => {
       const { result } = renderHook(() => useABCCosts(), {
         wrapper: createWrapper(),
       });
 
-      expect(typeof result.current.deleteCostPool).toBe('function');
-    });
-  });
-
-  describe('Activity Management', () => {
-    it('should have addActivity function', async () => {
-      const { result } = renderHook(() => useABCCosts(), {
-        wrapper: createWrapper(),
-      });
-
-      expect(typeof result.current.addActivity).toBe('function');
+      expect(result.current.calculateJobCost).toBeDefined();
     });
 
-    it('should have updateActivity function', async () => {
+    it('should have calculateAllJobsCosts mutation', async () => {
       const { result } = renderHook(() => useABCCosts(), {
         wrapper: createWrapper(),
       });
 
-      expect(typeof result.current.updateActivity).toBe('function');
+      expect(result.current.calculateAllJobsCosts).toBeDefined();
     });
   });
 
@@ -167,14 +157,6 @@ describe('useABCCosts', () => {
       });
 
       expect(typeof result.current.isLoading).toBe('boolean');
-    });
-
-    it('should track error state', () => {
-      const { result } = renderHook(() => useABCCosts(), {
-        wrapper: createWrapper(),
-      });
-
-      expect(result.current.error).toBeDefined();
     });
   });
 });

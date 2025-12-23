@@ -1,29 +1,28 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { Sonner } from '../sonner';
+import { Toaster, toast } from '../sonner';
+import { Button } from '../button';
 
-const meta: Meta<typeof Sonner> = {
+const meta: Meta<typeof Toaster> = {
   title: 'UI/Sonner',
-  component: Sonner,
+  component: Toaster,
   tags: ['autodocs'],
   parameters: {
     layout: 'centered',
   },
-  argTypes: {
-    // Add argTypes based on component props
-  },
 };
 
 export default meta;
-type Story = StoryObj<typeof Sonner>;
+type Story = StoryObj<typeof Toaster>;
 
 export const Default: Story = {
-  args: {
-    // Default props
-  },
-};
-
-export const Playground: Story = {
-  args: {
-    // Playground props
-  },
+  render: () => (
+    <>
+      <Toaster />
+      <div className="space-x-2">
+        <Button onClick={() => toast('Hello World!')}>Show Toast</Button>
+        <Button variant="destructive" onClick={() => toast.error('Error!')}>Error Toast</Button>
+        <Button variant="secondary" onClick={() => toast.success('Success!')}>Success Toast</Button>
+      </div>
+    </>
+  ),
 };

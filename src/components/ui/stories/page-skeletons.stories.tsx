@@ -1,29 +1,30 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { PageSkeletons } from '../page-skeletons';
+import { PageSkeleton, HeaderSkeleton } from '../page-skeletons';
 
-const meta: Meta<typeof PageSkeletons> = {
+const meta: Meta<typeof PageSkeleton> = {
   title: 'UI/PageSkeletons',
-  component: PageSkeletons,
+  component: PageSkeleton,
   tags: ['autodocs'],
   parameters: {
-    layout: 'centered',
-  },
-  argTypes: {
-    // Add argTypes based on component props
+    layout: 'fullscreen',
   },
 };
 
 export default meta;
-type Story = StoryObj<typeof PageSkeletons>;
+type Story = StoryObj<typeof PageSkeleton>;
 
 export const Default: Story = {
-  args: {
-    // Default props
-  },
+  render: () => (
+    <PageSkeleton>
+      <HeaderSkeleton />
+    </PageSkeleton>
+  ),
 };
 
 export const Playground: Story = {
-  args: {
-    // Playground props
-  },
+  render: () => (
+    <PageSkeleton className="max-w-4xl mx-auto">
+      <HeaderSkeleton />
+    </PageSkeleton>
+  ),
 };
