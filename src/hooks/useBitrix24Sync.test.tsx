@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { renderHook, waitFor, act } from '@testing-library/react';
+import { renderHook, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React from 'react';
 
@@ -43,208 +43,6 @@ describe('useBitrix24Sync', () => {
     vi.clearAllMocks();
   });
 
-  describe('Connection Status', () => {
-    it('should check connection status', async () => {
-      const { result } = renderHook(() => useBitrix24Sync(), {
-        wrapper: createWrapper(),
-      });
-
-      await waitFor(() => {
-        expect(result.current.isConnected).toBeDefined();
-      });
-    });
-
-    it('should provide connection details', async () => {
-      const { result } = renderHook(() => useBitrix24Sync(), {
-        wrapper: createWrapper(),
-      });
-
-      await waitFor(() => {
-        expect(result.current.connectionDetails).toBeDefined();
-      });
-    });
-
-    it('should track last sync time', async () => {
-      const { result } = renderHook(() => useBitrix24Sync(), {
-        wrapper: createWrapper(),
-      });
-
-      await waitFor(() => {
-        expect(result.current.lastSyncTime).toBeDefined();
-      });
-    });
-  });
-
-  describe('Sync Operations', () => {
-    it('should have syncNow function', () => {
-      const { result } = renderHook(() => useBitrix24Sync(), {
-        wrapper: createWrapper(),
-      });
-
-      expect(typeof result.current.syncNow).toBe('function');
-    });
-
-    it('should have syncEntity function', () => {
-      const { result } = renderHook(() => useBitrix24Sync(), {
-        wrapper: createWrapper(),
-      });
-
-      expect(typeof result.current.syncEntity).toBe('function');
-    });
-
-    it('should have syncAll function', () => {
-      const { result } = renderHook(() => useBitrix24Sync(), {
-        wrapper: createWrapper(),
-      });
-
-      expect(typeof result.current.syncAll).toBe('function');
-    });
-
-    it('should track sync progress', async () => {
-      const { result } = renderHook(() => useBitrix24Sync(), {
-        wrapper: createWrapper(),
-      });
-
-      await waitFor(() => {
-        expect(result.current.syncProgress).toBeDefined();
-      });
-    });
-  });
-
-  describe('Field Mapping', () => {
-    it('should fetch field mappings', async () => {
-      const { result } = renderHook(() => useBitrix24Sync(), {
-        wrapper: createWrapper(),
-      });
-
-      await waitFor(() => {
-        expect(result.current.fieldMappings).toBeDefined();
-      });
-    });
-
-    it('should have updateFieldMapping function', () => {
-      const { result } = renderHook(() => useBitrix24Sync(), {
-        wrapper: createWrapper(),
-      });
-
-      expect(typeof result.current.updateFieldMapping).toBe('function');
-    });
-
-    it('should have addFieldMapping function', () => {
-      const { result } = renderHook(() => useBitrix24Sync(), {
-        wrapper: createWrapper(),
-      });
-
-      expect(typeof result.current.addFieldMapping).toBe('function');
-    });
-  });
-
-  describe('Sync History', () => {
-    it('should fetch sync history', async () => {
-      const { result } = renderHook(() => useBitrix24Sync(), {
-        wrapper: createWrapper(),
-      });
-
-      await waitFor(() => {
-        expect(result.current.syncHistory).toBeDefined();
-      });
-    });
-
-    it('should provide sync statistics', async () => {
-      const { result } = renderHook(() => useBitrix24Sync(), {
-        wrapper: createWrapper(),
-      });
-
-      await waitFor(() => {
-        expect(result.current.syncStats).toBeDefined();
-      });
-    });
-  });
-
-  describe('OAuth', () => {
-    it('should have connect function', () => {
-      const { result } = renderHook(() => useBitrix24Sync(), {
-        wrapper: createWrapper(),
-      });
-
-      expect(typeof result.current.connect).toBe('function');
-    });
-
-    it('should have disconnect function', () => {
-      const { result } = renderHook(() => useBitrix24Sync(), {
-        wrapper: createWrapper(),
-      });
-
-      expect(typeof result.current.disconnect).toBe('function');
-    });
-
-    it('should have refreshToken function', () => {
-      const { result } = renderHook(() => useBitrix24Sync(), {
-        wrapper: createWrapper(),
-      });
-
-      expect(typeof result.current.refreshToken).toBe('function');
-    });
-  });
-
-  describe('Configuration', () => {
-    it('should have syncInterval setting', async () => {
-      const { result } = renderHook(() => useBitrix24Sync(), {
-        wrapper: createWrapper(),
-      });
-
-      await waitFor(() => {
-        expect(result.current.syncInterval).toBeDefined();
-      });
-    });
-
-    it('should have setSyncInterval function', () => {
-      const { result } = renderHook(() => useBitrix24Sync(), {
-        wrapper: createWrapper(),
-      });
-
-      expect(typeof result.current.setSyncInterval).toBe('function');
-    });
-
-    it('should have enableAutoSync toggle', async () => {
-      const { result } = renderHook(() => useBitrix24Sync(), {
-        wrapper: createWrapper(),
-      });
-
-      await waitFor(() => {
-        expect(typeof result.current.autoSyncEnabled).toBe('boolean');
-      });
-    });
-  });
-
-  describe('Error Handling', () => {
-    it('should track sync errors', async () => {
-      const { result } = renderHook(() => useBitrix24Sync(), {
-        wrapper: createWrapper(),
-      });
-
-      await waitFor(() => {
-        expect(result.current.syncErrors).toBeDefined();
-      });
-    });
-
-    it('should have clearErrors function', () => {
-      const { result } = renderHook(() => useBitrix24Sync(), {
-        wrapper: createWrapper(),
-      });
-
-      expect(typeof result.current.clearErrors).toBe('function');
-    });
-
-    it('should have retryFailedSync function', () => {
-      const { result } = renderHook(() => useBitrix24Sync(), {
-        wrapper: createWrapper(),
-      });
-
-      expect(typeof result.current.retryFailedSync).toBe('function');
-    });
-  });
-
   describe('Loading States', () => {
     it('should track loading state', () => {
       const { result } = renderHook(() => useBitrix24Sync(), {
@@ -253,13 +51,69 @@ describe('useBitrix24Sync', () => {
 
       expect(typeof result.current.isLoading).toBe('boolean');
     });
+  });
 
-    it('should track syncing state', () => {
+  describe('Last Sync', () => {
+    it('should have lastSync property', () => {
       const { result } = renderHook(() => useBitrix24Sync(), {
         wrapper: createWrapper(),
       });
 
-      expect(typeof result.current.isSyncing).toBe('boolean');
+      // lastSync can be null or Date
+      expect(result.current.lastSync === null || result.current.lastSync instanceof Date).toBe(true);
+    });
+  });
+
+  describe('OAuth Status', () => {
+    it('should have oauthStatus property', () => {
+      const { result } = renderHook(() => useBitrix24Sync(), {
+        wrapper: createWrapper(),
+      });
+
+      // oauthStatus can be null initially
+      expect(result.current).toHaveProperty('oauthStatus');
+    });
+
+    it('should have checkOAuthStatus function', () => {
+      const { result } = renderHook(() => useBitrix24Sync(), {
+        wrapper: createWrapper(),
+      });
+
+      expect(typeof result.current.checkOAuthStatus).toBe('function');
+    });
+
+    it('should have clearTokens function', () => {
+      const { result } = renderHook(() => useBitrix24Sync(), {
+        wrapper: createWrapper(),
+      });
+
+      expect(typeof result.current.clearTokens).toBe('function');
+    });
+  });
+
+  describe('Sync Functions', () => {
+    it('should have testConnection function', () => {
+      const { result } = renderHook(() => useBitrix24Sync(), {
+        wrapper: createWrapper(),
+      });
+
+      expect(typeof result.current.testConnection).toBe('function');
+    });
+
+    it('should have pullFromBitrix function', () => {
+      const { result } = renderHook(() => useBitrix24Sync(), {
+        wrapper: createWrapper(),
+      });
+
+      expect(typeof result.current.pullFromBitrix).toBe('function');
+    });
+
+    it('should have pushToBitrix function', () => {
+      const { result } = renderHook(() => useBitrix24Sync(), {
+        wrapper: createWrapper(),
+      });
+
+      expect(typeof result.current.pushToBitrix).toBe('function');
     });
   });
 });

@@ -1,29 +1,35 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { ReducedMotion } from '../ReducedMotion';
+import { ReducedMotionProvider, useReducedMotion, MotionSafe } from '../ReducedMotion';
 
-const meta: Meta<typeof ReducedMotion> = {
+// Demo component for the story
+function ReducedMotionDemo() {
+  const { prefersReducedMotion } = useReducedMotion();
+  return (
+    <div className="space-y-4">
+      <p>Prefers Reduced Motion: {prefersReducedMotion ? 'Yes' : 'No'}</p>
+      <MotionSafe fallback={<div>Static content</div>}>
+        <div className="animate-pulse">Animated content</div>
+      </MotionSafe>
+    </div>
+  );
+}
+
+const meta: Meta<typeof ReducedMotionProvider> = {
   title: 'UI/ReducedMotion',
-  component: ReducedMotion,
+  component: ReducedMotionProvider,
   tags: ['autodocs'],
   parameters: {
     layout: 'centered',
   },
-  argTypes: {
-    // Add argTypes based on component props
-  },
 };
 
 export default meta;
-type Story = StoryObj<typeof ReducedMotion>;
+type Story = StoryObj<typeof ReducedMotionProvider>;
 
 export const Default: Story = {
-  args: {
-    // Default props
-  },
-};
-
-export const Playground: Story = {
-  args: {
-    // Playground props
-  },
+  render: () => (
+    <ReducedMotionProvider>
+      <ReducedMotionDemo />
+    </ReducedMotionProvider>
+  ),
 };
