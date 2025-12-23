@@ -1,11 +1,12 @@
 import { describe, it, expect } from 'vitest';
-import { isValidCPF } from './cpf';
+import { validateCPF } from './cpf';
 
-describe('isValidCPF', () => {
-  it('should validate CPF length', () => {
-    expect(isValidCPF('123.456.789-00')).toBe(true);
+describe('validateCPF', () => {
+  it('should validate correct CPF', () => {
+    expect(validateCPF('529.982.247-25')).toBe(true);
   });
-  it('should reject short CPF', () => {
-    expect(isValidCPF('123')).toBe(false);
+  it('should reject invalid CPF', () => {
+    expect(validateCPF('123')).toBe(false);
+    expect(validateCPF('000.000.000-00')).toBe(false);
   });
 });

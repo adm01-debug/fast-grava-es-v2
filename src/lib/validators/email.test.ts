@@ -1,11 +1,11 @@
 import { describe, it, expect } from 'vitest';
-import { isValidEmail } from './email';
+import { validateEmail } from './email';
 
-describe('isValidEmail', () => {
+describe('validateEmail', () => {
   it('should validate correct email', () => {
-    expect(isValidEmail('test@test.com')).toBe(true);
+    expect(validateEmail('test@test.com')).toBe(true);
   });
   it('should reject invalid email', () => {
-    expect(isValidEmail('invalid')).toBe(false);
+    expect(validateEmail('invalid')).toBe(false);
   });
 });
