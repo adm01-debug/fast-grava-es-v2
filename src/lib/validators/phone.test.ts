@@ -1,8 +1,11 @@
 import { describe, it, expect } from 'vitest';
-import { isValidPhone } from './phone';
+import { validatePhone } from './phone';
 
-describe('isValidPhone', () => {
+describe('validatePhone', () => {
   it('should validate phone', () => {
-    expect(isValidPhone('(11) 99999-9999')).toBe(true);
+    expect(validatePhone('(11) 99999-9999')).toBe(true);
+  });
+  it('should reject short phone', () => {
+    expect(validatePhone('123')).toBe(false);
   });
 });

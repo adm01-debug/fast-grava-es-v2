@@ -1,8 +1,9 @@
 import { describe, it, expect } from 'vitest';
-import { isValidCNPJ } from './cnpj';
+import { validateCNPJ } from './cnpj';
 
-describe('isValidCNPJ', () => {
-  it('should validate CNPJ length', () => {
-    expect(isValidCNPJ('12.345.678/0001-00')).toBe(true);
+describe('validateCNPJ', () => {
+  it('should validate CNPJ format', () => {
+    expect(validateCNPJ('11.222.333/0001-81')).toBe(true);
+    expect(validateCNPJ('00.000.000/0000-00')).toBe(false);
   });
 });

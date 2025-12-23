@@ -42,9 +42,12 @@
     "@radix-ui/react-toggle": "^1.1.9",
     "@radix-ui/react-toggle-group": "^1.1.10",
     "@radix-ui/react-tooltip": "^1.2.7",
+    "@sentry/react": "^8.55.0",
+    "@storybook/react": "^8.6.15",
     "@supabase/supabase-js": "^2.87.1",
     "@tanstack/react-query": "^5.83.0",
     "@tanstack/react-virtual": "^3.13.13",
+    "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",
@@ -80,6 +83,7 @@
     "vaul": "^0.9.9",
     "vite-plugin-pwa": "^1.2.0",
     "vitest": "^4.0.15",
+    "web-vitals": "^4.2.4",
     "zod": "^3.25.76"
   },
   "devDependencies": {
