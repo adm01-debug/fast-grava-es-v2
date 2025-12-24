@@ -152,34 +152,40 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-muted/50 p-4 relative">
-      <div className="absolute top-4 right-4 flex items-center gap-2">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-primary/5 p-4 relative overflow-hidden">
+      {/* Background decorations */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary/10 rounded-full blur-3xl" />
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-accent/10 rounded-full blur-3xl" />
+      </div>
+      
+      <div className="absolute top-4 right-4 flex items-center gap-2 z-10">
         <LanguageSwitcher />
         <Button
           variant="ghost"
           size="icon"
           onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-          className="h-9 w-9"
+          className="h-9 w-9 rounded-lg"
         >
           <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
           <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
         </Button>
       </div>
 
-      <div className="w-full max-w-md space-y-8 animate-fade-in">
-        <div className="text-center space-y-2">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl gradient-primary mb-4 shadow-lg shadow-primary/30">
-            <Printer className="h-8 w-8 text-white" />
+      <div className="w-full max-w-md space-y-8 animate-fade-in relative z-10">
+        <div className="text-center space-y-3">
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-primary to-accent mb-4 shadow-xl shadow-primary/25">
+            <Printer className="h-10 w-10 text-white" />
           </div>
-          <h1 className="text-3xl font-display font-bold">
-            <span className="gradient-text">{t('common.appName')}</span>
+          <h1 className="text-4xl font-display font-bold tracking-tight">
+            <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">{t('common.appName')}</span>
           </h1>
-          <p className="text-muted-foreground">
-            {t('dashboard.welcome', { name: '' }).replace(', !', '')}
+          <p className="text-muted-foreground text-lg">
+            Sistema de Gestão de Produção
           </p>
         </div>
 
-        <Card className="glass-card border-border/50 card-shadow">
+        <Card variant="elevated" className="border-border/50">
           <CardContent className="pt-6">
             <Tabs defaultValue="login" className="w-full">
               <TabsList className="grid w-full grid-cols-2 mb-6">
@@ -188,40 +194,38 @@ export default function AuthPage() {
               </TabsList>
 
               <TabsContent value="login">
-                <form onSubmit={handleLogin} className="space-y-4">
+                <form onSubmit={handleLogin} className="space-y-5">
                   <div className="space-y-2">
-                    <Label htmlFor="login-email">{t('auth.email')}</Label>
+                    <Label htmlFor="login-email" className="text-sm font-medium">{t('auth.email')}</Label>
                     <Input
                       id="login-email"
                       type="email"
                       placeholder={t('auth.email')}
                       value={loginEmail}
                       onChange={(e) => setLoginEmail(e.target.value)}
-                      className="bg-background"
                       disabled={isLoading}
                     />
                     {errors.login_email && (
-                      <p className="text-xs text-destructive">{errors.login_email}</p>
+                      <p className="text-xs text-destructive animate-fade-in">{errors.login_email}</p>
                     )}
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="login-password">{t('auth.password')}</Label>
+                    <Label htmlFor="login-password" className="text-sm font-medium">{t('auth.password')}</Label>
                     <Input
                       id="login-password"
                       type="password"
                       placeholder="••••••••"
                       value={loginPassword}
                       onChange={(e) => setLoginPassword(e.target.value)}
-                      className="bg-background"
                       disabled={isLoading}
                     />
                     {errors.login_password && (
-                      <p className="text-xs text-destructive">{errors.login_password}</p>
+                      <p className="text-xs text-destructive animate-fade-in">{errors.login_password}</p>
                     )}
                   </div>
 
-                  <Button type="submit" className="w-full gradient-primary" disabled={isLoading}>
+                  <Button type="submit" variant="gradient" className="w-full h-11" disabled={isLoading}>
                     {isLoading ? (
                       <>
                         <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -238,7 +242,7 @@ export default function AuthPage() {
                   <Button
                     type="button"
                     variant="link"
-                    className="w-full text-muted-foreground hover:text-primary"
+                    className="w-full text-muted-foreground hover:text-primary transition-colors"
                     onClick={() => setShowForgotPassword(true)}
                   >
                     {t('auth.forgotPassword')}
@@ -247,72 +251,68 @@ export default function AuthPage() {
               </TabsContent>
 
               <TabsContent value="signup">
-                <form onSubmit={handleSignup} className="space-y-4">
+                <form onSubmit={handleSignup} className="space-y-5">
                   <div className="space-y-2">
-                    <Label htmlFor="signup-name">{t('operators.fullName')}</Label>
+                    <Label htmlFor="signup-name" className="text-sm font-medium">{t('operators.fullName')}</Label>
                     <Input
                       id="signup-name"
                       type="text"
                       placeholder={t('operators.fullName')}
                       value={signupName}
                       onChange={(e) => setSignupName(e.target.value)}
-                      className="bg-background"
                       disabled={isLoading}
                     />
                     {errors.signup_fullName && (
-                      <p className="text-xs text-destructive">{errors.signup_fullName}</p>
+                      <p className="text-xs text-destructive animate-fade-in">{errors.signup_fullName}</p>
                     )}
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="signup-email">{t('auth.email')}</Label>
+                    <Label htmlFor="signup-email" className="text-sm font-medium">{t('auth.email')}</Label>
                     <Input
                       id="signup-email"
                       type="email"
                       placeholder={t('auth.email')}
                       value={signupEmail}
                       onChange={(e) => setSignupEmail(e.target.value)}
-                      className="bg-background"
                       disabled={isLoading}
                     />
                     {errors.signup_email && (
-                      <p className="text-xs text-destructive">{errors.signup_email}</p>
+                      <p className="text-xs text-destructive animate-fade-in">{errors.signup_email}</p>
                     )}
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="signup-password">{t('auth.password')}</Label>
+                    <Label htmlFor="signup-password" className="text-sm font-medium">{t('auth.password')}</Label>
                     <Input
                       id="signup-password"
                       type="password"
                       placeholder="••••••••"
                       value={signupPassword}
                       onChange={(e) => setSignupPassword(e.target.value)}
-                      className="bg-background"
                       disabled={isLoading}
                     />
                     {errors.signup_password && (
-                      <p className="text-xs text-destructive">{errors.signup_password}</p>
+                      <p className="text-xs text-destructive animate-fade-in">{errors.signup_password}</p>
                     )}
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="signup-confirm">{t('auth.confirmPassword')}</Label>
+                    <Label htmlFor="signup-confirm" className="text-sm font-medium">{t('auth.confirmPassword')}</Label>
                     <Input
                       id="signup-confirm"
                       type="password"
                       placeholder="••••••••"
                       value={signupConfirmPassword}
                       onChange={(e) => setSignupConfirmPassword(e.target.value)}
-                      className="bg-background"
                       disabled={isLoading}
                     />
                     {errors.signup_confirmPassword && (
-                      <p className="text-xs text-destructive">{errors.signup_confirmPassword}</p>
+                      <p className="text-xs text-destructive animate-fade-in">{errors.signup_confirmPassword}</p>
                     )}
                   </div>
 
-                  <Button type="submit" className="w-full gradient-primary" disabled={isLoading}>
+                  <Button type="submit" variant="gradient" className="w-full h-11" disabled={isLoading}>
                     {isLoading ? (
                       <>
                         <Loader2 className="h-4 w-4 mr-2 animate-spin" />
