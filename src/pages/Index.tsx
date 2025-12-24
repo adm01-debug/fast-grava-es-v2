@@ -173,7 +173,7 @@ const Index = () => {
                 value={stats.todayScheduled.toString()}
                 subtitle={`${stats.scheduled} ${t('jobs.statuses.scheduled')}`}
                 icon={Calendar}
-                variant="blue"
+                variant="primary"
                 className="stagger-1"
               />
               <StatsCard
@@ -181,7 +181,7 @@ const Index = () => {
                 value={stats.inProgress.toString()}
                 subtitle={`${machines.length} ${t('machines.title')}`}
                 icon={Printer}
-                variant="cyan"
+                variant="info"
                 className="stagger-2"
               />
               <StatsCard
@@ -189,7 +189,7 @@ const Index = () => {
                 value={stats.todayCompleted.toString()}
                 subtitle={`${stats.completedPieces.toLocaleString('pt-BR')} ${t('jobs.producedQuantity')}`}
                 icon={CheckCircle2}
-                variant="green"
+                variant="success"
                 className="stagger-3"
               />
               <StatsCard
@@ -197,7 +197,7 @@ const Index = () => {
                 value={stats.delayed.toString()}
                 subtitle={stats.delayed > 0 ? t('alerts.types.warning') : t('common.success')}
                 icon={AlertTriangle}
-                variant="orange"
+                variant="warning"
                 className="stagger-4"
               />
             </>
