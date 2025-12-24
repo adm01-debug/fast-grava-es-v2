@@ -12,53 +12,40 @@ interface StatsCardProps {
     value: number;
     isPositive: boolean;
   };
-  variant?: 'blue' | 'cyan' | 'green' | 'purple' | 'orange' | 'yellow';
+  variant?: 'primary' | 'success' | 'warning' | 'info' | 'accent' | 'muted';
   className?: string;
 }
 
-// Cores vibrantes com glow effects para gaming
 const variantStyles = {
-  blue: {
-    iconBg: 'bg-[hsl(210,100%,55%)]/15 dark:bg-[hsl(210,100%,55%)]/20',
-    iconColor: 'text-[hsl(210,100%,55%)] dark:text-[hsl(210,100%,65%)]',
-    borderColor: 'border-[hsl(210,100%,55%)]/10 dark:border-[hsl(210,100%,55%)]/20',
-    hoverBorder: 'hover:border-[hsl(210,100%,55%)]/30 dark:hover:border-[hsl(210,100%,55%)]/50',
-    hoverGlow: 'dark:hover:shadow-[0_8px_32px_-8px_hsl(210,100%,55%,0.3)]',
+  primary: {
+    iconBg: 'bg-primary/10',
+    iconColor: 'text-primary',
+    accentColor: 'text-primary',
   },
-  cyan: {
-    iconBg: 'bg-[hsl(180,100%,45%)]/15 dark:bg-[hsl(180,100%,45%)]/20',
-    iconColor: 'text-[hsl(180,100%,45%)] dark:text-[hsl(180,100%,55%)]',
-    borderColor: 'border-[hsl(180,100%,45%)]/10 dark:border-[hsl(180,100%,45%)]/20',
-    hoverBorder: 'hover:border-[hsl(180,100%,45%)]/30 dark:hover:border-[hsl(180,100%,45%)]/50',
-    hoverGlow: 'dark:hover:shadow-[0_8px_32px_-8px_hsl(180,100%,45%,0.3)]',
+  success: {
+    iconBg: 'bg-success/10',
+    iconColor: 'text-success',
+    accentColor: 'text-success',
   },
-  green: {
-    iconBg: 'bg-[hsl(142,70%,45%)]/15 dark:bg-[hsl(142,70%,50%)]/20',
-    iconColor: 'text-[hsl(142,70%,45%)] dark:text-[hsl(142,70%,55%)]',
-    borderColor: 'border-[hsl(142,70%,45%)]/10 dark:border-[hsl(142,70%,50%)]/20',
-    hoverBorder: 'hover:border-[hsl(142,70%,45%)]/30 dark:hover:border-[hsl(142,70%,50%)]/50',
-    hoverGlow: 'dark:hover:shadow-[0_8px_32px_-8px_hsl(142,70%,50%,0.3)]',
+  warning: {
+    iconBg: 'bg-warning/10',
+    iconColor: 'text-warning',
+    accentColor: 'text-warning',
   },
-  purple: {
-    iconBg: 'bg-[hsl(280,80%,55%)]/15 dark:bg-[hsl(280,80%,60%)]/20',
-    iconColor: 'text-[hsl(280,80%,55%)] dark:text-[hsl(280,80%,65%)]',
-    borderColor: 'border-[hsl(280,80%,55%)]/10 dark:border-[hsl(280,80%,60%)]/20',
-    hoverBorder: 'hover:border-[hsl(280,80%,55%)]/30 dark:hover:border-[hsl(280,80%,60%)]/50',
-    hoverGlow: 'dark:hover:shadow-[0_8px_32px_-8px_hsl(280,80%,60%,0.3)]',
+  info: {
+    iconBg: 'bg-info/10',
+    iconColor: 'text-info',
+    accentColor: 'text-info',
   },
-  orange: {
-    iconBg: 'bg-[hsl(24,95%,50%)]/15 dark:bg-[hsl(24,95%,55%)]/20',
-    iconColor: 'text-[hsl(24,95%,50%)] dark:text-[hsl(24,95%,60%)]',
-    borderColor: 'border-[hsl(24,95%,50%)]/10 dark:border-[hsl(24,95%,55%)]/20',
-    hoverBorder: 'hover:border-[hsl(24,95%,50%)]/30 dark:hover:border-[hsl(24,95%,55%)]/50',
-    hoverGlow: 'dark:hover:shadow-[0_8px_32px_-8px_hsl(24,95%,55%,0.3)]',
+  accent: {
+    iconBg: 'bg-accent',
+    iconColor: 'text-accent-foreground',
+    accentColor: 'text-accent-foreground',
   },
-  yellow: {
-    iconBg: 'bg-[hsl(45,100%,50%)]/15 dark:bg-[hsl(45,100%,55%)]/20',
-    iconColor: 'text-[hsl(45,100%,45%)] dark:text-[hsl(45,100%,60%)]',
-    borderColor: 'border-[hsl(45,100%,50%)]/10 dark:border-[hsl(45,100%,55%)]/20',
-    hoverBorder: 'hover:border-[hsl(45,100%,50%)]/30 dark:hover:border-[hsl(45,100%,55%)]/50',
-    hoverGlow: 'dark:hover:shadow-[0_8px_32px_-8px_hsl(45,100%,55%,0.3)]',
+  muted: {
+    iconBg: 'bg-muted',
+    iconColor: 'text-muted-foreground',
+    accentColor: 'text-muted-foreground',
   },
 };
 
@@ -68,53 +55,46 @@ function StatsCardComponent({
   subtitle, 
   icon: Icon, 
   trend, 
-  variant = 'blue',
+  variant = 'primary',
   className 
 }: StatsCardProps) {
   const styles = useMemo(() => variantStyles[variant], [variant]);
 
-  const cardClassName = useMemo(() => cn(
-    'p-4 sm:p-5 lg:p-6 rounded-xl animate-bounce-in card-shine',
-    'opacity-0 [animation-fill-mode:forwards]',
-    'border transition-all duration-300 ease-out',
-    'hover:-translate-y-1.5 hover:scale-[1.01]',
-    'dark:bg-card/60 dark:backdrop-blur-xl',
-    styles.borderColor,
-    styles.hoverBorder,
-    styles.hoverGlow,
-    className
-  ), [styles, className]);
-
-  const iconBgClassName = useMemo(() => cn(
-    'w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 rounded-xl sm:rounded-2xl flex items-center justify-center transition-transform hover:scale-105 shrink-0',
-    styles.iconBg
-  ), [styles.iconBg]);
-
-  const iconClassName = useMemo(() => cn('w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7', styles.iconColor), [styles.iconColor]);
-
   return (
-    <Card className={cardClassName}>
-      <div className="flex items-start justify-between gap-3">
+    <Card className={cn(
+      'p-5 transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5',
+      className
+    )}>
+      <div className="flex items-start justify-between gap-4">
         <div className="space-y-1 min-w-0 flex-1">
-          <p className="text-xs sm:text-sm font-medium text-muted-foreground truncate">{title}</p>
-          <p className="text-2xl sm:text-3xl lg:text-4xl font-display font-bold tracking-tight text-foreground">{value}</p>
+          <p className="text-sm font-medium text-muted-foreground truncate">
+            {title}
+          </p>
+          <p className="text-3xl font-semibold tracking-tight text-foreground">
+            {value}
+          </p>
           {subtitle && (
-            <p className="text-xs sm:text-sm text-muted-foreground mt-1 truncate">{subtitle}</p>
+            <p className="text-sm text-muted-foreground mt-1 truncate">
+              {subtitle}
+            </p>
           )}
           {trend && (
             <div className="flex items-center gap-1.5 pt-1">
               <span className={cn(
-                'text-xs sm:text-sm font-semibold',
-                trend.isPositive ? 'text-[hsl(145,80%,50%)]' : 'text-primary'
+                'text-sm font-medium',
+                trend.isPositive ? 'text-success' : 'text-destructive'
               )}>
                 {trend.isPositive ? '+' : ''}{trend.value}%
               </span>
-              <span className="text-xs text-muted-foreground hidden sm:inline">vs. ontem</span>
+              <span className="text-xs text-muted-foreground">vs. ontem</span>
             </div>
           )}
         </div>
-        <div className={iconBgClassName}>
-          <Icon className={iconClassName} />
+        <div className={cn(
+          'w-12 h-12 rounded-xl flex items-center justify-center shrink-0',
+          styles.iconBg
+        )}>
+          <Icon className={cn('w-6 h-6', styles.iconColor)} />
         </div>
       </div>
     </Card>
