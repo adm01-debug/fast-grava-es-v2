@@ -1,4 +1,4 @@
-import { memo, useMemo, useState } from 'react';
+import { memo, useMemo, useState, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { 
@@ -15,12 +15,15 @@ import {
   Settings,
   BookOpen,
   ArrowRightLeft,
-  Download
+  Download,
+  X,
+  ChevronRight
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useDevice } from '@/hooks/use-device';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAlertCount } from '@/hooks/useAlertCount';
+import { useHapticFeedback } from '@/hooks/use-haptic-feedback';
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
@@ -94,33 +97,48 @@ const MobileNavButton = memo(function MobileNavButton({
   onClick 
 }: MobileNavButtonProps) {
   const Icon = item.icon;
+  const { trigger } = useHapticFeedback();
+  
+  const handleClick = useCallback(() => {
+    trigger('light');
+    onClick();
+  }, [trigger, onClick]);
   
   return (
     <button
-      onClick={onClick}
+      onClick={handleClick}
       className={cn(
-        'flex flex-col items-center justify-center flex-1 py-2 px-1 min-h-[56px]',
-        'touch-target transition-colors duration-200',
+        'relative flex flex-col items-center justify-center flex-1 py-2 px-1 min-h-[60px]',
+        'touch-target transition-all duration-200 ease-out',
+        'active:scale-95',
         isActive
           ? 'text-primary'
           : 'text-muted-foreground active:text-foreground'
       )}
       aria-current={isActive ? 'page' : undefined}
     >
-      <div className="relative">
+      {/* Active indicator pill */}
+      {isActive && (
+        <span 
+          className="absolute top-1 left-1/2 -translate-x-1/2 w-12 h-1 rounded-full bg-primary animate-scale-in"
+          aria-hidden="true"
+        />
+      )}
+      
+      <div className="relative mt-1">
         <Icon className={cn(
-          'h-5 w-5 transition-transform duration-200',
-          isActive && 'scale-110'
+          'h-6 w-6 transition-all duration-200',
+          isActive && 'scale-105'
         )} />
         {badge !== undefined && badge > 0 && (
-          <span className="absolute -top-1 -right-1 min-w-[16px] h-4 px-1 flex items-center justify-center text-[10px] font-medium rounded-full bg-destructive text-destructive-foreground">
+          <span className="absolute -top-1.5 -right-2 min-w-[18px] h-[18px] px-1 flex items-center justify-center text-[10px] font-bold rounded-full bg-destructive text-destructive-foreground shadow-sm">
             {badge > 99 ? '99+' : badge}
           </span>
         )}
       </div>
       <span className={cn(
-        'text-[10px] mt-1 font-medium truncate max-w-full',
-        isActive && 'font-semibold'
+        'text-[11px] mt-1.5 font-medium truncate max-w-full transition-all duration-200',
+        isActive && 'font-semibold text-primary'
       )}>
         {item.label}
       </span>
@@ -131,43 +149,75 @@ const MobileNavButton = memo(function MobileNavButton({
 function MoreMenuContent({ 
   items, 
   currentPath, 
-  onNavigate 
+  onNavigate,
+  onClose 
 }: { 
   items: NavItem[];
   currentPath: string;
   onNavigate: (href: string) => void;
+  onClose: () => void;
 }) {
+  const { trigger } = useHapticFeedback();
+  
+  const handleNavigate = useCallback((href: string) => {
+    trigger('light');
+    onNavigate(href);
+  }, [trigger, onNavigate]);
+  
   return (
-    <ScrollArea className="h-full">
-      <div className="p-4 space-y-2">
-        <h3 className="text-sm font-semibold text-muted-foreground mb-4">
+    <div className="flex flex-col h-full">
+      {/* Header with close button */}
+      <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+        <h3 className="text-base font-semibold text-foreground">
           Mais opções
         </h3>
-        {items.map((item) => {
-          const Icon = item.icon;
-          const isActive = item.href === '/' 
-            ? currentPath === '/' 
-            : currentPath.startsWith(item.href);
-          
-          return (
-            <button
-              key={item.id}
-              onClick={() => onNavigate(item.href)}
-              className={cn(
-                'w-full flex items-center gap-3 px-4 py-3 rounded-lg',
-                'touch-target transition-colors',
-                isActive
-                  ? 'bg-primary/10 text-primary'
-                  : 'text-foreground active:bg-muted'
-              )}
-            >
-              <Icon className="h-5 w-5" />
-              <span className="font-medium">{item.label}</span>
-            </button>
-          );
-        })}
+        <button
+          onClick={onClose}
+          className="p-2 -mr-2 rounded-full hover:bg-muted active:bg-muted/80 transition-colors"
+          aria-label="Fechar menu"
+        >
+          <X className="h-5 w-5 text-muted-foreground" />
+        </button>
       </div>
-    </ScrollArea>
+      
+      <ScrollArea className="flex-1">
+        <div className="p-3 space-y-1">
+          {items.map((item) => {
+            const Icon = item.icon;
+            const isActive = item.href === '/' 
+              ? currentPath === '/' 
+              : currentPath.startsWith(item.href);
+            
+            return (
+              <button
+                key={item.id}
+                onClick={() => handleNavigate(item.href)}
+                className={cn(
+                  'w-full flex items-center gap-3 px-4 py-3.5 rounded-xl',
+                  'touch-target transition-all duration-200',
+                  'active:scale-[0.98]',
+                  isActive
+                    ? 'bg-primary/10 text-primary'
+                    : 'text-foreground hover:bg-muted active:bg-muted/80'
+                )}
+              >
+                <div className={cn(
+                  'w-10 h-10 rounded-lg flex items-center justify-center',
+                  isActive ? 'bg-primary/20' : 'bg-muted'
+                )}>
+                  <Icon className="h-5 w-5" />
+                </div>
+                <span className="flex-1 text-left font-medium">{item.label}</span>
+                <ChevronRight className={cn(
+                  'h-5 w-5 text-muted-foreground transition-transform',
+                  isActive && 'text-primary'
+                )} />
+              </button>
+            );
+          })}
+        </div>
+      </ScrollArea>
+    </div>
   );
 }
 
@@ -179,6 +229,7 @@ export function MobileNavigation() {
   const { role } = useAuth();
   const alertCount = useAlertCount();
   const [sheetOpen, setSheetOpen] = useState(false);
+  const { trigger } = useHapticFeedback();
 
   // Get items based on role
   const primaryItems = useMemo(() => {
@@ -210,10 +261,15 @@ export function MobileNavigation() {
     return location.pathname.startsWith(href);
   };
 
-  const handleNavigate = (href: string) => {
+  const handleNavigate = useCallback((href: string) => {
     navigate(href);
     setSheetOpen(false);
-  };
+  }, [navigate]);
+
+  const handleMoreClick = useCallback(() => {
+    trigger('light');
+    setSheetOpen(true);
+  }, [trigger]);
 
   // Only render on mobile
   if (!isMobile) return null;
@@ -222,13 +278,14 @@ export function MobileNavigation() {
     <nav
       className={cn(
         'fixed bottom-0 left-0 right-0 z-50',
-        'bg-background/95 backdrop-blur-lg border-t border-border',
+        'bg-background/95 backdrop-blur-xl border-t border-border',
+        'shadow-[0_-4px_20px_-4px_rgba(0,0,0,0.1)] dark:shadow-[0_-4px_20px_-4px_rgba(0,0,0,0.3)]',
         'pb-safe'
       )}
       role="navigation"
       aria-label="Navegação principal mobile"
     >
-      <div className="flex items-stretch justify-around">
+      <div className="flex items-stretch justify-around max-w-md mx-auto">
         {primaryItems.map((item) => (
           <MobileNavButton
             key={item.id}
@@ -243,17 +300,31 @@ export function MobileNavigation() {
         <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
           <SheetTrigger asChild>
             <button
+              onClick={handleMoreClick}
               className={cn(
-                'flex flex-col items-center justify-center flex-1 py-2 px-1 min-h-[56px]',
-                'touch-target transition-colors duration-200',
-                'text-muted-foreground active:text-foreground'
+                'relative flex flex-col items-center justify-center flex-1 py-2 px-1 min-h-[60px]',
+                'touch-target transition-all duration-200 ease-out',
+                'active:scale-95',
+                sheetOpen
+                  ? 'text-primary'
+                  : 'text-muted-foreground active:text-foreground'
               )}
             >
-              <Menu className="h-5 w-5" />
-              <span className="text-[10px] mt-1 font-medium">Mais</span>
+              <div className="relative mt-1">
+                <Menu className={cn(
+                  'h-6 w-6 transition-transform duration-200',
+                  sheetOpen && 'rotate-90'
+                )} />
+              </div>
+              <span className={cn(
+                'text-[11px] mt-1.5 font-medium',
+                sheetOpen && 'font-semibold text-primary'
+              )}>
+                Mais
+              </span>
             </button>
           </SheetTrigger>
-          <SheetContent side="bottom" className="h-[60vh] rounded-t-2xl">
+          <SheetContent side="bottom" className="h-[65vh] rounded-t-3xl p-0">
             <SheetHeader className="sr-only">
               <SheetTitle>Menu de navegação</SheetTitle>
             </SheetHeader>
@@ -261,6 +332,7 @@ export function MobileNavigation() {
               items={moreItems}
               currentPath={location.pathname}
               onNavigate={handleNavigate}
+              onClose={() => setSheetOpen(false)}
             />
           </SheetContent>
         </Sheet>
