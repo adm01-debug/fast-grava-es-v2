@@ -1,4 +1,6 @@
-import { ReactNode } from 'react';
+import { ReactNode, useMemo } from 'react';
+import { useLocation } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { AppSidebar } from './AppSidebar';
 import { AssistantButton } from '../assistant/AssistantButton';
 import { NotificationIntegrator } from '../notifications/NotificationIntegrator';
@@ -16,8 +18,19 @@ interface MainLayoutProps {
   children: ReactNode;
 }
 
+// Page transition variants
+const pageVariants = {
+  initial: { opacity: 0, y: 8 },
+  animate: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: -8 }
+};
+
 export function MainLayout({ children }: MainLayoutProps) {
-  const { isMobile } = useDevice();
+  const { isMobile, prefersReducedMotion } = useDevice();
+  const location = useLocation();
+
+  // Disable animations if user prefers reduced motion
+  const shouldAnimate = isMobile && !prefersReducedMotion;
 
   return (
     <div className="flex min-h-screen w-full bg-background">
@@ -44,7 +57,22 @@ export function MainLayout({ children }: MainLayoutProps) {
           "pt-16 md:pt-0",
           isMobile && "pb-24" // Extra padding for bottom navigation + safe area
         )}>
-          {children}
+          {shouldAnimate ? (
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={location.pathname}
+                variants={pageVariants}
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                transition={{ duration: 0.15, ease: 'easeOut' }}
+              >
+                {children}
+              </motion.div>
+            </AnimatePresence>
+          ) : (
+            children
+          )}
         </div>
         {/* Mobile bottom navigation */}
         <MobileNavigation />
