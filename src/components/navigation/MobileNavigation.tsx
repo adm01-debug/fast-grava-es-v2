@@ -1,4 +1,4 @@
-import { memo, useMemo, useState, useCallback, useEffect } from 'react';
+import { memo, useMemo, useState, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -18,14 +18,14 @@ import {
   ArrowRightLeft,
   Download,
   X,
-  ChevronRight,
-  GripHorizontal
+  ChevronRight
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useDevice } from '@/hooks/use-device';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAlertCount } from '@/hooks/useAlertCount';
 import { useHapticFeedback } from '@/hooks/use-haptic-feedback';
+import { useScrollDirection } from '@/hooks/use-scroll-direction';
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
@@ -253,11 +253,12 @@ export function MobileNavigation() {
   const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
-  const { isMobile } = useDevice();
+  const { isMobile, prefersReducedMotion } = useDevice();
   const { role } = useAuth();
   const alertCount = useAlertCount();
   const [sheetOpen, setSheetOpen] = useState(false);
   const { trigger } = useHapticFeedback();
+  const { isVisible } = useScrollDirection({ threshold: 20 });
 
   // Get items based on role
   const primaryItems = useMemo(() => {
@@ -303,7 +304,16 @@ export function MobileNavigation() {
   if (!isMobile) return null;
 
   return (
-    <nav
+    <motion.nav
+      initial={false}
+      animate={{ 
+        y: isVisible || sheetOpen ? 0 : 100,
+        opacity: isVisible || sheetOpen ? 1 : 0
+      }}
+      transition={{ 
+        duration: prefersReducedMotion ? 0 : 0.2, 
+        ease: 'easeOut' 
+      }}
       className={cn(
         'fixed bottom-0 left-0 right-0 z-50',
         'bg-background/95 backdrop-blur-xl border-t border-border',
@@ -368,7 +378,7 @@ export function MobileNavigation() {
           </SheetContent>
         </Sheet>
       </div>
-    </nav>
+    </motion.nav>
   );
 }
 
