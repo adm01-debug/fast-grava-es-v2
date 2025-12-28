@@ -1,19 +1,22 @@
-import { ReactNode } from 'react';
+import { ReactNode, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Home } from 'lucide-react';
+import { ArrowLeft, Home, Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { useDevice } from '@/hooks/use-device';
+import { useHapticFeedback } from '@/hooks/use-haptic-feedback';
 
 interface MobileHeaderProps {
   title?: string;
   showBack?: boolean;
   showHome?: boolean;
+  showMenu?: boolean;
   backTo?: string;
   leftAction?: ReactNode;
   rightAction?: ReactNode;
   className?: string;
   transparent?: boolean;
+  onMenuClick?: () => void;
 }
 
 /**
@@ -26,16 +29,20 @@ export function MobileHeader({
   title,
   showBack = true,
   showHome = false,
+  showMenu = false,
   backTo,
   leftAction,
   rightAction,
   className,
   transparent = false,
+  onMenuClick,
 }: MobileHeaderProps) {
   const navigate = useNavigate();
-  const isMobile = useIsMobile();
+  const { isMobile } = useDevice();
+  const { trigger } = useHapticFeedback();
 
-  const handleBack = () => {
+  const handleBack = useCallback(() => {
+    trigger('light');
     if (backTo) {
       navigate(backTo);
     } else if (window.history.length > 1) {
@@ -43,11 +50,17 @@ export function MobileHeader({
     } else {
       navigate('/');
     }
-  };
+  }, [backTo, navigate, trigger]);
 
-  const handleHome = () => {
+  const handleHome = useCallback(() => {
+    trigger('light');
     navigate('/');
-  };
+  }, [navigate, trigger]);
+
+  const handleMenu = useCallback(() => {
+    trigger('light');
+    onMenuClick?.();
+  }, [onMenuClick, trigger]);
 
   // Always render on mobile, optionally on desktop
   if (!isMobile) return null;
@@ -56,35 +69,46 @@ export function MobileHeader({
     <header
       className={cn(
         'fixed top-0 left-0 right-0 z-40',
-        'flex items-center justify-between h-14 px-4',
+        'flex items-center justify-between h-14 px-3',
         'safe-area-top',
         transparent
           ? 'bg-transparent'
-          : 'bg-background/95 backdrop-blur-lg border-b border-border',
+          : 'bg-background/95 backdrop-blur-xl border-b border-border shadow-sm',
         className
       )}
     >
       {/* Left Section */}
-      <div className="flex items-center gap-2 min-w-[48px]">
+      <div className="flex items-center gap-1 min-w-[48px]">
         {leftAction || (
           <>
-            {showBack && (
+            {showMenu && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={handleMenu}
+                className="h-10 w-10 touch-target active:scale-95 transition-transform"
+                aria-label="Abrir menu"
+              >
+                <Menu className="h-5 w-5" />
+              </Button>
+            )}
+            {showBack && !showMenu && (
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={handleBack}
-                className="h-10 w-10 touch-target"
+                className="h-10 w-10 touch-target active:scale-95 transition-transform"
                 aria-label="Voltar"
               >
                 <ArrowLeft className="h-5 w-5" />
               </Button>
             )}
-            {showHome && !showBack && (
+            {showHome && !showBack && !showMenu && (
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={handleHome}
-                className="h-10 w-10 touch-target"
+                className="h-10 w-10 touch-target active:scale-95 transition-transform"
                 aria-label="Ir para início"
               >
                 <Home className="h-5 w-5" />
@@ -96,13 +120,13 @@ export function MobileHeader({
 
       {/* Title */}
       {title && (
-        <h1 className="text-base font-semibold text-foreground truncate flex-1 text-center">
+        <h1 className="text-base font-semibold text-foreground truncate flex-1 text-center px-2">
           {title}
         </h1>
       )}
 
       {/* Right Section */}
-      <div className="flex items-center gap-2 min-w-[48px] justify-end">
+      <div className="flex items-center gap-1 min-w-[48px] justify-end">
         {rightAction}
       </div>
     </header>
@@ -113,7 +137,7 @@ export function MobileHeader({
  * MobileHeaderSpacer - Adiciona espaço para compensar o header fixo
  */
 export function MobileHeaderSpacer({ className }: { className?: string }) {
-  const isMobile = useIsMobile();
+  const { isMobile } = useDevice();
 
   if (!isMobile) return null;
 
