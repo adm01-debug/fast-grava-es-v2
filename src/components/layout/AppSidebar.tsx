@@ -45,7 +45,7 @@ import { prefetchRoute } from '@/lib/prefetch';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useAuth } from '@/contexts/AuthContext';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { useDevice } from '@/hooks/use-device';
 import { useAlertCount } from '@/hooks/useAlertCount';
 import { useSwipeGesture } from '@/hooks/use-swipe-gesture';
 import { useFocusTrap } from '@/hooks/use-focus-trap';
@@ -170,7 +170,7 @@ export function AppSidebar() {
   const location = useLocation();
   const navigate = useNavigate();
   const { profile, role, signOut, isCoordinator } = useAuth();
-  const isMobile = useIsMobile();
+  const { isMobile } = useDevice();
   const alertCount = useAlertCount();
 
   // Build nav items with dynamic badge
