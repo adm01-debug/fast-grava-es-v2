@@ -11,6 +11,7 @@ import { QuickFavoritesBar } from './QuickFavoritesBar';
 import { OfflineReadyIndicator } from '../offline/OfflineReadyIndicator';
 import { OfflineStatusBanner } from '../offline/OfflineStatusBanner';
 import { MobileNavigation } from '../navigation/MobileNavigation';
+import { MobileQuickActions } from '../navigation/MobileQuickActions';
 import { useDevice } from '@/hooks/use-device';
 import { cn } from '@/lib/utils';
 
@@ -76,6 +77,8 @@ export function MainLayout({ children }: MainLayoutProps) {
         </div>
         {/* Mobile bottom navigation */}
         <MobileNavigation />
+        {/* Mobile quick actions FAB */}
+        <MobileQuickActions />
       </main>
       <AssistantButton />
       <NotificationIntegrator />
