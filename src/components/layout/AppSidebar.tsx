@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, memo, useMemo } from 'react';
+import { useState, useEffect, useCallback, memo, useMemo, useRef } from 'react';
 import { useLocation, Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { 
@@ -47,6 +47,8 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { useAuth } from '@/contexts/AuthContext';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useAlertCount } from '@/hooks/useAlertCount';
+import { useSwipeGesture } from '@/hooks/use-swipe-gesture';
+import { useFocusTrap } from '@/hooks/use-focus-trap';
 import { LanguageSwitcher } from './LanguageSwitcher';
 
 interface NavItem {
@@ -217,6 +219,29 @@ export function AppSidebar() {
     prefetchRoute('/new-job');
   }, []);
 
+  // Swipe gesture to open sidebar from left edge
+  const { ref: swipeRef } = useSwipeGesture<HTMLDivElement>({
+    onSwipeRight: () => {
+      if (isMobile && !mobileOpen) {
+        setMobileOpen(true);
+      }
+    },
+    onSwipeLeft: () => {
+      if (isMobile && mobileOpen) {
+        setMobileOpen(false);
+      }
+    },
+    threshold: 50,
+    disabled: !isMobile,
+  });
+
+  // Focus trap for mobile sidebar
+  const focusTrapRef = useFocusTrap<HTMLElement>({
+    enabled: isMobile && mobileOpen,
+    autoFocus: true,
+    restoreFocus: true,
+  });
+
   // Mobile hamburger button
   const MobileMenuButton = () => (
     <Button
@@ -244,7 +269,18 @@ export function AppSidebar() {
     <>
       <MobileMenuButton />
       <MobileOverlay />
+      
+      {/* Swipe detection zone for opening sidebar */}
+      {isMobile && !mobileOpen && (
+        <div
+          ref={swipeRef}
+          className="fixed inset-y-0 left-0 w-8 z-30 md:hidden"
+          aria-hidden="true"
+        />
+      )}
+      
       <aside
+        ref={isMobile ? focusTrapRef : undefined}
         className={cn(
           'flex flex-col h-screen bg-sidebar border-r border-sidebar-border transition-all duration-300',
           'shadow-[2px_0_12px_-4px_hsl(220_20%_20%/0.08)] dark:shadow-none',
@@ -256,6 +292,8 @@ export function AppSidebar() {
           isMobile && (mobileOpen ? 'translate-x-0' : '-translate-x-full'),
           isMobile && 'flex'
         )}
+        role="navigation"
+        aria-label="Menu principal"
       >
         {/* Header */}
         <div className={cn(
