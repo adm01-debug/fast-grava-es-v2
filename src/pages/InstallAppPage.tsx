@@ -16,6 +16,7 @@ import {
   MoreVertical
 } from "lucide-react";
 import { motion } from "framer-motion";
+import { MobileHeader, MobileHeaderSpacer } from "@/components/navigation/MobileHeader";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>;
@@ -103,8 +104,13 @@ const InstallAppPage = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background p-4 md:p-8">
-      <div className="max-w-2xl mx-auto space-y-6">
+    <div className="min-h-screen bg-background">
+      {/* Mobile Header with back navigation */}
+      <MobileHeader title="Instalar App" showBack={true} />
+      <MobileHeaderSpacer />
+      
+      <div className="p-4 md:p-8">
+        <div className="max-w-2xl mx-auto space-y-6">
         {/* Header */}
         <motion.div 
           initial={{ opacity: 0, y: -20 }}
@@ -288,6 +294,7 @@ const InstallAppPage = () => {
             </CardContent>
           </Card>
         </motion.div>
+        </div>
       </div>
     </div>
   );
