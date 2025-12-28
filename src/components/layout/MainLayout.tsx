@@ -9,7 +9,7 @@ import { QuickFavoritesBar } from './QuickFavoritesBar';
 import { OfflineReadyIndicator } from '../offline/OfflineReadyIndicator';
 import { OfflineStatusBanner } from '../offline/OfflineStatusBanner';
 import { MobileNavigation } from '../navigation/MobileNavigation';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { useDevice } from '@/hooks/use-device';
 import { cn } from '@/lib/utils';
 
 interface MainLayoutProps {
@@ -17,7 +17,7 @@ interface MainLayoutProps {
 }
 
 export function MainLayout({ children }: MainLayoutProps) {
-  const isMobile = useIsMobile();
+  const { isMobile } = useDevice();
 
   return (
     <div className="flex min-h-screen w-full bg-background">
@@ -32,17 +32,17 @@ export function MainLayout({ children }: MainLayoutProps) {
           <ThemeToggle />
           <RealtimeIndicator />
         </div>
-        {/* Mobile top bar - simplified */}
+        {/* Mobile top bar - simplified, positioned to not overlap hamburger */}
         {isMobile && (
           <div className="fixed top-4 right-4 z-40 flex items-center gap-2">
             <OfflineReadyIndicator />
             <ThemeToggle />
           </div>
         )}
-        {/* Add top padding on mobile for hamburger menu, bottom padding for nav */}
+        {/* Content with proper padding for mobile nav */}
         <div className={cn(
           "pt-16 md:pt-0",
-          isMobile && "pb-20" // Extra padding for bottom navigation
+          isMobile && "pb-24" // Extra padding for bottom navigation + safe area
         )}>
           {children}
         </div>

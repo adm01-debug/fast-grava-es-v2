@@ -1,4 +1,4 @@
-import { memo, useMemo } from 'react';
+import { memo, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { 
@@ -11,14 +11,17 @@ import {
   QrCode,
   Wrench,
   BarChart3,
-  Bell
+  Bell,
+  Settings,
+  BookOpen,
+  ArrowRightLeft,
+  Download
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { useDevice } from '@/hooks/use-device';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAlertCount } from '@/hooks/useAlertCount';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Button } from '@/components/ui/button';
+import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface NavItem {
@@ -30,21 +33,51 @@ interface NavItem {
   roles?: ('operator' | 'coordinator' | 'manager')[];
 }
 
-// Bottom nav items - most important for mobile
-const primaryNavItems: NavItem[] = [
-  { id: 'home', icon: Home, label: 'Dashboard', href: '/', roles: ['coordinator', 'manager'] },
-  { id: 'calendar', icon: Calendar, label: 'Calendário', href: '/calendar/daily', roles: ['coordinator', 'manager'] },
-  { id: 'kanban', icon: LayoutGrid, label: 'Kanban', href: '/kanban', roles: ['coordinator'] },
+// Primary nav items for different roles
+const operatorPrimaryItems: NavItem[] = [
+  { id: 'operator', icon: User, label: 'Início', href: '/operator' },
+  { id: 'scanner', icon: QrCode, label: 'Scanner', href: '/scanner' },
   { id: 'alerts', icon: AlertTriangle, label: 'Alertas', href: '/alerts' },
-  { id: 'operator', icon: User, label: 'Operador', href: '/operator' },
+  { id: 'shift', icon: ArrowRightLeft, label: 'Turno', href: '/shift-handover' },
 ];
 
-// More menu items
-const moreNavItems: NavItem[] = [
-  { id: 'oee', icon: BarChart3, label: 'OEE', href: '/oee', roles: ['coordinator', 'manager'] },
-  { id: 'tpm', icon: Wrench, label: 'TPM', href: '/tpm', roles: ['coordinator', 'manager'] },
-  { id: 'scanner', icon: QrCode, label: 'QR Scanner', href: '/scanner' },
+const coordinatorPrimaryItems: NavItem[] = [
+  { id: 'home', icon: Home, label: 'Dashboard', href: '/' },
+  { id: 'calendar', icon: Calendar, label: 'Agenda', href: '/calendar/daily' },
+  { id: 'kanban', icon: LayoutGrid, label: 'Kanban', href: '/kanban' },
+  { id: 'alerts', icon: AlertTriangle, label: 'Alertas', href: '/alerts' },
+];
+
+const managerPrimaryItems: NavItem[] = [
+  { id: 'home', icon: Home, label: 'Dashboard', href: '/' },
+  { id: 'oee', icon: BarChart3, label: 'OEE', href: '/oee' },
+  { id: 'calendar', icon: Calendar, label: 'Agenda', href: '/calendar/daily' },
+  { id: 'alerts', icon: AlertTriangle, label: 'Alertas', href: '/alerts' },
+];
+
+// More menu items by role
+const operatorMoreItems: NavItem[] = [
+  { id: 'knowledge', icon: BookOpen, label: 'Base de Conhecimento', href: '/knowledge' },
   { id: 'notifications', icon: Bell, label: 'Notificações', href: '/notifications' },
+  { id: 'install', icon: Download, label: 'Instalar App', href: '/install' },
+];
+
+const coordinatorMoreItems: NavItem[] = [
+  { id: 'oee', icon: BarChart3, label: 'OEE', href: '/oee' },
+  { id: 'tpm', icon: Wrench, label: 'TPM', href: '/tpm' },
+  { id: 'scanner', icon: QrCode, label: 'QR Scanner', href: '/scanner' },
+  { id: 'shift', icon: ArrowRightLeft, label: 'Passagem Turno', href: '/shift-handover' },
+  { id: 'knowledge', icon: BookOpen, label: 'Base de Conhecimento', href: '/knowledge' },
+  { id: 'notifications', icon: Bell, label: 'Notificações', href: '/notifications' },
+  { id: 'settings', icon: Settings, label: 'Configurações', href: '/settings' },
+];
+
+const managerMoreItems: NavItem[] = [
+  { id: 'tpm', icon: Wrench, label: 'TPM', href: '/tpm' },
+  { id: 'kanban', icon: LayoutGrid, label: 'Kanban', href: '/kanban' },
+  { id: 'knowledge', icon: BookOpen, label: 'Base de Conhecimento', href: '/knowledge' },
+  { id: 'notifications', icon: Bell, label: 'Notificações', href: '/notifications' },
+  { id: 'settings', icon: Settings, label: 'Configurações', href: '/settings' },
 ];
 
 interface MobileNavButtonProps {
@@ -142,25 +175,34 @@ export function MobileNavigation() {
   const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
-  const isMobile = useIsMobile();
+  const { isMobile } = useDevice();
   const { role } = useAuth();
   const alertCount = useAlertCount();
+  const [sheetOpen, setSheetOpen] = useState(false);
 
-  // Filter items by role
-  const filteredPrimaryItems = useMemo(() => {
-    return primaryNavItems.filter(item => {
-      if (!item.roles) return true;
-      if (!role) return false;
-      return item.roles.includes(role as any);
-    }).slice(0, 4); // Max 4 items + menu
+  // Get items based on role
+  const primaryItems = useMemo(() => {
+    switch (role) {
+      case 'operator':
+        return operatorPrimaryItems;
+      case 'manager':
+        return managerPrimaryItems;
+      case 'coordinator':
+      default:
+        return coordinatorPrimaryItems;
+    }
   }, [role]);
 
-  const filteredMoreItems = useMemo(() => {
-    return moreNavItems.filter(item => {
-      if (!item.roles) return true;
-      if (!role) return false;
-      return item.roles.includes(role as any);
-    });
+  const moreItems = useMemo(() => {
+    switch (role) {
+      case 'operator':
+        return operatorMoreItems;
+      case 'manager':
+        return managerMoreItems;
+      case 'coordinator':
+      default:
+        return coordinatorMoreItems;
+    }
   }, [role]);
 
   const isActive = (href: string) => {
@@ -170,62 +212,60 @@ export function MobileNavigation() {
 
   const handleNavigate = (href: string) => {
     navigate(href);
+    setSheetOpen(false);
   };
 
   // Only render on mobile
   if (!isMobile) return null;
 
   return (
-    <>
-      {/* Bottom Navigation Bar */}
-      <nav
-        className={cn(
-          'fixed bottom-0 left-0 right-0 z-50',
-          'bg-background/95 backdrop-blur-lg border-t border-border',
-          'safe-area-bottom'
-        )}
-        role="navigation"
-        aria-label="Navegação principal mobile"
-      >
-        <div className="flex items-stretch justify-around">
-          {filteredPrimaryItems.map((item) => (
-            <MobileNavButton
-              key={item.id}
-              item={item}
-              isActive={isActive(item.href)}
-              badge={item.id === 'alerts' ? alertCount : undefined}
-              onClick={() => handleNavigate(item.href)}
+    <nav
+      className={cn(
+        'fixed bottom-0 left-0 right-0 z-50',
+        'bg-background/95 backdrop-blur-lg border-t border-border',
+        'pb-safe'
+      )}
+      role="navigation"
+      aria-label="Navegação principal mobile"
+    >
+      <div className="flex items-stretch justify-around">
+        {primaryItems.map((item) => (
+          <MobileNavButton
+            key={item.id}
+            item={item}
+            isActive={isActive(item.href)}
+            badge={item.id === 'alerts' ? alertCount : undefined}
+            onClick={() => handleNavigate(item.href)}
+          />
+        ))}
+        
+        {/* More Menu Button */}
+        <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
+          <SheetTrigger asChild>
+            <button
+              className={cn(
+                'flex flex-col items-center justify-center flex-1 py-2 px-1 min-h-[56px]',
+                'touch-target transition-colors duration-200',
+                'text-muted-foreground active:text-foreground'
+              )}
+            >
+              <Menu className="h-5 w-5" />
+              <span className="text-[10px] mt-1 font-medium">Mais</span>
+            </button>
+          </SheetTrigger>
+          <SheetContent side="bottom" className="h-[60vh] rounded-t-2xl">
+            <SheetHeader className="sr-only">
+              <SheetTitle>Menu de navegação</SheetTitle>
+            </SheetHeader>
+            <MoreMenuContent 
+              items={moreItems}
+              currentPath={location.pathname}
+              onNavigate={handleNavigate}
             />
-          ))}
-          
-          {/* More Menu Button */}
-          <Sheet>
-            <SheetTrigger asChild>
-              <button
-                className={cn(
-                  'flex flex-col items-center justify-center flex-1 py-2 px-1 min-h-[56px]',
-                  'touch-target transition-colors duration-200',
-                  'text-muted-foreground active:text-foreground'
-                )}
-              >
-                <Menu className="h-5 w-5" />
-                <span className="text-[10px] mt-1 font-medium">Mais</span>
-              </button>
-            </SheetTrigger>
-            <SheetContent side="bottom" className="h-[50vh] rounded-t-2xl">
-              <MoreMenuContent 
-                items={filteredMoreItems}
-                currentPath={location.pathname}
-                onNavigate={handleNavigate}
-              />
-            </SheetContent>
-          </Sheet>
-        </div>
-      </nav>
-
-      {/* Spacer to prevent content from being hidden behind bottom nav */}
-      <div className="h-[72px] safe-area-bottom" />
-    </>
+          </SheetContent>
+        </Sheet>
+      </div>
+    </nav>
   );
 }
 
