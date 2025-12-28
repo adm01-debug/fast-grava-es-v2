@@ -1,6 +1,7 @@
-import { memo, useMemo, useState, useCallback } from 'react';
+import { memo, useMemo, useState, useCallback, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Home, 
   Calendar, 
@@ -17,7 +18,8 @@ import {
   ArrowRightLeft,
   Download,
   X,
-  ChevronRight
+  ChevronRight,
+  GripHorizontal
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useDevice } from '@/hooks/use-device';
@@ -105,44 +107,60 @@ const MobileNavButton = memo(function MobileNavButton({
   }, [trigger, onClick]);
   
   return (
-    <button
+    <motion.button
       onClick={handleClick}
+      whileTap={{ scale: 0.92 }}
+      transition={{ duration: 0.1 }}
       className={cn(
         'relative flex flex-col items-center justify-center flex-1 py-2 px-1 min-h-[60px]',
-        'touch-target transition-all duration-200 ease-out',
-        'active:scale-95',
+        'touch-target transition-colors duration-200 ease-out',
+        'focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
         isActive
           ? 'text-primary'
-          : 'text-muted-foreground active:text-foreground'
+          : 'text-muted-foreground'
       )}
       aria-current={isActive ? 'page' : undefined}
     >
-      {/* Active indicator pill */}
-      {isActive && (
-        <span 
-          className="absolute top-1 left-1/2 -translate-x-1/2 w-12 h-1 rounded-full bg-primary animate-scale-in"
-          aria-hidden="true"
-        />
-      )}
-      
-      <div className="relative mt-1">
-        <Icon className={cn(
-          'h-6 w-6 transition-all duration-200',
-          isActive && 'scale-105'
-        )} />
-        {badge !== undefined && badge > 0 && (
-          <span className="absolute -top-1.5 -right-2 min-w-[18px] h-[18px] px-1 flex items-center justify-center text-[10px] font-bold rounded-full bg-destructive text-destructive-foreground shadow-sm">
-            {badge > 99 ? '99+' : badge}
-          </span>
+      {/* Active indicator pill with animation */}
+      <AnimatePresence>
+        {isActive && (
+          <motion.span 
+            initial={{ scaleX: 0, opacity: 0 }}
+            animate={{ scaleX: 1, opacity: 1 }}
+            exit={{ scaleX: 0, opacity: 0 }}
+            transition={{ duration: 0.2, ease: 'easeOut' }}
+            className="absolute top-1 left-1/2 -translate-x-1/2 w-12 h-1 rounded-full bg-primary origin-center"
+            aria-hidden="true"
+          />
         )}
-      </div>
+      </AnimatePresence>
+      
+      <motion.div 
+        className="relative mt-1"
+        animate={{ scale: isActive ? 1.1 : 1 }}
+        transition={{ duration: 0.2 }}
+      >
+        <Icon className="h-6 w-6" />
+        <AnimatePresence>
+          {badge !== undefined && badge > 0 && (
+            <motion.span 
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0 }}
+              className="absolute -top-1.5 -right-2 min-w-[18px] h-[18px] px-1 flex items-center justify-center text-[10px] font-bold rounded-full bg-destructive text-destructive-foreground shadow-sm"
+            >
+              {badge > 99 ? '99+' : badge}
+            </motion.span>
+          )}
+        </AnimatePresence>
+      </motion.div>
       <span className={cn(
         'text-[11px] mt-1.5 font-medium truncate max-w-full transition-all duration-200',
         isActive && 'font-semibold text-primary'
       )}>
         {item.label}
       </span>
-    </button>
+    </motion.button>
   );
 });
 
@@ -166,43 +184,53 @@ function MoreMenuContent({
   
   return (
     <div className="flex flex-col h-full">
+      {/* Drag handle indicator */}
+      <div className="flex justify-center pt-3 pb-1">
+        <div className="w-10 h-1 rounded-full bg-muted-foreground/30" aria-hidden="true" />
+      </div>
+      
       {/* Header with close button */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+      <div className="flex items-center justify-between px-4 py-2 border-b border-border">
         <h3 className="text-base font-semibold text-foreground">
           Mais opções
         </h3>
-        <button
+        <motion.button
+          whileTap={{ scale: 0.9 }}
           onClick={onClose}
-          className="p-2 -mr-2 rounded-full hover:bg-muted active:bg-muted/80 transition-colors"
+          className="p-2 -mr-2 rounded-full hover:bg-muted active:bg-muted/80 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
           aria-label="Fechar menu"
         >
           <X className="h-5 w-5 text-muted-foreground" />
-        </button>
+        </motion.button>
       </div>
       
       <ScrollArea className="flex-1">
         <div className="p-3 space-y-1">
-          {items.map((item) => {
+          {items.map((item, index) => {
             const Icon = item.icon;
             const isActive = item.href === '/' 
               ? currentPath === '/' 
               : currentPath.startsWith(item.href);
             
             return (
-              <button
+              <motion.button
                 key={item.id}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: index * 0.03, duration: 0.2 }}
+                whileTap={{ scale: 0.98 }}
                 onClick={() => handleNavigate(item.href)}
                 className={cn(
                   'w-full flex items-center gap-3 px-4 py-3.5 rounded-xl',
-                  'touch-target transition-all duration-200',
-                  'active:scale-[0.98]',
+                  'touch-target transition-colors duration-200',
+                  'focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset',
                   isActive
                     ? 'bg-primary/10 text-primary'
                     : 'text-foreground hover:bg-muted active:bg-muted/80'
                 )}
               >
                 <div className={cn(
-                  'w-10 h-10 rounded-lg flex items-center justify-center',
+                  'w-10 h-10 rounded-lg flex items-center justify-center transition-colors',
                   isActive ? 'bg-primary/20' : 'bg-muted'
                 )}>
                   <Icon className="h-5 w-5" />
@@ -210,9 +238,9 @@ function MoreMenuContent({
                 <span className="flex-1 text-left font-medium">{item.label}</span>
                 <ChevronRight className={cn(
                   'h-5 w-5 text-muted-foreground transition-transform',
-                  isActive && 'text-primary'
+                  isActive && 'text-primary translate-x-0.5'
                 )} />
-              </button>
+              </motion.button>
             );
           })}
         </div>
@@ -299,30 +327,33 @@ export function MobileNavigation() {
         {/* More Menu Button */}
         <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
           <SheetTrigger asChild>
-            <button
+            <motion.button
+              whileTap={{ scale: 0.92 }}
+              transition={{ duration: 0.1 }}
               onClick={handleMoreClick}
               className={cn(
                 'relative flex flex-col items-center justify-center flex-1 py-2 px-1 min-h-[60px]',
-                'touch-target transition-all duration-200 ease-out',
-                'active:scale-95',
+                'touch-target transition-colors duration-200 ease-out',
+                'focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
                 sheetOpen
                   ? 'text-primary'
-                  : 'text-muted-foreground active:text-foreground'
+                  : 'text-muted-foreground'
               )}
             >
-              <div className="relative mt-1">
-                <Menu className={cn(
-                  'h-6 w-6 transition-transform duration-200',
-                  sheetOpen && 'rotate-90'
-                )} />
-              </div>
+              <motion.div 
+                className="relative mt-1"
+                animate={{ rotate: sheetOpen ? 90 : 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                <Menu className="h-6 w-6" />
+              </motion.div>
               <span className={cn(
                 'text-[11px] mt-1.5 font-medium',
                 sheetOpen && 'font-semibold text-primary'
               )}>
                 Mais
               </span>
-            </button>
+            </motion.button>
           </SheetTrigger>
           <SheetContent side="bottom" className="h-[65vh] rounded-t-3xl p-0">
             <SheetHeader className="sr-only">
