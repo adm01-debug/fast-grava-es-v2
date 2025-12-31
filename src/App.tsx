@@ -6,10 +6,12 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { ReauthProvider } from "@/contexts/ReauthContext";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { EfficiencyNotificationProvider } from "@/components/notifications/EfficiencyNotificationProvider";
 import { RealtimeNotificationsProvider } from "@/components/notifications/RealtimeNotificationsProvider";
 import { OfflineSyncProvider } from "@/contexts/OfflineSyncContext";
+import { SessionManager } from "@/hooks/useSessionManager";
 import { PageTransition } from "@/components/layout/PageTransition";
 import { NavigationListener } from "@/components/navigation/NavigationListener";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
@@ -58,6 +60,7 @@ const GamificationPage = lazy(() => import("./pages/GamificationPage"));
 const EnergyDashboard = lazy(() => import("./pages/EnergyDashboard"));
 const DocumentsPage = lazy(() => import("./pages/DocumentsPage"));
 const SettingsPage = lazy(() => import("./pages/SettingsPage"));
+const SecurityDashboard = lazy(() => import("./pages/SecurityDashboard"));
 const AuthPage = lazy(() => import("./pages/AuthPage"));
 const ResetPasswordPage = lazy(() => import("./pages/ResetPasswordPage"));
 const InstallAppPage = lazy(() => import("./pages/InstallAppPage"));
@@ -380,6 +383,15 @@ function AnimatedRoutes() {
             </PageTransition>
           </ProtectedRoute>
         } />
+        <Route path="/security" element={
+          <ProtectedRoute allowedRoles={['coordinator', 'manager']}>
+            <PageTransition>
+              <Suspense fallback={<DashboardPageSkeleton />}>
+                <SecurityDashboard />
+              </Suspense>
+            </PageTransition>
+          </ProtectedRoute>
+        } />
         <Route path="/install" element={
           <PageTransition>
             <Suspense fallback={<DashboardPageSkeleton />}>
@@ -408,13 +420,17 @@ const App = () => (
         <BrowserRouter>
           <NavigationListener />
           <AuthProvider>
-            <OfflineSyncProvider>
-              <EfficiencyNotificationProvider>
-                <RealtimeNotificationsProvider>
-                  <AnimatedRoutes />
-                </RealtimeNotificationsProvider>
-              </EfficiencyNotificationProvider>
-            </OfflineSyncProvider>
+            <ReauthProvider>
+              <SessionManager>
+                <OfflineSyncProvider>
+                  <EfficiencyNotificationProvider>
+                    <RealtimeNotificationsProvider>
+                      <AnimatedRoutes />
+                    </RealtimeNotificationsProvider>
+                  </EfficiencyNotificationProvider>
+                </OfflineSyncProvider>
+              </SessionManager>
+            </ReauthProvider>
           </AuthProvider>
         </BrowserRouter>
       </TooltipProvider>

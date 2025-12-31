@@ -20,3 +20,12 @@ verify_jwt = true
 
 [functions.validate-login-ip]
 verify_jwt = false
+
+[functions.cleanup-security-logs]
+verify_jwt = false
+
+[functions.security-alert]
+verify_jwt = false
+
+[functions.rate-limit-check]
+verify_jwt = false
