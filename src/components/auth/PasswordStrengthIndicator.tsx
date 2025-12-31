@@ -1,11 +1,13 @@
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect, useCallback } from 'react';
 import { Progress } from '@/components/ui/progress';
-import { Check, X, AlertCircle } from 'lucide-react';
+import { Check, X, AlertCircle, Loader2, ShieldAlert, ShieldCheck } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useDebounce } from '@/hooks/useDebounce';
 
 interface PasswordStrengthIndicatorProps {
   password: string;
   showRequirements?: boolean;
+  checkBreaches?: boolean;
   className?: string;
 }
 
@@ -15,11 +17,89 @@ interface PasswordCriteria {
   met: boolean;
 }
 
+// SHA-1 hash function using Web Crypto API
+async function sha1(message: string): Promise<string> {
+  const msgBuffer = new TextEncoder().encode(message);
+  const hashBuffer = await crypto.subtle.digest('SHA-1', msgBuffer);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('').toUpperCase();
+}
+
+// Check if password has been leaked using Have I Been Pwned API (k-anonymity)
+async function checkPasswordBreach(password: string): Promise<{ breached: boolean; count: number }> {
+  try {
+    const hash = await sha1(password);
+    const prefix = hash.substring(0, 5);
+    const suffix = hash.substring(5);
+
+    const response = await fetch(`https://api.pwnedpasswords.com/range/${prefix}`, {
+      headers: {
+        'Add-Padding': 'true', // Adds padding to prevent response size analysis
+      },
+    });
+
+    if (!response.ok) {
+      console.warn('HIBP API request failed:', response.status);
+      return { breached: false, count: 0 };
+    }
+
+    const text = await response.text();
+    const lines = text.split('\n');
+
+    for (const line of lines) {
+      const [hashSuffix, countStr] = line.split(':');
+      if (hashSuffix?.trim() === suffix) {
+        const count = parseInt(countStr?.trim() || '0', 10);
+        return { breached: true, count };
+      }
+    }
+
+    return { breached: false, count: 0 };
+  } catch (error) {
+    console.warn('Error checking password breach:', error);
+    return { breached: false, count: 0 };
+  }
+}
+
 export function PasswordStrengthIndicator({
   password,
   showRequirements = true,
+  checkBreaches = true,
   className,
 }: PasswordStrengthIndicatorProps) {
+  const [breachStatus, setBreachStatus] = useState<{
+    checking: boolean;
+    breached: boolean;
+    count: number;
+  }>({ checking: false, breached: false, count: 0 });
+
+  const debouncedPassword = useDebounce(password, 500);
+
+  // Check for breaches when password changes (debounced)
+  useEffect(() => {
+    if (!checkBreaches || !debouncedPassword || debouncedPassword.length < 8) {
+      setBreachStatus({ checking: false, breached: false, count: 0 });
+      return;
+    }
+
+    let cancelled = false;
+    setBreachStatus(prev => ({ ...prev, checking: true }));
+
+    checkPasswordBreach(debouncedPassword).then(result => {
+      if (!cancelled) {
+        setBreachStatus({
+          checking: false,
+          breached: result.breached,
+          count: result.count,
+        });
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [debouncedPassword, checkBreaches]);
+
   const analysis = useMemo(() => {
     const criteria: PasswordCriteria[] = [
       {
@@ -44,7 +124,7 @@ export function PasswordStrengthIndicator({
       },
       {
         id: 'special',
-        label: 'Caractere especial (!@#$%)',
+        label: 'Caractere especial (!@#$%&*)',
         met: /[!@#$%^&*(),.?":{}|<>_\-+=[\]\\;'/`~]/.test(password),
       },
     ];
@@ -89,6 +169,16 @@ export function PasswordStrengthIndicator({
     return null;
   }
 
+  const formatBreachCount = (count: number): string => {
+    if (count >= 1000000) {
+      return `${(count / 1000000).toFixed(1)}M`;
+    }
+    if (count >= 1000) {
+      return `${(count / 1000).toFixed(0)}K`;
+    }
+    return count.toString();
+  };
+
   return (
     <div className={cn('space-y-3', className)}>
       {/* Progress Bar */}
@@ -117,6 +207,38 @@ export function PasswordStrengthIndicator({
           />
         </div>
       </div>
+
+      {/* Breach Warning */}
+      {checkBreaches && password.length >= 8 && (
+        <div
+          className={cn(
+            'flex items-center gap-2 p-2 rounded-md text-xs transition-all duration-200',
+            breachStatus.checking && 'bg-muted/50 text-muted-foreground',
+            breachStatus.breached && 'bg-red-500/10 text-red-600 border border-red-500/20',
+            !breachStatus.checking && !breachStatus.breached && 'bg-green-500/10 text-green-600 border border-green-500/20'
+          )}
+        >
+          {breachStatus.checking ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin flex-shrink-0" />
+              <span>Verificando vazamentos de dados...</span>
+            </>
+          ) : breachStatus.breached ? (
+            <>
+              <ShieldAlert className="h-4 w-4 flex-shrink-0" />
+              <span>
+                <strong>Atenção:</strong> Esta senha apareceu em {formatBreachCount(breachStatus.count)} vazamentos de dados. 
+                Escolha outra senha.
+              </span>
+            </>
+          ) : (
+            <>
+              <ShieldCheck className="h-4 w-4 flex-shrink-0" />
+              <span>Senha não encontrada em vazamentos conhecidos</span>
+            </>
+          )}
+        </div>
+      )}
 
       {/* Requirements List */}
       {showRequirements && (
