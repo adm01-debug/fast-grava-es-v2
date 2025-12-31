@@ -1,4 +1,4 @@
-const CACHE_NAME = 'fast-grava-v1';
+const CACHE_NAME = 'fast-grava-v2';
 const OFFLINE_URL = '/offline.html';
 
 const STATIC_ASSETS = [
@@ -76,22 +76,87 @@ async function syncData() {
 
 // Push Notifications
 self.addEventListener('push', (event) => {
-  const data = event.data?.json() || {};
-  const options = {
-    body: data.body || 'Nova notificação',
+  console.log('[SW] Push notification received');
+  
+  let data = {
+    title: 'Fast Grava',
+    body: 'Nova notificação',
     icon: '/pwa-icons/icon-192x192.png',
     badge: '/pwa-icons/icon-72x72.png',
-    vibrate: [100, 50, 100],
-    data: { url: data.url || '/' }
+    data: { url: '/' }
   };
+
+  try {
+    if (event.data) {
+      const payload = event.data.json();
+      data = {
+        title: payload.title || data.title,
+        body: payload.body || data.body,
+        icon: payload.icon || data.icon,
+        badge: data.badge,
+        data: payload.data || data.data
+      };
+    }
+  } catch (e) {
+    console.error('[SW] Error parsing push data:', e);
+  }
+
+  const options = {
+    body: data.body,
+    icon: data.icon,
+    badge: data.badge,
+    vibrate: [200, 100, 200],
+    tag: 'security-alert',
+    renotify: true,
+    requireInteraction: true,
+    data: data.data,
+    actions: [
+      {
+        action: 'view',
+        title: 'Ver detalhes'
+      },
+      {
+        action: 'dismiss',
+        title: 'Dispensar'
+      }
+    ]
+  };
+
   event.waitUntil(
-    self.registration.showNotification(data.title || 'Fast Grava', options)
+    self.registration.showNotification(data.title, options)
   );
 });
 
+// Notification click handler
 self.addEventListener('notificationclick', (event) => {
+  console.log('[SW] Notification clicked:', event.action);
+  
   event.notification.close();
+
+  if (event.action === 'dismiss') {
+    return;
+  }
+
+  const urlToOpen = event.notification.data?.url || '/seguranca';
+
   event.waitUntil(
-    clients.openWindow(event.notification.data.url)
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
+      // Procura por uma janela já aberta
+      for (const client of clientList) {
+        if (client.url.includes(self.location.origin) && 'focus' in client) {
+          client.navigate(urlToOpen);
+          return client.focus();
+        }
+      }
+      // Se não encontrar, abre uma nova janela
+      if (clients.openWindow) {
+        return clients.openWindow(urlToOpen);
+      }
+    })
   );
+});
+
+// Notification close handler
+self.addEventListener('notificationclose', (event) => {
+  console.log('[SW] Notification closed');
 });
