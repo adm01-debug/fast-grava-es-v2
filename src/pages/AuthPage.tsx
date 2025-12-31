@@ -77,7 +77,17 @@ export default function AuthPage() {
     const { error } = await signIn(loginEmail, loginPassword);
 
     if (error) {
-      toast.error(t('auth.loginError'));
+      // Check if it's a lockout error
+      const lockoutError = error as Error & { isLockout?: boolean; remainingMinutes?: number; lockoutMinutes?: number };
+      if (lockoutError.isLockout) {
+        const minutes = lockoutError.remainingMinutes || lockoutError.lockoutMinutes || 0;
+        toast.error('Conta Bloqueada', {
+          description: `Muitas tentativas falhas. Tente novamente em ${minutes} minuto(s).`,
+          duration: 10000,
+        });
+      } else {
+        toast.error(t('auth.loginError'));
+      }
       setIsLoading(false);
       return;
     }
