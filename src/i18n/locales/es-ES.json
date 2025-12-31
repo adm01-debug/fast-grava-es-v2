@@ -62,7 +62,8 @@
     "passwordMismatch": "Las contraseñas no coinciden",
     "loginSuccess": "¡Inicio de sesión exitoso!",
     "loginError": "Error al iniciar sesión",
-    "logoutSuccess": "¡Cierre de sesión exitoso!"
+    "logoutSuccess": "¡Cierre de sesión exitoso!",
+    "resetRequestSent": "¡Solicitud enviada! Esperando aprobación del gestor."
   },
   "dashboard": {
     "title": "Panel Principal",

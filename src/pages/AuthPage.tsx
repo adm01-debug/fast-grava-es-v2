@@ -100,17 +100,23 @@ export default function AuthPage() {
     }
 
     setIsSendingReset(true);
-    const { error } = await supabase.auth.resetPasswordForEmail(forgotEmail, {
-      redirectTo: `${window.location.origin}/reset-password`,
-    });
+    
+    // Create a password reset request for manager approval
+    const { error } = await supabase
+      .from('password_reset_requests')
+      .insert({
+        user_email: forgotEmail.trim().toLowerCase(),
+        requested_by_name: null, // Anonymous request
+      });
 
     if (error) {
+      console.error('Error creating reset request:', error);
       toast.error(t('errors.generic'));
       setIsSendingReset(false);
       return;
     }
 
-    toast.success(t('auth.resetEmailSent'));
+    toast.success(t('auth.resetRequestSent', 'Solicitação enviada! Aguarde aprovação do gestor.'));
     setShowForgotPassword(false);
     setForgotEmail('');
     setIsSendingReset(false);
@@ -340,7 +346,7 @@ export default function AuthPage() {
               {t('auth.resetPassword')}
             </DialogTitle>
             <DialogDescription>
-              {t('auth.forgotPassword')}
+              {t('auth.resetNeedsApproval', 'Digite seu e-mail. A solicitação será enviada para aprovação do gestor.')}
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleForgotPassword} className="space-y-4">
@@ -355,6 +361,9 @@ export default function AuthPage() {
                 disabled={isSendingReset}
                 autoFocus
               />
+              <p className="text-xs text-muted-foreground">
+                {t('auth.resetApprovalNote', 'Sua solicitação será analisada por um gestor antes do envio do e-mail de redefinição.')}
+              </p>
             </div>
             <div className="flex gap-2 justify-end">
               <Button
@@ -372,7 +381,7 @@ export default function AuthPage() {
                     {t('common.loading')}
                   </>
                 ) : (
-                  t('common.confirm')
+                  t('auth.sendRequest', 'Enviar Solicitação')
                 )}
               </Button>
             </div>
