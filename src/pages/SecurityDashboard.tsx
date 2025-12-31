@@ -28,6 +28,7 @@ import { LoginAuditLog } from '@/components/settings/LoginAuditLog';
 import { SecurityOverviewCard } from '@/components/security/SecurityOverviewCard';
 import { ActiveDevicesPanel } from '@/components/security/ActiveDevicesPanel';
 import { SecurityAlertsPanel } from '@/components/security/SecurityAlertsPanel';
+import { PushNotificationSettings } from '@/components/security/PushNotificationSettings';
 import { useMFA } from '@/hooks/useMFA';
 import { useUserDevices } from '@/hooks/useUserDevices';
 
@@ -179,7 +180,10 @@ export default function SecurityDashboard() {
         </TabsContent>
 
         <TabsContent value="mfa">
-          <MFASettings />
+          <div className="grid gap-6 lg:grid-cols-2">
+            <MFASettings />
+            <PushNotificationSettings />
+          </div>
         </TabsContent>
 
         <TabsContent value="alerts">

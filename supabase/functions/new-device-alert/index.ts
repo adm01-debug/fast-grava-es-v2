@@ -221,6 +221,41 @@ Deno.serve(async (req) => {
           console.error('Error sending alert email:', emailError);
         }
       }
+
+      // Enviar push notification
+      try {
+        const browserInfo = deviceInfo.browser_name || 'Navegador desconhecido';
+        const osInfo = deviceInfo.os_name || 'Sistema desconhecido';
+        
+        const pushPayload = {
+          user_id: deviceInfo.user_id,
+          title: '🔐 Novo Dispositivo Detectado',
+          body: `Login detectado de ${browserInfo} em ${osInfo}. IP: ${deviceInfo.ip_address || 'desconhecido'}`,
+          data: { 
+            url: '/seguranca',
+            type: 'new_device',
+            device_id: deviceId
+          }
+        };
+
+        // Chamar a edge function de push notification
+        const pushResponse = await fetch(`${supabaseUrl}/functions/v1/send-push-notification`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${supabaseKey}`
+          },
+          body: JSON.stringify(pushPayload)
+        });
+
+        if (pushResponse.ok) {
+          console.log('Push notification sent successfully');
+        } else {
+          console.log('Push notification skipped or failed:', await pushResponse.text());
+        }
+      } catch (pushError) {
+        console.error('Error sending push notification:', pushError);
+      }
     }
 
     return new Response(
