@@ -101,7 +101,7 @@ export default function AuthPage() {
 
     setIsSendingReset(true);
     const { error } = await supabase.auth.resetPasswordForEmail(forgotEmail, {
-      redirectTo: `${window.location.origin}/auth`,
+      redirectTo: `${window.location.origin}/reset-password`,
     });
 
     if (error) {
@@ -110,7 +110,7 @@ export default function AuthPage() {
       return;
     }
 
-    toast.success(t('common.success'));
+    toast.success(t('auth.resetEmailSent'));
     setShowForgotPassword(false);
     setForgotEmail('');
     setIsSendingReset(false);

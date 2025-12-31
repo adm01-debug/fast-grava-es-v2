@@ -58,6 +58,7 @@ const EnergyDashboard = lazy(() => import("./pages/EnergyDashboard"));
 const DocumentsPage = lazy(() => import("./pages/DocumentsPage"));
 const SettingsPage = lazy(() => import("./pages/SettingsPage"));
 const AuthPage = lazy(() => import("./pages/AuthPage"));
+const ResetPasswordPage = lazy(() => import("./pages/ResetPasswordPage"));
 const InstallAppPage = lazy(() => import("./pages/InstallAppPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
@@ -73,6 +74,13 @@ function AnimatedRoutes() {
           <PageTransition>
             <Suspense fallback={<AuthPageSkeleton />}>
               <AuthPage />
+            </Suspense>
+          </PageTransition>
+        } />
+        <Route path="/reset-password" element={
+          <PageTransition>
+            <Suspense fallback={<AuthPageSkeleton />}>
+              <ResetPasswordPage />
             </Suspense>
           </PageTransition>
         } />
