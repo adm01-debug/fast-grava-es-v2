@@ -603,6 +603,42 @@ export type Database = {
         }
         Relationships: []
       }
+      ip_allowlist: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          expires_at: string | null
+          id: string
+          ip_address: unknown
+          is_active: boolean
+          is_global: boolean
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          expires_at?: string | null
+          id?: string
+          ip_address: unknown
+          is_active?: boolean
+          is_global?: boolean
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          expires_at?: string | null
+          id?: string
+          ip_address?: unknown
+          is_active?: boolean
+          is_global?: boolean
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       jobs: {
         Row: {
           actual_end_time: string | null
@@ -692,6 +728,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      login_audit: {
+        Row: {
+          created_at: string
+          failure_reason: string | null
+          id: string
+          ip_address: unknown
+          login_status: string
+          user_agent: string | null
+          user_email: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          failure_reason?: string | null
+          id?: string
+          ip_address?: unknown
+          login_status: string
+          user_agent?: string | null
+          user_email: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          failure_reason?: string | null
+          id?: string
+          ip_address?: unknown
+          login_status?: string
+          user_agent?: string | null
+          user_email?: string
+          user_id?: string | null
+        }
+        Relationships: []
       }
       lot_components: {
         Row: {
@@ -2800,6 +2869,36 @@ export type Database = {
           created_at?: string
           favorites?: Json
           id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_mfa_settings: {
+        Row: {
+          backup_codes_generated_at: string | null
+          created_at: string
+          id: string
+          totp_enabled: boolean
+          totp_verified_at: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          backup_codes_generated_at?: string | null
+          created_at?: string
+          id?: string
+          totp_enabled?: boolean
+          totp_verified_at?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          backup_codes_generated_at?: string | null
+          created_at?: string
+          id?: string
+          totp_enabled?: boolean
+          totp_verified_at?: string | null
           updated_at?: string
           user_id?: string
         }

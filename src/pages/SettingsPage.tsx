@@ -36,6 +36,9 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { usePushSubscription } from '@/hooks/usePushSubscription';
 import { UserManagement } from '@/components/settings/UserManagement';
 import { PasswordResetRequests } from '@/components/settings/PasswordResetRequests';
+import { TwoFactorSetup } from '@/components/settings/TwoFactorSetup';
+import { IPAllowlist } from '@/components/settings/IPAllowlist';
+import { LoginAuditLog } from '@/components/settings/LoginAuditLog';
 
 // Settings persistence hook
 function usePersistedSettings() {
@@ -180,8 +183,9 @@ export default function SettingsPage() {
         </div>
 
         <Tabs defaultValue="general" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-6">
             <TabsTrigger value="general">Geral</TabsTrigger>
+            <TabsTrigger value="security">Segurança</TabsTrigger>
             <TabsTrigger value="notifications">Notificações</TabsTrigger>
             <TabsTrigger value="alerts">Alertas</TabsTrigger>
             <TabsTrigger value="users">Usuários</TabsTrigger>
@@ -262,6 +266,13 @@ export default function SettingsPage() {
                 </CardContent>
               </Card>
             </div>
+          </TabsContent>
+
+          {/* Security Tab */}
+          <TabsContent value="security" className="space-y-4">
+            <TwoFactorSetup />
+            <IPAllowlist />
+            <LoginAuditLog />
           </TabsContent>
 
           {/* Notifications Tab */}

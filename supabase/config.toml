@@ -14,3 +14,9 @@ verify_jwt = false
 
 [functions.calculate-rankings]
 verify_jwt = false
+
+[functions.approve-password-reset]
+verify_jwt = true
+
+[functions.validate-login-ip]
+verify_jwt = false
