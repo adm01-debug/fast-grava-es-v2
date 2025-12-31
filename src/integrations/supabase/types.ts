@@ -933,6 +933,42 @@ export type Database = {
         }
         Relationships: []
       }
+      login_lockouts: {
+        Row: {
+          created_at: string
+          failed_attempts: number
+          id: string
+          identifier: string
+          identifier_type: string
+          last_failed_at: string | null
+          locked_until: string | null
+          lockout_count: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          failed_attempts?: number
+          id?: string
+          identifier: string
+          identifier_type: string
+          last_failed_at?: string | null
+          locked_until?: string | null
+          lockout_count?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          failed_attempts?: number
+          id?: string
+          identifier?: string
+          identifier_type?: string
+          last_failed_at?: string | null
+          locked_until?: string | null
+          lockout_count?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       lot_components: {
         Row: {
           batch_number: string | null

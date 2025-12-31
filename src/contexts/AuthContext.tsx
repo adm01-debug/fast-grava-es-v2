@@ -4,6 +4,68 @@ import { supabase } from '@/integrations/supabase/client';
 import { useDeviceDetection } from '@/hooks/useDeviceDetection';
 import { toast } from 'sonner';
 
+// Lockout check helper
+async function checkLockout(email: string, ipAddress?: string): Promise<{
+  locked: boolean;
+  remaining_minutes?: number;
+  message?: string;
+  attempts_remaining?: number;
+}> {
+  try {
+    const { data, error } = await supabase.functions.invoke('check-login-lockout', {
+      body: { email, ip_address: ipAddress, action: 'check' }
+    });
+    
+    if (error) {
+      console.error('Lockout check error:', error);
+      return { locked: false };
+    }
+    
+    return data;
+  } catch (err) {
+    console.error('Lockout check failed:', err);
+    return { locked: false };
+  }
+}
+
+async function recordLoginAttempt(email: string, success: boolean, ipAddress?: string): Promise<{
+  locked?: boolean;
+  lockout_minutes?: number;
+  attempts_remaining?: number;
+  message?: string;
+}> {
+  try {
+    const { data, error } = await supabase.functions.invoke('check-login-lockout', {
+      body: { 
+        email, 
+        ip_address: ipAddress, 
+        action: success ? 'record_success' : 'record_failure' 
+      }
+    });
+    
+    if (error) {
+      console.error('Record attempt error:', error);
+      return {};
+    }
+    
+    return data;
+  } catch (err) {
+    console.error('Record attempt failed:', err);
+    return {};
+  }
+}
+
+// Get client IP (best effort)
+async function getClientIP(): Promise<string | undefined> {
+  try {
+    const response = await fetch('https://api.ipify.org?format=json');
+    const data = await response.json();
+    return data.ip;
+  } catch {
+    return undefined;
+  }
+}
+
 export type AppRole = 'coordinator' | 'operator' | 'manager';
 
 export interface Profile {
@@ -99,13 +161,57 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const signIn = async (email: string, password: string) => {
+    // Get client IP for lockout tracking
+    const ipAddress = await getClientIP();
+    
+    // Check if account is locked
+    const lockoutStatus = await checkLockout(email, ipAddress);
+    if (lockoutStatus.locked) {
+      const lockoutError = new Error(lockoutStatus.message || 'Conta temporariamente bloqueada') as Error & { 
+        isLockout: boolean;
+        remainingMinutes: number;
+      };
+      (lockoutError as any).isLockout = true;
+      (lockoutError as any).remainingMinutes = lockoutStatus.remaining_minutes || 0;
+      return { error: lockoutError };
+    }
+    
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
     
+    // Record login attempt result
+    if (error) {
+      const result = await recordLoginAttempt(email, false, ipAddress);
+      
+      // If account is now locked, return specific error
+      if (result.locked) {
+        const lockoutError = new Error(result.message || `Conta bloqueada por ${result.lockout_minutes} minuto(s)`) as Error & {
+          isLockout: boolean;
+          lockoutMinutes: number;
+        };
+        (lockoutError as any).isLockout = true;
+        (lockoutError as any).lockoutMinutes = result.lockout_minutes || 0;
+        return { error: lockoutError };
+      }
+      
+      // Show remaining attempts warning
+      if (result.attempts_remaining !== undefined && result.attempts_remaining <= 2) {
+        toast.warning(`Atenção: ${result.attempts_remaining} tentativa(s) restante(s)`, {
+          description: 'Após 5 tentativas falhas, sua conta será bloqueada temporariamente.',
+          duration: 5000,
+        });
+      }
+      
+      return { error };
+    }
+    
+    // Login successful - reset lockout
+    await recordLoginAttempt(email, true, ipAddress);
+    
     // Se login bem-sucedido, verificar dispositivo
-    if (!error && data.user) {
+    if (data.user) {
       try {
         const { data: profileData } = await supabase
           .from('profiles')
@@ -130,7 +236,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     }
     
-    return { error };
+    return { error: null };
   };
 
   const signUp = async (email: string, password: string, fullName: string) => {
