@@ -1,6 +1,8 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState, ReactNode, useCallback } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
+import { useDeviceDetection } from '@/hooks/useDeviceDetection';
+import { toast } from 'sonner';
 
 export type AppRole = 'coordinator' | 'operator' | 'manager';
 
@@ -33,6 +35,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [role, setRole] = useState<AppRole | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const { checkDevice } = useDeviceDetection();
 
   const fetchUserData = async (userId: string) => {
     try {
@@ -96,10 +99,37 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
+    
+    // Se login bem-sucedido, verificar dispositivo
+    if (!error && data.user) {
+      try {
+        const { data: profileData } = await supabase
+          .from('profiles')
+          .select('full_name')
+          .eq('id', data.user.id)
+          .maybeSingle();
+        
+        const result = await checkDevice(
+          data.user.id, 
+          data.user.email || email,
+          profileData?.full_name || undefined
+        );
+        
+        if (result.isNewDevice) {
+          toast.info('Novo dispositivo detectado', {
+            description: 'Um email de alerta foi enviado para sua caixa de entrada.',
+            duration: 5000,
+          });
+        }
+      } catch (deviceError) {
+        console.error('Error checking device:', deviceError);
+      }
+    }
+    
     return { error };
   };
 

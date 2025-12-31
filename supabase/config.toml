@@ -29,3 +29,6 @@ verify_jwt = false
 
 [functions.rate-limit-check]
 verify_jwt = false
+
+[functions.new-device-alert]
+verify_jwt = false
