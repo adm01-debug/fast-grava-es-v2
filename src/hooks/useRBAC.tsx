@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { useAuth, AppRole } from '@/contexts/AuthContext';
 
 // Define permissions for each role
-const ROLE_PERMISSIONS: Record<AppRole, string[]> = {
+export const ROLE_PERMISSIONS: Record<AppRole, string[]> = {
   coordinator: [
     // Full access
     'jobs:read', 'jobs:create', 'jobs:update', 'jobs:delete',
