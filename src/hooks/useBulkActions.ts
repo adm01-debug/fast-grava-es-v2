@@ -1,197 +1,209 @@
+/**
+ * FINANCE HUB - Hook para Ações em Massa
+ * 
+ * @module hooks/useBulkActions
+ * @description Gerenciamento de seleção e ações em múltiplos itens
+ */
+
 import { useState, useCallback, useMemo } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
-export type BulkActionType = 'delete' | 'archive' | 'restore' | 'update' | 'export';
+// ============================================
+// TIPOS
+// ============================================
 
-export interface BulkActionConfig {
-  type: BulkActionType;
+export interface BulkAction<T> {
+  id: string;
   label: string;
-  icon?: string;
-  confirmMessage?: string;
-  requireConfirm?: boolean;
+  icon?: React.ComponentType<{ className?: string }>;
+  variant?: 'default' | 'destructive' | 'outline';
+  action: (items: T[]) => Promise<void>;
+  confirm?: {
+    title: string;
+    description: string;
+  };
 }
 
-export interface UseBulkActionsOptions<T> {
-  tableName: string;
-  queryKey: string[];
-  idField?: keyof T;
-  onSuccess?: (action: BulkActionType, count: number) => void;
-  onError?: (error: Error) => void;
+interface UseBulkActionsOptions<T> {
+  /** Nome da tabela para operações padrão */
+  tableName?: string;
+  /** Query key para invalidar após ações */
+  queryKey?: string[];
+  /** Ações customizadas */
+  actions?: BulkAction<T>[];
+  /** Callback após qualquer ação */
+  onActionComplete?: () => void;
 }
+
+interface UseBulkActionsResult<T> {
+  selectedIds: Set<string>;
+  selectedItems: T[];
+  isAllSelected: boolean;
+  isPartiallySelected: boolean;
+  selectOne: (id: string) => void;
+  selectAll: () => void;
+  deselectAll: () => void;
+  toggleSelection: (id: string) => void;
+  isSelected: (id: string) => boolean;
+  executeAction: (actionId: string) => Promise<void>;
+  availableActions: BulkAction<T>[];
+  isExecuting: boolean;
+  hasSelection: boolean;
+  selectionCount: number;
+}
+
+// ============================================
+// HOOK
+// ============================================
 
 export function useBulkActions<T extends { id: string }>(
-  options: UseBulkActionsOptions<T>
-) {
-  const { tableName, queryKey, idField = 'id', onSuccess, onError } = options;
+  items: T[],
+  options: UseBulkActionsOptions<T> = {}
+): UseBulkActionsResult<T> {
+  const { tableName, queryKey, actions = [], onActionComplete } = options;
   const queryClient = useQueryClient();
 
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
-  const [isProcessing, setIsProcessing] = useState(false);
+  const [isExecuting, setIsExecuting] = useState(false);
 
-  const selectedCount = selectedIds.size;
+  // Itens selecionados
+  const selectedItems = useMemo(
+    () => items.filter((item) => selectedIds.has(item.id)),
+    [items, selectedIds]
+  );
 
+  // Status de seleção
+  const isAllSelected = items.length > 0 && selectedIds.size === items.length;
+  const isPartiallySelected = selectedIds.size > 0 && selectedIds.size < items.length;
+  const hasSelection = selectedIds.size > 0;
+
+  // Selecionar um item
+  const selectOne = useCallback((id: string) => {
+    setSelectedIds((prev) => new Set([...prev, id]));
+  }, []);
+
+  // Toggle seleção
   const toggleSelection = useCallback((id: string) => {
-    setSelectedIds(prev => {
-      const next = new Set(prev);
-      if (next.has(id)) {
-        next.delete(id);
+    setSelectedIds((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(id)) {
+        newSet.delete(id);
       } else {
-        next.add(id);
+        newSet.add(id);
       }
-      return next;
+      return newSet;
     });
   }, []);
 
-  const selectAll = useCallback((ids: string[]) => {
-    setSelectedIds(new Set(ids));
-  }, []);
+  // Selecionar todos
+  const selectAll = useCallback(() => {
+    setSelectedIds(new Set(items.map((item) => item.id)));
+  }, [items]);
 
-  const clearSelection = useCallback(() => {
+  // Deselecionar todos
+  const deselectAll = useCallback(() => {
     setSelectedIds(new Set());
   }, []);
 
-  const isSelected = useCallback((id: string) => selectedIds.has(id), [selectedIds]);
+  // Verificar se está selecionado
+  const isSelected = useCallback(
+    (id: string) => selectedIds.has(id),
+    [selectedIds]
+  );
 
-  // Bulk Delete
-  const bulkDelete = useMutation({
-    mutationFn: async (ids: string[]) => {
-      const { error } = await supabase
-        .from(tableName)
-        .delete()
-        .in(idField as string, ids);
-      
-      if (error) throw error;
-      return ids.length;
-    },
-    onSuccess: (count) => {
-      queryClient.invalidateQueries({ queryKey });
-      clearSelection();
-      toast.success(`${count} registros excluídos`);
-      onSuccess?.('delete', count);
-    },
-    onError: (error: Error) => {
-      toast.error('Erro ao excluir registros');
-      onError?.(error);
-    },
-  });
+  // Ações padrão
+  const defaultActions: BulkAction<T>[] = useMemo(() => {
+    if (!tableName) return [];
 
-  // Bulk Soft Delete (Archive)
-  const bulkArchive = useMutation({
-    mutationFn: async (ids: string[]) => {
-      const { error } = await supabase
-        .from(tableName)
-        .update({ deleted_at: new Date().toISOString(), is_active: false })
-        .in(idField as string, ids);
-      
-      if (error) throw error;
-      return ids.length;
-    },
-    onSuccess: (count) => {
-      queryClient.invalidateQueries({ queryKey });
-      clearSelection();
-      toast.success(`${count} registros arquivados`);
-      onSuccess?.('archive', count);
-    },
-    onError: (error: Error) => {
-      toast.error('Erro ao arquivar registros');
-      onError?.(error);
-    },
-  });
+    return [
+      {
+        id: 'delete',
+        label: 'Excluir Selecionados',
+        variant: 'destructive' as const,
+        confirm: {
+          title: 'Confirmar Exclusão',
+          description: `Tem certeza que deseja excluir ${selectedIds.size} item(s)? Esta ação não pode ser desfeita.`,
+        },
+        action: async (items: T[]) => {
+          const ids = items.map((i) => i.id);
+          const { error } = await supabase
+            .from(tableName)
+            .delete()
+            .in('id', ids);
+          
+          if (error) throw error;
+          toast.success(`${ids.length} item(s) excluído(s)`);
+        },
+      },
+      {
+        id: 'archive',
+        label: 'Arquivar Selecionados',
+        variant: 'outline' as const,
+        action: async (items: T[]) => {
+          const ids = items.map((i) => i.id);
+          const { error } = await supabase
+            .from(tableName)
+            .update({ status: 'archived', updated_at: new Date().toISOString() })
+            .in('id', ids);
+          
+          if (error) throw error;
+          toast.success(`${ids.length} item(s) arquivado(s)`);
+        },
+      },
+    ];
+  }, [tableName, selectedIds.size]);
 
-  // Bulk Restore
-  const bulkRestore = useMutation({
-    mutationFn: async (ids: string[]) => {
-      const { error } = await supabase
-        .from(tableName)
-        .update({ deleted_at: null, is_active: true })
-        .in(idField as string, ids);
-      
-      if (error) throw error;
-      return ids.length;
-    },
-    onSuccess: (count) => {
-      queryClient.invalidateQueries({ queryKey });
-      clearSelection();
-      toast.success(`${count} registros restaurados`);
-      onSuccess?.('restore', count);
-    },
-    onError: (error: Error) => {
-      toast.error('Erro ao restaurar registros');
-      onError?.(error);
-    },
-  });
+  // Todas as ações disponíveis
+  const availableActions = useMemo(
+    () => [...defaultActions, ...actions],
+    [defaultActions, actions]
+  );
 
-  // Bulk Update
-  const bulkUpdate = useMutation({
-    mutationFn: async ({ ids, data }: { ids: string[]; data: Partial<T> }) => {
-      const { error } = await supabase
-        .from(tableName)
-        .update(data)
-        .in(idField as string, ids);
-      
-      if (error) throw error;
-      return ids.length;
-    },
-    onSuccess: (count) => {
-      queryClient.invalidateQueries({ queryKey });
-      clearSelection();
-      toast.success(`${count} registros atualizados`);
-      onSuccess?.('update', count);
-    },
-    onError: (error: Error) => {
-      toast.error('Erro ao atualizar registros');
-      onError?.(error);
-    },
-  });
+  // Executar ação
+  const executeAction = useCallback(async (actionId: string) => {
+    const action = availableActions.find((a) => a.id === actionId);
+    if (!action || selectedItems.length === 0) return;
 
-  const executeAction = useCallback(async (
-    action: BulkActionType,
-    updateData?: Partial<T>
-  ) => {
-    const ids = Array.from(selectedIds);
-    if (ids.length === 0) {
-      toast.warning('Nenhum registro selecionado');
-      return;
-    }
+    setIsExecuting(true);
 
-    setIsProcessing(true);
     try {
-      switch (action) {
-        case 'delete':
-          await bulkDelete.mutateAsync(ids);
-          break;
-        case 'archive':
-          await bulkArchive.mutateAsync(ids);
-          break;
-        case 'restore':
-          await bulkRestore.mutateAsync(ids);
-          break;
-        case 'update':
-          if (updateData) {
-            await bulkUpdate.mutateAsync({ ids, data: updateData });
-          }
-          break;
+      await action.action(selectedItems);
+      
+      // Invalidar queries
+      if (queryKey) {
+        await queryClient.invalidateQueries({ queryKey });
       }
+
+      // Limpar seleção
+      deselectAll();
+
+      // Callback
+      onActionComplete?.();
+    } catch (error) {
+      toast.error(`Erro ao executar ação: ${error instanceof Error ? error.message : 'Erro desconhecido'}`);
     } finally {
-      setIsProcessing(false);
+      setIsExecuting(false);
     }
-  }, [selectedIds, bulkDelete, bulkArchive, bulkRestore, bulkUpdate]);
+  }, [availableActions, selectedItems, queryClient, queryKey, deselectAll, onActionComplete]);
 
   return {
-    selectedIds: Array.from(selectedIds),
-    selectedCount,
-    isProcessing,
-    toggleSelection,
+    selectedIds,
+    selectedItems,
+    isAllSelected,
+    isPartiallySelected,
+    selectOne,
     selectAll,
-    clearSelection,
+    deselectAll,
+    toggleSelection,
     isSelected,
     executeAction,
-    bulkDelete: (ids?: string[]) => bulkDelete.mutate(ids ?? Array.from(selectedIds)),
-    bulkArchive: (ids?: string[]) => bulkArchive.mutate(ids ?? Array.from(selectedIds)),
-    bulkRestore: (ids?: string[]) => bulkRestore.mutate(ids ?? Array.from(selectedIds)),
-    bulkUpdate: (data: Partial<T>, ids?: string[]) => 
-      bulkUpdate.mutate({ ids: ids ?? Array.from(selectedIds), data }),
+    availableActions,
+    isExecuting,
+    hasSelection,
+    selectionCount: selectedIds.size,
   };
 }
+
+export default useBulkActions;
