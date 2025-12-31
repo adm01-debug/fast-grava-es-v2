@@ -672,6 +672,108 @@ export type Database = {
         }
         Relationships: []
       }
+      geo_blocking_logs: {
+        Row: {
+          action: string
+          country_code: string | null
+          country_name: string | null
+          created_at: string
+          id: string
+          ip_address: unknown
+          request_path: string | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          country_code?: string | null
+          country_name?: string | null
+          created_at?: string
+          id?: string
+          ip_address: unknown
+          request_path?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          country_code?: string | null
+          country_name?: string | null
+          created_at?: string
+          id?: string
+          ip_address?: unknown
+          request_path?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      geo_blocking_rules: {
+        Row: {
+          block_type: string
+          country_code: string
+          country_name: string
+          created_at: string
+          created_by: string | null
+          id: string
+          is_blocked: boolean
+          reason: string | null
+          updated_at: string
+        }
+        Insert: {
+          block_type?: string
+          country_code: string
+          country_name: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_blocked?: boolean
+          reason?: string | null
+          updated_at?: string
+        }
+        Update: {
+          block_type?: string
+          country_code?: string
+          country_name?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_blocked?: boolean
+          reason?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      geo_blocking_settings: {
+        Row: {
+          block_unknown_countries: boolean
+          id: string
+          is_enabled: boolean
+          log_blocked_attempts: boolean
+          mode: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          block_unknown_countries?: boolean
+          id?: string
+          is_enabled?: boolean
+          log_blocked_attempts?: boolean
+          mode?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          block_unknown_countries?: boolean
+          id?: string
+          is_enabled?: boolean
+          log_blocked_attempts?: boolean
+          mode?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       ip_allowlist: {
         Row: {
           created_at: string

@@ -15,7 +15,8 @@ import {
   Smartphone,
   Key,
   Bell,
-  LayoutDashboard
+  LayoutDashboard,
+  Globe
 } from 'lucide-react';
 import { useBlockedIPs, useRateLimitLogs, useSecurityEvents } from '@/hooks/useRateLimitLogs';
 import { BlockedIPsPanel } from '@/components/security/BlockedIPsPanel';
@@ -24,6 +25,7 @@ import { SecurityEventsLog } from '@/components/security/SecurityEventsLog';
 import { PermissionMatrix } from '@/components/security/PermissionMatrix';
 import { PermissionManager } from '@/components/security/PermissionManager';
 import { MFASettings } from '@/components/security/MFASettings';
+import { GeoBlockingSettings } from '@/components/security/GeoBlockingSettings';
 import { IPAllowlist } from '@/components/settings/IPAllowlist';
 import { LoginAuditLog } from '@/components/settings/LoginAuditLog';
 import { SecurityOverviewCard } from '@/components/security/SecurityOverviewCard';
@@ -131,7 +133,7 @@ export default function SecurityDashboard() {
 
       {/* Main Content */}
       <Tabs defaultValue="overview" className="space-y-4">
-        <TabsList className="grid grid-cols-9 w-full">
+        <TabsList className="grid grid-cols-10 w-full">
           <TabsTrigger value="overview" className="gap-2">
             <LayoutDashboard className="h-4 w-4" />
             <span className="hidden md:inline">Visão Geral</span>
@@ -155,6 +157,10 @@ export default function SecurityDashboard() {
           <TabsTrigger value="blocked" className="gap-2">
             <ShieldAlert className="h-4 w-4" />
             <span className="hidden md:inline">IPs</span>
+          </TabsTrigger>
+          <TabsTrigger value="geo" className="gap-2">
+            <Globe className="h-4 w-4" />
+            <span className="hidden md:inline">Geo</span>
           </TabsTrigger>
           <TabsTrigger value="ratelimit" className="gap-2">
             <Settings className="h-4 w-4" />
@@ -204,6 +210,10 @@ export default function SecurityDashboard() {
             <BlockedIPsPanel />
             <IPAllowlist />
           </div>
+        </TabsContent>
+
+        <TabsContent value="geo">
+          <GeoBlockingSettings />
         </TabsContent>
 
         <TabsContent value="ratelimit">
