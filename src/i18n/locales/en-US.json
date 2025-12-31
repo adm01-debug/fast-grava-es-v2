@@ -62,7 +62,8 @@
     "passwordMismatch": "Passwords do not match",
     "loginSuccess": "Login successful!",
     "loginError": "Login error",
-    "logoutSuccess": "Logout successful!"
+    "logoutSuccess": "Logout successful!",
+    "resetRequestSent": "Request sent! Awaiting manager approval."
   },
   "dashboard": {
     "title": "Dashboard",

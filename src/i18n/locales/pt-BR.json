@@ -62,7 +62,8 @@
     "passwordMismatch": "As senhas não coincidem",
     "loginSuccess": "Login realizado com sucesso!",
     "loginError": "Erro ao fazer login",
-    "logoutSuccess": "Logout realizado com sucesso!"
+    "logoutSuccess": "Logout realizado com sucesso!",
+    "resetRequestSent": "Solicitação enviada! Aguarde aprovação do gestor."
   },
   "dashboard": {
     "title": "Dashboard Principal",

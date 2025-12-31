@@ -35,6 +35,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { usePushSubscription } from '@/hooks/usePushSubscription';
 import { UserManagement } from '@/components/settings/UserManagement';
+import { PasswordResetRequests } from '@/components/settings/PasswordResetRequests';
 
 // Settings persistence hook
 function usePersistedSettings() {
@@ -429,6 +430,7 @@ export default function SettingsPage() {
           {/* Users Tab */}
           <TabsContent value="users" className="space-y-4">
             <UserManagement />
+            <PasswordResetRequests />
           </TabsContent>
 
           {/* Backup Tab */}
