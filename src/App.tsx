@@ -8,6 +8,7 @@ import { AnimatePresence } from "framer-motion";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { EfficiencyNotificationProvider } from "@/components/notifications/EfficiencyNotificationProvider";
+import { RealtimeNotificationsProvider } from "@/components/notifications/RealtimeNotificationsProvider";
 import { OfflineSyncProvider } from "@/contexts/OfflineSyncContext";
 import { PageTransition } from "@/components/layout/PageTransition";
 import { NavigationListener } from "@/components/navigation/NavigationListener";
@@ -409,7 +410,9 @@ const App = () => (
           <AuthProvider>
             <OfflineSyncProvider>
               <EfficiencyNotificationProvider>
-                <AnimatedRoutes />
+                <RealtimeNotificationsProvider>
+                  <AnimatedRoutes />
+                </RealtimeNotificationsProvider>
               </EfficiencyNotificationProvider>
             </OfflineSyncProvider>
           </AuthProvider>
