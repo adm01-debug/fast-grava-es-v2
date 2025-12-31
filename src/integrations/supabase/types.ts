@@ -1535,6 +1535,53 @@ export type Database = {
         }
         Relationships: []
       }
+      new_device_alerts: {
+        Row: {
+          acknowledged: boolean
+          acknowledged_at: string | null
+          created_at: string
+          device_id: string | null
+          email_sent: boolean
+          email_sent_at: string | null
+          id: string
+          ip_address: unknown
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          acknowledged?: boolean
+          acknowledged_at?: string | null
+          created_at?: string
+          device_id?: string | null
+          email_sent?: boolean
+          email_sent_at?: string | null
+          id?: string
+          ip_address?: unknown
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          acknowledged?: boolean
+          acknowledged_at?: string | null
+          created_at?: string
+          device_id?: string | null
+          email_sent?: boolean
+          email_sent_at?: string | null
+          id?: string
+          ip_address?: unknown
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "new_device_alerts_device_id_fkey"
+            columns: ["device_id"]
+            isOneToOne: false
+            referencedRelation: "user_devices"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       operator_achievements: {
         Row: {
           achieved_at: string
@@ -3027,6 +3074,57 @@ export type Database = {
           name?: string
           setup_time?: number
           short_name?: string
+        }
+        Relationships: []
+      }
+      user_devices: {
+        Row: {
+          browser_name: string | null
+          city: string | null
+          country: string | null
+          created_at: string
+          device_fingerprint: string
+          device_type: string | null
+          first_seen_at: string
+          id: string
+          ip_address: unknown
+          is_trusted: boolean
+          last_seen_at: string
+          os_name: string | null
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          browser_name?: string | null
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          device_fingerprint: string
+          device_type?: string | null
+          first_seen_at?: string
+          id?: string
+          ip_address?: unknown
+          is_trusted?: boolean
+          last_seen_at?: string
+          os_name?: string | null
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          browser_name?: string | null
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          device_fingerprint?: string
+          device_type?: string | null
+          first_seen_at?: string
+          id?: string
+          ip_address?: unknown
+          is_trusted?: boolean
+          last_seen_at?: string
+          os_name?: string | null
+          user_agent?: string | null
+          user_id?: string
         }
         Relationships: []
       }
