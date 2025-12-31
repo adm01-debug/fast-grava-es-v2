@@ -6,6 +6,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { PasswordInput } from '@/components/ui/password-input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -219,9 +220,8 @@ export default function AuthPage() {
 
                   <div className="space-y-2">
                     <Label htmlFor="login-password" className="text-sm font-medium">{t('auth.password')}</Label>
-                    <Input
+                    <PasswordInput
                       id="login-password"
-                      type="password"
                       placeholder="••••••••"
                       value={loginPassword}
                       onChange={(e) => setLoginPassword(e.target.value)}
@@ -291,9 +291,8 @@ export default function AuthPage() {
 
                   <div className="space-y-2">
                     <Label htmlFor="signup-password" className="text-sm font-medium">{t('auth.password')}</Label>
-                    <Input
+                    <PasswordInput
                       id="signup-password"
-                      type="password"
                       placeholder="••••••••"
                       value={signupPassword}
                       onChange={(e) => setSignupPassword(e.target.value)}
@@ -307,9 +306,8 @@ export default function AuthPage() {
 
                   <div className="space-y-2">
                     <Label htmlFor="signup-confirm" className="text-sm font-medium">{t('auth.confirmPassword')}</Label>
-                    <Input
+                    <PasswordInput
                       id="signup-confirm"
-                      type="password"
                       placeholder="••••••••"
                       value={signupConfirmPassword}
                       onChange={(e) => setSignupConfirmPassword(e.target.value)}
