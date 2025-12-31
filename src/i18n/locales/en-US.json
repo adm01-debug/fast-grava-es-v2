@@ -48,6 +48,15 @@
     "confirmPassword": "Confirm password",
     "forgotPassword": "Forgot password",
     "resetPassword": "Reset password",
+    "newPassword": "New password",
+    "enterNewPassword": "Enter your new password",
+    "updatePassword": "Update password",
+    "passwordUpdated": "Password updated successfully!",
+    "redirectingToLogin": "Redirecting to login...",
+    "backToLogin": "Back to login",
+    "invalidResetLink": "Invalid or expired reset link",
+    "resetEmailSent": "Reset email sent! Check your inbox.",
+    "passwordRequirements": "At least 6 characters, 1 uppercase and 1 number",
     "invalidEmail": "Invalid email",
     "passwordMinLength": "Password must be at least {{min}} characters",
     "passwordMismatch": "Passwords do not match",
@@ -254,6 +263,8 @@
     "positive": "Must be a positive value",
     "integer": "Must be an integer",
     "date": "Invalid date",
-    "url": "Invalid URL"
+    "url": "Invalid URL",
+    "passwordUppercase": "Must contain at least one uppercase letter",
+    "passwordNumber": "Must contain at least one number"
   }
 }
