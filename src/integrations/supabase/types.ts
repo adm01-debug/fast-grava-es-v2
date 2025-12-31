@@ -293,6 +293,48 @@ export type Database = {
         }
         Relationships: []
       }
+      blocked_ips: {
+        Row: {
+          blocked_at: string
+          blocked_by: string | null
+          created_at: string
+          expires_at: string | null
+          id: string
+          ip_address: unknown
+          is_permanent: boolean
+          reason: string
+          request_count_at_block: number | null
+          unblocked_at: string | null
+          unblocked_by: string | null
+        }
+        Insert: {
+          blocked_at?: string
+          blocked_by?: string | null
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          ip_address: unknown
+          is_permanent?: boolean
+          reason: string
+          request_count_at_block?: number | null
+          unblocked_at?: string | null
+          unblocked_by?: string | null
+        }
+        Update: {
+          blocked_at?: string
+          blocked_by?: string | null
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          ip_address?: unknown
+          is_permanent?: boolean
+          reason?: string
+          request_count_at_block?: number | null
+          unblocked_at?: string | null
+          unblocked_by?: string | null
+        }
+        Relationships: []
+      }
       daily_summaries: {
         Row: {
           created_at: string
@@ -416,6 +458,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      email_verification_tokens: {
+        Row: {
+          created_at: string
+          expires_at: string
+          id: string
+          token: string
+          user_id: string
+          verified_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          token: string
+          user_id: string
+          verified_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          token?: string
+          user_id?: string
+          verified_at?: string | null
+        }
+        Relationships: []
       }
       energy_alerts: {
         Row: {
@@ -1957,6 +2026,117 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      rate_limit_logs: {
+        Row: {
+          created_at: string
+          endpoint: string
+          id: string
+          ip_address: unknown
+          is_blocked: boolean
+          request_count: number
+          user_email: string | null
+          user_id: string | null
+          window_end: string
+          window_start: string
+        }
+        Insert: {
+          created_at?: string
+          endpoint: string
+          id?: string
+          ip_address: unknown
+          is_blocked?: boolean
+          request_count?: number
+          user_email?: string | null
+          user_id?: string | null
+          window_end?: string
+          window_start?: string
+        }
+        Update: {
+          created_at?: string
+          endpoint?: string
+          id?: string
+          ip_address?: unknown
+          is_blocked?: boolean
+          request_count?: number
+          user_email?: string | null
+          user_id?: string | null
+          window_end?: string
+          window_start?: string
+        }
+        Relationships: []
+      }
+      rate_limit_settings: {
+        Row: {
+          block_duration_minutes: number
+          created_at: string
+          created_by: string | null
+          endpoint_pattern: string
+          id: string
+          is_active: boolean
+          max_requests: number
+          updated_at: string
+          window_seconds: number
+        }
+        Insert: {
+          block_duration_minutes?: number
+          created_at?: string
+          created_by?: string | null
+          endpoint_pattern: string
+          id?: string
+          is_active?: boolean
+          max_requests?: number
+          updated_at?: string
+          window_seconds?: number
+        }
+        Update: {
+          block_duration_minutes?: number
+          created_at?: string
+          created_by?: string | null
+          endpoint_pattern?: string
+          id?: string
+          is_active?: boolean
+          max_requests?: number
+          updated_at?: string
+          window_seconds?: number
+        }
+        Relationships: []
+      }
+      security_events: {
+        Row: {
+          created_at: string
+          details: Json | null
+          event_type: string
+          id: string
+          ip_address: unknown
+          severity: string
+          user_agent: string | null
+          user_email: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          details?: Json | null
+          event_type: string
+          id?: string
+          ip_address?: unknown
+          severity?: string
+          user_agent?: string | null
+          user_email?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          details?: Json | null
+          event_type?: string
+          id?: string
+          ip_address?: unknown
+          severity?: string
+          user_agent?: string | null
+          user_email?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
       }
       shift_checklist_templates: {
         Row: {
