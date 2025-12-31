@@ -7,6 +7,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
 import { Loader2, UserPlus } from 'lucide-react';
+import { PasswordStrengthIndicator } from '@/components/auth/PasswordStrengthIndicator';
 
 interface CreateOperatorModalProps {
   open: boolean;
@@ -161,6 +162,7 @@ export function CreateOperatorModal({ open, onOpenChange }: CreateOperatorModalP
               disabled={isLoading}
               className={errors.password ? 'border-destructive' : ''}
             />
+            <PasswordStrengthIndicator password={formData.password} />
             {errors.password && (
               <p className="text-sm text-destructive">{errors.password}</p>
             )}

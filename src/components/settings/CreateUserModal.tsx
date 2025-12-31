@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 import { Loader2, UserPlus } from 'lucide-react';
+import { PasswordStrengthIndicator } from '@/components/auth/PasswordStrengthIndicator';
 
 const createUserSchema = z.object({
   email: z.string().email('Email inválido'),
@@ -127,6 +128,7 @@ export function CreateUserModal({ open, onOpenChange, onSuccess }: CreateUserMod
               placeholder="••••••••"
               disabled={isLoading}
             />
+            <PasswordStrengthIndicator password={form.password} />
             {errors.password && (
               <p className="text-xs text-destructive">{errors.password}</p>
             )}

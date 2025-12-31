@@ -14,6 +14,7 @@ import { Loader2, LogIn, UserPlus, Printer, Moon, Sun, KeyRound } from 'lucide-r
 import { z } from 'zod';
 import { useTheme } from 'next-themes';
 import { LanguageSwitcher } from '@/components/layout/LanguageSwitcher';
+import { PasswordStrengthIndicator } from '@/components/auth/PasswordStrengthIndicator';
 
 export default function AuthPage() {
   const navigate = useNavigate();
@@ -298,6 +299,7 @@ export default function AuthPage() {
                       onChange={(e) => setSignupPassword(e.target.value)}
                       disabled={isLoading}
                     />
+                    <PasswordStrengthIndicator password={signupPassword} />
                     {errors.signup_password && (
                       <p className="text-xs text-destructive animate-fade-in">{errors.signup_password}</p>
                     )}
