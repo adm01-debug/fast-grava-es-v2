@@ -22,6 +22,7 @@ import { BlockedIPsPanel } from '@/components/security/BlockedIPsPanel';
 import { RateLimitSettings } from '@/components/security/RateLimitSettings';
 import { SecurityEventsLog } from '@/components/security/SecurityEventsLog';
 import { PermissionMatrix } from '@/components/security/PermissionMatrix';
+import { PermissionManager } from '@/components/security/PermissionManager';
 import { MFASettings } from '@/components/security/MFASettings';
 import { IPAllowlist } from '@/components/settings/IPAllowlist';
 import { LoginAuditLog } from '@/components/settings/LoginAuditLog';
@@ -210,7 +211,10 @@ export default function SecurityDashboard() {
         </TabsContent>
 
         <TabsContent value="permissions">
-          <PermissionMatrix />
+          <div className="space-y-6">
+            <PermissionManager />
+            <PermissionMatrix />
+          </div>
         </TabsContent>
 
         <TabsContent value="audit">
