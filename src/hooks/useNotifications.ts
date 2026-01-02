@@ -1,149 +1,98 @@
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { useEffect, useCallback } from 'react';
-import { useJobs, useTechniques } from './useJobs';
 import { toast } from 'sonner';
-import { createAppError } from '@/lib/errorHandling';
-import { navigateTo } from '@/lib/navigation';
 
-const NOTIFICATIONS_ERROR_CONTEXT = {
-  delayedCheck: { entity: 'notifications', operation: 'check_delayed' },
-  bufferCheck: { entity: 'notifications', operation: 'check_buffer' },
-};
-
-interface NotificationConfig {
-  enableDelayedAlerts: boolean;
-  enableReadyAlerts: boolean;
-  enableStatusChanges: boolean;
-  checkIntervalMs: number;
+export interface Notification {
+  id: string;
+  title: string;
+  message: string;
+  type: 'info' | 'success' | 'warning' | 'error' | 'urgent';
+  category: string | null;
+  source_system: string;
+  is_read: boolean;
+  read_at: string | null;
+  action_url: string | null;
+  action_label: string | null;
+  priority: number;
+  group_count: number;
+  is_grouped: boolean;
+  created_at: string;
 }
 
-const defaultConfig: NotificationConfig = {
-  enableDelayedAlerts: true,
-  enableReadyAlerts: true,
-  enableStatusChanges: true,
-  checkIntervalMs: 60000, // 1 minute
-};
+export function useNotifications(options?: { limit?: number; unreadOnly?: boolean }) {
+  const { limit = 50, unreadOnly = false } = options ?? {};
+  const queryClient = useQueryClient();
 
-export function useNotifications(config: Partial<NotificationConfig> = {}) {
-  const { data: jobs } = useJobs();
-  const { data: techniques } = useTechniques();
-  const settings = { ...defaultConfig, ...config };
+  const { data: notifications = [], isLoading } = useQuery({
+    queryKey: ['notifications', { limit, unreadOnly }],
+    queryFn: async () => {
+      let query = supabase.from('notifications').select('*').order('created_at', { ascending: false }).limit(limit);
+      if (unreadOnly) query = query.eq('is_read', false);
+      const { data, error } = await query;
+      if (error) throw error;
+      return data as Notification[];
+    },
+  });
 
-  const checkDelayedJobs = useCallback(() => {
-    try {
-      if (!jobs || !settings.enableDelayedAlerts) return;
+  const { data: unreadCount = 0 } = useQuery({
+    queryKey: ['notifications', 'unread-count'],
+    queryFn: async () => {
+      const { count, error } = await supabase.from('notifications').select('*', { count: 'exact', head: true }).eq('is_read', false);
+      if (error) throw error;
+      return count || 0;
+    },
+  });
 
-      const delayedJobs = jobs.filter(job => job.status === 'delayed');
+  const markAsRead = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.rpc('mark_notification_read', { p_notification_id: id });
+      if (error) throw error;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['notifications'] }),
+  });
+
+  const markAllAsRead = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase.rpc('mark_all_notifications_read');
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
+      toast.success('Todas as notificações marcadas como lidas');
+    },
+  });
+
+  const deleteNotification = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from('notifications').delete().eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['notifications'] }),
+  });
+
+  useEffect(() => {
+    const setupRealtime = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
       
-      if (delayedJobs.length > 0) {
-        toast.error(`${delayedJobs.length} job(s) atrasado(s)`, {
-          description: delayedJobs.slice(0, 3).map(j => j.client).join(', '),
-          action: {
-            label: 'Ver Alertas',
-            onClick: () => navigateTo('/alerts'),
-          },
-        });
-      }
-    } catch (error) {
-      const appError = createAppError(error, NOTIFICATIONS_ERROR_CONTEXT.delayedCheck);
-      if (import.meta.env.DEV) console.error('[checkDelayedJobs]', appError);
-    }
-  }, [jobs, settings.enableDelayedAlerts]);
-
-  const checkReadyJobs = useCallback(() => {
-    try {
-      if (!jobs || !techniques || !settings.enableReadyAlerts) return;
-
-      const readyJobs = jobs.filter(job => job.status === 'ready');
-      const activeJobs = jobs.filter(job => !['finished', 'cancelled'].includes(job.status));
-      
-      // Get all unique techniques that have active jobs (need buffer monitoring)
-      const techniquesWithActiveJobs = new Set(activeJobs.map(job => job.technique_id));
-      
-      // Count ready jobs per technique
-      const techniqueReadyCounts = readyJobs.reduce((acc, job) => {
-        acc[job.technique_id] = (acc[job.technique_id] || 0) + 1;
-        return acc;
-      }, {} as Record<string, number>);
-
-      // Check ALL techniques that have active work - not just those with ready jobs
-      techniquesWithActiveJobs.forEach(techniqueId => {
-        const count = techniqueReadyCounts[techniqueId] || 0;
-        if (count < 3) {
-          // Get technique name for readable notification
-          const technique = techniques.find(t => t.id === techniqueId);
-          const techniqueName = technique?.name || technique?.short_name || techniqueId;
-          
-          toast.warning(`Buffer baixo: ${techniqueName}`, {
-            description: `Apenas ${count} job(s) no jeito. Meta: 3`,
-          });
+      const channel = supabase.channel('notifications-realtime').on('postgres_changes', {
+        event: 'INSERT', schema: 'public', table: 'notifications', filter: `user_id=eq.${user.id}`,
+      }, (payload) => {
+        queryClient.invalidateQueries({ queryKey: ['notifications'] });
+        const notif = payload.new as Notification;
+        if (notif.priority >= 2) {
+          toast.info(notif.title, { description: notif.message });
         }
-      });
-    } catch (error) {
-      const appError = createAppError(error, NOTIFICATIONS_ERROR_CONTEXT.bufferCheck);
-      if (import.meta.env.DEV) console.error('[checkReadyJobs]', appError);
-    }
-  }, [jobs, techniques, settings.enableReadyAlerts]);
-
-  // Initial check on mount for both delayed and ready jobs
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      checkDelayedJobs();
-      checkReadyJobs();
-    }, 2000); // Delay initial check
-
-    return () => clearTimeout(timeout);
-  }, [checkDelayedJobs, checkReadyJobs]);
-
-  // Periodic checks
-  useEffect(() => {
-    const interval = setInterval(() => {
-      checkDelayedJobs();
-      checkReadyJobs();
-    }, settings.checkIntervalMs);
-
-    return () => clearInterval(interval);
-  }, [checkDelayedJobs, checkReadyJobs, settings.checkIntervalMs]);
+      }).subscribe();
+      return () => { supabase.removeChannel(channel); };
+    };
+    setupRealtime();
+  }, [queryClient]);
 
   return {
-    checkDelayedJobs,
-    checkReadyJobs,
+    notifications, unreadCount, isLoading,
+    markAsRead: markAsRead.mutate, markAllAsRead: markAllAsRead.mutate,
+    deleteNotification: deleteNotification.mutate,
   };
-}
-
-// Helper to show status change notification
-export function notifyStatusChange(
-  jobClient: string, 
-  oldStatus: string, 
-  newStatus: string
-) {
-  const statusLabels: Record<string, string> = {
-    queue: 'Na Fila',
-    ready: 'No Jeito',
-    scheduled: 'Agendado',
-    production: 'Em Produção',
-    finished: 'Finalizado',
-    paused: 'Pausado',
-    delayed: 'Atrasado',
-    rework: 'Retrabalho',
-  };
-
-  const newLabel = statusLabels[newStatus] || newStatus;
-
-  if (newStatus === 'finished') {
-    toast.success(`Job finalizado: ${jobClient}`, {
-      description: 'Produção concluída com sucesso',
-    });
-  } else if (newStatus === 'delayed') {
-    toast.error(`Job atrasado: ${jobClient}`, {
-      description: 'Atenção necessária',
-    });
-  } else if (newStatus === 'production') {
-    toast.info(`Produção iniciada: ${jobClient}`, {
-      description: 'Job em andamento',
-    });
-  } else {
-    toast(`Status alterado: ${jobClient}`, {
-      description: `Novo status: ${newLabel}`,
-    });
-  }
 }
