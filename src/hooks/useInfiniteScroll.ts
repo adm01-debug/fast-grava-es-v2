@@ -2,7 +2,7 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 import { useCallback, useRef, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
-export interface InfiniteScrollOptions<T> {
+export interface InfiniteScrollOptions {
   tableName: string;
   selectColumns?: string;
   orderBy?: { column: string; ascending?: boolean };
@@ -25,7 +25,7 @@ export interface InfiniteScrollResult<T> {
 
 export function useInfiniteScroll<T extends { id: string }>(
   queryKey: string[],
-  options: InfiniteScrollOptions<T>
+  options: InfiniteScrollOptions
 ): InfiniteScrollResult<T> {
   const {
     tableName,
@@ -50,13 +50,12 @@ export function useInfiniteScroll<T extends { id: string }>(
   } = useInfiniteQuery({
     queryKey: [...queryKey, 'infinite', filters],
     queryFn: async ({ pageParam = 0 }) => {
-      let query = supabase
-        .from(tableName)
+      // @ts-ignore - Dynamic table access
+      let query = supabase.from(tableName)
         .select(selectColumns, { count: 'exact' })
         .order(orderBy.column, { ascending: orderBy.ascending ?? false })
         .range(pageParam * pageSize, (pageParam + 1) * pageSize - 1);
 
-      // Apply filters
       Object.entries(filters).forEach(([key, value]) => {
         if (value !== undefined && value !== null && value !== '') {
           if (typeof value === 'string' && value.includes('%')) {
@@ -67,13 +66,13 @@ export function useInfiniteScroll<T extends { id: string }>(
         }
       });
 
-      const { data, error, count } = await query;
+      const { data: resultData, error: queryError, count } = await query;
 
-      if (error) throw error;
+      if (queryError) throw queryError;
 
       return {
-        items: data as T[],
-        nextPage: (data?.length ?? 0) === pageSize ? pageParam + 1 : undefined,
+        items: (resultData || []) as T[],
+        nextPage: (resultData?.length ?? 0) === pageSize ? pageParam + 1 : undefined,
         totalCount: count ?? 0,
       };
     },
@@ -82,24 +81,16 @@ export function useInfiniteScroll<T extends { id: string }>(
     enabled,
   });
 
-  // Flatten all pages into a single array
   const allItems = data?.pages.flatMap(page => page.items) ?? [];
   const totalCount = data?.pages[0]?.totalCount ?? 0;
 
-  // Intersection Observer for automatic loading
   const setLoadMoreRef = useCallback((node: HTMLElement | null) => {
-    if (loadMoreRef.current) {
-      observerRef.current?.unobserve(loadMoreRef.current);
-    }
-
+    if (loadMoreRef.current) observerRef.current?.unobserve(loadMoreRef.current);
     loadMoreRef.current = node;
-
     if (node) {
       observerRef.current = new IntersectionObserver(
         (entries) => {
-          if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
-            fetchNextPage();
-          }
+          if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) fetchNextPage();
         },
         { threshold: 0.1, rootMargin: '100px' }
       );
@@ -107,22 +98,7 @@ export function useInfiniteScroll<T extends { id: string }>(
     }
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-  // Cleanup observer on unmount
-  useEffect(() => {
-    return () => {
-      observerRef.current?.disconnect();
-    };
-  }, []);
+  useEffect(() => () => { observerRef.current?.disconnect(); }, []);
 
-  return {
-    data: allItems,
-    fetchNextPage,
-    hasNextPage: hasNextPage ?? false,
-    isFetchingNextPage,
-    isLoading,
-    isError,
-    error: error as Error | null,
-    totalCount,
-    loadMoreRef: setLoadMoreRef,
-  };
+  return { data: allItems, fetchNextPage, hasNextPage: hasNextPage ?? false, isFetchingNextPage, isLoading, isError, error: error as Error | null, totalCount, loadMoreRef: setLoadMoreRef };
 }

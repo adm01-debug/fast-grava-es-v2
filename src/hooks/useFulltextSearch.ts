@@ -38,17 +38,13 @@ export function useFulltextSearch<T = unknown>(
         return [] as T[];
       }
 
-      // Construir condições OR para busca em múltiplas colunas
       const orConditions = searchColumns
         .map(col => `${col}.ilike.%${searchTerm}%`)
         .join(',');
 
-      let query = supabase
-        .from(table)
-        .select(selectColumns)
-        .or(orConditions);
+      // @ts-ignore - Dynamic table access
+      let query = supabase.from(table).select(selectColumns).or(orConditions);
 
-      // Aplicar filtros adicionais
       Object.entries(additionalFilters).forEach(([key, value]) => {
         if (value !== undefined && value !== null && value !== '') {
           query = query.eq(key, value);
@@ -61,33 +57,30 @@ export function useFulltextSearch<T = unknown>(
       return (data ?? []) as T[];
     },
     enabled: isEnabled,
-    staleTime: 30000, // 30 segundos
-    gcTime: 60000, // 1 minuto
+    staleTime: 30000,
+    gcTime: 60000,
   });
 }
 
-// Hook específico para Jobs
 export function useJobsFulltextSearch(searchTerm: string, filters?: Record<string, unknown>) {
   return useFulltextSearch(searchTerm, {
     table: 'jobs',
-    searchColumns: ['client_name', 'job_description', 'material', 'observations'],
-    selectColumns: '*, machine:machines(name), operator:operators(name)',
+    searchColumns: ['client', 'product', 'order_number', 'notes'],
+    selectColumns: '*, machine:machines(name)',
     additionalFilters: filters,
   });
 }
 
-// Hook específico para Machines
 export function useMachinesFulltextSearch(searchTerm: string) {
   return useFulltextSearch(searchTerm, {
     table: 'machines',
-    searchColumns: ['name', 'type', 'location', 'manufacturer', 'model'],
+    searchColumns: ['name', 'code'],
   });
 }
 
-// Hook específico para Operators
 export function useOperatorsFulltextSearch(searchTerm: string) {
   return useFulltextSearch(searchTerm, {
-    table: 'operators',
-    searchColumns: ['name', 'email', 'phone', 'specialization'],
+    table: 'profiles',
+    searchColumns: ['full_name', 'phone'],
   });
 }

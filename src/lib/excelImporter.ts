@@ -1,4 +1,3 @@
-import * as XLSX from 'xlsx';
 import { z } from 'zod';
 import { ImportResult, ImportError } from './csvImporter';
 
@@ -9,14 +8,42 @@ export interface ExcelImportOptions {
   trimValues?: boolean;
 }
 
+// Parse TSV/CSV content for Excel-like import
+function parseDelimitedContent(text: string, trimValues: boolean): Record<string, unknown>[] {
+  const lines = text.split('\n').filter(line => line.trim());
+  if (lines.length < 2) return [];
+
+  // Detect delimiter (tab for Excel exports, comma for CSV)
+  const delimiter = lines[0].includes('\t') ? '\t' : ',';
+  
+  // Parse header
+  const headers = lines[0].split(delimiter).map(h => 
+    h.trim().toLowerCase().replace(/\s+/g, '_').replace(/"/g, '')
+  );
+
+  // Parse data rows
+  const data: Record<string, unknown>[] = [];
+  for (let i = 1; i < lines.length; i++) {
+    const values = lines[i].split(delimiter);
+    const row: Record<string, unknown> = {};
+    headers.forEach((header, index) => {
+      let value = values[index] || '';
+      // Remove quotes
+      value = value.replace(/^"(.*)"$/, '$1');
+      row[header] = trimValues ? value.trim() : value;
+    });
+    data.push(row);
+  }
+
+  return data;
+}
+
 export async function importExcel<T>(
   file: File,
   schema: z.ZodSchema<T>,
   options: ExcelImportOptions = {}
 ): Promise<ImportResult<T>> {
   const {
-    sheetName,
-    sheetIndex = 0,
     headerRow = 1,
     trimValues = true,
   } = options;
@@ -26,46 +53,22 @@ export async function importExcel<T>(
     
     reader.onload = (e) => {
       try {
-        const data = new Uint8Array(e.target?.result as ArrayBuffer);
-        const workbook = XLSX.read(data, { type: 'array' });
-        
-        // Selecionar planilha
-        const sheet = sheetName 
-          ? workbook.Sheets[sheetName]
-          : workbook.Sheets[workbook.SheetNames[sheetIndex]];
-        
-        if (!sheet) {
-          throw new Error('Planilha não encontrada');
-        }
-
-        // Converter para JSON
-        const jsonData = XLSX.utils.sheet_to_json(sheet, {
-          header: headerRow,
-          defval: '',
-        }) as Record<string, unknown>[];
+        const text = e.target?.result as string;
+        const jsonData = parseDelimitedContent(text, trimValues);
 
         const success: T[] = [];
         const errors: ImportError[] = [];
         let skipped = 0;
 
         jsonData.forEach((row, index) => {
-          // Normalizar keys (lowercase, underscore)
-          const normalizedRow: Record<string, unknown> = {};
-          Object.entries(row).forEach(([key, value]) => {
-            const normalizedKey = String(key).trim().toLowerCase().replace(/\s+/g, '_');
-            normalizedRow[normalizedKey] = trimValues && typeof value === 'string' 
-              ? value.trim() 
-              : value;
-          });
-
-          // Pular linhas vazias
-          if (Object.values(normalizedRow).every(v => !v)) {
+          // Skip empty rows
+          if (Object.values(row).every(v => !v)) {
             skipped++;
             return;
           }
 
           try {
-            const validated = schema.parse(normalizedRow);
+            const validated = schema.parse(row);
             success.push(validated);
           } catch (error) {
             if (error instanceof z.ZodError) {
@@ -73,7 +76,7 @@ export async function importExcel<T>(
                 errors.push({
                   row: index + headerRow + 1,
                   field: err.path.join('.'),
-                  value: normalizedRow[err.path[0] as string],
+                  value: row[err.path[0] as string],
                   error: err.message,
                 });
               });
@@ -93,51 +96,28 @@ export async function importExcel<T>(
     };
     
     reader.onerror = () => reject(new Error('Erro ao ler arquivo'));
-    reader.readAsArrayBuffer(file);
+    reader.readAsText(file);
   });
 }
 
-// Função para listar planilhas de um arquivo Excel
-export async function getExcelSheets(file: File): Promise<string[]> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    
-    reader.onload = (e) => {
-      try {
-        const data = new Uint8Array(e.target?.result as ArrayBuffer);
-        const workbook = XLSX.read(data, { type: 'array' });
-        resolve(workbook.SheetNames);
-      } catch (error) {
-        reject(error);
-      }
-    };
-    
-    reader.onerror = () => reject(new Error('Erro ao ler arquivo'));
-    reader.readAsArrayBuffer(file);
-  });
+// Get sheet names (simplified - returns default)
+export async function getExcelSheets(_file: File): Promise<string[]> {
+  return ['Sheet1'];
 }
 
-// Função para gerar template Excel
+// Generate Excel template (as TSV)
 export function generateExcelTemplate(
   columns: { name: string; example?: string; required?: boolean }[],
-  sheetName: string = 'Template'
+  _sheetName: string = 'Template'
 ): Blob {
-  const ws = XLSX.utils.aoa_to_sheet([
-    columns.map(col => col.name),
-    columns.map(col => col.example ?? ''),
-  ]);
-
-  // Definir largura das colunas
-  ws['!cols'] = columns.map(() => ({ wch: 20 }));
-
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, sheetName);
+  const header = columns.map(col => col.name).join('\t');
+  const example = columns.map(col => col.example ?? '').join('\t');
+  const content = `${header}\n${example}`;
   
-  const buffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-  return new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  return new Blob(['\ufeff' + content], { type: 'application/vnd.ms-excel;charset=utf-8;' });
 }
 
-// Função para download de template Excel
+// Download Excel template
 export function downloadExcelTemplate(
   columns: { name: string; example?: string; required?: boolean }[],
   filename: string
@@ -145,7 +125,7 @@ export function downloadExcelTemplate(
   const blob = generateExcelTemplate(columns);
   const link = document.createElement('a');
   link.href = URL.createObjectURL(blob);
-  link.download = `${filename}.xlsx`;
+  link.download = `${filename}.xls`;
   link.click();
   URL.revokeObjectURL(link.href);
 }
@@ -169,7 +149,6 @@ export function exportToCSV(
         const value = row[col.key];
         if (value === null || value === undefined) return '';
         const strValue = String(value);
-        // Escape quotes and wrap in quotes if contains comma
         if (strValue.includes(',') || strValue.includes('"')) {
           return `"${strValue.replace(/"/g, '""')}"`;
         }
@@ -179,7 +158,7 @@ export function exportToCSV(
   );
 
   const csv = [headers, ...rows].join('\n');
-  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.href = url;
@@ -188,24 +167,28 @@ export function exportToCSV(
   URL.revokeObjectURL(url);
 }
 
-// Export data to Excel format
+// Export data to Excel format (as TSV)
 export function exportToExcel(
   data: Record<string, unknown>[],
   columns: ExportColumn[],
   filename: string,
-  sheetName: string = 'Dados'
+  _sheetName: string = 'Dados'
 ): void {
-  // Create worksheet data
-  const wsData = [
-    columns.map(c => c.label),
-    ...data.map(row => columns.map(col => row[col.key] ?? ''))
-  ];
+  const headers = columns.map(c => c.label).join('\t');
+  const rows = data.map(row => 
+    columns.map(col => {
+      const value = row[col.key];
+      if (value === null || value === undefined) return '';
+      return String(value).replace(/\t/g, ' ').replace(/\n/g, ' ');
+    }).join('\t')
+  );
   
-  const ws = XLSX.utils.aoa_to_sheet(wsData);
-  ws['!cols'] = columns.map(() => ({ wch: 20 }));
-  
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, sheetName);
-  
-  XLSX.writeFile(wb, `${filename}.xlsx`);
+  const content = [headers, ...rows].join('\n');
+  const blob = new Blob(['\ufeff' + content], { type: 'application/vnd.ms-excel;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `${filename}.xls`;
+  link.click();
+  URL.revokeObjectURL(url);
 }
