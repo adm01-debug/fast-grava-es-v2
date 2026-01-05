@@ -22,10 +22,11 @@ export function useCRUD<T extends BaseEntity>(config: CRUDConfig<T>) {
     return useQuery({
       queryKey: [...queryKey, 'list', { search, filters, page, pageSize }],
       queryFn: async (): Promise<PaginatedResult<T>> => {
-        let query = supabase.from(tableName).select('*', { count: 'exact' });
+        // Use type assertion to work around strict Supabase typing
+        let query = (supabase.from(tableName as never) as unknown as ReturnType<typeof supabase.from<'jobs'>>).select('*', { count: 'exact' });
         if (softDeleteColumn) query = query.is(softDeleteColumn, null);
         Object.entries({ ...defaultFilters, ...filters }).forEach(([key, value]) => {
-          if (value !== undefined && value !== null && value !== '') query = query.eq(key, value);
+          if (value !== undefined && value !== null && value !== '') query = query.eq(key as never, value as never);
         });
         if (search && searchColumns.length > 0) {
           const orConditions = searchColumns.map(col => `${col}.ilike.%${search}%`).join(',');
@@ -36,7 +37,7 @@ export function useCRUD<T extends BaseEntity>(config: CRUDConfig<T>) {
         query = query.range(from, from + pageSize - 1);
         const { data, error, count } = await query;
         if (error) throw error;
-        return { data: (data || []) as T[], total: count || 0, page, pageSize, totalPages: Math.ceil((count || 0) / pageSize) };
+        return { data: (data || []) as unknown as T[], total: count || 0, page, pageSize, totalPages: Math.ceil((count || 0) / pageSize) };
       },
     });
   };
@@ -44,18 +45,18 @@ export function useCRUD<T extends BaseEntity>(config: CRUDConfig<T>) {
   const useGetById = (id: string) => useQuery({
     queryKey: [...queryKey, id],
     queryFn: async () => {
-      const { data, error } = await supabase.from(tableName).select('*').eq('id', id).single();
+      const { data, error } = await (supabase.from(tableName as never) as unknown as ReturnType<typeof supabase.from<'jobs'>>).select('*').eq('id', id).single();
       if (error) throw error;
-      return data as T;
+      return data as unknown as T;
     },
     enabled: !!id,
   });
 
   const createMutation = useMutation({
     mutationFn: async (newData: Partial<T>) => {
-      const { data, error } = await supabase.from(tableName).insert(newData).select().single();
+      const { data, error } = await (supabase.from(tableName as never) as unknown as ReturnType<typeof supabase.from<'jobs'>>).insert(newData as never).select().single();
       if (error) throw error;
-      return data as T;
+      return data as unknown as T;
     },
     onSuccess: () => { queryClient.invalidateQueries({ queryKey }); toast.success(messages.createSuccess || 'Registro criado!'); },
     onError: () => toast.error(messages.error || 'Erro ao criar registro'),
@@ -63,9 +64,9 @@ export function useCRUD<T extends BaseEntity>(config: CRUDConfig<T>) {
 
   const updateMutation = useMutation({
     mutationFn: async ({ id, data: updateData }: { id: string; data: Partial<T> }) => {
-      const { data, error } = await supabase.from(tableName).update(updateData).eq('id', id).select().single();
+      const { data, error } = await (supabase.from(tableName as never) as unknown as ReturnType<typeof supabase.from<'jobs'>>).update(updateData as never).eq('id', id).select().single();
       if (error) throw error;
-      return data as T;
+      return data as unknown as T;
     },
     onSuccess: () => { queryClient.invalidateQueries({ queryKey }); toast.success(messages.updateSuccess || 'Registro atualizado!'); },
     onError: () => toast.error(messages.error || 'Erro ao atualizar registro'),
@@ -73,7 +74,7 @@ export function useCRUD<T extends BaseEntity>(config: CRUDConfig<T>) {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from(tableName).delete().eq('id', id);
+      const { error } = await (supabase.from(tableName as never) as unknown as ReturnType<typeof supabase.from<'jobs'>>).delete().eq('id', id);
       if (error) throw error;
     },
     onSuccess: () => { queryClient.invalidateQueries({ queryKey }); toast.success(messages.deleteSuccess || 'Registro removido!'); },
@@ -82,14 +83,14 @@ export function useCRUD<T extends BaseEntity>(config: CRUDConfig<T>) {
 
   const softDeleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from(tableName).update({ [softDeleteColumn]: new Date().toISOString() }).eq('id', id);
+      const { error } = await (supabase.from(tableName as never) as unknown as ReturnType<typeof supabase.from<'jobs'>>).update({ [softDeleteColumn]: new Date().toISOString() } as never).eq('id', id);
       if (error) throw error;
     },
     onSuccess: () => { queryClient.invalidateQueries({ queryKey }); toast.success('Registro arquivado!'); },
   });
 
   const bulkDelete = async (ids: string[]) => {
-    const { error } = await supabase.from(tableName).delete().in('id', ids);
+    const { error } = await (supabase.from(tableName as never) as unknown as ReturnType<typeof supabase.from<'jobs'>>).delete().in('id', ids);
     if (error) throw error;
     queryClient.invalidateQueries({ queryKey });
     toast.success(`${ids.length} registros removidos!`);
