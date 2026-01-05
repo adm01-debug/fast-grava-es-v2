@@ -149,3 +149,63 @@ export function downloadExcelTemplate(
   link.click();
   URL.revokeObjectURL(link.href);
 }
+
+// Interface for export columns
+interface ExportColumn {
+  key: string;
+  label: string;
+}
+
+// Export data to CSV format
+export function exportToCSV(
+  data: Record<string, unknown>[],
+  columns: ExportColumn[],
+  filename: string
+): void {
+  const headers = columns.map((c) => c.label).join(',');
+  const rows = data.map((row) =>
+    columns
+      .map((col) => {
+        const value = row[col.key];
+        if (value === null || value === undefined) return '';
+        const strValue = String(value);
+        // Escape quotes and wrap in quotes if contains comma
+        if (strValue.includes(',') || strValue.includes('"')) {
+          return `"${strValue.replace(/"/g, '""')}"`;
+        }
+        return strValue;
+      })
+      .join(',')
+  );
+
+  const csv = [headers, ...rows].join('\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `${filename}.csv`;
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
+// Export data to Excel format
+export function exportToExcel(
+  data: Record<string, unknown>[],
+  columns: ExportColumn[],
+  filename: string,
+  sheetName: string = 'Dados'
+): void {
+  // Create worksheet data
+  const wsData = [
+    columns.map(c => c.label),
+    ...data.map(row => columns.map(col => row[col.key] ?? ''))
+  ];
+  
+  const ws = XLSX.utils.aoa_to_sheet(wsData);
+  ws['!cols'] = columns.map(() => ({ wch: 20 }));
+  
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, sheetName);
+  
+  XLSX.writeFile(wb, `${filename}.xlsx`);
+}

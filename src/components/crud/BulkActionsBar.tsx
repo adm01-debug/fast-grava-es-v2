@@ -28,7 +28,8 @@ import {
   Loader2,
   CheckSquare,
 } from 'lucide-react';
-import { BulkActionType } from '@/hooks/useBulkActions';
+// BulkActionType definition
+export type BulkActionType = 'delete' | 'archive' | 'restore' | 'duplicate' | 'export';
 
 interface BulkActionsBarProps {
   selectedCount: number;
