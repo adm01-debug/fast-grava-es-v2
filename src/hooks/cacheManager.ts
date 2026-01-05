@@ -1,8 +1,8 @@
 /**
- * Cache Manager Stub
+ * Cache Manager - In-memory caching with TTL
  * 
  * @module hooks/cacheManager
- * @description Simple in-memory cache manager
+ * @description Simple in-memory cache manager with automatic expiration
  */
 
 interface CacheEntry<T> {
@@ -55,4 +55,40 @@ class CacheManager {
 }
 
 export const cacheManager = new CacheManager();
+
+/**
+ * Wrapper function to cache async operations
+ */
+export async function withCache<T>(
+  key: string,
+  fn: () => Promise<T>,
+  ttlMs: number = 5 * 60 * 1000
+): Promise<T> {
+  // Check cache first
+  const cached = cacheManager.get<T>(key);
+  if (cached !== null) {
+    return cached;
+  }
+  
+  // Execute function and cache result
+  const result = await fn();
+  cacheManager.set(key, result, ttlMs);
+  
+  return result;
+}
+
+/**
+ * Create a cached version of an async function
+ */
+export function createCachedFunction<TArgs extends unknown[], TResult>(
+  fn: (...args: TArgs) => Promise<TResult>,
+  keyGenerator: (...args: TArgs) => string,
+  ttlMs: number = 5 * 60 * 1000
+): (...args: TArgs) => Promise<TResult> {
+  return async (...args: TArgs): Promise<TResult> => {
+    const key = keyGenerator(...args);
+    return withCache(key, () => fn(...args), ttlMs);
+  };
+}
+
 export default cacheManager;

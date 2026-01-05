@@ -1,244 +1,89 @@
-/**
- * Hook para Busca Fulltext
- * 
- * @module hooks/useSearch
- * @description Busca em múltiplas colunas com debounce e validação
- * 
- * @example
- * ```tsx
- * const { results, isLoading, searchTerm, setSearchTerm } = useSearch<Produto>({
- *   table: 'produtos',
- *   columns: ['nome', 'descricao', 'codigo'],
- *   minChars: 2,
- *   debounceMs: 300
- * });
- * ```
- */
-
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
-// ============================================
-// TIPOS
-// ============================================
-
 export interface SearchOptions {
-  /** Tabela para buscar */
   table: string;
-  /** Colunas para buscar */
   columns: string[];
-  /** Mínimo de caracteres para iniciar busca */
   minChars?: number;
-  /** Tempo de debounce em ms */
   debounceMs?: number;
-  /** Limite de resultados */
   limit?: number;
-  /** Ordenação */
-  orderBy?: {
-    column: string;
-    ascending?: boolean;
-  };
-  /** Filtros adicionais */
-  filters?: Record<string, any>;
-  /** Select customizado */
+  orderBy?: { column: string; ascending?: boolean };
+  filters?: Record<string, unknown>;
   select?: string;
 }
 
 interface UseSearchResult<T> {
-  /** Resultados da busca */
   results: T[];
-  /** Estado de carregamento */
   isLoading: boolean;
-  /** Erro se houver */
   error: Error | null;
-  /** Termo de busca atual */
   searchTerm: string;
-  /** Atualizar termo de busca */
   setSearchTerm: (term: string) => void;
-  /** Limpar busca */
   clearSearch: () => void;
-  /** Se há resultados */
   hasResults: boolean;
-  /** Total de resultados (se disponível) */
   totalCount?: number;
 }
 
-// ============================================
-// HOOK
-// ============================================
-
-/**
- * Hook para busca fulltext com debounce
- * 
- * @template T Tipo dos resultados
- * @param options Opções de configuração da busca
- * @returns Objeto com resultados e controles da busca
- */
-export function useSearch<T = any>(
-  options: SearchOptions
-): UseSearchResult<T> {
-  const {
-    table,
-    columns,
-    minChars = 2,
-    debounceMs = 300,
-    limit = 50,
-    orderBy,
-    filters,
-    select = '*'
-  } = options;
-
-  // ============================================
-  // ESTADO
-  // ============================================
+export function useSearch<T = unknown>(options: SearchOptions): UseSearchResult<T> {
+  const { table, columns, minChars = 2, debounceMs = 300, limit = 50, orderBy, filters, select = '*' } = options;
 
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedTerm, setDebouncedTerm] = useState('');
 
-  // ============================================
-  // DEBOUNCE
-  // ============================================
-
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedTerm(searchTerm);
-    }, debounceMs);
-
+    const timer = setTimeout(() => setDebouncedTerm(searchTerm), debounceMs);
     return () => clearTimeout(timer);
   }, [searchTerm, debounceMs]);
 
-  // ============================================
-  // QUERY
-  // ============================================
-
-  const shouldSearch = useMemo(() => {
-    return debouncedTerm.length >= minChars;
-  }, [debouncedTerm, minChars]);
+  const shouldSearch = useMemo(() => debouncedTerm.length >= minChars, [debouncedTerm, minChars]);
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['search', table, debouncedTerm, columns, filters],
     queryFn: async () => {
-      // Construir query base
-      let query = supabase
-        .from(table)
-        .select(select, { count: 'exact' });
+      // @ts-ignore - Dynamic table access
+      let query = supabase.from(table).select(select, { count: 'exact' });
 
-      // Adicionar busca fulltext em múltiplas colunas
       if (debouncedTerm) {
-        const searchConditions = columns
-          .map(col => `${col}.ilike.%${debouncedTerm}%`)
-          .join(',');
-        
+        const searchConditions = columns.map(col => `${col}.ilike.%${debouncedTerm}%`).join(',');
         query = query.or(searchConditions);
       }
 
-      // Aplicar filtros adicionais
       if (filters) {
         Object.entries(filters).forEach(([key, value]) => {
-          if (value !== null && value !== undefined) {
-            query = query.eq(key, value);
-          }
+          if (value !== null && value !== undefined) query = query.eq(key, value);
         });
       }
 
-      // Aplicar ordenação
-      if (orderBy) {
-        query = query.order(orderBy.column, { 
-          ascending: orderBy.ascending ?? true 
-        });
-      }
+      if (orderBy) query = query.order(orderBy.column, { ascending: orderBy.ascending ?? true });
+      if (limit) query = query.limit(limit);
 
-      // Aplicar limite
-      if (limit) {
-        query = query.limit(limit);
-      }
-
-      const { data, error, count } = await query;
-      
-      if (error) throw error;
-      
-      return {
-        results: data as T[],
-        count
-      };
+      const { data: resultData, error: queryError, count } = await query;
+      if (queryError) throw queryError;
+      return { results: (resultData || []) as T[], count };
     },
     enabled: shouldSearch,
-    staleTime: 30000, // 30 segundos
-    gcTime: 300000, // 5 minutos
+    staleTime: 30000,
+    gcTime: 300000,
   });
 
-  // ============================================
-  // CALLBACKS
-  // ============================================
-
-  const clearSearch = useCallback(() => {
-    setSearchTerm('');
-    setDebouncedTerm('');
-  }, []);
-
-  // ============================================
-  // COMPUTED
-  // ============================================
-
-  const results = useMemo(() => {
-    return data?.results ?? [];
-  }, [data]);
-
-  const hasResults = useMemo(() => {
-    return results.length > 0;
-  }, [results]);
-
-  // ============================================
-  // RETURN
-  // ============================================
+  const clearSearch = useCallback(() => { setSearchTerm(''); setDebouncedTerm(''); }, []);
 
   return {
-    results,
+    results: data?.results ?? [],
     isLoading: shouldSearch && isLoading,
     error: error as Error | null,
     searchTerm,
     setSearchTerm,
     clearSearch,
-    hasResults,
+    hasResults: (data?.results?.length ?? 0) > 0,
     totalCount: data?.count ?? undefined,
   };
 }
 
-// ============================================
-// HELPER FUNCTIONS
-// ============================================
-
-/**
- * Hook simplificado para busca rápida
- */
-export function useQuickSearch<T = any>(
-  table: string,
-  searchColumns: string[]
-): UseSearchResult<T> {
-  return useSearch<T>({
-    table,
-    columns: searchColumns,
-    minChars: 2,
-    debounceMs: 300,
-    limit: 20,
-  });
+export function useQuickSearch<T = unknown>(table: string, searchColumns: string[]): UseSearchResult<T> {
+  return useSearch<T>({ table, columns: searchColumns, minChars: 2, debounceMs: 300, limit: 20 });
 }
 
-/**
- * Hook para busca avançada com filtros
- */
-export function useAdvancedSearch<T = any>(
-  table: string,
-  columns: string[],
-  filters?: Record<string, any>
-): UseSearchResult<T> {
-  return useSearch<T>({
-    table,
-    columns,
-    filters,
-    minChars: 1,
-    debounceMs: 500,
-    limit: 100,
-  });
+export function useAdvancedSearch<T = unknown>(table: string, columns: string[], filters?: Record<string, unknown>): UseSearchResult<T> {
+  return useSearch<T>({ table, columns, filters, minChars: 1, debounceMs: 500, limit: 100 });
 }

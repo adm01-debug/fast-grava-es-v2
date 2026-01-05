@@ -1,5 +1,3 @@
-import * as XLSX from 'xlsx';
-
 export interface ExportColumn<T> {
   key: keyof T | string;
   header: string;
@@ -37,10 +35,10 @@ export function exportToCSV<T extends Record<string, unknown>>(
     ? `${options.filename}_${formatTimestamp()}.csv`
     : `${options.filename}.csv`;
 
-  downloadFile(csvContent, filename, 'text/csv;charset=utf-8;');
+  downloadFile('\ufeff' + csvContent, filename, 'text/csv;charset=utf-8;');
 }
 
-// Export Excel
+// Export Excel (as TSV for compatibility without xlsx dependency)
 export function exportToExcel<T extends Record<string, unknown>>(
   data: T[],
   columns: ExportColumn<T>[],
@@ -50,24 +48,22 @@ export function exportToExcel<T extends Record<string, unknown>>(
   const rows = data.map(row =>
     columns.map(col => {
       const value = getNestedValue(row, col.key as string);
-      return col.formatter ? col.formatter(value, row) : value ?? '';
+      const formatted = col.formatter ? col.formatter(value, row) : String(value ?? '');
+      // Clean for TSV
+      return formatted.replace(/\t/g, ' ').replace(/\n/g, ' ');
     })
   );
 
-  const wsData = [headers, ...rows];
-  const ws = XLSX.utils.aoa_to_sheet(wsData);
-
-  // Set column widths
-  ws['!cols'] = columns.map(col => ({ wch: col.width ?? 15 }));
-
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, options.sheetName ?? 'Data');
+  const tsvContent = [
+    headers.join('\t'),
+    ...rows.map(row => row.join('\t'))
+  ].join('\n');
 
   const filename = options.includeTimestamp
-    ? `${options.filename}_${formatTimestamp()}.xlsx`
-    : `${options.filename}.xlsx`;
+    ? `${options.filename}_${formatTimestamp()}.xls`
+    : `${options.filename}.xls`;
 
-  XLSX.writeFile(wb, filename);
+  downloadFile('\ufeff' + tsvContent, filename, 'application/vnd.ms-excel;charset=utf-8;');
 }
 
 // Export PDF (HTML-based for simplicity)

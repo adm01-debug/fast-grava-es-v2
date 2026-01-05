@@ -6,7 +6,6 @@
  */
 
 import { useState, useCallback } from 'react';
-import * as XLSX from 'xlsx';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { toast } from 'sonner';
@@ -81,20 +80,35 @@ export function useExportData<T extends Record<string, unknown>>(
     URL.revokeObjectURL(url);
   }, [columns, formatData, fileName]);
 
-  // Exportar para Excel
+  // Exportar para Excel (simplified version without xlsx dependency)
   const exportExcel = useCallback((data: T[]) => {
+    // Create CSV for Excel compatibility
     const formatted = formatData(data);
-    const worksheet = XLSX.utils.json_to_sheet(formatted);
+    const headers = columns.map((c) => c.header);
     
-    // Ajustar largura das colunas
-    const colWidths = columns.map((col) => ({
-      wch: col.width ?? Math.max(col.header.length, 15),
-    }));
-    worksheet['!cols'] = colWidths;
+    // Use tab-separated values for better Excel compatibility
+    const tsvContent = [
+      headers.join('\t'),
+      ...formatted.map((row) =>
+        headers
+          .map((h) => {
+            const value = row[h];
+            if (typeof value === 'string') {
+              return value.replace(/\t/g, ' ').replace(/\n/g, ' ');
+            }
+            return value ?? '';
+          })
+          .join('\t')
+      ),
+    ].join('\n');
 
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Dados');
-    XLSX.writeFile(workbook, `${fileName}.xlsx`);
+    const blob = new Blob(['\ufeff' + tsvContent], { type: 'application/vnd.ms-excel;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${fileName}.xls`;
+    link.click();
+    URL.revokeObjectURL(url);
   }, [columns, formatData, fileName]);
 
   // Exportar para PDF

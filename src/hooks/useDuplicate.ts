@@ -27,12 +27,12 @@ export function useDuplicate<T extends { id: string }>(
 
   const duplicateMutation = useMutation({
     mutationFn: async (sourceId: string) => {
-      // Fetch original data
-      const { data: original, error: fetchError } = await supabase
-        .from(tableName)
+      // Fetch original data using type assertion for dynamic table access
+      const { data: original, error: fetchError } = await (supabase
+        .from(tableName as 'jobs')
         .select('*')
         .eq('id', sourceId)
-        .single();
+        .single() as unknown as Promise<{ data: Record<string, unknown> | null; error: Error | null }>);
 
       if (fetchError) throw fetchError;
       if (!original) throw new Error('Registro não encontrado');
@@ -47,7 +47,7 @@ export function useDuplicate<T extends { id: string }>(
 
       // Apply custom transformation
       if (transformData) {
-        duplicateData = { ...duplicateData, ...transformData(original as T) };
+        duplicateData = { ...duplicateData, ...transformData(original as unknown as T) };
       }
 
       // Generate new name if nameField is specified
@@ -58,15 +58,15 @@ export function useDuplicate<T extends { id: string }>(
       }
 
       // Insert duplicate
-      const { data: newRecord, error: insertError } = await supabase
-        .from(tableName)
-        .insert(duplicateData)
+      const { data: newRecord, error: insertError } = await (supabase
+        .from(tableName as 'jobs')
+        .insert(duplicateData as never)
         .select()
-        .single();
+        .single() as unknown as Promise<{ data: Record<string, unknown> | null; error: Error | null }>);
 
       if (insertError) throw insertError;
 
-      return newRecord as T;
+      return newRecord as unknown as T;
     },
     onSuccess: (newRecord) => {
       queryClient.invalidateQueries({ queryKey });
@@ -86,11 +86,11 @@ export function useDuplicate<T extends { id: string }>(
 
       for (const id of sourceIds) {
         // Fetch original
-        const { data: original, error: fetchError } = await supabase
-          .from(tableName)
+        const { data: original, error: fetchError } = await (supabase
+          .from(tableName as 'jobs')
           .select('*')
           .eq('id', id)
-          .single();
+          .single() as unknown as Promise<{ data: Record<string, unknown> | null; error: Error | null }>);
 
         if (fetchError || !original) continue;
 
@@ -101,7 +101,7 @@ export function useDuplicate<T extends { id: string }>(
         });
 
         if (transformData) {
-          duplicateData = { ...duplicateData, ...transformData(original as T) };
+          duplicateData = { ...duplicateData, ...transformData(original as unknown as T) };
         }
 
         if (nameField && duplicateData[nameField as string]) {
@@ -111,14 +111,14 @@ export function useDuplicate<T extends { id: string }>(
         }
 
         // Insert
-        const { data: newRecord, error: insertError } = await supabase
-          .from(tableName)
-          .insert(duplicateData)
+        const { data: newRecord, error: insertError } = await (supabase
+          .from(tableName as 'jobs')
+          .insert(duplicateData as never)
           .select()
-          .single();
+          .single() as unknown as Promise<{ data: Record<string, unknown> | null; error: Error | null }>);
 
         if (!insertError && newRecord) {
-          results.push(newRecord as T);
+          results.push(newRecord as unknown as T);
         }
       }
 

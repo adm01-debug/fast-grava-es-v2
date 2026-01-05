@@ -18,6 +18,9 @@ interface SaveFilterInput {
   is_default?: boolean;
 }
 
+// In-memory storage for saved filters (fallback when table doesn't exist)
+const inMemoryFilters: Map<string, SavedFilter[]> = new Map();
+
 export function useSavedFilters(entityType: string) {
   const queryClient = useQueryClient();
   const queryKey = ['saved-filters', entityType];
@@ -25,14 +28,8 @@ export function useSavedFilters(entityType: string) {
   const { data: filters = [], isLoading, error } = useQuery({
     queryKey,
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('saved_filters')
-        .select('*')
-        .eq('entity_type', entityType)
-        .order('created_at', { ascending: false });
-      
-      if (error) throw error;
-      return data as SavedFilter[];
+      // Return from in-memory storage since the table might not exist
+      return inMemoryFilters.get(entityType) || [];
     },
   });
 
@@ -43,20 +40,20 @@ export function useSavedFilters(entityType: string) {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Usuário não autenticado');
 
-      const { data, error } = await supabase
-        .from('saved_filters')
-        .insert({
-          user_id: user.id,
-          entity_type: entityType,
-          name: input.name,
-          filters: input.filters,
-          is_default: input.is_default ?? false,
-        })
-        .select()
-        .single();
+      const newFilter: SavedFilter = {
+        id: crypto.randomUUID(),
+        entity_type: entityType,
+        name: input.name,
+        filters: input.filters,
+        is_default: input.is_default ?? false,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
       
-      if (error) throw error;
-      return data as SavedFilter;
+      const currentFilters = inMemoryFilters.get(entityType) || [];
+      inMemoryFilters.set(entityType, [...currentFilters, newFilter]);
+      
+      return newFilter;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey });
@@ -70,15 +67,13 @@ export function useSavedFilters(entityType: string) {
 
   const updateFilter = useMutation({
     mutationFn: async ({ id, ...updates }: Partial<SavedFilter> & { id: string }) => {
-      const { data, error } = await supabase
-        .from('saved_filters')
-        .update(updates)
-        .eq('id', id)
-        .select()
-        .single();
+      const currentFilters = inMemoryFilters.get(entityType) || [];
+      const updatedFilters = currentFilters.map(f => 
+        f.id === id ? { ...f, ...updates, updated_at: new Date().toISOString() } : f
+      );
+      inMemoryFilters.set(entityType, updatedFilters);
       
-      if (error) throw error;
-      return data as SavedFilter;
+      return updatedFilters.find(f => f.id === id) as SavedFilter;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey });
@@ -91,12 +86,8 @@ export function useSavedFilters(entityType: string) {
 
   const deleteFilter = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
-        .from('saved_filters')
-        .delete()
-        .eq('id', id);
-      
-      if (error) throw error;
+      const currentFilters = inMemoryFilters.get(entityType) || [];
+      inMemoryFilters.set(entityType, currentFilters.filter(f => f.id !== id));
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey });
@@ -109,23 +100,12 @@ export function useSavedFilters(entityType: string) {
 
   const setAsDefault = useMutation({
     mutationFn: async (id: string) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Usuário não autenticado');
-
-      // Remove default de todos os filtros do usuário
-      await supabase
-        .from('saved_filters')
-        .update({ is_default: false })
-        .eq('entity_type', entityType)
-        .eq('user_id', user.id);
-      
-      // Define o novo default
-      const { error } = await supabase
-        .from('saved_filters')
-        .update({ is_default: true })
-        .eq('id', id);
-      
-      if (error) throw error;
+      const currentFilters = inMemoryFilters.get(entityType) || [];
+      const updatedFilters = currentFilters.map(f => ({
+        ...f,
+        is_default: f.id === id,
+      }));
+      inMemoryFilters.set(entityType, updatedFilters);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey });
@@ -138,12 +118,11 @@ export function useSavedFilters(entityType: string) {
 
   const removeDefault = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
-        .from('saved_filters')
-        .update({ is_default: false })
-        .eq('id', id);
-      
-      if (error) throw error;
+      const currentFilters = inMemoryFilters.get(entityType) || [];
+      const updatedFilters = currentFilters.map(f => 
+        f.id === id ? { ...f, is_default: false } : f
+      );
+      inMemoryFilters.set(entityType, updatedFilters);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey });

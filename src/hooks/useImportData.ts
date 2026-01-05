@@ -7,8 +7,6 @@
 
 import { useState, useCallback } from 'react';
 import { z } from 'zod';
-import Papa from 'papaparse';
-import * as XLSX from 'xlsx';
 import { toast } from 'sonner';
 
 // ============================================
@@ -39,6 +37,60 @@ interface UseImportDataOptions<T> {
 }
 
 // ============================================
+// CSV Parser (built-in, no external dependency)
+// ============================================
+
+function parseCSVString(csvString: string): Record<string, string>[] {
+  const lines = csvString.split('\n').filter(line => line.trim());
+  if (lines.length < 2) return [];
+
+  // Parse header
+  const headers = parseCSVLine(lines[0]).map(h => 
+    h.trim().toLowerCase().replace(/\s+/g, '_')
+  );
+
+  // Parse data rows
+  const data: Record<string, string>[] = [];
+  for (let i = 1; i < lines.length; i++) {
+    const values = parseCSVLine(lines[i]);
+    const row: Record<string, string> = {};
+    headers.forEach((header, index) => {
+      row[header] = values[index]?.trim() || '';
+    });
+    data.push(row);
+  }
+
+  return data;
+}
+
+function parseCSVLine(line: string): string[] {
+  const result: string[] = [];
+  let current = '';
+  let inQuotes = false;
+
+  for (let i = 0; i < line.length; i++) {
+    const char = line[i];
+    
+    if (char === '"') {
+      if (inQuotes && line[i + 1] === '"') {
+        current += '"';
+        i++;
+      } else {
+        inQuotes = !inQuotes;
+      }
+    } else if (char === ',' && !inQuotes) {
+      result.push(current);
+      current = '';
+    } else {
+      current += char;
+    }
+  }
+  
+  result.push(current);
+  return result;
+}
+
+// ============================================
 // HOOK
 // ============================================
 
@@ -52,58 +104,66 @@ export function useImportData<T>(options: UseImportDataOptions<T>) {
   // Parsear CSV
   const parseCSV = useCallback(async (file: File): Promise<unknown[]> => {
     return new Promise((resolve, reject) => {
-      Papa.parse(file, {
-        header: true,
-        skipEmptyLines: true,
-        transformHeader: (header) => header.trim().toLowerCase().replace(/\s+/g, '_'),
-        complete: (results) => {
-          if (skipFirstRow && results.data.length > 0) {
-            results.data.shift();
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const text = e.target?.result as string;
+          const data = parseCSVString(text);
+          if (skipFirstRow && data.length > 0) {
+            data.shift();
           }
-          resolve(results.data);
-        },
-        error: (error) => reject(error),
-      });
+          resolve(data);
+        } catch (error) {
+          reject(error);
+        }
+      };
+      reader.onerror = () => reject(new Error('Erro ao ler arquivo'));
+      reader.readAsText(file);
     });
   }, [skipFirstRow]);
 
-  // Parsear Excel
+  // Parsear Excel (simplified - treats as CSV/TSV)
   const parseExcel = useCallback(async (file: File): Promise<unknown[]> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       
       reader.onload = (e) => {
         try {
-          const data = new Uint8Array(e.target?.result as ArrayBuffer);
-          const workbook = XLSX.read(data, { type: 'array' });
-          const sheet = workbook.Sheets[workbook.SheetNames[0]];
-          const jsonData = XLSX.utils.sheet_to_json(sheet, {
-            defval: '',
-            raw: false,
-          });
-          
-          // Normalizar headers
-          const normalized = jsonData.map((row: Record<string, unknown>) => {
-            const newRow: Record<string, unknown> = {};
-            Object.keys(row).forEach(key => {
-              const normalizedKey = key.trim().toLowerCase().replace(/\s+/g, '_');
-              newRow[normalizedKey] = row[key];
+          const text = e.target?.result as string;
+          // Try tab-separated first, then comma
+          const lines = text.split('\n').filter(line => line.trim());
+          if (lines.length < 2) {
+            resolve([]);
+            return;
+          }
+
+          const delimiter = lines[0].includes('\t') ? '\t' : ',';
+          const headers = lines[0].split(delimiter).map(h => 
+            h.trim().toLowerCase().replace(/\s+/g, '_')
+          );
+
+          const data: Record<string, string>[] = [];
+          for (let i = 1; i < lines.length; i++) {
+            const values = lines[i].split(delimiter);
+            const row: Record<string, string> = {};
+            headers.forEach((header, index) => {
+              row[header] = values[index]?.trim() || '';
             });
-            return newRow;
-          });
-          
-          if (skipFirstRow && normalized.length > 0) {
-            normalized.shift();
+            data.push(row);
           }
           
-          resolve(normalized);
+          if (skipFirstRow && data.length > 0) {
+            data.shift();
+          }
+          
+          resolve(data);
         } catch (error) {
           reject(error);
         }
       };
       
       reader.onerror = () => reject(new Error('Erro ao ler arquivo'));
-      reader.readAsArrayBuffer(file);
+      reader.readAsText(file);
     });
   }, [skipFirstRow]);
 
