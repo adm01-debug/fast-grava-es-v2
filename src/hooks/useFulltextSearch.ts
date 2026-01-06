@@ -42,8 +42,8 @@ export function useFulltextSearch<T = unknown>(
         .map(col => `${col}.ilike.%${searchTerm}%`)
         .join(',');
 
-      // @ts-ignore - Dynamic table access
-      let query = supabase.from(table).select(selectColumns).or(orConditions);
+      const tableRef = supabase.from(table as any) as any;
+      let query = tableRef.select(selectColumns).or(orConditions);
 
       Object.entries(additionalFilters).forEach(([key, value]) => {
         if (value !== undefined && value !== null && value !== '') {
@@ -54,7 +54,7 @@ export function useFulltextSearch<T = unknown>(
       const { data, error } = await query.limit(100);
 
       if (error) throw error;
-      return (data ?? []) as T[];
+      return (data ?? []) as unknown as T[];
     },
     enabled: isEnabled,
     staleTime: 30000,
