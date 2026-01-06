@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -15,6 +16,8 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { FavoriteButton } from '@/components/favorites/FavoriteButton';
+import { FavoritesDropdown } from '@/components/favorites/FavoritesDropdown';
 import { useEnergy } from '@/hooks/useEnergy';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -44,7 +47,8 @@ import {
   DollarSign,
   Gauge,
   Plus,
-  CheckCircle
+  CheckCircle,
+  Command
 } from 'lucide-react';
 import { format, startOfMonth, endOfMonth, subMonths } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -53,6 +57,7 @@ import { toast } from 'sonner';
 const COLORS = ['hsl(var(--primary))', 'hsl(var(--accent))', 'hsl(var(--chart-3))', 'hsl(var(--chart-4))', 'hsl(var(--chart-5))'];
 
 export default function EnergyDashboard() {
+  const navigate = useNavigate();
   const [dateRange, setDateRange] = useState({
     start: startOfMonth(new Date()),
     end: endOfMonth(new Date()),
@@ -125,15 +130,26 @@ export default function EnergyDashboard() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-display font-bold">
-              <span className="gradient-text">Monitoramento de Energia</span>
-            </h1>
+            <div className="flex items-center gap-3">
+              <h1 className="text-2xl sm:text-3xl font-display font-bold">
+                <span className="gradient-text">Monitoramento de Energia</span>
+              </h1>
+              <FavoriteButton 
+                pageId="energy" 
+                pageName="Energia" 
+                pageUrl="/energy" 
+              />
+            </div>
             <p className="text-muted-foreground">
               {format(dateRange.start, "MMMM 'de' yyyy", { locale: ptBR })}
             </p>
           </div>
 
           <div className="flex items-center gap-2">
+            <FavoritesDropdown onNavigate={(url) => navigate(url)} />
+            <Badge variant="outline" className="gap-1 text-xs hidden sm:flex">
+              <Command className="h-3 w-3" />K para buscar
+            </Badge>
             <Button
               variant="outline"
               onClick={() => setDateRange({

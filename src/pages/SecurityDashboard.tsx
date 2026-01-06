@@ -1,8 +1,10 @@
 import { useAuth } from '@/contexts/AuthContext';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { FavoriteButton } from '@/components/favorites/FavoriteButton';
+import { FavoritesDropdown } from '@/components/favorites/FavoritesDropdown';
 import { 
   Shield, 
   ShieldCheck, 
@@ -16,7 +18,8 @@ import {
   Key,
   Bell,
   LayoutDashboard,
-  Globe
+  Globe,
+  Command
 } from 'lucide-react';
 import { useBlockedIPs, useRateLimitLogs, useSecurityEvents } from '@/hooks/useRateLimitLogs';
 import { BlockedIPsPanel } from '@/components/security/BlockedIPsPanel';
@@ -37,6 +40,7 @@ import { useMFA } from '@/hooks/useMFA';
 import { useUserDevices } from '@/hooks/useUserDevices';
 
 export default function SecurityDashboard() {
+  const navigate = useNavigate();
   const { isCoordinator, isManager } = useAuth();
   const { data: blockedIPs } = useBlockedIPs();
   const { data: rateLimitLogs } = useRateLimitLogs(100);
@@ -59,14 +63,29 @@ export default function SecurityDashboard() {
   return (
     <div className="container mx-auto py-6 space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
-          <Shield className="h-8 w-8" />
-          Painel de Segurança Unificado
-        </h1>
-        <p className="text-muted-foreground">
-          Visão completa de todas as configurações de segurança do sistema
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <div className="flex items-center gap-3">
+            <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
+              <Shield className="h-8 w-8" />
+              Painel de Segurança Unificado
+            </h1>
+            <FavoriteButton 
+              pageId="security" 
+              pageName="Segurança" 
+              pageUrl="/security" 
+            />
+          </div>
+          <p className="text-muted-foreground">
+            Visão completa de todas as configurações de segurança do sistema
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <FavoritesDropdown onNavigate={(url) => navigate(url)} />
+          <Badge variant="outline" className="gap-1 text-xs hidden sm:flex">
+            <Command className="h-3 w-3" />K para buscar
+          </Badge>
+        </div>
       </div>
 
       {/* Stats */}

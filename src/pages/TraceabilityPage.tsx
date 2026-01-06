@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -15,13 +16,16 @@ import {
   AlertTriangle,
   Layers,
   FileText,
-  ClipboardCheck
+  ClipboardCheck,
+  Command
 } from 'lucide-react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { FavoriteButton } from '@/components/favorites/FavoriteButton';
+import { FavoritesDropdown } from '@/components/favorites/FavoritesDropdown';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Table,
@@ -62,6 +66,7 @@ const STATUS_CONFIG: Record<string, { label: string; variant: 'default' | 'secon
 };
 
 export default function TraceabilityPage() {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -137,21 +142,33 @@ export default function TraceabilityPage() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
-              <Package className="h-8 w-8" />
-              Rastreabilidade de Produtos
-            </h1>
+            <div className="flex items-center gap-3">
+              <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
+                <Package className="h-8 w-8" />
+                Rastreabilidade de Produtos
+              </h1>
+              <FavoriteButton 
+                pageId="traceability" 
+                pageName="Rastreabilidade" 
+                pageUrl="/traceability" 
+              />
+            </div>
             <p className="text-muted-foreground">
               Genealogia, lotes e movimentações de produtos
             </p>
           </div>
-          <Dialog open={showCreateModal} onOpenChange={setShowCreateModal}>
-            <DialogTrigger asChild>
-              <Button>
-                <Plus className="h-4 w-4 mr-2" />
-                Novo Lote
-              </Button>
-            </DialogTrigger>
+          <div className="flex items-center gap-2">
+            <FavoritesDropdown onNavigate={(url) => navigate(url)} />
+            <Badge variant="outline" className="gap-1 text-xs hidden sm:flex">
+              <Command className="h-3 w-3" />K para buscar
+            </Badge>
+            <Dialog open={showCreateModal} onOpenChange={setShowCreateModal}>
+              <DialogTrigger asChild>
+                <Button>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Novo Lote
+                </Button>
+              </DialogTrigger>
             <DialogContent className="max-w-lg">
               <DialogHeader>
                 <DialogTitle>Criar Novo Lote</DialogTitle>
@@ -254,10 +271,11 @@ export default function TraceabilityPage() {
                     Criar Lote
                   </Button>
                 </div>
-              </div>
-            </DialogContent>
-          </Dialog>
-        </div>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </div>
+          </div>
 
         {/* Stats */}
         <div className="grid gap-4 md:grid-cols-4">

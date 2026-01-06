@@ -1,5 +1,6 @@
 import { Helmet } from 'react-helmet';
-import { Wrench, AlertTriangle, CheckCircle, Clock, CalendarCheck, RefreshCw, Settings } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Wrench, AlertTriangle, CheckCircle, Clock, CalendarCheck, RefreshCw, Settings, Command } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -15,9 +16,13 @@ import { CreateScheduleModal } from '@/components/tpm/CreateScheduleModal';
 import { TPMNotificationSettings } from '@/components/tpm/TPMNotificationSettings';
 import { MTBFMTTRWidget } from '@/components/reliability/MTBFMTTRWidget';
 import { MainLayout } from '@/components/layout/MainLayout';
+import { FavoriteButton } from '@/components/favorites/FavoriteButton';
+import { FavoritesDropdown } from '@/components/favorites/FavoritesDropdown';
+import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 
 export default function TPMDashboard() {
+  const navigate = useNavigate();
   const { user, profile } = useAuth();
   const {
     maintenanceTypes,
@@ -72,14 +77,25 @@ export default function TPMDashboard() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 animate-fade-in">
           <div>
-            <h1 className="text-3xl font-display font-bold">
-              <span className="gradient-text animate-pulse-glow">TPM - Manutenção Preventiva</span>
-            </h1>
+            <div className="flex items-center gap-3">
+              <h1 className="text-3xl font-display font-bold">
+                <span className="gradient-text animate-pulse-glow">TPM - Manutenção Preventiva</span>
+              </h1>
+              <FavoriteButton 
+                pageId="tpm" 
+                pageName="TPM" 
+                pageUrl="/tpm" 
+              />
+            </div>
             <p className="text-muted-foreground">
               Total Productive Maintenance - Gestão de manutenções programadas
             </p>
           </div>
-          <div className="flex gap-3">
+          <div className="flex items-center gap-3">
+            <FavoritesDropdown onNavigate={(url) => navigate(url)} />
+            <Badge variant="outline" className="gap-1 text-xs hidden sm:flex">
+              <Command className="h-3 w-3" />K para buscar
+            </Badge>
             <Sheet>
               <SheetTrigger asChild>
                 <Button variant="outline" size="icon" className="hover:shadow-glow-primary hover:border-primary/50 transition-all duration-300">

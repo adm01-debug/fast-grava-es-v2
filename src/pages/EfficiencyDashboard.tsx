@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -6,6 +7,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
+import { FavoriteButton } from '@/components/favorites/FavoriteButton';
+import { FavoritesDropdown } from '@/components/favorites/FavoritesDropdown';
 import { 
   Layers, 
   Scale, 
@@ -18,7 +21,8 @@ import {
   Package,
   Timer,
   BarChart3,
-  History
+  History,
+  Command
 } from 'lucide-react';
 import { useSmartSequencing } from '@/hooks/useSmartSequencing';
 import { useLoadBalancing } from '@/hooks/useLoadBalancing';
@@ -28,6 +32,7 @@ import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
 export default function EfficiencyDashboard() {
+  const navigate = useNavigate();
   const { suggestions: sequencingSuggestions, totalSavings } = useSmartSequencing();
   const { byTechnique, suggestions: balancingSuggestions, isLoading: loadBalancingLoading } = useLoadBalancing();
   const { alerts, capacityByDate, isLoading: bottleneckLoading, criticalCount } = useBottleneckPrediction();
@@ -51,16 +56,27 @@ export default function EfficiencyDashboard() {
     <MainLayout>
       <div className="p-4 sm:p-6 space-y-4 sm:space-y-6 animate-fade-in">
         {/* Header */}
-        <div className="flex flex-col gap-3 sm:gap-4">
+        <div className="flex flex-col sm:flex-row justify-between gap-3 sm:gap-4">
           <div>
-            <h1 className="text-xl sm:text-2xl font-display font-bold text-foreground">
-              Eficiência Operacional
-            </h1>
+            <div className="flex items-center gap-3">
+              <h1 className="text-xl sm:text-2xl font-display font-bold text-foreground">
+                Eficiência Operacional
+              </h1>
+              <FavoriteButton 
+                pageId="efficiency" 
+                pageName="Eficiência Operacional" 
+                pageUrl="/efficiency" 
+              />
+            </div>
             <p className="text-xs sm:text-sm text-muted-foreground mt-1">
               Análises e otimizações para maximizar produtividade
             </p>
           </div>
-          <div className="flex gap-2 flex-wrap">
+          <div className="flex items-center gap-2 flex-wrap">
+            <FavoritesDropdown onNavigate={(url) => navigate(url)} />
+            <Badge variant="outline" className="gap-1 text-xs hidden sm:flex">
+              <Command className="h-3 w-3" />K para buscar
+            </Badge>
             <Button variant="outline" size="sm" className="gap-1.5 sm:gap-2 text-xs sm:text-sm">
               <History className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
               Histórico

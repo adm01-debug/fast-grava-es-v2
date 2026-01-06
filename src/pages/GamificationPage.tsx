@@ -1,12 +1,15 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
+import { FavoriteButton } from '@/components/favorites/FavoriteButton';
+import { FavoritesDropdown } from '@/components/favorites/FavoritesDropdown';
 import { useGamification } from '@/hooks/useGamification';
-import { Trophy, Medal, Star, Target, Zap, Award, Crown, TrendingUp } from 'lucide-react';
+import { Trophy, Medal, Star, Target, Zap, Award, Crown, TrendingUp, Command } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -23,6 +26,7 @@ const achievementIcons: Record<string, React.ElementType> = {
 };
 
 export default function GamificationPage() {
+  const navigate = useNavigate();
   const [period, setPeriod] = useState<'daily' | 'weekly' | 'monthly'>('weekly');
   const { rankings, achievements, isLoading, periodStart, periodEnd } = useGamification(period);
 
@@ -49,21 +53,34 @@ export default function GamificationPage() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-display font-bold">
-              <span className="gradient-text">Ranking de Operadores</span>
-            </h1>
+            <div className="flex items-center gap-3">
+              <h1 className="text-2xl sm:text-3xl font-display font-bold">
+                <span className="gradient-text">Ranking de Operadores</span>
+              </h1>
+              <FavoriteButton 
+                pageId="gamification" 
+                pageName="Gamificação" 
+                pageUrl="/gamification" 
+              />
+            </div>
             <p className="text-muted-foreground">
               {format(periodStart, "dd 'de' MMMM", { locale: ptBR })} - {format(periodEnd, "dd 'de' MMMM", { locale: ptBR })}
             </p>
           </div>
 
-          <Tabs value={period} onValueChange={(v) => setPeriod(v as any)}>
-            <TabsList>
-              <TabsTrigger value="daily">Diário</TabsTrigger>
-              <TabsTrigger value="weekly">Semanal</TabsTrigger>
-              <TabsTrigger value="monthly">Mensal</TabsTrigger>
-            </TabsList>
-          </Tabs>
+          <div className="flex items-center gap-3">
+            <FavoritesDropdown onNavigate={(url) => navigate(url)} />
+            <Badge variant="outline" className="gap-1 text-xs hidden sm:flex">
+              <Command className="h-3 w-3" />K para buscar
+            </Badge>
+            <Tabs value={period} onValueChange={(v) => setPeriod(v as any)}>
+              <TabsList>
+                <TabsTrigger value="daily">Diário</TabsTrigger>
+                <TabsTrigger value="weekly">Semanal</TabsTrigger>
+                <TabsTrigger value="monthly">Mensal</TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </div>
         </div>
 
         {/* Podium */}
