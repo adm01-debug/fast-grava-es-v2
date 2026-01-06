@@ -16,6 +16,8 @@ import { PageTransition } from "@/components/layout/PageTransition";
 import { NavigationListener } from "@/components/navigation/NavigationListener";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
 import { ProductDesignProvider } from "@/components/design-system/ProductDesignProvider";
+import { PushNotificationPrompt } from "@/components/notifications/PushNotificationPrompt";
+import { useRoutePrefetch } from "@/hooks/useRoutePrefetch";
 import {
   DashboardPageSkeleton,
   CalendarPageSkeleton,
@@ -71,6 +73,9 @@ const queryClient = new QueryClient();
 
 function AnimatedRoutes() {
   const location = useLocation();
+  
+  // Prefetch de rotas críticas
+  useRoutePrefetch();
 
   return (
     <AnimatePresence mode="wait">
@@ -432,6 +437,8 @@ const App = () => (
                         enableKeyboardShortcuts={true}
                         enableToastWithUndo={true}
                       >
+                        <AnimatedRoutes />
+                        <PushNotificationPrompt delay={15000} />
                         <AnimatedRoutes />
                       </ProductDesignProvider>
                     </RealtimeNotificationsProvider>

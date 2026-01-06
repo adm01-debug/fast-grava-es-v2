@@ -2,10 +2,13 @@ import { useState, useEffect, useCallback } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { createAppError } from '@/lib/errorHandling';
 import { navigateTo } from '@/lib/navigation';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 
 const PUSH_NOTIFICATIONS_ERROR_CONTEXT = {
   requestPermission: { entity: 'push_notifications', operation: 'request_permission' },
   sendNotification: { entity: 'push_notifications', operation: 'send' },
+  subscribe: { entity: 'push_notifications', operation: 'subscribe' },
 };
 
 interface NotificationOptions {
@@ -20,17 +23,50 @@ interface NotificationOptions {
 export const usePushNotifications = () => {
   const [permission, setPermission] = useState<NotificationPermission>('default');
   const [isSupported, setIsSupported] = useState(false);
+  const [isSubscribed, setIsSubscribed] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
+  const { user } = useAuth();
 
   useEffect(() => {
     // Check if notifications are supported
-    const supported = 'Notification' in window;
+    const supported = 'Notification' in window && 'serviceWorker' in navigator;
     setIsSupported(supported);
     
     if (supported) {
       setPermission(Notification.permission);
+      
+      // Check if already subscribed
+      if (user) {
+        checkSubscription();
+      } else {
+        setIsLoading(false);
+      }
+    } else {
+      setIsLoading(false);
     }
-  }, []);
+  }, [user]);
+
+  const checkSubscription = async () => {
+    if (!user) {
+      setIsLoading(false);
+      return;
+    }
+    
+    try {
+      const { data } = await supabase
+        .from('push_subscriptions')
+        .select('id')
+        .eq('user_id', user.id)
+        .single();
+      
+      setIsSubscribed(!!data);
+    } catch {
+      setIsSubscribed(false);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const requestPermission = useCallback(async (): Promise<boolean> => {
     if (!isSupported) {
@@ -156,10 +192,39 @@ export const usePushNotifications = () => {
     });
   }, [sendNotification]);
 
+  // Unsubscribe from push notifications
+  const unsubscribe = useCallback(async (): Promise<boolean> => {
+    if (!user) return false;
+    
+    setIsLoading(true);
+    try {
+      await supabase
+        .from('push_subscriptions')
+        .delete()
+        .eq('user_id', user.id);
+      
+      setIsSubscribed(false);
+      toast({
+        title: "Notificações desativadas",
+        description: "Você não receberá mais alertas push."
+      });
+      return true;
+    } catch (error) {
+      const appError = createAppError(error, PUSH_NOTIFICATIONS_ERROR_CONTEXT.subscribe);
+      if (import.meta.env.DEV) console.error('[unsubscribe]', appError);
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  }, [user, toast]);
+
   return {
     permission,
     isSupported,
+    isSubscribed,
+    isLoading,
     requestPermission,
+    unsubscribe,
     sendNotification,
     // Specific alert types
     sendDelayedJobAlert,
