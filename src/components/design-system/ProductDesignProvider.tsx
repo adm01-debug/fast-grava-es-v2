@@ -94,3 +94,6 @@ export { useFocusTrap, SkipToContent, useLiveRegion, AccessibleIconButton, useRe
 export { useLocale, useNumberFormat, useDateFormat, useListFormat, usePlural, useFileSizeFormat, useDurationFormat, formatPhoneNumber, formatDocument } from "@/lib/formatters";
 export { useOptimisticUpdate } from "@/hooks/useOptimisticUpdates";
 export { default as confetti } from "@/lib/confetti";
+export { usePushNotifications } from "@/hooks/usePushNotifications";
+export { useRoutePrefetch, usePrefetchRoute } from "@/hooks/useRoutePrefetch";
+export { PushNotificationPrompt, PushNotificationToggle } from "@/components/notifications/PushNotificationPrompt";
