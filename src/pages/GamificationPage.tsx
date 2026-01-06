@@ -8,6 +8,7 @@ import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
 import { FavoriteButton } from '@/components/favorites/FavoriteButton';
 import { FavoritesDropdown } from '@/components/favorites/FavoritesDropdown';
+import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { useGamification } from '@/hooks/useGamification';
 import { Trophy, Medal, Star, Target, Zap, Award, Crown, TrendingUp, Command } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -50,6 +51,8 @@ export default function GamificationPage() {
   return (
     <MainLayout>
       <div className="p-4 sm:p-6 lg:p-8 space-y-6 animate-fade-in-up">
+        <Breadcrumbs />
+        
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>

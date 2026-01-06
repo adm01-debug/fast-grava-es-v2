@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Printer, CheckCircle2, XCircle } from 'lucide-react';
 import { useSchedulingData } from '@/hooks/useSchedulingData';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 
 export default function MachinesPage() {
   const { machines, techniques, isLoadingMachines, getTechniqueById } = useSchedulingData();
@@ -36,6 +37,8 @@ export default function MachinesPage() {
   return (
     <MainLayout>
       <div className="space-y-6">
+        <Breadcrumbs />
+        
         <div>
           <h1 className="text-2xl font-display font-bold gradient-text">Máquinas</h1>
           <p className="text-muted-foreground">Gerencie as máquinas de produção por técnica</p>

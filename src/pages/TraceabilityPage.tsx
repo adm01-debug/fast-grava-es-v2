@@ -26,6 +26,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { FavoriteButton } from '@/components/favorites/FavoriteButton';
 import { FavoritesDropdown } from '@/components/favorites/FavoritesDropdown';
+import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Table,
@@ -139,6 +140,8 @@ export default function TraceabilityPage() {
       </Helmet>
 
       <div className="space-y-6">
+        <Breadcrumbs />
+        
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
