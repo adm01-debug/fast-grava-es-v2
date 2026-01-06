@@ -15,6 +15,7 @@ import { SessionManager } from "@/hooks/useSessionManager";
 import { PageTransition } from "@/components/layout/PageTransition";
 import { NavigationListener } from "@/components/navigation/NavigationListener";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
+import { ProductDesignProvider } from "@/components/design-system/ProductDesignProvider";
 import {
   DashboardPageSkeleton,
   CalendarPageSkeleton,
@@ -425,7 +426,14 @@ const App = () => (
                 <OfflineSyncProvider>
                   <EfficiencyNotificationProvider>
                     <RealtimeNotificationsProvider>
-                      <AnimatedRoutes />
+                      <ProductDesignProvider
+                        enableOnboarding={true}
+                        enableCommandPalette={true}
+                        enableKeyboardShortcuts={true}
+                        enableToastWithUndo={true}
+                      >
+                        <AnimatedRoutes />
+                      </ProductDesignProvider>
                     </RealtimeNotificationsProvider>
                   </EfficiencyNotificationProvider>
                 </OfflineSyncProvider>

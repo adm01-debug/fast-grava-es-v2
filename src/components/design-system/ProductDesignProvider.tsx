@@ -3,6 +3,7 @@ import { OnboardingTour, useOnboarding } from "@/components/onboarding/Onboardin
 import { CommandPalette } from "@/components/navigation/CommandPalette";
 import { KeyboardShortcutsProvider } from "@/components/shortcuts/KeyboardShortcuts";
 import { ToastContainer } from "@/components/notifications/ToastWithUndo";
+import { FloatingAIAssistant } from "@/components/ai/FloatingAIAssistant";
 
 interface ProductDesignProviderProps {
   children: React.ReactNode;
@@ -10,6 +11,7 @@ interface ProductDesignProviderProps {
   enableCommandPalette?: boolean;
   enableKeyboardShortcuts?: boolean;
   enableToastWithUndo?: boolean;
+  enableAIAssistant?: boolean;
 }
 
 /**
@@ -20,6 +22,7 @@ interface ProductDesignProviderProps {
  * - Command Palette (Cmd+K for quick navigation)
  * - Keyboard Shortcuts (vim-like navigation)
  * - Toast with Undo (undoable notifications)
+ * - AI Assistant (floating chat widget)
  */
 export function ProductDesignProvider({
   children,
@@ -27,6 +30,7 @@ export function ProductDesignProvider({
   enableCommandPalette = true,
   enableKeyboardShortcuts = true,
   enableToastWithUndo = true,
+  enableAIAssistant = true,
 }: ProductDesignProviderProps) {
   const { showTour, setShowTour } = useOnboarding();
 
@@ -48,6 +52,9 @@ export function ProductDesignProvider({
 
       {/* Toast Container for undoable notifications */}
       {enableToastWithUndo && <ToastContainer />}
+
+      {/* Floating AI Assistant */}
+      {enableAIAssistant && <FloatingAIAssistant />}
     </>
   );
 
@@ -78,6 +85,7 @@ export { EnhancedTable } from "@/components/tables/EnhancedTable";
 export { DashboardCustomizer, useDashboardConfig, AnimatedWidget, DashboardGrid } from "@/components/dashboard/DashboardCustomizer";
 export { useBreakpoint, useDeviceCapabilities, ResponsiveContainer, Show, TouchOptimized, AdaptiveText, AdaptiveGrid, ResponsiveStack, SafeArea, ScrollContainer } from "@/components/responsive/AdaptiveContent";
 export { AIAssistantWidget, AISuggestions } from "@/components/ai/AIAssistantWidget";
+export { FloatingAIAssistant } from "@/components/ai/FloatingAIAssistant";
 export { LivePresence, CursorPresence, ActivityIndicator, WhosHereBanner, useLivePresence } from "@/components/collaboration/LivePresence";
 export { WorkflowAutomation, AutomationTrigger } from "@/components/automation/WorkflowAutomation";
 export { AutomationBuilder } from "@/components/automation/AutomationBuilder";
