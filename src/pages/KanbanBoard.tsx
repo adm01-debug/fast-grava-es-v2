@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
   DndContext, 
   DragOverlay, 
@@ -13,11 +14,13 @@ import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
 import { JobDetailsModal } from '@/components/jobs/JobDetailsModal';
 import { Skeleton } from '@/components/ui/skeleton';
 import { DroppableColumn } from '@/components/kanban/DroppableColumn';
 import { DragOverlayCard } from '@/components/kanban/DragOverlayCard';
 import { useKanbanDragDrop } from '@/hooks/useKanbanDragDrop';
+import { FavoriteButton, FavoritesDropdown } from '@/components/navigation/FavoritesManager';
 import { 
   Search, 
   Filter,
@@ -29,6 +32,7 @@ import {
   AlertTriangle,
   RotateCcw,
   Pause,
+  Command
 } from 'lucide-react';
 import { useSchedulingData } from '@/hooks/useSchedulingData';
 import { DbJob } from '@/hooks/useJobs';
@@ -90,6 +94,7 @@ const dbJobToJob = (dbJob: DbJob): Job => {
 };
 
 export default function KanbanBoard() {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTechnique, setSelectedTechnique] = useState<string>('all');
   const [selectedJob, setSelectedJob] = useState<DbJob | null>(null);
@@ -191,46 +196,60 @@ export default function KanbanBoard() {
           {/* Header */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <h1 className="text-xl sm:text-2xl lg:text-3xl font-display font-bold">
-                <span className="gradient-text">Kanban</span>
-              </h1>
+              <div className="flex items-center gap-3">
+                <h1 className="text-xl sm:text-2xl lg:text-3xl font-display font-bold">
+                  <span className="gradient-text">Kanban</span>
+                </h1>
+                <FavoriteButton path="/kanban" name="Kanban" />
+              </div>
               <p className="text-muted-foreground text-sm sm:text-base">
                 Arraste cards para alterar status • {isUpdating && 'Atualizando...'}
               </p>
             </div>
             
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-              <div className="relative flex-1 sm:flex-initial">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Buscar jobs..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-9 w-full sm:w-[200px] bg-card/50 border-border/50"
-                />
-              </div>
+            <div className="flex items-center gap-3">
+              {/* Favorites Dropdown */}
+              <FavoritesDropdown onNavigate={(path) => navigate(path)} />
               
-              <Select value={selectedTechnique} onValueChange={setSelectedTechnique}>
-                <SelectTrigger className="w-full sm:w-[180px] bg-card/50 border-border/50">
-                  <Filter className="h-4 w-4 mr-2" />
-                  <SelectValue placeholder="Técnica" />
-                </SelectTrigger>
-                <SelectContent className="bg-card border-border">
-                  <SelectItem value="all">Todas as técnicas</SelectItem>
-                  {techniques.map(technique => (
-                    <SelectItem key={technique.id} value={technique.id}>
-                      <div className="flex items-center gap-2">
-                        <div 
-                          className="w-2 h-2 rounded-full" 
-                          style={{ backgroundColor: technique.color }} 
-                        />
-                        {technique.name}
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              {/* Command Palette Hint */}
+              <Badge variant="outline" className="hidden md:flex gap-1.5 cursor-pointer hover:bg-muted transition-colors">
+                <Command className="h-3 w-3" />
+                <span className="text-xs">⌘K</span>
+              </Badge>
             </div>
+          </div>
+          
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+            <div className="relative flex-1 sm:flex-initial">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Buscar jobs..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-9 w-full sm:w-[200px] bg-card/50 border-border/50"
+              />
+            </div>
+            
+            <Select value={selectedTechnique} onValueChange={setSelectedTechnique}>
+              <SelectTrigger className="w-full sm:w-[180px] bg-card/50 border-border/50">
+                <Filter className="h-4 w-4 mr-2" />
+                <SelectValue placeholder="Técnica" />
+              </SelectTrigger>
+              <SelectContent className="bg-card border-border">
+                <SelectItem value="all">Todas as técnicas</SelectItem>
+                {techniques.map(technique => (
+                  <SelectItem key={technique.id} value={technique.id}>
+                    <div className="flex items-center gap-2">
+                      <div 
+                        className="w-2 h-2 rounded-full" 
+                        style={{ backgroundColor: technique.color }} 
+                      />
+                      {technique.name}
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           {/* Main Kanban Board */}

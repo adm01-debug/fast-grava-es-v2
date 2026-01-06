@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -17,7 +18,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { Users, UserCheck, Phone, Calendar, Settings2, Search, X, UserPlus, Pencil, Clock, Trash2, UserX, Power } from 'lucide-react';
+import { Users, UserCheck, Phone, Calendar, Settings2, Search, X, UserPlus, Pencil, Clock, Trash2, UserX, Power, Command } from 'lucide-react';
 import { useOperators, OperatorWithProfile } from '@/hooks/useOperators';
 import { useOperatorPresence } from '@/hooks/useOperatorPresence';
 import { useOperatorMachines } from '@/hooks/useOperatorMachines';
@@ -27,6 +28,7 @@ import { CreateOperatorModal } from '@/components/operators/CreateOperatorModal'
 import { EditOperatorModal } from '@/components/operators/EditOperatorModal';
 import { OperatorAuditHistory } from '@/components/operators/OperatorAuditHistory';
 import { Skeleton } from '@/components/ui/skeleton';
+import { FavoriteButton, FavoritesDropdown } from '@/components/navigation/FavoritesManager';
 import { format, formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
@@ -36,6 +38,7 @@ const formatLastSeen = (date: Date | undefined) => {
 };
 
 export default function OperatorsPage() {
+  const navigate = useNavigate();
   const { data: operators = [], isLoading, removeOperator, isRemoving, toggleActive, isToggling } = useOperators();
   const { assignments } = useOperatorMachines();
   const { machines } = useSchedulingData();
@@ -105,15 +108,30 @@ export default function OperatorsPage() {
   return (
     <MainLayout>
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-display font-bold gradient-text">Operadores</h1>
+            <div className="flex items-center gap-3">
+              <h1 className="text-2xl font-display font-bold gradient-text">Operadores</h1>
+              <FavoriteButton path="/operators" name="Operadores" />
+            </div>
             <p className="text-muted-foreground">Gerencie os operadores e suas permissões de máquinas</p>
           </div>
-          <Button onClick={() => setIsCreateModalOpen(true)}>
-            <UserPlus className="h-4 w-4 mr-2" />
-            Novo Operador
-          </Button>
+          
+          <div className="flex items-center gap-3">
+            {/* Favorites Dropdown */}
+            <FavoritesDropdown onNavigate={(path) => navigate(path)} />
+            
+            {/* Command Palette Hint */}
+            <Badge variant="outline" className="hidden md:flex gap-1.5 cursor-pointer hover:bg-muted transition-colors">
+              <Command className="h-3 w-3" />
+              <span className="text-xs">⌘K</span>
+            </Badge>
+            
+            <Button onClick={() => setIsCreateModalOpen(true)}>
+              <UserPlus className="h-4 w-4 mr-2" />
+              Novo Operador
+            </Button>
+          </div>
         </div>
 
         <div className="grid gap-4 md:grid-cols-3">
