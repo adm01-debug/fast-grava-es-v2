@@ -15,7 +15,7 @@ export default {
     extend: {
       fontFamily: {
         sans: ["Inter", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "Helvetica Neue", "Arial", "sans-serif"],
-        display: ["Inter", "-apple-system", "BlinkMacSystemFont", "sans-serif"],
+        display: ["Plus Jakarta Sans", "Inter", "-apple-system", "BlinkMacSystemFont", "sans-serif"],
         mono: ["JetBrains Mono", "ui-monospace", "SFMono-Regular", "monospace"],
       },
       colors: {
@@ -104,6 +104,14 @@ export default {
           DEFAULT: "hsl(var(--info))",
           foreground: "hsl(var(--info-foreground))",
         },
+        // Semantic surfaces
+        surface: {
+          success: "hsl(var(--surface-success))",
+          warning: "hsl(var(--surface-warning))",
+          destructive: "hsl(var(--surface-destructive))",
+          info: "hsl(var(--surface-info))",
+          muted: "hsl(var(--surface-muted))",
+        },
         xp: {
           DEFAULT: "hsl(var(--xp))",
           foreground: "hsl(var(--xp-foreground))",
@@ -156,14 +164,29 @@ export default {
         "section-lg": "3rem",
       },
       transitionDuration: {
+        "75": "75ms",
+        "100": "100ms",
         "150": "150ms",
         "200": "200ms",
         "250": "250ms",
         "300": "300ms",
+        "400": "400ms",
+        "600": "600ms",
+        // Motion design system tokens
+        instant: "var(--duration-instant)",
+        fast: "var(--duration-fast)",
+        normal: "var(--duration-normal)",
+        slow: "var(--duration-slow)",
+        slower: "var(--duration-slower)",
       },
       transitionTimingFunction: {
         smooth: "cubic-bezier(0.4, 0, 0.2, 1)",
         spring: "cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+        // Motion design system tokens
+        standard: "var(--easing-standard)",
+        enter: "var(--easing-enter)",
+        exit: "var(--easing-exit)",
+        bounce: "var(--easing-spring)",
       },
       keyframes: {
         "accordion-down": {
