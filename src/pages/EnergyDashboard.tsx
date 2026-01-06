@@ -18,6 +18,8 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { FavoriteButton } from '@/components/favorites/FavoriteButton';
 import { FavoritesDropdown } from '@/components/favorites/FavoritesDropdown';
+import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
+import { KPITooltip } from '@/components/ui/kpi-tooltip';
 import { useEnergy } from '@/hooks/useEnergy';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -127,6 +129,8 @@ export default function EnergyDashboard() {
   return (
     <MainLayout>
       <div className="p-4 sm:p-6 lg:p-8 space-y-6 animate-fade-in-up">
+        <Breadcrumbs />
+        
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>

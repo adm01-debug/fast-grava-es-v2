@@ -18,6 +18,8 @@ import { MTBFMTTRWidget } from '@/components/reliability/MTBFMTTRWidget';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { FavoriteButton } from '@/components/favorites/FavoriteButton';
 import { FavoritesDropdown } from '@/components/favorites/FavoritesDropdown';
+import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
+import { KPITooltip } from '@/components/ui/kpi-tooltip';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 
@@ -74,6 +76,8 @@ export default function TPMDashboard() {
       </Helmet>
 
       <div className="p-4 sm:p-6 lg:p-8 space-y-6 lg:space-y-8">
+        <Breadcrumbs />
+        
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 animate-fade-in">
           <div>
