@@ -59,6 +59,7 @@ import {
 } from 'recharts';
 import { format, subDays, eachDayOfInterval, startOfDay, parseISO, isAfter, isBefore, isSameDay } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 
 function StatCard({ 
   title, 
@@ -719,6 +720,7 @@ export default function OperatorProductivityPage() {
   return (
     <MainLayout>
       <div className="space-y-6 animate-fade-in">
+        <Breadcrumbs />
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>

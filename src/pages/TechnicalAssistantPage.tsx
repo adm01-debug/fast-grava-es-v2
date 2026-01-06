@@ -40,6 +40,7 @@ import { toast } from "sonner";
 import { useTechnicalConversations, useTechnicalMessages, TechnicalMessage } from "@/hooks/useTechnicalConversations";
 import { formatDistanceToNow, isToday, isThisWeek, isThisMonth, subDays } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/technical-assistant`;
 
@@ -358,7 +359,9 @@ const TechnicalAssistantPage = () => {
 
   return (
     <MainLayout>
-      <div className="flex h-[calc(100vh-2rem)] m-4 gap-4">
+      <div className="flex flex-col h-[calc(100vh-2rem)] m-4 gap-4">
+        <Breadcrumbs />
+        <div className="flex flex-1 gap-4 min-h-0">
         {/* Sidebar with conversations */}
         <Card className="w-80 flex flex-col glass-card border-border/50">
           <CardHeader className="pb-3">
@@ -761,6 +764,7 @@ const TechnicalAssistantPage = () => {
             )}
           </CardContent>
         </Card>
+        </div>
       </div>
     </MainLayout>
   );

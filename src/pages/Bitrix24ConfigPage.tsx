@@ -33,6 +33,7 @@ import {
 import { Bitrix24SyncPanel } from '@/components/integrations/Bitrix24SyncPanel';
 import { Bitrix24SyncHistory } from '@/components/integrations/Bitrix24SyncHistory';
 import { useToast } from '@/hooks/use-toast';
+import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 
 interface FieldInfo {
   type: string;
@@ -249,6 +250,7 @@ const Bitrix24ConfigPage = () => {
   return (
     <MainLayout>
       <div className="space-y-6">
+        <Breadcrumbs />
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>

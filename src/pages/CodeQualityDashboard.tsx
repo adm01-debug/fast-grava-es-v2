@@ -22,6 +22,7 @@ import {
   Gauge
 } from 'lucide-react';
 import { useCodeQualityMetrics } from '@/hooks/useCodeQualityMetrics';
+import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { 
   PieChart as RechartsPie, 
   Pie, 
@@ -67,6 +68,7 @@ export default function CodeQualityDashboard() {
   return (
     <MainLayout>
       <div className="space-y-6 animate-fade-in">
+        <Breadcrumbs />
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>

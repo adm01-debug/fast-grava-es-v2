@@ -187,6 +187,7 @@ import {
   Pause
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { 
   Table, 
   TableBody, 
@@ -239,6 +240,7 @@ export default function DesignSystemPage() {
   return (
     <MainLayout>
       <div className="p-6 space-y-8 max-w-7xl mx-auto">
+        <Breadcrumbs />
         {/* Floating Reduced Motion Indicator */}
         {isReducedMotionActive && (
           <div className="fixed bottom-4 left-4 z-50 flex items-center gap-2 px-3 py-2 rounded-full bg-warning/90 text-warning-foreground shadow-lg border border-warning/50 backdrop-blur-sm">
