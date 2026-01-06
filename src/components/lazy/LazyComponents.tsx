@@ -158,10 +158,10 @@ interface LazyFactoryOptions {
   preload?: boolean;
 }
 
-export function createLazyComponent<T extends React.ComponentType<object>>(
-  importFn: () => Promise<{ default: T }>,
+export function createLazyComponent(
+  importFn: () => Promise<{ default: React.ComponentType<Record<string, unknown>> }>,
   options: LazyFactoryOptions = {}
-) {
+): React.FC<Record<string, unknown>> & { preload: () => void } {
   const LazyComponent = React.lazy(importFn);
 
   // Preload if specified
@@ -169,28 +169,26 @@ export function createLazyComponent<T extends React.ComponentType<object>>(
     importFn();
   }
 
-  const WrappedComponent = React.forwardRef<
-    React.ComponentRef<T>,
-    React.ComponentProps<T>
-  >((props, ref) => (
+  const WrappedComponent: React.FC<Record<string, unknown>> = (props) => (
     <LazyWrapper
       fallback={options.fallback}
       errorFallback={options.errorFallback}
       delay={options.delay}
       minLoadTime={options.minLoadTime}
     >
-      <LazyComponent {...(props as object)} ref={ref} />
+      <LazyComponent {...props} />
     </LazyWrapper>
-  ));
+  );
 
   WrappedComponent.displayName = 'LazyComponent';
 
   // Add preload method
-  (WrappedComponent as unknown as { preload: () => void }).preload = () => {
+  const componentWithPreload = WrappedComponent as React.FC<Record<string, unknown>> & { preload: () => void };
+  componentWithPreload.preload = () => {
     importFn();
   };
 
-  return WrappedComponent as T & { preload: () => void };
+  return componentWithPreload;
 }
 
 // ============================================================================
@@ -324,14 +322,12 @@ export function LazyImage({
 
       {/* Image */}
       {isInView && (
-        <motion.img
+        <img
           src={src}
           alt={alt}
           onLoad={() => setIsLoaded(true)}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: isLoaded ? 1 : 0 }}
+          style={{ opacity: isLoaded ? 1 : 0, transition: 'opacity 0.3s ease' }}
           className={cn('w-full h-full object-cover', className)}
-          {...props}
         />
       )}
     </div>
