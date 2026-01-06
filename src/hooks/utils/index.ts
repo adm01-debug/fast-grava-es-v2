@@ -1,6 +1,8 @@
 // Utility hooks - simplified exports
 export { useLocalStorage } from '@/hooks/useLocalStorage';
 
+import { useState, useCallback, useEffect, useRef } from 'react';
+
 // Simple utility hooks implementations
 export function useSessionStorage<T>(key: string, initialValue: T): [T, (value: T) => void] {
   const [storedValue, setStoredValue] = useState<T>(() => {
@@ -20,7 +22,21 @@ export function useSessionStorage<T>(key: string, initialValue: T): [T, (value: 
   return [storedValue, setValue];
 }
 
-import { useState, useCallback, useEffect, useRef } from 'react';
+export function useDebounce<T>(value: T, delay: number): T {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [value, delay]);
+
+  return debouncedValue;
+}
 
 export function useClipboard(timeout = 2000) {
   const [copied, setCopied] = useState(false);
