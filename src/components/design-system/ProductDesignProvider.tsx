@@ -89,7 +89,8 @@ export { SessionManagement, ConfirmationDialog } from "@/components/security/Ses
 export { MultiStepForm, ValidatedInput } from "@/components/forms/MultiStepForm";
 export { EnhancedTable } from "@/components/tables/EnhancedTable";
 export { DashboardCustomizer, useDashboardConfig, AnimatedWidget, DashboardGrid } from "@/components/dashboard/DashboardCustomizer";
-export { useBreakpoint, useDeviceCapabilities, ResponsiveContainer, Show, TouchOptimized, AdaptiveText, AdaptiveGrid, ResponsiveStack, SafeArea, ScrollContainer } from "@/components/responsive/AdaptiveContent";
+export { useBreakpoint, useDeviceCapabilities, ResponsiveContainer as AdaptiveContainer, Show, TouchOptimized, AdaptiveText, AdaptiveGrid, ResponsiveStack as AdaptiveStack, SafeArea, ScrollContainer } from "@/components/responsive/AdaptiveContent";
+export { ResponsiveContainer, ResponsiveGrid, ResponsiveStack, HideOn, ShowOn, MobileOnly, DesktopOnly, TabletUp } from "@/components/layout/ResponsiveContainer";
 export { AIAssistantWidget, AISuggestions } from "@/components/ai/AIAssistantWidget";
 export { FloatingAIAssistant } from "@/components/ai/FloatingAIAssistant";
 export { LivePresence, CursorPresence, ActivityIndicator, WhosHereBanner, useLivePresence } from "@/components/collaboration/LivePresence";
@@ -104,3 +105,4 @@ export { usePushNotifications } from "@/hooks/usePushNotifications";
 export { useRoutePrefetch, usePrefetchRoute } from "@/hooks/useRoutePrefetch";
 export { PushNotificationPrompt, PushNotificationToggle } from "@/components/notifications/PushNotificationPrompt";
 export { KioskMode, KioskModeButton } from "@/components/kiosk/KioskMode";
+export { useDevice, useIsMobile, useIsTablet, useIsDesktop, useIsTouch, useOrientation, usePrefersReducedMotion } from "@/hooks/use-device";
