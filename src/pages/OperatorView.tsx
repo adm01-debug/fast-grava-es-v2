@@ -1,4 +1,5 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -12,6 +13,9 @@ import { useOfflineSync } from '@/hooks/useOfflineSync';
 import { JobDetailsModal } from '@/components/jobs/JobDetailsModal';
 import { ProductionRegistrationModal } from '@/components/operator/ProductionRegistrationModal';
 import { OfflineSyncIndicator } from '@/components/offline/OfflineSyncIndicator';
+import { MobilePullToRefresh } from '@/components/mobile/PullToRefresh';
+import { SwipeActions, SwipeActionPresets } from '@/components/mobile/SwipeActions';
+import { EmptyState } from '@/components/ui/empty-state';
 import { 
   User,
   Play,
@@ -20,20 +24,22 @@ import {
   Clock,
   AlertTriangle,
   Package,
-  ClipboardCheck
+  ClipboardCheck,
+  Maximize
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { JobStatus } from '@/types/scheduling';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 
 export default function OperatorView() {
+  const navigate = useNavigate();
   const [selectedMachine, setSelectedMachine] = useState<string>('all');
   const [selectedJob, setSelectedJob] = useState<DbJob | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [productionJob, setProductionJob] = useState<DbJob | null>(null);
   const [isProductionModalOpen, setIsProductionModalOpen] = useState(false);
 
-  const { jobs, techniques, machines, isLoading, getTechniqueById, getMachineById } = useSchedulingData();
+  const { jobs, techniques, machines, isLoading, getTechniqueById, getMachineById, refetchAll } = useSchedulingData();
   const updateStatus = useUpdateJobStatus();
   const { isOnline, cacheData, getCachedJobs, getCachedMachines } = useOfflineSync();
 
@@ -136,7 +142,7 @@ export default function OperatorView() {
             </p>
           </div>
           
-          <div className="flex items-center">
+          <div className="flex items-center gap-3 flex-wrap">
             <Select value={selectedMachine} onValueChange={setSelectedMachine}>
               <SelectTrigger className="w-full sm:w-[220px] bg-card/50 border-border/50">
                 <User className="h-4 w-4 mr-2" />
@@ -151,6 +157,16 @@ export default function OperatorView() {
                 ))}
               </SelectContent>
             </Select>
+            
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => navigate('/kiosk')}
+              className="gap-2"
+            >
+              <Maximize className="h-4 w-4" />
+              Modo Kiosk
+            </Button>
           </div>
         </div>
 
@@ -284,12 +300,12 @@ export default function OperatorView() {
           </h2>
           
           {readyJobs.length === 0 ? (
-            <Card className="glass-card">
-              <CardContent className="py-12 text-center">
-                <Clock className="h-12 w-12 mx-auto mb-4 text-muted-foreground opacity-30" />
-                <p className="text-muted-foreground">Nenhum job aguardando produção</p>
-              </CardContent>
-            </Card>
+            <EmptyState
+              variant="no-events"
+              title="Nenhum job aguardando"
+              description="Não há jobs prontos para produção no momento."
+              size="sm"
+            />
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {readyJobs.map(job => {

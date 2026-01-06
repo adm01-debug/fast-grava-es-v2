@@ -33,7 +33,7 @@ export function PullToRefresh({
 
   return (
     <div
-      ref={ref}
+      ref={ref as React.RefObject<HTMLDivElement>}
       className={cn("relative overflow-auto momentum-scroll", className)}
     >
       {/* Pull to refresh indicator */}

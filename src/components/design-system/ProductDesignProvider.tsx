@@ -97,3 +97,4 @@ export { default as confetti } from "@/lib/confetti";
 export { usePushNotifications } from "@/hooks/usePushNotifications";
 export { useRoutePrefetch, usePrefetchRoute } from "@/hooks/useRoutePrefetch";
 export { PushNotificationPrompt, PushNotificationToggle } from "@/components/notifications/PushNotificationPrompt";
+export { KioskMode, KioskModeButton } from "@/components/kiosk/KioskMode";
