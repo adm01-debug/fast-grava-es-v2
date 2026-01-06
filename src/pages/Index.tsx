@@ -1,5 +1,6 @@
 import { Suspense, lazy, useMemo, ComponentType } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { StatsCard } from '@/components/dashboard/StatsCard';
 import { useOperatorDashboardData } from '@/hooks/useOperatorDashboardData';
@@ -12,12 +13,15 @@ import { DashboardEditControls } from '@/components/dashboard/DashboardEditContr
 import { SortableWidgetSection } from '@/components/dashboard/SortableWidgetSection';
 import { DailySummaryCard } from '@/components/notifications/DailySummaryCard';
 import { Badge } from '@/components/ui/badge';
+import { FavoritesDropdown, FavoriteButton } from '@/components/navigation/FavoritesManager';
+import { ActivityLog, useActivityLog } from '@/components/activity/ActivityLog';
 import { 
   Calendar, 
   CheckCircle2, 
   AlertTriangle, 
   Printer,
-  User
+  User,
+  Command
 } from 'lucide-react';
 
 // Type definitions for widget components
@@ -118,15 +122,22 @@ const Index = () => {
     );
   };
 
+  // Activity log for tracking
+  const { entries: activityEntries, addEntry: addActivityEntry } = useActivityLog();
+  const navigate = useNavigate();
+
   return (
     <MainLayout>
       <div className="p-4 sm:p-6 lg:p-8 space-y-6 lg:space-y-8">
-        {/* Page Header */}
+        {/* Page Header with Enhanced Navigation */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 animate-fade-in">
           <div>
-            <h1 className="text-3xl font-display font-bold">
-              <span className="gradient-text">{t('dashboard.title')}</span>
-            </h1>
+            <div className="flex items-center gap-3">
+              <h1 className="text-3xl font-display font-bold">
+                <span className="gradient-text">{t('dashboard.title')}</span>
+              </h1>
+              <FavoriteButton path="/" name={t('dashboard.title')} />
+            </div>
             <div className="flex items-center gap-2">
               <p className="text-muted-foreground">
                 {isOperator 
@@ -142,13 +153,25 @@ const Index = () => {
               )}
             </div>
           </div>
-          <DashboardEditControls
-            isEditMode={isEditMode}
-            widgets={filteredWidgetsForControls}
-            onToggleEditMode={() => setIsEditMode(!isEditMode)}
-            onResetLayout={resetLayout}
-            onToggleWidget={toggleWidgetVisibility}
-          />
+          
+          <div className="flex items-center gap-3">
+            {/* Favorites Dropdown */}
+            <FavoritesDropdown onNavigate={(path) => navigate(path)} />
+            
+            {/* Command Palette Hint */}
+            <Badge variant="outline" className="hidden md:flex gap-1.5 cursor-pointer hover:bg-muted transition-colors">
+              <Command className="h-3 w-3" />
+              <span className="text-xs">⌘K</span>
+            </Badge>
+            
+            <DashboardEditControls
+              isEditMode={isEditMode}
+              widgets={filteredWidgetsForControls}
+              onToggleEditMode={() => setIsEditMode(!isEditMode)}
+              onResetLayout={resetLayout}
+              onToggleWidget={toggleWidgetVisibility}
+            />
+          </div>
         </div>
 
         {/* Edit Mode Indicator */}
@@ -261,6 +284,17 @@ const Index = () => {
         >
           {bottomWidgets.map(widget => renderWidget(widget.id))}
         </SortableWidgetSection>
+
+        {/* Activity Log Section */}
+        {!isOperator && activityEntries.length > 0 && (
+          <div className="mt-8">
+            <ActivityLog 
+              entries={activityEntries}
+              title="Atividade Recente"
+              maxHeight="300px"
+            />
+          </div>
+        )}
       </div>
     </MainLayout>
   );
