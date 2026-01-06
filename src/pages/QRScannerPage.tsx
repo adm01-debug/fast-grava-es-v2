@@ -4,6 +4,7 @@ import { QRScanner } from "@/components/qrcode/QRScanner";
 import { ScanHistory } from "@/components/qrcode/ScanHistory";
 import { ScanStatsChart } from "@/components/qrcode/ScanStatsChart";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Breadcrumbs } from "@/components/navigation/Breadcrumbs";
 import { QrCode, History, BarChart3 } from "lucide-react";
 
 const QRScannerPage = () => {
@@ -12,6 +13,8 @@ const QRScannerPage = () => {
   return (
     <MainLayout>
       <div className="container mx-auto p-4 sm:p-6 max-w-2xl">
+        <Breadcrumbs className="mb-4" />
+        
         <div className="mb-4 sm:mb-6 text-center">
           <h1 className="text-xl sm:text-2xl font-bold text-foreground mb-1 sm:mb-2">
             Scanner de Produção

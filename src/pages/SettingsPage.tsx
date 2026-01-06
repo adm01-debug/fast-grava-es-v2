@@ -39,6 +39,8 @@ import { PasswordResetRequests } from '@/components/settings/PasswordResetReques
 import { TwoFactorSetup } from '@/components/settings/TwoFactorSetup';
 import { IPAllowlist } from '@/components/settings/IPAllowlist';
 import { LoginAuditLog } from '@/components/settings/LoginAuditLog';
+import { AutoThemeToggle } from '@/components/settings/AutoThemeToggle';
+import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 
 // Settings persistence hook
 function usePersistedSettings() {
@@ -177,6 +179,8 @@ export default function SettingsPage() {
   return (
     <MainLayout>
       <div className="space-y-6">
+        <Breadcrumbs />
+        
         <div>
           <h1 className="text-2xl font-display font-bold gradient-text">Configurações Avançadas</h1>
           <p className="text-muted-foreground">Gerencie todas as configurações do sistema</p>
@@ -219,6 +223,8 @@ export default function SettingsPage() {
                   />
                 </div>
                 <Separator />
+                <AutoThemeToggle compact />
+                <Separator />
                 <div className="flex items-center justify-between">
                   <div className="space-y-0.5">
                     <Label className="flex items-center gap-2">
@@ -236,6 +242,8 @@ export default function SettingsPage() {
                 </div>
               </CardContent>
             </Card>
+            
+            <AutoThemeToggle />
 
             <div className="grid gap-4 md:grid-cols-2">
               <Card className="glass-card">

@@ -9,6 +9,8 @@ import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
 import { FavoriteButton } from '@/components/favorites/FavoriteButton';
 import { FavoritesDropdown } from '@/components/favorites/FavoritesDropdown';
+import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
+import { KPITooltip, KPI_DEFINITIONS } from '@/components/ui/kpi-tooltip';
 import { 
   Layers, 
   Scale, 
@@ -55,6 +57,8 @@ export default function EfficiencyDashboard() {
   return (
     <MainLayout>
       <div className="p-4 sm:p-6 space-y-4 sm:space-y-6 animate-fade-in">
+        <Breadcrumbs />
+        
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between gap-3 sm:gap-4">
           <div>
@@ -90,61 +94,93 @@ export default function EfficiencyDashboard() {
 
         {/* KPI Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-          <Card className="glass-card border-border/50">
-            <CardContent className="p-3 sm:p-4">
-              <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-2 sm:p-2.5 rounded-xl bg-primary/10">
-                  <Timer className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+          <KPITooltip
+            title="Setup Economizado"
+            description="Tempo total economizado através de sequenciamento inteligente de jobs por cor."
+            formula="Soma de (tempo setup normal - tempo setup otimizado)"
+            target="Maximizar"
+            trend={totalSetupSaved > 0 ? 'up' : 'stable'}
+            trendValue={`${totalSetupSaved}min`}
+          >
+            <Card className="glass-card border-border/50">
+              <CardContent className="p-3 sm:p-4">
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <div className="p-2 sm:p-2.5 rounded-xl bg-primary/10">
+                    <Timer className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-lg sm:text-2xl font-bold text-foreground truncate">{totalSetupSaved}min</p>
+                    <p className="text-[10px] sm:text-xs text-muted-foreground">Setup Economizado</p>
+                  </div>
                 </div>
-                <div className="min-w-0">
-                  <p className="text-lg sm:text-2xl font-bold text-foreground truncate">{totalSetupSaved}min</p>
-                  <p className="text-[10px] sm:text-xs text-muted-foreground">Setup Economizado</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </KPITooltip>
 
-          <Card className="glass-card border-border/50">
-            <CardContent className="p-3 sm:p-4">
-              <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-2 sm:p-2.5 rounded-xl bg-success/10">
-                  <Scale className="h-4 w-4 sm:h-5 sm:w-5 text-success" />
+          <KPITooltip
+            title="Máquinas Balanceadas"
+            description="Máquinas com ocupação entre 30% e 80%, considerado o range ideal."
+            formula="Máquinas (30% ≤ ocupação ≤ 80%) / Total"
+            target="100%"
+            benchmark="Ideal: 80%+"
+          >
+            <Card className="glass-card border-border/50">
+              <CardContent className="p-3 sm:p-4">
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <div className="p-2 sm:p-2.5 rounded-xl bg-success/10">
+                    <Scale className="h-4 w-4 sm:h-5 sm:w-5 text-success" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-lg sm:text-2xl font-bold text-foreground">{balancedMachines}/{totalMachines}</p>
+                    <p className="text-[10px] sm:text-xs text-muted-foreground">Balanceadas</p>
+                  </div>
                 </div>
-                <div className="min-w-0">
-                  <p className="text-lg sm:text-2xl font-bold text-foreground">{balancedMachines}/{totalMachines}</p>
-                  <p className="text-[10px] sm:text-xs text-muted-foreground">Balanceadas</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </KPITooltip>
 
-          <Card className="glass-card border-border/50">
-            <CardContent className="p-3 sm:p-4">
-              <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-2 sm:p-2.5 rounded-xl bg-warning/10">
-                  <AlertTriangle className="h-4 w-4 sm:h-5 sm:w-5 text-warning" />
+          <KPITooltip
+            title="Gargalos Críticos"
+            description="Técnicas ou máquinas operando acima de 90% da capacidade."
+            formula="Count(ocupação > 90%)"
+            target="0"
+            trend={criticalBottlenecks > 0 ? 'down' : 'stable'}
+            trendValue={criticalBottlenecks > 0 ? 'Atenção necessária' : 'OK'}
+          >
+            <Card className="glass-card border-border/50">
+              <CardContent className="p-3 sm:p-4">
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <div className="p-2 sm:p-2.5 rounded-xl bg-warning/10">
+                    <AlertTriangle className="h-4 w-4 sm:h-5 sm:w-5 text-warning" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-lg sm:text-2xl font-bold text-foreground">{criticalBottlenecks}</p>
+                    <p className="text-[10px] sm:text-xs text-muted-foreground">Gargalos</p>
+                  </div>
                 </div>
-                <div className="min-w-0">
-                  <p className="text-lg sm:text-2xl font-bold text-foreground">{criticalBottlenecks}</p>
-                  <p className="text-[10px] sm:text-xs text-muted-foreground">Gargalos</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </KPITooltip>
 
-          <Card className="glass-card border-border/50">
-            <CardContent className="p-3 sm:p-4">
-              <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-2 sm:p-2.5 rounded-xl bg-accent/10">
-                  <BarChart3 className="h-4 w-4 sm:h-5 sm:w-5 text-accent" />
+          <KPITooltip
+            {...KPI_DEFINITIONS.efficiency}
+            trend={avgOccupancy >= 60 ? 'up' : avgOccupancy >= 40 ? 'stable' : 'down'}
+            trendValue={`${avgOccupancy}%`}
+          >
+            <Card className="glass-card border-border/50">
+              <CardContent className="p-3 sm:p-4">
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <div className="p-2 sm:p-2.5 rounded-xl bg-accent/10">
+                    <BarChart3 className="h-4 w-4 sm:h-5 sm:w-5 text-accent" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-lg sm:text-2xl font-bold text-foreground">{avgOccupancy}%</p>
+                    <p className="text-[10px] sm:text-xs text-muted-foreground">Ocupação</p>
+                  </div>
                 </div>
-                <div className="min-w-0">
-                  <p className="text-lg sm:text-2xl font-bold text-foreground">{avgOccupancy}%</p>
-                  <p className="text-[10px] sm:text-xs text-muted-foreground">Ocupação</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </KPITooltip>
         </div>
 
         {/* Main Content Tabs */}
