@@ -54,8 +54,11 @@ export default function DailyCalendar() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [viewMode, setViewMode] = useState<'timeline' | 'agenda'>('timeline');
   const { isMobile } = useDevice();
+  
+  const { jobs, techniques, machines, isLoading, getTechniqueById } = useSchedulingData();
 
-  // Filter jobs for selected date
+  // Auto-switch to agenda view on mobile
+  const effectiveViewMode = isMobile ? 'agenda' : viewMode;
   const dayJobs = useMemo(() => {
     return jobs.filter(job => {
       if (!job.scheduled_date) return false;
