@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { MobileHeader, MobileHeaderSpacer } from "@/components/navigation/MobileHeader";
+import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 
 interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>;
@@ -110,6 +111,7 @@ const InstallAppPage = () => {
       <MobileHeaderSpacer />
       
       <div className="p-4 md:p-8">
+        <Breadcrumbs className="mb-4" />
         <div className="max-w-2xl mx-auto space-y-6">
         {/* Header */}
         <motion.div 

@@ -24,6 +24,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { TechnicalSheetViewer } from '@/components/knowledge/TechnicalSheetViewer';
 import { TechnicalSheetEditor } from '@/components/knowledge/TechnicalSheetEditor';
 import { useAuth } from '@/contexts/AuthContext';
+import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 
 const TechnicalKnowledgeBase = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -98,6 +99,7 @@ const TechnicalKnowledgeBase = () => {
   return (
     <MainLayout>
       <div className="flex flex-col h-[calc(100vh-4rem)] p-4 sm:p-6">
+        <Breadcrumbs />
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 sm:mb-6 gap-3">
           <div>
