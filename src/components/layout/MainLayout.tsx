@@ -1,4 +1,4 @@
-import { ReactNode, useMemo } from 'react';
+import { ReactNode } from 'react';
 import { useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AppSidebar } from './AppSidebar';
@@ -27,17 +27,23 @@ const pageVariants = {
 };
 
 export function MainLayout({ children }: MainLayoutProps) {
-  const { isMobile, prefersReducedMotion } = useDevice();
+  const { isMobile, isTablet, prefersReducedMotion } = useDevice();
   const location = useLocation();
 
-  // Disable animations if user prefers reduced motion
-  const shouldAnimate = isMobile && !prefersReducedMotion;
+  // Enable animations unless user prefers reduced motion
+  const shouldAnimate = !prefersReducedMotion;
 
   return (
     <div className="flex min-h-screen w-full bg-background">
+      {/* Sidebar - hidden on mobile, shown on tablet+ */}
       <AppSidebar />
-      <main className="flex-1 overflow-auto relative md:ml-0">
+      
+      <main className={cn(
+        "flex-1 overflow-auto relative",
+        "min-h-screen"
+      )}>
         <OfflineStatusBanner />
+        
         {/* Desktop top bar */}
         <div className="fixed top-4 right-4 z-40 hidden md:flex items-center gap-2">
           <QuickFavoritesBar />
@@ -46,17 +52,20 @@ export function MainLayout({ children }: MainLayoutProps) {
           <ThemeToggle />
           <RealtimeIndicator />
         </div>
-        {/* Mobile top bar - simplified, positioned to not overlap hamburger */}
-        {isMobile && (
-          <div className="fixed top-4 right-4 z-40 flex items-center gap-2">
-            <OfflineReadyIndicator />
-            <ThemeToggle />
-          </div>
-        )}
-        {/* Content with proper padding for mobile nav */}
+        
+        {/* Mobile/Tablet top bar */}
+        <div className="fixed top-4 right-4 z-40 flex md:hidden items-center gap-2">
+          <OfflineReadyIndicator />
+          <ThemeToggle />
+        </div>
+        
+        {/* Content with proper padding */}
         <div className={cn(
-          "pt-16 md:pt-0",
-          isMobile && "pb-24" // Extra padding for bottom navigation + safe area
+          // Mobile: top padding for header, bottom for nav
+          "pt-16 md:pt-4",
+          "pb-24 md:pb-4",
+          // Horizontal padding
+          "px-4 sm:px-6 lg:px-8"
         )}>
           {shouldAnimate ? (
             <AnimatePresence mode="wait">
@@ -75,11 +84,18 @@ export function MainLayout({ children }: MainLayoutProps) {
             children
           )}
         </div>
-        {/* Mobile bottom navigation */}
-        <MobileNavigation />
-        {/* Mobile quick actions FAB */}
-        <MobileQuickActions />
+        
+        {/* Mobile navigation spacer */}
+        {isMobile && <div className="h-20" aria-hidden="true" />}
       </main>
+      
+      {/* Mobile navigation - only render on mobile */}
+      <MobileNavigation />
+      
+      {/* Mobile FAB for quick actions */}
+      <MobileQuickActions />
+      
+      {/* Global components */}
       <AssistantButton />
       <NotificationIntegrator />
     </div>

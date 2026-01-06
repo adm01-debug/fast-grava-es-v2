@@ -7,10 +7,27 @@ export default {
   theme: {
     container: {
       center: true,
-      padding: "2rem",
+      padding: {
+        DEFAULT: "1rem",
+        sm: "1.5rem",
+        lg: "2rem",
+      },
       screens: {
+        sm: "640px",
+        md: "768px",
+        lg: "1024px",
+        xl: "1280px",
         "2xl": "1400px",
       },
+    },
+    // Custom breakpoints matching useDevice hook
+    screens: {
+      xs: "375px",    // Small phones
+      sm: "640px",    // Large phones / small tablets
+      md: "768px",    // Tablets - MOBILE_BREAKPOINT
+      lg: "1024px",   // Small laptops - TABLET_BREAKPOINT  
+      xl: "1280px",   // Desktops
+      "2xl": "1536px", // Large desktops
     },
     extend: {
       fontFamily: {

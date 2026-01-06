@@ -810,3 +810,175 @@
     @apply w-px bg-border mx-4 self-stretch;
   }
 }
+
+/* ===== RESPONSIVE UTILITIES ===== */
+@layer utilities {
+  /* Container queries for responsive components */
+  .container-responsive {
+    container-type: inline-size;
+  }
+
+  /* Responsive text sizes */
+  .text-responsive-xs {
+    @apply text-xs sm:text-sm;
+  }
+
+  .text-responsive-sm {
+    @apply text-sm sm:text-base;
+  }
+
+  .text-responsive-base {
+    @apply text-base sm:text-lg md:text-xl;
+  }
+
+  .text-responsive-lg {
+    @apply text-lg sm:text-xl md:text-2xl;
+  }
+
+  .text-responsive-xl {
+    @apply text-xl sm:text-2xl md:text-3xl;
+  }
+
+  .text-responsive-2xl {
+    @apply text-2xl sm:text-3xl md:text-4xl;
+  }
+
+  /* Responsive spacing */
+  .p-responsive {
+    @apply p-3 sm:p-4 md:p-6 lg:p-8;
+  }
+
+  .px-responsive {
+    @apply px-3 sm:px-4 md:px-6 lg:px-8;
+  }
+
+  .py-responsive {
+    @apply py-3 sm:py-4 md:py-6;
+  }
+
+  .gap-responsive {
+    @apply gap-3 sm:gap-4 md:gap-6;
+  }
+
+  /* Mobile-first grid patterns */
+  .grid-responsive-cards {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4;
+  }
+
+  .grid-responsive-stats {
+    @apply grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4;
+  }
+
+  .grid-responsive-dashboard {
+    @apply grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6;
+  }
+
+  /* Flex responsive patterns */
+  .flex-responsive {
+    @apply flex flex-col sm:flex-row;
+  }
+
+  .flex-responsive-reverse {
+    @apply flex flex-col-reverse sm:flex-row;
+  }
+
+  /* Hide/show utilities for breakpoints */
+  .mobile-only {
+    @apply block sm:hidden;
+  }
+
+  .tablet-up {
+    @apply hidden sm:block;
+  }
+
+  .desktop-only {
+    @apply hidden lg:block;
+  }
+
+  .mobile-tablet {
+    @apply block lg:hidden;
+  }
+
+  /* Responsive card sizing */
+  .card-responsive {
+    @apply rounded-lg sm:rounded-xl;
+  }
+
+  /* Responsive icon sizing */
+  .icon-responsive-sm {
+    @apply h-4 w-4 sm:h-5 sm:w-5;
+  }
+
+  .icon-responsive {
+    @apply h-5 w-5 sm:h-6 sm:w-6;
+  }
+
+  .icon-responsive-lg {
+    @apply h-6 w-6 sm:h-8 sm:w-8;
+  }
+
+  /* Bottom navigation safe spacing */
+  .pb-bottom-nav {
+    @apply pb-20 md:pb-0;
+  }
+
+  /* Top header safe spacing for mobile */
+  .pt-mobile-header {
+    @apply pt-16 md:pt-0;
+  }
+
+  /* Combined mobile safe spacing */
+  .py-mobile-safe {
+    @apply pt-16 pb-24 md:pt-0 md:pb-0;
+  }
+
+  /* Responsive table wrapper */
+  .table-responsive {
+    @apply overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0;
+  }
+
+  /* Responsive modal/dialog sizes */
+  .dialog-responsive {
+    @apply w-[calc(100%-2rem)] max-w-lg sm:w-full;
+  }
+
+  /* Full bleed on mobile */
+  .full-bleed-mobile {
+    @apply -mx-4 px-4 sm:mx-0 sm:px-0;
+  }
+
+  /* Card padding responsive */
+  .card-padding-responsive {
+    @apply p-4 sm:p-6;
+  }
+
+  /* Header padding responsive */
+  .header-padding-responsive {
+    @apply px-4 py-3 sm:px-6 sm:py-4;
+  }
+
+  /* Stack to row on larger screens */
+  .stack-to-row {
+    @apply flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-4;
+  }
+
+  /* Aspect ratios for responsive images */
+  .aspect-card {
+    @apply aspect-[4/3] sm:aspect-[16/10];
+  }
+
+  .aspect-hero {
+    @apply aspect-[4/3] sm:aspect-[16/9] lg:aspect-[21/9];
+  }
+
+  /* Min height for main content */
+  .min-h-main {
+    @apply min-h-[calc(100vh-4rem)] md:min-h-screen;
+  }
+
+  /* Scrollable area with proper mobile handling */
+  .scroll-area-mobile {
+    @apply overflow-auto overscroll-contain;
+    -webkit-overflow-scrolling: touch;
+  }
+}
