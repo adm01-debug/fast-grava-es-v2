@@ -22,6 +22,7 @@ const inMemoryVersions: Map<string, EntityVersion[]> = new Map();
 
 export function useVersions(entityType: string, entityId: string | null) {
   const queryKey = ['versions', entityType, entityId];
+  const queryClient = useQueryClient();
 
   const { data: versions = [], isLoading, error } = useQuery({
     queryKey,
@@ -37,13 +38,49 @@ export function useVersions(entityType: string, entityId: string | null) {
 
   const latestVersion = versions[0] ?? null;
   const versionCount = versions.length;
+  const currentVersion = latestVersion?.version_number ?? 0;
+
+  const restoreVersionMutation = useMutation({
+    mutationFn: async (versionNumber: number) => {
+      if (!entityId) throw new Error('No entity ID');
+      
+      const key = `${entityType}:${entityId}`;
+      const allVersions = inMemoryVersions.get(key) || [];
+      const targetVersion = allVersions.find(v => v.version_number === versionNumber);
+      
+      if (!targetVersion) throw new Error('Version not found');
+      
+      // Update the entity with version data
+      const { error } = await (supabase
+        .from(entityType as 'jobs')
+        .update(targetVersion.data as never)
+        .eq('id', entityId) as unknown as Promise<{ error: Error | null }>);
+      
+      if (error) throw error;
+      return targetVersion;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey });
+      queryClient.invalidateQueries({ queryKey: [entityType] });
+      toast.success('Versão restaurada com sucesso!');
+    },
+    onError: () => {
+      toast.error('Erro ao restaurar versão');
+    },
+  });
+
+  const restoreVersion = async (versionNumber: number) => {
+    return restoreVersionMutation.mutateAsync(versionNumber);
+  };
 
   return {
     versions,
     latestVersion,
     versionCount,
+    currentVersion,
     isLoading,
     error,
+    restoreVersion,
   };
 }
 
