@@ -44,6 +44,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 
 export default function ExecutiveDashboard() {
   const datePresets = getDateRangePresets();
@@ -143,6 +144,8 @@ export default function ExecutiveDashboard() {
   return (
     <MainLayout>
       <div className="p-4 sm:p-6 lg:p-8 space-y-6 animate-fade-in-up">
+        <Breadcrumbs />
+        
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>

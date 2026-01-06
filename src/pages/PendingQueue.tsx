@@ -25,6 +25,7 @@ import {
 import { useSchedulingData } from "@/hooks/useSchedulingData";
 import { DbJob, DbTechnique, DbMachine } from "@/hooks/useJobs";
 import { JobStatus } from "@/types/scheduling";
+import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 
 type SortField = 'orderNumber' | 'client' | 'scheduledDate' | 'priority' | 'quantity';
 type SortDirection = 'asc' | 'desc';
@@ -175,6 +176,8 @@ export default function PendingQueue() {
   return (
     <MainLayout>
       <div className="min-h-screen bg-background p-4 sm:p-6 space-y-4 sm:space-y-6">
+        <Breadcrumbs />
+        
         <JobDetailsModal 
           job={selectedJob} 
           open={isModalOpen} 

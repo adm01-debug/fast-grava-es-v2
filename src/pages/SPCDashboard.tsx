@@ -54,6 +54,7 @@ import {
   ComposedChart,
   Bar
 } from 'recharts';
+import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import {
   useSPCParameters,
   useSPCMeasurements,
@@ -167,6 +168,8 @@ export default function SPCDashboard() {
       </Helmet>
 
       <div className="space-y-6">
+        <Breadcrumbs />
+        
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>

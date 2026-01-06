@@ -17,6 +17,7 @@ import { useSchedulingData } from '@/hooks/useSchedulingData';
 import { DbJob } from '@/hooks/useJobs';
 import { JobStatus } from '@/types/scheduling';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 
 const statusColors: Record<JobStatus, string> = {
   queue: 'bg-status-queue/80 border-status-queue',
@@ -119,6 +120,8 @@ export default function WeeklyCalendar() {
         onOpenChange={setIsModalOpen} 
       />
       <div className="p-4 sm:p-6 space-y-4 sm:space-y-6 animate-fade-in-up">
+        <Breadcrumbs />
+        
         {/* Header */}
         <div className="flex flex-col gap-4">
           <div>

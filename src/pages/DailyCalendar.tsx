@@ -17,6 +17,7 @@ import { useSchedulingData } from '@/hooks/useSchedulingData';
 import { DbJob } from '@/hooks/useJobs';
 import { JobStatus } from '@/types/scheduling';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 
 const hours = Array.from({ length: 14 }, (_, i) => i + 7); // 07:00 to 20:00
 
@@ -133,6 +134,8 @@ export default function DailyCalendar() {
         onOpenChange={setIsModalOpen} 
       />
       <div className="p-4 sm:p-6 space-y-4 sm:space-y-6 animate-fade-in-up">
+        <Breadcrumbs />
+        
         {/* Header */}
         <div className="flex flex-col gap-4">
           <div>

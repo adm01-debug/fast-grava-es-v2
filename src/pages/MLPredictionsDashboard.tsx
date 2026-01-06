@@ -11,6 +11,7 @@ import { useMLPredictionNotifications } from '@/hooks/useMLPredictionNotificatio
 import { MLPredictionCard } from '@/components/ml/MLPredictionCard';
 import { MLRiskDistributionChart } from '@/components/ml/MLRiskDistributionChart';
 import { MLNotificationSettings } from '@/components/ml/MLNotificationSettings';
+import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 
 export default function MLPredictionsDashboard() {
   const {
@@ -49,6 +50,8 @@ export default function MLPredictionsDashboard() {
       </Helmet>
 
       <div className="space-y-6">
+        <Breadcrumbs />
+        
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>

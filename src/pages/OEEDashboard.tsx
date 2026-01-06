@@ -29,6 +29,7 @@ import { OEETrendChart } from '@/components/oee/OEETrendChart';
 import { OEELossesChart } from '@/components/oee/OEELossesChart';
 import { OEETechniqueComparison } from '@/components/oee/OEETechniqueComparison';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 
 export default function OEEDashboard() {
   const [period, setPeriod] = useState<string>('30');
@@ -66,6 +67,8 @@ export default function OEEDashboard() {
 
   return (
       <div className="p-6 space-y-6">
+        <Breadcrumbs />
+        
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>

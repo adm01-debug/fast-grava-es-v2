@@ -17,7 +17,8 @@ import { useOEE } from '@/hooks/useOEE';
 import { useSchedulingData } from '@/hooks/useSchedulingData';
 import { toast } from 'sonner';
 import { FavoriteButton, FavoritesDropdown } from '@/components/navigation/FavoritesManager';
-import { 
+import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
+import {
   TrendingUp, 
   TrendingDown, 
   Activity, 
@@ -495,6 +496,8 @@ export default function BIDashboard() {
   return (
     <MainLayout>
       <div className="p-6 space-y-8 animate-fade-in">
+        <Breadcrumbs />
+        
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div className="animate-slide-up">

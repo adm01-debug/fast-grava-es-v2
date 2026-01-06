@@ -38,6 +38,7 @@ import { PushNotificationSettings } from '@/components/security/PushNotification
 import { PasskeySettings } from '@/components/security/PasskeySettings';
 import { useMFA } from '@/hooks/useMFA';
 import { useUserDevices } from '@/hooks/useUserDevices';
+import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 
 export default function SecurityDashboard() {
   const navigate = useNavigate();
@@ -62,6 +63,8 @@ export default function SecurityDashboard() {
 
   return (
     <div className="container mx-auto py-6 space-y-6">
+      <Breadcrumbs />
+      
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
