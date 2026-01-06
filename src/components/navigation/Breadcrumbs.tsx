@@ -46,6 +46,8 @@ const routeLabels: Record<string, string> = {
   'code-quality': 'Qualidade de Código',
   'bitrix24-config': 'Bitrix24',
   'install-app': 'Instalar App',
+  'auth': 'Autenticação',
+  'reset-password': 'Redefinir Senha',
 };
 
 export function Breadcrumbs({ className }: { className?: string }) {

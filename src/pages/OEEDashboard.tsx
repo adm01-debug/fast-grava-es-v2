@@ -30,6 +30,7 @@ import { OEELossesChart } from '@/components/oee/OEELossesChart';
 import { OEETechniqueComparison } from '@/components/oee/OEETechniqueComparison';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
+import { KPITooltip, KPI_DEFINITIONS } from '@/components/ui/kpi-tooltip';
 
 export default function OEEDashboard() {
   const [period, setPeriod] = useState<string>('30');
@@ -131,34 +132,42 @@ export default function OEEDashboard() {
 
         {/* Main Metrics */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <OEEGaugeCard
-            title="OEE Geral"
-            value={data.overallOEE}
-            icon={<Target className="h-4 w-4" />}
-            description="Eficiência geral de todas as máquinas"
-            benchmark={WORLD_CLASS_OEE}
-          />
-          <OEEGaugeCard
-            title="Disponibilidade"
-            value={data.overallAvailability}
-            icon={<Clock className="h-4 w-4" />}
-            description="Tempo operando vs. tempo planejado"
-            benchmark={90}
-          />
-          <OEEGaugeCard
-            title="Performance"
-            value={data.overallPerformance}
-            icon={<Gauge className="h-4 w-4" />}
-            description="Velocidade real vs. velocidade ideal"
-            benchmark={95}
-          />
-          <OEEGaugeCard
-            title="Qualidade"
-            value={data.overallQuality}
-            icon={<CheckCircle2 className="h-4 w-4" />}
-            description="Peças boas vs. total produzido"
-            benchmark={99}
-          />
+          <KPITooltip {...KPI_DEFINITIONS.oee}>
+            <OEEGaugeCard
+              title="OEE Geral"
+              value={data.overallOEE}
+              icon={<Target className="h-4 w-4" />}
+              description="Eficiência geral de todas as máquinas"
+              benchmark={WORLD_CLASS_OEE}
+            />
+          </KPITooltip>
+          <KPITooltip {...KPI_DEFINITIONS.availability}>
+            <OEEGaugeCard
+              title="Disponibilidade"
+              value={data.overallAvailability}
+              icon={<Clock className="h-4 w-4" />}
+              description="Tempo operando vs. tempo planejado"
+              benchmark={90}
+            />
+          </KPITooltip>
+          <KPITooltip {...KPI_DEFINITIONS.performance}>
+            <OEEGaugeCard
+              title="Performance"
+              value={data.overallPerformance}
+              icon={<Gauge className="h-4 w-4" />}
+              description="Velocidade real vs. velocidade ideal"
+              benchmark={95}
+            />
+          </KPITooltip>
+          <KPITooltip {...KPI_DEFINITIONS.quality}>
+            <OEEGaugeCard
+              title="Qualidade"
+              value={data.overallQuality}
+              icon={<CheckCircle2 className="h-4 w-4" />}
+              description="Peças boas vs. total produzido"
+              benchmark={99}
+            />
+          </KPITooltip>
         </div>
 
         {/* Quick Stats */}
