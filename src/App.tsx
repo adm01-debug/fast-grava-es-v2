@@ -16,6 +16,7 @@ import { PageTransition } from "@/components/layout/PageTransition";
 import { NavigationListener } from "@/components/navigation/NavigationListener";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
 import { ProductDesignProvider } from "@/components/design-system/ProductDesignProvider";
+import { CelebrationProvider } from "@/components/ui/celebration";
 import { PushNotificationPrompt } from "@/components/notifications/PushNotificationPrompt";
 import { useRoutePrefetch } from "@/hooks/useRoutePrefetch";
 import {
@@ -445,9 +446,10 @@ const App = () => (
                         enableKeyboardShortcuts={true}
                         enableToastWithUndo={true}
                       >
-                        <AnimatedRoutes />
-                        <PushNotificationPrompt delay={15000} />
-                        <AnimatedRoutes />
+                        <CelebrationProvider>
+                          <AnimatedRoutes />
+                          <PushNotificationPrompt delay={15000} />
+                        </CelebrationProvider>
                       </ProductDesignProvider>
                     </RealtimeNotificationsProvider>
                   </EfficiencyNotificationProvider>
