@@ -318,6 +318,51 @@
     --shadow: var(--shadow-md);
     --shadow-2xs: 0 1px 1px 0 hsl(0 0% 0% / 0.2);
   }
+
+  /* ===== HIGH CONTRAST MODE ===== */
+  @media (prefers-contrast: high) {
+    :root {
+      --background: 0 0% 100%;
+      --foreground: 0 0% 0%;
+      --card: 0 0% 100%;
+      --card-foreground: 0 0% 0%;
+      --primary: 234 100% 40%;
+      --primary-foreground: 0 0% 100%;
+      --secondary: 0 0% 95%;
+      --secondary-foreground: 0 0% 0%;
+      --muted: 0 0% 95%;
+      --muted-foreground: 0 0% 30%;
+      --accent: 262 100% 40%;
+      --accent-foreground: 0 0% 100%;
+      --border: 0 0% 0%;
+      --input: 0 0% 0%;
+      --ring: 234 100% 40%;
+      --success: 160 100% 25%;
+      --warning: 38 100% 35%;
+      --destructive: 0 100% 40%;
+    }
+
+    .dark {
+      --background: 0 0% 0%;
+      --foreground: 0 0% 100%;
+      --card: 0 0% 5%;
+      --card-foreground: 0 0% 100%;
+      --primary: 234 100% 70%;
+      --primary-foreground: 0 0% 0%;
+      --secondary: 0 0% 15%;
+      --secondary-foreground: 0 0% 100%;
+      --muted: 0 0% 15%;
+      --muted-foreground: 0 0% 70%;
+      --accent: 262 100% 70%;
+      --accent-foreground: 0 0% 0%;
+      --border: 0 0% 100%;
+      --input: 0 0% 100%;
+      --ring: 234 100% 70%;
+      --success: 160 100% 50%;
+      --warning: 38 100% 55%;
+      --destructive: 0 100% 60%;
+    }
+  }
 }
 
 @layer base {
