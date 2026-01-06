@@ -67,6 +67,7 @@ const SecurityDashboard = lazy(() => import("./pages/SecurityDashboard"));
 const AuthPage = lazy(() => import("./pages/AuthPage"));
 const ResetPasswordPage = lazy(() => import("./pages/ResetPasswordPage"));
 const InstallAppPage = lazy(() => import("./pages/InstallAppPage"));
+const KioskPage = lazy(() => import("./pages/KioskPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -404,6 +405,13 @@ function AnimatedRoutes() {
               <InstallAppPage />
             </Suspense>
           </PageTransition>
+        } />
+        <Route path="/kiosk" element={
+          <ProtectedRoute>
+            <Suspense fallback={<DashboardPageSkeleton />}>
+              <KioskPage />
+            </Suspense>
+          </ProtectedRoute>
         } />
         <Route path="*" element={
           <PageTransition>
