@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, memo, useMemo, useRef } from 'react';
 import { useLocation, Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Calendar, 
   CalendarDays, 
@@ -12,6 +13,7 @@ import {
   Printer,
   ChevronLeft,
   ChevronRight,
+  ChevronDown,
   Home,
   Plus,
   BarChart3,
@@ -38,7 +40,10 @@ import {
   FileDown,
   Trophy,
   BatteryCharging,
-  FileText
+  FileText,
+  Cog,
+  TrendingUp,
+  Cpu
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { prefetchRoute } from '@/lib/prefetch';
@@ -51,6 +56,8 @@ import { useSwipeGesture } from '@/hooks/use-swipe-gesture';
 import { useFocusTrap } from '@/hooks/use-focus-trap';
 import { LanguageSwitcher } from './LanguageSwitcher';
 
+// ============ NAV GROUP TYPES ============
+
 interface NavItem {
   icon: React.ElementType;
   label: string;
@@ -58,43 +65,105 @@ interface NavItem {
   badge?: number;
 }
 
-const baseMainNavItems: Omit<NavItem, 'badge'>[] = [
-  { icon: Home, label: 'Dashboard', href: '/' },
-  { icon: BarChart3, label: 'BI Executivo', href: '/bi' },
-  { icon: FileDown, label: 'Dashboard Executivo', href: '/executive' },
-  { icon: Trophy, label: 'Gamificação', href: '/gamification' },
-  { icon: Calendar, label: 'Calendário Diário', href: '/calendar/daily' },
-  { icon: CalendarDays, label: 'Calendário Semanal', href: '/calendar/weekly' },
-  { icon: LayoutGrid, label: 'Kanban', href: '/kanban' },
-  { icon: List, label: 'Lista de Pendências', href: '/pending' },
-  { icon: Zap, label: 'Eficiência', href: '/efficiency' },
-  { icon: Gauge, label: 'OEE', href: '/oee' },
-  { icon: Coins, label: 'Custeio ABC', href: '/abc' },
-  { icon: Package, label: 'Rastreabilidade', href: '/traceability' },
-  { icon: Activity, label: 'SPC Qualidade', href: '/spc' },
-  { icon: Wrench, label: 'TPM', href: '/tpm' },
-  { icon: Brain, label: 'ML Preditivo', href: '/ml-predictions' },
-  { icon: BatteryCharging, label: 'Energia', href: '/energy' },
-  { icon: BarChart3, label: 'KPIs e Ocupação', href: '/kpis' },
-  { icon: AlertTriangle, label: 'Alertas', href: '/alerts' },
-  { icon: Bell, label: 'Notificações', href: '/notifications' },
-  { icon: ArrowRightLeft, label: 'Passagem de Turno', href: '/shift-handover' },
-  { icon: BookOpen, label: 'Base de Conhecimento', href: '/knowledge' },
-  { icon: FileText, label: 'Documentos', href: '/documents' },
-  { icon: UserCircle, label: 'Visão Operador', href: '/operator' },
-  { icon: QrCode, label: 'Scanner QR', href: '/scanner' },
-  { icon: Bot, label: 'Assistente IA', href: '/assistant' },
+interface NavGroup {
+  id: string;
+  icon: React.ElementType;
+  label: string;
+  items: NavItem[];
+  defaultOpen?: boolean;
+}
+
+// ============ GROUPED NAVIGATION STRUCTURE ============
+// Reorganized for better IA - max 7 top-level items
+
+const navGroups: NavGroup[] = [
+  {
+    id: 'home',
+    icon: Home,
+    label: 'Início',
+    items: [
+      { icon: Home, label: 'Dashboard', href: '/' },
+    ],
+    defaultOpen: true,
+  },
+  {
+    id: 'planning',
+    icon: Calendar,
+    label: 'Planejamento',
+    items: [
+      { icon: Calendar, label: 'Calendário Diário', href: '/calendar/daily' },
+      { icon: CalendarDays, label: 'Calendário Semanal', href: '/calendar/weekly' },
+      { icon: LayoutGrid, label: 'Kanban', href: '/kanban' },
+      { icon: List, label: 'Pendências', href: '/pending' },
+    ],
+  },
+  {
+    id: 'analytics',
+    icon: BarChart3,
+    label: 'Analytics',
+    items: [
+      { icon: BarChart3, label: 'BI Executivo', href: '/bi' },
+      { icon: FileDown, label: 'Dashboard Executivo', href: '/executive' },
+      { icon: TrendingUp, label: 'KPIs e Ocupação', href: '/kpis' },
+      { icon: Gauge, label: 'OEE', href: '/oee' },
+      { icon: Zap, label: 'Eficiência', href: '/efficiency' },
+      { icon: Activity, label: 'SPC Qualidade', href: '/spc' },
+      { icon: Coins, label: 'Custeio ABC', href: '/abc' },
+    ],
+  },
+  {
+    id: 'operations',
+    icon: Wrench,
+    label: 'Operações',
+    items: [
+      { icon: Wrench, label: 'TPM', href: '/tpm' },
+      { icon: Cpu, label: 'Máquinas', href: '/machines' },
+      { icon: BatteryCharging, label: 'Energia', href: '/energy' },
+      { icon: Package, label: 'Rastreabilidade', href: '/traceability' },
+    ],
+  },
+  {
+    id: 'team',
+    icon: Users,
+    label: 'Equipe',
+    items: [
+      { icon: Users, label: 'Operadores', href: '/operators' },
+      { icon: TrendingUp, label: 'Produtividade', href: '/operators/productivity' },
+      { icon: Trophy, label: 'Gamificação', href: '/gamification' },
+      { icon: ArrowRightLeft, label: 'Passagem de Turno', href: '/shift-handover' },
+      { icon: UserCircle, label: 'Visão Operador', href: '/operator' },
+    ],
+  },
+  {
+    id: 'intelligence',
+    icon: Brain,
+    label: 'Inteligência',
+    items: [
+      { icon: Brain, label: 'ML Preditivo', href: '/ml-predictions' },
+      { icon: Bot, label: 'Assistente IA', href: '/assistant' },
+      { icon: BookOpen, label: 'Base de Conhecimento', href: '/knowledge' },
+      { icon: FileText, label: 'Documentos', href: '/documents' },
+    ],
+  },
+  {
+    id: 'system',
+    icon: Cog,
+    label: 'Sistema',
+    items: [
+      { icon: AlertTriangle, label: 'Alertas', href: '/alerts' },
+      { icon: Bell, label: 'Notificações', href: '/notifications' },
+      { icon: QrCode, label: 'Scanner QR', href: '/scanner' },
+      { icon: Settings, label: 'Configurações', href: '/settings' },
+    ],
+  },
 ];
 
-const secondaryNavItems: NavItem[] = [
-  { icon: Printer, label: 'Máquinas', href: '/machines' },
-  { icon: Users, label: 'Operadores', href: '/operators' },
-  { icon: BarChart3, label: 'Produtividade', href: '/operators/productivity' },
+// Admin-only items
+const adminNavItems: NavItem[] = [
   { icon: Code2, label: 'Qualidade de Código', href: '/code-quality' },
   { icon: RefreshCw, label: 'Bitrix24', href: '/integrations/bitrix24' },
   { icon: Palette, label: 'Design System', href: '/design-system' },
   { icon: Download, label: 'Instalar App', href: '/install' },
-  { icon: Settings, label: 'Configurações', href: '/settings' },
 ];
 
 interface NavButtonProps {
@@ -163,22 +232,155 @@ const NavButton = memo(function NavButton({ item, collapsed, isMobile, isActive 
 });
 NavButton.displayName = 'NavButton';
 
+// ============ COLLAPSIBLE NAV GROUP ============
+
+interface NavGroupComponentProps {
+  group: NavGroup;
+  collapsed: boolean;
+  isMobile: boolean;
+  isActive: (href: string) => boolean;
+  alertCount: number;
+  openGroups: string[];
+  toggleGroup: (id: string) => void;
+}
+
+const NavGroupComponent = memo(function NavGroupComponent({
+  group,
+  collapsed,
+  isMobile,
+  isActive,
+  alertCount,
+  openGroups,
+  toggleGroup,
+}: NavGroupComponentProps) {
+  const Icon = group.icon;
+  const isOpen = openGroups.includes(group.id);
+  const hasActiveItem = group.items.some(item => isActive(item.href));
+  
+  // Add badge to alerts item
+  const itemsWithBadge = group.items.map(item => ({
+    ...item,
+    badge: item.href === '/alerts' && alertCount > 0 ? alertCount : undefined
+  }));
+
+  // In collapsed mode on desktop, show items directly without group wrapper
+  if (collapsed && !isMobile) {
+    return (
+      <>
+        {itemsWithBadge.map(item => (
+          <NavButton 
+            key={item.href} 
+            item={item}
+            collapsed={collapsed}
+            isMobile={isMobile}
+            isActive={isActive(item.href)}
+          />
+        ))}
+      </>
+    );
+  }
+
+  // Single item group - render directly
+  if (group.items.length === 1) {
+    return (
+      <NavButton 
+        item={itemsWithBadge[0]}
+        collapsed={collapsed}
+        isMobile={isMobile}
+        isActive={isActive(itemsWithBadge[0].href)}
+      />
+    );
+  }
+
+  return (
+    <div className="space-y-0.5">
+      <Button
+        variant="ghost"
+        onClick={() => toggleGroup(group.id)}
+        className={cn(
+          "w-full justify-between gap-3 h-10 px-3",
+          "hover:bg-sidebar-muted/50 hover:text-sidebar-foreground",
+          "text-sidebar-foreground/70",
+          hasActiveItem && "text-sidebar-foreground font-medium"
+        )}
+        aria-expanded={isOpen}
+        aria-controls={`nav-group-${group.id}`}
+      >
+        <div className="flex items-center gap-3">
+          <Icon className={cn(
+            "h-4 w-4 shrink-0",
+            hasActiveItem && "text-primary"
+          )} />
+          <span className="text-sm">{group.label}</span>
+        </div>
+        <motion.div
+          animate={{ rotate: isOpen ? 180 : 0 }}
+          transition={{ duration: 0.2 }}
+        >
+          <ChevronDown className="h-4 w-4 opacity-50" />
+        </motion.div>
+      </Button>
+
+      <AnimatePresence initial={false}>
+        {isOpen && (
+          <motion.div
+            id={`nav-group-${group.id}`}
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2, ease: "easeInOut" }}
+            className="overflow-hidden"
+          >
+            <div className="pl-4 space-y-0.5 border-l-2 border-border/30 ml-5">
+              {itemsWithBadge.map(item => (
+                <NavButton 
+                  key={item.href} 
+                  item={item}
+                  collapsed={false}
+                  isMobile={isMobile}
+                  isActive={isActive(item.href)}
+                />
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+});
+
 export function AppSidebar() {
   const { t } = useTranslation();
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [openGroups, setOpenGroups] = useState<string[]>(['home', 'planning']);
   const location = useLocation();
   const navigate = useNavigate();
   const { profile, role, signOut, isCoordinator } = useAuth();
   const { isMobile } = useDevice();
   const alertCount = useAlertCount();
 
-  // Build nav items with dynamic badge
-  const mainNavItems: NavItem[] = useMemo(() => 
-    baseMainNavItems.map(item => ({
-      ...item,
-      badge: item.href === '/alerts' && alertCount > 0 ? alertCount : undefined
-    })), [alertCount]);
+  // Toggle group open/closed
+  const toggleGroup = useCallback((groupId: string) => {
+    setOpenGroups(prev => 
+      prev.includes(groupId) 
+        ? prev.filter(id => id !== groupId)
+        : [...prev, groupId]
+    );
+  }, []);
+
+  // Auto-open group containing active route
+  useEffect(() => {
+    const activeGroup = navGroups.find(group => 
+      group.items.some(item => {
+        if (item.href === '/') return location.pathname === '/';
+        return location.pathname.startsWith(item.href);
+      })
+    );
+    if (activeGroup && !openGroups.includes(activeGroup.id)) {
+      setOpenGroups(prev => [...prev, activeGroup.id]);
+    }
+  }, [location.pathname]);
 
   // Close mobile menu on route change
   useEffect(() => {
@@ -197,18 +399,22 @@ export function AppSidebar() {
     navigate('/auth');
   }, [signOut, navigate]);
 
-  // Filter nav items based on role
-  const filteredMainNavItems = mainNavItems.filter(item => {
-    if (role === 'operator') {
-      return ['/operator', '/alerts', '/assistant', '/scanner', '/knowledge', '/shift-handover'].includes(item.href);
-    }
-    if (role === 'manager') {
-      return ['/', '/bi', '/calendar/daily', '/calendar/weekly', '/kpis', '/oee', '/abc', '/tpm', '/ml-predictions', '/alerts', '/notifications', '/efficiency', '/assistant', '/knowledge', '/shift-handover'].includes(item.href);
-    }
-    return true; // coordinator sees all
-  });
+  // Filter nav groups based on role
+  const filteredNavGroups = useMemo(() => {
+    const operatorAllowedPaths = ['/operator', '/alerts', '/assistant', '/scanner', '/knowledge', '/shift-handover'];
+    const managerAllowedPaths = ['/', '/bi', '/calendar/daily', '/calendar/weekly', '/kpis', '/oee', '/abc', '/tpm', '/ml-predictions', '/alerts', '/notifications', '/efficiency', '/assistant', '/knowledge', '/shift-handover'];
 
-  const filteredSecondaryNavItems = isCoordinator ? secondaryNavItems : [];
+    return navGroups.map(group => ({
+      ...group,
+      items: group.items.filter(item => {
+        if (role === 'operator') return operatorAllowedPaths.includes(item.href);
+        if (role === 'manager') return managerAllowedPaths.includes(item.href);
+        return true;
+      })
+    })).filter(group => group.items.length > 0);
+  }, [role]);
+
+  const filteredAdminNavItems = isCoordinator ? adminNavItems : [];
 
   const isActive = useCallback((href: string) => {
     if (href === '/') return location.pathname === '/';
@@ -248,7 +454,9 @@ export function AppSidebar() {
       variant="ghost"
       size="icon"
       onClick={() => setMobileOpen(!mobileOpen)}
-      className="fixed top-4 left-4 z-50 md:hidden h-10 w-10 bg-background/80 backdrop-blur-sm border border-border shadow-lg"
+      aria-label={mobileOpen ? 'Fechar menu' : 'Abrir menu'}
+      aria-expanded={mobileOpen}
+      className="fixed top-4 left-4 z-50 md:hidden h-10 w-10 bg-background/80 backdrop-blur-sm border border-border shadow-lg focus:ring-2 focus:ring-primary focus:ring-offset-2"
     >
       {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
     </Button>
@@ -262,6 +470,7 @@ export function AppSidebar() {
         mobileOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
       )}
       onClick={() => setMobileOpen(false)}
+      aria-hidden="true"
     />
   );
 
@@ -294,6 +503,7 @@ export function AppSidebar() {
         )}
         role="navigation"
         aria-label="Menu principal"
+        id="navigation"
       >
         {/* Header */}
         <div className={cn(
@@ -317,7 +527,8 @@ export function AppSidebar() {
               variant="ghost"
               size="icon"
               onClick={() => setCollapsed(!collapsed)}
-              className="h-8 w-8 text-sidebar-foreground/50 hover:text-sidebar-foreground hover:bg-sidebar-muted"
+              aria-label={collapsed ? 'Expandir menu' : 'Recolher menu'}
+              className="h-8 w-8 text-sidebar-foreground/50 hover:text-sidebar-foreground hover:bg-sidebar-muted focus:ring-2 focus:ring-primary"
             >
               {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
             </Button>
@@ -334,6 +545,7 @@ export function AppSidebar() {
             <Button 
               className={cn(
                 'w-full gap-2 gradient-primary hover:opacity-90 transition-opacity glow-primary',
+                'focus:ring-2 focus:ring-primary focus:ring-offset-2',
                 collapsed && !isMobile && 'px-0'
               )}
             >
@@ -343,24 +555,23 @@ export function AppSidebar() {
           </Link>
         </div>
 
-        {/* Main Navigation */}
-        <nav className="flex-1 overflow-y-auto scrollbar-thin p-2 space-y-1">
-          {(!collapsed || isMobile) && (
-            <p className="text-xs font-medium text-sidebar-foreground/30 uppercase tracking-wider px-3 py-2">
-              Navegação
-            </p>
-          )}
-          {filteredMainNavItems.map((item) => (
-            <NavButton 
-              key={item.href} 
-              item={item}
+        {/* Main Navigation with Collapsible Groups */}
+        <nav className="flex-1 overflow-y-auto scrollbar-thin p-2 space-y-1" id="main-navigation">
+          {filteredNavGroups.map((group) => (
+            <NavGroupComponent
+              key={group.id}
+              group={group}
               collapsed={collapsed}
               isMobile={isMobile}
-              isActive={isActive(item.href)}
+              isActive={isActive}
+              alertCount={alertCount}
+              openGroups={openGroups}
+              toggleGroup={toggleGroup}
             />
           ))}
           
-          {filteredSecondaryNavItems.length > 0 && (
+          {/* Admin Section */}
+          {filteredAdminNavItems.length > 0 && (
             <>
               <div className="my-4 border-t border-sidebar-border/50" />
               
@@ -369,7 +580,7 @@ export function AppSidebar() {
                   Administração
                 </p>
               )}
-              {filteredSecondaryNavItems.map((item) => (
+              {filteredAdminNavItems.map((item) => (
                 <NavButton 
                   key={item.href} 
                   item={item}
@@ -419,6 +630,7 @@ export function AppSidebar() {
             onClick={handleSignOut}
             className={cn(
               'w-full mt-2 text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-muted',
+              'focus:ring-2 focus:ring-primary focus:ring-offset-2',
               collapsed && !isMobile && 'px-0'
             )}
           >
