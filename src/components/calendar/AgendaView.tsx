@@ -1,13 +1,16 @@
-import { memo, useMemo } from 'react';
+import { memo, useMemo, useState, useCallback } from 'react';
 import { format, isToday } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { Clock, MapPin, Package, User, ChevronRight, AlertCircle } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { DbJob } from '@/hooks/useJobs';
 import { JobStatus } from '@/types/scheduling';
+import { JobQuickActions, SwipeAction } from './JobQuickActions';
+import { HoverLift } from '@/components/ui/micro-interactions';
+import { useIsMobile } from '@/hooks/use-device';
 
 interface AgendaViewProps {
   jobs: DbJob[];
@@ -15,6 +18,7 @@ interface AgendaViewProps {
   techniques: Array<{ id: string; name: string; short_name: string; color: string }>;
   selectedDate: Date;
   onJobClick: (job: DbJob) => void;
+  onStatusChange?: (jobId: string, newStatus: JobStatus) => void;
 }
 
 const statusConfig: Record<JobStatus, { label: string; color: string; bgColor: string }> = {
@@ -34,58 +38,82 @@ interface JobCardProps {
   machine?: { id: string; code: string; name: string; technique_id: string };
   technique?: { id: string; name: string; short_name: string; color: string };
   onClick: () => void;
+  onStatusChange?: (jobId: string, newStatus: JobStatus) => void;
   index: number;
 }
 
-const JobCard = memo(function JobCard({ job, machine, technique, onClick, index }: JobCardProps) {
+const JobCard = memo(function JobCard({ job, machine, technique, onClick, onStatusChange, index }: JobCardProps) {
   const status = statusConfig[job.status as JobStatus] || statusConfig.scheduled;
   const isCurrentlyProducing = job.status === 'production';
   const isDelayed = job.status === 'delayed';
+  const [isHovered, setIsHovered] = useState(false);
+  const prefersReducedMotion = useReducedMotion();
+  const isMobile = useIsMobile();
 
-  return (
-    <motion.div
-      initial={{ opacity: 0, x: -20 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: 20 }}
-      transition={{ delay: index * 0.05, duration: 0.2 }}
-    >
-      <Card 
-        onClick={onClick}
-        role="button"
-        tabIndex={0}
-        aria-label={`Job ${job.order_number} - ${job.client} - ${status.label}`}
-        onKeyDown={(e) => e.key === 'Enter' && onClick()}
-        className={cn(
-          "cursor-pointer transition-all duration-fast border-l-4 group",
-          "hover:shadow-lg hover:scale-[1.01] active:scale-[0.99]",
-          "focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2",
-          isCurrentlyProducing && "border-l-status-production animate-pulse-subtle",
-          isDelayed && "border-l-status-delayed",
-          !isCurrentlyProducing && !isDelayed && "border-l-border/50"
-        )}
-        style={{ 
-          borderLeftColor: isCurrentlyProducing 
+  const handleStatusChange = useCallback((jobId: string, newStatus: JobStatus) => {
+    onStatusChange?.(jobId, newStatus);
+  }, [onStatusChange]);
+
+  const cardContent = (
+    <Card 
+      onClick={onClick}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      role="button"
+      tabIndex={0}
+      aria-label={`Job ${job.order_number} - ${job.client} - ${status.label}`}
+      onKeyDown={(e) => e.key === 'Enter' && onClick()}
+      className={cn(
+        "cursor-pointer transition-all duration-fast border-l-4 group relative",
+        "hover:shadow-lg active:scale-[0.99]",
+        "focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2",
+        isCurrentlyProducing && "border-l-status-production animate-pulse-subtle",
+        isDelayed && "border-l-status-delayed",
+        !isCurrentlyProducing && !isDelayed && "border-l-border/50"
+      )}
+      style={{ 
+        borderLeftColor: isCurrentlyProducing 
+          ? undefined 
+          : isDelayed 
             ? undefined 
-            : isDelayed 
-              ? undefined 
-              : technique?.color 
-        }}
-      >
-        <CardContent className="p-4 space-y-3">
-          {/* Header */}
-          <div className="flex items-start justify-between gap-2">
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2">
-                <h3 className="font-semibold text-foreground truncate">
-                  {job.order_number.replace('OS-2024-', '#')}
-                </h3>
-                {isDelayed && (
-                  <AlertCircle className="w-4 h-4 text-status-delayed shrink-0" aria-label="Job atrasado" />
-                )}
-              </div>
-              <p className="text-sm text-muted-foreground truncate">{job.client}</p>
+            : technique?.color 
+      }}
+    >
+      <CardContent className="p-4 space-y-3">
+        {/* Header with Quick Actions */}
+        <div className="flex items-start justify-between gap-2">
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2">
+              <h3 className="font-semibold text-foreground truncate">
+                {job.order_number.replace('OS-2024-', '#')}
+              </h3>
+              {isDelayed && (
+                <AlertCircle className="w-4 h-4 text-status-delayed shrink-0" aria-label="Job atrasado" />
+              )}
             </div>
-            
+            <p className="text-sm text-muted-foreground truncate">{job.client}</p>
+          </div>
+          
+          <div className="flex items-center gap-2">
+            {/* Quick Actions - visible on hover (desktop) or always (mobile) */}
+            <AnimatePresence>
+              {(isHovered || isMobile) && onStatusChange && (
+                <motion.div
+                  initial={prefersReducedMotion ? {} : { opacity: 0, x: 10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={prefersReducedMotion ? {} : { opacity: 0, x: 10 }}
+                  transition={{ duration: 0.15 }}
+                >
+                  <JobQuickActions
+                    jobId={job.id}
+                    currentStatus={job.status as JobStatus}
+                    onStatusChange={handleStatusChange}
+                    isExpanded={isHovered}
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
+
             <Badge 
               variant="outline" 
               className={cn("shrink-0 text-xs", status.color, status.bgColor)}
@@ -93,62 +121,75 @@ const JobCard = memo(function JobCard({ job, machine, technique, onClick, index 
               {status.label}
             </Badge>
           </div>
+        </div>
 
-          {/* Product */}
-          <p className="text-sm font-medium text-foreground/90 line-clamp-2">
-            {job.product}
-          </p>
+        {/* Product */}
+        <p className="text-sm font-medium text-foreground/90 line-clamp-2">
+          {job.product}
+        </p>
 
-          {/* Details Grid */}
-          <div className="grid grid-cols-2 gap-2 text-xs">
-            {/* Time */}
-            <div className="flex items-center gap-1.5 text-muted-foreground">
-              <Clock className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
-              <span>
-                {job.start_time || '00:00'} - {job.end_time || '00:00'}
-              </span>
-            </div>
-
-            {/* Machine */}
-            <div className="flex items-center gap-1.5 text-muted-foreground">
-              <MapPin className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
-              <span className="truncate">{machine?.code || 'N/A'}</span>
-            </div>
-
-            {/* Quantity */}
-            <div className="flex items-center gap-1.5 text-muted-foreground">
-              <Package className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
-              <span>{job.quantity.toLocaleString('pt-BR')} pçs</span>
-            </div>
-
-            {/* Technique */}
-            <div className="flex items-center gap-1.5">
-              <div 
-                className="w-2.5 h-2.5 rounded-full shrink-0"
-                style={{ backgroundColor: technique?.color }}
-                aria-hidden="true"
-              />
-              <span className="text-muted-foreground truncate">
-                {technique?.short_name || 'N/A'}
-              </span>
-            </div>
+        {/* Details Grid */}
+        <div className="grid grid-cols-2 gap-2 text-xs">
+          {/* Time */}
+          <div className="flex items-center gap-1.5 text-muted-foreground">
+            <Clock className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
+            <span>
+              {job.start_time || '00:00'} - {job.end_time || '00:00'}
+            </span>
           </div>
 
-          {/* Color badge if present */}
-          {job.gravure_color && (
-            <div className="flex items-center gap-1.5 text-xs">
-              <User className="w-3.5 h-3.5 text-muted-foreground shrink-0" aria-hidden="true" />
-              <span className="text-muted-foreground">Cor: {job.gravure_color}</span>
-            </div>
-          )}
-
-          {/* Tap indicator */}
-          <div className="flex items-center justify-end text-xs text-muted-foreground/50 group-hover:text-primary transition-colors">
-            <span className="mr-1">Ver detalhes</span>
-            <ChevronRight className="w-4 h-4" aria-hidden="true" />
+          {/* Machine */}
+          <div className="flex items-center gap-1.5 text-muted-foreground">
+            <MapPin className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
+            <span className="truncate">{machine?.code || 'N/A'}</span>
           </div>
-        </CardContent>
-      </Card>
+
+          {/* Quantity */}
+          <div className="flex items-center gap-1.5 text-muted-foreground">
+            <Package className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
+            <span>{job.quantity.toLocaleString('pt-BR')} pçs</span>
+          </div>
+
+          {/* Technique */}
+          <div className="flex items-center gap-1.5">
+            <div 
+              className="w-2.5 h-2.5 rounded-full shrink-0"
+              style={{ backgroundColor: technique?.color }}
+              aria-hidden="true"
+            />
+            <span className="text-muted-foreground truncate">
+              {technique?.short_name || 'N/A'}
+            </span>
+          </div>
+        </div>
+
+        {/* Color badge if present */}
+        {job.gravure_color && (
+          <div className="flex items-center gap-1.5 text-xs">
+            <User className="w-3.5 h-3.5 text-muted-foreground shrink-0" aria-hidden="true" />
+            <span className="text-muted-foreground">Cor: {job.gravure_color}</span>
+          </div>
+        )}
+
+        {/* Tap indicator */}
+        <div className="flex items-center justify-end text-xs text-muted-foreground/50 group-hover:text-primary transition-colors">
+          <span className="mr-1">Ver detalhes</span>
+          <ChevronRight className="w-4 h-4" aria-hidden="true" />
+        </div>
+      </CardContent>
+    </Card>
+  );
+
+  return (
+    <motion.div
+      initial={prefersReducedMotion ? {} : { opacity: 0, x: -20 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={prefersReducedMotion ? {} : { opacity: 0, x: 20 }}
+      transition={{ delay: index * 0.05, duration: 0.2 }}
+    >
+      <HoverLift lift={3} shadow={!isMobile}>
+        {cardContent}
+      </HoverLift>
     </motion.div>
   );
 });
@@ -158,7 +199,8 @@ export const AgendaView = memo(function AgendaView({
   machines, 
   techniques, 
   selectedDate,
-  onJobClick 
+  onJobClick,
+  onStatusChange
 }: AgendaViewProps) {
   // Sort jobs by start time
   const sortedJobs = useMemo(() => {
@@ -212,6 +254,7 @@ export const AgendaView = memo(function AgendaView({
                 machine={getMachine(job.machine_id)}
                 technique={getTechnique(job.technique_id)}
                 onClick={() => onJobClick(job)}
+                onStatusChange={onStatusChange}
                 index={startIndex + index}
               />
             ))}
