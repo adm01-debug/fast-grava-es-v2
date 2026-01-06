@@ -1,4 +1,5 @@
 import { useMemo, useState, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -15,6 +16,7 @@ import { useKPIs } from '@/hooks/useKPIs';
 import { useOEE } from '@/hooks/useOEE';
 import { useSchedulingData } from '@/hooks/useSchedulingData';
 import { toast } from 'sonner';
+import { FavoriteButton, FavoritesDropdown } from '@/components/navigation/FavoritesManager';
 import { 
   TrendingUp, 
   TrendingDown, 
@@ -40,7 +42,8 @@ import {
   FileText,
   ChevronRight,
   X,
-  Eye
+  Eye,
+  Command
 } from 'lucide-react';
 import { 
   AreaChart, 
@@ -170,6 +173,7 @@ function LoadingSkeleton() {
 }
 
 export default function BIDashboard() {
+  const navigate = useNavigate();
   const [periodFilter, setPeriodFilter] = useState<PeriodFilter>('30d');
   const [customRange, setCustomRange] = useState<DateRange>({
     from: subDays(new Date(), 30),
@@ -494,17 +498,29 @@ export default function BIDashboard() {
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div className="animate-slide-up">
-            <h1 className="text-3xl font-bold font-display flex items-center gap-3">
-              <div className="p-2 rounded-xl bg-primary/10 shadow-glow-primary">
-                <BarChart3 className="h-8 w-8 text-primary" />
-              </div>
-              <span className="gradient-text">Business Intelligence</span>
-            </h1>
+            <div className="flex items-center gap-3">
+              <h1 className="text-3xl font-bold font-display flex items-center gap-3">
+                <div className="p-2 rounded-xl bg-primary/10 shadow-glow-primary">
+                  <BarChart3 className="h-8 w-8 text-primary" />
+                </div>
+                <span className="gradient-text">Business Intelligence</span>
+              </h1>
+              <FavoriteButton path="/bi" name="Business Intelligence" />
+            </div>
             <p className="text-muted-foreground mt-1">
               Visão executiva consolidada • Atualizado em {format(new Date(), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
             </p>
           </div>
           <div className="flex items-center gap-4 animate-slide-left">
+            {/* Favorites Dropdown */}
+            <FavoritesDropdown onNavigate={(path) => navigate(path)} />
+            
+            {/* Command Palette Hint */}
+            <Badge variant="outline" className="hidden md:flex gap-1.5 cursor-pointer hover:bg-muted transition-colors">
+              <Command className="h-3 w-3" />
+              <span className="text-xs">⌘K</span>
+            </Badge>
+            
             <div className="flex items-center gap-2 glass-card px-4 py-2 rounded-lg">
               <Switch 
                 id="comparison-mode" 
