@@ -132,10 +132,13 @@ export function MobileQuickActions() {
           onClick={toggleOpen}
           className={cn(
             'w-14 h-14 rounded-full flex items-center justify-center',
-            'bg-primary text-primary-foreground shadow-xl',
+            'gradient-primary text-primary-foreground',
             'focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
             isOpen && 'bg-muted text-muted-foreground'
           )}
+          style={{
+            boxShadow: isOpen ? undefined : 'var(--shadow-glow-primary), var(--shadow-xl)'
+          }}
           aria-label={isOpen ? 'Fechar menu' : 'Ações rápidas'}
           aria-expanded={isOpen}
         >

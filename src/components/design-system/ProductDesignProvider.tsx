@@ -73,7 +73,13 @@ export { FavoriteButton, FavoritesDropdown, useFavorites } from "@/components/na
 export { GlobalSearch, CompactSearch } from "@/components/navigation/GlobalSearch";
 export { SwipeActions, SwipeActionPresets } from "@/components/mobile/SwipeActions";
 export { PullToRefresh, MobilePullToRefresh } from "@/components/mobile/PullToRefresh";
+export { BottomNavigation, BottomNavSpacer } from "@/components/mobile/BottomNavigation";
+export { FloatingActionButton } from "@/components/mobile/FloatingActionButton";
+export { CollapsibleNavGroup } from "@/components/navigation/CollapsibleNavGroup";
 export { EmptyState, EmptyStates } from "@/components/ui/empty-state";
+export { CelebrationMoment, useCelebration, MiniCelebration as InlineCelebration } from "@/components/feedback/CelebrationMoment";
+export { FeedbackState, InlineLoader, SuccessCheck } from "@/components/feedback/FeedbackState";
+export { ProgressRing, ProgressBar, StepProgress } from "@/components/feedback/ProgressIndicators";
 export { Skeleton, SkeletonCard, SkeletonList, SkeletonTable, SkeletonDashboard, SkeletonChart, SkeletonForm } from "@/components/ui/skeleton-screens";
 export { ToastContainer, toast as toastWithUndo } from "@/components/notifications/ToastWithUndo";
 export { NotificationCenter } from "@/components/notifications/NotificationCenter";
