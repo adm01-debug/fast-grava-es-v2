@@ -50,8 +50,8 @@ export function useInfiniteScroll<T extends { id: string }>(
   } = useInfiniteQuery({
     queryKey: [...queryKey, 'infinite', filters],
     queryFn: async ({ pageParam = 0 }) => {
-      // @ts-ignore - Dynamic table access
-      let query = supabase.from(tableName)
+      const tableRef = supabase.from(tableName as any) as any;
+      let query = tableRef
         .select(selectColumns, { count: 'exact' })
         .order(orderBy.column, { ascending: orderBy.ascending ?? false })
         .range(pageParam * pageSize, (pageParam + 1) * pageSize - 1);
@@ -71,7 +71,7 @@ export function useInfiniteScroll<T extends { id: string }>(
       if (queryError) throw queryError;
 
       return {
-        items: (resultData || []) as T[],
+        items: (resultData || []) as unknown as T[],
         nextPage: (resultData?.length ?? 0) === pageSize ? pageParam + 1 : undefined,
         totalCount: count ?? 0,
       };

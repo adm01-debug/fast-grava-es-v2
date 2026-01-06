@@ -40,8 +40,8 @@ export function useSearch<T = unknown>(options: SearchOptions): UseSearchResult<
   const { data, isLoading, error } = useQuery({
     queryKey: ['search', table, debouncedTerm, columns, filters],
     queryFn: async () => {
-      // @ts-ignore - Dynamic table access
-      let query = supabase.from(table).select(select, { count: 'exact' });
+      const tableRef = supabase.from(table as any) as any;
+      let query = tableRef.select(select, { count: 'exact' });
 
       if (debouncedTerm) {
         const searchConditions = columns.map(col => `${col}.ilike.%${debouncedTerm}%`).join(',');
@@ -59,7 +59,7 @@ export function useSearch<T = unknown>(options: SearchOptions): UseSearchResult<
 
       const { data: resultData, error: queryError, count } = await query;
       if (queryError) throw queryError;
-      return { results: (resultData || []) as T[], count };
+      return { results: (resultData || []) as unknown as T[], count };
     },
     enabled: shouldSearch,
     staleTime: 30000,
