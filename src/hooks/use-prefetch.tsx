@@ -15,7 +15,7 @@ export function usePrefetch() {
   const prefetchedRef = React.useRef<Set<string>>(new Set());
 
   const prefetchQuery = React.useCallback(
-    async <T>(
+    async <T,>(
       queryKey: (string | number | object)[],
       queryFn: () => Promise<T>,
       options: PrefetchOptions = {}
@@ -40,7 +40,7 @@ export function usePrefetch() {
   );
 
   const prefetchOnHover = React.useCallback(
-    <T>(
+    <T,>(
       queryKey: (string | number | object)[],
       queryFn: () => Promise<T>,
       options?: PrefetchOptions
@@ -53,37 +53,6 @@ export function usePrefetch() {
     [prefetchQuery]
   );
 
-  const prefetchOnVisible = React.useCallback(
-    <T>(
-      queryKey: (string | number | object)[],
-      queryFn: () => Promise<T>,
-      options?: PrefetchOptions
-    ) => {
-      const ref = React.useRef<HTMLElement>(null);
-
-      React.useEffect(() => {
-        const element = ref.current;
-        if (!element) return;
-
-        const observer = new IntersectionObserver(
-          ([entry]) => {
-            if (entry.isIntersecting) {
-              prefetchQuery(queryKey, queryFn, options);
-              observer.disconnect();
-            }
-          },
-          { rootMargin: '100px' }
-        );
-
-        observer.observe(element);
-        return () => observer.disconnect();
-      }, [queryKey, queryFn, options]);
-
-      return ref;
-    },
-    [prefetchQuery]
-  );
-
   const clearPrefetchCache = React.useCallback(() => {
     prefetchedRef.current.clear();
   }, []);
@@ -91,7 +60,6 @@ export function usePrefetch() {
   return {
     prefetchQuery,
     prefetchOnHover,
-    prefetchOnVisible,
     clearPrefetchCache,
   };
 }
@@ -116,7 +84,7 @@ export function PrefetchLink({
   ...props
 }: PrefetchLinkProps) {
   const prefetchedRef = React.useRef(false);
-  const timerRef = React.useRef<NodeJS.Timeout>();
+  const timerRef = React.useRef<ReturnType<typeof setTimeout>>();
 
   const handleMouseEnter = React.useCallback(
     (e: React.MouseEvent<HTMLAnchorElement>) => {
@@ -211,21 +179,21 @@ export function useRoutePrefetch() {
 // INTERSECTION PREFETCH
 // ============================================================================
 
-interface UseIntersectionPrefetchOptions<T> {
+interface UseIntersectionPrefetchOptions {
   queryKey: (string | number | object)[];
-  queryFn: () => Promise<T>;
+  queryFn: () => Promise<unknown>;
   threshold?: number;
   rootMargin?: string;
   enabled?: boolean;
 }
 
-export function useIntersectionPrefetch<T>({
+export function useIntersectionPrefetch({
   queryKey,
   queryFn,
   threshold = 0,
   rootMargin = '200px',
   enabled = true,
-}: UseIntersectionPrefetchOptions<T>) {
+}: UseIntersectionPrefetchOptions) {
   const queryClient = useQueryClient();
   const ref = React.useRef<HTMLElement>(null);
   const hasPrefetched = React.useRef(false);
@@ -258,15 +226,15 @@ export function useIntersectionPrefetch<T>({
 // BATCH PREFETCH
 // ============================================================================
 
-interface PrefetchItem<T> {
+interface PrefetchItem {
   queryKey: (string | number | object)[];
-  queryFn: () => Promise<T>;
+  queryFn: () => Promise<unknown>;
   priority?: number;
 }
 
 export function useBatchPrefetch() {
   const queryClient = useQueryClient();
-  const queueRef = React.useRef<PrefetchItem<unknown>[]>([]);
+  const queueRef = React.useRef<PrefetchItem[]>([]);
   const isProcessingRef = React.useRef(false);
 
   const processQueue = React.useCallback(async () => {
@@ -307,7 +275,7 @@ export function useBatchPrefetch() {
   }, [queryClient]);
 
   const addToPrefetchQueue = React.useCallback(
-    (item: PrefetchItem<unknown>) => {
+    (item: PrefetchItem) => {
       queueRef.current.push(item);
 
       // Use requestIdleCallback if available, otherwise setTimeout
