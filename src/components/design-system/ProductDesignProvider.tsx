@@ -1,6 +1,6 @@
 import * as React from "react";
 import { OnboardingTour, useOnboarding } from "@/components/onboarding/OnboardingTour";
-import { CommandPalette } from "@/components/navigation/CommandPalette";
+import { CommandPaletteAdvanced } from "@/components/navigation/CommandPaletteAdvanced";
 import { KeyboardShortcutsProvider } from "@/components/shortcuts/KeyboardShortcuts";
 import { ToastContainer } from "@/components/notifications/ToastWithUndo";
 import { FloatingAIAssistant } from "@/components/ai/FloatingAIAssistant";
@@ -48,7 +48,7 @@ export function ProductDesignProvider({
       )}
 
       {/* Command Palette (Cmd+K) */}
-      {enableCommandPalette && <CommandPalette />}
+      {enableCommandPalette && <CommandPaletteAdvanced />}
 
       {/* Toast Container for undoable notifications */}
       {enableToastWithUndo && <ToastContainer />}
@@ -68,7 +68,7 @@ export function ProductDesignProvider({
 
 // Export all design improvement components for individual use
 export { OnboardingTour, useOnboarding } from "@/components/onboarding/OnboardingTour";
-export { CommandPalette, CommandPaletteTrigger } from "@/components/navigation/CommandPalette";
+export { CommandPaletteAdvanced as CommandPalette, CommandPaletteTriggerAdvanced as CommandPaletteTrigger } from "@/components/navigation/CommandPaletteAdvanced";
 export { FavoriteButton, FavoritesDropdown, useFavorites } from "@/components/navigation/FavoritesManager";
 export { GlobalSearch, CompactSearch } from "@/components/navigation/GlobalSearch";
 export { SwipeActions, SwipeActionPresets } from "@/components/mobile/SwipeActions";
