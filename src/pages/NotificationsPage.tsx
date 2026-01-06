@@ -33,6 +33,7 @@ import { usePushNotifications } from '@/hooks/usePushNotifications';
 import { useNotificationSounds } from '@/hooks/useNotificationSounds';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 
 interface MaintenanceAlert {
   id: string;
@@ -397,6 +398,8 @@ const NotificationsPage = () => {
   return (
     <MainLayout>
       <div className="p-4 sm:p-6 lg:p-8 space-y-6">
+        <Breadcrumbs />
+        
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>

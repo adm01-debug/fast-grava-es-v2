@@ -38,6 +38,7 @@ import HandoverDetailsModal from '@/components/shift/HandoverDetailsModal';
 import PendingTasksPanel from '@/components/shift/PendingTasksPanel';
 import OccurrencesPanel from '@/components/shift/OccurrencesPanel';
 import ChecklistTemplatesManager from '@/components/shift/ChecklistTemplatesManager';
+import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 
 const STATUS_LABELS: Record<string, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }> = {
   open: { label: 'Em andamento', variant: 'default' },
@@ -131,6 +132,8 @@ export default function ShiftHandoverPage() {
 
   return (
     <div className="container mx-auto p-4 md:p-6 space-y-6">
+      <Breadcrumbs />
+      
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>

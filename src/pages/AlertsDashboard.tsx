@@ -35,6 +35,7 @@ import { useEfficiencyNotifications } from "@/hooks/useEfficiencyNotifications";
 import { EfficiencyAlertHistoryWidget } from "@/components/dashboard/EfficiencyAlertHistoryWidget";
 import { useStuckJobsDetection, StuckJob } from "@/hooks/useStuckJobsDetection";
 import { useOrphanedDataDetection } from "@/hooks/useOrphanedDataDetection";
+import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 
 const priorityColors: Record<string, string> = {
   urgent: 'bg-primary/20 text-primary border-primary/30',
@@ -417,6 +418,8 @@ export default function AlertsDashboard() {
 
   return (
     <div className="min-h-screen bg-background p-4 sm:p-6 space-y-4 sm:space-y-6">
+      <Breadcrumbs />
+      
       <JobDetailsModal 
         job={selectedJob} 
         open={isModalOpen} 

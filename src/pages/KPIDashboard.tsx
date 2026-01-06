@@ -29,6 +29,7 @@ import {
   Target
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 
 export default function KPIDashboard() {
   const { data: kpis, isLoading } = useKPIs();
@@ -73,6 +74,8 @@ export default function KPIDashboard() {
   return (
     <MainLayout>
       <div className="p-4 sm:p-6 lg:p-8 space-y-4 sm:space-y-6 animate-fade-in-up">
+        <Breadcrumbs />
+        
         {/* Header */}
         <div>
           <h1 className="text-xl sm:text-2xl lg:text-3xl font-display font-bold">

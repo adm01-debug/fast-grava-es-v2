@@ -21,8 +21,9 @@ import { DroppableColumn } from '@/components/kanban/DroppableColumn';
 import { DragOverlayCard } from '@/components/kanban/DragOverlayCard';
 import { useKanbanDragDrop } from '@/hooks/useKanbanDragDrop';
 import { FavoriteButton, FavoritesDropdown } from '@/components/navigation/FavoritesManager';
+import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { 
-  Search, 
+  Search,
   Filter,
   Clock,
   Package,
@@ -193,6 +194,8 @@ export default function KanbanBoard() {
         onDragCancel={handleDragCancel}
       >
         <div className="p-4 sm:p-6 lg:p-8 space-y-4 sm:space-y-6 animate-fade-in-up">
+          <Breadcrumbs />
+          
           {/* Header */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>

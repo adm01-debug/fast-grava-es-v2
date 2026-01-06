@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { JobStatus } from '@/types/scheduling';
+import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 
 export default function OperatorView() {
   const [selectedMachine, setSelectedMachine] = useState<string>('all');
@@ -119,6 +120,8 @@ export default function OperatorView() {
       />
       
       <div className="p-4 sm:p-6 lg:p-8 space-y-4 sm:space-y-6 animate-fade-in-up">
+        <Breadcrumbs />
+        
         {/* Offline Sync Indicator */}
         <OfflineSyncIndicator variant="full" />
 

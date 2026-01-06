@@ -16,6 +16,7 @@ import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
+import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 
 export default function NewJobPage() {
   const navigate = useNavigate();
@@ -93,6 +94,8 @@ export default function NewJobPage() {
   return (
     <MainLayout>
       <div className="space-y-6 max-w-3xl mx-auto">
+        <Breadcrumbs />
+        
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
             <ArrowLeft className="h-5 w-5" />

@@ -29,6 +29,7 @@ import { EditOperatorModal } from '@/components/operators/EditOperatorModal';
 import { OperatorAuditHistory } from '@/components/operators/OperatorAuditHistory';
 import { Skeleton } from '@/components/ui/skeleton';
 import { FavoriteButton, FavoritesDropdown } from '@/components/navigation/FavoritesManager';
+import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { format, formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
@@ -108,6 +109,8 @@ export default function OperatorsPage() {
   return (
     <MainLayout>
       <div className="space-y-6">
+        <Breadcrumbs />
+        
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-3">

@@ -9,6 +9,7 @@ import { ABCTechniqueChart } from '@/components/abc/ABCTechniqueChart';
 import { ABCCostBreakdownChart } from '@/components/abc/ABCCostBreakdownChart';
 import { ABCJobCostsTable } from '@/components/abc/ABCJobCostsTable';
 import { ABCActivityRatesCard } from '@/components/abc/ABCActivityRatesCard';
+import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 
 export default function ABCCostingDashboard() {
   const {
@@ -59,6 +60,8 @@ export default function ABCCostingDashboard() {
       </Helmet>
 
       <div className="space-y-6">
+        <Breadcrumbs />
+        
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
