@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { format, isToday, addDays, subDays } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { ChevronLeft, ChevronRight, Filter, Calendar as CalendarIcon, Clock } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Filter, Calendar as CalendarIcon, Clock, List, LayoutGrid } from 'lucide-react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -12,12 +12,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { JobDetailsModal } from '@/components/jobs/JobDetailsModal';
+import { AgendaView } from '@/components/calendar/AgendaView';
 import { cn } from '@/lib/utils';
 import { useSchedulingData } from '@/hooks/useSchedulingData';
 import { DbJob } from '@/hooks/useJobs';
 import { JobStatus } from '@/types/scheduling';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
+import { useDevice } from '@/hooks/use-device';
 
 const hours = Array.from({ length: 14 }, (_, i) => i + 7); // 07:00 to 20:00
 
@@ -50,8 +52,8 @@ export default function DailyCalendar() {
   const [selectedTechnique, setSelectedTechnique] = useState<string>('all');
   const [selectedJob, setSelectedJob] = useState<DbJob | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const { jobs, techniques, machines, isLoading, getTechniqueById } = useSchedulingData();
+  const [viewMode, setViewMode] = useState<'timeline' | 'agenda'>('timeline');
+  const { isMobile } = useDevice();
 
   // Filter jobs for selected date
   const dayJobs = useMemo(() => {
@@ -202,23 +204,73 @@ export default function DailyCalendar() {
                 Hoje
               </Button>
             </div>
+            {/* View Mode Toggle - desktop only */}
+            {!isMobile && (
+              <div className="hidden sm:flex items-center gap-1 bg-card border border-border/40 rounded-lg p-1">
+                <Button
+                  variant={viewMode === 'timeline' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setViewMode('timeline')}
+                  className="h-8 px-3"
+                  aria-label="Vista Timeline"
+                >
+                  <LayoutGrid className="h-4 w-4 mr-1" />
+                  Timeline
+                </Button>
+                <Button
+                  variant={viewMode === 'agenda' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setViewMode('agenda')}
+                  className="h-8 px-3"
+                  aria-label="Vista Agenda"
+                >
+                  <List className="h-4 w-4 mr-1" />
+                  Agenda
+                </Button>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Calendar Grid */}
-        <Card className="bg-card border border-border/40 rounded-xl overflow-hidden">
-          <CardHeader className="border-b border-border/40 pb-3 px-3 sm:px-6">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-              <CardTitle className="text-sm sm:text-lg font-display gradient-text flex items-center gap-2">
-                <Clock className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" />
-                <span className="hidden sm:inline">{format(selectedDate, "EEEE, dd 'de' MMMM 'de' yyyy", { locale: ptBR })}</span>
-                <span className="sm:hidden">{format(selectedDate, "EEEE, dd MMM", { locale: ptBR })}</span>
-              </CardTitle>
-              <Badge variant="outline" className="border-primary/30 text-primary w-fit">
-                {dayJobs.length} agendamento{dayJobs.length !== 1 ? 's' : ''}
-              </Badge>
-            </div>
-          </CardHeader>
+        {/* Agenda View for Mobile or when selected */}
+        {effectiveViewMode === 'agenda' ? (
+          <Card className="bg-card border border-border/40 rounded-xl">
+            <CardHeader className="border-b border-border/40 pb-3 px-3 sm:px-6">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-sm sm:text-lg font-display gradient-text flex items-center gap-2">
+                  <Clock className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" />
+                  <span>{format(selectedDate, "EEEE, dd MMM", { locale: ptBR })}</span>
+                </CardTitle>
+                <Badge variant="outline" className="border-primary/30 text-primary">
+                  {dayJobs.length} job{dayJobs.length !== 1 ? 's' : ''}
+                </Badge>
+              </div>
+            </CardHeader>
+            <CardContent className="p-3 sm:p-4">
+              <AgendaView
+                jobs={dayJobs}
+                machines={filteredMachines}
+                techniques={techniques}
+                selectedDate={selectedDate}
+                onJobClick={handleJobClick}
+              />
+            </CardContent>
+          </Card>
+        ) : (
+          /* Timeline View - Desktop */
+          <Card className="bg-card border border-border/40 rounded-xl overflow-hidden">
+            <CardHeader className="border-b border-border/40 pb-3 px-3 sm:px-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <CardTitle className="text-sm sm:text-lg font-display gradient-text flex items-center gap-2">
+                  <Clock className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" />
+                  <span className="hidden sm:inline">{format(selectedDate, "EEEE, dd 'de' MMMM 'de' yyyy", { locale: ptBR })}</span>
+                  <span className="sm:hidden">{format(selectedDate, "EEEE, dd MMM", { locale: ptBR })}</span>
+                </CardTitle>
+                <Badge variant="outline" className="border-primary/30 text-primary w-fit">
+                  {dayJobs.length} agendamento{dayJobs.length !== 1 ? 's' : ''}
+                </Badge>
+              </div>
+            </CardHeader>
           
           <CardContent className="p-0">
             <ScrollArea className="w-full">
@@ -350,6 +402,7 @@ export default function DailyCalendar() {
             </ScrollArea>
           </CardContent>
         </Card>
+        )}
 
         {/* Legend */}
         <Card className="bg-card border border-border/40 rounded-xl">
