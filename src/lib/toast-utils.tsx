@@ -1,5 +1,5 @@
 import { toast } from 'sonner';
-import { CheckCircle, AlertTriangle, XCircle, Info, Undo2, Copy, ExternalLink } from 'lucide-react';
+import { CheckCircle, AlertTriangle, XCircle, Info, Undo2, Copy, ExternalLink, Wifi, WifiOff, Upload, Shield, Clock, FileText, Zap, Bell } from 'lucide-react';
 
 interface ToastWithUndoOptions {
   message: string;
@@ -29,6 +29,13 @@ interface ToastWithCopyOptions {
   message: string;
   description?: string;
   textToCopy: string;
+  duration?: number;
+}
+
+interface ToastWithProgressOptions {
+  message: string;
+  description?: string;
+  progress: number; // 0-100
   duration?: number;
 }
 
