@@ -32,7 +32,7 @@ export {
 export { useLocalStorage } from '@/hooks/useLocalStorage';
 
 // Feature hooks
-export * from '@/hooks/useFormAutosave';
+export * from '@/hooks/useFormAutosave.tsx';
 export * from '@/hooks/useSessionTimeout';
 export * from '@/hooks/useNetworkStatus';
 export * from '@/hooks/usePerformance';
