@@ -39,6 +39,7 @@ import { PasskeySettings } from '@/components/security/PasskeySettings';
 import { useMFA } from '@/hooks/useMFA';
 import { useUserDevices } from '@/hooks/useUserDevices';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
+import { VoiceButton } from '@/components/voice/VoiceCommands';
 
 export default function SecurityDashboard() {
   const navigate = useNavigate();
@@ -84,6 +85,7 @@ export default function SecurityDashboard() {
           </p>
         </div>
         <div className="flex items-center gap-2">
+          <VoiceButton />
           <FavoritesDropdown onNavigate={(url) => navigate(url)} />
           <Badge variant="outline" className="gap-1 text-xs hidden sm:flex">
             <Command className="h-3 w-3" />K para buscar

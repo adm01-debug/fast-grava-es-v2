@@ -31,6 +31,7 @@ import { OEETechniqueComparison } from '@/components/oee/OEETechniqueComparison'
 import { Skeleton } from '@/components/ui/skeleton';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { KPITooltip, KPI_DEFINITIONS } from '@/components/ui/kpi-tooltip';
+import { VoiceButton } from '@/components/voice/VoiceCommands';
 
 export default function OEEDashboard() {
   const [period, setPeriod] = useState<string>('30');
@@ -83,6 +84,7 @@ export default function OEEDashboard() {
           </div>
           
           <div className="flex items-center gap-3">
+            <VoiceButton />
             <Select value={period} onValueChange={setPeriod}>
               <SelectTrigger className="w-40">
                 <SelectValue placeholder="Período" />

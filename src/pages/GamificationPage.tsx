@@ -9,6 +9,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { FavoriteButton } from '@/components/favorites/FavoriteButton';
 import { FavoritesDropdown } from '@/components/favorites/FavoritesDropdown';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
+import { VoiceButton } from '@/components/voice/VoiceCommands';
 import { useGamification } from '@/hooks/useGamification';
 import { Trophy, Medal, Star, Target, Zap, Award, Crown, TrendingUp, Command } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -72,6 +73,7 @@ export default function GamificationPage() {
           </div>
 
           <div className="flex items-center gap-3">
+            <VoiceButton />
             <FavoritesDropdown onNavigate={(url) => navigate(url)} />
             <Badge variant="outline" className="gap-1 text-xs hidden sm:flex">
               <Command className="h-3 w-3" />K para buscar
