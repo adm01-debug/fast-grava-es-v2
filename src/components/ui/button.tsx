@@ -1,11 +1,12 @@
 import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
+import { motion, type HTMLMotionProps } from "framer-motion";
 
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-medium ring-offset-background transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 active:scale-[0.97]",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-medium ring-offset-background transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
@@ -14,7 +15,6 @@ const buttonVariants = cva(
           "shadow-sm hover:shadow-md",
           "dark:shadow-[0_0_20px_-5px_hsl(var(--primary)/0.4)]",
           "dark:hover:shadow-[0_0_30px_-5px_hsl(var(--primary)/0.6)]",
-          "dark:hover:translate-y-[-1px]",
         ],
         destructive: [
           "bg-destructive text-destructive-foreground hover:bg-destructive/90",
@@ -40,52 +40,41 @@ const buttonVariants = cva(
           "dark:hover:bg-white/5 dark:hover:text-foreground",
         ],
         link: "text-primary underline-offset-4 hover:underline font-semibold",
-        // Gaming/Gradient variants with state transitions
         gradient: [
           "gradient-primary text-white border-0",
           "shadow-md",
           "dark:shadow-[0_4px_20px_-5px_hsl(var(--primary)/0.4)]",
-          "hover:gradient-primary-hover hover:shadow-lg hover:translate-y-[-2px]",
+          "hover:shadow-lg",
           "dark:hover:shadow-[0_8px_30px_-5px_hsl(var(--primary)/0.6)]",
-          "active:gradient-primary-active active:translate-y-0 active:shadow-sm",
-          "disabled:gradient-primary-disabled disabled:translate-y-0 disabled:shadow-none",
         ],
         "gradient-subtle": [
           "gradient-primary-subtle text-primary border border-primary/20",
           "hover:border-primary/40 hover:shadow-sm",
-          "active:bg-primary/20",
-          "disabled:opacity-50",
         ],
         "gradient-intense": [
           "gradient-primary-intense text-white border-0",
           "shadow-lg",
           "dark:shadow-[0_6px_25px_-5px_hsl(var(--primary)/0.5)]",
-          "hover:shadow-xl hover:translate-y-[-2px]",
+          "hover:shadow-xl",
           "dark:hover:shadow-[0_10px_40px_-5px_hsl(var(--primary)/0.7)]",
-          "active:translate-y-0 active:shadow-md",
         ],
         "gradient-secondary": [
           "gradient-secondary text-white border-0",
           "shadow-md hover:shadow-lg",
           "dark:shadow-[0_4px_20px_-5px_hsl(210_100%_60%/0.4)]",
           "dark:hover:shadow-[0_8px_30px_-5px_hsl(210_100%_60%/0.6)]",
-          "hover:translate-y-[-2px]",
-          "active:translate-y-0",
         ],
         "gradient-success": [
           "gradient-success text-white border-0",
           "shadow-md hover:shadow-lg",
           "dark:shadow-[0_4px_20px_-5px_hsl(142_70%_50%/0.4)]",
           "dark:hover:shadow-[0_8px_30px_-5px_hsl(142_70%_50%/0.6)]",
-          "hover:translate-y-[-2px]",
-          "active:translate-y-0",
         ],
         glow: [
           "bg-primary text-primary-foreground",
           "shadow-lg",
           "dark:shadow-[0_0_30px_-5px_hsl(var(--primary)/0.5)]",
           "dark:hover:shadow-[0_0_50px_-5px_hsl(var(--primary)/0.7)]",
-          "hover:translate-y-[-2px]",
           "dark:pulse-glow",
         ],
         glass: [
@@ -100,16 +89,13 @@ const buttonVariants = cva(
           "shadow-sm hover:shadow-md",
           "dark:shadow-[0_0_20px_-5px_hsl(var(--success)/0.4)]",
           "dark:hover:shadow-[0_0_30px_-5px_hsl(var(--success)/0.6)]",
-          "dark:hover:translate-y-[-1px]",
         ],
-        // New: Warning variant
         warning: [
           "bg-warning text-warning-foreground hover:bg-warning/90",
           "shadow-sm hover:shadow-md",
           "dark:shadow-[0_0_20px_-5px_hsl(var(--warning)/0.4)]",
           "dark:hover:shadow-[0_0_30px_-5px_hsl(var(--warning)/0.6)]",
         ],
-        // New: Subtle variant - minimal visual weight with better dark mode contrast
         subtle: [
           "bg-muted/50 text-muted-foreground border border-transparent",
           "hover:text-foreground hover:bg-muted hover:border-border/50",
@@ -121,7 +107,6 @@ const buttonVariants = cva(
           "border border-amber-400/50",
           "shadow-[0_4px_20px_-5px_hsl(45_100%_50%/0.4)]",
           "hover:shadow-[0_8px_30px_-5px_hsl(45_100%_50%/0.6)]",
-          "hover:translate-y-[-2px]",
           "dark:border-amber-300/30",
           "dark:shadow-[0_4px_25px_-5px_hsl(45_100%_50%/0.5)]",
           "dark:hover:shadow-[0_8px_40px_-5px_hsl(45_100%_50%/0.7)]",
@@ -179,4 +164,158 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 );
 Button.displayName = "Button";
 
-export { Button, buttonVariants };
+// ===== MOTION BUTTON WITH MICRO-INTERACTIONS =====
+interface MotionButtonProps {
+  className?: string;
+  variant?: VariantProps<typeof buttonVariants>["variant"];
+  size?: VariantProps<typeof buttonVariants>["size"];
+  shimmer?: boolean;
+  haptic?: boolean;
+  children?: React.ReactNode;
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  disabled?: boolean;
+  type?: "button" | "submit" | "reset";
+}
+
+const MotionButton = React.forwardRef<HTMLButtonElement, MotionButtonProps>(
+  ({ className, variant, size, shimmer, haptic = true, children, onClick, disabled, type = "button" }, ref) => {
+    const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+      // Trigger haptic feedback on supported devices
+      if (haptic && "vibrate" in navigator) {
+        navigator.vibrate(10);
+      }
+      onClick?.(e);
+    };
+
+    return (
+      <motion.button
+        ref={ref}
+        type={type}
+        disabled={disabled}
+        className={cn(buttonVariants({ variant, size, shimmer, className }))}
+        onClick={handleClick}
+        whileHover={disabled ? undefined : { scale: 1.02, y: -2 }}
+        whileTap={disabled ? undefined : { scale: 0.97 }}
+        transition={{
+          type: "spring",
+          stiffness: 400,
+          damping: 17,
+        }}
+      >
+        {children}
+        {shimmer && (
+          <span 
+            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full animate-[shimmer-btn_2s_infinite]" 
+            aria-hidden="true"
+          />
+        )}
+      </motion.button>
+    );
+  },
+);
+MotionButton.displayName = "MotionButton";
+
+// ===== ICON BUTTON WITH BOUNCE =====
+interface IconButtonProps extends Omit<ButtonProps, 'children'> {
+  icon: React.ReactNode;
+  label: string;
+}
+
+const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(
+  ({ icon, label, className, size = "icon", variant = "ghost", ...props }, ref) => {
+    return (
+      <Button
+        ref={ref}
+        className={cn("transition-transform hover:scale-110 active:scale-90", className)}
+        variant={variant}
+        size={size}
+        aria-label={label}
+        {...props}
+      >
+        {icon}
+      </Button>
+    );
+  },
+);
+IconButton.displayName = "IconButton";
+
+// ===== PULSE BUTTON (for CTAs) =====
+interface PulseButtonProps extends ButtonProps {
+  pulseColor?: string;
+}
+
+const PulseButton = React.forwardRef<HTMLButtonElement, PulseButtonProps>(
+  ({ className, variant = "gradient", children, pulseColor, ...props }, ref) => {
+    return (
+      <div className="relative inline-flex">
+        <motion.div
+          className={cn(
+            "absolute inset-0 rounded-lg",
+            pulseColor || "bg-primary"
+          )}
+          animate={{
+            scale: [1, 1.05, 1],
+            opacity: [0.5, 0, 0.5],
+          }}
+          transition={{
+            duration: 2,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        />
+        <Button
+          ref={ref}
+          variant={variant}
+          className={cn("relative z-10", className)}
+          {...props}
+        >
+          {children}
+        </Button>
+      </div>
+    );
+  },
+);
+PulseButton.displayName = "PulseButton";
+
+// ===== LOADING BUTTON =====
+interface LoadingButtonProps extends ButtonProps {
+  isLoading?: boolean;
+  loadingText?: string;
+}
+
+const LoadingButton = React.forwardRef<HTMLButtonElement, LoadingButtonProps>(
+  ({ isLoading, loadingText, children, disabled, className, ...props }, ref) => {
+    return (
+      <Button
+        ref={ref}
+        disabled={disabled || isLoading}
+        className={cn("relative", className)}
+        {...props}
+      >
+        <motion.span
+          animate={{ opacity: isLoading ? 0 : 1 }}
+          className="flex items-center gap-2"
+        >
+          {children}
+        </motion.span>
+        {isLoading && (
+          <motion.span
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="absolute inset-0 flex items-center justify-center gap-2"
+          >
+            <motion.span
+              animate={{ rotate: 360 }}
+              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+              className="h-4 w-4 border-2 border-current border-t-transparent rounded-full"
+            />
+            {loadingText && <span>{loadingText}</span>}
+          </motion.span>
+        )}
+      </Button>
+    );
+  },
+);
+LoadingButton.displayName = "LoadingButton";
+
+export { Button, buttonVariants, MotionButton, IconButton, PulseButton, LoadingButton };
