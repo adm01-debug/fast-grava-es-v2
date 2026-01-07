@@ -12,6 +12,10 @@ import { OfflineReadyIndicator } from '../offline/OfflineReadyIndicator';
 import { OfflineStatusBanner } from '../offline/OfflineStatusBanner';
 import { MobileNavigation } from '../navigation/MobileNavigation';
 import { MobileQuickActions } from '../navigation/MobileQuickActions';
+import { SkipLinks, MainContent } from '../accessibility/SkipLinks';
+import { NetworkStatusIndicator } from '@/hooks/useNetworkStatus';
+import { SessionProvider } from '@/hooks/useSessionTimeout';
+import { GlobalSearchTrigger } from '../search/GlobalSearch';
 import { useDevice } from '@/hooks/use-device';
 import { cn } from '@/lib/utils';
 
@@ -27,77 +31,87 @@ const pageVariants = {
 };
 
 export function MainLayout({ children }: MainLayoutProps) {
-  const { isMobile, isTablet, prefersReducedMotion } = useDevice();
+  const { isMobile, prefersReducedMotion } = useDevice();
   const location = useLocation();
 
   // Enable animations unless user prefers reduced motion
   const shouldAnimate = !prefersReducedMotion;
 
   return (
-    <div className="flex min-h-screen w-full bg-background">
-      {/* Sidebar - hidden on mobile, shown on tablet+ */}
-      <AppSidebar />
-      
-      <main className={cn(
-        "flex-1 overflow-auto relative",
-        "min-h-screen"
-      )}>
-        <OfflineStatusBanner />
+    <SessionProvider>
+      <div className="flex min-h-screen w-full bg-background">
+        {/* Skip Links for Accessibility */}
+        <SkipLinks />
         
-        {/* Desktop top bar */}
-        <div className="fixed top-4 right-4 z-40 hidden md:flex items-center gap-2">
-          <QuickFavoritesBar />
-          <OperatorMachinesIndicator />
-          <OfflineReadyIndicator />
-          <ThemeToggle />
-          <RealtimeIndicator />
-        </div>
+        {/* Global Search (Cmd+K) */}
+        <GlobalSearchTrigger className="hidden" />
         
-        {/* Mobile/Tablet top bar */}
-        <div className="fixed top-4 right-4 z-40 flex md:hidden items-center gap-2">
-          <OfflineReadyIndicator />
-          <ThemeToggle />
-        </div>
+        {/* Sidebar - hidden on mobile, shown on tablet+ */}
+        <AppSidebar />
         
-        {/* Content with proper padding */}
-        <div className={cn(
-          // Mobile: top padding for header, bottom for nav
-          "pt-16 md:pt-4",
-          "pb-24 md:pb-4",
-          // Horizontal padding
-          "px-4 sm:px-6 lg:px-8"
+        <main className={cn(
+          "flex-1 overflow-auto relative",
+          "min-h-screen"
         )}>
-          {shouldAnimate ? (
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={location.pathname}
-                variants={pageVariants}
-                initial="initial"
-                animate="animate"
-                exit="exit"
-                transition={{ duration: 0.15, ease: 'easeOut' }}
-              >
-                {children}
-              </motion.div>
-            </AnimatePresence>
-          ) : (
-            children
-          )}
-        </div>
+          <OfflineStatusBanner />
+          
+          {/* Desktop top bar */}
+          <div className="fixed top-4 right-4 z-40 hidden md:flex items-center gap-2">
+            <QuickFavoritesBar />
+            <OperatorMachinesIndicator />
+            <NetworkStatusIndicator />
+            <OfflineReadyIndicator />
+            <ThemeToggle />
+            <RealtimeIndicator />
+          </div>
+          
+          {/* Mobile/Tablet top bar */}
+          <div className="fixed top-4 right-4 z-40 flex md:hidden items-center gap-2">
+            <NetworkStatusIndicator />
+            <OfflineReadyIndicator />
+            <ThemeToggle />
+          </div>
+          
+          {/* Content with proper padding */}
+          <MainContent className={cn(
+            // Mobile: top padding for header, bottom for nav
+            "pt-16 md:pt-4",
+            "pb-24 md:pb-4",
+            // Horizontal padding
+            "px-4 sm:px-6 lg:px-8"
+          )}>
+            {shouldAnimate ? (
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={location.pathname}
+                  variants={pageVariants}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  transition={{ duration: 0.15, ease: 'easeOut' }}
+                >
+                  {children}
+                </motion.div>
+              </AnimatePresence>
+            ) : (
+              children
+            )}
+          </MainContent>
+          
+          {/* Mobile navigation spacer */}
+          {isMobile && <div className="h-20" aria-hidden="true" />}
+        </main>
         
-        {/* Mobile navigation spacer */}
-        {isMobile && <div className="h-20" aria-hidden="true" />}
-      </main>
-      
-      {/* Mobile navigation - only render on mobile */}
-      <MobileNavigation />
-      
-      {/* Mobile FAB for quick actions */}
-      <MobileQuickActions />
-      
-      {/* Global components */}
-      <AssistantButton />
-      <NotificationIntegrator />
-    </div>
+        {/* Mobile navigation - only render on mobile */}
+        <MobileNavigation />
+        
+        {/* Mobile FAB for quick actions */}
+        <MobileQuickActions />
+        
+        {/* Global components */}
+        <AssistantButton />
+        <NotificationIntegrator />
+      </div>
+    </SessionProvider>
   );
 }
