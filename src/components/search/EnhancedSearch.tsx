@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { Search, X, ArrowUp, ArrowDown, ChevronRight, Clock, TrendingUp, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useDebounce } from '@/hooks/use-debounce';
+import { useDebounce } from '@/hooks/useDebounce';
 
 // ============================================
 // ENHANCED SEARCH INPUT
