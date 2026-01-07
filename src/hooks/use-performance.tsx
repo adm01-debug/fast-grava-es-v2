@@ -531,3 +531,167 @@ export function useStableCallback<T extends (...args: unknown[]) => unknown>(cal
     return callbackRef.current(...args);
   }, []) as T;
 }
+
+// Hook para lazy loading de dados
+export function useLazyLoad<T>(
+  loader: () => Promise<T>,
+  options: { immediate?: boolean } = {}
+) {
+  const [data, setData] = React.useState<T | null>(null);
+  const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState<Error | null>(null);
+
+  const load = React.useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const result = await loader();
+      setData(result);
+    } catch (err) {
+      setError(err as Error);
+    } finally {
+      setLoading(false);
+    }
+  }, [loader]);
+
+  React.useEffect(() => {
+    if (options.immediate) {
+      load();
+    }
+  }, [options.immediate, load]);
+
+  return { data, loading, error, load };
+}
+
+// Hook para cache de requests
+const requestCache = new Map<string, { data: unknown; timestamp: number }>();
+
+export function useCachedFetch<T>(
+  url: string,
+  options: { ttl?: number; enabled?: boolean } = {}
+) {
+  const { ttl = 60000, enabled = true } = options;
+  const [data, setData] = React.useState<T | null>(null);
+  const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState<Error | null>(null);
+
+  const fetchData = React.useCallback(async () => {
+    if (!enabled) return;
+
+    const cached = requestCache.get(url);
+    if (cached && Date.now() - cached.timestamp < ttl) {
+      setData(cached.data as T);
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error(response.statusText);
+      const result = await response.json();
+      
+      requestCache.set(url, { data: result, timestamp: Date.now() });
+      setData(result);
+    } catch (err) {
+      setError(err as Error);
+    } finally {
+      setLoading(false);
+    }
+  }, [url, ttl, enabled]);
+
+  React.useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  const invalidate = React.useCallback(() => {
+    requestCache.delete(url);
+    fetchData();
+  }, [url, fetchData]);
+
+  return { data, loading, error, refetch: fetchData, invalidate };
+}
+
+// Hook para batch updates
+export function useBatchUpdates<T>(
+  initialValue: T,
+  options: { delay?: number } = {}
+) {
+  const { delay = 100 } = options;
+  const [value, setValue] = React.useState(initialValue);
+  const pendingUpdates = React.useRef<((prev: T) => T)[]>([]);
+  const timeoutRef = React.useRef<NodeJS.Timeout>();
+
+  const batchUpdate = React.useCallback((updater: (prev: T) => T) => {
+    pendingUpdates.current.push(updater);
+
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+
+    timeoutRef.current = setTimeout(() => {
+      setValue(prev => {
+        let result = prev;
+        for (const update of pendingUpdates.current) {
+          result = update(result);
+        }
+        pendingUpdates.current = [];
+        return result;
+      });
+    }, delay);
+  }, [delay]);
+
+  const flush = React.useCallback(() => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    setValue(prev => {
+      let result = prev;
+      for (const update of pendingUpdates.current) {
+        result = update(result);
+      }
+      pendingUpdates.current = [];
+      return result;
+    });
+  }, []);
+
+  return { value, batchUpdate, flush, setValue };
+}
+
+// Hook para idle callback
+export function useIdleCallback(
+  callback: () => void,
+  options: { timeout?: number } = {}
+) {
+  const { timeout = 1000 } = options;
+
+  React.useEffect(() => {
+    if ('requestIdleCallback' in window) {
+      const id = (window as unknown as { requestIdleCallback: (cb: () => void, opts: { timeout: number }) => number }).requestIdleCallback(callback, { timeout });
+      return () => (window as unknown as { cancelIdleCallback: (id: number) => void }).cancelIdleCallback(id);
+    } else {
+      const id = setTimeout(callback, 0);
+      return () => clearTimeout(id);
+    }
+  }, [callback, timeout]);
+}
+
+// Hook para detectar slow renders
+export function usePerformanceMonitor(
+  componentName: string,
+  threshold: number = 16
+) {
+  const startTime = React.useRef<number>(0);
+
+  React.useEffect(() => {
+    startTime.current = performance.now();
+  });
+
+  React.useEffect(() => {
+    const renderTime = performance.now() - startTime.current;
+    if (renderTime > threshold && process.env.NODE_ENV === 'development') {
+      console.warn(`⚠️ Slow render detected in ${componentName}: ${renderTime.toFixed(2)}ms`);
+    }
+  });
+}
