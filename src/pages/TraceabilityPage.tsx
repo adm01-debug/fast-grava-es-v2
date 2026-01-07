@@ -57,6 +57,7 @@ import { useProductionLots, useTraceabilityMutations, ProductionLot } from '@/ho
 import { useJobs } from '@/hooks/useJobs';
 import LotDetailsModal from '@/components/traceability/LotDetailsModal';
 import LotGenealogyView from '@/components/traceability/LotGenealogyView';
+import { VoiceButton } from '@/components/voice/VoiceCommands';
 
 const STATUS_CONFIG: Record<string, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }> = {
   active: { label: 'Ativo', variant: 'default' },
@@ -161,6 +162,7 @@ export default function TraceabilityPage() {
             </p>
           </div>
           <div className="flex items-center gap-2">
+            <VoiceButton />
             <FavoritesDropdown onNavigate={(url) => navigate(url)} />
             <Badge variant="outline" className="gap-1 text-xs hidden sm:flex">
               <Command className="h-3 w-3" />K para buscar

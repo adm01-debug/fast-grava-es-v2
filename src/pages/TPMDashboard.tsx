@@ -22,6 +22,7 @@ import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { KPITooltip } from '@/components/ui/kpi-tooltip';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
+import { VoiceButton } from '@/components/voice/VoiceCommands';
 
 export default function TPMDashboard() {
   const navigate = useNavigate();
@@ -96,6 +97,7 @@ export default function TPMDashboard() {
             </p>
           </div>
           <div className="flex items-center gap-3">
+            <VoiceButton />
             <FavoritesDropdown onNavigate={(url) => navigate(url)} />
             <Badge variant="outline" className="gap-1 text-xs hidden sm:flex">
               <Command className="h-3 w-3" />K para buscar
