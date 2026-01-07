@@ -15,6 +15,9 @@ import { DailySummaryCard } from '@/components/notifications/DailySummaryCard';
 import { Badge } from '@/components/ui/badge';
 import { FavoritesDropdown, FavoriteButton } from '@/components/navigation/FavoritesManager';
 import { ActivityLog, useActivityLog } from '@/components/activity/ActivityLog';
+import { OfflineBanner, ConnectionStatus } from '@/components/offline/OfflineMode';
+import FloatingAIAssistant from '@/components/ai/AIAssistant';
+import { VoiceButton } from '@/components/voice/VoiceCommands';
 import { 
   Calendar, 
   CheckCircle2, 
@@ -128,6 +131,9 @@ const Index = () => {
 
   return (
     <MainLayout>
+      {/* Offline Banner */}
+      <OfflineBanner />
+      
       <div className="p-4 sm:p-6 lg:p-8 space-y-6 lg:space-y-8">
         {/* Page Header with Enhanced Navigation */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 animate-fade-in">
@@ -155,6 +161,15 @@ const Index = () => {
           </div>
           
           <div className="flex items-center gap-3">
+            {/* Connection Status */}
+            <ConnectionStatus />
+            
+            {/* Voice Command */}
+            <VoiceButton 
+              onCommand={(text) => console.log('Voice:', text)} 
+              className="hidden md:flex"
+            />
+            
             {/* Favorites Dropdown */}
             <FavoritesDropdown onNavigate={(path) => navigate(path)} />
             
@@ -296,6 +311,9 @@ const Index = () => {
           </div>
         )}
       </div>
+      
+      {/* Floating AI Assistant */}
+      <FloatingAIAssistant />
     </MainLayout>
   );
 };

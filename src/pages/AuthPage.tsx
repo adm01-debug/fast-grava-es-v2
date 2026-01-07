@@ -11,11 +11,12 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { toast } from 'sonner';
-import { Loader2, LogIn, UserPlus, Printer, Moon, Sun, KeyRound } from 'lucide-react';
+import { Loader2, LogIn, UserPlus, Printer, Moon, Sun, KeyRound, Fingerprint } from 'lucide-react';
 import { z } from 'zod';
 import { useTheme } from 'next-themes';
 import { LanguageSwitcher } from '@/components/layout/LanguageSwitcher';
 import { PasswordStrengthIndicator } from '@/components/auth/PasswordStrengthIndicator';
+import { PasskeyLoginButton } from '@/components/auth/PasskeyLoginButton';
 
 export default function AuthPage() {
   const navigate = useNavigate();
@@ -255,6 +256,21 @@ export default function AuthPage() {
                       </>
                     )}
                   </Button>
+
+                  <div className="relative">
+                    <div className="absolute inset-0 flex items-center">
+                      <span className="w-full border-t" />
+                    </div>
+                    <div className="relative flex justify-center text-xs uppercase">
+                      <span className="bg-card px-2 text-muted-foreground">ou</span>
+                    </div>
+                  </div>
+
+                  <PasskeyLoginButton 
+                    email={loginEmail}
+                    onSuccess={() => navigate('/')}
+                    className="w-full"
+                  />
 
                   <Button
                     type="button"

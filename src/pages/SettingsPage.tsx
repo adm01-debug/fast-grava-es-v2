@@ -25,7 +25,10 @@ import {
   UserPlus,
   Mail,
   Save,
-  RotateCcw
+  RotateCcw,
+  Accessibility,
+  FileUp,
+  FileDown
 } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { useState, useEffect } from 'react';
@@ -41,6 +44,7 @@ import { IPAllowlist } from '@/components/settings/IPAllowlist';
 import { LoginAuditLog } from '@/components/settings/LoginAuditLog';
 import { AutoThemeToggle } from '@/components/settings/AutoThemeToggle';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
+import IntegrationHub from '@/components/integrations/IntegrationHub';
 
 // Settings persistence hook
 function usePersistedSettings() {
@@ -187,13 +191,14 @@ export default function SettingsPage() {
         </div>
 
         <Tabs defaultValue="general" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-6">
+          <TabsList className="grid w-full grid-cols-7">
             <TabsTrigger value="general">Geral</TabsTrigger>
             <TabsTrigger value="security">Segurança</TabsTrigger>
             <TabsTrigger value="notifications">Notificações</TabsTrigger>
             <TabsTrigger value="alerts">Alertas</TabsTrigger>
             <TabsTrigger value="users">Usuários</TabsTrigger>
             <TabsTrigger value="backup">Backup</TabsTrigger>
+            <TabsTrigger value="integrations">Integrações</TabsTrigger>
           </TabsList>
 
           {/* General Tab */}
@@ -477,9 +482,9 @@ export default function SettingsPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Plug className="h-5 w-5 text-primary" />
-                  Integrações
+                  Status das Integrações
                 </CardTitle>
-                <CardDescription>Status das integrações configuradas</CardDescription>
+                <CardDescription>Veja o status das integrações configuradas</CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30">
@@ -522,6 +527,11 @@ export default function SettingsPage() {
                 </div>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          {/* Integrations Tab */}
+          <TabsContent value="integrations" className="space-y-4">
+            <IntegrationHub />
           </TabsContent>
         </Tabs>
       </div>
