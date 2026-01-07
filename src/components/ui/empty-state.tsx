@@ -11,6 +11,15 @@ import {
   Calendar,
   AlertCircle,
   Plus,
+  Package,
+  Wrench,
+  BarChart3,
+  Bell,
+  CheckCircle2,
+  Clock,
+  Settings,
+  ShieldAlert,
+  Zap,
 } from "lucide-react";
 
 type EmptyStateVariant =
@@ -22,7 +31,14 @@ type EmptyStateVariant =
   | "empty-folder"
   | "no-users"
   | "no-events"
-  | "error";
+  | "error"
+  | "success"
+  | "maintenance"
+  | "analytics"
+  | "notifications"
+  | "settings"
+  | "security"
+  | "performance";
 
 interface EmptyStateProps {
   variant?: EmptyStateVariant;
@@ -40,34 +56,193 @@ interface EmptyStateProps {
   };
   className?: string;
   size?: "sm" | "md" | "lg";
+  illustration?: boolean;
 }
+
+// SVG Illustrations for empty states
+const Illustrations = {
+  noData: (
+    <svg viewBox="0 0 200 150" className="w-full h-full" fill="none">
+      <motion.circle
+        cx="100"
+        cy="75"
+        r="60"
+        className="fill-muted/30"
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        transition={{ duration: 0.5, type: "spring" }}
+      />
+      <motion.path
+        d="M70 60 L130 60 L130 110 L70 110 Z"
+        className="fill-muted stroke-muted-foreground/30"
+        strokeWidth="2"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+      />
+      <motion.path
+        d="M80 75 L120 75"
+        className="stroke-muted-foreground/40"
+        strokeWidth="3"
+        strokeLinecap="round"
+        initial={{ pathLength: 0 }}
+        animate={{ pathLength: 1 }}
+        transition={{ delay: 0.4, duration: 0.5 }}
+      />
+      <motion.path
+        d="M80 85 L110 85"
+        className="stroke-muted-foreground/40"
+        strokeWidth="3"
+        strokeLinecap="round"
+        initial={{ pathLength: 0 }}
+        animate={{ pathLength: 1 }}
+        transition={{ delay: 0.5, duration: 0.5 }}
+      />
+      <motion.path
+        d="M80 95 L100 95"
+        className="stroke-muted-foreground/40"
+        strokeWidth="3"
+        strokeLinecap="round"
+        initial={{ pathLength: 0 }}
+        animate={{ pathLength: 1 }}
+        transition={{ delay: 0.6, duration: 0.5 }}
+      />
+    </svg>
+  ),
+  search: (
+    <svg viewBox="0 0 200 150" className="w-full h-full" fill="none">
+      <motion.circle
+        cx="90"
+        cy="70"
+        r="35"
+        className="stroke-muted-foreground/30"
+        strokeWidth="4"
+        fill="none"
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        transition={{ duration: 0.4, type: "spring" }}
+      />
+      <motion.line
+        x1="115"
+        y1="95"
+        x2="145"
+        y2="125"
+        className="stroke-muted-foreground/40"
+        strokeWidth="6"
+        strokeLinecap="round"
+        initial={{ pathLength: 0 }}
+        animate={{ pathLength: 1 }}
+        transition={{ delay: 0.3, duration: 0.3 }}
+      />
+      <motion.text
+        x="90"
+        y="75"
+        textAnchor="middle"
+        className="fill-muted-foreground/30 text-2xl"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.5 }}
+      >
+        ?
+      </motion.text>
+    </svg>
+  ),
+  success: (
+    <svg viewBox="0 0 200 150" className="w-full h-full" fill="none">
+      <motion.circle
+        cx="100"
+        cy="75"
+        r="50"
+        className="fill-success/10"
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        transition={{ duration: 0.5, type: "spring" }}
+      />
+      <motion.circle
+        cx="100"
+        cy="75"
+        r="35"
+        className="fill-success/20"
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        transition={{ delay: 0.1, duration: 0.5, type: "spring" }}
+      />
+      <motion.path
+        d="M80 75 L95 90 L125 60"
+        className="stroke-success"
+        strokeWidth="6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        fill="none"
+        initial={{ pathLength: 0 }}
+        animate={{ pathLength: 1 }}
+        transition={{ delay: 0.3, duration: 0.4 }}
+      />
+    </svg>
+  ),
+  error: (
+    <svg viewBox="0 0 200 150" className="w-full h-full" fill="none">
+      <motion.circle
+        cx="100"
+        cy="75"
+        r="50"
+        className="fill-destructive/10"
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        transition={{ duration: 0.5, type: "spring" }}
+      />
+      <motion.path
+        d="M80 55 L120 95"
+        className="stroke-destructive"
+        strokeWidth="6"
+        strokeLinecap="round"
+        initial={{ pathLength: 0 }}
+        animate={{ pathLength: 1 }}
+        transition={{ delay: 0.2, duration: 0.3 }}
+      />
+      <motion.path
+        d="M120 55 L80 95"
+        className="stroke-destructive"
+        strokeWidth="6"
+        strokeLinecap="round"
+        initial={{ pathLength: 0 }}
+        animate={{ pathLength: 1 }}
+        transition={{ delay: 0.4, duration: 0.3 }}
+      />
+    </svg>
+  ),
+};
 
 const variantConfig: Record<
   EmptyStateVariant,
-  { icon: React.ReactNode; title: string; description: string }
+  { icon: React.ReactNode; title: string; description: string; illustration?: keyof typeof Illustrations }
 > = {
   default: {
     icon: <Inbox className="h-12 w-12" />,
     title: "Nada aqui ainda",
     description: "Comece adicionando seu primeiro item.",
+    illustration: "noData",
   },
   search: {
     icon: <Search className="h-12 w-12" />,
     title: "Nenhum resultado encontrado",
     description: "Tente ajustar os filtros ou termos de busca.",
+    illustration: "search",
   },
   "no-data": {
     icon: <FileQuestion className="h-12 w-12" />,
     title: "Sem dados disponíveis",
     description: "Os dados aparecerão aqui quando estiverem disponíveis.",
+    illustration: "noData",
   },
   "no-results": {
     icon: <Search className="h-12 w-12" />,
     title: "Sem resultados",
     description: "Não encontramos nada com os critérios atuais.",
+    illustration: "search",
   },
   "no-access": {
-    icon: <AlertCircle className="h-12 w-12" />,
+    icon: <ShieldAlert className="h-12 w-12" />,
     title: "Acesso restrito",
     description: "Você não tem permissão para visualizar este conteúdo.",
   },
@@ -75,6 +250,7 @@ const variantConfig: Record<
     icon: <FolderOpen className="h-12 w-12" />,
     title: "Pasta vazia",
     description: "Esta pasta não contém arquivos.",
+    illustration: "noData",
   },
   "no-users": {
     icon: <Users className="h-12 w-12" />,
@@ -90,6 +266,43 @@ const variantConfig: Record<
     icon: <AlertCircle className="h-12 w-12" />,
     title: "Algo deu errado",
     description: "Ocorreu um erro ao carregar os dados. Tente novamente.",
+    illustration: "error",
+  },
+  success: {
+    icon: <CheckCircle2 className="h-12 w-12" />,
+    title: "Tudo certo!",
+    description: "A operação foi concluída com sucesso.",
+    illustration: "success",
+  },
+  maintenance: {
+    icon: <Wrench className="h-12 w-12" />,
+    title: "Nenhuma manutenção",
+    description: "Não há manutenções programadas ou pendentes.",
+  },
+  analytics: {
+    icon: <BarChart3 className="h-12 w-12" />,
+    title: "Dados insuficientes",
+    description: "Aguarde mais dados para visualizar os relatórios.",
+  },
+  notifications: {
+    icon: <Bell className="h-12 w-12" />,
+    title: "Tudo em dia!",
+    description: "Você não tem notificações pendentes.",
+  },
+  settings: {
+    icon: <Settings className="h-12 w-12" />,
+    title: "Nenhuma configuração",
+    description: "Configure as preferências do sistema.",
+  },
+  security: {
+    icon: <ShieldAlert className="h-12 w-12" />,
+    title: "Sem alertas",
+    description: "Nenhum problema de segurança detectado.",
+  },
+  performance: {
+    icon: <Zap className="h-12 w-12" />,
+    title: "Sem dados de performance",
+    description: "Os dados de performance aparecerão aqui.",
   },
 };
 
