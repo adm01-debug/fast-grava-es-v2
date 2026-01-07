@@ -1,0 +1,416 @@
+import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  Trophy, 
+  Star, 
+  Zap, 
+  Target, 
+  Award,
+  TrendingUp,
+  Crown,
+  Medal,
+  Flame,
+  Gift
+} from 'lucide-react';
+import { cn } from '@/lib/utils';
+import confetti from 'canvas-confetti';
+
+// Types
+interface Achievement {
+  id: string;
+  name: string;
+  description: string;
+  icon: React.ElementType;
+  color: string;
+  points: number;
+  unlockedAt?: Date;
+  progress?: number;
+  maxProgress?: number;
+}
+
+interface Level {
+  level: number;
+  name: string;
+  minPoints: number;
+  maxPoints: number;
+  icon: React.ElementType;
+  color: string;
+}
+
+interface UserStats {
+  totalPoints: number;
+  level: Level;
+  streak: number;
+  achievements: Achievement[];
+  recentActivity: ActivityItem[];
+}
+
+interface ActivityItem {
+  id: string;
+  action: string;
+  points: number;
+  timestamp: Date;
+}
+
+// Levels configuration
+const LEVELS: Level[] = [
+  { level: 1, name: 'Iniciante', minPoints: 0, maxPoints: 100, icon: Star, color: 'text-gray-500' },
+  { level: 2, name: 'Aprendiz', minPoints: 100, maxPoints: 300, icon: Zap, color: 'text-blue-500' },
+  { level: 3, name: 'Competente', minPoints: 300, maxPoints: 600, icon: Target, color: 'text-green-500' },
+  { level: 4, name: 'Proficiente', minPoints: 600, maxPoints: 1000, icon: Award, color: 'text-purple-500' },
+  { level: 5, name: 'Especialista', minPoints: 1000, maxPoints: 1500, icon: Trophy, color: 'text-yellow-500' },
+  { level: 6, name: 'Mestre', minPoints: 1500, maxPoints: 2500, icon: Crown, color: 'text-orange-500' },
+  { level: 7, name: 'Lenda', minPoints: 2500, maxPoints: Infinity, icon: Flame, color: 'text-red-500' },
+];
+
+// Achievement definitions
+const ACHIEVEMENT_DEFINITIONS: Omit<Achievement, 'unlockedAt' | 'progress'>[] = [
+  { id: 'first_job', name: 'Primeira Ordem', description: 'Complete sua primeira ordem de produção', icon: Star, color: 'bg-blue-500', points: 10 },
+  { id: 'streak_7', name: 'Semana Perfeita', description: '7 dias consecutivos de produtividade', icon: Flame, color: 'bg-orange-500', points: 50 },
+  { id: 'streak_30', name: 'Mês Imbatível', description: '30 dias consecutivos de atividade', icon: Flame, color: 'bg-red-500', points: 200 },
+  { id: 'efficiency_90', name: 'Alta Eficiência', description: 'Mantenha eficiência acima de 90%', icon: TrendingUp, color: 'bg-green-500', points: 75 },
+  { id: 'zero_defects', name: 'Perfeição', description: 'Complete 10 ordens sem defeitos', icon: Target, color: 'bg-purple-500', points: 100 },
+  { id: 'team_leader', name: 'Líder de Equipe', description: 'Seja o mais produtivo da semana', icon: Crown, color: 'bg-yellow-500', points: 150 },
+  { id: 'problem_solver', name: 'Solucionador', description: 'Resolva 5 alertas de manutenção', icon: Award, color: 'bg-teal-500', points: 60 },
+  { id: 'mentor', name: 'Mentor', description: 'Ajude 3 novos operadores', icon: Medal, color: 'bg-indigo-500', points: 80 },
+];
+
+// Context
+interface GamificationContextType {
+  stats: UserStats;
+  addPoints: (points: number, reason: string) => void;
+  unlockAchievement: (achievementId: string) => void;
+  getLevel: (points: number) => Level;
+}
+
+const GamificationContext = createContext<GamificationContextType | null>(null);
+
+export function useGamification() {
+  const context = useContext(GamificationContext);
+  if (!context) {
+    throw new Error('useGamification must be used within GamificationProvider');
+  }
+  return context;
+}
+
+// Provider
+export function GamificationProvider({ children }: { children: ReactNode }) {
+  const [stats, setStats] = useState<UserStats>(() => {
+    const saved = localStorage.getItem('gamification_stats');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      return {
+        ...parsed,
+        recentActivity: parsed.recentActivity?.map((a: any) => ({
+          ...a,
+          timestamp: new Date(a.timestamp)
+        })) || [],
+        achievements: parsed.achievements?.map((a: any) => ({
+          ...a,
+          unlockedAt: a.unlockedAt ? new Date(a.unlockedAt) : undefined
+        })) || []
+      };
+    }
+    return {
+      totalPoints: 0,
+      level: LEVELS[0],
+      streak: 0,
+      achievements: [],
+      recentActivity: []
+    };
+  });
+
+  const [notification, setNotification] = useState<{
+    type: 'points' | 'achievement' | 'levelUp';
+    data: any;
+  } | null>(null);
+
+  useEffect(() => {
+    localStorage.setItem('gamification_stats', JSON.stringify(stats));
+  }, [stats]);
+
+  const getLevel = (points: number): Level => {
+    return [...LEVELS].reverse().find(l => points >= l.minPoints) || LEVELS[0];
+  };
+
+  const addPoints = (points: number, reason: string) => {
+    setStats(prev => {
+      const newPoints = prev.totalPoints + points;
+      const oldLevel = getLevel(prev.totalPoints);
+      const newLevel = getLevel(newPoints);
+
+      if (newLevel.level > oldLevel.level) {
+        // Level up!
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.6 }
+        });
+        setNotification({ type: 'levelUp', data: newLevel });
+      } else {
+        setNotification({ type: 'points', data: { points, reason } });
+      }
+
+      return {
+        ...prev,
+        totalPoints: newPoints,
+        level: newLevel,
+        recentActivity: [
+          {
+            id: Date.now().toString(),
+            action: reason,
+            points,
+            timestamp: new Date()
+          },
+          ...prev.recentActivity.slice(0, 19)
+        ]
+      };
+    });
+  };
+
+  const unlockAchievement = (achievementId: string) => {
+    const definition = ACHIEVEMENT_DEFINITIONS.find(a => a.id === achievementId);
+    if (!definition) return;
+
+    const alreadyUnlocked = stats.achievements.some(a => a.id === achievementId);
+    if (alreadyUnlocked) return;
+
+    confetti({
+      particleCount: 50,
+      spread: 60,
+      origin: { y: 0.6 },
+      colors: ['#FFD700', '#FFA500', '#FF6347']
+    });
+
+    const newAchievement: Achievement = {
+      ...definition,
+      unlockedAt: new Date()
+    };
+
+    setNotification({ type: 'achievement', data: newAchievement });
+
+    setStats(prev => ({
+      ...prev,
+      totalPoints: prev.totalPoints + definition.points,
+      achievements: [...prev.achievements, newAchievement]
+    }));
+  };
+
+  // Auto-hide notification
+  useEffect(() => {
+    if (notification) {
+      const timer = setTimeout(() => setNotification(null), 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [notification]);
+
+  return (
+    <GamificationContext.Provider value={{ stats, addPoints, unlockAchievement, getLevel }}>
+      {children}
+      <NotificationPopup notification={notification} onClose={() => setNotification(null)} />
+    </GamificationContext.Provider>
+  );
+}
+
+// Notification Popup
+function NotificationPopup({ 
+  notification, 
+  onClose 
+}: { 
+  notification: { type: string; data: any } | null;
+  onClose: () => void;
+}) {
+  if (!notification) return null;
+
+  return (
+    <AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0, y: -50, scale: 0.9 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: -50, scale: 0.9 }}
+        className="fixed top-4 left-1/2 -translate-x-1/2 z-50"
+      >
+        {notification.type === 'points' && (
+          <div className="flex items-center gap-3 px-4 py-3 bg-card border border-border rounded-xl shadow-2xl">
+            <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center">
+              <Zap className="h-5 w-5 text-primary" />
+            </div>
+            <div>
+              <p className="text-sm font-medium">+{notification.data.points} pontos</p>
+              <p className="text-xs text-muted-foreground">{notification.data.reason}</p>
+            </div>
+          </div>
+        )}
+
+        {notification.type === 'achievement' && (
+          <div className="flex items-center gap-3 px-4 py-3 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border border-yellow-500/30 rounded-xl shadow-2xl">
+            <div className={cn("h-12 w-12 rounded-full flex items-center justify-center", notification.data.color)}>
+              <notification.data.icon className="h-6 w-6 text-white" />
+            </div>
+            <div>
+              <p className="text-sm font-bold flex items-center gap-1">
+                <Trophy className="h-4 w-4 text-yellow-500" />
+                Conquista Desbloqueada!
+              </p>
+              <p className="text-sm font-medium">{notification.data.name}</p>
+              <p className="text-xs text-muted-foreground">+{notification.data.points} pontos</p>
+            </div>
+          </div>
+        )}
+
+        {notification.type === 'levelUp' && (
+          <div className="flex items-center gap-3 px-6 py-4 bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/30 rounded-xl shadow-2xl">
+            <motion.div 
+              animate={{ rotate: [0, 360] }}
+              transition={{ duration: 1, ease: "easeOut" }}
+              className="h-14 w-14 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center"
+            >
+              <notification.data.icon className="h-7 w-7 text-white" />
+            </motion.div>
+            <div>
+              <p className="text-lg font-bold">🎉 Level Up!</p>
+              <p className="text-sm">Você alcançou nível {notification.data.level}</p>
+              <p className={cn("text-sm font-semibold", notification.data.color)}>
+                {notification.data.name}
+              </p>
+            </div>
+          </div>
+        )}
+      </motion.div>
+    </AnimatePresence>
+  );
+}
+
+// Components
+export function LevelBadge({ level, size = 'md' }: { level: Level; size?: 'sm' | 'md' | 'lg' }) {
+  const sizes = {
+    sm: 'h-6 w-6 text-xs',
+    md: 'h-8 w-8 text-sm',
+    lg: 'h-12 w-12 text-lg'
+  };
+
+  return (
+    <div className={cn(
+      "rounded-full bg-gradient-to-br from-card to-muted flex items-center justify-center border-2 border-primary/20",
+      sizes[size]
+    )}>
+      <level.icon className={cn("h-1/2 w-1/2", level.color)} />
+    </div>
+  );
+}
+
+export function PointsDisplay({ points, showAnimation = true }: { points: number; showAnimation?: boolean }) {
+  return (
+    <motion.div 
+      key={points}
+      initial={showAnimation ? { scale: 1.2 } : false}
+      animate={{ scale: 1 }}
+      className="flex items-center gap-1 text-sm font-semibold"
+    >
+      <Star className="h-4 w-4 text-yellow-500" />
+      <span>{points.toLocaleString()}</span>
+    </motion.div>
+  );
+}
+
+export function ProgressBar({ current, max, className }: { current: number; max: number; className?: string }) {
+  const percentage = Math.min((current / max) * 100, 100);
+  
+  return (
+    <div className={cn("h-2 bg-muted rounded-full overflow-hidden", className)}>
+      <motion.div 
+        initial={{ width: 0 }}
+        animate={{ width: `${percentage}%` }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+        className="h-full bg-gradient-to-r from-primary to-primary/70 rounded-full"
+      />
+    </div>
+  );
+}
+
+export function AchievementCard({ achievement, locked = false }: { achievement: Achievement; locked?: boolean }) {
+  return (
+    <motion.div
+      whileHover={{ scale: 1.02 }}
+      className={cn(
+        "p-4 rounded-xl border transition-all",
+        locked 
+          ? "bg-muted/50 border-border opacity-50" 
+          : "bg-card border-primary/20 shadow-sm"
+      )}
+    >
+      <div className="flex items-start gap-3">
+        <div className={cn(
+          "h-12 w-12 rounded-xl flex items-center justify-center",
+          locked ? "bg-muted" : achievement.color
+        )}>
+          <achievement.icon className={cn("h-6 w-6", locked ? "text-muted-foreground" : "text-white")} />
+        </div>
+        <div className="flex-1">
+          <h4 className="font-semibold">{achievement.name}</h4>
+          <p className="text-xs text-muted-foreground">{achievement.description}</p>
+          {!locked && (
+            <div className="flex items-center gap-1 mt-1">
+              <Gift className="h-3 w-3 text-primary" />
+              <span className="text-xs font-medium text-primary">+{achievement.points} pts</span>
+            </div>
+          )}
+        </div>
+      </div>
+      {achievement.progress !== undefined && achievement.maxProgress && (
+        <div className="mt-3">
+          <div className="flex justify-between text-xs text-muted-foreground mb-1">
+            <span>Progresso</span>
+            <span>{achievement.progress}/{achievement.maxProgress}</span>
+          </div>
+          <ProgressBar current={achievement.progress} max={achievement.maxProgress} />
+        </div>
+      )}
+    </motion.div>
+  );
+}
+
+export function LeaderboardItem({ 
+  rank, 
+  name, 
+  points, 
+  isCurrentUser = false 
+}: { 
+  rank: number; 
+  name: string; 
+  points: number; 
+  isCurrentUser?: boolean;
+}) {
+  const getRankIcon = () => {
+    if (rank === 1) return <Crown className="h-5 w-5 text-yellow-500" />;
+    if (rank === 2) return <Medal className="h-5 w-5 text-gray-400" />;
+    if (rank === 3) return <Medal className="h-5 w-5 text-amber-600" />;
+    return <span className="text-sm font-medium text-muted-foreground">{rank}</span>;
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: -10 }}
+      animate={{ opacity: 1, x: 0 }}
+      className={cn(
+        "flex items-center gap-3 p-3 rounded-lg",
+        isCurrentUser ? "bg-primary/10 border border-primary/20" : "bg-muted/50"
+      )}
+    >
+      <div className="w-8 flex justify-center">{getRankIcon()}</div>
+      <div className="flex-1">
+        <p className={cn("font-medium", isCurrentUser && "text-primary")}>{name}</p>
+      </div>
+      <PointsDisplay points={points} showAnimation={false} />
+    </motion.div>
+  );
+}
+
+export function StreakDisplay({ streak }: { streak: number }) {
+  return (
+    <div className="flex items-center gap-2 px-3 py-1.5 bg-orange-500/10 rounded-full">
+      <Flame className={cn("h-4 w-4", streak > 0 ? "text-orange-500" : "text-muted-foreground")} />
+      <span className="text-sm font-semibold">{streak} dias</span>
+    </div>
+  );
+}
