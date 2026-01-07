@@ -31,6 +31,8 @@ import {
 import { cn } from '@/lib/utils';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { KPITooltip, KPI_DEFINITIONS } from '@/components/ui/kpi-tooltip';
+import { VoiceButton } from '@/components/voice/VoiceCommands';
+import { useNavigate } from 'react-router-dom';
 
 export default function KPIDashboard() {
   const { data: kpis, isLoading } = useKPIs();
@@ -78,13 +80,16 @@ export default function KPIDashboard() {
         <Breadcrumbs />
         
         {/* Header */}
-        <div>
-          <h1 className="text-xl sm:text-2xl lg:text-3xl font-display font-bold">
-            <span className="gradient-text">Dashboard de KPIs</span>
-          </h1>
-          <p className="text-muted-foreground text-sm sm:text-base">
-            Métricas de produtividade e performance
-          </p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-display font-bold">
+              <span className="gradient-text">Dashboard de KPIs</span>
+            </h1>
+            <p className="text-muted-foreground text-sm sm:text-base">
+              Métricas de produtividade e performance
+            </p>
+          </div>
+          <VoiceButton />
         </div>
 
         {/* Main Stats */}
