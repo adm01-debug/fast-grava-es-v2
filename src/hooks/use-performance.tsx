@@ -381,3 +381,153 @@ export function useImagePreloader(srcs: string[]) {
 
   return { loadedImages, progress, isComplete: progress === 100 };
 }
+
+// Additional performance hooks
+
+// Debounce value hook
+export function useDebounce<T>(value: T, delay: number): T {
+  const [debouncedValue, setDebouncedValue] = React.useState(value);
+
+  React.useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => clearTimeout(handler);
+  }, [value, delay]);
+
+  return debouncedValue;
+}
+
+// Throttle value hook
+export function useThrottle<T>(value: T, limit: number): T {
+  const [throttledValue, setThrottledValue] = React.useState(value);
+  const lastRan = React.useRef(Date.now());
+
+  React.useEffect(() => {
+    const handler = setTimeout(() => {
+      if (Date.now() - lastRan.current >= limit) {
+        setThrottledValue(value);
+        lastRan.current = Date.now();
+      }
+    }, limit - (Date.now() - lastRan.current));
+
+    return () => clearTimeout(handler);
+  }, [value, limit]);
+
+  return throttledValue;
+}
+
+// Previous value hook
+export function usePrevious<T>(value: T): T | undefined {
+  const ref = React.useRef<T>();
+  
+  React.useEffect(() => {
+    ref.current = value;
+  }, [value]);
+
+  return ref.current;
+}
+
+// Is first render hook
+export function useIsFirstRender(): boolean {
+  const isFirst = React.useRef(true);
+
+  if (isFirst.current) {
+    isFirst.current = false;
+    return true;
+  }
+
+  return false;
+}
+
+// Update effect (skip first render)
+export function useUpdateEffect(
+  effect: React.EffectCallback, 
+  deps?: React.DependencyList
+): void {
+  const isFirst = useIsFirstRender();
+
+  React.useEffect(() => {
+    if (!isFirst) {
+      return effect();
+    }
+  }, deps);
+}
+
+// Media query hook
+export function useMediaQuery(query: string): boolean {
+  const [matches, setMatches] = React.useState(() => {
+    if (typeof window !== 'undefined') {
+      return window.matchMedia(query).matches;
+    }
+    return false;
+  });
+
+  React.useEffect(() => {
+    const mediaQuery = window.matchMedia(query);
+    const handler = (e: MediaQueryListEvent) => setMatches(e.matches);
+
+    mediaQuery.addEventListener('change', handler);
+    return () => mediaQuery.removeEventListener('change', handler);
+  }, [query]);
+
+  return matches;
+}
+
+// Responsive breakpoints hook
+export function useBreakpoint() {
+  const isMobile = useMediaQuery('(max-width: 639px)');
+  const isTablet = useMediaQuery('(min-width: 640px) and (max-width: 1023px)');
+  const isDesktop = useMediaQuery('(min-width: 1024px)');
+  const isLargeDesktop = useMediaQuery('(min-width: 1280px)');
+
+  return {
+    isMobile,
+    isTablet,
+    isDesktop,
+    isLargeDesktop,
+    breakpoint: isMobile ? 'mobile' : isTablet ? 'tablet' : isLargeDesktop ? 'xl' : 'desktop'
+  };
+}
+
+// Reduced motion preference
+export function usePrefersReducedMotion(): boolean {
+  return useMediaQuery('(prefers-reduced-motion: reduce)');
+}
+
+// Dark mode preference
+export function usePrefersDarkMode(): boolean {
+  return useMediaQuery('(prefers-color-scheme: dark)');
+}
+
+// Force update hook
+export function useForceUpdate(): () => void {
+  const [, setTick] = React.useState(0);
+  return React.useCallback(() => setTick(tick => tick + 1), []);
+}
+
+// Render count (for debugging)
+export function useRenderCount(componentName?: string): number {
+  const renderCount = React.useRef(0);
+  renderCount.current++;
+
+  if (process.env.NODE_ENV === 'development' && componentName) {
+    console.log(`${componentName} rendered ${renderCount.current} times`);
+  }
+
+  return renderCount.current;
+}
+
+// Stable callback (never changes reference)
+export function useStableCallback<T extends (...args: unknown[]) => unknown>(callback: T): T {
+  const callbackRef = React.useRef(callback);
+  
+  React.useEffect(() => {
+    callbackRef.current = callback;
+  }, [callback]);
+
+  return React.useCallback((...args: Parameters<T>) => {
+    return callbackRef.current(...args);
+  }, []) as T;
+}
