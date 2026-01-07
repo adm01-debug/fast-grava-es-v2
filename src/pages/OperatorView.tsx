@@ -30,6 +30,7 @@ import {
 import { cn } from '@/lib/utils';
 import { JobStatus } from '@/types/scheduling';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
+import { VoiceButton } from '@/components/voice/VoiceCommands';
 
 export default function OperatorView() {
   const navigate = useNavigate();
@@ -157,6 +158,13 @@ export default function OperatorView() {
                 ))}
               </SelectContent>
             </Select>
+            
+            <VoiceButton onCommand={(cmd) => {
+              if (cmd.startsWith('navigate:')) {
+                const dest = cmd.replace('navigate:', '');
+                if (dest.includes('kiosk')) navigate('/kiosk');
+              }
+            }} />
             
             <Button 
               variant="outline" 

@@ -45,6 +45,8 @@ import {
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
+import { VoiceButton } from '@/components/voice/VoiceCommands';
+import { useNavigate } from 'react-router-dom';
 
 export default function ExecutiveDashboard() {
   const datePresets = getDateRangePresets();
@@ -156,6 +158,12 @@ export default function ExecutiveDashboard() {
           </div>
           
           <div className="flex items-center gap-3">
+            <VoiceButton onCommand={(cmd) => {
+              if (cmd.startsWith('search:')) {
+                toast.info(`Busca: ${cmd.replace('search:', '')}`);
+              }
+            }} />
+            
             <Select 
               value={selectedRange.label} 
               onValueChange={(value) => {
