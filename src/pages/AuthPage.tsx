@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/contexts/AuthContext';
@@ -10,13 +10,15 @@ import { PasswordInput } from '@/components/ui/password-input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'sonner';
-import { Loader2, LogIn, UserPlus, Printer, Moon, Sun, KeyRound, Fingerprint } from 'lucide-react';
+import { Loader2, LogIn, UserPlus, Printer, Moon, Sun, KeyRound, Chrome, Github } from 'lucide-react';
 import { z } from 'zod';
 import { useTheme } from 'next-themes';
 import { LanguageSwitcher } from '@/components/layout/LanguageSwitcher';
 import { PasswordStrengthIndicator } from '@/components/auth/PasswordStrengthIndicator';
 import { PasskeyLoginButton } from '@/components/auth/PasskeyLoginButton';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function AuthPage() {
   const navigate = useNavigate();
@@ -42,6 +44,7 @@ export default function AuthPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
   const [signupName, setSignupName] = useState('');
   const [signupEmail, setSignupEmail] = useState('');
   const [signupPassword, setSignupPassword] = useState('');
@@ -51,6 +54,16 @@ export default function AuthPage() {
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [forgotEmail, setForgotEmail] = useState('');
   const [isSendingReset, setIsSendingReset] = useState(false);
+  const [socialLoading, setSocialLoading] = useState<string | null>(null);
+
+  // Load remembered email
+  useEffect(() => {
+    const savedEmail = localStorage.getItem('rememberedEmail');
+    if (savedEmail) {
+      setLoginEmail(savedEmail);
+      setRememberMe(true);
+    }
+  }, []);
 
   if (user) {
     navigate('/');
@@ -74,11 +87,17 @@ export default function AuthPage() {
       }
     }
 
+    // Handle remember me
+    if (rememberMe) {
+      localStorage.setItem('rememberedEmail', loginEmail);
+    } else {
+      localStorage.removeItem('rememberedEmail');
+    }
+
     setIsLoading(true);
     const { error } = await signIn(loginEmail, loginPassword);
 
     if (error) {
-      // Check if it's a lockout error
       const lockoutError = error as Error & { isLockout?: boolean; remainingMinutes?: number; lockoutMinutes?: number };
       if (lockoutError.isLockout) {
         const minutes = lockoutError.remainingMinutes || lockoutError.lockoutMinutes || 0;
@@ -95,6 +114,25 @@ export default function AuthPage() {
 
     toast.success(t('auth.loginSuccess'));
     navigate('/');
+  };
+
+  const handleSocialLogin = async (provider: 'google' | 'github') => {
+    setSocialLoading(provider);
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider,
+        options: {
+          redirectTo: `${window.location.origin}/`,
+        },
+      });
+      if (error) {
+        toast.error(`Erro ao conectar com ${provider === 'google' ? 'Google' : 'GitHub'}`);
+      }
+    } catch {
+      toast.error('Erro ao iniciar login social');
+    } finally {
+      setSocialLoading(null);
+    }
   };
 
   const handleForgotPassword = async (e: React.FormEvent) => {
@@ -243,7 +281,24 @@ export default function AuthPage() {
                     )}
                   </div>
 
-                  <Button type="submit" variant="gradient" className="w-full h-11" disabled={isLoading}>
+                  {/* Remember Me */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <Checkbox 
+                        id="remember-me" 
+                        checked={rememberMe}
+                        onCheckedChange={(checked) => setRememberMe(checked === true)}
+                      />
+                      <Label 
+                        htmlFor="remember-me" 
+                        className="text-sm font-normal text-muted-foreground cursor-pointer"
+                      >
+                        Lembrar meu e-mail
+                      </Label>
+                    </div>
+                  </div>
+
+                  <Button type="submit" variant="gradient" className="w-full h-11" disabled={isLoading || !!socialLoading}>
                     {isLoading ? (
                       <>
                         <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -271,6 +326,38 @@ export default function AuthPage() {
                     onSuccess={() => navigate('/')}
                     className="w-full"
                   />
+
+                  {/* Social Login Buttons */}
+                  <div className="grid grid-cols-2 gap-3">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="w-full h-11 gap-2"
+                      onClick={() => handleSocialLogin('google')}
+                      disabled={isLoading || !!socialLoading}
+                    >
+                      {socialLoading === 'google' ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Chrome className="h-4 w-4" />
+                      )}
+                      Google
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="w-full h-11 gap-2"
+                      onClick={() => handleSocialLogin('github')}
+                      disabled={isLoading || !!socialLoading}
+                    >
+                      {socialLoading === 'github' ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Github className="h-4 w-4" />
+                      )}
+                      GitHub
+                    </Button>
+                  </div>
 
                   <Button
                     type="button"
