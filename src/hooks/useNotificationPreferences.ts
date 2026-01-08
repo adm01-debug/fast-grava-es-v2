@@ -85,7 +85,7 @@ export function useNotificationPreferences() {
       
       // For now, just update local state since the table might not exist
       // In production, this would update the notification_preferences table
-      console.log('Updating preferences:', updates);
+      if (import.meta.env.DEV) console.log('Updating preferences:', updates);
       
       return { ...preferences, ...updates };
     },

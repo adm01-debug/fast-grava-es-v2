@@ -288,7 +288,7 @@ export async function registerBackgroundSync(): Promise<boolean> {
 export async function requestPersistentStorage(): Promise<boolean> {
   if ('storage' in navigator && 'persist' in navigator.storage) {
     const persistent = await navigator.storage.persist();
-    console.log('Persistent storage:', persistent ? 'granted' : 'denied');
+    if (import.meta.env.DEV) console.log('Persistent storage:', persistent ? 'granted' : 'denied');
     return persistent;
   }
   return false;

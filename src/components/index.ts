@@ -35,9 +35,6 @@ export * from '@/components/accessibility/SkipLinks';
 // Error
 export * from '@/components/error/ErrorBoundaryAdvanced';
 
-// Animations
-export * from '@/components/animations/MicroInteractions';
-
 // Virtualized
 export * from '@/components/virtualized/VirtualizedComponents';
 

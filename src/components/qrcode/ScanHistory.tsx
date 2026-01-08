@@ -137,7 +137,7 @@ const playNotificationSound = (action: string) => {
       currentTime += duration * 0.9; // Slight overlap for smoother sound
     });
   } catch (error) {
-    console.log('Could not play notification sound:', error);
+    if (import.meta.env.DEV) console.log('Could not play notification sound:', error);
   }
 };
 
