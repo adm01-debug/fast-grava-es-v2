@@ -122,9 +122,8 @@ export function useDebouncedCallback<T extends (...args: any[]) => any>(
   return { debouncedCallback, cancel, flush, isPending };
 }
 
-// useThrottle is exported from src/hooks/useThrottle.ts
-// Re-export for convenience
-export { useThrottle, useThrottleCallback as useThrottledCallback } from './useThrottle';
+// Note: useThrottle hooks are exported from src/hooks/useThrottle.ts
+// Use the canonical import: import { useThrottle, useThrottleCallback } from '@/hooks/useThrottle';
 
 /**
  * useDebouncedState - State that debounces updates
