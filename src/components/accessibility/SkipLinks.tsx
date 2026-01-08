@@ -84,6 +84,80 @@ export function MainContent({ children, className, id = "main-content" }: MainCo
 }
 
 // ============================================
+// LIVE REGION PROVIDER
+// Provider para anúncios de screen reader
+// ============================================
+
+interface LiveRegionContextType {
+  announce: (message: string, priority?: 'polite' | 'assertive') => void;
+}
+
+const LiveRegionContext = React.createContext<LiveRegionContextType | null>(null);
+
+export function useLiveAnnounce() {
+  const context = React.useContext(LiveRegionContext);
+  if (!context) {
+    // Return a no-op if not in provider
+    return (message: string, priority?: 'polite' | 'assertive') => {
+      console.warn('useLiveAnnounce called outside of AccessibilityProvider');
+    };
+  }
+  return context.announce;
+}
+
+interface AccessibilityProviderProps {
+  children: React.ReactNode;
+}
+
+export function AccessibilityProvider({ children }: AccessibilityProviderProps) {
+  const [politeMessage, setPoliteMessage] = React.useState('');
+  const [assertiveMessage, setAssertiveMessage] = React.useState('');
+  const politeTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+  const assertiveTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+
+  const announce = React.useCallback((message: string, priority: 'polite' | 'assertive' = 'polite') => {
+    if (priority === 'assertive') {
+      if (assertiveTimeoutRef.current) clearTimeout(assertiveTimeoutRef.current);
+      setAssertiveMessage(message);
+      assertiveTimeoutRef.current = setTimeout(() => setAssertiveMessage(''), 1000);
+    } else {
+      if (politeTimeoutRef.current) clearTimeout(politeTimeoutRef.current);
+      setPoliteMessage(message);
+      politeTimeoutRef.current = setTimeout(() => setPoliteMessage(''), 1000);
+    }
+  }, []);
+
+  React.useEffect(() => {
+    return () => {
+      if (politeTimeoutRef.current) clearTimeout(politeTimeoutRef.current);
+      if (assertiveTimeoutRef.current) clearTimeout(assertiveTimeoutRef.current);
+    };
+  }, []);
+
+  return (
+    <LiveRegionContext.Provider value={{ announce }}>
+      {children}
+      <div
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        className="sr-only"
+      >
+        {politeMessage}
+      </div>
+      <div
+        role="alert"
+        aria-live="assertive"
+        aria-atomic="true"
+        className="sr-only"
+      >
+        {assertiveMessage}
+      </div>
+    </LiveRegionContext.Provider>
+  );
+}
+
+// ============================================
 // FOCUS TRAP
 // Mantém foco dentro de um container (para modais)
 // ============================================
@@ -109,7 +183,6 @@ export function FocusTrap({
 
     previousActiveElement.current = document.activeElement as HTMLElement;
 
-    // Focus initial element or first focusable
     if (initialFocus?.current) {
       initialFocus.current.focus();
     } else {

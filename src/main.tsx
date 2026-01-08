@@ -7,7 +7,7 @@ import "./index.css";
 import "./i18n";
 
 // Import global providers
-import { AccessibilityProvider } from "./components/accessibility/AccessibilityEnhancements";
+import { AccessibilityProvider } from "./components/accessibility/SkipLinks";
 import { OfflineProvider } from "./components/offline/OfflineMode";
 
 createRoot(document.getElementById("root")!).render(
