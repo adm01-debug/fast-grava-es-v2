@@ -1,35 +1,39 @@
 // Barrel exports for hooks
 
-// Utils - from index file
+// Utils - from utils/index file
 export { 
-  useSessionStorage,
+  useLocalStorage,
   useDebounce,
+  useDebouncedCallback,
+  useThrottle,
+  useThrottledCallback,
+  useDebouncedState,
+  useDebounceWithLoading,
+  useSearchDebounce,
+  useArray,
+  useAsync,
   useClipboard,
-  useFullscreen,
-  useNetworkStatus as useNetworkStatusSimple,
-  usePrevious,
-  useInterval,
-  useTimeout,
-  useWindowSize,
-  useScrollPosition,
+  useCounter,
   useEventListener,
   useFetch,
-  useAsync,
-  useToggle,
-  useCounter,
-  useArray,
-  useMap,
-  useSet,
-  useQueue,
-  useUndo,
   useForm,
-  useValidation,
-  usePagination,
+  useFullscreen,
   useGeolocation,
+  useInterval,
+  useMap,
+  useNetworkStatus as useNetworkStatusSimple,
+  usePagination,
+  usePrevious,
+  useQueue,
+  useScrollPosition,
+  useSessionStorage,
+  useSet,
+  useTimeout,
+  useToggle,
+  useUndo,
+  useValidation,
+  useWindowSize,
 } from '@/hooks/utils';
-
-// Standalone hooks
-export { useLocalStorage } from '@/hooks/useLocalStorage';
 
 // Feature hooks
 export * from '@/hooks/useFormAutosave.tsx';
