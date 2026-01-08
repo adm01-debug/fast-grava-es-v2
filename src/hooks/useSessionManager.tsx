@@ -42,7 +42,7 @@ export function useSessionManager() {
       }
 
       if (data.session) {
-        console.log('Session refreshed successfully');
+        if (import.meta.env.DEV) console.log('Session refreshed successfully');
       }
     } catch (error) {
       console.error('Session refresh error:', error);

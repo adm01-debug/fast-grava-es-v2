@@ -166,7 +166,6 @@ const Index = () => {
             
             {/* Voice Command */}
             <VoiceButton 
-              onCommand={(text) => console.log('Voice:', text)} 
               className="hidden md:flex"
             />
             

@@ -100,7 +100,7 @@ export const useDeviceDetection = () => {
       const deviceInfo = getDeviceInfo();
       const ipAddress = await getClientIP();
 
-      console.log('Checking device:', { userId, fingerprint: deviceInfo.fingerprint });
+      if (import.meta.env.DEV) console.log('Checking device:', { userId, fingerprint: deviceInfo.fingerprint });
 
       const response = await supabase.functions.invoke('new-device-alert', {
         body: {
