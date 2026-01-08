@@ -100,7 +100,7 @@ export function useQuickFavorites() {
         try {
           const parsed = JSON.parse(localStorageFavorites) as QuickFavorite[];
           if (Array.isArray(parsed) && parsed.length > 0) {
-            console.log('Migrating favorites from localStorage to database:', parsed);
+            if (import.meta.env.DEV) console.log('Migrating favorites from localStorage to database:', parsed);
             
             // Save to database
             supabase
@@ -118,7 +118,7 @@ export function useQuickFavorites() {
                     variant: 'destructive',
                   });
                 } else {
-                  console.log('Successfully migrated favorites to database');
+                  if (import.meta.env.DEV) console.log('Successfully migrated favorites to database');
                   // Update query cache
                   queryClient.setQueryData(['user-favorites', user.id], parsed);
                   // Clean up localStorage
