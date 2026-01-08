@@ -122,7 +122,7 @@ export function useOfflineSync() {
       setLastSyncedAt(new Date());
       localStorage.setItem(STORAGE_KEYS.CACHED_DATA, JSON.stringify(newCachedData));
       
-      console.log('Data cached successfully for offline use');
+      if (import.meta.env.DEV) console.log('Data cached successfully for offline use');
     } catch (error) {
       console.error('Error caching data:', error);
     }
