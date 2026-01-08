@@ -1,5 +1,6 @@
 // Utility hooks - simplified exports
 export { useLocalStorage } from '@/hooks/useLocalStorage';
+export { useDebounce, useDebouncedCallback, useThrottle, useThrottledCallback, useDebouncedState, useDebounceWithLoading, useSearchDebounce } from '@/hooks/useDebounce';
 
 import { useState, useCallback, useEffect, useRef } from 'react';
 
@@ -20,22 +21,6 @@ export function useSessionStorage<T>(key: string, initialValue: T): [T, (value: 
   };
 
   return [storedValue, setValue];
-}
-
-export function useDebounce<T>(value: T, delay: number): T {
-  const [debouncedValue, setDebouncedValue] = useState(value);
-
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedValue(value);
-    }, delay);
-
-    return () => {
-      clearTimeout(handler);
-    };
-  }, [value, delay]);
-
-  return debouncedValue;
 }
 
 export function useClipboard(timeout = 2000) {
