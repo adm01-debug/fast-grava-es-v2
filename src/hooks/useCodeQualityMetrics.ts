@@ -58,33 +58,7 @@ export interface CodeQualityMetrics {
 
 // Static analysis of test files in the project
 const TEST_FILES: TestFile[] = [
-  // Unit tests
-  { name: 'badge.test.tsx', path: 'src/components/ui/badge.test.tsx', testCount: 5, category: 'unit' },
-  { name: 'button.test.tsx', path: 'src/components/ui/button.test.tsx', testCount: 8, category: 'unit' },
-  { name: 'card.test.tsx', path: 'src/components/ui/card.test.tsx', testCount: 6, category: 'unit' },
-  { name: 'input.test.tsx', path: 'src/components/ui/input.test.tsx', testCount: 7, category: 'unit' },
-  { name: 'utils.test.ts', path: 'src/lib/utils.test.ts', testCount: 10, category: 'unit' },
-  { name: 'productivityReport.test.ts', path: 'src/lib/productivityReport.test.ts', testCount: 12, category: 'unit' },
-  
-  // Hook tests
-  { name: 'useJobs.test.ts', path: 'src/hooks/useJobs.test.ts', testCount: 8, category: 'unit' },
-  { name: 'useKPIs.test.ts', path: 'src/hooks/useKPIs.test.ts', testCount: 6, category: 'unit' },
-  { name: 'useGoalAlerts.test.ts', path: 'src/hooks/useGoalAlerts.test.ts', testCount: 5, category: 'unit' },
-  { name: 'useOperatorMachines.test.ts', path: 'src/hooks/useOperatorMachines.test.ts', testCount: 7, category: 'unit' },
-  { name: 'useSchedulingData.test.ts', path: 'src/hooks/useSchedulingData.test.ts', testCount: 9, category: 'unit' },
-  { name: 'useAutoBufferPromotion.test.ts', path: 'src/hooks/useAutoBufferPromotion.test.ts', testCount: 8, category: 'unit' },
-  { name: 'useLoadBalancingWithActions.test.ts', path: 'src/hooks/useLoadBalancingWithActions.test.ts', testCount: 7, category: 'unit' },
-  { name: 'useSmartSequencingWithActions.test.ts', path: 'src/hooks/useSmartSequencingWithActions.test.ts', testCount: 6, category: 'unit' },
-  
-  // Bug fix validation tests (new)
-  { name: 'useOEE.test.ts', path: 'src/hooks/useOEE.test.ts', testCount: 6, category: 'unit' },
-  { name: 'useOperatorProductivity.test.ts', path: 'src/hooks/useOperatorProductivity.test.ts', testCount: 5, category: 'unit' },
-  { name: 'useABCCosts.test.ts', path: 'src/hooks/useABCCosts.test.ts', testCount: 5, category: 'unit' },
-  { name: 'useBottleneckPrediction.test.ts', path: 'src/hooks/useBottleneckPrediction.test.ts', testCount: 5, category: 'unit' },
-  { name: 'useLoadBalancing.test.ts', path: 'src/hooks/useLoadBalancing.test.ts', testCount: 5, category: 'unit' },
-  { name: 'useOperators.test.ts', path: 'src/hooks/useOperators.test.ts', testCount: 4, category: 'unit' },
-  
-  // Integration tests
+  // Integration tests (actual existing files)
   { name: 'authentication.test.ts', path: 'src/test/integration/authentication.test.ts', testCount: 15, category: 'integration' },
   { name: 'bitrix24-integration.test.ts', path: 'src/test/integration/bitrix24-integration.test.ts', testCount: 12, category: 'integration' },
   { name: 'data-integrity.test.ts', path: 'src/test/integration/data-integrity.test.ts', testCount: 10, category: 'integration' },
@@ -96,6 +70,7 @@ const TEST_FILES: TestFile[] = [
   { name: 'scheduling-logic.test.ts', path: 'src/test/integration/scheduling-logic.test.ts', testCount: 20, category: 'integration' },
   { name: 'technical-assistant.test.ts', path: 'src/test/integration/technical-assistant.test.ts', testCount: 9, category: 'integration' },
   { name: 'edge-functions.test.ts', path: 'src/test/integration/edge-functions.test.ts', testCount: 8, category: 'integration' },
+  { name: 'operator-jobs-permissions.test.ts', path: 'src/test/integration/operator-jobs-permissions.test.ts', testCount: 10, category: 'integration' },
   
   // E2E tests
   { name: 'e2e-production-flows.test.ts', path: 'src/test/integration/e2e-production-flows.test.ts', testCount: 25, category: 'e2e' },
@@ -115,15 +90,11 @@ const HOOKS = [
   'useRealtimeConnection', 'useRetryableQuery', 'useSchedulingConflicts',
   'useSchedulingData', 'useSmartSequencing', 'useSmartSequencingWithActions',
   'useStuckJobsDetection', 'useTPM', 'useTechnicalConversations',
-  'useTechnicalSheets', 'useThemeSound'
+  'useTechnicalSheets', 'useThemeSound', 'useDebounce', 'useThrottle'
 ];
 
-const HOOKS_WITH_TESTS = [
-  'useJobs', 'useKPIs', 'useGoalAlerts', 'useOperatorMachines',
-  'useSchedulingData', 'useAutoBufferPromotion', 'useLoadBalancingWithActions',
-  'useSmartSequencingWithActions', 'useOEE', 'useOperatorProductivity',
-  'useABCCosts', 'useBottleneckPrediction', 'useLoadBalancing', 'useOperators'
-];
+// Hooks covered by integration tests
+const HOOKS_WITH_TESTS: string[] = [];
 
 // Component complexity analysis (simplified estimation)
 const COMPONENT_METRICS: ComponentMetrics[] = [
