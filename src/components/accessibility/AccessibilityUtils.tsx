@@ -1,45 +1,8 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
-// Focus trap hook for accessibility
-export function useFocusTrap(isActive: boolean) {
-  const containerRef = React.useRef<HTMLDivElement>(null);
-
-  React.useEffect(() => {
-    if (!isActive || !containerRef.current) return;
-
-    const container = containerRef.current;
-    const focusableElements = container.querySelectorAll<HTMLElement>(
-      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-    );
-    const firstElement = focusableElements[0];
-    const lastElement = focusableElements[focusableElements.length - 1];
-
-    // Focus first element when trap activates
-    firstElement?.focus();
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key !== "Tab") return;
-
-      if (e.shiftKey) {
-        if (document.activeElement === firstElement) {
-          e.preventDefault();
-          lastElement?.focus();
-        }
-      } else {
-        if (document.activeElement === lastElement) {
-          e.preventDefault();
-          firstElement?.focus();
-        }
-      }
-    };
-
-    container.addEventListener("keydown", handleKeyDown);
-    return () => container.removeEventListener("keydown", handleKeyDown);
-  }, [isActive]);
-
-  return containerRef;
-}
+// Re-export useFocusTrap from canonical location
+export { useFocusTrap } from "@/hooks/use-focus-trap";
 
 // Skip to content link
 export function SkipToContent({ targetId = "main-content" }: { targetId?: string }) {
