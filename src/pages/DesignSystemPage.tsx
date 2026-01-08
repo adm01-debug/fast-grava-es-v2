@@ -10141,7 +10141,7 @@ function OverviewSection({ onNavigate }: OverviewSectionProps) {
         sparkle.stop(now + i * 0.05 + 0.2);
       }
     } catch (e) {
-      console.log('Audio not supported');
+      if (import.meta.env.DEV) console.log('Audio not supported');
     }
   };
 

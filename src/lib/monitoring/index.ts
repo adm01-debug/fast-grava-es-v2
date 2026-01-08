@@ -13,5 +13,5 @@ export function initMonitoring() {
   initSentry();
   initAnalytics();
   initWebVitals();
-  console.log('[Monitoring] All monitoring services initialized');
+  if (import.meta.env.DEV) console.log('[Monitoring] All monitoring services initialized');
 }

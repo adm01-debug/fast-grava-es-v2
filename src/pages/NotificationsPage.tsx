@@ -107,7 +107,7 @@ const NotificationsPage = () => {
 
   // Handle new realtime notification
   const handleNewNotification = useCallback((type: 'maintenance' | 'prediction' | 'summary', payload: unknown) => {
-    console.log(`[Realtime] New ${type} notification:`, payload);
+    if (import.meta.env.DEV) console.log(`[Realtime] New ${type} notification:`, payload);
     
     // Increment counter
     setNewNotificationsCount(prev => prev + 1);
@@ -141,7 +141,7 @@ const NotificationsPage = () => {
 
   // Realtime subscriptions
   useEffect(() => {
-    console.log('[Realtime] Setting up notification subscriptions...');
+    if (import.meta.env.DEV) console.log('[Realtime] Setting up notification subscriptions...');
     
     const channel = supabase
       .channel('notifications-realtime')
@@ -195,12 +195,12 @@ const NotificationsPage = () => {
         }
       )
       .subscribe((status) => {
-        console.log('[Realtime] Subscription status:', status);
+        if (import.meta.env.DEV) console.log('[Realtime] Subscription status:', status);
         setIsRealtimeConnected(status === 'SUBSCRIBED');
       });
 
     return () => {
-      console.log('[Realtime] Cleaning up notification subscriptions...');
+      if (import.meta.env.DEV) console.log('[Realtime] Cleaning up notification subscriptions...');
       supabase.removeChannel(channel);
     };
   }, [handleNewNotification, queryClient]);

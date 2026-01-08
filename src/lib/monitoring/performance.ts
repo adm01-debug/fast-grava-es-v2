@@ -37,7 +37,7 @@ export function measureAsync<T>(name: string, fn: () => Promise<T>): Promise<T> 
   const start = performance.now();
   return fn().finally(() => {
     const duration = performance.now() - start;
-    console.log(`[Performance] ${name}: ${duration.toFixed(2)}ms`);
+    if (import.meta.env.DEV) console.log(`[Performance] ${name}: ${duration.toFixed(2)}ms`);
     performance.measure(name, { start, duration });
   });
 }
@@ -48,7 +48,7 @@ export function measureSync<T>(name: string, fn: () => T): T {
     return fn();
   } finally {
     const duration = performance.now() - start;
-    console.log(`[Performance] ${name}: ${duration.toFixed(2)}ms`);
+    if (import.meta.env.DEV) console.log(`[Performance] ${name}: ${duration.toFixed(2)}ms`);
   }
 }
 
