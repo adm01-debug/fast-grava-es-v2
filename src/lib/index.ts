@@ -2,7 +2,18 @@
 
 export * from '@/lib/utils';
 export * from '@/lib/toast-utils';
-export * from '@/lib/export-utils';
+// Export utils - use the dedicated component
+export {
+  exportToCSV,
+  exportToJSON,
+  exportToPDF,
+  exportToExcel,
+  printData,
+  formatters,
+  ExportDropdown,
+  type ExportColumn,
+  type ExportOptions,
+} from '@/lib/export-utils.tsx';
 
 // Date utils (renamed to avoid conflicts)
 export {

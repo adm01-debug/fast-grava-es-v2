@@ -2,10 +2,10 @@ import { memo, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Plus, Download, Upload, RefreshCw, Play, CheckCircle, Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import { SavedFiltersDropdown } from '@/components/SavedFiltersDropdown';
-import { AdvancedFilters, FilterValue, FilterConfig } from '@/components/AdvancedFilters';
-import { DataImporter } from '@/components/DataImporter';
-import { BulkActionsBar } from '@/components/BulkActionsBar';
+import { SavedFiltersDropdown } from '@/components/crud/SavedFiltersDropdown';
+import { AdvancedFilters, FilterValue, FilterConfig } from '@/components/crud/AdvancedFilters';
+import { DataImporter } from '@/components/crud/DataImporter';
+import { BulkActionsBar } from '@/components/crud/BulkActionsBar';
 import { gravacaoSchema, fastGravaImportTemplates, fastGravaFilterConfigs } from '@/lib/fastGravaSchemas';
 import { exportToCSV } from '@/lib/excelImporter';
 import { supabase } from '@/integrations/supabase/client';
@@ -36,7 +36,6 @@ export const GravacoesToolbar = memo(function GravacoesToolbar({ onSearch, onFil
 
   const handleImport = async (gravacoes: unknown[]) => {
     // Note: 'gravacoes' table may not exist - this is a placeholder
-    console.log('Importing gravacoes:', gravacoes);
     toast.success(`${(gravacoes as unknown[]).length} gravações importadas!`);
     onRefresh();
   };
