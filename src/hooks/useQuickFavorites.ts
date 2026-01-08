@@ -154,7 +154,7 @@ export function useQuickFavorites() {
           filter: `user_id=eq.${user.id}`,
         },
         (payload) => {
-          console.log('Favorites updated from another device/tab:', payload);
+          if (import.meta.env.DEV) console.log('Favorites updated from another device/tab:', payload);
           if (payload.new && 'favorites' in payload.new) {
             queryClient.setQueryData(
               ['user-favorites', user.id],
