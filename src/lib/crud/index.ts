@@ -10,11 +10,11 @@ export { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
 export { useBulkActions } from '@/hooks/useBulkActions';
 
 // Components
-export { DataImporter } from '@/components/DataImporter';
-export { SavedFiltersDropdown } from '@/components/SavedFiltersDropdown';
-export { AdvancedFilters } from '@/components/AdvancedFilters';
-export { BulkActionsBar } from '@/components/BulkActionsBar';
-export { DuplicateButton } from '@/components/DuplicateButton';
+export { DataImporter } from '@/components/crud/DataImporter';
+export { SavedFiltersDropdown } from '@/components/crud/SavedFiltersDropdown';
+export { AdvancedFilters } from '@/components/crud/AdvancedFilters';
+export { BulkActionsBar } from '@/components/crud/BulkActionsBar';
+export { DuplicateButton } from '@/components/crud/DuplicateButton';
 
 // Types
-export type { FilterConfig } from '@/components/AdvancedFilters';
+export type { FilterConfig } from '@/components/crud/AdvancedFilters';
