@@ -111,7 +111,7 @@ export function UserManagement() {
       setSelectedUser(null);
     },
     onError: (error) => {
-      console.error('Error updating user:', error);
+      if (import.meta.env.DEV) console.error('Error updating user:', error);
       toast.error('Erro ao atualizar usuário');
     },
   });
@@ -135,7 +135,7 @@ export function UserManagement() {
       setSelectedUser(null);
     },
     onError: (error) => {
-      console.error('Error deleting user:', error);
+      if (import.meta.env.DEV) console.error('Error deleting user:', error);
       toast.error('Erro ao remover usuário');
     },
   });
@@ -158,7 +158,7 @@ export function UserManagement() {
       setInviteRole('operator');
     },
     onError: (error: Error) => {
-      console.error('Error inviting user:', error);
+      if (import.meta.env.DEV) console.error('Error inviting user:', error);
       // Fallback: just show success since admin invite may not be available
       toast.info('Funcionalidade de convite requer configuração adicional');
       setShowInviteModal(false);

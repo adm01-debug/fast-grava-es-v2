@@ -129,7 +129,7 @@ export function ProductionRegistrationModal({
           .upload(fileName, file);
 
         if (uploadError) {
-          console.error('Upload error:', uploadError);
+          if (import.meta.env.DEV) console.error('Upload error:', uploadError);
           toast.error(`Erro ao enviar foto: ${file.name}`);
           continue;
         }
@@ -144,7 +144,7 @@ export function ProductionRegistrationModal({
       setPhotos(prev => [...prev, ...uploadedUrls]);
       toast.success(`${uploadedUrls.length} foto(s) enviada(s)`);
     } catch (error) {
-      console.error('Error uploading photos:', error);
+      if (import.meta.env.DEV) console.error('Error uploading photos:', error);
       toast.error('Erro ao enviar fotos');
     } finally {
       setIsUploading(false);

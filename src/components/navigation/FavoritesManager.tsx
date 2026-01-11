@@ -28,7 +28,7 @@ export function useFavorites() {
       try {
         setFavorites(JSON.parse(saved));
       } catch (e) {
-        console.error("Failed to parse favorites", e);
+        if (import.meta.env.DEV) console.error("Failed to parse favorites", e);
       }
     }
   }, []);

@@ -61,7 +61,7 @@ export function useVoiceCommands({
       };
 
       recognitionRef.current.onerror = (event) => {
-        console.error('Speech recognition error:', event.error);
+        if (import.meta.env.DEV) console.error('Speech recognition error:', event.error);
         setIsListening(false);
         toast({
           title: 'Erro no reconhecimento de voz',

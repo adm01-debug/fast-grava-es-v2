@@ -357,7 +357,7 @@ export function AlertsWidget() {
       setSelectedJobId(null);
       refetch();
     } catch (error) {
-      console.error('Error scheduling job:', error);
+      if (import.meta.env.DEV) console.error('Error scheduling job:', error);
       toast.error('Erro ao agendar job');
     } finally {
       setIsSubmitting(false);

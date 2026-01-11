@@ -355,7 +355,7 @@ export function showToast(
     // @ts-ignore
     return window.__toastManager.addToast(options);
   }
-  console.warn("Toast container not mounted");
+  if (import.meta.env.DEV) console.warn("Toast container not mounted");
   return null;
 }
 
