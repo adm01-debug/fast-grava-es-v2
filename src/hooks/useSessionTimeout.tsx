@@ -63,9 +63,9 @@ export function useSessionTimeout({
     isActive: true,
   });
 
-  const warningTimerRef = React.useRef<NodeJS.Timeout | null>(null);
-  const logoutTimerRef = React.useRef<NodeJS.Timeout | null>(null);
-  const countdownRef = React.useRef<NodeJS.Timeout | null>(null);
+  const warningTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+  const logoutTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+  const countdownRef = React.useRef<ReturnType<typeof setInterval> | null>(null);
   const lastActivityRef = React.useRef<number>(Date.now());
 
   // Reset all timers

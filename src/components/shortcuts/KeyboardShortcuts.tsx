@@ -71,7 +71,7 @@ export function KeyboardShortcutsProvider({ children }: { children: React.ReactN
 
   // Track key sequence for multi-key shortcuts
   const [keySequence, setKeySequence] = React.useState<string[]>([]);
-  const sequenceTimeout = React.useRef<NodeJS.Timeout | null>(null);
+  const sequenceTimeout = React.useRef<ReturnType<typeof setTimeout> | null>(null);
 
   React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {

@@ -151,7 +151,7 @@ export function useEnterKey(handler: () => void, enabled = true) {
 // Key sequence (e.g., Konami code)
 export function useKeySequence(sequence: string[], handler: () => void, timeout = 2000) {
   const inputSequence = useRef<string[]>([]);
-  const timeoutRef = useRef<NodeJS.Timeout>();
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -205,7 +205,7 @@ export function useTypeAhead<T>(
   const { timeout = 500 } = options;
   const [query, setQuery] = useState('');
   const [matchIndex, setMatchIndex] = useState(-1);
-  const timeoutRef = useRef<NodeJS.Timeout>();
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {

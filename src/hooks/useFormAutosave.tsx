@@ -34,7 +34,7 @@ export function useFormAutosave<T extends Record<string, unknown>>({
     isRestoring: false,
   });
   
-  const timeoutRef = useRef<NodeJS.Timeout>();
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const initialDataRef = useRef<T | null>(null);
   const storageKey = `autosave_${key}`;
   

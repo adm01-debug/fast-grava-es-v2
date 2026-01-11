@@ -36,7 +36,7 @@ export function useThrottleCallback<T extends (...args: any[]) => any>(
   deps: React.DependencyList = []
 ): T {
   const lastExecuted = useRef<number>(0);
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastArgsRef = useRef<Parameters<T> | null>(null);
 
   const throttledCallback = useCallback((...args: Parameters<T>) => {
@@ -79,7 +79,7 @@ export function useThrottleState<T>(
   const [value, setValue] = useState<T>(initialValue);
   const [throttledValue, setThrottledValue] = useState<T>(initialValue);
   const lastExecuted = useRef<number>(0);
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const setThrottled = useCallback((newValue: T) => {
     setValue(newValue);
@@ -118,7 +118,7 @@ export function useThrottleEffect(
   delay: number = 300
 ): void {
   const lastExecuted = useRef<number>(0);
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const cleanupRef = useRef<(() => void) | void>();
 
   useEffect(() => {

@@ -112,8 +112,8 @@ interface AccessibilityProviderProps {
 export function AccessibilityProvider({ children }: AccessibilityProviderProps) {
   const [politeMessage, setPoliteMessage] = React.useState('');
   const [assertiveMessage, setAssertiveMessage] = React.useState('');
-  const politeTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
-  const assertiveTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+  const politeTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+  const assertiveTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const announce = React.useCallback((message: string, priority: 'polite' | 'assertive' = 'polite') => {
     if (priority === 'assertive') {
