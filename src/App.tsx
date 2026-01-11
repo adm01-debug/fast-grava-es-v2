@@ -19,6 +19,7 @@ import { ProductDesignProvider } from "@/components/design-system/ProductDesignP
 import { CelebrationProvider } from "@/components/ui/celebration";
 import { PushNotificationPrompt } from "@/components/notifications/PushNotificationPrompt";
 import { useRoutePrefetch } from "@/hooks/useRoutePrefetch";
+import { NetworkStatusProvider } from "@/hooks/useNetworkStatus";
 import {
   DashboardPageSkeleton,
   CalendarPageSkeleton,
@@ -438,21 +439,23 @@ const App = () => (
             <ReauthProvider>
               <SessionManager>
                 <OfflineSyncProvider>
-                  <EfficiencyNotificationProvider>
-                    <RealtimeNotificationsProvider>
-                      <ProductDesignProvider
-                        enableOnboarding={true}
-                        enableCommandPalette={true}
-                        enableKeyboardShortcuts={true}
-                        enableToastWithUndo={true}
-                      >
-                        <CelebrationProvider>
-                          <AnimatedRoutes />
-                          <PushNotificationPrompt delay={15000} />
-                        </CelebrationProvider>
-                      </ProductDesignProvider>
-                    </RealtimeNotificationsProvider>
-                  </EfficiencyNotificationProvider>
+                  <NetworkStatusProvider>
+                    <EfficiencyNotificationProvider>
+                      <RealtimeNotificationsProvider>
+                        <ProductDesignProvider
+                          enableOnboarding={true}
+                          enableCommandPalette={true}
+                          enableKeyboardShortcuts={true}
+                          enableToastWithUndo={true}
+                        >
+                          <CelebrationProvider>
+                            <AnimatedRoutes />
+                            <PushNotificationPrompt delay={15000} />
+                          </CelebrationProvider>
+                        </ProductDesignProvider>
+                      </RealtimeNotificationsProvider>
+                    </EfficiencyNotificationProvider>
+                  </NetworkStatusProvider>
                 </OfflineSyncProvider>
               </SessionManager>
             </ReauthProvider>
