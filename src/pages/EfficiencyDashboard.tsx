@@ -7,8 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
-import { FavoriteButton } from '@/components/favorites/FavoriteButton';
-import { FavoritesDropdown } from '@/components/favorites/FavoritesDropdown';
+import { FavoriteButton, FavoritesDropdown } from '@/components/navigation/FavoritesManager';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { KPITooltip, KPI_DEFINITIONS } from '@/components/ui/kpi-tooltip';
 import { 
@@ -67,9 +66,8 @@ export default function EfficiencyDashboard() {
                 Eficiência Operacional
               </h1>
               <FavoriteButton 
-                pageId="efficiency" 
-                pageName="Eficiência Operacional" 
-                pageUrl="/efficiency" 
+                path="/efficiency" 
+                name="Eficiência Operacional" 
               />
             </div>
             <p className="text-xs sm:text-sm text-muted-foreground mt-1">

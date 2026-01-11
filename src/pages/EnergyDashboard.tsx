@@ -16,8 +16,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { FavoriteButton } from '@/components/favorites/FavoriteButton';
-import { FavoritesDropdown } from '@/components/favorites/FavoritesDropdown';
+import { FavoriteButton, FavoritesDropdown } from '@/components/navigation/FavoritesManager';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { KPITooltip } from '@/components/ui/kpi-tooltip';
 import { useEnergy } from '@/hooks/useEnergy';
@@ -139,9 +138,8 @@ export default function EnergyDashboard() {
                 <span className="gradient-text">Monitoramento de Energia</span>
               </h1>
               <FavoriteButton 
-                pageId="energy" 
-                pageName="Energia" 
-                pageUrl="/energy" 
+                path="/energy" 
+                name="Energia" 
               />
             </div>
             <p className="text-muted-foreground">

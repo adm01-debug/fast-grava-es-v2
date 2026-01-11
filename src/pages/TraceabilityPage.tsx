@@ -24,8 +24,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { FavoriteButton } from '@/components/favorites/FavoriteButton';
-import { FavoritesDropdown } from '@/components/favorites/FavoritesDropdown';
+import { FavoriteButton, FavoritesDropdown } from '@/components/navigation/FavoritesManager';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
@@ -152,9 +151,8 @@ export default function TraceabilityPage() {
                 Rastreabilidade de Produtos
               </h1>
               <FavoriteButton 
-                pageId="traceability" 
-                pageName="Rastreabilidade" 
-                pageUrl="/traceability" 
+                path="/traceability" 
+                name="Rastreabilidade" 
               />
             </div>
             <p className="text-muted-foreground">
