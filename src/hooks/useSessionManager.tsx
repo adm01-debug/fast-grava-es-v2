@@ -9,7 +9,7 @@ const ACTIVITY_TIMEOUT_MINUTES = 60;
 export function useSessionManager() {
   const { user, signOut } = useAuth();
   const lastActivityRef = useRef<Date>(new Date());
-  const refreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const refreshIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Update last activity on user interaction
   const updateActivity = useCallback(() => {

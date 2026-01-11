@@ -266,7 +266,7 @@ interface PrefetchOptions<T> {
 export function usePrefetchOnHover<T>(options: PrefetchOptions<T>) {
   const { fetcher, cacheKey, delay = 200 } = options;
 
-  const timeoutRef = useRef<NodeJS.Timeout>();
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [isPrefetching, setIsPrefetching] = useState(false);
   const [isPrefetched, setIsPrefetched] = useState(false);
 

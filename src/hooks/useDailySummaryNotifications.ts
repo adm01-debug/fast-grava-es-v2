@@ -32,7 +32,7 @@ export function useDailySummaryNotifications() {
   const { playSound, isEnabled } = useNotificationSounds();
   const [lastSummary, setLastSummary] = useState<DailySummary | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const checkIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const checkIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const shouldShowSummary = useCallback(() => {
     const lastShown = localStorage.getItem(LAST_SUMMARY_KEY);
