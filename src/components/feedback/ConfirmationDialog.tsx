@@ -80,7 +80,7 @@ export function ConfirmationDialog({
       onOpenChange(false);
       setConfirmText('');
     } catch (error) {
-      console.error('Confirmation action failed:', error);
+      if (import.meta.env.DEV) console.error('Confirmation action failed:', error);
     } finally {
       setIsLoading(false);
     }

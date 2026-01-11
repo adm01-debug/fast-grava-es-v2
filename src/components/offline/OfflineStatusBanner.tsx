@@ -46,7 +46,7 @@ export function OfflineStatusBanner({
         const info = await offlineStorage.getStorageInfo();
         setStorageInfo(info);
       } catch (error) {
-        console.error('Failed to load storage info:', error);
+        if (import.meta.env.DEV) console.error('Failed to load storage info:', error);
       }
     };
     loadStorageInfo();

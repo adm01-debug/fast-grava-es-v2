@@ -46,7 +46,7 @@ export function SavedFiltersDropdown({
         setSavedFilters(JSON.parse(stored));
       }
     } catch {
-      console.warn('Failed to load saved filters');
+      if (import.meta.env.DEV) console.warn('Failed to load saved filters');
     }
   }, [storageKey]);
 

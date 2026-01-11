@@ -62,7 +62,7 @@ export function OfflineReadyIndicator({ className }: OfflineReadyIndicatorProps)
           techniques: techniques.length,
         });
       } catch (error) {
-        console.error('Failed to load cached counts:', error);
+        if (import.meta.env.DEV) console.error('Failed to load cached counts:', error);
       }
     };
     

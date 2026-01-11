@@ -72,7 +72,7 @@ export function CreateUserModal({ open, onOpenChange, onSuccess }: CreateUserMod
       onOpenChange(false);
       setForm({ email: '', password: '', fullName: '', role: 'operator' });
     } catch (error) {
-      console.error('Error creating user:', error);
+      if (import.meta.env.DEV) console.error('Error creating user:', error);
       toast.error('Erro ao criar usuário. Verifique os dados.');
     } finally {
       setIsLoading(false);

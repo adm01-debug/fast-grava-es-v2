@@ -52,7 +52,7 @@ export const QRScanner = () => {
           device_info: deviceInfo
         });
     } catch (error) {
-      console.error("Error recording scan:", error);
+      if (import.meta.env.DEV) console.error("Error recording scan:", error);
     }
   };
 
@@ -86,7 +86,7 @@ export const QRScanner = () => {
 
       setIsScanning(true);
     } catch (error) {
-      console.error("Error starting scanner:", error);
+      if (import.meta.env.DEV) console.error("Error starting scanner:", error);
       toast.error("Não foi possível acessar a câmera");
     }
   };
@@ -98,7 +98,7 @@ export const QRScanner = () => {
       }
       setIsScanning(false);
     } catch (error) {
-      console.error("Error stopping scanner:", error);
+      if (import.meta.env.DEV) console.error("Error stopping scanner:", error);
     }
   };
 
@@ -132,7 +132,7 @@ export const QRScanner = () => {
       await recordScan(job.id, 'view');
       toast.success(`Job ${job.order_number} identificado!`);
     } catch (error) {
-      console.error("Error processing QR:", error);
+      if (import.meta.env.DEV) console.error("Error processing QR:", error);
       toast.error("Erro ao processar QR Code");
     } finally {
       setIsLoading(false);
@@ -158,7 +158,7 @@ export const QRScanner = () => {
       setScannedJob({ ...scannedJob, status: "in_production" });
       toast.success("Produção iniciada!");
     } catch (error) {
-      console.error("Error starting production:", error);
+      if (import.meta.env.DEV) console.error("Error starting production:", error);
       toast.error("Erro ao iniciar produção");
     } finally {
       setActionLoading(false);
@@ -181,7 +181,7 @@ export const QRScanner = () => {
       setScannedJob({ ...scannedJob, status: "paused" });
       toast.success("Produção pausada!");
     } catch (error) {
-      console.error("Error pausing production:", error);
+      if (import.meta.env.DEV) console.error("Error pausing production:", error);
       toast.error("Erro ao pausar produção");
     } finally {
       setActionLoading(false);
@@ -204,7 +204,7 @@ export const QRScanner = () => {
       setScannedJob({ ...scannedJob, status: "in_production" });
       toast.success("Produção retomada!");
     } catch (error) {
-      console.error("Error resuming production:", error);
+      if (import.meta.env.DEV) console.error("Error resuming production:", error);
       toast.error("Erro ao retomar produção");
     } finally {
       setActionLoading(false);
@@ -230,7 +230,7 @@ export const QRScanner = () => {
       setScannedJob({ ...scannedJob, status: "completed" });
       toast.success("Produção finalizada!");
     } catch (error) {
-      console.error("Error finishing production:", error);
+      if (import.meta.env.DEV) console.error("Error finishing production:", error);
       toast.error("Erro ao finalizar produção");
     } finally {
       setActionLoading(false);
