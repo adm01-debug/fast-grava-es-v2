@@ -3,8 +3,7 @@ import { Navigate, useNavigate } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { FavoriteButton } from '@/components/favorites/FavoriteButton';
-import { FavoritesDropdown } from '@/components/favorites/FavoritesDropdown';
+import { FavoriteButton, FavoritesDropdown } from '@/components/navigation/FavoritesManager';
 import { 
   Shield, 
   ShieldCheck, 
@@ -75,9 +74,8 @@ export default function SecurityDashboard() {
               Painel de Segurança Unificado
             </h1>
             <FavoriteButton 
-              pageId="security" 
-              pageName="Segurança" 
-              pageUrl="/security" 
+              path="/security" 
+              name="Segurança" 
             />
           </div>
           <p className="text-muted-foreground">

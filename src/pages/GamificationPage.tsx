@@ -6,8 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
-import { FavoriteButton } from '@/components/favorites/FavoriteButton';
-import { FavoritesDropdown } from '@/components/favorites/FavoritesDropdown';
+import { FavoriteButton, FavoritesDropdown } from '@/components/navigation/FavoritesManager';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { VoiceButton } from '@/components/voice/VoiceCommands';
 import { useGamification } from '@/hooks/useGamification';
@@ -62,9 +61,8 @@ export default function GamificationPage() {
                 <span className="gradient-text">Ranking de Operadores</span>
               </h1>
               <FavoriteButton 
-                pageId="gamification" 
-                pageName="Gamificação" 
-                pageUrl="/gamification" 
+                path="/gamification" 
+                name="Gamificação" 
               />
             </div>
             <p className="text-muted-foreground">

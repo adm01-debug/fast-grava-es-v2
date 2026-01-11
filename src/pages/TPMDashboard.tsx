@@ -16,8 +16,7 @@ import { CreateScheduleModal } from '@/components/tpm/CreateScheduleModal';
 import { TPMNotificationSettings } from '@/components/tpm/TPMNotificationSettings';
 import { MTBFMTTRWidget } from '@/components/reliability/MTBFMTTRWidget';
 import { MainLayout } from '@/components/layout/MainLayout';
-import { FavoriteButton } from '@/components/favorites/FavoriteButton';
-import { FavoritesDropdown } from '@/components/favorites/FavoritesDropdown';
+import { FavoriteButton, FavoritesDropdown } from '@/components/navigation/FavoritesManager';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { KPITooltip } from '@/components/ui/kpi-tooltip';
 import { Badge } from '@/components/ui/badge';
@@ -87,9 +86,8 @@ export default function TPMDashboard() {
                 <span className="gradient-text animate-pulse-glow">TPM - Manutenção Preventiva</span>
               </h1>
               <FavoriteButton 
-                pageId="tpm" 
-                pageName="TPM" 
-                pageUrl="/tpm" 
+                path="/tpm" 
+                name="TPM" 
               />
             </div>
             <p className="text-muted-foreground">
