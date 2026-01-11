@@ -7,13 +7,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import {
   Maximize,
   Minimize,
-  X,
   Play,
   Pause,
   CheckCircle2,
   Clock,
   AlertTriangle,
-  Settings,
   RefreshCw,
   Wifi,
   WifiOff,
@@ -48,15 +46,6 @@ interface KioskModeProps {
   isOnline?: boolean;
 }
 
-/**
- * Modo Kiosk - Tela fullscreen otimizada para operadores no chão de fábrica
- * Features:
- * - Fullscreen toggle
- * - Relógio em tempo real
- * - Status de conexão
- * - Cards grandes e touch-friendly
- * - Auto-refresh
- */
 export function KioskMode({
   jobs,
   machineName = "Máquina",
@@ -72,7 +61,6 @@ export function KioskMode({
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(true);
 
-  // Clock update
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentTime(new Date());
@@ -80,7 +68,6 @@ export function KioskMode({
     return () => clearInterval(interval);
   }, []);
 
-  // Auto-refresh every 30 seconds
   useEffect(() => {
     if (!onRefresh) return;
     const interval = setInterval(() => {
@@ -119,7 +106,6 @@ export function KioskMode({
 
   const playSound = (type: "start" | "complete" | "alert") => {
     if (!soundEnabled) return;
-    // Simple beep using Web Audio API
     const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
     const oscillator = audioContext.createOscillator();
     const gainNode = audioContext.createGain();
@@ -213,7 +199,7 @@ export function KioskMode({
 
       {/* Main Content */}
       <main className="flex-1 p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Current Production - Large Card */}
+        {/* Current Production */}
         <div className="lg:col-span-2">
           <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
             <Play className="h-6 w-6 text-cyan-400" />
@@ -455,7 +441,7 @@ export function KioskMode({
           </div>
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded-full bg-green-500" />
-            <span className="text-muted-foreground">Concluídos Hoje:</span>
+            <span className="text-muted-foreground">Concluídos:</span>
             <span className="font-semibold">{jobs.filter(j => j.status === "completed").length}</span>
           </div>
         </div>
@@ -464,13 +450,10 @@ export function KioskMode({
   );
 }
 
-/**
- * Botão para ativar modo kiosk
- */
 export function KioskModeButton({ onClick }: { onClick: () => void }) {
   return (
-    <Button variant="outline" size="sm" onClick={onClick} className="gap-2">
-      <Maximize className="h-4 w-4" />
+    <Button onClick={onClick} variant="outline" size="sm">
+      <Maximize className="h-4 w-4 mr-2" />
       Modo Kiosk
     </Button>
   );

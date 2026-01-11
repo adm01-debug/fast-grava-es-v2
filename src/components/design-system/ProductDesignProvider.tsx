@@ -93,9 +93,6 @@ export { useBreakpoint, useDeviceCapabilities, ResponsiveContainer as AdaptiveCo
 export { ResponsiveContainer, ResponsiveGrid, ResponsiveStack, HideOn, ShowOn, MobileOnly, DesktopOnly, TabletUp } from "@/components/layout/ResponsiveContainer";
 export { AIAssistantWidget, AISuggestions } from "@/components/ai/AIAssistantWidget";
 export { FloatingAIAssistant } from "@/components/ai/FloatingAIAssistant";
-export { LivePresence, CursorPresence, ActivityIndicator, WhosHereBanner, useLivePresence } from "@/components/collaboration/LivePresence";
-export { WorkflowAutomation, AutomationTrigger } from "@/components/automation/WorkflowAutomation";
-export { AutomationBuilder } from "@/components/automation/AutomationBuilder";
 export { ActivityLog, useActivityLog } from "@/components/activity/ActivityLog";
 export { useFocusTrap, SkipToContent, useLiveRegion, AccessibleIconButton, useReducedMotion, useKeyboardNavigation, VisuallyHidden, FocusRing } from "@/components/accessibility/AccessibilityUtils";
 export { useLocale, useNumberFormat, useDateFormat, useListFormat, usePlural, useFileSizeFormat, useDurationFormat, formatPhoneNumber, formatDocument } from "@/lib/formatters";
