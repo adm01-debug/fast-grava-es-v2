@@ -2,15 +2,53 @@ import { memo, useMemo, useState, useCallback } from 'react';
 import { format, isToday } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { Clock, MapPin, Package, User, ChevronRight, AlertCircle } from 'lucide-react';
+import { Clock, MapPin, Package, User, ChevronRight, AlertCircle, Play, Pause, Check } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { DbJob } from '@/hooks/useJobs';
 import { JobStatus } from '@/types/scheduling';
-import { JobQuickActions, SwipeAction } from './JobQuickActions';
 import { HoverLift } from '@/components/ui/micro-interactions';
 import { useIsMobile } from '@/hooks/use-device';
+
+// Inline JobQuickActions component
+interface JobQuickActionsProps {
+  jobId: string;
+  currentStatus: JobStatus;
+  onStatusChange: (jobId: string, newStatus: JobStatus) => void;
+  isExpanded?: boolean;
+}
+
+const JobQuickActions = memo(function JobQuickActions({ jobId, currentStatus, onStatusChange, isExpanded }: JobQuickActionsProps) {
+  const actions: Array<{ status: JobStatus; icon: typeof Play; label: string }> = [
+    { status: 'production', icon: Play, label: 'Iniciar' },
+    { status: 'paused', icon: Pause, label: 'Pausar' },
+    { status: 'finished', icon: Check, label: 'Finalizar' },
+  ];
+
+  const availableActions = actions.filter(a => a.status !== currentStatus);
+
+  return (
+    <div className="flex gap-1">
+      {availableActions.slice(0, 2).map(action => (
+        <Button
+          key={action.status}
+          size="icon"
+          variant="ghost"
+          className="h-7 w-7"
+          onClick={(e) => {
+            e.stopPropagation();
+            onStatusChange(jobId, action.status);
+          }}
+          title={action.label}
+        >
+          <action.icon className="h-3.5 w-3.5" />
+        </Button>
+      ))}
+    </div>
+  );
+});
 
 interface AgendaViewProps {
   jobs: DbJob[];

@@ -83,13 +83,13 @@ export function PermissionManager() {
     if (!isCoordinator) return;
     
     setTogglingPerm(permission);
-    const currentValue = hasPermission(selectedRole, permission);
-    await togglePermission(selectedRole, permission, currentValue);
+    const perm = permission as import('@/hooks/useRolePermissions').Permission;
+    await togglePermission(selectedRole, perm);
     setTogglingPerm(null);
   };
 
   const countGrantedPermissions = (role: AppRole) => {
-    return permissions.filter(p => p.role === role && p.is_granted).length;
+    return (permissions[role] || []).length;
   };
 
   if (isLoading) {

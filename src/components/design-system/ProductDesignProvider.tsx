@@ -73,8 +73,7 @@ export { FavoriteButton, FavoritesDropdown, useFavorites } from "@/components/na
 export { GlobalSearch as PopoverGlobalSearch, CompactSearch } from "@/components/navigation/GlobalSearch";
 export { SwipeActions, SwipeActionPresets } from "@/components/mobile/SwipeActions";
 export { PullToRefresh, MobilePullToRefresh } from "@/components/mobile/PullToRefresh";
-export { BottomNavigation, BottomNavSpacer } from "@/components/mobile/BottomNavigation";
-export { FloatingActionButton } from "@/components/mobile/FloatingActionButton";
+// Removed: BottomNavigation, FloatingActionButton (unused orphan files)
 export { CollapsibleNavGroup } from "@/components/navigation/CollapsibleNavGroup";
 export { EmptyState, EmptyStates } from "@/components/ui/empty-state";
 export { CelebrationMoment, useCelebration, MiniCelebration as InlineCelebration } from "@/components/feedback/CelebrationMoment";
@@ -92,7 +91,7 @@ export { ResponsiveContainer, ResponsiveGrid, ResponsiveStack, HideOn, ShowOn, M
 export { FloatingAIAssistant } from "@/components/ai/FloatingAIAssistant";
 export { ActivityLog, useActivityLog } from "@/components/activity/ActivityLog";
 export { useFocusTrap, SkipToContent, useLiveRegion, AccessibleIconButton, useReducedMotion, useKeyboardNavigation, VisuallyHidden, FocusRing } from "@/components/accessibility/AccessibilityUtils";
-export { useLocale, useNumberFormat, useDateFormat, useListFormat, usePlural, useFileSizeFormat, useDurationFormat, formatPhoneNumber, formatDocument } from "@/lib/formatters";
+// Removed: formatters.ts (unused orphan file)
 // Removed: useOptimisticUpdate (unused), confetti (using canvas-confetti directly)
 export { usePushNotifications } from "@/hooks/usePushNotifications";
 export { useRoutePrefetch, usePrefetchRoute } from "@/hooks/useRoutePrefetch";
