@@ -1,219 +1,121 @@
-import { useState, useCallback, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
-import type { AppRole } from '@/contexts/AuthContext';
+import { useState, useCallback } from 'react';
+import { AppRole } from '@/contexts/AuthContext';
 
-export interface RolePermission {
-  id: string;
-  role: AppRole;
-  permission: string;
-  resource: string;
-  action: string;
-  is_granted: boolean;
-  created_at: string;
-  updated_at: string;
-}
+// Permission types
+export type Permission = 
+  | 'jobs.view' | 'jobs.create' | 'jobs.edit' | 'jobs.delete'
+  | 'production.view' | 'production.register' | 'production.edit'
+  | 'operators.view' | 'operators.create' | 'operators.edit' | 'operators.delete'
+  | 'reports.view' | 'reports.export'
+  | 'settings.view' | 'settings.edit'
+  | 'security.view' | 'security.manage';
 
 export interface PermissionDefinition {
-  permission: string;
-  resource: string;
-  action: string;
+  permission: Permission;
   label: string;
   description: string;
+  resource: string;
 }
 
+// Available permissions list
 export const AVAILABLE_PERMISSIONS: PermissionDefinition[] = [
-  // Jobs
-  { permission: 'jobs:read', resource: 'jobs', action: 'read', label: 'Visualizar Jobs', description: 'Ver lista de jobs e detalhes' },
-  { permission: 'jobs:create', resource: 'jobs', action: 'create', label: 'Criar Jobs', description: 'Criar novos jobs de produção' },
-  { permission: 'jobs:update', resource: 'jobs', action: 'update', label: 'Editar Jobs', description: 'Modificar jobs existentes' },
-  { permission: 'jobs:delete', resource: 'jobs', action: 'delete', label: 'Excluir Jobs', description: 'Remover jobs do sistema' },
-  { permission: 'production:register', resource: 'production', action: 'register', label: 'Registrar Produção', description: 'Registrar quantidades produzidas' },
-  
-  // Operators
-  { permission: 'operators:read', resource: 'operators', action: 'read', label: 'Visualizar Operadores', description: 'Ver lista de operadores' },
-  { permission: 'operators:create', resource: 'operators', action: 'create', label: 'Criar Operadores', description: 'Adicionar novos operadores' },
-  { permission: 'operators:update', resource: 'operators', action: 'update', label: 'Editar Operadores', description: 'Modificar dados de operadores' },
-  { permission: 'operators:delete', resource: 'operators', action: 'delete', label: 'Excluir Operadores', description: 'Remover operadores do sistema' },
-  
-  // Machines
-  { permission: 'machines:read', resource: 'machines', action: 'read', label: 'Visualizar Máquinas', description: 'Ver lista de máquinas' },
-  { permission: 'machines:create', resource: 'machines', action: 'create', label: 'Criar Máquinas', description: 'Adicionar novas máquinas' },
-  { permission: 'machines:update', resource: 'machines', action: 'update', label: 'Editar Máquinas', description: 'Modificar dados de máquinas' },
-  { permission: 'machines:delete', resource: 'machines', action: 'delete', label: 'Excluir Máquinas', description: 'Remover máquinas do sistema' },
-  
-  // Reports
-  { permission: 'reports:read', resource: 'reports', action: 'read', label: 'Visualizar Relatórios', description: 'Ver relatórios do sistema' },
-  { permission: 'reports:create', resource: 'reports', action: 'create', label: 'Criar Relatórios', description: 'Gerar novos relatórios' },
-  { permission: 'reports:export', resource: 'reports', action: 'export', label: 'Exportar Relatórios', description: 'Exportar relatórios em PDF/Excel' },
-  
-  // Settings
-  { permission: 'settings:read', resource: 'settings', action: 'read', label: 'Visualizar Configurações', description: 'Ver configurações do sistema' },
-  { permission: 'settings:update', resource: 'settings', action: 'update', label: 'Editar Configurações', description: 'Modificar configurações do sistema' },
-  
-  // Security
-  { permission: 'security:read', resource: 'security', action: 'read', label: 'Visualizar Segurança', description: 'Ver painel de segurança' },
-  { permission: 'security:manage', resource: 'security', action: 'manage', label: 'Gerenciar Segurança', description: 'Gerenciar configurações de segurança' },
-  { permission: 'users:manage', resource: 'users', action: 'manage', label: 'Gerenciar Usuários', description: 'Gerenciar contas de usuários' },
+  { permission: 'jobs.view', label: 'Ver Jobs', description: 'Visualizar lista de jobs', resource: 'jobs' },
+  { permission: 'jobs.create', label: 'Criar Jobs', description: 'Criar novos jobs', resource: 'jobs' },
+  { permission: 'jobs.edit', label: 'Editar Jobs', description: 'Editar jobs existentes', resource: 'jobs' },
+  { permission: 'jobs.delete', label: 'Excluir Jobs', description: 'Excluir jobs', resource: 'jobs' },
+  { permission: 'production.view', label: 'Ver Produção', description: 'Visualizar dados de produção', resource: 'production' },
+  { permission: 'production.register', label: 'Registrar Produção', description: 'Registrar produção', resource: 'production' },
+  { permission: 'production.edit', label: 'Editar Produção', description: 'Editar registros', resource: 'production' },
+  { permission: 'operators.view', label: 'Ver Operadores', description: 'Visualizar operadores', resource: 'operators' },
+  { permission: 'operators.create', label: 'Criar Operadores', description: 'Criar operadores', resource: 'operators' },
+  { permission: 'operators.edit', label: 'Editar Operadores', description: 'Editar operadores', resource: 'operators' },
+  { permission: 'operators.delete', label: 'Excluir Operadores', description: 'Excluir operadores', resource: 'operators' },
+  { permission: 'reports.view', label: 'Ver Relatórios', description: 'Visualizar relatórios', resource: 'reports' },
+  { permission: 'reports.export', label: 'Exportar Relatórios', description: 'Exportar dados', resource: 'reports' },
+  { permission: 'settings.view', label: 'Ver Configurações', description: 'Visualizar configurações', resource: 'settings' },
+  { permission: 'settings.edit', label: 'Editar Configurações', description: 'Editar configurações', resource: 'settings' },
+  { permission: 'security.view', label: 'Ver Segurança', description: 'Visualizar segurança', resource: 'security' },
+  { permission: 'security.manage', label: 'Gerenciar Segurança', description: 'Gerenciar segurança', resource: 'security' },
 ];
 
 export const RESOURCE_LABELS: Record<string, string> = {
-  jobs: 'Produção',
+  jobs: 'Jobs',
   production: 'Produção',
   operators: 'Operadores',
-  machines: 'Máquinas',
   reports: 'Relatórios',
   settings: 'Configurações',
   security: 'Segurança',
-  users: 'Usuários',
+};
+
+// Default permissions by role
+const DEFAULT_PERMISSIONS: Record<AppRole, Permission[]> = {
+  coordinator: AVAILABLE_PERMISSIONS.map(p => p.permission),
+  manager: [
+    'jobs.view', 'jobs.create', 'jobs.edit',
+    'production.view', 'production.register', 'production.edit',
+    'operators.view', 'operators.create', 'operators.edit',
+    'reports.view', 'reports.export',
+    'settings.view',
+  ],
+  operator: [
+    'jobs.view',
+    'production.view', 'production.register',
+    'operators.view',
+  ],
 };
 
 export function useRolePermissions() {
-  const [permissions, setPermissions] = useState<RolePermission[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [permissions, setPermissions] = useState<Record<AppRole, Permission[]>>(DEFAULT_PERMISSIONS);
+  const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
 
-  const fetchPermissions = useCallback(async () => {
-    setIsLoading(true);
+  const hasPermission = useCallback((role: AppRole, permission: Permission) => {
+    return permissions[role]?.includes(permission) ?? false;
+  }, [permissions]);
+
+  const togglePermission = useCallback(async (role: AppRole, permission: Permission, _value?: boolean) => {
+    setIsSaving(true);
     try {
-      const { data, error } = await supabase
-        .from('role_permissions')
-        .select('*')
-        .order('role')
-        .order('resource')
-        .order('action');
-
-      if (error) throw error;
-      setPermissions((data || []) as RolePermission[]);
-    } catch (error) {
-      console.error('Error fetching permissions:', error);
-      toast.error('Erro ao carregar permissões');
+      setPermissions(prev => {
+        const rolePerms = prev[role] || [];
+        const hasIt = rolePerms.includes(permission);
+        return {
+          ...prev,
+          [role]: hasIt 
+            ? rolePerms.filter(p => p !== permission)
+            : [...rolePerms, permission],
+        };
+      });
     } finally {
-      setIsLoading(false);
+      setIsSaving(false);
     }
   }, []);
 
-  useEffect(() => {
-    fetchPermissions();
-  }, [fetchPermissions]);
+  const fetchPermissions = useCallback(() => {
+    setPermissions(DEFAULT_PERMISSIONS);
+  }, []);
 
-  const togglePermission = useCallback(async (
-    role: AppRole,
-    permission: string,
-    currentValue: boolean
-  ): Promise<boolean> => {
-    setIsSaving(true);
-    try {
-      const existingPerm = permissions.find(
-        p => p.role === role && p.permission === permission
-      );
+  const refetch = useCallback(() => {
+    setPermissions(DEFAULT_PERMISSIONS);
+  }, []);
 
-      if (existingPerm) {
-        // Update existing
-        const { error } = await supabase
-          .from('role_permissions')
-          .update({ is_granted: !currentValue })
-          .eq('id', existingPerm.id);
-
-        if (error) throw error;
-      } else {
-        // Insert new
-        const permDef = AVAILABLE_PERMISSIONS.find(p => p.permission === permission);
-        if (!permDef) throw new Error('Permission not found');
-
-        const { error } = await supabase
-          .from('role_permissions')
-          .insert({
-            role,
-            permission,
-            resource: permDef.resource,
-            action: permDef.action,
-            is_granted: !currentValue
-          });
-
-        if (error) throw error;
-      }
-
-      await fetchPermissions();
-      toast.success('Permissão atualizada');
-      return true;
-    } catch (error) {
-      console.error('Error toggling permission:', error);
-      toast.error('Erro ao atualizar permissão');
-      return false;
-    } finally {
-      setIsSaving(false);
-    }
-  }, [permissions, fetchPermissions]);
-
-  const hasPermission = useCallback((role: AppRole, permission: string): boolean => {
-    const perm = permissions.find(
-      p => p.role === role && p.permission === permission
-    );
-    return perm?.is_granted ?? false;
-  }, [permissions]);
-
-  const getPermissionsByRole = useCallback((role: AppRole): RolePermission[] => {
-    return permissions.filter(p => p.role === role && p.is_granted);
-  }, [permissions]);
-
-  const getPermissionsByResource = useCallback((resource: string): RolePermission[] => {
-    return permissions.filter(p => p.resource === resource);
-  }, [permissions]);
-
-  const bulkUpdatePermissions = useCallback(async (
-    role: AppRole,
-    permissionUpdates: { permission: string; is_granted: boolean }[]
-  ): Promise<boolean> => {
-    setIsSaving(true);
-    try {
-      for (const update of permissionUpdates) {
-        const existingPerm = permissions.find(
-          p => p.role === role && p.permission === update.permission
-        );
-
-        if (existingPerm) {
-          await supabase
-            .from('role_permissions')
-            .update({ is_granted: update.is_granted })
-            .eq('id', existingPerm.id);
-        } else {
-          const permDef = AVAILABLE_PERMISSIONS.find(p => p.permission === update.permission);
-          if (permDef) {
-            await supabase
-              .from('role_permissions')
-              .insert({
-                role,
-                permission: update.permission,
-                resource: permDef.resource,
-                action: permDef.action,
-                is_granted: update.is_granted
-              });
-          }
-        }
-      }
-
-      await fetchPermissions();
-      toast.success('Permissões atualizadas em lote');
-      return true;
-    } catch (error) {
-      console.error('Error bulk updating permissions:', error);
-      toast.error('Erro ao atualizar permissões');
-      return false;
-    } finally {
-      setIsSaving(false);
-    }
-  }, [permissions, fetchPermissions]);
+  // Group permissions by resource
+  const groupedPermissions = AVAILABLE_PERMISSIONS.reduce((acc, perm) => {
+    if (!acc[perm.resource]) acc[perm.resource] = [];
+    acc[perm.resource].push(perm);
+    return acc;
+  }, {} as Record<string, PermissionDefinition[]>);
 
   return {
     permissions,
+    groupedPermissions,
+    hasPermission,
+    togglePermission,
     isLoading,
     isSaving,
+    error,
+    refetch,
     fetchPermissions,
-    togglePermission,
-    hasPermission,
-    getPermissionsByRole,
-    getPermissionsByResource,
-    bulkUpdatePermissions
   };
 }

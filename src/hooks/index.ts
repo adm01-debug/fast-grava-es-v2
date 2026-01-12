@@ -18,4 +18,4 @@ export {
 // Feature hooks
 export * from '@/hooks/useSessionTimeout';
 export * from '@/hooks/useNetworkStatus';
-export * from '@/hooks/useFeatureFlags';
+// Removed: useFeatureFlags (unused orphan file)
