@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, useRef } from 'react';
+import React, { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Search, 
@@ -89,15 +89,19 @@ const searchFilters: SearchFilter[] = [
   { id: 'actions', label: 'Ações', icon: <ArrowRight className="w-4 h-4" />, types: ['action'] },
 ];
 
-// Hook for global search
-export function useGlobalSearch() {
+// Hook for advanced search (internal use only - different from main useGlobalSearch)
+function useAdvancedSearchState() {
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<SearchResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [recentSearches, setRecentSearches] = useState<string[]>(() => {
-    const saved = localStorage.getItem('recent-searches');
-    return saved ? JSON.parse(saved) : [];
+    try {
+      const saved = localStorage.getItem('recent-searches-advanced');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
   });
   const [activeFilter, setActiveFilter] = useState<string>('all');
   const navigate = useNavigate();
@@ -106,7 +110,11 @@ export function useGlobalSearch() {
   const addRecentSearch = useCallback((search: string) => {
     setRecentSearches(prev => {
       const updated = [search, ...prev.filter(s => s !== search)].slice(0, 5);
-      localStorage.setItem('recent-searches', JSON.stringify(updated));
+      try {
+        localStorage.setItem('recent-searches-advanced', JSON.stringify(updated));
+      } catch {
+        // Ignore storage errors
+      }
       return updated;
     });
   }, []);
@@ -114,11 +122,15 @@ export function useGlobalSearch() {
   // Clear recent searches
   const clearRecentSearches = useCallback(() => {
     setRecentSearches([]);
-    localStorage.removeItem('recent-searches');
+    try {
+      localStorage.removeItem('recent-searches-advanced');
+    } catch {
+      // Ignore storage errors
+    }
   }, []);
 
   // Static pages and actions
-  const staticResults: SearchResult[] = [
+  const staticResults: SearchResult[] = useMemo(() => [
     // Pages
     { id: 'home', type: 'page', title: 'Dashboard', description: 'Página inicial', icon: <BarChart3 className="w-4 h-4" />, action: () => navigate('/'), keywords: ['home', 'inicio'] },
     { id: 'jobs', type: 'page', title: 'Jobs', description: 'Gerenciar jobs de produção', icon: <Package className="w-4 h-4" />, action: () => navigate('/jobs'), keywords: ['producao', 'ordens'] },
@@ -132,7 +144,7 @@ export function useGlobalSearch() {
     { id: 'new-job', type: 'action', title: 'Criar Novo Job', description: 'Iniciar um novo job de produção', icon: <Package className="w-4 h-4" />, action: () => navigate('/jobs/new'), badge: 'Ação', keywords: ['criar', 'novo'] },
     { id: 'new-maintenance', type: 'action', title: 'Registrar Manutenção', description: 'Agendar ou registrar manutenção', icon: <Wrench className="w-4 h-4" />, action: () => navigate('/maintenance/new'), badge: 'Ação' },
     { id: 'generate-report', type: 'action', title: 'Gerar Relatório', description: 'Criar novo relatório', icon: <BarChart3 className="w-4 h-4" />, action: () => navigate('/reports/new'), badge: 'Ação' },
-  ];
+  ], [navigate]);
 
   // Search function
   const search = useCallback(async (searchQuery: string) => {
@@ -160,11 +172,9 @@ export function useGlobalSearch() {
       ? matchedStatic.filter(r => filter.types.includes(r.type))
       : matchedStatic;
 
-    // TODO: Add API search for dynamic content (jobs, machines, etc.)
-    
     setResults(filtered);
     setIsLoading(false);
-  }, [activeFilter, navigate]);
+  }, [activeFilter, staticResults]);
 
   // Debounced search
   useEffect(() => {
@@ -172,18 +182,8 @@ export function useGlobalSearch() {
     return () => clearTimeout(timer);
   }, [query, search]);
 
-  // Keyboard shortcut
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-        e.preventDefault();
-        setIsOpen(prev => !prev);
-      }
-    };
-
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, []);
+  // Keyboard shortcut - NOT registering here to avoid conflicts with main GlobalSearch
+  // The main useGlobalSearch in GlobalSearch.tsx handles Cmd+K/Cmd+/
 
   const executeResult = useCallback((result: SearchResult) => {
     addRecentSearch(result.title);
@@ -223,7 +223,7 @@ export const GlobalSearchAdvanced: React.FC = () => {
     setActiveFilter,
     executeResult,
     filters,
-  } = useGlobalSearch();
+  } = useAdvancedSearchState();
 
   const groupedResults = React.useMemo(() => {
     const groups: Record<string, SearchResult[]> = {};

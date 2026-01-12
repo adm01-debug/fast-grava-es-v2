@@ -70,7 +70,7 @@ export function ProductDesignProvider({
 export { OnboardingTour, useOnboarding } from "@/components/onboarding/OnboardingTour";
 export { CommandPaletteAdvanced as CommandPalette, CommandPaletteTriggerAdvanced as CommandPaletteTrigger } from "@/components/navigation/CommandPaletteAdvanced";
 export { FavoriteButton, FavoritesDropdown, useFavorites } from "@/components/navigation/FavoritesManager";
-export { GlobalSearch, CompactSearch } from "@/components/navigation/GlobalSearch";
+export { GlobalSearch as PopoverGlobalSearch, CompactSearch } from "@/components/navigation/GlobalSearch";
 export { SwipeActions, SwipeActionPresets } from "@/components/mobile/SwipeActions";
 export { PullToRefresh, MobilePullToRefresh } from "@/components/mobile/PullToRefresh";
 export { BottomNavigation, BottomNavSpacer } from "@/components/mobile/BottomNavigation";

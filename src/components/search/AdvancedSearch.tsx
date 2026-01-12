@@ -134,11 +134,14 @@ export function SearchWithSuggestions({
 
   const debouncedValue = useDebounce(value, 300);
 
-  const allItems = value
+  // Type for all items - Suggestion already has optional category
+  type SearchItem = Suggestion & { category?: string };
+
+  const allItems: SearchItem[] = value
     ? suggestions
     : [
-        ...recentSearches.map((s, i) => ({ id: `recent-${i}`, label: s, category: 'recent' })),
-        ...trendingSearches.map((s, i) => ({ id: `trending-${i}`, label: s, category: 'trending' }))
+        ...recentSearches.map((s, i) => ({ id: `recent-${i}`, label: s, category: 'recent' as const })),
+        ...trendingSearches.map((s, i) => ({ id: `trending-${i}`, label: s, category: 'trending' as const }))
       ];
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -154,7 +157,7 @@ export function SearchWithSuggestions({
       case 'Enter':
         e.preventDefault();
         if (selectedIndex >= 0 && allItems[selectedIndex]) {
-          onSelect(allItems[selectedIndex] as Suggestion);
+          onSelect(allItems[selectedIndex]);
           setIsOpen(false);
         } else if (onSearch) {
           onSearch(value);
@@ -181,12 +184,12 @@ export function SearchWithSuggestions({
     setSelectedIndex(-1);
   }, [debouncedValue]);
 
-  const groupedSuggestions = allItems.reduce((acc, item) => {
-    const category = (item as any).category || 'results';
+  const groupedSuggestions = allItems.reduce<Record<string, SearchItem[]>>((acc, item) => {
+    const category = item.category || 'results';
     if (!acc[category]) acc[category] = [];
-    acc[category].push(item as any);
+    acc[category].push(item);
     return acc;
-  }, {} as Record<string, Suggestion[]>);
+  }, {});
 
   const categoryLabels: Record<string, { label: string; icon: React.ReactNode }> = {
     recent: { label: 'Recentes', icon: <Clock className="h-4 w-4" /> },
@@ -231,24 +234,17 @@ export function SearchWithSuggestions({
                       globalIndex === selectedIndex && "bg-accent"
                     )}
                     onClick={() => {
-                      const suggestion: Suggestion = {
-                        id: item.id,
-                        label: item.label,
-                        description: (item as Suggestion).description,
-                        icon: (item as Suggestion).icon,
-                        category: (item as any).category
-                      };
-                      onSelect(suggestion);
+                      onSelect(item);
                       setIsOpen(false);
                     }}
                   >
                     <div className="flex items-center gap-2">
-                      {(item as any).icon}
+                      {item.icon}
                       <span className="font-medium">{item.label}</span>
                     </div>
-                    {(item as Suggestion).description && (
+                    {item.description && (
                       <p className="text-sm text-muted-foreground mt-0.5">
-                        {(item as Suggestion).description}
+                        {item.description}
                       </p>
                     )}
                   </button>
@@ -273,7 +269,7 @@ interface SearchCategory {
   items: Suggestion[];
 }
 
-interface GlobalSearchProps {
+interface CategorySearchProps {
   isOpen: boolean;
   onClose: () => void;
   categories: SearchCategory[];
@@ -281,13 +277,13 @@ interface GlobalSearchProps {
   placeholder?: string;
 }
 
-export function GlobalSearch({
+export function CategorySearch({
   isOpen,
   onClose,
   categories,
   onSelect,
   placeholder = "Buscar em tudo..."
-}: GlobalSearchProps) {
+}: CategorySearchProps) {
   const [query, setQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
