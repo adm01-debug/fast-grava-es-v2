@@ -86,12 +86,9 @@ export { NotificationCenter } from "@/components/notifications/NotificationCente
 export { CelebrationOverlay, AnimatedXPBar, MiniCelebration } from "@/components/gamification/CelebrationAnimations";
 export { KeyboardShortcutsProvider, useKeyboardShortcuts, useRegisterShortcut } from "@/components/shortcuts/KeyboardShortcuts";
 export { SessionManagement, ConfirmationDialog } from "@/components/security/SessionManagement";
-export { MultiStepForm, ValidatedInput } from "@/components/forms/MultiStepForm";
-export { EnhancedTable } from "@/components/tables/EnhancedTable";
 export { DashboardCustomizer, useDashboardConfig, AnimatedWidget, DashboardGrid } from "@/components/dashboard/DashboardCustomizer";
-export { useBreakpoint, useDeviceCapabilities, ResponsiveContainer as AdaptiveContainer, Show, TouchOptimized, AdaptiveText, AdaptiveGrid, ResponsiveStack as AdaptiveStack, SafeArea, ScrollContainer } from "@/components/responsive/AdaptiveContent";
+// Responsive utilities now provided by layout/ResponsiveContainer and hooks/use-device
 export { ResponsiveContainer, ResponsiveGrid, ResponsiveStack, HideOn, ShowOn, MobileOnly, DesktopOnly, TabletUp } from "@/components/layout/ResponsiveContainer";
-export { AIAssistantWidget, AISuggestions } from "@/components/ai/AIAssistantWidget";
 export { FloatingAIAssistant } from "@/components/ai/FloatingAIAssistant";
 export { ActivityLog, useActivityLog } from "@/components/activity/ActivityLog";
 export { useFocusTrap, SkipToContent, useLiveRegion, AccessibleIconButton, useReducedMotion, useKeyboardNavigation, VisuallyHidden, FocusRing } from "@/components/accessibility/AccessibilityUtils";
