@@ -98,47 +98,70 @@ const mockSearch = async (query: string, filters: SearchFilter): Promise<SearchR
   return results.sort((a, b) => b.relevance - a.relevance);
 };
 
-// Custom hook for search state management (used by GlobalSearchTrigger)
-// Using a singleton pattern to prevent multiple listeners
-let globalSearchListenerRegistered = false;
-let globalSetIsOpen: ((open: boolean) => void) | null = null;
+// ============================================================
+// Global Search State Management with Singleton Pattern
+// ============================================================
+// This prevents "Maximum update depth exceeded" by ensuring only
+// ONE keyboard listener is registered across all component instances
+
+// Singleton state - shared across all hook instances
+let globalSearchState = {
+  isOpen: false,
+  listeners: new Set<(isOpen: boolean) => void>(),
+  keyboardListenerRegistered: false,
+};
+
+function notifyListeners(isOpen: boolean) {
+  globalSearchState.isOpen = isOpen;
+  globalSearchState.listeners.forEach(listener => listener(isOpen));
+}
+
+function registerKeyboardShortcut() {
+  if (globalSearchState.keyboardListenerRegistered) return;
+  
+  const handleKeyDown = (e: KeyboardEvent) => {
+    // Cmd+/ or Ctrl+/ to open search
+    if ((e.metaKey || e.ctrlKey) && e.key === '/') {
+      e.preventDefault();
+      notifyListeners(true);
+    }
+    // Cmd+K or Ctrl+K as alternative
+    if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+      e.preventDefault();
+      notifyListeners(true);
+    }
+  };
+
+  window.addEventListener('keydown', handleKeyDown);
+  globalSearchState.keyboardListenerRegistered = true;
+  
+  // Never unregister - stays for app lifetime
+}
 
 export function useGlobalSearch() {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(globalSearchState.isOpen);
   
-  // Store the setter for global access
+  // Subscribe to global state changes
   useEffect(() => {
-    globalSetIsOpen = setIsOpen;
+    const listener = (newIsOpen: boolean) => setIsOpen(newIsOpen);
+    globalSearchState.listeners.add(listener);
+    
+    // Register keyboard shortcut once
+    registerKeyboardShortcut();
+    
     return () => {
-      globalSetIsOpen = null;
+      globalSearchState.listeners.delete(listener);
     };
   }, []);
 
-  // Keyboard shortcuts - register only once globally
-  useEffect(() => {
-    if (globalSearchListenerRegistered) return;
-    
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === '/') {
-        e.preventDefault();
-        if (globalSetIsOpen) {
-          globalSetIsOpen(true);
-        }
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    globalSearchListenerRegistered = true;
-    
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-      globalSearchListenerRegistered = false;
-    };
+  // Wrapper that updates both local and global state
+  const setIsOpenGlobal = useCallback((open: boolean) => {
+    notifyListeners(open);
   }, []);
 
   return {
     isOpen,
-    setIsOpen,
+    setIsOpen: setIsOpenGlobal,
   };
 }
 
