@@ -93,8 +93,7 @@ export { FloatingAIAssistant } from "@/components/ai/FloatingAIAssistant";
 export { ActivityLog, useActivityLog } from "@/components/activity/ActivityLog";
 export { useFocusTrap, SkipToContent, useLiveRegion, AccessibleIconButton, useReducedMotion, useKeyboardNavigation, VisuallyHidden, FocusRing } from "@/components/accessibility/AccessibilityUtils";
 export { useLocale, useNumberFormat, useDateFormat, useListFormat, usePlural, useFileSizeFormat, useDurationFormat, formatPhoneNumber, formatDocument } from "@/lib/formatters";
-export { useOptimisticUpdate } from "@/hooks/useOptimisticUpdates";
-export { default as confetti } from "@/lib/confetti";
+// Removed: useOptimisticUpdate (unused), confetti (using canvas-confetti directly)
 export { usePushNotifications } from "@/hooks/usePushNotifications";
 export { useRoutePrefetch, usePrefetchRoute } from "@/hooks/useRoutePrefetch";
 export { PushNotificationPrompt, PushNotificationToggle } from "@/components/notifications/PushNotificationPrompt";

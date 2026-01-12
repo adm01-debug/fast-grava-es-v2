@@ -1,7 +1,7 @@
 import * as React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Trophy, Star, Zap, Crown, Medal, Target, Flame, Sparkles } from "lucide-react";
-import confetti from "@/lib/confetti";
+import confetti from "canvas-confetti";
 
 type CelebrationType =
   | "achievement"
@@ -77,7 +77,7 @@ export function CelebrationOverlay({
 
   React.useEffect(() => {
     // Trigger confetti on mount
-    confetti.fire();
+    confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
 
     const timer = setTimeout(() => {
       setIsVisible(false);
