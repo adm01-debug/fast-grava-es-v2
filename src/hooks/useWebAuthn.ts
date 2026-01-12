@@ -173,11 +173,12 @@ export function useWebAuthn() {
       toast.success('Passkey registrada com sucesso!');
       await fetchCredentials();
       return true;
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error registering passkey:', error);
-      if (error.name === 'NotAllowedError') {
+      const err = error as { name?: string };
+      if (err.name === 'NotAllowedError') {
         toast.error('Registro cancelado pelo usuário');
-      } else if (error.name === 'InvalidStateError') {
+      } else if (err.name === 'InvalidStateError') {
         toast.error('Este dispositivo já está registrado');
       } else {
         toast.error('Erro ao registrar passkey');
@@ -261,9 +262,10 @@ export function useWebAuthn() {
 
       toast.success('Autenticação bem-sucedida!');
       return { success: true, userId: credData.user_id };
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error authenticating:', error);
-      if (error.name === 'NotAllowedError') {
+      const err = error as { name?: string };
+      if (err.name === 'NotAllowedError') {
         toast.error('Autenticação cancelada');
       } else {
         toast.error('Erro na autenticação biométrica');

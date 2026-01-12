@@ -95,8 +95,9 @@ export const Bitrix24FieldMapping = () => {
       } else if (data.error) {
         toast.error(`Erro de conexão: ${data.error}`);
       }
-    } catch (error: any) {
-      toast.error(`Falha na conexão: ${error.message}`);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Erro desconhecido';
+      toast.error(`Falha na conexão: ${message}`);
     } finally {
       setIsTestingConnection(false);
     }
