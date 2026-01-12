@@ -202,10 +202,19 @@ function useSearchDialogState() {
     status: filterStatus,
   }), [filterType, filterDateRange, filterStatus]);
 
-  // Stable setter that updates individual filter states
+  // Use ref to access current filter values without recreating callback
+  const filtersRef = useRef({ filterType, filterDateRange, filterStatus });
+  filtersRef.current = { filterType, filterDateRange, filterStatus };
+
+  // Stable setter that updates individual filter states - NO dependencies to avoid infinite loop
   const setFilters = useCallback((updater: SearchFilter | ((prev: SearchFilter) => SearchFilter)) => {
+    const current = filtersRef.current;
     if (typeof updater === 'function') {
-      const newFilters = updater({ type: filterType, dateRange: filterDateRange, status: filterStatus });
+      const newFilters = updater({ 
+        type: current.filterType, 
+        dateRange: current.filterDateRange, 
+        status: current.filterStatus 
+      });
       setFilterType(newFilters.type);
       setFilterDateRange(newFilters.dateRange);
       setFilterStatus(newFilters.status);
@@ -214,7 +223,7 @@ function useSearchDialogState() {
       setFilterDateRange(updater.dateRange);
       setFilterStatus(updater.status);
     }
-  }, [filterType, filterDateRange, filterStatus]);
+  }, []);
 
   return {
     query,
