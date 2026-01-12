@@ -1,6 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { startOfMonth, endOfMonth, startOfWeek, endOfWeek, subMonths, format, differenceInMinutes } from 'date-fns';
+import type { Database } from '@/integrations/supabase/types';
+
+type Job = Database['public']['Tables']['jobs']['Row'];
+type Profile = Database['public']['Tables']['profiles']['Row'];
 
 export interface ExecutiveKPIs {
   // Production KPIs
@@ -179,7 +183,7 @@ export function useExecutiveDashboard(dateRange: DateRange) {
   });
 }
 
-function calculateDailyTrend(jobs: any[], dateRange: DateRange) {
+function calculateDailyTrend(jobs: Job[], dateRange: DateRange) {
   const days: Record<string, { produced: number; target: number }> = {};
   
   jobs.forEach(job => {
@@ -200,7 +204,7 @@ function calculateDailyTrend(jobs: any[], dateRange: DateRange) {
     }));
 }
 
-function calculateEfficiencyTrend(jobs: any[], dateRange: DateRange) {
+function calculateEfficiencyTrend(jobs: Job[], dateRange: DateRange) {
   const days: Record<string, { produced: number; target: number }> = {};
   
   jobs.forEach(job => {
@@ -220,7 +224,7 @@ function calculateEfficiencyTrend(jobs: any[], dateRange: DateRange) {
     }));
 }
 
-function calculateTopOperators(completedJobs: any[], profiles: any[]) {
+function calculateTopOperators(completedJobs: Job[], profiles: Profile[]) {
   // Group by machine_id as proxy for operator (in real scenario, would have operator_id)
   const operatorStats: Record<string, { produced: number; jobs: number }> = {};
   

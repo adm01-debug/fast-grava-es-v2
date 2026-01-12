@@ -1,5 +1,11 @@
 import * as React from "react";
 
+// Extend Navigator for legacy touch detection
+interface NavigatorWithTouch extends Navigator {
+  msMaxTouchPoints?: number;
+  standalone?: boolean;
+}
+
 const MOBILE_BREAKPOINT = 768;
 const TABLET_BREAKPOINT = 1024;
 
@@ -45,15 +51,14 @@ export function useDevice(): DeviceInfo {
       const height = window.innerHeight;
       
       // Detect touch capability
+      const nav = navigator as NavigatorWithTouch;
       const isTouch = 'ontouchstart' in window || 
         navigator.maxTouchPoints > 0 ||
-        // @ts-ignore
-        navigator.msMaxTouchPoints > 0;
+        (nav.msMaxTouchPoints ?? 0) > 0;
 
       // Detect PWA standalone mode
       const isStandalone = window.matchMedia('(display-mode: standalone)').matches ||
-        // @ts-ignore
-        window.navigator.standalone === true;
+        nav.standalone === true;
 
       // Detect reduced motion preference
       const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
