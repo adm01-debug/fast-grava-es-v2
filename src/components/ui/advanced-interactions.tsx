@@ -129,7 +129,7 @@ export function CopyButton({ text, className, onCopy }: CopyButtonProps) {
       onCopy?.();
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
-      console.error('Failed to copy:', err);
+      if (import.meta.env.DEV) console.error('Failed to copy:', err);
     }
   };
 

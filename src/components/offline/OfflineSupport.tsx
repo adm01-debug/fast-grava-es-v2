@@ -180,7 +180,7 @@ export function useOfflineSync() {
       try {
         setPendingActions(JSON.parse(stored));
       } catch (e) {
-        console.error("Error loading pending actions:", e);
+        if (import.meta.env.DEV) console.error("Error loading pending actions:", e);
       }
     }
   }, []);
@@ -234,7 +234,7 @@ export function useOfflineSync() {
           );
         }
       } catch (error) {
-        console.error("Sync error:", error);
+        if (import.meta.env.DEV) console.error("Sync error:", error);
       }
 
       completed++;
@@ -359,7 +359,7 @@ export function useOfflineCache<T>(key: string, fetcher: () => Promise<T>) {
           setIsStale(age > 5 * 60 * 1000); // Stale após 5 minutos
         }
       } catch (e) {
-        console.error("Cache parse error:", e);
+        if (import.meta.env.DEV) console.error("Cache parse error:", e);
       }
     }
     setIsLoading(false);

@@ -44,7 +44,7 @@ export function useOperatorPresence() {
       .on('presence', { event: 'join' }, ({ newPresences }) => {
         setOnlineUsers((prev) => {
           const updated = new Set(prev);
-          newPresences.forEach((presence: any) => {
+          (newPresences as Array<{ user_id?: string }>).forEach((presence) => {
             if (presence.user_id) {
               updated.add(presence.user_id);
             }
@@ -56,13 +56,13 @@ export function useOperatorPresence() {
         const now = new Date();
         setOnlineUsers((prev) => {
           const updated = new Set(prev);
-          leftPresences.forEach((presence: any) => {
+          (leftPresences as Array<{ user_id?: string }>).forEach((presence) => {
             if (presence.user_id) {
               updated.delete(presence.user_id);
               // Track last seen time when user leaves
               setLastSeen((prevLastSeen) => {
                 const newMap = new Map(prevLastSeen);
-                newMap.set(presence.user_id, now);
+                newMap.set(presence.user_id!, now);
                 return newMap;
               });
             }
