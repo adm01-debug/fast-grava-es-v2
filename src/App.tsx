@@ -17,6 +17,7 @@ import { NavigationListener } from "@/components/navigation/NavigationListener";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
 import { ProductDesignProvider } from "@/components/design-system/ProductDesignProvider";
 import { CelebrationProvider } from "@/components/ui/celebration";
+import { FeedbackProvider } from "@/components/feedback/FeedbackProvider";
 import { PushNotificationPrompt } from "@/components/notifications/PushNotificationPrompt";
 import { useRoutePrefetch } from "@/hooks/useRoutePrefetch";
 import { NetworkStatusProvider } from "@/hooks/useNetworkStatus";
@@ -449,8 +450,10 @@ const App = () => (
                           enableToastWithUndo={true}
                         >
                           <CelebrationProvider>
-                            <AnimatedRoutes />
-                            <PushNotificationPrompt delay={15000} />
+                            <FeedbackProvider>
+                              <AnimatedRoutes />
+                              <PushNotificationPrompt delay={15000} />
+                            </FeedbackProvider>
                           </CelebrationProvider>
                         </ProductDesignProvider>
                       </RealtimeNotificationsProvider>
