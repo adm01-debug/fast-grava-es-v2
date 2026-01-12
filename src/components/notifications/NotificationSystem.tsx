@@ -323,3 +323,32 @@ export function useNotifications(initialNotifications: Notification[] = []) {
     clearAll
   };
 }
+
+// Alias for backwards compatibility
+export const useNotificationState = useNotifications;
+
+// Notification Badge Component
+export function NotificationBadge({ 
+  count, 
+  showZero = false,
+  max = 99,
+  className 
+}: { 
+  count: number;
+  showZero?: boolean;
+  max?: number;
+  className?: string;
+}) {
+  if (count === 0 && !showZero) return null;
+  
+  const displayCount = count > max ? `${max}+` : count;
+  
+  return (
+    <span className={cn(
+      "absolute -top-1 -right-1 flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-destructive text-destructive-foreground text-xs font-medium",
+      className
+    )}>
+      {displayCount}
+    </span>
+  );
+}

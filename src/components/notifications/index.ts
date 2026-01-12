@@ -5,5 +5,6 @@ export {
   NotificationCenter,
   NotificationItem,
   NotificationBadge,
+  useNotifications,
   useNotificationState,
 } from './NotificationSystem';
