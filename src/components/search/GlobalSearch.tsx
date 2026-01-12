@@ -112,8 +112,12 @@ let globalSearchState = {
 };
 
 function notifyListeners(isOpen: boolean) {
+  // Idempotência: evita loops caso algum componente (ex: Dialog) dispare onOpenChange
+  // repetidamente com o mesmo valor.
+  if (globalSearchState.isOpen === isOpen) return;
+
   globalSearchState.isOpen = isOpen;
-  globalSearchState.listeners.forEach(listener => listener(isOpen));
+  globalSearchState.listeners.forEach((listener) => listener(isOpen));
 }
 
 function registerKeyboardShortcut() {

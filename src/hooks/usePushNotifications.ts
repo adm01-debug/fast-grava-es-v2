@@ -52,15 +52,19 @@ export const usePushNotifications = () => {
       setIsLoading(false);
       return;
     }
-    
+
     try {
-      const { data } = await supabase
+      // Um usuário pode ter múltiplas subscriptions (ex: vários dispositivos/endpoints).
+      // Então NÃO podemos usar .single() aqui (vira 406 quando há 0 ou >1 registros).
+      const { data, error } = await supabase
         .from('push_subscriptions')
         .select('id')
         .eq('user_id', user.id)
-        .single();
-      
-      setIsSubscribed(!!data);
+        .limit(1);
+
+      if (error) throw error;
+
+      setIsSubscribed((data?.length ?? 0) > 0);
     } catch {
       setIsSubscribed(false);
     } finally {
