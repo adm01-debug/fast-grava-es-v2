@@ -15,10 +15,20 @@ export function NotificationPreferences() {
       <Card>
         <CardHeader><CardTitle>Canais de Notificação</CardTitle><CardDescription>Escolha como deseja receber notificações</CardDescription></CardHeader>
         <CardContent className="space-y-4">
-          {[{ id: 'email', label: 'E-mail', key: 'email_enabled' }, { id: 'push', label: 'Push Notifications', key: 'push_enabled' }, { id: 'sms', label: 'SMS', key: 'sms_enabled' }, { id: 'whatsapp', label: 'WhatsApp', key: 'whatsapp_enabled' }].map(({ id, label, key }) => (
+          {([
+            { id: 'email', label: 'E-mail', key: 'email_enabled' as const },
+            { id: 'push', label: 'Push Notifications', key: 'push_enabled' as const },
+            { id: 'sms', label: 'SMS', key: 'sms_enabled' as const },
+            { id: 'whatsapp', label: 'WhatsApp', key: 'whatsapp_enabled' as const },
+          ]).map(({ id, label, key }) => (
             <div key={id} className="flex items-center justify-between">
               <Label htmlFor={id}>{label}</Label>
-              <Switch id={id} checked={(preferences as any)?.[key] ?? (id === 'email' || id === 'push')} onCheckedChange={(checked) => updatePreferences({ [key]: checked })} disabled={isUpdating} />
+              <Switch 
+                id={id} 
+                checked={preferences?.[key] ?? (id === 'email' || id === 'push')} 
+                onCheckedChange={(checked) => updatePreferences({ [key]: checked })} 
+                disabled={isUpdating} 
+              />
             </div>
           ))}
         </CardContent>
