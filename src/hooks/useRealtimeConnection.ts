@@ -58,6 +58,7 @@ export function useRealtimeConnection(): UseRealtimeConnectionReturn {
     return () => {
       supabase.removeChannel(ch);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const reconnect = useCallback(() => {
