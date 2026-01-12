@@ -13,7 +13,6 @@ export {
   useThrottleState,
   useThrottleEffect,
   useThrottleMemo,
-  usePagination,
 } from '@/hooks/utils';
 
 // Feature hooks

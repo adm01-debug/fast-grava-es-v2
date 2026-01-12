@@ -11,6 +11,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { 
   RefreshCw, 
   ArrowRight, 
@@ -83,6 +84,7 @@ const Bitrix24ConfigPage = () => {
   const [allMappings, setAllMappings] = useState<MappingRecord[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [addDialogOpen, setAddDialogOpen] = useState(false);
+  const [deleteMappingConfirm, setDeleteMappingConfirm] = useState<MappingRecord | null>(null);
   const [newMapping, setNewMapping] = useState({ 
     mapping_type: 'field', 
     source_key: '', 
@@ -184,12 +186,12 @@ const Bitrix24ConfigPage = () => {
     }
   };
 
-  const deleteMapping = async (mapping: MappingRecord) => {
-    if (!confirm('Tem certeza que deseja remover este mapeamento?')) return;
+  const handleDeleteMapping = async () => {
+    if (!deleteMappingConfirm) return;
 
     setIsLoading(true);
     try {
-      await callBitrixSync('delete-mapping', { id: mapping.id });
+      await callBitrixSync('delete-mapping', { id: deleteMappingConfirm.id });
       toast({
         title: 'Mapeamento removido',
         description: 'O mapeamento foi removido com sucesso.'
@@ -204,6 +206,7 @@ const Bitrix24ConfigPage = () => {
       });
     } finally {
       setIsLoading(false);
+      setDeleteMappingConfirm(null);
     }
   };
 
@@ -461,7 +464,7 @@ const Bitrix24ConfigPage = () => {
                                       variant="ghost" 
                                       size="icon" 
                                       className="h-5 w-5 text-destructive hover:text-destructive"
-                                      onClick={() => deleteMapping(mapping)}
+                                      onClick={() => setDeleteMappingConfirm(mapping)}
                                     >
                                       <X className="h-3 w-3" />
                                     </Button>
@@ -507,7 +510,7 @@ const Bitrix24ConfigPage = () => {
                             variant="ghost" 
                             size="icon" 
                             className="h-6 w-6 opacity-0 group-hover:opacity-100 text-destructive"
-                            onClick={() => deleteMapping(mapping)}
+                            onClick={() => setDeleteMappingConfirm(mapping)}
                           >
                             <Trash2 className="h-3 w-3" />
                           </Button>
@@ -553,7 +556,7 @@ const Bitrix24ConfigPage = () => {
                             variant="ghost" 
                             size="icon" 
                             className="h-6 w-6 opacity-0 group-hover:opacity-100 text-destructive"
-                            onClick={() => deleteMapping(mapping)}
+                            onClick={() => setDeleteMappingConfirm(mapping)}
                           >
                             <Trash2 className="h-3 w-3" />
                           </Button>
@@ -601,7 +604,7 @@ const Bitrix24ConfigPage = () => {
                           variant="ghost" 
                           size="icon" 
                           className="h-6 w-6 opacity-0 group-hover:opacity-100 text-destructive"
-                          onClick={() => deleteMapping(mapping)}
+                          onClick={() => setDeleteMappingConfirm(mapping)}
                         >
                           <Trash2 className="h-3 w-3" />
                         </Button>
@@ -677,6 +680,25 @@ const Bitrix24ConfigPage = () => {
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* Delete Mapping Confirmation Dialog */}
+      <AlertDialog open={!!deleteMappingConfirm} onOpenChange={() => setDeleteMappingConfirm(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remover Mapeamento</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tem certeza que deseja remover este mapeamento? Esta ação não pode ser desfeita.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteMapping} disabled={isLoading}>
+              {isLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+              Remover
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </MainLayout>
   );
 };
