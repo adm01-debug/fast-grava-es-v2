@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 
 type SetValue<T> = T | ((prevValue: T) => T);
 
@@ -6,55 +6,70 @@ export function useLocalStorage<T>(
   key: string,
   initialValue: T
 ): [T, (value: SetValue<T>) => void, () => void] {
+  // Use ref to avoid re-creating readValue on each render
+  const initialValueRef = useRef(initialValue);
+  
   const readValue = useCallback((): T => {
     if (typeof window === 'undefined') {
-      return initialValue;
+      return initialValueRef.current;
     }
 
     try {
       const item = window.localStorage.getItem(key);
-      return item ? (JSON.parse(item) as T) : initialValue;
+      return item ? (JSON.parse(item) as T) : initialValueRef.current;
     } catch (error) {
-      console.warn(`Error reading localStorage key "${key}":`, error);
-      return initialValue;
+      if (import.meta.env.DEV) {
+        console.warn(`Error reading localStorage key "${key}":`, error);
+      }
+      return initialValueRef.current;
     }
-  }, [initialValue, key]);
+  }, [key]);
 
-  const [storedValue, setStoredValue] = useState<T>(readValue);
+  // Initialize state with the value from localStorage
+  const [storedValue, setStoredValue] = useState<T>(() => readValue());
+
+  // Store the latest value in a ref to avoid stale closures in setValue
+  const storedValueRef = useRef(storedValue);
+  storedValueRef.current = storedValue;
 
   const setValue = useCallback((value: SetValue<T>) => {
     try {
-      const valueToStore = value instanceof Function ? value(storedValue) : value;
+      const valueToStore = value instanceof Function ? value(storedValueRef.current) : value;
       setStoredValue(valueToStore);
+      storedValueRef.current = valueToStore;
       if (typeof window !== 'undefined') {
         window.localStorage.setItem(key, JSON.stringify(valueToStore));
         window.dispatchEvent(new StorageEvent('local-storage', { key }));
       }
     } catch (error) {
-      console.warn(`Error setting localStorage key "${key}":`, error);
+      if (import.meta.env.DEV) {
+        console.warn(`Error setting localStorage key "${key}":`, error);
+      }
     }
-  }, [key, storedValue]);
+  }, [key]);
 
   const removeValue = useCallback(() => {
     try {
       if (typeof window !== 'undefined') {
         window.localStorage.removeItem(key);
-        setStoredValue(initialValue);
+        setStoredValue(initialValueRef.current);
+        storedValueRef.current = initialValueRef.current;
         window.dispatchEvent(new StorageEvent('local-storage', { key }));
       }
     } catch (error) {
-      console.warn(`Error removing localStorage key "${key}":`, error);
+      if (import.meta.env.DEV) {
+        console.warn(`Error removing localStorage key "${key}":`, error);
+      }
     }
-  }, [key, initialValue]);
+  }, [key]);
 
-  useEffect(() => {
-    setStoredValue(readValue());
-  }, [readValue]);
-
+  // Listen for changes from other tabs/windows
   useEffect(() => {
     const handleStorageChange = (event: StorageEvent) => {
       if (event.key === key || event.type === 'local-storage') {
-        setStoredValue(readValue());
+        const newValue = readValue();
+        setStoredValue(newValue);
+        storedValueRef.current = newValue;
       }
     };
 

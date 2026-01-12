@@ -105,19 +105,28 @@ const mockSearch = async (query: string, filters: SearchFilter): Promise<SearchR
 // ONE keyboard listener is registered across all component instances
 
 // Singleton state - shared across all hook instances
-let globalSearchState = {
+const globalSearchState = {
   isOpen: false,
   listeners: new Set<(isOpen: boolean) => void>(),
   keyboardListenerRegistered: false,
+  notifyScheduled: false,
 };
 
 function notifyListeners(isOpen: boolean) {
-  // Idempotência: evita loops caso algum componente (ex: Dialog) dispare onOpenChange
-  // repetidamente com o mesmo valor.
+  // Idempotência: evita loops caso algum componente dispare onOpenChange repetidamente
   if (globalSearchState.isOpen === isOpen) return;
+  
+  // Debounce: evita múltiplas notificações no mesmo tick
+  if (globalSearchState.notifyScheduled) return;
+  globalSearchState.notifyScheduled = true;
 
   globalSearchState.isOpen = isOpen;
-  globalSearchState.listeners.forEach((listener) => listener(isOpen));
+  
+  // Usar microtask para agrupar updates e evitar loops
+  queueMicrotask(() => {
+    globalSearchState.notifyScheduled = false;
+    globalSearchState.listeners.forEach((listener) => listener(globalSearchState.isOpen));
+  });
 }
 
 function registerKeyboardShortcut() {
@@ -138,8 +147,6 @@ function registerKeyboardShortcut() {
 
   window.addEventListener('keydown', handleKeyDown);
   globalSearchState.keyboardListenerRegistered = true;
-  
-  // Never unregister - stays for app lifetime
 }
 
 export function useGlobalSearch() {
@@ -293,7 +300,11 @@ interface GlobalSearchDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export function GlobalSearchDialog({ isOpen, onOpenChange }: GlobalSearchDialogProps) {
+// Memoize to prevent re-renders from parent state changes
+export const GlobalSearchDialog = React.memo(function GlobalSearchDialog({ 
+  isOpen, 
+  onOpenChange 
+}: GlobalSearchDialogProps) {
   const navigate = useNavigate();
   
   // Use the internal search state hook - NOT the global one to avoid double event listeners
@@ -566,21 +577,30 @@ export function GlobalSearchDialog({ isOpen, onOpenChange }: GlobalSearchDialogP
       </div>
     </CommandDialog>
   );
-}
+});
 
 // Search trigger button
 interface GlobalSearchTriggerProps {
   className?: string;
 }
 
-export function GlobalSearchTrigger({ className }: GlobalSearchTriggerProps) {
+export const GlobalSearchTrigger = React.memo(function GlobalSearchTrigger({ className }: GlobalSearchTriggerProps) {
   // Use the global search hook which handles keyboard shortcut
   const { isOpen, setIsOpen } = useGlobalSearch();
+
+  // Stable callback to prevent re-renders in Dialog
+  const handleOpenChange = useCallback((open: boolean) => {
+    setIsOpen(open);
+  }, [setIsOpen]);
+
+  const handleClick = useCallback(() => {
+    setIsOpen(true);
+  }, [setIsOpen]);
 
   return (
     <>
       <button
-        onClick={() => setIsOpen(true)}
+        onClick={handleClick}
         className={cn(
           "flex items-center gap-2 px-3 py-2 rounded-lg",
           "bg-muted/50 hover:bg-muted transition-colors",
@@ -594,7 +614,7 @@ export function GlobalSearchTrigger({ className }: GlobalSearchTriggerProps) {
           ⌘/
         </kbd>
       </button>
-      <GlobalSearchDialog isOpen={isOpen} onOpenChange={setIsOpen} />
+      <GlobalSearchDialog isOpen={isOpen} onOpenChange={handleOpenChange} />
     </>
   );
-}
+});
