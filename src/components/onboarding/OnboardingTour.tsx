@@ -5,7 +5,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Progress } from "@/components/ui/progress";
 import { X, ChevronLeft, ChevronRight, Sparkles, Lightbulb, Target, Zap } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import confetti from "@/lib/confetti";
+import confetti from "canvas-confetti";
 
 interface TourStep {
   id: string;
@@ -75,7 +75,7 @@ export function OnboardingTour({ isOpen, onClose, onComplete }: OnboardingTourPr
   };
 
   const handleComplete = () => {
-    confetti.fire();
+    confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
     localStorage.setItem("onboarding_completed", "true");
     onComplete();
   };
