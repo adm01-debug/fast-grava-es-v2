@@ -98,9 +98,31 @@ const mockSearch = async (query: string, filters: SearchFilter): Promise<SearchR
   return results.sort((a, b) => b.relevance - a.relevance);
 };
 
-// Custom hook for search
+// Custom hook for search state management (used by GlobalSearchTrigger)
 export function useGlobalSearch() {
   const [isOpen, setIsOpen] = useState(false);
+
+  // Keyboard shortcuts - only register once at trigger level
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === '/') {
+        e.preventDefault();
+        setIsOpen(true);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  return {
+    isOpen,
+    setIsOpen,
+  };
+}
+
+// Internal hook for search dialog state - not exposed externally
+function useSearchDialogState() {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<SearchResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -113,8 +135,10 @@ export function useGlobalSearch() {
   
   const debouncedQuery = useDebounce(query, 300);
 
-  // Perform search
+  // Perform search - stable dependencies
   useEffect(() => {
+    let cancelled = false;
+    
     const search = async () => {
       if (!debouncedQuery) {
         setResults([]);
@@ -124,16 +148,26 @@ export function useGlobalSearch() {
       setIsLoading(true);
       try {
         const searchResults = await mockSearch(debouncedQuery, filters);
-        setResults(searchResults);
+        if (!cancelled) {
+          setResults(searchResults);
+        }
       } catch (error) {
         console.error('Search error:', error);
-        setResults([]);
+        if (!cancelled) {
+          setResults([]);
+        }
       } finally {
-        setIsLoading(false);
+        if (!cancelled) {
+          setIsLoading(false);
+        }
       }
     };
 
     search();
+    
+    return () => {
+      cancelled = true;
+    };
   }, [debouncedQuery, filters]);
 
   // Add to recent searches
@@ -150,22 +184,13 @@ export function useGlobalSearch() {
     setRecentSearches([]);
   }, [setRecentSearches]);
 
-  // Keyboard shortcuts
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === '/') {
-        e.preventDefault();
-        setIsOpen(true);
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+  // Reset state
+  const reset = useCallback(() => {
+    setQuery('');
+    setFilters({ type: null, dateRange: 'all', status: null });
   }, []);
 
   return {
-    isOpen,
-    setIsOpen,
     query,
     setQuery,
     results,
@@ -175,6 +200,7 @@ export function useGlobalSearch() {
     recentSearches,
     addToRecent,
     clearRecent,
+    reset,
   };
 }
 
@@ -186,6 +212,8 @@ interface GlobalSearchDialogProps {
 
 export function GlobalSearchDialog({ isOpen, onOpenChange }: GlobalSearchDialogProps) {
   const navigate = useNavigate();
+  
+  // Use the internal search state hook - NOT the global one to avoid double event listeners
   const {
     query,
     setQuery,
@@ -196,30 +224,33 @@ export function GlobalSearchDialog({ isOpen, onOpenChange }: GlobalSearchDialogP
     recentSearches,
     addToRecent,
     clearRecent,
-  } = useGlobalSearch();
+    reset,
+  } = useSearchDialogState();
 
   const inputRef = useRef<HTMLInputElement>(null);
+  
+  // Track previous isOpen to detect close
+  const wasOpen = useRef(isOpen);
 
   // Handle result selection
   const handleSelect = useCallback((result: SearchResult) => {
     addToRecent(query);
     navigate(result.path);
     onOpenChange(false);
-    setQuery('');
-  }, [query, addToRecent, navigate, onOpenChange, setQuery]);
+  }, [query, addToRecent, navigate, onOpenChange]);
 
   // Handle recent search selection
   const handleRecentSelect = useCallback((searchQuery: string) => {
     setQuery(searchQuery);
   }, [setQuery]);
 
-  // Reset on close
+  // Reset on close - using ref to avoid unnecessary effect triggers
   useEffect(() => {
-    if (!isOpen) {
-      setQuery('');
-      setFilters({ type: null, dateRange: 'all', status: null });
+    if (wasOpen.current && !isOpen) {
+      reset();
     }
-  }, [isOpen, setQuery, setFilters]);
+    wasOpen.current = isOpen;
+  }, [isOpen, reset]);
 
   // Group results by type
   const groupedResults = useMemo(() => {
@@ -460,19 +491,8 @@ interface GlobalSearchTriggerProps {
 }
 
 export function GlobalSearchTrigger({ className }: GlobalSearchTriggerProps) {
-  const [isOpen, setIsOpen] = useState(false);
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === '/') {
-        e.preventDefault();
-        setIsOpen(true);
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
+  // Use the global search hook which handles keyboard shortcut
+  const { isOpen, setIsOpen } = useGlobalSearch();
 
   return (
     <>
