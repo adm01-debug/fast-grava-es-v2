@@ -16,9 +16,6 @@ export {
 } from '@/hooks/utils';
 
 // Feature hooks
-export * from '@/hooks/useFormAutosave.tsx';
 export * from '@/hooks/useSessionTimeout';
 export * from '@/hooks/useNetworkStatus';
-export * from '@/hooks/usePerformance';
 export * from '@/hooks/useFeatureFlags';
-export * from '@/hooks/useI18nUtils';
