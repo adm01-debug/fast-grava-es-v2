@@ -3,12 +3,16 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { showErrorToast, categorizeError } from '@/lib/errorHandling';
 import { ABCActivity, ABCActivityRate, ABCJobCost, ABC_ERROR_CONTEXT } from './types';
+import type { Database } from '@/integrations/supabase/types';
+
+type Job = Database['public']['Tables']['jobs']['Row'];
+type Technique = Database['public']['Tables']['techniques']['Row'];
 
 interface UseABCMutationsProps {
   activities: ABCActivity[];
   activityRates: ABCActivityRate[];
-  jobs: any[];
-  techniques: any[];
+  jobs: Job[];
+  techniques: Technique[];
 }
 
 export function useABCMutations({ activities, activityRates, jobs, techniques }: UseABCMutationsProps) {

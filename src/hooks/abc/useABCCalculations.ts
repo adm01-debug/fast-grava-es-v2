@@ -1,11 +1,15 @@
 import { useMemo, useCallback } from 'react';
 import { ABCCostPool, ABCJobCost, JobCostSummary, TechniqueCostSummary } from './types';
+import type { Database } from '@/integrations/supabase/types';
+
+type Job = Database['public']['Tables']['jobs']['Row'];
+type Technique = Database['public']['Tables']['techniques']['Row'];
 
 interface UseABCCalculationsProps {
   costPools: ABCCostPool[];
   jobCosts: ABCJobCost[];
-  jobs: any[];
-  techniques: any[];
+  jobs: Job[];
+  techniques: Technique[];
 }
 
 export function useABCCalculations({ costPools, jobCosts, jobs, techniques }: UseABCCalculationsProps) {

@@ -93,9 +93,10 @@ export function CreateOperatorModal({ open, onOpenChange }: CreateOperatorModalP
       queryClient.invalidateQueries({ queryKey: ['operators'] });
       onOpenChange(false);
       setFormData({ full_name: '', email: '', password: '', phone: '' });
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error creating operator:', error);
-      toast.error(error.message || 'Erro ao criar operador');
+      const message = error instanceof Error ? error.message : 'Erro ao criar operador';
+      toast.error(message);
     } finally {
       setIsLoading(false);
     }

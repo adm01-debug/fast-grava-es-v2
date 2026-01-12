@@ -165,7 +165,7 @@ export function useBlockIP() {
       queryClient.invalidateQueries({ queryKey: ['blocked-ips'] });
       toast.success('IP bloqueado com sucesso');
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast.error(error.message || 'Erro ao bloquear IP');
     },
   });
@@ -192,7 +192,7 @@ export function useUnblockIP() {
       queryClient.invalidateQueries({ queryKey: ['blocked-ips'] });
       toast.success('IP desbloqueado com sucesso');
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast.error(error.message || 'Erro ao desbloquear IP');
     },
   });
@@ -220,7 +220,7 @@ export function useUpdateRateLimitSetting() {
       queryClient.invalidateQueries({ queryKey: ['rate-limit-settings'] });
       toast.success('Configuração atualizada');
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast.error(error.message || 'Erro ao atualizar configuração');
     },
   });
@@ -249,7 +249,7 @@ export function useCreateRateLimitSetting() {
       queryClient.invalidateQueries({ queryKey: ['rate-limit-settings'] });
       toast.success('Configuração criada');
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast.error(error.message || 'Erro ao criar configuração');
     },
   });
@@ -271,7 +271,7 @@ export function useDeleteRateLimitSetting() {
       queryClient.invalidateQueries({ queryKey: ['rate-limit-settings'] });
       toast.success('Configuração removida');
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast.error(error.message || 'Erro ao remover configuração');
     },
   });

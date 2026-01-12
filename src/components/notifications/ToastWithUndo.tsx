@@ -5,6 +5,20 @@ import { Button } from "@/components/ui/button";
 
 type ToastType = "success" | "error" | "warning" | "info" | "default" | "loading" | "promise";
 
+// Extend Window interface for toast manager
+interface ToastManager {
+  addToast: (options: Omit<UndoableToast, "id"> & { type?: ToastType }) => string;
+  updateToast: (id: string, updates: Partial<UndoableToast>) => void;
+  dismissToast: (id: string) => void;
+  clearToasts: () => void;
+}
+
+declare global {
+  interface Window {
+    __toastManager?: ToastManager;
+  }
+}
+
 interface UndoableToast {
   id: string;
   title: string;
@@ -309,11 +323,9 @@ export function ToastContainer({
       setToasts([]);
     };
 
-    // @ts-ignore
     window.__toastManager = { addToast, updateToast, dismissToast, clearToasts };
 
     return () => {
-      // @ts-ignore
       delete window.__toastManager;
     };
   }, [maxToasts]);
@@ -350,9 +362,7 @@ export function ToastContainer({
 export function showToast(
   options: Omit<UndoableToast, "id"> & { type?: ToastType }
 ) {
-  // @ts-ignore
   if (window.__toastManager) {
-    // @ts-ignore
     return window.__toastManager.addToast(options);
   }
   if (import.meta.env.DEV) console.warn("Toast container not mounted");
@@ -402,16 +412,14 @@ export const toast = {
     
     try {
       const result = await promise;
-      // @ts-ignore
-      window.__toastManager?.updateToast(id, {
+      window.__toastManager?.updateToast(id!, {
         title: typeof messages.success === "function" ? messages.success(result) : messages.success,
         type: "success",
         duration: 5000,
       });
       return result;
     } catch (err) {
-      // @ts-ignore
-      window.__toastManager?.updateToast(id, {
+      window.__toastManager?.updateToast(id!, {
         title: typeof messages.error === "function" ? messages.error(err as Error) : messages.error,
         type: "error",
         duration: 8000,
@@ -422,13 +430,11 @@ export const toast = {
 
   // Dismiss a specific toast
   dismiss: (id: string) => {
-    // @ts-ignore
     window.__toastManager?.dismissToast(id);
   },
 
   // Clear all toasts
   clear: () => {
-    // @ts-ignore
     window.__toastManager?.clearToasts();
   },
 };
