@@ -537,7 +537,7 @@ export default function SPCDashboard() {
                 <TableBody>
                   {alerts.slice(0, 10).map(alert => (
                     <TableRow key={alert.id}>
-                      <TableCell>{(alert.parameter as any)?.name || '-'}</TableCell>
+                      <TableCell>{alert.parameter?.name || '-'}</TableCell>
                       <TableCell>
                         <Badge variant={alert.severity === 'critical' ? 'destructive' : 'secondary'}>
                           {alert.alert_type}

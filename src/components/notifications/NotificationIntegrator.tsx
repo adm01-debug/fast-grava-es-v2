@@ -12,6 +12,23 @@ interface NotificationPreferences {
   productionComplete: boolean;
 }
 
+interface JobPayload {
+  id: string;
+  order_number: string;
+  product: string;
+  client: string;
+  status: string;
+}
+
+interface EfficiencyAlertPayload {
+  id: string;
+  alert_type: string;
+  title: string;
+  description: string;
+  severity: string;
+  metadata?: Record<string, unknown>;
+}
+
 const getPreferences = (): NotificationPreferences => {
   const saved = localStorage.getItem('notification-preferences');
   return saved ? JSON.parse(saved) : {
@@ -60,8 +77,8 @@ export const NotificationIntegrator = () => {
         },
         async (payload) => {
           const prefs = getPreferences();
-          const newJob = payload.new as any;
-          const oldJob = payload.old as any;
+          const newJob = payload.new as JobPayload;
+          const oldJob = payload.old as JobPayload;
           
           // Status change notification
           if (prefs.statusChanges && oldJob.status !== newJob.status) {
@@ -126,7 +143,7 @@ export const NotificationIntegrator = () => {
         },
         (payload) => {
           const prefs = getPreferences();
-          const alert = payload.new as any;
+          const alert = payload.new as EfficiencyAlertPayload;
           
           const alertKey = `${alert.alert_type}-${alert.id}`;
           if (notifiedAlertsRef.current.has(alertKey)) return;
@@ -134,10 +151,10 @@ export const NotificationIntegrator = () => {
 
           if (prefs.bottleneck && alert.alert_type === 'bottleneck') {
             playBottleneckAlert();
-            const metadata = alert.metadata || {};
+            const metadata = alert.metadata as { occupancy?: number } || {};
             sendBottleneckAlert(
               alert.title.replace('Gargalo: ', ''),
-              metadata.occupancy || 90
+              metadata.occupancy ?? 90
             );
           }
 
