@@ -45,7 +45,7 @@ export function MFAChallenge({ factorId, onSuccess, onCancel }: MFAChallengeProp
 
       onSuccess();
     } catch (error) {
-      console.error('MFA verification error:', error);
+      if (import.meta.env.DEV) console.error('MFA verification error:', error);
       const message = error instanceof Error ? error.message : 'Código inválido';
       toast.error(message);
     } finally {

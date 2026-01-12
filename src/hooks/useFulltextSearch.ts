@@ -42,6 +42,8 @@ export function useFulltextSearch<T = unknown>(
         .map(col => `${col}.ilike.%${searchTerm}%`)
         .join(',');
 
+      // Dynamic table access requires type assertion - this is intentional for flexibility
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const tableRef = supabase.from(table as any) as any;
       let query = tableRef.select(selectColumns).or(orConditions);
 

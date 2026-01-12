@@ -145,14 +145,22 @@ export function GamificationProvider({ children }: { children: ReactNode }) {
   const [stats, setStats] = useState<UserStats>(() => {
     const saved = localStorage.getItem('gamification_stats');
     if (saved) {
-      const parsed = JSON.parse(saved);
+      const parsed = JSON.parse(saved) as {
+        totalPoints?: number;
+        level?: Level;
+        streak?: number;
+        achievements?: Array<Achievement & { unlockedAt?: string }>;
+        recentActivity?: Array<ActivityItem & { timestamp: string }>;
+      };
       return {
-        ...parsed,
-        recentActivity: parsed.recentActivity?.map((a: any) => ({
+        totalPoints: parsed.totalPoints ?? 0,
+        level: parsed.level ?? LEVELS[0],
+        streak: parsed.streak ?? 0,
+        recentActivity: parsed.recentActivity?.map((a) => ({
           ...a,
           timestamp: new Date(a.timestamp)
         })) || [],
-        achievements: parsed.achievements?.map((a: any) => ({
+        achievements: parsed.achievements?.map((a) => ({
           ...a,
           unlockedAt: a.unlockedAt ? new Date(a.unlockedAt) : undefined
         })) || []
@@ -167,6 +175,8 @@ export function GamificationProvider({ children }: { children: ReactNode }) {
     };
   });
 
+  // Notification data uses discriminated union - type checked at usage site
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [notification, setNotification] = useState<{
     type: 'points' | 'achievement' | 'levelUp';
     data: any;
@@ -265,6 +275,8 @@ function NotificationPopup({
   notification, 
   onClose 
 }: { 
+  // Notification data is type-checked by type discriminator at render time
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   notification: { type: string; data: any } | null;
   onClose: () => void;
 }) {

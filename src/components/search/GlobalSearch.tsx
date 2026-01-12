@@ -99,20 +99,41 @@ const mockSearch = async (query: string, filters: SearchFilter): Promise<SearchR
 };
 
 // Custom hook for search state management (used by GlobalSearchTrigger)
+// Using a singleton pattern to prevent multiple listeners
+let globalSearchListenerRegistered = false;
+let globalSetIsOpen: ((open: boolean) => void) | null = null;
+
 export function useGlobalSearch() {
   const [isOpen, setIsOpen] = useState(false);
-
-  // Keyboard shortcuts - only register once at trigger level
+  
+  // Store the setter for global access
   useEffect(() => {
+    globalSetIsOpen = setIsOpen;
+    return () => {
+      globalSetIsOpen = null;
+    };
+  }, []);
+
+  // Keyboard shortcuts - register only once globally
+  useEffect(() => {
+    if (globalSearchListenerRegistered) return;
+    
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === '/') {
         e.preventDefault();
-        setIsOpen(true);
+        if (globalSetIsOpen) {
+          globalSetIsOpen(true);
+        }
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    globalSearchListenerRegistered = true;
+    
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      globalSearchListenerRegistered = false;
+    };
   }, []);
 
   return {
@@ -155,7 +176,7 @@ function useSearchDialogState() {
           setResults(searchResults);
         }
       } catch (error) {
-        console.error('Search error:', error);
+        if (import.meta.env.DEV) console.error('Search error:', error);
         if (!cancelled) {
           setResults([]);
         }
