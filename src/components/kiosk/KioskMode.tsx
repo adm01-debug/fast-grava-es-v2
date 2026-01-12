@@ -1,26 +1,23 @@
 import * as React from "react";
-import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { cn } from "@/lib/utils";
 import {
-  Maximize,
-  Minimize,
   Play,
   Pause,
   CheckCircle2,
-  Clock,
-  AlertTriangle,
   RefreshCw,
+  Clock,
+  Package,
+  AlertTriangle,
   Wifi,
   WifiOff,
-  Volume2,
-  VolumeX,
+  Maximize,
+  Minimize,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
 
 interface KioskJob {
   id: string;
@@ -37,18 +34,18 @@ interface KioskJob {
 
 interface KioskModeProps {
   jobs: KioskJob[];
-  machineName?: string;
+  machineName: string;
   operatorName?: string;
-  onStartProduction?: (jobId: string) => void;
-  onPauseProduction?: (jobId: string) => void;
-  onCompleteProduction?: (jobId: string) => void;
-  onRefresh?: () => Promise<void>;
+  onStartProduction: (jobId: string) => void;
+  onPauseProduction: (jobId: string) => void;
+  onCompleteProduction: (jobId: string) => void;
+  onRefresh: () => void;
   isOnline?: boolean;
 }
 
 export function KioskMode({
   jobs,
-  machineName = "Máquina",
+  machineName,
   operatorName,
   onStartProduction,
   onPauseProduction,
@@ -56,27 +53,17 @@ export function KioskMode({
   onRefresh,
   isOnline = true,
 }: KioskModeProps) {
-  const [isFullscreen, setIsFullscreen] = useState(false);
-  const [currentTime, setCurrentTime] = useState(new Date());
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const [soundEnabled, setSoundEnabled] = useState(true);
+  const [isFullscreen, setIsFullscreen] = React.useState(false);
+  const [currentTime, setCurrentTime] = React.useState(new Date());
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 1000);
-    return () => clearInterval(interval);
+  // Update time every minute
+  React.useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(new Date()), 60000);
+    return () => clearInterval(timer);
   }, []);
 
-  useEffect(() => {
-    if (!onRefresh) return;
-    const interval = setInterval(() => {
-      handleRefresh();
-    }, 30000);
-    return () => clearInterval(interval);
-  }, [onRefresh]);
-
-  const toggleFullscreen = useCallback(() => {
+  // Toggle fullscreen
+  const toggleFullscreen = () => {
     if (!document.fullscreenElement) {
       document.documentElement.requestFullscreen();
       setIsFullscreen(true);
@@ -84,9 +71,10 @@ export function KioskMode({
       document.exitFullscreen();
       setIsFullscreen(false);
     }
-  }, []);
+  };
 
-  useEffect(() => {
+  // Listen for fullscreen changes
+  React.useEffect(() => {
     const handleFullscreenChange = () => {
       setIsFullscreen(!!document.fullscreenElement);
     };
@@ -94,365 +82,180 @@ export function KioskMode({
     return () => document.removeEventListener("fullscreenchange", handleFullscreenChange);
   }, []);
 
-  const handleRefresh = async () => {
-    if (!onRefresh || isRefreshing) return;
-    setIsRefreshing(true);
-    try {
-      await onRefresh();
-    } finally {
-      setIsRefreshing(false);
-    }
+  const priorityConfig = {
+    urgent: { label: "Urgente", color: "bg-destructive text-destructive-foreground" },
+    high: { label: "Alta", color: "bg-warning text-warning-foreground" },
+    normal: { label: "Normal", color: "bg-secondary text-secondary-foreground" },
   };
 
-  const playSound = (type: "start" | "complete" | "alert") => {
-    if (!soundEnabled) return;
-    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-    const oscillator = audioContext.createOscillator();
-    const gainNode = audioContext.createGain();
-    
-    oscillator.connect(gainNode);
-    gainNode.connect(audioContext.destination);
-    
-    oscillator.frequency.value = type === "complete" ? 800 : type === "alert" ? 400 : 600;
-    oscillator.type = "sine";
-    gainNode.gain.value = 0.1;
-    
-    oscillator.start();
-    oscillator.stop(audioContext.currentTime + 0.15);
+  const statusConfig = {
+    ready: { label: "Pronto", color: "text-blue-500", icon: Clock },
+    production: { label: "Em Produção", color: "text-green-500", icon: Play },
+    paused: { label: "Pausado", color: "text-yellow-500", icon: Pause },
+    completed: { label: "Concluído", color: "text-gray-500", icon: CheckCircle2 },
   };
-
-  const inProduction = jobs.find(j => j.status === "production");
-  const nextJobs = jobs.filter(j => j.status === "ready").slice(0, 3);
-  const pausedJob = jobs.find(j => j.status === "paused");
 
   return (
-    <div className={cn(
-      "min-h-screen bg-background flex flex-col",
-      isFullscreen && "fixed inset-0 z-50"
-    )}>
+    <div className="min-h-screen bg-background p-4 md:p-8">
       {/* Header */}
-      <header className="flex items-center justify-between p-4 border-b border-border/50 bg-card/50 backdrop-blur-sm">
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h1 className="text-2xl md:text-4xl font-bold">{machineName}</h1>
+          {operatorName && (
+            <p className="text-muted-foreground">Operador: {operatorName}</p>
+          )}
+        </div>
         <div className="flex items-center gap-4">
+          <div className="text-right">
+            <p className="text-2xl font-mono">
+              {currentTime.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}
+            </p>
+            <p className="text-sm text-muted-foreground">
+              {currentTime.toLocaleDateString("pt-BR")}
+            </p>
+          </div>
           <div className="flex items-center gap-2">
             {isOnline ? (
               <Wifi className="h-5 w-5 text-green-500" />
             ) : (
-              <WifiOff className="h-5 w-5 text-red-500" />
+              <WifiOff className="h-5 w-5 text-destructive" />
             )}
-            <span className="text-sm text-muted-foreground">
-              {isOnline ? "Online" : "Offline"}
-            </span>
-          </div>
-          
-          <div className="h-6 w-px bg-border" />
-          
-          <div className="text-lg font-semibold">{machineName}</div>
-          
-          {operatorName && (
-            <>
-              <div className="h-6 w-px bg-border" />
-              <div className="text-sm text-muted-foreground">
-                Operador: <span className="font-medium text-foreground">{operatorName}</span>
-              </div>
-            </>
-          )}
-        </div>
-
-        <div className="flex items-center gap-4">
-          <div className="text-2xl font-mono font-bold text-primary">
-            {format(currentTime, "HH:mm:ss")}
-          </div>
-          <div className="text-sm text-muted-foreground">
-            {format(currentTime, "EEEE, d 'de' MMMM", { locale: ptBR })}
-          </div>
-          
-          <div className="h-6 w-px bg-border" />
-          
-          <div className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setSoundEnabled(!soundEnabled)}
-            >
-              {soundEnabled ? <Volume2 className="h-5 w-5" /> : <VolumeX className="h-5 w-5" />}
+            <Button variant="outline" size="icon" onClick={onRefresh}>
+              <RefreshCw className="h-4 w-4" />
             </Button>
-            
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleRefresh}
-              disabled={isRefreshing}
-            >
-              <RefreshCw className={cn("h-5 w-5", isRefreshing && "animate-spin")} />
-            </Button>
-            
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={toggleFullscreen}
-            >
-              {isFullscreen ? <Minimize className="h-5 w-5" /> : <Maximize className="h-5 w-5" />}
+            <Button variant="outline" size="icon" onClick={toggleFullscreen}>
+              {isFullscreen ? <Minimize className="h-4 w-4" /> : <Maximize className="h-4 w-4" />}
             </Button>
           </div>
         </div>
-      </header>
+      </div>
 
-      {/* Main Content */}
-      <main className="flex-1 p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Current Production */}
-        <div className="lg:col-span-2">
-          <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-            <Play className="h-6 w-6 text-cyan-400" />
-            Produção Atual
-          </h2>
-          
-          {inProduction ? (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="h-[calc(100%-2rem)]"
-            >
-              <Card className="h-full border-cyan-500/30 bg-gradient-to-br from-cyan-500/10 to-transparent">
-                <CardContent className="p-8 h-full flex flex-col justify-between">
-                  <div>
-                    <div className="flex items-start justify-between mb-6">
-                      <div>
-                        <h3 className="text-3xl font-bold text-foreground mb-2">
-                          {inProduction.client}
-                        </h3>
-                        <p className="text-xl text-muted-foreground">
-                          {inProduction.product}
-                        </p>
+      {/* Jobs Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        <AnimatePresence mode="popLayout">
+          {jobs.map((job) => {
+            const status = statusConfig[job.status];
+            const priority = priorityConfig[job.priority || "normal"];
+            const progress = job.produced && job.quantity 
+              ? Math.round((job.produced / job.quantity) * 100) 
+              : 0;
+
+            return (
+              <motion.div
+                key={job.id}
+                layout
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.2 }}
+              >
+                <Card className={cn(
+                  "overflow-hidden transition-shadow hover:shadow-lg",
+                  job.status === "production" && "ring-2 ring-green-500"
+                )}>
+                  <CardContent className="p-4">
+                    {/* Header */}
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-semibold truncate">{job.client}</h3>
+                        <p className="text-sm text-muted-foreground truncate">{job.product}</p>
                       </div>
-                      <Badge className="text-lg px-4 py-2 bg-cyan-500/20 text-cyan-400 border-cyan-500/50">
-                        Em Produção
-                      </Badge>
+                      <Badge className={priority.color}>{priority.label}</Badge>
                     </div>
-                    
-                    <div className="grid grid-cols-2 gap-8 mt-8">
-                      <div>
-                        <p className="text-muted-foreground text-lg">Quantidade Total</p>
-                        <p className="text-4xl font-bold text-foreground">
-                          {inProduction.quantity.toLocaleString()}
-                        </p>
-                      </div>
-                      {inProduction.produced !== undefined && (
-                        <div>
-                          <p className="text-muted-foreground text-lg">Produzido</p>
-                          <p className="text-4xl font-bold text-green-500">
-                            {inProduction.produced.toLocaleString()}
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                    
-                    {inProduction.technique && (
-                      <div className="mt-6">
+
+                    {/* Technique */}
+                    {job.technique && (
+                      <div className="mb-3">
                         <Badge 
                           variant="outline" 
-                          className="text-lg px-4 py-2"
-                          style={{ 
-                            borderColor: inProduction.techniqueColor,
-                            color: inProduction.techniqueColor 
-                          }}
+                          style={{ borderColor: job.techniqueColor, color: job.techniqueColor }}
                         >
-                          {inProduction.technique}
+                          {job.technique}
                         </Badge>
                       </div>
                     )}
-                  </div>
-                  
-                  <div className="flex gap-4 mt-8">
-                    <Button
-                      size="lg"
-                      variant="outline"
-                      className="flex-1 h-16 text-lg border-orange-500/50 text-orange-400 hover:bg-orange-500/10"
-                      onClick={() => {
-                        playSound("alert");
-                        onPauseProduction?.(inProduction.id);
-                      }}
-                    >
-                      <Pause className="h-6 w-6 mr-2" />
-                      Pausar
-                    </Button>
-                    <Button
-                      size="lg"
-                      className="flex-1 h-16 text-lg bg-green-600 hover:bg-green-700"
-                      onClick={() => {
-                        playSound("complete");
-                        onCompleteProduction?.(inProduction.id);
-                      }}
-                    >
-                      <CheckCircle2 className="h-6 w-6 mr-2" />
-                      Finalizar
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          ) : pausedJob ? (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="h-[calc(100%-2rem)]"
-            >
-              <Card className="h-full border-orange-500/30 bg-gradient-to-br from-orange-500/10 to-transparent">
-                <CardContent className="p-8 h-full flex flex-col justify-between">
-                  <div>
-                    <div className="flex items-start justify-between mb-6">
-                      <div>
-                        <h3 className="text-3xl font-bold text-foreground mb-2">
-                          {pausedJob.client}
-                        </h3>
-                        <p className="text-xl text-muted-foreground">
-                          {pausedJob.product}
-                        </p>
-                      </div>
-                      <Badge className="text-lg px-4 py-2 bg-orange-500/20 text-orange-400 border-orange-500/50">
-                        Pausado
-                      </Badge>
-                    </div>
-                    
-                    <div className="flex items-center gap-4 mt-8">
-                      <AlertTriangle className="h-12 w-12 text-orange-400" />
-                      <p className="text-xl text-muted-foreground">
-                        Produção pausada. Clique para retomar.
-                      </p>
-                    </div>
-                  </div>
-                  
-                  <Button
-                    size="lg"
-                    className="w-full h-16 text-lg gradient-primary"
-                    onClick={() => {
-                      playSound("start");
-                      onStartProduction?.(pausedJob.id);
-                    }}
-                  >
-                    <Play className="h-6 w-6 mr-2" />
-                    Retomar Produção
-                  </Button>
-                </CardContent>
-              </Card>
-            </motion.div>
-          ) : (
-            <Card className="h-[calc(100%-2rem)] border-dashed">
-              <CardContent className="h-full flex flex-col items-center justify-center">
-                <Clock className="h-24 w-24 text-muted-foreground/30 mb-6" />
-                <p className="text-2xl text-muted-foreground">
-                  Nenhuma produção em andamento
-                </p>
-                <p className="text-muted-foreground/60 mt-2">
-                  Selecione um job da fila para iniciar
-                </p>
-              </CardContent>
-            </Card>
-          )}
-        </div>
 
-        {/* Next Jobs Queue */}
-        <div>
-          <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-            <Clock className="h-6 w-6 text-amber-400" />
-            Próximos
-          </h2>
-          
-          <div className="space-y-4">
-            <AnimatePresence mode="popLayout">
-              {nextJobs.length === 0 ? (
-                <Card className="border-dashed">
-                  <CardContent className="py-12 text-center">
-                    <p className="text-muted-foreground">Fila vazia</p>
+                    {/* Progress */}
+                    <div className="mb-3">
+                      <div className="flex items-center justify-between text-sm mb-1">
+                        <div className="flex items-center gap-1">
+                          <Package className="h-4 w-4" />
+                          <span>{job.produced || 0} / {job.quantity}</span>
+                        </div>
+                        <span className={status.color}>{progress}%</span>
+                      </div>
+                      <Progress value={progress} className="h-2" />
+                    </div>
+
+                    {/* Status */}
+                    <div className={cn("flex items-center gap-2 text-sm mb-4", status.color)}>
+                      <status.icon className="h-4 w-4" />
+                      <span>{status.label}</span>
+                    </div>
+
+                    {/* Actions */}
+                    <div className="flex gap-2">
+                      {job.status === "ready" && (
+                        <Button 
+                          className="flex-1" 
+                          onClick={() => onStartProduction(job.id)}
+                        >
+                          <Play className="h-4 w-4 mr-2" />
+                          Iniciar
+                        </Button>
+                      )}
+                      {job.status === "production" && (
+                        <>
+                          <Button 
+                            variant="outline" 
+                            className="flex-1"
+                            onClick={() => onPauseProduction(job.id)}
+                          >
+                            <Pause className="h-4 w-4 mr-2" />
+                            Pausar
+                          </Button>
+                          <Button 
+                            className="flex-1"
+                            onClick={() => onCompleteProduction(job.id)}
+                          >
+                            <CheckCircle2 className="h-4 w-4 mr-2" />
+                            Finalizar
+                          </Button>
+                        </>
+                      )}
+                      {job.status === "paused" && (
+                        <Button 
+                          className="flex-1"
+                          onClick={() => onStartProduction(job.id)}
+                        >
+                          <Play className="h-4 w-4 mr-2" />
+                          Retomar
+                        </Button>
+                      )}
+                    </div>
                   </CardContent>
                 </Card>
-              ) : (
-                nextJobs.map((job, index) => (
-                  <motion.div
-                    key={job.id}
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
-                    transition={{ delay: index * 0.1 }}
-                  >
-                    <Card className={cn(
-                      "cursor-pointer hover:border-primary/50 transition-colors",
-                      job.priority === "urgent" && "border-red-500/30",
-                      job.priority === "high" && "border-orange-500/30"
-                    )}>
-                      <CardContent className="p-4">
-                        <div className="flex items-start justify-between mb-2">
-                          <div>
-                            <p className="font-semibold text-lg">{job.client}</p>
-                            <p className="text-muted-foreground">{job.product}</p>
-                          </div>
-                          {job.priority === "urgent" && (
-                            <Badge variant="destructive" className="shrink-0">
-                              <AlertTriangle className="h-3 w-3 mr-1" />
-                              Urgente
-                            </Badge>
-                          )}
-                        </div>
-                        
-                        <div className="flex items-center justify-between mt-4">
-                          <span className="text-sm text-muted-foreground">
-                            {job.quantity.toLocaleString()} peças
-                          </span>
-                          
-                          {!inProduction && !pausedJob && (
-                            <Button
-                              size="sm"
-                              onClick={() => {
-                                playSound("start");
-                                onStartProduction?.(job.id);
-                              }}
-                            >
-                              <Play className="h-4 w-4 mr-1" />
-                              Iniciar
-                            </Button>
-                          )}
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </motion.div>
-                ))
-              )}
-            </AnimatePresence>
-          </div>
-        </div>
-      </main>
+              </motion.div>
+            );
+          })}
+        </AnimatePresence>
+      </div>
 
-      {/* Footer Stats */}
-      <footer className="border-t border-border/50 bg-card/50 backdrop-blur-sm p-4">
-        <div className="flex items-center justify-center gap-8 text-sm">
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-cyan-500" />
-            <span className="text-muted-foreground">Em Produção:</span>
-            <span className="font-semibold">{jobs.filter(j => j.status === "production").length}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-amber-500" />
-            <span className="text-muted-foreground">Aguardando:</span>
-            <span className="font-semibold">{jobs.filter(j => j.status === "ready").length}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-orange-500" />
-            <span className="text-muted-foreground">Pausados:</span>
-            <span className="font-semibold">{jobs.filter(j => j.status === "paused").length}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-green-500" />
-            <span className="text-muted-foreground">Concluídos:</span>
-            <span className="font-semibold">{jobs.filter(j => j.status === "completed").length}</span>
-          </div>
+      {/* Empty state */}
+      {jobs.length === 0 && (
+        <div className="text-center py-12">
+          <Package className="h-16 w-16 mx-auto text-muted-foreground/50 mb-4" />
+          <h3 className="text-xl font-semibold">Nenhum job disponível</h3>
+          <p className="text-muted-foreground">Aguardando novos jobs para produção</p>
         </div>
-      </footer>
+      )}
     </div>
   );
 }
 
-export function KioskModeButton({ onClick }: { onClick: () => void }) {
+export function KioskModeButton() {
   return (
-    <Button onClick={onClick} variant="outline" size="sm">
+    <Button variant="outline" size="sm">
       <Maximize className="h-4 w-4 mr-2" />
       Modo Kiosk
     </Button>
