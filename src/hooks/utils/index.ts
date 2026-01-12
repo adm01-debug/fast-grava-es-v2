@@ -14,6 +14,3 @@ export {
   useThrottleEffect, 
   useThrottleMemo 
 } from '@/hooks/useThrottle';
-
-// Individual utility hook exports
-export { usePagination } from '@/hooks/usePagination';
