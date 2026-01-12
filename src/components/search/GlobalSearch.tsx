@@ -126,16 +126,14 @@ function useSearchDialogState() {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<SearchResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [filters, setFilters] = useState<SearchFilter>({
-    type: null,
-    dateRange: 'all',
-    status: null,
-  });
+  const [filterType, setFilterType] = useState<string | null>(null);
+  const [filterDateRange, setFilterDateRange] = useState<'all' | 'today' | 'week' | 'month'>('all');
+  const [filterStatus, setFilterStatus] = useState<string | null>(null);
   const [recentSearches, setRecentSearches] = useLocalStorage<string[]>('recent-searches', []);
   
   const debouncedQuery = useDebounce(query, 300);
 
-  // Perform search - stable dependencies
+  // Perform search - using primitive dependencies to avoid infinite loop
   useEffect(() => {
     let cancelled = false;
     
@@ -147,7 +145,12 @@ function useSearchDialogState() {
 
       setIsLoading(true);
       try {
-        const searchResults = await mockSearch(debouncedQuery, filters);
+        const currentFilters: SearchFilter = {
+          type: filterType,
+          dateRange: filterDateRange,
+          status: filterStatus,
+        };
+        const searchResults = await mockSearch(debouncedQuery, currentFilters);
         if (!cancelled) {
           setResults(searchResults);
         }
@@ -168,7 +171,7 @@ function useSearchDialogState() {
     return () => {
       cancelled = true;
     };
-  }, [debouncedQuery, filters]);
+  }, [debouncedQuery, filterType, filterDateRange, filterStatus]);
 
   // Add to recent searches
   const addToRecent = useCallback((searchQuery: string) => {
@@ -187,8 +190,31 @@ function useSearchDialogState() {
   // Reset state
   const reset = useCallback(() => {
     setQuery('');
-    setFilters({ type: null, dateRange: 'all', status: null });
+    setFilterType(null);
+    setFilterDateRange('all');
+    setFilterStatus(null);
   }, []);
+
+  // Stable filters object for external consumption
+  const filters = useMemo<SearchFilter>(() => ({
+    type: filterType,
+    dateRange: filterDateRange,
+    status: filterStatus,
+  }), [filterType, filterDateRange, filterStatus]);
+
+  // Stable setter that updates individual filter states
+  const setFilters = useCallback((updater: SearchFilter | ((prev: SearchFilter) => SearchFilter)) => {
+    if (typeof updater === 'function') {
+      const newFilters = updater({ type: filterType, dateRange: filterDateRange, status: filterStatus });
+      setFilterType(newFilters.type);
+      setFilterDateRange(newFilters.dateRange);
+      setFilterStatus(newFilters.status);
+    } else {
+      setFilterType(updater.type);
+      setFilterDateRange(updater.dateRange);
+      setFilterStatus(updater.status);
+    }
+  }, [filterType, filterDateRange, filterStatus]);
 
   return {
     query,
