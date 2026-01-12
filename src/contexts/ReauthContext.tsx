@@ -111,9 +111,10 @@ export function ReauthProvider({ children }: { children: ReactNode }) {
       if (onSuccessCallback) {
         onSuccessCallback();
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error('Reauth error:', error);
-      toast.error(error.message || 'Falha na verificação');
+      const message = error instanceof Error ? error.message : 'Falha na verificação';
+      toast.error(message);
 
       // Log failed attempt
       const { data: { user } } = await supabase.auth.getUser();

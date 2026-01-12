@@ -122,10 +122,11 @@ const Bitrix24ConfigPage = () => {
         title: 'Campos carregados',
         description: `${result.totalCustomFields || 0} campos personalizados encontrados.`
       });
-    } catch (error: any) {
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Erro desconhecido';
       toast({
         title: 'Erro ao carregar campos',
-        description: error.message,
+        description: message,
         variant: 'destructive'
       });
     } finally {
@@ -138,11 +139,12 @@ const Bitrix24ConfigPage = () => {
     try {
       const result = await callBitrixSync('list-mappings');
       setAllMappings(result.mappings || []);
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error fetching mappings:', error);
+      const message = error instanceof Error ? error.message : 'Erro desconhecido';
       toast({
         title: 'Erro ao carregar mapeamentos',
-        description: error.message,
+        description: message,
         variant: 'destructive'
       });
     } finally {
@@ -170,10 +172,11 @@ const Bitrix24ConfigPage = () => {
       setAddDialogOpen(false);
       setNewMapping({ mapping_type: 'field', source_key: '', target_key: '', priority: 0 });
       await fetchMappings();
-    } catch (error: any) {
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Erro desconhecido';
       toast({
         title: 'Erro ao salvar',
-        description: error.message,
+        description: message,
         variant: 'destructive'
       });
     } finally {
@@ -192,10 +195,11 @@ const Bitrix24ConfigPage = () => {
         description: 'O mapeamento foi removido com sucesso.'
       });
       await fetchMappings();
-    } catch (error: any) {
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Erro desconhecido';
       toast({
         title: 'Erro ao remover',
-        description: error.message,
+        description: message,
         variant: 'destructive'
       });
     } finally {

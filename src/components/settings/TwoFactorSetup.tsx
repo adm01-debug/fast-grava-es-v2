@@ -61,9 +61,10 @@ export function TwoFactorSetup() {
         });
         setShowEnrollDialog(true);
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error enrolling TOTP:', error);
-      toast.error(error.message || 'Erro ao configurar 2FA');
+      const message = error instanceof Error ? error.message : 'Erro ao configurar 2FA';
+      toast.error(message);
     } finally {
       setIsEnrolling(false);
     }
@@ -103,9 +104,10 @@ export function TwoFactorSetup() {
       setEnrollData(null);
       setVerifyCode('');
       fetchMfaFactors();
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error verifying TOTP:', error);
-      toast.error(error.message || 'Código inválido');
+      const message = error instanceof Error ? error.message : 'Código inválido';
+      toast.error(message);
     } finally {
       setIsEnrolling(false);
     }
@@ -153,9 +155,10 @@ export function TwoFactorSetup() {
       setShowDisableDialog(false);
       setDisableCode('');
       fetchMfaFactors();
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error disabling 2FA:', error);
-      toast.error(error.message || 'Código inválido');
+      const message = error instanceof Error ? error.message : 'Código inválido';
+      toast.error(message);
     } finally {
       setIsDisabling(false);
     }

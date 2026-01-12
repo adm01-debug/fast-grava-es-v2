@@ -61,7 +61,7 @@ export function useMFA(): UseMFAReturn {
       if (error) throw error;
       
       setFactors(data.totp || []);
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error fetching MFA factors:', error);
       toast.error('Erro ao carregar configurações MFA');
     } finally {
@@ -84,9 +84,10 @@ export function useMFA(): UseMFAReturn {
       if (error) throw error;
 
       setEnrollmentData(data);
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error starting MFA enrollment:', error);
-      toast.error(error.message || 'Erro ao iniciar configuração MFA');
+      const message = error instanceof Error ? error.message : 'Erro ao iniciar configuração MFA';
+      toast.error(message);
       setIsEnrolling(false);
     }
   };
@@ -121,9 +122,10 @@ export function useMFA(): UseMFAReturn {
       setIsEnrolling(false);
       await refreshFactors();
       return true;
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error verifying MFA enrollment:', error);
-      toast.error(error.message || 'Código inválido');
+      const message = error instanceof Error ? error.message : 'Código inválido';
+      toast.error(message);
       return false;
     } finally {
       setIsVerifying(false);
@@ -146,9 +148,10 @@ export function useMFA(): UseMFAReturn {
       toast.success('Autenticação de dois fatores desativada');
       await refreshFactors();
       return true;
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error unenrolling MFA:', error);
-      toast.error(error.message || 'Erro ao desativar MFA');
+      const message = error instanceof Error ? error.message : 'Erro ao desativar MFA';
+      toast.error(message);
       return false;
     }
   };
@@ -162,9 +165,10 @@ export function useMFA(): UseMFAReturn {
       if (error) throw error;
 
       return data.id;
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error creating MFA challenge:', error);
-      toast.error(error.message || 'Erro ao criar desafio MFA');
+      const message = error instanceof Error ? error.message : 'Erro ao criar desafio MFA';
+      toast.error(message);
       return null;
     }
   };
@@ -185,9 +189,10 @@ export function useMFA(): UseMFAReturn {
       if (error) throw error;
 
       return true;
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error verifying MFA challenge:', error);
-      toast.error(error.message || 'Código inválido');
+      const message = error instanceof Error ? error.message : 'Código inválido';
+      toast.error(message);
       return false;
     } finally {
       setIsVerifying(false);
