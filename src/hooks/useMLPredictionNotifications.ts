@@ -2,7 +2,25 @@ import { useEffect, useCallback, useRef } from 'react';
 import { usePushNotifications } from './usePushNotifications';
 import { useNotificationSounds } from './useNotificationSounds';
 import { supabase } from '@/integrations/supabase/client';
-import { MachinePrediction } from './useMLPredictions';
+import { MachinePrediction, PredictionFactor } from './useMLPredictions';
+import { Json } from '@/integrations/supabase/types';
+
+interface PredictionPayload {
+  id: string;
+  machine_id: string;
+  prediction_type: string;
+  risk_score: number;
+  confidence: number;
+  predicted_failure_date: string | null;
+  factors: Json;
+  recommendations: string[] | null;
+  model_version: string;
+  is_active: boolean;
+  acknowledged_by: string | null;
+  acknowledged_at: string | null;
+  created_at: string;
+  expires_at: string;
+}
 
 interface MLNotificationPreferences {
   criticalRisk: boolean;
@@ -185,7 +203,7 @@ export const useMLPredictionNotifications = () => {
           table: 'machine_predictions'
         },
         async (payload) => {
-          const newPrediction = payload.new as any;
+          const newPrediction = payload.new as PredictionPayload;
           
           // Only notify for active predictions with significant risk
           if (!newPrediction.is_active || newPrediction.risk_score < 40) return;
@@ -197,10 +215,16 @@ export const useMLPredictionNotifications = () => {
             .eq('id', newPrediction.machine_id)
             .single();
 
+          // Parse factors from JSON
+          const parsedFactors: PredictionFactor[] = Array.isArray(newPrediction.factors) 
+            ? (newPrediction.factors as unknown as PredictionFactor[])
+            : [];
+
           const predictionWithMachine: MachinePrediction = {
             ...newPrediction,
+            prediction_type: newPrediction.prediction_type as MachinePrediction['prediction_type'],
             machine: machine || undefined,
-            factors: Array.isArray(newPrediction.factors) ? newPrediction.factors : [],
+            factors: parsedFactors,
             recommendations: Array.isArray(newPrediction.recommendations) ? newPrediction.recommendations : [],
           };
 

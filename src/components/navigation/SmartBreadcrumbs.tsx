@@ -305,7 +305,7 @@ export function SmartBreadcrumbs({
                       <div className="px-2 py-1.5 text-xs font-medium text-muted-foreground">
                         Também nesta seção
                       </div>
-                      {(item as any).siblings.map((sibling: { path: string; label: string }) => (
+                      {item.siblings?.map((sibling) => (
                         <DropdownMenuItem 
                           key={sibling.path}
                           onClick={() => navigate(sibling.path)}
