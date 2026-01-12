@@ -6,8 +6,8 @@ import { StatsCard } from '@/components/dashboard/StatsCard';
 import { useOperatorDashboardData } from '@/hooks/useOperatorDashboardData';
 import { useDashboardLayout, WidgetConfig } from '@/hooks/useDashboardLayout';
 import { useAuth } from '@/contexts/AuthContext';
-import { Skeleton } from '@/components/ui/skeleton';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { StatsCardSkeleton, ContentTransition } from '@/components/loading';
 import { DraggableWidget } from '@/components/dashboard/DraggableWidget';
 import { DashboardEditControls } from '@/components/dashboard/DashboardEditControls';
 import { SortableWidgetSection } from '@/components/dashboard/SortableWidgetSection';
@@ -44,15 +44,17 @@ const SmartSequencingWidget = lazy(() => import('@/components/dashboard/SmartSeq
 const LoadBalancingWidget = lazy(() => import('@/components/dashboard/LoadBalancingWidget').then(m => ({ default: m.LoadBalancingWidget })));
 const BottleneckWidget = lazy(() => import('@/components/dashboard/BottleneckWidget').then(m => ({ default: m.BottleneckWidget })));
 
-// Widget skeleton fallback
+// Widget skeleton fallback with shimmer
 function WidgetSkeleton({ className = "h-64" }: { className?: string }) {
   return (
-    <Card className="glass-card animate-pulse">
+    <Card className="glass-card overflow-hidden">
       <CardHeader className="pb-2">
-        <Skeleton className="h-6 w-40" />
+        <div className="h-6 w-40 rounded bg-muted animate-pulse" />
       </CardHeader>
       <CardContent>
-        <Skeleton className={className} />
+        <div className={`${className} rounded bg-muted relative overflow-hidden`}>
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-background/30 to-transparent animate-shimmer" />
+        </div>
       </CardContent>
     </Card>
   );
@@ -196,50 +198,51 @@ const Index = () => {
         )}
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
-          {isLoading ? (
-            <>
+        <ContentTransition
+          isLoading={isLoading}
+          skeleton={
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
               {[1, 2, 3, 4].map(i => (
-                <Skeleton key={i} className="h-32" />
+                <StatsCardSkeleton key={i} />
               ))}
-            </>
-          ) : (
-            <>
-              <StatsCard
-                title={t('dashboard.jobsQueue')}
-                value={stats.todayScheduled.toString()}
-                subtitle={`${stats.scheduled} ${t('jobs.statuses.scheduled')}`}
-                icon={Calendar}
-                variant="primary"
-                className="stagger-1"
-              />
-              <StatsCard
-                title={t('dashboard.jobsInProduction')}
-                value={stats.inProgress.toString()}
-                subtitle={`${machines.length} ${t('machines.title')}`}
-                icon={Printer}
-                variant="info"
-                className="stagger-2"
-              />
-              <StatsCard
-                title={t('dashboard.jobsFinished')}
-                value={stats.todayCompleted.toString()}
-                subtitle={`${stats.completedPieces.toLocaleString('pt-BR')} ${t('jobs.producedQuantity')}`}
-                icon={CheckCircle2}
-                variant="success"
-                className="stagger-3"
-              />
-              <StatsCard
-                title={t('alerts.types.warning')}
-                value={stats.delayed.toString()}
-                subtitle={stats.delayed > 0 ? t('alerts.types.warning') : t('common.success')}
-                icon={AlertTriangle}
-                variant="warning"
-                className="stagger-4"
-              />
-            </>
-          )}
-        </div>
+            </div>
+          }
+        >
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
+            <StatsCard
+              title={t('dashboard.jobsQueue')}
+              value={stats.todayScheduled.toString()}
+              subtitle={`${stats.scheduled} ${t('jobs.statuses.scheduled')}`}
+              icon={Calendar}
+              variant="primary"
+              className="stagger-1"
+            />
+            <StatsCard
+              title={t('dashboard.jobsInProduction')}
+              value={stats.inProgress.toString()}
+              subtitle={`${machines.length} ${t('machines.title')}`}
+              icon={Printer}
+              variant="info"
+              className="stagger-2"
+            />
+            <StatsCard
+              title={t('dashboard.jobsFinished')}
+              value={stats.todayCompleted.toString()}
+              subtitle={`${stats.completedPieces.toLocaleString('pt-BR')} ${t('jobs.producedQuantity')}`}
+              icon={CheckCircle2}
+              variant="success"
+              className="stagger-3"
+            />
+            <StatsCard
+              title={t('alerts.types.warning')}
+              value={stats.delayed.toString()}
+              subtitle={stats.delayed > 0 ? t('alerts.types.warning') : t('common.success')}
+              icon={AlertTriangle}
+              variant="warning"
+              className="stagger-4"
+            />
+          </div>
+        </ContentTransition>
 
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 xl:grid-cols-5 gap-6">
