@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useFuseSearch } from '@/hooks/useFuseSearch';
 import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import { format } from 'date-fns';
@@ -87,13 +88,16 @@ export default function TraceabilityPage() {
   const { data: jobs } = useJobs();
   const { createLot } = useTraceabilityMutations();
 
-  const filteredLots = lots?.filter(lot => {
-    const matchesSearch = 
-      lot.lot_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      lot.product_name.toLowerCase().includes(searchTerm.toLowerCase());
+  // Apply Fuse.js fuzzy search for lots
+  const fuseSearchedLots = useFuseSearch(lots || [], searchTerm, {
+    keys: ['lot_number', 'product_name'],
+    threshold: 0.3,
+  });
+
+  const filteredLots = fuseSearchedLots.filter(lot => {
     const matchesStatus = statusFilter === 'all' || lot.status === statusFilter;
-    return matchesSearch && matchesStatus;
-  }) || [];
+    return matchesStatus;
+  });
 
   const stats = {
     total: lots?.length || 0,

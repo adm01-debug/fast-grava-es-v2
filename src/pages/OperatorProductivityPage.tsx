@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useFuseSearch } from '@/hooks/useFuseSearch';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -639,17 +640,14 @@ export default function OperatorProductivityPage() {
     'all': 'Todo o período',
   };
 
-  const filteredOperators = useMemo(() => {
-    let result = operators;
+  // Apply Fuse.js fuzzy search for operators
+  const fuseSearchedOperators = useFuseSearch(operators, searchQuery, {
+    keys: ['operatorName', 'machineNames'],
+    threshold: 0.3,
+  });
 
-    // Filter by search
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
-      result = result.filter(o => 
-        o.operatorName.toLowerCase().includes(query) ||
-        o.machineNames.some(m => m.toLowerCase().includes(query))
-      );
-    }
+  const filteredOperators = useMemo(() => {
+    let result = fuseSearchedOperators;
 
     // Filter by status
     if (statusFilter === 'active') {
@@ -667,7 +665,7 @@ export default function OperatorProductivityPage() {
         default: return b.efficiencyScore - a.efficiencyScore;
       }
     });
-  }, [operators, searchQuery, statusFilter, sortBy]);
+  }, [fuseSearchedOperators, statusFilter, sortBy]);
 
   // Select first operator with data for radar chart
   const displayOperator = selectedOperator || filteredOperators.find(o => o.totalJobsCompleted > 0) || filteredOperators[0];
