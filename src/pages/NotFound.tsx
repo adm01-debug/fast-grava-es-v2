@@ -1,5 +1,6 @@
 import { useLocation, Link, useNavigate } from "react-router-dom";
 import { useState, useEffect, useMemo } from "react";
+import { useFuseSearch } from "@/hooks/useFuseSearch";
 import { motion } from "framer-motion";
 import { Home, ArrowLeft, Search, Calendar, LayoutGrid, BarChart3, Settings, Users, Bell, FileText, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -42,13 +43,16 @@ const NotFound = () => {
   
   const similarPages = useMemo(() => findSimilarPages(location.pathname), [location.pathname]);
   
+  // Apply Fuse.js fuzzy search for pages
+  const fuseFilteredPages = useFuseSearch(popularPages, searchQuery, {
+    keys: ['name', 'description'],
+    threshold: 0.4,
+  });
+
   const filteredPages = useMemo(() => {
     if (!searchQuery) return popularPages.slice(0, 6);
-    return popularPages.filter(page => 
-      page.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      page.description.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  }, [searchQuery]);
+    return fuseFilteredPages;
+  }, [searchQuery, fuseFilteredPages]);
 
   useEffect(() => {
     if (import.meta.env.DEV) {

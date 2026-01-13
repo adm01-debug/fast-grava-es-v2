@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
+import { useFuseSearch } from '@/hooks/useFuseSearch';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -42,23 +43,29 @@ export function OEEMachineTable({ machines }: OEEMachineTableProps) {
     return acc;
   }, {} as Record<string, string>);
 
-  const filteredMachines = machines
-    .filter(m => {
-      const matchesSearch = m.machineName.toLowerCase().includes(search.toLowerCase()) ||
-        m.machineCode.toLowerCase().includes(search.toLowerCase());
-      const matchesTechnique = techniqueFilter === 'all' || m.techniqueId === techniqueFilter;
-      return matchesSearch && matchesTechnique;
-    })
-    .sort((a, b) => {
-      const aVal = a[sortField];
-      const bVal = b[sortField];
-      const dir = sortDirection === 'asc' ? 1 : -1;
-      
-      if (typeof aVal === 'string' && typeof bVal === 'string') {
-        return aVal.localeCompare(bVal) * dir;
-      }
-      return ((aVal as number) - (bVal as number)) * dir;
-    });
+  // Apply Fuse.js fuzzy search for machines
+  const fuseSearchedMachines = useFuseSearch(machines, search, {
+    keys: ['machineName', 'machineCode'],
+    threshold: 0.3,
+  });
+
+  const filteredMachines = useMemo(() => {
+    return fuseSearchedMachines
+      .filter(m => {
+        const matchesTechnique = techniqueFilter === 'all' || m.techniqueId === techniqueFilter;
+        return matchesTechnique;
+      })
+      .sort((a, b) => {
+        const aVal = a[sortField];
+        const bVal = b[sortField];
+        const dir = sortDirection === 'asc' ? 1 : -1;
+        
+        if (typeof aVal === 'string' && typeof bVal === 'string') {
+          return aVal.localeCompare(bVal) * dir;
+        }
+        return ((aVal as number) - (bVal as number)) * dir;
+      });
+  }, [fuseSearchedMachines, techniqueFilter, sortField, sortDirection]);
 
   const toggleSort = (field: SortField) => {
     if (sortField === field) {

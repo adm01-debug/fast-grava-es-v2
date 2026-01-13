@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback } from 'react';
+import { useFuseSearch } from '@/hooks/useFuseSearch';
 import { useNavigate } from 'react-router-dom';
 import { 
   DndContext, 
@@ -140,18 +141,18 @@ export default function KanbanBoard() {
     })
   );
 
+  // Apply Fuse.js fuzzy search
+  const fuseSearchedJobs = useFuseSearch(jobs, searchTerm, {
+    keys: ['client', 'product', 'order_number'],
+    threshold: 0.3,
+  });
+
   const filteredJobs = useMemo(() => {
-    return jobs.filter(job => {
-      const matchesSearch = searchTerm === '' || 
-        job.client.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        job.product.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        job.order_number.toLowerCase().includes(searchTerm.toLowerCase());
-      
+    return fuseSearchedJobs.filter(job => {
       const matchesTechnique = selectedTechnique === 'all' || job.technique_id === selectedTechnique;
-      
-      return matchesSearch && matchesTechnique;
+      return matchesTechnique;
     });
-  }, [jobs, searchTerm, selectedTechnique]);
+  }, [fuseSearchedJobs, selectedTechnique]);
 
   const getJobsByStatus = useCallback((status: JobStatus) => {
     return filteredJobs.filter(job => job.status === status);

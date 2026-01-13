@@ -1,4 +1,5 @@
 import { useState, useMemo, useRef } from "react";
+import { useFuseSearch } from "@/hooks/useFuseSearch";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -68,20 +69,25 @@ export default function PendingQueue() {
   // Filter pending jobs (queue, ready, scheduled, delayed, rework)
   const pendingStatuses: JobStatus[] = ['queue', 'ready', 'scheduled', 'delayed', 'rework'];
 
+  // Pre-filter by status first
+  const pendingJobs = useMemo(() => {
+    return jobs.filter(job => pendingStatuses.includes(job.status as JobStatus));
+  }, [jobs]);
+
+  // Apply Fuse.js fuzzy search
+  const fuseSearchedJobs = useFuseSearch(pendingJobs, searchTerm, {
+    keys: ['order_number', 'client', 'product'],
+    threshold: 0.3,
+  });
+
   const filteredJobs = useMemo(() => {
-    return jobs
-      .filter(job => pendingStatuses.includes(job.status as JobStatus))
+    return fuseSearchedJobs
       .filter(job => {
-        const matchesSearch = 
-          job.order_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          job.client.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          job.product.toLowerCase().includes(searchTerm.toLowerCase());
-        
         const matchesTechnique = selectedTechnique === "all" || job.technique_id === selectedTechnique;
         const matchesStatus = selectedStatus === "all" || job.status === selectedStatus;
         const matchesPriority = selectedPriority === "all" || job.priority === selectedPriority;
 
-        return matchesSearch && matchesTechnique && matchesStatus && matchesPriority;
+        return matchesTechnique && matchesStatus && matchesPriority;
       })
       .sort((a, b) => {
         let comparison = 0;

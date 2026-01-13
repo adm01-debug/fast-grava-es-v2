@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useFuseSearch } from '@/hooks/useFuseSearch';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -50,14 +51,18 @@ const TechnicalKnowledgeBase = () => {
     }
   });
 
+  // Apply Fuse.js fuzzy search for sheets
+  const fuseSearchedSheets = useFuseSearch(sheets, searchTerm, {
+    keys: ['title', 'description'],
+    threshold: 0.3,
+  });
+
   // Group sheets by technique
   const groupedSheets = useMemo(() => {
-    const filtered = sheets.filter(sheet => {
-      const matchesSearch = sheet.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        sheet.description?.toLowerCase().includes(searchTerm.toLowerCase());
+    const filtered = fuseSearchedSheets.filter(sheet => {
       const matchesTechnique = selectedTechnique === 'all' || sheet.technique_id === selectedTechnique;
       const matchesCategory = selectedCategory === 'all' || sheet.product_category_id === selectedCategory;
-      return matchesSearch && matchesTechnique && matchesCategory;
+      return matchesTechnique && matchesCategory;
     });
 
     const grouped: Record<string, TechnicalSheet[]> = {};
@@ -70,7 +75,7 @@ const TechnicalKnowledgeBase = () => {
     });
 
     return grouped;
-  }, [sheets, searchTerm, selectedTechnique, selectedCategory]);
+  }, [fuseSearchedSheets, selectedTechnique, selectedCategory]);
 
   const canEdit = role === 'coordinator';
 

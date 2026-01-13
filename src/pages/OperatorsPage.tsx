@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useFuseSearch } from '@/hooks/useFuseSearch';
 import { useNavigate } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -69,12 +70,14 @@ export default function OperatorsPage() {
     return machines.filter(m => machineIds.includes(m.id));
   };
 
+  // Apply Fuse.js fuzzy search for operators
+  const fuseSearchedOperators = useFuseSearch(operators, searchQuery, {
+    keys: ['full_name'],
+    threshold: 0.3,
+  });
+
   const filteredOperators = useMemo(() => {
-    return operators.filter((operator) => {
-      // Filter by name
-      const nameMatch = !searchQuery || 
-        (operator.full_name?.toLowerCase().includes(searchQuery.toLowerCase()));
-      
+    return fuseSearchedOperators.filter((operator) => {
       // Filter by assigned machine
       const machineMatch = machineFilter === 'all' || 
         getAssignedMachineIds(operator.user_id).includes(machineFilter);
@@ -84,9 +87,9 @@ export default function OperatorsPage() {
         (statusFilter === 'active' && operator.is_active) ||
         (statusFilter === 'inactive' && !operator.is_active);
       
-      return nameMatch && machineMatch && statusMatch;
+      return machineMatch && statusMatch;
     });
-  }, [operators, searchQuery, machineFilter, statusFilter, assignments, isOnline]);
+  }, [fuseSearchedOperators, machineFilter, statusFilter, assignments, isOnline]);
 
   const handleOpenAssignment = (operator: OperatorWithProfile) => {
     setSelectedOperator(operator);

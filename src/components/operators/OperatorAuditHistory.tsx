@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useFuseSearch } from '@/hooks/useFuseSearch';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -45,13 +46,14 @@ export function OperatorAuditHistory() {
   const [actionFilter, setActionFilter] = useState<string>('all');
   const [periodFilter, setPeriodFilter] = useState<string>('all');
 
-  const filteredEntries = useMemo(() => {
-    return auditEntries.filter((entry) => {
-      // Filter by search query (operator name or performer name)
-      const searchMatch = !searchQuery || 
-        entry.operator_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        entry.performed_by_name?.toLowerCase().includes(searchQuery.toLowerCase());
+  // Apply Fuse.js fuzzy search for audit entries
+  const fuseSearchedEntries = useFuseSearch(auditEntries, searchQuery, {
+    keys: ['operator_name', 'performed_by_name'],
+    threshold: 0.3,
+  });
 
+  const filteredEntries = useMemo(() => {
+    return fuseSearchedEntries.filter((entry) => {
       // Filter by action
       const actionMatch = actionFilter === 'all' || entry.action === actionFilter;
 
@@ -63,9 +65,9 @@ export function OperatorAuditHistory() {
         periodMatch = isAfter(entryDate, subDays(new Date(), daysAgo));
       }
 
-      return searchMatch && actionMatch && periodMatch;
+      return actionMatch && periodMatch;
     });
-  }, [auditEntries, searchQuery, actionFilter, periodFilter]);
+  }, [fuseSearchedEntries, actionFilter, periodFilter]);
 
   const clearFilters = () => {
     setSearchQuery('');
