@@ -136,7 +136,7 @@ const Index = () => {
       {/* Offline Banner */}
       <OfflineBanner />
       
-      <div className="p-4 sm:p-6 lg:p-8 space-y-6 lg:space-y-8">
+      <div className="py-4 sm:py-6 lg:py-8 space-y-6 lg:space-y-8">
         {/* Page Header with Enhanced Navigation */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 animate-fade-in">
           <div>

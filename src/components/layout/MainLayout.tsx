@@ -39,7 +39,7 @@ export function MainLayout({ children }: MainLayoutProps) {
 
   return (
     <SessionProvider>
-      <div className="flex min-h-screen w-full bg-background">
+      <div className="flex h-screen w-full bg-background overflow-hidden">
         {/* Skip Links for Accessibility */}
         <SkipLinks />
         
@@ -49,10 +49,13 @@ export function MainLayout({ children }: MainLayoutProps) {
         {/* Sidebar - hidden on mobile, shown on tablet+ */}
         <AppSidebar />
         
-        <main className={cn(
-          "flex-1 overflow-auto relative",
-          "min-h-screen"
-        )}>
+        <main 
+          className={cn(
+            "flex-1 flex flex-col overflow-y-auto overflow-x-hidden relative",
+            "h-full scrollbar-thin"
+          )}
+          role="main"
+        >
           <OfflineStatusBanner />
           
           {/* Desktop top bar */}
@@ -78,7 +81,9 @@ export function MainLayout({ children }: MainLayoutProps) {
             "pt-16 md:pt-4",
             "pb-24 md:pb-4",
             // Horizontal padding
-            "px-4 sm:px-6 lg:px-8"
+            "px-4 sm:px-6 lg:px-8",
+            // Ensure content can scroll
+            "min-h-0"
           )}>
             {shouldAnimate ? (
               <AnimatePresence mode="wait">
@@ -99,7 +104,7 @@ export function MainLayout({ children }: MainLayoutProps) {
           </MainContent>
           
           {/* Mobile navigation spacer */}
-          {isMobile && <div className="h-20" aria-hidden="true" />}
+          {isMobile && <div className="h-20 shrink-0" aria-hidden="true" />}
         </main>
         
         {/* Mobile navigation - only render on mobile */}

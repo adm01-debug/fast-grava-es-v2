@@ -72,14 +72,13 @@ interface MainContentProps {
 
 export function MainContent({ children, className, id = "main-content" }: MainContentProps) {
   return (
-    <main
+    <div
       id={id}
-      role="main"
       tabIndex={-1}
-      className={cn("outline-none", className)}
+      className={cn("outline-none flex-1", className)}
     >
       {children}
-    </main>
+    </div>
   );
 }
 
