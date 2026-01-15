@@ -3,7 +3,7 @@ import { LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Card } from '@/components/ui/card';
 
-interface StatsCardProps {
+export interface StatsCardProps {
   title: string;
   value: string | number;
   subtitle?: string;
@@ -14,6 +14,7 @@ interface StatsCardProps {
   };
   variant?: 'primary' | 'success' | 'warning' | 'info' | 'accent' | 'muted';
   className?: string;
+  compact?: boolean;
 }
 
 const variantStyles = {
@@ -56,9 +57,43 @@ function StatsCardComponent({
   icon: Icon, 
   trend, 
   variant = 'primary',
-  className 
+  className,
+  compact = false
 }: StatsCardProps) {
   const styles = useMemo(() => variantStyles[variant], [variant]);
+
+  if (compact) {
+    return (
+      <Card className={cn(
+        'p-3 transition-all duration-200 hover:shadow-md',
+        className
+      )}>
+        <div className="flex items-center gap-3">
+          <div className={cn(
+            'w-9 h-9 rounded-lg flex items-center justify-center shrink-0',
+            styles.iconBg
+          )}>
+            <Icon className={cn('w-4 h-4', styles.iconColor)} />
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="text-xs font-medium text-muted-foreground truncate">
+              {title}
+            </p>
+            <div className="flex items-baseline gap-2">
+              <p className="text-xl font-semibold tracking-tight text-foreground">
+                {value}
+              </p>
+              {subtitle && (
+                <p className="text-xs text-muted-foreground truncate">
+                  {subtitle}
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+      </Card>
+    );
+  }
 
   return (
     <Card className={cn(

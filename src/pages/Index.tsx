@@ -1,4 +1,4 @@
-import { Suspense, lazy, useMemo, ComponentType } from 'react';
+import { Suspense, lazy, useMemo, ComponentType, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
@@ -18,13 +18,19 @@ import { ActivityLog, useActivityLog } from '@/components/activity/ActivityLog';
 import { OfflineBanner, ConnectionStatus } from '@/components/offline/OfflineMode';
 import { FloatingAIAssistant } from '@/components/ai/FloatingAIAssistant';
 import { VoiceButton } from '@/components/voice/VoiceCommands';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { 
   Calendar, 
   CheckCircle2, 
   AlertTriangle, 
   Printer,
   User,
-  Command
+  Command,
+  LayoutDashboard,
+  TrendingUp,
+  Table2,
+  Clock
 } from 'lucide-react';
 
 // Type definitions for widget components
@@ -131,55 +137,38 @@ const Index = () => {
   const { entries: activityEntries, addEntry: addActivityEntry } = useActivityLog();
   const navigate = useNavigate();
 
+  // State for active tab
+  const [activeTab, setActiveTab] = useState<string>('overview');
+
   return (
     <MainLayout>
       {/* Offline Banner */}
       <OfflineBanner />
       
-      <div className="py-4 sm:py-6 lg:py-8 space-y-6 lg:space-y-8">
-        {/* Page Header with Enhanced Navigation */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 animate-fade-in">
-          <div>
-            <div className="flex items-center gap-3">
-              <h1 className="text-3xl font-display font-bold">
-                <span className="gradient-text">{t('dashboard.title')}</span>
-              </h1>
-              <FavoriteButton path="/" name={t('dashboard.title')} />
-            </div>
-            <div className="flex items-center gap-2">
-              <p className="text-muted-foreground">
-                {isOperator 
-                  ? `${t('operators.assignedMachines')} (${machines.length})`
-                  : t('dashboard.weeklyOverview')
-                }
-              </p>
-              {isOperator && (
-                <Badge variant="secondary" className="gap-1">
-                  <User className="h-3 w-3" />
-                  {profile?.full_name || t('operators.title')}
-                </Badge>
-              )}
-            </div>
+      <div className="h-full flex flex-col py-3 lg:py-4">
+        {/* Compact Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4 px-1 shrink-0">
+          <div className="flex items-center gap-3">
+            <h1 className="text-2xl font-display font-bold">
+              <span className="gradient-text">{t('dashboard.title')}</span>
+            </h1>
+            <FavoriteButton path="/" name={t('dashboard.title')} />
+            {isOperator && (
+              <Badge variant="secondary" className="gap-1 text-xs">
+                <User className="h-3 w-3" />
+                {profile?.full_name || t('operators.title')}
+              </Badge>
+            )}
           </div>
           
-          <div className="flex items-center gap-3">
-            {/* Connection Status */}
+          <div className="flex items-center gap-2">
             <ConnectionStatus />
-            
-            {/* Voice Command */}
-            <VoiceButton 
-              className="hidden md:flex"
-            />
-            
-            {/* Favorites Dropdown */}
+            <VoiceButton className="hidden md:flex" />
             <FavoritesDropdown onNavigate={(path) => navigate(path)} />
-            
-            {/* Command Palette Hint */}
             <Badge variant="outline" className="hidden md:flex gap-1.5 cursor-pointer hover:bg-muted transition-colors">
               <Command className="h-3 w-3" />
               <span className="text-xs">⌘K</span>
             </Badge>
-            
             <DashboardEditControls
               isEditMode={isEditMode}
               widgets={filteredWidgetsForControls}
@@ -192,30 +181,30 @@ const Index = () => {
 
         {/* Edit Mode Indicator */}
         {isEditMode && (
-          <div className="bg-primary/10 border border-primary/20 rounded-lg p-3 text-center text-sm text-primary animate-fade-in">
+          <div className="bg-primary/10 border border-primary/20 rounded-lg p-2 text-center text-sm text-primary mb-3 shrink-0">
             {t('common.edit')} - {t('kanban.dragHint')}
           </div>
         )}
 
-        {/* Stats Grid */}
+        {/* Compact Stats Row */}
         <ContentTransition
           isLoading={isLoading}
           skeleton={
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4 shrink-0">
               {[1, 2, 3, 4].map(i => (
                 <StatsCardSkeleton key={i} />
               ))}
             </div>
           }
         >
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4 shrink-0">
             <StatsCard
               title={t('dashboard.jobsQueue')}
               value={stats.todayScheduled.toString()}
               subtitle={`${stats.scheduled} ${t('jobs.statuses.scheduled')}`}
               icon={Calendar}
               variant="primary"
-              className="stagger-1"
+              compact
             />
             <StatsCard
               title={t('dashboard.jobsInProduction')}
@@ -223,15 +212,15 @@ const Index = () => {
               subtitle={`${machines.length} ${t('machines.title')}`}
               icon={Printer}
               variant="info"
-              className="stagger-2"
+              compact
             />
             <StatsCard
               title={t('dashboard.jobsFinished')}
               value={stats.todayCompleted.toString()}
-              subtitle={`${stats.completedPieces.toLocaleString('pt-BR')} ${t('jobs.producedQuantity')}`}
+              subtitle={`${stats.completedPieces.toLocaleString('pt-BR')} pçs`}
               icon={CheckCircle2}
               variant="success"
-              className="stagger-3"
+              compact
             />
             <StatsCard
               title={t('alerts.types.warning')}
@@ -239,79 +228,120 @@ const Index = () => {
               subtitle={stats.delayed > 0 ? t('alerts.types.warning') : t('common.success')}
               icon={AlertTriangle}
               variant="warning"
-              className="stagger-4"
+              compact
             />
           </div>
         </ContentTransition>
 
-        {/* Main Content Grid */}
-        <div className="grid grid-cols-1 xl:grid-cols-5 gap-6">
-          {/* Left - Main widgets */}
-          <div className="xl:col-span-3">
-            <SortableWidgetSection
-              widgets={mainWidgets}
-              section="main"
-              onReorder={reorderWidgets}
-              className="space-y-6"
-            >
-              {mainWidgets.map(widget => renderWidget(widget.id))}
-            </SortableWidgetSection>
-          </div>
+        {/* Tabbed Dashboard Content - Takes remaining space */}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col min-h-0">
+          <TabsList className="w-full justify-start bg-muted/50 p-1 h-auto shrink-0">
+            <TabsTrigger value="overview" className="gap-2 data-[state=active]:bg-background">
+              <LayoutDashboard className="h-4 w-4" />
+              <span className="hidden sm:inline">Visão Geral</span>
+            </TabsTrigger>
+            {!isOperator && (
+              <TabsTrigger value="efficiency" className="gap-2 data-[state=active]:bg-background">
+                <TrendingUp className="h-4 w-4" />
+                <span className="hidden sm:inline">Eficiência</span>
+              </TabsTrigger>
+            )}
+            <TabsTrigger value="timeline" className="gap-2 data-[state=active]:bg-background">
+              <Clock className="h-4 w-4" />
+              <span className="hidden sm:inline">Timeline</span>
+            </TabsTrigger>
+            <TabsTrigger value="jobs" className="gap-2 data-[state=active]:bg-background">
+              <Table2 className="h-4 w-4" />
+              <span className="hidden sm:inline">Jobs</span>
+            </TabsTrigger>
+          </TabsList>
 
-          {/* Right - Sidebar widgets */}
-          <div className="xl:col-span-2 space-y-6">
-            {/* Daily Summary Card - visible to all */}
-            <DailySummaryCard />
-            
-            <SortableWidgetSection
-              widgets={sidebarWidgets}
-              section="sidebar"
-              onReorder={reorderWidgets}
-              className="space-y-6"
-            >
-              {sidebarWidgets.map(widget => renderWidget(widget.id))}
-            </SortableWidgetSection>
-          </div>
-        </div>
+          {/* Overview Tab - Main Dashboard */}
+          <TabsContent value="overview" className="flex-1 mt-4 min-h-0">
+            <div className="grid grid-cols-1 xl:grid-cols-5 gap-4 h-full">
+              {/* Left Panel - Main Chart */}
+              <div className="xl:col-span-3 flex flex-col min-h-0">
+                <ScrollArea className="flex-1">
+                  <div className="space-y-4 pr-2">
+                    <SortableWidgetSection
+                      widgets={mainWidgets}
+                      section="main"
+                      onReorder={reorderWidgets}
+                      className="space-y-4"
+                    >
+                      {mainWidgets.map(widget => renderWidget(widget.id))}
+                    </SortableWidgetSection>
+                  </div>
+                </ScrollArea>
+              </div>
 
-        {/* Operational Efficiency Section - Coordinators and Managers only */}
-        {!isOperator && efficiencyWidgets.length > 0 && (
-          <div className="space-y-4">
-            <h2 className="text-xl font-display font-semibold text-foreground">
-              {t('dashboard.efficiency')}
-            </h2>
-            <SortableWidgetSection
-              widgets={efficiencyWidgets}
-              section="efficiency"
-              direction="horizontal"
-              onReorder={reorderWidgets}
-              className="grid grid-cols-1 xl:grid-cols-3 gap-6"
-            >
-              {efficiencyWidgets.map(widget => renderWidget(widget.id))}
-            </SortableWidgetSection>
-          </div>
-        )}
+              {/* Right Panel - Sidebar Widgets */}
+              <div className="xl:col-span-2 flex flex-col min-h-0">
+                <ScrollArea className="flex-1">
+                  <div className="space-y-4 pr-2">
+                    <DailySummaryCard />
+                    <SortableWidgetSection
+                      widgets={sidebarWidgets}
+                      section="sidebar"
+                      onReorder={reorderWidgets}
+                      className="space-y-4"
+                    >
+                      {sidebarWidgets.map(widget => renderWidget(widget.id))}
+                    </SortableWidgetSection>
+                  </div>
+                </ScrollArea>
+              </div>
+            </div>
+          </TabsContent>
 
-        {/* Bottom Section */}
-        <SortableWidgetSection
-          widgets={bottomWidgets}
-          section="bottom"
-          onReorder={reorderWidgets}
-          className="space-y-6"
-        >
-          {bottomWidgets.map(widget => renderWidget(widget.id))}
-        </SortableWidgetSection>
+          {/* Efficiency Tab - For Coordinators/Managers */}
+          {!isOperator && (
+            <TabsContent value="efficiency" className="flex-1 mt-4 min-h-0">
+              <ScrollArea className="h-full">
+                <div className="pr-2">
+                  <SortableWidgetSection
+                    widgets={efficiencyWidgets}
+                    section="efficiency"
+                    direction="horizontal"
+                    onReorder={reorderWidgets}
+                    className="grid grid-cols-1 lg:grid-cols-3 gap-4"
+                  >
+                    {efficiencyWidgets.map(widget => renderWidget(widget.id))}
+                  </SortableWidgetSection>
+                  
+                  {/* Activity Log */}
+                  {activityEntries.length > 0 && (
+                    <div className="mt-6">
+                      <ActivityLog 
+                        entries={activityEntries}
+                        title="Atividade Recente"
+                        maxHeight="300px"
+                      />
+                    </div>
+                  )}
+                </div>
+              </ScrollArea>
+            </TabsContent>
+          )}
 
-        {/* Activity Log Section */}
-        {!isOperator && activityEntries.length > 0 && (
-          <div className="mt-8">
-            <ActivityLog 
-              entries={activityEntries}
-              title="Atividade Recente"
-              maxHeight="300px"
-            />
-          </div>
-        )}
+          {/* Timeline Tab */}
+          <TabsContent value="timeline" className="flex-1 mt-4 min-h-0">
+            <ScrollArea className="h-full">
+              <div className="pr-2">
+                {bottomWidgets.filter(w => w.id === 'timeline').map(widget => renderWidget(widget.id))}
+              </div>
+            </ScrollArea>
+          </TabsContent>
+
+          {/* Jobs Tab */}
+          <TabsContent value="jobs" className="flex-1 mt-4 min-h-0">
+            <ScrollArea className="h-full">
+              <div className="pr-2">
+                {bottomWidgets.filter(w => w.id === 'jobs').map(widget => renderWidget(widget.id))}
+              </div>
+            </ScrollArea>
+          </TabsContent>
+        </Tabs>
       </div>
       
       {/* Floating AI Assistant */}

@@ -1,5 +1,6 @@
 import { AlertTriangle, Clock, AlertCircle, Calendar, Settings2, Sparkles, ListTodo, Check, X } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -379,19 +380,24 @@ export function AlertsWidget() {
   return (
     <>
       <Card className="glass-card card-interactive animate-fade-in-up opacity-0 [animation-fill-mode:forwards] [animation-delay:0.15s]">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-base sm:text-lg font-display flex items-center gap-2">
-            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-status-delayed/20 flex items-center justify-center animate-glow-pulse">
-              <AlertTriangle className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-status-delayed" />
+        <CardHeader className="pb-2 pt-3 px-3">
+          <CardTitle className="text-sm font-display flex items-center gap-2">
+            <div className="w-6 h-6 rounded-lg bg-status-delayed/20 flex items-center justify-center">
+              <AlertTriangle className="w-3 h-3 text-status-delayed" />
             </div>
-            <span className="gradient-text text-sm sm:text-base">Alertas</span>
+            <span className="gradient-text">Alertas</span>
+            {alerts.length > 0 && (
+              <Badge variant="outline" className="ml-auto text-[10px] h-5">
+                {alerts.length}
+              </Badge>
+            )}
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-2 sm:space-y-3">
+        <CardContent className="space-y-1.5 px-3 pb-3 max-h-[200px] overflow-y-auto scrollbar-thin">
           {alerts.length === 0 ? (
-            <p className="text-sm text-muted-foreground text-center py-4">Nenhum alerta no momento</p>
+            <p className="text-xs text-muted-foreground text-center py-3">Nenhum alerta</p>
           ) : (
-            alerts.map((alert) => {
+            alerts.slice(0, 5).map((alert) => {
               const Icon = alertIcons[alert.type];
               
               return (
@@ -399,28 +405,23 @@ export function AlertsWidget() {
                   key={alert.id}
                   onClick={() => handleAlertClick(alert)}
                   className={cn(
-                    "flex items-start gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg bg-secondary/50 hover:bg-secondary/80 transition-all cursor-pointer border border-border/20",
-                    "hover:-translate-x-1 hover:border-primary/30",
+                    "flex items-center gap-2 p-2 rounded-lg bg-secondary/50 hover:bg-secondary/80 transition-all cursor-pointer border border-border/20",
+                    "hover:-translate-x-0.5 hover:border-primary/30",
                     alert.canSchedule && "group"
                   )}
                 >
                   <div className={cn(
-                    'w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center shrink-0',
+                    'w-6 h-6 rounded-lg flex items-center justify-center shrink-0',
                     alertColors[alert.type]
                   )}>
-                    <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                    <Icon className="w-3 h-3" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs sm:text-sm font-medium text-foreground">{alert.title}</p>
-                    <p className="text-[10px] sm:text-xs text-muted-foreground truncate">{alert.description}</p>
-                    <p className="text-[10px] sm:text-xs text-muted-foreground mt-1">
-                      {formatDistanceToNow(alert.time, { addSuffix: true, locale: ptBR })}
-                    </p>
+                    <p className="text-xs font-medium text-foreground truncate">{alert.title}</p>
+                    <p className="text-[10px] text-muted-foreground truncate">{alert.description}</p>
                   </div>
                   {alert.canSchedule && (
-                    <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                      <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary" />
-                    </div>
+                    <Calendar className="w-3 h-3 text-primary opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
                   )}
                 </div>
               );

@@ -34,60 +34,55 @@ const BufferRow = memo(function BufferRow({ data, onPromote, isPromoting }: Buff
   return (
     <div
       className={cn(
-        "p-3 rounded-lg border transition-all duration-200",
+        "p-2 rounded-lg border transition-all duration-200",
         isCritical && "bg-primary/10 border-primary/30",
         !isCritical && !isHealthy && "bg-amber-500/10 border-amber-500/30",
         isHealthy && "bg-green-500/10 border-green-500/30"
       )}
     >
-      <div className="flex items-center justify-between mb-2">
+      <div className="flex items-center justify-between mb-1.5">
         <div className="flex items-center gap-2">
           <div 
-            className="w-3 h-3 rounded-full"
+            className="w-2.5 h-2.5 rounded-full"
             style={{ backgroundColor: technique.color }}
           />
-          <span className="font-medium text-sm">{technique.name}</span>
+          <span className="font-medium text-xs">{technique.name}</span>
         </div>
-        <div className="flex items-center gap-3 text-xs">
-          <div className="flex items-center gap-1 text-muted-foreground">
-            <span>Fila:</span>
-            <span className="font-semibold text-foreground">{queueCount}</span>
-          </div>
-          <ArrowRight className="h-3 w-3 text-muted-foreground" />
-          <div className={cn(
-            "flex items-center gap-1",
+        <div className="flex items-center gap-2 text-[10px]">
+          <span className="text-muted-foreground">Fila: <span className="font-semibold text-foreground">{queueCount}</span></span>
+          <ArrowRight className="h-2.5 w-2.5 text-muted-foreground" />
+          <span className={cn(
             isCritical && "text-primary",
             !isCritical && !isHealthy && "text-amber-400",
             isHealthy && "text-green-400"
           )}>
-            <span>Prontos:</span>
-            <span className="font-bold">{readyCount}/{BUFFER_TARGET}</span>
-          </div>
+            Prontos: <span className="font-bold">{readyCount}/{BUFFER_TARGET}</span>
+          </span>
         </div>
       </div>
       
       <Progress 
         value={progress} 
         className={cn(
-          "h-2",
+          "h-1.5",
           isCritical && "[&>div]:bg-primary",
           !isCritical && !isHealthy && "[&>div]:bg-amber-500",
           isHealthy && "[&>div]:bg-green-500"
         )}
       />
       
-      <div className="flex items-center justify-between mt-2">
+      <div className="flex items-center justify-between mt-1">
         <div>
           {isCritical && (
-            <p className="text-xs text-primary flex items-center gap-1">
-              <AlertCircle className="h-3 w-3" />
-              Buffer vazio! Preparar jobs urgentemente.
+            <p className="text-[10px] text-primary flex items-center gap-1">
+              <AlertCircle className="h-2.5 w-2.5" />
+              Buffer vazio!
             </p>
           )}
           {!isCritical && !isHealthy && (
-            <p className="text-xs text-amber-400 flex items-center gap-1">
-              <AlertTriangle className="h-3 w-3" />
-              Buffer abaixo do ideal. Preparar mais {BUFFER_TARGET - readyCount} job(s).
+            <p className="text-[10px] text-amber-400 flex items-center gap-1">
+              <AlertTriangle className="h-2.5 w-2.5" />
+              +{BUFFER_TARGET - readyCount} job(s)
             </p>
           )}
         </div>
@@ -96,7 +91,7 @@ const BufferRow = memo(function BufferRow({ data, onPromote, isPromoting }: Buff
             size="sm"
             variant="ghost"
             className={cn(
-              "h-6 text-xs",
+              "h-5 text-[10px] px-1.5",
               isCritical && "text-primary hover:text-primary/80 hover:bg-primary/10",
               !isCritical && "text-amber-400 hover:text-amber-300 hover:bg-amber-500/10"
             )}
@@ -104,11 +99,10 @@ const BufferRow = memo(function BufferRow({ data, onPromote, isPromoting }: Buff
             disabled={isPromoting}
           >
             {isPromoting ? (
-              <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+              <Loader2 className="h-2.5 w-2.5 animate-spin" />
             ) : (
-              <Zap className="h-3 w-3 mr-1" />
+              <Zap className="h-2.5 w-2.5" />
             )}
-            Promover
           </Button>
         )}
       </div>
@@ -134,15 +128,15 @@ function BufferStatusWidgetComponent() {
   if (isLoading) {
     return (
       <Card className="glass-card">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-lg flex items-center gap-2">
-            <Package className="h-5 w-5 text-amber-400" />
-            Buffer "No Jeito"
+        <CardHeader className="pb-2 pt-3 px-3">
+          <CardTitle className="text-sm flex items-center gap-2">
+            <Package className="h-4 w-4 text-amber-400" />
+            Buffer
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          {[1, 2, 3].map(i => (
-            <Skeleton key={i} className="h-16 w-full" />
+        <CardContent className="space-y-2 px-3 pb-3">
+          {[1, 2].map(i => (
+            <Skeleton key={i} className="h-12 w-full" />
           ))}
         </CardContent>
       </Card>
@@ -150,61 +144,58 @@ function BufferStatusWidgetComponent() {
   }
 
   return (
-    <Card className="glass-card card-interactive card-shine animate-fade-in-up opacity-0 [animation-fill-mode:forwards] [animation-delay:0.1s]">
-      <CardHeader className="pb-3">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-          <CardTitle className="text-lg font-display flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-warning/20 flex items-center justify-center dark:glow-warning">
-              <Package className="h-4 w-4 text-warning" />
+    <Card className="glass-card card-interactive animate-fade-in-up opacity-0 [animation-fill-mode:forwards] [animation-delay:0.1s]">
+      <CardHeader className="pb-2 pt-3 px-3">
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-sm font-display flex items-center gap-2">
+            <div className="w-6 h-6 rounded-lg bg-warning/20 flex items-center justify-center">
+              <Package className="h-3 w-3 text-warning" />
             </div>
-            <span className="gradient-text">Buffer "No Jeito"</span>
+            <span className="gradient-text">Buffer</span>
           </CardTitle>
-          <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+          <div className="flex items-center gap-1">
             {hasUnhealthyTechniques && (
               <Button
                 size="sm"
-                variant="outline"
-                className="h-7 text-xs border-amber-500/50 text-amber-400 hover:bg-amber-500/10"
+                variant="ghost"
+                className="h-6 w-6 p-0 text-amber-400 hover:bg-amber-500/10"
                 onClick={() => triggerPromotion()}
                 disabled={isPromoting}
+                title="Promover Todos"
               >
                 {isPromoting ? (
-                  <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                  <Loader2 className="h-3 w-3 animate-spin" />
                 ) : (
-                  <RefreshCw className="h-3 w-3 mr-1" />
+                  <RefreshCw className="h-3 w-3" />
                 )}
-                Promover Todos
               </Button>
             )}
             {criticalCount > 0 && (
-              <Badge variant="destructive" className="gap-1 text-xs">
-                <AlertCircle className="h-3 w-3" />
+              <Badge variant="destructive" className="gap-0.5 text-[10px] h-5 px-1.5">
+                <AlertCircle className="h-2.5 w-2.5" />
                 {criticalCount}
               </Badge>
             )}
             {warningCount > 0 && (
-              <Badge variant="outline" className="border-amber-500 text-amber-500 gap-1 text-xs">
-                <AlertTriangle className="h-3 w-3" />
+              <Badge variant="outline" className="border-amber-500 text-amber-500 gap-0.5 text-[10px] h-5 px-1.5">
+                <AlertTriangle className="h-2.5 w-2.5" />
                 {warningCount}
               </Badge>
             )}
             {healthyCount > 0 && (
-              <Badge variant="outline" className="border-green-500 text-green-500 gap-1 text-xs">
-                <CheckCircle2 className="h-3 w-3" />
+              <Badge variant="outline" className="border-green-500 text-green-500 gap-0.5 text-[10px] h-5 px-1.5">
+                <CheckCircle2 className="h-2.5 w-2.5" />
                 {healthyCount}
               </Badge>
             )}
           </div>
         </div>
-        <p className="text-xs text-muted-foreground mt-1">
-          Meta: manter {BUFFER_TARGET} jobs preparados por técnica (promoção automática ativada)
-        </p>
       </CardHeader>
-      <CardContent className="space-y-3">
+      <CardContent className="space-y-2 px-3 pb-3 max-h-[280px] overflow-y-auto scrollbar-thin">
         {bufferByTechnique.length === 0 ? (
-          <div className="text-center py-8 text-muted-foreground">
-            <Package className="h-12 w-12 mx-auto mb-2 opacity-30" />
-            <p>Nenhum job na fila ou preparado</p>
+          <div className="text-center py-4 text-muted-foreground">
+            <Package className="h-8 w-8 mx-auto mb-1 opacity-30" />
+            <p className="text-xs">Nenhum job</p>
           </div>
         ) : (
           bufferByTechnique.map((data) => (
