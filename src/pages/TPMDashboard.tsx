@@ -18,7 +18,6 @@ import { MTBFMTTRWidget } from '@/components/reliability/MTBFMTTRWidget';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { FavoriteButton, FavoritesDropdown } from '@/components/navigation/FavoritesManager';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
-import { KPITooltip } from '@/components/ui/kpi-tooltip';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 import { VoiceButton } from '@/components/voice/VoiceCommands';
@@ -35,7 +34,6 @@ export default function TPMDashboard() {
     isLoading,
     createSchedule,
     startMaintenance,
-    completeMaintenance,
     checkAndGenerateAlerts,
     resolveAlert,
   } = useTPM();

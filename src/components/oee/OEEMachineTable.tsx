@@ -22,7 +22,6 @@ import {
 import { Input } from '@/components/ui/input';
 import { ArrowUpDown, Search, TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { MachineOEE, getOEEColor } from '@/hooks/useOEE';
-import { cn } from '@/lib/utils';
 
 interface OEEMachineTableProps {
   machines: MachineOEE[];

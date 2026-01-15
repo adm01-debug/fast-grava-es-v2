@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useFuseSearch } from '@/hooks/useFuseSearch';
 import { MainLayout } from '@/components/layout/MainLayout';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -12,9 +12,7 @@ import {
   BookOpen, 
   Search, 
   Plus, 
-  Filter,
   Clock,
-  Wrench,
   ChevronRight,
   FileText,
   Lightbulb

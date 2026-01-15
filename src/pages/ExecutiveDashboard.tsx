@@ -9,8 +9,6 @@ import { Progress } from '@/components/ui/progress';
 import { useExecutiveDashboard, getDateRangePresets, DateRange } from '@/hooks/useExecutiveDashboard';
 import { exportExecutiveDashboardPDF } from '@/lib/pdfExport';
 import { 
-  BarChart, 
-  Bar, 
   XAxis, 
   YAxis, 
   CartesianGrid, 
@@ -21,7 +19,6 @@ import {
   PieChart,
   Pie,
   Cell,
-  Legend,
   AreaChart,
   Area
 } from 'recharts';
@@ -37,7 +34,6 @@ import {
   AlertTriangle,
   CheckCircle2,
   Clock,
-  Zap,
   BarChart3,
   PieChart as PieChartIcon,
   Activity
@@ -46,7 +42,6 @@ import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { VoiceButton } from '@/components/voice/VoiceCommands';
-import { useNavigate } from 'react-router-dom';
 
 export default function ExecutiveDashboard() {
   const datePresets = getDateRangePresets();

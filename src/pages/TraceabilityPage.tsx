@@ -3,21 +3,17 @@ import { useFuseSearch } from '@/hooks/useFuseSearch';
 import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
 import {
   Package,
   Search,
   Plus,
   Eye,
   GitBranch,
-  ArrowRight,
-  ArrowLeft,
   CheckCircle,
   XCircle,
   AlertTriangle,
   Layers,
   FileText,
-  ClipboardCheck,
   Command
 } from 'lucide-react';
 import { MainLayout } from '@/components/layout/MainLayout';
