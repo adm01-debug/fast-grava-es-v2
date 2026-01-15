@@ -6,7 +6,6 @@ import { Home, ArrowLeft, Search, Calendar, LayoutGrid, BarChart3, Settings, Use
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { MobileHeader, MobileHeaderSpacer } from "@/components/navigation/MobileHeader";
-import { useIsMobile } from "@/hooks/use-device";
 import { cn } from "@/lib/utils";
 
 // Popular pages for suggestions
@@ -38,7 +37,6 @@ function findSimilarPages(pathname: string) {
 const NotFound = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const isMobile = useIsMobile();
   const [searchQuery, setSearchQuery] = useState('');
   
   const similarPages = useMemo(() => findSimilarPages(location.pathname), [location.pathname]);

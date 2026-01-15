@@ -65,8 +65,8 @@ const isValidPriority = (priority: string): priority is Job['priority'] => {
   return ['low', 'medium', 'high', 'urgent'].includes(priority);
 };
 
-// Helper to convert DbJob to Job format for modal
-const dbJobToJob = (dbJob: DbJob): Job => {
+// Helper to convert DbJob to Job format for modal - used by JobDetailsModal
+const _dbJobToJob = (dbJob: DbJob): Job => {
   const status: JobStatus = isValidJobStatus(dbJob.status) ? dbJob.status : 'queue';
   const priority: Job['priority'] = isValidPriority(dbJob.priority) ? dbJob.priority : 'medium';
   
