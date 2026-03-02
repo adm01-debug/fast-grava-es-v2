@@ -1,4 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
+
+// Extend ServiceWorkerRegistration to include pushManager
+declare global {
+  interface ServiceWorkerRegistration {
+    readonly pushManager: PushManager;
+  }
+}
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
