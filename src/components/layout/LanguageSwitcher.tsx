@@ -43,4 +43,4 @@ export const LanguageSwitcher = forwardRef<HTMLDivElement, React.HTMLAttributes<
       </DropdownMenuContent>
     </DropdownMenu>
   );
-}
+});
