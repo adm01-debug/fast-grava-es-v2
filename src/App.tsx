@@ -144,7 +144,7 @@ function AnimatedRoutes() {
           </ProtectedRoute>
         } />
         <Route path="/kanban" element={
-          <ProtectedRoute allowedRoles={['coordinator']}>
+          <ProtectedRoute allowedRoles={['coordinator', 'manager']}>
             <PageTransition>
               <Suspense fallback={<KanbanPageSkeleton />}>
                 <KanbanBoard />
