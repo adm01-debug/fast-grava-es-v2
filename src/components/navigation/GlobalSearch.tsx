@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Search, X, Clock, TrendingUp, Loader2 } from "lucide-react";
-import { useDebounce } from "@/hooks/utils";
+import { useDebounce } from "@/hooks/useDebounce";
 
 interface SearchResult {
   id: string;
