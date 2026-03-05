@@ -76,7 +76,7 @@ export default function GamificationPage() {
             <Badge variant="outline" className="gap-1 text-xs hidden sm:flex">
               <Command className="h-3 w-3" />K para buscar
             </Badge>
-            <Tabs value={period} onValueChange={(v) => setPeriod(v as any)}>
+            <Tabs value={period} onValueChange={(v) => setPeriod(v as 'daily' | 'weekly' | 'monthly')}>
               <TabsList>
                 <TabsTrigger value="daily">Diário</TabsTrigger>
                 <TabsTrigger value="weekly">Semanal</TabsTrigger>

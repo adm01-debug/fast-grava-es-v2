@@ -171,8 +171,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isLockout: boolean;
         remainingMinutes: number;
       };
-      (lockoutError as any).isLockout = true;
-      (lockoutError as any).remainingMinutes = lockoutStatus.remaining_minutes || 0;
+      lockoutError.isLockout = true;
+      lockoutError.remainingMinutes = lockoutStatus.remaining_minutes || 0;
       return { error: lockoutError };
     }
     
@@ -191,8 +191,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           isLockout: boolean;
           lockoutMinutes: number;
         };
-        (lockoutError as any).isLockout = true;
-        (lockoutError as any).lockoutMinutes = result.lockout_minutes || 0;
+        lockoutError.isLockout = true;
+        lockoutError.lockoutMinutes = result.lockout_minutes || 0;
         return { error: lockoutError };
       }
       

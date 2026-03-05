@@ -15,7 +15,7 @@ import { MobileQuickActions } from '../navigation/MobileQuickActions';
 import { SkipLinks, MainContent } from '../accessibility/SkipLinks';
 import { NetworkStatusIndicator } from '@/hooks/useNetworkStatus';
 import { SessionProvider } from '@/hooks/useSessionTimeout';
-import { GlobalSearchTrigger } from '../search/GlobalSearch';
+
 import { useDevice } from '@/hooks/use-device';
 import { cn } from '@/lib/utils';
 
@@ -43,8 +43,6 @@ export function MainLayout({ children }: MainLayoutProps) {
         {/* Skip Links for Accessibility */}
         <SkipLinks />
         
-        {/* Global Search (Cmd+K) */}
-        <GlobalSearchTrigger className="hidden" />
         
         {/* Sidebar - hidden on mobile, shown on tablet+ */}
         <AppSidebar />

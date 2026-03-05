@@ -45,7 +45,7 @@ export function MLPredictionCard({
             </p>
           </div>
           <Badge 
-            variant={riskLevel.color as any}
+            variant={riskLevel.color as "default" | "secondary" | "destructive" | "outline"}
             className={`${isHighRisk ? 'animate-pulse' : ''}`}
           >
             {riskLevel.label}
