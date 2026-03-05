@@ -449,7 +449,7 @@ export function AppSidebar() {
   });
 
   // Mobile hamburger button
-  const MobileMenuButton = () => (
+  const mobileMenuButton = (
     <Button
       variant="ghost"
       size="icon"
@@ -463,7 +463,7 @@ export function AppSidebar() {
   );
 
   // Mobile overlay
-  const MobileOverlay = () => (
+  const mobileOverlay = (
     <div
       className={cn(
         'fixed inset-0 bg-background/80 backdrop-blur-sm z-40 md:hidden transition-opacity duration-300',
@@ -476,8 +476,8 @@ export function AppSidebar() {
 
   return (
     <>
-      <MobileMenuButton />
-      <MobileOverlay />
+      {mobileMenuButton}
+      {mobileOverlay}
       
       {/* Swipe detection zone for opening sidebar */}
       {isMobile && !mobileOpen && (
