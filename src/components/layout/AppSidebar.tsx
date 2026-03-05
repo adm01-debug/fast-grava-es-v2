@@ -173,7 +173,7 @@ interface NavButtonProps {
   isActive: boolean;
 }
 
-const NavButton = memo(function NavButton({ item, collapsed, isMobile, isActive }: NavButtonProps) {
+const NavButton = memo(React.forwardRef<HTMLDivElement, NavButtonProps>(function NavButton({ item, collapsed, isMobile, isActive }, ref) {
   const Icon = item.icon;
   
   const handlePrefetch = useCallback(() => {
