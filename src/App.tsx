@@ -223,7 +223,7 @@ function AnimatedRoutes() {
           </PageTransition>
         } />
         <Route path="/new-job" element={
-          <ProtectedRoute allowedRoles={['coordinator']}>
+          <ProtectedRoute allowedRoles={['coordinator', 'manager']}>
             <PageTransition>
               <Suspense fallback={<DashboardPageSkeleton />}>
                 <NewJobPage />
