@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, memo, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useCallback, memo, useMemo, useRef, forwardRef } from 'react';
 import { useLocation, Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -173,7 +173,7 @@ interface NavButtonProps {
   isActive: boolean;
 }
 
-const NavButton = memo(React.forwardRef<HTMLDivElement, NavButtonProps>(function NavButton({ item, collapsed, isMobile, isActive }, ref) {
+const NavButton = memo(forwardRef<HTMLDivElement, NavButtonProps>(function NavButton({ item, collapsed, isMobile, isActive }, ref) {
   const Icon = item.icon;
   
   const handlePrefetch = useCallback(() => {
@@ -229,7 +229,7 @@ const NavButton = memo(React.forwardRef<HTMLDivElement, NavButtonProps>(function
   }
 
   return button;
-});
+}));
 NavButton.displayName = 'NavButton';
 
 // ============ COLLAPSIBLE NAV GROUP ============
