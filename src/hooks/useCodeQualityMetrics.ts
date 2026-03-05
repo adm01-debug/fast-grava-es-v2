@@ -16,8 +16,8 @@ export interface ComponentMetrics {
 }
 
 export interface BuildMetrics {
-  estimatedBuildTime: number; // seconds
-  bundleSizeEstimate: number; // KB
+  estimatedBuildTime: number;
+  bundleSizeEstimate: number;
   lazyLoadedPages: number;
   totalPages: number;
   edgeFunctions: number;
@@ -26,10 +26,10 @@ export interface BuildMetrics {
 }
 
 export interface PerformanceMetrics {
-  lighthouseScore: number; // 0-100 estimate
-  firstContentfulPaint: number; // ms
-  largestContentfulPaint: number; // ms
-  timeToInteractive: number; // ms
+  lighthouseScore: number;
+  firstContentfulPaint: number;
+  largestContentfulPaint: number;
+  timeToInteractive: number;
   codeChunks: number;
   treeshakingEnabled: boolean;
 }
@@ -56,47 +56,43 @@ export interface CodeQualityMetrics {
   performanceMetrics: PerformanceMetrics;
 }
 
-// Static analysis of test files in the project
-const TEST_FILES: TestFile[] = [
-  // Integration tests (actual existing files)
-  { name: 'authentication.test.ts', path: 'src/test/integration/authentication.test.ts', testCount: 15, category: 'integration' },
-  { name: 'bitrix24-integration.test.ts', path: 'src/test/integration/bitrix24-integration.test.ts', testCount: 12, category: 'integration' },
-  { name: 'data-integrity.test.ts', path: 'src/test/integration/data-integrity.test.ts', testCount: 10, category: 'integration' },
-  { name: 'kpis-productivity.test.ts', path: 'src/test/integration/kpis-productivity.test.ts', testCount: 14, category: 'integration' },
-  { name: 'notifications-realtime.test.ts', path: 'src/test/integration/notifications-realtime.test.ts', testCount: 11, category: 'integration' },
-  { name: 'productivity-calculations.test.ts', path: 'src/test/integration/productivity-calculations.test.ts', testCount: 13, category: 'integration' },
-  { name: 'rls-policies.test.ts', path: 'src/test/integration/rls-policies.test.ts', testCount: 18, category: 'integration' },
-  { name: 'role-permissions.test.ts', path: 'src/test/integration/role-permissions.test.ts', testCount: 16, category: 'integration' },
-  { name: 'scheduling-logic.test.ts', path: 'src/test/integration/scheduling-logic.test.ts', testCount: 20, category: 'integration' },
-  { name: 'technical-assistant.test.ts', path: 'src/test/integration/technical-assistant.test.ts', testCount: 9, category: 'integration' },
-  { name: 'edge-functions.test.ts', path: 'src/test/integration/edge-functions.test.ts', testCount: 8, category: 'integration' },
-  { name: 'operator-jobs-permissions.test.ts', path: 'src/test/integration/operator-jobs-permissions.test.ts', testCount: 10, category: 'integration' },
-  
-  // E2E tests
-  { name: 'e2e-production-flows.test.ts', path: 'src/test/integration/e2e-production-flows.test.ts', testCount: 25, category: 'e2e' },
-];
+// No test files currently exist in the project
+const TEST_FILES: TestFile[] = [];
 
-// Hooks in the project
+// All hooks in the project
 const HOOKS = [
-  'useABCCosts', 'useAlertCount', 'useAutoBufferPromotion', 'useBitrix24Sync',
-  'useBottleneckPrediction', 'useDashboardLayout', 'useEfficiencyAlertHistory',
-  'useEfficiencyNotifications', 'useGoalAlerts', 'useJobs', 'useKPIs',
-  'useLoadBalancing', 'useLoadBalancingWithActions', 'useMLPredictions',
-  'useMTBFMTTR', 'useNotificationSounds', 'useNotifications', 'useOEE',
+  'useABCCosts', 'useAlertCount', 'useAutoBufferPromotion', 'useAutoTheme',
+  'useBitrix24Sync', 'useBottleneckPrediction', 'useCodeQualityMetrics',
+  'useDailySummaryNotifications', 'useDashboardLayout', 'useDebounce',
+  'useDeviceDetection', 'useDocuments', 'useEfficiencyAlertHistory',
+  'useEfficiencyNotifications', 'useEnergy', 'useExecutiveDashboard',
+  'useFuseSearch', 'useGamification', 'useGeoBlocking', 'useGoalAlerts',
+  'useJobs', 'useKPIs', 'useKanbanDragDrop', 'useLoadBalancing',
+  'useLoadBalancingWithActions', 'useMFA', 'useMLPredictionNotifications',
+  'useMLPredictions', 'useMTBFMTTR', 'useNetworkStatus',
+  'useNotificationSounds', 'useNotifications', 'useOEE', 'useOfflineSync',
   'useOperatorAudit', 'useOperatorDashboardData', 'useOperatorEvolution',
   'useOperatorGoals', 'useOperatorMachines', 'useOperatorPresence',
   'useOperatorProductivity', 'useOperators', 'useOrphanedDataDetection',
-  'usePushNotifications', 'useQuickFavorites',
-  'useRealtimeConnection', 'useSchedulingConflicts',
-  'useSchedulingData', 'useSmartSequencing', 'useSmartSequencingWithActions',
-  'useStuckJobsDetection', 'useTPM', 'useTechnicalConversations',
-  'useTechnicalSheets', 'useThemeSound', 'useDebounce'
+  'usePushNotifications', 'usePushSubscription', 'useQuickFavorites',
+  'useRBAC', 'useRateLimitLogs', 'useRealtimeConnection',
+  'useRealtimeResetRequests', 'useRolePermissions', 'useRoutePrefetch',
+  'useSPC', 'useSchedulingConflicts', 'useSchedulingData',
+  'useSecurityEvents', 'useSessionManager', 'useSessionTimeout',
+  'useShiftHandover', 'useSmartSequencing', 'useSmartSequencingWithActions',
+  'useStuckJobsDetection', 'useTPM', 'useTPMNotifications',
+  'useTechnicalConversations', 'useTechnicalSheets', 'useThemeSound',
+  'useTraceability', 'useUserDevices', 'useWebAuthn',
+  'useWebPushNotifications',
+  'use-device', 'use-focus-trap', 'use-haptic-feedback',
+  'use-pull-to-refresh', 'use-scroll-direction', 'use-swipe-gesture',
+  'use-toast',
 ];
 
-// Hooks covered by integration tests
+// No hooks are currently covered by tests
 const HOOKS_WITH_TESTS: string[] = [];
 
-// Component complexity analysis (simplified estimation)
+// Component complexity analysis
 const COMPONENT_METRICS: ComponentMetrics[] = [
   { name: 'Index (Dashboard)', path: 'src/pages/Index.tsx', linesOfCode: 250, complexity: 'high', hasTests: false },
   { name: 'KanbanBoard', path: 'src/pages/KanbanBoard.tsx', linesOfCode: 180, complexity: 'high', hasTests: false },
@@ -105,10 +101,6 @@ const COMPONENT_METRICS: ComponentMetrics[] = [
   { name: 'TPMDashboard', path: 'src/pages/TPMDashboard.tsx', linesOfCode: 120, complexity: 'medium', hasTests: false },
   { name: 'OEEDashboard', path: 'src/pages/OEEDashboard.tsx', linesOfCode: 100, complexity: 'medium', hasTests: false },
   { name: 'ABCCostingDashboard', path: 'src/pages/ABCCostingDashboard.tsx', linesOfCode: 110, complexity: 'medium', hasTests: false },
-  { name: 'Button', path: 'src/components/ui/button.tsx', linesOfCode: 60, complexity: 'low', hasTests: true },
-  { name: 'Card', path: 'src/components/ui/card.tsx', linesOfCode: 80, complexity: 'low', hasTests: true },
-  { name: 'Badge', path: 'src/components/ui/badge.tsx', linesOfCode: 45, complexity: 'low', hasTests: true },
-  { name: 'Input', path: 'src/components/ui/input.tsx', linesOfCode: 30, complexity: 'low', hasTests: true },
   { name: 'TechnicalAssistant', path: 'src/components/assistant/TechnicalAssistant.tsx', linesOfCode: 280, complexity: 'high', hasTests: false },
   { name: 'JobDetailsModal', path: 'src/components/jobs/JobDetailsModal.tsx', linesOfCode: 220, complexity: 'high', hasTests: false },
   { name: 'ProductionRegistrationModal', path: 'src/components/operator/ProductionRegistrationModal.tsx', linesOfCode: 180, complexity: 'medium', hasTests: false },
@@ -135,29 +127,26 @@ export function useCodeQualityMetrics(): CodeQualityMetrics {
       high: COMPONENT_METRICS.filter(c => c.complexity === 'high').length,
     };
 
-    // Estimate coverage based on tested components and hooks
-    const hooksCoverage = (HOOKS_WITH_TESTS.length / HOOKS.length) * 100;
-    const componentCoverage = (componentsWithTests / COMPONENT_METRICS.length) * 100;
+    const hooksCoverage = HOOKS.length > 0 ? (HOOKS_WITH_TESTS.length / HOOKS.length) * 100 : 0;
+    const componentCoverage = COMPONENT_METRICS.length > 0 ? (componentsWithTests / COMPONENT_METRICS.length) * 100 : 0;
     const coverageEstimate = Math.round((hooksCoverage + componentCoverage) / 2);
 
-    // Build metrics (static analysis estimates)
     const buildMetrics: BuildMetrics = {
-      estimatedBuildTime: 45, // seconds estimate for Vite build
-      bundleSizeEstimate: 2800, // KB estimate
-      lazyLoadedPages: 25, // pages using React.lazy
-      totalPages: 28,
-      edgeFunctions: 5, // Supabase edge functions
-      dependencies: 45,
+      estimatedBuildTime: 45,
+      bundleSizeEstimate: 2800,
+      lazyLoadedPages: 27,
+      totalPages: 30,
+      edgeFunctions: 18,
+      dependencies: 48,
       devDependencies: 12,
     };
 
-    // Performance metrics (Lighthouse-style estimates)
     const performanceMetrics: PerformanceMetrics = {
-      lighthouseScore: 85, // estimated score
-      firstContentfulPaint: 1200, // ms
-      largestContentfulPaint: 2100, // ms
-      timeToInteractive: 3200, // ms
-      codeChunks: 32, // number of code-split chunks
+      lighthouseScore: 85,
+      firstContentfulPaint: 1200,
+      largestContentfulPaint: 2100,
+      timeToInteractive: 3200,
+      codeChunks: 32,
       treeshakingEnabled: true,
     };
 
