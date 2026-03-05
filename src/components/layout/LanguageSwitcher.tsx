@@ -1,3 +1,4 @@
+import React, { forwardRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import {
@@ -9,7 +10,7 @@ import {
 import { Globe } from 'lucide-react';
 import { supportedLanguages } from '@/i18n';
 
-export function LanguageSwitcher() {
+export const LanguageSwitcher = forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(function LanguageSwitcher(props, ref) {
   const { i18n } = useTranslation();
 
   const currentLanguage = supportedLanguages.find(
@@ -42,4 +43,4 @@ export function LanguageSwitcher() {
       </DropdownMenuContent>
     </DropdownMenu>
   );
-}
+});
