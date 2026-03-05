@@ -1,5 +1,6 @@
-import { Link, useLocation } from 'react-router-dom';
-import { ChevronRight, Home } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { ChevronRight, Home, ArrowLeft } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 interface BreadcrumbItem {
@@ -15,18 +16,19 @@ const routeLabels: Record<string, string> = {
   'jobs': 'Jobs',
   'new-job': 'Novo Job',
   'operators': 'Operadores',
+  'operator': 'Visão Operador',
   'operator-view': 'Visão Operador',
-  'operator-productivity': 'Produtividade',
+  'productivity': 'Produtividade',
   'machines': 'Máquinas',
   'efficiency': 'Eficiência',
   'energy': 'Energia',
   'tpm': 'TPM',
   'oee': 'OEE',
   'spc': 'SPC',
-  'kpi': 'KPIs',
+  'kpis': 'KPIs',
   'bi': 'Business Intelligence',
   'ml-predictions': 'Predições ML',
-  'abc-costing': 'Custeio ABC',
+  'abc': 'Custeio ABC',
   'gamification': 'Gamificação',
   'traceability': 'Rastreabilidade',
   'documents': 'Documentos',
@@ -35,23 +37,26 @@ const routeLabels: Record<string, string> = {
   'notifications': 'Notificações',
   'scanner': 'Scanner QR',
   'shift-handover': 'Passagem de Turno',
-  'weekly-calendar': 'Calendário Semanal',
-  'daily-calendar': 'Calendário Diário',
+  'weekly': 'Semanal',
+  'daily': 'Diário',
+  'calendar': 'Calendário',
   'pending': 'Fila Pendente',
   'alerts': 'Alertas',
   'executive': 'Executivo',
-  'technical-assistant': 'Assistente Técnico',
-  'knowledge-base': 'Base de Conhecimento',
+  'assistant': 'Assistente Técnico',
+  'knowledge': 'Base de Conhecimento',
   'design-system': 'Design System',
   'code-quality': 'Qualidade de Código',
-  'bitrix24-config': 'Bitrix24',
-  'install-app': 'Instalar App',
+  'integrations': 'Integrações',
+  'bitrix24': 'Bitrix24',
+  'install': 'Instalar App',
   'auth': 'Autenticação',
   'reset-password': 'Redefinir Senha',
 };
 
 export function Breadcrumbs({ className }: { className?: string }) {
   const location = useLocation();
+  const navigate = useNavigate();
   const pathnames = location.pathname.split('/').filter(Boolean);
 
   // Don't show breadcrumbs on home page
@@ -74,31 +79,51 @@ export function Breadcrumbs({ className }: { className?: string }) {
     });
   });
 
+  const handleBack = () => {
+    if (window.history.length > 1) {
+      navigate(-1);
+    } else {
+      navigate('/');
+    }
+  };
+
   return (
     <nav 
       aria-label="Breadcrumb" 
-      className={cn("flex items-center gap-1 text-sm text-muted-foreground mb-4", className)}
+      className={cn("flex items-center gap-2 text-sm text-muted-foreground mb-4", className)}
     >
-      {breadcrumbs.map((item, index) => (
-        <div key={index} className="flex items-center gap-1">
-          {index > 0 && (
-            <ChevronRight className="h-3.5 w-3.5 flex-shrink-0" />
-          )}
-          {index === 0 && (
-            <Home className="h-3.5 w-3.5 mr-0.5" />
-          )}
-          {item.href ? (
-            <Link 
-              to={item.href} 
-              className="hover:text-foreground transition-colors hover:underline underline-offset-4"
-            >
-              {item.label}
-            </Link>
-          ) : (
-            <span className="text-foreground font-medium">{item.label}</span>
-          )}
-        </div>
-      ))}
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={handleBack}
+        className="h-8 w-8 shrink-0 text-muted-foreground hover:text-foreground"
+        aria-label="Voltar"
+      >
+        <ArrowLeft className="h-4 w-4" />
+      </Button>
+
+      <div className="flex items-center gap-1">
+        {breadcrumbs.map((item, index) => (
+          <div key={index} className="flex items-center gap-1">
+            {index > 0 && (
+              <ChevronRight className="h-3.5 w-3.5 flex-shrink-0" />
+            )}
+            {index === 0 && (
+              <Home className="h-3.5 w-3.5 mr-0.5" />
+            )}
+            {item.href ? (
+              <Link 
+                to={item.href} 
+                className="hover:text-foreground transition-colors hover:underline underline-offset-4"
+              >
+                {item.label}
+              </Link>
+            ) : (
+              <span className="text-foreground font-medium">{item.label}</span>
+            )}
+          </div>
+        ))}
+      </div>
     </nav>
   );
 }
