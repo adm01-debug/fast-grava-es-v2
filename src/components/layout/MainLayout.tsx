@@ -43,8 +43,6 @@ export function MainLayout({ children }: MainLayoutProps) {
         {/* Skip Links for Accessibility */}
         <SkipLinks />
         
-        {/* Global Search (Cmd+K) */}
-        <GlobalSearchTrigger className="hidden" />
         
         {/* Sidebar - hidden on mobile, shown on tablet+ */}
         <AppSidebar />
