@@ -476,8 +476,8 @@ export function AppSidebar() {
 
   return (
     <>
-      <MobileMenuButton />
-      <MobileOverlay />
+      {mobileMenuButton}
+      {mobileOverlay}
       
       {/* Swipe detection zone for opening sidebar */}
       {isMobile && !mobileOpen && (
