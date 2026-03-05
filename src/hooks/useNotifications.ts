@@ -64,7 +64,7 @@ export function useNotifications(options?: { limit?: number; unreadOnly?: boolea
           created_at: n.created_at,
         }));
       } catch (error) {
-        console.warn('Notifications table not available:', error);
+        if (import.meta.env.DEV) console.warn('Notifications table not available:', error);
         return mockNotifications;
       }
     },

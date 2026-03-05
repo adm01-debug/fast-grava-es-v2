@@ -112,7 +112,7 @@ export function useABCMutations({ activities, activityRates, jobs, techniques }:
         
         results.forEach((result, idx) => {
           if (result.status === 'rejected') {
-            console.warn(`Failed to calculate cost for job ${batch[idx].id}:`, result.reason);
+            if (import.meta.env.DEV) console.warn(`Failed to calculate cost for job ${batch[idx].id}:`, result.reason);
           }
         });
       }
