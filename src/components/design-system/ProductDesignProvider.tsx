@@ -65,36 +65,3 @@ export function ProductDesignProvider({
 
   return content;
 }
-
-// Export all design improvement components for individual use
-export { OnboardingTour, useOnboarding } from "@/components/onboarding/OnboardingTour";
-export { CommandPaletteAdvanced as CommandPalette, CommandPaletteTriggerAdvanced as CommandPaletteTrigger } from "@/components/navigation/CommandPaletteAdvanced";
-export { FavoriteButton, FavoritesDropdown, useFavorites } from "@/components/navigation/FavoritesManager";
-export { GlobalSearch as PopoverGlobalSearch, CompactSearch } from "@/components/navigation/GlobalSearch";
-export { SwipeActions, SwipeActionPresets } from "@/components/mobile/SwipeActions";
-export { PullToRefresh, MobilePullToRefresh } from "@/components/mobile/PullToRefresh";
-// Removed: BottomNavigation, FloatingActionButton (unused orphan files)
-export { CollapsibleNavGroup } from "@/components/navigation/CollapsibleNavGroup";
-export { EmptyState, EmptyStates } from "@/components/ui/empty-state";
-export { CelebrationMoment, useCelebration, MiniCelebration as InlineCelebration } from "@/components/feedback/CelebrationMoment";
-export { FeedbackState, InlineLoader, SuccessCheck } from "@/components/feedback/FeedbackState";
-export { ProgressRing, ProgressBar, StepProgress } from "@/components/feedback/ProgressIndicators";
-export { Skeleton, SkeletonCard, SkeletonList, SkeletonTable, SkeletonDashboard, SkeletonChart, SkeletonForm } from "@/components/ui/skeleton-screens";
-export { ToastContainer, toast as toastWithUndo } from "@/components/notifications/ToastWithUndo";
-export { NotificationCenter } from "@/components/notifications/NotificationCenter";
-export { CelebrationOverlay, AnimatedXPBar, MiniCelebration } from "@/components/gamification/CelebrationAnimations";
-export { KeyboardShortcutsProvider, useKeyboardShortcuts, useRegisterShortcut } from "@/components/shortcuts/KeyboardShortcuts";
-export { SessionManagement, ConfirmationDialog } from "@/components/security/SessionManagement";
-// Removed: DashboardCustomizer (unused orphan file)
-// Responsive utilities now provided by layout/ResponsiveContainer and hooks/use-device
-export { ResponsiveContainer, ResponsiveGrid, ResponsiveStack, HideOn, ShowOn, MobileOnly, DesktopOnly, TabletUp } from "@/components/layout/ResponsiveContainer";
-export { FloatingAIAssistant } from "@/components/ai/FloatingAIAssistant";
-export { ActivityLog, useActivityLog } from "@/components/activity/ActivityLog";
-export { useFocusTrap, SkipToContent, useLiveRegion, AccessibleIconButton, useReducedMotion, useKeyboardNavigation, VisuallyHidden, FocusRing } from "@/components/accessibility/AccessibilityUtils";
-// Removed: formatters.ts (unused orphan file)
-// Removed: useOptimisticUpdate (unused), confetti (using canvas-confetti directly)
-export { usePushNotifications } from "@/hooks/usePushNotifications";
-export { useRoutePrefetch, usePrefetchRoute } from "@/hooks/useRoutePrefetch";
-export { PushNotificationPrompt, PushNotificationToggle } from "@/components/notifications/PushNotificationPrompt";
-export { KioskMode, KioskModeButton } from "@/components/kiosk/KioskMode";
-export { useDevice, useIsMobile, useIsTablet, useIsDesktop, useIsTouch, useOrientation, usePrefersReducedMotion } from "@/hooks/use-device";
