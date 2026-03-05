@@ -259,7 +259,7 @@ export const VoiceButton = forwardRef<HTMLDivElement, {
       </AnimatePresence>
     </div>
   );
-}
+});
 
 // Voice Feedback (Text-to-Speech)
 export function useVoiceFeedback() {
