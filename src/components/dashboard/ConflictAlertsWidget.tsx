@@ -1,97 +1,72 @@
-import { memo } from 'react';
-import { AlertTriangle, Clock, AlertOctagon } from 'lucide-react';
+import { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { useSchedulingConflicts, SchedulingConflict } from '@/hooks/useSchedulingConflicts';
+import { AlertTriangle, CheckCircle } from 'lucide-react';
+import { useSchedulingConflicts } from '@/hooks/useSchedulingConflicts';
+import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
-const ConflictCard = memo(function ConflictCard({ conflict }: { conflict: SchedulingConflict }) {
-  const isError = conflict.severity === 'error';
-  
-  return (
-    <div 
-      className={`p-2 rounded-lg border text-xs ${
-        isError 
-          ? 'bg-destructive/10 border-destructive/30' 
-          : 'bg-yellow-500/10 border-yellow-500/30'
-      }`}
-    >
-      <div className="flex items-center gap-2 mb-1">
-        {isError ? (
-          <AlertOctagon className="h-3 w-3 text-destructive shrink-0" />
-        ) : (
-          <AlertTriangle className="h-3 w-3 text-yellow-500 shrink-0" />
-        )}
-        <span className="font-medium">{conflict.machineCode}</span>
-        <Badge variant="outline" className="text-[10px] h-4 px-1">
-          {format(conflict.date, "dd/MM", { locale: ptBR })}
-        </Badge>
-      </div>
-      <div className="space-y-0.5 ml-5">
-        {conflict.jobs.slice(0, 2).map(job => (
-          <div key={job.id} className="flex items-center gap-1 text-[10px] text-muted-foreground">
-            <Clock className="h-2.5 w-2.5" />
-            <span className="font-mono">{job.startTime}-{job.endTime}</span>
-            <span className="truncate">{job.orderNumber}</span>
-          </div>
-        ))}
-        {conflict.jobs.length > 2 && (
-          <span className="text-[10px] text-muted-foreground">+{conflict.jobs.length - 2} mais</span>
-        )}
-      </div>
-    </div>
-  );
-});
-ConflictCard.displayName = 'ConflictCard';
+export function ConflictAlertsWidget() {
+  const { conflicts } = useSchedulingConflicts();
 
-function ConflictAlertsWidgetComponent() {
-  const { conflicts, hasConflicts, errorCount, warningCount } = useSchedulingConflicts();
+  const activeConflicts = useMemo(() => {
+    return conflicts?.filter(c => c.severity === 'error') ?? [];
+  }, [conflicts]);
+
+  const warnings = useMemo(() => {
+    return conflicts?.filter(c => c.severity === 'warning') ?? [];
+  }, [conflicts]);
+
+  const hasIssues = activeConflicts.length > 0 || warnings.length > 0;
 
   return (
-    <Card className="bg-card/50 backdrop-blur border-border/50">
-      <CardHeader className="pb-2 pt-3 px-3">
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-sm font-semibold flex items-center gap-2">
-            <AlertTriangle className="h-3.5 w-3.5 text-yellow-500" />
-            Conflitos
-          </CardTitle>
-          {hasConflicts && (
-            <div className="flex gap-1">
-              {errorCount > 0 && (
-                <Badge variant="destructive" className="text-[10px] h-5 px-1.5">
-                  {errorCount} crít.
-                </Badge>
-              )}
-              {warningCount > 0 && (
-                <Badge className="bg-yellow-500/20 text-yellow-500 border-yellow-500/30 text-[10px] h-5 px-1.5">
-                  {warningCount} aviso
-                </Badge>
-              )}
-            </div>
+    <Card className={cn(
+      "glass-card",
+      activeConflicts.length > 0 && "border-destructive/30"
+    )}>
+      <CardHeader className="pb-2">
+        <CardTitle className="text-sm font-medium flex items-center gap-2">
+          <AlertTriangle className={cn(
+            "h-4 w-4",
+            activeConflicts.length > 0 ? "text-destructive" : "text-muted-foreground"
+          )} />
+          Conflitos de Agendamento
+          {hasIssues && (
+            <Badge variant={activeConflicts.length > 0 ? "destructive" : "secondary"} className="ml-auto">
+              {activeConflicts.length + warnings.length}
+            </Badge>
           )}
-        </div>
+        </CardTitle>
       </CardHeader>
-      <CardContent className="px-3 pb-3">
-        {!hasConflicts ? (
-          <div className="text-center py-3 text-muted-foreground">
-            <AlertTriangle className="h-6 w-6 mx-auto mb-1 opacity-50" />
-            <p className="text-xs">Nenhum conflito</p>
+      <CardContent>
+        {!hasIssues ? (
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <CheckCircle className="h-4 w-4 text-green-500" />
+            Nenhum conflito detectado
           </div>
         ) : (
-          <ScrollArea className="h-[140px] pr-2">
-            <div className="space-y-1.5">
-              {conflicts.map(conflict => (
-                <ConflictCard key={conflict.id} conflict={conflict} />
-              ))}
-            </div>
-          </ScrollArea>
+          <div className="space-y-2">
+            {activeConflicts.slice(0, 3).map((conflict) => (
+              <div key={conflict.id} className="text-xs p-2 rounded bg-destructive/10 border border-destructive/20">
+                <span className="font-medium">{conflict.machineName}</span>
+                <span className="text-muted-foreground ml-1">
+                  — {conflict.jobs.length} jobs sobrepostos em{' '}
+                  {format(conflict.date, "dd/MM", { locale: ptBR })}
+                </span>
+              </div>
+            ))}
+            {warnings.slice(0, 2).map((w) => (
+              <div key={w.id} className="text-xs p-2 rounded bg-yellow-500/10 border border-yellow-500/20">
+                <span className="font-medium">{w.machineName}</span>
+                <span className="text-muted-foreground ml-1">
+                  — {w.jobs.length} jobs próximos
+                </span>
+              </div>
+            ))}
+          </div>
         )}
       </CardContent>
     </Card>
   );
 }
-
-export const ConflictAlertsWidget = memo(ConflictAlertsWidgetComponent);
-ConflictAlertsWidget.displayName = 'ConflictAlertsWidget';
