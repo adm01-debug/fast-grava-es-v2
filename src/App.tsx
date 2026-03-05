@@ -385,7 +385,7 @@ function AnimatedRoutes() {
           </ProtectedRoute>
         } />
         <Route path="/settings" element={
-          <ProtectedRoute allowedRoles={['coordinator']}>
+          <ProtectedRoute allowedRoles={['coordinator', 'manager']}>
             <PageTransition>
               <Suspense fallback={<DashboardPageSkeleton />}>
                 <SettingsPage />
