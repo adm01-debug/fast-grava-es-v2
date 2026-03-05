@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, forwardRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Mic, MicOff, Volume2, Loader2, X, MessageCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -114,13 +114,13 @@ export function useVoiceCommands({
 }
 
 // Voice Button Component
-export function VoiceButton({
-  onCommand,
-  className,
-}: {
+export const VoiceButton = forwardRef<HTMLDivElement, {
   onCommand?: (transcript: string) => void;
   className?: string;
-}) {
+}>(function VoiceButton({
+  onCommand,
+  className,
+}, ref) {
   const [showFeedback, setShowFeedback] = useState(false);
   const [lastCommand, setLastCommand] = useState('');
 
@@ -259,7 +259,7 @@ export function VoiceButton({
       </AnimatePresence>
     </div>
   );
-}
+});
 
 // Voice Feedback (Text-to-Speech)
 export function useVoiceFeedback() {
