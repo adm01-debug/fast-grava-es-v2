@@ -86,11 +86,11 @@ const HOOKS = [
   'useOperatorAudit', 'useOperatorDashboardData', 'useOperatorEvolution',
   'useOperatorGoals', 'useOperatorMachines', 'useOperatorPresence',
   'useOperatorProductivity', 'useOperators', 'useOrphanedDataDetection',
-  'usePaginatedJobs', 'usePushNotifications', 'useQuickFavorites',
-  'useRealtimeConnection', 'useRetryableQuery', 'useSchedulingConflicts',
+  'usePushNotifications', 'useQuickFavorites',
+  'useRealtimeConnection', 'useSchedulingConflicts',
   'useSchedulingData', 'useSmartSequencing', 'useSmartSequencingWithActions',
   'useStuckJobsDetection', 'useTPM', 'useTechnicalConversations',
-  'useTechnicalSheets', 'useThemeSound', 'useDebounce', 'useThrottle'
+  'useTechnicalSheets', 'useThemeSound', 'useDebounce'
 ];
 
 // Hooks covered by integration tests
