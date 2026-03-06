@@ -98,6 +98,7 @@ export function useOfflineSync() {
     if (isOnline && pendingActions.length > 0) {
       syncPendingActions();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only trigger on connectivity change
   }, [isOnline]);
 
   // Cache essential data for offline use

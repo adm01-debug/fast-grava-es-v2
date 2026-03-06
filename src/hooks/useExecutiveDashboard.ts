@@ -183,7 +183,7 @@ export function useExecutiveDashboard(dateRange: DateRange) {
   });
 }
 
-function calculateDailyTrend(jobs: Job[], dateRange: DateRange) {
+function calculateDailyTrend(jobs: Job[], _dateRange: DateRange) {
   const days: Record<string, { produced: number; target: number }> = {};
   
   jobs.forEach(job => {
@@ -204,7 +204,7 @@ function calculateDailyTrend(jobs: Job[], dateRange: DateRange) {
     }));
 }
 
-function calculateEfficiencyTrend(jobs: Job[], dateRange: DateRange) {
+function calculateEfficiencyTrend(jobs: Job[], _dateRange: DateRange) {
   const days: Record<string, { produced: number; target: number }> = {};
   
   jobs.forEach(job => {

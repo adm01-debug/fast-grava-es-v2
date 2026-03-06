@@ -87,12 +87,12 @@ export function useRealtimeBlockedIPs() {
 export function logSecurityEvent(
   eventType: string,
   severity: 'info' | 'warning' | 'error' | 'critical',
-  details?: Record<string, any>
+  details?: Record<string, unknown>
 ) {
-  return supabase.from('security_events').insert({
+  return supabase.from('security_events').insert([{
     event_type: eventType,
     severity,
-    details: details || {},
+    details: (details || {}) as import('@/integrations/supabase/types').Json,
     user_agent: typeof navigator !== 'undefined' ? navigator.userAgent : null,
-  });
+  }]);
 }
