@@ -232,7 +232,7 @@ export function useOperatorProductivity(period: ProductivityPeriod = 'all') {
         operatorId,
         operatorName: profile?.full_name || 'Sem nome',
         avatarUrl: profile?.avatar_url,
-        isActive: op.is_active,
+        isActive: true,
         
         totalJobsCompleted: operatorJobs.length,
         totalJobsInProgress: inProgressJobs.length,
