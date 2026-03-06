@@ -38,7 +38,7 @@ import {
 } from 'lucide-react';
 import { useSchedulingData } from '@/hooks/useSchedulingData';
 import { DbJob } from '@/hooks/useJobs';
-import { Job, JobStatus } from '@/types/scheduling';
+import { JobStatus } from '@/types/scheduling';
 import { useQueryClient } from '@tanstack/react-query';
 
 const statusColumns: { status: JobStatus; label: string; icon: React.ElementType; color: string }[] = [
