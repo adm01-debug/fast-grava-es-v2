@@ -119,7 +119,7 @@ export function useGamification(period: 'daily' | 'weekly' | 'monthly' = 'weekly
       queryClient.invalidateQueries({ queryKey: ['operator-achievements'] });
     },
     onError: (error) => {
-      console.error('Error calculating rankings:', error);
+      if (import.meta.env.DEV) console.error('Error calculating rankings:', error);
       toast.error('Erro ao calcular rankings');
     },
   });

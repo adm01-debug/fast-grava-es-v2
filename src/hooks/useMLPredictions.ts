@@ -63,7 +63,7 @@ export function useMLPredictions() {
           .order('risk_score', { ascending: false });
         
         if (error) {
-          console.error('[useMLPredictions] predictions fetch failed:', categorizeError(error), error);
+          if (import.meta.env.DEV) console.error('[useMLPredictions] predictions fetch failed:', categorizeError(error), error);
           throw error;
         }
         return data.map((p: any) => ({
@@ -73,7 +73,7 @@ export function useMLPredictions() {
           recommendations: Array.isArray(p.recommendations) ? p.recommendations : [],
         })) as MachinePrediction[];
       } catch (err) {
-        console.error('[useMLPredictions] predictions error:', err);
+        if (import.meta.env.DEV) console.error('[useMLPredictions] predictions error:', err);
         throw err;
       }
     },
@@ -93,12 +93,12 @@ export function useMLPredictions() {
         .limit(200);
       
       if (error) {
-        console.error('[useMLPredictions] history fetch failed:', categorizeError(error), error);
+        if (import.meta.env.DEV) console.error('[useMLPredictions] history fetch failed:', categorizeError(error), error);
         throw error;
       }
       return data as PredictionHistory[];
       } catch (err) {
-        console.error('[useMLPredictions] history error:', err);
+        if (import.meta.env.DEV) console.error('[useMLPredictions] history error:', err);
         throw err;
       }
     },
@@ -117,12 +117,12 @@ export function useMLPredictions() {
           .eq('is_active', true)
           .order('name');
         if (error) {
-          console.error('[useMLPredictions] machines fetch failed:', categorizeError(error), error);
+          if (import.meta.env.DEV) console.error('[useMLPredictions] machines fetch failed:', categorizeError(error), error);
           throw error;
         }
         return data;
       } catch (err) {
-        console.error('[useMLPredictions] machines error:', err);
+        if (import.meta.env.DEV) console.error('[useMLPredictions] machines error:', err);
         throw err;
       }
     },
