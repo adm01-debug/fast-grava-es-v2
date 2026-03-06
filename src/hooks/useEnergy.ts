@@ -117,8 +117,9 @@ export function useEnergy(dateRange?: { start: Date; end: Date }) {
     const totalConsumption = consumption.reduce((sum, c) => sum + Number(c.consumption_kwh), 0);
     const totalCost = consumption.reduce((sum, c) => sum + Number(c.total_cost), 0);
     const peakDemand = Math.max(...consumption.map(c => Number(c.peak_demand_kw) || 0), 0);
-    const avgPowerFactor = consumption.length > 0
-      ? consumption.reduce((sum, c) => sum + (Number(c.power_factor) || 0), 0) / consumption.filter(c => c.power_factor).length
+    const powerFactorEntries = consumption.filter(c => c.power_factor != null);
+    const avgPowerFactor = powerFactorEntries.length > 0
+      ? powerFactorEntries.reduce((sum, c) => sum + (Number(c.power_factor) || 0), 0) / powerFactorEntries.length
       : 0;
 
     // Days in range
