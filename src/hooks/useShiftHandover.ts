@@ -130,10 +130,15 @@ export function useShiftHandovers(filters?: {
 
       // Fetch profiles separately
       const operatorIds = [...new Set(data.flatMap(h => [h.outgoing_operator_id, h.incoming_operator_id].filter(Boolean)))];
-      const { data: profiles } = await supabase
-        .from('profiles')
-        .select('id, full_name')
-        .in('id', operatorIds);
+      
+      let profileMap = new Map<string, { id: string; full_name: string | null }>();
+      if (operatorIds.length > 0) {
+        const { data: profiles } = await supabase
+          .from('profiles')
+          .select('id, full_name')
+          .in('id', operatorIds);
+        profileMap = new Map(profiles?.map(p => [p.id, p]) || []);
+      }
 
       const profileMap = new Map(profiles?.map(p => [p.id, p]) || []);
 
