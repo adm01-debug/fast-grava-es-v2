@@ -238,21 +238,21 @@ const Index = () => {
           <TabsList className="w-full justify-start bg-muted/50 p-1 h-auto shrink-0">
             <TabsTrigger value="overview" className="gap-2 data-[state=active]:bg-background">
               <LayoutDashboard className="h-4 w-4" />
-              <span className="hidden sm:inline">Visão Geral</span>
+              <span className="hidden sm:inline">{t('dashboard.tabs.overview')}</span>
             </TabsTrigger>
             {!isOperator && (
               <TabsTrigger value="efficiency" className="gap-2 data-[state=active]:bg-background">
                 <TrendingUp className="h-4 w-4" />
-                <span className="hidden sm:inline">Eficiência</span>
+                <span className="hidden sm:inline">{t('dashboard.tabs.efficiency')}</span>
               </TabsTrigger>
             )}
             <TabsTrigger value="timeline" className="gap-2 data-[state=active]:bg-background">
               <Clock className="h-4 w-4" />
-              <span className="hidden sm:inline">Timeline</span>
+              <span className="hidden sm:inline">{t('dashboard.tabs.timeline')}</span>
             </TabsTrigger>
             <TabsTrigger value="jobs" className="gap-2 data-[state=active]:bg-background">
               <Table2 className="h-4 w-4" />
-              <span className="hidden sm:inline">Jobs</span>
+              <span className="hidden sm:inline">{t('dashboard.tabs.jobs')}</span>
             </TabsTrigger>
           </TabsList>
 
@@ -314,7 +314,7 @@ const Index = () => {
                     <div className="mt-6">
                       <ActivityLog 
                         entries={activityEntries}
-                        title="Atividade Recente"
+                        title={t('dashboard.recentActivity')}
                         maxHeight="300px"
                       />
                     </div>

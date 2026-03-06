@@ -63,7 +63,10 @@
     "loginSuccess": "Login realizado com sucesso!",
     "loginError": "Erro ao fazer login",
     "logoutSuccess": "Logout realizado com sucesso!",
-    "resetRequestSent": "Solicitação enviada! Aguarde aprovação do gestor."
+    "resetRequestSent": "Solicitação enviada! Aguarde aprovação do gestor.",
+    "subtitle": "Sistema de Gestão de Produção",
+    "rememberEmail": "Lembrar meu e-mail",
+    "or": "ou"
   },
   "dashboard": {
     "title": "Dashboard Principal",
@@ -80,7 +83,14 @@
     "weeklyOverview": "Visão Semanal",
     "recentJobs": "Jobs Recentes",
     "topOperators": "Top Operadores",
-    "machineStatus": "Status das Máquinas"
+    "machineStatus": "Status das Máquinas",
+    "recentActivity": "Atividade Recente",
+    "tabs": {
+      "overview": "Visão Geral",
+      "efficiency": "Eficiência",
+      "timeline": "Timeline",
+      "jobs": "Jobs"
+    }
   },
   "jobs": {
     "title": "Jobs",
