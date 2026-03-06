@@ -140,7 +140,6 @@ export function useShiftHandovers(filters?: {
         profileMap = new Map(profiles?.map(p => [p.id, p]) || []);
       }
 
-      const profileMap = new Map(profiles?.map(p => [p.id, p]) || []);
 
       return data.map(h => ({
         ...h,
