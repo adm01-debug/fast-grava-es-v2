@@ -24,6 +24,7 @@ interface FinishedJob {
   id: string;
   machine_id: string | null;
   quantity: number;
+  produced_quantity: number | null;
   lost_pieces: number | null;
   estimated_duration: number;
   actual_start_time: string | null;
@@ -53,7 +54,7 @@ export function useOperatorEvolution(days: number = 30) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('jobs')
-        .select('id, machine_id, quantity, lost_pieces, estimated_duration, actual_start_time, actual_end_time')
+        .select('id, machine_id, quantity, produced_quantity, lost_pieces, estimated_duration, actual_start_time, actual_end_time')
         .eq('status', 'finished')
         .gte('actual_end_time', startDate.toISOString());
 
@@ -134,7 +135,7 @@ export function useOperatorEvolution(days: number = 30) {
         });
 
         const jobsCompleted = dayJobs.length;
-        const piecesProduced = dayJobs.reduce((sum, j) => sum + (j.quantity - (j.lost_pieces || 0)), 0);
+        const piecesProduced = dayJobs.reduce((sum, j) => sum + (j.produced_quantity ?? (j.quantity - (j.lost_pieces || 0))), 0);
         const piecesLost = dayJobs.reduce((sum, j) => sum + (j.lost_pieces || 0), 0);
         const totalPieces = piecesProduced + piecesLost;
         const lossRate = totalPieces > 0 ? (piecesLost / totalPieces) * 100 : 0;
