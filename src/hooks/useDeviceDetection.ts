@@ -89,7 +89,7 @@ const getClientIP = async (): Promise<string> => {
     const data = await response.json();
     return data.ip || '0.0.0.0';
   } catch {
-    console.warn('Could not fetch IP address');
+    if (import.meta.env.DEV) console.warn('Could not fetch IP address');
     return '0.0.0.0';
   }
 };

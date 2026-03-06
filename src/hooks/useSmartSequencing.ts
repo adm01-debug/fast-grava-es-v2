@@ -79,7 +79,7 @@ export function useSmartSequencing() {
     );
 
     if (validJobs.length === 0 && jobs.length > 0) {
-      console.warn('[useSmartSequencing] All jobs failed validation');
+      if (import.meta.env.DEV) console.warn('[useSmartSequencing] All jobs failed validation');
     }
 
     const result: SequencingSuggestion[] = [];

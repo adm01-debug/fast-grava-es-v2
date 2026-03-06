@@ -124,7 +124,7 @@ export function useOfflineSync() {
       
       if (import.meta.env.DEV) console.log('Data cached successfully for offline use');
     } catch (error) {
-      console.error('Error caching data:', error);
+      if (import.meta.env.DEV) console.error('Error caching data:', error);
     }
   }, [isOnline]);
 
@@ -209,7 +209,7 @@ export function useOfflineSync() {
         }
 
         default:
-          console.warn('Unknown action type:', action.type);
+          if (import.meta.env.DEV) console.warn('Unknown action type:', action.type);
           return false;
       }
 

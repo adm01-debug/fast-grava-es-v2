@@ -197,7 +197,7 @@ export function useSmartSequencingWithActions() {
     
     // Validate date before using
     if (!today || isNaN(today.getTime())) {
-      console.warn('[useSmartSequencingWithActions] Invalid current date');
+      if (import.meta.env.DEV) console.warn('[useSmartSequencingWithActions] Invalid current date');
       return [];
     }
     
