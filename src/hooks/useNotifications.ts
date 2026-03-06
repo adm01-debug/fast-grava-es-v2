@@ -20,8 +20,7 @@ export interface Notification {
   created_at: string;
 }
 
-// Mock notifications for development
-const mockNotifications: Notification[] = [];
+const EMPTY_NOTIFICATIONS: Notification[] = [];
 
 export function useNotifications(options?: { limit?: number; unreadOnly?: boolean }) {
   const { limit = 50, unreadOnly = false } = options ?? {};
@@ -33,7 +32,7 @@ export function useNotifications(options?: { limit?: number; unreadOnly?: boolea
       try {
         // Try to fetch from push_notifications table which exists
         const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return mockNotifications;
+        if (!user) return EMPTY_NOTIFICATIONS;
 
         const { data } = await supabase
           .from('push_notifications')
@@ -43,7 +42,7 @@ export function useNotifications(options?: { limit?: number; unreadOnly?: boolea
           .limit(limit);
         
         if (!data || data.length === 0) {
-          return mockNotifications;
+          return EMPTY_NOTIFICATIONS;
         }
 
         // Transform push_notifications to Notification format
@@ -63,9 +62,8 @@ export function useNotifications(options?: { limit?: number; unreadOnly?: boolea
           is_grouped: false,
           created_at: n.created_at,
         }));
-      } catch (error) {
-        if (import.meta.env.DEV) console.warn('Notifications table not available:', error);
-        return mockNotifications;
+      } catch {
+        return EMPTY_NOTIFICATIONS;
       }
     },
   });
@@ -130,21 +128,25 @@ export function useNotifications(options?: { limit?: number; unreadOnly?: boolea
   });
 
   useEffect(() => {
+    let channel: ReturnType<typeof supabase.channel> | null = null;
+    
     const setupRealtime = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
       
-      const channel = supabase.channel('notifications-realtime').on('postgres_changes', {
+      channel = supabase.channel('notifications-realtime').on('postgres_changes', {
         event: 'INSERT', schema: 'public', table: 'push_notifications', filter: `user_id=eq.${user.id}`,
       }, (payload) => {
         queryClient.invalidateQueries({ queryKey: ['notifications'] });
         const notif = payload.new as { title: string; body: string };
         toast.info(notif.title, { description: notif.body });
       }).subscribe();
-      
-      return () => { supabase.removeChannel(channel); };
     };
     setupRealtime();
+    
+    return () => {
+      if (channel) supabase.removeChannel(channel);
+    };
   }, [queryClient]);
 
   return {
