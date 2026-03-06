@@ -188,7 +188,7 @@ export default function GamificationPage() {
                       <div className="flex items-center gap-2 text-xs text-muted-foreground">
                         <span>{r.total_produced.toLocaleString()} pçs</span>
                         <span>•</span>
-                        <span>{r.efficiency_rate.toFixed(0)}% efic.</span>
+                        <span>{(r.efficiency_rate ?? 0).toFixed(0)}% efic.</span>
                       </div>
                     </div>
 
@@ -198,9 +198,9 @@ export default function GamificationPage() {
                     </div>
 
                     <div className="w-24 hidden sm:block">
-                      <Progress value={r.quality_rate} className="h-2" />
+                      <Progress value={r.quality_rate ?? 0} className="h-2" />
                       <p className="text-xs text-muted-foreground text-center mt-1">
-                        {r.quality_rate.toFixed(0)}% qual.
+                        {(r.quality_rate ?? 0).toFixed(0)}% qual.
                       </p>
                     </div>
                   </div>
