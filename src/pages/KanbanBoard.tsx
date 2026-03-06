@@ -38,7 +38,7 @@ import {
 } from 'lucide-react';
 import { useSchedulingData } from '@/hooks/useSchedulingData';
 import { DbJob } from '@/hooks/useJobs';
-import { Job, JobStatus } from '@/types/scheduling';
+import { JobStatus } from '@/types/scheduling';
 import { useQueryClient } from '@tanstack/react-query';
 
 const statusColumns: { status: JobStatus; label: string; icon: React.ElementType; color: string }[] = [
@@ -55,45 +55,6 @@ const exceptionStatuses: { status: JobStatus; label: string; icon: React.Element
   { status: 'rework', label: 'Retrabalho', icon: RotateCcw, color: 'text-pink-400' },
 ];
 
-// Type-safe status validation
-const isValidJobStatus = (status: string): status is JobStatus => {
-  return ['queue', 'ready', 'scheduled', 'production', 'finished', 'paused', 'cancelled', 'delayed', 'rework'].includes(status);
-};
-
-// Type-safe priority validation
-const isValidPriority = (priority: string): priority is Job['priority'] => {
-  return ['low', 'medium', 'high', 'urgent'].includes(priority);
-};
-
-// Helper to convert DbJob to Job format for modal - used by JobDetailsModal
-const _dbJobToJob = (dbJob: DbJob): Job => {
-  const status: JobStatus = isValidJobStatus(dbJob.status) ? dbJob.status : 'queue';
-  const priority: Job['priority'] = isValidPriority(dbJob.priority) ? dbJob.priority : 'medium';
-  
-  return {
-    id: dbJob.id,
-    orderNumber: dbJob.order_number,
-    client: dbJob.client,
-    product: dbJob.product,
-    quantity: dbJob.quantity,
-    techniqueId: dbJob.technique_id as Job['techniqueId'],
-    machineId: dbJob.machine_id || '',
-    operatorId: '',
-    scheduledDate: dbJob.scheduled_date ? new Date(dbJob.scheduled_date) : new Date(),
-    startTime: dbJob.start_time || '',
-    endTime: dbJob.end_time || '',
-    estimatedDuration: dbJob.estimated_duration,
-    status,
-    gravureColor: dbJob.gravure_color || undefined,
-    notes: dbJob.notes || undefined,
-    priority,
-    createdAt: new Date(dbJob.created_at),
-    updatedAt: new Date(dbJob.updated_at),
-    createdBy: '',
-    actualStartTime: dbJob.actual_start_time ? new Date(dbJob.actual_start_time) : undefined,
-    actualEndTime: dbJob.actual_end_time ? new Date(dbJob.actual_end_time) : undefined,
-  };
-};
 
 export default function KanbanBoard() {
   const navigate = useNavigate();
