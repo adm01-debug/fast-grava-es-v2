@@ -279,6 +279,13 @@ export function useSPCMutations() {
   const calculateControlLimits = useMutation({
     mutationFn: async (parameterId: string) => {
       // Get last 25 measurements
+      // Get parameter to determine sample size
+      const { data: param } = await supabase
+        .from('spc_control_parameters')
+        .select('sample_size')
+        .eq('id', parameterId)
+        .single();
+
       const { data: measurements } = await supabase
         .from('spc_measurements')
         .select('mean_value, range_value')
@@ -296,8 +303,13 @@ export function useSPCMutations() {
       const xBar = means.reduce((a, b) => a + b, 0) / means.length;
       const rBar = ranges.reduce((a, b) => a + b, 0) / ranges.length;
 
-      // A2 constant for n=5 (typical sample size)
-      const A2 = 0.577;
+      // A2 constants by sample size (n=2..10)
+      const A2_TABLE: Record<number, number> = {
+        2: 1.880, 3: 1.023, 4: 0.729, 5: 0.577,
+        6: 0.483, 7: 0.419, 8: 0.373, 9: 0.337, 10: 0.308,
+      };
+      const sampleSize = param?.sample_size ?? 5;
+      const A2 = A2_TABLE[sampleSize] ?? 0.577;
       const ucl = xBar + A2 * rBar;
       const lcl = xBar - A2 * rBar;
 

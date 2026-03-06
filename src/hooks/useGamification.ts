@@ -164,7 +164,8 @@ async function calculateRankingsLocally(
   const operatorStats: Record<string, { produced: number; quantity: number; lost: number; jobs: number }> = {};
 
   (jobs || []).forEach(job => {
-    const operatorId = machineToOperator[job.machine_id] || job.machine_id;
+    if (!job.machine_id) return;
+    const operatorId = machineToOperator[job.machine_id];
     if (!operatorId) return;
 
     if (!operatorStats[operatorId]) {

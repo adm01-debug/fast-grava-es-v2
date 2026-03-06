@@ -12,6 +12,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSchedulingData } from '@/hooks/useSchedulingData';
 import { supabase } from '@/integrations/supabase/client';
+import { calculateEstimatedTime } from '@/hooks/useKPIs';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -62,6 +63,13 @@ export default function NewJobPage() {
     setIsSubmitting(true);
     
     try {
+      // Calculate estimated duration based on technique setup time and quantity
+      const selectedTechnique = techniques.find(t => t.id === formData.technique_id);
+      const estimatedDuration = calculateEstimatedTime({
+        quantity: parseInt(formData.quantity),
+        techniqueSetupTime: selectedTechnique?.setup_time ?? 10,
+      });
+
       const { error } = await supabase.from('jobs').insert({
         order_number: formData.order_number,
         client: formData.client,
@@ -76,6 +84,7 @@ export default function NewJobPage() {
         priority: formData.priority,
         gravure_color: formData.gravure_color || null,
         status: 'queue',
+        estimated_duration: estimatedDuration,
       });
 
       if (error) throw error;
