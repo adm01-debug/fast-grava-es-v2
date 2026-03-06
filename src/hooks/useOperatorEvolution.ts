@@ -85,8 +85,7 @@ export function useOperatorEvolution(days: number = 30) {
       const { data: roles, error: rolesError } = await supabase
         .from('user_roles')
         .select('user_id')
-        .eq('role', 'operator')
-        .eq('is_active', true);
+        .eq('role', 'operator');
 
       if (rolesError) throw rolesError;
       if (!roles || roles.length === 0) return [];

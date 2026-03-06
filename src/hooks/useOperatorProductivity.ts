@@ -68,7 +68,7 @@ export function useOperatorProductivity(period: ProductivityPeriod = 'all') {
       // First get user_roles
       const { data: roles, error: rolesError } = await supabase
         .from('user_roles')
-        .select('user_id, role, is_active')
+        .select('user_id, role')
         .eq('role', 'operator');
 
       if (rolesError) throw rolesError;
