@@ -12,20 +12,22 @@ interface OfflineSyncProviderProps {
 export function OfflineSyncProvider({ children }: OfflineSyncProviderProps) {
   const offlineSync = useOfflineSync();
 
+  const { cacheData, isOnline } = offlineSync;
+
   // Cache data on mount and periodically
   useEffect(() => {
     // Initial cache
-    offlineSync.cacheData();
+    cacheData();
 
     // Refresh cache every 5 minutes when online
     const interval = setInterval(() => {
-      if (offlineSync.isOnline) {
-        offlineSync.cacheData();
+      if (isOnline) {
+        cacheData();
       }
     }, 5 * 60 * 1000);
 
     return () => clearInterval(interval);
-  }, [offlineSync.isOnline]);
+  }, [isOnline, cacheData]);
 
   return (
     <OfflineSyncContext.Provider value={offlineSync}>

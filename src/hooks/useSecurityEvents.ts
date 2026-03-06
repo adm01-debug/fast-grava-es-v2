@@ -87,7 +87,7 @@ export function useRealtimeBlockedIPs() {
 export function logSecurityEvent(
   eventType: string,
   severity: 'info' | 'warning' | 'error' | 'critical',
-  details?: Record<string, any>
+  details?: Record<string, unknown>
 ) {
   return supabase.from('security_events').insert({
     event_type: eventType,
