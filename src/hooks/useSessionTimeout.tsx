@@ -124,7 +124,7 @@ export function useSessionTimeout({
       });
       navigate("/auth");
     } catch (error) {
-      console.error("Logout error:", error);
+      if (import.meta.env.DEV) console.error("Logout error:", error);
     }
   }, [navigate, onSessionExpired]);
 

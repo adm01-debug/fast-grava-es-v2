@@ -62,7 +62,7 @@ export function useMFA(): UseMFAReturn {
       
       setFactors(data.totp || []);
     } catch (error) {
-      console.error('Error fetching MFA factors:', error);
+      if (import.meta.env.DEV) console.error('Error fetching MFA factors:', error);
       toast.error('Erro ao carregar configurações MFA');
     } finally {
       setIsLoading(false);
@@ -85,7 +85,7 @@ export function useMFA(): UseMFAReturn {
 
       setEnrollmentData(data);
     } catch (error) {
-      console.error('Error starting MFA enrollment:', error);
+      if (import.meta.env.DEV) console.error('Error starting MFA enrollment:', error);
       const message = error instanceof Error ? error.message : 'Erro ao iniciar configuração MFA';
       toast.error(message);
       setIsEnrolling(false);
@@ -123,7 +123,7 @@ export function useMFA(): UseMFAReturn {
       await refreshFactors();
       return true;
     } catch (error) {
-      console.error('Error verifying MFA enrollment:', error);
+      if (import.meta.env.DEV) console.error('Error verifying MFA enrollment:', error);
       const message = error instanceof Error ? error.message : 'Código inválido';
       toast.error(message);
       return false;
@@ -149,7 +149,7 @@ export function useMFA(): UseMFAReturn {
       await refreshFactors();
       return true;
     } catch (error) {
-      console.error('Error unenrolling MFA:', error);
+      if (import.meta.env.DEV) console.error('Error unenrolling MFA:', error);
       const message = error instanceof Error ? error.message : 'Erro ao desativar MFA';
       toast.error(message);
       return false;
@@ -166,7 +166,7 @@ export function useMFA(): UseMFAReturn {
 
       return data.id;
     } catch (error) {
-      console.error('Error creating MFA challenge:', error);
+      if (import.meta.env.DEV) console.error('Error creating MFA challenge:', error);
       const message = error instanceof Error ? error.message : 'Erro ao criar desafio MFA';
       toast.error(message);
       return null;
@@ -190,7 +190,7 @@ export function useMFA(): UseMFAReturn {
 
       return true;
     } catch (error) {
-      console.error('Error verifying MFA challenge:', error);
+      if (import.meta.env.DEV) console.error('Error verifying MFA challenge:', error);
       const message = error instanceof Error ? error.message : 'Código inválido';
       toast.error(message);
       return false;

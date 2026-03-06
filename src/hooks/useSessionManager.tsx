@@ -32,7 +32,7 @@ export function useSessionManager() {
       const { data, error } = await supabase.auth.refreshSession();
       
       if (error) {
-        console.error('Session refresh error:', error);
+        if (import.meta.env.DEV) console.error('Session refresh error:', error);
         
         // If refresh fails and session is inactive, sign out
         if (!isSessionActive()) {
@@ -45,7 +45,7 @@ export function useSessionManager() {
         if (import.meta.env.DEV) console.log('Session refreshed successfully');
       }
     } catch (error) {
-      console.error('Session refresh error:', error);
+      if (import.meta.env.DEV) console.error('Session refresh error:', error);
     }
   }, [user, isSessionActive, signOut]);
 
