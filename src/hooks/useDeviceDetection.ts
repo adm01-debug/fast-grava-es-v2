@@ -117,7 +117,7 @@ export const useDeviceDetection = () => {
       });
 
       if (response.error) {
-        console.error('Error checking device:', response.error);
+        if (import.meta.env.DEV) console.error('Error checking device:', response.error);
         return { isNewDevice: false, error: response.error };
       }
 
@@ -127,7 +127,7 @@ export const useDeviceDetection = () => {
         error: null 
       };
     } catch (error) {
-      console.error('Error in device detection:', error);
+      if (import.meta.env.DEV) console.error('Error in device detection:', error);
       return { isNewDevice: false, error };
     }
   }, []);

@@ -111,7 +111,7 @@ export function useQuickFavorites() {
               }], { onConflict: 'user_id' })
               .then(({ error }) => {
                 if (error) {
-                  console.error('Error migrating favorites:', error);
+                  if (import.meta.env.DEV) console.error('Error migrating favorites:', error);
                   toast({
                     title: 'Erro na migração',
                     description: 'Não foi possível migrar seus favoritos para a nuvem.',
@@ -131,7 +131,7 @@ export function useQuickFavorites() {
               });
           }
         } catch (e) {
-          console.error('Error parsing localStorage favorites:', e);
+          if (import.meta.env.DEV) console.error('Error parsing localStorage favorites:', e);
         }
       }
     }
