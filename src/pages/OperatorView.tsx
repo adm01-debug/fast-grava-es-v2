@@ -47,7 +47,7 @@ export default function OperatorView() {
   // Cache data on mount for offline use
   useEffect(() => {
     cacheData();
-  }, []);
+  }, [cacheData]);
 
   const filteredJobs = useMemo(() => {
     if (!jobs) return [];

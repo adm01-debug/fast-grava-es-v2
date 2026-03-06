@@ -248,7 +248,7 @@ export default function SettingsPage() {
               </CardContent>
             </Card>
             
-            <AutoThemeToggle />
+            
 
             <div className="grid gap-4 md:grid-cols-2">
               <Card className="glass-card">
