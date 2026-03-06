@@ -17,7 +17,7 @@ interface NotificationOptions {
   icon?: string;
   tag?: string;
   requireInteraction?: boolean;
-  data?: any;
+  data?: Record<string, unknown>;
 }
 
 export const usePushNotifications = () => {
