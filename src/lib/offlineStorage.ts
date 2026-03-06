@@ -44,7 +44,7 @@ class OfflineStorageManager {
       const request = indexedDB.open(DB_NAME, DB_VERSION);
 
       request.onerror = () => {
-        console.error('Error opening IndexedDB:', request.error);
+        if (import.meta.env.DEV) console.error('Error opening IndexedDB:', request.error);
         reject(request.error);
       };
 
@@ -277,7 +277,7 @@ export async function registerBackgroundSync(): Promise<boolean> {
         return true;
       }
     } catch (error) {
-      console.error('Background sync registration failed:', error);
+      if (import.meta.env.DEV) console.error('Background sync registration failed:', error);
       return false;
     }
   }

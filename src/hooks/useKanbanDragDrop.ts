@@ -137,7 +137,7 @@ export function useKanbanDragDrop({ jobs, onJobsUpdate }: UseKanbanDragDropProps
       
       onJobsUpdate();
     } catch (error) {
-      console.error('Error reordering jobs:', error);
+      if (import.meta.env.DEV) console.error('Error reordering jobs:', error);
       toast.error('Erro ao reordenar', {
         description: 'Não foi possível reordenar os cards. Tente novamente.'
       });
@@ -202,7 +202,7 @@ export function useKanbanDragDrop({ jobs, onJobsUpdate }: UseKanbanDragDropProps
       
       onJobsUpdate();
     } catch (error) {
-      console.error('Error updating job status:', error);
+      if (import.meta.env.DEV) console.error('Error updating job status:', error);
       toast.error('Erro ao atualizar status', {
         description: 'Não foi possível mover o job. Tente novamente.'
       });
