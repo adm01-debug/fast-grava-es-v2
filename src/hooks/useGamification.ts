@@ -144,7 +144,7 @@ async function calculateRankingsLocally(
   const { data: jobs } = await supabase
     .from('jobs')
     .select('*')
-    .eq('status', 'completed')
+    .eq('status', 'finished')
     .gte('actual_end_time', periodStart.toISOString())
     .lte('actual_end_time', periodEnd.toISOString());
 

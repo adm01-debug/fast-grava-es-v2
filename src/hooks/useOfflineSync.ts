@@ -179,7 +179,7 @@ export function useOfflineSync() {
               lost_pieces: lostPieces,
               notes,
               production_photos: photos,
-              status: 'completed',
+              status: 'finished',
               actual_end_time: new Date().toISOString(),
             })
             .eq('id', jobId);
@@ -307,7 +307,7 @@ export function useOfflineSync() {
           lost_pieces: lostPieces,
           notes,
           production_photos: photos,
-          status: 'completed',
+          status: 'finished',
           actual_end_time: new Date().toISOString(),
         })
         .eq('id', jobId);
@@ -331,7 +331,7 @@ export function useOfflineSync() {
               lost_pieces: lostPieces,
               notes,
               production_photos: photos,
-              status: 'completed',
+              status: 'finished',
             };
           }
           return job;
