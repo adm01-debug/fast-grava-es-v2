@@ -18,9 +18,6 @@ function sanitizeNumber(value: unknown, fallback = 0): number {
   return Math.max(0, value);
 }
 
-function clampPercentage(value: number): number {
-  return Math.min(100, Math.max(0, value));
-}
 
 export interface MachineOEE {
   machineId: string;
