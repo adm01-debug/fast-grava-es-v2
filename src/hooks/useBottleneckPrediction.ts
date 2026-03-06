@@ -72,7 +72,7 @@ export function useBottleneckPrediction() {
     );
 
     if (validJobs.length === 0 && jobs.length > 0) {
-      console.warn('[useBottleneckPrediction] All jobs failed validation');
+      if (import.meta.env.DEV) console.warn('[useBottleneckPrediction] All jobs failed validation');
     }
 
     const today = new Date();
