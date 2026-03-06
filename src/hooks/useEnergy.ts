@@ -60,6 +60,8 @@ export function useEnergy(dateRange?: { start: Date; end: Date }) {
   const now = new Date();
   const start = dateRange?.start || startOfMonth(now);
   const end = dateRange?.end || endOfMonth(now);
+  const prevStart = startOfMonth(subMonths(start, 1));
+  const prevEnd = endOfMonth(subMonths(start, 1));
 
   // Fetch consumption data
   const consumptionQuery = useQuery({
@@ -76,6 +78,22 @@ export function useEnergy(dateRange?: { start: Date; end: Date }) {
       return data as EnergyConsumption[];
     },
     staleTime: 60000,
+  });
+
+  // Fetch previous month consumption for trend comparison
+  const prevConsumptionQuery = useQuery({
+    queryKey: ['energy-consumption-prev', prevStart.toISOString(), prevEnd.toISOString()],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('energy_consumption')
+        .select('total_cost')
+        .gte('recorded_at', prevStart.toISOString())
+        .lte('recorded_at', prevEnd.toISOString());
+
+      if (error) throw error;
+      return data as { total_cost: number }[];
+    },
+    staleTime: 300000, // 5 min - previous month rarely changes
   });
 
   // Fetch alerts
@@ -126,11 +144,8 @@ export function useEnergy(dateRange?: { start: Date; end: Date }) {
     const days = Math.max(1, Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)));
     const avgDailyConsumption = totalConsumption / days;
 
-    // Compare with previous month
-    const prevStart = subMonths(start, 1);
-    const prevData = consumption.filter(c => 
-      new Date(c.recorded_at) >= prevStart && new Date(c.recorded_at) < start
-    );
+    // Compare with previous month using separate query
+    const prevData = prevConsumptionQuery.data || [];
     const prevTotal = prevData.reduce((sum, c) => sum + Number(c.total_cost), 0);
     const costTrend = prevTotal > 0 ? ((totalCost - prevTotal) / prevTotal) * 100 : 0;
 
