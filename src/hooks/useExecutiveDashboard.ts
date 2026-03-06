@@ -87,7 +87,7 @@ export function useExecutiveDashboard(dateRange: DateRange) {
       const profiles = profilesRes.data || [];
 
       // Calculate Production KPIs
-      const completedJobs = jobs.filter(j => j.status === 'completed');
+      const completedJobs = jobs.filter(j => j.status === 'finished');
       const inProgressJobs = jobs.filter(j => ['production', 'paused'].includes(j.status));
       const totalPiecesProduced = jobs.reduce((sum, j) => sum + (j.produced_quantity || 0), 0);
       const totalPiecesLost = jobs.reduce((sum, j) => sum + (j.lost_pieces || 0), 0);
@@ -153,7 +153,7 @@ export function useExecutiveDashboard(dateRange: DateRange) {
           return {
             machine: m.code || m.name,
             utilization: machineJobs.length > 0 ? Math.min(100, machineJobs.length * 15) : 0,
-            oee: machineMetrics?.oee_score || Math.random() * 30 + 60,
+            oee: machineMetrics?.oee_score || 0,
           };
         });
 
@@ -238,13 +238,15 @@ function calculateTopOperators(completedJobs: Job[], profiles: Profile[]) {
   });
 
   return Object.entries(operatorStats)
+    .sort(([, a], [, b]) => b.produced - a.produced)
     .slice(0, 5)
     .map(([id, stats], index) => {
-      const profile = profiles[index % profiles.length];
+      const profile = profiles.find(p => p.id === id) || profiles[index % Math.max(1, profiles.length)];
+      const efficiency = stats.jobs > 0 ? Math.min(100, (stats.produced / (stats.jobs * 100)) * 100) : 0;
       return {
         name: profile?.full_name || `Operador ${index + 1}`,
         produced: stats.produced,
-        efficiency: Math.min(100, 70 + Math.random() * 25),
+        efficiency,
       };
     });
 }
