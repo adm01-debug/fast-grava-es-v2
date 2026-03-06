@@ -134,7 +134,7 @@ export const usePushNotifications = () => {
         
         // Navigate to specific page if data contains a route
         // Using navigateTo helper for React Router integration
-        if (options.data?.route) {
+        if (options.data?.route && typeof options.data.route === 'string') {
           navigateTo(options.data.route);
         }
       };
