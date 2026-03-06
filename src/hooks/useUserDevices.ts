@@ -36,7 +36,7 @@ export function useUserDevices() {
         .order('last_seen_at', { ascending: false });
 
       if (error) {
-        console.error('Error fetching devices:', error);
+        if (import.meta.env.DEV) console.error('Error fetching devices:', error);
         throw error;
       }
 

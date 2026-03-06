@@ -161,7 +161,7 @@ export default function AuthPage() {
       });
 
     if (error) {
-      console.error('Error creating reset request:', error);
+      if (import.meta.env.DEV) console.error('Error creating reset request:', error);
       toast.error(t('errors.generic'));
       setIsSendingReset(false);
       return;
