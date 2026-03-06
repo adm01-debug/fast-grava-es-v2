@@ -80,7 +80,7 @@ export function useWebAuthn() {
       if (error) throw error;
       setCredentials(data || []);
     } catch (error) {
-      console.error('Error fetching credentials:', error);
+      if (import.meta.env.DEV) console.error('Error fetching credentials:', error);
     } finally {
       setIsLoading(false);
     }
@@ -174,7 +174,7 @@ export function useWebAuthn() {
       await fetchCredentials();
       return true;
     } catch (error) {
-      console.error('Error registering passkey:', error);
+      if (import.meta.env.DEV) console.error('Error registering passkey:', error);
       const err = error as { name?: string };
       if (err.name === 'NotAllowedError') {
         toast.error('Registro cancelado pelo usuário');
@@ -263,7 +263,7 @@ export function useWebAuthn() {
       toast.success('Autenticação bem-sucedida!');
       return { success: true, userId: credData.user_id };
     } catch (error) {
-      console.error('Error authenticating:', error);
+      if (import.meta.env.DEV) console.error('Error authenticating:', error);
       const err = error as { name?: string };
       if (err.name === 'NotAllowedError') {
         toast.error('Autenticação cancelada');
@@ -293,7 +293,7 @@ export function useWebAuthn() {
       await fetchCredentials();
       return true;
     } catch (error) {
-      console.error('Error removing passkey:', error);
+      if (import.meta.env.DEV) console.error('Error removing passkey:', error);
       toast.error('Erro ao remover passkey');
       return false;
     }

@@ -32,7 +32,7 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
       toast.success('Manutenção agendada com sucesso');
     },
     onError: (error) => {
-      console.error('[useTPM] createSchedule failed:', categorizeError(error), error);
+      if (import.meta.env.DEV) console.error('[useTPM] createSchedule failed:', categorizeError(error), error);
       showErrorToast(error, 'Erro ao agendar manutenção', TPM_ERROR_CONTEXT.schedules);
     },
   });
@@ -74,7 +74,7 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
       toast.success('Manutenção iniciada');
     },
     onError: (error) => {
-      console.error('[useTPM] startMaintenance failed:', categorizeError(error), error);
+      if (import.meta.env.DEV) console.error('[useTPM] startMaintenance failed:', categorizeError(error), error);
       showErrorToast(error, 'Erro ao iniciar manutenção', TPM_ERROR_CONTEXT.records);
     },
   });
@@ -140,7 +140,7 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
       toast.success('Manutenção concluída');
     },
     onError: (error) => {
-      console.error('[useTPM] completeMaintenance failed:', categorizeError(error), error);
+      if (import.meta.env.DEV) console.error('[useTPM] completeMaintenance failed:', categorizeError(error), error);
       showErrorToast(error, 'Erro ao concluir manutenção', TPM_ERROR_CONTEXT.records);
     },
   });

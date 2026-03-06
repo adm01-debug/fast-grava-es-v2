@@ -90,7 +90,7 @@ export function useABCMutations({ activities, activityRates, jobs, techniques }:
       toast.success('Custo do job calculado com sucesso');
     },
     onError: (error) => {
-      console.error('[useABCCosts] calculateJobCost failed:', categorizeError(error), error);
+      if (import.meta.env.DEV) console.error('[useABCCosts] calculateJobCost failed:', categorizeError(error), error);
       showErrorToast(error, 'Erro ao calcular custo do job', ABC_ERROR_CONTEXT.calculation);
     },
   });

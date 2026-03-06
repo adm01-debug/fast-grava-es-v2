@@ -79,7 +79,7 @@ export function useAutoBufferPromotion(options?: { enabled?: boolean; showToasts
         await promoteJobMutation.mutateAsync(job.id);
         promotedIds.push(job.id);
       } catch (error) {
-        console.error(`Failed to promote job ${job.order_number}:`, error);
+        if (import.meta.env.DEV) console.error(`Failed to promote job ${job.order_number}:`, error);
       }
     }
 

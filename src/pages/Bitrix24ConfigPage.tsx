@@ -142,7 +142,7 @@ const Bitrix24ConfigPage = () => {
       const result = await callBitrixSync('list-mappings');
       setAllMappings(result.mappings || []);
     } catch (error) {
-      console.error('Error fetching mappings:', error);
+      if (import.meta.env.DEV) console.error('Error fetching mappings:', error);
       const message = error instanceof Error ? error.message : 'Erro desconhecido';
       toast({
         title: 'Erro ao carregar mapeamentos',

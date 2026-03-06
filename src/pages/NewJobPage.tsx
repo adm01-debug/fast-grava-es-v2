@@ -84,7 +84,7 @@ export default function NewJobPage() {
       refetchJobs();
       navigate('/');
     } catch (error) {
-      console.error('Error creating job:', error);
+      if (import.meta.env.DEV) console.error('Error creating job:', error);
       toast.error('Erro ao criar job');
     } finally {
       setIsSubmitting(false);

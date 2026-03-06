@@ -17,13 +17,13 @@ async function checkLockout(email: string, ipAddress?: string): Promise<{
     });
     
     if (error) {
-      console.error('Lockout check error:', error);
+      if (import.meta.env.DEV) console.error('Lockout check error:', error);
       return { locked: false };
     }
     
     return data;
   } catch (err) {
-    console.error('Lockout check failed:', err);
+    if (import.meta.env.DEV) console.error('Lockout check failed:', err);
     return { locked: false };
   }
 }
@@ -44,13 +44,13 @@ async function recordLoginAttempt(email: string, success: boolean, ipAddress?: s
     });
     
     if (error) {
-      console.error('Record attempt error:', error);
+      if (import.meta.env.DEV) console.error('Record attempt error:', error);
       return {};
     }
     
     return data;
   } catch (err) {
-    console.error('Record attempt failed:', err);
+    if (import.meta.env.DEV) console.error('Record attempt failed:', err);
     return {};
   }
 }
@@ -120,7 +120,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setRole(roleData as AppRole);
       }
     } catch (error) {
-      console.error('Error fetching user data:', error);
+      if (import.meta.env.DEV) console.error('Error fetching user data:', error);
     }
   };
 
@@ -232,7 +232,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           });
         }
       } catch (deviceError) {
-        console.error('Error checking device:', deviceError);
+        if (import.meta.env.DEV) console.error('Error checking device:', deviceError);
       }
     }
     
