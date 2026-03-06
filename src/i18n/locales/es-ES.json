@@ -63,10 +63,7 @@
     "loginSuccess": "¡Inicio de sesión exitoso!",
     "loginError": "Error al iniciar sesión",
     "logoutSuccess": "¡Cierre de sesión exitoso!",
-    "resetRequestSent": "¡Solicitud enviada! Esperando aprobación del gestor.",
-    "subtitle": "Sistema de Gestión de Producción",
-    "rememberEmail": "Recordar mi correo",
-    "or": "o"
+    "resetRequestSent": "¡Solicitud enviada! Esperando aprobación del gestor."
   },
   "dashboard": {
     "title": "Panel Principal",
@@ -83,14 +80,7 @@
     "weeklyOverview": "Resumen Semanal",
     "recentJobs": "Trabajos Recientes",
     "topOperators": "Mejores Operadores",
-    "machineStatus": "Estado de las Máquinas",
-    "recentActivity": "Actividad Reciente",
-    "tabs": {
-      "overview": "Vista General",
-      "efficiency": "Eficiencia",
-      "timeline": "Línea de Tiempo",
-      "jobs": "Trabajos"
-    }
+    "machineStatus": "Estado de las Máquinas"
   },
   "jobs": {
     "title": "Trabajos",

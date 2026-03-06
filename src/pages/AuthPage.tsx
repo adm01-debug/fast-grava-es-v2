@@ -243,7 +243,7 @@ export default function AuthPage() {
             <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">{t('common.appName')}</span>
           </h1>
           <p className="text-muted-foreground text-lg">
-            {t('auth.subtitle')}
+            Sistema de Gestão de Produção
           </p>
         </div>
 
@@ -298,7 +298,7 @@ export default function AuthPage() {
                         htmlFor="remember-me" 
                         className="text-sm font-normal text-muted-foreground cursor-pointer"
                       >
-                        {t('auth.rememberEmail')}
+                        Lembrar meu e-mail
                       </Label>
                     </div>
                   </div>
@@ -322,7 +322,7 @@ export default function AuthPage() {
                       <span className="w-full border-t" />
                     </div>
                     <div className="relative flex justify-center text-xs uppercase">
-                      <span className="bg-card px-2 text-muted-foreground">{t('auth.or')}</span>
+                      <span className="bg-card px-2 text-muted-foreground">ou</span>
                     </div>
                   </div>
 

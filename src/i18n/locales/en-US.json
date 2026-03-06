@@ -63,10 +63,7 @@
     "loginSuccess": "Login successful!",
     "loginError": "Login error",
     "logoutSuccess": "Logout successful!",
-    "resetRequestSent": "Request sent! Awaiting manager approval.",
-    "subtitle": "Production Management System",
-    "rememberEmail": "Remember my email",
-    "or": "or"
+    "resetRequestSent": "Request sent! Awaiting manager approval."
   },
   "dashboard": {
     "title": "Dashboard",
@@ -83,14 +80,7 @@
     "weeklyOverview": "Weekly Overview",
     "recentJobs": "Recent Jobs",
     "topOperators": "Top Operators",
-    "machineStatus": "Machine Status",
-    "recentActivity": "Recent Activity",
-    "tabs": {
-      "overview": "Overview",
-      "efficiency": "Efficiency",
-      "timeline": "Timeline",
-      "jobs": "Jobs"
-    }
+    "machineStatus": "Machine Status"
   },
   "jobs": {
     "title": "Jobs",

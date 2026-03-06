@@ -111,8 +111,8 @@ export function MainLayout({ children }: MainLayoutProps) {
         {/* Mobile FAB for quick actions */}
         <MobileQuickActions />
         
-        {/* Global components - Assistant only on desktop to avoid FAB overlap on mobile */}
-        {!isMobile && <AssistantButton />}
+        {/* Global components */}
+        <AssistantButton />
         <NotificationIntegrator />
       </div>
     </SessionProvider>
