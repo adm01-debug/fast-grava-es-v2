@@ -147,7 +147,6 @@ export function useEnergy(dateRange?: { start: Date; end: Date }) {
     // Compare with previous month using separate query
     const prevData = prevConsumptionQuery.data || [];
     const prevTotal = prevData.reduce((sum, c) => sum + Number(c.total_cost), 0);
-    const prevTotal = prevData.reduce((sum, c) => sum + Number(c.total_cost), 0);
     const costTrend = prevTotal > 0 ? ((totalCost - prevTotal) / prevTotal) * 100 : 0;
 
     // Group by machine
