@@ -55,16 +55,6 @@ const exceptionStatuses: { status: JobStatus; label: string; icon: React.Element
   { status: 'rework', label: 'Retrabalho', icon: RotateCcw, color: 'text-pink-400' },
 ];
 
-// Type-safe status validation
-const isValidJobStatus = (status: string): status is JobStatus => {
-  return ['queue', 'ready', 'scheduled', 'production', 'finished', 'paused', 'cancelled', 'delayed', 'rework'].includes(status);
-};
-
-// Type-safe priority validation
-const isValidPriority = (priority: string): priority is Job['priority'] => {
-  return ['low', 'medium', 'high', 'urgent'].includes(priority);
-};
-
 
 export default function KanbanBoard() {
   const navigate = useNavigate();
