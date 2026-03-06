@@ -66,7 +66,7 @@ export function useMLPredictions() {
           if (import.meta.env.DEV) console.error('[useMLPredictions] predictions fetch failed:', categorizeError(error), error);
           throw error;
         }
-        return data.map((p: any) => ({
+        return data.map((p: Record<string, unknown>) => ({
           ...p,
           machine: p.machines,
           factors: Array.isArray(p.factors) ? p.factors : [],

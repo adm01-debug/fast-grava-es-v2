@@ -65,8 +65,13 @@ export default function AuthPage() {
     }
   }, []);
 
+  useEffect(() => {
+    if (user) {
+      navigate('/', { replace: true });
+    }
+  }, [user, navigate]);
+
   if (user) {
-    navigate('/');
     return null;
   }
 

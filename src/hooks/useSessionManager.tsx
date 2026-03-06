@@ -41,8 +41,8 @@ export function useSessionManager() {
         return;
       }
 
-      if (data.session) {
-        if (import.meta.env.DEV) console.log('Session refreshed successfully');
+      if (!data.session) {
+        await signOut();
       }
     } catch (error) {
       if (import.meta.env.DEV) console.error('Session refresh error:', error);
