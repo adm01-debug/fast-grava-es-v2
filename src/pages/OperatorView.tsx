@@ -68,7 +68,7 @@ export default function OperatorView() {
       await updateStatus.mutateAsync({ jobId: job.id, status: 'production' });
       notifyStatusChange(job.client, job.status, 'production');
     } catch (error) {
-      console.error('Error starting production:', error);
+      if (import.meta.env.DEV) console.error('Error starting production:', error);
     }
   };
 
@@ -77,7 +77,7 @@ export default function OperatorView() {
       await updateStatus.mutateAsync({ jobId: job.id, status: 'paused' });
       notifyStatusChange(job.client, job.status, 'paused');
     } catch (error) {
-      console.error('Error pausing production:', error);
+      if (import.meta.env.DEV) console.error('Error pausing production:', error);
     }
   };
 

@@ -60,7 +60,7 @@ export default function ExecutiveDashboard() {
       });
       toast.success('Relatório PDF exportado com sucesso!');
     } catch (error) {
-      console.error('Error exporting PDF:', error);
+      if (import.meta.env.DEV) console.error('Error exporting PDF:', error);
       toast.error('Erro ao exportar relatório');
     }
   };
