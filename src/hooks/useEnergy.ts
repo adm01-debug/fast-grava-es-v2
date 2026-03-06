@@ -60,6 +60,8 @@ export function useEnergy(dateRange?: { start: Date; end: Date }) {
   const now = new Date();
   const start = dateRange?.start || startOfMonth(now);
   const end = dateRange?.end || endOfMonth(now);
+  const prevStart = startOfMonth(subMonths(start, 1));
+  const prevEnd = endOfMonth(subMonths(start, 1));
 
   // Fetch consumption data
   const consumptionQuery = useQuery({
