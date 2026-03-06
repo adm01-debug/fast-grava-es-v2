@@ -50,13 +50,13 @@ export function useDailySummaryNotifications() {
       const { data, error } = await supabase.functions.invoke('daily-maintenance-summary');
       
       if (error) {
-        console.error('Error fetching daily summary:', error);
+        if (import.meta.env.DEV) console.error('Error fetching daily summary:', error);
         return null;
       }
       
       return data as DailySummary;
     } catch (error) {
-      console.error('Error fetching daily summary:', error);
+      if (import.meta.env.DEV) console.error('Error fetching daily summary:', error);
       return null;
     } finally {
       setIsLoading(false);
