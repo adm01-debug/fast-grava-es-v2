@@ -59,7 +59,7 @@ export const QRScanner = () => {
   useEffect(() => {
     return () => {
       if (scannerRef.current?.isScanning) {
-        scannerRef.current.stop().catch(console.error);
+        scannerRef.current.stop().catch(() => { /* cleanup */ });
       }
     };
   }, []);

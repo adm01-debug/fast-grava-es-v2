@@ -234,7 +234,7 @@ export function useUpdateJobStatus() {
                 'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
               },
               body: JSON.stringify({ jobId, status })
-            }).catch(console.error);
+            }).catch(() => { /* fire and forget */ });
           }
         } catch (e) {
           if (import.meta.env.DEV) console.error('[useUpdateJobStatus] Bitrix24 sync error:', e);
