@@ -97,8 +97,8 @@ export function useLiveAnnounce() {
   const context = React.useContext(LiveRegionContext);
   if (!context) {
     // Return a no-op if not in provider
-    return (message: string, priority?: 'polite' | 'assertive') => {
-      console.warn('useLiveAnnounce called outside of AccessibilityProvider');
+    return (_message: string, _priority?: 'polite' | 'assertive') => {
+      // no-op outside provider
     };
   }
   return context.announce;

@@ -99,7 +99,7 @@ export function useKPIs(): { data: KPIData | null; isLoading: boolean } {
     const validTechniques = techniques.filter(isValidTechnique);
 
     if (validJobs.length === 0 && jobs.length > 0) {
-      console.warn('[useKPIs] All jobs failed validation');
+      if (import.meta.env.DEV) console.warn('[useKPIs] All jobs failed validation');
     }
 
     const today = new Date().toISOString().split('T')[0];
