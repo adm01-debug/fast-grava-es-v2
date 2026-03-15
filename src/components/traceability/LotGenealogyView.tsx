@@ -48,7 +48,7 @@ export default function LotGenealogyView({ lot, open, onClose }: LotGenealogyVie
               </h3>
               {parents.length > 0 ? (
                 <div className="grid gap-3">
-                  {parents.map((item: any) => (
+                  {parents.map((item: LotComponent) => (
                     <Card key={item.id} className="border-l-4 border-l-blue-500">
                       <CardContent className="py-3">
                         <div className="flex items-center justify-between">
