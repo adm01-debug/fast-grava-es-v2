@@ -235,7 +235,7 @@ serve(async (req) => {
     </div>
     
     <div class="footer">
-      <p>Relatório gerado automaticamente pelo GravuraPro</p>
+      <p>Relatório gerado automaticamente pelo Fast Gravações</p>
       <p>© ${new Date().getFullYear()} - Sistema de Gestão de Produção</p>
     </div>
   </div>
@@ -254,7 +254,7 @@ serve(async (req) => {
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-              from: 'GravuraPro <reports@resend.dev>',
+              from: 'Fast Gravações <reports@resend.dev>',
               to: [recipient],
               subject: `📊 Relatório ${reportTitle} de Produção - ${body.start_date}`,
               html: htmlContent,

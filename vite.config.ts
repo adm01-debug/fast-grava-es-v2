@@ -17,8 +17,8 @@ export default defineConfig(({ mode }) => ({
       registerType: "autoUpdate",
       includeAssets: ["favicon.ico", "robots.txt", "pwa-icons/*.png"],
       manifest: {
-        name: "GravuraPro - Sistema de Produção",
-        short_name: "GravuraPro",
+        name: "Fast Gravações - Sistema de Produção",
+        short_name: "FastGravações",
         description: "Sistema completo de agendamento e gestão de produção para gravação e personalização",
         theme_color: "#f97316",
         background_color: "#0a0a0a",

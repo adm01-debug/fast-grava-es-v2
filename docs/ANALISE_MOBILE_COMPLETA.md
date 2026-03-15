@@ -1,4 +1,4 @@
-# 📱 Análise de Preparação Mobile - GravuraPro
+# 📱 Análise de Preparação Mobile - Fast Gravações
 
 **Data da Análise:** 2025-12-28  
 **Versão do Sistema:** Produção  

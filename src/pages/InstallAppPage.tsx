@@ -124,7 +124,7 @@ const InstallAppPage = () => {
               <Smartphone className="w-8 h-8 text-white" />
             </div>
           </div>
-          <h1 className="text-3xl font-bold text-foreground">Instalar GravuraPro</h1>
+          <h1 className="text-3xl font-bold text-foreground">Instalar Fast Gravações</h1>
           <p className="text-muted-foreground">
             Instale o app no seu dispositivo para acesso rápido e offline
           </p>
@@ -156,7 +156,7 @@ const InstallAppPage = () => {
               </CardTitle>
               <CardDescription>
                 {isInstalled 
-                  ? "O GravuraPro já está instalado no seu dispositivo"
+                  ? "O Fast Gravações já está instalado no seu dispositivo"
                   : "Adicione à sua tela inicial para acesso rápido"
                 }
               </CardDescription>

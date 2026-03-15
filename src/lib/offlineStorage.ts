@@ -3,7 +3,7 @@
  * Provides persistent storage for offline data with better performance than localStorage
  */
 
-const DB_NAME = 'gravurapro_offline';
+const DB_NAME = 'fastgravacoes_offline';
 const DB_VERSION = 1;
 
 interface OfflineStore {
