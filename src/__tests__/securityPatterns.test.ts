@@ -262,16 +262,16 @@ describe('Geo Blocking Logic', () => {
       if (!rule) return blockUnknown;
       return rule.isBlocked;
     } else {
-      // allowlist mode: only allow explicitly allowed
+      // allowlist mode: only explicitly allowed countries pass
       if (!rule) return true; // not in list = blocked
-      return !rule.isBlocked; // isBlocked=false means allowed
+      return rule.isBlocked; // isBlocked=true means blocked, false means allowed
     }
   }
 
   const rules = [
-    { countryCode: 'BR', isBlocked: false },
-    { countryCode: 'CN', isBlocked: true },
-    { countryCode: 'US', isBlocked: false },
+    { countryCode: 'BR', isBlocked: false }, // allowed
+    { countryCode: 'CN', isBlocked: true },  // blocked
+    { countryCode: 'US', isBlocked: false }, // allowed
   ];
 
   it('blocklist mode: allows unlisted countries by default', () => {
