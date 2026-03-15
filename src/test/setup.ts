@@ -42,7 +42,5 @@ Object.defineProperty(window, 'ResizeObserver', {
 window.scrollTo = vi.fn() as any;
 
 // Mock import.meta.env
-// @ts-expect-error - stubEnv accepts string values for env vars
-vi.stubEnv('DEV', true);
 vi.stubEnv('VITE_SUPABASE_URL', 'https://test.supabase.co');
 vi.stubEnv('VITE_SUPABASE_PUBLISHABLE_KEY', 'test-key');
