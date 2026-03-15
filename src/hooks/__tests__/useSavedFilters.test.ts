@@ -147,7 +147,9 @@ describe('useSavedFilters', () => {
     let filterId: string;
     act(() => {
       filterId = result.current.saveFilter('Default', {}).id;
-      result.current.setAsDefault(filterId);
+    });
+    act(() => {
+      result.current.setAsDefault(filterId!);
     });
     
     expect(result.current.getDefaultFilter()?.name).toBe('Default');
