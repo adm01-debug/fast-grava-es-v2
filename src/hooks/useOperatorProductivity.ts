@@ -193,7 +193,8 @@ export function useOperatorProductivity(period: ProductivityPeriod = 'all') {
           const startTime = new Date(job.actual_start_time).getTime();
           const endTime = new Date(job.actual_end_time).getTime();
           const durationMinutes = (endTime - startTime) / (1000 * 60);
-          if (durationMinutes > 0 && durationMinutes < 1440) { // Ignore invalid durations (> 24h)
+          // Allow durations up to 72h for multi-shift jobs; only reject negative or unreasonably long
+          if (durationMinutes > 0 && durationMinutes < 4320) {
             totalProductionTimeMinutes += durationMinutes;
             jobsWithActualTime++;
           }
