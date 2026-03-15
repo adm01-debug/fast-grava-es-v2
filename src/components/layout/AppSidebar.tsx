@@ -402,7 +402,7 @@ export function AppSidebar() {
   // Filter nav groups based on role
   const filteredNavGroups = useMemo(() => {
     const operatorAllowedPaths = ['/operator', '/alerts', '/assistant', '/scanner', '/knowledge', '/shift-handover'];
-    const managerAllowedPaths = ['/', '/bi', '/executive', '/calendar/daily', '/calendar/weekly', '/kpis', '/oee', '/abc', '/spc', '/tpm', '/ml-predictions', '/alerts', '/notifications', '/efficiency', '/operators', '/operators/productivity', '/machines', '/energy', '/traceability', '/assistant', '/knowledge', '/documents', '/shift-handover', '/gamification', '/settings', '/security'];
+    const managerAllowedPaths = ['/', '/bi', '/executive', '/calendar/daily', '/calendar/weekly', '/kpis', '/oee', '/abc', '/spc', '/tpm', '/ml-predictions', '/alerts', '/notifications', '/efficiency', '/operators', '/operators/productivity', '/machines', '/energy', '/traceability', '/assistant', '/knowledge', '/documents', '/shift-handover', '/gamification', '/settings', '/security', '/kanban', '/new-job'];
 
     return navGroups.map(group => ({
       ...group,
@@ -535,25 +535,27 @@ export function AppSidebar() {
           )}
         </div>
 
-        {/* New Job Button */}
-        <div className={cn('p-3', collapsed && !isMobile && 'px-2')}>
-          <Link 
-            to="/new-job"
-            onMouseEnter={handleNewJobPrefetch}
-            onFocus={handleNewJobPrefetch}
-          >
-            <Button 
-              className={cn(
-                'w-full gap-2 gradient-primary hover:opacity-90 transition-opacity glow-primary',
-                'focus:ring-2 focus:ring-primary focus:ring-offset-2',
-                collapsed && !isMobile && 'px-0'
-              )}
+        {/* New Job Button - hidden from operators */}
+        {role !== 'operator' && (
+          <div className={cn('p-3', collapsed && !isMobile && 'px-2')}>
+            <Link 
+              to="/new-job"
+              onMouseEnter={handleNewJobPrefetch}
+              onFocus={handleNewJobPrefetch}
             >
-              <Plus className="h-4 w-4" />
-              {(!collapsed || isMobile) && <span>Novo Agendamento</span>}
-            </Button>
-          </Link>
-        </div>
+              <Button 
+                className={cn(
+                  'w-full gap-2 gradient-primary hover:opacity-90 transition-opacity glow-primary',
+                  'focus:ring-2 focus:ring-primary focus:ring-offset-2',
+                  collapsed && !isMobile && 'px-0'
+                )}
+              >
+                <Plus className="h-4 w-4" />
+                {(!collapsed || isMobile) && <span>Novo Agendamento</span>}
+              </Button>
+            </Link>
+          </div>
+        )}
 
         {/* Main Navigation with Collapsible Groups */}
         <nav className="flex-1 overflow-y-auto scrollbar-thin p-2 space-y-1" id="main-navigation">
