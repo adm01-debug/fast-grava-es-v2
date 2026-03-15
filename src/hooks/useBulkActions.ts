@@ -2,6 +2,9 @@ import { useState, useCallback } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import type { Database } from '@/integrations/supabase/types';
+
+type TableName = keyof Database['public']['Tables'];
 
 export interface BulkActionProgress {
   total: number;
@@ -10,7 +13,7 @@ export interface BulkActionProgress {
   percentage: number;
 }
 
-export function useBulkActions<T extends { id: string }>(tableName: string) {
+export function useBulkActions<T extends { id: string }>(tableName: TableName) {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [progress, setProgress] = useState<BulkActionProgress | null>(null);
   const queryClient = useQueryClient();
@@ -45,12 +48,11 @@ export function useBulkActions<T extends { id: string }>(tableName: string) {
       let completed = 0;
       let failed = 0;
 
-      // Process in batches of 50
       const batchSize = 50;
       for (let i = 0; i < ids.length; i += batchSize) {
         const batch = ids.slice(i, i + batchSize);
-        const { error } = await supabase
-          .from(tableName)
+        const { error } = await (supabase
+          .from(tableName) as any)
           .update(updates)
           .in('id', batch);
 
@@ -92,8 +94,8 @@ export function useBulkActions<T extends { id: string }>(tableName: string) {
       const batchSize = 50;
       for (let i = 0; i < ids.length; i += batchSize) {
         const batch = ids.slice(i, i + batchSize);
-        const { error } = await supabase
-          .from(tableName)
+        const { error } = await (supabase
+          .from(tableName) as any)
           .delete()
           .in('id', batch);
 

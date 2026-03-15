@@ -50,7 +50,7 @@ export function usePaginatedJobs(initialOptions?: Partial<PaginationOptions>) {
       // Apply search
       if (search.trim()) {
         query = query.or(
-          `client.ilike.%${search}%,product.ilike.%${search}%,order_number.ilike.%${search}%,notes.ilike.%${search}%`
+          `client.ilike.%${search}%,product.ilike.%${search}%,order_number.ilike.%${search}%`
         );
       }
 
@@ -58,16 +58,16 @@ export function usePaginatedJobs(initialOptions?: Partial<PaginationOptions>) {
       Object.entries(filters).forEach(([key, value]) => {
         if (value && value.length > 0) {
           if (Array.isArray(value)) {
-            query = query.in(key, value);
+            query = query.in(key as any, value);
           } else {
-            query = query.eq(key, value);
+            query = query.eq(key as any, value);
           }
         }
       });
 
       // Apply sorting and pagination
       query = query
-        .order(sortBy, { ascending: sortOrder === 'asc' })
+        .order(sortBy as any, { ascending: sortOrder === 'asc' })
         .range(from, to);
 
       const { data: jobs, error, count } = await query;
@@ -85,7 +85,7 @@ export function usePaginatedJobs(initialOptions?: Partial<PaginationOptions>) {
         pageSize,
         hasNextPage: page < totalPages,
         hasPreviousPage: page > 1,
-      } as PaginatedResult<typeof jobs[0]>;
+      };
     },
   });
 

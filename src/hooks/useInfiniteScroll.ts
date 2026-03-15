@@ -1,9 +1,12 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import type { Database } from '@/integrations/supabase/types';
+
+type TableName = keyof Database['public']['Tables'];
 
 interface InfiniteScrollOptions {
-  tableName: string;
+  tableName: TableName;
   pageSize?: number;
   sortBy?: string;
   sortOrder?: 'asc' | 'desc';
@@ -30,7 +33,7 @@ export function useInfiniteScroll<T = Record<string, unknown>>({
       const from = (pageParam as number) * pageSize;
       const to = from + pageSize - 1;
 
-      let q = supabase.from(tableName).select(select);
+      let q = (supabase.from(tableName) as any).select(select);
 
       if (filters) {
         Object.entries(filters).forEach(([key, value]) => {
@@ -60,7 +63,6 @@ export function useInfiniteScroll<T = Record<string, unknown>>({
 
   const allItems = query.data?.pages.flat() ?? [];
 
-  // Set up intersection observer
   useEffect(() => {
     if (!sentinelRef) return;
 

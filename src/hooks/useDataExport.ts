@@ -1,7 +1,9 @@
 import { useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import type { Database } from '@/integrations/supabase/types';
 
+type TableName = keyof Database['public']['Tables'];
 export type ExportFormat = 'csv' | 'json';
 
 export interface ExportOptions {
@@ -23,7 +25,6 @@ function convertToCSV(data: Record<string, unknown>[], columns?: string[]): stri
       const value = row[key];
       if (value === null || value === undefined) return '';
       const str = String(value);
-      // Escape CSV values
       if (str.includes(',') || str.includes('"') || str.includes('\n')) {
         return `"${str.replace(/"/g, '""')}"`;
       }
@@ -46,7 +47,7 @@ function downloadFile(content: string, fileName: string, mimeType: string) {
   URL.revokeObjectURL(url);
 }
 
-export function useDataExport(tableName: string) {
+export function useDataExport(tableName: TableName) {
   const [isExporting, setIsExporting] = useState(false);
 
   const exportData = useCallback(async (options: ExportOptions = {}) => {
@@ -63,9 +64,8 @@ export function useDataExport(tableName: string) {
 
     try {
       const selectColumns = columns ? columns.join(',') : '*';
-      let query = supabase.from(tableName).select(selectColumns);
+      let query = (supabase.from(tableName) as any).select(selectColumns);
 
-      // Apply filters
       if (filters) {
         Object.entries(filters).forEach(([key, value]) => {
           if (value && value.length > 0) {

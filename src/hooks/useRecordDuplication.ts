@@ -2,6 +2,9 @@ import { useCallback } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import type { Database } from '@/integrations/supabase/types';
+
+type TableName = keyof Database['public']['Tables'];
 
 interface DuplicationOptions {
   excludeFields?: string[];
@@ -10,7 +13,7 @@ interface DuplicationOptions {
 
 const DEFAULT_EXCLUDE = ['id', 'created_at', 'updated_at'];
 
-export function useRecordDuplication(tableName: string) {
+export function useRecordDuplication(tableName: TableName) {
   const queryClient = useQueryClient();
 
   const duplicateMutation = useMutation({
@@ -30,13 +33,12 @@ export function useRecordDuplication(tableName: string) {
         }
       });
 
-      // Apply overrides
       if (options.overrides) {
         Object.assign(duplicate, options.overrides);
       }
 
-      const { data, error } = await supabase
-        .from(tableName)
+      const { data, error } = await (supabase
+        .from(tableName) as any)
         .insert(duplicate)
         .select()
         .single();
@@ -77,15 +79,15 @@ export function useRecordDuplication(tableName: string) {
         return dup;
       });
 
-      const { data, error } = await supabase
-        .from(tableName)
+      const { data, error } = await (supabase
+        .from(tableName) as any)
         .insert(duplicates)
         .select();
 
       if (error) throw error;
       return data;
     },
-    onSuccess: (data) => {
+    onSuccess: (data: unknown[]) => {
       queryClient.invalidateQueries({ queryKey: [tableName] });
       queryClient.invalidateQueries({ queryKey: ['jobs'] });
       toast.success(`${data?.length ?? 0} registros duplicados`);

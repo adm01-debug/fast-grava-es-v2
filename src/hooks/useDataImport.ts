@@ -2,6 +2,9 @@ import { useState, useCallback } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import type { Database } from '@/integrations/supabase/types';
+
+type TableName = keyof Database['public']['Tables'];
 
 export interface ImportColumn {
   header: string;
@@ -36,7 +39,7 @@ function parseCSV(text: string): { headers: string[]; rows: string[][] } {
   return { headers, rows };
 }
 
-export function useDataImport(tableName: string) {
+export function useDataImport(tableName: TableName) {
   const [preview, setPreview] = useState<ImportPreview | null>(null);
   const [file, setFile] = useState<File | null>(null);
   const queryClient = useQueryClient();
@@ -54,7 +57,7 @@ export function useDataImport(tableName: string) {
 
     const previewData: ImportPreview = {
       headers,
-      rows: rows.slice(0, 10), // Preview first 10 rows
+      rows: rows.slice(0, 10),
       totalRows: rows.length,
       columns,
     };
@@ -86,7 +89,6 @@ export function useDataImport(tableName: string) {
       let failed = 0;
       const errors: Array<{ row: number; error: string }> = [];
 
-      // Process in batches of 100
       const batchSize = 100;
       for (let i = 0; i < rows.length; i += batchSize) {
         const batchRows = rows.slice(i, i + batchSize);
@@ -100,7 +102,7 @@ export function useDataImport(tableName: string) {
           return record;
         });
 
-        const { error } = await supabase.from(tableName).insert(records);
+        const { error } = await (supabase.from(tableName) as any).insert(records);
         if (error) {
           failed += batchRows.length;
           errors.push({ row: i, error: error.message });
@@ -109,12 +111,7 @@ export function useDataImport(tableName: string) {
         }
       }
 
-      return {
-        totalRows: rows.length,
-        imported,
-        failed,
-        errors,
-      };
+      return { totalRows: rows.length, imported, failed, errors };
     },
     onSuccess: (result) => {
       queryClient.invalidateQueries({ queryKey: [tableName] });
