@@ -85,11 +85,7 @@ export interface KPIData {
 }
 
 export function useKPIs(): { data: KPIData | null; isLoading: boolean } {
-  const { data: jobs, isLoading: jobsLoading } = useJobs();
-  const { data: techniques, isLoading: techniquesLoading } = useTechniques();
-  const { data: machines, isLoading: machinesLoading } = useMachines();
-
-  const isLoading = jobsLoading || techniquesLoading || machinesLoading;
+  const { jobs, techniques, machines, isLoading } = useSchedulingData();
 
   const data = useMemo(() => {
     if (!jobs || !techniques || !machines) return null;
