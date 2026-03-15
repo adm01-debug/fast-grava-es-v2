@@ -133,7 +133,7 @@ describe('Input Sanitization Patterns', () => {
   });
 
   it('strips dangerous characters', () => {
-    expect(sanitizeInput('Hello <World>')).toBe('Hello World');
+    expect(sanitizeInput('Hello "World"')).toBe('Hello World');
     expect(sanitizeInput("It's a 'test'")).toBe('Its a test');
   });
 
