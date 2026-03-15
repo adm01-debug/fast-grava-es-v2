@@ -402,7 +402,7 @@ export function AppSidebar() {
   // Filter nav groups based on role
   const filteredNavGroups = useMemo(() => {
     const operatorAllowedPaths = ['/operator', '/alerts', '/assistant', '/scanner', '/knowledge', '/shift-handover'];
-    const managerAllowedPaths = ['/', '/bi', '/calendar/daily', '/calendar/weekly', '/kpis', '/oee', '/abc', '/tpm', '/ml-predictions', '/alerts', '/notifications', '/efficiency', '/assistant', '/knowledge', '/shift-handover'];
+    const managerAllowedPaths = ['/', '/bi', '/executive', '/calendar/daily', '/calendar/weekly', '/kpis', '/oee', '/abc', '/spc', '/tpm', '/ml-predictions', '/alerts', '/notifications', '/efficiency', '/operators', '/operators/productivity', '/machines', '/energy', '/traceability', '/assistant', '/knowledge', '/documents', '/shift-handover', '/gamification', '/settings', '/security'];
 
     return navGroups.map(group => ({
       ...group,
