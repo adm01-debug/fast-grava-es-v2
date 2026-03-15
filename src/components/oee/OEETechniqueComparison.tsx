@@ -58,7 +58,7 @@ export function OEETechniqueComparison({ techniques, worldClassBenchmark }: OEET
                   border: '1px solid hsl(var(--border))',
                   borderRadius: '8px'
                 }}
-                formatter={(value: number, name: string, props: any) => {
+                formatter={(value: number) => {
                   return [`${value.toFixed(1)}%`, 'OEE'];
                 }}
                 labelFormatter={(label, payload) => {

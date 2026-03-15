@@ -96,7 +96,7 @@ export function useTPMData() {
           if (import.meta.env.DEV) console.error('[useTPM:schedules]', appError);
           throw error;
         }
-        return data.map((s: any) => ({
+        return data.map((s: Record<string, unknown>) => ({
           ...s,
           machine: s.machines,
           maintenance_type: s.maintenance_types,
@@ -125,7 +125,7 @@ export function useTPMData() {
           if (import.meta.env.DEV) console.error('[useTPM:checklists]', appError);
           throw error;
         }
-        return data.map((c: any) => ({
+        return data.map((c: Record<string, unknown>) => ({
           ...c,
           items: c.maintenance_checklist_items || [],
         })) as MaintenanceChecklist[];
@@ -153,7 +153,7 @@ export function useTPMData() {
           if (import.meta.env.DEV) console.error('[useTPM:records]', appError);
           throw error;
         }
-        return data.map((r: any) => ({
+        return data.map((r: Record<string, unknown>) => ({
           ...r,
           machine: r.machines,
         })) as MaintenanceRecord[];
@@ -181,7 +181,7 @@ export function useTPMData() {
           if (import.meta.env.DEV) console.error('[useTPM:alerts]', appError);
           throw error;
         }
-        return data.map((a: any) => ({
+        return data.map((a: Record<string, unknown>) => ({
           ...a,
           machine: a.machines,
         })) as MaintenanceAlert[];

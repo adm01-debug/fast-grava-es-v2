@@ -93,7 +93,7 @@ const Bitrix24ConfigPage = () => {
   });
   const { toast } = useToast();
 
-  const callBitrixSync = async (action: string, body?: any): Promise<any> => {
+  const callBitrixSync = async (action: string, body?: Record<string, unknown>): Promise<Record<string, unknown> & { customFields?: Record<string, FieldInfo>; totalCustomFields?: number; mappings?: MappingRecord[] }> => {
     const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
     const url = `https://${projectId}.supabase.co/functions/v1/bitrix24-sync?action=${action}`;
 

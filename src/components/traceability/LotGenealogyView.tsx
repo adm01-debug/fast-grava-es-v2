@@ -8,7 +8,11 @@ import {
 } from '@/components/ui/dialog';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ProductionLot, useLotGenealogy } from '@/hooks/useTraceability';
+import { ProductionLot, LotComponent, useLotGenealogy } from '@/hooks/useTraceability';
+
+interface GenealogyChildItem extends LotComponent {
+  lot?: ProductionLot;
+}
 import { format } from 'date-fns';
 
 interface LotGenealogyViewProps {
@@ -20,7 +24,7 @@ interface LotGenealogyViewProps {
 export default function LotGenealogyView({ lot, open, onClose }: LotGenealogyViewProps) {
   const { data: genealogy, isLoading } = useLotGenealogy(lot.id);
 
-  const parents = genealogy?.parents?.filter((p: any) => p.component_lot) || [];
+  const parents = genealogy?.parents?.filter((p: LotComponent) => p.component_lot) || [];
   const children = genealogy?.children || [];
 
   return (
@@ -48,7 +52,7 @@ export default function LotGenealogyView({ lot, open, onClose }: LotGenealogyVie
               </h3>
               {parents.length > 0 ? (
                 <div className="grid gap-3">
-                  {parents.map((item: any) => (
+                  {parents.map((item: LotComponent) => (
                     <Card key={item.id} className="border-l-4 border-l-blue-500">
                       <CardContent className="py-3">
                         <div className="flex items-center justify-between">
@@ -109,7 +113,7 @@ export default function LotGenealogyView({ lot, open, onClose }: LotGenealogyVie
               </h3>
               {children.length > 0 ? (
                 <div className="grid gap-3">
-                  {children.map((item: any) => (
+                  {children.map((item: GenealogyChildItem) => (
                     <Card key={item.id} className="border-l-4 border-l-green-500">
                       <CardContent className="py-3">
                         <div className="flex items-center justify-between">
