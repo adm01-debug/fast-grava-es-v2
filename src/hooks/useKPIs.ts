@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
-import { useJobs, useTechniques, useMachines, DbJob, DbMachine, DbTechnique } from './useJobs';
+import { useSchedulingData } from './useSchedulingData';
+import { DbJob, DbMachine, DbTechnique } from './useJobs';
 
 // Data validation helpers
 function isValidJob(job: DbJob): boolean {
