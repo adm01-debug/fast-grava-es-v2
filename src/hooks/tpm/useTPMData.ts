@@ -96,7 +96,7 @@ export function useTPMData() {
           if (import.meta.env.DEV) console.error('[useTPM:schedules]', appError);
           throw error;
         }
-        return data.map((s: any) => ({
+        return data.map((s: Record<string, unknown>) => ({
           ...s,
           machine: s.machines,
           maintenance_type: s.maintenance_types,
