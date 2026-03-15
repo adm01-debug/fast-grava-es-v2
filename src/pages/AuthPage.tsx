@@ -122,17 +122,14 @@ export default function AuthPage() {
     navigate('/');
   };
 
-  const handleSocialLogin = async (provider: 'google' | 'github') => {
-    setSocialLoading(provider);
+  const handleGoogleLogin = async () => {
+    setSocialLoading('google');
     try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider,
-        options: {
-          redirectTo: `${window.location.origin}/`,
-        },
+      const result = await lovable.auth.signInWithOAuth('google', {
+        redirect_uri: window.location.origin,
       });
-      if (error) {
-        toast.error(`Erro ao conectar com ${provider === 'google' ? 'Google' : 'GitHub'}`);
+      if (result.error) {
+        toast.error('Erro ao conectar com Google');
       }
     } catch {
       toast.error('Erro ao iniciar login social');
