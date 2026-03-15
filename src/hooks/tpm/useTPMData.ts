@@ -153,7 +153,7 @@ export function useTPMData() {
           if (import.meta.env.DEV) console.error('[useTPM:records]', appError);
           throw error;
         }
-        return data.map((r: any) => ({
+        return data.map((r: Record<string, unknown>) => ({
           ...r,
           machine: r.machines,
         })) as MaintenanceRecord[];
