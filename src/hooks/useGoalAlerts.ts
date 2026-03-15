@@ -77,7 +77,7 @@ export function useGoalAlerts(config: Partial<GoalAlertConfig> = {}) {
       if (progress.progress_percentage < settings.criticalThreshold && daysRemaining <= 7) {
         riskLevel = 'critical';
         message = `Meta crítica! ${operator.operatorName} está em ${progress.progress_percentage.toFixed(0)}% com apenas ${daysRemaining} dia(s) restante(s)`;
-      } else if (progress.progress_percentage < settings.warningThreshold && daysRemaining <= 14) {
+      } else if (progress.progress_percentage <= settings.warningThreshold && daysRemaining <= 14) {
         riskLevel = 'warning';
         message = `Atenção: ${operator.operatorName} precisa acelerar para atingir a meta de ${GOAL_TYPE_LABELS[goal.goal_type as GoalType]}`;
       } else if (progress.progress_percentage < 50) {
