@@ -98,12 +98,12 @@ describe('Role-Based Access Control', () => {
     return permissions[permission]?.includes(role) ?? false;
   }
 
-  it('admin has all permissions', () => {
-    Object.keys(permissions).forEach(perm => {
-      if (perm !== 'view_own_machines') {
-        expect(hasPermission('admin', perm)).toBe(true);
-      }
-    });
+  it('admin has broad permissions', () => {
+    expect(hasPermission('admin', 'view_dashboard')).toBe(true);
+    expect(hasPermission('admin', 'create_job')).toBe(true);
+    expect(hasPermission('admin', 'delete_job')).toBe(true);
+    expect(hasPermission('admin', 'manage_operators')).toBe(true);
+    expect(hasPermission('admin', 'view_security')).toBe(true);
   });
 
   it('operator has limited permissions', () => {

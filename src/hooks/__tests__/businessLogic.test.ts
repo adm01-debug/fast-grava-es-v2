@@ -421,7 +421,6 @@ describe('Smart Sequencing Setup Savings', () => {
   it('calculates savings from grouping', () => {
     const current = ['red', 'blue', 'red', 'blue'];
     const optimized = ['red', 'red', 'blue', 'blue'];
-    expect(calculateSavings(current, optimized, 15)).toBe(15); // 3-1=2 less changes * 15 = ... wait
     // current: 3 changes, optimized: 1 change, savings: 2 * 15 = 30
     expect(calculateSavings(current, optimized, 15)).toBe(30);
   });
