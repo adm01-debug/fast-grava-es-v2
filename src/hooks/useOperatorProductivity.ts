@@ -193,7 +193,8 @@ export function useOperatorProductivity(period: ProductivityPeriod = 'all') {
           const startTime = new Date(job.actual_start_time).getTime();
           const endTime = new Date(job.actual_end_time).getTime();
           const durationMinutes = (endTime - startTime) / (1000 * 60);
-          if (durationMinutes > 0 && durationMinutes < 1440) { // Ignore invalid durations (> 24h)
+          // Allow durations up to 72h for multi-shift jobs; only reject negative or unreasonably long
+          if (durationMinutes > 0 && durationMinutes < 4320) {
             totalProductionTimeMinutes += durationMinutes;
             jobsWithActualTime++;
           }
@@ -210,10 +211,15 @@ export function useOperatorProductivity(period: ProductivityPeriod = 'all') {
         : 1;
 
       // Calculate efficiency score (0-100)
-      // Based on: loss rate (lower is better), time efficiency (closer to estimate is better)
+      // Based on: loss rate (lower is better), time efficiency (asymmetric: reward speed, penalize slowness)
       const lossScore = Math.max(0, 100 - lossRate * 5); // -5 points per 1% loss
-      const timeScore = estimatedVsActualRatio > 0 
-        ? Math.max(0, Math.min(100, 100 - Math.abs(1 - estimatedVsActualRatio) * 50))
+      // Asymmetric time score: faster than estimated gets bonus, slower gets full penalty
+      const timeDeviation = 1 - estimatedVsActualRatio; // positive = faster, negative = slower
+      const timeScore = estimatedVsActualRatio > 0
+        ? Math.max(0, Math.min(100, timeDeviation > 0
+            ? 100 - timeDeviation * 25  // Gentle penalty for being faster (only -25 per 100% faster)
+            : 100 + timeDeviation * 50   // Full penalty for being slower (-50 per 100% slower)
+          ))
         : 100;
       const efficiencyScore = (lossScore * 0.6 + timeScore * 0.4); // 60% weight on quality, 40% on time
 

@@ -110,13 +110,14 @@ export function useKPIs(): { data: KPIData | null; isLoading: boolean } {
     const inProgressJobs = validJobs.filter(j => j.status === 'production').length;
     const delayedJobs = validJobs.filter(j => j.status === 'delayed').length;
 
-    // Pieces stats with sanitization
+    // Pieces stats with sanitization — include in-production jobs for real-time visibility
     const totalPieces = validJobs.reduce((sum, j) => sum + sanitizeNumber(j.quantity), 0);
+    const productionStatuses = ['finished', 'production'];
     const completedPieces = validJobs
-      .filter(j => j.status === 'finished')
-      .reduce((sum, j) => sum + sanitizeNumber(j.quantity), 0);
+      .filter(j => productionStatuses.includes(j.status))
+      .reduce((sum, j) => sum + sanitizeNumber(j.produced_quantity ?? j.quantity), 0);
     const lostPieces = validJobs
-      .filter(j => j.status === 'finished')
+      .filter(j => productionStatuses.includes(j.status))
       .reduce((sum, j) => sum + sanitizeNumber(j.lost_pieces), 0);
     const totalAttempted = completedPieces + lostPieces;
     const lossRate = totalAttempted > 0 ? (lostPieces / totalAttempted) * 100 : 0;

@@ -229,10 +229,21 @@ export function calculateGoalProgress(
   let is_achieved: boolean;
 
   if (goal.goal_type === 'loss_rate') {
-    // For loss rate, lower is better
-    progress_percentage = goal.target_value > 0 
-      ? Math.max(0, Math.min(100, ((goal.target_value - currentValue) / goal.target_value) * 100 + 100))
-      : currentValue === 0 ? 100 : 0;
+    // For loss rate, lower is better — granular progress that distinguishes performance levels
+    // Formula: if currentValue <= target → scale from 100% (at 0 loss) to target-match level
+    // if currentValue > target → scale down proportionally
+    if (goal.target_value > 0) {
+      if (currentValue <= goal.target_value) {
+        // Met the goal: show granular progress (0% loss = 100%, at target = 75% baseline)
+        const bonusRange = 25; // 25% extra for being better than target
+        progress_percentage = 75 + bonusRange * (1 - currentValue / goal.target_value);
+      } else {
+        // Above target: scale down from 75% to 0%
+        progress_percentage = Math.max(0, 75 * (1 - (currentValue - goal.target_value) / goal.target_value));
+      }
+    } else {
+      progress_percentage = currentValue === 0 ? 100 : 0;
+    }
     is_achieved = currentValue <= goal.target_value;
   } else {
     // For other metrics, higher is better
