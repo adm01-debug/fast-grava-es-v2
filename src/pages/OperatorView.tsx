@@ -40,7 +40,7 @@ export default function OperatorView() {
   const [productionJob, setProductionJob] = useState<DbJob | null>(null);
   const [isProductionModalOpen, setIsProductionModalOpen] = useState(false);
 
-  const { jobs, techniques, machines, isLoading, getTechniqueById, getMachineById, refetchAll } = useSchedulingData();
+  const { jobs, techniques, machines, isLoading, getTechniqueById, getMachineById, refetchAll } = useOperatorDashboardData();
   const updateStatus = useUpdateJobStatus();
   const { isOnline, cacheData, getCachedJobs, getCachedMachines } = useOfflineSync();
 
