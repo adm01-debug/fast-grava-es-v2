@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
-import { useJobs, useTechniques, useMachines, DbJob, DbMachine, DbTechnique } from './useJobs';
+import { useSchedulingData } from './useSchedulingData';
+import { DbJob, DbMachine, DbTechnique } from './useJobs';
 
 // Data validation helpers
 function isValidJob(job: DbJob): boolean {
@@ -84,11 +85,7 @@ export interface KPIData {
 }
 
 export function useKPIs(): { data: KPIData | null; isLoading: boolean } {
-  const { data: jobs, isLoading: jobsLoading } = useJobs();
-  const { data: techniques, isLoading: techniquesLoading } = useTechniques();
-  const { data: machines, isLoading: machinesLoading } = useMachines();
-
-  const isLoading = jobsLoading || techniquesLoading || machinesLoading;
+  const { jobs, techniques, machines, isLoading } = useSchedulingData();
 
   const data = useMemo(() => {
     if (!jobs || !techniques || !machines) return null;
