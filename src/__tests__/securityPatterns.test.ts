@@ -108,8 +108,8 @@ describe('Table Access Control Patterns', () => {
 describe('Input Sanitization Patterns', () => {
   function sanitizeInput(input: string): string {
     return input
-      .replace(/<[^>]*>/g, '') // strip HTML
-      .replace(/[<>'"]/g, '') // strip special chars
+      .replace(/<[^>]*>/g, '') // strip HTML tags
+      .replace(/['"]/g, '') // strip quotes
       .trim();
   }
 
