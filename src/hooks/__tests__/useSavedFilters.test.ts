@@ -73,6 +73,8 @@ describe('useSavedFilters', () => {
     let id1: string, id2: string;
     act(() => {
       id1 = result.current.saveFilter('Filter1', {}).id;
+    });
+    act(() => {
       id2 = result.current.saveFilter('Filter2', {}).id;
     });
     
@@ -80,8 +82,10 @@ describe('useSavedFilters', () => {
       result.current.setAsDefault(id2!);
     });
     
-    expect(result.current.savedFilters.find(f => f.id === id2!)?.isDefault).toBe(true);
-    expect(result.current.savedFilters.find(f => f.id === id1!)?.isDefault).toBe(false);
+    const f2 = result.current.savedFilters.find(f => f.id === id2!);
+    const f1 = result.current.savedFilters.find(f => f.id === id1!);
+    expect(f2?.isDefault).toBe(true);
+    expect(f1?.isDefault).toBe(false);
   });
 
   it('applies a filter sets it as active', () => {
