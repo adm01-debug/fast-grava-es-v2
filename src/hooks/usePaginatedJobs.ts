@@ -43,8 +43,8 @@ export function usePaginatedJobs(initialOptions?: Partial<PaginationOptions>) {
       const from = (page - 1) * pageSize;
       const to = from + pageSize - 1;
 
-      let query = supabase
-        .from('jobs')
+      let query = (supabase
+        .from('jobs') as any)
         .select('*', { count: 'exact' });
 
       // Apply search
