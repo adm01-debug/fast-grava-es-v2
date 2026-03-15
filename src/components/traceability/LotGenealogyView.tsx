@@ -20,7 +20,7 @@ interface LotGenealogyViewProps {
 export default function LotGenealogyView({ lot, open, onClose }: LotGenealogyViewProps) {
   const { data: genealogy, isLoading } = useLotGenealogy(lot.id);
 
-  const parents = genealogy?.parents?.filter((p: any) => p.component_lot) || [];
+  const parents = genealogy?.parents?.filter((p: LotComponent) => p.component_lot) || [];
   const children = genealogy?.children || [];
 
   return (
