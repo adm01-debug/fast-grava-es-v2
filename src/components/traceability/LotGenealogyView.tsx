@@ -9,6 +9,10 @@ import {
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ProductionLot, LotComponent, useLotGenealogy } from '@/hooks/useTraceability';
+
+interface GenealogyChildItem extends LotComponent {
+  lot?: ProductionLot;
+}
 import { format } from 'date-fns';
 
 interface LotGenealogyViewProps {
