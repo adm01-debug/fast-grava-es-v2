@@ -12,7 +12,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'sonner';
-import { Loader2, LogIn, UserPlus, Printer, Moon, Sun, KeyRound, Chrome, Github } from 'lucide-react';
+import { Loader2, LogIn, UserPlus, Printer, Moon, Sun, KeyRound, Chrome } from 'lucide-react';
+import { lovable } from '@/integrations/lovable/index';
 import { z } from 'zod';
 import { useTheme } from 'next-themes';
 import { LanguageSwitcher } from '@/components/layout/LanguageSwitcher';
@@ -121,17 +122,14 @@ export default function AuthPage() {
     navigate('/');
   };
 
-  const handleSocialLogin = async (provider: 'google' | 'github') => {
-    setSocialLoading(provider);
+  const handleGoogleLogin = async () => {
+    setSocialLoading('google');
     try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider,
-        options: {
-          redirectTo: `${window.location.origin}/`,
-        },
+      const result = await lovable.auth.signInWithOAuth('google', {
+        redirect_uri: window.location.origin,
       });
-      if (error) {
-        toast.error(`Erro ao conectar com ${provider === 'google' ? 'Google' : 'GitHub'}`);
+      if (result.error) {
+        toast.error('Erro ao conectar com Google');
       }
     } catch {
       toast.error('Erro ao iniciar login social');
@@ -332,37 +330,21 @@ export default function AuthPage() {
                     className="w-full"
                   />
 
-                  {/* Social Login Buttons */}
-                  <div className="grid grid-cols-2 gap-3">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="w-full h-11 gap-2"
-                      onClick={() => handleSocialLogin('google')}
-                      disabled={isLoading || !!socialLoading}
-                    >
-                      {socialLoading === 'google' ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                      ) : (
-                        <Chrome className="h-4 w-4" />
-                      )}
-                      Google
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="w-full h-11 gap-2"
-                      onClick={() => handleSocialLogin('github')}
-                      disabled={isLoading || !!socialLoading}
-                    >
-                      {socialLoading === 'github' ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                      ) : (
-                        <Github className="h-4 w-4" />
-                      )}
-                      GitHub
-                    </Button>
-                  </div>
+                   {/* Social Login Button */}
+                   <Button
+                     type="button"
+                     variant="outline"
+                     className="w-full h-11 gap-2"
+                     onClick={handleGoogleLogin}
+                     disabled={isLoading || !!socialLoading}
+                   >
+                     {socialLoading === 'google' ? (
+                       <Loader2 className="h-4 w-4 animate-spin" />
+                     ) : (
+                       <Chrome className="h-4 w-4" />
+                     )}
+                     Entrar com Google
+                   </Button>
 
                   <Button
                     type="button"
