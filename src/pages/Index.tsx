@@ -344,8 +344,6 @@ const Index = () => {
         </Tabs>
       </div>
       
-      {/* Floating AI Assistant */}
-      <FloatingAIAssistant />
     </MainLayout>
   );
 };
