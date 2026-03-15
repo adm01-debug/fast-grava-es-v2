@@ -191,7 +191,9 @@ describe('useSavedFilters', () => {
     let filterId: string;
     act(() => {
       filterId = result.current.saveFilter('Active', {}).id;
-      result.current.applyFilter(filterId);
+    });
+    act(() => {
+      result.current.applyFilter(filterId!);
     });
     
     expect(result.current.activeFilterId).toBe(filterId!);
