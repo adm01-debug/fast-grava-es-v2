@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+import { BrowserRouter } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/contexts/AuthContext";
@@ -12,6 +13,7 @@ import { CelebrationProvider } from "@/components/ui/celebration";
 import { FeedbackProvider } from "@/components/feedback/FeedbackProvider";
 import { NetworkStatusProvider } from "@/hooks/useNetworkStatus";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
+import { NavigationListener } from "@/components/navigation/NavigationListener";
 
 // Contextos de infraestrutura
 import { BreadcrumbProvider } from "@/contexts/BreadcrumbContext";
@@ -35,46 +37,49 @@ export function AppProviders({ children }: { children: ReactNode }) {
           <TooltipProvider>
             <UserPreferencesProvider>
               <FeatureFlagsProvider>
-                <BreadcrumbProvider>
-                  <SearchProvider>
-                    <SidebarProvider>
-                      <ConfirmationProvider>
-                        <NotificationsProvider>
-                          <AuthProvider>
-                            <ReauthProvider>
-                              <PermissionsProvider>
-                                <SessionManager>
-                                  <OfflineSyncProvider>
-                                    <NetworkStatusProvider>
-                                      <WebSocketProvider>
-                                        <EfficiencyNotificationProvider>
-                                          <RealtimeNotificationsProvider>
-                                            <ProductDesignProvider
-                                              enableOnboarding={true}
-                                              enableCommandPalette={true}
-                                              enableKeyboardShortcuts={true}
-                                              enableToastWithUndo={true}
-                                            >
-                                              <CelebrationProvider>
-                                                <FeedbackProvider>
-                                                  {children}
-                                                </FeedbackProvider>
-                                              </CelebrationProvider>
-                                            </ProductDesignProvider>
-                                          </RealtimeNotificationsProvider>
-                                        </EfficiencyNotificationProvider>
-                                      </WebSocketProvider>
-                                    </NetworkStatusProvider>
-                                  </OfflineSyncProvider>
-                                </SessionManager>
-                              </PermissionsProvider>
-                            </ReauthProvider>
-                          </AuthProvider>
-                        </NotificationsProvider>
-                      </ConfirmationProvider>
-                    </SidebarProvider>
-                  </SearchProvider>
-                </BreadcrumbProvider>
+                <BrowserRouter>
+                  <NavigationListener />
+                  <BreadcrumbProvider>
+                    <SearchProvider>
+                      <SidebarProvider>
+                        <ConfirmationProvider>
+                          <NotificationsProvider>
+                            <AuthProvider>
+                              <ReauthProvider>
+                                <PermissionsProvider>
+                                  <SessionManager>
+                                    <OfflineSyncProvider>
+                                      <NetworkStatusProvider>
+                                        <WebSocketProvider>
+                                          <EfficiencyNotificationProvider>
+                                            <RealtimeNotificationsProvider>
+                                              <ProductDesignProvider
+                                                enableOnboarding={true}
+                                                enableCommandPalette={true}
+                                                enableKeyboardShortcuts={true}
+                                                enableToastWithUndo={true}
+                                              >
+                                                <CelebrationProvider>
+                                                  <FeedbackProvider>
+                                                    {children}
+                                                  </FeedbackProvider>
+                                                </CelebrationProvider>
+                                              </ProductDesignProvider>
+                                            </RealtimeNotificationsProvider>
+                                          </EfficiencyNotificationProvider>
+                                        </WebSocketProvider>
+                                      </NetworkStatusProvider>
+                                    </OfflineSyncProvider>
+                                  </SessionManager>
+                                </PermissionsProvider>
+                              </ReauthProvider>
+                            </AuthProvider>
+                          </NotificationsProvider>
+                        </ConfirmationProvider>
+                      </SidebarProvider>
+                    </SearchProvider>
+                  </BreadcrumbProvider>
+                </BrowserRouter>
               </FeatureFlagsProvider>
             </UserPreferencesProvider>
           </TooltipProvider>
