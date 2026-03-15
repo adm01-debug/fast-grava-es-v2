@@ -235,7 +235,7 @@ serve(async (req) => {
     </div>
     
     <div class="footer">
-      <p>Relatório gerado automaticamente pelo GravuraPro</p>
+      <p>Relatório gerado automaticamente pelo Fast Gravações</p>
       <p>© ${new Date().getFullYear()} - Sistema de Gestão de Produção</p>
     </div>
   </div>
