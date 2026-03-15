@@ -516,8 +516,8 @@ export function AppSidebar() {
                 <Printer className="w-5 h-5 text-primary-foreground" />
               </div>
               <div>
-                <h1 className="font-display font-bold text-sidebar-foreground text-base">Gravação</h1>
-                <p className="text-xs text-sidebar-foreground/50">Promo Brindes</p>
+                <h1 className="font-display font-bold text-sidebar-foreground text-base">Fast Gravações</h1>
+                <p className="text-xs text-sidebar-foreground/50">Sistema de Gestão</p>
               </div>
             </div>
           )}
