@@ -57,7 +57,7 @@ const NotFound = () => {
       console.error("404 Error: User attempted to access non-existent route:", location.pathname);
     }
     // Update document title
-    document.title = 'Página não encontrada | FastGrava';
+    document.title = 'Página não encontrada | Fast Gravações';
   }, [location.pathname]);
 
   const handleBack = () => {

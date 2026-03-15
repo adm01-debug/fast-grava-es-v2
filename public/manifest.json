@@ -1,6 +1,6 @@
 {
-  "name": "Fast Grava ES",
-  "short_name": "FastGrava",
+  "name": "Fast Gravações",
+  "short_name": "FastGravações",
   "description": "Sistema de Gestão de Gravação Industrial",
   "start_url": "/",
   "display": "standalone",
