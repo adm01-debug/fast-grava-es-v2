@@ -330,37 +330,21 @@ export default function AuthPage() {
                     className="w-full"
                   />
 
-                  {/* Social Login Buttons */}
-                  <div className="grid grid-cols-2 gap-3">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="w-full h-11 gap-2"
-                      onClick={() => handleSocialLogin('google')}
-                      disabled={isLoading || !!socialLoading}
-                    >
-                      {socialLoading === 'google' ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                      ) : (
-                        <Chrome className="h-4 w-4" />
-                      )}
-                      Google
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="w-full h-11 gap-2"
-                      onClick={() => handleSocialLogin('github')}
-                      disabled={isLoading || !!socialLoading}
-                    >
-                      {socialLoading === 'github' ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                      ) : (
-                        <Github className="h-4 w-4" />
-                      )}
-                      GitHub
-                    </Button>
-                  </div>
+                   {/* Social Login Button */}
+                   <Button
+                     type="button"
+                     variant="outline"
+                     className="w-full h-11 gap-2"
+                     onClick={handleGoogleLogin}
+                     disabled={isLoading || !!socialLoading}
+                   >
+                     {socialLoading === 'google' ? (
+                       <Loader2 className="h-4 w-4 animate-spin" />
+                     ) : (
+                       <Chrome className="h-4 w-4" />
+                     )}
+                     Entrar com Google
+                   </Button>
 
                   <Button
                     type="button"
