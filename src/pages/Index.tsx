@@ -16,7 +16,7 @@ import { Badge } from '@/components/ui/badge';
 import { FavoritesDropdown, FavoriteButton } from '@/components/navigation/FavoritesManager';
 import { ActivityLog, useActivityLog } from '@/components/activity/ActivityLog';
 import { OfflineBanner, ConnectionStatus } from '@/components/offline/OfflineMode';
-import { FloatingAIAssistant } from '@/components/ai/FloatingAIAssistant';
+
 import { VoiceButton } from '@/components/voice/VoiceCommands';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -344,8 +344,6 @@ const Index = () => {
         </Tabs>
       </div>
       
-      {/* Floating AI Assistant */}
-      <FloatingAIAssistant />
     </MainLayout>
   );
 };

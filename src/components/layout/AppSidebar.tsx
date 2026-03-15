@@ -402,7 +402,7 @@ export function AppSidebar() {
   // Filter nav groups based on role
   const filteredNavGroups = useMemo(() => {
     const operatorAllowedPaths = ['/operator', '/alerts', '/assistant', '/scanner', '/knowledge', '/shift-handover'];
-    const managerAllowedPaths = ['/', '/bi', '/calendar/daily', '/calendar/weekly', '/kpis', '/oee', '/abc', '/tpm', '/ml-predictions', '/alerts', '/notifications', '/efficiency', '/assistant', '/knowledge', '/shift-handover'];
+    const managerAllowedPaths = ['/', '/bi', '/executive', '/calendar/daily', '/calendar/weekly', '/kpis', '/oee', '/abc', '/spc', '/tpm', '/ml-predictions', '/alerts', '/notifications', '/efficiency', '/operators', '/operators/productivity', '/machines', '/energy', '/traceability', '/assistant', '/knowledge', '/documents', '/shift-handover', '/gamification', '/settings', '/security'];
 
     return navGroups.map(group => ({
       ...group,
@@ -516,8 +516,8 @@ export function AppSidebar() {
                 <Printer className="w-5 h-5 text-primary-foreground" />
               </div>
               <div>
-                <h1 className="font-display font-bold text-sidebar-foreground text-base">Gravação</h1>
-                <p className="text-xs text-sidebar-foreground/50">Promo Brindes</p>
+                <h1 className="font-display font-bold text-sidebar-foreground text-base">Fast Gravações</h1>
+                <p className="text-xs text-sidebar-foreground/50">Sistema de Gestão</p>
               </div>
             </div>
           )}
