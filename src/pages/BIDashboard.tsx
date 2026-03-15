@@ -192,7 +192,7 @@ export default function BIDashboard() {
     type: 'technique' | 'machine' | 'status' | null;
     id: string;
     name: string;
-    jobs: any[];
+    jobs: Array<{ id: string; order_number: string; status: string; client: string; product: string; quantity: number }>;
   } | null>(null);
   
   // Comparison mode state

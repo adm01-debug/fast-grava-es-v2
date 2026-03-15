@@ -258,7 +258,7 @@ function addSection(doc: jsPDF, title: string, yPosition: number, margin: number
 
 // Export production report
 export async function exportProductionReport(
-  jobs: any[],
+  jobs: Array<{ order_number: string; client: string; product: string; status: string; quantity: number; produced_quantity?: number | null; lost_pieces?: number | null; scheduled_date?: string | null }>,
   dateRange: DateRange,
   title = 'Relatório de Produção'
 ): Promise<void> {

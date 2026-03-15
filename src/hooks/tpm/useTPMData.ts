@@ -181,7 +181,7 @@ export function useTPMData() {
           if (import.meta.env.DEV) console.error('[useTPM:alerts]', appError);
           throw error;
         }
-        return data.map((a: any) => ({
+        return data.map((a: Record<string, unknown>) => ({
           ...a,
           machine: a.machines,
         })) as MaintenanceAlert[];

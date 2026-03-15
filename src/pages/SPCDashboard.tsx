@@ -460,7 +460,7 @@ export default function SPCDashboard() {
                         dataKey="mean"
                         stroke="hsl(var(--primary))"
                         strokeWidth={2}
-                        dot={(props: any) => {
+                        dot={(props: { cx: number; cy: number; payload: { inControl: boolean } }) => {
                           const { cx, cy, payload } = props;
                           return (
                             <circle
