@@ -15,7 +15,7 @@ export interface PDFExportOptions {
 }
 
 export async function exportExecutiveDashboardPDF(options: PDFExportOptions): Promise<void> {
-  const { title, subtitle, dateRange, kpis, companyName = 'GravuraPro' } = options;
+  const { title, subtitle, dateRange, kpis, companyName = 'Fast Gravações' } = options;
   
   const doc = new jsPDF({
     orientation: 'portrait',

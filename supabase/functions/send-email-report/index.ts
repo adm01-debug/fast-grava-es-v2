@@ -254,7 +254,7 @@ serve(async (req) => {
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-              from: 'GravuraPro <reports@resend.dev>',
+              from: 'Fast Gravações <reports@resend.dev>',
               to: [recipient],
               subject: `📊 Relatório ${reportTitle} de Produção - ${body.start_date}`,
               html: htmlContent,

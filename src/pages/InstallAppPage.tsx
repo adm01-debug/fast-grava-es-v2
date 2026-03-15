@@ -156,7 +156,7 @@ const InstallAppPage = () => {
               </CardTitle>
               <CardDescription>
                 {isInstalled 
-                  ? "O GravuraPro já está instalado no seu dispositivo"
+                  ? "O Fast Gravações já está instalado no seu dispositivo"
                   : "Adicione à sua tela inicial para acesso rápido"
                 }
               </CardDescription>

@@ -18,8 +18,8 @@ interface CachedData {
 }
 
 const STORAGE_KEYS = {
-  PENDING_ACTIONS: 'gravurapro_pending_actions',
-  CACHED_DATA: 'gravurapro_cached_data',
+  PENDING_ACTIONS: 'fastgravacoes_pending_actions',
+  CACHED_DATA: 'fastgravacoes_cached_data',
 };
 
 const MAX_RETRIES = 3;
