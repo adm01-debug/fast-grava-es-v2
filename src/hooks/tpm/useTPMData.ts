@@ -125,7 +125,7 @@ export function useTPMData() {
           if (import.meta.env.DEV) console.error('[useTPM:checklists]', appError);
           throw error;
         }
-        return data.map((c: any) => ({
+        return data.map((c: Record<string, unknown>) => ({
           ...c,
           items: c.maintenance_checklist_items || [],
         })) as MaintenanceChecklist[];
