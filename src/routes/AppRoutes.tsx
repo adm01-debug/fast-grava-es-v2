@@ -65,7 +65,7 @@ function ProtectedPage({
 }: {
   children: React.ReactNode;
   fallback: React.ReactNode;
-  allowedRoles?: string[];
+  allowedRoles?: AppRole[];
 }) {
   return (
     <ProtectedRoute allowedRoles={allowedRoles}>

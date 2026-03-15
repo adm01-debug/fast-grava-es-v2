@@ -15,7 +15,7 @@ export const NotificationsService = {
     const { data, error } = await supabase
       .from('efficiency_alert_history')
       .select('*')
-      .is('resolved_at', resolved ? 'not.null' : null)
+      .not('resolved_at', 'is', resolved ? null : 'not.null')
       .order('detected_at', { ascending: false });
     if (error) throw error;
     return data;
