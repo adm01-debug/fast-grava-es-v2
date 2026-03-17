@@ -48,7 +48,7 @@ const priorityLabels = {
 
 export function JobDetailsModal({ job, open, onOpenChange, onStatusChange }: JobDetailsModalProps) {
   const { getTechniqueById, getMachineById } = useSchedulingData();
-
+  const { duplicateJob } = useDuplicateJob();
   if (!job) return null;
 
   const technique = getTechniqueById(job.technique_id);
