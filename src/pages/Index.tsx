@@ -18,6 +18,10 @@ import { ActivityLog, useActivityLog } from '@/components/activity/ActivityLog';
 import { OfflineBanner, ConnectionStatus } from '@/components/offline/OfflineMode';
 
 import { VoiceButton } from '@/components/voice/VoiceCommands';
+import { ActivityFeedWidget } from '@/components/dashboard/ActivityFeedWidget';
+import { LiveMachineStatusPanel } from '@/components/dashboard/LiveMachineStatusPanel';
+import { AutoShiftSummary } from '@/components/shift/AutoShiftSummary';
+import { QuickChat } from '@/components/chat/QuickChat';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { 
