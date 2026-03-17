@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { ReactNode, memo, lazy, Suspense } from 'react';
 import { useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AppSidebar } from './AppSidebar';
