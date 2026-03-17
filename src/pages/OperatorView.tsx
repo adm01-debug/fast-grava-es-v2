@@ -239,6 +239,9 @@ export default function OperatorView() {
                         </div>
                       </div>
 
+                      {/* Production Timer */}
+                      <ProductionTimer job={job} />
+
                       <div className="flex gap-2 pt-2" onClick={e => e.stopPropagation()}>
                         <Button 
                           variant="outline" 
