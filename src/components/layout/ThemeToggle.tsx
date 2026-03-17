@@ -24,8 +24,8 @@ function ThemeTransitionOverlay({ isVisible, isDark }: { isVisible: boolean; isD
       `}
       style={{
         background: isDark 
-          ? 'radial-gradient(circle at center, hsl(var(--primary) / 0.15) 0%, hsl(222 47% 8% / 0.4) 100%)'
-          : 'radial-gradient(circle at center, hsl(var(--warning) / 0.2) 0%, hsl(220 20% 97% / 0.5) 100%)',
+          ? 'radial-gradient(circle at center, hsl(var(--primary) / 0.14) 0%, hsl(var(--background) / 0.72) 100%)'
+          : 'radial-gradient(circle at center, hsl(var(--muted) / 0.7) 0%, hsl(var(--background) / 0.55) 100%)',
         backdropFilter: isVisible ? 'blur(2px)' : 'blur(0px)',
       }}
     />,

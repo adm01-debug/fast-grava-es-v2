@@ -547,13 +547,13 @@
   }
 
   .dark .glass-card {
-    border-color: hsl(24 95% 55% / 0.08);
+    border-color: hsl(var(--border) / 0.65);
     box-shadow: var(--shadow-sm), inset 0 1px 0 0 hsl(0 0% 100% / 0.03);
   }
 
   .dark .glass-card:hover {
-    border-color: hsl(24 95% 55% / 0.15);
-    box-shadow: var(--shadow-md), 0 0 30px hsl(24 95% 55% / 0.05);
+    border-color: hsl(var(--border) / 0.9);
+    box-shadow: var(--shadow-md), 0 0 24px hsl(220 30% 8% / 0.18);
   }
 
   /* ===== CARD STYLES ===== */

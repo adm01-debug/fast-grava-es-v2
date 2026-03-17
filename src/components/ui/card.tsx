@@ -57,10 +57,10 @@ const cardVariants = cva(
         ],
         // New: Premium card with golden accent
         premium: [
-          "bg-gradient-to-br from-card via-card to-amber-50/20 border-amber-200/50",
-          "shadow-[0_4px_20px_-4px_hsl(45_100%_50%/0.15),inset_0_1px_0_hsl(0_0%_100%/0.8)]",
-          "dark:from-card dark:via-card dark:to-amber-900/10 dark:border-amber-500/20",
-          "dark:shadow-[0_8px_32px_-8px_hsl(45_100%_50%/0.2),inset_0_1px_0_hsl(45_100%_50%/0.1)]",
+          "bg-gradient-to-br from-card via-card to-surface-warning/35 border-border/70",
+          "shadow-[0_4px_20px_-4px_hsl(var(--warning)/0.12),inset_0_1px_0_hsl(0_0%_100%/0.8)]",
+          "dark:from-card dark:via-card dark:to-surface-warning/20 dark:border-border/80",
+          "dark:shadow-[0_8px_32px_-8px_hsl(var(--warning)/0.12),inset_0_1px_0_hsl(0_0%_100%/0.06)]",
         ],
       },
     },
