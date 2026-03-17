@@ -192,16 +192,20 @@ const NavButton = memo(forwardRef<HTMLDivElement, NavButtonProps>(function NavBu
       <Button
         variant="ghost"
         className={cn(
-          'w-full justify-start gap-3 h-11 px-3 relative transition-all duration-200',
-          'hover:bg-sidebar-muted/50 hover:text-sidebar-foreground',
-          isActive && 'bg-gradient-to-r from-primary/20 to-accent/10 text-primary font-medium border-l-2 border-primary',
+          'w-full justify-start gap-3 h-11 px-3 relative transition-all duration-200 group/nav',
+          'hover:bg-primary/8 hover:text-sidebar-foreground',
+          isActive && 'bg-primary/12 text-primary font-medium border-l-[3px] border-primary shadow-[inset_0_0_20px_hsl(var(--primary)/0.05)]',
+          !isActive && 'border-l-[3px] border-transparent',
           collapsed && !isMobile && 'justify-center px-0'
         )}
       >
-        <Icon className={cn('h-5 w-5 shrink-0', isActive && 'text-primary')} />
+        <Icon className={cn(
+          'h-5 w-5 shrink-0 transition-transform duration-200 group-hover/nav:scale-110',
+          isActive && 'text-primary'
+        )} />
         {(!collapsed || isMobile) && <span className="truncate">{item.label}</span>}
         {(!collapsed || isMobile) && item.badge && (
-          <span className="ml-auto gradient-primary text-primary-foreground text-xs font-semibold px-2 py-0.5 rounded-full">
+          <span className="ml-auto gradient-primary text-primary-foreground text-xs font-semibold px-2 py-0.5 rounded-full animate-pulse-glow">
             {item.badge}
           </span>
         )}
@@ -494,7 +498,8 @@ export function AppSidebar() {
         ref={isMobile ? focusTrapRef : undefined}
         className={cn(
           'flex flex-col h-screen bg-sidebar border-r border-sidebar-border transition-all duration-300',
-          'shadow-[2px_0_12px_-4px_hsl(220_20%_20%/0.08)] dark:shadow-none',
+          'dark:bg-gradient-to-b dark:from-[hsl(20_14%_7%)] dark:to-[hsl(20_14%_5%)]',
+          'shadow-[2px_0_12px_-4px_hsl(20_14%_12%/0.08)] dark:shadow-[2px_0_20px_-4px_hsl(0_0%_0%/0.3)]',
           // Desktop styles
           'hidden md:flex',
           collapsed ? 'w-16' : 'w-64',
@@ -514,12 +519,12 @@ export function AppSidebar() {
         )}>
           {(!collapsed || isMobile) && (
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center glow-primary">
+              <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center glow-primary shadow-lg">
                 <Printer className="w-5 h-5 text-primary-foreground" />
               </div>
               <div>
-                <h1 className="font-display font-bold text-sidebar-foreground text-base">Fast Gravações</h1>
-                <p className="text-xs text-sidebar-foreground/50">Sistema de Gestão</p>
+                <h1 className="font-display font-bold text-sidebar-foreground text-base tracking-tight">Fast Gravações</h1>
+                <p className="text-[10px] font-medium text-primary/60 uppercase tracking-widest">Sistema de Gestão</p>
               </div>
             </div>
           )}
