@@ -136,6 +136,7 @@ export function AnimatedRoutes() {
 
         {/* Resources */}
         <Route path="/machines" element={<ProtectedPage fallback={<ListPageSkeleton />} allowedRoles={['coordinator', 'manager']}><MachinesPage /></ProtectedPage>} />
+        <Route path="/machines/compare" element={<ProtectedPage fallback={<KPIPageSkeleton />} allowedRoles={['coordinator', 'manager']}><MachineComparisonPage /></ProtectedPage>} />
         <Route path="/energy" element={<ProtectedPage fallback={<KPIPageSkeleton />} allowedRoles={['coordinator', 'manager']}><EnergyDashboard /></ProtectedPage>} />
 
         {/* Quality & Traceability */}
