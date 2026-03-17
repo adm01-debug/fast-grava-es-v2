@@ -53,7 +53,7 @@ export default function MachineComparisonPage() {
         ? finished.reduce((s, j) => s + j.estimated_duration, 0) / finished.length
         : 0;
 
-      const oee = machineOEEData?.find((o: any) => o.machineId === id);
+      const oee = oeeData?.byMachine?.find(o => o.machineId === id);
 
       return {
         id,
