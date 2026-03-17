@@ -261,8 +261,8 @@
     --glass-border: 24 95% 55% / 0.12;
 
     /* ===== STATUS ===== */
-    --status-queue: 20 14% 14%;
-    --status-queue-foreground: 20 10% 60%;
+    --status-queue: 220 10% 13%;
+    --status-queue-foreground: 220 8% 60%;
     --status-ready: 160 84% 45%;
     --status-ready-foreground: 0 0% 100%;
     --status-scheduled: 24 95% 55%;
@@ -288,16 +288,16 @@
     --chart-5: 206 100% 60%;
 
     /* ===== SIDEBAR ===== */
-    --sidebar-background: 20 14% 7%;
-    --sidebar-foreground: 30 20% 90%;
+    --sidebar-background: 220 10% 6%;
+    --sidebar-foreground: 210 15% 90%;
     --sidebar-primary: 24 95% 55%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 24 95% 55% / 0.12;
     --sidebar-accent-foreground: 24 95% 65%;
-    --sidebar-border: 20 14% 14%;
+    --sidebar-border: 220 10% 13%;
     --sidebar-ring: 24 95% 55%;
-    --sidebar-muted: 20 14% 12%;
-    --sidebar: 20 14% 6%;
+    --sidebar-muted: 220 10% 11%;
+    --sidebar: 220 10% 5%;
 
     /* ===== GRADIENTS ===== */
     --gradient-primary: linear-gradient(135deg, hsl(24 95% 55%), hsl(262 83% 55%));
