@@ -1,6 +1,6 @@
-import { ReactNode } from "react";
+import { ReactNode, memo } from "react";
 import { BrowserRouter } from "react-router-dom";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ReauthProvider } from "@/contexts/ReauthContext";
@@ -29,7 +29,9 @@ import { ThemeContextProvider } from "@/contexts/ThemeContext";
 import { UserPreferencesProvider } from "@/contexts/UserPreferencesContext";
 import { WebSocketProvider } from "@/contexts/WebSocketContext";
 
-const queryClient = new QueryClient();
+import { createQueryClient } from "@/lib/queryConfig";
+
+const queryClient = createQueryClient();
 
 export function AppProviders({ children }: { children: ReactNode }) {
   return (
