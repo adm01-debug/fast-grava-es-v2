@@ -294,6 +294,8 @@ const Index = () => {
               <div className="xl:col-span-2 flex flex-col min-h-0">
                 <ScrollArea className="flex-1">
                   <div className="space-y-4 pr-2">
+                    <AutoShiftSummary />
+                    <ActivityFeedWidget />
                     <DailySummaryCard />
                     <SortableWidgetSection
                       widgets={sidebarWidgets}
