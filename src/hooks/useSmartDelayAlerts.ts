@@ -60,9 +60,8 @@ export function useSmartDelayAlerts() {
             href: '/alerts',
           });
 
-          // Auto-mark as delayed if not already
-          if (job.status !== 'delayed') {
-            await supabase
+          // Auto-mark as delayed
+          await supabase
               .from('jobs')
               .update({ status: 'delayed' })
               .eq('id', job.id);
