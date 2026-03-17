@@ -338,7 +338,23 @@ const Index = () => {
                   )}
                 </div>
               </ScrollArea>
-            </TabsContent>
+          </TabsContent>
+
+          {/* Machines Tab - Live Status */}
+          <TabsContent value="machines" className="flex-1 mt-4 min-h-0">
+            <ScrollArea className="h-full">
+              <div className="pr-2">
+                <LiveMachineStatusPanel />
+              </div>
+            </ScrollArea>
+          </TabsContent>
+
+          {/* Chat Tab */}
+          <TabsContent value="chat" className="flex-1 mt-4 min-h-0">
+            <div className="h-full">
+              <QuickChat />
+            </div>
+          </TabsContent>
           )}
 
           {/* Timeline Tab */}
