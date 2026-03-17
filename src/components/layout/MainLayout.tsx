@@ -84,18 +84,14 @@ export function MainLayout({ children }: MainLayoutProps) {
             "min-h-0"
           )}>
             {shouldAnimate ? (
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={location.pathname}
-                  variants={pageVariants}
-                  initial="initial"
-                  animate="animate"
-                  exit="exit"
-                  transition={{ duration: 0.15, ease: 'easeOut' }}
-                >
-                  {children}
-                </motion.div>
-              </AnimatePresence>
+              <motion.div
+                key={location.pathname}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.1, ease: 'easeOut' }}
+              >
+                {children}
+              </motion.div>
             ) : (
               children
             )}
