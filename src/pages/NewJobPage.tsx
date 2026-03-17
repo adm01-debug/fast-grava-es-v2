@@ -44,6 +44,8 @@ export default function NewJobPage() {
     ? getMachinesByTechnique(formData.technique_id)
     : [];
 
+  const { bestMachine, suggestions } = useMachineSuggestion(formData.technique_id || null);
+
   const handleChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     
