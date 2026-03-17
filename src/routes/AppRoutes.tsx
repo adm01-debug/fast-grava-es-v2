@@ -132,6 +132,7 @@ export function AnimatedRoutes() {
         <Route path="/operator" element={<ProtectedPage fallback={<ListPageSkeleton />}><OperatorView /></ProtectedPage>} />
         <Route path="/operators" element={<ProtectedPage fallback={<ListPageSkeleton />} allowedRoles={['coordinator', 'manager']}><OperatorsPage /></ProtectedPage>} />
         <Route path="/operator-productivity" element={<ProtectedPage fallback={<KPIPageSkeleton />} allowedRoles={['coordinator', 'manager']}><OperatorProductivityPage /></ProtectedPage>} />
+        <Route path="/operator-history" element={<ProtectedPage fallback={<ListPageSkeleton />} allowedRoles={['coordinator', 'manager']}><OperatorHistoryPage /></ProtectedPage>} />
         <Route path="/operators/productivity" element={<Navigate to="/operator-productivity" replace />} />
 
         {/* Resources */}
