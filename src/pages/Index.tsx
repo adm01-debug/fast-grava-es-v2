@@ -154,14 +154,15 @@ const Index = () => {
       
       <div className="h-full flex flex-col py-3 lg:py-4">
         {/* Compact Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4 px-1 shrink-0">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5 px-1 shrink-0">
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-display font-bold">
+            <div className="w-1 h-8 rounded-full gradient-primary" />
+            <h1 className="text-2xl font-display font-bold tracking-tight">
               <span className="gradient-text">{t('dashboard.title')}</span>
             </h1>
             <FavoriteButton path="/" name={t('dashboard.title')} />
             {isOperator && (
-              <Badge variant="secondary" className="gap-1 text-xs">
+              <Badge variant="secondary" className="gap-1 text-xs glass">
                 <User className="h-3 w-3" />
                 {profile?.full_name || t('operators.title')}
               </Badge>
@@ -172,7 +173,7 @@ const Index = () => {
             <ConnectionStatus />
             <VoiceButton className="hidden md:flex" />
             <FavoritesDropdown onNavigate={(path) => navigate(path)} />
-            <Badge variant="outline" className="hidden md:flex gap-1.5 cursor-pointer hover:bg-muted transition-colors">
+            <Badge variant="outline" className="hidden md:flex gap-1.5 cursor-pointer hover:bg-primary/8 hover:border-primary/30 transition-all duration-200">
               <Command className="h-3 w-3" />
               <span className="text-xs">⌘K</span>
             </Badge>
