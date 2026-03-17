@@ -35,33 +35,33 @@
     --pressed-overlay: 0 0% 0% / 0.08;
     --focus-ring-inset: inset 0 0 0 2px hsl(var(--ring));
 
-    /* ===== LIGHT THEME - Clean & Professional ===== */
-    --background: 220 20% 97%;
-    --foreground: 224 30% 15%;
+    /* ===== LIGHT THEME - Warm & Premium ===== */
+    --background: 30 20% 97%;
+    --foreground: 20 25% 12%;
 
     /* ===== CARDS ===== */
     --card: 0 0% 100%;
-    --card-foreground: 224 30% 15%;
-    --card-elevated: 0 0% 100%;
+    --card-foreground: 20 25% 12%;
+    --card-elevated: 30 15% 99%;
 
     /* ===== POPOVER/DIALOG ===== */
     --popover: 0 0% 100%;
-    --popover-foreground: 224 30% 15%;
+    --popover-foreground: 20 25% 12%;
 
-    /* ===== CORES PRIMÁRIAS - Indigo Profissional ===== */
-    --primary: 234 89% 63%;
+    /* ===== CORES PRIMÁRIAS - Laranja Premium ===== */
+    --primary: 24 95% 53%;
     --primary-foreground: 0 0% 100%;
-    --primary-glow: 234 89% 70%;
+    --primary-glow: 24 95% 60%;
 
     /* ===== CORES SECUNDÁRIAS ===== */
-    --secondary: 220 14% 96%;
-    --secondary-foreground: 224 30% 25%;
+    --secondary: 30 15% 95%;
+    --secondary-foreground: 20 25% 25%;
 
     /* ===== MUTED ===== */
-    --muted: 220 14% 96%;
-    --muted-foreground: 220 10% 50%;
+    --muted: 30 15% 95%;
+    --muted-foreground: 20 10% 50%;
 
-    /* ===== ACCENT - Violet suave ===== */
+    /* ===== ACCENT - Roxo/Violet ===== */
     --accent: 262 83% 96%;
     --accent-foreground: 262 83% 45%;
 
@@ -70,26 +70,26 @@
     --destructive-foreground: 0 0% 100%;
 
     /* ===== BORDAS E INPUTS ===== */
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 234 89% 63%;
+    --border: 30 15% 90%;
+    --input: 30 15% 90%;
+    --ring: 24 95% 53%;
 
     --radius: 0.75rem;
 
     /* ===== ESTADOS ===== */
     --success: 160 84% 39%;
     --success-foreground: 0 0% 100%;
-    --warning: 38 92% 50%;
-    --warning-foreground: 38 92% 15%;
+    --warning: 45 93% 47%;
+    --warning-foreground: 45 100% 15%;
     --info: 206 100% 50%;
     --info-foreground: 0 0% 100%;
 
     /* ===== SEMANTIC SURFACES ===== */
     --surface-success: 160 84% 95%;
-    --surface-warning: 38 92% 95%;
+    --surface-warning: 45 93% 95%;
     --surface-destructive: 0 72% 95%;
     --surface-info: 206 100% 95%;
-    --surface-muted: 220 14% 97%;
+    --surface-muted: 30 15% 97%;
 
     /* ===== GAMIFICAÇÃO ===== */
     --xp: 262 83% 58%;
@@ -109,70 +109,70 @@
 
     /* ===== ELEVAÇÃO ===== */
     --elevated: 0 0% 100%;
-    --elevated-hover: 220 14% 98%;
+    --elevated-hover: 30 15% 98%;
 
     /* ===== GLASS ===== */
     --glass-bg: 0 0% 100% / 0.8;
-    --glass-border: 220 13% 91% / 0.5;
+    --glass-border: 30 15% 90% / 0.5;
 
     /* ===== STATUS - Paleta Harmoniosa ===== */
-    --status-queue: 220 14% 95%;
-    --status-queue-foreground: 220 10% 45%;
+    --status-queue: 30 15% 95%;
+    --status-queue-foreground: 20 10% 45%;
     --status-ready: 160 84% 39%;
     --status-ready-foreground: 0 0% 100%;
-    --status-scheduled: 234 89% 63%;
+    --status-scheduled: 24 95% 53%;
     --status-scheduled-foreground: 0 0% 100%;
     --status-production: 262 83% 58%;
     --status-production-foreground: 0 0% 100%;
     --status-finished: 160 84% 39%;
     --status-finished-foreground: 0 0% 100%;
-    --status-paused: 38 92% 50%;
-    --status-paused-foreground: 38 92% 15%;
+    --status-paused: 45 93% 47%;
+    --status-paused-foreground: 45 100% 15%;
     --status-cancelled: 0 72% 51%;
     --status-cancelled-foreground: 0 0% 100%;
-    --status-delayed: 24 95% 53%;
+    --status-delayed: 0 72% 55%;
     --status-delayed-foreground: 0 0% 100%;
     --status-rework: 280 65% 60%;
     --status-rework-foreground: 0 0% 100%;
 
     /* ===== CHART ===== */
-    --chart-1: 234 89% 63%;
+    --chart-1: 24 95% 53%;
     --chart-2: 160 84% 39%;
     --chart-3: 262 83% 58%;
-    --chart-4: 38 92% 50%;
-    --chart-5: 24 95% 53%;
+    --chart-4: 45 93% 47%;
+    --chart-5: 206 100% 50%;
 
     /* ===== SIDEBAR ===== */
     --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 224 30% 25%;
-    --sidebar-primary: 234 89% 63%;
+    --sidebar-foreground: 20 25% 25%;
+    --sidebar-primary: 24 95% 53%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 262 83% 96%;
-    --sidebar-accent-foreground: 262 83% 45%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 234 89% 63%;
-    --sidebar-muted: 220 14% 96%;
+    --sidebar-accent: 24 95% 96%;
+    --sidebar-accent-foreground: 24 95% 40%;
+    --sidebar-border: 30 15% 90%;
+    --sidebar-ring: 24 95% 53%;
+    --sidebar-muted: 30 15% 95%;
     --sidebar: 0 0% 100%;
 
     /* ===== GRADIENTS ===== */
-    --gradient-primary: linear-gradient(135deg, hsl(234 89% 63%), hsl(262 83% 58%));
-    --gradient-secondary: linear-gradient(135deg, hsl(220 14% 98%), hsl(220 14% 96%));
+    --gradient-primary: linear-gradient(135deg, hsl(24 95% 53%), hsl(262 83% 58%));
+    --gradient-secondary: linear-gradient(135deg, hsl(30 15% 98%), hsl(30 15% 95%));
     --gradient-success: linear-gradient(135deg, hsl(160 84% 39%), hsl(160 84% 45%));
-    --gradient-xp: linear-gradient(90deg, hsl(262 83% 58%), hsl(234 89% 63%));
+    --gradient-xp: linear-gradient(90deg, hsl(262 83% 58%), hsl(24 95% 53%));
     --gradient-gold: linear-gradient(135deg, hsl(45 93% 47%), hsl(38 92% 50%));
-    --gradient-hero: linear-gradient(135deg, hsl(234 89% 63% / 0.1), hsl(262 83% 58% / 0.1));
+    --gradient-hero: linear-gradient(135deg, hsl(24 95% 53% / 0.1), hsl(262 83% 58% / 0.1));
 
-    /* ===== SHADOWS - Soft & Modern ===== */
-    --shadow-xs: 0 1px 2px 0 hsl(224 30% 15% / 0.05);
-    --shadow-sm: 0 1px 3px 0 hsl(224 30% 15% / 0.1), 0 1px 2px -1px hsl(224 30% 15% / 0.1);
-    --shadow-md: 0 4px 6px -1px hsl(224 30% 15% / 0.1), 0 2px 4px -2px hsl(224 30% 15% / 0.1);
-    --shadow-lg: 0 10px 15px -3px hsl(224 30% 15% / 0.1), 0 4px 6px -4px hsl(224 30% 15% / 0.1);
-    --shadow-xl: 0 20px 25px -5px hsl(224 30% 15% / 0.1), 0 8px 10px -6px hsl(224 30% 15% / 0.1);
-    --shadow-2xl: 0 25px 50px -12px hsl(224 30% 15% / 0.25);
-    --shadow-glow-primary: 0 0 20px hsl(234 89% 63% / 0.25);
+    /* ===== SHADOWS - Warm & Modern ===== */
+    --shadow-xs: 0 1px 2px 0 hsl(20 25% 12% / 0.05);
+    --shadow-sm: 0 1px 3px 0 hsl(20 25% 12% / 0.08), 0 1px 2px -1px hsl(20 25% 12% / 0.06);
+    --shadow-md: 0 4px 6px -1px hsl(20 25% 12% / 0.08), 0 2px 4px -2px hsl(20 25% 12% / 0.06);
+    --shadow-lg: 0 10px 15px -3px hsl(20 25% 12% / 0.08), 0 4px 6px -4px hsl(20 25% 12% / 0.06);
+    --shadow-xl: 0 20px 25px -5px hsl(20 25% 12% / 0.1), 0 8px 10px -6px hsl(20 25% 12% / 0.08);
+    --shadow-2xl: 0 25px 50px -12px hsl(20 25% 12% / 0.2);
+    --shadow-glow-primary: 0 0 20px hsl(24 95% 53% / 0.3), 0 0 40px hsl(24 95% 53% / 0.1);
     --shadow-glow-success: 0 0 20px hsl(160 84% 39% / 0.25);
     --shadow: var(--shadow-md);
-    --shadow-2xs: 0 1px 1px 0 hsl(224 30% 15% / 0.03);
+    --shadow-2xs: 0 1px 1px 0 hsl(20 25% 12% / 0.03);
 
     --spacing: 0.25rem;
   }
