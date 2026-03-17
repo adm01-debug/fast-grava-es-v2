@@ -243,30 +243,30 @@ const Index = () => {
 
         {/* Tabbed Dashboard Content - Takes remaining space */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col min-h-0">
-          <TabsList className="w-full justify-start bg-muted/50 p-1 h-auto shrink-0">
-            <TabsTrigger value="overview" className="gap-2 data-[state=active]:bg-background">
+          <TabsList className="w-full justify-start glass p-1 h-auto shrink-0 rounded-xl gap-1">
+            <TabsTrigger value="overview" className="gap-2 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all duration-200">
               <LayoutDashboard className="h-4 w-4" />
               <span className="hidden sm:inline">Visão Geral</span>
             </TabsTrigger>
             {!isOperator && (
-              <TabsTrigger value="efficiency" className="gap-2 data-[state=active]:bg-background">
+              <TabsTrigger value="efficiency" className="gap-2 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all duration-200">
                 <TrendingUp className="h-4 w-4" />
                 <span className="hidden sm:inline">Eficiência</span>
               </TabsTrigger>
             )}
-            <TabsTrigger value="timeline" className="gap-2 data-[state=active]:bg-background">
+            <TabsTrigger value="timeline" className="gap-2 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all duration-200">
               <Clock className="h-4 w-4" />
               <span className="hidden sm:inline">Timeline</span>
             </TabsTrigger>
-            <TabsTrigger value="machines" className="gap-2 data-[state=active]:bg-background">
+            <TabsTrigger value="machines" className="gap-2 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all duration-200">
               <Cpu className="h-4 w-4" />
               <span className="hidden sm:inline">Máquinas</span>
             </TabsTrigger>
-            <TabsTrigger value="chat" className="gap-2 data-[state=active]:bg-background">
+            <TabsTrigger value="chat" className="gap-2 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all duration-200">
               <MessageCircle className="h-4 w-4" />
               <span className="hidden sm:inline">Chat</span>
             </TabsTrigger>
-            <TabsTrigger value="jobs" className="gap-2 data-[state=active]:bg-background">
+            <TabsTrigger value="jobs" className="gap-2 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all duration-200">
               <Table2 className="h-4 w-4" />
               <span className="hidden sm:inline">Jobs</span>
             </TabsTrigger>
