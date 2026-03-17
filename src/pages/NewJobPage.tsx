@@ -209,6 +209,24 @@ export default function NewJobPage() {
                       ))}
                     </SelectContent>
                   </Select>
+                  {/* Machine Suggestion */}
+                  {bestMachine && !formData.machine_id && (
+                    <div className="md:col-span-2 flex items-center gap-2 p-3 rounded-lg bg-primary/10 border border-primary/20">
+                      <Lightbulb className="h-4 w-4 text-primary shrink-0" />
+                      <span className="text-sm text-foreground">
+                        Sugestão: <strong>{bestMachine.machineCode} - {bestMachine.machineName}</strong> — {bestMachine.reason}
+                      </span>
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        className="ml-auto shrink-0"
+                        onClick={() => handleChange('machine_id', bestMachine.machineId)}
+                      >
+                        Usar
+                      </Button>
+                    </div>
+                  )}
                 </div>
               </div>
 
