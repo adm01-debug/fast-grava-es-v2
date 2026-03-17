@@ -257,6 +257,14 @@ const Index = () => {
               <Clock className="h-4 w-4" />
               <span className="hidden sm:inline">Timeline</span>
             </TabsTrigger>
+            <TabsTrigger value="machines" className="gap-2 data-[state=active]:bg-background">
+              <Cpu className="h-4 w-4" />
+              <span className="hidden sm:inline">Máquinas</span>
+            </TabsTrigger>
+            <TabsTrigger value="chat" className="gap-2 data-[state=active]:bg-background">
+              <MessageCircle className="h-4 w-4" />
+              <span className="hidden sm:inline">Chat</span>
+            </TabsTrigger>
             <TabsTrigger value="jobs" className="gap-2 data-[state=active]:bg-background">
               <Table2 className="h-4 w-4" />
               <span className="hidden sm:inline">Jobs</span>
