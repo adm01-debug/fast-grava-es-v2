@@ -205,7 +205,7 @@ const Index = () => {
             </div>
           }
         >
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4 shrink-0">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5 shrink-0 stagger-children">
             <StatsCard
               title={t('dashboard.jobsQueue')}
               value={stats.todayScheduled.toString()}
