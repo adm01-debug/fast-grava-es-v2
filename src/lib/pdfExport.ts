@@ -13,6 +13,8 @@ export interface PDFExportOptions {
 }
 
 export async function exportExecutiveDashboardPDF(options: PDFExportOptions): Promise<void> {
+  const { default: jsPDF } = await import('jspdf');
+  const { default: autoTable } = await import('jspdf-autotable');
   const { title, subtitle, dateRange, kpis, companyName = 'Fast Gravações' } = options;
   
   const doc = new jsPDF({
