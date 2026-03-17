@@ -12,6 +12,8 @@ import { notifyStatusChange } from '@/hooks/useNotifications';
 import { useOfflineSync } from '@/hooks/useOfflineSync';
 import { JobDetailsModal } from '@/components/jobs/JobDetailsModal';
 import { ProductionRegistrationModal } from '@/components/operator/ProductionRegistrationModal';
+import { ProductionTimer } from '@/components/operator/ProductionTimer';
+import { PreProductionChecklist } from '@/components/operator/PreProductionChecklist';
 import { OfflineSyncIndicator } from '@/components/offline/OfflineSyncIndicator';
 import { MobilePullToRefresh } from '@/components/mobile/PullToRefresh';
 import { SwipeActions, SwipeActionPresets } from '@/components/mobile/SwipeActions';
