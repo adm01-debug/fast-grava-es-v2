@@ -15,6 +15,7 @@ import { NetworkStatusProvider } from "@/hooks/useNetworkStatus";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
 import { NavigationListener } from "@/components/navigation/NavigationListener";
 import { InAppNotificationWatcher } from "@/components/notifications/InAppNotificationWatcher";
+import { SmartAlertsWatcher } from "@/components/notifications/SmartAlertsWatcher";
 
 // Contextos de infraestrutura
 import { BreadcrumbProvider } from "@/contexts/BreadcrumbContext";
