@@ -1,4 +1,4 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -17,11 +17,13 @@ import {
   FileText,
   Hash,
   Building,
-  QrCode
+  QrCode,
+  Copy
 } from "lucide-react";
 import { useSchedulingData } from "@/hooks/useSchedulingData";
 import { DbJob } from "@/hooks/useJobs";
 import { JobQRCode } from "@/components/qrcode/JobQRCode";
+import { useDuplicateJob } from "@/hooks/useDuplicateJob";
 
 interface JobDetailsModalProps {
   job: DbJob | null;
