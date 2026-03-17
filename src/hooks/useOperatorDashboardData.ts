@@ -46,29 +46,46 @@ export function useOperatorDashboardData() {
     return schedulingData.techniques.filter(t => relevantTechniqueIds.has(t.id));
   }, [isOperator, assignedMachineIds, machines, schedulingData.techniques]);
 
-  // Recalculate stats based on filtered data
+  // Single-pass stats computation
   const stats = useMemo(() => {
     const today = new Date().toISOString().split('T')[0];
-    const todayJobs = jobs.filter(j => j.scheduled_date === today);
-
-    return {
+    const result = {
       total: jobs.length,
-      completed: jobs.filter(j => j.status === 'finished').length,
-      inProgress: jobs.filter(j => j.status === 'production').length,
-      delayed: jobs.filter(j => j.status === 'delayed').length,
-      queue: jobs.filter(j => j.status === 'queue').length,
-      ready: jobs.filter(j => j.status === 'ready').length,
-      scheduled: jobs.filter(j => j.status === 'scheduled').length,
-      paused: jobs.filter(j => j.status === 'paused').length,
-      rework: jobs.filter(j => j.status === 'rework').length,
-      todayScheduled: todayJobs.length,
-      todayCompleted: todayJobs.filter(j => j.status === 'finished').length,
-      todayInProgress: todayJobs.filter(j => j.status === 'production').length,
-      todayDelayed: todayJobs.filter(j => j.status === 'delayed').length,
-      totalPieces: jobs.reduce((sum, j) => sum + j.quantity, 0),
-      completedPieces: jobs.filter(j => j.status === 'finished').reduce((sum, j) => sum + j.quantity, 0),
-      lostPieces: jobs.reduce((sum, j) => sum + (j.lost_pieces || 0), 0),
+      completed: 0, inProgress: 0, delayed: 0, queue: 0,
+      ready: 0, scheduled: 0, paused: 0, rework: 0,
+      todayScheduled: 0, todayCompleted: 0, todayInProgress: 0, todayDelayed: 0,
+      totalPieces: 0, completedPieces: 0, lostPieces: 0,
     };
+
+    for (let i = 0; i < jobs.length; i++) {
+      const j = jobs[i];
+      const isToday = j.scheduled_date === today;
+      result.totalPieces += j.quantity;
+      result.lostPieces += j.lost_pieces || 0;
+      if (isToday) result.todayScheduled++;
+
+      switch (j.status) {
+        case 'finished':
+          result.completed++;
+          result.completedPieces += j.quantity;
+          if (isToday) result.todayCompleted++;
+          break;
+        case 'production':
+          result.inProgress++;
+          if (isToday) result.todayInProgress++;
+          break;
+        case 'delayed':
+          result.delayed++;
+          if (isToday) result.todayDelayed++;
+          break;
+        case 'queue': result.queue++; break;
+        case 'ready': result.ready++; break;
+        case 'scheduled': result.scheduled++; break;
+        case 'paused': result.paused++; break;
+        case 'rework': result.rework++; break;
+      }
+    }
+    return result;
   }, [jobs]);
 
   // Helper functions that work with filtered data for operators

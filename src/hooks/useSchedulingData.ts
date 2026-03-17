@@ -133,15 +133,28 @@ export function useSchedulingData() {
     };
   }, [queryClient]);
 
-  // Helper functions memoized
-  const getTechniqueById = useCallback((id: string): DbTechnique | undefined => {
-    return techniquesQuery.data?.find(t => t.id === id);
+  // Pre-build Maps for O(1) lookups instead of O(n) .find()
+  const techniquesMap = useMemo(() => {
+    const map = new Map<string, DbTechnique>();
+    techniquesQuery.data?.forEach(t => map.set(t.id, t));
+    return map;
   }, [techniquesQuery.data]);
+
+  const machinesMap = useMemo(() => {
+    const map = new Map<string, DbMachine>();
+    machinesQuery.data?.forEach(m => map.set(m.id, m));
+    return map;
+  }, [machinesQuery.data]);
+
+  // Helper functions using O(1) Map lookups
+  const getTechniqueById = useCallback((id: string): DbTechnique | undefined => {
+    return techniquesMap.get(id);
+  }, [techniquesMap]);
 
   const getMachineById = useCallback((id: string | null): DbMachine | undefined => {
     if (!id) return undefined;
-    return machinesQuery.data?.find(m => m.id === id);
-  }, [machinesQuery.data]);
+    return machinesMap.get(id);
+  }, [machinesMap]);
 
   const getMachinesByTechnique = useCallback((techniqueId: string): DbMachine[] => {
     return machinesQuery.data?.filter(m => m.technique_id === techniqueId) || [];
@@ -159,30 +172,51 @@ export function useSchedulingData() {
     return jobsQuery.data?.filter(j => j.technique_id === techniqueId) || [];
   }, [jobsQuery.data]);
 
-  // Derived stats
+  // Single-pass stats computation (replaces 9+ separate .filter() calls)
   const stats = useMemo(() => {
     const jobs = jobsQuery.data || [];
     const today = new Date().toISOString().split('T')[0];
-    const todayJobs = jobs.filter(j => j.scheduled_date === today);
-
-    return {
+    
+    const result = {
       total: jobs.length,
-      completed: jobs.filter(j => j.status === 'finished').length,
-      inProgress: jobs.filter(j => j.status === 'production').length,
-      delayed: jobs.filter(j => j.status === 'delayed').length,
-      queue: jobs.filter(j => j.status === 'queue').length,
-      ready: jobs.filter(j => j.status === 'ready').length,
-      scheduled: jobs.filter(j => j.status === 'scheduled').length,
-      paused: jobs.filter(j => j.status === 'paused').length,
-      rework: jobs.filter(j => j.status === 'rework').length,
-      todayScheduled: todayJobs.length,
-      todayCompleted: todayJobs.filter(j => j.status === 'finished').length,
-      todayInProgress: todayJobs.filter(j => j.status === 'production').length,
-      todayDelayed: todayJobs.filter(j => j.status === 'delayed').length,
-      totalPieces: jobs.reduce((sum, j) => sum + j.quantity, 0),
-      completedPieces: jobs.filter(j => j.status === 'finished').reduce((sum, j) => sum + j.quantity, 0),
-      lostPieces: jobs.reduce((sum, j) => sum + (j.lost_pieces || 0), 0),
+      completed: 0, inProgress: 0, delayed: 0, queue: 0,
+      ready: 0, scheduled: 0, paused: 0, rework: 0,
+      todayScheduled: 0, todayCompleted: 0, todayInProgress: 0, todayDelayed: 0,
+      totalPieces: 0, completedPieces: 0, lostPieces: 0,
     };
+
+    for (let i = 0; i < jobs.length; i++) {
+      const j = jobs[i];
+      const isToday = j.scheduled_date === today;
+      
+      result.totalPieces += j.quantity;
+      result.lostPieces += j.lost_pieces || 0;
+
+      if (isToday) result.todayScheduled++;
+
+      switch (j.status) {
+        case 'finished':
+          result.completed++;
+          result.completedPieces += j.quantity;
+          if (isToday) result.todayCompleted++;
+          break;
+        case 'production':
+          result.inProgress++;
+          if (isToday) result.todayInProgress++;
+          break;
+        case 'delayed':
+          result.delayed++;
+          if (isToday) result.todayDelayed++;
+          break;
+        case 'queue': result.queue++; break;
+        case 'ready': result.ready++; break;
+        case 'scheduled': result.scheduled++; break;
+        case 'paused': result.paused++; break;
+        case 'rework': result.rework++; break;
+      }
+    }
+
+    return result;
   }, [jobsQuery.data]);
 
   return {
