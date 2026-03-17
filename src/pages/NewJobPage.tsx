@@ -7,7 +7,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { CalendarIcon, Plus, ArrowLeft } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { CalendarIcon, Plus, ArrowLeft, Lightbulb } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSchedulingData } from '@/hooks/useSchedulingData';
