@@ -34,7 +34,10 @@ import {
   LayoutDashboard,
   TrendingUp,
   Table2,
-  Clock
+  Clock,
+  Cpu,
+  MessageCircle,
+  FileText
 } from 'lucide-react';
 
 // Type definitions for widget components
