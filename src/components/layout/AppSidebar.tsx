@@ -118,6 +118,7 @@ const navGroups: NavGroup[] = [
     items: [
       { icon: Wrench, label: 'TPM', href: '/tpm' },
       { icon: Cpu, label: 'Máquinas', href: '/machines' },
+      { icon: ArrowRightLeft, label: 'Comparativo Máquinas', href: '/machines/compare' },
       { icon: BatteryCharging, label: 'Energia', href: '/energy' },
       { icon: Package, label: 'Rastreabilidade', href: '/traceability' },
     ],
