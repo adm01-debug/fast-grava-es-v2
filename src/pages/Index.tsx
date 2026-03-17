@@ -338,7 +338,8 @@ const Index = () => {
                   )}
                 </div>
               </ScrollArea>
-          </TabsContent>
+            </TabsContent>
+          )}
 
           {/* Machines Tab - Live Status */}
           <TabsContent value="machines" className="flex-1 mt-4 min-h-0">
@@ -355,7 +356,6 @@ const Index = () => {
               <QuickChat />
             </div>
           </TabsContent>
-          )}
 
           {/* Timeline Tab */}
           <TabsContent value="timeline" className="flex-1 mt-4 min-h-0">
