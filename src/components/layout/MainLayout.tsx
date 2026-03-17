@@ -1,20 +1,22 @@
-import { ReactNode, memo, lazy, Suspense } from 'react';
+import { ReactNode, lazy, Suspense } from 'react';
 import { useLocation } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { AppSidebar } from './AppSidebar';
-import { AssistantButton } from '../assistant/AssistantButton';
-import { NotificationIntegrator } from '../notifications/NotificationIntegrator';
-import { RealtimeIndicator } from '../dashboard/RealtimeIndicator';
 import { ThemeToggle } from './ThemeToggle';
-import { OperatorMachinesIndicator } from './OperatorMachinesIndicator';
-import { QuickFavoritesBar } from './QuickFavoritesBar';
-import { OfflineReadyIndicator } from '../offline/OfflineReadyIndicator';
 import { OfflineStatusBanner } from '../offline/OfflineStatusBanner';
-import { MobileNavigation } from '../navigation/MobileNavigation';
-import { MobileQuickActions } from '../navigation/MobileQuickActions';
 import { SkipLinks, MainContent } from '../accessibility/SkipLinks';
 import { NetworkStatusIndicator } from '@/hooks/useNetworkStatus';
 import { SessionProvider } from '@/hooks/useSessionTimeout';
+
+// Lazy-load non-critical layout components
+const AssistantButton = lazy(() => import('../assistant/AssistantButton').then(m => ({ default: m.AssistantButton })));
+const NotificationIntegrator = lazy(() => import('../notifications/NotificationIntegrator').then(m => ({ default: m.NotificationIntegrator })));
+const RealtimeIndicator = lazy(() => import('../dashboard/RealtimeIndicator').then(m => ({ default: m.RealtimeIndicator })));
+const OperatorMachinesIndicator = lazy(() => import('./OperatorMachinesIndicator').then(m => ({ default: m.OperatorMachinesIndicator })));
+const QuickFavoritesBar = lazy(() => import('./QuickFavoritesBar').then(m => ({ default: m.QuickFavoritesBar })));
+const OfflineReadyIndicator = lazy(() => import('../offline/OfflineReadyIndicator').then(m => ({ default: m.OfflineReadyIndicator })));
+const MobileNavigation = lazy(() => import('../navigation/MobileNavigation').then(m => ({ default: m.MobileNavigation })));
+const MobileQuickActions = lazy(() => import('../navigation/MobileQuickActions').then(m => ({ default: m.MobileQuickActions })));
 
 import { useDevice } from '@/hooks/use-device';
 import { cn } from '@/lib/utils';

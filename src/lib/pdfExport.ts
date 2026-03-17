@@ -1,5 +1,3 @@
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import type { ExecutiveKPIs, DateRange } from '@/hooks/useExecutiveDashboard';
@@ -15,6 +13,8 @@ export interface PDFExportOptions {
 }
 
 export async function exportExecutiveDashboardPDF(options: PDFExportOptions): Promise<void> {
+  const { default: jsPDF } = await import('jspdf');
+  const { default: autoTable } = await import('jspdf-autotable');
   const { title, subtitle, dateRange, kpis, companyName = 'Fast Gravações' } = options;
   
   const doc = new jsPDF({
@@ -244,7 +244,7 @@ export async function exportExecutiveDashboardPDF(options: PDFExportOptions): Pr
   doc.save(filename);
 }
 
-function addSection(doc: jsPDF, title: string, yPosition: number, margin: number): number {
+function addSection(doc: InstanceType<typeof import('jspdf').default>, title: string, yPosition: number, margin: number): number {
   doc.setFontSize(14);
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(30, 41, 59);
@@ -262,6 +262,8 @@ export async function exportProductionReport(
   dateRange: DateRange,
   title = 'Relatório de Produção'
 ): Promise<void> {
+  const { default: jsPDF } = await import('jspdf');
+  const { default: autoTable } = await import('jspdf-autotable');
   const doc = new jsPDF({
     orientation: 'landscape',
     unit: 'mm',
