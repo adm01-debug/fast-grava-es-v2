@@ -19,7 +19,7 @@ import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
-
+import { useMachineSuggestion } from '@/hooks/useMachineSuggestion';
 export default function NewJobPage() {
   const navigate = useNavigate();
   const { techniques, machines, getMachinesByTechnique, refetchJobs } = useSchedulingData();
