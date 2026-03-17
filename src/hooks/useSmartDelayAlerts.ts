@@ -62,11 +62,11 @@ export function useSmartDelayAlerts() {
 
           // Auto-mark as delayed
           await supabase
-              .from('jobs')
-              .update({ status: 'delayed' })
-              .eq('id', job.id);
-          }
+            .from('jobs')
+            .update({ status: 'delayed' })
+            .eq('id', job.id);
         }
+      }
       }
 
       // Cleanup old alerts
