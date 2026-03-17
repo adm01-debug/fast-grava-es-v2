@@ -519,12 +519,12 @@ export function AppSidebar() {
         )}>
           {(!collapsed || isMobile) && (
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center glow-primary">
+              <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center glow-primary shadow-lg">
                 <Printer className="w-5 h-5 text-primary-foreground" />
               </div>
               <div>
-                <h1 className="font-display font-bold text-sidebar-foreground text-base">Fast Gravações</h1>
-                <p className="text-xs text-sidebar-foreground/50">Sistema de Gestão</p>
+                <h1 className="font-display font-bold text-sidebar-foreground text-base tracking-tight">Fast Gravações</h1>
+                <p className="text-[10px] font-medium text-primary/60 uppercase tracking-widest">Sistema de Gestão</p>
               </div>
             </div>
           )}

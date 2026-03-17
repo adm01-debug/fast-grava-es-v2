@@ -19,34 +19,40 @@ export interface StatsCardProps {
 
 const variantStyles = {
   primary: {
-    iconBg: 'bg-primary/10',
+    iconBg: 'bg-primary/12 dark:bg-primary/15',
     iconColor: 'text-primary',
     accentColor: 'text-primary',
+    glowClass: 'group-hover:shadow-[0_0_20px_hsl(var(--primary)/0.15)]',
   },
   success: {
-    iconBg: 'bg-success/10',
+    iconBg: 'bg-success/12 dark:bg-success/15',
     iconColor: 'text-success',
     accentColor: 'text-success',
+    glowClass: 'group-hover:shadow-[0_0_20px_hsl(var(--success)/0.15)]',
   },
   warning: {
-    iconBg: 'bg-warning/10',
+    iconBg: 'bg-warning/12 dark:bg-warning/15',
     iconColor: 'text-warning',
     accentColor: 'text-warning',
+    glowClass: 'group-hover:shadow-[0_0_20px_hsl(var(--warning)/0.15)]',
   },
   info: {
-    iconBg: 'bg-info/10',
+    iconBg: 'bg-info/12 dark:bg-info/15',
     iconColor: 'text-info',
     accentColor: 'text-info',
+    glowClass: 'group-hover:shadow-[0_0_20px_hsl(var(--info)/0.15)]',
   },
   accent: {
     iconBg: 'bg-accent',
     iconColor: 'text-accent-foreground',
     accentColor: 'text-accent-foreground',
+    glowClass: '',
   },
   muted: {
     iconBg: 'bg-muted',
     iconColor: 'text-muted-foreground',
     accentColor: 'text-muted-foreground',
+    glowClass: '',
   },
 };
 
@@ -65,26 +71,28 @@ function StatsCardComponent({
   if (compact) {
     return (
       <Card className={cn(
-        'p-3 transition-all duration-200 hover:shadow-md',
+        'group p-3.5 glass-card card-shine transition-all duration-300',
+        'hover:-translate-y-0.5 hover:shadow-md',
+        styles.glowClass,
         className
       )}>
         <div className="flex items-center gap-3">
           <div className={cn(
-            'w-9 h-9 rounded-lg flex items-center justify-center shrink-0',
+            'w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-110',
             styles.iconBg
           )}>
-            <Icon className={cn('w-4 h-4', styles.iconColor)} />
+            <Icon className={cn('w-[18px] h-[18px]', styles.iconColor)} />
           </div>
           <div className="min-w-0 flex-1">
-            <p className="text-xs font-medium text-muted-foreground truncate">
+            <p className="text-[11px] font-medium text-muted-foreground truncate uppercase tracking-wider">
               {title}
             </p>
             <div className="flex items-baseline gap-2">
-              <p className="text-xl font-semibold tracking-tight text-foreground">
+              <p className="text-2xl font-bold tracking-tight text-foreground font-display">
                 {value}
               </p>
               {subtitle && (
-                <p className="text-xs text-muted-foreground truncate">
+                <p className="text-[11px] text-muted-foreground truncate">
                   {subtitle}
                 </p>
               )}
@@ -97,15 +105,17 @@ function StatsCardComponent({
 
   return (
     <Card className={cn(
-      'p-5 transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5',
+      'group p-5 glass-card card-shine transition-all duration-300',
+      'hover:-translate-y-1 hover:shadow-lg',
+      styles.glowClass,
       className
     )}>
       <div className="flex items-start justify-between gap-4">
-        <div className="space-y-1 min-w-0 flex-1">
-          <p className="text-sm font-medium text-muted-foreground truncate">
+        <div className="space-y-1.5 min-w-0 flex-1">
+          <p className="text-xs font-medium text-muted-foreground truncate uppercase tracking-wider">
             {title}
           </p>
-          <p className="text-3xl font-semibold tracking-tight text-foreground">
+          <p className="text-3xl font-bold tracking-tight text-foreground font-display">
             {value}
           </p>
           {subtitle && (
@@ -116,17 +126,17 @@ function StatsCardComponent({
           {trend && (
             <div className="flex items-center gap-1.5 pt-1">
               <span className={cn(
-                'text-sm font-medium',
+                'text-sm font-semibold',
                 trend.isPositive ? 'text-success' : 'text-destructive'
               )}>
                 {trend.isPositive ? '+' : ''}{trend.value}%
               </span>
-              <span className="text-xs text-muted-foreground">vs. ontem</span>
+              <span className="text-[11px] text-muted-foreground">vs. ontem</span>
             </div>
           )}
         </div>
         <div className={cn(
-          'w-12 h-12 rounded-xl flex items-center justify-center shrink-0',
+          'w-12 h-12 rounded-xl flex items-center justify-center shrink-0 transition-all duration-300 group-hover:scale-110 group-hover:rotate-3',
           styles.iconBg
         )}>
           <Icon className={cn('w-6 h-6', styles.iconColor)} />
