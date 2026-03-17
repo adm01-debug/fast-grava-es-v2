@@ -12,6 +12,8 @@ import { notifyStatusChange } from '@/hooks/useNotifications';
 import { useOfflineSync } from '@/hooks/useOfflineSync';
 import { JobDetailsModal } from '@/components/jobs/JobDetailsModal';
 import { ProductionRegistrationModal } from '@/components/operator/ProductionRegistrationModal';
+import { ProductionTimer } from '@/components/operator/ProductionTimer';
+import { PreProductionChecklist } from '@/components/operator/PreProductionChecklist';
 import { OfflineSyncIndicator } from '@/components/offline/OfflineSyncIndicator';
 import { MobilePullToRefresh } from '@/components/mobile/PullToRefresh';
 import { SwipeActions, SwipeActionPresets } from '@/components/mobile/SwipeActions';
@@ -39,6 +41,7 @@ export default function OperatorView() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [productionJob, setProductionJob] = useState<DbJob | null>(null);
   const [isProductionModalOpen, setIsProductionModalOpen] = useState(false);
+  const [checklistJobId, setChecklistJobId] = useState<string | null>(null);
 
   const { jobs, techniques, machines, isLoading, getTechniqueById, getMachineById, refetchAll } = useOperatorDashboardData();
   const updateStatus = useUpdateJobStatus();
@@ -64,6 +67,14 @@ export default function OperatorView() {
   }, [jobs, selectedMachine]);
 
   const handleStartProduction = async (job: DbJob) => {
+    // Show checklist first
+    setChecklistJobId(job.id);
+  };
+
+  const handleChecklistComplete = async (jobId: string) => {
+    setChecklistJobId(null);
+    const job = jobs?.find(j => j.id === jobId);
+    if (!job) return;
     try {
       await updateStatus.mutateAsync({ jobId: job.id, status: 'production' });
       notifyStatusChange(job.client, job.status, 'production');
@@ -228,6 +239,9 @@ export default function OperatorView() {
                         </div>
                       </div>
 
+                      {/* Production Timer */}
+                      <ProductionTimer job={job} />
+
                       <div className="flex gap-2 pt-2" onClick={e => e.stopPropagation()}>
                         <Button 
                           variant="outline" 
@@ -297,6 +311,17 @@ export default function OperatorView() {
                 );
               })}
             </div>
+          </div>
+        )}
+
+        {/* Pre-Production Checklist (when starting a job) */}
+        {checklistJobId && (
+          <div className="space-y-3">
+            <PreProductionChecklist
+              jobId={checklistJobId}
+              onComplete={() => handleChecklistComplete(checklistJobId)}
+              onSkip={() => handleChecklistComplete(checklistJobId)}
+            />
           </div>
         )}
 

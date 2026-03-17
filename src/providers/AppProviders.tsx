@@ -14,6 +14,7 @@ import { FeedbackProvider } from "@/components/feedback/FeedbackProvider";
 import { NetworkStatusProvider } from "@/hooks/useNetworkStatus";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
 import { NavigationListener } from "@/components/navigation/NavigationListener";
+import { InAppNotificationWatcher } from "@/components/notifications/InAppNotificationWatcher";
 
 // Contextos de infraestrutura
 import { BreadcrumbProvider } from "@/contexts/BreadcrumbContext";
@@ -53,6 +54,7 @@ export function AppProviders({ children }: { children: ReactNode }) {
                                         <WebSocketProvider>
                                           <EfficiencyNotificationProvider>
                                             <RealtimeNotificationsProvider>
+                                              <InAppNotificationWatcher />
                                               <ProductDesignProvider
                                                 enableOnboarding={true}
                                                 enableCommandPalette={true}

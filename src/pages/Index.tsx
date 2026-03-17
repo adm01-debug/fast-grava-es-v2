@@ -18,6 +18,10 @@ import { ActivityLog, useActivityLog } from '@/components/activity/ActivityLog';
 import { OfflineBanner, ConnectionStatus } from '@/components/offline/OfflineMode';
 
 import { VoiceButton } from '@/components/voice/VoiceCommands';
+import { ActivityFeedWidget } from '@/components/dashboard/ActivityFeedWidget';
+import { LiveMachineStatusPanel } from '@/components/dashboard/LiveMachineStatusPanel';
+import { AutoShiftSummary } from '@/components/shift/AutoShiftSummary';
+import { QuickChat } from '@/components/chat/QuickChat';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { 
@@ -30,7 +34,10 @@ import {
   LayoutDashboard,
   TrendingUp,
   Table2,
-  Clock
+  Clock,
+  Cpu,
+  MessageCircle,
+  FileText
 } from 'lucide-react';
 
 // Type definitions for widget components
@@ -250,6 +257,14 @@ const Index = () => {
               <Clock className="h-4 w-4" />
               <span className="hidden sm:inline">Timeline</span>
             </TabsTrigger>
+            <TabsTrigger value="machines" className="gap-2 data-[state=active]:bg-background">
+              <Cpu className="h-4 w-4" />
+              <span className="hidden sm:inline">Máquinas</span>
+            </TabsTrigger>
+            <TabsTrigger value="chat" className="gap-2 data-[state=active]:bg-background">
+              <MessageCircle className="h-4 w-4" />
+              <span className="hidden sm:inline">Chat</span>
+            </TabsTrigger>
             <TabsTrigger value="jobs" className="gap-2 data-[state=active]:bg-background">
               <Table2 className="h-4 w-4" />
               <span className="hidden sm:inline">Jobs</span>
@@ -279,6 +294,8 @@ const Index = () => {
               <div className="xl:col-span-2 flex flex-col min-h-0">
                 <ScrollArea className="flex-1">
                   <div className="space-y-4 pr-2">
+                    <AutoShiftSummary />
+                    <ActivityFeedWidget />
                     <DailySummaryCard />
                     <SortableWidgetSection
                       widgets={sidebarWidgets}
@@ -323,6 +340,22 @@ const Index = () => {
               </ScrollArea>
             </TabsContent>
           )}
+
+          {/* Machines Tab - Live Status */}
+          <TabsContent value="machines" className="flex-1 mt-4 min-h-0">
+            <ScrollArea className="h-full">
+              <div className="pr-2">
+                <LiveMachineStatusPanel />
+              </div>
+            </ScrollArea>
+          </TabsContent>
+
+          {/* Chat Tab */}
+          <TabsContent value="chat" className="flex-1 mt-4 min-h-0">
+            <div className="h-full">
+              <QuickChat />
+            </div>
+          </TabsContent>
 
           {/* Timeline Tab */}
           <TabsContent value="timeline" className="flex-1 mt-4 min-h-0">

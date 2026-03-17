@@ -335,6 +335,36 @@ export type Database = {
         }
         Relationships: []
       }
+      chat_messages: {
+        Row: {
+          channel: string
+          created_at: string
+          id: string
+          is_read: boolean
+          message: string
+          sender_id: string
+          sender_name: string
+        }
+        Insert: {
+          channel?: string
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message: string
+          sender_id: string
+          sender_name: string
+        }
+        Update: {
+          channel?: string
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message?: string
+          sender_id?: string
+          sender_name?: string
+        }
+        Relationships: []
+      }
       daily_summaries: {
         Row: {
           created_at: string
@@ -1946,6 +1976,56 @@ export type Database = {
           user_email?: string
         }
         Relationships: []
+      }
+      pre_production_checklists: {
+        Row: {
+          checked_by: string | null
+          checked_by_name: string | null
+          color_verified: boolean
+          completed_at: string | null
+          created_at: string
+          id: string
+          job_id: string
+          machine_clean: boolean
+          material_verified: boolean
+          notes: string | null
+          tools_ready: boolean
+        }
+        Insert: {
+          checked_by?: string | null
+          checked_by_name?: string | null
+          color_verified?: boolean
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          job_id: string
+          machine_clean?: boolean
+          material_verified?: boolean
+          notes?: string | null
+          tools_ready?: boolean
+        }
+        Update: {
+          checked_by?: string | null
+          checked_by_name?: string | null
+          color_verified?: boolean
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          job_id?: string
+          machine_clean?: boolean
+          material_verified?: boolean
+          notes?: string | null
+          tools_ready?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pre_production_checklists_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       prediction_history: {
         Row: {
