@@ -41,6 +41,7 @@ export default function OperatorView() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [productionJob, setProductionJob] = useState<DbJob | null>(null);
   const [isProductionModalOpen, setIsProductionModalOpen] = useState(false);
+  const [checklistJobId, setChecklistJobId] = useState<string | null>(null);
 
   const { jobs, techniques, machines, isLoading, getTechniqueById, getMachineById, refetchAll } = useOperatorDashboardData();
   const updateStatus = useUpdateJobStatus();
