@@ -130,6 +130,7 @@ const navGroups: NavGroup[] = [
     items: [
       { icon: Users, label: 'Operadores', href: '/operators' },
       { icon: TrendingUp, label: 'Produtividade', href: '/operators/productivity' },
+      { icon: Activity, label: 'Histórico de Ações', href: '/operator-history' },
       { icon: Trophy, label: 'Gamificação', href: '/gamification' },
       { icon: ArrowRightLeft, label: 'Passagem de Turno', href: '/shift-handover' },
       { icon: UserCircle, label: 'Visão Operador', href: '/operator' },
