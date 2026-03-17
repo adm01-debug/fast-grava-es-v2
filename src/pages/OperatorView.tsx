@@ -67,6 +67,14 @@ export default function OperatorView() {
   }, [jobs, selectedMachine]);
 
   const handleStartProduction = async (job: DbJob) => {
+    // Show checklist first
+    setChecklistJobId(job.id);
+  };
+
+  const handleChecklistComplete = async (jobId: string) => {
+    setChecklistJobId(null);
+    const job = jobs?.find(j => j.id === jobId);
+    if (!job) return;
     try {
       await updateStatus.mutateAsync({ jobId: job.id, status: 'production' });
       notifyStatusChange(job.client, job.status, 'production');
