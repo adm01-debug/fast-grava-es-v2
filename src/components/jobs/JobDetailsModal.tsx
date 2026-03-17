@@ -1,4 +1,4 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -17,11 +17,13 @@ import {
   FileText,
   Hash,
   Building,
-  QrCode
+  QrCode,
+  Copy
 } from "lucide-react";
 import { useSchedulingData } from "@/hooks/useSchedulingData";
 import { DbJob } from "@/hooks/useJobs";
 import { JobQRCode } from "@/components/qrcode/JobQRCode";
+import { useDuplicateJob } from "@/hooks/useDuplicateJob";
 
 interface JobDetailsModalProps {
   job: DbJob | null;
@@ -46,7 +48,7 @@ const priorityLabels = {
 
 export function JobDetailsModal({ job, open, onOpenChange, onStatusChange }: JobDetailsModalProps) {
   const { getTechniqueById, getMachineById } = useSchedulingData();
-
+  const { duplicateJob } = useDuplicateJob();
   if (!job) return null;
 
   const technique = getTechniqueById(job.technique_id);
@@ -94,12 +96,25 @@ export function JobDetailsModal({ job, open, onOpenChange, onStatusChange }: Job
               {job.order_number}
             </DialogTitle>
             <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => duplicateJob(job)}
+                className="border-border/50 text-muted-foreground hover:text-foreground"
+                title="Duplicar Job"
+              >
+                <Copy className="h-4 w-4 mr-1" />
+                Duplicar
+              </Button>
               <Badge className={`${priorityColors[job.priority]} border`}>
                 {priorityLabels[job.priority]}
               </Badge>
               <StatusBadge status={job.status} />
             </div>
           </div>
+          <DialogDescription className="sr-only">
+            Detalhes do trabalho {job.order_number}
+          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-6 mt-4">

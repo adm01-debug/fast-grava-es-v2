@@ -7,7 +7,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { CalendarIcon, Plus, ArrowLeft } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { CalendarIcon, Plus, ArrowLeft, Lightbulb } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSchedulingData } from '@/hooks/useSchedulingData';
@@ -18,7 +19,7 @@ import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
-
+import { useMachineSuggestion } from '@/hooks/useMachineSuggestion';
 export default function NewJobPage() {
   const navigate = useNavigate();
   const { techniques, machines, getMachinesByTechnique, refetchJobs } = useSchedulingData();
@@ -42,6 +43,8 @@ export default function NewJobPage() {
   const availableMachines = formData.technique_id 
     ? getMachinesByTechnique(formData.technique_id)
     : [];
+
+  const { bestMachine, suggestions } = useMachineSuggestion(formData.technique_id || null);
 
   const handleChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -206,6 +209,24 @@ export default function NewJobPage() {
                       ))}
                     </SelectContent>
                   </Select>
+                  {/* Machine Suggestion */}
+                  {bestMachine && !formData.machine_id && (
+                    <div className="md:col-span-2 flex items-center gap-2 p-3 rounded-lg bg-primary/10 border border-primary/20">
+                      <Lightbulb className="h-4 w-4 text-primary shrink-0" />
+                      <span className="text-sm text-foreground">
+                        Sugestão: <strong>{bestMachine.machineCode} - {bestMachine.machineName}</strong> — {bestMachine.reason}
+                      </span>
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        className="ml-auto shrink-0"
+                        onClick={() => handleChange('machine_id', bestMachine.machineId)}
+                      >
+                        Usar
+                      </Button>
+                    </div>
+                  )}
                 </div>
               </div>
 
