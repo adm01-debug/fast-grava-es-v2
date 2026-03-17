@@ -12,7 +12,9 @@ export interface ShiftReportData {
   techniques: DbTechnique[];
 }
 
-export function exportShiftReportPDF(data: ShiftReportData): void {
+export async function exportShiftReportPDF(data: ShiftReportData): Promise<void> {
+  const { default: jsPDF } = await import('jspdf');
+  const { default: autoTable } = await import('jspdf-autotable');
   const { shiftName, shiftStart, shiftEnd, jobs, machines, techniques } = data;
 
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
