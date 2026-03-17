@@ -55,6 +55,8 @@ const AuthPage = lazy(() => import("@/pages/AuthPage"));
 const ResetPasswordPage = lazy(() => import("@/pages/ResetPasswordPage"));
 const InstallAppPage = lazy(() => import("@/pages/InstallAppPage"));
 const KioskPage = lazy(() => import("@/pages/KioskPage"));
+const MachineComparisonPage = lazy(() => import("@/pages/MachineComparisonPage"));
+const OperatorHistoryPage = lazy(() => import("@/pages/OperatorHistoryPage"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 
 // Helper para rotas protegidas com Suspense
@@ -130,10 +132,12 @@ export function AnimatedRoutes() {
         <Route path="/operator" element={<ProtectedPage fallback={<ListPageSkeleton />}><OperatorView /></ProtectedPage>} />
         <Route path="/operators" element={<ProtectedPage fallback={<ListPageSkeleton />} allowedRoles={['coordinator', 'manager']}><OperatorsPage /></ProtectedPage>} />
         <Route path="/operator-productivity" element={<ProtectedPage fallback={<KPIPageSkeleton />} allowedRoles={['coordinator', 'manager']}><OperatorProductivityPage /></ProtectedPage>} />
+        <Route path="/operator-history" element={<ProtectedPage fallback={<ListPageSkeleton />} allowedRoles={['coordinator', 'manager']}><OperatorHistoryPage /></ProtectedPage>} />
         <Route path="/operators/productivity" element={<Navigate to="/operator-productivity" replace />} />
 
         {/* Resources */}
         <Route path="/machines" element={<ProtectedPage fallback={<ListPageSkeleton />} allowedRoles={['coordinator', 'manager']}><MachinesPage /></ProtectedPage>} />
+        <Route path="/machines/compare" element={<ProtectedPage fallback={<KPIPageSkeleton />} allowedRoles={['coordinator', 'manager']}><MachineComparisonPage /></ProtectedPage>} />
         <Route path="/energy" element={<ProtectedPage fallback={<KPIPageSkeleton />} allowedRoles={['coordinator', 'manager']}><EnergyDashboard /></ProtectedPage>} />
 
         {/* Quality & Traceability */}

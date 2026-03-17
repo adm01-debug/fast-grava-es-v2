@@ -118,6 +118,7 @@ const navGroups: NavGroup[] = [
     items: [
       { icon: Wrench, label: 'TPM', href: '/tpm' },
       { icon: Cpu, label: 'Máquinas', href: '/machines' },
+      { icon: ArrowRightLeft, label: 'Comparativo Máquinas', href: '/machines/compare' },
       { icon: BatteryCharging, label: 'Energia', href: '/energy' },
       { icon: Package, label: 'Rastreabilidade', href: '/traceability' },
     ],
@@ -129,6 +130,7 @@ const navGroups: NavGroup[] = [
     items: [
       { icon: Users, label: 'Operadores', href: '/operators' },
       { icon: TrendingUp, label: 'Produtividade', href: '/operators/productivity' },
+      { icon: Activity, label: 'Histórico de Ações', href: '/operator-history' },
       { icon: Trophy, label: 'Gamificação', href: '/gamification' },
       { icon: ArrowRightLeft, label: 'Passagem de Turno', href: '/shift-handover' },
       { icon: UserCircle, label: 'Visão Operador', href: '/operator' },
