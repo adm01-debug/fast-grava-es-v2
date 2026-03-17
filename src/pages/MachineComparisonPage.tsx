@@ -28,7 +28,7 @@ import { cn } from '@/lib/utils';
 
 export default function MachineComparisonPage() {
   const { machines, jobs, techniques } = useSchedulingData();
-  const { machineOEEData } = useOEE();
+  const { data: oeeData } = useOEE();
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
   const activeMachines = useMemo(() => machines.filter(m => m.is_active), [machines]);
