@@ -314,6 +314,17 @@ export default function OperatorView() {
           </div>
         )}
 
+        {/* Pre-Production Checklist (when starting a job) */}
+        {checklistJobId && (
+          <div className="space-y-3">
+            <PreProductionChecklist
+              jobId={checklistJobId}
+              onComplete={() => handleChecklistComplete(checklistJobId)}
+              onSkip={() => handleChecklistComplete(checklistJobId)}
+            />
+          </div>
+        )}
+
         {/* Ready Jobs */}
         <div className="space-y-4">
           <h2 className="text-xl font-semibold flex items-center gap-2">
