@@ -86,13 +86,21 @@ export function AutoShiftSummary() {
     <Card className="glass-card">
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-base flex items-center gap-2">
-            <FileText className="h-4 w-4 text-primary" />
-            Resumo do Turno
-          </CardTitle>
-          <Badge variant="secondary" className="text-xs">
-            {currentShift} • {format(summary.shiftStart, 'HH:mm', { locale: ptBR })}
-          </Badge>
+          <div className="flex items-center gap-2">
+            <CardTitle className="text-base flex items-center gap-2">
+              <FileText className="h-4 w-4 text-primary" />
+              Resumo do Turno
+            </CardTitle>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" onClick={handleExportPDF} className="h-7 text-xs">
+              <FileDown className="h-3 w-3 mr-1" />
+              PDF
+            </Button>
+            <Badge variant="secondary" className="text-xs">
+              {currentShift} • {format(summary.shiftStart, 'HH:mm', { locale: ptBR })}
+            </Badge>
+          </div>
         </div>
       </CardHeader>
       <CardContent>
