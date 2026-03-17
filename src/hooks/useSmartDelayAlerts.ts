@@ -67,7 +67,6 @@ export function useSmartDelayAlerts() {
             .eq('id', job.id);
         }
       }
-      }
 
       // Cleanup old alerts
       if (alertedRef.current.size > 300) {
