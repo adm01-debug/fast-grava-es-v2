@@ -54,6 +54,7 @@ export function AppProviders({ children }: { children: ReactNode }) {
                                         <WebSocketProvider>
                                           <EfficiencyNotificationProvider>
                                             <RealtimeNotificationsProvider>
+                                              <InAppNotificationWatcher />
                                               <ProductDesignProvider
                                                 enableOnboarding={true}
                                                 enableCommandPalette={true}
