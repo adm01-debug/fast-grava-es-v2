@@ -73,7 +73,7 @@ export default function MachineComparisonPage() {
         quality: oee?.quality ?? 0,
       };
     }).filter(Boolean);
-  }, [selectedIds, machines, jobs, techniques, machineOEEData]);
+  }, [selectedIds, machines, jobs, techniques, oeeData]);
 
   const radarData = useMemo(() => {
     if (comparisonData.length === 0) return [];
