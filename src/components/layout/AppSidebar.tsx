@@ -498,7 +498,8 @@ export function AppSidebar() {
         ref={isMobile ? focusTrapRef : undefined}
         className={cn(
           'flex flex-col h-screen bg-sidebar border-r border-sidebar-border transition-all duration-300',
-          'shadow-[2px_0_12px_-4px_hsl(220_20%_20%/0.08)] dark:shadow-none',
+          'dark:bg-gradient-to-b dark:from-[hsl(20_14%_7%)] dark:to-[hsl(20_14%_5%)]',
+          'shadow-[2px_0_12px_-4px_hsl(20_14%_12%/0.08)] dark:shadow-[2px_0_20px_-4px_hsl(0_0%_0%/0.3)]',
           // Desktop styles
           'hidden md:flex',
           collapsed ? 'w-16' : 'w-64',
