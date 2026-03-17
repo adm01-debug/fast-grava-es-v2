@@ -498,7 +498,7 @@ export function AppSidebar() {
         ref={isMobile ? focusTrapRef : undefined}
         className={cn(
           'flex flex-col h-screen bg-sidebar border-r border-sidebar-border transition-all duration-300',
-          'dark:bg-gradient-to-b dark:from-[hsl(220_10%_7%)] dark:to-[hsl(220_10%_5%)]',
+          'dark:bg-gradient-to-b dark:from-sidebar dark:via-sidebar dark:to-background',
           'shadow-[2px_0_12px_-4px_hsl(220_10%_12%/0.08)] dark:shadow-[2px_0_20px_-4px_hsl(0_0%_0%/0.3)]',
           // Desktop styles
           'hidden md:flex',

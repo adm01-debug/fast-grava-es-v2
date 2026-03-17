@@ -11,7 +11,7 @@ import { AccessibilityProvider } from "./components/accessibility/SkipLinks";
 import { OfflineProvider } from "./components/offline/OfflineMode";
 
 createRoot(document.getElementById("root")!).render(
-  <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+  <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} storageKey="fast-gravacoes-theme">
     <AccessibilityProvider>
       <OfflineProvider>
         <App />
