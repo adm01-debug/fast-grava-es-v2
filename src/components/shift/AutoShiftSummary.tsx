@@ -15,6 +15,31 @@ import { ptBR } from 'date-fns/locale';
 
 export function AutoShiftSummary() {
   const { jobs, machines, isLoading } = useOperatorDashboardData();
+  const { techniques } = useSchedulingData();
+
+  const handleExportPDF = useCallback(() => {
+    if (!jobs || !machines) return;
+    const now = new Date();
+    const shiftStart = new Date(now);
+    shiftStart.setHours(now.getHours() >= 14 ? 14 : 7, 0, 0, 0);
+    const shiftEnd = new Date(now);
+    shiftEnd.setHours(now.getHours() >= 14 ? 22 : 14, 0, 0, 0);
+    const shiftName = now.getHours() >= 14 ? 'Tarde' : 'Manhã';
+
+    try {
+      exportShiftReportPDF({
+        shiftName,
+        shiftStart,
+        shiftEnd,
+        jobs: jobs as any,
+        machines: machines as any,
+        techniques: techniques as any,
+      });
+      toast.success('Relatório PDF gerado com sucesso!');
+    } catch {
+      toast.error('Erro ao gerar relatório PDF');
+    }
+  }, [jobs, machines, techniques]);
 
   const summary = useMemo(() => {
     if (!jobs) return null;
