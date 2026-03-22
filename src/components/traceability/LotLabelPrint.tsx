@@ -1,0 +1,254 @@
+import { useState } from 'react';
+import { QRCodeSVG } from 'qrcode.react';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { Download, Printer, Tag, Copy } from 'lucide-react';
+import { ProductionLot } from '@/hooks/useTraceability';
+import { format } from 'date-fns';
+import { toast } from 'sonner';
+
+interface LotLabelPrintProps {
+  lots: ProductionLot[];
+  open: boolean;
+  onClose: () => void;
+}
+
+type LabelSize = '10x15' | '5x7' | '8x5';
+
+const LABEL_CONFIGS: Record<LabelSize, { w: number; h: number; qrSize: number; name: string }> = {
+  '10x15': { w: 378, h: 567, qrSize: 180, name: '10×15 cm' },
+  '5x7':   { w: 189, h: 265, qrSize: 100, name: '5×7 cm' },
+  '8x5':   { w: 302, h: 189, qrSize: 90,  name: '8×5 cm (paisagem)' },
+};
+
+export function LotLabelPrint({ lots, open, onClose }: LotLabelPrintProps) {
+  const [labelSize, setLabelSize] = useState<LabelSize>('10x15');
+  const [copies, setCopies] = useState(1);
+
+  const config = LABEL_CONFIGS[labelSize];
+
+  const generateQrValue = (lot: ProductionLot) => {
+    return `LOT:${lot.lot_number}`;
+  };
+
+  const buildLabelHTML = (lot: ProductionLot, cfg: typeof config) => {
+    const qrValue = generateQrValue(lot);
+    const isLandscape = cfg.w > cfg.h;
+
+    return `
+      <div style="
+        width:${cfg.w}px;height:${cfg.h}px;
+        border:1px dashed #ccc;border-radius:6px;
+        display:flex;flex-direction:${isLandscape ? 'row' : 'column'};
+        align-items:center;justify-content:center;
+        padding:${isLandscape ? '8px 16px' : '16px'};gap:${isLandscape ? '16px' : '12px'};
+        font-family:'Courier New',monospace;box-sizing:border-box;
+        page-break-inside:avoid;break-inside:avoid;
+      ">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex-shrink:0;">
+          <div id="qr-placeholder-${lot.id}" data-value="${qrValue}" data-size="${cfg.qrSize}"></div>
+        </div>
+        <div style="text-align:${isLandscape ? 'left' : 'center'};flex:1;min-width:0;overflow:hidden;">
+          <div style="font-size:${isLandscape ? '13px' : '16px'};font-weight:bold;margin-bottom:4px;word-break:break-word;">
+            ${lot.lot_number}
+          </div>
+          <div style="font-size:${isLandscape ? '11px' : '13px'};color:#333;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+            ${lot.product_name}
+          </div>
+          <div style="font-size:${isLandscape ? '10px' : '11px'};color:#666;margin-bottom:2px;">
+            Qtd: ${lot.quantity} un
+          </div>
+          <div style="font-size:${isLandscape ? '10px' : '11px'};color:#666;margin-bottom:2px;">
+            Produção: ${format(new Date(lot.production_date), 'dd/MM/yyyy')}
+          </div>
+          ${lot.expiration_date ? `
+            <div style="font-size:${isLandscape ? '10px' : '11px'};color:#c00;font-weight:bold;">
+              Val: ${format(new Date(lot.expiration_date), 'dd/MM/yyyy')}
+            </div>
+          ` : ''}
+          ${lot.job ? `
+            <div style="font-size:${isLandscape ? '9px' : '10px'};color:#999;margin-top:4px;">
+              OS: ${lot.job.order_number}
+            </div>
+          ` : ''}
+          <div style="font-size:8px;color:#bbb;margin-top:6px;">
+            ${lot.lot_number}
+          </div>
+        </div>
+      </div>
+    `;
+  };
+
+  const handlePrint = () => {
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) {
+      toast.error('Pop-up bloqueado. Permita pop-ups para imprimir.');
+      return;
+    }
+
+    const labelsHTML = lots.flatMap(lot =>
+      Array.from({ length: copies }, () => buildLabelHTML(lot, config))
+    ).join('');
+
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Etiquetas - ${lots.length} lote(s)</title>
+          <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"><\/script>
+          <style>
+            @page { size: auto; margin: 5mm; }
+            body {
+              margin:0;padding:10px;
+              display:flex;flex-wrap:wrap;gap:8px;
+              justify-content:center;align-items:flex-start;
+            }
+            @media print {
+              body { gap:4px; }
+            }
+          </style>
+        </head>
+        <body>
+          ${labelsHTML}
+          <script>
+            document.querySelectorAll('[id^="qr-placeholder-"]').forEach(el => {
+              const value = el.dataset.value;
+              const size = parseInt(el.dataset.size);
+              const canvas = document.createElement('canvas');
+              QRCode.toCanvas(canvas, value, { width: size, margin: 1, errorCorrectionLevel: 'H' }, () => {
+                el.appendChild(canvas);
+              });
+            });
+            setTimeout(() => { window.print(); }, 800);
+          <\/script>
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
+    toast.success(`Imprimindo ${lots.length * copies} etiqueta(s)`);
+  };
+
+  const handleDownloadSVG = () => {
+    if (lots.length === 0) return;
+    const lot = lots[0];
+    const svgEl = document.getElementById(`label-qr-preview-${lot.id}`);
+    if (!svgEl) return;
+
+    const svgData = new XMLSerializer().serializeToString(svgEl);
+    const blob = new Blob([svgData], { type: 'image/svg+xml' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `etiqueta-${lot.lot_number}.svg`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success('SVG baixado');
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onClose}>
+      <DialogContent className="max-w-lg">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <Tag className="h-5 w-5 text-primary" />
+            Imprimir Etiquetas ({lots.length} lote{lots.length > 1 ? 's' : ''})
+          </DialogTitle>
+        </DialogHeader>
+
+        <div className="space-y-4">
+          {/* Settings */}
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1.5">
+              <Label className="text-xs">Tamanho da Etiqueta</Label>
+              <Select value={labelSize} onValueChange={(v) => setLabelSize(v as LabelSize)}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.entries(LABEL_CONFIGS).map(([key, cfg]) => (
+                    <SelectItem key={key} value={key}>{cfg.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs">Cópias por lote</Label>
+              <Input
+                type="number"
+                min={1}
+                max={50}
+                value={copies}
+                onChange={(e) => setCopies(Math.max(1, parseInt(e.target.value) || 1))}
+              />
+            </div>
+          </div>
+
+          {/* Preview */}
+          <div className="border border-border rounded-lg p-4 bg-background flex items-center justify-center">
+            {lots.length > 0 ? (
+              <div
+                style={{
+                  width: config.w * 0.7,
+                  height: config.h * 0.7,
+                  border: '1px dashed hsl(var(--border))',
+                  borderRadius: 6,
+                  display: 'flex',
+                  flexDirection: config.w > config.h ? 'row' : 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: config.w > config.h ? '6px 12px' : '12px',
+                  gap: config.w > config.h ? 12 : 8,
+                  fontFamily: "'Courier New', monospace",
+                }}
+              >
+                <QRCodeSVG
+                  id={`label-qr-preview-${lots[0].id}`}
+                  value={generateQrValue(lots[0])}
+                  size={config.qrSize * 0.7}
+                  level="H"
+                  includeMargin
+                />
+                <div style={{ textAlign: config.w > config.h ? 'left' : 'center', flex: 1, minWidth: 0, overflow: 'hidden' }}>
+                  <div className="font-bold text-sm truncate">{lots[0].lot_number}</div>
+                  <div className="text-xs text-muted-foreground truncate">{lots[0].product_name}</div>
+                  <div className="text-[10px] text-muted-foreground">Qtd: {lots[0].quantity} un</div>
+                  <div className="text-[10px] text-muted-foreground">
+                    {format(new Date(lots[0].production_date), 'dd/MM/yyyy')}
+                  </div>
+                  {lots[0].expiration_date && (
+                    <div className="text-[10px] text-destructive font-bold">
+                      Val: {format(new Date(lots[0].expiration_date), 'dd/MM/yyyy')}
+                    </div>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <p className="text-muted-foreground text-sm">Nenhum lote selecionado</p>
+            )}
+          </div>
+
+          {lots.length > 1 && (
+            <p className="text-xs text-muted-foreground text-center">
+              Preview do primeiro lote. Serão impressas {lots.length * copies} etiqueta(s) no total.
+            </p>
+          )}
+
+          {/* Actions */}
+          <div className="flex gap-2 justify-end">
+            <Button variant="outline" size="sm" onClick={handleDownloadSVG} disabled={lots.length === 0}>
+              <Download className="h-4 w-4 mr-1" />
+              SVG
+            </Button>
+            <Button size="sm" onClick={handlePrint} disabled={lots.length === 0}>
+              <Printer className="h-4 w-4 mr-1" />
+              Imprimir {lots.length * copies > 1 ? `(${lots.length * copies})` : ''}
+            </Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}

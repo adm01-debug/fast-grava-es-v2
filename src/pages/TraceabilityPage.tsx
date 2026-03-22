@@ -6,7 +6,7 @@ import { format, differenceInDays } from 'date-fns';
 import {
   Package, Search, Plus, Eye, GitBranch, AlertTriangle,
   FileText, Command, QrCode, Download, CheckSquare,
-  ArrowUpDown, Calendar, Filter, X
+  ArrowUpDown, Calendar, Filter, X, Tag
 } from 'lucide-react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -35,6 +35,7 @@ import LotDetailsModal from '@/components/traceability/LotDetailsModal';
 import LotGenealogyView from '@/components/traceability/LotGenealogyView';
 import { TraceabilityStatsCards } from '@/components/traceability/TraceabilityStatsCards';
 import { LotQRCode } from '@/components/traceability/LotQRCode';
+import { LotLabelPrint } from '@/components/traceability/LotLabelPrint';
 import { VoiceButton } from '@/components/voice/VoiceCommands';
 import { toast } from 'sonner';
 
@@ -68,6 +69,7 @@ export default function TraceabilityPage() {
   const [selectedLot, setSelectedLot] = useState<ProductionLot | null>(null);
   const [showGenealogyView, setShowGenealogyView] = useState(false);
   const [qrLot, setQrLot] = useState<ProductionLot | null>(null);
+  const [labelLots, setLabelLots] = useState<ProductionLot[]>([]);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [sortField, setSortField] = useState<SortField>('production_date');
   const [sortDir, setSortDir] = useState<SortDir>('desc');
@@ -326,6 +328,12 @@ export default function TraceabilityPage() {
               <CheckSquare className="h-5 w-5 text-primary" />
               <span className="font-medium">{selectedIds.size} lote(s) selecionado(s)</span>
               <div className="flex gap-2 ml-auto">
+                <Button size="sm" variant="outline" onClick={() => {
+                  const selected = filteredAndSortedLots.filter(l => selectedIds.has(l.id));
+                  setLabelLots(selected);
+                }}>
+                  <Tag className="h-3.5 w-3.5 mr-1" />Etiquetas
+                </Button>
                 <Button size="sm" variant="outline" onClick={() => handleBulkStatusChange('quarantine')}>
                   <AlertTriangle className="h-3.5 w-3.5 mr-1" />Quarentena
                 </Button>
@@ -466,6 +474,9 @@ export default function TraceabilityPage() {
                               <Button variant="ghost" size="icon" onClick={() => setQrLot(lot)} title="QR Code">
                                 <QrCode className="h-4 w-4" />
                               </Button>
+                              <Button variant="ghost" size="icon" onClick={() => setLabelLots([lot])} title="Imprimir Etiqueta">
+                                <Tag className="h-4 w-4" />
+                              </Button>
                             </div>
                           </TableCell>
                         </TableRow>
@@ -504,6 +515,9 @@ export default function TraceabilityPage() {
       )}
       {qrLot && (
         <LotQRCode lot={qrLot} open={!!qrLot} onClose={() => setQrLot(null)} />
+      )}
+      {labelLots.length > 0 && (
+        <LotLabelPrint lots={labelLots} open={labelLots.length > 0} onClose={() => setLabelLots([])} />
       )}
     </MainLayout>
   );
