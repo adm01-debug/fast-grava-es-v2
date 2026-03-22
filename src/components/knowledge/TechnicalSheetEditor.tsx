@@ -15,9 +15,19 @@ import {
   Trash2, 
   ListOrdered, 
   Package, 
-  Lightbulb,
-  GripVertical
+  Lightbulb
 } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import { 
   useTechnicalSheetDetails, 
   useTechnicalSheetMutations,
