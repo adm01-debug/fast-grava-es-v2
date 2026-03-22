@@ -15,9 +15,19 @@ import {
   Trash2, 
   ListOrdered, 
   Package, 
-  Lightbulb,
-  GripVertical
+  Lightbulb
 } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import { 
   useTechnicalSheetDetails, 
   useTechnicalSheetMutations,
@@ -336,14 +346,27 @@ export const TechnicalSheetEditor = ({
                         <p className="font-medium text-sm">{step.title}</p>
                         <p className="text-xs text-muted-foreground mt-1">{step.description}</p>
                       </div>
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        className="h-8 w-8"
-                        onClick={() => deleteStep.mutate(step.id)}
-                      >
-                        <Trash2 className="h-4 w-4 text-destructive" />
-                      </Button>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button variant="ghost" size="icon" className="h-8 w-8">
+                            <Trash2 className="h-4 w-4 text-destructive" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Remover passo?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              O passo "{step.title}" será removido permanentemente.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => deleteStep.mutate(step.id)}>
+                              Remover
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
                     </div>
                   ))}
 
@@ -384,7 +407,7 @@ export const TechnicalSheetEditor = ({
                 {/* Materials */}
                 <div className="space-y-4">
                   <h3 className="text-sm font-semibold flex items-center gap-2">
-                    <Package className="h-4 w-4 text-cyan-400" />
+                    <Package className="h-4 w-4 text-primary" />
                     Materiais e Insumos ({sheetMaterials.length})
                   </h3>
 
@@ -393,12 +416,27 @@ export const TechnicalSheetEditor = ({
                       <Badge key={m.id} variant="secondary" className="gap-1">
                         {m.name}
                         {m.quantity && <span className="text-muted-foreground">({m.quantity})</span>}
-                        <button 
-                          onClick={() => deleteMaterial.mutate(m.id)}
-                          className="ml-1 hover:text-destructive"
-                        >
-                          <X className="h-3 w-3" />
-                        </button>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <button className="ml-1 hover:text-destructive">
+                              <X className="h-3 w-3" />
+                            </button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Remover material?</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                O material "{m.name}" será removido da ficha.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                              <AlertDialogAction onClick={() => deleteMaterial.mutate(m.id)}>
+                                Remover
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
                       </Badge>
                     ))}
                   </div>
@@ -429,7 +467,7 @@ export const TechnicalSheetEditor = ({
                 {/* Tips */}
                 <div className="space-y-4">
                   <h3 className="text-sm font-semibold flex items-center gap-2">
-                    <Lightbulb className="h-4 w-4 text-yellow-400" />
+                    <Lightbulb className="h-4 w-4 text-accent-foreground" />
                     Dicas e Observações ({tips.length})
                   </h3>
 
@@ -440,9 +478,27 @@ export const TechnicalSheetEditor = ({
                           {tip.tip_type}
                         </Badge>
                         <span className="text-sm flex-1">{tip.content}</span>
-                        <button onClick={() => deleteTip.mutate(tip.id)} className="hover:text-destructive">
-                          <X className="h-4 w-4" />
-                        </button>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <button className="hover:text-destructive">
+                              <X className="h-4 w-4" />
+                            </button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Remover dica?</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Esta dica será removida permanentemente.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                              <AlertDialogAction onClick={() => deleteTip.mutate(tip.id)}>
+                                Remover
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
                       </div>
                     ))}
                   </div>

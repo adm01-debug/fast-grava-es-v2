@@ -1,81 +1,96 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useFuseSearch } from '@/hooks/useFuseSearch';
 import { MainLayout } from '@/components/layout/MainLayout';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { 
-  BookOpen, 
-  Search, 
-  Plus, 
-  Clock,
-  ChevronRight,
-  FileText,
-  Lightbulb
-} from 'lucide-react';
-import { useTechnicalSheets, TechnicalSheet } from '@/hooks/useTechnicalSheets';
+import { BookOpen, Plus, Lightbulb } from 'lucide-react';
+import { useTechnicalSheets, useTechnicalSheetMutations, TechnicalSheet } from '@/hooks/useTechnicalSheets';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { TechnicalSheetViewer } from '@/components/knowledge/TechnicalSheetViewer';
 import { TechnicalSheetEditor } from '@/components/knowledge/TechnicalSheetEditor';
+import { KnowledgeBaseStats } from '@/components/knowledge/KnowledgeBaseStats';
+import { KnowledgeSheetList } from '@/components/knowledge/KnowledgeSheetList';
 import { useAuth } from '@/contexts/AuthContext';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
+import { toast } from 'sonner';
 
 const TechnicalKnowledgeBase = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTechnique, setSelectedTechnique] = useState<string>('all');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [selectedMachine, setSelectedMachine] = useState<string>('all');
   const [selectedSheet, setSelectedSheet] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
   const { role } = useAuth();
+  const { createSheet } = useTechnicalSheetMutations();
 
   const { sheets, isLoadingSheets, categories, materials } = useTechnicalSheets();
 
-  // Fetch techniques
   const { data: techniques = [] } = useQuery({
     queryKey: ['techniques'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('techniques')
-        .select('*')
-        .order('name');
+      const { data, error } = await supabase.from('techniques').select('*').order('name');
       if (error) throw error;
       return data;
     }
   });
 
-  // Apply Fuse.js fuzzy search for sheets
+  const { data: machines = [] } = useQuery({
+    queryKey: ['machines-active'],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('machines').select('id, name, code').eq('is_active', true).order('name');
+      if (error) throw error;
+      return data;
+    }
+  });
+
+  // Deep linking: read sheet from URL
+  useEffect(() => {
+    const sheetParam = searchParams.get('sheet');
+    if (sheetParam && sheets.length > 0) {
+      const exists = sheets.find(s => s.id === sheetParam);
+      if (exists) setSelectedSheet(sheetParam);
+    }
+  }, [searchParams, sheets]);
+
+  // Update URL when sheet changes
+  useEffect(() => {
+    if (selectedSheet) {
+      setSearchParams({ sheet: selectedSheet }, { replace: true });
+    } else {
+      setSearchParams({}, { replace: true });
+    }
+  }, [selectedSheet]);
+
+  // Expanded fuzzy search: title, description, material, machine
   const fuseSearchedSheets = useFuseSearch(sheets, searchTerm, {
-    keys: ['title', 'description'],
+    keys: ['title', 'description', 'materials.name', 'machines.name', 'machines.code', 'product_categories.name'],
     threshold: 0.3,
   });
 
-  // Group sheets by technique
   const groupedSheets = useMemo(() => {
     const filtered = fuseSearchedSheets.filter(sheet => {
       const matchesTechnique = selectedTechnique === 'all' || sheet.technique_id === selectedTechnique;
       const matchesCategory = selectedCategory === 'all' || sheet.product_category_id === selectedCategory;
-      return matchesTechnique && matchesCategory;
+      const matchesMachine = selectedMachine === 'all' || sheet.recommended_machine_id === selectedMachine;
+      return matchesTechnique && matchesCategory && matchesMachine;
     });
 
     const grouped: Record<string, TechnicalSheet[]> = {};
     filtered.forEach(sheet => {
-      const techniqueId = sheet.technique_id;
-      if (!grouped[techniqueId]) {
-        grouped[techniqueId] = [];
-      }
-      grouped[techniqueId].push(sheet);
+      const tid = sheet.technique_id;
+      if (!grouped[tid]) grouped[tid] = [];
+      grouped[tid].push(sheet);
     });
-
     return grouped;
-  }, [fuseSearchedSheets, selectedTechnique, selectedCategory]);
+  }, [fuseSearchedSheets, selectedTechnique, selectedCategory, selectedMachine]);
 
   const canEdit = role === 'coordinator';
+  const hasFilters = searchTerm !== '' || selectedTechnique !== 'all' || selectedCategory !== 'all' || selectedMachine !== 'all';
 
   const handleSheetClick = (sheetId: string) => {
     setSelectedSheet(sheetId);
@@ -97,6 +112,26 @@ const TechnicalKnowledgeBase = () => {
   const handleCloseEditor = () => {
     setIsEditing(false);
     setIsCreating(false);
+  };
+
+  const handleDuplicate = async () => {
+    if (!selectedSheet) return;
+    const original = sheets.find(s => s.id === selectedSheet);
+    if (!original) return;
+    try {
+      await createSheet.mutateAsync({
+        technique_id: original.technique_id,
+        title: `${original.title} (Cópia)`,
+        description: original.description || undefined,
+        product_category_id: original.product_category_id || undefined,
+        material_id: original.material_id || undefined,
+        estimated_time_minutes: original.estimated_time_minutes || undefined,
+        recommended_machine_id: original.recommended_machine_id || undefined,
+      });
+      toast.success('Ficha duplicada com sucesso!');
+    } catch {
+      toast.error('Erro ao duplicar ficha');
+    }
   };
 
   return (
@@ -123,133 +158,37 @@ const TechnicalKnowledgeBase = () => {
           )}
         </div>
 
-        {/* Mobile: Stacked layout, Desktop: Side by side */}
-        <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 flex-1 min-h-0">
-          {/* Left Panel - List */}
-          <div className={`${selectedSheet || isCreating || isEditing ? 'hidden lg:flex' : 'flex'} w-full lg:w-80 flex-shrink-0 flex-col`}>
-            <Card className="glass-card border-border/50 flex-1 flex flex-col">
-              <CardHeader className="pb-3">
-                <div className="space-y-3">
-                  {/* Search */}
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      placeholder="Buscar fichas..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-9"
-                    />
-                  </div>
+        {/* Stats */}
+        <KnowledgeBaseStats sheets={sheets} techniques={techniques} />
 
-                  {/* Filters */}
-                  <div className="flex gap-2">
-                    <Select value={selectedTechnique} onValueChange={setSelectedTechnique}>
-                      <SelectTrigger className="flex-1">
-                        <SelectValue placeholder="Técnica" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">Todas Técnicas</SelectItem>
-                        {techniques.map(t => (
-                          <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                      <SelectTrigger className="flex-1">
-                        <SelectValue placeholder="Produto" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">Todos Produtos</SelectItem>
-                        {categories.map(c => (
-                          <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="flex-1 p-0 overflow-hidden">
-                <ScrollArea className="h-full px-4 pb-4">
-                  {isLoadingSheets ? (
-                    <div className="text-center py-8 text-muted-foreground">Carregando...</div>
-                  ) : Object.keys(groupedSheets).length === 0 ? (
-                    <div className="text-center py-8">
-                      <FileText className="h-12 w-12 text-muted-foreground/30 mx-auto mb-3" />
-                      <p className="text-muted-foreground">Nenhuma ficha encontrada</p>
-                      {canEdit && (
-                        <Button variant="link" onClick={handleCreateNew} className="mt-2">
-                          Criar primeira ficha técnica
-                        </Button>
-                      )}
-                    </div>
-                  ) : (
-                    <div className="space-y-4">
-                      {Object.entries(groupedSheets).map(([techniqueId, techniqueSheets]) => {
-                        const technique = techniques.find(t => t.id === techniqueId);
-                        return (
-                          <div key={techniqueId}>
-                            <div className="flex items-center gap-2 mb-2 sticky top-0 bg-background/80 backdrop-blur py-1">
-                              <div 
-                                className="w-3 h-3 rounded-full" 
-                                style={{ backgroundColor: technique?.color || '#888' }}
-                              />
-                              <span className="text-sm font-medium text-foreground">
-                                {technique?.name || techniqueId}
-                              </span>
-                              <Badge variant="outline" className="text-xs ml-auto">
-                                {techniqueSheets.length}
-                              </Badge>
-                            </div>
-                            <div className="space-y-2">
-                              {techniqueSheets.map(sheet => (
-                                <button
-                                  key={sheet.id}
-                                  onClick={() => handleSheetClick(sheet.id)}
-                                  className={`w-full text-left p-3 rounded-lg border transition-all ${
-                                    selectedSheet === sheet.id
-                                      ? 'border-primary bg-primary/10'
-                                      : 'border-border/30 hover:border-border hover:bg-muted/20'
-                                  }`}
-                                >
-                                  <div className="flex items-start justify-between gap-2">
-                                    <div className="flex-1 min-w-0">
-                                      <p className="font-medium text-sm truncate">{sheet.title}</p>
-                                      <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
-                                        {sheet.product_categories?.name && (
-                                          <span>{sheet.product_categories.name}</span>
-                                        )}
-                                        {sheet.materials?.name && (
-                                          <>
-                                            <span>•</span>
-                                            <span>{sheet.materials.name}</span>
-                                          </>
-                                        )}
-                                      </div>
-                                    </div>
-                                    <ChevronRight className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-                                  </div>
-                                  {sheet.estimated_time_minutes && (
-                                    <div className="flex items-center gap-1 mt-2 text-xs text-muted-foreground">
-                                      <Clock className="h-3 w-3" />
-                                      <span>{sheet.estimated_time_minutes} min</span>
-                                    </div>
-                                  )}
-                                </button>
-                              ))}
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )}
-                </ScrollArea>
-              </CardContent>
-            </Card>
+        {/* Content */}
+        <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 flex-1 min-h-0">
+          {/* Left Panel */}
+          <div className={`${selectedSheet || isCreating || isEditing ? 'hidden lg:flex' : 'flex'} w-full lg:w-80 flex-shrink-0 flex-col`}>
+            <KnowledgeSheetList
+              sheets={groupedSheets}
+              techniques={techniques}
+              categories={categories}
+              machines={machines}
+              searchTerm={searchTerm}
+              onSearchChange={setSearchTerm}
+              selectedTechnique={selectedTechnique}
+              onTechniqueChange={setSelectedTechnique}
+              selectedCategory={selectedCategory}
+              onCategoryChange={setSelectedCategory}
+              selectedMachine={selectedMachine}
+              onMachineChange={setSelectedMachine}
+              selectedSheet={selectedSheet}
+              onSheetClick={handleSheetClick}
+              canEdit={canEdit}
+              onCreateNew={handleCreateNew}
+              isLoading={isLoadingSheets}
+              hasFilters={hasFilters}
+            />
           </div>
 
-          {/* Right Panel - Viewer/Editor */}
+          {/* Right Panel */}
           <div className={`${!selectedSheet && !isCreating && !isEditing ? 'hidden lg:block' : 'block'} flex-1 min-w-0`}>
-            {/* Back button for mobile */}
             {(selectedSheet || isCreating || isEditing) && (
               <Button
                 variant="ghost"
@@ -264,7 +203,7 @@ const TechnicalKnowledgeBase = () => {
                 ← Voltar para lista
               </Button>
             )}
-            
+
             {isCreating ? (
               <TechnicalSheetEditor
                 techniques={techniques}
@@ -284,6 +223,7 @@ const TechnicalKnowledgeBase = () => {
               <TechnicalSheetViewer
                 sheetId={selectedSheet}
                 onEdit={canEdit ? handleEdit : undefined}
+                onDuplicate={canEdit ? handleDuplicate : undefined}
               />
             ) : (
               <Card className="glass-card border-border/50 h-full flex items-center justify-center">
