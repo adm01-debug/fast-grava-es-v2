@@ -83,9 +83,9 @@ export function PreProductionChecklist({ jobId, onComplete, onSkip }: PreProduct
 
   if (existingChecklist) {
     return (
-      <div className="flex items-center gap-2 p-3 rounded-lg bg-green-500/10 border border-green-500/30">
-        <CheckCircle2 className="h-4 w-4 text-green-400" />
-        <span className="text-sm text-green-400">Checklist pré-produção concluído</span>
+      <div className="flex items-center gap-2 p-3 rounded-lg bg-success/10 border border-success/30">
+        <CheckCircle2 className="h-4 w-4 text-success" />
+        <span className="text-sm text-success">Checklist pré-produção concluído</span>
       </div>
     );
   }
@@ -97,13 +97,13 @@ export function PreProductionChecklist({ jobId, onComplete, onSkip }: PreProduct
           <ClipboardCheck className="h-5 w-5 text-primary" />
           Checklist Pré-Produção
           {!allChecked && (
-            <Badge variant="outline" className="text-xs border-yellow-500/50 text-yellow-500 ml-auto">
+            <Badge variant="outline" className="text-xs border-warning/50 text-warning ml-auto">
               <AlertTriangle className="h-3 w-3 mr-1" />
               Pendente
             </Badge>
           )}
           {allChecked && (
-            <Badge className="text-xs bg-green-500/20 text-green-400 border-green-500/50 ml-auto">
+            <Badge className="text-xs bg-success/20 text-success border-success/50 ml-auto">
               <CheckCircle2 className="h-3 w-3 mr-1" />
               Pronto
             </Badge>
@@ -117,7 +117,7 @@ export function PreProductionChecklist({ jobId, onComplete, onSkip }: PreProduct
             className={cn(
               'flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-all',
               state[item.key] 
-                ? 'bg-green-500/5 border-green-500/30' 
+                ? 'bg-success/5 border-success/30' 
                 : 'bg-background/50 border-border hover:border-primary/30'
             )}
           >
@@ -127,7 +127,7 @@ export function PreProductionChecklist({ jobId, onComplete, onSkip }: PreProduct
               className="mt-0.5"
             />
             <div>
-              <p className={cn('text-sm font-medium', state[item.key] && 'text-green-400')}>
+              <p className={cn('text-sm font-medium', state[item.key] && 'text-success')}>
                 {item.label}
               </p>
               <p className="text-xs text-muted-foreground">{item.description}</p>
