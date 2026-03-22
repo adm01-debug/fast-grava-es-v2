@@ -407,7 +407,7 @@ export const TechnicalSheetEditor = ({
                 {/* Materials */}
                 <div className="space-y-4">
                   <h3 className="text-sm font-semibold flex items-center gap-2">
-                    <Package className="h-4 w-4 text-cyan-400" />
+                    <Package className="h-4 w-4 text-primary" />
                     Materiais e Insumos ({sheetMaterials.length})
                   </h3>
 
