@@ -127,7 +127,7 @@ export function PreProductionChecklist({ jobId, onComplete, onSkip }: PreProduct
               className="mt-0.5"
             />
             <div>
-              <p className={cn('text-sm font-medium', state[item.key] && 'text-green-400')}>
+              <p className={cn('text-sm font-medium', state[item.key] && 'text-success')}>
                 {item.label}
               </p>
               <p className="text-xs text-muted-foreground">{item.description}</p>
