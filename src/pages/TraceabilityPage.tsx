@@ -69,6 +69,7 @@ export default function TraceabilityPage() {
   const [selectedLot, setSelectedLot] = useState<ProductionLot | null>(null);
   const [showGenealogyView, setShowGenealogyView] = useState(false);
   const [qrLot, setQrLot] = useState<ProductionLot | null>(null);
+  const [labelLots, setLabelLots] = useState<ProductionLot[]>([]);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [sortField, setSortField] = useState<SortField>('production_date');
   const [sortDir, setSortDir] = useState<SortDir>('desc');
