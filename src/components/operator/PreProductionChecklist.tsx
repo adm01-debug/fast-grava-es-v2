@@ -97,13 +97,13 @@ export function PreProductionChecklist({ jobId, onComplete, onSkip }: PreProduct
           <ClipboardCheck className="h-5 w-5 text-primary" />
           Checklist Pré-Produção
           {!allChecked && (
-            <Badge variant="outline" className="text-xs border-yellow-500/50 text-yellow-500 ml-auto">
+            <Badge variant="outline" className="text-xs border-warning/50 text-warning ml-auto">
               <AlertTriangle className="h-3 w-3 mr-1" />
               Pendente
             </Badge>
           )}
           {allChecked && (
-            <Badge className="text-xs bg-green-500/20 text-green-400 border-green-500/50 ml-auto">
+            <Badge className="text-xs bg-success/20 text-success border-success/50 ml-auto">
               <CheckCircle2 className="h-3 w-3 mr-1" />
               Pronto
             </Badge>
