@@ -416,12 +416,27 @@ export const TechnicalSheetEditor = ({
                       <Badge key={m.id} variant="secondary" className="gap-1">
                         {m.name}
                         {m.quantity && <span className="text-muted-foreground">({m.quantity})</span>}
-                        <button 
-                          onClick={() => deleteMaterial.mutate(m.id)}
-                          className="ml-1 hover:text-destructive"
-                        >
-                          <X className="h-3 w-3" />
-                        </button>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <button className="ml-1 hover:text-destructive">
+                              <X className="h-3 w-3" />
+                            </button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Remover material?</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                O material "{m.name}" será removido da ficha.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                              <AlertDialogAction onClick={() => deleteMaterial.mutate(m.id)}>
+                                Remover
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
                       </Badge>
                     ))}
                   </div>
