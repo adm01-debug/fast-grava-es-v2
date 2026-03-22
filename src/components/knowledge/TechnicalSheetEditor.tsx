@@ -478,9 +478,27 @@ export const TechnicalSheetEditor = ({
                           {tip.tip_type}
                         </Badge>
                         <span className="text-sm flex-1">{tip.content}</span>
-                        <button onClick={() => deleteTip.mutate(tip.id)} className="hover:text-destructive">
-                          <X className="h-4 w-4" />
-                        </button>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <button className="hover:text-destructive">
+                              <X className="h-4 w-4" />
+                            </button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Remover dica?</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Esta dica será removida permanentemente.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                              <AlertDialogAction onClick={() => deleteTip.mutate(tip.id)}>
+                                Remover
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
                       </div>
                     ))}
                   </div>
