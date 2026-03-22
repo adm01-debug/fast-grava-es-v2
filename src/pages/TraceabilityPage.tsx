@@ -35,6 +35,7 @@ import LotDetailsModal from '@/components/traceability/LotDetailsModal';
 import LotGenealogyView from '@/components/traceability/LotGenealogyView';
 import { TraceabilityStatsCards } from '@/components/traceability/TraceabilityStatsCards';
 import { LotQRCode } from '@/components/traceability/LotQRCode';
+import { LotLabelPrint } from '@/components/traceability/LotLabelPrint';
 import { VoiceButton } from '@/components/voice/VoiceCommands';
 import { toast } from 'sonner';
 
