@@ -68,17 +68,17 @@ export function MainLayout({ children }: MainLayoutProps) {
             <RealtimeIndicator />
           </div>
           
-          {/* Mobile/Tablet top bar */}
-          <div className="fixed top-4 right-4 z-40 flex md:hidden items-center gap-2">
+          {/* Mobile/Tablet top bar - uses safe-area-top */}
+          <div className="fixed top-2 right-3 z-40 flex md:hidden items-center gap-1.5 safe-area-top">
             <NetworkStatusIndicator />
             <OfflineReadyIndicator />
             <ThemeToggle />
           </div>
           
-          {/* Content with proper padding */}
+          {/* Content with proper padding and safe-area insets */}
           <MainContent className={cn(
-            // Mobile: top padding for header, bottom for nav
-            "pt-16 md:pt-4",
+            // Mobile: reduced top padding (no hamburger), bottom for nav + safe area
+            "pt-12 md:pt-4",
             "pb-24 md:pb-4",
             // Horizontal padding
             "px-4 sm:px-6 lg:px-8",

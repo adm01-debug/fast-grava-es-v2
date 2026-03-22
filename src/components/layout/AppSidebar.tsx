@@ -454,19 +454,9 @@ export function AppSidebar() {
     restoreFocus: true,
   });
 
-  // Mobile hamburger button
-  const mobileMenuButton = (
-    <Button
-      variant="ghost"
-      size="icon"
-      onClick={() => setMobileOpen(!mobileOpen)}
-      aria-label={mobileOpen ? 'Fechar menu' : 'Abrir menu'}
-      aria-expanded={mobileOpen}
-      className="fixed top-4 left-4 z-50 md:hidden h-10 w-10 bg-background/80 backdrop-blur-sm border border-border shadow-lg focus:ring-2 focus:ring-primary focus:ring-offset-2"
-    >
-      {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-    </Button>
-  );
+  // Mobile hamburger button - hidden when bottom nav is present (avoid duplicate navigation)
+  // Sidebar is still accessible via swipe gesture from left edge
+  const mobileMenuButton = isMobile ? null : null; // Removed: bottom MobileNavigation handles mobile nav
 
   // Mobile overlay
   const mobileOverlay = (
@@ -482,7 +472,7 @@ export function AppSidebar() {
 
   return (
     <>
-      {mobileMenuButton}
+      {/* Mobile overlay for swipe-opened sidebar */}
       {mobileOverlay}
       
       {/* Swipe detection zone for opening sidebar */}
