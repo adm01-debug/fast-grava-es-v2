@@ -6,7 +6,7 @@ import { format, differenceInDays } from 'date-fns';
 import {
   Package, Search, Plus, Eye, GitBranch, AlertTriangle,
   FileText, Command, QrCode, Download, CheckSquare,
-  ArrowUpDown, Calendar, Filter, X
+  ArrowUpDown, Calendar, Filter, X, Tag
 } from 'lucide-react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
