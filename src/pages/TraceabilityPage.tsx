@@ -474,6 +474,9 @@ export default function TraceabilityPage() {
                               <Button variant="ghost" size="icon" onClick={() => setQrLot(lot)} title="QR Code">
                                 <QrCode className="h-4 w-4" />
                               </Button>
+                              <Button variant="ghost" size="icon" onClick={() => setLabelLots([lot])} title="Imprimir Etiqueta">
+                                <Tag className="h-4 w-4" />
+                              </Button>
                             </div>
                           </TableCell>
                         </TableRow>
