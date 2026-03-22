@@ -516,6 +516,9 @@ export default function TraceabilityPage() {
       {qrLot && (
         <LotQRCode lot={qrLot} open={!!qrLot} onClose={() => setQrLot(null)} />
       )}
+      {labelLots.length > 0 && (
+        <LotLabelPrint lots={labelLots} open={labelLots.length > 0} onClose={() => setLabelLots([])} />
+      )}
     </MainLayout>
   );
 }
