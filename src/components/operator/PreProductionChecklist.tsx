@@ -83,9 +83,9 @@ export function PreProductionChecklist({ jobId, onComplete, onSkip }: PreProduct
 
   if (existingChecklist) {
     return (
-      <div className="flex items-center gap-2 p-3 rounded-lg bg-green-500/10 border border-green-500/30">
-        <CheckCircle2 className="h-4 w-4 text-green-400" />
-        <span className="text-sm text-green-400">Checklist pré-produção concluído</span>
+      <div className="flex items-center gap-2 p-3 rounded-lg bg-success/10 border border-success/30">
+        <CheckCircle2 className="h-4 w-4 text-success" />
+        <span className="text-sm text-success">Checklist pré-produção concluído</span>
       </div>
     );
   }

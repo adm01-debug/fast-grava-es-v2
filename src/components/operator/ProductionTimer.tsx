@@ -27,7 +27,6 @@ export function ProductionTimer({ job, compact = false }: ProductionTimerProps) 
     const remainingSeconds = estimatedSeconds - elapsedSeconds;
     const progress = estimatedSeconds > 0 ? Math.min(100, (elapsedSeconds / estimatedSeconds) * 100) : 0;
 
-    // Status: green < 75%, yellow 75-100%, red > 100%
     let status: 'good' | 'warning' | 'critical' = 'good';
     if (progress >= 100) status = 'critical';
     else if (progress >= 75) status = 'warning';
@@ -49,15 +48,21 @@ export function ProductionTimer({ job, compact = false }: ProductionTimerProps) 
   };
 
   const statusColors = {
-    good: 'text-green-400',
-    warning: 'text-yellow-400',
-    critical: 'text-red-400',
+    good: 'text-success',
+    warning: 'text-warning',
+    critical: 'text-destructive',
   };
 
   const bgColors = {
-    good: 'from-green-500/10 to-green-500/5 border-green-500/30',
-    warning: 'from-yellow-500/10 to-yellow-500/5 border-yellow-500/30',
-    critical: 'from-red-500/10 to-red-500/5 border-red-500/30',
+    good: 'from-success/10 to-success/5 border-success/30',
+    warning: 'from-warning/10 to-warning/5 border-warning/30',
+    critical: 'from-destructive/10 to-destructive/5 border-destructive/30',
+  };
+
+  const barColors = {
+    good: 'bg-success',
+    warning: 'bg-warning',
+    critical: 'bg-destructive',
   };
 
   const StatusIcon = timerData.status === 'critical' ? AlertTriangle : timerData.status === 'warning' ? Timer : CheckCircle2;
@@ -103,20 +108,18 @@ export function ProductionTimer({ job, compact = false }: ProductionTimerProps) 
           <div
             className={cn(
               'absolute inset-y-0 left-0 rounded-full transition-all duration-1000',
-              timerData.status === 'good' && 'bg-green-500',
-              timerData.status === 'warning' && 'bg-yellow-500',
-              timerData.status === 'critical' && 'bg-red-500',
+              barColors[timerData.status],
             )}
             style={{ width: `${Math.min(100, timerData.progress)}%` }}
           />
           {timerData.progress > 100 && (
-            <div className="absolute inset-0 bg-red-500/20 animate-pulse rounded-full" />
+            <div className="absolute inset-0 bg-destructive/20 animate-pulse rounded-full" />
           )}
         </div>
 
         <div className="flex justify-between text-xs text-muted-foreground mt-2">
           <span>{Math.round(timerData.progress)}% concluído</span>
-          <span className={cn(timerData.remainingSeconds < 0 && 'text-red-400 font-medium')}>
+          <span className={cn(timerData.remainingSeconds < 0 && 'text-destructive font-medium')}>
             {timerData.remainingSeconds > 0 
               ? `${formatTime(timerData.remainingSeconds)} restantes`
               : `${formatTime(Math.abs(timerData.remainingSeconds))} excedido`

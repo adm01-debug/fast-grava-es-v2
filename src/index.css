@@ -1285,3 +1285,13 @@
     -webkit-overflow-scrolling: touch;
   }
 }
+
+/* ===== OPERATOR VIEW ANIMATIONS ===== */
+@keyframes pulse-border {
+  0%, 100% { border-color: hsl(var(--status-production) / 0.3); }
+  50% { border-color: hsl(var(--status-production) / 0.7); box-shadow: 0 0 12px hsl(var(--status-production) / 0.15); }
+}
+
+.animate-pulse-border {
+  animation: pulse-border 2s ease-in-out infinite;
+}
