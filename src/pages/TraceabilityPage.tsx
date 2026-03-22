@@ -328,6 +328,12 @@ export default function TraceabilityPage() {
               <CheckSquare className="h-5 w-5 text-primary" />
               <span className="font-medium">{selectedIds.size} lote(s) selecionado(s)</span>
               <div className="flex gap-2 ml-auto">
+                <Button size="sm" variant="outline" onClick={() => {
+                  const selected = filteredAndSortedLots.filter(l => selectedIds.has(l.id));
+                  setLabelLots(selected);
+                }}>
+                  <Tag className="h-3.5 w-3.5 mr-1" />Etiquetas
+                </Button>
                 <Button size="sm" variant="outline" onClick={() => handleBulkStatusChange('quarantine')}>
                   <AlertTriangle className="h-3.5 w-3.5 mr-1" />Quarentena
                 </Button>
