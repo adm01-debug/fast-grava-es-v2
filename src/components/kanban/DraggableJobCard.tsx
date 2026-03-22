@@ -80,17 +80,16 @@ export function DraggableJobCard({ job, technique, machine, onClick, viewMode = 
       <div
         ref={setNodeRef}
         style={style}
-        className={cn(
-          "flex items-center gap-2 px-2 py-1.5 rounded-md border cursor-pointer transition-all",
+      className={cn(
+          "flex items-center gap-2 px-2 py-1.5 rounded-md border border-l-2 cursor-pointer transition-all",
           "bg-card/50 border-border/30 hover:bg-card hover:border-border",
           "group touch-none text-xs",
           isDragging && "opacity-50 shadow-xl scale-105 z-50 ring-2 ring-primary",
-          isSelected && "ring-2 ring-primary bg-primary/5",
-          technique?.color && `border-l-2`
+          isSelected && "ring-2 ring-primary bg-primary/5"
         )}
         style={{ 
-          ...style,
-          borderLeftColor: technique?.color || undefined,
+          ...style as React.CSSProperties,
+          borderLeftColor: technique?.color || 'transparent',
         }}
         onClick={onClick}
       >
