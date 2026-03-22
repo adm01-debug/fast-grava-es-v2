@@ -472,7 +472,7 @@ export function AppSidebar() {
 
   return (
     <>
-      {mobileMenuButton}
+      {/* Mobile overlay for swipe-opened sidebar */}
       {mobileOverlay}
       
       {/* Swipe detection zone for opening sidebar */}
