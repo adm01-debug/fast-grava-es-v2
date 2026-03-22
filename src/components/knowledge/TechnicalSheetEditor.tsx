@@ -467,7 +467,7 @@ export const TechnicalSheetEditor = ({
                 {/* Tips */}
                 <div className="space-y-4">
                   <h3 className="text-sm font-semibold flex items-center gap-2">
-                    <Lightbulb className="h-4 w-4 text-yellow-400" />
+                    <Lightbulb className="h-4 w-4 text-accent-foreground" />
                     Dicas e Observações ({tips.length})
                   </h3>
 
