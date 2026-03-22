@@ -84,66 +84,13 @@ export function useKanbanDragDrop({ jobs, onJobsUpdate }: UseKanbanDragDropProps
   const handleReorderWithinColumn = async (
     activeJobId: string, 
     overJobId: string, 
-    status: JobStatus
+    _status: JobStatus
   ) => {
-    // Get jobs in this column, sorted by priority then date
-    const columnJobs = jobs
-      .filter(job => job.status === status)
-      .sort((a, b) => {
-        // First by priority
-        const priorityDiff = (priorityOrder[b.priority] || 0) - (priorityOrder[a.priority] || 0);
-        if (priorityDiff !== 0) return priorityDiff;
-        // Then by created date
-        return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
-      });
-    
-    const oldIndex = columnJobs.findIndex(job => job.id === activeJobId);
-    const newIndex = columnJobs.findIndex(job => job.id === overJobId);
-    
-    if (oldIndex === -1 || newIndex === -1 || oldIndex === newIndex) return;
-    
-    const reorderedJobs = arrayMove(columnJobs, oldIndex, newIndex);
-    
-    setIsUpdating(true);
-    
-    try {
-      // Update priorities based on new order
-      // Jobs at the top get higher priority
-      const priorityValues = ['urgent', 'high', 'medium', 'low'];
-      const updates = reorderedJobs.map((job, index) => {
-        // Calculate new priority based on position
-        // Top positions get urgent/high, bottom get medium/low
-        const totalJobs = reorderedJobs.length;
-        const priorityIndex = Math.min(
-          Math.floor((index / totalJobs) * priorityValues.length),
-          priorityValues.length - 1
-        );
-        const newPriority = priorityValues[priorityIndex];
-        
-        return supabase
-          .from('jobs')
-          .update({ 
-            priority: newPriority,
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', job.id);
-      });
-      
-      await Promise.all(updates);
-      
-      toast.success('Cards reordenados', {
-        description: 'A ordem dos jobs foi atualizada'
-      });
-      
-      onJobsUpdate();
-    } catch (error) {
-      if (import.meta.env.DEV) console.error('Error reordering jobs:', error);
-      toast.error('Erro ao reordenar', {
-        description: 'Não foi possível reordenar os cards. Tente novamente.'
-      });
-    } finally {
-      setIsUpdating(false);
-    }
+    // Reordering within a column is now visual only (sort by priority stays)
+    // We don't change priorities on reorder to avoid destructive behavior
+    toast.info('Cards ordenados por prioridade', {
+      description: 'Altere a prioridade do job para reposicionar permanentemente'
+    });
   };
 
   const handleStatusChange = async (draggedJob: DbJob, targetStatus: JobStatus) => {
