@@ -121,6 +121,7 @@ const MobileNavButton = memo(function MobileNavButton({
           : 'text-muted-foreground'
       )}
       aria-current={isActive ? 'page' : undefined}
+      aria-label={`${item.label}${badge && badge > 0 ? `, ${badge} alertas` : ''}`}
     >
       {/* Active indicator pill with animation */}
       <AnimatePresence>
