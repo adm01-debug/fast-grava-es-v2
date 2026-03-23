@@ -7,6 +7,8 @@ import { OfflineStatusBanner } from '../offline/OfflineStatusBanner';
 import { SkipLinks, MainContent } from '../accessibility/SkipLinks';
 import { NetworkStatusIndicator } from '@/hooks/useNetworkStatus';
 import { SessionProvider } from '@/hooks/useSessionTimeout';
+import { SectionErrorBoundary } from '../ui/section-error-boundary';
+import { usePageTitle } from '@/hooks/usePageTitle';
 
 // Lazy-load non-critical layout components
 const AssistantButton = lazy(() => import('../assistant/AssistantButton').then(m => ({ default: m.AssistantButton })));
@@ -25,18 +27,16 @@ interface MainLayoutProps {
   children: ReactNode;
 }
 
-// Page transition variants
-const pageVariants = {
-  initial: { opacity: 0, y: 8 },
-  animate: { opacity: 1, y: 0 },
-  exit: { opacity: 0, y: -8 }
-};
+/** Inline fallback for lazy layout widgets — renders nothing */
+const EmptyFallback = null;
 
 export function MainLayout({ children }: MainLayoutProps) {
   const { isMobile, prefersReducedMotion } = useDevice();
   const location = useLocation();
 
-  // Enable animations unless user prefers reduced motion
+  // Dynamic page title for SEO
+  usePageTitle();
+
   const shouldAnimate = !prefersReducedMotion;
 
   return (
@@ -44,7 +44,6 @@ export function MainLayout({ children }: MainLayoutProps) {
       <div className="flex h-screen w-full bg-background overflow-hidden">
         {/* Skip Links for Accessibility */}
         <SkipLinks />
-        
         
         {/* Sidebar - hidden on mobile, shown on tablet+ */}
         <AppSidebar />
@@ -54,35 +53,51 @@ export function MainLayout({ children }: MainLayoutProps) {
             "flex-1 flex flex-col overflow-y-auto overflow-x-hidden relative",
             "h-full scrollbar-thin"
           )}
-          role="main"
         >
           <OfflineStatusBanner />
           
           {/* Desktop top bar */}
-          <div className="fixed top-4 right-4 z-40 hidden md:flex items-center gap-2">
-            <QuickFavoritesBar />
-            <OperatorMachinesIndicator />
-            <NetworkStatusIndicator />
-            <OfflineReadyIndicator />
+          <div className="fixed top-4 right-4 z-40 hidden md:flex items-center gap-2" role="toolbar" aria-label="Ações rápidas">
+            <SectionErrorBoundary section="Favoritos" compact>
+              <Suspense fallback={EmptyFallback}>
+                <QuickFavoritesBar />
+              </Suspense>
+            </SectionErrorBoundary>
+            <SectionErrorBoundary section="Máquinas" compact>
+              <Suspense fallback={EmptyFallback}>
+                <OperatorMachinesIndicator />
+              </Suspense>
+            </SectionErrorBoundary>
+            <Suspense fallback={EmptyFallback}>
+              <NetworkStatusIndicator />
+            </Suspense>
+            <Suspense fallback={EmptyFallback}>
+              <OfflineReadyIndicator />
+            </Suspense>
             <ThemeToggle />
-            <RealtimeIndicator />
+            <SectionErrorBoundary section="Realtime" compact>
+              <Suspense fallback={EmptyFallback}>
+                <RealtimeIndicator />
+              </Suspense>
+            </SectionErrorBoundary>
           </div>
           
-          {/* Mobile/Tablet top bar - uses safe-area-top */}
-          <div className="fixed top-2 right-3 z-40 flex md:hidden items-center gap-1.5 safe-area-top">
-            <NetworkStatusIndicator />
-            <OfflineReadyIndicator />
+          {/* Mobile/Tablet top bar */}
+          <div className="fixed top-2 right-3 z-40 flex md:hidden items-center gap-1.5 safe-area-top" role="toolbar" aria-label="Ações rápidas mobile">
+            <Suspense fallback={EmptyFallback}>
+              <NetworkStatusIndicator />
+            </Suspense>
+            <Suspense fallback={EmptyFallback}>
+              <OfflineReadyIndicator />
+            </Suspense>
             <ThemeToggle />
           </div>
           
           {/* Content with proper padding and safe-area insets */}
           <MainContent className={cn(
-            // Mobile: reduced top padding (no hamburger), bottom for nav + safe area
             "pt-12 md:pt-4",
             "pb-24 md:pb-4",
-            // Horizontal padding
             "px-4 sm:px-6 lg:px-8",
-            // Ensure content can scroll
             "min-h-0"
           )}>
             {shouldAnimate ? (
@@ -103,15 +118,29 @@ export function MainLayout({ children }: MainLayoutProps) {
           {isMobile && <div className="h-20 shrink-0" aria-hidden="true" />}
         </main>
         
-        {/* Mobile navigation - only render on mobile */}
-        <MobileNavigation />
+        {/* Mobile navigation */}
+        <SectionErrorBoundary section="Navegação mobile" compact>
+          <Suspense fallback={EmptyFallback}>
+            <MobileNavigation />
+          </Suspense>
+        </SectionErrorBoundary>
         
-        {/* Mobile FAB for quick actions */}
-        <MobileQuickActions />
+        {/* Mobile FAB */}
+        <SectionErrorBoundary section="Ações rápidas" compact>
+          <Suspense fallback={EmptyFallback}>
+            <MobileQuickActions />
+          </Suspense>
+        </SectionErrorBoundary>
         
         {/* Global components */}
-        <AssistantButton />
-        <NotificationIntegrator />
+        <SectionErrorBoundary section="Assistente" compact>
+          <Suspense fallback={EmptyFallback}>
+            <AssistantButton />
+          </Suspense>
+        </SectionErrorBoundary>
+        <Suspense fallback={EmptyFallback}>
+          <NotificationIntegrator />
+        </Suspense>
       </div>
     </SessionProvider>
   );
