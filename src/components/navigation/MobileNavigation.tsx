@@ -90,21 +90,22 @@ interface MobileNavButtonProps {
   isActive: boolean;
   badge?: number;
   onClick: () => void;
+  onHaptic: () => void;
 }
 
 const MobileNavButton = memo(function MobileNavButton({ 
   item, 
   isActive, 
   badge,
-  onClick 
+  onClick,
+  onHaptic,
 }: MobileNavButtonProps) {
   const Icon = item.icon;
-  const { trigger } = useHapticFeedback();
   
   const handleClick = useCallback(() => {
-    trigger('light');
+    onHaptic();
     onClick();
-  }, [trigger, onClick]);
+  }, [onHaptic, onClick]);
   
   return (
     <motion.button
@@ -120,6 +121,7 @@ const MobileNavButton = memo(function MobileNavButton({
           : 'text-muted-foreground'
       )}
       aria-current={isActive ? 'page' : undefined}
+      aria-label={`${item.label}${badge && badge > 0 ? `, ${badge} alertas` : ''}`}
     >
       {/* Active indicator pill with animation */}
       <AnimatePresence>
@@ -331,6 +333,7 @@ export function MobileNavigation() {
             isActive={isActive(item.href)}
             badge={item.id === 'alerts' ? alertCount : undefined}
             onClick={() => handleNavigate(item.href)}
+            onHaptic={() => trigger('light')}
           />
         ))}
         

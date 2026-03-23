@@ -8,6 +8,7 @@ interface NavigatorWithTouch extends Navigator {
 
 const MOBILE_BREAKPOINT = 768;
 const TABLET_BREAKPOINT = 1024;
+const RESIZE_THROTTLE_MS = 150;
 
 export interface DeviceInfo {
   isMobile: boolean;
@@ -24,109 +25,140 @@ export interface DeviceInfo {
   screenWidth: number;
   screenHeight: number;
   pixelRatio: number;
-  isStandalone: boolean; // PWA mode
+  isStandalone: boolean;
   prefersReducedMotion: boolean;
   isOnline: boolean;
 }
 
+/**
+ * Parse a CSS env() value to a number. The computed style resolves env()
+ * to a pixel value (e.g. "44px") on supported devices, or returns the
+ * raw string "env(...)" / empty on unsupported ones.
+ */
+function parseSafeAreaValue(raw: string): number {
+  if (!raw) return 0;
+  const num = parseFloat(raw);
+  return Number.isFinite(num) ? num : 0;
+}
+
+function getDeviceInfo(): DeviceInfo {
+  const width = window.innerWidth;
+  const height = window.innerHeight;
+
+  const nav = navigator as NavigatorWithTouch;
+  const isTouch =
+    'ontouchstart' in window ||
+    navigator.maxTouchPoints > 0 ||
+    (nav.msMaxTouchPoints ?? 0) > 0;
+
+  const isStandalone =
+    window.matchMedia('(display-mode: standalone)').matches ||
+    nav.standalone === true;
+
+  const prefersReducedMotion = window.matchMedia(
+    '(prefers-reduced-motion: reduce)'
+  ).matches;
+
+  // Read safe-area insets via CSS custom properties that resolve env()
+  const cs = getComputedStyle(document.documentElement);
+  const safeAreaInsets = {
+    top: parseSafeAreaValue(cs.getPropertyValue('--safe-area-top')),
+    bottom: parseSafeAreaValue(cs.getPropertyValue('--safe-area-bottom')),
+    left: parseSafeAreaValue(cs.getPropertyValue('--safe-area-left')),
+    right: parseSafeAreaValue(cs.getPropertyValue('--safe-area-right')),
+  };
+
+  return {
+    isMobile: width < MOBILE_BREAKPOINT,
+    isTablet: width >= MOBILE_BREAKPOINT && width < TABLET_BREAKPOINT,
+    isDesktop: width >= TABLET_BREAKPOINT,
+    isTouch,
+    orientation: width > height ? 'landscape' : 'portrait',
+    safeAreaInsets,
+    screenWidth: width,
+    screenHeight: height,
+    pixelRatio: window.devicePixelRatio,
+    isStandalone,
+    prefersReducedMotion,
+    isOnline: navigator.onLine,
+  };
+}
+
 export function useDevice(): DeviceInfo {
-  const [device, setDevice] = React.useState<DeviceInfo>({
-    isMobile: false,
-    isTablet: false,
-    isDesktop: true,
-    isTouch: false,
-    orientation: 'portrait',
-    safeAreaInsets: { top: 0, bottom: 0, left: 0, right: 0 },
-    screenWidth: typeof window !== 'undefined' ? window.innerWidth : 1024,
-    screenHeight: typeof window !== 'undefined' ? window.innerHeight : 768,
-    pixelRatio: typeof window !== 'undefined' ? window.devicePixelRatio : 1,
-    isStandalone: false,
-    prefersReducedMotion: false,
-    isOnline: true,
-  });
+  const [device, setDevice] = React.useState<DeviceInfo>(getDeviceInfo);
 
   React.useEffect(() => {
-    const checkDevice = () => {
-      const width = window.innerWidth;
-      const height = window.innerHeight;
-      
-      // Detect touch capability
-      const nav = navigator as NavigatorWithTouch;
-      const isTouch = 'ontouchstart' in window || 
-        navigator.maxTouchPoints > 0 ||
-        (nav.msMaxTouchPoints ?? 0) > 0;
+    let rafId: number | null = null;
+    let throttleTimer: ReturnType<typeof setTimeout> | null = null;
 
-      // Detect PWA standalone mode
-      const isStandalone = window.matchMedia('(display-mode: standalone)').matches ||
-        nav.standalone === true;
-
-      // Detect reduced motion preference
-      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-      // Get safe area insets from CSS environment variables
-      const computedStyle = getComputedStyle(document.documentElement);
-      const safeAreaInsets = {
-        top: parseInt(computedStyle.getPropertyValue('--safe-area-top') || '0', 10) || 0,
-        bottom: parseInt(computedStyle.getPropertyValue('--safe-area-bottom') || '0', 10) || 0,
-        left: parseInt(computedStyle.getPropertyValue('--safe-area-left') || '0', 10) || 0,
-        right: parseInt(computedStyle.getPropertyValue('--safe-area-right') || '0', 10) || 0,
-      };
-
-      setDevice({
-        isMobile: width < MOBILE_BREAKPOINT,
-        isTablet: width >= MOBILE_BREAKPOINT && width < TABLET_BREAKPOINT,
-        isDesktop: width >= TABLET_BREAKPOINT,
-        isTouch,
-        orientation: width > height ? 'landscape' : 'portrait',
-        safeAreaInsets,
-        screenWidth: width,
-        screenHeight: height,
-        pixelRatio: window.devicePixelRatio,
-        isStandalone,
-        prefersReducedMotion,
-        isOnline: navigator.onLine,
+    const update = () => {
+      // Use rAF for layout-safe reads
+      rafId = requestAnimationFrame(() => {
+        setDevice((prev) => {
+          const next = getDeviceInfo();
+          // Bail out of state update if breakpoint-relevant values haven't changed
+          if (
+            prev.isMobile === next.isMobile &&
+            prev.isTablet === next.isTablet &&
+            prev.isDesktop === next.isDesktop &&
+            prev.orientation === next.orientation &&
+            prev.isStandalone === next.isStandalone &&
+            prev.prefersReducedMotion === next.prefersReducedMotion &&
+            prev.isOnline === next.isOnline &&
+            prev.screenWidth === next.screenWidth &&
+            prev.screenHeight === next.screenHeight
+          ) {
+            return prev; // no re-render
+          }
+          return next;
+        });
       });
     };
 
-    checkDevice();
-
-    // Listen for resize events
-    const handleResize = () => checkDevice();
-    window.addEventListener('resize', handleResize);
-
-    // Listen for orientation change
-    const handleOrientationChange = () => {
-      // Delay to ensure dimensions are updated
-      setTimeout(checkDevice, 100);
+    const throttledUpdate = () => {
+      if (throttleTimer) return;
+      throttleTimer = setTimeout(() => {
+        throttleTimer = null;
+        update();
+      }, RESIZE_THROTTLE_MS);
     };
-    window.addEventListener('orientationchange', handleOrientationChange);
 
-    // Listen for online/offline
-    const handleOnline = () => setDevice(prev => ({ ...prev, isOnline: true }));
-    const handleOffline = () => setDevice(prev => ({ ...prev, isOnline: false }));
+    window.addEventListener('resize', throttledUpdate);
+    window.addEventListener('orientationchange', () =>
+      setTimeout(throttledUpdate, 100)
+    );
+
+    const handleOnline = () =>
+      setDevice((prev) => (prev.isOnline ? prev : { ...prev, isOnline: true }));
+    const handleOffline = () =>
+      setDevice((prev) => (!prev.isOnline ? prev : { ...prev, isOnline: false }));
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
 
-    // Listen for reduced motion preference changes
     const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
     const handleMotionChange = (e: MediaQueryListEvent) => {
-      setDevice(prev => ({ ...prev, prefersReducedMotion: e.matches }));
+      setDevice((prev) =>
+        prev.prefersReducedMotion === e.matches
+          ? prev
+          : { ...prev, prefersReducedMotion: e.matches }
+      );
     };
     motionQuery.addEventListener('change', handleMotionChange);
 
     return () => {
-      window.removeEventListener('resize', handleResize);
-      window.removeEventListener('orientationchange', handleOrientationChange);
+      window.removeEventListener('resize', throttledUpdate);
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
       motionQuery.removeEventListener('change', handleMotionChange);
+      if (throttleTimer) clearTimeout(throttleTimer);
+      if (rafId) cancelAnimationFrame(rafId);
     };
   }, []);
 
   return device;
 }
 
-// Convenience hooks for specific device checks
+// Convenience hooks
 export function useIsMobile(): boolean {
   const { isMobile } = useDevice();
   return isMobile;
