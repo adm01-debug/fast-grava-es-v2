@@ -57,6 +57,7 @@ const InstallAppPage = lazy(() => import("@/pages/InstallAppPage"));
 const KioskPage = lazy(() => import("@/pages/KioskPage"));
 const MachineComparisonPage = lazy(() => import("@/pages/MachineComparisonPage"));
 const OperatorHistoryPage = lazy(() => import("@/pages/OperatorHistoryPage"));
+const AdminTelemetriaPage = lazy(() => import("@/pages/AdminTelemetriaPage"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 
 // Helper para rotas protegidas com Suspense
