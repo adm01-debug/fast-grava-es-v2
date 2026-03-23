@@ -10,7 +10,7 @@ describe('useDebouncedCallback', () => {
     const callback = vi.fn();
     const { result } = renderHook(() => useDebouncedCallback(callback, 300));
     
-    result.current.debouncedCallback('test');
+    act(() => { result.current.debouncedCallback('test'); });
     expect(callback).not.toHaveBeenCalled();
     
     act(() => { vi.advanceTimersByTime(300); });
@@ -21,8 +21,8 @@ describe('useDebouncedCallback', () => {
     const callback = vi.fn();
     const { result } = renderHook(() => useDebouncedCallback(callback, 300));
     
-    result.current.debouncedCallback('test');
-    result.current.cancel();
+    act(() => { result.current.debouncedCallback('test'); });
+    act(() => { result.current.cancel(); });
     
     act(() => { vi.advanceTimersByTime(300); });
     expect(callback).not.toHaveBeenCalled();
@@ -32,8 +32,8 @@ describe('useDebouncedCallback', () => {
     const callback = vi.fn();
     const { result } = renderHook(() => useDebouncedCallback(callback, 300));
     
-    result.current.debouncedCallback('test');
-    result.current.flush();
+    act(() => { result.current.debouncedCallback('test'); });
+    act(() => { result.current.flush(); });
     
     expect(callback).toHaveBeenCalledWith('test');
   });
@@ -55,9 +55,11 @@ describe('useDebouncedCallback', () => {
     const callback = vi.fn();
     const { result } = renderHook(() => useDebouncedCallback(callback, 300));
     
-    result.current.debouncedCallback('a');
-    result.current.debouncedCallback('b');
-    result.current.debouncedCallback('c');
+    act(() => {
+      result.current.debouncedCallback('a');
+      result.current.debouncedCallback('b');
+      result.current.debouncedCallback('c');
+    });
     
     act(() => { vi.advanceTimersByTime(300); });
     expect(callback).toHaveBeenCalledTimes(1);
