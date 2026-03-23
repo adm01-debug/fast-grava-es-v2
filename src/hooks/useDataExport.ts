@@ -64,7 +64,7 @@ export function useDataExport(tableName: TableName) {
 
     try {
       const selectColumns = columns ? columns.join(',') : '*';
-      let query = (supabase.from(tableName) as any).select(selectColumns);
+      let query = supabase.from(tableName).select(selectColumns);
 
       if (filters) {
         Object.entries(filters).forEach(([key, value]) => {

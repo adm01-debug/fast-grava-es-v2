@@ -33,7 +33,7 @@ export function useInfiniteScroll<T = Record<string, unknown>>({
       const from = (pageParam as number) * pageSize;
       const to = from + pageSize - 1;
 
-      let q = (supabase.from(tableName) as any).select(select);
+      let q = supabase.from(tableName).select(select);
 
       if (filters) {
         Object.entries(filters).forEach(([key, value]) => {

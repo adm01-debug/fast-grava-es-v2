@@ -137,6 +137,9 @@ export default defineConfig(({ mode }) => ({
     cssCodeSplit: true,
     sourcemap: false,
     minify: 'esbuild',
+    esbuild: {
+      drop: mode === 'production' ? ['console', 'debugger'] : [],
+    },
     rollupOptions: {
       output: {
         manualChunks: {
