@@ -104,8 +104,8 @@ export function AppProviders({ children }: { children: ReactNode }) {
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>
-          <Observers />
           <ComposedProviders>
+            <Observers />
             {children}
           </ComposedProviders>
         </BrowserRouter>
