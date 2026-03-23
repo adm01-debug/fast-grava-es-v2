@@ -90,21 +90,22 @@ interface MobileNavButtonProps {
   isActive: boolean;
   badge?: number;
   onClick: () => void;
+  onHaptic: () => void;
 }
 
 const MobileNavButton = memo(function MobileNavButton({ 
   item, 
   isActive, 
   badge,
-  onClick 
+  onClick,
+  onHaptic,
 }: MobileNavButtonProps) {
   const Icon = item.icon;
-  const { trigger } = useHapticFeedback();
   
   const handleClick = useCallback(() => {
-    trigger('light');
+    onHaptic();
     onClick();
-  }, [trigger, onClick]);
+  }, [onHaptic, onClick]);
   
   return (
     <motion.button
