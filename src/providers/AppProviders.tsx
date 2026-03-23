@@ -1,4 +1,4 @@
-import { ReactNode, memo } from "react";
+import { ReactNode, ComponentType } from "react";
 import { BrowserRouter } from "react-router-dom";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -17,7 +17,6 @@ import { NavigationListener } from "@/components/navigation/NavigationListener";
 import { InAppNotificationWatcher } from "@/components/notifications/InAppNotificationWatcher";
 import { SmartAlertsWatcher } from "@/components/notifications/SmartAlertsWatcher";
 
-// Contextos de infraestrutura
 import { BreadcrumbProvider } from "@/contexts/BreadcrumbContext";
 import { ConfirmationProvider } from "@/contexts/ConfirmationContext";
 import { FeatureFlagsProvider } from "@/contexts/FeatureFlagsContext";
@@ -33,63 +32,83 @@ import { createQueryClient } from "@/lib/queryConfig";
 
 const queryClient = createQueryClient();
 
+/**
+ * Composes an array of providers into a single wrapper, eliminating deep nesting.
+ * Each entry is either a Provider component or a tuple [Provider, props].
+ */
+type ProviderEntry =
+  | ComponentType<{ children: ReactNode }>
+  | [ComponentType<any>, Record<string, unknown>];
+
+function composeProviders(entries: ProviderEntry[]): ComponentType<{ children: ReactNode }> {
+  return function ComposedProviders({ children }: { children: ReactNode }) {
+    return entries.reduceRight<ReactNode>((acc, entry) => {
+      if (Array.isArray(entry)) {
+        const [Provider, props] = entry;
+        return <Provider {...props}>{acc}</Provider>;
+      }
+      const Provider = entry;
+      return <Provider>{acc}</Provider>;
+    }, children);
+  };
+}
+
+// Standalone observer components (no children)
+function Observers() {
+  return (
+    <>
+      <NavigationListener />
+      <InAppNotificationWatcher />
+      <SmartAlertsWatcher />
+    </>
+  );
+}
+
+// Build the composed tree – order matters (outermost first)
+const ComposedProviders = composeProviders([
+  // Infrastructure layer (no auth dependency)
+  ThemeContextProvider,
+  [TooltipProvider, {}],
+  UserPreferencesProvider,
+  FeatureFlagsProvider,
+  // Router-dependent layer
+  BreadcrumbProvider,
+  SearchProvider,
+  SidebarProvider,
+  ConfirmationProvider,
+  NotificationsProvider,
+  // Auth layer
+  AuthProvider,
+  ReauthProvider,
+  PermissionsProvider,
+  SessionManager,
+  // Data & sync layer
+  OfflineSyncProvider,
+  NetworkStatusProvider,
+  WebSocketProvider,
+  // Feature layer
+  EfficiencyNotificationProvider,
+  RealtimeNotificationsProvider,
+  [ProductDesignProvider, {
+    enableOnboarding: true,
+    enableCommandPalette: true,
+    enableKeyboardShortcuts: true,
+    enableToastWithUndo: true,
+  }],
+  CelebrationProvider,
+  FeedbackProvider,
+]);
+
 export function AppProviders({ children }: { children: ReactNode }) {
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
-        <ThemeContextProvider>
-          <TooltipProvider>
-            <UserPreferencesProvider>
-              <FeatureFlagsProvider>
-                <BrowserRouter>
-                  <NavigationListener />
-                  <BreadcrumbProvider>
-                    <SearchProvider>
-                      <SidebarProvider>
-                        <ConfirmationProvider>
-                          <NotificationsProvider>
-                            <AuthProvider>
-                              <ReauthProvider>
-                                <PermissionsProvider>
-                                  <SessionManager>
-                                    <OfflineSyncProvider>
-                                      <NetworkStatusProvider>
-                                        <WebSocketProvider>
-                                          <EfficiencyNotificationProvider>
-                                            <RealtimeNotificationsProvider>
-                                              <InAppNotificationWatcher />
-                                              <SmartAlertsWatcher />
-                                              <ProductDesignProvider
-                                                enableOnboarding={true}
-                                                enableCommandPalette={true}
-                                                enableKeyboardShortcuts={true}
-                                                enableToastWithUndo={true}
-                                              >
-                                                <CelebrationProvider>
-                                                  <FeedbackProvider>
-                                                    {children}
-                                                  </FeedbackProvider>
-                                                </CelebrationProvider>
-                                              </ProductDesignProvider>
-                                            </RealtimeNotificationsProvider>
-                                          </EfficiencyNotificationProvider>
-                                        </WebSocketProvider>
-                                      </NetworkStatusProvider>
-                                    </OfflineSyncProvider>
-                                  </SessionManager>
-                                </PermissionsProvider>
-                              </ReauthProvider>
-                            </AuthProvider>
-                          </NotificationsProvider>
-                        </ConfirmationProvider>
-                      </SidebarProvider>
-                    </SearchProvider>
-                  </BreadcrumbProvider>
-                </BrowserRouter>
-              </FeatureFlagsProvider>
-            </UserPreferencesProvider>
-          </TooltipProvider>
-        </ThemeContextProvider>
+        <BrowserRouter>
+          <Observers />
+          <ComposedProviders>
+            {children}
+          </ComposedProviders>
+        </BrowserRouter>
       </QueryClientProvider>
     </ErrorBoundary>
   );
