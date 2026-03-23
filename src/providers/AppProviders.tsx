@@ -1,4 +1,5 @@
 import { ReactNode, ComponentType } from "react";
+import { ThemeProvider } from "next-themes";
 import { BrowserRouter } from "react-router-dom";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -67,6 +68,7 @@ function Observers() {
 // Build the composed tree – order matters (outermost first)
 const ComposedProviders = composeProviders([
   // Infrastructure layer (no auth dependency)
+  [ThemeProvider, { attribute: "class", defaultTheme: "dark", enableSystem: true, disableTransitionOnChange: true }],
   ThemeContextProvider,
   [TooltipProvider, {}],
   UserPreferencesProvider,
