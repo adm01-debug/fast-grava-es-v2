@@ -68,6 +68,7 @@ function Observers() {
 // Build the composed tree – order matters (outermost first)
 const ComposedProviders = composeProviders([
   // Infrastructure layer (no auth dependency)
+  [ThemeProvider, { attribute: "class", defaultTheme: "dark", enableSystem: true, disableTransitionOnChange: true }],
   ThemeContextProvider,
   [TooltipProvider, {}],
   UserPreferencesProvider,
