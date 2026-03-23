@@ -64,7 +64,8 @@ export function useDataExport(tableName: TableName) {
 
     try {
       const selectColumns = columns ? columns.join(',') : '*';
-      let query = supabase.from(tableName).select(selectColumns);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- dynamic table name requires runtime cast
+      let query = (supabase.from(tableName) as any).select(selectColumns);
 
       if (filters) {
         Object.entries(filters).forEach(([key, value]) => {
