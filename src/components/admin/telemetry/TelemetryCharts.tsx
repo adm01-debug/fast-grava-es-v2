@@ -1,7 +1,10 @@
 import { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from "recharts";
-import { BarChart3, TrendingUp, PieChart as PieIcon } from "lucide-react";
+import {
+  AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
+  ResponsiveContainer, Legend,
+} from "recharts";
+import { BarChart3, TrendingUp, Clock } from "lucide-react";
 
 interface TelemetryRow {
   id: string;
@@ -18,131 +21,162 @@ interface TelemetryChartsProps {
   timeFilter: string;
 }
 
-const COLORS = [
-  "hsl(var(--primary))",
-  "hsl(var(--destructive))",
-  "hsl(var(--warning, 45 93% 47%))",
-  "hsl(var(--success, 142 71% 45%))",
-  "hsl(var(--accent))",
-  "hsl(220 70% 55%)",
-];
+function getBucketMs(timeFilter: string): number {
+  switch (timeFilter) {
+    case "1h": return 5 * 60 * 1000;      // 5 min
+    case "6h": return 30 * 60 * 1000;     // 30 min
+    case "24h": return 60 * 60 * 1000;    // 1 hora
+    default: return 6 * 60 * 60 * 1000;   // 6 horas (7d/custom)
+  }
+}
+
+function formatBucketTime(ts: number, timeFilter: string): string {
+  const d = new Date(ts);
+  if (timeFilter === "7d" || timeFilter === "custom") {
+    return d.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
+  }
+  return d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+}
 
 export function TelemetryCharts({ rows, timeFilter }: TelemetryChartsProps) {
-  const timelineData = useMemo(() => {
+  // 1. Stacked AreaChart — Alertas por Severidade ao longo do tempo
+  const stackedData = useMemo(() => {
     if (rows.length === 0) return [];
-    const buckets = new Map<string, { count: number; avgMs: number; totalMs: number }>();
-    const isShort = timeFilter === "1h" || timeFilter === "6h";
+    const bucketMs = getBucketMs(timeFilter);
+    const buckets = new Map<number, { lentas: number; muitoLentas: number; erros: number }>();
 
     for (const r of rows) {
-      const d = new Date(r.created_at);
-      const key = isShort
-        ? `${d.getHours().toString().padStart(2, "0")}:${(Math.floor(d.getMinutes() / 10) * 10).toString().padStart(2, "0")}`
-        : `${d.getDate().toString().padStart(2, "0")}/${(d.getMonth() + 1).toString().padStart(2, "0")} ${d.getHours().toString().padStart(2, "0")}h`;
-
-      const prev = buckets.get(key) || { count: 0, avgMs: 0, totalMs: 0 };
-      buckets.set(key, { count: prev.count + 1, totalMs: prev.totalMs + r.duration_ms, avgMs: 0 });
+      const ts = Math.floor(new Date(r.created_at).getTime() / bucketMs) * bucketMs;
+      const prev = buckets.get(ts) || { lentas: 0, muitoLentas: 0, erros: 0 };
+      if (r.severity === "slow") prev.lentas++;
+      else if (r.severity === "very_slow") prev.muitoLentas++;
+      else if (r.severity === "error") prev.erros++;
+      buckets.set(ts, prev);
     }
 
     return [...buckets.entries()]
-      .map(([time, v]) => ({ time, count: v.count, avgMs: Math.round(v.totalMs / v.count) }))
-      .sort((a, b) => a.time.localeCompare(b.time));
+      .sort((a, b) => a[0] - b[0])
+      .map(([ts, v]) => ({
+        time: formatBucketTime(ts, timeFilter),
+        lentas: v.lentas,
+        muitoLentas: v.muitoLentas,
+        erros: v.erros,
+      }));
   }, [rows, timeFilter]);
 
-  const severityData = useMemo(() => {
-    const counts = { slow: 0, very_slow: 0, error: 0 };
-    for (const r of rows) {
-      if (r.severity in counts) counts[r.severity as keyof typeof counts]++;
-    }
-    return [
-      { name: "Lentas", value: counts.slow, color: "hsl(45 93% 47%)" },
-      { name: "Muito Lentas", value: counts.very_slow, color: "hsl(var(--destructive))" },
-      { name: "Erros", value: counts.error, color: "hsl(0 84% 40%)" },
-    ].filter(d => d.value > 0);
-  }, [rows]);
+  // 2. Duration avg/max AreaChart
+  const durationData = useMemo(() => {
+    if (rows.length === 0) return [];
+    const bucketMs = getBucketMs(timeFilter);
+    const buckets = new Map<number, { totalMs: number; maxMs: number; count: number }>();
 
-  const operationData = useMemo(() => {
+    for (const r of rows) {
+      const ts = Math.floor(new Date(r.created_at).getTime() / bucketMs) * bucketMs;
+      const prev = buckets.get(ts) || { totalMs: 0, maxMs: 0, count: 0 };
+      buckets.set(ts, {
+        totalMs: prev.totalMs + r.duration_ms,
+        maxMs: Math.max(prev.maxMs, r.duration_ms),
+        count: prev.count + 1,
+      });
+    }
+
+    return [...buckets.entries()]
+      .sort((a, b) => a[0] - b[0])
+      .map(([ts, v]) => ({
+        time: formatBucketTime(ts, timeFilter),
+        mediaMs: Math.round(v.totalMs / v.count),
+        maxMs: v.maxMs,
+      }));
+  }, [rows, timeFilter]);
+
+  // 3. Horizontal BarChart — Top 8 tabelas
+  const tableData = useMemo(() => {
     const counts = new Map<string, number>();
     for (const r of rows) {
-      counts.set(r.operation, (counts.get(r.operation) || 0) + 1);
+      const key = r.rpc_name || r.table_name || "unknown";
+      counts.set(key, (counts.get(key) || 0) + 1);
     }
     return [...counts.entries()]
       .sort((a, b) => b[1] - a[1])
-      .slice(0, 6)
-      .map(([name, value]) => ({ name, value }));
+      .slice(0, 8)
+      .map(([name, value]) => ({ name, alertas: value }));
   }, [rows]);
 
   if (rows.length === 0) return null;
 
+  const tooltipStyle = {
+    backgroundColor: "hsl(var(--card))",
+    border: "1px solid hsl(var(--border))",
+    borderRadius: 8,
+    fontSize: 12,
+  };
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-      {/* Timeline */}
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {/* 1. Stacked AreaChart — Alertas ao Longo do Tempo */}
       <Card className="md:col-span-2">
         <CardHeader className="pb-2">
           <CardTitle className="text-sm flex items-center gap-2">
             <TrendingUp className="h-4 w-4" />
-            Timeline de Alertas
+            Alertas ao Longo do Tempo
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <ResponsiveContainer width="100%" height={220}>
-            <LineChart data={timelineData}>
+          <ResponsiveContainer width="100%" height={240}>
+            <AreaChart data={stackedData}>
               <CartesianGrid strokeDasharray="3 3" className="stroke-border/30" />
               <XAxis dataKey="time" tick={{ fontSize: 10 }} className="fill-muted-foreground" />
               <YAxis tick={{ fontSize: 10 }} className="fill-muted-foreground" />
-              <Tooltip
-                contentStyle={{ backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8, fontSize: 12 }}
-                labelStyle={{ color: "hsl(var(--foreground))" }}
-              />
-              <Line type="monotone" dataKey="count" stroke="hsl(var(--primary))" strokeWidth={2} dot={{ r: 3 }} name="Alertas" />
-              <Line type="monotone" dataKey="avgMs" stroke="hsl(var(--destructive))" strokeWidth={2} dot={{ r: 3 }} name="Média (ms)" yAxisId={0} />
-            </LineChart>
+              <Tooltip contentStyle={tooltipStyle} />
+              <Legend wrapperStyle={{ fontSize: 11 }} />
+              <Area type="monotone" dataKey="muitoLentas" stackId="1" fill="hsl(var(--destructive))" stroke="hsl(var(--destructive))" fillOpacity={0.6} name="Muito Lentas" />
+              <Area type="monotone" dataKey="lentas" stackId="1" fill="hsl(45 93% 47%)" stroke="hsl(45 93% 47%)" fillOpacity={0.5} name="Lentas" />
+              <Area type="monotone" dataKey="erros" stackId="1" fill="hsl(0 84% 60%)" stroke="hsl(0 84% 60%)" fillOpacity={0.5} name="Erros" />
+            </AreaChart>
           </ResponsiveContainer>
         </CardContent>
       </Card>
 
-      {/* Severity Pie */}
+      {/* 2. Duration AreaChart — Média / Máxima */}
       <Card>
         <CardHeader className="pb-2">
           <CardTitle className="text-sm flex items-center gap-2">
-            <PieIcon className="h-4 w-4" />
-            Por Severidade
+            <Clock className="h-4 w-4" />
+            Duração Média / Máxima
           </CardTitle>
         </CardHeader>
-        <CardContent className="flex items-center justify-center">
-          {severityData.length > 0 ? (
-            <ResponsiveContainer width="100%" height={220}>
-              <PieChart>
-                <Pie data={severityData} cx="50%" cy="50%" innerRadius={50} outerRadius={80} dataKey="value" label={({ name, value }) => `${name}: ${value}`}>
-                  {severityData.map((entry, i) => (
-                    <Cell key={i} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
-          ) : (
-            <p className="text-sm text-muted-foreground">Sem dados</p>
-          )}
+        <CardContent>
+          <ResponsiveContainer width="100%" height={220}>
+            <AreaChart data={durationData}>
+              <CartesianGrid strokeDasharray="3 3" className="stroke-border/30" />
+              <XAxis dataKey="time" tick={{ fontSize: 10 }} className="fill-muted-foreground" />
+              <YAxis tick={{ fontSize: 10 }} className="fill-muted-foreground" unit="ms" />
+              <Tooltip contentStyle={tooltipStyle} />
+              <Legend wrapperStyle={{ fontSize: 11 }} />
+              <Area type="monotone" dataKey="maxMs" fill="hsl(var(--destructive))" stroke="hsl(var(--destructive))" fillOpacity={0.3} name="Máxima (ms)" />
+              <Area type="monotone" dataKey="mediaMs" fill="hsl(var(--primary))" stroke="hsl(var(--primary))" fillOpacity={0.4} name="Média (ms)" />
+            </AreaChart>
+          </ResponsiveContainer>
         </CardContent>
       </Card>
 
-      {/* Operations Bar */}
-      {operationData.length > 0 && (
-        <Card className="md:col-span-3">
+      {/* 3. Horizontal BarChart — Por Tabela */}
+      {tableData.length > 0 && (
+        <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm flex items-center gap-2">
               <BarChart3 className="h-4 w-4" />
-              Por Tipo de Operação
+              Alertas por Tabela
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={180}>
-              <BarChart data={operationData}>
+            <ResponsiveContainer width="100%" height={220}>
+              <BarChart data={tableData} layout="vertical">
                 <CartesianGrid strokeDasharray="3 3" className="stroke-border/30" />
-                <XAxis dataKey="name" tick={{ fontSize: 11 }} className="fill-muted-foreground" />
-                <YAxis tick={{ fontSize: 11 }} className="fill-muted-foreground" />
-                <Tooltip contentStyle={{ backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8, fontSize: 12 }} />
-                <Bar dataKey="value" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} name="Ocorrências" />
+                <XAxis type="number" tick={{ fontSize: 10 }} className="fill-muted-foreground" />
+                <YAxis type="category" dataKey="name" tick={{ fontSize: 10 }} className="fill-muted-foreground" width={100} />
+                <Tooltip contentStyle={tooltipStyle} />
+                <Bar dataKey="alertas" fill="hsl(var(--primary))" radius={[0, 4, 4, 0]} name="Alertas" />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
