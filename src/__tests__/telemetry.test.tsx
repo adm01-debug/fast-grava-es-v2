@@ -37,6 +37,8 @@ vi.mock('recharts', () => {
     Line: () => null,
     BarChart: MockComponent,
     Bar: () => null,
+    AreaChart: MockComponent,
+    Area: () => null,
     PieChart: MockComponent,
     Pie: ({ children }: any) => React.createElement('div', null, children),
     Cell: () => null,
@@ -44,6 +46,7 @@ vi.mock('recharts', () => {
     YAxis: () => null,
     CartesianGrid: () => null,
     Tooltip: () => null,
+    Legend: () => null,
   };
 });
 
