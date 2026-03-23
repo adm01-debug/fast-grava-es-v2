@@ -32,8 +32,8 @@ describe('useDebouncedCallback', () => {
     const callback = vi.fn();
     const { result } = renderHook(() => useDebouncedCallback(callback, 300));
     
-    result.current.debouncedCallback('test');
-    result.current.flush();
+    act(() => { result.current.debouncedCallback('test'); });
+    act(() => { result.current.flush(); });
     
     expect(callback).toHaveBeenCalledWith('test');
   });
