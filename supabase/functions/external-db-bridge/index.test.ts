@@ -1,5 +1,14 @@
-import { loadSync } from "https://deno.land/std@0.224.0/dotenv/mod.ts";
-loadSync({ export: true, allowEmptyValues: true });
+// Load env manually to avoid .env.example validation
+const envText = Deno.readTextFileSync("/dev-server/.env");
+for (const line of envText.split("\n")) {
+  const match = line.match(/^([^#=]+)=(.*)$/);
+  if (match) {
+    const key = match[1].trim();
+    const val = match[2].trim().replace(/^["']|["']$/g, "");
+    Deno.env.set(key, val);
+  }
+}
+
 import { assertEquals, assertExists, assert } from "https://deno.land/std@0.224.0/assert/mod.ts";
 
 const SUPABASE_URL = Deno.env.get("VITE_SUPABASE_URL")!;
