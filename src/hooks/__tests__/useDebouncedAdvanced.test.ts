@@ -55,9 +55,11 @@ describe('useDebouncedCallback', () => {
     const callback = vi.fn();
     const { result } = renderHook(() => useDebouncedCallback(callback, 300));
     
-    result.current.debouncedCallback('a');
-    result.current.debouncedCallback('b');
-    result.current.debouncedCallback('c');
+    act(() => {
+      result.current.debouncedCallback('a');
+      result.current.debouncedCallback('b');
+      result.current.debouncedCallback('c');
+    });
     
     act(() => { vi.advanceTimersByTime(300); });
     expect(callback).toHaveBeenCalledTimes(1);
