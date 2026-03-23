@@ -333,6 +333,7 @@ export function MobileNavigation() {
             isActive={isActive(item.href)}
             badge={item.id === 'alerts' ? alertCount : undefined}
             onClick={() => handleNavigate(item.href)}
+            onHaptic={() => trigger('light')}
           />
         ))}
         
