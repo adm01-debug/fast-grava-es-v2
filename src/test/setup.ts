@@ -1,6 +1,11 @@
 import '@testing-library/jest-dom';
 import { vi } from 'vitest';
 
+// Guard: skip browser mocks when running in node environment
+if (typeof window === 'undefined') {
+  // Node environment - skip browser mocks
+} else {
+
 // Mock matchMedia
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
