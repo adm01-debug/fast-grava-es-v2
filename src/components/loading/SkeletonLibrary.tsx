@@ -10,22 +10,25 @@ export function Shimmer({ className }: { className?: string }) {
     <div className={cn(
       'relative overflow-hidden bg-muted rounded',
       'before:absolute before:inset-0',
-      'before:bg-gradient-to-r before:from-transparent before:via-white/20 before:to-transparent',
+      'before:bg-gradient-to-r before:from-transparent before:via-foreground/5 before:to-transparent',
       'before:animate-shimmer',
       className
     )} />
   );
 }
 
-// Stats card skeleton
+// Stats card skeleton — anatomically mirrors StatsCard
 export function StatsCardSkeleton({ className }: { className?: string }) {
   return (
-    <Card className={cn('p-5', className)}>
+    <Card className={cn('p-5 glass-card', className)}>
       <div className="flex items-start justify-between gap-4">
-        <div className="space-y-2 flex-1">
-          <Skeleton className="h-4 w-24" />
-          <Skeleton className="h-8 w-16" />
-          <Skeleton className="h-3 w-32" />
+        <div className="space-y-2.5 flex-1">
+          <Skeleton className="h-3.5 w-20 rounded-md" />
+          <Skeleton className="h-9 w-20 rounded-md" />
+          <div className="flex items-center gap-1.5">
+            <Skeleton className="h-5 w-12 rounded-full" />
+            <Skeleton className="h-3 w-24 rounded-md" />
+          </div>
         </div>
         <Skeleton className="h-12 w-12 rounded-xl shrink-0" />
       </div>
