@@ -245,7 +245,7 @@ export default function AuthPage() {
           </p>
         </div>
 
-        <Card variant="elevated" className="border-border/50">
+        <Card variant="elevated" className="border-border/60 shadow-xl dark:shadow-glow-primary/20 backdrop-blur-xl">
           <CardContent className="pt-6">
             <Tabs defaultValue="login" className="w-full">
               <TabsList className="grid w-full grid-cols-2 mb-6">
