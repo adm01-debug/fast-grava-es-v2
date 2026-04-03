@@ -456,6 +456,7 @@ export default function AuthPage() {
             </Tabs>
           </CardContent>
         </Card>
+        </motion.div>
       </div>
 
       <Dialog open={showForgotPassword} onOpenChange={setShowForgotPassword}>
