@@ -3,10 +3,10 @@ import { cn } from '@/lib/utils';
 import { useEffect, useRef, useState } from 'react';
 import { 
   Clock, 
-  Target, 
+  ThumbsUp, 
   Calendar, 
   Play, 
-  CheckCircle2, 
+  CircleCheckBig, 
   Pause, 
   XCircle, 
   AlertTriangle,
