@@ -1,8 +1,12 @@
+// @vitest-environment node
 import { describe, it, expect } from 'vitest';
-import fs from 'fs';
-import path from 'path';
+import { readFileSync } from 'node:fs';
+import { resolve, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const cssContent = fs.readFileSync(path.resolve(__dirname, '../../index.css'), 'utf-8');
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const cssContent = readFileSync(resolve(__dirname, '../../index.css'), 'utf-8');
 
 describe('Design System CSS Tokens', () => {
   // ===== DARK MODE CARD CONTRAST (P0 fix) =====

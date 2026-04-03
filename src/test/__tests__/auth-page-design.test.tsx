@@ -1,8 +1,12 @@
-import { describe, it, expect, vi } from 'vitest';
-import fs from 'fs';
-import path from 'path';
+// @vitest-environment node
+import { describe, it, expect } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { resolve, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const authPageCode = fs.readFileSync(path.resolve(__dirname, '../../pages/AuthPage.tsx'), 'utf-8');
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const authPageCode = readFileSync(resolve(__dirname, '../../pages/AuthPage.tsx'), 'utf-8');
 
 describe('AuthPage Design Improvements', () => {
   // ===== STAGGERED ANIMATIONS =====
