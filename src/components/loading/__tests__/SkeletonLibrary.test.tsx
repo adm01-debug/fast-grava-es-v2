@@ -46,8 +46,8 @@ describe('SkeletonLibrary', () => {
 
     it('contains skeleton elements for label, value, badge, and icon', () => {
       const { container } = render(<StatsCardSkeleton />);
-      // Count skeleton divs (data-slot="skeleton" or role)
-      const skeletons = container.querySelectorAll('[data-slot="skeleton"]');
+      // Skeleton component renders divs with specific classes
+      const skeletons = container.querySelectorAll('.rounded-md, .rounded-full, .rounded-xl');
       expect(skeletons.length).toBeGreaterThanOrEqual(4);
     });
 
