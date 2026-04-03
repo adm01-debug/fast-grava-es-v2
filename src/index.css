@@ -181,9 +181,9 @@
     --foreground: 210 15% 95%;
 
     /* ===== CARDS ===== */
-    --card: 220 10% 8%;
+    --card: 220 10% 10%;
     --card-foreground: 210 15% 95%;
-    --card-elevated: 220 10% 11%;
+    --card-elevated: 220 10% 12%;
 
     /* ===== POPOVER/DIALOG ===== */
     --popover: 220 10% 8%;
