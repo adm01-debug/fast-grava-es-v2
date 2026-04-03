@@ -3,10 +3,10 @@ import { cn } from '@/lib/utils';
 import { useEffect, useRef, useState } from 'react';
 import { 
   Clock, 
-  Target, 
+  ThumbsUp, 
   Calendar, 
   Play, 
-  CheckCircle2, 
+  CircleCheckBig, 
   Pause, 
   XCircle, 
   AlertTriangle,
@@ -37,7 +37,7 @@ const statusConfig: Record<JobStatus, {
   },
   ready: { 
     label: 'No Jeito', 
-    icon: Target,
+    icon: ThumbsUp,
     bgClass: 'bg-status-ready',
     textClass: 'text-status-ready-foreground',
     glowClass: 'dark:shadow-[0_0_12px_hsl(45_100%_55%/0.4)]',
@@ -60,7 +60,7 @@ const statusConfig: Record<JobStatus, {
   },
   finished: { 
     label: 'Finalizado', 
-    icon: CheckCircle2,
+    icon: CircleCheckBig,
     bgClass: 'bg-status-finished',
     textClass: 'text-status-finished-foreground',
     glowClass: 'dark:shadow-[0_0_12px_hsl(142_70%_50%/0.4)]',

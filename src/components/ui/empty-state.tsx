@@ -336,11 +336,12 @@ export function EmptyState({
   secondaryAction,
   className,
   size = "md",
+  illustration = true,
 }: EmptyStateProps) {
   const config = variantConfig[variant];
   const sizes = sizeClasses[size];
+  const illustrationKey = config.illustration;
 
-  const displayIcon = icon || config.icon;
   const displayTitle = title || config.title;
   const displayDescription = description || config.description;
 
@@ -355,22 +356,43 @@ export function EmptyState({
         className
       )}
     >
-      <motion.div
-        initial={{ scale: 0.8, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ delay: 0.1, type: "spring", damping: 15 }}
-        className="mb-4 text-muted-foreground/50"
-      >
-        {React.cloneElement(displayIcon as React.ReactElement, {
-          className: cn(sizes.icon, "text-muted-foreground/50"),
-        })}
-      </motion.div>
+      {/* SVG Illustration or Icon */}
+      {illustration && illustrationKey && Illustrations[illustrationKey] ? (
+        <motion.div
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ delay: 0.1, type: "spring", damping: 15 }}
+          className={cn(
+            "mb-4",
+            size === "sm" ? "w-24 h-18" : size === "lg" ? "w-40 h-30" : "w-32 h-24"
+          )}
+        >
+          {Illustrations[illustrationKey]}
+        </motion.div>
+      ) : (
+        <motion.div
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ delay: 0.1, type: "spring", damping: 15 }}
+          className="mb-4 rounded-2xl bg-muted/50 border border-border/50 p-4"
+        >
+          {icon ? (
+            React.cloneElement(icon as React.ReactElement, {
+              className: cn(sizes.icon, "text-muted-foreground/60"),
+            })
+          ) : (
+            React.cloneElement(config.icon as React.ReactElement, {
+              className: cn(sizes.icon, "text-muted-foreground/60"),
+            })
+          )}
+        </motion.div>
+      )}
 
       <motion.h3
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.2 }}
-        className={cn("font-semibold text-foreground mb-1", sizes.title)}
+        className={cn("font-display font-semibold text-foreground mb-1.5", sizes.title)}
       >
         {displayTitle}
       </motion.h3>

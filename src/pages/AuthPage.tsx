@@ -232,20 +232,40 @@ export default function AuthPage() {
         </Button>
       </div>
 
-      <div className="w-full max-w-md space-y-8 animate-fade-in relative z-10">
+      <div className="w-full max-w-md space-y-8 relative z-10">
         <div className="text-center space-y-3">
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-primary to-accent mb-4 shadow-xl shadow-primary/25">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5, ease: [0.175, 0.885, 0.32, 1.275] }}
+            className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-primary to-accent mb-4 shadow-xl shadow-primary/25"
+          >
             <Printer className="h-10 w-10 text-white" />
-          </div>
-          <h1 className="text-4xl font-display font-bold tracking-tight">
+          </motion.div>
+          <motion.h1
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.15, ease: [0, 0, 0.2, 1] }}
+            className="text-4xl font-display font-bold tracking-tight"
+          >
             <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">{t('common.appName')}</span>
-          </h1>
-          <p className="text-muted-foreground text-lg">
+          </motion.h1>
+          <motion.p
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.25, ease: [0, 0, 0.2, 1] }}
+            className="text-muted-foreground text-lg"
+          >
             Sistema de Gestão de Produção
-          </p>
+          </motion.p>
         </div>
 
-        <Card variant="elevated" className="border-border/50">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.35, ease: [0, 0, 0.2, 1] }}
+        >
+        <Card variant="elevated" className="border-border/60 shadow-xl dark:shadow-glow-primary/20 backdrop-blur-xl">
           <CardContent className="pt-6">
             <Tabs defaultValue="login" className="w-full">
               <TabsList className="grid w-full grid-cols-2 mb-6">
@@ -301,7 +321,7 @@ export default function AuthPage() {
                     </div>
                   </div>
 
-                  <Button type="submit" variant="gradient" className="w-full h-11" disabled={isLoading || !!socialLoading}>
+                  <Button type="submit" variant="gradient" className="w-full h-12 text-base font-semibold tracking-wide" disabled={isLoading || !!socialLoading}>
                     {isLoading ? (
                       <>
                         <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -418,7 +438,7 @@ export default function AuthPage() {
                     )}
                   </div>
 
-                  <Button type="submit" variant="gradient" className="w-full h-11" disabled={isLoading}>
+                  <Button type="submit" variant="gradient" className="w-full h-12 text-base font-semibold tracking-wide" disabled={isLoading}>
                     {isLoading ? (
                       <>
                         <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -436,6 +456,7 @@ export default function AuthPage() {
             </Tabs>
           </CardContent>
         </Card>
+        </motion.div>
       </div>
 
       <Dialog open={showForgotPassword} onOpenChange={setShowForgotPassword}>
