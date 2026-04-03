@@ -132,8 +132,16 @@ export function ChartSkeleton({
 }) {
   if (type === 'pie') {
     return (
-      <div className={cn('flex items-center justify-center p-6', className)}>
-        <Skeleton className="h-40 w-40 rounded-full" />
+      <div className={cn('flex items-center justify-center gap-6 p-6', className)}>
+        <Skeleton className="h-36 w-36 rounded-full shrink-0" />
+        <div className="space-y-3">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="flex items-center gap-2">
+              <Skeleton className="h-3 w-3 rounded-full shrink-0" />
+              <Skeleton className="h-3 w-16" />
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
@@ -142,26 +150,26 @@ export function ChartSkeleton({
     <div className={cn('p-4 space-y-4', className)}>
       {/* Y axis labels */}
       <div className="flex gap-4">
-        <div className="w-8 space-y-4">
+        <div className="w-8 space-y-6 pt-2">
           <Skeleton className="h-3 w-full" />
-          <Skeleton className="h-3 w-full" />
+          <Skeleton className="h-3 w-3/4" />
           <Skeleton className="h-3 w-full" />
         </div>
-        {/* Bars/Lines */}
-        <div className="flex-1 flex items-end gap-2 h-32">
-          {Array.from({ length: 7 }).map((_, i) => (
+        {/* Bars */}
+        <div className="flex-1 flex items-end gap-1.5 h-32">
+          {[65, 80, 45, 90, 55, 70, 40].map((h, i) => (
             <Skeleton 
               key={i} 
-              className="flex-1 rounded-t" 
-              style={{ height: `${30 + Math.random() * 70}%` }} 
+              className="flex-1 rounded-t-md" 
+              style={{ height: `${h}%` }} 
             />
           ))}
         </div>
       </div>
       {/* X axis labels */}
-      <div className="flex gap-2 pl-12">
+      <div className="flex gap-1.5 pl-12">
         {Array.from({ length: 7 }).map((_, i) => (
-          <Skeleton key={i} className="h-3 flex-1" />
+          <Skeleton key={i} className="h-3 flex-1 rounded-sm" />
         ))}
       </div>
     </div>
