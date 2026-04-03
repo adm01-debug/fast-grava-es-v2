@@ -418,7 +418,7 @@ export default function AuthPage() {
                     )}
                   </div>
 
-                  <Button type="submit" variant="gradient" className="w-full h-11" disabled={isLoading}>
+                  <Button type="submit" variant="gradient" className="w-full h-12 text-base font-semibold tracking-wide" disabled={isLoading}>
                     {isLoading ? (
                       <>
                         <Loader2 className="h-4 w-4 mr-2 animate-spin" />
