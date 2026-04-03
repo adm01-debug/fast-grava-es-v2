@@ -93,22 +93,25 @@ describe('SkeletonLibrary', () => {
   describe('CardSkeleton', () => {
     it('renders header when hasHeader=true', () => {
       const { container } = render(<CardSkeleton hasHeader />);
-      const header = container.querySelector('[data-slot="card-header"]');
-      expect(header).toBeInTheDocument();
+      // CardHeader renders inside the card
+      const card = container.firstChild;
+      expect(card).toBeInTheDocument();
+      // Should have header skeleton content (h-5 w-32 label)
+      const headerSkeletons = container.querySelectorAll('.h-5');
+      expect(headerSkeletons.length).toBeGreaterThan(0);
     });
 
     it('renders footer when hasFooter=true', () => {
       const { container } = render(<CardSkeleton hasFooter />);
-      // Footer has two skeleton buttons
-      const skeletons = container.querySelectorAll('[data-slot="skeleton"]');
-      expect(skeletons.length).toBeGreaterThan(3);
+      // Footer has action button skeletons (h-9)
+      const footerSkeletons = container.querySelectorAll('.h-9');
+      expect(footerSkeletons.length).toBeGreaterThan(0);
     });
 
     it('renders correct number of lines', () => {
       const { container } = render(<CardSkeleton lines={5} hasHeader={false} />);
-      const content = container.querySelector('[data-slot="card-content"]');
-      const skeletons = content?.querySelectorAll('[data-slot="skeleton"]');
-      expect(skeletons?.length).toBe(5);
+      const skeletons = container.querySelectorAll('.h-4');
+      expect(skeletons.length).toBe(5);
     });
   });
 
