@@ -37,7 +37,7 @@ const statusConfig: Record<JobStatus, {
   },
   ready: { 
     label: 'No Jeito', 
-    icon: Target,
+    icon: ThumbsUp,
     bgClass: 'bg-status-ready',
     textClass: 'text-status-ready-foreground',
     glowClass: 'dark:shadow-[0_0_12px_hsl(45_100%_55%/0.4)]',
