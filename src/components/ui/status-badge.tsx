@@ -60,7 +60,7 @@ const statusConfig: Record<JobStatus, {
   },
   finished: { 
     label: 'Finalizado', 
-    icon: CheckCircle2,
+    icon: CircleCheckBig,
     bgClass: 'bg-status-finished',
     textClass: 'text-status-finished-foreground',
     glowClass: 'dark:shadow-[0_0_12px_hsl(142_70%_50%/0.4)]',
