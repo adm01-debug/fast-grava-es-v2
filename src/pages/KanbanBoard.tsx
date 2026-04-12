@@ -420,7 +420,7 @@ export default function KanbanBoard() {
             <DragOverlayCard
               job={activeJob}
               technique={getTechniqueById(activeJob.technique_id)}
-              machine={activeJob.machine_id ? getMachineById(activeJob.machine_id) : null}
+              machine={activeJob.machine_id ? getMachineById(activeJob.machine_id) ?? null : null}
             />
           ) : null}
         </DragOverlay>

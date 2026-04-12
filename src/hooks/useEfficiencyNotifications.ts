@@ -80,7 +80,7 @@ export function useEfficiencyNotifications(config: Partial<EfficiencyNotificatio
   const checkBottleneckAlerts = useCallback(() => {
     if (!settings.enableBottleneckAlerts) return;
     
-    const currentCount = criticalCount + warningCount;
+    const currentCount = (criticalCount ?? 0) + (warningCount ?? 0);
     const currentIds = new Set(bottleneckAlerts.map(a => 
       `${a.techniqueId}-${a.date.toISOString().split('T')[0]}`
     ));

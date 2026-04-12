@@ -29,7 +29,7 @@ export interface LotComponent {
   material_id: string | null;
   component_name: string;
   quantity_used: number;
-  unit: string;
+  unit: string | null;
   supplier: string | null;
   batch_number: string | null;
   notes: string | null;

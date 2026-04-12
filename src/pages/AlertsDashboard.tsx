@@ -85,7 +85,7 @@ export default function AlertsDashboard() {
     endTime: dbJob.end_time || '',
     estimatedDuration: dbJob.estimated_duration,
     status: dbJob.status as Job['status'],
-    gravureColor: dbJob.gravure_color || undefined,
+    gravureColor: dbJob.gravure_color ?? undefined,
     notes: dbJob.notes || undefined,
     priority: dbJob.priority as Job['priority'],
     createdAt: new Date(dbJob.created_at),

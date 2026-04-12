@@ -154,7 +154,7 @@ export function DroppableColumn({
                   key={job.id}
                   job={job}
                   technique={getTechniqueById(job.technique_id)}
-                  machine={job.machine_id ? getMachineById(job.machine_id) : null}
+                  machine={job.machine_id ? getMachineById(job.machine_id) ?? null : null}
                   onClick={() => onJobClick(job)}
                   viewMode={viewMode}
                   isSelected={selectedJobs?.has(job.id)}

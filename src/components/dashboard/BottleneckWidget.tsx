@@ -156,12 +156,12 @@ function BottleneckWidgetComponent() {
           </div>
           {totalAlerts > 0 ? (
             <div className="flex items-center gap-1.5 flex-wrap self-start sm:self-auto">
-              {criticalCount > 0 && (
+              {(criticalCount ?? 0) > 0 && (
                 <Badge className="bg-primary/20 text-primary border-primary/30 border text-xs">
                   {criticalCount} crít.
                 </Badge>
               )}
-              {warningCount > 0 && (
+              {(warningCount ?? 0) > 0 && (
                 <Badge className="bg-orange-500/20 text-orange-400 border-orange-500/30 border text-xs">
                   {warningCount} avisos
                 </Badge>
