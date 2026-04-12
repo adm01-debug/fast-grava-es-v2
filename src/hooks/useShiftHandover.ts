@@ -136,7 +136,7 @@ export function useShiftHandovers(filters?: {
         const { data: profiles } = await supabase
           .from('profiles')
           .select('id, full_name')
-          .in('id', operatorIds);
+          .in('id', operatorIds as string[]);
         profileMap = new Map(profiles?.map(p => [p.id, p]) || []);
       }
 
@@ -169,7 +169,7 @@ export function useShiftHandover(id: string | null) {
       if (!data) return null;
 
       // Fetch profiles
-      const operatorIds = [data.outgoing_operator_id, data.incoming_operator_id].filter(Boolean);
+      const operatorIds = [data.outgoing_operator_id, data.incoming_operator_id].filter((id): id is string => !!id);
       let profileMap = new Map<string, { id: string; full_name: string | null }>();
       if (operatorIds.length > 0) {
         const { data: profiles } = await supabase

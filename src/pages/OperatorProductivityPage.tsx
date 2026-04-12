@@ -554,8 +554,8 @@ function EvolutionChart({ evolutionData, overallDailyData, selectedOperatorId, o
                   border: '1px solid hsl(var(--border))',
                   borderRadius: '8px',
                 }}
-                formatter={(value: number | null, name: string) => {
-                  if (value === null) return ['-', ''];
+                formatter={(value: string | number | (string | number)[], name: string) => {
+                  if (value === null || value === undefined) return ['-', ''];
                   if (name === 'efficiency') return [`${value}%`, 'Eficiência'];
                   if (name === 'trend') return [`${value}%`, 'Tendência'];
                   if (name === 'forecast') return [`${value}%`, 'Previsão'];

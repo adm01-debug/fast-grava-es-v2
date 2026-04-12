@@ -56,7 +56,7 @@ export function RateLimitSettings() {
     is_active: true,
   });
 
-  const handleEdit = (setting: typeof settings[0]) => {
+  const handleEdit = (setting: NonNullable<typeof settings>[number]) => {
     setFormData({
       endpoint_pattern: setting.endpoint_pattern,
       max_requests: setting.max_requests,

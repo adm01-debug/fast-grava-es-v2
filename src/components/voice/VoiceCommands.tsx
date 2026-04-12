@@ -27,20 +27,21 @@ export function useVoiceCommands({
   const [isListening, setIsListening] = useState(false);
   const [transcript, setTranscript] = useState('');
   const [isSupported, setIsSupported] = useState(false);
-  const recognitionRef = useRef<any>(null);
+  const recognitionRef = useRef<ReturnType<typeof Object> | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
-    const SpeechRecognitionAPI = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    const w = window as unknown as Record<string, new () => unknown>;
+    const SpeechRecognitionAPI = w.SpeechRecognition || w.webkitSpeechRecognition;
     setIsSupported(!!SpeechRecognitionAPI);
 
     if (SpeechRecognitionAPI) {
-      recognitionRef.current = new SpeechRecognitionAPI();
+      recognitionRef.current = new (SpeechRecognitionAPI as new () => Record<string, unknown>)();
       recognitionRef.current.continuous = continuous;
       recognitionRef.current.interimResults = true;
       recognitionRef.current.lang = language;
 
-      recognitionRef.current.onresult = (event) => {
+      recognitionRef.current.onresult = (event: SpeechRecognitionEvent) => {
         const current = event.resultIndex;
         const result = event.results[current];
         const transcriptText = result[0].transcript.toLowerCase();
@@ -60,7 +61,7 @@ export function useVoiceCommands({
         }
       };
 
-      recognitionRef.current.onerror = (event) => {
+      recognitionRef.current.onerror = (event: SpeechRecognitionErrorEvent) => {
         if (import.meta.env.DEV) console.error('Speech recognition error:', event.error);
         setIsListening(false);
         toast({

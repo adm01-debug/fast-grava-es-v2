@@ -29,12 +29,12 @@ export interface LotComponent {
   material_id: string | null;
   component_name: string;
   quantity_used: number;
-  unit: string;
+  unit: string | null;
   supplier: string | null;
   batch_number: string | null;
   notes: string | null;
   created_at: string;
-  component_lot?: ProductionLot;
+  component_lot?: ProductionLot | null;
 }
 
 export interface LotMovement {
