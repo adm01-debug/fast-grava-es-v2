@@ -82,7 +82,7 @@ export function QuickChat({ channel = 'general', compact = false }: QuickChatPro
       });
       setNewMessage('');
     } catch (err) {
-      console.error('Error sending message:', err);
+      if (import.meta.env.DEV) console.error('Error sending message:', err);
     } finally {
       setIsSending(false);
     }

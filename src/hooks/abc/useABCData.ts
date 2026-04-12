@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { categorizeError } from '@/lib/errorHandling';
+import { logger } from '@/lib/logger';
 import { defaultQueryOptions, STALE_TIMES } from '@/lib/queryConfig';
 import { ABCActivity, ABCCostPool, ABCActivityRate, ABCJobCost, ABC_ERROR_CONTEXT } from './types';
 
