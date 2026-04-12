@@ -1,0 +1,28 @@
+/**
+ * Barrel export for core lib utilities.
+ * Import from '@/lib' for convenience.
+ */
+
+// Error handling
+export { ErrorCodes, categorizeError, createAppError, isRetryableError } from './errorHandling';
+
+// Validation
+export { safeParse, safeParseArray, uuidSchema, paginationSchema, dateRangeSchema } from './validation';
+
+// Resilience
+export { CircuitBreaker, CircuitOpenError } from './circuitBreaker';
+export { retryWithBackoff, isNetworkRetryable } from './retryWithBackoff';
+export { RateLimiter, apiLimiter, searchLimiter, authLimiter } from './rateLimiter';
+
+// State machines
+export { canTransition, getValidTransitions, assertTransition } from './jobStateMachine';
+export type { JobStatus } from './jobStateMachine';
+
+// Security
+export { escapeHtml, stripTags, sanitizeText, sanitizeUrl, sanitizeInput } from './sanitize';
+
+// Logging
+export { logger } from './logger';
+
+// Utilities
+export { cn } from './utils';
