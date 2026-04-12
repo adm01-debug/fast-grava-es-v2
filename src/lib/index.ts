@@ -4,7 +4,7 @@
  */
 
 // Error handling
-export { ErrorCodes, categorizeError, createAppError, isRetryableError } from './errorHandling';
+export { ErrorCodes, categorizeError, createAppError } from './errorHandling';
 
 // Validation
 export { safeParse, safeParseArray, uuidSchema, paginationSchema, dateRangeSchema } from './validation';
