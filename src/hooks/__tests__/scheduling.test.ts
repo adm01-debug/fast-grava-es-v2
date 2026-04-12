@@ -408,7 +408,7 @@ describe('Smart Sequencing - Color Grouping', () => {
     const optimized = optimizeSequence(jobs);
     // After grouping, same colors should be adjacent
     const colors = optimized.map(j => j.color);
-    expect(countColorChanges(colors)).toBeLessThanOrEqual(1);
+    expect(countColorChanges(colors.filter((c): c is string => c !== null))).toBeLessThanOrEqual(1);
   });
 
   it('preserves priority within color groups', () => {

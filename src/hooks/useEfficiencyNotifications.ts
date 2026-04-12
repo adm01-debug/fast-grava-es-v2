@@ -195,7 +195,7 @@ export function useEfficiencyNotifications(config: Partial<EfficiencyNotificatio
   // Initialize and run first check after a delay
   useEffect(() => {
     // Set initial values without triggering notifications
-    prevBottleneckCount.current = criticalCount + warningCount;
+    prevBottleneckCount.current = (criticalCount ?? 0) + (warningCount ?? 0);
     prevLoadBalancingCount.current = loadBalancingSuggestions.length;
     prevBottleneckIds.current = new Set(bottleneckAlerts.map(a => `${a.techniqueId}-${a.date.toISOString().split('T')[0]}`));
     prevSuggestionIds.current = new Set(loadBalancingSuggestions.map(s => `${s.jobId}-${s.currentMachineId}-${s.suggestedMachineId}`));
@@ -218,7 +218,7 @@ export function useEfficiencyNotifications(config: Partial<EfficiencyNotificatio
 
   // Manual check functions
   const forceCheckBottlenecks = useCallback(() => {
-    if (criticalCount > 0) {
+    if ((criticalCount ?? 0) > 0) {
       toast.error(`${criticalCount} gargalo(s) crítico(s) detectado(s)`, {
         description: bottleneckAlerts.find(a => a.severity === 'critical')?.message,
         action: {
@@ -226,7 +226,7 @@ export function useEfficiencyNotifications(config: Partial<EfficiencyNotificatio
           onClick: () => navigateTo('/alerts'),
         },
       });
-    } else if (warningCount > 0) {
+    } else if ((warningCount ?? 0) > 0) {
       toast.warning(`${warningCount} alerta(s) de capacidade`, {
         description: bottleneckAlerts[0]?.message,
         action: {
@@ -260,7 +260,7 @@ export function useEfficiencyNotifications(config: Partial<EfficiencyNotificatio
   return {
     checkBottleneckAlerts: forceCheckBottlenecks,
     checkLoadBalancingAlerts: forceCheckLoadBalancing,
-    bottleneckCount: criticalCount + warningCount,
+    bottleneckCount: (criticalCount ?? 0) + (warningCount ?? 0),
     loadBalancingCount: loadBalancingSuggestions.length,
   };
 }

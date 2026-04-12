@@ -237,7 +237,7 @@ export function useOperatorProductivity(period: ProductivityPeriod = 'all') {
       return {
         operatorId,
         operatorName: profile?.full_name || 'Sem nome',
-        avatarUrl: profile?.avatar_url,
+        avatarUrl: profile?.avatar_url ?? null,
         isActive: true,
         
         totalJobsCompleted: operatorJobs.length,

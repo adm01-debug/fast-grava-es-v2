@@ -85,7 +85,7 @@ export default function AlertsDashboard() {
     endTime: dbJob.end_time || '',
     estimatedDuration: dbJob.estimated_duration,
     status: dbJob.status as Job['status'],
-    gravureColor: dbJob.gravure_color ?? undefined,
+    gravureColor: dbJob.gravure_color ?? '',
     notes: dbJob.notes || undefined,
     priority: dbJob.priority as Job['priority'],
     createdAt: new Date(dbJob.created_at),
@@ -412,7 +412,7 @@ export default function AlertsDashboard() {
   const totalJobAlerts = alertData.delayed.length + alertData.rework.length + 
                       alertData.urgent.length + alertData.atRisk.length + alertData.overdue.length;
   
-  const totalEfficiencyAlerts = criticalCount + warningCount + loadBalancingSuggestions.length;
+  const totalEfficiencyAlerts = (criticalCount ?? 0) + (warningCount ?? 0) + loadBalancingSuggestions.length;
   const totalSystemAlerts = stuckJobs.length + dataIssues.length;
   const totalAlerts = totalJobAlerts + totalEfficiencyAlerts + totalSystemAlerts;
 
@@ -558,7 +558,7 @@ export default function AlertsDashboard() {
               <Activity className="h-4 w-4 sm:h-5 sm:w-5 text-pink-400" />
             </div>
             <div>
-              <p className="text-lg sm:text-2xl font-bold text-foreground">{criticalCount + warningCount}</p>
+              <p className="text-lg sm:text-2xl font-bold text-foreground">{(criticalCount ?? 0) + (warningCount ?? 0)}</p>
               <p className="text-[10px] sm:text-xs text-muted-foreground">Gargalos</p>
             </div>
           </CardContent>
@@ -936,7 +936,7 @@ export default function AlertsDashboard() {
                 <div className="h-2 rounded-full bg-yellow-500/50" style={{ flex: alertData.urgent.length || 0.1 }} />
                 <div className="h-2 rounded-full bg-cyan-500/50" style={{ flex: alertData.atRisk.length || 0.1 }} />
                 <div className="h-2 rounded-full bg-purple-500/50" style={{ flex: alertData.rework.length || 0.1 }} />
-                <div className="h-2 rounded-full bg-pink-500/50" style={{ flex: criticalCount + warningCount || 0.1 }} />
+                <div className="h-2 rounded-full bg-pink-500/50" style={{ flex: (criticalCount ?? 0) + (warningCount ?? 0) || 0.1 }} />
                 <div className="h-2 rounded-full bg-teal-500/50" style={{ flex: loadBalancingSuggestions.length || 0.1 }} />
               </div>
               <div className="grid grid-cols-6 gap-1 mt-2 text-xs text-muted-foreground text-center">
