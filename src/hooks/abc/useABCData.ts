@@ -18,7 +18,7 @@ export function useABCData() {
       
       if (error) {
         if (import.meta.env.DEV) {
-          logger.error('[useABCCosts] activities fetch failed:', categorizeError(error), error);
+          logger.error('[useABCCosts] activities fetch failed: ' + categorizeError(error), error, 'ABC');
         }
         throw error;
       }
@@ -40,7 +40,7 @@ export function useABCData() {
       
       if (error) {
         if (import.meta.env.DEV) {
-          logger.error('[useABCCosts] pools fetch failed:', categorizeError(error), error);
+          logger.error('[useABCCosts] pools fetch failed: ' + categorizeError(error), error, 'ABC');
         }
         throw error;
       }
@@ -61,7 +61,7 @@ export function useABCData() {
       
       if (error) {
         if (import.meta.env.DEV) {
-          logger.error('[useABCCosts] rates fetch failed:', categorizeError(error), error);
+          logger.error('[useABCCosts] rates fetch failed: ' + categorizeError(error), error, 'ABC');
         }
         throw error;
       }
@@ -82,7 +82,7 @@ export function useABCData() {
       
       if (error) {
         if (import.meta.env.DEV) {
-          logger.error('[useABCCosts] jobCosts fetch failed:', categorizeError(error), error);
+          logger.error('[useABCCosts] jobCosts fetch failed: ' + categorizeError(error), error, 'ABC');
         }
         throw error;
       }
@@ -105,7 +105,7 @@ export function useABCData() {
       
       if (error) {
         if (import.meta.env.DEV) {
-          logger.error('[useABCCosts] jobs fetch failed:', categorizeError(error), error);
+          logger.error('[useABCCosts] jobs fetch failed: ' + categorizeError(error), error, 'ABC');
         }
         throw error;
       }
@@ -125,7 +125,7 @@ export function useABCData() {
       
       if (error) {
         if (import.meta.env.DEV) {
-          logger.error('[useABCCosts] techniques fetch failed:', categorizeError(error), error);
+          logger.error('[useABCCosts] techniques fetch failed: ' + categorizeError(error), error, 'ABC');
         }
         throw error;
       }
