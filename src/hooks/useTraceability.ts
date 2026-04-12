@@ -34,7 +34,7 @@ export interface LotComponent {
   batch_number: string | null;
   notes: string | null;
   created_at: string;
-  component_lot?: ProductionLot;
+  component_lot?: ProductionLot | null;
 }
 
 export interface LotMovement {
