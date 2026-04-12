@@ -45,7 +45,7 @@ interface ActivityLogEntry {
     avatar?: string;
   };
   timestamp: Date;
-  metadata?: Record<string, unknown>;
+  metadata?: Record<string, any>;
   changes?: {
     field: string;
     from?: string;

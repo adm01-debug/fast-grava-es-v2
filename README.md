@@ -1,117 +1,126 @@
-# 🏭 Fast Gravações — Sistema de Produção Industrial
+# Sistema de Agendamento de Produção
 
-![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue)
+![Coverage](https://img.shields.io/badge/coverage-checking-yellow)
+![Tests](https://img.shields.io/badge/tests-passing-brightgreen)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)
 ![React](https://img.shields.io/badge/React-18.3-61dafb)
-![Tests](https://img.shields.io/badge/tests-1263%20passing-brightgreen)
-![Build](https://img.shields.io/badge/build-passing-brightgreen)
+![Vite](https://img.shields.io/badge/Vite-5.0-646cff)
 
-Sistema completo de agendamento e gerenciamento de produção para personalização de produtos, com suporte a **16 técnicas de gravação**, **52 máquinas** e **28 módulos**.
+## Visão Geral
 
-## 🚀 Quick Start
+Sistema completo de agendamento e gerenciamento de produção para personalização de produtos, com suporte a 16 técnicas de gravação e 52 máquinas.
+
+### Funcionalidades Principais
+
+- 📅 **Calendário de Produção** - Visualização diária/semanal com drag-and-drop
+- 🎯 **Gestão de Buffer** - Manutenção automática de 3 jobs prontos por técnica
+- ⚡ **Smart Sequencing** - Otimização automática por cor/material
+- ⚖️ **Load Balancing** - Redistribuição inteligente de carga entre máquinas
+- 🔮 **ML Predictions** - Previsão de falhas com machine learning
+- 📊 **OEE Dashboard** - Métricas de eficiência operacional
+- 🔧 **TPM** - Manutenção produtiva total
+- 💰 **ABC Costing** - Custeio baseado em atividades
+- 🤖 **Assistente Técnico IA** - Suporte técnico com IA
+
+## Testes
 
 ```bash
-# 1. Clone e instale
-git clone <YOUR_GIT_URL> && cd fast-gravacoes
-npm install
-
-# 2. Dev server
-npm run dev
-
-# 3. Testes
+# Executar todos os testes
 npm test
 
-# 4. Build
-npm run build
+# Executar com coverage report
+npm test -- --coverage
+
+# Executar testes específicos
+npm test -- --run useLoadBalancingWithActions
 ```
 
-## 🏗️ Arquitetura
+### Estrutura de Testes
 
-```
-src/
-├── components/     # UI por domínio (kanban/, operators/, maintenance/)
-├── hooks/          # Custom hooks (abc/, scheduling/)
-├── services/       # Camada de serviço (auth, jobs, machines)
-├── schemas/        # Validação Zod (job, operator, machine)
-├── constants/      # Enums, thresholds, configurações
-├── contexts/       # React contexts (Auth, Theme, Offline)
-├── lib/            # Utils (logger, validation, jobStateMachine)
-├── pages/          # Componentes de rota (38 rotas)
-└── integrations/   # Supabase client + types (auto-gerado)
+| Categoria | Arquivos | Cobertura |
+|-----------|----------|-----------|
+| Hooks | `src/hooks/*.test.ts` | Unitários |
+| Componentes | `src/components/**/*.test.tsx` | Componentes |
+| Integração | `src/test/integration/*.test.ts` | E2E |
 
-supabase/
-├── functions/      # 25 Edge Functions (Deno)
-├── migrations/     # Migrations versionadas
-└── config.toml     # Configuração do projeto
+### Padrões Implementados
 
-docs/
-├── adr/            # Architecture Decision Records
-├── PERFORMANCE.md  # Guia de performance
-└── LEVANTAMENTO_COMPLETO_FUNCIONALIDADES.md
-```
+- ✅ Error Handling centralizado (`src/lib/errorHandling.ts`)
+- ✅ Retry automático com exponential backoff (`src/lib/queryConfig.ts`)
+- ✅ Validação de dados em hooks críticos
+- ✅ Real-time subscriptions para sincronização
+- ✅ Paginação para grandes conjuntos de dados
 
-**Decisões documentadas:** Ver [`docs/adr/`](docs/adr/)
+📖 Documentação completa: [`docs/ERROR_HANDLING_PATTERNS.md`](docs/ERROR_HANDLING_PATTERNS.md)
 
-## 🔑 Funcionalidades Principais
+## Project Info
 
-| Módulo | Descrição |
-|--------|-----------|
-| 📅 Calendário | Visualização diária/semanal com drag-and-drop |
-| 📋 Kanban | WIP limits, aging, swimlanes, bulk actions |
-| 🎯 Buffer Auto | Mantém 3 jobs prontos por técnica |
-| ⚡ Smart Sequencing | Otimização por cor/material |
-| ⚖️ Load Balancing | Redistribuição inteligente de carga |
-| 🔮 Predições ML | Previsão de falhas via machine learning |
-| 📊 OEE/BI | Dashboards executivos e operacionais |
-| 🔧 TPM | Manutenção produtiva total com checklists |
-| 💰 ABC Costing | Custeio baseado em atividades |
-| 🏷️ Rastreabilidade | QR Code, genealogia, inspeções |
-| 📖 Base Conhecimento | Fichas técnicas com versionamento |
-| ⚡ Energia | Monitoramento de consumo energético |
-| 🤖 Assistente IA | Suporte técnico com Lovable AI |
-| 📱 Offline-First | IndexedDB + Service Worker |
+**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
 
-## 🔐 Segurança
+## How can I edit this code?
 
-- **RBAC** com 3 roles: Coordinator, Operator, Manager
-- **RLS** (Row Level Security) em 100% das tabelas
-- **HIBP** leak check em senhas
-- **Strict TypeScript** (`strict: true`)
-- **Audit logging** para ações sensíveis
-- Ver [ADR-003](docs/adr/003-rbac-with-rls.md)
+There are several ways of editing your application.
 
-## 🧪 Testes
+**Use Lovable**
 
-```bash
-npm test                    # Todos os testes (1.263)
-npm test -- --coverage      # Com cobertura
-npm test -- --run jobState  # Testes específicos
+Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+
+Changes made via Lovable will be committed automatically to this repo.
+
+**Use your preferred IDE**
+
+If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+
+The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+
+Follow these steps:
+
+```sh
+# Step 1: Clone the repository using the project's Git URL.
+git clone <YOUR_GIT_URL>
+
+# Step 2: Navigate to the project directory.
+cd <YOUR_PROJECT_NAME>
+
+# Step 3: Install the necessary dependencies.
+npm i
+
+# Step 4: Start the development server with auto-reloading and an instant preview.
+npm run dev
 ```
 
-| Tipo | Quantidade | Localização |
-|------|-----------|-------------|
-| Unit | ~900 | `src/hooks/__tests__/` |
-| Component | ~250 | `src/components/**/__tests__/` |
-| Integration | ~100 | `src/test/__tests__/` |
+**Edit a file directly in GitHub**
 
-## 📦 Stack
+- Navigate to the desired file(s).
+- Click the "Edit" button (pencil icon) at the top right of the file view.
+- Make your changes and commit the changes.
 
-- **Frontend:** React 18 + Vite 5 + TypeScript 5 (strict)
-- **UI:** Tailwind CSS + shadcn/ui + Framer Motion
-- **State:** TanStack Query + Zustand
-- **Backend:** Lovable Cloud (Supabase)
-- **Auth:** Supabase Auth + RBAC
-- **Validação:** Zod schemas
-- **Testes:** Vitest + Testing Library
+**Use GitHub Codespaces**
 
-## 🚢 Deploy
+- Navigate to the main page of your repository.
+- Click on the "Code" button (green button) near the top right.
+- Select the "Codespaces" tab.
+- Click on "New codespace" to launch a new Codespace environment.
+- Edit files directly within the Codespace and commit and push your changes once you're done.
 
-Abra o projeto no [Lovable](https://lovable.dev) → Share → Publish.
+## What technologies are used for this project?
 
-Para domínio customizado: Project → Settings → Domains → Connect Domain.
+This project is built with:
 
-## 📖 Documentação
+- Vite
+- TypeScript
+- React
+- shadcn-ui
+- Tailwind CSS
 
-- [`docs/adr/`](docs/adr/) — Architecture Decision Records
-- [`docs/PERFORMANCE.md`](docs/PERFORMANCE.md) — Guia de performance
-- [`docs/ERROR_HANDLING_PATTERNS.md`](docs/ERROR_HANDLING_PATTERNS.md) — Padrões de error handling
-- [`docs/LEVANTAMENTO_COMPLETO_FUNCIONALIDADES.md`](docs/LEVANTAMENTO_COMPLETO_FUNCIONALIDADES.md) — Mapa funcional completo
+## How can I deploy this project?
+
+Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+
+## Can I connect a custom domain to my Lovable project?
+
+Yes, you can!
+
+To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+
+Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)

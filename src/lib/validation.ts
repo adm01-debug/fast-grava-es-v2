@@ -1,87 +1,81 @@
 /**
- * Runtime validation utilities for Supabase API responses.
- * Uses Zod schemas to validate data at runtime, catching
- * mismatches between DB schema and TypeScript types.
+ * Runtime validation utilities using Zod.
+ * Use these to validate API responses and user inputs at runtime boundaries.
  */
-
 import { z, ZodSchema, ZodError } from 'zod';
 import { logger } from '@/lib/logger';
 
-export interface SafeParseResult<T> {
+export interface ParseResult<T> {
   success: true;
   data: T;
 }
 
-export interface SafeParseError {
+export interface ParseError {
   success: false;
   error: ZodError;
-  rawData: unknown;
 }
 
-type ParseResult<T> = SafeParseResult<T> | SafeParseError;
-
 /**
- * Safely parse a single record from a Supabase response.
- * Returns typed data on success, or logs the validation error.
+ * Safely parse a single value against a Zod schema.
+ * Logs validation failures in dev mode.
  */
-export function safeParse<T>(schema: ZodSchema<T>, data: unknown, context?: string): ParseResult<T> {
+export function safeParse<T>(schema: ZodSchema<T>, data: unknown, context?: string): ParseResult<T> | ParseError {
   const result = schema.safeParse(data);
-  if (result.success) {
-    return { success: true, data: result.data };
+  if (!result.success) {
+    logger.warn(
+      `Validation failed${context ? ` [${context}]` : ''}`,
+      result.error.flatten(),
+      'validation'
+    );
+    return { success: false, error: result.error };
   }
-
-  logger.warn(
-    `Validation failed${context ? ` in ${context}` : ''}: ${result.error.issues.map(i => `${i.path.join('.')}: ${i.message}`).join(', ')}`,
-    { issues: result.error.issues, rawData: data },
-    'validation'
-  );
-
-  return { success: false, error: result.error, rawData: data };
+  return { success: true, data: result.data };
 }
 
 /**
- * Safely parse an array of records, filtering out invalid ones.
- * Returns only valid records with a count of failures.
+ * Safely parse an array of items, filtering out invalid entries.
+ * Returns only the valid items with a count of rejected ones.
  */
 export function safeParseArray<T>(
   schema: ZodSchema<T>,
-  data: unknown[],
+  items: unknown[],
   context?: string
-): { valid: T[]; invalidCount: number } {
-  let invalidCount = 0;
+): { valid: T[]; rejected: number } {
   const valid: T[] = [];
+  let rejected = 0;
 
-  for (const item of data) {
+  for (const item of items) {
     const result = schema.safeParse(item);
     if (result.success) {
       valid.push(result.data);
     } else {
-      invalidCount++;
+      rejected++;
     }
   }
 
-  if (invalidCount > 0) {
+  if (rejected > 0) {
     logger.warn(
-      `${invalidCount} of ${data.length} records failed validation${context ? ` in ${context}` : ''}`,
+      `${rejected} items rejected during validation${context ? ` [${context}]` : ''}`,
       undefined,
       'validation'
     );
   }
 
-  return { valid, invalidCount };
+  return { valid, rejected };
 }
 
-/**
- * Parse or throw — for cases where invalid data is a critical error.
- */
-export function parseOrThrow<T>(schema: ZodSchema<T>, data: unknown, context?: string): T {
-  try {
-    return schema.parse(data);
-  } catch (error) {
-    logger.error(`Critical validation failure${context ? ` in ${context}` : ''}`, error, 'validation');
-    throw error;
-  }
-}
+// ── Common Schemas ──────────────────────────────────────────
 
-// Re-export common schemas for convenience
-export { z } from 'zod';
+export const uuidSchema = z.string().uuid();
+
+export const paginationSchema = z.object({
+  page: z.number().int().min(1).default(1),
+  pageSize: z.number().int().min(1).max(100).default(20),
+});
+
+export const dateRangeSchema = z.object({
+  start: z.string().datetime(),
+  end: z.string().datetime(),
+}).refine(d => new Date(d.start) <= new Date(d.end), {
+  message: 'Data inicial deve ser anterior à data final',
+});

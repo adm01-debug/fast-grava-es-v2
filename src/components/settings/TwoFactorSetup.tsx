@@ -17,7 +17,7 @@ export function TwoFactorSetup() {
   const { t } = useTranslation();
   const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
-  const [mfaFactors, setMfaFactors] = useState<Array<{ id: string; friendly_name?: string; factor_type: string; status: string }>>([]);
+  const [mfaFactors, setMfaFactors] = useState<any[]>([]);
   const [showEnrollDialog, setShowEnrollDialog] = useState(false);
   const [showDisableDialog, setShowDisableDialog] = useState(false);
   const [enrollData, setEnrollData] = useState<{ qr: string; secret: string; id: string } | null>(null);
