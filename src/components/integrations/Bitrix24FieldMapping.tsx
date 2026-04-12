@@ -27,7 +27,7 @@ interface FieldMappingData {
 }
 
 interface BitrixFieldsData {
-  customFields: Record<string, { title?: string; type?: string }>;
+  customFields: Record<string, { title?: string; type?: string; formLabel?: string }>;
   totalCustomFields: number;
   currentMapping: Record<string, string[]>;
   techniqueMapping: Record<string, string>;

@@ -123,8 +123,8 @@ export function SecurityEventsLog() {
                         {event.ip_address || '-'}
                       </TableCell>
                       <TableCell className="max-w-[200px] truncate text-sm text-muted-foreground">
-                        {event.details?.message || 
-                         event.details?.reason || 
+                        {(event.details as Record<string, unknown>)?.message as string || 
+                         (event.details as Record<string, unknown>)?.reason as string || 
                          JSON.stringify(event.details).slice(0, 50)}
                       </TableCell>
                       <TableCell className="text-sm text-muted-foreground">

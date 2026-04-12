@@ -81,6 +81,7 @@ export default function MachineComparisonPage() {
     return metrics.map(metric => {
       const point: Record<string, string | number> = { metric };
       comparisonData.forEach((m) => {
+        if (!m) return;
         switch (metric) {
           case 'OEE': point[m.code] = m.oeeScore; break;
           case 'Disponibilidade': point[m.code] = m.availability; break;
