@@ -49,7 +49,7 @@ export interface SecurityEvent {
   user_email: string | null;
   ip_address: string | null;
   user_agent: string | null;
-  details: Record<string, any>;
+  details: Record<string, unknown>;
   created_at: string;
 }
 
