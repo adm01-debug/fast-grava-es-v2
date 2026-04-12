@@ -39,7 +39,25 @@ export default function MachineComparisonPage() {
     );
   };
 
-  const comparisonData = useMemo(() => {
+  interface MachineComparison {
+    id: string;
+    name: string;
+    code: string;
+    technique: string;
+    techniqueColor: string;
+    totalJobs: number;
+    completedJobs: number;
+    totalPieces: number;
+    totalLost: number;
+    lossRate: string;
+    avgDuration: number;
+    oeeScore: number;
+    availability: number;
+    performance: number;
+    quality: number;
+  }
+
+  const comparisonData = useMemo((): MachineComparison[] => {
     return selectedIds.map(id => {
       const machine = machines.find(m => m.id === id);
       if (!machine) return null;
@@ -72,15 +90,15 @@ export default function MachineComparisonPage() {
         performance: oee?.performance ?? 0,
         quality: oee?.quality ?? 0,
       };
-    }).filter(Boolean);
+    }).filter((x): x is MachineComparison => x !== null);
   }, [selectedIds, machines, jobs, techniques, oeeData]);
 
   const radarData = useMemo(() => {
     if (comparisonData.length === 0) return [];
-    const metrics = ['OEE', 'Disponibilidade', 'Performance', 'Qualidade'];
+    const metrics = ['OEE', 'Disponibilidade', 'Performance', 'Qualidade'] as const;
     return metrics.map(metric => {
-      const point: any = { metric };
-      comparisonData.forEach((m: any) => {
+      const point: Record<string, string | number> = { metric };
+      comparisonData.forEach((m) => {
         switch (metric) {
           case 'OEE': point[m.code] = m.oeeScore; break;
           case 'Disponibilidade': point[m.code] = m.availability; break;
@@ -93,7 +111,7 @@ export default function MachineComparisonPage() {
   }, [comparisonData]);
 
   const barData = useMemo(() => {
-    return comparisonData.map((m: any) => ({
+    return comparisonData.map((m) => ({
       name: m.code,
       'Jobs Concluídos': m.completedJobs,
       'Peças Produzidas': m.totalPieces,
@@ -158,7 +176,7 @@ export default function MachineComparisonPage() {
           <>
             {/* KPI Cards Side by Side */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {comparisonData.map((m: any, i: number) => (
+              {comparisonData.map((m, i) => (
                 <Card key={m.id} className="glass-card border-t-2" style={{ borderTopColor: COLORS[i] }}>
                   <CardHeader className="pb-2">
                     <CardTitle className="text-sm font-medium">{m.code} - {m.name}</CardTitle>
@@ -208,7 +226,7 @@ export default function MachineComparisonPage() {
                     <PolarGrid stroke="hsl(var(--border))" />
                     <PolarAngleAxis dataKey="metric" tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }} />
                     <PolarRadiusAxis domain={[0, 100]} tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 10 }} />
-                    {comparisonData.map((m: any, i: number) => (
+                    {comparisonData.map((m, i) => (
                       <Radar
                         key={m.id}
                         name={m.code}
