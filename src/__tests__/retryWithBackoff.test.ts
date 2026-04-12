@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { retryWithBackoff, isNetworkRetryable } from '../retryWithBackoff';
+import { retryWithBackoff, isNetworkRetryable } from '@/lib/retryWithBackoff';
 
 describe('retryWithBackoff', () => {
   it('returns on first success', async () => {

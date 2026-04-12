@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { RateLimiter } from '../rateLimiter';
+import { RateLimiter } from '@/lib/rateLimiter';
 
 describe('RateLimiter', () => {
   let limiter: RateLimiter;

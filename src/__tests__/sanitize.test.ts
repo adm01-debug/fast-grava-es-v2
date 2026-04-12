@@ -6,7 +6,7 @@ import {
   sanitizeUrl,
   sanitizeControlChars,
   sanitizeInput,
-} from '../sanitize';
+} from '@/lib/sanitize';
 
 describe('escapeHtml', () => {
   it('escapes all dangerous characters', () => {
