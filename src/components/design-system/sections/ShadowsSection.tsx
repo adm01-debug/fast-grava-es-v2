@@ -1,4 +1,5 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Circle, Layers, Palette, Ruler, Sparkles, Square, Target, Wand2, Zap } from 'lucide-react';
 
 export function ShadowsSection() {
   const boxShadows = [

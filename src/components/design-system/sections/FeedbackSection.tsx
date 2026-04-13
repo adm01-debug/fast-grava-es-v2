@@ -5,6 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
+import { AlertCircle, AlertTriangle, CheckCircle, Info, Bell, Loader2 } from 'lucide-react';
 
 export function FeedbackSection() {
   return (

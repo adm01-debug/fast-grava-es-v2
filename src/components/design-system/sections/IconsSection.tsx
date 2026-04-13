@@ -3,6 +3,7 @@ import { Badge } from '@/components/ui/badge';
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { useState, useEffect } from 'react';
+import { AlertTriangle, Box, Check, CheckCircle, Layers, Palette, Ruler, Search, Settings, Sparkles, Star, User, X, Zap, type LucideIcon } from 'lucide-react';
 
 export function IconsSection() {
   const [searchTerm, setSearchTerm] = useState('');

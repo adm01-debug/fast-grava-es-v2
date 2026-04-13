@@ -12,6 +12,7 @@ import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/h
 import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger, navigationMenuTriggerStyle } from '@/components/ui/navigation-menu';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { useState, useEffect } from 'react';
+import { RefreshCw, Play, Sparkles, MousePointer2, Wand2, Trophy, Flame, Coins, Award, Star, Zap, AlertTriangle, AlertCircle, CheckCircle, Layers, Info, Square, Eye, MessageSquare, HelpCircle, Menu, ChevronUp, ChevronDown, MoreHorizontal, Settings, Check, X, Pause, Navigation as NavigationIcon } from 'lucide-react';
 
 export function AnimationsSection() {
   const [animationKey, setAnimationKey] = useState(0);
