@@ -892,7 +892,7 @@ export function AnimationsSection() {
             <div className="p-4 rounded-lg border border-border bg-muted/30 space-y-2">
               <div className="flex items-center gap-2">
                 <div className="h-8 w-8 rounded-md bg-success/20 flex items-center justify-center">
-                  <Navigation className="h-4 w-4 text-success" />
+                  <NavigationIcon className="h-4 w-4 text-success" />
                 </div>
                 <div>
                   <h4 className="text-sm font-semibold">NavigationMenu</h4>
