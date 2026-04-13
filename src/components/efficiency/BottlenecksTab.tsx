@@ -15,7 +15,7 @@ interface BottlenecksTabProps {
     [key: string]: any;
   }>;
   capacityByDate: Array<{
-    date: string;
+    date: string | Date;
     occupancyRate?: number;
     [key: string]: any;
   }>;
