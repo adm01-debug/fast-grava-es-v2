@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button';
+import { ArrowLeft } from 'lucide-react';
 
 export function BackToOverviewButton({ onNavigate }: { onNavigate: (tabId: string) => void }) {
   return (

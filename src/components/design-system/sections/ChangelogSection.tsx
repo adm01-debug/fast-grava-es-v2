@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { ThemeToggle } from '@/components/layout/ThemeToggle';
+import { FileText, Sparkles, Calendar, Star } from 'lucide-react';
 import { CodeBlock } from '@/components/ui/code-block';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';

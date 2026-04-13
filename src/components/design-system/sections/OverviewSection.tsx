@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { Check, ChevronRight, Coins, Copy, Layers, LayoutGrid, Play, Plus, Sparkles, Square, Star, TrendingUp, Wand2, Zap, Edit, MessageSquare, TableIcon, Tag, Activity, Type, Ruler, Palette, Bell, Loader2, Package, AlertCircle, Sun, Navigation as NavigationIcon } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
@@ -16,6 +17,40 @@ import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useState, useEffect } from 'react';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
+
+interface OverviewSectionProps {
+  onNavigate: (tabId: string) => void;
+}
+
+interface ConfettiParticle {
+  id: number;
+  x: number;
+  y: number;
+  color: string;
+  angle: number;
+  velocity: number;
+  size: number;
+  rotation: number;
+  shape: string;
+  duration: number;
+}
+
+const confettiShapes = ['circle', 'square', 'triangle', 'star', 'heart'];
+
+const getConfettiShapeStyle = (shape: string, size: number, color: string): React.CSSProperties => {
+  switch (shape) {
+    case 'square':
+      return { width: size, height: size, backgroundColor: color, borderRadius: 2 };
+    case 'triangle':
+      return { width: 0, height: 0, borderLeft: `${size/2}px solid transparent`, borderRight: `${size/2}px solid transparent`, borderBottom: `${size}px solid ${color}`, backgroundColor: 'transparent' };
+    case 'star':
+      return { width: size, height: size, backgroundColor: color, clipPath: 'polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)' };
+    case 'heart':
+      return { width: size, height: size, backgroundColor: color, clipPath: 'polygon(50% 85%, 15% 55%, 0% 35%, 5% 15%, 20% 5%, 35% 5%, 50% 20%, 65% 5%, 80% 5%, 95% 15%, 100% 35%, 85% 55%)' };
+    default:
+      return { width: size, height: size, backgroundColor: color, borderRadius: '50%' };
+  }
+};
 
 export function OverviewSection({ onNavigate }: OverviewSectionProps) {
   const [animatedValues, setAnimatedValues] = useState({ categories: 0, components: 0, variants: 0, copiable: 0 });
@@ -179,7 +214,7 @@ export function OverviewSection({ onNavigate }: OverviewSectionProps) {
     { id: 'modals', icon: Layers, title: 'Modais', description: 'Dialog, AlertDialog, Sheet e Drawer', count: 4 },
     { id: 'tooltips', icon: MessageSquare, title: 'Tooltips', description: 'Tooltips, Popovers e HoverCards', count: 3 },
     { id: 'tables', icon: TableIcon, title: 'Tabelas', description: 'Tabelas com zebra, badges, ações e paginação', count: 5 },
-    { id: 'navigation', icon: Navigation, title: 'Navegação', description: 'Breadcrumbs, Tabs, Navigation Menu', count: 4 },
+    { id: 'navigation', icon: NavigationIcon, title: 'Navegação', description: 'Breadcrumbs, Tabs, Navigation Menu', count: 4 },
     { id: 'cards', icon: Square, title: 'Cards', description: '8 variantes incluindo stat, premium e glass', count: 8 },
     { id: 'badges', icon: Tag, title: 'Badges', description: 'Status badges com variantes coloridas', count: 6 },
     { id: 'progress', icon: Activity, title: 'Progress', description: 'Barras de progresso com variantes', count: 4 },

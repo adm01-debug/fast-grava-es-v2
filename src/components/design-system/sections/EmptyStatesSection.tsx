@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { CodeBlock } from '@/components/ui/code-block';
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
+import { Package, Search, MousePointer2, Calendar, Plus, MessageSquare, Bell, Settings, Sparkles, Wand2, WifiOff, RefreshCw, Layers, TableIcon, CheckCircle, Upload, FolderOpen, Filter, X } from 'lucide-react';
 
 export function EmptyStatesSection() {
   return (

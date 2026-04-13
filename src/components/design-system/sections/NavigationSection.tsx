@@ -4,6 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
 import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger, navigationMenuTriggerStyle } from '@/components/ui/navigation-menu';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
+import { BarChart, ChevronRight, Code, File, FileText, Folder, HelpCircle, Home, LayoutGrid, Menu, MessageSquare, Package, Settings, Users } from 'lucide-react';
 
 export function NavigationSection() {
   return (

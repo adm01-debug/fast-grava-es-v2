@@ -12,6 +12,7 @@ import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/h
 import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger, navigationMenuTriggerStyle } from '@/components/ui/navigation-menu';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { useState, useEffect } from 'react';
+import { RefreshCw, Play, Sparkles, MousePointer2, Wand2, Trophy, Flame, Coins, Award, Star, Zap, AlertTriangle, AlertCircle, CheckCircle, Layers, Info, Square, Eye, MessageSquare, HelpCircle, Menu, ChevronUp, ChevronDown, MoreHorizontal, Settings, Check, X, Pause, Navigation as NavigationIcon } from 'lucide-react';
 
 export function AnimationsSection() {
   const [animationKey, setAnimationKey] = useState(0);
@@ -891,7 +892,7 @@ export function AnimationsSection() {
             <div className="p-4 rounded-lg border border-border bg-muted/30 space-y-2">
               <div className="flex items-center gap-2">
                 <div className="h-8 w-8 rounded-md bg-success/20 flex items-center justify-center">
-                  <Navigation className="h-4 w-4 text-success" />
+                  <NavigationIcon className="h-4 w-4 text-success" />
                 </div>
                 <div>
                   <h4 className="text-sm font-semibold">NavigationMenu</h4>

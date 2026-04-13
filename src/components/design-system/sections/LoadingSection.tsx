@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { CodeBlock } from '@/components/ui/code-block';
 import { useState, useEffect } from 'react';
+import { Activity, Layers, Loader2, Play, RefreshCw, RotateCw, Save, Zap } from 'lucide-react';
 
 export function LoadingSection() {
   const [isLoading, setIsLoading] = useState(false);

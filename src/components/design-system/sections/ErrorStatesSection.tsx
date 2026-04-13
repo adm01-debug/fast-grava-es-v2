@@ -5,6 +5,7 @@ import { CodeBlock } from '@/components/ui/code-block';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
+import { XCircle, Search, Home, ArrowLeft, Server, RefreshCw, WifiOff, AlertCircle, AlertTriangle, HelpCircle, Shield, Lock, Key, Clock, Cpu, MinusCircle, Loader2, Copy, Save, Trash2 } from 'lucide-react';
 
 export function ErrorStatesSection() {
   return (

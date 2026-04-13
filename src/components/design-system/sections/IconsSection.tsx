@@ -3,6 +3,7 @@ import { Badge } from '@/components/ui/badge';
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { useState, useEffect } from 'react';
+import { AlertTriangle, AlertCircle, Box, Check, CheckCircle, Layers, Palette, Ruler, Search, Settings, Sparkles, Star, User, X, Zap, Home, Menu, ChevronUp, ChevronDown, ChevronLeft, ChevronRight, ArrowUp, ArrowDown, ArrowLeft, ArrowRight, ExternalLink, Link, Plus, Minus, Edit, Trash2, Save, Download, Upload, Copy, Send, Share2, RefreshCw, RefreshCcw, RotateCw, RotateCcw, Users, Lock, Unlock, Key, Shield, ShieldCheck, Eye, EyeOff, Fingerprint, Bell, Mail, Phone, MessageSquare, Info, HelpCircle, XCircle, MinusCircle, PlusCircle, Trophy, Award, Flame, Coins, Target, Heart, ThumbsUp, ThumbsDown, Gift, FileText, Folder, FolderOpen, Camera, Video, Music, Volume2, VolumeX, Calendar, Clock, TrendingUp, Activity, BarChart, PieChart, LineChart, Gauge, Filter, Grid, List, TableIcon, LayoutGrid, Maximize, Minimize, ZoomIn, ZoomOut, Move, Grip, MoreHorizontal, MoreVertical, Scan, QrCode, Printer, Wifi, WifiOff, Cloud, Database, Server, Cpu, HardDrive, Monitor, Smartphone, Tablet, MousePointer2, Wand2, Package, Truck, Factory, Warehouse, Building, ShoppingCart, CreditCard, DollarSign, Percent, Tag, Bookmark, Flag, Sun, Moon, CloudRain, Thermometer, Droplet, Wind, Umbrella, Terminal, Code, GitBranch, Battery, BatteryCharging, Power, Loader2, MapPin, Compass, Globe, Crosshair, Github, Linkedin, Twitter, Facebook, Instagram, Youtube, Square, Circle, Play, Type, Clipboard as ClipboardIcon, FileIcon, ImageIcon, Map as MapIcon, Navigation as NavigationIcon, type LucideIcon } from 'lucide-react';
 
 export function IconsSection() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -38,7 +39,7 @@ export function IconsSection() {
         { name: 'Download', Icon: Download },
         { name: 'Upload', Icon: Upload },
         { name: 'Copy', Icon: Copy },
-        { name: 'Clipboard', Icon: Clipboard },
+        { name: 'Clipboard', Icon: ClipboardIcon },
         { name: 'Send', Icon: Send },
         { name: 'Share2', Icon: Share2 },
         { name: 'RefreshCw', Icon: RefreshCw },
@@ -104,11 +105,11 @@ export function IconsSection() {
     {
       category: 'Arquivos & Mídia',
       icons: [
-        { name: 'File', Icon: File },
+        { name: 'File', Icon: FileIcon },
         { name: 'FileText', Icon: FileText },
         { name: 'Folder', Icon: Folder },
         { name: 'FolderOpen', Icon: FolderOpen },
-        { name: 'Image', Icon: Image },
+        { name: 'Image', Icon: ImageIcon },
         { name: 'Camera', Icon: Camera },
         { name: 'Video', Icon: Video },
         { name: 'Music', Icon: Music },
@@ -209,8 +210,8 @@ export function IconsSection() {
       category: 'Localização',
       icons: [
         { name: 'MapPin', Icon: MapPin },
-        { name: 'Map', Icon: Map },
-        { name: 'Navigation', Icon: Navigation },
+        { name: 'Map', Icon: MapIcon },
+        { name: 'Navigation', Icon: NavigationIcon },
         { name: 'Compass', Icon: Compass },
         { name: 'Globe', Icon: Globe },
         { name: 'Crosshair', Icon: Crosshair },
