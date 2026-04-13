@@ -193,7 +193,7 @@ export default function OperatorProductivityPage() {
         )}
       </div>
 
-      <CreateGoalModal open={showCreateGoalModal} onOpenChange={setShowCreateGoalModal} operatorId={goalOperatorId} operators={operators.map(o => ({ id: o.operatorId, name: o.operatorName }))} />
+      <CreateGoalModal open={showCreateGoalModal} onOpenChange={setShowCreateGoalModal} defaultOperatorId={goalOperatorId} />
     </MainLayout>
   );
 }
