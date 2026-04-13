@@ -5,6 +5,8 @@ import { CodeBlock } from '@/components/ui/code-block';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import { ChevronRight, Edit, Eye, HelpCircle, Layers, LayoutGrid, Minimize, MousePointer2, Settings, Tag, Trash2 } from 'lucide-react';
 
 export function TablesSection() {
