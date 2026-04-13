@@ -20,7 +20,7 @@ interface SPCCreateParameterModalProps {
     upper_spec_limit: number; lower_spec_limit: number; sample_size: number;
     frequency_minutes: number; product_name: string;
   };
-  onParamChange: (updater: (prev: typeof newParam) => typeof newParam) => void;
+  onParamChange: (updater: (prev: ParamType) => ParamType) => void;
   onSubmit: () => void;
   isPending: boolean;
 }
