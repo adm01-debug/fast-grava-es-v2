@@ -19,7 +19,7 @@ interface ScanHistoryItemProps {
     action: string;
     operator_name: string;
     scanned_at: string;
-    notes?: string;
+    notes?: string | null;
     jobs?: { order_number: string; product: string; client: string } | null;
   };
   isNew: boolean;
