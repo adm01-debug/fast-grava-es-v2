@@ -322,7 +322,7 @@ export function TypographySection() {
                 </div>
               </CardContent>
             </Card>
-          </TabsContent>
+
 
     </>
   );
