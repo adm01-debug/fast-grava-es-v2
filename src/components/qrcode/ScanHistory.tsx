@@ -163,11 +163,11 @@ export const ScanHistory = ({ jobId, limit = 200 }: ScanHistoryProps) => {
 
       <CardContent className="space-y-4">
         {showFilters && (
-          <ScanHistoryFilters operatorFilter={operatorFilter} actionFilter={actionFilter} dateRange={dateRange} operators={operators} hasActiveFilters={hasActiveFilters} onOperatorChange={setOperatorFilter} onActionChange={setActionFilter} onDateChange={setDateRange} onClear={clearFilters} />
+          <ScanHistoryFilters operatorFilter={operatorFilter} actionFilter={actionFilter} dateRange={dateRange} operators={operators} hasActiveFilters={hasActiveFilters} onOperatorFilterChange={setOperatorFilter} onActionFilterChange={setActionFilter} onDateRangeChange={setDateRange} onClear={clearFilters} />
         )}
 
         {(viewMode === "charts" || viewMode === "both") && (
-          <ScanHistoryCharts actionDistribution={actionDistribution} dailyEvolution={dailyEvolution} actionConfig={actionConfig} />
+          <ScanHistoryCharts actionDistribution={actionDistribution} dailyEvolution={dailyEvolution} />
         )}
 
         {(viewMode === "list" || viewMode === "both") && (
