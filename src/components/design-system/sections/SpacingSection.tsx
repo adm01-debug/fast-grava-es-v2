@@ -294,7 +294,6 @@ export function SpacingSection() {
                 </div>
               </CardContent>
             </Card>
-          </TabsContent>
     </>
   );
 }

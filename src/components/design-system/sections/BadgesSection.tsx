@@ -179,7 +179,6 @@ export function BadgesSection() {
                 </div>
               </CardContent>
             </Card>
-          </TabsContent>
     </>
   );
 }

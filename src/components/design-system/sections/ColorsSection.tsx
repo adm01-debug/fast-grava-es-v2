@@ -293,7 +293,6 @@ export function ColorsSection() {
                 </div>
               </CardContent>
             </Card>
-          </TabsContent>
     </>
   );
 }

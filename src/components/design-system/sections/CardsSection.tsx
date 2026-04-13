@@ -506,7 +506,6 @@ export function CardsSection() {
                 </div>
               </CardContent>
             </Card>
-          </TabsContent>
     </>
   );
 }

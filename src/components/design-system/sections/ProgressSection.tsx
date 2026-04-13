@@ -127,7 +127,6 @@ export function ProgressSection() {
                 </div>
               </CardContent>
             </Card>
-          </TabsContent>
     </>
   );
 }
