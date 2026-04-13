@@ -4,25 +4,21 @@ import { Progress } from '@/components/ui/progress';
 import { AlertTriangle, CheckCircle2, Clock } from 'lucide-react';
 import { format } from 'date-fns';
 
-interface Alert {
-  id: string;
-  techniqueName: string;
-  severity: 'critical' | 'warning' | 'info';
-  message: string;
-  occupancyRate: number;
-  affectedJobs: number;
-}
-
-interface CapacityEntry {
-  date: string;
-  totalCapacity: number;
-  usedCapacity: number;
-  occupancyRate: number;
-}
-
 interface BottlenecksTabProps {
-  alerts: Alert[];
-  capacityByDate: CapacityEntry[];
+  alerts: Array<{
+    id: string;
+    techniqueName: string;
+    severity: string;
+    message: string;
+    occupancyRate?: number;
+    affectedJobs?: number;
+    [key: string]: any;
+  }>;
+  capacityByDate: Array<{
+    date: string;
+    occupancyRate?: number;
+    [key: string]: any;
+  }>;
 }
 
 export function BottlenecksTab({ alerts, capacityByDate }: BottlenecksTabProps) {
@@ -43,17 +39,19 @@ export function BottlenecksTab({ alerts, capacityByDate }: BottlenecksTabProps) 
           </CardHeader>
           <CardContent className="space-y-3">
             <p className="text-sm text-muted-foreground">{alert.message}</p>
-            <div className="space-y-1">
-              <div className="flex items-center justify-between text-xs">
-                <span>Ocupação</span>
-                <span className="font-medium">{Math.round(alert.occupancyRate)}%</span>
+            {alert.occupancyRate != null && (
+              <div className="space-y-1">
+                <div className="flex items-center justify-between text-xs">
+                  <span>Ocupação</span><span className="font-medium">{Math.round(alert.occupancyRate)}%</span>
+                </div>
+                <Progress value={alert.occupancyRate} className="h-2" />
               </div>
-              <Progress value={alert.occupancyRate} className="h-2" />
-            </div>
-            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <Clock className="h-3 w-3" />
-              <span>{alert.affectedJobs} jobs afetados</span>
-            </div>
+            )}
+            {alert.affectedJobs != null && (
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <Clock className="h-3 w-3" /><span>{alert.affectedJobs} jobs afetados</span>
+              </div>
+            )}
           </CardContent>
         </Card>
       ))}
@@ -76,16 +74,16 @@ export function BottlenecksTab({ alerts, capacityByDate }: BottlenecksTabProps) 
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
-              {capacityByDate.slice(0, 7).map((entry) => (
-                <div key={entry.date} className="text-center space-y-2 p-3 rounded-lg bg-muted/30">
-                  <p className="text-xs font-medium">{format(new Date(entry.date), 'dd/MM')}</p>
-                  <Progress value={entry.occupancyRate} className="h-2" />
-                  <p className={`text-sm font-bold ${
-                    entry.occupancyRate > 90 ? 'text-destructive' :
-                    entry.occupancyRate > 70 ? 'text-warning' : 'text-success'
-                  }`}>{Math.round(entry.occupancyRate)}%</p>
-                </div>
-              ))}
+              {capacityByDate.slice(0, 7).map((entry) => {
+                const rate = entry.occupancyRate ?? 0;
+                return (
+                  <div key={entry.date} className="text-center space-y-2 p-3 rounded-lg bg-muted/30">
+                    <p className="text-xs font-medium">{format(new Date(entry.date), 'dd/MM')}</p>
+                    <Progress value={rate} className="h-2" />
+                    <p className={`text-sm font-bold ${rate > 90 ? 'text-destructive' : rate > 70 ? 'text-warning' : 'text-success'}`}>{Math.round(rate)}%</p>
+                  </div>
+                );
+              })}
             </div>
           </CardContent>
         </Card>

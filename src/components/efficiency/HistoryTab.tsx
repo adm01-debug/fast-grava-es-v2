@@ -5,38 +5,30 @@ import { CheckCircle2, History } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
-interface ResolvedAlert {
-  id: string;
-  title: string;
-  description: string;
-  alert_type: string;
-  severity: string;
-  detected_at: string;
-  resolved_at: string | null;
-  resolution_notes: string | null;
-}
-
 interface HistoryTabProps {
-  resolvedAlerts: ResolvedAlert[];
+  resolvedAlerts: Array<{
+    id: string;
+    title: string;
+    description: string;
+    alert_type: string;
+    severity: string;
+    detected_at: string;
+    resolved_at?: string | null;
+    resolution_notes?: string | null;
+    [key: string]: any;
+  }>;
   isLoading: boolean;
 }
 
 export function HistoryTab({ resolvedAlerts, isLoading }: HistoryTabProps) {
   if (isLoading) {
-    return (
-      <div className="space-y-4">
-        {[1, 2, 3].map(i => <Skeleton key={i} className="h-24" />)}
-      </div>
-    );
+    return <div className="space-y-4">{[1, 2, 3].map(i => <Skeleton key={i} className="h-24" />)}</div>;
   }
 
   return (
     <Card className="glass-card border-border/50">
       <CardHeader>
-        <CardTitle className="text-lg flex items-center gap-2">
-          <History className="h-5 w-5" />
-          Alertas Resolvidos
-        </CardTitle>
+        <CardTitle className="text-lg flex items-center gap-2"><History className="h-5 w-5" />Alertas Resolvidos</CardTitle>
         <CardDescription>Histórico de alertas de eficiência resolvidos</CardDescription>
       </CardHeader>
       <CardContent className="space-y-3">
@@ -63,9 +55,7 @@ export function HistoryTab({ resolvedAlerts, isLoading }: HistoryTabProps) {
               )}
               <div className="flex items-center gap-4 text-xs text-muted-foreground">
                 <span>Detectado: {format(new Date(alert.detected_at), "dd/MM/yyyy HH:mm", { locale: ptBR })}</span>
-                {alert.resolved_at && (
-                  <span>Resolvido: {format(new Date(alert.resolved_at), "dd/MM/yyyy HH:mm", { locale: ptBR })}</span>
-                )}
+                {alert.resolved_at && <span>Resolvido: {format(new Date(alert.resolved_at), "dd/MM/yyyy HH:mm", { locale: ptBR })}</span>}
               </div>
             </div>
           ))
