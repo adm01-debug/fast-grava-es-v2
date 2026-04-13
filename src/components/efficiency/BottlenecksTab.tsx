@@ -74,11 +74,12 @@ export function BottlenecksTab({ alerts, capacityByDate }: BottlenecksTabProps) 
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
-              {capacityByDate.slice(0, 7).map((entry) => {
+              {capacityByDate.slice(0, 7).map((entry, idx) => {
                 const rate = entry.occupancyRate ?? 0;
+                const dateStr = entry.date instanceof Date ? entry.date.toISOString() : String(entry.date);
                 return (
-                  <div key={entry.date} className="text-center space-y-2 p-3 rounded-lg bg-muted/30">
-                    <p className="text-xs font-medium">{format(new Date(entry.date), 'dd/MM')}</p>
+                  <div key={idx} className="text-center space-y-2 p-3 rounded-lg bg-muted/30">
+                    <p className="text-xs font-medium">{format(new Date(dateStr), 'dd/MM')}</p>
                     <Progress value={rate} className="h-2" />
                     <p className={`text-sm font-bold ${rate > 90 ? 'text-destructive' : rate > 70 ? 'text-warning' : 'text-success'}`}>{Math.round(rate)}%</p>
                   </div>
