@@ -39,7 +39,7 @@ export function IconsSection() {
         { name: 'Download', Icon: Download },
         { name: 'Upload', Icon: Upload },
         { name: 'Copy', Icon: Copy },
-        { name: 'Clipboard', Icon: Clipboard },
+        { name: 'Clipboard', Icon: ClipboardIcon },
         { name: 'Send', Icon: Send },
         { name: 'Share2', Icon: Share2 },
         { name: 'RefreshCw', Icon: RefreshCw },
@@ -105,11 +105,11 @@ export function IconsSection() {
     {
       category: 'Arquivos & Mídia',
       icons: [
-        { name: 'File', Icon: File },
+        { name: 'File', Icon: FileIcon },
         { name: 'FileText', Icon: FileText },
         { name: 'Folder', Icon: Folder },
         { name: 'FolderOpen', Icon: FolderOpen },
-        { name: 'Image', Icon: Image },
+        { name: 'Image', Icon: ImageIcon },
         { name: 'Camera', Icon: Camera },
         { name: 'Video', Icon: Video },
         { name: 'Music', Icon: Music },
@@ -210,8 +210,8 @@ export function IconsSection() {
       category: 'Localização',
       icons: [
         { name: 'MapPin', Icon: MapPin },
-        { name: 'Map', Icon: Map },
-        { name: 'Navigation', Icon: Navigation },
+        { name: 'Map', Icon: MapIcon },
+        { name: 'Navigation', Icon: NavigationIcon },
         { name: 'Compass', Icon: Compass },
         { name: 'Globe', Icon: Globe },
         { name: 'Crosshair', Icon: Crosshair },

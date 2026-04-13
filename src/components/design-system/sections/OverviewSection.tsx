@@ -214,7 +214,7 @@ export function OverviewSection({ onNavigate }: OverviewSectionProps) {
     { id: 'modals', icon: Layers, title: 'Modais', description: 'Dialog, AlertDialog, Sheet e Drawer', count: 4 },
     { id: 'tooltips', icon: MessageSquare, title: 'Tooltips', description: 'Tooltips, Popovers e HoverCards', count: 3 },
     { id: 'tables', icon: TableIcon, title: 'Tabelas', description: 'Tabelas com zebra, badges, ações e paginação', count: 5 },
-    { id: 'navigation', icon: Navigation, title: 'Navegação', description: 'Breadcrumbs, Tabs, Navigation Menu', count: 4 },
+    { id: 'navigation', icon: NavigationIcon, title: 'Navegação', description: 'Breadcrumbs, Tabs, Navigation Menu', count: 4 },
     { id: 'cards', icon: Square, title: 'Cards', description: '8 variantes incluindo stat, premium e glass', count: 8 },
     { id: 'badges', icon: Tag, title: 'Badges', description: 'Status badges com variantes coloridas', count: 6 },
     { id: 'progress', icon: Activity, title: 'Progress', description: 'Barras de progresso com variantes', count: 4 },
