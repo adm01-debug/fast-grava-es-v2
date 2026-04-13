@@ -20,13 +20,11 @@ export function AnimationsSection() {
         </Button>
       </div>
 
-      <div key={animationKey}>
-        <EntryAnimations animationKey={animationKey} />
-        <StaggerAnimations animationKey={animationKey} />
-      </div>
+      <EntryAnimations animationKey={animationKey} />
+      <StaggerAnimations animationKey={animationKey} />
       <HoverEffects />
       <GlowEffects />
-      <GamificationAnimations />
+      <GamificationAnimations animationKey={animationKey} />
       <PulseGlowAnimation />
     </div>
   );
