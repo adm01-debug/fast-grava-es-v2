@@ -28,6 +28,9 @@ export function EfficiencyAlertStatsPanel({ alerts, resolvedAlerts }: { alerts: 
 
   const formatTime = (m: number | null) => { if (m === null) return 'N/A'; if (m < 60) return `${m} min`; const h = Math.floor(m / 60); if (h < 24) return `${h}h ${m % 60}m`; return `${Math.floor(h / 24)}d ${h % 24}h`; };
 
+  const formatSeverity = (s: string) => { const m: Record<string, string> = { error: 'Crítico', warning: 'Alerta', info: 'Info' }; return m[s] || s; };
+  const getSeverityColor = (s: string) => { const m: Record<string, string> = { error: severityColors.error, warning: severityColors.warning, info: severityColors.info }; return m[s] || ''; };
+
   if (stats.totalAlerts === 0) return (<div className="flex flex-col items-center justify-center h-[300px] text-muted-foreground"><BarChart3 className="h-12 w-12 mb-3" /><p>Sem estatísticas disponíveis</p></div>);
 
   return (
@@ -51,7 +54,7 @@ export function EfficiencyAlertStatsPanel({ alerts, resolvedAlerts }: { alerts: 
         </div>
         <div className="p-4 rounded-lg border border-border/50 bg-card/30 backdrop-blur-sm">
           <h4 className="text-sm font-medium text-foreground mb-3 flex items-center gap-2"><AlertTriangle className="h-4 w-4 text-amber-400" />Severidade Mais Comum</h4>
-          {stats.mostFrequentSeverity ? (<div className="flex items-center gap-3"><Badge className={`${severityColors[stats.mostFrequentSeverity]} border`}>{stats.mostFrequentSeverity === 'error' ? 'Crítico' : stats.mostFrequentSeverity === 'warning' ? 'Alerta' : 'Info'}</Badge><p className="text-xs text-muted-foreground">{alerts.filter(a => a.severity === stats.mostFrequentSeverity).length} ocorrências</p></div>) : <p className="text-sm text-muted-foreground">Sem dados</p>}
+          {stats.mostFrequentSeverity ? (<div className="flex items-center gap-3"><Badge className={`${getSeverityColor(stats.mostFrequentSeverity)} border`}>{formatSeverity(stats.mostFrequentSeverity)}</Badge><p className="text-xs text-muted-foreground">{alerts.filter(a => a.severity === stats.mostFrequentSeverity).length} ocorrências</p></div>) : <p className="text-sm text-muted-foreground">Sem dados</p>}
         </div>
       </div>
       <div className="p-4 rounded-lg border border-border/50 bg-card/30 backdrop-blur-sm">
