@@ -1,8 +1,4 @@
-// Main ShiftHandover hook - combines queries and mutations
-// Refactored to re-export from sub-modules for maintainability
-
-import { useShiftHandoverQueries } from './shift-handover/useShiftHandoverQueries';
-import { useShiftHandoverMutations as useShiftHandoverMutationsImpl } from './shift-handover/useShiftHandoverMutations';
+// Main ShiftHandover hook - re-exports from sub-modules for maintainability
 
 // Re-export types
 export type {
