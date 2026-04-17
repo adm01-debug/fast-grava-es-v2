@@ -8,6 +8,10 @@ import { fileURLToPath } from 'node:url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const authPageCode = readFileSync(resolve(__dirname, '../../pages/AuthPage.tsx'), 'utf-8');
+const authLoginFormCode = readFileSync(resolve(__dirname, '../../components/auth/AuthLoginForm.tsx'), 'utf-8');
+const authSignupFormCode = readFileSync(resolve(__dirname, '../../components/auth/AuthSignupForm.tsx'), 'utf-8');
+// Combined source for assertions that may live in AuthPage or its extracted subcomponents
+const authCombinedCode = authPageCode + '\n' + authLoginFormCode + '\n' + authSignupFormCode;
 
 describe('AuthPage Design Improvements', () => {
   // ===== STAGGERED ANIMATIONS =====
@@ -49,15 +53,15 @@ describe('AuthPage Design Improvements', () => {
   // ===== CTA BUTTON =====
   describe('CTA button prominence', () => {
     it('login button uses variant="gradient"', () => {
-      expect(authPageCode).toContain('variant="gradient"');
+      expect(authCombinedCode).toContain('variant="gradient"');
     });
 
     it('login button has large height (h-12)', () => {
-      expect(authPageCode).toContain('h-12');
+      expect(authCombinedCode).toContain('h-12');
     });
 
     it('login button has tracking-wide for readability', () => {
-      expect(authPageCode).toContain('tracking-wide');
+      expect(authCombinedCode).toContain('tracking-wide');
     });
   });
 
@@ -148,14 +152,14 @@ describe('AuthPage Design Improvements', () => {
   // ===== PASSWORD STRENGTH =====
   describe('Password strength indicator', () => {
     it('includes PasswordStrengthIndicator in signup', () => {
-      expect(authPageCode).toContain('PasswordStrengthIndicator');
+      expect(authCombinedCode).toContain('PasswordStrengthIndicator');
     });
   });
 
   // ===== PASSKEY LOGIN =====
   describe('Passkey login support', () => {
     it('includes PasskeyLoginButton', () => {
-      expect(authPageCode).toContain('PasskeyLoginButton');
+      expect(authCombinedCode).toContain('PasskeyLoginButton');
     });
   });
 
