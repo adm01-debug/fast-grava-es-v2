@@ -27,7 +27,7 @@ export function AuditTrailDrawer({
       <SheetContent className="w-full sm:max-w-2xl overflow-hidden flex flex-col">
         <SheetHeader>
           <SheetTitle className="flex items-center gap-2">
-            <ShieldCheckIcon className="h-5 w-5 text-emerald-500" aria-hidden />
+            <ShieldCheckIcon className="h-5 w-5 text-primary" aria-hidden />
             Trilha de Auditoria
           </SheetTitle>
           <SheetDescription>
@@ -47,7 +47,7 @@ export function AuditTrailDrawer({
             )}
 
             {error && (
-              <div className="text-sm text-destructive p-4 border border-destructive/30 rounded-md bg-destructive/5">
+              <div className="text-sm text-destructive p-4 border border-destructive/30 rounded-md bg-destructive/10">
                 Não foi possível carregar a trilha de auditoria.
               </div>
             )}

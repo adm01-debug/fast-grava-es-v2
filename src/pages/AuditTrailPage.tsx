@@ -1,5 +1,4 @@
-import { useState } from 'react';
-import { Helmet } from 'react-helmet-async';
+import { useEffect, useState } from 'react';
 import { ShieldCheckIcon } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAuditTrail } from '@/hooks/useAuditTrail';
@@ -12,19 +11,15 @@ export default function AuditTrailPage() {
   const [filters, setFilters] = useState<AuditFiltersType>({ limit: 100 });
   const { data, isLoading, error } = useAuditTrail(filters);
 
+  useEffect(() => {
+    document.title = 'Trilha de Auditoria — Fast Gravações';
+  }, []);
+
   return (
     <>
-      <Helmet>
-        <title>Trilha de Auditoria — Fast Gravações</title>
-        <meta
-          name="description"
-          content="Auditoria imutável com hash chain para conformidade 21 CFR Part 11 / ANVISA"
-        />
-      </Helmet>
-
       <div className="container mx-auto p-4 sm:p-6 space-y-6 max-w-6xl">
         <header className="flex items-center gap-3">
-          <ShieldCheckIcon className="h-7 w-7 text-emerald-500" aria-hidden />
+          <ShieldCheckIcon className="h-7 w-7 text-primary" aria-hidden />
           <div>
             <h1 className="text-2xl font-semibold tracking-tight">Trilha de Auditoria</h1>
             <p className="text-sm text-muted-foreground">
@@ -46,7 +41,7 @@ export default function AuditTrailPage() {
           )}
 
           {error && (
-            <div className="text-sm text-destructive p-4 border border-destructive/30 rounded-md bg-destructive/5">
+            <div className="text-sm text-destructive p-4 border border-destructive/30 rounded-md bg-destructive/10">
               Não foi possível carregar a trilha de auditoria. Verifique se você tem permissão de coordenador ou gerente.
             </div>
           )}

@@ -17,7 +17,7 @@ export function AuditChainStatus() {
         {ok === null ? (
           <ShieldCheckIcon className="h-6 w-6 text-muted-foreground" aria-hidden />
         ) : ok ? (
-          <ShieldCheckIcon className="h-6 w-6 text-emerald-500" aria-hidden />
+          <ShieldCheckIcon className="h-6 w-6 text-primary" aria-hidden />
         ) : (
           <ShieldAlertIcon className="h-6 w-6 text-destructive" aria-hidden />
         )}

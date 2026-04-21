@@ -18,8 +18,8 @@ interface AuditEntryCardProps {
 }
 
 const actionConfig = {
-  INSERT: { icon: PlusCircleIcon, label: 'Criado', variant: 'default' as const, color: 'text-emerald-500' },
-  UPDATE: { icon: PencilIcon, label: 'Atualizado', variant: 'secondary' as const, color: 'text-amber-500' },
+  INSERT: { icon: PlusCircleIcon, label: 'Criado', variant: 'default' as const, color: 'text-primary' },
+  UPDATE: { icon: PencilIcon, label: 'Atualizado', variant: 'secondary' as const, color: 'text-secondary-foreground' },
   DELETE: { icon: Trash2Icon, label: 'Excluído', variant: 'destructive' as const, color: 'text-destructive' },
 };
 
@@ -54,7 +54,7 @@ export const AuditEntryCard = memo(function AuditEntryCard({ entry }: AuditEntry
             </div>
           </div>
         </div>
-        <ShieldCheckIcon className="h-4 w-4 text-emerald-500/60 shrink-0" aria-hidden />
+        <ShieldCheckIcon className="h-4 w-4 text-primary/60 shrink-0" aria-hidden />
       </div>
 
       {entry.changed_fields && entry.changed_fields.length > 0 && (
