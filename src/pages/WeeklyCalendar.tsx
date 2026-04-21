@@ -11,14 +11,18 @@ import { JobDetailsModal } from '@/components/jobs/JobDetailsModal';
 import { CalendarHeader } from '@/components/calendar/CalendarHeader';
 import { CalendarFilters } from '@/components/calendar/CalendarFilters';
 import { CalendarLegend } from '@/components/calendar/CalendarLegend';
+import { CalendarEmptyState } from '@/components/calendar/CalendarEmptyState';
+import { MobileFAB } from '@/components/calendar/MobileFAB';
 import { statusColorsSolid, statusLabels } from '@/components/calendar/types';
 import { cn } from '@/lib/utils';
 import { useSchedulingData } from '@/hooks/useSchedulingData';
 import { useCalendarFilters } from '@/hooks/useCalendarFilters';
+import { useCalendarHotkeys } from '@/hooks/useCalendarHotkeys';
 import { useSchedulingConflicts } from '@/hooks/useSchedulingConflicts';
 import { DbJob } from '@/hooks/useJobs';
 import { JobStatus } from '@/types/scheduling';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
+import '@/components/calendar/calendar-print.css';
 
 export default function WeeklyCalendar() {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -27,6 +31,7 @@ export default function WeeklyCalendar() {
 
   const { jobs, techniques, machines, getTechniqueById } = useSchedulingData();
   const { conflicts } = useSchedulingConflicts();
+  useCalendarHotkeys({ selectedDate, onDateChange: setSelectedDate, scope: 'weekly' });
   const {
     filters,
     updateFilter,
@@ -102,7 +107,7 @@ export default function WeeklyCalendar() {
   return (
     <MainLayout>
       <JobDetailsModal job={selectedJob} open={isModalOpen} onOpenChange={setIsModalOpen} />
-      <div className="p-4 sm:p-6 space-y-4 sm:space-y-6 animate-fade-in-up">
+      <div className="p-4 sm:p-6 space-y-4 sm:space-y-6 animate-fade-in-up calendar-print-area">
         <Breadcrumbs />
 
         <CalendarHeader
