@@ -194,6 +194,54 @@ export type Database = {
           },
         ]
       }
+      audit_log: {
+        Row: {
+          action: string
+          actor_email: string | null
+          actor_id: string | null
+          changed_fields: string[] | null
+          created_at: string
+          entity_id: string
+          entity_type: string
+          hash: string
+          id: string
+          metadata: Json | null
+          new_data: Json | null
+          old_data: Json | null
+          previous_hash: string | null
+        }
+        Insert: {
+          action: string
+          actor_email?: string | null
+          actor_id?: string | null
+          changed_fields?: string[] | null
+          created_at?: string
+          entity_id: string
+          entity_type: string
+          hash: string
+          id?: string
+          metadata?: Json | null
+          new_data?: Json | null
+          old_data?: Json | null
+          previous_hash?: string | null
+        }
+        Update: {
+          action?: string
+          actor_email?: string | null
+          actor_id?: string | null
+          changed_fields?: string[] | null
+          created_at?: string
+          entity_id?: string
+          entity_type?: string
+          hash?: string
+          id?: string
+          metadata?: Json | null
+          new_data?: Json | null
+          old_data?: Json | null
+          previous_hash?: string | null
+        }
+        Relationships: []
+      }
       bitrix24_field_mappings: {
         Row: {
           created_at: string
@@ -3579,6 +3627,19 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      compute_audit_hash: {
+        Args: {
+          _action: string
+          _actor_id: string
+          _created_at: string
+          _entity_id: string
+          _entity_type: string
+          _new_data: Json
+          _old_data: Json
+          _previous_hash: string
+        }
+        Returns: string
+      }
       get_user_role: {
         Args: { _user_id: string }
         Returns: Database["public"]["Enums"]["app_role"]
@@ -3589,6 +3650,15 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      verify_audit_chain: {
+        Args: { _limit?: number }
+        Returns: {
+          broken: number
+          first_broken_id: string
+          total_records: number
+          verified: number
+        }[]
       }
     }
     Enums: {

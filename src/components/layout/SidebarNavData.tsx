@@ -4,7 +4,7 @@ import {
   Home, Plus, BarChart3, Gauge, Coins, Wrench, Brain, Code2, UserCircle,
   Zap, Bot, QrCode, RefreshCw, BookOpen, Palette, Download, Bell,
   ArrowRightLeft, Package, Activity, FileDown, Trophy, BatteryCharging,
-  FileText, Cog, TrendingUp, Cpu
+  FileText, Cog, TrendingUp, Cpu, ShieldCheck
 } from 'lucide-react';
 
 export interface NavItem {
@@ -64,6 +64,7 @@ export const navGroups: NavGroup[] = [
   { id: 'system', icon: Cog, label: 'Sistema', items: [
     { icon: AlertTriangle, label: 'Alertas', href: '/alerts' },
     { icon: Bell, label: 'Notificações', href: '/notifications' },
+    { icon: ShieldCheck, label: 'Trilha de Auditoria', href: '/audit' },
     { icon: QrCode, label: 'Scanner QR', href: '/scanner' },
     { icon: Settings, label: 'Configurações', href: '/settings' },
   ]},

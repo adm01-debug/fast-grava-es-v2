@@ -1,0 +1,78 @@
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { logger } from '@/lib/logger';
+import {
+  auditLogEntrySchema,
+  auditChainVerificationSchema,
+  type AuditLogEntry,
+  type AuditChainVerification,
+  type AuditFilters,
+} from '@/lib/schemas/auditLog';
+
+const CONTEXT = 'useAuditTrail';
+
+async function fetchAuditEntries(filters: AuditFilters): Promise<AuditLogEntry[]> {
+  let query = supabase
+    .from('audit_log')
+    .select('*')
+    .order('created_at', { ascending: false })
+    .limit(filters.limit);
+
+  if (filters.entityType) query = query.eq('entity_type', filters.entityType);
+  if (filters.entityId) query = query.eq('entity_id', filters.entityId);
+  if (filters.actorId) query = query.eq('actor_id', filters.actorId);
+  if (filters.action) query = query.eq('action', filters.action);
+  if (filters.fromDate) query = query.gte('created_at', filters.fromDate);
+  if (filters.toDate) query = query.lte('created_at', filters.toDate);
+
+  const { data, error } = await query;
+  if (error) {
+    logger.error('Failed to load audit entries', error, CONTEXT);
+    throw error;
+  }
+  const parsed = (data ?? []).map((row) => {
+    const result = auditLogEntrySchema.safeParse(row);
+    if (!result.success) {
+      logger.warn('Audit row failed validation', result.error.flatten(), CONTEXT);
+      return null;
+    }
+    return result.data;
+  });
+  return parsed.filter((x): x is AuditLogEntry => x !== null);
+}
+
+export function useAuditTrail(filters: AuditFilters) {
+  return useQuery({
+    queryKey: ['audit-trail', filters],
+    queryFn: () => fetchAuditEntries(filters),
+    staleTime: 30_000,
+  });
+}
+
+export function useEntityAuditTrail(entityType: string, entityId: string | undefined) {
+  return useQuery({
+    queryKey: ['audit-trail', 'entity', entityType, entityId],
+    queryFn: () =>
+      fetchAuditEntries({ entityType, entityId: entityId ?? '', limit: 200 }),
+    enabled: Boolean(entityId),
+    staleTime: 15_000,
+  });
+}
+
+export function useAuditChainVerification(enabled = false) {
+  return useQuery<AuditChainVerification>({
+    queryKey: ['audit-chain-verify'],
+    enabled,
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc('verify_audit_chain', { _limit: 1000 });
+      if (error) {
+        logger.error('Chain verification failed', error, CONTEXT);
+        throw error;
+      }
+      const row = Array.isArray(data) ? data[0] : data;
+      const parsed = auditChainVerificationSchema.parse(row);
+      return parsed;
+    },
+    staleTime: 0,
+  });
+}
