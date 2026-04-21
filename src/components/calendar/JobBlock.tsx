@@ -10,10 +10,11 @@ interface JobBlockProps {
   job: DbJob;
   position: { left: string; width: string };
   hasConflict?: boolean;
+  ghost?: boolean;
   onClick: (job: DbJob) => void;
 }
 
-export function JobBlock({ job, position, hasConflict, onClick }: JobBlockProps) {
+export function JobBlock({ job, position, hasConflict, ghost, onClick }: JobBlockProps) {
   return (
     <Tooltip>
       <TooltipTrigger asChild>
@@ -21,11 +22,12 @@ export function JobBlock({ job, position, hasConflict, onClick }: JobBlockProps)
           onClick={() => onClick(job)}
           aria-label={`Job ${job.order_number} — ${statusLabels[job.status as JobStatus]}`}
           className={cn(
-            'absolute top-2 bottom-2 rounded-md border cursor-pointer',
+            'absolute top-2 rounded-md border cursor-pointer',
             'flex items-center justify-center overflow-hidden',
             'transition-all duration-200 hover:scale-[1.02] hover:z-10',
             'shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-primary/40',
             statusColors[job.status as JobStatus],
+            ghost ? 'bottom-5 opacity-70 border-dashed' : 'bottom-2',
             hasConflict && 'ring-2 ring-destructive/70 animate-pulse'
           )}
           style={position}

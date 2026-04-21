@@ -64,3 +64,39 @@ export const EMPTY_FILTERS: CalendarFilterState = {
   onlyInProduction: false,
   searchQuery: '',
 };
+
+// E11 — Zoom temporal
+export type CalendarZoomLevel = 15 | 30 | 60 | 120;
+export const ZOOM_LABELS: Record<CalendarZoomLevel, string> = {
+  15: '15 min',
+  30: '30 min',
+  60: '1 h',
+  120: '2 h',
+};
+
+// E7/E8 — Agrupamento
+export type CalendarGroupBy = 'machine' | 'technique';
+
+// E9/E10 — Overlays
+export interface CalendarOverlays {
+  showHeatmap: boolean;
+  showActualVsPlanned: boolean;
+}
+
+export const EMPTY_OVERLAYS: CalendarOverlays = {
+  showHeatmap: false,
+  showActualVsPlanned: false,
+};
+
+// E9 — Heatmap thresholds
+export function getOccupancyColor(rate: number): string {
+  if (rate < 0.5) return 'hsl(var(--status-finished) / 0.18)';
+  if (rate < 0.8) return 'hsl(var(--status-delayed) / 0.20)';
+  return 'hsl(var(--destructive) / 0.22)';
+}
+
+export function getOccupancyLabel(rate: number): string {
+  if (rate < 0.5) return 'Baixa';
+  if (rate < 0.8) return 'Média';
+  return 'Alta';
+}

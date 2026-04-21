@@ -20,6 +20,7 @@ import {
 const Index = lazy(() => import("@/pages/Index"));
 const DailyCalendar = lazy(() => import("@/pages/DailyCalendar"));
 const WeeklyCalendar = lazy(() => import("@/pages/WeeklyCalendar"));
+const MonthlyCalendar = lazy(() => import("@/pages/MonthlyCalendar"));
 const PendingQueue = lazy(() => import("@/pages/PendingQueue"));
 const AlertsDashboard = lazy(() => import("@/pages/AlertsDashboard"));
 const KanbanBoard = lazy(() => import("@/pages/KanbanBoard"));
@@ -106,6 +107,7 @@ export function AnimatedRoutes() {
         {/* Calendar */}
         <Route path="/calendar/daily" element={<ProtectedPage fallback={<CalendarPageSkeleton />} allowedRoles={['coordinator', 'manager']}><DailyCalendar /></ProtectedPage>} />
         <Route path="/calendar/weekly" element={<ProtectedPage fallback={<CalendarPageSkeleton />} allowedRoles={['coordinator', 'manager']}><WeeklyCalendar /></ProtectedPage>} />
+        <Route path="/calendar/monthly" element={<ProtectedPage fallback={<CalendarPageSkeleton />} allowedRoles={['coordinator', 'manager']}><MonthlyCalendar /></ProtectedPage>} />
 
         {/* Operations */}
         <Route path="/pending" element={<ProtectedPage fallback={<ListPageSkeleton />} allowedRoles={['coordinator']}><PendingQueue /></ProtectedPage>} />
