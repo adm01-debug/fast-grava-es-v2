@@ -2,7 +2,7 @@ import {
   Calendar, CalendarDays, CalendarRange, LayoutGrid, List, AlertTriangle, Settings, Users, Home,
   BarChart3, Gauge, Coins, Wrench, Brain, Code2, Zap, Bot, QrCode, RefreshCw,
   BookOpen, Palette, Download, Bell, ArrowRightLeft, Package, Activity, FileDown,
-  Trophy, BatteryCharging, FileText, Cog, TrendingUp, Cpu, UserCircle
+  Trophy, BatteryCharging, FileText, Cog, TrendingUp, Cpu, UserCircle, ShieldCheck
 } from 'lucide-react';
 import { NavGroup } from './NavGroupComponent';
 import { NavItem } from './NavButton';
@@ -49,6 +49,7 @@ export const navGroups: NavGroup[] = [
   { id: 'system', icon: Cog, label: 'Sistema', items: [
     { icon: AlertTriangle, label: 'Alertas', href: '/alerts' },
     { icon: Bell, label: 'Notificações', href: '/notifications' },
+    { icon: ShieldCheck, label: 'Trilha de Auditoria', href: '/audit' },
     { icon: QrCode, label: 'Scanner QR', href: '/scanner' },
     { icon: Settings, label: 'Configurações', href: '/settings' },
   ]},
