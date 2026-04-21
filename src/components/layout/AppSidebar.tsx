@@ -42,7 +42,7 @@ export function AppSidebar() {
 
   const filteredNavGroups = useMemo(() => {
     const opPaths = ['/operator', '/alerts', '/assistant', '/scanner', '/knowledge', '/shift-handover'];
-    const mgrPaths = ['/', '/bi', '/executive', '/calendar/daily', '/calendar/weekly', '/kpis', '/oee', '/abc', '/spc', '/tpm', '/ml-predictions', '/alerts', '/notifications', '/efficiency', '/operators', '/operators/productivity', '/machines', '/energy', '/traceability', '/assistant', '/knowledge', '/documents', '/shift-handover', '/gamification', '/settings', '/security', '/kanban', '/new-job'];
+    const mgrPaths = ['/', '/bi', '/executive', '/calendar/daily', '/calendar/weekly', '/calendar/monthly', '/kpis', '/oee', '/abc', '/spc', '/tpm', '/ml-predictions', '/alerts', '/notifications', '/efficiency', '/operators', '/operators/productivity', '/machines', '/energy', '/traceability', '/assistant', '/knowledge', '/documents', '/shift-handover', '/gamification', '/settings', '/security', '/kanban', '/new-job'];
     return navGroups.map(g => ({ ...g, items: g.items.filter(i => { if (role === 'operator') return opPaths.includes(i.href); if (role === 'manager') return mgrPaths.includes(i.href); return true; }) })).filter(g => g.items.length > 0);
   }, [role]);
 

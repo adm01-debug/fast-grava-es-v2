@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  Calendar, CalendarDays, LayoutGrid, List, AlertTriangle, Settings, Users,
+  Calendar, CalendarDays, CalendarRange, LayoutGrid, List, AlertTriangle, Settings, Users,
   Home, Plus, BarChart3, Gauge, Coins, Wrench, Brain, Code2, UserCircle,
   Zap, Bot, QrCode, RefreshCw, BookOpen, Palette, Download, Bell,
   ArrowRightLeft, Package, Activity, FileDown, Trophy, BatteryCharging,
@@ -27,6 +27,7 @@ export const navGroups: NavGroup[] = [
   { id: 'planning', icon: Calendar, label: 'Planejamento', items: [
     { icon: Calendar, label: 'Calendário Diário', href: '/calendar/daily' },
     { icon: CalendarDays, label: 'Calendário Semanal', href: '/calendar/weekly' },
+    { icon: CalendarRange, label: 'Calendário Mensal', href: '/calendar/monthly' },
     { icon: LayoutGrid, label: 'Kanban', href: '/kanban' },
     { icon: List, label: 'Pendências', href: '/pending' },
   ]},
