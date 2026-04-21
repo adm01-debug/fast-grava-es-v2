@@ -1,75 +1,160 @@
 
-## Análise Exaustiva de Funcionalidades — Fast Gravações
 
-Vou mapear **todas** as funcionalidades do sistema cruzando: páginas (`src/pages`), hooks (`src/hooks`), componentes (`src/components`), serviços (`src/services`), edge functions (`supabase/functions`), tabelas do banco, contextos e integrações.
+## Análise Estratégica do Módulo AGENDA — Product Designer Strategist
 
-### Fontes a inspecionar
-1. `src/routes/AppRoutes.tsx` — todas as rotas registradas
-2. `src/pages/*` — 36+ páginas
-3. `src/hooks/*` — 74+ hooks customizados
-4. `src/components/*` — agrupados por domínio (dashboard, kiosk, operator, quality, etc.)
-5. `src/services/*` — camada de serviços
-6. `supabase/functions/*` — edge functions deployadas
-7. `src/contexts/*` — providers globais
-8. `src/i18n/*` — idiomas suportados
-9. Schema do banco (tabelas + RLS)
-10. Integrações externas (Bitrix24, TaskGeeks, Lovable AI, Resend, Push/VAPID)
+### 📊 Diagnóstico Atual
 
-### Estrutura do Relatório Final
-Vou entregar um documento Markdown salvo em `/mnt/documents/FUNCIONALIDADES_SISTEMA.md` com:
+**O que existe hoje:**
+- `DailyCalendar.tsx` (430 linhas — **viola política de 400 linhas**) — Timeline horizontal por máquina + vista Agenda mobile
+- `WeeklyCalendar.tsx` (357 linhas) — Grade semanal (máquinas × 7 dias)
+- `AgendaView.tsx` — Cards agrupados por turno (manhã/tarde/noite)
+- `JobDetailsModal.tsx` — Único modal para detalhes
 
-1. **Visão geral** — stack, escala (52 máquinas, 16 técnicas), papéis
-2. **Mapa de rotas** — tabela rota → página → permissão
-3. **Módulos funcionais** (organizados pelos 7 grupos do sidebar):
-   - Início / Dashboard
-   - Planejamento (Calendário, Kanban, Pendências)
-   - Analytics (BI, Executivo, KPIs, OEE, Eficiência, SPC, ABC)
-   - Operações (TPM, Máquinas, Comparativo, Energia, Rastreabilidade)
-   - Equipe (Operadores, Produtividade, Histórico, Gamificação, Turno, Visão Operador)
-   - Inteligência (ML, Assistente IA, Conhecimento, Documentos)
-   - Sistema (Alertas, Notificações, Scanner QR, Configurações)
-   - Admin (Code Quality, Bitrix24, Design System, Install)
-4. **Funcionalidades transversais**:
-   - Autenticação (email/senha + Google OAuth + RBAC 3 papéis)
-   - Offline-first (IndexedDB `fastgravacoes_offline`)
-   - Realtime (Supabase channels)
-   - i18n (pt-BR, en-US, es-ES)
-   - PWA + Push Notifications (VAPID)
-   - Impressão térmica (etiquetas 10x15, 5x7, 8x5)
-   - Modo Kiosk
-   - Confirmações, Celebrações, Feedback, Command Palette, Onboarding
-5. **Lógica de negócio**:
-   - Máquina de estados de jobs
-   - Buffer auto-promotion (3 jobs ready/técnica)
-   - Conflict resolution (Urgência > Prazo > VIP > Valor)
-   - SPC (Western Electric rules, A2 dinâmico)
-   - OEE (thresholds 85/70/55)
-   - ABC Costing (Σ atividade × taxa × tempo)
-   - KPIs (penalidade assimétrica, limite 72h)
-   - Detecção de jobs travados / dados órfãos
-6. **Integrações**:
-   - Bitrix24 (OAuth bidirecional, pg_cron 5min, 16 SPAs)
-   - TaskGeeks (gamificação bidirecional)
-   - Lovable AI (Gemini/GPT models)
-   - Resend (e-mail)
-   - Storage (production-photos, technical-documents)
-7. **Edge Functions** — listar todas com propósito
-8. **Tabelas + RLS** — resumo do schema e políticas
-9. **Engenharia / Qualidade**:
-   - Circuit Breaker, Rate Limiter, Retry com backoff
-   - Validação Zod
-   - Logger estruturado
-   - 1386 testes automatizados
-   - Política 400 linhas/arquivo
-10. **Gaps / Itens cancelados** — IoT (cancelado)
+**Lacunas críticas identificadas:**
+1. ❌ **Sem drag & drop** (mencionado em `docs/CALENDAR.md` mas não implementado)
+2. ❌ **Sem detecção visual de conflitos** (sobreposições de horário invisíveis)
+3. ❌ **Sem visão mensal** nem **timeline 24h contínua** (só 07-20h fixo)
+4. ❌ **Sem heatmap de ocupação** por máquina/técnica
+5. ❌ **Sem agendamento rápido** (clicar em slot vazio não cria job)
+6. ❌ **Sem indicador de carga/utilização** por máquina visível na agenda
+7. ❌ **Sem swimlane por operador**, só por máquina
+8. ❌ **Sem multi-seleção** + ações em lote diretamente na agenda
+9. ❌ **Sem zoom temporal** (15min / 30min / 1h / 2h)
+10. ❌ **Filtros pobres**: só "técnica" — falta status, operador, cliente, prioridade, atraso
+11. ❌ **Sem busca/jump-to-job** dentro da agenda
+12. ❌ **Sem export** (PDF/iCal/print) da agenda
+13. ❌ **Sem pré-visualização de impacto** ao reagendar (ripple delay)
+14. ❌ **Sem alertas inline**: setup time, troca de cor, deadline próximo
+15. ❌ **Sem agrupamento inteligente** por técnica (52 máquinas viram parede)
+16. ❌ **Sem comparativo planejado vs realizado** sobreposto
+17. ❌ **Mobile**: só lista — falta swipe entre dias, gestos, FAB de criação
+18. ❌ **Sem keyboard shortcuts** (←/→ dia, T hoje, N novo, F filtro, /)
+19. ❌ **Sem persistência** de filtros/zoom/visão preferida (localStorage)
+20. ❌ **Sem indicação de "agora"** na vista semanal (só na diária)
 
-### Processo de execução (modo padrão)
-1. Listar `src/pages`, `src/hooks`, `src/services`, `src/components`, `supabase/functions` via `code--list_dir`
-2. Ler `AppRoutes.tsx` para mapa completo de rotas e proteções
-3. Consultar schema via `security--get_table_schema`
-4. Inspecionar contextos e providers
-5. Ler READMEs/docs em `docs/`
-6. Compilar relatório em `/mnt/documents/FUNCIONALIDADES_SISTEMA.md`
-7. Entregar via `<lov-artifact>`
+---
 
-Sem mudanças no código — apenas geração de documento.
+### 🎯 Plano de Melhorias — 4 Ondas Sequenciais
+
+Cada onda é **autônoma, testável, entregável** e adere a `useSchedulingData`, máquina de estados, política 400 linhas, dark theme Task Gifts e `Icon` suffix.
+
+---
+
+#### **🌊 Onda 1 — Fundação UX & Inteligência de Dados** *(maior ROI, base das outras)*
+
+1. **Refatorar `DailyCalendar.tsx`** em subcomponentes (<400 linhas):
+   - `CalendarHeader.tsx` (nav + filtros)
+   - `CalendarTimeline.tsx` (grid horária)
+   - `CalendarMachineRow.tsx` (linha por máquina)
+   - `JobBlock.tsx` (bloco visual + tooltip)
+   - `CalendarLegend.tsx`
+
+2. **Filtros avançados unificados** (`CalendarFilters.tsx` reutilizável Diária/Semanal):
+   - Multi-select: técnica, máquina, operador, status, prioridade, cliente
+   - Toggles: "Só com atrasos", "Só em produção", "Só meus turnos"
+   - Persistência em localStorage por usuário
+   - Chips removíveis + botão "Limpar"
+
+3. **Detecção de conflitos visual**:
+   - Hook `useScheduleConflicts(jobs)` — detecta sobreposições mesma máquina
+   - Borda vermelha pulsante + ícone `AlertTriangle` no bloco
+   - Badge contador no header: "⚠ 3 conflitos"
+
+4. **Linha "AGORA" também na semanal** + auto-scroll inicial para hora atual.
+
+5. **Mini-mapa de densidade** (sparkline acima do timeline mostrando carga por hora).
+
+---
+
+#### **🌊 Onda 2 — Interatividade Profissional**
+
+6. **Drag & Drop** com `@dnd-kit` (já familiar ao Kanban):
+   - Arrastar bloco entre máquinas/horários
+   - Validação via `jobStateMachine` antes de soltar
+   - Snap-to-grid (15/30/60min)
+   - Preview fantasma + "ripple" mostrando jobs deslocados
+   - Undo via toast (5s) — `useUndoableAction`
+
+7. **Resize de blocos** (alça lateral) → ajusta `estimated_duration` + `end_time`.
+
+8. **Click-to-create**: clicar em slot vazio abre `QuickJobDialog` pré-preenchido com máquina+horário.
+
+9. **Multi-seleção + ações em lote**:
+   - Shift+click ou checkbox toggle
+   - Barra flutuante: "3 selecionados — [Reagendar][Mudar máquina][Excluir][Imprimir etiquetas]"
+
+10. **Keyboard shortcuts** (`useHotkeys`):
+    - `←/→` navegar dia, `Shift+←/→` semana, `T` hoje, `N` novo, `F` filtros, `/` busca, `1/2/3` timeline/agenda/mês, `Esc` deselecionar.
+
+11. **Command palette extension** — `Cmd+K` → "Ir para job OS-2024-1234".
+
+---
+
+#### **🌊 Onda 3 — Visões Estratégicas Novas**
+
+12. **Vista Mensal** (`MonthlyCalendar.tsx`) — heatmap de jobs/dia, click → vai para diária.
+
+13. **Vista Operadores** (toggle swimlane) — agrupa por operador em vez de máquina (útil para gestores de turno).
+
+14. **Vista Técnicas Agregada** — colapsa 52 máquinas em 16 técnicas, expand-on-click (resolve poluição visual).
+
+15. **Heatmap de Ocupação** sobreposto (toggle): cor de fundo da célula = % ocupação (verde→amarelo→vermelho).
+
+16. **Comparativo Planejado vs Realizado**:
+    - Bloco superior = planejado (transparente)
+    - Bloco inferior = realizado (sólido, baseado em `actual_start_time/actual_end_time`)
+    - Indicador de desvio (+15min / -10min)
+
+17. **Zoom temporal**: slider 15min/30min/1h/2h — afeta densidade do grid.
+
+---
+
+#### **🌊 Onda 4 — Mobile, Export, Polimento**
+
+18. **Mobile-first refinements**:
+    - Swipe horizontal entre dias (`useSwipeGesture` já existe)
+    - Pull-to-refresh (`use-pull-to-refresh` já existe)
+    - FAB "+" para criar job rápido
+    - Bottom sheet para detalhes (em vez de modal)
+    - Haptic feedback nas ações (`use-haptic-feedback` já existe)
+
+19. **Export & Compartilhamento**:
+    - PDF do dia/semana (jsPDF + html2canvas)
+    - Export iCal (.ics) por máquina ou operador
+    - Print-friendly CSS `@media print`
+    - Compartilhar link de agenda filtrada
+
+20. **Onboarding contextual** (primeira visita) — overlay com dicas sobre filtros/atalhos/drag.
+
+21. **Skeleton loaders elegantes** substituindo spinners genéricos.
+
+22. **Empty states com CTA** (ilustração + "Criar primeiro agendamento").
+
+23. **Acessibilidade WCAG AA**:
+    - `aria-live` em mudanças de status
+    - Navegação completa por teclado nos blocos
+    - Contraste 4.5:1 verificado em todos os status colors
+    - Screen reader labels descritivos
+
+---
+
+### 📐 Detalhes Técnicos
+
+- **Sem novas dependências críticas** — `@dnd-kit` já está no projeto (Kanban), `framer-motion` idem.
+- **Reuso máximo**: `useSchedulingData`, `jobStateMachine`, `JobDetailsModal`, hooks mobile existentes.
+- **Performance**: virtualização (`@tanstack/react-virtual`) na vista semanal quando >30 máquinas.
+- **Realtime**: aproveitar `useRealtimeConnection` para atualizar blocos sem refresh.
+- **Offline-first**: drag & drop respeita fila do `useOfflineSync`.
+- **i18n**: todas as strings via `t()` (pt-BR, en-US, es-ES).
+- **Logger**: `src/lib/logger.ts`, zero `console.log`.
+- **Validação**: Zod nos payloads de reagendamento.
+- **Testes**: ampliar suite atual (1386 testes) com casos de conflito, drag, filtros.
+
+---
+
+### 🚀 Recomendação de Execução
+
+Dado seu perfil (autônomo, sequencial, perfeccionista), sugiro executar **Onda 1 primeiro** (fundação) — entrega valor imediato (filtros + conflitos + refactor crítico de 430 linhas) e desbloqueia as próximas. Após sua aprovação, sigo para Onda 2, 3 e 4 sem interrupções.
+
+**Confirma iniciar pela Onda 1?** Posso começar agora mesmo com refactor + filtros + detecção de conflitos + linha "AGORA" semanal + mini-mapa de densidade — tudo em uma única execução contínua.
+
