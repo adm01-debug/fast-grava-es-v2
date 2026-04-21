@@ -1,160 +1,134 @@
 
+## Execução Sequencial Autônoma — Ondas 2, 3 e 4 do Módulo AGENDA
 
-## Análise Estratégica do Módulo AGENDA — Product Designer Strategist
-
-### 📊 Diagnóstico Atual
-
-**O que existe hoje:**
-- `DailyCalendar.tsx` (430 linhas — **viola política de 400 linhas**) — Timeline horizontal por máquina + vista Agenda mobile
-- `WeeklyCalendar.tsx` (357 linhas) — Grade semanal (máquinas × 7 dias)
-- `AgendaView.tsx` — Cards agrupados por turno (manhã/tarde/noite)
-- `JobDetailsModal.tsx` — Único modal para detalhes
-
-**Lacunas críticas identificadas:**
-1. ❌ **Sem drag & drop** (mencionado em `docs/CALENDAR.md` mas não implementado)
-2. ❌ **Sem detecção visual de conflitos** (sobreposições de horário invisíveis)
-3. ❌ **Sem visão mensal** nem **timeline 24h contínua** (só 07-20h fixo)
-4. ❌ **Sem heatmap de ocupação** por máquina/técnica
-5. ❌ **Sem agendamento rápido** (clicar em slot vazio não cria job)
-6. ❌ **Sem indicador de carga/utilização** por máquina visível na agenda
-7. ❌ **Sem swimlane por operador**, só por máquina
-8. ❌ **Sem multi-seleção** + ações em lote diretamente na agenda
-9. ❌ **Sem zoom temporal** (15min / 30min / 1h / 2h)
-10. ❌ **Filtros pobres**: só "técnica" — falta status, operador, cliente, prioridade, atraso
-11. ❌ **Sem busca/jump-to-job** dentro da agenda
-12. ❌ **Sem export** (PDF/iCal/print) da agenda
-13. ❌ **Sem pré-visualização de impacto** ao reagendar (ripple delay)
-14. ❌ **Sem alertas inline**: setup time, troca de cor, deadline próximo
-15. ❌ **Sem agrupamento inteligente** por técnica (52 máquinas viram parede)
-16. ❌ **Sem comparativo planejado vs realizado** sobreposto
-17. ❌ **Mobile**: só lista — falta swipe entre dias, gestos, FAB de criação
-18. ❌ **Sem keyboard shortcuts** (←/→ dia, T hoje, N novo, F filtro, /)
-19. ❌ **Sem persistência** de filtros/zoom/visão preferida (localStorage)
-20. ❌ **Sem indicação de "agora"** na vista semanal (só na diária)
+Vou executar **todas as 18 melhorias restantes** uma a uma, sem pausas nem perguntas, até atingir 10/10.
 
 ---
 
-### 🎯 Plano de Melhorias — 4 Ondas Sequenciais
+### 🌊 Onda 2 — Interatividade Profissional (5 entregas)
 
-Cada onda é **autônoma, testável, entregável** e adere a `useSchedulingData`, máquina de estados, política 400 linhas, dark theme Task Gifts e `Icon` suffix.
+**E1. Drag & Drop com `@dnd-kit`**
+- Hook `useCalendarDnd` envolvendo `DndContext`
+- Arrastar `JobBlock` entre máquinas/horários
+- Validação via `jobStateMachine.canTransition`
+- Snap-to-grid 15min
+- Preview fantasma com `DragOverlay`
+- Toast de undo (5s) via `useUndoableAction`
+- Persistência via `useJobs.updateJob` (offline-safe)
 
----
+**E2. Resize de blocos**
+- Alça lateral direita no `JobBlock`
+- Atualiza `estimated_duration` + `end_time`
+- Mesma validação + undo
 
-#### **🌊 Onda 1 — Fundação UX & Inteligência de Dados** *(maior ROI, base das outras)*
+**E3. Click-to-create em slot vazio**
+- Componente `QuickJobDialog` (form mínimo)
+- Click em célula vazia da timeline → abre dialog pré-preenchido (máquina + horário)
+- Cria job em status `scheduled`
 
-1. **Refatorar `DailyCalendar.tsx`** em subcomponentes (<400 linhas):
-   - `CalendarHeader.tsx` (nav + filtros)
-   - `CalendarTimeline.tsx` (grid horária)
-   - `CalendarMachineRow.tsx` (linha por máquina)
-   - `JobBlock.tsx` (bloco visual + tooltip)
-   - `CalendarLegend.tsx`
+**E4. Multi-seleção + ações em lote**
+- Hook `useMultiSelect<DbJob>`
+- Shift+click ou checkbox no `JobBlock`
+- Barra flutuante `BulkActionsBar`: Reagendar | Mudar máquina | Excluir | Imprimir etiquetas
 
-2. **Filtros avançados unificados** (`CalendarFilters.tsx` reutilizável Diária/Semanal):
-   - Multi-select: técnica, máquina, operador, status, prioridade, cliente
-   - Toggles: "Só com atrasos", "Só em produção", "Só meus turnos"
-   - Persistência em localStorage por usuário
-   - Chips removíveis + botão "Limpar"
-
-3. **Detecção de conflitos visual**:
-   - Hook `useScheduleConflicts(jobs)` — detecta sobreposições mesma máquina
-   - Borda vermelha pulsante + ícone `AlertTriangle` no bloco
-   - Badge contador no header: "⚠ 3 conflitos"
-
-4. **Linha "AGORA" também na semanal** + auto-scroll inicial para hora atual.
-
-5. **Mini-mapa de densidade** (sparkline acima do timeline mostrando carga por hora).
-
----
-
-#### **🌊 Onda 2 — Interatividade Profissional**
-
-6. **Drag & Drop** com `@dnd-kit` (já familiar ao Kanban):
-   - Arrastar bloco entre máquinas/horários
-   - Validação via `jobStateMachine` antes de soltar
-   - Snap-to-grid (15/30/60min)
-   - Preview fantasma + "ripple" mostrando jobs deslocados
-   - Undo via toast (5s) — `useUndoableAction`
-
-7. **Resize de blocos** (alça lateral) → ajusta `estimated_duration` + `end_time`.
-
-8. **Click-to-create**: clicar em slot vazio abre `QuickJobDialog` pré-preenchido com máquina+horário.
-
-9. **Multi-seleção + ações em lote**:
-   - Shift+click ou checkbox toggle
-   - Barra flutuante: "3 selecionados — [Reagendar][Mudar máquina][Excluir][Imprimir etiquetas]"
-
-10. **Keyboard shortcuts** (`useHotkeys`):
-    - `←/→` navegar dia, `Shift+←/→` semana, `T` hoje, `N` novo, `F` filtros, `/` busca, `1/2/3` timeline/agenda/mês, `Esc` deselecionar.
-
-11. **Command palette extension** — `Cmd+K` → "Ir para job OS-2024-1234".
+**E5. Atalhos de teclado + Command Palette**
+- Hook `useCalendarHotkeys`: ←/→, Shift+←/→, T, N, F, /, 1/2/3, Esc
+- Extensão do Command Palette: "Ir para OS-2024-XXXX"
 
 ---
 
-#### **🌊 Onda 3 — Visões Estratégicas Novas**
+### 🌊 Onda 3 — Visões Estratégicas Novas (6 entregas)
 
-12. **Vista Mensal** (`MonthlyCalendar.tsx`) — heatmap de jobs/dia, click → vai para diária.
+**E6. Vista Mensal (`MonthlyCalendar.tsx`)**
+- Grid 6×7 com heatmap de jobs/dia
+- Cor de fundo proporcional à carga
+- Click no dia → navega para `DailyCalendar` com `?date=...`
+- Rota nova `/calendar/monthly` + entrada no sidebar
 
-13. **Vista Operadores** (toggle swimlane) — agrupa por operador em vez de máquina (útil para gestores de turno).
+**E7. Vista por Operadores (toggle swimlane)**
+- Toggle no `CalendarHeader`: "Por Máquina" | "Por Operador"
+- Hook `useJobsByOperator` agrupa por `operator_id`
+- Reusa `CalendarTimeline` com prop `groupBy`
 
-14. **Vista Técnicas Agregada** — colapsa 52 máquinas em 16 técnicas, expand-on-click (resolve poluição visual).
+**E8. Vista Técnicas Agregada**
+- Toggle "Agregar por técnica"
+- Colapsa 52 máquinas em 16 técnicas (accordion)
+- Expand-on-click revela máquinas individuais
 
-15. **Heatmap de Ocupação** sobreposto (toggle): cor de fundo da célula = % ocupação (verde→amarelo→vermelho).
+**E9. Heatmap de Ocupação**
+- Toggle "Mostrar ocupação"
+- Cor de fundo da célula = % uso (verde<50% / amarelo 50-80% / vermelho >80%)
+- Cálculo via `useMachineUtilization`
 
-16. **Comparativo Planejado vs Realizado**:
-    - Bloco superior = planejado (transparente)
-    - Bloco inferior = realizado (sólido, baseado em `actual_start_time/actual_end_time`)
-    - Indicador de desvio (+15min / -10min)
+**E10. Comparativo Planejado vs Realizado**
+- Toggle "Real vs Planejado"
+- Bloco superior transparente = planejado
+- Bloco inferior sólido = realizado (`actual_start_time`/`actual_end_time`)
+- Badge de desvio (+15min / -10min)
 
-17. **Zoom temporal**: slider 15min/30min/1h/2h — afeta densidade do grid.
-
----
-
-#### **🌊 Onda 4 — Mobile, Export, Polimento**
-
-18. **Mobile-first refinements**:
-    - Swipe horizontal entre dias (`useSwipeGesture` já existe)
-    - Pull-to-refresh (`use-pull-to-refresh` já existe)
-    - FAB "+" para criar job rápido
-    - Bottom sheet para detalhes (em vez de modal)
-    - Haptic feedback nas ações (`use-haptic-feedback` já existe)
-
-19. **Export & Compartilhamento**:
-    - PDF do dia/semana (jsPDF + html2canvas)
-    - Export iCal (.ics) por máquina ou operador
-    - Print-friendly CSS `@media print`
-    - Compartilhar link de agenda filtrada
-
-20. **Onboarding contextual** (primeira visita) — overlay com dicas sobre filtros/atalhos/drag.
-
-21. **Skeleton loaders elegantes** substituindo spinners genéricos.
-
-22. **Empty states com CTA** (ilustração + "Criar primeiro agendamento").
-
-23. **Acessibilidade WCAG AA**:
-    - `aria-live` em mudanças de status
-    - Navegação completa por teclado nos blocos
-    - Contraste 4.5:1 verificado em todos os status colors
-    - Screen reader labels descritivos
+**E11. Zoom Temporal**
+- Slider 15/30/60/120min no header
+- Persistência localStorage
+- Recalcula `totalMinutes` da timeline
 
 ---
 
-### 📐 Detalhes Técnicos
+### 🌊 Onda 4 — Mobile, Export, Polimento (7 entregas)
 
-- **Sem novas dependências críticas** — `@dnd-kit` já está no projeto (Kanban), `framer-motion` idem.
-- **Reuso máximo**: `useSchedulingData`, `jobStateMachine`, `JobDetailsModal`, hooks mobile existentes.
-- **Performance**: virtualização (`@tanstack/react-virtual`) na vista semanal quando >30 máquinas.
-- **Realtime**: aproveitar `useRealtimeConnection` para atualizar blocos sem refresh.
-- **Offline-first**: drag & drop respeita fila do `useOfflineSync`.
-- **i18n**: todas as strings via `t()` (pt-BR, en-US, es-ES).
-- **Logger**: `src/lib/logger.ts`, zero `console.log`.
-- **Validação**: Zod nos payloads de reagendamento.
-- **Testes**: ampliar suite atual (1386 testes) com casos de conflito, drag, filtros.
+**E12. Mobile Refinements**
+- Swipe horizontal entre dias (`useSwipeGesture`)
+- Pull-to-refresh
+- FAB "+" para criar job
+- Bottom sheet para detalhes (`vaul`)
+- Haptic feedback em ações destrutivas
+
+**E13. Export PDF**
+- Botão "Exportar PDF" → jsPDF + html2canvas
+- Captura agenda do dia/semana
+
+**E14. Export iCal (.ics)**
+- Função `exportToICS` por máquina ou operador
+- Download direto
+
+**E15. Print-friendly**
+- CSS `@media print` em `calendar.css`
+- Esconde controles, mantém grid
+
+**E16. Onboarding contextual**
+- `CalendarOnboarding.tsx` — overlay primeira visita
+- 4 steps: filtros → atalhos → drag → views
+- Persistência localStorage
+
+**E17. Skeleton + Empty states**
+- `CalendarSkeleton.tsx` — substitui spinners
+- `CalendarEmptyState.tsx` — ilustração SVG + CTA "Criar agendamento"
+
+**E18. Acessibilidade WCAG AA**
+- `aria-live="polite"` em mudanças de status
+- Navegação por teclado em blocos (Tab + Enter + setas)
+- Audit de contraste 4.5:1
+- `aria-label` descritivo em todos os elementos interativos
 
 ---
 
-### 🚀 Recomendação de Execução
+### 📐 Padrões Mantidos em Todas as Entregas
+- **400 linhas/arquivo** — split sempre que ultrapassar
+- **Lucide com sufixo Icon** quando colidir com identificadores
+- **Zero `console.log`** — `src/lib/logger.ts`
+- **Tokens HSL semânticos** — sem cores hardcoded
+- **Zod** — validação em payloads de update/create
+- **i18n** — strings via `t()` (pt-BR/en-US/es-ES)
+- **Realtime** — aproveitar `useRealtimeConnection` existente
+- **Offline-first** — drag & drop respeita `useOfflineSync`
+- **Dark theme Task Gifts** — Outfit font, Hue 220 / Sat 10%
+- **TypeScript strict** — `unknown` + Zod, nunca `any`
+- **Testes** — após cada onda, `npm test` para garantir 1386+ verde
 
-Dado seu perfil (autônomo, sequencial, perfeccionista), sugiro executar **Onda 1 primeiro** (fundação) — entrega valor imediato (filtros + conflitos + refactor crítico de 430 linhas) e desbloqueia as próximas. Após sua aprovação, sigo para Onda 2, 3 e 4 sem interrupções.
+### 🔄 Fluxo de Execução
+1. Implemento E1 completo → valido tipos → próxima
+2. Implemento E2 → valida → próxima
+3. ... segue até E18
+4. Ao final de cada onda: rodo testes
+5. Ao final da E18: relatório final 10/10
 
-**Confirma iniciar pela Onda 1?** Posso começar agora mesmo com refactor + filtros + detecção de conflitos + linha "AGORA" semanal + mini-mapa de densidade — tudo em uma única execução contínua.
-
+**Tempo estimado**: execução contínua sem pausas. Confirme aprovação e inicio imediatamente pela E1 (Drag & Drop).
