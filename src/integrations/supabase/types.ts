@@ -3427,6 +3427,145 @@ export type Database = {
         }
         Relationships: []
       }
+      tpm_execution_checklist: {
+        Row: {
+          created_at: string | null
+          execution_id: string | null
+          id: string
+          is_compliant: boolean | null
+          item_description: string
+          observation: string | null
+          photo_url: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          execution_id?: string | null
+          id?: string
+          is_compliant?: boolean | null
+          item_description: string
+          observation?: string | null
+          photo_url?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          execution_id?: string | null
+          id?: string
+          is_compliant?: boolean | null
+          item_description?: string
+          observation?: string | null
+          photo_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tpm_execution_checklist_execution_id_fkey"
+            columns: ["execution_id"]
+            isOneToOne: false
+            referencedRelation: "tpm_executions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tpm_execution_parts: {
+        Row: {
+          cost: number | null
+          created_at: string | null
+          execution_id: string | null
+          id: string
+          part_code: string | null
+          part_name: string
+          quantity: number | null
+          unit: string | null
+        }
+        Insert: {
+          cost?: number | null
+          created_at?: string | null
+          execution_id?: string | null
+          id?: string
+          part_code?: string | null
+          part_name: string
+          quantity?: number | null
+          unit?: string | null
+        }
+        Update: {
+          cost?: number | null
+          created_at?: string | null
+          execution_id?: string | null
+          id?: string
+          part_code?: string | null
+          part_name?: string
+          quantity?: number | null
+          unit?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tpm_execution_parts_execution_id_fkey"
+            columns: ["execution_id"]
+            isOneToOne: false
+            referencedRelation: "tpm_executions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tpm_executions: {
+        Row: {
+          created_at: string | null
+          duration_minutes: number | null
+          finished_at: string | null
+          id: string
+          machine_id: string | null
+          notes: string | null
+          schedule_id: string | null
+          signature_url: string | null
+          started_at: string | null
+          status: string | null
+          technician_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          duration_minutes?: number | null
+          finished_at?: string | null
+          id?: string
+          machine_id?: string | null
+          notes?: string | null
+          schedule_id?: string | null
+          signature_url?: string | null
+          started_at?: string | null
+          status?: string | null
+          technician_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          duration_minutes?: number | null
+          finished_at?: string | null
+          id?: string
+          machine_id?: string | null
+          notes?: string | null
+          schedule_id?: string | null
+          signature_url?: string | null
+          started_at?: string | null
+          status?: string | null
+          technician_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tpm_executions_machine_id_fkey"
+            columns: ["machine_id"]
+            isOneToOne: false
+            referencedRelation: "machines"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tpm_executions_schedule_id_fkey"
+            columns: ["schedule_id"]
+            isOneToOne: false
+            referencedRelation: "maintenance_schedules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tpm_notification_logs: {
         Row: {
           channel: string
