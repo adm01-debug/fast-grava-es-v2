@@ -40,9 +40,11 @@ describe('useDataExport', () => {
 
     // 1. Success
     const mockData = [{ id: '1', name: 'Job 1' }];
+    const mockOrder = vi.fn().mockResolvedValue({ data: mockData, error: null });
+    
     (supabase.from as any).mockReturnValue({
       select: vi.fn().mockReturnThis(),
-      order: vi.fn().mockResolvedValue({ data: mockData, error: null }),
+      order: mockOrder,
     });
 
     const link = { click: vi.fn(), href: '', download: '', style: {} };
@@ -57,10 +59,7 @@ describe('useDataExport', () => {
     expect(toast.success).toHaveBeenCalledWith('1 registros exportados');
 
     // 2. Empty
-    (supabase.from as any).mockReturnValue({
-      select: vi.fn().mockReturnThis(),
-      order: vi.fn().mockResolvedValue({ data: [], error: null }),
-    });
+    mockOrder.mockResolvedValue({ data: [], error: null });
 
     await act(async () => {
       await result.current.exportData();
@@ -69,17 +68,14 @@ describe('useDataExport', () => {
     expect(toast.info).toHaveBeenCalledWith('Nenhum dado para exportar');
 
     // 3. Error
-    const mockError = new Error('Database connection failed');
-    (supabase.from as any).mockReturnValue({
-      select: vi.fn().mockReturnThis(),
-      order: vi.fn().mockResolvedValue({ data: null, error: mockError }),
-    });
+    const mockError = new Error('Connection failed');
+    mockOrder.mockResolvedValue({ data: null, error: mockError });
 
     await act(async () => {
       await result.current.exportData();
     });
 
-    expect(toast.error).toHaveBeenCalledWith(expect.stringContaining('Database connection failed'));
+    expect(toast.error).toHaveBeenCalledWith(expect.stringContaining('Connection failed'));
     
     createSpy.mockRestore();
     appendSpy.mockRestore();
