@@ -2099,12 +2099,18 @@ export type Database = {
           checked_by_name: string | null
           color_verified: boolean
           completed_at: string | null
+          consumables_confirmed: Json | null
           created_at: string
           id: string
           job_id: string
           machine_clean: boolean
           material_verified: boolean
           notes: string | null
+          pressure: string | null
+          speed: string | null
+          squeegee_passes: string | null
+          technical_sheet_version: number | null
+          temperature: string | null
           tools_ready: boolean
         }
         Insert: {
@@ -2112,12 +2118,18 @@ export type Database = {
           checked_by_name?: string | null
           color_verified?: boolean
           completed_at?: string | null
+          consumables_confirmed?: Json | null
           created_at?: string
           id?: string
           job_id: string
           machine_clean?: boolean
           material_verified?: boolean
           notes?: string | null
+          pressure?: string | null
+          speed?: string | null
+          squeegee_passes?: string | null
+          technical_sheet_version?: number | null
+          temperature?: string | null
           tools_ready?: boolean
         }
         Update: {
@@ -2125,12 +2137,18 @@ export type Database = {
           checked_by_name?: string | null
           color_verified?: boolean
           completed_at?: string | null
+          consumables_confirmed?: Json | null
           created_at?: string
           id?: string
           job_id?: string
           machine_clean?: boolean
           material_verified?: boolean
           notes?: string | null
+          pressure?: string | null
+          speed?: string | null
+          squeegee_passes?: string | null
+          technical_sheet_version?: number | null
+          temperature?: string | null
           tools_ready?: boolean
         }
         Relationships: [
@@ -3394,6 +3412,7 @@ export type Database = {
       technical_sheets: {
         Row: {
           challenges_notes: string | null
+          consumables: Json | null
           created_at: string
           created_by: string | null
           description: string | null
@@ -3420,6 +3439,7 @@ export type Database = {
         }
         Insert: {
           challenges_notes?: string | null
+          consumables?: Json | null
           created_at?: string
           created_by?: string | null
           description?: string | null
@@ -3446,6 +3466,7 @@ export type Database = {
         }
         Update: {
           challenges_notes?: string | null
+          consumables?: Json | null
           created_at?: string
           created_by?: string | null
           description?: string | null
