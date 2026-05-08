@@ -84,6 +84,21 @@ export function MaintenanceExecutionModal({
   }, [schedule, checklists]);
 
   useEffect(() => {
+    if (selectedSheetId) {
+      const sheet = technicalSheets.find(s => s.id === selectedSheetId);
+      if (sheet?.machine_settings) {
+        const settings = sheet.machine_settings as any;
+        setAdjustmentParams({
+          squeegee_passes: settings.squeegee_passes || '',
+          pressure: settings.pressure || '',
+          speed: settings.speed || '',
+          temperature: settings.temperature || ''
+        });
+      }
+    }
+  }, [selectedSheetId, technicalSheets]);
+
+  useEffect(() => {
     if (checklist?.items) {
       const initialResponses: Record<string, any> = {};
       checklist.items.forEach(item => {
