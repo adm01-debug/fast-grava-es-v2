@@ -64,6 +64,7 @@ interface FuturisticBIProps {
 }
 
 export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
+  const navigate = useNavigate();
   const { operators, overallStats } = useOperatorProductivity(30);
   const { stats: tpmStats, records: tpmRecords } = useTPM();
   const { exportData: exportJobs } = useDataExport('jobs');
