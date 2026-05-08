@@ -34,6 +34,9 @@ interface MaintenanceExecutionModalProps {
     technical_sheet_version?: number;
     quality_responses?: any[];
     adjustment_parameters?: any;
+    supplies_used?: any[];
+    execution_alerts?: any[];
+    failure_risk_detected?: boolean;
   }) => void;
 }
 
@@ -54,7 +57,23 @@ export function MaintenanceExecutionModal({
     temperature: ''
   });
   const [qualityResponses, setQualityResponses] = useState<Record<string, { approved: boolean; justification?: string }>>({});
-  const [parameterAlerts, setParameterAlerts] = useState<string[]>([]);
+  const [activeAlerts, setActiveAlerts] = useState<Array<{
+    alert_type: string;
+    parameter_name?: string;
+    expected_range?: string;
+    actual_value?: string;
+    severity: 'info' | 'warning' | 'critical';
+    description: string;
+    evidence_urls: string[];
+    is_critical_risk: boolean;
+  }>>([]);
+  
+  const [suppliesUsed, setSuppliesUsed] = useState<Record<string, {
+    quantity: string;
+    alternative_used: boolean;
+    name: string;
+    is_checked: boolean;
+  }>>({});
   
   const [notes, setNotes] = useState('');
   const [totalCost, setTotalCost] = useState(0);
@@ -99,8 +118,64 @@ export function MaintenanceExecutionModal({
           temperature: settings.temperature || ''
         });
       }
+
+      if (sheet?.consumables) {
+        const initialSupplies: Record<string, any> = {};
+        sheet.consumables.forEach((c: any) => {
+          initialSupplies[c.id] = {
+            name: c.name,
+            quantity: c.quantity,
+            alternative_used: false,
+            is_checked: true,
+          };
+        });
+        setSuppliesUsed(initialSupplies);
+      }
     }
   }, [selectedSheetId, technicalSheets]);
+
+  // Real-time parameter validation
+  useEffect(() => {
+    if (!selectedSheetId) return;
+    
+    const sheet = technicalSheets.find(s => s.id === selectedSheetId);
+    if (!sheet) return;
+
+    const ranges = (sheet?.settings_ranges as any) || {};
+    const newAlerts: typeof activeAlerts = [];
+
+    const checkRange = (name: string, value: string, range: any, paramKey: string) => {
+      if (!range || (!range.min && !range.max)) return;
+      const val = parseFloat(value.replace(/[^0-9.]/g, ''));
+      if (isNaN(val) && value !== '') return;
+      
+      const min = range.min ? parseFloat(range.min.replace(/[^0-9.]/g, '')) : -Infinity;
+      const max = range.max ? parseFloat(range.max.replace(/[^0-9.]/g, '')) : Infinity;
+      
+      if (!isNaN(val) && (val < min || val > max)) {
+        // Find existing alert to preserve evidence_urls
+        const existingAlert = activeAlerts.find(a => a.parameter_name === name);
+        
+        newAlerts.push({
+          alert_type: 'out_of_range',
+          parameter_name: name,
+          expected_range: `Mín: ${range.min || '-'} / Máx: ${range.max || '-'}`,
+          actual_value: value,
+          severity: 'critical',
+          description: `Risco de Perda: ${name} fora do intervalo recomendado (${value}).`,
+          evidence_urls: existingAlert?.evidence_urls || [],
+          is_critical_risk: true
+        });
+      }
+    };
+
+    checkRange('Passadas de Rodo', adjustmentParams.squeegee_passes, ranges.squeegee_passes, 'squeegee_passes');
+    checkRange('Pressão', adjustmentParams.pressure, ranges.pressure, 'pressure');
+    checkRange('Velocidade', adjustmentParams.speed, ranges.speed, 'speed');
+    checkRange('Temperatura', adjustmentParams.temperature, ranges.temperature, 'temperature');
+
+    setActiveAlerts(newAlerts);
+  }, [adjustmentParams, selectedSheetId, technicalSheets]);
 
   useEffect(() => {
     if (checklist?.items) {
