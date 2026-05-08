@@ -13,6 +13,12 @@ interface EditorBasicInfoProps {
     description: string;
     estimated_time_minutes: string;
     recommended_machine_id: string;
+    ink_specifications: string;
+    tooling_specifications: string;
+    squeegee_passes: string;
+    pressure: string;
+    speed: string;
+    temperature: string;
   };
   setFormData: (data: any) => void;
   techniques: Array<{ id: string; name: string; color: string; short_name: string }>;
