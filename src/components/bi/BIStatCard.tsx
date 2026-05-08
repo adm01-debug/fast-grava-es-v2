@@ -23,6 +23,7 @@ export function BIStatCard({ title, value, subtitle, icon: Icon, trend, trendVal
   const TrendIcon = trend === 'up' ? ArrowUp : trend === 'down' ? ArrowDown : Minus;
   const trendColor = trend === 'up' ? 'text-success' : trend === 'down' ? 'text-primary' : 'text-muted-foreground';
 
+  return (
     <Card className={cn(
       variantStyles[variant],
       "bg-card/40 backdrop-blur-md shadow-xl rounded-3xl overflow-hidden group hover:shadow-glow-primary/10 transition-all duration-500 ring-1 ring-white/5",
