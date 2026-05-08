@@ -91,7 +91,8 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
       technical_sheet_id?: string;
       technical_sheet_version?: number;
       adjustment_parameters?: any;
-      quality_responses?: any[];
+      quality_checklist_results?: any[];
+      failure_risk_detected?: boolean;
       responses?: Array<{
         checklist_item_id: string;
         is_checked: boolean;
@@ -104,6 +105,21 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
         code?: string;
         quantity: number;
         cost?: number;
+      }>;
+      supplies_used?: Array<{
+        name: string;
+        quantity: string;
+        alternative_used?: boolean;
+        original_recommended_id?: string;
+      }>;
+      execution_alerts?: Array<{
+        alert_type: string;
+        parameter_name?: string;
+        expected_range?: string;
+        actual_value?: string;
+        severity?: string;
+        description?: string;
+        evidence_urls?: string[];
       }>;
       signature?: string;
     }) => {
@@ -132,13 +148,37 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
           technical_sheet_id: data.technical_sheet_id,
           technical_sheet_version: data.technical_sheet_version,
           adjustment_parameters: data.adjustment_parameters,
-          quality_responses: data.quality_responses,
+          quality_checklist_results: data.quality_checklist_results,
+          failure_risk_detected: data.failure_risk_detected || false,
         })
         .eq('id', data.record_id);
       
       if (recordError) throw recordError;
 
-      // Se houver parâmetros fora do recomendado, registrar alertas
+      // Register specific execution alerts if provided
+      if (data.execution_alerts && data.execution_alerts.length > 0) {
+        const { error: alertsErr } = await supabase
+          .from('tpm_execution_alerts')
+          .insert(data.execution_alerts.map(alert => ({
+            ...alert,
+            execution_id: data.record_id
+          })));
+        if (alertsErr) throw alertsErr;
+      }
+
+      // Register supplies used
+      if (data.supplies_used && data.supplies_used.length > 0) {
+        const { error: suppliesErr } = await supabase
+          .from('tpm_execution_supplies')
+          .insert(data.supplies_used.map(supply => ({
+            ...supply,
+            execution_id: data.record_id
+          })));
+        if (suppliesErr) throw suppliesErr;
+      }
+
+      // Se houver parâmetros fora do recomendado, registrar alertas na tabela legada tpm_parameter_alerts também
+      // para compatibilidade com painéis existentes se necessário, mas tpm_execution_alerts é o novo padrão.
       if (data.adjustment_parameters?.ranges) {
         const params = data.adjustment_parameters;
         const ranges = params.ranges;
