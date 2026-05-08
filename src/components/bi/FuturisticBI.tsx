@@ -29,6 +29,7 @@ import { FuturisticStatCard } from './FuturisticStatCard';
 import { useBIExport } from '@/hooks/useBIExport';
 import { BITooltip } from './BITooltip';
 import { BIEmptyState } from './BIEmptyState';
+import { BIAIInsights } from './BIAIInsights';
 
 
 
