@@ -94,16 +94,30 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
   const handleDrillDown = (title: string, segment: string) => {
     setDrillDownTitle(title);
     
-    // In a real app, we would filter biMetrics.jobs or use a hook
-    // For now, let's mock some data based on the segment
-    const mockDrillDown = [
-      { id: '1', order_number: 'OS-2024-501', product: 'Camiseta DryFit', status: 'production', quantity: 150 },
-      { id: '2', order_number: 'OS-2024-502', product: 'Caneca Cerâmica', status: 'finished', quantity: 50 },
-      { id: '3', order_number: 'OS-2024-503', product: 'Boné Trucker', status: 'delayed', quantity: 200 },
-      { id: '4', order_number: 'OS-2024-504', product: 'Squeeze Alumínio', status: 'production', quantity: 85 },
-    ];
+    // Filter real jobs from the list provided by biMetrics
+    if (biMetrics.periodJobsList) {
+      const filtered = biMetrics.periodJobsList.filter((j: any) => {
+        if (segment === 'all') return true;
+        // Check if segment matches status, machine, or technique
+        return (
+          j.status === segment.toLowerCase() || 
+          j.machine_id === segment || 
+          j.technique_id === segment ||
+          (segment.includes('Studio') && j.technique_id) // Basic studio match
+        );
+      }).map((j: any) => ({
+        id: j.id,
+        order_number: j.order_number || `OS-${j.id.slice(0, 5)}`,
+        product: j.product_name || 'Produto',
+        status: j.status,
+        quantity: j.quantity,
+        efficiency: j.produced_quantity > 0 ? (((j.produced_quantity - (j.lost_pieces || 0)) / j.produced_quantity) * 100).toFixed(1) + '%' : '--'
+      }));
+      setDrillDownJobs(filtered);
+    } else {
+      setDrillDownJobs([]);
+    }
     
-    setDrillDownJobs(mockDrillDown);
     setDrillDownOpen(true);
   };
 
