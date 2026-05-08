@@ -518,7 +518,7 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
                 <TableBody>
                   {lossAnalysis.length > 0 ? (
                     lossAnalysis.slice(0, 10).map((loss: any, idx: number) => (
-                      <TableRow key={idx} className="border-white/5 hover:bg-white/5 cursor-pointer transition-colors">
+                      <TableRow key={idx} className="border-white/5 hover:bg-white/5 cursor-pointer transition-colors" onClick={() => handleDrillDown(`PERDAS OS-2024-${100 + idx}`, `OS-2024-${100 + idx}`)}>
                         <TableCell>
                           <div className="font-medium text-sm">OS-2024-{100 + idx}</div>
                           <div className="text-[10px] text-muted-foreground">Produto Personalizado</div>
