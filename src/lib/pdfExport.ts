@@ -323,3 +323,113 @@ export async function exportProductionReport(
   const filename = `relatorio-producao-${format(new Date(), 'yyyy-MM-dd-HHmm')}.pdf`;
   doc.save(filename);
 }
+
+export async function exportLossesReport(
+  jobs: any[],
+  dateRange: { start: Date; end: Date },
+  title = 'Relatório de Perdas e Qualidade'
+): Promise<void> {
+  const { default: jsPDF } = await import('jspdf');
+  const { default: autoTable } = await import('jspdf-autotable');
+  
+  const doc = new jsPDF({
+    orientation: 'portrait',
+    unit: 'mm',
+    format: 'a4',
+  });
+
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const margin = 15;
+
+  // Header
+  doc.setFillColor(239, 68, 68); // Red for losses
+  doc.rect(0, 0, pageWidth, 30, 'F');
+  
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(18);
+  doc.setFont('helvetica', 'bold');
+  doc.text(title, margin, 18);
+
+  const dateText = `${format(dateRange.start, 'dd/MM/yyyy')} - ${format(dateRange.end, 'dd/MM/yyyy')}`;
+  doc.setFontSize(10);
+  doc.text(dateText, pageWidth - margin - doc.getTextWidth(dateText), 18);
+
+  // Losses table
+  doc.setTextColor(0, 0, 0);
+  
+  const lossesData = jobs.map(job => [
+    job.order_number || job.id.slice(0, 8),
+    job.product_name || 'Produto',
+    job.lost_pieces.toString(),
+    job.loss_reason || 'Não informado',
+    `R$ ${(job.lost_pieces * 15.5).toFixed(2)}`,
+  ]);
+
+  autoTable(doc, {
+    startY: 40,
+    head: [['OS', 'Produto', 'Qtd Perdas', 'Motivo', 'Custo Est.']],
+    body: lossesData,
+    theme: 'striped',
+    headStyles: { fillColor: [239, 68, 68] },
+    margin: { left: margin, right: margin },
+    styles: { fontSize: 10 },
+  });
+
+  const filename = `relatorio-perdas-${format(new Date(), 'yyyy-MM-dd-HHmm')}.pdf`;
+  doc.save(filename);
+}
+
+export async function exportDelaysReport(
+  jobs: any[],
+  dateRange: { start: Date; end: Date },
+  title = 'Relatório de Atrasos e Produtividade'
+): Promise<void> {
+  const { default: jsPDF } = await import('jspdf');
+  const { default: autoTable } = await import('jspdf-autotable');
+  
+  const doc = new jsPDF({
+    orientation: 'portrait',
+    unit: 'mm',
+    format: 'a4',
+  });
+
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const margin = 15;
+
+  // Header
+  doc.setFillColor(245, 158, 11); // Amber for delays
+  doc.rect(0, 0, pageWidth, 30, 'F');
+  
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(18);
+  doc.setFont('helvetica', 'bold');
+  doc.text(title, margin, 18);
+
+  const dateText = `${format(dateRange.start, 'dd/MM/yyyy')} - ${format(dateRange.end, 'dd/MM/yyyy')}`;
+  doc.setFontSize(10);
+  doc.text(dateText, pageWidth - margin - doc.getTextWidth(dateText), 18);
+
+  // Delays table
+  doc.setTextColor(0, 0, 0);
+  
+  const delaysData = jobs.map(job => [
+    job.order_number || job.id.slice(0, 8),
+    job.product_name || 'Produto',
+    job.delay_time || 'Atrasado',
+    job.responsible_name || 'Não atribuído',
+    job.status === 'delayed' ? 'Crítico' : 'Alerta',
+  ]);
+
+  autoTable(doc, {
+    startY: 40,
+    head: [['OS', 'Produto', 'Atraso', 'Responsável', 'Severidade']],
+    body: delaysData,
+    theme: 'striped',
+    headStyles: { fillColor: [245, 158, 11] },
+    margin: { left: margin, right: margin },
+    styles: { fontSize: 10 },
+  });
+
+  const filename = `relatorio-atrasos-${format(new Date(), 'yyyy-MM-dd-HHmm')}.pdf`;
+  doc.save(filename);
+}
