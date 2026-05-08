@@ -27,6 +27,10 @@ interface EditorBasicInfoProps {
     speed_max: string;
     temperature_min: string;
     temperature_max: string;
+    gap_specifications: string;
+    challenges_notes: string;
+    failure_scenarios: string;
+    quality_requirements: string;
     version: string;
   };
   setFormData: (data: any) => void;
