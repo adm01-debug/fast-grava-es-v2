@@ -275,6 +275,7 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
           gradient={GRADIENTS.primary}
           glowColor="primary"
           onExport={(format: 'csv' | 'pdf') => handleExport(format, 'OEE_Global')}
+          onClick={() => handleDrillDown('KPI: OEE Global', 'all')}
         />
         <FuturisticStatCard 
           title="Jobs em Produção" 
@@ -284,6 +285,7 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
           gradient={GRADIENTS.success}
           glowColor="success"
           onExport={(format: 'csv' | 'pdf') => handleExport(format, 'Producao_Atual')}
+          onClick={() => handleDrillDown('PEDIDOS EM PRODUÇÃO', 'production')}
         />
         <FuturisticStatCard 
           title="Atrasos Críticos" 
@@ -294,6 +296,7 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
           gradient={GRADIENTS.danger}
           glowColor="danger"
           onExport={(format: 'csv' | 'pdf') => handleExport(format, 'Atrasos_Criticos')}
+          onClick={() => handleDrillDown('PEDIDOS ATRASADOS', 'delayed')}
         />
         <FuturisticStatCard 
           title="Taxa de Perda" 
@@ -305,6 +308,7 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
           gradient={GRADIENTS.warning}
           glowColor="warning"
           onExport={(format: 'csv' | 'pdf') => handleExport(format, 'Perdas_Qualidade')}
+          onClick={() => handleDrillDown('PEDIDOS COM PERDAS', 'lost')}
         />
       </div>
 
