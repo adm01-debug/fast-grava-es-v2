@@ -431,6 +431,16 @@ export function ExecutionDetailsModal({ isOpen, onClose, recordId }: ExecutionDe
                     <p className="text-[10px] text-muted-foreground">Assinado em: {record.completed_at ? format(new Date(record.completed_at), "dd/MM/yyyy 'às' HH:mm") : '-'}</p>
                   </div>
 
+                  {record.status === 'approved' ? (
+                    <div className="space-y-2 text-center md:text-right">
+                      <h3 className="text-xs font-semibold text-muted-foreground uppercase">Aprovação / Auditoria</h3>
+                      <div className="py-4 px-8 border-b border-emerald-200 w-fit mx-auto md:ml-auto">
+                        <p className="text-emerald-600 font-bold uppercase tracking-widest flex items-center gap-2">
+                          <CheckCircle className="h-5 w-5" /> APROVADO
+                        </p>
+                      </div>
+                      <p className="text-[10px] text-muted-foreground">Em: {record.approved_at ? format(new Date(record.approved_at), "dd/MM/yyyy 'às' HH:mm") : '-'}</p>
+                    </div>
                   ) : record.status === 'completed' ? (
                     <div className="flex flex-col items-center md:items-end gap-3">
                       {isRequestingCorrection ? (
