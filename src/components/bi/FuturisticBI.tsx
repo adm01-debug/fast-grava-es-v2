@@ -266,12 +266,44 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
           <CardContent>
             <ResponsiveContainer width="100%" height={350}>
               <AreaChart data={biMetrics.dailyTrend}>
+                <defs>
+                  <linearGradient id="colorProduced" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor={CHART_COLORS.primary} stopOpacity={0.3}/>
+                    <stop offset="95%" stopColor={CHART_COLORS.primary} stopOpacity={0}/>
+                  </linearGradient>
+                  <linearGradient id="colorLost" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor={CHART_COLORS.danger} stopOpacity={0.3}/>
+                    <stop offset="95%" stopColor={CHART_COLORS.danger} stopOpacity={0}/>
+                  </linearGradient>
+                </defs>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
-                <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 12 }} />
-                <YAxis axisLine={false} tickLine={false} tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 12 }} />
-                <RechartsTooltip content={<BITooltip showPercentage />} />
-                {visibleSeries.produced && <Area type="monotone" dataKey="produced" stroke={CHART_COLORS.primary} strokeWidth={4} fill="rgba(14, 165, 233, 0.1)" />}
-                {visibleSeries.lost && <Area type="monotone" dataKey="lost" stroke={CHART_COLORS.danger} strokeWidth={2} fill="rgba(239, 44, 44, 0.1)" />}
+                <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 10 }} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 10 }} />
+                <RechartsTooltip content={<BITooltip showPercentage />} cursor={{ stroke: 'rgba(14, 165, 233, 0.2)', strokeWidth: 2 }} />
+                {visibleSeries.produced && (
+                  <Area 
+                    type="monotone" 
+                    dataKey="produced" 
+                    stroke={CHART_COLORS.primary} 
+                    strokeWidth={4} 
+                    fillOpacity={1} 
+                    fill="url(#colorProduced)" 
+                    animationDuration={2000}
+                    activeDot={{ r: 6, stroke: CHART_COLORS.primary, strokeWidth: 2, fill: '#fff' }}
+                  />
+                )}
+                {visibleSeries.lost && (
+                  <Area 
+                    type="monotone" 
+                    dataKey="lost" 
+                    stroke={CHART_COLORS.danger} 
+                    strokeWidth={2} 
+                    fillOpacity={1} 
+                    fill="url(#colorLost)" 
+                    animationDuration={2000}
+                    activeDot={{ r: 4, stroke: CHART_COLORS.danger, strokeWidth: 2, fill: '#fff' }}
+                  />
+                )}
               </AreaChart>
             </ResponsiveContainer>
           </CardContent>
