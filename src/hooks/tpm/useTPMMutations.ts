@@ -93,6 +93,13 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
         notes?: string;
         photo_url?: string;
       }>;
+      parts?: Array<{
+        name: string;
+        code?: string;
+        quantity: number;
+        cost?: number;
+      }>;
+      signature?: string;
     }) => {
       const { data: recordData, error: recordFetchError } = await supabase
         .from('maintenance_records')
@@ -113,6 +120,7 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
           notes: data.notes,
           total_cost: data.total_cost || 0,
           downtime_minutes: data.downtime_minutes || 0,
+          signature_url: data.signature, // Reuse field or map accordingly
         })
         .eq('id', data.record_id);
       
@@ -130,6 +138,24 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
           .insert(responsesToInsert);
         
         if (respError) throw respError;
+      }
+
+      // Insert parts if provided
+      if (data.parts && data.parts.length > 0) {
+        const partsToInsert = data.parts.map(part => ({
+          execution_id: data.record_id, // Map record_id to execution_id for the new table
+          part_name: part.name,
+          part_code: part.code,
+          quantity: part.quantity,
+          cost: part.cost
+        }));
+
+        // Insert into tpm_execution_parts (new table)
+        const { error: partsError } = await supabase
+          .from('tpm_execution_parts')
+          .insert(partsToInsert);
+        
+        if (partsError) throw partsError;
       }
 
       const { data: scheduleData } = await supabase
