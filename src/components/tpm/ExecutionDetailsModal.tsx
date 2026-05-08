@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
-import { ClipboardList, Plus, Trash2, Save, FileText, Camera, PenTool, CheckCircle, Download, FileSpreadsheet, File, Archive, Eye, Activity, AlertTriangle, Clock, User, Calendar, CheckCircle2, Wrench, Package } from 'lucide-react';
+import { ClipboardList, Plus, Trash2, Save, FileText, Camera, PenTool, CheckCircle, Download, FileSpreadsheet, File, Archive, Eye, Activity, AlertTriangle, Clock, User, Calendar, CheckCircle2, Wrench, Package, Zap, MoveHorizontal, Thermometer } from 'lucide-react';
 import { MaintenanceRecord } from '@/hooks/tpm/types';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -284,8 +284,35 @@ export function ExecutionDetailsModal({ isOpen, onClose, recordId }: ExecutionDe
               )}
               {/* Header for print only */}
               <div className="hidden print:block text-center border-b pb-4 mb-8">
-                <h1 className="text-2xl font-bold uppercase">Relatório de Execução TPM</h1>
-                <p className="text-sm text-muted-foreground">Documento Gerado em {format(new Date(), 'dd/MM/yyyy HH:mm')}</p>
+                <div className="flex justify-between items-center mb-4">
+                  <div className="text-left">
+                    <h1 className="text-2xl font-bold uppercase">Ordem de Serviço Técnica</h1>
+                    <p className="text-sm font-semibold">TPM - Total Productive Maintenance</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-xs">Documento nº: {record.id.substring(0, 8)}</p>
+                    <p className="text-xs">Emissão: {format(new Date(), 'dd/MM/yyyy HH:mm')}</p>
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4 text-left border p-4 rounded-lg mb-4">
+                  <div>
+                    <p className="text-[10px] text-muted-foreground uppercase font-bold">Operador/Técnico</p>
+                    <p className="text-sm">{record.performed_by_name || 'N/A'}</p>
+                  </div>
+                  <div>
+                    <p className="text-[10px] text-muted-foreground uppercase font-bold">Data de Execução</p>
+                    <p className="text-sm">{record.completed_at ? format(new Date(record.completed_at), 'dd/MM/yyyy HH:mm') : 'N/A'}</p>
+                  </div>
+                  <div>
+                    <p className="text-[10px] text-muted-foreground uppercase font-bold">Máquina</p>
+                    <p className="text-sm">{record.machine?.name} ({record.machine?.code})</p>
+                  </div>
+                  <div>
+                    <p className="text-[10px] text-muted-foreground uppercase font-bold">Status</p>
+                    <p className="text-sm font-bold">{record.status === 'approved' ? 'APROVADA' : 'PENDENTE'}</p>
+                  </div>
+                </div>
               </div>
 
               {/* Basic Info Grid */}
@@ -383,6 +410,75 @@ export function ExecutionDetailsModal({ isOpen, onClose, recordId }: ExecutionDe
                   </table>
                 </div>
               </div>
+
+              {/* Adjustment Parameters */}
+              {record.adjustment_parameters && Object.values(record.adjustment_parameters).some(v => v && typeof v === 'string') && (
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold flex items-center gap-2">
+                    <Zap className="h-5 w-5 text-amber-500" />
+                    Regulagem Técnica Aplicada
+                  </h3>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {record.adjustment_parameters.squeegee_passes && (
+                      <div className={`p-3 rounded-lg border ${record.adjustment_parameters.recommended?.squeegee_passes && record.adjustment_parameters.squeegee_passes !== record.adjustment_parameters.recommended.squeegee_passes ? 'bg-amber-500/10 border-amber-500/30' : 'bg-secondary/20 border-border/50'}`}>
+                        <Label className="text-[10px] text-muted-foreground uppercase flex items-center gap-1">
+                          <MoveHorizontal className="h-3 w-3" /> Passadas
+                        </Label>
+                        <p className="text-sm font-bold">{record.adjustment_parameters.squeegee_passes}</p>
+                        {record.adjustment_parameters.recommended?.squeegee_passes && record.adjustment_parameters.squeegee_passes !== record.adjustment_parameters.recommended.squeegee_passes && (
+                          <p className="text-[9px] text-amber-600 font-medium">Rec: {record.adjustment_parameters.recommended.squeegee_passes}</p>
+                        )}
+                      </div>
+                    )}
+                    {record.adjustment_parameters.pressure && (
+                      <div className={`p-3 rounded-lg border ${record.adjustment_parameters.recommended?.pressure && record.adjustment_parameters.pressure !== record.adjustment_parameters.recommended.pressure ? 'bg-amber-500/10 border-amber-500/30' : 'bg-secondary/20 border-border/50'}`}>
+                        <Label className="text-[10px] text-muted-foreground uppercase">Pressão</Label>
+                        <p className="text-sm font-bold">{record.adjustment_parameters.pressure}</p>
+                        {record.adjustment_parameters.recommended?.pressure && record.adjustment_parameters.pressure !== record.adjustment_parameters.recommended.pressure && (
+                          <p className="text-[9px] text-amber-600 font-medium">Rec: {record.adjustment_parameters.recommended.pressure}</p>
+                        )}
+                      </div>
+                    )}
+                    {record.adjustment_parameters.speed && (
+                      <div className={`p-3 rounded-lg border ${record.adjustment_parameters.recommended?.speed && record.adjustment_parameters.speed !== record.adjustment_parameters.recommended.speed ? 'bg-amber-500/10 border-amber-500/30' : 'bg-secondary/20 border-border/50'}`}>
+                        <Label className="text-[10px] text-muted-foreground uppercase">Velocidade</Label>
+                        <p className="text-sm font-bold">{record.adjustment_parameters.speed}</p>
+                        {record.adjustment_parameters.recommended?.speed && record.adjustment_parameters.speed !== record.adjustment_parameters.recommended.speed && (
+                          <p className="text-[9px] text-amber-600 font-medium">Rec: {record.adjustment_parameters.recommended.speed}</p>
+                        )}
+                      </div>
+                    )}
+                    {record.adjustment_parameters.temperature && (
+                      <div className={`p-3 rounded-lg border ${record.adjustment_parameters.recommended?.temperature && record.adjustment_parameters.temperature !== record.adjustment_parameters.recommended.temperature ? 'bg-amber-500/10 border-amber-500/30' : 'bg-secondary/20 border-border/50'}`}>
+                        <Label className="text-[10px] text-muted-foreground uppercase flex items-center gap-1">
+                          <Thermometer className="h-3 w-3" /> Temp.
+                        </Label>
+                        <p className="text-sm font-bold">{record.adjustment_parameters.temperature}</p>
+                        {record.adjustment_parameters.recommended?.temperature && record.adjustment_parameters.temperature !== record.adjustment_parameters.recommended.temperature && (
+                          <p className="text-[9px] text-amber-600 font-medium">Rec: {record.adjustment_parameters.recommended.temperature}</p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Print-only Observations Block */}
+                  <div className="hidden print:block mt-6 border p-4 rounded-lg">
+                    <h4 className="text-xs font-bold uppercase mb-2">Observações e Notas Técnicas</h4>
+                    <p className="text-sm min-h-[60px]">{record.notes || 'Sem observações adicionais.'}</p>
+                    
+                    <div className="grid grid-cols-2 gap-8 mt-12">
+                      <div className="border-t pt-2 text-center">
+                        <p className="text-[10px] uppercase">Assinatura do Técnico</p>
+                        <p className="text-sm font-serif italic mt-2">{record.signature_url}</p>
+                      </div>
+                      <div className="border-t pt-2 text-center">
+                        <p className="text-[10px] uppercase">Aprovação (Supervisor)</p>
+                        <p className="text-sm mt-2">{record.approver_id ? '✓ Verificado Digitalmente' : '_______________________'}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Parts */}
               <div className="space-y-4">

@@ -7,9 +7,12 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Wrench, CheckCircle2, Camera, AlertTriangle, Clock, Plus, Trash2, PenTool } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Separator } from '@/components/ui/separator';
+import { Wrench, CheckCircle2, Camera, AlertTriangle, Clock, Plus, Trash2, PenTool, Zap, MoveHorizontal, Thermometer } from 'lucide-react';
 import { MaintenanceSchedule, MaintenanceChecklist, MaintenanceChecklistItem } from '@/hooks/tpm/types';
 import { useTPM } from '@/hooks/useTPM';
+import { useTechnicalSheets } from '@/hooks/useTechnicalSheets';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -27,6 +30,8 @@ interface MaintenanceExecutionModalProps {
     signature?: string;
     checklist_version?: number;
     checklist_snapshot?: any;
+    technical_sheet_id?: string;
+    adjustment_parameters?: any;
   }) => void;
 }
 
@@ -38,6 +43,16 @@ export function MaintenanceExecutionModal({
   onComplete,
 }: MaintenanceExecutionModalProps) {
   const { checklists } = useTPM();
+  const { sheets: technicalSheets } = useTechnicalSheets();
+  const [selectedSheetId, setSelectedSheetId] = useState<string | null>(null);
+  const [adjustmentParams, setAdjustmentParams] = useState({
+    squeegee_passes: '',
+    pressure: '',
+    speed: '',
+    temperature: ''
+  });
+  const [parameterAlerts, setParameterAlerts] = useState<string[]>([]);
+  
   const [notes, setNotes] = useState('');
   const [totalCost, setTotalCost] = useState(0);
   const [downtime, setDowntime] = useState(0);
@@ -68,6 +83,21 @@ export function MaintenanceExecutionModal({
       c.is_active
     );
   }, [schedule, checklists]);
+
+  useEffect(() => {
+    if (selectedSheetId) {
+      const sheet = technicalSheets.find(s => s.id === selectedSheetId);
+      if (sheet?.machine_settings) {
+        const settings = sheet.machine_settings as any;
+        setAdjustmentParams({
+          squeegee_passes: settings.squeegee_passes || '',
+          pressure: settings.pressure || '',
+          speed: settings.speed || '',
+          temperature: settings.temperature || ''
+        });
+      }
+    }
+  }, [selectedSheetId, technicalSheets]);
 
   useEffect(() => {
     if (checklist?.items) {
@@ -142,6 +172,29 @@ export function MaintenanceExecutionModal({
       }
     }
 
+    // Validação de parâmetros de regulagem
+    if (selectedSheetId) {
+      const sheet = technicalSheets.find(s => s.id === selectedSheetId);
+      const settings = sheet?.machine_settings as any;
+      const alerts: string[] = [];
+
+      if (settings) {
+        if (settings.squeegee_passes && adjustmentParams.squeegee_passes !== settings.squeegee_passes) {
+          alerts.push(`Passadas de Rodo: Informado ${adjustmentParams.squeegee_passes}, Recomendado ${settings.squeegee_passes}`);
+        }
+        if (settings.pressure && adjustmentParams.pressure !== settings.pressure) {
+          alerts.push(`Pressão: Informado ${adjustmentParams.pressure}, Recomendado ${settings.pressure}`);
+        }
+        // ... mais validações se necessário
+      }
+
+      if (alerts.length > 0) {
+        toast.warning("Atenção: Parâmetros fora do recomendado", {
+          description: alerts.join('\n')
+        });
+      }
+    }
+
     onComplete({
       notes,
       total_cost: totalCost,
@@ -153,7 +206,12 @@ export function MaintenanceExecutionModal({
       parts,
       signature,
       checklist_version: checklist?.version,
-      checklist_snapshot: checklist
+      checklist_snapshot: checklist,
+      technical_sheet_id: selectedSheetId || undefined,
+      adjustment_parameters: {
+        ...adjustmentParams,
+        recommended: selectedSheetId ? (technicalSheets.find(s => s.id === selectedSheetId)?.machine_settings) : null
+      }
     });
   };
 
@@ -261,6 +319,79 @@ export function MaintenanceExecutionModal({
                 <p className="text-sm">Nenhum checklist configurado para este tipo de manutenção.</p>
               </div>
             )}
+
+            {/* Technical Sheet & Adjustments */}
+            <div className="space-y-4 pt-4 border-t border-border/50">
+              <h3 className="text-lg font-semibold flex items-center gap-2">
+                <Zap className="h-5 w-5 text-amber-500" />
+                Regulagem Técnica
+              </h3>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label>Vincular Ficha Técnica (Opcional)</Label>
+                  <Select 
+                    value={selectedSheetId || ""} 
+                    onValueChange={(value) => setSelectedSheetId(value || null)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione uma ficha técnica..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {technicalSheets.filter(s => s.recommended_machine_id === schedule.machine_id).map(sheet => (
+                        <SelectItem key={sheet.id} value={sheet.id}>{sheet.title}</SelectItem>
+                      ))}
+                      {technicalSheets.filter(s => s.recommended_machine_id !== schedule.machine_id).length > 0 && (
+                        <>
+                          <Separator className="my-2" />
+                          {technicalSheets.filter(s => s.recommended_machine_id !== schedule.machine_id).map(sheet => (
+                            <SelectItem key={sheet.id} value={sheet.id}>{sheet.title} (Outra Máquina)</SelectItem>
+                          ))}
+                        </>
+                      )}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                  <div className="space-y-2">
+                    <Label className="flex items-center gap-1 text-xs">
+                      <MoveHorizontal className="h-3 w-3" /> Passadas
+                    </Label>
+                    <Input 
+                      placeholder="Ex: 2"
+                      value={adjustmentParams.squeegee_passes}
+                      onChange={(e) => setAdjustmentParams(prev => ({ ...prev, squeegee_passes: e.target.value }))}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-xs">Pressão</Label>
+                    <Input 
+                      placeholder="Ex: 4 bar"
+                      value={adjustmentParams.pressure}
+                      onChange={(e) => setAdjustmentParams(prev => ({ ...prev, pressure: e.target.value }))}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-xs">Velocidade</Label>
+                    <Input 
+                      placeholder="Ex: 50%"
+                      value={adjustmentParams.speed}
+                      onChange={(e) => setAdjustmentParams(prev => ({ ...prev, speed: e.target.value }))}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="flex items-center gap-1 text-xs">
+                      <Thermometer className="h-3 w-3" /> Temp.
+                    </Label>
+                    <Input 
+                      placeholder="Ex: 180°C"
+                      value={adjustmentParams.temperature}
+                      onChange={(e) => setAdjustmentParams(prev => ({ ...prev, temperature: e.target.value }))}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
 
             {/* General Info */}
             <div className="space-y-4 pt-4 border-t border-border/50">

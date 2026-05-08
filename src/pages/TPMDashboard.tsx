@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { useNavigate } from 'react-router-dom';
-import { Wrench, AlertTriangle, CheckCircle, Clock, CalendarCheck, RefreshCw, Settings, Command } from 'lucide-react';
+import { Wrench, AlertTriangle, CheckCircle, Clock, CalendarCheck, RefreshCw, Settings, Command, Zap } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -11,6 +11,7 @@ import { useTPM } from '@/hooks/useTPM';
 import { useTPMNotifications } from '@/hooks/useTPMNotifications';
 import { useAuth } from '@/contexts/AuthContext';
 import { TPMAlertsPanel } from '@/components/tpm/TPMAlertsPanel';
+import { TPMParameterAlerts } from '@/components/tpm/TPMParameterAlerts';
 import { TPMCalendar } from '@/components/tpm/TPMCalendar';
 import { TPMScheduleList } from '@/components/tpm/TPMScheduleList';
 import { CreateScheduleModal } from '@/components/tpm/CreateScheduleModal';
@@ -272,11 +273,14 @@ export default function TPMDashboard() {
                   onSelectSchedule={(schedule) => handleStartMaintenance(schedule.id)} 
                 />
               </div>
-              <TPMAlertsPanel
-                alerts={alerts}
-                onResolve={(id) => resolveAlert.mutate(id)}
-                onStartMaintenance={handleStartMaintenance}
-              />
+              <div className="space-y-6">
+                <TPMAlertsPanel
+                  alerts={alerts}
+                  onResolve={(id) => resolveAlert.mutate(id)}
+                  onStartMaintenance={handleStartMaintenance}
+                />
+                <TPMParameterAlerts />
+              </div>
             </div>
           </TabsContent>
 
@@ -292,11 +296,14 @@ export default function TPMDashboard() {
           </TabsContent>
 
           <TabsContent value="alerts" className="animate-fade-in">
-            <TPMAlertsPanel
-              alerts={alerts}
-              onResolve={(id) => resolveAlert.mutate(id)}
-              onStartMaintenance={handleStartMaintenance}
-            />
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <TPMAlertsPanel
+                alerts={alerts}
+                onResolve={(id) => resolveAlert.mutate(id)}
+                onStartMaintenance={handleStartMaintenance}
+              />
+              <TPMParameterAlerts />
+            </div>
           </TabsContent>
 
           <TabsContent value="reports" className="animate-fade-in">
