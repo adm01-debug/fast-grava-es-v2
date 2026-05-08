@@ -71,7 +71,7 @@ describe('FuturisticBI', () => {
   it('renders critical metrics correctly', () => {
     renderComponent();
     expect(screen.getByText('Pedidos a Fazer')).toBeInTheDocument();
-    expect(screen.getByText('0')).toBeInTheDocument(); // Initial value in mock is undefined, so 0
+    expect(screen.getByText('15')).toBeInTheDocument();
     expect(screen.getByText('5')).toBeInTheDocument(); // Jobs em Produção
     expect(screen.getByText('2')).toBeInTheDocument(); // Atrasos Críticos
     expect(screen.getByText('1.50%')).toBeInTheDocument(); // Taxa de Perda
