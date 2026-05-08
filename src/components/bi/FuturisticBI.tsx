@@ -102,6 +102,11 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
   const [drillDownOpen, setDrillDownOpen] = useState(false);
   const [drillDownTitle, setDrillDownTitle] = useState('');
   const [drillDownJobs, setDrillDownJobs] = useState<any[]>([]);
+  const [visibleSeries, setVisibleSeries] = useState<Record<string, boolean>>({ produced: true, lost: true });
+
+  const toggleSeries = (key: string) => {
+    setVisibleSeries(prev => ({ ...prev, [key]: !prev[key] }));
+  };
 
   const handleDrillDown = (title: string, segment: string) => {
     setDrillDownTitle(title);
