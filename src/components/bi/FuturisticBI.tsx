@@ -342,7 +342,8 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
                 <FileText className="h-4 w-4" />
               </Button>
             </div>
-          </CardHeader>
+          </div>
+        </CardHeader>
           <CardContent className="relative z-10">
             <ResponsiveContainer width="100%" height={350}>
               <AreaChart 
