@@ -147,18 +147,31 @@ export function SmartSequencingPanel() {
                 </div>
               </div>
 
-              <Button 
-                size="sm" 
-                className="w-full h-8 text-xs gap-2 bg-primary/10 hover:bg-primary/20 text-primary border-none"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleApplyOptimization(suggestion);
-                }}
-                disabled={isApplying}
-              >
-                {isApplying ? 'Aplicando...' : 'Aplicar Sequência Ideal'}
-                <ArrowRight className="h-3 w-3" />
-              </Button>
+              <div className="flex gap-2">
+                <Button 
+                  size="sm" 
+                  className="flex-1 h-8 text-xs gap-2 bg-primary/10 hover:bg-primary/20 text-primary border-none"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleApplyOptimization(suggestion);
+                  }}
+                  disabled={isApplying}
+                >
+                  {isApplying ? 'Aplicando...' : 'Aplicar IA'}
+                  <ArrowRight className="h-3 w-3" />
+                </Button>
+                <Button 
+                  size="sm" 
+                  variant="outline"
+                  className="h-8 px-2 border-primary/20 hover:bg-primary/5 text-primary"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSuggestionToDetail(suggestion);
+                  }}
+                >
+                  <Info className="h-3.5 w-3.5" />
+                </Button>
+              </div>
 
             </motion.div>
           ))}
