@@ -181,20 +181,6 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
     }));
   }, [biMetrics.dailyTrend]);
 
-  const jobsWithLosses = useMemo(() => {
-    if (!biMetrics.periodJobsList) return [];
-    return biMetrics.periodJobsList
-      .filter((j: any) => (j.lost_pieces || 0) > 0)
-      .sort((a: any, b: any) => (b.lost_pieces || 0) - (a.lost_pieces || 0))
-      .slice(0, 10);
-  }, [biMetrics.periodJobsList]);
-
-  const delayedJobsList = useMemo(() => {
-    if (!biMetrics.periodJobsList) return [];
-    return biMetrics.periodJobsList
-      .filter((j: any) => j.status === 'delayed')
-      .slice(0, 10);
-  }, [biMetrics.periodJobsList]);
 
   const containerVariants = {
     hidden: { opacity: 0 },
