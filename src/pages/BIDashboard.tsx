@@ -30,6 +30,9 @@ import {
 import { format, subDays, startOfDay, endOfDay, isWithinInterval, parseISO, differenceInDays } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { DelaysAnalysis } from '@/components/bi/delays/DelaysAnalysis';
+import { LossesTable } from '@/components/bi/losses/LossesTable';
 
 type PeriodFilter = '7d' | '30d' | '90d' | 'custom';
 interface DateRange { from: Date; to: Date; }
