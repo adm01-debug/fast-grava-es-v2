@@ -313,31 +313,37 @@ export default function UserManagementPage() {
               ))}
             </div>
           </TabsContent>
-          <TabsContent value="matrix" className="pt-4 space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <Card className="lg:col-span-2 border-border/40 bg-card/50">
-                <CardHeader>
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <LayoutGrid className="h-5 w-5 text-primary" />
-                    Matriz de Acesso por Recurso
-                  </CardTitle>
-                  <CardDescription>Visualização rápida de permissões críticas por estúdio/equipe</CardDescription>
+          <TabsContent value="matrix" className="outline-none pt-4 space-y-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              <Card className="lg:col-span-2 border-border/40 bg-card/40 backdrop-blur-md shadow-2xl rounded-3xl overflow-hidden ring-1 ring-white/5">
+                <CardHeader className="p-8">
+                  <div className="flex items-center gap-4">
+                    <div className="p-3 bg-primary/10 rounded-2xl shadow-inner">
+                      <LayoutGrid className="h-6 w-6 text-primary" />
+                    </div>
+                    <div className="space-y-1">
+                      <CardTitle className="text-2xl font-bold font-display">Matriz de Governança</CardTitle>
+                      <CardDescription className="text-base font-medium">Visualização granular de permissões por ecossistema.</CardDescription>
+                    </div>
+                  </div>
                 </CardHeader>
-                <CardContent>
-                  <div className="rounded-md border border-border/50 overflow-hidden">
+                <CardContent className="px-8 pb-8 pt-0">
+                  <div className="rounded-2xl border border-border/40 bg-background/20 backdrop-blur-sm overflow-hidden shadow-sm">
                     <Table>
-                      <TableHeader className="bg-muted/50">
-                        <TableRow>
-                          <TableHead className="w-[200px]">Recurso / Módulo</TableHead>
+                      <TableHeader className="bg-muted/30">
+                        <TableRow className="hover:bg-transparent border-b border-border/40">
+                          <TableHead className="w-[240px] h-14 px-6 text-sm font-bold uppercase tracking-wider text-muted-foreground">Módulo / Domínio</TableHead>
                           {permissionMatrix.roles.map(role => (
-                            <TableHead key={role} className="text-center capitalize">{role === 'coordinator' ? 'Coord.' : role === 'manager' ? 'Gerente' : 'Operador'}</TableHead>
+                            <TableHead key={role} className="h-14 px-6 text-center text-sm font-bold uppercase tracking-wider text-muted-foreground capitalize">
+                              {role === 'coordinator' ? 'Coord.' : role === 'manager' ? 'Gerente' : 'Operador'}
+                            </TableHead>
                           ))}
                         </TableRow>
                       </TableHeader>
                       <TableBody>
                         {permissionMatrix.resources.map(res => (
-                          <TableRow key={res.id}>
-                            <TableCell className="font-medium text-sm">{res.label}</TableCell>
+                          <TableRow key={res.id} className="hover:bg-primary/[0.01] transition-colors border-b border-border/40 last:border-0">
+                            <TableCell className="px-6 py-5 font-bold text-base text-foreground/80">{res.label}</TableCell>
                             {permissionMatrix.roles.map(role => {
                               const hasAll = res.perms.every(p => ROLE_PERMISSIONS[role].includes(p));
                               const hasSome = res.perms.some(p => ROLE_PERMISSIONS[role].includes(p));
@@ -379,40 +385,50 @@ export default function UserManagementPage() {
                 </CardContent>
               </Card>
 
-              <Card className="border-border/40 bg-card/50">
-                <CardHeader>
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <ShieldCheckIcon className="h-5 w-5 text-primary" />
-                    Validação Automática
-                  </CardTitle>
-                  <CardDescription>Testes de integridade de RLS e RBAC</CardDescription>
+              <Card className="border-border/40 bg-card/40 backdrop-blur-md shadow-2xl rounded-3xl overflow-hidden ring-1 ring-white/5">
+                <CardHeader className="p-8 pb-4">
+                  <div className="flex items-center gap-4">
+                    <div className="p-3 bg-primary/10 rounded-2xl shadow-inner">
+                      <ShieldCheckIcon className="h-6 w-6 text-primary" />
+                    </div>
+                    <div className="space-y-1">
+                      <CardTitle className="text-2xl font-bold font-display">Integridade</CardTitle>
+                      <CardDescription className="text-base font-medium">Testes automatizados de RBAC/RLS.</CardDescription>
+                    </div>
+                  </div>
                 </CardHeader>
-                <CardContent className="space-y-4">
+                <CardContent className="p-8 space-y-6">
                   <Button 
-                    className="w-full gap-2" 
+                    className="w-full h-12 gap-2 rounded-xl shadow-lg hover:shadow-glow-primary transition-all duration-300 font-bold" 
                     variant="secondary" 
                     onClick={runPermissionTests}
                     disabled={isTesting}
                   >
-                    {isTesting ? "Validando..." : "Executar Testes de Segurança"}
+                    {isTesting ? "Validando Protocolos..." : "Auditar Segurança"}
                   </Button>
 
-                  <div className="space-y-3 pt-2">
+                  <div className="space-y-4 pt-2">
                     {testResults.map((test, i) => (
-                      <div key={i} className="p-3 rounded-lg border border-border/50 bg-background/50 text-xs space-y-1">
+                      <div key={i} className="p-5 rounded-2xl border border-border/40 bg-background/30 backdrop-blur-sm text-sm space-y-3 shadow-sm animate-in fade-in zoom-in-95 duration-500">
                         <div className="flex items-center justify-between">
-                          <span className="font-bold">{test.name}</span>
-                          <Badge variant={test.status === 'pass' ? 'default' : 'destructive'} className="h-4 text-[9px]">
-                            {test.status === 'pass' ? 'PASS' : 'FAIL'}
+                          <span className="font-bold text-foreground/80 tracking-tight">{test.name}</span>
+                          <Badge variant={test.status === 'pass' ? 'default' : 'destructive'} className={cn(
+                            "h-5 px-2 text-[9px] font-black tracking-widest uppercase rounded-md",
+                            test.status === 'pass' ? "bg-success/10 text-success border-success/20" : "bg-destructive/10 text-destructive border-destructive/20"
+                          )}>
+                            {test.status === 'pass' ? 'Passed' : 'Failed'}
                           </Badge>
                         </div>
-                        <p className="text-muted-foreground leading-relaxed">{test.message}</p>
+                        <p className="text-muted-foreground font-medium leading-relaxed">{test.message}</p>
                       </div>
                     ))}
                     {testResults.length === 0 && (
-                      <p className="text-center text-muted-foreground py-8 text-xs italic">
-                        Nenhum teste executado recentemente.
-                      </p>
+                      <div className="flex flex-col items-center justify-center py-12 px-6 border border-dashed border-border/60 rounded-2xl bg-muted/5 opacity-60">
+                        <ShieldAlertIcon className="h-10 w-10 text-muted-foreground mb-4" />
+                        <p className="text-center text-muted-foreground text-sm font-medium italic">
+                          Aguardando execução dos protocolos de auditoria.
+                        </p>
+                      </div>
                     )}
                   </div>
                 </CardContent>
