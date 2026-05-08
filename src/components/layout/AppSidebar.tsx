@@ -93,13 +93,13 @@ export function AppSidebar() {
         </div>
 
         {role !== 'operator' && (
-          <div className={cn('p-5', collapsed && !isMobile && 'px-3')}>
+          <div className={cn('p-6', collapsed && !isMobile && 'px-4')}>
             <Link to="/new-job" onMouseEnter={handleNewJobPrefetch} onFocus={handleNewJobPrefetch}>
               <Button className={cn(
-                'w-full h-12 gap-2 bg-gradient-to-r from-primary to-primary-glow hover:shadow-glow-primary transition-all duration-300 shadow-lg rounded-xl font-bold border-0',
-                collapsed && !isMobile && 'px-0 justify-center'
+                'w-full h-14 gap-3 bg-gradient-to-r from-primary via-primary-glow to-primary hover:shadow-glow-primary transition-all duration-500 shadow-xl rounded-2xl font-black border-0 uppercase tracking-widest text-[10px]',
+                collapsed && !isMobile && 'px-0 justify-center h-12'
               )}>
-                <Plus className="h-5 w-5" />{(!collapsed || isMobile) && <span>Novo Agendamento</span>}
+                <Plus className="h-5 w-5" />{(!collapsed || isMobile) && <span>Operations Launch</span>}
               </Button>
             </Link>
           </div>
