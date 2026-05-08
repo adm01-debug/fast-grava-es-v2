@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { 
   TrendingUp, Activity, AlertTriangle, Gauge, Package, Target, 
   CheckCircle, Clock, BarChart3, PieChart, LineChart, Printer, 
-  Users, Tool, ShieldAlert, Timer, ArrowUpRight, Zap
+  Users, Wrench, ShieldAlert, Timer, ArrowUpRight, Zap
 } from 'lucide-react';
 import { 
   AreaChart, Area, BarChart, Bar, PieChart as RechartsPieChart, Pie, Cell,
@@ -42,7 +42,7 @@ interface FuturisticBIProps {
 }
 
 export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
-  const { operators, overallStats } = useOperatorProductivity('30');
+  const { operators, overallStats } = useOperatorProductivity(30);
   const { stats: tpmStats, records: tpmRecords } = useTPM();
 
   // Derived data for "Studios" (Mock grouping machines into studios)
@@ -335,7 +335,7 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
         <Card className="lg:col-span-2 bg-black/40 border-primary/20 backdrop-blur-xl">
           <CardHeader>
             <CardTitle className="flex items-center gap-3">
-              <Tool className="h-5 w-5 text-primary" />
+              <Wrench className="h-5 w-5 text-primary" />
               <span className="font-display tracking-wider">SAÚDE DAS MÁQUINAS & MANUTENÇÃO</span>
             </CardTitle>
           </CardHeader>
@@ -351,10 +351,10 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
                     <div className="h-full bg-primary" style={{ width: `${oeeData.overallAvailability}%` }} />
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-2 gap-4">
                   <div className="p-4 rounded-xl bg-white/5 border border-white/10">
                     <p className="text-xs text-muted-foreground uppercase tracking-widest mb-1">Manutenções Hoje</p>
-                    <p className="text-2xl font-bold">{tpmStats.todaySchedules}</p>
+                    <p className="text-2xl font-bold">{tpmStats.dueToday}</p>
                   </div>
                   <div className="p-4 rounded-xl bg-white/5 border border-white/10">
                     <p className="text-xs text-muted-foreground uppercase tracking-widest mb-1">Alertas Ativos</p>
