@@ -167,11 +167,11 @@ export function ProductionRegistrationModal({
       const rawPayload = {
         actual_end_time: new Date().toISOString(),
         lost_pieces: lostPieces,
+        loss_category: lostPieces > 0 ? lossCategory : null,
         notes: notes || null,
         produced_quantity: producedQuantity,
         production_photos: photos.length > 0 ? photos : null,
-        // Campos que NÃO devem ser atualizados por operadores (serão filtrados)
-        status: 'finished', // Será removido pelo sanitizer
+        status: 'finished',
       };
 
       // SANITIZAR: garantir que apenas campos permitidos sejam enviados
