@@ -443,6 +443,13 @@ export default function BIDashboard() {
             )}
           </>
         )}
+        <DrillDownDialog 
+          open={drillDownOpen} 
+          onOpenChange={setDrillDownOpen} 
+          title={drillDownTitle} 
+          jobs={drillDownJobs} 
+          onExport={handleExport}
+        />
       </div>
     </MainLayout>
   );
