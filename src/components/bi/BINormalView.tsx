@@ -35,7 +35,7 @@ interface StatCardProps {
   onClick?: () => void;
 }
 
-function StatCard({ title, value, subtitle, icon: Icon, trend, trendValue, variant = 'default' }: StatCardProps) {
+function StatCard({ title, value, subtitle, icon: Icon, trend, trendValue, variant = 'default', onClick }: StatCardProps) {
   const variantStyles = {
     default: 'border-border/50 hover:border-primary/30',
     success: 'border-success/30 bg-success/5 hover:shadow-glow-success',
@@ -43,13 +43,18 @@ function StatCard({ title, value, subtitle, icon: Icon, trend, trendValue, varia
     danger: 'border-primary/30 bg-primary/5 hover:shadow-glow-primary',
   };
 
-  const { ArrowUp, ArrowDown, Minus } = require('lucide-react');
   const TrendIcon = trend === 'up' ? ArrowUp : trend === 'down' ? ArrowDown : Minus;
   const trendColor = trend === 'up' ? 'text-success' : trend === 'down' ? 'text-primary' : 'text-muted-foreground';
-  const { cn } = require('@/lib/utils');
 
   return (
-    <Card className={cn(variantStyles[variant], "card-interactive group transition-all duration-300 hover:shadow-lg hover:-translate-y-1")}>
+    <Card 
+      onClick={onClick}
+      className={cn(
+        variantStyles[variant], 
+        "card-interactive group transition-all duration-300 hover:shadow-lg hover:-translate-y-1",
+        onClick && "cursor-pointer"
+      )}
+    >
       <CardContent className="pt-6">
         <div className="flex items-start justify-between">
           <div className="space-y-2">
@@ -71,6 +76,7 @@ function StatCard({ title, value, subtitle, icon: Icon, trend, trendValue, varia
     </Card>
   );
 }
+
 
 interface BINormalViewProps {
   biMetrics: any;
