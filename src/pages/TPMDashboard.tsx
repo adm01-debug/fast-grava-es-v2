@@ -16,6 +16,7 @@ import { CreateScheduleModal } from '@/components/tpm/CreateScheduleModal';
 import { TPMNotificationSettings } from '@/components/tpm/TPMNotificationSettings';
 import { ChecklistManager } from '@/components/tpm/ChecklistManager';
 import { MTBFMTTRWidget } from '@/components/reliability/MTBFMTTRWidget';
+import { MaintenanceExecutionModal } from '@/components/tpm/MaintenanceExecutionModal';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { FavoriteButton, FavoritesDropdown } from '@/components/navigation/FavoritesManager';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
