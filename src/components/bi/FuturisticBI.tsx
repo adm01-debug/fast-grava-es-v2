@@ -696,7 +696,9 @@ function FuturisticStatCard({ title, value, subtitle, icon: Icon, trend, trendVa
       whileHover={{ scale: 1.02, y: -5 }}
       transition={{ type: "spring", stiffness: 300, damping: 20 }}
     >
-      <Card className={cn(
+      <Card 
+        onClick={onClick}
+        className={cn(
         "bg-black/40 border-white/10 backdrop-blur-xl transition-all duration-500 relative overflow-hidden group cursor-pointer",
         glowStyles[glowColor as keyof typeof glowStyles]
       )}>
