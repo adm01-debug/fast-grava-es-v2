@@ -204,17 +204,6 @@ export function MaintenanceExecutionModal({
         toast.warning("Parâmetros fora do intervalo recomendado", {
           description: alerts.join('\n')
         });
-        
-        // Log alerts to database
-        alerts.forEach(alertMsg => {
-          supabase.from('tpm_parameter_alerts').insert({
-            execution_id: recordId, // This might be null if creating new, we'll need to handle it after save
-            parameter_name: alertMsg.split(':')[0],
-            recorded_value: adjustmentParams[alertMsg.split(':')[0].toLowerCase().replace(/ /g, '_') as keyof typeof adjustmentParams] || '',
-            recommended_range: JSON.stringify(ranges[alertMsg.split(':')[0].toLowerCase().replace(/ /g, '_')]),
-            severity: 'warning'
-          }).then();
-        });
       }
     }
 
