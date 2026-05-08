@@ -27,31 +27,8 @@ import { toast } from 'sonner';
 import { FuturisticStatCard } from './FuturisticStatCard';
 import { useBIExport } from '@/hooks/useBIExport';
 
-const CHART_COLORS = {
-  primary: '#0ea5e9',
-  primaryGlow: '#38bdf8',
-  success: '#10b981',
-  warning: '#f59e0b',
-  danger: '#ef4444',
-  purple: '#8b5cf6',
-  cyan: '#06b6d4',
-  pink: '#ec4899',
-};
+import { CHART_COLORS, GRADIENTS, getStudioName } from '@/constants/biConstants';
 
-const GRADIENTS = {
-  primary: 'from-primary/20 via-primary/5 to-transparent',
-  success: 'from-emerald-500/20 via-emerald-500/5 to-transparent',
-  warning: 'from-amber-500/20 via-amber-500/5 to-transparent',
-  danger: 'from-rose-500/20 via-rose-500/5 to-transparent',
-  purple: 'from-violet-500/20 via-violet-500/5 to-transparent',
-};
-
-// Studio mapping logic centralized
-const getStudioName = (technique: string = '') => {
-  if (technique.includes('Laser')) return 'Studio Alfa';
-  if (technique.includes('UV')) return 'Studio Beta';
-  return 'Studio Gamma';
-};
 
 interface FuturisticBIProps {
   biMetrics: {
