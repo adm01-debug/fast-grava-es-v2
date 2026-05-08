@@ -3,7 +3,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Package, FileSpreadsheet, FileText, AlertTriangle, TrendingDown } from "lucide-react";
+import { Package, FileSpreadsheet, FileText, AlertTriangle, TrendingDown, Target } from "lucide-react";
+import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -122,13 +123,20 @@ export function LossesTable({ jobs, onExport, onShowDetails }: LossesTableProps)
                           <Badge 
                             variant="outline" 
                             className={cn(
-                              "font-mono transition-all duration-300",
+                              "font-mono transition-all duration-300 relative overflow-hidden",
                               isCritical 
                                 ? "text-rose-500 border-rose-500/50 bg-rose-500/10 shadow-[0_0_10px_rgba(244,63,94,0.3)] group-hover/row:scale-110" 
                                 : "text-muted-foreground border-white/10"
                             )}
                           >
-                            {job.lost_pieces} PCS
+                            {isCritical && (
+                              <motion.div 
+                                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent"
+                                animate={{ x: ['-100%', '100%'] }}
+                                transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }}
+                              />
+                            )}
+                            <span className="relative z-10">{job.lost_pieces} PCS</span>
                           </Badge>
                         </div>
                       </TableCell>

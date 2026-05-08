@@ -1,9 +1,10 @@
 import { useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Sparkles, ArrowUpRight, ArrowDownRight, AlertCircle, CheckCircle2, Lightbulb, Clock, ChevronRight, ChevronDown, Zap } from 'lucide-react';
+import { Sparkles, ArrowUpRight, ArrowDownRight, AlertCircle, CheckCircle2, Lightbulb, Clock, ChevronRight, ChevronDown, Zap, Target, TrendingUp, Cpu, RefreshCcw } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
 
 interface BIAIInsightsProps {
   biMetrics: {
@@ -23,6 +24,20 @@ interface BIAIInsightsProps {
 
 export function BIAIInsights({ biMetrics, oeeData }: BIAIInsightsProps) {
   const [expandedInsight, setExpandedInsight] = useState<number | null>(null);
+  const [isSimulating, setIsSimulating] = useState(false);
+  const [simulationResult, setSimulationResult] = useState<{ oee: number; revenue: number } | null>(null);
+
+  const runSimulation = () => {
+    setIsSimulating(true);
+    // Simulate complex calculation
+    setTimeout(() => {
+      setSimulationResult({
+        oee: Math.min(98, oeeData.overallOEE + 12),
+        revenue: biMetrics.periodCompletedPieces * 2.5 * 1.15
+      });
+      setIsSimulating(false);
+    }, 1500);
+  };
 
   const insights = useMemo(() => {
     const list = [];
@@ -187,9 +202,77 @@ export function BIAIInsights({ biMetrics, oeeData }: BIAIInsightsProps) {
         </div>
         
         <div className="p-4 bg-primary/5 border-t border-primary/10">
-          <div className="flex items-center gap-2 text-[10px] text-primary/70 font-mono uppercase tracking-widest">
-            <span className="w-2 h-2 rounded-full bg-primary animate-ping" />
-            Análise Preditiva em Tempo Real Ativa
+          <div className="flex flex-col gap-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-[10px] text-primary/70 font-mono uppercase tracking-widest">
+                <span className="w-2 h-2 rounded-full bg-primary animate-ping" />
+                Simulador de Otimização IA
+              </div>
+              {!simulationResult && (
+                <Button 
+                  onClick={runSimulation} 
+                  disabled={isSimulating}
+                  variant="ghost" 
+                  size="sm" 
+                  className="h-7 text-[10px] gap-2 border border-primary/20 hover:bg-primary/10"
+                >
+                  {isSimulating ? <RefreshCcw className="h-3 w-3 animate-spin" /> : <Cpu className="h-3 w-3" />}
+                  SIMULAR CENÁRIO IDEAL
+                </Button>
+              )}
+            </div>
+
+            {isSimulating && (
+              <div className="space-y-2">
+                <div className="flex justify-between text-[9px] text-primary/60 font-mono">
+                  <span>PROCESSANDO REDE NEURAL...</span>
+                  <span>{Math.floor(Math.random() * 100)}%</span>
+                </div>
+                <Progress value={45} className="h-1 bg-white/5" />
+              </div>
+            )}
+
+            {simulationResult && !isSimulating && (
+              <motion.div 
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="grid grid-cols-2 gap-3 p-3 bg-primary/10 border border-primary/20 rounded-lg relative overflow-hidden"
+              >
+                <div className="absolute top-0 right-0 p-1">
+                  <Button variant="ghost" size="icon" className="h-4 w-4 hover:bg-white/10" onClick={() => setSimulationResult(null)}>
+                    <ChevronDown className="h-3 w-3 rotate-180" />
+                  </Button>
+                </div>
+                <div className="space-y-1">
+                  <div className="flex items-center gap-1.5 text-[9px] text-primary font-bold uppercase">
+                    <Target className="h-3 w-3" /> Potencial OEE
+                  </div>
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-xl font-bold text-white">{simulationResult.oee.toFixed(1)}%</span>
+                    <span className="text-[10px] text-success flex items-center gap-0.5">
+                      <TrendingUp className="h-2 w-2" /> +{(simulationResult.oee - oeeData.overallOEE).toFixed(1)}%
+                    </span>
+                  </div>
+                </div>
+                <div className="space-y-1 border-l border-white/10 pl-3">
+                  <div className="flex items-center gap-1.5 text-[9px] text-primary font-bold uppercase">
+                    <TrendingUp className="h-3 w-3" /> Ganhos Est.
+                  </div>
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-xl font-bold text-white">
+                      R$ {simulationResult.revenue.toLocaleString('pt-BR', { maximumFractionDigits: 0 })}
+                    </span>
+                    <span className="text-[10px] text-success flex items-center gap-0.5">
+                      <TrendingUp className="h-2 w-2" /> +15%
+                    </span>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+            
+            <div className="flex items-center gap-2 text-[10px] text-primary/50 font-mono uppercase tracking-widest pt-1 border-t border-white/5">
+              <Sparkles className="h-3 w-3" /> Análise Preditiva em Tempo Real Ativa
+            </div>
           </div>
         </div>
       </CardContent>
