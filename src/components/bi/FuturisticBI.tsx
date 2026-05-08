@@ -186,7 +186,14 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
           </CardHeader>
           <CardContent className="relative z-10">
             <ResponsiveContainer width="100%" height={350}>
-              <AreaChart data={biMetrics.dailyTrend}>
+              <AreaChart 
+                data={biMetrics.dailyTrend}
+                onClick={(data) => {
+                  if (data && data.activeLabel) {
+                    handleDrillDown(`PEDIDOS EM ${data.activeLabel}`, []);
+                  }
+                }}
+              >
                 <defs>
                   <linearGradient id="glowPrimary" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor={CHART_COLORS.primary} stopOpacity={0.3}/>
