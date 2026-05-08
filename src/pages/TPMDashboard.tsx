@@ -291,6 +291,10 @@ export default function TPMDashboard() {
             />
           </TabsContent>
 
+          <TabsContent value="reports" className="animate-fade-in">
+            <TPMReports />
+          </TabsContent>
+
           <TabsContent value="config" className="animate-fade-in">
             <ChecklistManager />
           </TabsContent>
