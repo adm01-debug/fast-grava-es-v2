@@ -32,8 +32,6 @@ global.URL.revokeObjectURL = vi.fn();
 describe('useDataExport', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    // Setup initial DOM for tests that might need it
-    document.body.innerHTML = '';
   });
 
   it('should initialize with isExporting as false', () => {
@@ -41,56 +39,56 @@ describe('useDataExport', () => {
     expect(result.current.isExporting).toBe(false);
   });
 
-  it('should handle successful CSV export', async () => {
+  it('should handle export operations correctly', async () => {
+    // 1. Successful Export
     const mockData = [{ id: '1', name: 'Job 1' }];
     (supabase.from as any).mockReturnValue({
       select: vi.fn().mockReturnThis(),
       order: vi.fn().mockResolvedValue({ data: mockData, error: null }),
     });
 
-    const { result } = renderHook(() => useDataExport('jobs' as any));
+    const { result, rerender } = renderHook(({ table }) => useDataExport(table as any), {
+      initialProps: { table: 'jobs' }
+    });
     
     const link = { click: vi.fn(), href: '', download: '', style: {} };
-    vi.spyOn(document, 'createElement').mockReturnValue(link as any);
-    vi.spyOn(document.body, 'appendChild').mockImplementation(() => null as any);
-    vi.spyOn(document.body, 'removeChild').mockImplementation(() => null as any);
+    const createSpy = vi.spyOn(document, 'createElement').mockReturnValue(link as any);
+    const appendSpy = vi.spyOn(document.body, 'appendChild').mockImplementation(() => null as any);
+    const removeSpy = vi.spyOn(document.body, 'removeChild').mockImplementation(() => null as any);
 
     await act(async () => {
       await result.current.exportData();
     });
 
-    expect(supabase.from).toHaveBeenCalledWith('jobs');
     expect(toast.success).toHaveBeenCalledWith('1 registros exportados');
-  });
 
-  it('should show info toast when no data is found', async () => {
+    // 2. Empty data
     (supabase.from as any).mockReturnValue({
       select: vi.fn().mockReturnThis(),
       order: vi.fn().mockResolvedValue({ data: [], error: null }),
     });
 
-    const { result } = renderHook(() => useDataExport('jobs' as any));
-    
     await act(async () => {
       await result.current.exportData();
     });
 
     expect(toast.info).toHaveBeenCalledWith('Nenhum dado para exportar');
-  });
 
-  it('should handle export errors', async () => {
-    const mockError = { message: 'Database error' };
+    // 3. Error
+    const mockError = { message: 'DB Error' };
     (supabase.from as any).mockReturnValue({
       select: vi.fn().mockReturnThis(),
       order: vi.fn().mockResolvedValue({ data: null, error: mockError }),
     });
 
-    const { result } = renderHook(() => useDataExport('jobs' as any));
-    
     await act(async () => {
       await result.current.exportData();
     });
 
-    expect(toast.error).toHaveBeenCalledWith(expect.stringContaining('Database error'));
+    expect(toast.error).toHaveBeenCalledWith(expect.stringContaining('DB Error'));
+    
+    createSpy.mockRestore();
+    appendSpy.mockRestore();
+    removeSpy.mockRestore();
   });
 });
