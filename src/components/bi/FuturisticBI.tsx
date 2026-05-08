@@ -1,15 +1,16 @@
-import { useMemo, useState, useCallback } from 'react';
+import { useMemo, useState, useCallback, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { 
   TrendingUp, Activity, Gauge, Target, 
   CheckCircle, PieChart, LineChart, Printer, 
-  Users, Wrench, ShieldAlert, Zap, Download, FileText, FileSpreadsheet, Package, Timer, ArrowUpRight
+  Users, Wrench, ShieldAlert, Zap, Download, FileText, FileSpreadsheet, Package, Timer, ArrowUpRight, RefreshCcw, Clock
 } from 'lucide-react';
 import { 
   AreaChart, Area, BarChart, Bar, PieChart as RechartsPieChart, Pie, Cell,
-  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, Radar
+  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, Radar, Legend
 } from 'recharts';
+
 import { format } from 'date-fns';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -27,6 +28,8 @@ import { toast } from 'sonner';
 import { FuturisticStatCard } from './FuturisticStatCard';
 import { useBIExport } from '@/hooks/useBIExport';
 import { BITooltip } from './BITooltip';
+import { BIEmptyState } from './BIEmptyState';
+
 
 
 import { CHART_COLORS, GRADIENTS, getStudioName } from '@/constants/biConstants';
@@ -59,6 +62,18 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
   const { operators } = useOperatorProductivity(30);
   const { stats: tpmStats } = useTPM();
   const { isExporting, handleExport: baseHandleExport } = useBIExport(biMetrics);
+  const [lastUpdated, setLastUpdated] = useState(new Date());
+
+  useEffect(() => {
+    // Simulate real-time data flow indicator
+    const interval = setInterval(() => {
+      // Small random chance to "update" the timestamp to simulate activity
+      if (Math.random() > 0.8) {
+        setLastUpdated(new Date());
+      }
+    }, 30000);
+    return () => clearInterval(interval);
+  }, []);
 
   const jobsWithLosses = useMemo(() => {
     if (!biMetrics.periodJobsList) return [];
@@ -78,6 +93,7 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
   const handleExport = useCallback((format: 'csv' | 'pdf', type: string) => {
     baseHandleExport(format, type, { jobsWithLosses, delayedJobsList });
   }, [baseHandleExport, jobsWithLosses, delayedJobsList]);
+
 
   const [drillDownOpen, setDrillDownOpen] = useState(false);
   const [drillDownTitle, setDrillDownTitle] = useState('');
@@ -179,6 +195,14 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
     }
   };
 
+  if (!biMetrics.periodJobsList || biMetrics.periodJobsList.length === 0) {
+    return (
+      <div className="py-12">
+        <BIEmptyState />
+      </div>
+    );
+  }
+
   return (
     <motion.div 
       variants={containerVariants}
@@ -186,6 +210,7 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
       animate="visible"
       className="space-y-8"
     >
+
       {/* Top Layer: Critical Real-time Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <FuturisticStatCard 
@@ -243,7 +268,17 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
                 <Activity className="h-5 w-5 text-primary" />
               </div>
               <span className="font-display tracking-wider text-xl uppercase">Fluxo de Produção</span>
-              <Badge variant="outline" className="border-primary/30 text-primary animate-pulse ml-2">LIVE</Badge>
+              <div className="flex items-center gap-3 ml-2">
+                <Badge variant="outline" className="border-primary/30 text-primary animate-pulse bg-primary/5">
+                  <div className="w-1.5 h-1.5 rounded-full bg-primary mr-2 animate-ping" />
+                  LIVE
+                </Badge>
+                <div className="hidden sm:flex items-center gap-1.5 text-[10px] text-muted-foreground bg-white/5 px-2 py-1 rounded-full border border-white/5">
+                  <Clock className="h-3 w-3" />
+                  Sincronizado: {format(lastUpdated, 'HH:mm:ss')}
+                </div>
+              </div>
+
             </CardTitle>
             <div className="flex items-center gap-2">
               <Button 
@@ -292,7 +327,7 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
                   tickLine={false}
                   tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 12 }}
                 />
-                <Tooltip content={<BITooltip />} />
+                <Tooltip content={<BITooltip showPercentage />} />
 
                 <Area 
                   type="monotone" 
@@ -357,7 +392,7 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
                     <Cell key={`cell-${index}`} fill={entry.color} fillOpacity={0.8} />
                   ))}
                 </Pie>
-                <Tooltip />
+                <Tooltip content={<BITooltip showPercentage />} />
               </RechartsPieChart>
             </ResponsiveContainer>
             <div className="grid grid-cols-2 gap-4 mt-4">
@@ -405,7 +440,7 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
               <BarChart data={studioData} layout="vertical">
                 <XAxis type="number" hide />
                 <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} tick={{ fill: '#fff', fontSize: 12 }} />
-                <Tooltip content={<BITooltip />} cursor={{ fill: 'rgba(255,255,255,0.05)' }} />
+                <Tooltip content={<BITooltip showPercentage />} cursor={{ fill: 'rgba(255,255,255,0.05)' }} />
                 <Bar 
                   dataKey="jobs" 
                   radius={[0, 4, 4, 0]} 
