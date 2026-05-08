@@ -8,6 +8,7 @@ import {
 import { useSchedulingData } from '@/hooks/useSchedulingData';
 import { useSmartSequencing } from '@/hooks/useSmartSequencing';
 import { useLoadBalancing } from '@/hooks/useLoadBalancing';
+import { useOEE } from '@/hooks/useOEE';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 
