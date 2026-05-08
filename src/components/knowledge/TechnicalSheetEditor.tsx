@@ -79,6 +79,8 @@ export const TechnicalSheetEditor = ({ sheetId, techniques, categories, material
         challenges_notes: sheet.challenges_notes || '',
         failure_scenarios: sheet.failure_scenarios || '',
         quality_requirements: sheet.quality_requirements || '',
+        setup_instructions: sheet.setup_instructions || '',
+        quality_checklist: sheet.quality_checklist || [],
         version: sheet.version?.toString() || '1'
       });
     }
