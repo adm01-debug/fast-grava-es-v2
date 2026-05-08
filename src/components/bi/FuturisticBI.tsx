@@ -4,11 +4,11 @@ import { Badge } from '@/components/ui/badge';
 import { 
   TrendingUp, Activity, Gauge, Target, 
   CheckCircle, PieChart, LineChart, Printer, 
-  Users, Wrench, ShieldAlert, Zap, Download, FileText, FileSpreadsheet, Package, Timer
+  Users, Wrench, ShieldAlert, Zap, Download, FileText, FileSpreadsheet, Package, Timer, ArrowUpRight
 } from 'lucide-react';
 import { 
   AreaChart, Area, BarChart, Bar, PieChart as RechartsPieChart, Pie, Cell,
-  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
+  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, Radar
 } from 'recharts';
 import { 
   Dialog,
@@ -40,6 +40,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { DrillDownDialog } from './drilldown/DrillDownDialog';
 import { LossesTable } from './losses/LossesTable';
 import { DelaysAnalysis } from './delays/DelaysAnalysis';
+
 
 
 
