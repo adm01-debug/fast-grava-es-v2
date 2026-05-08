@@ -460,6 +460,23 @@ export function ExecutionDetailsModal({ isOpen, onClose, recordId }: ExecutionDe
                       </div>
                     )}
                   </div>
+
+                  {/* Print-only Observations Block */}
+                  <div className="hidden print:block mt-6 border p-4 rounded-lg">
+                    <h4 className="text-xs font-bold uppercase mb-2">Observações e Notas Técnicas</h4>
+                    <p className="text-sm min-h-[60px]">{record.notes || 'Sem observações adicionais.'}</p>
+                    
+                    <div className="grid grid-cols-2 gap-8 mt-12">
+                      <div className="border-t pt-2 text-center">
+                        <p className="text-[10px] uppercase">Assinatura do Técnico</p>
+                        <p className="text-sm font-serif italic mt-2">{record.signature_url}</p>
+                      </div>
+                      <div className="border-t pt-2 text-center">
+                        <p className="text-[10px] uppercase">Aprovação (Supervisor)</p>
+                        <p className="text-sm mt-2">{record.approver_id ? '✓ Verificado Digitalmente' : '_______________________'}</p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               )}
 
