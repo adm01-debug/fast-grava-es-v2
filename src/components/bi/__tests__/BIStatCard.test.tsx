@@ -1,7 +1,8 @@
 import { render, screen } from '@testing-library/react';
-import { BIStatCard } from './BIStatCard';
+import { BIStatCard } from '../BIStatCard';
 import { describe, it, expect } from 'vitest';
 import { Activity } from 'lucide-react';
+import '@testing-library/jest-dom';
 
 describe('BIStatCard', () => {
   it('renders title and value', () => {
@@ -13,8 +14,8 @@ describe('BIStatCard', () => {
       />
     );
     
-    expect(screen.getByText('Total Orders')).toBeDefined();
-    expect(screen.getByText('1,234')).toBeDefined();
+    expect(screen.getByText('Total Orders')).toBeInTheDocument();
+    expect(screen.getByText('1,234')).toBeInTheDocument();
   });
 
   it('renders subtitle when provided', () => {
@@ -27,7 +28,7 @@ describe('BIStatCard', () => {
       />
     );
     
-    expect(screen.getByText('Last 30 days')).toBeDefined();
+    expect(screen.getByText('Last 30 days')).toBeInTheDocument();
   });
 
   it('renders trend value and icon when provided', () => {
@@ -41,7 +42,7 @@ describe('BIStatCard', () => {
       />
     );
     
-    expect(screen.getByText('+5%')).toBeDefined();
+    expect(screen.getByText('+5%')).toBeInTheDocument();
     // Check for up arrow icon (ArrowUp)
     const arrowUp = container.querySelector('svg.text-success');
     expect(arrowUp).not.toBeNull();
@@ -62,3 +63,4 @@ describe('BIStatCard', () => {
     expect(card.className).toContain('bg-primary/5');
   });
 });
+

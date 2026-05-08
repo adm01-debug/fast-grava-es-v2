@@ -61,3 +61,4 @@ describe('useKPIs utility functions', () => {
     });
   });
 });
+

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { renderHook, waitFor } from '@testing-library/react';
+import { renderHook } from '@testing-library/react';
 import { useDataExport } from '../useDataExport';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -45,10 +45,7 @@ describe('useDataExport', () => {
       { id: '2', name: 'Job 2', quantity: 20 },
     ];
 
-    const mockSelect = vi.fn().mockResolvedValue({ data: mockData, error: null });
-    const mockOrder = vi.fn().mockReturnValue({ then: (cb: any) => cb({ data: mockData, error: null }) });
-    
-    // We need to mock the chain correctly
+    // Setup mocking chain for supabase query
     (supabase.from as any).mockReturnValue({
       select: vi.fn().mockReturnThis(),
       order: vi.fn().mockResolvedValue({ data: mockData, error: null }),
@@ -95,3 +92,4 @@ describe('useDataExport', () => {
     expect(toast.error).toHaveBeenCalledWith(expect.stringContaining('Database error'));
   });
 });
+
