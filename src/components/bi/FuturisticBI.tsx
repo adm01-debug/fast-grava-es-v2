@@ -212,14 +212,14 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
         <Card className="lg:col-span-2 bg-black/40 border-primary/20 backdrop-blur-xl hover:border-primary/40 transition-all duration-500 overflow-hidden relative group">
           <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none" />
           <CardHeader className="relative z-10">
-            <CardTitle className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
+            <div className="flex items-center justify-between w-full">
+              <CardTitle className="flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-primary/10">
                   <Activity className="h-5 w-5 text-primary" />
                 </div>
-                <span className="font-display tracking-wider text-xl">FLUXO DE PRODUÇÃO</span>
-              </div>
-              <Badge variant="outline" className="border-primary/30 text-primary animate-pulse">LIVE</Badge>
+                <span className="font-display tracking-wider text-xl uppercase">Fluxo de Produção</span>
+                <Badge variant="outline" className="border-primary/30 text-primary animate-pulse ml-2">LIVE</Badge>
+              </CardTitle>
             </div>
             <div className="flex items-center gap-2">
               <Button 
