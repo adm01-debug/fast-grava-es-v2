@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { 
   BrainCircuit, ArrowRight, Zap, AlertTriangle, 
   CheckCircle2, Sparkles, ChevronRight, LayoutPanelTop,
-  Search, Filter
+  Search, Filter, Clock
 } from 'lucide-react';
 import { useSmartSequencing, SequencingSuggestion } from '@/hooks/useSmartSequencing';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -104,9 +104,17 @@ export function SmartSequencingPanel() {
                 <Badge variant="outline" className="text-[10px] font-mono border-primary/30 text-primary">
                   {suggestion.machineCode}
                 </Badge>
-                <div className="flex items-center gap-1 text-xs font-medium text-yellow-400">
-                  <Zap className="h-3 w-3" />
-                  {suggestion.estimatedSavings} min economizados
+                <div className="flex flex-col items-end gap-1">
+                  <div className="flex items-center gap-1 text-xs font-medium text-yellow-400">
+                    <Zap className="h-3 w-3" />
+                    {suggestion.estimatedSavings} min economizados
+                  </div>
+                  {suggestion.estimatedColumnTime && (
+                    <div className="text-[9px] text-muted-foreground font-mono flex items-center gap-1">
+                      <Clock className="h-2 w-2" />
+                      Carga: {suggestion.estimatedColumnTime}
+                    </div>
+                  )}
                 </div>
               </div>
 
