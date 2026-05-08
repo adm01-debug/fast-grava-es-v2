@@ -54,27 +54,52 @@ export function LossesTable({ jobs, onExport }: LossesTableProps) {
             </TableHeader>
             <TableBody>
               {jobs.length > 0 ? (
-                jobs.map((job: any) => (
-                  <TableRow key={job.id} className="border-white/5 hover:bg-white/5 cursor-pointer transition-colors" onClick={() => navigate(`/job/${job.id}`)}>
-                    <TableCell>
-                      <div className="font-medium text-sm">{job.order_number || `OS-${job.id.slice(0, 5)}`}</div>
-                      <div className="text-[10px] text-muted-foreground">{job.product_name || 'Produto'}</div>
-                    </TableCell>
-                    <TableCell className="text-center">
-                      <Badge variant="outline" className="text-rose-500 border-rose-500/30 bg-rose-500/5">
-                        {job.lost_pieces} pcs
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <span className="text-[11px] text-muted-foreground">
-                        {job.loss_reason || 'Perda na Produção'}
-                      </span>
-                    </TableCell>
-                    <TableCell className="text-right font-mono text-xs">
-                      R$ {(job.lost_pieces * 15.5).toFixed(2)}
-                    </TableCell>
-                  </TableRow>
-                ))
+                jobs.map((job: any) => {
+                  const lossRate = (job.lost_pieces / (job.produced_quantity || job.quantity || 1)) * 100;
+                  const isCritical = lossRate > 5;
+                  
+                  return (
+                    <TableRow 
+                      key={job.id} 
+                      className={cn(
+                        "border-white/5 hover:bg-white/5 cursor-pointer transition-colors",
+                        isCritical && "bg-rose-500/5 hover:bg-rose-500/10"
+                      )} 
+                      onClick={() => navigate(`/job/${job.id}`)}
+                    >
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          {isCritical && <AlertTriangle className="h-3 w-3 text-rose-500 animate-pulse" />}
+                          <div>
+                            <div className={cn("font-medium text-sm", isCritical && "text-rose-500")}>
+                              {job.order_number || `OS-${job.id.slice(0, 5)}`}
+                            </div>
+                            <div className="text-[10px] text-muted-foreground">{job.product_name || 'Produto'}</div>
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-center">
+                        <Badge 
+                          variant="outline" 
+                          className={cn(
+                            "text-rose-500 border-rose-500/30 bg-rose-500/5",
+                            isCritical && "border-rose-500 shadow-[0_0_10px_rgba(244,63,94,0.3)]"
+                          )}
+                        >
+                          {job.lost_pieces} pcs
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <span className="text-[11px] text-muted-foreground italic">
+                          {lossRate.toFixed(1)}% de perda
+                        </span>
+                      </TableCell>
+                      <TableCell className="text-right font-mono text-xs">
+                        R$ {(job.lost_pieces * 15.5).toFixed(2)}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })
               ) : (
                 <TableRow>
                   <TableCell colSpan={4} className="text-center py-8 text-muted-foreground">Nenhuma perda registrada</TableCell>
