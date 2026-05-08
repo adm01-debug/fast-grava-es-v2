@@ -56,6 +56,71 @@ async function generateQualityReport(data: any, options: any): Promise<Uint8Arra
 }
 
 async function generateMaintenanceReport(data: any, options: any): Promise<Uint8Array> {
-  const content = `Maintenance Report\n\nGenerated: ${new Date().toISOString()}\n\nData: ${JSON.stringify(data, null, 2)}`;
+  const { execution, machine, schedule, technical_sheet, supplies, alerts } = data;
+  
+  let content = `ORDEM DE SERVIÇO TÉCNICA - TPM\n`;
+  content += `====================================\n\n`;
+  content += `ID Execução: ${execution?.id || 'N/A'}\n`;
+  content += `Data: ${new Date(execution?.completed_at || execution?.started_at).toLocaleString('pt-BR')}\n`;
+  content += `Operador: ${execution?.performed_by_name || 'N/A'}\n\n`;
+  
+  content += `DADOS DA MÁQUINA E SERVIÇO\n`;
+  content += `--------------------------\n`;
+  content += `Máquina: ${machine?.name} (${machine?.code})\n`;
+  content += `Técnica: ${technical_sheet?.techniques?.name || 'N/A'}\n`;
+  content += `Produto: ${technical_sheet?.product_categories?.name || 'N/A'}\n\n`;
+
+  content += `PARÂMETROS DE REGULAGEM APLICADOS\n`;
+  content += `---------------------------------\n`;
+  const params = execution?.adjustment_parameters || {};
+  content += `Passadas de Rodo: ${params.squeegee_passes || 'N/A'}\n`;
+  content += `Pressão: ${params.pressure || 'N/A'}\n`;
+  content += `Velocidade: ${params.speed || 'N/A'}\n`;
+  content += `Temperatura: ${params.temperature || 'N/A'}\n\n`;
+
+  if (technical_sheet?.setup_instructions) {
+    content += `GUIA DE SETUP E PREPARAÇÃO\n`;
+    content += `--------------------------\n`;
+    content += `${technical_sheet.setup_instructions}\n\n`;
+  }
+
+  if (supplies && supplies.length > 0) {
+    content += `INSUMOS E CONSUMÍVEIS UTILIZADOS\n`;
+    content += `--------------------------------\n`;
+    supplies.forEach((s: any) => {
+      content += `- ${s.name}: ${s.quantity}${s.alternative_used ? ' (Alternativo)' : ''}\n`;
+    });
+    content += `\n`;
+  }
+
+  if (execution?.quality_checklist_results && execution.quality_checklist_results.length > 0) {
+    content += `CHECKLIST DE QUALIDADE\n`;
+    content += `----------------------\n`;
+    execution.quality_checklist_results.forEach((q: any) => {
+      const sheet = technical_sheet?.quality_checklist?.find((i: any) => i.id === q.id);
+      content += `[${q.approved ? 'OK' : 'X'}] ${sheet?.description || q.id}${q.justification ? ` - Justificativa: ${q.justification}` : ''}\n`;
+    });
+    content += `\n`;
+  }
+
+  if (alerts && alerts.length > 0) {
+    content += `ALERTAS E CENÁRIOS DE FALHA (RISCO DE PERDA)\n`;
+    content += `-------------------------------------------\n`;
+    alerts.forEach((a: any) => {
+      content += `! ${a.description} (Valor: ${a.actual_value} / Esperado: ${a.expected_range})\n`;
+      if (a.evidence_urls && a.evidence_urls.length > 0) {
+        content += `  Evidências: ${a.evidence_urls.length} fotos anexadas.\n`;
+      }
+    });
+    content += `\n`;
+  }
+
+  content += `OBSERVAÇÕES GERAIS\n`;
+  content += `------------------\n`;
+  content += `${execution?.notes || 'Nenhuma observação.'}\n\n`;
+  
+  content += `------------------------------------\n`;
+  content += `Assinatura: ${execution?.signature_url || '____________________'}\n`;
+
   return new TextEncoder().encode(content);
 }
