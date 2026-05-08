@@ -260,7 +260,7 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
               </div>
             </div>
             
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-4 mb-8">
               <div className="p-5 rounded-2xl bg-amber-500/5 border border-amber-500/10 space-y-2">
                 <div className="flex items-center gap-2">
                   <ShieldAlert className="h-4 w-4 text-amber-500" />
@@ -274,6 +274,30 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
                   <span className="text-[10px] font-black uppercase tracking-widest text-emerald-600/70">Asset Health</span>
                 </div>
                 <p className="text-xl font-black">98.2% <span className="text-xs font-bold text-muted-foreground uppercase tracking-tighter">Up-time</span></p>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <h4 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                <TrendingUp className="h-3.5 w-3.5" /> Recent Losses by Category
+              </h4>
+              <div className="space-y-2">
+                {[
+                  { cat: 'Setup Error', count: 12, impact: 'High' },
+                  { cat: 'Material Defect', count: 8, impact: 'Medium' },
+                  { cat: 'Machine Fail', count: 5, impact: 'Critical' }
+                ].map((l, i) => (
+                  <div key={i} className="flex items-center justify-between p-3 rounded-xl bg-background/20 border border-white/5">
+                    <span className="text-xs font-bold text-foreground/70">{l.cat}</span>
+                    <div className="flex items-center gap-3">
+                      <span className="text-xs font-black">{l.count} pçs</span>
+                      <Badge variant="outline" className={cn(
+                        "text-[8px] font-black uppercase",
+                        l.impact === 'Critical' ? "border-rose-500/30 text-rose-500" : "border-amber-500/30 text-amber-500"
+                      )}>{l.impact}</Badge>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           </CardContent>
