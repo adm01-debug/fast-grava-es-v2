@@ -465,7 +465,10 @@ export default function BIDashboard() {
                   <Card className="card-elevated">
                     <CardHeader><CardTitle className="flex items-center gap-2"><AlertTriangle className="h-5 w-5 text-primary" />Principais Perdas</CardTitle></CardHeader>
                     <CardContent>
-                       <LossesTable jobs={biMetrics.periodJobsList.filter((j: any) => (j.lost_pieces || 0) > 0)} />
+                       <LossesTable 
+                         jobs={biMetrics.periodJobsList.filter((j: any) => (j.lost_pieces || 0) > 0)} 
+                         onExport={(format) => handleExport(format)}
+                       />
                     </CardContent>
                   </Card>
                 </div>
