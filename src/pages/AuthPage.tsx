@@ -17,7 +17,7 @@ import { useTheme } from 'next-themes';
 import { LanguageSwitcher } from '@/components/layout/LanguageSwitcher';
 import { AuthLoginForm } from '@/components/auth/AuthLoginForm';
 import { AuthSignupForm } from '@/components/auth/AuthSignupForm';
-import { ErrorBoundary } from '@/components/ui/error-boundary';
+import { AuthErrorBoundary } from '@/components/auth/AuthErrorBoundary';
 import { motion } from 'framer-motion';
 
 export default function AuthPage() {
