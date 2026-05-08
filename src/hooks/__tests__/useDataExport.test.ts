@@ -38,7 +38,7 @@ describe('useDataExport', () => {
     const { result } = renderHook(() => useDataExport('jobs' as any));
     expect(result.current.isExporting).toBe(false);
 
-    // Mock successful export
+    // 1. Success
     const mockData = [{ id: '1', name: 'Job 1' }];
     (supabase.from as any).mockReturnValue({
       select: vi.fn().mockReturnThis(),
@@ -46,9 +46,9 @@ describe('useDataExport', () => {
     });
 
     const link = { click: vi.fn(), href: '', download: '', style: {} };
-    vi.spyOn(document, 'createElement').mockReturnValue(link as any);
-    vi.spyOn(document.body, 'appendChild').mockImplementation(() => null as any);
-    vi.spyOn(document.body, 'removeChild').mockImplementation(() => null as any);
+    const createSpy = vi.spyOn(document, 'createElement').mockReturnValue(link as any);
+    const appendSpy = vi.spyOn(document.body, 'appendChild').mockImplementation(() => null as any);
+    const removeSpy = vi.spyOn(document.body, 'removeChild').mockImplementation(() => null as any);
 
     await act(async () => {
       await result.current.exportData();
@@ -56,7 +56,7 @@ describe('useDataExport', () => {
 
     expect(toast.success).toHaveBeenCalledWith('1 registros exportados');
 
-    // Mock empty data
+    // 2. Empty
     (supabase.from as any).mockReturnValue({
       select: vi.fn().mockReturnThis(),
       order: vi.fn().mockResolvedValue({ data: [], error: null }),
@@ -68,8 +68,8 @@ describe('useDataExport', () => {
 
     expect(toast.info).toHaveBeenCalledWith('Nenhum dado para exportar');
 
-    // Mock error
-    const mockError = { message: 'Database failure' };
+    // 3. Error
+    const mockError = new Error('Database connection failed');
     (supabase.from as any).mockReturnValue({
       select: vi.fn().mockReturnThis(),
       order: vi.fn().mockResolvedValue({ data: null, error: mockError }),
@@ -79,6 +79,10 @@ describe('useDataExport', () => {
       await result.current.exportData();
     });
 
-    expect(toast.error).toHaveBeenCalledWith(expect.stringContaining('Database failure'));
+    expect(toast.error).toHaveBeenCalledWith(expect.stringContaining('Database connection failed'));
+    
+    createSpy.mockRestore();
+    appendSpy.mockRestore();
+    removeSpy.mockRestore();
   });
 });
