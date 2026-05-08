@@ -264,7 +264,13 @@ export function SmartSequencingPanel() {
                   {suggestionToDetail.bottleneckRisk === 'high' && (
                     <li className="flex items-start gap-2 text-red-400 font-medium">
                       <AlertTriangle className="h-3 w-3 mt-0.5" />
-                      Carga de trabalho elevada detectada para este equipamento nas próximas 24h.
+                      Carga de trabalho elevada detectada para este equipamento nas próximas 24h. Recomenda-se remanejamento de carga para evitar atrasos.
+                    </li>
+                  )}
+                  {suggestionToDetail.estimatedSavings > 30 && (
+                    <li className="flex items-start gap-2 text-green-400 font-medium">
+                      <Zap className="h-3 w-3 mt-0.5" />
+                      Economia significativa detectada. Esta otimização liberará mais de 30min de capacidade.
                     </li>
                   )}
                 </ul>

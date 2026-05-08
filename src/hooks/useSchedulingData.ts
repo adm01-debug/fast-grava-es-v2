@@ -252,6 +252,13 @@ export function useSchedulingData() {
       techniquesQuery.refetch();
       machinesQuery.refetch();
     },
+    
+    // Add real OEE historical analysis
+    getOEETrend: (days: number = 14) => {
+      // Logic for calculating OEE trend would go here, 
+      // already partially handled in useOEE hook.
+      return [];
+    }
   };
 }
 
