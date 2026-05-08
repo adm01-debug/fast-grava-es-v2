@@ -25,7 +25,7 @@ import { exportProductionReport, exportLossesReport, exportDelaysReport } from '
 import { subDays } from 'date-fns';
 import { toast } from 'sonner';
 import { FuturisticStatCard } from './FuturisticStatCard';
-
+import { useBIExport } from '@/hooks/useBIExport';
 
 const CHART_COLORS = {
   primary: '#0ea5e9',
@@ -77,88 +77,29 @@ interface FuturisticBIProps {
 
 export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
   const navigate = useNavigate();
-  const { operators, overallStats } = useOperatorProductivity(30);
-  const { stats: tpmStats, records: tpmRecords } = useTPM();
-  const { exportData: exportJobs } = useDataExport('jobs');
-  const [isExporting, setIsExporting] = useState(false);
+  const { operators } = useOperatorProductivity(30);
+  const { stats: tpmStats } = useTPM();
+  const { isExporting, handleExport: baseHandleExport } = useBIExport(biMetrics);
 
-  const handleExport = async (format: 'csv' | 'pdf', type: string) => {
-    setIsExporting(true);
-    const dateRange = { start: subDays(new Date(), 30), end: new Date(), label: 'Últimos 30 dias' };
-    
-    try {
-      if (format === 'csv') {
-        toast.info(`Gerando CSV para ${type}...`);
-        
-        let dataToExport: any[] = [];
-        let filename = `BI_Export_${type}_${formatDate(new Date(), 'yyyyMMdd')}`;
+  const jobsWithLosses = useMemo(() => {
+    if (!biMetrics.periodJobsList) return [];
+    return biMetrics.periodJobsList
+      .filter((j: any) => (j.lost_pieces || 0) > 0)
+      .sort((a: any, b: any) => (b.lost_pieces || 0) - (a.lost_pieces || 0))
+      .slice(0, 10);
+  }, [biMetrics.periodJobsList]);
 
-        if (type.includes('Perdas')) {
-          dataToExport = jobsWithLosses;
-        } else if (type.includes('Atrasos')) {
-          dataToExport = delayedJobsList;
-        } else if (type.includes('Pedidos_A_Fazer')) {
-          dataToExport = (biMetrics.periodJobsList || []).filter((j: any) => j.status === 'scheduled' || j.status === 'queue');
-        } else {
-          dataToExport = biMetrics.periodJobsList || [];
-        }
+  const delayedJobsList = useMemo(() => {
+    if (!biMetrics.periodJobsList) return [];
+    return biMetrics.periodJobsList
+      .filter((j: any) => j.status === 'delayed')
+      .slice(0, 10);
+  }, [biMetrics.periodJobsList]);
 
-        if (dataToExport.length === 0) {
-          toast.warning("Nenhum dado encontrado para exportar.");
-          setIsExporting(false);
-          return;
-        }
+  const handleExport = useCallback((format: 'csv' | 'pdf', type: string) => {
+    baseHandleExport(format, type, { jobsWithLosses, delayedJobsList });
+  }, [baseHandleExport, jobsWithLosses, delayedJobsList]);
 
-        // Simple CSV generation helper
-        const headers = Object.keys(dataToExport[0]).join(',');
-        const rows = dataToExport.map(obj => 
-          Object.values(obj).map(val => `"${String(val).replace(/"/g, '""')}"`).join(',')
-        ).join('\n');
-        
-        const blob = new Blob([`\uFEFF${headers}\n${rows}`], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.setAttribute('download', `${filename}.csv`);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        
-        toast.success(`Exportação CSV de ${type} concluída.`);
-      } else {
-        toast.info(`Gerando PDF para ${type}...`);
-        
-        if (type.includes('Perdas')) {
-          await exportLossesReport(jobsWithLosses, dateRange);
-        } else if (type.includes('Atrasos')) {
-          await exportDelaysReport(delayedJobsList, dateRange);
-        } else {
-          const jobs = (biMetrics.periodJobsList || []).map((j: any) => ({
-            order_number: j.order_number || `OS-${j.id?.slice(0, 5)}`,
-            client: j.client_name || 'Cliente',
-            product: j.product_name || 'Produto',
-            status: j.status,
-            quantity: j.quantity,
-            produced_quantity: j.produced_quantity,
-            lost_pieces: j.lost_pieces,
-            scheduled_date: j.scheduled_date
-          }));
-          await exportProductionReport(jobs, dateRange, `Relatório: ${type.replace(/_/g, ' ')}`);
-        }
-        
-        toast.success(`Relatório PDF de ${type} gerado com sucesso.`);
-      }
-    } catch (error) {
-      console.error('Export error:', error);
-      toast.error("Falha ao gerar exportação.");
-    } finally {
-      setIsExporting(false);
-    }
-  };
-
-  // Helper function for date formatting in filename
-  function formatDate(date: Date, pattern: string): string {
-    return format(date, pattern);
-  }
   const [drillDownOpen, setDrillDownOpen] = useState(false);
   const [drillDownTitle, setDrillDownTitle] = useState('');
   const [drillDownJobs, setDrillDownJobs] = useState<any[]>([]);
