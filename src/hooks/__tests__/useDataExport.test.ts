@@ -34,27 +34,21 @@ describe('useDataExport', () => {
     vi.clearAllMocks();
   });
 
-  it('should initialize with isExporting as false', () => {
+  it('should initialize and handle export operations', async () => {
     const { result } = renderHook(() => useDataExport('jobs' as any));
     expect(result.current.isExporting).toBe(false);
-  });
 
-  it('should handle export operations correctly', async () => {
-    // 1. Successful Export
+    // Mock successful export
     const mockData = [{ id: '1', name: 'Job 1' }];
     (supabase.from as any).mockReturnValue({
       select: vi.fn().mockReturnThis(),
       order: vi.fn().mockResolvedValue({ data: mockData, error: null }),
     });
 
-    const { result, rerender } = renderHook(({ table }) => useDataExport(table as any), {
-      initialProps: { table: 'jobs' }
-    });
-    
     const link = { click: vi.fn(), href: '', download: '', style: {} };
-    const createSpy = vi.spyOn(document, 'createElement').mockReturnValue(link as any);
-    const appendSpy = vi.spyOn(document.body, 'appendChild').mockImplementation(() => null as any);
-    const removeSpy = vi.spyOn(document.body, 'removeChild').mockImplementation(() => null as any);
+    vi.spyOn(document, 'createElement').mockReturnValue(link as any);
+    vi.spyOn(document.body, 'appendChild').mockImplementation(() => null as any);
+    vi.spyOn(document.body, 'removeChild').mockImplementation(() => null as any);
 
     await act(async () => {
       await result.current.exportData();
@@ -62,7 +56,7 @@ describe('useDataExport', () => {
 
     expect(toast.success).toHaveBeenCalledWith('1 registros exportados');
 
-    // 2. Empty data
+    // Mock empty data
     (supabase.from as any).mockReturnValue({
       select: vi.fn().mockReturnThis(),
       order: vi.fn().mockResolvedValue({ data: [], error: null }),
@@ -74,8 +68,8 @@ describe('useDataExport', () => {
 
     expect(toast.info).toHaveBeenCalledWith('Nenhum dado para exportar');
 
-    // 3. Error
-    const mockError = { message: 'DB Error' };
+    // Mock error
+    const mockError = { message: 'Database failure' };
     (supabase.from as any).mockReturnValue({
       select: vi.fn().mockReturnThis(),
       order: vi.fn().mockResolvedValue({ data: null, error: mockError }),
@@ -85,10 +79,6 @@ describe('useDataExport', () => {
       await result.current.exportData();
     });
 
-    expect(toast.error).toHaveBeenCalledWith(expect.stringContaining('DB Error'));
-    
-    createSpy.mockRestore();
-    appendSpy.mockRestore();
-    removeSpy.mockRestore();
+    expect(toast.error).toHaveBeenCalledWith(expect.stringContaining('Database failure'));
   });
 });
