@@ -76,16 +76,16 @@ describe('FuturisticBI', () => {
     expect(screen.getByText('1.50%')).toBeInTheDocument(); // Taxa de Perda
   });
 
-  it('shows drill-down dialog when clicking on a chart segment', async () => {
+  it('shows drill-down dialog when clicking on a stat card', async () => {
     renderComponent();
     
-    // Find a status distribution item or pie chart cell
-    const completedBadge = screen.getByText('Completed');
-    fireEvent.click(completedBadge);
+    // Find the Atrasos Críticos card by its title
+    const delayedCard = screen.getByText('Atrasos Críticos');
+    fireEvent.click(delayedCard);
     
-    // Check if dialog opens (we might need to wait for animation)
+    // Check if dialog opens
     await waitFor(() => {
-      expect(screen.getByText(/PEDIDOS:/i)).toBeInTheDocument();
+      expect(screen.getByText(/PEDIDOS ATRASADOS/i)).toBeInTheDocument();
     });
   });
 
