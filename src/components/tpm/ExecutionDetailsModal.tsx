@@ -266,22 +266,25 @@ export function ExecutionDetailsModal({ isOpen, onClose, recordId }: ExecutionDe
                 </div>
               )}
 
-              {/* Checklist Version Info */}
-              {record.checklist_snapshot && (
-                <div className="flex items-center gap-4 bg-secondary/10 px-3 py-2 rounded-lg border border-border/50">
-                  <div className="flex items-center gap-2 text-[10px] text-muted-foreground uppercase font-semibold">
-                    <ClipboardList className="h-3.5 w-3.5 text-primary" />
-                    Checklist Versão
+              {/* Technical Sheet & Checklist Info */}
+              <div className="flex flex-col sm:flex-row gap-4">
+                {record.checklist_snapshot && (
+                  <div className="flex-1 flex items-center gap-4 bg-secondary/10 px-3 py-2 rounded-lg border border-border/50">
+                    <div className="flex items-center gap-2 text-[10px] text-muted-foreground uppercase font-semibold">
+                      <ClipboardList className="h-3.5 w-3.5 text-primary" />
+                      Checklist v{record.checklist_version || record.checklist_snapshot.version || '1'}
+                    </div>
                   </div>
-                  <Badge variant="outline" className="font-bold">
-                    v{record.checklist_version || record.checklist_snapshot.version || '1'}
-                  </Badge>
-                  <div className="flex items-center gap-2 text-[10px] text-muted-foreground ml-auto">
-                    <Calendar className="h-3.5 w-3.5" />
-                    Snapshot de: {record.started_at ? format(new Date(record.started_at), "dd/MM/yyyy", { locale: ptBR }) : '-'}
+                )}
+                {record.technical_sheet_id && (
+                  <div className="flex-1 flex items-center gap-4 bg-primary/5 px-3 py-2 rounded-lg border border-primary/10">
+                    <div className="flex items-center gap-2 text-[10px] text-primary uppercase font-semibold">
+                      <Zap className="h-3.5 w-3.5" />
+                      Ficha Técnica v{record.technical_sheet_version || '1'}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
+              </div>
               {/* Header for print only */}
               <div className="hidden print:block text-center border-b pb-4 mb-8">
                 <div className="flex justify-between items-center mb-4">
