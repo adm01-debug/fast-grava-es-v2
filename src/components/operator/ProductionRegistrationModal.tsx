@@ -37,6 +37,7 @@ type AllowedField = typeof ALLOWED_OPERATOR_FIELDS[number];
 interface SanitizedPayload {
   produced_quantity?: number;
   lost_pieces?: number;
+  loss_category?: string | null;
   actual_start_time?: string;
   actual_end_time?: string;
   production_photos?: string[] | null;
