@@ -121,26 +121,30 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
     setDrillDownOpen(true);
   };
 
-  // Derived data for "Studios" (Mock grouping machines into studios)
+  // Derived data for "Studios" (Grouping machines into studios based on techniques)
   const studioData = useMemo(() => {
     if (!biMetrics.machineUtilization) return [];
     
-    const studios = [
-      { name: 'Studio Alfa', machines: biMetrics.machineUtilization.slice(0, 3) },
-      { name: 'Studio Beta', machines: biMetrics.machineUtilization.slice(3, 6) },
-      { name: 'Studio Gamma', machines: biMetrics.machineUtilization.slice(6) },
-    ].filter(s => s.machines.length > 0);
+    // Create logical studios based on machine techniques
+    const machineGroups: Record<string, any[]> = {};
+    biMetrics.machineUtilization.forEach((m: any) => {
+      const studioName = m.technique.includes('Laser') ? 'Studio Alfa' : 
+                        m.technique.includes('UV') ? 'Studio Beta' : 
+                        'Studio Gamma';
+      if (!machineGroups[studioName]) machineGroups[studioName] = [];
+      machineGroups[studioName].push(m);
+    });
 
-    return studios.map(studio => {
-      const totalJobs = studio.machines.reduce((sum: number, m: any) => sum + m.totalJobs, 0);
-      const avgUtilization = studio.machines.reduce((sum: number, m: any) => sum + m.utilization, 0) / studio.machines.length;
+    return Object.entries(machineGroups).map(([name, machines]) => {
+      const totalJobs = machines.reduce((sum: number, m: any) => sum + m.totalJobs, 0);
+      const avgUtilization = machines.reduce((sum: number, m: any) => sum + m.utilization, 0) / machines.length;
       return {
-        name: studio.name,
+        name,
         jobs: totalJobs,
         utilization: avgUtilization,
-        color: studio.name === 'Studio Alfa' ? CHART_COLORS.primary : studio.name === 'Studio Beta' ? CHART_COLORS.purple : CHART_COLORS.cyan
+        color: name === 'Studio Alfa' ? CHART_COLORS.primary : name === 'Studio Beta' ? CHART_COLORS.purple : CHART_COLORS.cyan
       };
-    });
+    }).sort((a, b) => b.jobs - a.jobs);
   }, [biMetrics.machineUtilization]);
 
   // Derived data for "Losses per Job"
