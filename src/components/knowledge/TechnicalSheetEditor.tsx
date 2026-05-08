@@ -52,6 +52,12 @@ export const TechnicalSheetEditor = ({ sheetId, techniques, categories, material
         description: sheet.description || '',
         estimated_time_minutes: sheet.estimated_time_minutes?.toString() || '',
         recommended_machine_id: sheet.recommended_machine_id || '',
+        ink_specifications: sheet.ink_specifications || '',
+        tooling_specifications: sheet.tooling_specifications || '',
+        squeegee_passes: (sheet.machine_settings as any)?.squeegee_passes || '',
+        pressure: (sheet.machine_settings as any)?.pressure || '',
+        speed: (sheet.machine_settings as any)?.speed || '',
+        temperature: (sheet.machine_settings as any)?.temperature || '',
       });
     }
   }, [sheet]);
