@@ -32,6 +32,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { useOperatorProductivity } from '@/hooks/useOperatorProductivity';
 import { useTPM } from '@/hooks/useTPM';
+import { toast } from 'sonner';
+import { useDataExport } from '@/hooks/useDataExport';
+import { Button } from '@/components/ui/button';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 const CHART_COLORS = {
   primary: '#0ea5e9',
