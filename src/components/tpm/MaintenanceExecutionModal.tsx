@@ -176,26 +176,43 @@ export function MaintenanceExecutionModal({
     if (selectedSheetId) {
       const sheet = technicalSheets.find(s => s.id === selectedSheetId);
       const settings = sheet?.machine_settings as any;
+      const ranges = (sheet?.settings_ranges as any) || {};
       const alerts: string[] = [];
 
-      if (settings) {
-        if (settings.squeegee_passes && adjustmentParams.squeegee_passes !== settings.squeegee_passes) {
-          alerts.push(`Passadas de Rodo: Informado ${adjustmentParams.squeegee_passes}, Recomendado ${settings.squeegee_passes}`);
+      const validateRange = (name: string, value: string, range: { min?: string; max?: string }) => {
+        if (!range || (!range.min && !range.max)) return;
+        const val = parseFloat(value.replace(/[^0-9.]/g, ''));
+        const min = range.min ? parseFloat(range.min.replace(/[^0-9.]/g, '')) : -Infinity;
+        const max = range.max ? parseFloat(range.max.replace(/[^0-9.]/g, '')) : Infinity;
+        
+        if (!isNaN(val)) {
+          if (val < min || val > max) {
+            alerts.push(`${name}: Informado ${value}, Recomendado entre ${range.min || '-'} e ${range.max || '-'}`);
+            return true;
+          }
         }
-        if (settings.pressure && adjustmentParams.pressure !== settings.pressure) {
-          alerts.push(`Pressão: Informado ${adjustmentParams.pressure}, Recomendado ${settings.pressure}`);
-        }
-        if (settings.speed && adjustmentParams.speed !== settings.speed) {
-          alerts.push(`Velocidade: Informado ${adjustmentParams.speed}, Recomendado ${settings.speed}`);
-        }
-        if (settings.temperature && adjustmentParams.temperature !== settings.temperature) {
-          alerts.push(`Temperatura: Informado ${adjustmentParams.temperature}, Recomendado ${settings.temperature}`);
-        }
-      }
+        return false;
+      };
+
+      validateRange('Passadas de Rodo', adjustmentParams.squeegee_passes, ranges.squeegee_passes);
+      validateRange('Pressão', adjustmentParams.pressure, ranges.pressure);
+      validateRange('Velocidade', adjustmentParams.speed, ranges.speed);
+      validateRange('Temperatura', adjustmentParams.temperature, ranges.temperature);
 
       if (alerts.length > 0) {
-        toast.warning("Atenção: Parâmetros fora do recomendado", {
+        toast.warning("Parâmetros fora do intervalo recomendado", {
           description: alerts.join('\n')
+        });
+        
+        // Log alerts to database
+        alerts.forEach(alertMsg => {
+          supabase.from('tpm_parameter_alerts').insert({
+            execution_id: recordId, // This might be null if creating new, we'll need to handle it after save
+            parameter_name: alertMsg.split(':')[0],
+            recorded_value: adjustmentParams[alertMsg.split(':')[0].toLowerCase().replace(/ /g, '_') as keyof typeof adjustmentParams] || '',
+            recommended_range: JSON.stringify(ranges[alertMsg.split(':')[0].toLowerCase().replace(/ /g, '_')]),
+            severity: 'warning'
+          }).then();
         });
       }
     }
@@ -213,9 +230,11 @@ export function MaintenanceExecutionModal({
       checklist_version: checklist?.version,
       checklist_snapshot: checklist,
       technical_sheet_id: selectedSheetId || undefined,
+      technical_sheet_version: selectedSheetId ? (technicalSheets.find(s => s.id === selectedSheetId)?.version) : undefined,
       adjustment_parameters: {
         ...adjustmentParams,
-        recommended: selectedSheetId ? (technicalSheets.find(s => s.id === selectedSheetId)?.machine_settings) : null
+        recommended: selectedSheetId ? (technicalSheets.find(s => s.id === selectedSheetId)?.machine_settings) : null,
+        ranges: selectedSheetId ? (technicalSheets.find(s => s.id === selectedSheetId)?.settings_ranges) : null
       }
     });
   };
