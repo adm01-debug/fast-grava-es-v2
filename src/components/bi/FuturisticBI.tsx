@@ -26,6 +26,8 @@ import { subDays } from 'date-fns';
 import { toast } from 'sonner';
 import { FuturisticStatCard } from './FuturisticStatCard';
 import { useBIExport } from '@/hooks/useBIExport';
+import { BITooltip } from './BITooltip';
+
 
 import { CHART_COLORS, GRADIENTS, getStudioName } from '@/constants/biConstants';
 
