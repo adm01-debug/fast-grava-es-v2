@@ -1,14 +1,19 @@
 import { useMemo } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { DbJob } from '@/hooks/useJobs';
-import { Clock, TrendingUp, AlertTriangle, BarChart3 } from 'lucide-react';
+import { Clock, TrendingUp, AlertTriangle, BarChart3, Zap, Scale } from 'lucide-react';
 import { differenceInHours, differenceInDays } from 'date-fns';
+import { useSmartSequencing } from '@/hooks/useSmartSequencing';
+import { useLoadBalancing } from '@/hooks/useLoadBalancing';
 
 interface KanbanMetricsBarProps {
   jobs: DbJob[];
 }
 
 export function KanbanMetricsBar({ jobs }: KanbanMetricsBarProps) {
+  const { totalSavings } = useSmartSequencing();
+  const { suggestions: balancingSuggestions } = useLoadBalancing();
+
   const metrics = useMemo(() => {
     const now = new Date();
     const inProgress = jobs.filter(j => j.status === 'production').length;
@@ -45,19 +50,21 @@ export function KanbanMetricsBar({ jobs }: KanbanMetricsBarProps) {
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
       <MetricChip
-        icon={BarChart3}
-        label="WIP Total"
-        value={metrics.totalWIP}
+        icon={Zap}
+        label="Setup Otimizável"
+        value={`${totalSavings}min`}
+        color="text-amber-400"
+        alert={totalSavings > 30}
+      />
+      <MetricChip
+        icon={Scale}
+        label="Desbalanceamento"
+        value={balancingSuggestions.length}
         color="text-blue-400"
+        alert={balancingSuggestions.length > 0}
       />
       <MetricChip
         icon={TrendingUp}
-        label="Em Produção"
-        value={metrics.inProgress}
-        color="text-cyan-400"
-      />
-      <MetricChip
-        icon={Clock}
         label="Lead Time Médio"
         value={`${metrics.avgLeadTimeHours.toFixed(1)}h`}
         color="text-purple-400"

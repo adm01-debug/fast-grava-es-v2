@@ -16,12 +16,14 @@ import { DroppableColumn } from '@/components/kanban/DroppableColumn';
 import { DragOverlayCard } from '@/components/kanban/DragOverlayCard';
 import { KanbanMetricsBar } from '@/components/kanban/KanbanMetricsBar';
 import { KanbanFiltersBar, ViewMode, SwimlanesMode } from '@/components/kanban/KanbanFiltersBar';
+import { KanbanAIAdvisor } from '@/components/kanban/KanbanAIAdvisor';
 import { useKanbanDragDrop } from '@/hooks/useKanbanDragDrop';
 import { FavoriteButton, FavoritesDropdown } from '@/components/navigation/FavoritesManager';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { 
   Clock, Package, Calendar, Play, CheckCircle2,
-  AlertTriangle, RotateCcw, Pause, Command, Trash2, ArrowRight
+  AlertTriangle, RotateCcw, Pause, Command, Trash2, ArrowRight,
+  Sparkles
 } from 'lucide-react';
 import { useSchedulingData } from '@/hooks/useSchedulingData';
 import { DbJob } from '@/hooks/useJobs';
@@ -29,6 +31,7 @@ import { JobStatus } from '@/types/scheduling';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { motion } from 'framer-motion';
 
 const statusColumns: { status: JobStatus; label: string; icon: React.ElementType; color: string }[] = [
   { status: 'queue', label: 'Na Fila', icon: Clock, color: 'text-blue-400' },
@@ -294,7 +297,8 @@ export default function KanbanBoard() {
                 <Command className="h-3 w-3" /><span className="text-xs">⌘K</span>
               </Badge>
             </div>
-          </div>
+          {/* AI Advisor */}
+          <KanbanAIAdvisor />
 
           {/* Metrics Bar */}
           <KanbanMetricsBar jobs={jobs} />
