@@ -220,7 +220,25 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
                 <span className="font-display tracking-wider text-xl">FLUXO DE PRODUÇÃO</span>
               </div>
               <Badge variant="outline" className="border-primary/30 text-primary animate-pulse">LIVE</Badge>
-            </CardTitle>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="h-8 w-8 text-muted-foreground hover:text-primary"
+                onClick={() => handleExport('csv', 'Tendencia_Producao')}
+              >
+                <FileSpreadsheet className="h-4 w-4" />
+              </Button>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="h-8 w-8 text-muted-foreground hover:text-primary"
+                onClick={() => handleExport('pdf', 'Tendencia_Producao')}
+              >
+                <FileText className="h-4 w-4" />
+              </Button>
+            </div>
           </CardHeader>
           <CardContent className="relative z-10">
             <ResponsiveContainer width="100%" height={350}>
