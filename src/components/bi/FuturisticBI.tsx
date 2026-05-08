@@ -68,13 +68,27 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
   const [drillDownTitle, setDrillDownTitle] = useState('');
   const [drillDownJobs, setDrillDownJobs] = useState<any[]>([]);
 
-  const handleDrillDown = (title: string, segment: string) => {
+  const handleDrillDown = (title: string, category: string) => {
     setDrillDownTitle(title);
-    setDrillDownJobs([
-      { id: '1', order_number: 'OS-2024-501', product: 'Premium Bottle', status: 'production', quantity: 150, operator: 'John Doe' },
-      { id: '2', order_number: 'OS-2024-502', product: 'Executive Pen', status: 'finished', quantity: 500, operator: 'Jane Smith' },
-      { id: '3', order_number: 'OS-2024-503', product: 'Tech Backpack', status: 'delayed', quantity: 85, operator: 'Mike Wilson' },
-    ]);
+    
+    // In a real scenario, we would filter biMetrics.periodJobs or similar
+    // For now, let's create dynamic data based on the selection
+    const mockOperators = ['John Doe', 'Jane Smith', 'Mike Wilson', 'Sarah Parker'];
+    const mockProducts = ['Premium Bottle', 'Executive Pen', 'Tech Backpack', 'Metal Mug', 'Eco Bag'];
+    
+    const count = category === 'Atrasados' ? biMetrics.periodJobs * 0.1 : 5;
+    const jobs = Array.from({ length: Math.max(3, Math.min(10, Math.floor(count))) }).map((_, i) => ({
+      id: `drill-${i}`,
+      order_number: `OS-2024-${500 + i}`,
+      product: mockProducts[Math.floor(Math.random() * mockProducts.length)],
+      status: category.toLowerCase().includes('finalizado') ? 'finished' : 
+              category.toLowerCase().includes('produção') ? 'production' : 
+              category.toLowerCase().includes('atrasado') ? 'delayed' : 'scheduled',
+      quantity: 50 + Math.floor(Math.random() * 500),
+      operator: mockOperators[Math.floor(Math.random() * mockOperators.length)]
+    }));
+
+    setDrillDownJobs(jobs);
     setDrillDownOpen(true);
   };
 
