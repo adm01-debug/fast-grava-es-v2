@@ -16,7 +16,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-} from "@/components/ui/select"; // Wait, I need the dialog component
+} from "@/components/ui/dialog";
 import {
   Table,
   TableBody,
