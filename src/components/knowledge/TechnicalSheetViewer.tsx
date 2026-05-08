@@ -306,34 +306,32 @@ export const TechnicalSheetViewer = ({ sheetId, onEdit, onDuplicate }: Technical
                       Regulagem da Máquina
                     </h3>
                     <div className="grid grid-cols-2 gap-3">
-                      {(sheet.machine_settings as any).squeegee_passes && (
-                        <div className="p-3 rounded-lg bg-amber-500/5 border border-amber-500/10">
-                          <Label className="text-[10px] text-muted-foreground uppercase flex items-center gap-1">
-                            <MoveHorizontal className="h-3 w-3" /> Passadas
-                          </Label>
-                          <p className="text-sm font-bold">{(sheet.machine_settings as any).squeegee_passes}</p>
-                        </div>
-                      )}
-                      {(sheet.machine_settings as any).pressure && (
-                        <div className="p-3 rounded-lg bg-amber-500/5 border border-amber-500/10">
-                          <Label className="text-[10px] text-muted-foreground uppercase">Pressão</Label>
-                          <p className="text-sm font-bold">{(sheet.machine_settings as any).pressure}</p>
-                        </div>
-                      )}
-                      {(sheet.machine_settings as any).speed && (
-                        <div className="p-3 rounded-lg bg-amber-500/5 border border-amber-500/10">
-                          <Label className="text-[10px] text-muted-foreground uppercase">Velocidade</Label>
-                          <p className="text-sm font-bold">{(sheet.machine_settings as any).speed}</p>
-                        </div>
-                      )}
-                      {(sheet.machine_settings as any).temperature && (
-                        <div className="p-3 rounded-lg bg-amber-500/5 border border-amber-500/10">
-                          <Label className="text-[10px] text-muted-foreground uppercase flex items-center gap-1">
-                            <Thermometer className="h-3 w-3" /> Temperatura
-                          </Label>
-                          <p className="text-sm font-bold">{(sheet.machine_settings as any).temperature}</p>
-                        </div>
-                      )}
+                      {['squeegee_passes', 'pressure', 'speed', 'temperature'].map((param) => {
+                        const labels: Record<string, string> = {
+                          squeegee_passes: 'Passadas',
+                          pressure: 'Pressão',
+                          speed: 'Velocidade',
+                          temperature: 'Temperatura'
+                        };
+                        const value = (sheet.machine_settings as any)?.[param];
+                        const range = (sheet.settings_ranges as any)?.[param];
+                        
+                        if (!value && (!range || (!range.min && !range.max))) return null;
+
+                        return (
+                          <div key={param} className="p-3 rounded-lg bg-amber-500/5 border border-amber-500/10">
+                            <Label className="text-[10px] text-muted-foreground uppercase flex items-center gap-1">
+                              {param === 'temperature' ? <Thermometer className="h-3 w-3" /> : param === 'squeegee_passes' ? <MoveHorizontal className="h-3 w-3" /> : <Zap className="h-3 w-3" />} {labels[param]}
+                            </Label>
+                            <p className="text-sm font-bold">{value || '-'}</p>
+                            {range && (range.min || range.max) && (
+                              <p className="text-[10px] text-muted-foreground mt-1 border-t border-amber-500/10 pt-1">
+                                Faixa: {range.min || '-'} a {range.max || '-'}
+                              </p>
+                            )}
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                 )}
