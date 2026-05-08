@@ -132,7 +132,7 @@ export const useTechnicalSheetDetails = (sheetId: string | null) => {
 
         if (error) throw error;
         if (!data) return null;
-        return data as TechnicalSheet;
+        return data as unknown as TechnicalSheet;
       } catch (error) {
         const appError = createAppError(error, SHEETS_ERROR_CONTEXT.sheetDetails);
         if (import.meta.env.DEV) console.error('[useTechnicalSheetDetails]', appError);
