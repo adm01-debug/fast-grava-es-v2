@@ -3,8 +3,9 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { FileDown, FileText, Table as TableIcon, Calendar, Filter } from 'lucide-react';
+import { FileDown, FileText, Table as TableIcon, Calendar, Filter, Activity } from 'lucide-react';
 import { useTPM } from '@/hooks/useTPM';
+import { useMTBFMTTR } from '@/hooks/useMTBFMTTR';
 import { format, subDays, startOfMonth, endOfMonth } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { jsPDF } from 'jspdf';
