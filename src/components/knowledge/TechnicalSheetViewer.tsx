@@ -343,6 +343,36 @@ export const TechnicalSheetViewer = ({ sheetId, onEdit, onDuplicate }: Technical
                 )}
               </div>
 
+              {sheet.setup_instructions && (
+                <div className="space-y-4">
+                  <h3 className="flex items-center gap-2 text-sm font-semibold text-blue-600">
+                    <Info className="h-4 w-4" />
+                    Setup e Preparação da Máquina
+                  </h3>
+                  <div className="p-4 rounded-lg bg-blue-500/5 border border-blue-500/10">
+                    <p className="text-sm whitespace-pre-wrap">{sheet.setup_instructions}</p>
+                  </div>
+                </div>
+              )}
+
+              {sheet.quality_checklist && sheet.quality_checklist.length > 0 && (
+                <div className="space-y-4">
+                  <h3 className="flex items-center gap-2 text-sm font-semibold text-emerald-600">
+                    <CheckSquare className="h-4 w-4" />
+                    Critérios de Qualidade
+                  </h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {sheet.quality_checklist.map((item) => (
+                      <div key={item.id} className="flex items-center gap-3 p-3 rounded-lg bg-emerald-500/5 border border-emerald-500/10">
+                        <CheckCircle2 className="h-4 w-4 text-emerald-600 flex-shrink-0" />
+                        <span className="text-sm font-medium">{item.description}</span>
+                        {item.required && <Badge variant="outline" className="ml-auto text-[8px] h-4">REQ</Badge>}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {(sheet.gap_specifications || sheet.quality_requirements || sheet.challenges_notes || sheet.failure_scenarios) && (
                 <>
                   <Separator />
