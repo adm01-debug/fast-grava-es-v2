@@ -292,10 +292,8 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
                   tickLine={false}
                   tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 12 }}
                 />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: 'rgba(0,0,0,0.8)', border: '1px solid rgba(14, 165, 233, 0.2)', borderRadius: '12px', backdropFilter: 'blur(8px)' }}
-                  itemStyle={{ color: '#fff' }}
-                />
+                <Tooltip content={<BITooltip />} />
+
                 <Area 
                   type="monotone" 
                   dataKey="produced" 
