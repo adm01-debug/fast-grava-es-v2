@@ -175,6 +175,21 @@ export function MaintenanceExecutionModal({
       }
     }
 
+    // Validação de Requisitos de Qualidade da Ficha Técnica
+    if (selectedSheetId) {
+      const sheet = technicalSheets.find(s => s.id === selectedSheetId);
+      if (sheet?.quality_checklist && sheet.quality_checklist.length > 0) {
+        const missingQuality = sheet.quality_checklist.filter(item => 
+          item.required && !qualityResponses[item.id]
+        );
+
+        if (missingQuality.length > 0) {
+          toast.error(`Existem requisitos de qualidade obrigatórios não atendidos.`);
+          return;
+        }
+      }
+    }
+
     // Validação de parâmetros de regulagem
     if (selectedSheetId) {
       const sheet = technicalSheets.find(s => s.id === selectedSheetId);
