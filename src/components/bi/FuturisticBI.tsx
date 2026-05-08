@@ -591,7 +591,7 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
                     </TableHeader>
                     <TableBody>
                       {[1, 2, 3, 4, 5].map((i) => (
-                        <TableRow key={i} className="border-white/5 hover:bg-white/5">
+                        <TableRow key={i} className="border-white/5 hover:bg-white/5 cursor-pointer" onClick={() => handleDrillDown(`DETALHES ATRASO OS-2024-${200 + i}`, `OS-2024-${200 + i}`)}>
                           <TableCell className="text-xs font-medium">OS-2024-{200 + i}</TableCell>
                           <TableCell>
                             <span className="text-xs text-rose-400 font-bold">{15 * i} min</span>
