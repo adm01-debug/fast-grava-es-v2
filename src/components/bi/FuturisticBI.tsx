@@ -1,15 +1,16 @@
-import { useMemo, useState, useCallback } from 'react';
+import { useMemo, useState, useCallback, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { 
   TrendingUp, Activity, Gauge, Target, 
   CheckCircle, PieChart, LineChart, Printer, 
-  Users, Wrench, ShieldAlert, Zap, Download, FileText, FileSpreadsheet, Package, Timer, ArrowUpRight
+  Users, Wrench, ShieldAlert, Zap, Download, FileText, FileSpreadsheet, Package, Timer, ArrowUpRight, RefreshCcw, Clock
 } from 'lucide-react';
 import { 
   AreaChart, Area, BarChart, Bar, PieChart as RechartsPieChart, Pie, Cell,
-  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, Radar
+  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, Radar, Legend
 } from 'recharts';
+
 import { format } from 'date-fns';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
