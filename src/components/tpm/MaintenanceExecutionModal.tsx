@@ -319,6 +319,79 @@ export function MaintenanceExecutionModal({
               </div>
             )}
 
+            {/* Technical Sheet & Adjustments */}
+            <div className="space-y-4 pt-4 border-t border-border/50">
+              <h3 className="text-lg font-semibold flex items-center gap-2">
+                <Zap className="h-5 w-5 text-amber-500" />
+                Regulagem Técnica
+              </h3>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label>Vincular Ficha Técnica (Opcional)</Label>
+                  <Select 
+                    value={selectedSheetId || ""} 
+                    onValueChange={(value) => setSelectedSheetId(value || null)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione uma ficha técnica..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {technicalSheets.filter(s => s.recommended_machine_id === schedule.machine_id).map(sheet => (
+                        <SelectItem key={sheet.id} value={sheet.id}>{sheet.title}</SelectItem>
+                      ))}
+                      {technicalSheets.filter(s => s.recommended_machine_id !== schedule.machine_id).length > 0 && (
+                        <>
+                          <Separator className="my-2" />
+                          {technicalSheets.filter(s => s.recommended_machine_id !== schedule.machine_id).map(sheet => (
+                            <SelectItem key={sheet.id} value={sheet.id}>{sheet.title} (Outra Máquina)</SelectItem>
+                          ))}
+                        </>
+                      )}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                  <div className="space-y-2">
+                    <Label className="flex items-center gap-1 text-xs">
+                      <MoveHorizontal className="h-3 w-3" /> Passadas
+                    </Label>
+                    <Input 
+                      placeholder="Ex: 2"
+                      value={adjustmentParams.squeegee_passes}
+                      onChange={(e) => setAdjustmentParams(prev => ({ ...prev, squeegee_passes: e.target.value }))}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-xs">Pressão</Label>
+                    <Input 
+                      placeholder="Ex: 4 bar"
+                      value={adjustmentParams.pressure}
+                      onChange={(e) => setAdjustmentParams(prev => ({ ...prev, pressure: e.target.value }))}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-xs">Velocidade</Label>
+                    <Input 
+                      placeholder="Ex: 50%"
+                      value={adjustmentParams.speed}
+                      onChange={(e) => setAdjustmentParams(prev => ({ ...prev, speed: e.target.value }))}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="flex items-center gap-1 text-xs">
+                      <Thermometer className="h-3 w-3" /> Temp.
+                    </Label>
+                    <Input 
+                      placeholder="Ex: 180°C"
+                      value={adjustmentParams.temperature}
+                      onChange={(e) => setAdjustmentParams(prev => ({ ...prev, temperature: e.target.value }))}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
             {/* General Info */}
             <div className="space-y-4 pt-4 border-t border-border/50">
               <h3 className="text-lg font-semibold">Informações Gerais</h3>
