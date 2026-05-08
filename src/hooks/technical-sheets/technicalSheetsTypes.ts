@@ -21,6 +21,7 @@ export interface TechnicalSheet {
   quality_requirements?: string | null;
   quality_checklist?: Array<{ id: string; description: string; required: boolean }>;
   setup_instructions?: string | null;
+  consumables?: Array<{ id: string; name: string; quantity: string; alternative?: string }>;
   techniques?: { id: string; name: string; color: string; short_name: string };
   product_categories?: { id: string; name: string };
   materials?: { id: string; name: string };
