@@ -30,7 +30,12 @@ export const TechnicalSheetEditor = ({ sheetId, techniques, categories, material
     technique_id: '', product_category_id: '', material_id: '',
     title: '', description: '', estimated_time_minutes: '', recommended_machine_id: '',
     ink_specifications: '', tooling_specifications: '',
-    squeegee_passes: '', pressure: '', speed: '', temperature: ''
+    squeegee_passes: '', pressure: '', speed: '', temperature: '',
+    squeegee_passes_min: '', squeegee_passes_max: '',
+    pressure_min: '', pressure_max: '',
+    speed_min: '', speed_max: '',
+    temperature_min: '', temperature_max: '',
+    version: '1'
   });
 
   const { data: machines = [] } = useQuery({
