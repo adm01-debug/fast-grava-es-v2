@@ -65,9 +65,19 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
   const [drillDownTitle, setDrillDownTitle] = useState('');
   const [drillDownJobs, setDrillDownJobs] = useState<any[]>([]);
 
-  const handleDrillDown = (title: string, filteredJobs: any[]) => {
+  const handleDrillDown = (title: string, segment: string) => {
     setDrillDownTitle(title);
-    setDrillDownJobs(filteredJobs);
+    
+    // In a real app, we would filter biMetrics.jobs or use a hook
+    // For now, let's mock some data based on the segment
+    const mockDrillDown = [
+      { id: '1', order_number: 'OS-2024-501', product: 'Camiseta DryFit', status: 'production', quantity: 150 },
+      { id: '2', order_number: 'OS-2024-502', product: 'Caneca Cerâmica', status: 'finished', quantity: 50 },
+      { id: '3', order_number: 'OS-2024-503', product: 'Boné Trucker', status: 'delayed', quantity: 200 },
+      { id: '4', order_number: 'OS-2024-504', product: 'Squeeze Alumínio', status: 'production', quantity: 85 },
+    ];
+    
+    setDrillDownJobs(mockDrillDown);
     setDrillDownOpen(true);
   };
 
