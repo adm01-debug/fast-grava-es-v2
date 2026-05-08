@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { 
@@ -10,41 +10,20 @@ import {
   AreaChart, Area, BarChart, Bar, PieChart as RechartsPieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, Radar
 } from 'recharts';
-import { 
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { format, parseISO } from 'date-fns';
+import { format } from 'date-fns';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { useOperatorProductivity } from '@/hooks/useOperatorProductivity';
 import { useTPM } from '@/hooks/useTPM';
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'sonner';
 import { useDataExport } from '@/hooks/useDataExport';
 import { Button } from '@/components/ui/button';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { DrillDownDialog } from './drilldown/DrillDownDialog';
 import { LossesTable } from './losses/LossesTable';
 import { DelaysAnalysis } from './delays/DelaysAnalysis';
 import { exportProductionReport, exportLossesReport, exportDelaysReport } from '@/lib/pdfExport';
 import { subDays } from 'date-fns';
-
-
-
+import { toast } from 'sonner';
+import { FuturisticStatCard } from './FuturisticStatCard';
 
 const CHART_COLORS = {
   primary: '#0ea5e9',
@@ -65,11 +44,34 @@ const GRADIENTS = {
   purple: 'from-violet-500/20 via-violet-500/5 to-transparent',
 };
 
+// Studio mapping logic centralized
+const getStudioName = (technique: string = '') => {
+  if (technique.includes('Laser')) return 'Studio Alfa';
+  if (technique.includes('UV')) return 'Studio Beta';
+  return 'Studio Gamma';
+};
+
 interface FuturisticBIProps {
-  biMetrics: any;
-  kpis: any;
-  oeeData: any;
+  biMetrics: {
+    toDoJobs: number;
+    periodLossRate: number;
+    periodJobsList: any[];
+    dailyTrend: any[];
+    statusDistribution: any[];
+    machineUtilization: any[];
+  };
+  kpis: {
+    inProgressJobs: number;
+    delayedJobs: number;
+  };
+  oeeData: {
+    overallAvailability: number;
+    overallOEE: number;
+    overallPerformance: number;
+    overallQuality: number;
+  };
 }
+
 
 export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
   const navigate = useNavigate();
