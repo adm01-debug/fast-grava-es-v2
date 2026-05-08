@@ -7,16 +7,16 @@ import { Button } from '@/components/ui/button';
 import { useKPIs } from '@/hooks/useKPIs';
 import { useOEE } from '@/hooks/useOEE';
 import { useSchedulingData } from '@/hooks/useSchedulingData';
-import { toast } from 'sonner';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { BIStatCard } from '@/components/bi/BIStatCard';
 import { BILoadingSkeleton } from '@/components/bi/BILoadingSkeleton';
 import { BIPeriodFilters } from '@/components/bi/BIPeriodFilters';
 import { BIHeader } from '@/components/bi/BIHeader';
+import { FuturisticBI } from '@/components/bi/FuturisticBI';
 import {
   TrendingUp, AlertTriangle, Printer, CheckCircle, Clock, Target,
   BarChart3, PieChart, LineChart, ArrowUp, ArrowDown, Minus,
-  Download, Gauge, Activity, ArrowRight, Package
+  Gauge, Activity, ArrowRight, Package, Layout
 } from 'lucide-react';
 import { 
   AreaChart, Area, BarChart, Bar, PieChart as RechartsPieChart, Pie, Cell,
@@ -53,14 +53,11 @@ export default function BIDashboard() {
   const [periodFilter, setPeriodFilter] = useState<PeriodFilter>('30d');
   const [customRange, setCustomRange] = useState<DateRange>({ from: subDays(new Date(), 30), to: new Date() });
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
-  const [techniqueFilter, setTechniqueFilter] = useState<string>('all');
-  const [machineFilter, setMachineFilter] = useState<string>('all');
-  const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [drillDownData, setDrillDownData] = useState<any>(null);
   const [comparisonMode, setComparisonMode] = useState(false);
   const [periodFilter2, setPeriodFilter2] = useState<PeriodFilter>('30d');
   const [customRange2, setCustomRange2] = useState<DateRange>({ from: subDays(new Date(), 60), to: subDays(new Date(), 31) });
   const [isCalendarOpen2, setIsCalendarOpen2] = useState(false);
+  const [viewMode, setViewMode] = useState<'futuristic' | 'classic'>('futuristic');
 
   const periodDays = useMemo(() => {
     if (periodFilter === 'custom') return differenceInDays(customRange.to, customRange.from) || 30;
@@ -224,7 +221,27 @@ export default function BIDashboard() {
     <MainLayout>
       <div className="p-6 space-y-8 animate-fade-in">
         <Breadcrumbs />
-        <BIHeader comparisonMode={comparisonMode} setComparisonMode={setComparisonMode} onNavigate={(path) => navigate(path)} />
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <BIHeader comparisonMode={comparisonMode} setComparisonMode={setComparisonMode} onNavigate={(path) => navigate(path)} />
+          <div className="flex items-center gap-2 bg-muted/50 p-1 rounded-lg">
+            <Button 
+              variant={viewMode === 'classic' ? 'secondary' : 'ghost'} 
+              size="sm" 
+              onClick={() => setViewMode('classic')}
+              className="gap-2"
+            >
+              <Layout className="h-4 w-4" /> Clássico
+            </Button>
+            <Button 
+              variant={viewMode === 'futuristic' ? 'secondary' : 'ghost'} 
+              size="sm" 
+              onClick={() => setViewMode('futuristic')}
+              className="gap-2"
+            >
+              <Activity className="h-4 w-4" /> Futurista
+            </Button>
+          </div>
+        </div>
 
         <BIPeriodFilters
           periodFilter={periodFilter} setPeriodFilter={setPeriodFilter}
@@ -238,7 +255,6 @@ export default function BIDashboard() {
           periodLabel2={getPeriodLabel(periodFilter2, customRange2)} periodJobs2={biMetrics2?.periodJobs ?? 0}
         />
 
-        {/* Comparison View */}
         {comparisonMode && biMetrics2 ? (
           <>
             <div className="flex items-center justify-center gap-4 py-6 animate-bounce-in">
@@ -270,9 +286,6 @@ export default function BIDashboard() {
                       </div>
                     ))}
                   </div>
-                  <div className="flex flex-wrap justify-center gap-4 mt-4">
-                    {biMetrics.statusDistribution.map(e => <div key={e.name} className="flex items-center gap-2"><div className="w-3 h-3 rounded-full" style={{ backgroundColor: e.color }} /><span className="text-xs">{e.name}</span></div>)}
-                  </div>
                 </CardContent>
               </Card>
 
@@ -289,147 +302,46 @@ export default function BIDashboard() {
                 </CardContent>
               </Card>
             </div>
-
-            <Card className="card-elevated overflow-hidden">
-              <CardHeader><CardTitle className="flex items-center gap-2"><Printer className="h-5 w-5 text-primary" />Comparativo de Utilização por Máquina</CardTitle></CardHeader>
-              <CardContent>
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead><tr className="border-b border-border"><th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Máquina</th><th className="text-left py-3 px-4 text-sm">Técnica</th><th className="text-center py-3 px-4 text-sm text-primary">P1 Jobs</th><th className="text-center py-3 px-4 text-sm text-primary">P1 Util.</th><th className="text-center py-3 px-4 text-sm">P2 Jobs</th><th className="text-center py-3 px-4 text-sm">P2 Util.</th><th className="text-right py-3 px-4 text-sm">Variação</th></tr></thead>
-                    <tbody>{biMetrics.machineUtilization.map(m1 => {
-                      const m2 = biMetrics2?.machineUtilization.find(m => m.id === m1.id);
-                      const { delta, trend } = getComparisonDelta(m1.utilization, m2?.utilization ?? 0);
-                      return (<tr key={m1.id} className="border-b border-border/50 hover:bg-muted/30"><td className="py-3 px-4 font-medium">{m1.name}</td><td className="py-3 px-4"><Badge variant="outline" className="text-xs">{m1.technique}</Badge></td><td className="py-3 px-4 text-center text-primary">{m1.totalJobs}</td><td className="py-3 px-4 text-center text-primary font-medium">{m1.utilization.toFixed(0)}%</td><td className="py-3 px-4 text-center text-muted-foreground">{m2?.totalJobs ?? 0}</td><td className="py-3 px-4 text-center text-muted-foreground">{(m2?.utilization ?? 0).toFixed(0)}%</td><td className="py-3 px-4 text-right"><span className={cn("flex items-center justify-end gap-1 text-sm", trend === 'up' ? "text-green-500" : trend === 'down' ? "text-red-500" : "text-muted-foreground")}>{trend === 'up' ? <ArrowUp className="h-3 w-3" /> : trend === 'down' ? <ArrowDown className="h-3 w-3" /> : <Minus className="h-3 w-3" />}{delta.toFixed(1)}%</span></td></tr>);
-                    })}</tbody>
-                  </table>
-                </div>
-              </CardContent>
-            </Card>
           </>
         ) : (
           <>
-            {/* Normal View - KPI Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              <BIStatCard title="OEE Geral" value={`${oeeData.overallOEE.toFixed(1)}%`} subtitle="Eficiência Global dos Equipamentos" icon={Gauge} variant={oeeData.overallOEE >= 85 ? 'success' : oeeData.overallOEE >= 65 ? 'warning' : 'danger'} />
-              <BIStatCard title="Taxa de Qualidade" value={`${oeeData.overallQuality.toFixed(1)}%`} subtitle={`${biMetrics.periodLostPieces.toLocaleString()} peças perdidas`} icon={Target} variant={oeeData.overallQuality >= 95 ? 'success' : oeeData.overallQuality >= 85 ? 'warning' : 'danger'} />
-              <BIStatCard title="Jobs Concluídos" value={biMetrics.periodCompletedJobs} subtitle={`de ${biMetrics.periodJobs} no período`} icon={CheckCircle} trend={biMetrics.productionTrend as 'up' | 'down' | 'neutral'} trendValue={`${biMetrics.trendPercentage}% vs período anterior`} />
-              <BIStatCard title="Peças Produzidas" value={biMetrics.periodCompletedPieces.toLocaleString()} subtitle={`Taxa de perda: ${biMetrics.periodLossRate.toFixed(2)}%`} icon={Package} variant={biMetrics.periodLossRate > 5 ? 'warning' : 'success'} />
-            </div>
-
-            {/* Secondary KPIs */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {[
-                { value: biMetrics.activeMachines, label: 'Máquinas Ativas', icon: Printer, gradient: 'from-primary/10 via-primary/5', borderColor: 'border-primary/20', iconBg: 'bg-primary/10', iconColor: 'text-primary' },
-                { value: biMetrics.activeTechniques, label: 'Técnicas', icon: Activity, gradient: 'from-xp/10 via-xp/5', borderColor: 'border-xp/20', iconBg: 'bg-xp/10', iconColor: 'text-xp' },
-                { value: kpis.inProgressJobs, label: 'Em Produção', icon: TrendingUp, gradient: 'from-success/10 via-success/5', borderColor: 'border-success/20', iconBg: 'bg-success/10', iconColor: 'text-success' },
-                { value: kpis.delayedJobs, label: 'Atrasados', icon: AlertTriangle, gradient: 'from-warning/10 via-warning/5', borderColor: 'border-warning/20', iconBg: 'bg-warning/10', iconColor: 'text-warning' },
-              ].map(({ value, label, icon: IIcon, gradient, borderColor, iconBg, iconColor }) => (
-                <Card key={label} className={`card-interactive bg-gradient-to-br ${gradient} to-transparent ${borderColor} group`}>
-                  <CardContent className="pt-4 pb-4"><div className="flex items-center gap-3"><div className={`p-2 rounded-lg ${iconBg} group-hover:scale-110 transition-transform`}><IIcon className={`h-5 w-5 ${iconColor}`} /></div><div><p className="text-2xl font-bold font-display">{value}</p><p className="text-xs text-muted-foreground">{label}</p></div></div></CardContent>
-                </Card>
-              ))}
-            </div>
-
-            {/* Charts Row 1 */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card className="card-elevated hover:shadow-glow-primary transition-all duration-300 group">
-                <CardHeader><CardTitle className="flex items-center gap-2"><div className="p-1.5 rounded-lg bg-primary/10"><LineChart className="h-5 w-5 text-primary" /></div>Tendência de Produção</CardTitle><CardDescription>{getPeriodLabel()}</CardDescription></CardHeader>
-                <CardContent>
-                  <ResponsiveContainer width="100%" height={280}>
-                    <AreaChart data={biMetrics.dailyTrend}>
-                      <defs><linearGradient id="colorProduced" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={CHART_COLORS.success} stopOpacity={0.4}/><stop offset="95%" stopColor={CHART_COLORS.success} stopOpacity={0}/></linearGradient></defs>
-                      <CartesianGrid strokeDasharray="3 3" className="stroke-border/50" /><XAxis dataKey="date" className="text-xs" tick={{ fill: 'hsl(var(--muted-foreground))' }} /><YAxis className="text-xs" tick={{ fill: 'hsl(var(--muted-foreground))' }} />
-                      <Tooltip contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '12px' }} />
-                      <Area type="monotone" dataKey="produced" stroke={CHART_COLORS.success} strokeWidth={2} fillOpacity={1} fill="url(#colorProduced)" name="Produzidas" />
-                      <Line type="monotone" dataKey="jobs" stroke={CHART_COLORS.primary} strokeWidth={3} dot={{ r: 4, fill: CHART_COLORS.primary, strokeWidth: 2 }} name="Jobs" />
-                    </AreaChart>
-                  </ResponsiveContainer>
-                </CardContent>
-              </Card>
-
-              <Card className="card-elevated hover:shadow-glow-primary transition-all duration-300">
-                <CardHeader><CardTitle className="flex items-center gap-2"><PieChart className="h-5 w-5 text-primary" />Distribuição por Status</CardTitle></CardHeader>
-                <CardContent>
-                  <ResponsiveContainer width="100%" height={280}>
-                    <RechartsPieChart><Pie data={biMetrics.statusDistribution} cx="50%" cy="50%" innerRadius={60} outerRadius={100} paddingAngle={2} dataKey="value" label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`} labelLine={false}>{biMetrics.statusDistribution.map((e, i) => <Cell key={i} fill={e.color} />)}</Pie><Tooltip contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px' }} /></RechartsPieChart>
-                  </ResponsiveContainer>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Charts Row 2 */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card className="card-elevated hover:shadow-glow-primary transition-all duration-300">
-                <CardHeader><CardTitle className="flex items-center gap-2"><BarChart3 className="h-5 w-5 text-primary" />Performance por Técnica</CardTitle></CardHeader>
-                <CardContent>
-                  <ResponsiveContainer width="100%" height={280}>
-                    <BarChart data={biMetrics.techniquePerformance.slice(0, 8)} layout="vertical">
-                      <CartesianGrid strokeDasharray="3 3" className="stroke-border/50" /><XAxis type="number" tick={{ fill: 'hsl(var(--muted-foreground))' }} /><YAxis dataKey="name" type="category" width={80} tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }} />
-                      <Tooltip contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '12px' }} formatter={(v: number, name: string) => [v.toLocaleString(), name === 'produced' ? 'Produzidas' : 'Perdidas']} />
-                      <Bar dataKey="produced" fill={CHART_COLORS.success} name="Produzidas" radius={[0, 6, 6, 0]} /><Bar dataKey="lost" fill={CHART_COLORS.danger} name="Perdidas" radius={[0, 6, 6, 0]} />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </CardContent>
-              </Card>
-
-              <Card className="card-elevated hover:shadow-glow-primary transition-all duration-300">
-                <CardHeader><CardTitle className="flex items-center gap-2"><Gauge className="h-5 w-5 text-primary" />Evolução OEE</CardTitle><CardDescription>Últimos 14 dias • Meta: 85%</CardDescription></CardHeader>
-                <CardContent>
-                  <ResponsiveContainer width="100%" height={280}>
-                    <RechartsLineChart data={oeeData.trendData}>
-                      <CartesianGrid strokeDasharray="3 3" className="stroke-border" /><XAxis dataKey="date" tickFormatter={(v) => format(parseISO(v), 'dd/MM')} tick={{ fill: 'hsl(var(--muted-foreground))' }} /><YAxis domain={[0, 100]} tick={{ fill: 'hsl(var(--muted-foreground))' }} />
-                      <Tooltip contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px' }} labelFormatter={(l) => format(parseISO(l as string), 'dd/MM/yyyy')} formatter={(v: number) => [`${v.toFixed(1)}%`]} />
-                      <Line type="monotone" dataKey="oee" stroke={CHART_COLORS.primary} strokeWidth={3} dot={{ r: 4, fill: CHART_COLORS.primary }} name="OEE" />
-                      <Line type="monotone" dataKey="quality" stroke={CHART_COLORS.success} strokeWidth={2} strokeDasharray="5 5" dot={false} name="Qualidade" />
-                      <Line type="monotone" dataKey={() => 85} stroke={CHART_COLORS.warning} strokeWidth={1} strokeDasharray="10 5" dot={false} name="Meta" />
-                    </RechartsLineChart>
-                  </ResponsiveContainer>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Machine Utilization Table */}
-            <Card className="card-elevated overflow-hidden">
-              <CardHeader><CardTitle className="flex items-center gap-2"><Printer className="h-5 w-5 text-primary" />Top 10 Máquinas por Utilização</CardTitle></CardHeader>
-              <CardContent>
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead><tr className="border-b border-primary/20 bg-primary/5"><th className="text-left py-3 px-4 text-sm font-semibold">Máquina</th><th className="text-left py-3 px-4 text-sm font-semibold">Técnica</th><th className="text-center py-3 px-4 text-sm font-semibold">Jobs</th><th className="text-center py-3 px-4 text-sm font-semibold">Concluídos</th><th className="text-right py-3 px-4 text-sm font-semibold">Utilização</th></tr></thead>
-                    <tbody>{biMetrics.machineUtilization.map((machine, index) => (
-                      <tr key={machine.id} className="border-b border-border/50 hover:bg-primary/5 transition-all group">
-                        <td className="py-3 px-4"><div className="flex items-center gap-2"><span className="text-xs text-muted-foreground w-5">{index + 1}.</span><span className="font-medium group-hover:text-primary transition-colors">{machine.name}</span></div></td>
-                        <td className="py-3 px-4"><Badge variant="outline" className="text-xs border-primary/30">{machine.technique}</Badge></td>
-                        <td className="py-3 px-4 text-center font-medium">{machine.totalJobs}</td>
-                        <td className="py-3 px-4 text-center font-medium">{machine.completedJobs}</td>
-                        <td className="py-3 px-4 text-right"><div className="flex items-center justify-end gap-2"><div className="w-24 h-2.5 bg-muted rounded-full overflow-hidden"><div className="h-full rounded-full transition-all duration-500" style={{ width: `${machine.utilization}%`, background: machine.utilization >= 80 ? 'linear-gradient(90deg, hsl(var(--success)), hsl(var(--success) / 0.8))' : machine.utilization >= 50 ? 'linear-gradient(90deg, hsl(var(--warning)), hsl(var(--warning) / 0.8))' : 'linear-gradient(90deg, hsl(var(--destructive)), hsl(var(--destructive) / 0.8))' }} /></div><span className="text-sm font-bold w-12 text-right">{machine.utilization.toFixed(0)}%</span></div></td>
-                      </tr>
-                    ))}</tbody>
-                  </table>
+            {viewMode === 'futuristic' ? (
+              <FuturisticBI biMetrics={biMetrics} kpis={kpis} oeeData={oeeData} />
+            ) : (
+              <div className="space-y-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <BIStatCard title="OEE Geral" value={`${oeeData.overallOEE.toFixed(1)}%`} subtitle="Eficiência Global dos Equipamentos" icon={Gauge} variant={oeeData.overallOEE >= 85 ? 'success' : oeeData.overallOEE >= 65 ? 'warning' : 'danger'} />
+                  <BIStatCard title="Taxa de Qualidade" value={`${oeeData.overallQuality.toFixed(1)}%`} subtitle={`${biMetrics.periodLostPieces.toLocaleString()} peças perdidas`} icon={Target} variant={oeeData.overallQuality >= 95 ? 'success' : oeeData.overallQuality >= 85 ? 'warning' : 'danger'} />
+                  <BIStatCard title="Jobs Concluídos" value={biMetrics.periodCompletedJobs} subtitle={`de ${biMetrics.periodJobs} no período`} icon={CheckCircle} trend={biMetrics.productionTrend as 'up' | 'down' | 'neutral'} trendValue={`${biMetrics.trendPercentage}% vs período anterior`} />
+                  <BIStatCard title="Peças Produzidas" value={biMetrics.periodCompletedPieces.toLocaleString()} subtitle={`Taxa de perda: ${biMetrics.periodLossRate.toFixed(2)}%`} icon={Package} variant={biMetrics.periodLossRate > 5 ? 'warning' : 'success'} />
                 </div>
-              </CardContent>
-            </Card>
 
-            {/* OEE Breakdown */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {[
-                { label: 'Disponibilidade', value: oeeData.overallAvailability, loss: oeeData.availabilityLosses, icon: Clock, color: 'primary' },
-                { label: 'Performance', value: oeeData.overallPerformance, loss: oeeData.performanceLosses, icon: TrendingUp, color: 'xp' },
-                { label: 'Qualidade', value: oeeData.overallQuality, loss: oeeData.qualityLosses, icon: Target, color: 'success' },
-              ].map(({ label, value, loss, icon: OIcon, color }) => (
-                <Card key={label} className={`card-interactive bg-gradient-to-br from-${color}/10 via-${color}/5 to-transparent border-${color}/20 group`}>
-                  <CardContent className="pt-6"><div className="text-center"><div className={`p-3 rounded-xl bg-${color}/10 w-fit mx-auto mb-3 group-hover:scale-110 transition-all`}><OIcon className={`h-8 w-8 text-${color}`} /></div><p className="text-sm text-muted-foreground font-medium">{label}</p><p className={`text-4xl font-bold font-display text-${color} mt-1`}>{value.toFixed(1)}%</p><p className="text-xs text-muted-foreground mt-2">Perda: {loss.toFixed(1)}%</p></div></CardContent>
-                </Card>
-              ))}
-            </div>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <Card className="card-elevated group">
+                    <CardHeader><CardTitle className="flex items-center gap-2"><LineChart className="h-5 w-5 text-primary" />Tendência de Produção</CardTitle></CardHeader>
+                    <CardContent>
+                      <ResponsiveContainer width="100%" height={280}>
+                        <AreaChart data={biMetrics.dailyTrend}>
+                          <defs><linearGradient id="colorProduced" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={CHART_COLORS.success} stopOpacity={0.4}/><stop offset="95%" stopColor={CHART_COLORS.success} stopOpacity={0}/></linearGradient></defs>
+                          <CartesianGrid strokeDasharray="3 3" className="stroke-border/50" /><XAxis dataKey="date" className="text-xs" /><YAxis className="text-xs" /><Tooltip />
+                          <Area type="monotone" dataKey="produced" stroke={CHART_COLORS.success} fill="url(#colorProduced)" name="Produzidas" />
+                          <Line type="monotone" dataKey="jobs" stroke={CHART_COLORS.primary} strokeWidth={2} name="Jobs" />
+                        </AreaChart>
+                      </ResponsiveContainer>
+                    </CardContent>
+                  </Card>
 
-            {/* Export */}
-            <div className="flex justify-end">
-              <Button onClick={() => {
-                const blob = new Blob([JSON.stringify({ exportedAt: new Date().toISOString(), period: getPeriodLabel(), metrics: biMetrics, oee: oeeData }, null, 2)], { type: 'application/json' });
-                const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `bi-report-${format(new Date(), 'yyyy-MM-dd')}.json`; a.click(); URL.revokeObjectURL(url);
-                toast.success('Relatório exportado com sucesso!');
-              }} className="gap-2"><Download className="h-4 w-4" />Exportar Relatório</Button>
-            </div>
+                  <Card className="card-elevated">
+                    <CardHeader><CardTitle className="flex items-center gap-2"><PieChart className="h-5 w-5 text-primary" />Distribuição por Status</CardTitle></CardHeader>
+                    <CardContent>
+                      <ResponsiveContainer width="100%" height={280}>
+                        <RechartsPieChart><Pie data={biMetrics.statusDistribution} cx="50%" cy="50%" innerRadius={60} outerRadius={100} paddingAngle={2} dataKey="value" label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`} labelLine={false}>{biMetrics.statusDistribution.map((e, i) => <Cell key={i} fill={e.color} />)}</Pie><Tooltip /></RechartsPieChart>
+                      </ResponsiveContainer>
+                    </CardContent>
+                  </Card>
+                </div>
+              </div>
+            )}
           </>
         )}
       </div>
