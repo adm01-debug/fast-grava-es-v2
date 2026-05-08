@@ -386,9 +386,29 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
                   tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 12 }}
                 />
                 <Tooltip content={<BITooltip showPercentage />} />
+                <Legend 
+                  content={({ payload }) => (
+                    <div className="flex justify-center gap-6 mt-4">
+                      {payload?.map((entry: any, index: number) => (
+                        <button
+                          key={`item-${index}`}
+                          onClick={() => toggleSeries(entry.dataKey)}
+                          className={cn(
+                            "flex items-center gap-2 transition-all hover:scale-105",
+                            !visibleSeries[entry.dataKey] && "opacity-30 grayscale"
+                          )}
+                        >
+                          <div className="w-3 h-3 rounded-full shadow-[0_0_8px_rgba(var(--color),0.5)]" style={{ backgroundColor: entry.color, '--color': entry.color === CHART_COLORS.primary ? '14, 165, 233' : '239, 44, 44' } as any} />
+                          <span className="text-xs font-bold uppercase tracking-widest text-white/80">{entry.value === 'produced' ? 'Produzido' : 'Perdas'}</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                />
 
                 {visibleSeries.produced && (
                   <Area 
+                    name="produced"
                     type="monotone" 
                     dataKey="produced" 
                     stroke={CHART_COLORS.primary} 
@@ -399,6 +419,7 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
                 )}
                 {visibleSeries.lost && (
                   <Area 
+                    name="lost"
                     type="monotone" 
                     dataKey="lost" 
                     stroke={CHART_COLORS.danger} 
@@ -451,21 +472,34 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
                   onClick={(data: any) => handleDrillDown(`PEDIDOS: ${data.name}`, data.name)}
                 >
                   {biMetrics.statusDistribution.map((entry: any, index: number) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} fillOpacity={0.8} />
+                    <Cell 
+                      key={`cell-${index}`} 
+                      fill={entry.color} 
+                      fillOpacity={0.8} 
+                      className="cursor-pointer hover:fill-opacity-100 transition-all duration-300"
+                    />
                   ))}
                 </Pie>
                 <Tooltip content={<BITooltip showPercentage />} />
+                <Legend 
+                  content={({ payload }) => (
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-2 mt-4">
+                      {payload?.map((entry: any, index: number) => (
+                        <button
+                          key={`item-${index}`}
+                          onClick={() => handleDrillDown(`PEDIDOS: ${entry.value}`, entry.value)}
+                          className="flex items-center gap-2 transition-all hover:translate-x-1"
+                        >
+                          <div className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color }} />
+                          <span className="text-[10px] text-muted-foreground uppercase tracking-tighter whitespace-nowrap">{entry.value}</span>
+                          <span className="text-[10px] font-bold ml-auto text-white/90">{biMetrics.statusDistribution.find((s: any) => s.name === entry.value)?.value}</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                />
               </RechartsPieChart>
             </ResponsiveContainer>
-            <div className="grid grid-cols-2 gap-4 mt-4">
-              {biMetrics.statusDistribution.map((s: any) => (
-                <div key={s.name} className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full" style={{ backgroundColor: s.color }} />
-                  <span className="text-xs text-muted-foreground uppercase tracking-tighter">{s.name}</span>
-                  <span className="text-xs font-bold ml-auto">{s.value}</span>
-                </div>
-              ))}
-            </div>
           </CardContent>
         </Card>
 

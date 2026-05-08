@@ -36,13 +36,16 @@ export function DrillDownDialog({ open, onOpenChange, title, jobs, onExport }: D
   const [searchTerm, setSearchTerm] = useState("");
 
   const filteredJobs = useMemo(() => {
-    if (!searchTerm) return jobs;
-    const lowerSearch = searchTerm.toLowerCase();
-    return jobs.filter(job => 
-      job.order_number?.toLowerCase().includes(lowerSearch) ||
-      job.product?.toLowerCase().includes(lowerSearch) ||
-      job.status?.toLowerCase().includes(lowerSearch)
-    );
+    let result = jobs;
+    if (searchTerm) {
+      const lowerSearch = searchTerm.toLowerCase();
+      result = result.filter(job => 
+        job.order_number?.toLowerCase().includes(lowerSearch) ||
+        job.product?.toLowerCase().includes(lowerSearch) ||
+        job.status?.toLowerCase().includes(lowerSearch)
+      );
+    }
+    return result;
   }, [jobs, searchTerm]);
 
   return (
@@ -108,9 +111,9 @@ export function DrillDownDialog({ open, onOpenChange, title, jobs, onExport }: D
         <div className="mt-4">
           <ScrollArea className="h-[500px] pr-4">
             <Table>
-              <TableHeader>
-                <TableRow className="border-white/20">
-                  <TableHead className="text-primary text-xs uppercase font-bold">OS</TableHead>
+              <TableHeader className="sticky top-0 bg-black/95 z-10">
+                <TableRow className="border-white/20 hover:bg-transparent">
+                  <TableHead className="text-primary text-xs uppercase font-bold w-[120px]">OS</TableHead>
                   <TableHead className="text-primary text-xs uppercase font-bold">Produto</TableHead>
                   <TableHead className="text-primary text-xs uppercase font-bold text-center">Status</TableHead>
                   <TableHead className="text-primary text-xs uppercase font-bold text-center">Qtd</TableHead>
@@ -150,7 +153,7 @@ export function DrillDownDialog({ open, onOpenChange, title, jobs, onExport }: D
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={5} className="text-center py-20 text-muted-foreground">
+                    <TableCell colSpan={6} className="text-center py-20 text-muted-foreground">
                       <div className="flex flex-col items-center gap-2">
                         <Filter className="h-8 w-8 text-muted-foreground/30" />
                         <p>Nenhum pedido corresponde à sua pesquisa.</p>

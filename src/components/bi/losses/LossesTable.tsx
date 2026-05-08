@@ -62,8 +62,8 @@ export function LossesTable({ jobs, onExport }: LossesTableProps) {
                     <TableRow 
                       key={job.id} 
                       className={cn(
-                        "border-white/5 hover:bg-white/5 cursor-pointer transition-colors",
-                        isCritical && "bg-rose-500/5 hover:bg-rose-500/10"
+                        "border-white/5 hover:bg-white/5 cursor-pointer transition-colors relative overflow-hidden group/row",
+                        isCritical && "bg-rose-500/5 hover:bg-rose-500/10 shadow-[inset_0_0_20px_rgba(244,63,94,0.05)]"
                       )} 
                       onClick={() => navigate(`/job/${job.id}`)}
                     >
@@ -71,7 +71,7 @@ export function LossesTable({ jobs, onExport }: LossesTableProps) {
                         <div className="flex items-center gap-2">
                           {isCritical && <AlertTriangle className="h-3 w-3 text-rose-500 animate-pulse" />}
                           <div>
-                            <div className={cn("font-medium text-sm", isCritical && "text-rose-500")}>
+                            <div className={cn("font-medium text-sm transition-colors", isCritical && "text-rose-500 group-hover/row:text-rose-400")}>
                               {job.order_number || `OS-${job.id.slice(0, 5)}`}
                             </div>
                             <div className="text-[10px] text-muted-foreground">{job.product_name || 'Produto'}</div>
@@ -82,8 +82,8 @@ export function LossesTable({ jobs, onExport }: LossesTableProps) {
                         <Badge 
                           variant="outline" 
                           className={cn(
-                            "text-rose-500 border-rose-500/30 bg-rose-500/5",
-                            isCritical && "border-rose-500 shadow-[0_0_10px_rgba(244,63,94,0.3)]"
+                            "text-rose-500 border-rose-500/30 bg-rose-500/5 transition-all duration-300",
+                            isCritical && "border-rose-500 shadow-[0_0_10px_rgba(244,63,94,0.3)] group-hover/row:scale-110"
                           )}
                         >
                           {job.lost_pieces} pcs
@@ -97,6 +97,9 @@ export function LossesTable({ jobs, onExport }: LossesTableProps) {
                       <TableCell className="text-right font-mono text-xs">
                         R$ {(job.lost_pieces * 15.5).toFixed(2)}
                       </TableCell>
+                      {isCritical && (
+                        <div className="absolute left-0 top-0 bottom-0 w-1 bg-rose-500 shadow-[0_0_15px_rgba(244,63,94,0.8)] animate-pulse" />
+                      )}
                     </TableRow>
                   );
                 })
