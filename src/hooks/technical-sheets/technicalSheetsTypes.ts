@@ -8,8 +8,10 @@ export interface TechnicalSheet {
   estimated_time_minutes: number | null;
   recommended_machine_id: string | null;
   machine_settings: Record<string, any> | null;
+  settings_ranges: Record<string, { min: string; max: string }> | null;
   ink_specifications: string | null;
   tooling_specifications: string | null;
+  version: number;
   is_active: boolean;
   created_at: string;
   updated_at: string;
