@@ -365,6 +365,52 @@ export function ExecutionDetailsModal({ isOpen, onClose, recordId }: ExecutionDe
                 </div>
               </div>
 
+              {/* Regulagem Técnica */}
+              {record.adjustment_parameters && (
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold flex items-center gap-2">
+                    <PenTool className="h-5 w-5 text-amber-500" />
+                    Regulagem Técnica Aplicada
+                  </h3>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {['squeegee_passes', 'pressure', 'speed', 'temperature'].map((param) => {
+                      const labels: Record<string, string> = {
+                        squeegee_passes: 'Passadas',
+                        pressure: 'Pressão',
+                        speed: 'Velocidade',
+                        temperature: 'Temperatura'
+                      };
+                      const value = record.adjustment_parameters[param];
+                      const range = record.adjustment_parameters.ranges?.[param];
+                      const isOutOfRange = (val: string, r: any) => {
+                        if (!r || (!r.min && !r.max)) return false;
+                        const v = parseFloat(val.replace(/[^0-9.]/g, ''));
+                        const min = r.min ? parseFloat(r.min.replace(/[^0-9.]/g, '')) : -Infinity;
+                        const max = r.max ? parseFloat(r.max.replace(/[^0-9.]/g, '')) : Infinity;
+                        return !isNaN(v) && (v < min || v > max);
+                      };
+
+                      const outOfRange = isOutOfRange(value || '', range);
+
+                      return (
+                        <div key={param} className={`p-3 rounded-lg border ${outOfRange ? 'bg-destructive/5 border-destructive/20' : 'bg-secondary/20 border-border/50'}`}>
+                          <p className="text-[10px] text-muted-foreground uppercase font-bold mb-1">{labels[param]}</p>
+                          <p className={`text-lg font-bold ${outOfRange ? 'text-destructive' : ''}`}>
+                            {value || '-'}
+                            {outOfRange && <AlertTriangle className="h-3 w-3 inline ml-1" />}
+                          </p>
+                          {range && (range.min || range.max) && (
+                            <p className="text-[10px] text-muted-foreground mt-1">
+                              Ref: {range.min || '-'} a {range.max || '-'}
+                            </p>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
               {/* Checklist */}
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold flex items-center gap-2">
