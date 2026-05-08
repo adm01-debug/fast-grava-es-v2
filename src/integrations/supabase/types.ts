@@ -894,10 +894,12 @@ export type Database = {
           actual_start_time: string | null
           client: string
           created_at: string
+          delay_reason: string | null
           end_time: string | null
           estimated_duration: number
           gravure_color: string | null
           id: string
+          loss_category: string | null
           lost_pieces: number | null
           machine_id: string | null
           notes: string | null
@@ -908,6 +910,7 @@ export type Database = {
           product_category_id: string | null
           production_photos: string[] | null
           quantity: number
+          rework_reason: string | null
           scheduled_date: string | null
           start_time: string | null
           status: string
@@ -919,10 +922,12 @@ export type Database = {
           actual_start_time?: string | null
           client: string
           created_at?: string
+          delay_reason?: string | null
           end_time?: string | null
           estimated_duration?: number
           gravure_color?: string | null
           id?: string
+          loss_category?: string | null
           lost_pieces?: number | null
           machine_id?: string | null
           notes?: string | null
@@ -933,6 +938,7 @@ export type Database = {
           product_category_id?: string | null
           production_photos?: string[] | null
           quantity: number
+          rework_reason?: string | null
           scheduled_date?: string | null
           start_time?: string | null
           status?: string
@@ -944,10 +950,12 @@ export type Database = {
           actual_start_time?: string | null
           client?: string
           created_at?: string
+          delay_reason?: string | null
           end_time?: string | null
           estimated_duration?: number
           gravure_color?: string | null
           id?: string
+          loss_category?: string | null
           lost_pieces?: number | null
           machine_id?: string | null
           notes?: string | null
@@ -958,6 +966,7 @@ export type Database = {
           product_category_id?: string | null
           production_photos?: string[] | null
           quantity?: number
+          rework_reason?: string | null
           scheduled_date?: string | null
           start_time?: string | null
           status?: string
