@@ -91,6 +91,7 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
       technical_sheet_id?: string;
       technical_sheet_version?: number;
       adjustment_parameters?: any;
+      quality_responses?: any[];
       responses?: Array<{
         checklist_item_id: string;
         is_checked: boolean;
