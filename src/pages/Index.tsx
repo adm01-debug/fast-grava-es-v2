@@ -158,10 +158,10 @@ const Index = () => {
           <div className="flex items-center gap-5">
             <div className="w-2 h-12 rounded-full bg-gradient-to-b from-primary to-primary-glow shadow-glow-primary/30" />
             <div className="space-y-1">
-              <h1 className="text-4xl font-display font-black tracking-tight leading-none uppercase gradient-text">
+              <h1 className="text-4xl font-display font-black tracking-tighter leading-none uppercase bg-clip-text text-transparent bg-gradient-to-r from-primary via-primary-glow to-primary shadow-sm">
                 {t('dashboard.title')}
               </h1>
-              <p className="text-base font-bold text-muted-foreground/80 uppercase tracking-[0.3em]">{profile?.full_name || 'System Intelligence'}</p>
+              <p className="text-[10px] font-black text-muted-foreground/50 uppercase tracking-[0.4em]">{profile?.full_name || 'System Intelligence'}</p>
             </div>
             <FavoriteButton path="/" name={t('dashboard.title')} />
             {isOperator && (
