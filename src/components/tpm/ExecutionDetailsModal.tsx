@@ -150,12 +150,18 @@ export function ExecutionDetailsModal({ isOpen, onClose, recordId }: ExecutionDe
         <Separator className="mt-4" />
 
         <ScrollArea className="flex-1 p-6">
-          <div className="space-y-8 print:space-y-4 print:p-0">
-            {/* Header for print only */}
-            <div className="hidden print:block text-center border-b pb-4 mb-8">
-              <h1 className="text-2xl font-bold uppercase">Relatório de Execução TPM</h1>
-              <p className="text-sm text-muted-foreground">Documento Gerado em {format(new Date(), 'dd/MM/yyyy HH:mm')}</p>
+          {isLoading ? (
+            <div className="flex items-center justify-center py-20">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
             </div>
+          ) : record ? (
+            <div className="space-y-8 print:space-y-4 print:p-0">
+              {/* Header for print only */}
+              <div className="hidden print:block text-center border-b pb-4 mb-8">
+                <h1 className="text-2xl font-bold uppercase">Relatório de Execução TPM</h1>
+                <p className="text-sm text-muted-foreground">Documento Gerado em {format(new Date(), 'dd/MM/yyyy HH:mm')}</p>
+              </div>
+
               {/* Basic Info Grid */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="space-y-1">
