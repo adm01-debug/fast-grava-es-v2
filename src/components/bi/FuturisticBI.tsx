@@ -435,7 +435,6 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
               </div>
               <span className="font-display tracking-tight text-2xl font-black uppercase gradient-text">Top Colaboradores</span>
             </CardTitle>
-            </CardTitle>
             <div className="flex items-center gap-2">
               <Button 
                 variant="ghost" 
@@ -490,13 +489,15 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Losses Analysis Section */}
-        <Card className="bg-black/40 border-primary/20 backdrop-blur-xl">
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle className="flex items-center gap-3">
-              <Package className="h-5 w-5 text-primary" />
-              <span className="font-display tracking-wider uppercase">Métricas de Perda por Pedido</span>
+        <Card className="border-border/40 bg-card/40 backdrop-blur-md shadow-2xl rounded-3xl overflow-hidden group hover:shadow-glow-primary/10 transition-all duration-500 ring-1 ring-white/5">
+          <CardHeader className="flex flex-row items-center justify-between p-8 pb-0">
+            <CardTitle className="flex items-center gap-4">
+              <div className="p-3 rounded-2xl bg-primary/10 shadow-inner">
+                <Package className="h-6 w-6 text-primary" />
+              </div>
+              <span className="font-display tracking-tight text-2xl font-black uppercase gradient-text">Perda por Pedido</span>
             </CardTitle>
             <div className="flex items-center gap-2">
               <Button 
