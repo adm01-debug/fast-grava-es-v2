@@ -104,7 +104,11 @@ export const TechnicalSheetEditor = ({ sheetId, techniques, categories, material
         pressure: { min: formData.pressure_min, max: formData.pressure_max },
         speed: { min: formData.speed_min, max: formData.speed_max },
         temperature: { min: formData.temperature_min, max: formData.temperature_max },
-      }
+      },
+      gap_specifications: formData.gap_specifications || undefined,
+      challenges_notes: formData.challenges_notes || undefined,
+      failure_scenarios: formData.failure_scenarios || undefined,
+      quality_requirements: formData.quality_requirements || undefined
     };
     if (isNew) { await createSheet.mutateAsync(payload); onClose(); }
     else { await updateSheet.mutateAsync({ id: sheetId!, ...payload }); toast.success('Ficha atualizada!'); }
