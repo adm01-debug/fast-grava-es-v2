@@ -141,6 +141,40 @@ export function ExecutionDetailsModal({ isOpen, onClose, recordId }: ExecutionDe
     }
   };
 
+  const handleExportPDF = async () => {
+    if (!record) return;
+    try {
+      setIsLoading(true);
+      const { data, error } = await supabase.functions.invoke('pdf-generator', {
+        body: {
+          type: 'maintenance-report',
+          data: {
+            execution: record,
+            machine: record.machine,
+            technical_sheet: record.technical_sheet,
+            supplies: record.supplies_used,
+            alerts: record.execution_alerts
+          }
+        }
+      });
+
+      if (error) throw error;
+
+      const blob = new Blob([data], { type: 'application/pdf' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `OS_Tecnica_${record.id.substring(0, 8)}.pdf`;
+      link.click();
+      toast.success("PDF gerado com sucesso via servidor");
+    } catch (e) {
+      console.error(e);
+      toast.error("Erro ao gerar PDF profissional. Usando impressão padrão...");
+      window.print();
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleExportCSV = () => {
     if (!record) return;
     
@@ -224,8 +258,8 @@ export function ExecutionDetailsModal({ isOpen, onClose, recordId }: ExecutionDe
                   <Button variant="outline" size="sm" onClick={handleExportCSV} className="gap-2">
                     <FileSpreadsheet className="h-4 w-4" /> CSV
                   </Button>
-                  <Button variant="outline" size="sm" onClick={() => window.print()} className="gap-2">
-                    <Download className="h-4 w-4" /> PDF
+                  <Button variant="outline" size="sm" onClick={handleExportPDF} className="gap-2 bg-primary/10 text-primary border-primary/20 hover:bg-primary/20">
+                    <Download className="h-4 w-4" /> PDF Técnico
                   </Button>
                 </div>
               )}
