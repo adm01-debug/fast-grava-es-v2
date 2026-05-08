@@ -177,7 +177,7 @@ export function useKPIs(): { data: KPIData | null; isLoading: boolean } {
         totalPieces: totalPcs,
         lostPieces: lostPcs,
         avgDuration: techJobs.length > 0 
-          ? techJobs.reduce((sum, j) => sum + j.estimated_duration, 0) / techJobs.length 
+          ? techJobs.reduce((sum, j) => sum + sanitizeNumber(j.estimated_duration), 0) / techJobs.length 
           : 0,
         occupancyRate: techMachines.length > 0 
           ? (busyMachines / techMachines.length) * 100 

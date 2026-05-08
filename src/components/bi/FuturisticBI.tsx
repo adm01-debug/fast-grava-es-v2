@@ -94,39 +94,57 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
   const handleDrillDown = (title: string, segment: string) => {
     setDrillDownTitle(title);
     
-    // In a real app, we would filter biMetrics.jobs or use a hook
-    // For now, let's mock some data based on the segment
-    const mockDrillDown = [
-      { id: '1', order_number: 'OS-2024-501', product: 'Camiseta DryFit', status: 'production', quantity: 150 },
-      { id: '2', order_number: 'OS-2024-502', product: 'Caneca Cerâmica', status: 'finished', quantity: 50 },
-      { id: '3', order_number: 'OS-2024-503', product: 'Boné Trucker', status: 'delayed', quantity: 200 },
-      { id: '4', order_number: 'OS-2024-504', product: 'Squeeze Alumínio', status: 'production', quantity: 85 },
-    ];
+    // Filter real jobs from the list provided by biMetrics
+    if (biMetrics.periodJobsList) {
+      const filtered = biMetrics.periodJobsList.filter((j: any) => {
+        if (segment === 'all') return true;
+        // Check if segment matches status, machine, or technique
+        return (
+          j.status === segment.toLowerCase() || 
+          j.machine_id === segment || 
+          j.technique_id === segment ||
+          (segment.includes('Studio') && j.technique_id) // Basic studio match
+        );
+      }).map((j: any) => ({
+        id: j.id,
+        order_number: j.order_number || `OS-${j.id.slice(0, 5)}`,
+        product: j.product_name || 'Produto',
+        status: j.status,
+        quantity: j.quantity,
+        efficiency: j.produced_quantity > 0 ? (((j.produced_quantity - (j.lost_pieces || 0)) / j.produced_quantity) * 100).toFixed(1) + '%' : '--'
+      }));
+      setDrillDownJobs(filtered);
+    } else {
+      setDrillDownJobs([]);
+    }
     
-    setDrillDownJobs(mockDrillDown);
     setDrillDownOpen(true);
   };
 
-  // Derived data for "Studios" (Mock grouping machines into studios)
+  // Derived data for "Studios" (Grouping machines into studios based on techniques)
   const studioData = useMemo(() => {
     if (!biMetrics.machineUtilization) return [];
     
-    const studios = [
-      { name: 'Studio Alfa', machines: biMetrics.machineUtilization.slice(0, 3) },
-      { name: 'Studio Beta', machines: biMetrics.machineUtilization.slice(3, 6) },
-      { name: 'Studio Gamma', machines: biMetrics.machineUtilization.slice(6) },
-    ].filter(s => s.machines.length > 0);
+    // Create logical studios based on machine techniques
+    const machineGroups: Record<string, any[]> = {};
+    biMetrics.machineUtilization.forEach((m: any) => {
+      const studioName = m.technique.includes('Laser') ? 'Studio Alfa' : 
+                        m.technique.includes('UV') ? 'Studio Beta' : 
+                        'Studio Gamma';
+      if (!machineGroups[studioName]) machineGroups[studioName] = [];
+      machineGroups[studioName].push(m);
+    });
 
-    return studios.map(studio => {
-      const totalJobs = studio.machines.reduce((sum: number, m: any) => sum + m.totalJobs, 0);
-      const avgUtilization = studio.machines.reduce((sum: number, m: any) => sum + m.utilization, 0) / studio.machines.length;
+    return Object.entries(machineGroups).map(([name, machines]) => {
+      const totalJobs = machines.reduce((sum: number, m: any) => sum + m.totalJobs, 0);
+      const avgUtilization = machines.reduce((sum: number, m: any) => sum + m.utilization, 0) / machines.length;
       return {
-        name: studio.name,
+        name,
         jobs: totalJobs,
         utilization: avgUtilization,
-        color: studio.name === 'Studio Alfa' ? CHART_COLORS.primary : studio.name === 'Studio Beta' ? CHART_COLORS.purple : CHART_COLORS.cyan
+        color: name === 'Studio Alfa' ? CHART_COLORS.primary : name === 'Studio Beta' ? CHART_COLORS.purple : CHART_COLORS.cyan
       };
-    });
+    }).sort((a, b) => b.jobs - a.jobs);
   }, [biMetrics.machineUtilization]);
 
   // Derived data for "Losses per Job"
@@ -134,10 +152,25 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
     if (!biMetrics.dailyTrend) return [];
     return biMetrics.dailyTrend.map((d: any) => ({
       date: d.date,
-      lossRate: d.produced > 0 ? (d.lost / (d.produced + d.lost)) * 100 : 0,
+      lossRate: (d.produced + d.lost) > 0 ? (d.lost / (d.produced + d.lost)) * 100 : 0,
       lost: d.lost
     }));
   }, [biMetrics.dailyTrend]);
+
+  const jobsWithLosses = useMemo(() => {
+    if (!biMetrics.periodJobsList) return [];
+    return biMetrics.periodJobsList
+      .filter((j: any) => (j.lost_pieces || 0) > 0)
+      .sort((a: any, b: any) => (b.lost_pieces || 0) - (a.lost_pieces || 0))
+      .slice(0, 10);
+  }, [biMetrics.periodJobsList]);
+
+  const delayedJobsList = useMemo(() => {
+    if (!biMetrics.periodJobsList) return [];
+    return biMetrics.periodJobsList
+      .filter((j: any) => j.status === 'delayed')
+      .slice(0, 10);
+  }, [biMetrics.periodJobsList]);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -518,23 +551,23 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {lossAnalysis.length > 0 ? (
-                    lossAnalysis.slice(0, 10).map((loss: any, idx: number) => (
-                      <TableRow key={idx} className="border-white/5 hover:bg-white/5 cursor-pointer transition-colors" onClick={() => handleDrillDown(`PERDAS OS-2024-${100 + idx}`, `OS-2024-${100 + idx}`)}>
+                  {jobsWithLosses.length > 0 ? (
+                    jobsWithLosses.map((job: any) => (
+                      <TableRow key={job.id} className="border-white/5 hover:bg-white/5 cursor-pointer transition-colors" onClick={() => navigate(`/job/${job.id}`)}>
                         <TableCell>
-                          <div className="font-medium text-sm">OS-2024-{100 + idx}</div>
-                          <div className="text-[10px] text-muted-foreground">Produto Personalizado</div>
+                          <div className="font-medium text-sm">{job.order_number || `OS-${job.id.slice(0, 5)}`}</div>
+                          <div className="text-[10px] text-muted-foreground">{job.product_name || 'Produto'}</div>
                         </TableCell>
                         <TableCell className="text-center">
                           <Badge variant="outline" className="text-rose-500 border-rose-500/30 bg-rose-500/5">
-                            {loss.lost} pcs
+                            {job.lost_pieces} pcs
                           </Badge>
                         </TableCell>
                         <TableCell>
-                          <span className="text-[11px] text-muted-foreground">Falha no Setup</span>
+                          <span className="text-[11px] text-muted-foreground">Perda na Produção</span>
                         </TableCell>
                         <TableCell className="text-right font-mono text-xs">
-                          R$ {(loss.lost * 15.5).toFixed(2)}
+                          R$ {(job.lost_pieces * 15.5).toFixed(2)}
                         </TableCell>
                       </TableRow>
                     ))
@@ -592,17 +625,23 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {[1, 2, 3, 4, 5].map((i) => (
-                        <TableRow key={i} className="border-white/5 hover:bg-white/5 cursor-pointer" onClick={() => handleDrillDown(`DETALHES ATRASO OS-2024-${200 + i}`, `OS-2024-${200 + i}`)}>
-                          <TableCell className="text-xs font-medium">OS-2024-{200 + i}</TableCell>
-                          <TableCell>
-                            <span className="text-xs text-rose-400 font-bold">{15 * i} min</span>
-                          </TableCell>
-                          <TableCell className="text-right text-[10px]">
-                            {operators[i % operators.length]?.operatorName || 'Operador X'}
-                          </TableCell>
+                      {delayedJobsList.length > 0 ? (
+                        delayedJobsList.map((job: any) => (
+                          <TableRow key={job.id} className="border-white/5 hover:bg-white/5 cursor-pointer" onClick={() => navigate(`/job/${job.id}`)}>
+                            <TableCell className="text-xs font-medium">{job.order_number || `OS-${job.id.slice(0, 5)}`}</TableCell>
+                            <TableCell>
+                              <span className="text-xs text-rose-400 font-bold">Atrasado</span>
+                            </TableCell>
+                            <TableCell className="text-right text-[10px]">
+                              {job.operator_id || 'Não atribuído'}
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      ) : (
+                        <TableRow>
+                          <TableCell colSpan={3} className="text-center py-8 text-muted-foreground">Nenhum pedido atrasado</TableCell>
                         </TableRow>
-                      ))}
+                      )}
                     </TableBody>
                   </Table>
                 </ScrollArea>

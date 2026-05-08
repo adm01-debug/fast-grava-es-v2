@@ -177,7 +177,7 @@ export default function BIDashboard() {
     return {
       statusDistribution, dailyTrend, techniquePerformance,
       machineUtilization: machineUtilization.slice(0, 10),
-      periodJobs: periodJobs.length, periodCompletedJobs, periodCompletedPieces,
+      periodJobs: periodJobs.length, periodJobsList: periodJobs, periodCompletedJobs, periodCompletedPieces,
       periodLostPieces, periodLossRate,
       activeMachines: machines.filter(m => m.is_active).length, activeTechniques: techniques.length,
     };
