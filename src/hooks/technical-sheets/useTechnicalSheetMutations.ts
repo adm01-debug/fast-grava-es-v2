@@ -29,9 +29,6 @@ export const useTechnicalSheetMutations = () => {
           challenges_notes: sheet.challenges_notes || null,
           failure_scenarios: sheet.failure_scenarios || null,
           quality_requirements: sheet.quality_requirements || null,
-          quality_checklist: sheet.quality_checklist || [],
-          consumables: (sheet as any).consumables || [],
-          setup_instructions: sheet.setup_instructions || null,
           version: 1,
           created_by: userData.user?.id,
           updated_by: userData.user?.id

@@ -41,12 +41,12 @@ export const DraggableWidget = memo(function DraggableWidget({
       className={cn(
         'relative group',
         isDragging && 'z-50 opacity-90',
-        isEditMode && 'ring-2 ring-primary/30 ring-dashed rounded-3xl bg-primary/[0.02]',
+        isEditMode && 'ring-2 ring-primary/20 ring-dashed rounded-lg',
         className
       )}
     >
       {isEditMode && (
-        <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 bg-card/90 backdrop-blur-xl border border-primary/20 rounded-2xl px-3 py-1.5 shadow-2xl opacity-0 group-hover:opacity-100 transition-all duration-300 scale-90 group-hover:scale-100">
+        <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10 flex items-center gap-1 bg-background border border-border rounded-full px-2 py-1 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity">
           <div
             {...attributes}
             {...listeners}

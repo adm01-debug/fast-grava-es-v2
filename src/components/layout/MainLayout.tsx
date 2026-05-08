@@ -57,32 +57,29 @@ export function MainLayout({ children }: MainLayoutProps) {
           <OfflineStatusBanner />
           
           {/* Desktop top bar */}
-          <div className="fixed top-6 right-8 z-40 hidden md:flex items-center gap-3" role="toolbar" aria-label="Ações rápidas">
-            <div className="flex items-center gap-2 px-4 py-2 bg-card/40 backdrop-blur-xl border border-border/40 rounded-2xl shadow-xl ring-1 ring-white/5">
-              <SectionErrorBoundary section="Favoritos" compact>
-                <Suspense fallback={EmptyFallback}>
-                  <QuickFavoritesBar />
-                </Suspense>
-              </SectionErrorBoundary>
-              <div className="w-px h-6 bg-border/40 mx-1" />
-              <SectionErrorBoundary section="Máquinas" compact>
-                <Suspense fallback={EmptyFallback}>
-                  <OperatorMachinesIndicator />
-                </Suspense>
-              </SectionErrorBoundary>
-              <div className="w-px h-6 bg-border/40 mx-1" />
+          <div className="fixed top-4 right-4 z-40 hidden md:flex items-center gap-2" role="toolbar" aria-label="Ações rápidas">
+            <SectionErrorBoundary section="Favoritos" compact>
               <Suspense fallback={EmptyFallback}>
-                <NetworkStatusIndicator />
+                <QuickFavoritesBar />
               </Suspense>
-              <div className="w-px h-6 bg-border/40 mx-1" />
-              <ThemeToggle className="border-0 bg-transparent hover:bg-primary/10 h-8 w-8" />
-              <div className="w-px h-6 bg-border/40 mx-1" />
-              <SectionErrorBoundary section="Realtime" compact>
-                <Suspense fallback={EmptyFallback}>
-                  <RealtimeIndicator />
-                </Suspense>
-              </SectionErrorBoundary>
-            </div>
+            </SectionErrorBoundary>
+            <SectionErrorBoundary section="Máquinas" compact>
+              <Suspense fallback={EmptyFallback}>
+                <OperatorMachinesIndicator />
+              </Suspense>
+            </SectionErrorBoundary>
+            <Suspense fallback={EmptyFallback}>
+              <NetworkStatusIndicator />
+            </Suspense>
+            <Suspense fallback={EmptyFallback}>
+              <OfflineReadyIndicator />
+            </Suspense>
+            <ThemeToggle />
+            <SectionErrorBoundary section="Realtime" compact>
+              <Suspense fallback={EmptyFallback}>
+                <RealtimeIndicator />
+              </Suspense>
+            </SectionErrorBoundary>
           </div>
           
           {/* Mobile/Tablet top bar */}
@@ -93,14 +90,14 @@ export function MainLayout({ children }: MainLayoutProps) {
             <Suspense fallback={EmptyFallback}>
               <OfflineReadyIndicator />
             </Suspense>
-            <ThemeToggle className="bg-card/40 backdrop-blur-md" />
+            <ThemeToggle />
           </div>
           
           {/* Content with proper padding and safe-area insets */}
           <MainContent className={cn(
-            "pt-20 md:pt-10",
-            "pb-28 md:pb-10",
-            "px-6 sm:px-10 lg:px-16",
+            "pt-12 md:pt-4",
+            "pb-24 md:pb-4",
+            "px-4 sm:px-6 lg:px-8",
             "min-h-0"
           )}>
             {shouldAnimate ? (

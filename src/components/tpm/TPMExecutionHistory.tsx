@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { 
   History, Search, Filter, FileSpreadsheet, Download, 
   Eye, Calendar, Wrench, CheckCircle, Clock, AlertTriangle,
-  CheckSquare, XSquare, ShieldCheck, Activity, Zap
+  CheckSquare, XSquare
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -18,7 +18,6 @@ import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { ExecutionDetailsModal } from './ExecutionDetailsModal';
 import { BatchApprovalPreviewModal } from './BatchApprovalPreviewModal';
-import { cn } from '@/lib/utils';
 
 export function TPMExecutionHistory() {
   const { records, machines, isLoading, approveBatch } = useTPM();
@@ -49,166 +48,245 @@ export function TPMExecutionHistory() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'approved':
-        return <Badge className="bg-emerald-500/10 text-emerald-500 border-emerald-500/20 font-black uppercase text-[10px] tracking-widest px-3 py-1 rounded-full"><CheckCircle className="h-3 w-3 mr-1" /> VALIDATED</Badge>;
+        return <Badge className="bg-emerald-500 gap-1"><CheckCircle className="h-3 w-3" /> Aprovado</Badge>;
       case 'completed':
-        return <Badge className="bg-amber-500/10 text-amber-500 border-amber-500/20 font-black uppercase text-[10px] tracking-widest px-3 py-1 rounded-full"><Clock className="h-3 w-3 mr-1" /> PENDING REVIEW</Badge>;
+        return <Badge variant="secondary" className="bg-amber-500/20 text-amber-600 gap-1"><Clock className="h-3 w-3" /> Revisar</Badge>;
+      case 'in_progress':
+        return <Badge variant="outline" className="text-blue-500 border-blue-200 gap-1"><Clock className="h-3 w-3" /> Em Andamento</Badge>;
+      case 'cancelled':
+        return <Badge variant="destructive" className="gap-1"><AlertTriangle className="h-3 w-3" /> Cancelado</Badge>;
       default:
-        return <Badge variant="outline" className="font-black uppercase text-[10px] tracking-widest px-3 py-1 rounded-full">{status}</Badge>;
+        return <Badge variant="outline">{status}</Badge>;
+    }
+  };
+
+  const handleExportAllCSV = () => {
+    if (filteredRecords.length === 0) return;
+
+    const headers = ['Data', 'Máquina', 'Tipo', 'Técnico', 'Status', 'Downtime (min)', 'Custo'];
+    const rows = filteredRecords.map(r => [
+      r.completed_at ? format(new Date(r.completed_at), 'dd/MM/yyyy') : format(new Date(r.started_at), 'dd/MM/yyyy'),
+      r.machine?.name || 'N/A',
+      r.maintenance_type_id,
+      r.performed_by_name || 'N/A',
+      r.status,
+      r.downtime_minutes,
+      r.total_cost
+    ]);
+
+    const csvContent = [headers, ...rows].map(e => e.join(',')).join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `historico_tpm_${new Date().getTime()}.csv`;
+    link.click();
+  };
+
+  const handleViewDetails = (id: string) => {
+    setSelectedRecordId(id);
+    setIsModalOpen(true);
+  };
+
+  const handleToggleSelect = (id: string) => {
+    setSelectedIds(prev => 
+      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+    );
+  };
+
+  const handleApproveBatch = () => {
+    if (selectedIds.length === 0) return;
+    setIsPreviewModalOpen(true);
+  };
+
+  const confirmApproveBatch = async () => {
+    if (!user || selectedIds.length === 0) return;
+    setIsBatchProcessing(true);
+    try {
+      await approveBatch.mutateAsync({
+        record_ids: selectedIds,
+        approver_id: user.id
+      });
+      setSelectedIds([]);
+      setIsPreviewModalOpen(false);
+    } catch (error) {
+      // Handled by mutation
+    } finally {
+      setIsBatchProcessing(false);
     }
   };
 
   return (
-    <Card className="border-border/40 bg-card/40 backdrop-blur-md shadow-2xl rounded-[2.5rem] overflow-hidden ring-1 ring-white/5 animate-in fade-in duration-700">
-      <CardHeader className="p-8 border-b border-border/20">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-          <div className="flex items-start gap-4">
-            <div className="p-4 bg-primary/10 rounded-2xl ring-1 ring-primary/20 shadow-glow-primary/10">
-              <History className="h-8 w-8 text-primary" />
+    <Card className="card-glass border-primary/10 shadow-lg">
+      <CardHeader className="pb-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="flex items-center gap-2">
+            <div className="p-2 rounded-lg bg-primary/10 text-primary">
+              <History className="h-6 w-6" />
             </div>
-            <div className="space-y-1">
-              <CardTitle className="text-3xl font-black font-display tracking-tight text-foreground/90 uppercase">Execution Logs</CardTitle>
-              <p className="text-sm font-medium text-muted-foreground uppercase tracking-widest opacity-60 flex items-center gap-2">
-                <ShieldCheck className="h-4 w-4" /> Comprehensive Industrial Audit Trail
-              </p>
+            <div>
+              <CardTitle className="text-2xl font-display">Histórico de Execuções</CardTitle>
+              <p className="text-sm text-muted-foreground">Consulte e aprove intervenções realizadas nas máquinas</p>
             </div>
           </div>
-          
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             {selectedIds.length > 0 && (
               <Button 
-                onClick={() => setIsPreviewModalOpen(true)}
-                className="h-12 px-6 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold uppercase tracking-widest text-xs shadow-glow-emerald/20 transition-all hover:scale-[1.02]"
+                variant="default" 
+                className="bg-emerald-600 hover:bg-emerald-700 animate-in fade-in zoom-in-95 gap-2"
+                onClick={handleApproveBatch}
+                disabled={approveBatch.isPending || isBatchProcessing}
               >
-                <CheckSquare className="h-4 w-4 mr-2" />
-                Approve {selectedIds.length} Selected
+                {approveBatch.isPending || isBatchProcessing ? <Clock className="h-4 w-4 animate-spin" /> : <CheckSquare className="h-4 w-4" />}
+                Aprovar Selecionados ({selectedIds.length})
               </Button>
             )}
-            <Button variant="outline" className="h-12 px-6 rounded-xl border-border/40 hover:bg-muted/30 transition-all font-bold uppercase tracking-widest text-xs">
-              <FileSpreadsheet className="h-4 w-4 mr-2" />
-              Export Dataset
+            <Button variant="outline" onClick={handleExportAllCSV} className="gap-2">
+              <FileSpreadsheet className="h-4 w-4" /> Exportar CSV
             </Button>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mt-10">
-          <div className="relative group">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input 
-              placeholder="Filter by operator, machine, ID..." 
+              placeholder="Buscar por técnico, máquina..." 
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-11 h-12 bg-muted/20 border-border/20 rounded-xl focus:ring-primary/20 font-medium"
+              className="pl-9"
             />
           </div>
           <Select value={machineFilter} onValueChange={setMachineFilter}>
-            <SelectTrigger className="h-12 bg-muted/20 border-border/20 rounded-xl font-bold uppercase tracking-widest text-[10px]">
-              <div className="flex items-center gap-2"><Wrench className="h-4 w-4 text-primary" /><SelectValue placeholder="All Assets" /></div>
+            <SelectTrigger>
+              <div className="flex items-center gap-2">
+                <Wrench className="h-4 w-4 text-muted-foreground" />
+                <SelectValue placeholder="Todas as Máquinas" />
+              </div>
             </SelectTrigger>
-            <SelectContent className="rounded-xl border-border/40 backdrop-blur-xl">
-              <SelectItem value="all">ALL ASSETS</SelectItem>
-              {machines.map(m => ( <SelectItem key={m.id} value={m.id}>{m.name.toUpperCase()}</SelectItem> ))}
+            <SelectContent>
+              <SelectItem value="all">Todas as Máquinas</SelectItem>
+              {machines.map(m => (
+                <SelectItem key={m.id} value={m.id}>{m.name}</SelectItem>
+              ))}
             </SelectContent>
           </Select>
           <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="h-12 bg-muted/20 border-border/20 rounded-xl font-bold uppercase tracking-widest text-[10px]">
-              <div className="flex items-center gap-2"><Filter className="h-4 w-4 text-primary" /><SelectValue placeholder="All Status" /></div>
+            <SelectTrigger>
+              <div className="flex items-center gap-2">
+                <Filter className="h-4 w-4 text-muted-foreground" />
+                <SelectValue placeholder="Todos os Status" />
+              </div>
             </SelectTrigger>
-            <SelectContent className="rounded-xl border-border/40 backdrop-blur-xl">
-              <SelectItem value="all">ALL STATUS</SelectItem>
-              <SelectItem value="completed">PENDING REVIEW</SelectItem>
-              <SelectItem value="approved">VALIDATED</SelectItem>
+            <SelectContent>
+              <SelectItem value="all">Todos os Status</SelectItem>
+              <SelectItem value="completed">Pendentes</SelectItem>
+              <SelectItem value="approved">Aprovados</SelectItem>
+              <SelectItem value="in_progress">Em Andamento</SelectItem>
             </SelectContent>
           </Select>
-          <div className="flex items-center justify-center h-12 rounded-xl bg-primary/5 border border-primary/20">
-            <Activity className="h-4 w-4 mr-2 text-primary" />
-            <span className="text-[10px] font-black uppercase tracking-widest text-primary">{filteredRecords.length} LOG ENTRIES</span>
+          <div className="flex items-center justify-center p-2 rounded-lg bg-secondary/30 border border-border/50">
+            <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
+            <span className="text-xs font-medium">{filteredRecords.length} registros encontrados</span>
           </div>
         </div>
       </CardHeader>
       
-      <CardContent className="p-0 overflow-hidden">
-        <Table>
-          <TableHeader>
-            <TableRow className="bg-muted/30 border-b border-border/20">
-              <TableHead className="w-16 px-6"></TableHead>
-              <TableHead className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground py-6 px-6">Timestamp</TableHead>
-              <TableHead className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground py-6">Machine Unit</TableHead>
-              <TableHead className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground py-6">Operator</TableHead>
-              <TableHead className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground py-6">Metric (min)</TableHead>
-              <TableHead className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground py-6">Status</TableHead>
-              <TableHead className="text-right px-8"></TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredRecords.map((record) => (
-              <TableRow key={record.id} className={cn("hover:bg-primary/[0.02] transition-colors border-b border-border/10 group", selectedIds.includes(record.id) && "bg-primary/[0.04]")}>
-                <TableCell className="px-6">
-                  {record.status === 'completed' && (
-                    <Checkbox 
-                      checked={selectedIds.includes(record.id)} 
-                      onCheckedChange={() => setSelectedIds(prev => prev.includes(record.id) ? prev.filter(i => i !== record.id) : [...prev, record.id])}
-                      className="h-5 w-5 rounded-lg border-2"
-                    />
-                  )}
-                </TableCell>
-                <TableCell className="py-6 px-6">
-                  <div className="flex flex-col">
-                    <span className="text-sm font-black text-foreground/80 tracking-tight">
-                      {format(new Date(record.completed_at || record.started_at), 'MMM d, yyyy')}
-                    </span>
-                    <span className="text-[10px] font-bold text-muted-foreground uppercase opacity-60">
-                      {format(new Date(record.completed_at || record.started_at), 'HH:mm:ss')}
-                    </span>
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-3">
-                    <div className="h-9 w-9 rounded-xl bg-background/50 border border-border/20 flex items-center justify-center group-hover:bg-primary/10 group-hover:text-primary transition-all">
-                      <Zap className="h-4 w-4" />
-                    </div>
-                    <div className="flex flex-col">
-                      <span className="text-sm font-black uppercase tracking-tight text-foreground/80">{record.machine?.name}</span>
-                      <span className="text-[10px] font-bold text-muted-foreground opacity-60">{record.machine?.code}</span>
-                    </div>
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-2">
-                    <div className="h-7 w-7 rounded-full bg-primary/10 flex items-center justify-center text-[10px] font-black text-primary uppercase ring-1 ring-primary/20">
-                      {(record.performed_by_name || 'N').charAt(0)}
-                    </div>
-                    <span className="text-sm font-bold text-muted-foreground uppercase tracking-tight">{record.performed_by_name || 'EXTERNAL'}</span>
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <span className="text-sm font-black font-mono text-primary/80">{record.downtime_minutes}</span>
-                </TableCell>
-                <TableCell>{getStatusBadge(record.status)}</TableCell>
-                <TableCell className="text-right px-8">
-                  <Button 
-                    size="sm" 
-                    variant="ghost" 
-                    className="h-10 px-4 rounded-xl hover:bg-primary/10 hover:text-primary font-black uppercase tracking-widest text-[10px] opacity-0 group-hover:opacity-100 transition-all"
-                    onClick={() => { setSelectedRecordId(record.id); setIsModalOpen(true); }}
-                  >
-                    <Eye className="h-4 w-4 mr-2" /> View Intel
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-        
-        {filteredRecords.length === 0 && (
-          <div className="flex flex-col items-center justify-center py-32 space-y-4 opacity-40">
-            <History className="h-20 w-20 stroke-[0.5]" />
-            <p className="text-lg font-black font-display uppercase tracking-widest">No Log Entries Found</p>
+      <CardContent>
+        {isLoading ? (
+          <div className="flex items-center justify-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+          </div>
+        ) : filteredRecords.length > 0 ? (
+          <div className="rounded-xl border border-border/50 overflow-hidden shadow-sm">
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-muted/50">
+                  <TableHead className="w-[40px]"></TableHead>
+                  <TableHead className="w-[120px]">Data</TableHead>
+                  <TableHead>Máquina</TableHead>
+                  <TableHead>Tipo</TableHead>
+                  <TableHead>Técnico</TableHead>
+                  <TableHead>Duração</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead className="text-right">Ação</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredRecords.map((record) => (
+                  <TableRow key={record.id} className={`hover:bg-muted/30 transition-colors ${selectedIds.includes(record.id) ? 'bg-primary/5' : ''}`}>
+                    <TableCell>
+                      {record.status === 'completed' && (
+                        <Checkbox 
+                          checked={selectedIds.includes(record.id)} 
+                          onCheckedChange={() => handleToggleSelect(record.id)}
+                        />
+                      )}
+                    </TableCell>
+                    <TableCell className="font-medium">
+                      {record.completed_at 
+                        ? format(new Date(record.completed_at), 'dd/MM/yyyy', { locale: ptBR })
+                        : format(new Date(record.started_at), 'dd/MM/yyyy', { locale: ptBR })}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex flex-col">
+                        <span className="font-semibold">{record.machine?.name}</span>
+                        <span className="text-[10px] text-muted-foreground">{record.machine?.code}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="outline" className="text-[10px] uppercase font-bold tracking-wider">
+                        {record.maintenance_type_id.replace('tpm-', '')}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2 text-sm">
+                        <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center text-[10px] font-bold text-primary">
+                          {(record.performed_by_name || 'N').charAt(0)}
+                        </div>
+                        {record.performed_by_name || 'Técnico Externo'}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <span className="text-sm font-mono">{record.downtime_minutes} min</span>
+                    </TableCell>
+                    <TableCell>{getStatusBadge(record.status)}</TableCell>
+                    <TableCell className="text-right">
+                      <Button 
+                        size="sm" 
+                        variant="ghost" 
+                        className="hover:bg-primary/10 hover:text-primary transition-colors"
+                        onClick={() => handleViewDetails(record.id)}
+                      >
+                        <Eye className="h-4 w-4 mr-1" /> Detalhes
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        ) : (
+          <div className="flex flex-col items-center justify-center py-20 text-muted-foreground bg-secondary/10 rounded-xl border border-dashed border-border/50">
+            <History className="h-16 w-16 mb-4 opacity-10" />
+            <p className="text-lg font-medium">Nenhum registro encontrado</p>
+            <p className="text-sm">Ajuste os filtros ou aguarde novas manutenções serem realizadas.</p>
           </div>
         )}
-      </CardContent>
 
-      <ExecutionDetailsModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} recordId={selectedRecordId} />
-      <BatchApprovalPreviewModal isOpen={isPreviewModalOpen} onClose={() => setIsPreviewModalOpen(false)} recordIds={selectedIds} onConfirm={async () => { /* Logic */ }} isProcessing={isBatchProcessing} />
+        <ExecutionDetailsModal 
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          recordId={selectedRecordId}
+        />
+
+        <BatchApprovalPreviewModal
+          isOpen={isPreviewModalOpen}
+          onClose={() => setIsPreviewModalOpen(false)}
+          recordIds={selectedIds}
+          onConfirm={confirmApproveBatch}
+          isProcessing={isBatchProcessing}
+        />
+      </CardContent>
     </Card>
   );
 }

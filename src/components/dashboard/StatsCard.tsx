@@ -71,8 +71,8 @@ function StatsCardComponent({
   if (compact) {
     return (
       <Card className={cn(
-        'group p-4 bg-card/40 backdrop-blur-md border-border/40 shadow-lg rounded-2xl overflow-hidden transition-all duration-300 ring-1 ring-white/5',
-        'hover:-translate-y-0.5 hover:bg-card/60',
+        'group p-3.5 glass-card card-shine transition-all duration-300',
+        'hover:-translate-y-0.5 hover:shadow-md',
         styles.glowClass,
         className
       )}>
@@ -105,8 +105,8 @@ function StatsCardComponent({
 
   return (
     <Card className={cn(
-      'group p-6 bg-card/40 backdrop-blur-md border-border/40 shadow-xl rounded-3xl overflow-hidden group hover:shadow-glow-primary/10 transition-all duration-500 ring-1 ring-white/5',
-      'hover:-translate-y-1',
+      'group p-5 glass-card card-shine transition-all duration-300',
+      'hover:-translate-y-1 hover:shadow-lg',
       styles.glowClass,
       className
     )}>

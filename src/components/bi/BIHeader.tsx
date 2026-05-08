@@ -14,18 +14,39 @@ interface BIHeaderProps {
 
 export function BIHeader({ comparisonMode, setComparisonMode, onNavigate }: BIHeaderProps) {
   return (
-    <div className="flex flex-col md:flex-row md:items-center gap-4">
-      <div className="flex items-center gap-2 glass-card px-4 py-2 rounded-xl border border-border/40 shadow-inner">
-        <Switch id="comparison-mode" checked={comparisonMode} onCheckedChange={setComparisonMode} />
-        <Label htmlFor="comparison-mode" className="text-sm font-bold cursor-pointer flex items-center gap-2 text-foreground/80">
-          <GitCompare className="h-4 w-4 text-primary" />
-          Modo Comparativo
-        </Label>
+    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div className="animate-slide-up">
+        <div className="flex items-center gap-3">
+          <h1 className="text-3xl font-bold font-display flex items-center gap-3">
+            <div className="p-2 rounded-xl bg-primary/10 shadow-glow-primary">
+              <BarChart3 className="h-8 w-8 text-primary" />
+            </div>
+            <span className="gradient-text">Business Intelligence</span>
+          </h1>
+          <FavoriteButton path="/bi" name="Business Intelligence" />
+        </div>
+        <p className="text-muted-foreground mt-1">
+          Visão executiva consolidada • Atualizado em {format(new Date(), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
+        </p>
       </div>
-      <Badge variant="outline" className="h-10 px-4 rounded-xl border-primary/20 bg-primary/5 animate-pulse-glow text-xs font-black tracking-widest uppercase text-primary">
-        <Activity className="h-3.5 w-3.5 mr-2" />
-        Real-time Matrix
-      </Badge>
+      <div className="flex items-center gap-4 animate-slide-left">
+        <FavoritesDropdown onNavigate={onNavigate} />
+        <Badge variant="outline" className="hidden md:flex gap-1.5 cursor-pointer hover:bg-muted transition-colors">
+          <Command className="h-3 w-3" />
+          <span className="text-xs">⌘K</span>
+        </Badge>
+        <div className="flex items-center gap-2 glass-card px-4 py-2 rounded-lg">
+          <Switch id="comparison-mode" checked={comparisonMode} onCheckedChange={setComparisonMode} />
+          <Label htmlFor="comparison-mode" className="text-sm cursor-pointer flex items-center gap-2">
+            <GitCompare className="h-4 w-4 text-primary" />
+            Comparar Períodos
+          </Label>
+        </div>
+        <Badge variant="outline" className="text-sm border-primary/30 bg-primary/5 animate-pulse-glow">
+          <Activity className="h-3 w-3 mr-1 text-primary" />
+          Dados em tempo real
+        </Badge>
+      </div>
     </div>
   );
 }

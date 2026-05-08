@@ -1,20 +1,33 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { format } from 'date-fns';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ptBR } from 'date-fns/locale';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
+import { 
   Edit, Clock, Wrench, ListOrdered, Package, Lightbulb,
   AlertTriangle, Info, CheckCircle2, FileDown, Copy,
-  QrCode, Zap, Droplets, MoveHorizontal, Thermometer,
-  CheckSquare, History, ShieldCheck, Activity, Settings2, Beaker
+  QrCode, Maximize2, Zap, Droplets, MoveHorizontal, Thermometer,
+  CheckSquare
 } from 'lucide-react';
 import { useTechnicalSheetDetails } from '@/hooks/useTechnicalSheets';
 import { KnowledgeSheetQRCode } from './KnowledgeSheetQRCode';
 import { toast } from 'sonner';
-import { cn } from '@/lib/utils';
 
 interface TechnicalSheetViewerProps {
   sheetId: string;
@@ -24,375 +37,506 @@ interface TechnicalSheetViewerProps {
 
 export const TechnicalSheetViewer = ({ sheetId, onEdit, onDuplicate }: TechnicalSheetViewerProps) => {
   const { sheet, steps, sheetMaterials, tips, isLoading } = useTechnicalSheetDetails(sheetId);
+  const [checklistMode, setChecklistMode] = useState(false);
+  const [completedSteps, setCompletedSteps] = useState<Set<string>>(new Set());
   const [showQR, setShowQR] = useState(false);
+
+  const toggleStep = (stepId: string) => {
+    setCompletedSteps(prev => {
+      const next = new Set(prev);
+      if (next.has(stepId)) next.delete(stepId);
+      else next.add(stepId);
+      return next;
+    });
+  };
 
   const handleExportPDF = async () => {
     if (!sheet) return;
     try {
       const { default: jsPDF } = await import('jspdf');
       const doc = new jsPDF();
-      
-      // Header
-      doc.setFontSize(22);
-      doc.setTextColor(30, 30, 30);
-      doc.text('FICHA TÉCNICA DE PRODUÇÃO', 105, 20, { align: 'center' });
-      
-      doc.setFontSize(10);
-      doc.setTextColor(100, 100, 100);
-      doc.text(`v${sheet.version || 1} • EMITIDO EM: ${format(new Date(), 'dd/MM/yyyy HH:mm')}`, 105, 28, { align: 'center' });
+      let y = 20;
 
-      // Basic Info
-      doc.setFontSize(14);
-      doc.setTextColor(0, 0, 0);
-      doc.text('1. INFORMAÇÕES GERAIS', 15, 45);
-      doc.setFontSize(11);
-      doc.text(`TÍTULO: ${sheet.title}`, 15, 55);
-      doc.text(`TÉCNICA: ${sheet.techniques?.name || '---'}`, 15, 62);
-      doc.text(`CATEGORIA: ${sheet.product_categories?.name || '---'}`, 15, 69);
-      doc.text(`MÁQUINA RECOMENDADA: ${sheet.machines?.name || '---'}`, 15, 76);
-      doc.text(`TEMPO ESTIMADO: ${sheet.estimated_time_minutes} min`, 15, 83);
+      doc.setFontSize(18);
+      doc.text(sheet.title, 14, y);
+      y += 10;
 
-      // Regulation
-      doc.setFontSize(14);
-      doc.text('2. PARÂMETROS DE REGULAGEM', 15, 100);
-      const settings = (sheet.machine_settings as any) || {};
-      const ranges = (sheet.settings_ranges as any) || {};
-      
-      doc.setFontSize(10);
-      let y = 110;
-      const fields = [
-        { label: 'PASSADAS RODO', key: 'squeegee_passes' },
-        { label: 'PRESSÃO', key: 'pressure' },
-        { label: 'VELOCIDADE', key: 'speed' },
-        { label: 'TEMPERATURA', key: 'temperature' }
-      ];
-
-      fields.forEach(f => {
-        const val = settings[f.key] || '---';
-        const range = ranges[f.key] ? `(Faixa: ${ranges[f.key].min || '0'} - ${ranges[f.key].max || '∞'})` : '';
-        doc.text(`${f.label}: ${val} ${range}`, 20, y);
-        y += 7;
-      });
-
-      // Consumables
-      doc.setFontSize(14);
-      doc.text('3. INSUMOS E CONSUMÍVEIS', 15, y + 10);
-      y += 20;
-      const consumables = (sheet.consumables as any[]) || [];
-      if (consumables.length > 0) {
-        consumables.forEach(c => {
-          doc.text(`• ${c.name} - Qtd: ${c.quantity}${c.alternative ? ` (Alt: ${c.alternative})` : ''}`, 20, y);
-          y += 7;
-        });
-      } else {
-        doc.text('Nenhum insumo específico listado.', 20, y);
-        y += 7;
+      if (sheet.description) {
+        doc.setFontSize(10);
+        const descLines = doc.splitTextToSize(sheet.description, 180);
+        doc.text(descLines, 14, y);
+        y += descLines.length * 5 + 5;
       }
 
-      // Steps
-      if (y > 240) { doc.addPage(); y = 20; }
-      doc.setFontSize(14);
-      doc.text('4. PASSOS DE PREPARAÇÃO / SETUP', 15, y + 10);
-      y += 20;
-      doc.setFontSize(10);
-      const setupLines = doc.splitTextToSize(sheet.setup_instructions || 'Nenhuma instrução de setup fornecida.', 170);
-      doc.text(setupLines, 20, y);
-      y += setupLines.length * 5 + 5;
+      if (sheet.techniques) {
+        doc.setFontSize(9);
+        doc.text(`Técnica: ${sheet.techniques.name}`, 14, y);
+        y += 6;
+      }
+      if (sheet.machines) {
+        doc.text(`Máquina: ${sheet.machines.name} (${sheet.machines.code})`, 14, y);
+        y += 6;
+      }
+      if (sheet.estimated_time_minutes) {
+        doc.text(`Tempo estimado: ${sheet.estimated_time_minutes} minutos`, 14, y);
+        y += 10;
+      }
 
-      // Quality
-      doc.setFontSize(14);
-      doc.text('5. CRITÉRIOS DE QUALIDADE', 15, y + 10);
-      y += 20;
-      const quality = (sheet.quality_checklist as any[]) || [];
-      if (quality.length > 0) {
-        quality.forEach(q => {
-          doc.text(`[ ] ${q.description}${q.required ? ' (OBRIGATÓRIO)' : ''}`, 20, y);
-          y += 7;
+      if (sheetMaterials.length > 0) {
+        doc.setFontSize(12);
+        doc.text('Materiais e Insumos', 14, y);
+        y += 7;
+        doc.setFontSize(9);
+        sheetMaterials.forEach(m => {
+          doc.text(`• ${m.name}${m.quantity ? ` (${m.quantity})` : ''}${m.specification ? ` - ${m.specification}` : ''}`, 18, y);
+          y += 5;
+          if (y > 270) { doc.addPage(); y = 20; }
+        });
+        y += 5;
+      }
+
+      if (steps.length > 0) {
+        doc.setFontSize(12);
+        doc.text('Passo a Passo', 14, y);
+        y += 7;
+        steps.forEach(step => {
+          if (y > 250) { doc.addPage(); y = 20; }
+          doc.setFontSize(10);
+          doc.text(`${step.step_number}. ${step.title}`, 14, y);
+          y += 6;
+          doc.setFontSize(9);
+          const stepLines = doc.splitTextToSize(step.description, 170);
+          doc.text(stepLines, 18, y);
+          y += stepLines.length * 5 + 3;
+          if (step.tips) {
+            doc.text(`💡 ${step.tips}`, 18, y);
+            y += 5;
+          }
+          if (step.warnings) {
+            doc.text(`⚠️ ${step.warnings}`, 18, y);
+            y += 5;
+          }
+          y += 3;
         });
       }
 
-      doc.save(`ficha-tecnica-${sheet.title.replace(/\s+/g, '-').toLowerCase()}.pdf`);
-      toast.success('Ficha Técnica exportada com sucesso!');
-    } catch (err) {
-      console.error(err);
+      if (tips.length > 0) {
+        if (y > 250) { doc.addPage(); y = 20; }
+        doc.setFontSize(12);
+        doc.text('Dicas e Observações', 14, y);
+        y += 7;
+        doc.setFontSize(9);
+        tips.forEach(tip => {
+          const prefix = tip.tip_type === 'warning' ? '⚠️' : tip.tip_type === 'important' ? 'ℹ️' : '💡';
+          const tipLines = doc.splitTextToSize(`${prefix} ${tip.content}`, 175);
+          doc.text(tipLines, 18, y);
+          y += tipLines.length * 5 + 3;
+          if (y > 270) { doc.addPage(); y = 20; }
+        });
+      }
+
+      doc.save(`ficha-${sheet.title.replace(/\s+/g, '-').toLowerCase()}.pdf`);
+      toast.success('PDF exportado com sucesso!');
+    } catch {
       toast.error('Erro ao gerar PDF');
     }
   };
 
-  if (isLoading) return null;
-  if (!sheet) return null;
+  if (isLoading) {
+    return (
+      <Card className="glass-card border-border/50 h-full flex items-center justify-center">
+        <div className="text-muted-foreground">Carregando...</div>
+      </Card>
+    );
+  }
+
+  if (!sheet) {
+    return (
+      <Card className="glass-card border-border/50 h-full flex items-center justify-center">
+        <div className="text-muted-foreground">Ficha não encontrada</div>
+      </Card>
+    );
+  }
+
+  const getTipIcon = (type: string) => {
+    switch (type) {
+      case 'warning': return <AlertTriangle className="h-4 w-4 text-destructive" />;
+      case 'important': return <Info className="h-4 w-4 text-primary" />;
+      default: return <Lightbulb className="h-4 w-4 text-accent-foreground" />;
+    }
+  };
+
+  const getTipBgColor = (type: string) => {
+    switch (type) {
+      case 'warning': return 'bg-destructive/10 border-destructive/30';
+      case 'important': return 'bg-primary/10 border-primary/30';
+      default: return 'bg-accent/30 border-accent/50';
+    }
+  };
+
+  const progress = steps.length > 0 ? Math.round((completedSteps.size / steps.length) * 100) : 0;
 
   return (
-    <div className="flex flex-col lg:flex-row gap-8 h-full animate-in fade-in slide-in-from-right-4 duration-700 relative">
-      <Card className="flex-1 flex flex-col border-border/40 bg-card/40 backdrop-blur-md shadow-2xl rounded-[2.5rem] overflow-hidden ring-1 ring-white/5">
-        <CardHeader className="p-8 pb-6 border-b border-border/20 bg-gradient-to-b from-primary/5 to-transparent">
-          <div className="flex items-start justify-between gap-6">
-            <div className="space-y-4">
-              <div className="flex items-center gap-2">
-                <Badge className="h-7 px-3 rounded-lg border font-black uppercase tracking-widest text-[10px] bg-primary/10 text-primary border-primary/20 shadow-glow-primary/10">
-                  VERSION {sheet.version || '1'}
-                </Badge>
+    <div className="flex flex-col lg:flex-row gap-4 h-full">
+      <Card className="glass-card border-border/50 flex-1 flex flex-col">
+        <CardHeader className="pb-4">
+          <div className="flex items-start justify-between">
+            <div className="flex-1">
+              <div className="flex items-center gap-2 mb-2 flex-wrap">
                 {sheet.techniques && (
-                  <Badge variant="outline" className="h-7 border-primary/20 bg-primary/5 text-[10px] font-black tracking-widest uppercase">
-                    {sheet.techniques.name}
+                  <Badge
+                    style={{ backgroundColor: `${sheet.techniques.color}20`, color: sheet.techniques.color, borderColor: `${sheet.techniques.color}50` }}
+                    className="border"
+                  >
+                    {sheet.techniques.short_name}
                   </Badge>
                 )}
                 {sheet.product_categories && (
-                  <Badge variant="secondary" className="h-7 bg-muted/50 text-[10px] font-bold uppercase">
-                    {sheet.product_categories.name}
-                  </Badge>
+                  <Badge variant="outline">{sheet.product_categories.name}</Badge>
+                )}
+                {sheet.materials && (
+                  <Badge variant="secondary">{sheet.materials.name}</Badge>
                 )}
               </div>
-              <CardTitle className="text-4xl font-black font-display tracking-tight text-foreground/90 uppercase leading-none">
-                {sheet.title}
-              </CardTitle>
+              <div className="flex items-center gap-3">
+                <CardTitle className="text-xl">{sheet.title}</CardTitle>
+                <Badge variant="outline" className="text-[10px] font-bold">v{sheet.version || '1'}</Badge>
+              <div className="flex items-center gap-2 mt-1">
+                <span className="text-[10px] text-muted-foreground uppercase font-semibold">Última atualização:</span>
+                <span className="text-[10px] text-muted-foreground">{format(new Date(sheet.updated_at), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}</span>
+              </div>
+            </div>
               {sheet.description && (
-                <p className="text-muted-foreground text-sm font-medium italic line-clamp-2 max-w-2xl">
-                  {sheet.description}
-                </p>
+                <p className="text-sm text-muted-foreground mt-2">{sheet.description}</p>
               )}
             </div>
-            <div className="flex gap-2 shrink-0">
-              <Button variant="ghost" size="icon" className="rounded-xl hover:bg-primary/10 hover:text-primary transition-all" onClick={() => setShowQR(!showQR)}>
-                <QrCode className="h-5 w-5" />
+            <div className="flex gap-1.5 flex-shrink-0">
+              {onDuplicate && (
+                <Button variant="ghost" size="icon" onClick={onDuplicate} title="Duplicar ficha">
+                  <Copy className="h-4 w-4" />
+                </Button>
+              )}
+              <Button variant="ghost" size="icon" onClick={() => setShowQR(!showQR)} title="QR Code">
+                <QrCode className="h-4 w-4" />
               </Button>
-              <Button variant="outline" size="sm" className="rounded-xl h-10 px-4 font-bold uppercase tracking-widest text-[10px] border-primary/20 hover:bg-primary/5" onClick={handleExportPDF}>
-                <FileDown className="h-4 w-4 mr-2" /> PDF
+              <Button variant="outline" size="sm" onClick={handleExportPDF} className="gap-1.5">
+                <FileDown className="h-4 w-4" />
+                <span className="hidden sm:inline">PDF</span>
               </Button>
               {onEdit && (
-                <Button size="sm" className="rounded-xl h-10 px-4 font-bold uppercase tracking-widest text-[10px] gradient-primary shadow-glow-primary/20" onClick={onEdit}>
-                  <Edit className="h-4 w-4 mr-2" /> Edit
+                <Button variant="outline" size="sm" onClick={onEdit} className="gap-1.5">
+                  <Edit className="h-4 w-4" />
+                  <span className="hidden sm:inline">Editar</span>
                 </Button>
               )}
             </div>
           </div>
+
+          <div className="flex items-center gap-4 mt-4 flex-wrap">
+            {sheet.estimated_time_minutes && (
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Clock className="h-4 w-4" />
+                <span>{sheet.estimated_time_minutes} minutos</span>
+              </div>
+            )}
+            {sheet.machines && (
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Wrench className="h-4 w-4" />
+                <span>{sheet.machines.name} ({sheet.machines.code})</span>
+              </div>
+            )}
+            {steps.length > 0 && (
+              <Button
+                variant={checklistMode ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => {
+                  setChecklistMode(!checklistMode);
+                  if (checklistMode) setCompletedSteps(new Set());
+                }}
+                className="gap-1.5 ml-auto"
+              >
+                <CheckCircle2 className="h-4 w-4" />
+                {checklistMode ? `${progress}%` : 'Checklist'}
+              </Button>
+            )}
+          </div>
+
+          {checklistMode && steps.length > 0 && (
+            <div className="mt-3">
+              <div className="h-2 rounded-full bg-muted overflow-hidden">
+                <div
+                  className="h-full rounded-full bg-primary transition-all duration-500"
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
+              <p className="text-xs text-muted-foreground mt-1">
+                {completedSteps.size} de {steps.length} passos concluídos
+              </p>
+            </div>
+          )}
         </CardHeader>
 
-        <CardContent className="p-0 overflow-hidden flex-1">
+        <Separator />
+
+        <CardContent className="flex-1 overflow-hidden p-0">
           <ScrollArea className="h-full">
-            <div className="p-8 space-y-12">
-              {/* Stats & Key Info */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                <div className="p-6 rounded-[2rem] bg-background/40 border border-border/20 shadow-sm">
-                  <div className="text-[10px] font-black uppercase text-muted-foreground mb-1 tracking-widest">Cycle Time</div>
-                  <div className="text-2xl font-black flex items-baseline gap-1">
-                    {sheet.estimated_time_minutes} <span className="text-sm font-bold text-muted-foreground">MIN</span>
+            <div className="p-6 space-y-8">
+              {/* Technical Settings Section */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {(sheet.ink_specifications || sheet.tooling_specifications) && (
+                  <div className="space-y-4">
+                    <h3 className="flex items-center gap-2 text-sm font-semibold text-primary">
+                      <Droplets className="h-4 w-4" />
+                      Insumos e Ferramental
+                    </h3>
+                    <div className="space-y-3">
+                      {sheet.ink_specifications && (
+                        <div className="p-3 rounded-lg bg-primary/5 border border-primary/10">
+                          <Label className="text-[10px] text-muted-foreground uppercase">Tinta / Solventes</Label>
+                          <p className="text-sm font-medium">{sheet.ink_specifications}</p>
+                        </div>
+                      )}
+                      {sheet.tooling_specifications && (
+                        <div className="p-3 rounded-lg bg-secondary/20 border border-border/30">
+                          <Label className="text-[10px] text-muted-foreground uppercase">Ferramental (Rodo/Lâmina)</Label>
+                          <p className="text-sm font-medium">{sheet.tooling_specifications}</p>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
-                <div className="p-6 rounded-[2rem] bg-background/40 border border-border/20 shadow-sm">
-                  <div className="text-[10px] font-black uppercase text-muted-foreground mb-1 tracking-widest">Workstation</div>
-                  <div className="text-xl font-black truncate">{sheet.machines?.name || 'Standard'}</div>
-                </div>
-                <div className="p-6 rounded-[2rem] bg-background/40 border border-border/20 shadow-sm">
-                  <div className="text-[10px] font-black uppercase text-muted-foreground mb-1 tracking-widest">Material</div>
-                  <div className="text-xl font-black truncate">{sheet.materials?.name || 'All'}</div>
-                </div>
-                <div className="p-6 rounded-[2rem] bg-primary/5 border border-primary/20 shadow-glow-primary/5">
-                  <div className="text-[10px] font-black uppercase text-primary mb-1 tracking-widest">Security</div>
-                  <div className="text-xl font-black text-primary flex items-center gap-2">
-                    <ShieldCheck className="h-5 w-5" /> VALID
-                  </div>
-                </div>
-              </div>
-              
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                {/* Parameters Section */}
-                <section className="space-y-6">
-                  <h3 className="text-lg font-black font-display uppercase tracking-widest flex items-center gap-2 border-l-4 border-primary pl-4">
-                    <Settings2 className="h-5 w-5 text-primary" /> Technical Parameters
-                  </h3>
-                  <div className="grid grid-cols-2 gap-4">
-                    {[
-                      { label: 'Squeegee Passes', key: 'squeegee_passes', icon: Activity },
-                      { label: 'Pressure', key: 'pressure', icon: Zap },
-                      { label: 'Speed', key: 'speed', icon: MoveHorizontal },
-                      { label: 'Temperature', key: 'temperature', icon: Thermometer },
-                    ].map((param) => {
-                      const val = (sheet.machine_settings as any)?.[param.key];
-                      const range = (sheet.settings_ranges as any)?.[param.key];
-                      return (
-                        <div key={param.key} className="p-5 rounded-2xl bg-card border border-border/20 shadow-sm space-y-3">
-                          <div className="flex items-center justify-between">
-                            <param.icon className="h-4 w-4 text-primary opacity-60" />
-                            <div className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">{param.label}</div>
+                )}
+
+                {sheet.machine_settings && Object.values(sheet.machine_settings).some(v => v) && (
+                  <div className="space-y-4">
+                    <h3 className="flex items-center gap-2 text-sm font-semibold text-amber-600">
+                      <Zap className="h-4 w-4" />
+                      Regulagem da Máquina
+                    </h3>
+                    <div className="grid grid-cols-2 gap-3">
+                      {['squeegee_passes', 'pressure', 'speed', 'temperature'].map((param) => {
+                        const labels: Record<string, string> = {
+                          squeegee_passes: 'Passadas',
+                          pressure: 'Pressão',
+                          speed: 'Velocidade',
+                          temperature: 'Temperatura'
+                        };
+                        const value = (sheet.machine_settings as any)?.[param];
+                        const range = (sheet.settings_ranges as any)?.[param];
+                        
+                        if (!value && (!range || (!range.min && !range.max))) return null;
+
+                        return (
+                          <div key={param} className="p-3 rounded-lg bg-amber-500/5 border border-amber-500/10">
+                            <Label className="text-[10px] text-muted-foreground uppercase flex items-center gap-1">
+                              {param === 'temperature' ? <Thermometer className="h-3 w-3" /> : param === 'squeegee_passes' ? <MoveHorizontal className="h-3 w-3" /> : <Zap className="h-3 w-3" />} {labels[param]}
+                            </Label>
+                            <p className="text-sm font-bold">{value || '-'}</p>
+                            {range && (range.min || range.max) && (
+                              <p className="text-[10px] text-muted-foreground mt-1 border-t border-amber-500/10 pt-1">
+                                Faixa: {range.min || '-'} a {range.max || '-'}
+                              </p>
+                            )}
                           </div>
-                          <div className="text-2xl font-black">{val || '---'}</div>
-                          {range && (range.min || range.max) && (
-                            <div className="flex items-center gap-2 text-[10px] font-bold text-primary/60 uppercase">
-                              <Info className="h-3 w-3" />
-                              Range: {range.min || '0'} - {range.max || '∞'}
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {sheet.setup_instructions && (
+                <div className="space-y-4">
+                  <h3 className="flex items-center gap-2 text-sm font-semibold text-blue-600">
+                    <Info className="h-4 w-4" />
+                    Setup e Preparação da Máquina
+                  </h3>
+                  <div className="p-4 rounded-lg bg-blue-500/5 border border-blue-500/10">
+                    <p className="text-sm whitespace-pre-wrap">{sheet.setup_instructions}</p>
+                  </div>
+                </div>
+              )}
+
+              {sheet.quality_checklist && sheet.quality_checklist.length > 0 && (
+                <div className="space-y-4">
+                  <h3 className="flex items-center gap-2 text-sm font-semibold text-emerald-600">
+                    <CheckSquare className="h-4 w-4" />
+                    Critérios de Qualidade
+                  </h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {sheet.quality_checklist.map((item) => (
+                      <div key={item.id} className="flex items-center gap-3 p-3 rounded-lg bg-emerald-500/5 border border-emerald-500/10">
+                        <CheckCircle2 className="h-4 w-4 text-emerald-600 flex-shrink-0" />
+                        <span className="text-sm font-medium">{item.description}</span>
+                        {item.required && <Badge variant="outline" className="ml-auto text-[8px] h-4">REQ</Badge>}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {(sheet.gap_specifications || sheet.quality_requirements || sheet.challenges_notes || sheet.failure_scenarios) && (
+                <>
+                  <Separator />
+                  <div className="space-y-6">
+                    <h3 className="flex items-center gap-2 text-sm font-semibold text-blue-600">
+                      <Info className="h-4 w-4" />
+                      Produção e Qualidade
+                    </h3>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {sheet.gap_specifications && (
+                        <div className="p-3 rounded-lg bg-blue-500/5 border border-blue-500/10">
+                          <Label className="text-[10px] text-muted-foreground uppercase font-bold">GAP / Distanciamento</Label>
+                          <p className="text-sm">{sheet.gap_specifications}</p>
+                        </div>
+                      )}
+                      {sheet.quality_requirements && (
+                        <div className="p-3 rounded-lg bg-emerald-500/5 border border-emerald-500/10">
+                          <Label className="text-[10px] text-muted-foreground uppercase font-bold text-emerald-700">Requisitos de Qualidade</Label>
+                          <p className="text-sm font-medium">{sheet.quality_requirements}</p>
+                        </div>
+                      )}
+                    </div>
+
+                    {sheet.challenges_notes && (
+                      <div className="p-3 rounded-lg bg-amber-500/5 border border-amber-500/10">
+                        <Label className="text-[10px] text-amber-700 uppercase font-bold flex items-center gap-1">
+                          <AlertTriangle className="h-3 w-3" /> Desafios Técnicos
+                        </Label>
+                        <p className="text-sm mt-1 whitespace-pre-wrap">{sheet.challenges_notes}</p>
+                      </div>
+                    )}
+
+                    {sheet.failure_scenarios && (
+                      <div className="p-3 rounded-lg bg-rose-500/5 border border-rose-500/10">
+                        <Label className="text-[10px] text-rose-700 uppercase font-bold flex items-center gap-1">
+                          <Info className="h-3 w-3" /> Cenários de Falha (Evitar Perdas)
+                        </Label>
+                        <p className="text-sm mt-1 text-rose-800 whitespace-pre-wrap">{sheet.failure_scenarios}</p>
+                      </div>
+                    )}
+                  </div>
+                </>
+              )}
+
+              <Separator />
+
+              {sheetMaterials.length > 0 && (
+                <div>
+                  <h3 className="flex items-center gap-2 text-sm font-semibold mb-3">
+                    <Package className="h-4 w-4 text-primary" />
+                    Materiais e Insumos
+                  </h3>
+                  <div className="grid grid-cols-2 gap-2">
+                    {sheetMaterials.map(material => (
+                      <div key={material.id} className="p-3 rounded-lg bg-muted/20 border border-border/30">
+                        <div className="font-medium text-sm">{material.name}</div>
+                        {material.specification && (
+                          <div className="text-xs text-muted-foreground mt-1">{material.specification}</div>
+                        )}
+                        {material.quantity && (
+                          <Badge variant="outline" className="mt-2 text-xs">{material.quantity}</Badge>
+                        )}
+                        {material.notes && (
+                          <div className="text-xs text-muted-foreground mt-2 italic">{material.notes}</div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {steps.length > 0 && (
+                <div>
+                  <h3 className="flex items-center gap-2 text-sm font-semibold mb-3">
+                    <ListOrdered className="h-4 w-4 text-primary" />
+                    Passo a Passo
+                  </h3>
+                  <div className="space-y-3">
+                    {steps.map(step => (
+                      <div
+                        key={step.id}
+                        className={`relative pl-8 pb-4 border-l-2 last:border-l-0 transition-opacity ${
+                          checklistMode && completedSteps.has(step.id)
+                            ? 'border-primary/50 opacity-60'
+                            : 'border-primary/30'
+                        }`}
+                      >
+                        {checklistMode ? (
+                          <div className="absolute -left-3 top-0">
+                            <Checkbox
+                              checked={completedSteps.has(step.id)}
+                              onCheckedChange={() => toggleStep(step.id)}
+                              className="h-6 w-6 rounded-full"
+                            />
+                          </div>
+                        ) : (
+                          <div className="absolute -left-3 top-0 w-6 h-6 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-xs font-bold">
+                            {step.step_number}
+                          </div>
+                        )}
+                        <div className={`p-4 rounded-lg bg-muted/20 border border-border/30 ${
+                          checklistMode && completedSteps.has(step.id) ? 'line-through decoration-muted-foreground/50' : ''
+                        }`}>
+                          <h4 className="font-medium text-sm">{step.title}</h4>
+                          <p className="text-sm text-muted-foreground mt-1 whitespace-pre-wrap">{step.description}</p>
+                          {step.tips && (
+                            <div className="mt-3 p-2 rounded bg-accent/30 border border-accent/50 flex items-start gap-2">
+                              <Lightbulb className="h-4 w-4 text-accent-foreground flex-shrink-0 mt-0.5" />
+                              <span className="text-xs text-accent-foreground">{step.tips}</span>
+                            </div>
+                          )}
+                          {step.warnings && (
+                            <div className="mt-2 p-2 rounded bg-destructive/10 border border-destructive/30 flex items-start gap-2">
+                              <AlertTriangle className="h-4 w-4 text-destructive flex-shrink-0 mt-0.5" />
+                              <span className="text-xs text-destructive">{step.warnings}</span>
                             </div>
                           )}
                         </div>
-                      );
-                    })}
+                      </div>
+                    ))}
                   </div>
+                </div>
+              )}
 
-                  <div className="space-y-4 pt-4">
-                    <div className="p-5 rounded-2xl bg-muted/30 border border-border/20 space-y-2">
-                      <div className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Ink & Chemicals</div>
-                      <div className="text-sm font-bold">{sheet.ink_specifications || 'Standard ink specification'}</div>
-                    </div>
-                    <div className="p-5 rounded-2xl bg-muted/30 border border-border/20 space-y-2">
-                      <div className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Tooling & Matrix</div>
-                      <div className="text-sm font-bold">{sheet.tooling_specifications || 'Standard tooling required'}</div>
-                    </div>
-                  </div>
-                </section>
-
-                {/* Setup & Preparation */}
-                <section className="space-y-6">
-                  <h3 className="text-lg font-black font-display uppercase tracking-widest flex items-center gap-2 border-l-4 border-amber-500 pl-4">
-                    <Wrench className="h-5 w-5 text-amber-500" /> Setup Instructions
+              {tips.length > 0 && (
+                <div>
+                  <h3 className="flex items-center gap-2 text-sm font-semibold mb-3">
+                    <Lightbulb className="h-4 w-4 text-accent-foreground" />
+                    Dicas e Observações
                   </h3>
-                  <div className="p-6 rounded-[2.5rem] bg-amber-500/5 border border-amber-500/10 space-y-4">
-                    <div className="text-sm font-medium leading-relaxed text-foreground/80 whitespace-pre-line">
-                      {sheet.setup_instructions || 'Please follow standard workstation preparation protocols.'}
-                    </div>
-                    {(sheet.gap_specifications || sheet.challenges_notes) && (
-                      <div className="pt-4 border-t border-amber-500/10 space-y-3">
-                        {sheet.gap_specifications && (
-                          <div className="flex items-start gap-2 text-xs">
-                            <Badge variant="outline" className="text-[9px] h-5 border-amber-500/30 text-amber-600">GAPS</Badge>
-                            <span className="font-bold">{sheet.gap_specifications}</span>
-                          </div>
-                        )}
-                        {sheet.challenges_notes && (
-                          <div className="flex items-start gap-2 text-xs">
-                            <Badge variant="outline" className="text-[9px] h-5 border-amber-500/30 text-amber-600">RISKS</Badge>
-                            <span className="font-bold">{sheet.challenges_notes}</span>
-                          </div>
-                        )}
+                  <div className="space-y-2">
+                    {tips.map(tip => (
+                      <div
+                        key={tip.id}
+                        className={`p-3 rounded-lg border flex items-start gap-2 ${getTipBgColor(tip.tip_type)}`}
+                      >
+                        {getTipIcon(tip.tip_type)}
+                        <span className="text-sm">{tip.content}</span>
                       </div>
-                    )}
+                    ))}
                   </div>
+                </div>
+              )}
 
-                  {/* Failure Scenarios */}
-                  {sheet.failure_scenarios && (
-                    <div className="p-6 rounded-[2.5rem] bg-destructive/5 border border-destructive/10 space-y-3">
-                      <h4 className="text-[10px] font-black uppercase text-destructive tracking-widest flex items-center gap-2">
-                        <AlertTriangle className="h-4 w-4" /> Potential Failures & Mitigations
-                      </h4>
-                      <div className="text-sm font-medium text-destructive/80 italic">
-                        {sheet.failure_scenarios}
-                      </div>
-                    </div>
+              {steps.length === 0 && sheetMaterials.length === 0 && tips.length === 0 && (
+                <div className="text-center py-8 text-muted-foreground">
+                  <p>Esta ficha técnica ainda não possui conteúdo detalhado.</p>
+                  {onEdit && (
+                    <Button variant="link" onClick={onEdit} className="mt-2">
+                      Adicionar conteúdo
+                    </Button>
                   )}
-                </section>
-              </div>
-
-              <Separator className="opacity-20" />
-
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                {/* Steps Section */}
-                <section className="space-y-6">
-                  <h3 className="text-lg font-black font-display uppercase tracking-widest flex items-center gap-2 border-l-4 border-primary pl-4">
-                    <ListOrdered className="h-5 w-5 text-primary" /> Execution Workflow
-                  </h3>
-                  <div className="space-y-4">
-                    {steps.length === 0 ? (
-                      <div className="text-center p-8 border border-dashed rounded-3xl opacity-50 italic text-sm">No workflow steps defined.</div>
-                    ) : (
-                      steps.map((step, idx) => (
-                        <div key={step.id} className="group p-6 rounded-[2rem] bg-card border border-border/20 flex gap-5 transition-all hover:border-primary/30 hover:shadow-lg">
-                          <div className="h-12 w-12 shrink-0 flex items-center justify-center rounded-2xl bg-primary/10 text-primary font-black text-xl group-hover:scale-110 transition-transform">
-                            {idx + 1}
-                          </div>
-                          <div className="space-y-1">
-                            <div className="font-black uppercase tracking-tight text-sm">{step.title}</div>
-                            <div className="text-sm text-muted-foreground font-medium leading-relaxed">{step.description}</div>
-                          </div>
-                        </div>
-                      ))
-                    )}
-                  </div>
-                </section>
-
-                {/* Quality Checklist */}
-                <section className="space-y-6">
-                  <h3 className="text-lg font-black font-display uppercase tracking-widest flex items-center gap-2 border-l-4 border-emerald-500 pl-4">
-                    <ShieldCheck className="h-5 w-5 text-emerald-500" /> Quality Assurance
-                  </h3>
-                  <div className="space-y-4">
-                    {(sheet.quality_checklist as any[])?.length === 0 ? (
-                      <div className="text-center p-8 border border-dashed rounded-3xl opacity-50 italic text-sm">No quality criteria defined.</div>
-                    ) : (
-                      (sheet.quality_checklist as any[])?.map((item, idx) => (
-                        <div key={idx} className="p-5 rounded-2xl bg-emerald-500/5 border border-emerald-500/10 flex items-center gap-4">
-                          <div className="h-6 w-6 rounded-full bg-emerald-500/20 flex items-center justify-center">
-                            <CheckCircle2 className="h-4 w-4 text-emerald-600" />
-                          </div>
-                          <div className="flex-1 text-sm font-bold uppercase tracking-tight">{item.description}</div>
-                          {item.required && (
-                            <Badge className="bg-emerald-600 text-[8px] font-black tracking-widest uppercase">Required</Badge>
-                          )}
-                        </div>
-                      ))
-                    )}
-                    {sheet.quality_requirements && (
-                      <div className="p-5 rounded-2xl bg-muted/30 border border-border/20 text-xs font-medium italic opacity-70">
-                        Note: {sheet.quality_requirements}
-                      </div>
-                    )}
-                  </div>
-                </section>
-              </div>
+                </div>
+              )}
             </div>
           </ScrollArea>
         </CardContent>
       </Card>
 
-      <aside className="w-full lg:w-[380px] flex flex-col gap-8 shrink-0">
-        {/* Consumables Card */}
-        <Card className="p-8 rounded-[2.5rem] bg-card/40 border-border/40 backdrop-blur-md shadow-xl flex flex-col">
-          <CardTitle className="text-lg font-black uppercase tracking-widest mb-8 flex items-center gap-2 border-b border-border/20 pb-4">
-            <Beaker className="h-5 w-5 text-primary" /> Required Supplies
-          </CardTitle>
-          <div className="space-y-4 flex-1">
-            {(sheet.consumables as any[])?.length === 0 ? (
-              <div className="text-center p-6 border border-dashed rounded-2xl opacity-50 italic text-[10px] uppercase">No supplies listed.</div>
-            ) : (
-              (sheet.consumables as any[])?.map((c, idx) => (
-                <div key={idx} className="p-4 rounded-2xl bg-background/50 border border-border/20 flex flex-col gap-2 transition-all hover:ring-1 hover:ring-primary/30">
-                  <div className="flex items-center justify-between">
-                    <span className="font-black text-xs uppercase tracking-tight">{c.name}</span>
-                    <Badge variant="secondary" className="font-black text-[10px]">{c.quantity}</Badge>
-                  </div>
-                  {c.alternative && (
-                    <div className="text-[10px] font-bold text-muted-foreground flex items-center gap-1 mt-1">
-                      <MoveHorizontal className="h-3 w-3" /> ALT: {c.alternative}
-                    </div>
-                  )}
-                </div>
-              ))
-            )}
-          </div>
-        </Card>
-
-        {/* Tips Section */}
-        <Card className="p-8 rounded-[2.5rem] bg-primary/5 border-primary/20 shadow-glow-primary/5">
-          <CardTitle className="text-lg font-black uppercase tracking-widest mb-6 flex items-center gap-2">
-            <Lightbulb className="h-5 w-5 text-primary" /> Pro Tips
-          </CardTitle>
-          <div className="space-y-4">
-            {tips.length === 0 ? (
-              <div className="text-xs opacity-50 italic">No expert tips available for this protocol.</div>
-            ) : (
-              tips.map(tip => (
-                <div key={tip.id} className="p-4 rounded-xl bg-background/40 border border-primary/10 text-xs font-medium leading-relaxed italic border-l-4 border-l-primary">
-                  "{tip.content}"
-                </div>
-              ))
-            )}
-          </div>
-        </Card>
-      </aside>
-
       {showQR && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm animate-in fade-in zoom-in-95" onClick={() => setShowQR(false)}>
-          <div className="relative" onClick={e => e.stopPropagation()}>
-            <KnowledgeSheetQRCode sheetId={sheetId} title={sheet.title} />
-          </div>
+        <div className="w-full lg:w-56 flex-shrink-0">
+          <KnowledgeSheetQRCode sheetId={sheetId} title={sheet.title} />
         </div>
       )}
     </div>

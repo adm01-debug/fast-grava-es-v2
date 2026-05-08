@@ -64,8 +64,7 @@ export const navGroups: NavGroup[] = [
   { id: 'system', icon: Cog, label: 'Sistema', items: [
     { icon: AlertTriangle, label: 'Alertas', href: '/alerts' },
     { icon: Bell, label: 'Notificações', href: '/notifications' },
-    { icon: ShieldCheck, label: 'Audit Trail', href: '/audit' },
-    { icon: Users, label: 'Governance', href: '/admin/users' },
+    { icon: ShieldCheck, label: 'Trilha de Auditoria', href: '/audit' },
     { icon: QrCode, label: 'Scanner QR', href: '/scanner' },
     { icon: Settings, label: 'Configurações', href: '/settings' },
   ]},

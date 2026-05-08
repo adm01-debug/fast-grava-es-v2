@@ -6,7 +6,6 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { DbJob } from '@/hooks/useJobs';
@@ -38,7 +37,6 @@ type AllowedField = typeof ALLOWED_OPERATOR_FIELDS[number];
 interface SanitizedPayload {
   produced_quantity?: number;
   lost_pieces?: number;
-  loss_category?: string | null;
   actual_start_time?: string;
   actual_end_time?: string;
   production_photos?: string[] | null;
@@ -52,7 +50,6 @@ interface SanitizedPayload {
 function sanitizeOperatorPayload(data: {
   produced_quantity?: number;
   lost_pieces?: number;
-  loss_category?: string | null;
   actual_start_time?: string;
   actual_end_time?: string;
   production_photos?: string[] | null;
@@ -61,13 +58,24 @@ function sanitizeOperatorPayload(data: {
 }): SanitizedPayload {
   const sanitized: SanitizedPayload = {};
   
-  if (data.produced_quantity !== undefined) sanitized.produced_quantity = data.produced_quantity;
-  if (data.lost_pieces !== undefined) sanitized.lost_pieces = data.lost_pieces;
-  if (data.loss_category !== undefined) sanitized.loss_category = data.loss_category;
-  if (data.actual_start_time !== undefined) sanitized.actual_start_time = data.actual_start_time;
-  if (data.actual_end_time !== undefined) sanitized.actual_end_time = data.actual_end_time;
-  if (data.production_photos !== undefined) sanitized.production_photos = data.production_photos;
-  if (data.notes !== undefined) sanitized.notes = data.notes;
+  if (data.produced_quantity !== undefined) {
+    sanitized.produced_quantity = data.produced_quantity;
+  }
+  if (data.lost_pieces !== undefined) {
+    sanitized.lost_pieces = data.lost_pieces;
+  }
+  if (data.actual_start_time !== undefined) {
+    sanitized.actual_start_time = data.actual_start_time;
+  }
+  if (data.actual_end_time !== undefined) {
+    sanitized.actual_end_time = data.actual_end_time;
+  }
+  if (data.production_photos !== undefined) {
+    sanitized.production_photos = data.production_photos;
+  }
+  if (data.notes !== undefined) {
+    sanitized.notes = data.notes;
+  }
   
   return sanitized;
 }
@@ -86,7 +94,6 @@ export function ProductionRegistrationModal({
   const [producedQuantity, setProducedQuantity] = useState<number>(0);
   const [lostPieces, setLostPieces] = useState<number>(0);
   const [notes, setNotes] = useState('');
-  const [lossCategory, setLossCategory] = useState<string | null>(null);
   const [photos, setPhotos] = useState<string[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -99,7 +106,6 @@ export function ProductionRegistrationModal({
       setProducedQuantity(job.quantity);
       setLostPieces(job.lost_pieces || 0);
       setNotes(job.notes || '');
-      setLossCategory(job.loss_category || null);
       setPhotos([]);
     }
     onOpenChange(open);
@@ -168,11 +174,11 @@ export function ProductionRegistrationModal({
       const rawPayload = {
         actual_end_time: new Date().toISOString(),
         lost_pieces: lostPieces,
-        loss_category: lostPieces > 0 ? lossCategory : null,
         notes: notes || null,
         produced_quantity: producedQuantity,
         production_photos: photos.length > 0 ? photos : null,
-        status: 'finished',
+        // Campos que NÃO devem ser atualizados por operadores (serão filtrados)
+        status: 'finished', // Será removido pelo sanitizer
       };
 
       // SANITIZAR: garantir que apenas campos permitidos sejam enviados
@@ -275,24 +281,7 @@ export function ProductionRegistrationModal({
               </p>
             </div>
 
-            {/* Loss Category */}
-            {lostPieces > 0 && (
-              <div className="space-y-2 animate-in slide-in-from-top-2 duration-300">
-                <Label htmlFor="loss_category">Motivo da Perda</Label>
-                <Select value={lossCategory || ''} onValueChange={setLossCategory}>
-                  <SelectTrigger className="bg-background">
-                    <SelectValue placeholder="Selecione o motivo..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="setup_error">Erro de Setup</SelectItem>
-                    <SelectItem value="material_defect">Defeito de Material</SelectItem>
-                    <SelectItem value="machine_fail">Falha de Máquina</SelectItem>
-                    <SelectItem value="process_deviation">Desvio de Processo</SelectItem>
-                    <SelectItem value="other">Outros</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
+            {/* Notes */}
             <div className="space-y-2">
               <Label htmlFor="notes">Observações</Label>
               <Textarea

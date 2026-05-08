@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useLocation, Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ChevronLeft, ChevronRight, Printer, Plus, LogOut, Terminal } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Printer, Plus, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { prefetchRoute } from '@/lib/prefetch';
 import { Button } from '@/components/ui/button';
@@ -42,7 +42,7 @@ export function AppSidebar() {
 
   const filteredNavGroups = useMemo(() => {
     const opPaths = ['/operator', '/alerts', '/assistant', '/scanner', '/knowledge', '/shift-handover'];
-    const mgrPaths = ['/', '/bi', '/executive', '/calendar/daily', '/calendar/weekly', '/calendar/monthly', '/kpis', '/oee', '/abc', '/spc', '/tpm', '/ml-predictions', '/alerts', '/notifications', '/efficiency', '/operators', '/operators/productivity', '/machines', '/energy', '/traceability', '/assistant', '/knowledge', '/documents', '/shift-handover', '/gamification', '/settings', '/security', '/kanban', '/new-job', '/audit', '/admin/users'];
+    const mgrPaths = ['/', '/bi', '/executive', '/calendar/daily', '/calendar/weekly', '/calendar/monthly', '/kpis', '/oee', '/abc', '/spc', '/tpm', '/ml-predictions', '/alerts', '/notifications', '/efficiency', '/operators', '/operators/productivity', '/machines', '/energy', '/traceability', '/assistant', '/knowledge', '/documents', '/shift-handover', '/gamification', '/settings', '/security', '/kanban', '/new-job'];
     return navGroups.map(g => ({ ...g, items: g.items.filter(i => { if (role === 'operator') return opPaths.includes(i.href); if (role === 'manager') return mgrPaths.includes(i.href); return true; }) })).filter(g => g.items.length > 0);
   }, [role]);
 
@@ -61,28 +61,22 @@ export function AppSidebar() {
       <aside
         ref={isMobile ? focusTrapRef : undefined}
         className={cn(
-          'flex flex-col h-screen bg-sidebar transition-all duration-500 ease-in-out',
-          'dark:bg-gradient-to-b dark:from-sidebar/95 dark:to-background',
-          'backdrop-blur-xl border-r border-sidebar-border/40',
-          'shadow-[1px_0_10px_-2px_hsl(var(--primary)/0.05)] dark:shadow-[4px_0_24px_-4px_hsl(0_0%_0%/0.4)]',
-          'hidden md:flex', collapsed ? 'w-24' : 'w-80',
-          isMobile && 'fixed inset-y-0 left-0 z-50 w-80',
-          isMobile && (mobileOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'),
+          'flex flex-col h-screen bg-sidebar border-r border-sidebar-border transition-all duration-300',
+          'dark:bg-gradient-to-b dark:from-sidebar dark:via-sidebar dark:to-background',
+          'shadow-[2px_0_12px_-4px_hsl(220_10%_12%/0.08)] dark:shadow-[2px_0_20px_-4px_hsl(0_0%_0%/0.3)]',
+          'hidden md:flex', collapsed ? 'w-16' : 'w-64',
+          isMobile && 'fixed inset-y-0 left-0 z-50 w-72',
+          isMobile && (mobileOpen ? 'translate-x-0' : '-translate-x-full'),
           isMobile && 'flex'
         )}
         role="navigation" aria-label="Menu principal" id="navigation"
       >
         {/* Header */}
-        <div className={cn('flex items-center h-24 px-8 border-b border-primary/10 bg-primary/[0.02]', collapsed && !isMobile ? 'justify-center' : 'justify-between')}>
+        <div className={cn('flex items-center h-16 px-4 border-b border-sidebar-border', collapsed && !isMobile ? 'justify-center' : 'justify-between')}>
           {(!collapsed || isMobile) && (
-            <div className="flex items-center gap-4 animate-in fade-in duration-500">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary to-primary-glow flex items-center justify-center shadow-[0_0_30px_hsl(var(--primary)/0.4)] ring-4 ring-primary/20 scale-110 group cursor-pointer transition-all duration-500 active:scale-95 hover:rotate-6">
-                <Terminal className="w-6 h-6 text-primary-foreground group-hover:scale-110 transition-transform" />
-              </div>
-              <div className="space-y-0.5">
-                <h1 className="font-display font-black text-sidebar-foreground text-xl tracking-tighter leading-none">Fast Gravações</h1>
-                <p className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Master Console</p>
-              </div>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center glow-primary shadow-lg"><Printer className="w-5 h-5 text-primary-foreground" /></div>
+              <div><h1 className="font-display font-bold text-sidebar-foreground text-base tracking-tight">Fast Gravações</h1><p className="text-[10px] font-medium text-primary/60 uppercase tracking-widest">Sistema de Gestão</p></div>
             </div>
           )}
           {!isMobile && (
@@ -93,39 +87,34 @@ export function AppSidebar() {
         </div>
 
         {role !== 'operator' && (
-          <div className={cn('p-6', collapsed && !isMobile && 'px-4')}>
+          <div className={cn('p-3', collapsed && !isMobile && 'px-2')}>
             <Link to="/new-job" onMouseEnter={handleNewJobPrefetch} onFocus={handleNewJobPrefetch}>
-              <Button className={cn(
-                'w-full h-14 gap-3 bg-gradient-to-r from-primary via-primary-glow to-primary hover:shadow-glow-primary transition-all duration-500 shadow-xl rounded-2xl font-black border-0 uppercase tracking-widest text-[10px]',
-                collapsed && !isMobile && 'px-0 justify-center h-12'
-              )}>
-                <Plus className="h-5 w-5" />{(!collapsed || isMobile) && <span>Operations Launch</span>}
+              <Button className={cn('w-full gap-2 gradient-primary hover:opacity-90 transition-opacity glow-primary focus:ring-2 focus:ring-primary focus:ring-offset-2', collapsed && !isMobile && 'px-0')}>
+                <Plus className="h-4 w-4" />{(!collapsed || isMobile) && <span>Novo Agendamento</span>}
               </Button>
             </Link>
           </div>
         )}
 
-        <nav className="flex-1 overflow-y-auto scrollbar-hide px-5 py-4 space-y-3" id="main-navigation">
+        <nav className="flex-1 overflow-y-auto scrollbar-thin p-2 space-y-1" id="main-navigation">
           {filteredNavGroups.map(group => <NavGroupComponent key={group.id} group={group} collapsed={collapsed} isMobile={isMobile} isActive={isActive} alertCount={alertCount} openGroups={openGroups} toggleGroup={toggleGroup} />)}
           {filteredAdminNavItems.length > 0 && (
             <>
-              <div className="my-8 border-t border-primary/10 shadow-[0_1px_0_hsl(0_0%_100%/0.05)]" />
-              {(!collapsed || isMobile) && <p className="text-[10px] font-black text-primary/30 uppercase tracking-[0.4em] px-8 py-5">Core Systems</p>}
-              <div className="px-2 space-y-2">
-                {filteredAdminNavItems.map(item => <NavButton key={item.href} item={item} collapsed={collapsed} isMobile={isMobile} isActive={isActive(item.href)} />)}
-              </div>
+              <div className="my-4 border-t border-sidebar-border/50" />
+              {(!collapsed || isMobile) && <p className="text-xs font-medium text-sidebar-foreground/30 uppercase tracking-wider px-3 py-2">Administração</p>}
+              {filteredAdminNavItems.map(item => <NavButton key={item.href} item={item} collapsed={collapsed} isMobile={isMobile} isActive={isActive(item.href)} />)}
             </>
           )}
         </nav>
 
-        <div className={cn('p-8 border-t border-primary/10 bg-gradient-to-t from-primary/[0.03] to-transparent', collapsed && !isMobile && 'p-2')}>
-          {(!collapsed || isMobile) && <div className="mb-6 px-1 scale-110 origin-left"><LanguageSwitcher /></div>}
-          <div className={cn('flex items-center gap-5 rounded-2xl p-5 bg-primary/[0.03] border border-primary/10 mb-4 shadow-[0_8px_30px_-10px_hsl(var(--primary)/0.1)] ring-1 ring-white/5 group cursor-default transition-all duration-500 hover:bg-primary/[0.05]', collapsed && !isMobile && 'justify-center p-2')}>
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary/40 via-primary/20 to-primary/5 flex items-center justify-center text-primary font-black text-xl border border-primary/30 shadow-inner group-hover:scale-110 transition-transform duration-500">{profile?.full_name?.charAt(0)?.toUpperCase() || 'U'}</div>
-            {(!collapsed || isMobile) && <div className="flex-1 min-w-0"><p className="text-base font-black text-sidebar-foreground truncate tracking-tighter">{profile?.full_name || 'Usuário'}</p><p className="text-[10px] font-black text-primary/60 uppercase tracking-[0.25em]">{role === 'coordinator' ? 'Lead Architect' : role === 'manager' ? 'Global Manager' : 'Field Specialist'}</p></div>}
+        <div className={cn('p-3 border-t border-sidebar-border/50', collapsed && !isMobile && 'p-2')}>
+          {(!collapsed || isMobile) && <div className="mb-2 px-1"><LanguageSwitcher /></div>}
+          <div className={cn('flex items-center gap-3 rounded-lg p-2', collapsed && !isMobile && 'justify-center p-2')}>
+            <div className="w-9 h-9 rounded-full gradient-primary flex items-center justify-center text-primary-foreground font-semibold text-sm">{profile?.full_name?.charAt(0)?.toUpperCase() || 'U'}</div>
+            {(!collapsed || isMobile) && <div className="flex-1 min-w-0"><p className="text-sm font-medium text-sidebar-foreground truncate">{profile?.full_name || 'Usuário'}</p><p className="text-xs text-sidebar-foreground/40 truncate capitalize">{role === 'coordinator' ? 'Coordenador' : role === 'manager' ? 'Gestão' : 'Operador'}</p></div>}
           </div>
-          <Button variant="ghost" size={(collapsed && !isMobile) ? "icon" : "sm"} onClick={handleSignOut} className={cn('w-full h-14 mt-2 text-rose-500 hover:text-rose-600 hover:bg-rose-500/10 rounded-2xl transition-all duration-500 font-black border border-transparent hover:border-rose-500/30 active:scale-95 shadow-lg shadow-transparent hover:shadow-rose-500/10', collapsed && !isMobile && 'px-0')}>
-            <LogOut className="h-6 w-6" />{(!collapsed || isMobile) && <span className="ml-3 font-display uppercase tracking-[0.2em] text-[11px]">Terminate Session</span>}
+          <Button variant="ghost" size={(collapsed && !isMobile) ? "icon" : "sm"} onClick={handleSignOut} className={cn('w-full mt-2 text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-muted focus:ring-2 focus:ring-primary focus:ring-offset-2', collapsed && !isMobile && 'px-0')}>
+            <LogOut className="h-4 w-4" />{(!collapsed || isMobile) && <span className="ml-2">{t('common.logout')}</span>}
           </Button>
         </div>
       </aside>

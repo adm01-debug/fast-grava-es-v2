@@ -48,18 +48,13 @@ export const NavGroupComponent = memo(function NavGroupComponent({
       <Button
         variant="ghost"
         onClick={() => toggleGroup(group.id)}
-        className={cn(
-          "w-full justify-between gap-4 h-14 px-5 rounded-2xl transition-all duration-300", 
-          "hover:bg-primary/[0.08] hover:text-primary", 
-          "text-muted-foreground font-bold", 
-          hasActiveItem && "text-primary font-black bg-primary/[0.1] ring-1 ring-primary/30 scale-[1.04] shadow-[0_8px_24px_-4px_hsl(var(--primary)/0.15)] z-10"
-        )}
+        className={cn("w-full justify-between gap-3 h-10 px-3", "hover:bg-sidebar-muted/50 hover:text-sidebar-foreground", "text-sidebar-foreground/70", hasActiveItem && "text-sidebar-foreground font-medium")}
         aria-expanded={isOpen}
         aria-controls={`nav-group-${group.id}`}
       >
         <div className="flex items-center gap-3">
-          <Icon className={cn("h-6 w-6 shrink-0 transition-transform duration-300", hasActiveItem && "text-primary scale-110")} />
-          <span className="text-sm tracking-tight">{group.label}</span>
+          <Icon className={cn("h-4 w-4 shrink-0", hasActiveItem && "text-primary")} />
+          <span className="text-sm">{group.label}</span>
         </div>
         <motion.div animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.2 }}>
           <ChevronDown className="h-4 w-4 opacity-50" />
@@ -68,7 +63,7 @@ export const NavGroupComponent = memo(function NavGroupComponent({
       <AnimatePresence initial={false}>
         {isOpen && (
           <motion.div id={`nav-group-${group.id}`} initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.2, ease: "easeInOut" }} className="overflow-hidden">
-            <div className="pl-6 space-y-1.5 border-l-2 border-primary/10 ml-7 py-3">
+            <div className="pl-4 space-y-0.5 border-l-2 border-border/30 ml-5">
               {itemsWithBadge.map(item => <NavButton key={item.href} item={item} collapsed={false} isMobile={isMobile} isActive={isActive(item.href)} />)}
             </div>
           </motion.div>

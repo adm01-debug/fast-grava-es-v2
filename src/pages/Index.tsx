@@ -37,9 +37,7 @@ import {
   Clock,
   Cpu,
   MessageCircle,
-  FileText,
-  Activity,
-  ShieldAlert
+  FileText
 } from 'lucide-react';
 
 // Type definitions for widget components
@@ -154,20 +152,15 @@ const Index = () => {
       {/* Offline Banner */}
       <OfflineBanner />
       
-      <div className="container mx-auto p-4 sm:p-8 space-y-10 max-w-7xl animate-in fade-in duration-700">
+      <div className="h-full flex flex-col py-3 lg:py-4">
         {/* Compact Header */}
-        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6 border-b border-border/40 pb-8">
-          <div className="flex items-center gap-6">
-            <div className="w-2.5 h-14 rounded-full bg-gradient-to-b from-primary via-primary-glow to-primary shadow-glow-primary/40" />
-            <div className="space-y-1">
-              <h1 className="text-5xl font-display font-black tracking-tighter leading-none uppercase bg-clip-text text-transparent bg-gradient-to-r from-primary via-primary-glow to-primary drop-shadow-sm">
-                {t('dashboard.title')}
-              </h1>
-              <p className="text-[11px] font-black text-muted-foreground/60 uppercase tracking-[0.5em]">{profile?.full_name || 'System Intelligence'}</p>
-            </div>
-            <div className="ml-2 scale-125 origin-left">
-              <FavoriteButton path="/" name={t('dashboard.title')} />
-            </div>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5 px-1 shrink-0">
+          <div className="flex items-center gap-3">
+            <div className="w-1 h-8 rounded-full gradient-primary" />
+            <h1 className="text-2xl font-display font-bold tracking-tight">
+              <span className="gradient-text">{t('dashboard.title')}</span>
+            </h1>
+            <FavoriteButton path="/" name={t('dashboard.title')} />
             {isOperator && (
               <Badge variant="secondary" className="gap-1 text-xs glass">
                 <User className="h-3 w-3" />
@@ -212,64 +205,68 @@ const Index = () => {
             </div>
           }
         >
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-10 shrink-0 stagger-children">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5 shrink-0 stagger-children">
             <StatsCard
-              title="Active Queue"
+              title={t('dashboard.jobsQueue')}
               value={stats.todayScheduled.toString()}
-              subtitle="Planned for next 24h"
+              subtitle={`${stats.scheduled} ${t('jobs.statuses.scheduled')}`}
               icon={Calendar}
               variant="primary"
+              compact
             />
             <StatsCard
-              title="Live Units"
+              title={t('dashboard.jobsInProduction')}
               value={stats.inProgress.toString()}
-              subtitle={`${machines.length} nodes active`}
-              icon={Activity}
+              subtitle={`${machines.length} ${t('machines.title')}`}
+              icon={Printer}
               variant="info"
+              compact
             />
             <StatsCard
-              title="Global Output"
+              title={t('dashboard.jobsFinished')}
               value={stats.todayCompleted.toString()}
-              subtitle={`${stats.completedPieces.toLocaleString('pt-BR')} units finished`}
+              subtitle={`${stats.completedPieces.toLocaleString('pt-BR')} pçs`}
               icon={CheckCircle2}
               variant="success"
+              compact
             />
             <StatsCard
-              title="Integrity Risks"
+              title={t('alerts.types.warning')}
               value={stats.delayed.toString()}
-              subtitle={stats.delayed > 0 ? "Action required" : "All systems normal"}
-              icon={ShieldAlert}
+              subtitle={stats.delayed > 0 ? t('alerts.types.warning') : t('common.success')}
+              icon={AlertTriangle}
               variant="warning"
+              compact
             />
           </div>
         </ContentTransition>
 
         {/* Tabbed Dashboard Content - Takes remaining space */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col min-h-0">
-          <TabsList className="inline-flex h-14 items-center justify-start rounded-2xl bg-muted/30 p-1.5 backdrop-blur-xl border border-border/40 shadow-inner gap-1">
-            <TabsTrigger value="overview" className="h-11 rounded-xl px-6 text-sm font-semibold transition-all data-[state=active]:bg-background data-[state=active]:text-primary data-[state=active]:shadow-md">
+          <TabsList className="w-full justify-start glass p-1 h-auto shrink-0 rounded-xl gap-1">
+            <TabsTrigger value="overview" className="gap-2 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all duration-200">
               <LayoutDashboard className="h-4 w-4" />
               <span className="hidden sm:inline">Visão Geral</span>
             </TabsTrigger>
             {!isOperator && (
-              <TabsTrigger value="efficiency" className="h-11 rounded-xl px-6 text-sm font-semibold transition-all data-[state=active]:bg-background data-[state=active]:text-primary data-[state=active]:shadow-md">
+              <TabsTrigger value="efficiency" className="gap-2 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all duration-200">
                 <TrendingUp className="h-4 w-4" />
                 <span className="hidden sm:inline">Eficiência</span>
               </TabsTrigger>
             )}
-            <TabsTrigger value="timeline" className="h-11 rounded-xl px-6 text-sm font-semibold transition-all data-[state=active]:bg-background data-[state=active]:text-primary data-[state=active]:shadow-md">
+            <TabsTrigger value="timeline" className="gap-2 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all duration-200">
               <Clock className="h-4 w-4" />
               <span className="hidden sm:inline">Timeline</span>
             </TabsTrigger>
-            <TabsTrigger value="machines" className="h-11 rounded-xl px-6 text-sm font-semibold transition-all data-[state=active]:bg-background data-[state=active]:text-primary data-[state=active]:shadow-md">
+            <TabsTrigger value="machines" className="gap-2 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all duration-200">
               <Cpu className="h-4 w-4" />
               <span className="hidden sm:inline">Máquinas</span>
             </TabsTrigger>
-            <TabsTrigger value="chat" className="h-11 rounded-xl px-6 text-sm font-semibold transition-all data-[state=active]:bg-background data-[state=active]:text-primary data-[state=active]:shadow-md">
+            <TabsTrigger value="chat" className="gap-2 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all duration-200">
               <MessageCircle className="h-4 w-4" />
               <span className="hidden sm:inline">Chat</span>
             </TabsTrigger>
-            <TabsTrigger value="jobs" className="h-11 rounded-xl px-6 text-sm font-semibold transition-all data-[state=active]:bg-background data-[state=active]:text-primary data-[state=active]:shadow-md">
+            <TabsTrigger value="jobs" className="gap-2 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all duration-200">
               <Table2 className="h-4 w-4" />
               <span className="hidden sm:inline">Jobs</span>
             </TabsTrigger>

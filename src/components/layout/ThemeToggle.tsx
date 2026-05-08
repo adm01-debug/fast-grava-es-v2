@@ -2,7 +2,6 @@ import { Moon, Sun, Volume2, VolumeX } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
-import { cn } from '@/lib/utils';
 import { createPortal } from 'react-dom';
 import { useThemeSound } from '@/hooks/useThemeSound';
 import {
@@ -34,7 +33,7 @@ function ThemeTransitionOverlay({ isVisible, isDark }: { isVisible: boolean; isD
   );
 }
 
-export function ThemeToggle({ className }: { className?: string }) {
+export function ThemeToggle() {
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -89,11 +88,12 @@ export function ThemeToggle({ className }: { className?: string }) {
           <Button
             variant="ghost"
             size="icon"
-            className={cn(
-              "relative h-10 w-10 overflow-hidden transition-all duration-300 ease-out hover:bg-primary/5 rounded-xl border border-border/40",
-              isAnimating ? 'scale-95' : 'scale-100',
-              className
-            )}
+            className={`
+              relative h-9 w-9 overflow-hidden
+              transition-all duration-300 ease-out
+              hover:bg-accent/80
+              ${isAnimating ? 'scale-95' : 'scale-100'}
+            `}
             title={isDark ? 'Mudar para tema claro' : 'Mudar para tema escuro'}
           >
             {/* Sun icon */}

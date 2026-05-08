@@ -21,7 +21,6 @@ export interface DbJob {
   quantity: number;
   produced_quantity: number | null;
   technique_id: string;
-  product_category_id: string | null;
   machine_id: string | null;
   scheduled_date: string | null;
   start_time: string | null;
@@ -33,9 +32,6 @@ export interface DbJob {
   actual_start_time: string | null;
   actual_end_time: string | null;
   lost_pieces: number | null;
-  loss_category: string | null;
-  delay_reason: string | null;
-  rework_reason: string | null;
   priority: 'low' | 'medium' | 'high' | 'urgent';
   created_at: string;
   updated_at: string;

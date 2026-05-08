@@ -58,8 +58,8 @@ export function BIPeriodFilters({
   machineFilter, setMachineFilter, studios, collaborators, machines,
 }: BIPeriodFiltersProps) {
   return (
-    <Card className="border-border/40 bg-card/40 backdrop-blur-md shadow-2xl rounded-3xl overflow-hidden ring-1 ring-white/5">
-      <CardContent className="p-8">
+    <Card className="border-primary/20 bg-gradient-to-r from-primary/5 via-primary/10 to-xp/5 glass-card">
+      <CardContent className="pt-4 pb-4">
         <div className="space-y-4">
           {/* Period 1 */}
           <div className="flex flex-col sm:flex-row sm:items-center gap-4">
@@ -68,15 +68,9 @@ export function BIPeriodFilters({
               <Filter className="h-4 w-4 text-primary" />
               <span className="text-sm font-medium">Período 1:</span>
             </div>
-            <div className="flex flex-wrap items-center gap-3">
+            <div className="flex flex-wrap items-center gap-2">
               {(['7d', '30d', '90d'] as const).map(p => (
-                <Button 
-                  key={p} 
-                  variant={periodFilter === p ? 'default' : 'outline'} 
-                  size="sm" 
-                  onClick={() => setPeriodFilter(p)}
-                  className="h-10 px-5 rounded-xl font-bold transition-all"
-                >
+                <Button key={p} variant={periodFilter === p ? 'default' : 'outline'} size="sm" onClick={() => setPeriodFilter(p)}>
                   {p === '7d' ? '7 dias' : p === '30d' ? '30 dias' : '90 dias'}
                 </Button>
               ))}
@@ -117,7 +111,7 @@ export function BIPeriodFilters({
                 <LayoutGrid className="h-3.5 w-3.5" /> Studio
               </div>
               <Select value={studioFilter} onValueChange={setStudioFilter}>
-                <SelectTrigger className="h-12 bg-muted/20 border-border/40 rounded-xl font-semibold">
+                <SelectTrigger className="bg-background/50 border-primary/20">
                   <SelectValue placeholder="Todos os Studios" />
                 </SelectTrigger>
                 <SelectContent>
@@ -134,7 +128,7 @@ export function BIPeriodFilters({
                 <Users className="h-3.5 w-3.5" /> Colaborador
               </div>
               <Select value={collaboratorFilter} onValueChange={setCollaboratorFilter}>
-                <SelectTrigger className="h-12 bg-muted/20 border-border/40 rounded-xl font-semibold">
+                <SelectTrigger className="bg-background/50 border-primary/20">
                   <SelectValue placeholder="Todos os Colaboradores" />
                 </SelectTrigger>
                 <SelectContent>
@@ -151,7 +145,7 @@ export function BIPeriodFilters({
                 <Printer className="h-3.5 w-3.5" /> Máquina
               </div>
               <Select value={machineFilter} onValueChange={setMachineFilter}>
-                <SelectTrigger className="h-12 bg-muted/20 border-border/40 rounded-xl font-semibold">
+                <SelectTrigger className="bg-background/50 border-primary/20">
                   <SelectValue placeholder="Todas as Máquinas" />
                 </SelectTrigger>
                 <SelectContent>
