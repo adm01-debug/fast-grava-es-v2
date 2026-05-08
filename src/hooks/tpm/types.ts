@@ -77,6 +77,8 @@ export interface MaintenanceRecord {
   checklist_version: number | null;
   checklist_snapshot: any | null;
   created_at: string;
+  technical_sheet_id?: string | null;
+  adjustment_parameters?: any | null;
   schedule?: MaintenanceSchedule;
   machine?: { id: string; name: string; code: string; technique_id?: string };
 }
