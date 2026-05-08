@@ -1487,7 +1487,9 @@ export type Database = {
           machine_category: string | null
           maintenance_type_id: string
           name: string
+          technique_id: string | null
           updated_at: string
+          version: number | null
         }
         Insert: {
           created_at?: string
@@ -1497,7 +1499,9 @@ export type Database = {
           machine_category?: string | null
           maintenance_type_id: string
           name: string
+          technique_id?: string | null
           updated_at?: string
+          version?: number | null
         }
         Update: {
           created_at?: string
@@ -1507,7 +1511,9 @@ export type Database = {
           machine_category?: string | null
           maintenance_type_id?: string
           name?: string
+          technique_id?: string | null
           updated_at?: string
+          version?: number | null
         }
         Relationships: [
           {
@@ -1515,6 +1521,13 @@ export type Database = {
             columns: ["maintenance_type_id"]
             isOneToOne: false
             referencedRelation: "maintenance_types"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "maintenance_checklists_technique_id_fkey"
+            columns: ["technique_id"]
+            isOneToOne: false
+            referencedRelation: "techniques"
             referencedColumns: ["id"]
           },
         ]
@@ -3570,6 +3583,8 @@ export type Database = {
       }
       tpm_executions: {
         Row: {
+          checklist_snapshot: Json | null
+          checklist_version: number | null
           created_at: string | null
           duration_minutes: number | null
           finished_at: string | null
@@ -3584,6 +3599,8 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          checklist_snapshot?: Json | null
+          checklist_version?: number | null
           created_at?: string | null
           duration_minutes?: number | null
           finished_at?: string | null
@@ -3598,6 +3615,8 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          checklist_snapshot?: Json | null
+          checklist_version?: number | null
           created_at?: string | null
           duration_minutes?: number | null
           finished_at?: string | null
@@ -3977,6 +3996,7 @@ export type Database = {
         Row: {
           created_at: string | null
           email_enabled: boolean | null
+          event_configs: Json | null
           id: string
           machine_filters: string[] | null
           notification_types: string[] | null
@@ -3989,6 +4009,7 @@ export type Database = {
         Insert: {
           created_at?: string | null
           email_enabled?: boolean | null
+          event_configs?: Json | null
           id?: string
           machine_filters?: string[] | null
           notification_types?: string[] | null
@@ -4001,6 +4022,7 @@ export type Database = {
         Update: {
           created_at?: string | null
           email_enabled?: boolean | null
+          event_configs?: Json | null
           id?: string
           machine_filters?: string[] | null
           notification_types?: string[] | null
