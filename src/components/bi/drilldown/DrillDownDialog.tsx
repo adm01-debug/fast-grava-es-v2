@@ -118,34 +118,48 @@ export function DrillDownDialog({ open, onOpenChange, title, jobs, onExport }: D
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {jobs.length > 0 ? (
-                  jobs.map((job: any) => (
-                    <TableRow key={job.id} className="border-white/10 hover:bg-primary/5 transition-colors cursor-pointer" onClick={() => navigate(`/job/${job.id}`)}>
-                      <TableCell className="font-mono text-sm">{job.order_number}</TableCell>
-                      <TableCell className="text-xs">{job.product}</TableCell>
+                {filteredJobs.length > 0 ? (
+                  filteredJobs.map((job: any) => (
+                    <TableRow key={job.id} className="border-white/5 hover:bg-primary/10 transition-colors cursor-pointer group/row" onClick={() => navigate(`/job/${job.id}`)}>
+                      <TableCell className="font-mono text-sm font-bold group-hover:text-primary transition-colors">{job.order_number}</TableCell>
+                      <TableCell className="text-xs max-w-[200px] truncate">{job.product}</TableCell>
                       <TableCell className="text-center">
                         <Badge variant="outline" className={cn(
-                          "text-[10px] uppercase",
-                          job.status === 'finished' ? "text-emerald-400 border-emerald-400/30 bg-emerald-400/5" :
-                          job.status === 'production' ? "text-blue-400 border-blue-400/30 bg-blue-400/5" :
-                          "text-amber-400 border-amber-400/30 bg-amber-400/5"
+                          "text-[9px] uppercase tracking-tighter",
+                          job.status === 'finished' ? "text-emerald-400 border-emerald-400/30 bg-emerald-400/10" :
+                          job.status === 'production' ? "text-blue-400 border-blue-400/30 bg-blue-400/10" :
+                          job.status === 'delayed' ? "text-primary border-primary/30 bg-primary/10" :
+                          "text-amber-400 border-amber-400/30 bg-amber-400/10"
                         )}>
                           {job.status}
                         </Badge>
                       </TableCell>
-                      <TableCell className="text-center font-bold">{job.quantity}</TableCell>
-                      <TableCell className="text-right font-mono">
+                      <TableCell className="text-center font-bold text-white/90">{job.quantity}</TableCell>
+                      <TableCell className="text-right font-mono text-primary/80">
                         {job.efficiency}
                       </TableCell>
                     </TableRow>
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={5} className="text-center py-12 text-muted-foreground">
-                      Nenhum pedido encontrado para este filtro.
+                    <TableCell colSpan={5} className="text-center py-20 text-muted-foreground">
+                      <div className="flex flex-col items-center gap-2">
+                        <Filter className="h-8 w-8 text-muted-foreground/30" />
+                        <p>Nenhum pedido corresponde à sua pesquisa.</p>
+                        {searchTerm && (
+                          <Button 
+                            variant="link" 
+                            className="text-primary h-auto p-0" 
+                            onClick={() => setSearchTerm("")}
+                          >
+                            Limpar filtros
+                          </Button>
+                        )}
+                      </div>
                     </TableCell>
                   </TableRow>
                 )}
+
               </TableBody>
             </Table>
           </ScrollArea>
