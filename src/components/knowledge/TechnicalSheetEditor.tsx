@@ -93,6 +93,12 @@ export const TechnicalSheetEditor = ({ sheetId, techniques, categories, material
         pressure: formData.pressure,
         speed: formData.speed,
         temperature: formData.temperature,
+      },
+      settings_ranges: {
+        squeegee_passes: { min: formData.squeegee_passes_min, max: formData.squeegee_passes_max },
+        pressure: { min: formData.pressure_min, max: formData.pressure_max },
+        speed: { min: formData.speed_min, max: formData.speed_max },
+        temperature: { min: formData.temperature_min, max: formData.temperature_max },
       }
     };
     if (isNew) { await createSheet.mutateAsync(payload); onClose(); }
