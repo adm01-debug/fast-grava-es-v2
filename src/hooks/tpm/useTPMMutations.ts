@@ -378,11 +378,11 @@ function approveBatch(queryClient: any) {
         try {
           // Aqui chamamos a lógica de aprovação individual para cada item do lote
           // No mundo real, faríamos um RPC para garantir atomicidade e validação em massa
-          const { error } = await supabase.rpc('approve_tpm_execution_batch', {
-            _record_id: id,
-            _approver_id: data.approver_id
+          // Call individual approve mutation logic for batch processing
+          await approveMaintenance.mutateAsync({
+            record_id: id,
+            approver_id: data.approver_id
           });
-          if (error) throw error;
           results.push(id);
         } catch (e) {
           console.error(`Falha ao aprovar item ${id}:`, e);
