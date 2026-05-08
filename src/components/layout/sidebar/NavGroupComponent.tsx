@@ -52,7 +52,7 @@ export const NavGroupComponent = memo(function NavGroupComponent({
           "w-full justify-between gap-4 h-14 px-5 rounded-2xl transition-all duration-300", 
           "hover:bg-primary/[0.08] hover:text-primary", 
           "text-muted-foreground font-bold", 
-          hasActiveItem && "text-primary font-black bg-primary/[0.08] ring-1 ring-primary/20 scale-[1.02] shadow-[0_4px_12px_-2px_hsl(var(--primary)/0.1)]"
+          hasActiveItem && "text-primary font-black bg-primary/[0.1] ring-1 ring-primary/30 scale-[1.04] shadow-[0_8px_24px_-4px_hsl(var(--primary)/0.15)] z-10"
         )}
         aria-expanded={isOpen}
         aria-controls={`nav-group-${group.id}`}
