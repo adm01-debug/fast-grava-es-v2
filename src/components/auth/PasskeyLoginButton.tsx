@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Fingerprint, Loader2 } from 'lucide-react';
 import { useWebAuthn } from '@/hooks/useWebAuthn';
@@ -13,14 +13,32 @@ export function PasskeyLoginButton({ email, onSuccess, className }: PasskeyLogin
   const { isSupported, isAuthenticating, authenticateWithPasskey } = useWebAuthn();
   const [isPlatformAvailable, setIsPlatformAvailable] = useState<boolean | null>(null);
 
-  // Check platform authenticator on mount
-  useState(() => {
-    if (isSupported && typeof PublicKeyCredential !== 'undefined') {
-      PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()
-        .then(setIsPlatformAvailable)
-        .catch(() => setIsPlatformAvailable(false));
-    }
-  });
+  // Check platform authenticator on mount with proper cleanup
+  useEffect(() => {
+    let isMounted = true;
+
+    const checkPlatform = async () => {
+      if (isSupported && typeof PublicKeyCredential !== 'undefined') {
+        try {
+          const available = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+          if (isMounted) {
+            setIsPlatformAvailable(available);
+          }
+        } catch (error) {
+          if (isMounted) {
+            console.error('Error checking platform authenticator:', error);
+            setIsPlatformAvailable(false);
+          }
+        }
+      }
+    };
+
+    checkPlatform();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [isSupported]);
 
   if (!isSupported) {
     return null;

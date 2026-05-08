@@ -1,10 +1,12 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { AlertTriangle, RefreshCw, Home } from 'lucide-react';
 import { Button } from './button';
+import { supabase } from '@/integrations/supabase/client';
 
 interface Props {
   children: ReactNode;
   fallback?: ReactNode;
+  componentName?: string;
 }
 
 interface State {
@@ -23,12 +25,32 @@ export class ErrorBoundary extends Component<Props, State> {
     return { hasError: true, error };
   }
 
-  componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
+  async componentDidCatch(error: Error, errorInfo: ErrorInfo): Promise<void> {
     this.setState({ errorInfo });
     
-    // Log error only in development
+    // Log error to console in development
     if (import.meta.env.DEV) {
       console.error('ErrorBoundary caught an error:', error, errorInfo);
+    }
+
+    // Automatically log error to database
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      await supabase.from('error_logs').insert({
+        message: error.message,
+        stack: error.stack,
+        component_name: this.props.componentName || 'Unknown Component',
+        url: window.location.href,
+        user_id: user?.id,
+        metadata: {
+          componentStack: errorInfo.componentStack,
+          userAgent: navigator.userAgent,
+          timestamp: new Date().toISOString()
+        }
+      });
+    } catch (logError) {
+      console.error('Failed to log error to database:', logError);
     }
   }
 
