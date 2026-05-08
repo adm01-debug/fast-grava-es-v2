@@ -11,7 +11,6 @@ export interface WebAuthnCredential {
   last_used_at: string | null;
 }
 
-// Convert ArrayBuffer to Base64URL string
 function bufferToBase64URL(buffer: ArrayBuffer): string {
   const bytes = new Uint8Array(buffer);
   let binary = '';
@@ -24,7 +23,6 @@ function bufferToBase64URL(buffer: ArrayBuffer): string {
     .replace(/=/g, '');
 }
 
-// Convert Base64URL string to ArrayBuffer
 function base64URLToBuffer(base64URL: string): ArrayBuffer {
   const base64 = base64URL.replace(/-/g, '+').replace(/_/g, '/');
   const padding = '='.repeat((4 - (base64.length % 4)) % 4);
@@ -36,7 +34,6 @@ function base64URLToBuffer(base64URL: string): ArrayBuffer {
   return bytes.buffer;
 }
 
-// Generate a random challenge
 function generateChallenge(): string {
   const array = new Uint8Array(32);
   crypto.getRandomValues(array);
@@ -62,12 +59,10 @@ export function useWebAuthn() {
   const safeSetIsRegistering = (val: boolean) => isMounted.current && setIsRegistering(val);
   const safeSetIsAuthenticating = (val: boolean) => isMounted.current && setIsAuthenticating(val);
 
-  // Check if WebAuthn is supported
   const isSupported = typeof window !== 'undefined' && 
     !!window.PublicKeyCredential &&
     typeof window.PublicKeyCredential === 'function';
 
-  // Check if platform authenticator is available (biometric)
   const checkPlatformAuthenticator = useCallback(async (): Promise<boolean> => {
     if (!isSupported) return false;
     try {
@@ -77,11 +72,10 @@ export function useWebAuthn() {
     }
   }, [isSupported]);
 
-  // Fetch user's registered credentials
   const fetchCredentials = useCallback(async () => {
     if (!user) return;
     
-    setIsLoading(true);
+    safeSetIsLoading(true);
     try {
       const { data, error } = await supabase
         .from('webauthn_credentials')
@@ -98,7 +92,6 @@ export function useWebAuthn() {
     }
   }, [user]);
 
-  // Register a new passkey
   const registerPasskey = useCallback(async (deviceName?: string): Promise<boolean> => {
     if (!user || !isSupported) {
       toast.error('WebAuthn não é suportado neste navegador');
@@ -108,8 +101,6 @@ export function useWebAuthn() {
     safeSetIsRegistering(true);
     try {
       const challenge = generateChallenge();
-      
-      // Store challenge in database
       const { error: challengeError } = await supabase
         .from('webauthn_challenges')
         .insert({
@@ -120,7 +111,6 @@ export function useWebAuthn() {
 
       if (challengeError) throw challengeError;
 
-      // Create credential options
       const publicKeyCredentialCreationOptions: PublicKeyCredentialCreationOptions = {
         challenge: base64URLToBuffer(challenge),
         rp: {
@@ -133,8 +123,8 @@ export function useWebAuthn() {
           displayName: user.email?.split('@')[0] || 'Usuário'
         },
         pubKeyCredParams: [
-          { alg: -7, type: 'public-key' },   // ES256
-          { alg: -257, type: 'public-key' }  // RS256
+          { alg: -7, type: 'public-key' },
+          { alg: -257, type: 'public-key' }
         ],
         timeout: 60000,
         attestation: 'none',
@@ -145,23 +135,17 @@ export function useWebAuthn() {
         }
       };
 
-      // Create credential
       const credential = await navigator.credentials.create({
         publicKey: publicKeyCredentialCreationOptions
       }) as PublicKeyCredential;
 
-      if (!credential) {
-        throw new Error('Falha ao criar credencial');
-      }
+      if (!credential) throw new Error('Falha ao criar credencial');
 
       const response = credential.response as AuthenticatorAttestationResponse;
-      
-      // Extract public key from attestation
       const credentialId = bufferToBase64URL(credential.rawId);
       const publicKey = bufferToBase64URL(response.getPublicKey?.() || response.attestationObject);
       const transports = response.getTransports?.() || [];
 
-      // Store credential in database
       const { error: insertError } = await supabase
         .from('webauthn_credentials')
         .insert({
@@ -175,7 +159,6 @@ export function useWebAuthn() {
 
       if (insertError) throw insertError;
 
-      // Clean up challenge
       await supabase
         .from('webauthn_challenges')
         .delete()
@@ -201,7 +184,6 @@ export function useWebAuthn() {
     }
   }, [user, isSupported, fetchCredentials]);
 
-  // Authenticate with passkey
   const authenticateWithPasskey = useCallback(async (email?: string): Promise<{ success: boolean; userId?: string }> => {
     if (!isSupported) {
       toast.error('WebAuthn não é suportado neste navegador');
@@ -211,8 +193,6 @@ export function useWebAuthn() {
     safeSetIsAuthenticating(true);
     try {
       const challenge = generateChallenge();
-      
-      // Store challenge
       const { error: challengeError } = await supabase
         .from('webauthn_challenges')
         .insert({
@@ -223,41 +203,29 @@ export function useWebAuthn() {
 
       if (challengeError) throw challengeError;
 
-      // For passkey authentication, we don't restrict to specific credentials
-      // The authenticator will show all available passkeys for this RP
-      const allowCredentials: PublicKeyCredentialDescriptor[] = [];
-      // Create assertion options
       const publicKeyCredentialRequestOptions: PublicKeyCredentialRequestOptions = {
         challenge: base64URLToBuffer(challenge),
         timeout: 60000,
         rpId: window.location.hostname,
-        userVerification: 'required',
-        ...(allowCredentials.length > 0 && { allowCredentials })
+        userVerification: 'required'
       };
 
-      // Get credential
       const assertion = await navigator.credentials.get({
         publicKey: publicKeyCredentialRequestOptions
       }) as PublicKeyCredential;
 
-      if (!assertion) {
-        throw new Error('Falha na autenticação');
-      }
+      if (!assertion) throw new Error('Falha na autenticação');
 
       const credentialId = bufferToBase64URL(assertion.rawId);
 
-      // Verify credential exists in database
       const { data: credData, error: credError } = await supabase
         .from('webauthn_credentials')
         .select('user_id, counter')
         .eq('credential_id', credentialId)
         .single();
 
-      if (credError || !credData) {
-        throw new Error('Credencial não encontrada');
-      }
+      if (credError || !credData) throw new Error('Credencial não encontrada');
 
-      // Update last used and counter
       await supabase
         .from('webauthn_credentials')
         .update({ 
@@ -266,7 +234,6 @@ export function useWebAuthn() {
         })
         .eq('credential_id', credentialId);
 
-      // Clean up challenge
       await supabase
         .from('webauthn_challenges')
         .delete()
@@ -287,11 +254,28 @@ export function useWebAuthn() {
       safeSetIsAuthenticating(false);
     }
   }, [isSupported]);
-...
-    } finally {
-      setIsLoading(false);
+
+  const removePasskey = useCallback(async (credentialId: string): Promise<boolean> => {
+    if (!user) return false;
+
+    try {
+      const { error } = await supabase
+        .from('webauthn_credentials')
+        .delete()
+        .eq('id', credentialId)
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+
+      toast.success('Passkey removida com sucesso');
+      await fetchCredentials();
+      return true;
+    } catch (error) {
+      if (import.meta.env.DEV) console.error('Error removing passkey:', error);
+      toast.error('Erro ao remover passkey');
+      return false;
     }
-  }, [user]);
+  }, [user, fetchCredentials]);
 
   return {
     credentials,
@@ -307,16 +291,13 @@ export function useWebAuthn() {
   };
 }
 
-// Helper to get device name
 function getDeviceName(): string {
   const ua = navigator.userAgent;
-  
   if (/iPhone/.test(ua)) return 'iPhone';
   if (/iPad/.test(ua)) return 'iPad';
   if (/Mac/.test(ua)) return 'Mac';
   if (/Android/.test(ua)) return 'Android';
   if (/Windows/.test(ua)) return 'Windows PC';
   if (/Linux/.test(ua)) return 'Linux';
-  
   return 'Dispositivo';
 }
