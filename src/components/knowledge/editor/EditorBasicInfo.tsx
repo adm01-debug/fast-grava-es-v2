@@ -3,6 +3,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ProductCategory, Material } from '@/hooks/useTechnicalSheets';
+import { Info } from 'lucide-react';
 
 interface EditorBasicInfoProps {
   formData: {
@@ -27,6 +28,10 @@ interface EditorBasicInfoProps {
     speed_max: string;
     temperature_min: string;
     temperature_max: string;
+    gap_specifications: string;
+    challenges_notes: string;
+    failure_scenarios: string;
+    quality_requirements: string;
     version: string;
   };
   setFormData: (data: any) => void;
@@ -241,9 +246,57 @@ export function EditorBasicInfo({ formData, setFormData, techniques, categories,
                 onChange={(e) => setFormData({...formData, temperature_max: e.target.value})} 
                 placeholder="Máx" 
               />
-            </div>
           </div>
         </div>
+
+        <Separator className="my-6" />
+
+        <div className="space-y-4">
+          <h3 className="text-sm font-semibold flex items-center gap-2">
+            <Info className="h-4 w-4 text-blue-500" />
+            Orientações de Produção e Qualidade
+          </h3>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label>GAP / Distanciamento</Label>
+              <Input 
+                value={formData.gap_specifications} 
+                onChange={(e) => setFormData({...formData, gap_specifications: e.target.value})} 
+                placeholder="Ex: GAP de 3mm entre tela e substrato" 
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Requisitos de Qualidade</Label>
+              <Input 
+                value={formData.quality_requirements} 
+                onChange={(e) => setFormData({...formData, quality_requirements: e.target.value})} 
+                placeholder="Ex: Sem rebarbas, brilho uniforme" 
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label>Desafios e Pontos de Atenção</Label>
+            <Textarea 
+              value={formData.challenges_notes} 
+              onChange={(e) => setFormData({...formData, challenges_notes: e.target.value})} 
+              placeholder="Descreva os principais desafios técnicos deste trabalho..." 
+              rows={2}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label>Cenários de Falha (O que evitar)</Label>
+            <Textarea 
+              value={formData.failure_scenarios} 
+              onChange={(e) => setFormData({...formData, failure_scenarios: e.target.value})} 
+              placeholder="Descreva situações que levam à perda de peças..." 
+              rows={2}
+            />
+          </div>
+        </div>
+      </div>
       </div>
     </div>
   );

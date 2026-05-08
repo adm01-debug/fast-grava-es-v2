@@ -35,6 +35,7 @@ export const TechnicalSheetEditor = ({ sheetId, techniques, categories, material
     pressure_min: '', pressure_max: '',
     speed_min: '', speed_max: '',
     temperature_min: '', temperature_max: '',
+    gap_specifications: '', challenges_notes: '', failure_scenarios: '', quality_requirements: '',
     version: '1'
   });
 
@@ -72,6 +73,10 @@ export const TechnicalSheetEditor = ({ sheetId, techniques, categories, material
         speed_max: ranges.speed?.max || '',
         temperature_min: ranges.temperature?.min || '',
         temperature_max: ranges.temperature?.max || '',
+        gap_specifications: sheet.gap_specifications || '',
+        challenges_notes: sheet.challenges_notes || '',
+        failure_scenarios: sheet.failure_scenarios || '',
+        quality_requirements: sheet.quality_requirements || '',
         version: sheet.version?.toString() || '1'
       });
     }
@@ -99,7 +104,11 @@ export const TechnicalSheetEditor = ({ sheetId, techniques, categories, material
         pressure: { min: formData.pressure_min, max: formData.pressure_max },
         speed: { min: formData.speed_min, max: formData.speed_max },
         temperature: { min: formData.temperature_min, max: formData.temperature_max },
-      }
+      },
+      gap_specifications: formData.gap_specifications || undefined,
+      challenges_notes: formData.challenges_notes || undefined,
+      failure_scenarios: formData.failure_scenarios || undefined,
+      quality_requirements: formData.quality_requirements || undefined
     };
     if (isNew) { await createSheet.mutateAsync(payload); onClose(); }
     else { await updateSheet.mutateAsync({ id: sheetId!, ...payload }); toast.success('Ficha atualizada!'); }

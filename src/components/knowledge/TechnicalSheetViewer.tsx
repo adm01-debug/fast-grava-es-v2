@@ -343,6 +343,51 @@ export const TechnicalSheetViewer = ({ sheetId, onEdit, onDuplicate }: Technical
                 )}
               </div>
 
+              {(sheet.gap_specifications || sheet.quality_requirements || sheet.challenges_notes || sheet.failure_scenarios) && (
+                <>
+                  <Separator />
+                  <div className="space-y-6">
+                    <h3 className="flex items-center gap-2 text-sm font-semibold text-blue-600">
+                      <Info className="h-4 w-4" />
+                      Produção e Qualidade
+                    </h3>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {sheet.gap_specifications && (
+                        <div className="p-3 rounded-lg bg-blue-500/5 border border-blue-500/10">
+                          <Label className="text-[10px] text-muted-foreground uppercase font-bold">GAP / Distanciamento</Label>
+                          <p className="text-sm">{sheet.gap_specifications}</p>
+                        </div>
+                      )}
+                      {sheet.quality_requirements && (
+                        <div className="p-3 rounded-lg bg-emerald-500/5 border border-emerald-500/10">
+                          <Label className="text-[10px] text-muted-foreground uppercase font-bold text-emerald-700">Requisitos de Qualidade</Label>
+                          <p className="text-sm font-medium">{sheet.quality_requirements}</p>
+                        </div>
+                      )}
+                    </div>
+
+                    {sheet.challenges_notes && (
+                      <div className="p-3 rounded-lg bg-amber-500/5 border border-amber-500/10">
+                        <Label className="text-[10px] text-amber-700 uppercase font-bold flex items-center gap-1">
+                          <AlertTriangle className="h-3 w-3" /> Desafios Técnicos
+                        </Label>
+                        <p className="text-sm mt-1 whitespace-pre-wrap">{sheet.challenges_notes}</p>
+                      </div>
+                    )}
+
+                    {sheet.failure_scenarios && (
+                      <div className="p-3 rounded-lg bg-rose-500/5 border border-rose-500/10">
+                        <Label className="text-[10px] text-rose-700 uppercase font-bold flex items-center gap-1">
+                          <Info className="h-3 w-3" /> Cenários de Falha (Evitar Perdas)
+                        </Label>
+                        <p className="text-sm mt-1 text-rose-800 whitespace-pre-wrap">{sheet.failure_scenarios}</p>
+                      </div>
+                    )}
+                  </div>
+                </>
+              )}
+
               <Separator />
 
               {sheetMaterials.length > 0 && (

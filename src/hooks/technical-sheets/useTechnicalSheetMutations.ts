@@ -25,6 +25,10 @@ export const useTechnicalSheetMutations = () => {
           settings_ranges: sheet.settings_ranges || {},
           ink_specifications: sheet.ink_specifications || null,
           tooling_specifications: sheet.tooling_specifications || null,
+          gap_specifications: sheet.gap_specifications || null,
+          challenges_notes: sheet.challenges_notes || null,
+          failure_scenarios: sheet.failure_scenarios || null,
+          quality_requirements: sheet.quality_requirements || null,
           version: 1,
           created_by: userData.user?.id,
           updated_by: userData.user?.id
