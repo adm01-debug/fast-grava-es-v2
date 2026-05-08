@@ -7,6 +7,8 @@ import { Button } from '@/components/ui/button';
 import { useKPIs } from '@/hooks/useKPIs';
 import { useOEE } from '@/hooks/useOEE';
 import { useSchedulingData } from '@/hooks/useSchedulingData';
+import { useOperators } from '@/hooks/useOperators';
+import { useOperatorMachines } from '@/hooks/useOperatorMachines';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { BIStatCard } from '@/components/bi/BIStatCard';
 import { BILoadingSkeleton } from '@/components/bi/BILoadingSkeleton';
@@ -58,6 +60,9 @@ export default function BIDashboard() {
   const [customRange2, setCustomRange2] = useState<DateRange>({ from: subDays(new Date(), 60), to: subDays(new Date(), 31) });
   const [isCalendarOpen2, setIsCalendarOpen2] = useState(false);
   const [viewMode, setViewMode] = useState<'futuristic' | 'classic'>('futuristic');
+  const [studioFilter, setStudioFilter] = useState<string>('all');
+  const [collaboratorFilter, setCollaboratorFilter] = useState<string>('all');
+  const [machineFilter, setMachineFilter] = useState<string>('all');
 
   const periodDays = useMemo(() => {
     if (periodFilter === 'custom') return differenceInDays(customRange.to, customRange.from) || 30;
@@ -67,6 +72,8 @@ export default function BIDashboard() {
   const { data: kpis, isLoading: kpisLoading } = useKPIs();
   const { data: oeeData, isLoading: oeeLoading } = useOEE(periodDays);
   const { jobs, machines, techniques, isLoading: schedulingLoading } = useSchedulingData();
+  const { data: operators } = useOperators();
+  const { assignments } = useOperatorMachines();
   const isLoading = kpisLoading || oeeLoading || schedulingLoading;
 
   const dateRange = useMemo((): DateRange => {
@@ -84,11 +91,35 @@ export default function BIDashboard() {
 
   const calculatePeriodMetrics = useCallback((range: DateRange) => {
     if (!jobs || !machines || !techniques) return null;
-    const periodJobs = jobs.filter(j => {
+    let periodJobs = jobs.filter(j => {
       if (!j.created_at) return false;
       try { return isWithinInterval(parseISO(j.created_at), { start: startOfDay(range.from), end: endOfDay(range.to) }); }
       catch { return false; }
     });
+
+    // Apply advanced filters
+    if (machineFilter !== 'all') {
+      periodJobs = periodJobs.filter(j => j.machine_id === machineFilter);
+    }
+    
+    if (collaboratorFilter !== 'all') {
+      // Find machines assigned to this collaborator
+      const assignedMachineIds = assignments
+        ?.filter(a => a.operator_id === collaboratorFilter)
+        .map(a => a.machine_id) || [];
+      periodJobs = periodJobs.filter(j => j.machine_id && assignedMachineIds.includes(j.machine_id));
+    }
+
+    if (studioFilter !== 'all') {
+      // In this mock context, Studio Alfa = laser, Beta = uv, Gamma = others
+      const studioMap: Record<string, string[]> = {
+        'Studio Alfa': ['laser-co2', 'laser-fiber'],
+        'Studio Beta': ['uv-print', 'sublimation'],
+        'Studio Gamma': ['pad-printing', 'silkscreen', 'embroidery']
+      };
+      const allowedTechniques = studioMap[studioFilter] || [];
+      periodJobs = periodJobs.filter(j => j.technique_id && allowedTechniques.includes(j.technique_id));
+    }
 
     const statusDistribution = [
       { name: 'Finalizados', value: periodJobs.filter(j => j.status === 'finished').length, color: PIE_COLORS[0] },
@@ -253,6 +284,12 @@ export default function BIDashboard() {
           customRange2={customRange2} setCustomRange2={setCustomRange2}
           isCalendarOpen2={isCalendarOpen2} setIsCalendarOpen2={setIsCalendarOpen2}
           periodLabel2={getPeriodLabel(periodFilter2, customRange2)} periodJobs2={biMetrics2?.periodJobs ?? 0}
+          studioFilter={studioFilter} setStudioFilter={setStudioFilter}
+          collaboratorFilter={collaboratorFilter} setCollaboratorFilter={setCollaboratorFilter}
+          machineFilter={machineFilter} setMachineFilter={setMachineFilter}
+          studios={['Studio Alfa', 'Studio Beta', 'Studio Gamma']}
+          collaborators={(operators || []).map(o => ({ id: o.user_id, name: o.full_name || 'Sem nome' }))}
+          machines={machines.map(m => ({ id: m.id, name: m.name }))}
         />
 
         {comparisonMode && biMetrics2 ? (
