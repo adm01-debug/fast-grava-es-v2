@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -25,6 +25,8 @@ interface MaintenanceExecutionModalProps {
     responses: any[];
     parts: any[];
     signature?: string;
+    checklist_version?: number;
+    checklist_snapshot?: any;
   }) => void;
 }
 
@@ -49,7 +51,23 @@ export function MaintenanceExecutionModal({
   const [signature, setSignature] = useState('');
   const [isUploading, setIsUploading] = useState(false);
 
-  const checklist = schedule ? checklists.find(c => c.maintenance_type_id === schedule.maintenance_type_id) : null;
+  const checklist = useMemo(() => {
+    if (!schedule) return null;
+    // Tenta encontrar checklist específico para a técnica/tipo da máquina
+    const techChecklist = checklists.find(c => 
+      c.maintenance_type_id === schedule.maintenance_type_id && 
+      c.technique_id === schedule.machine?.technique_id &&
+      c.is_active
+    );
+    if (techChecklist) return techChecklist;
+
+    // Fallback para checklist global do tipo de manutenção
+    return checklists.find(c => 
+      c.maintenance_type_id === schedule.maintenance_type_id && 
+      !c.technique_id &&
+      c.is_active
+    );
+  }, [schedule, checklists]);
 
   useEffect(() => {
     if (checklist?.items) {
@@ -133,7 +151,9 @@ export function MaintenanceExecutionModal({
         ...resp
       })),
       parts,
-      signature
+      signature,
+      checklist_version: checklist?.version,
+      checklist_snapshot: checklist
     });
   };
 
