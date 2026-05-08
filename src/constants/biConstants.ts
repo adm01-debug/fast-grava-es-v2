@@ -7,7 +7,12 @@ export const CHART_COLORS = {
   purple: '#8b5cf6',
   cyan: '#06b6d4',
   pink: '#ec4899',
+  muted: '#64748b',
+  xp: '#3b82f6',
+  coins: '#eab308',
+  streak: '#f97316',
 };
+
 
 export const GRADIENTS = {
   primary: 'from-primary/20 via-primary/5 to-transparent',
