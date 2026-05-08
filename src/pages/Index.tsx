@@ -152,16 +152,16 @@ const Index = () => {
       {/* Offline Banner */}
       <OfflineBanner />
       
-      <div className="h-full flex flex-col py-6 lg:py-8 space-y-8 animate-in fade-in duration-700 px-1">
+      <div className="container mx-auto p-4 sm:p-8 space-y-10 max-w-7xl animate-in fade-in duration-700">
         {/* Compact Header */}
-        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6 mb-2">
-          <div className="flex items-center gap-4">
-            <div className="w-1.5 h-10 rounded-full bg-gradient-to-b from-primary to-primary-glow shadow-glow-primary/20" />
-            <div className="space-y-0.5">
-              <h1 className="text-3xl font-display font-black tracking-tight leading-none">
-                <span className="gradient-text">{t('dashboard.title')}</span>
+        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6 border-b border-border/40 pb-8">
+          <div className="flex items-center gap-5">
+            <div className="w-2 h-12 rounded-full bg-gradient-to-b from-primary to-primary-glow shadow-glow-primary/30" />
+            <div className="space-y-1">
+              <h1 className="text-4xl font-display font-black tracking-tight leading-none uppercase gradient-text">
+                {t('dashboard.title')}
               </h1>
-              <p className="text-sm font-bold text-muted-foreground/60 uppercase tracking-[0.2em]">{profile?.full_name || 'System Operator'}</p>
+              <p className="text-base font-bold text-muted-foreground/80 uppercase tracking-[0.3em]">{profile?.full_name || 'System Intelligence'}</p>
             </div>
             <FavoriteButton path="/" name={t('dashboard.title')} />
             {isOperator && (
