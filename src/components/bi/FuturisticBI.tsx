@@ -410,11 +410,29 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Losses Analysis Section */}
         <Card className="bg-black/40 border-primary/20 backdrop-blur-xl">
-          <CardHeader>
+          <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="flex items-center gap-3">
               <Package className="h-5 w-5 text-primary" />
               <span className="font-display tracking-wider uppercase">Métricas de Perda por Pedido</span>
             </CardTitle>
+            <div className="flex items-center gap-2">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="h-8 w-8 text-muted-foreground hover:text-primary"
+                onClick={() => handleExport('csv', 'Perdas_Por_Pedido')}
+              >
+                <FileSpreadsheet className="h-4 w-4" />
+              </Button>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="h-8 w-8 text-muted-foreground hover:text-primary"
+                onClick={() => handleExport('pdf', 'Perdas_Por_Pedido')}
+              >
+                <FileText className="h-4 w-4" />
+              </Button>
+            </div>
           </CardHeader>
           <CardContent>
             <ScrollArea className="h-[300px]">
@@ -461,11 +479,29 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
 
         {/* Delay and Root Cause Section */}
         <Card className="bg-black/40 border-primary/20 backdrop-blur-xl">
-          <CardHeader>
+          <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="flex items-center gap-3">
               <Timer className="h-5 w-5 text-primary" />
               <span className="font-display tracking-wider uppercase">Atrasos & Causa Raiz</span>
             </CardTitle>
+            <div className="flex items-center gap-2">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="h-8 w-8 text-muted-foreground hover:text-primary"
+                onClick={() => handleExport('csv', 'Analise_Atrasos')}
+              >
+                <FileSpreadsheet className="h-4 w-4" />
+              </Button>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="h-8 w-8 text-muted-foreground hover:text-primary"
+                onClick={() => handleExport('pdf', 'Analise_Atrasos')}
+              >
+                <FileText className="h-4 w-4" />
+              </Button>
+            </div>
           </CardHeader>
           <CardContent>
             <Tabs defaultValue="list" className="w-full">
