@@ -12,6 +12,7 @@ export interface UserNotificationSettings {
   whatsapp_number: string | null;
   notification_types: string[];
   machine_filters: string[];
+  event_configs?: Record<string, { email: boolean; in_app: boolean }>;
   created_at: string;
   updated_at: string;
 }
