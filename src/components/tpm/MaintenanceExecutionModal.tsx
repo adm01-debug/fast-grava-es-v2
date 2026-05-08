@@ -42,6 +42,16 @@ export function MaintenanceExecutionModal({
   onComplete,
 }: MaintenanceExecutionModalProps) {
   const { checklists } = useTPM();
+  const { sheets: technicalSheets } = useTechnicalSheets();
+  const [selectedSheetId, setSelectedSheetId] = useState<string | null>(null);
+  const [adjustmentParams, setAdjustmentParams] = useState({
+    squeegee_passes: '',
+    pressure: '',
+    speed: '',
+    temperature: ''
+  });
+  const [parameterAlerts, setParameterAlerts] = useState<string[]>([]);
+  
   const [notes, setNotes] = useState('');
   const [totalCost, setTotalCost] = useState(0);
   const [downtime, setDowntime] = useState(0);
