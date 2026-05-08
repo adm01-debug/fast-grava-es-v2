@@ -2,12 +2,16 @@ import { useState } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Printer, CheckCircle2, XCircle, Info, Settings } from 'lucide-react';
+import { Printer, CheckCircle2, XCircle, Info, Settings, History } from 'lucide-react';
 import { useSchedulingData } from '@/hooks/useSchedulingData';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { VoiceButton } from '@/components/voice/VoiceCommands';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { useEntityAuditTrail } from '@/hooks/useAuditTrail';
+import { AuditEntryCard } from '@/components/audit/AuditEntryCard';
 import { MachineTPMPanel } from '@/components/tpm/MachineTPMPanel';
 import { useTPM } from '@/hooks/useTPM';
 import { MaintenanceExecutionModal } from '@/components/tpm/MaintenanceExecutionModal';
@@ -188,7 +192,7 @@ export default function MachinesPage() {
 
         {/* Machine Profile / TPM Dialog */}
         <Dialog open={!!selectedMachine} onOpenChange={() => setSelectedMachine(null)}>
-          <DialogContent className="sm:max-w-xl">
+          <DialogContent className="sm:max-w-xl max-h-[90vh] overflow-hidden flex flex-col">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
                 <Printer className="h-5 w-5 text-primary" />
@@ -200,11 +204,27 @@ export default function MachinesPage() {
             </DialogHeader>
             
             {selectedMachine && (
-              <MachineTPMPanel 
-                machineId={selectedMachine.id} 
-                onStartMaintenance={handleStartMaintenance}
-                onOpenCreateSchedule={() => setCreateScheduleModalOpen(true)}
-              />
+              <Tabs defaultValue="tpm" className="mt-2 flex-1 flex flex-col">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="tpm">Manutenção (TPM)</TabsTrigger>
+                  <TabsTrigger value="history" className="flex items-center gap-2">
+                    <History className="h-4 w-4" />
+                    Histórico
+                  </TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="tpm" className="flex-1 mt-4 overflow-auto">
+                  <MachineTPMPanel 
+                    machineId={selectedMachine.id} 
+                    onStartMaintenance={handleStartMaintenance}
+                    onOpenCreateSchedule={() => setCreateScheduleModalOpen(true)}
+                  />
+                </TabsContent>
+
+                <TabsContent value="history" className="flex-1 mt-4 overflow-hidden">
+                  <MachineHistoryTab machineId={selectedMachine.id} />
+                </TabsContent>
+              </Tabs>
             )}
           </DialogContent>
         </Dialog>
@@ -232,5 +252,43 @@ export default function MachinesPage() {
         )}
       </div>
     </MainLayout>
+  );
+function MachineHistoryTab({ machineId }: { machineId: string }) {
+  const { data, isLoading, error } = useEntityAuditTrail('machines', machineId);
+
+  if (isLoading) {
+    return (
+      <div className="space-y-3">
+        <Skeleton className="h-24 w-full" />
+        <Skeleton className="h-24 w-full" />
+        <Skeleton className="h-24 w-full" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="text-sm text-destructive p-4 border border-destructive/30 rounded-md bg-destructive/10">
+        Não foi possível carregar o histórico.
+      </div>
+    );
+  }
+
+  if (!data || data.length === 0) {
+    return (
+      <div className="text-sm text-muted-foreground text-center py-12 border border-dashed rounded-xl">
+        Nenhum registro encontrado para esta máquina.
+      </div>
+    );
+  }
+
+  return (
+    <ScrollArea className="h-[400px] pr-4">
+      <div className="space-y-3 pb-4">
+        {data.map((entry) => (
+          <AuditEntryCard key={entry.id} entry={entry} />
+        ))}
+      </div>
+    </ScrollArea>
   );
 }
