@@ -258,6 +258,95 @@ export function EditorBasicInfo({ formData, setFormData, techniques, categories,
         <div className="space-y-4">
           <h3 className="text-sm font-semibold flex items-center gap-2">
             <Info className="h-4 w-4 text-blue-500" />
+            Configuração e Preparação (Setup)
+          </h3>
+          <div className="space-y-2">
+            <Label>Guia de Configuração da Máquina</Label>
+            <Textarea 
+              value={formData.setup_instructions} 
+              onChange={(e) => setFormData({...formData, setup_instructions: e.target.value})} 
+              placeholder="Descreva o setup da máquina, ferramenta/matriz e passos de preparação..." 
+              rows={3}
+            />
+          </div>
+        </div>
+
+        <Separator className="my-6" />
+
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-semibold flex items-center gap-2">
+              <CheckSquare className="h-4 w-4 text-emerald-500" />
+              Checklist de Qualidade
+            </h3>
+            <Button 
+              type="button" 
+              variant="outline" 
+              size="sm" 
+              onClick={() => {
+                const newItem = { id: crypto.randomUUID(), description: '', required: true };
+                setFormData({...formData, quality_checklist: [...formData.quality_checklist, newItem]});
+              }}
+              className="h-8 gap-1"
+            >
+              <Plus className="h-3 w-3" /> Adicionar Critério
+            </Button>
+          </div>
+          
+          <div className="space-y-2">
+            {formData.quality_checklist.length === 0 && (
+              <p className="text-xs text-muted-foreground italic p-4 border border-dashed rounded-lg text-center">
+                Nenhum critério de qualidade definido.
+              </p>
+            )}
+            {formData.quality_checklist.map((item, index) => (
+              <div key={item.id} className="flex items-start gap-3 p-3 bg-secondary/10 rounded-lg border border-border/50">
+                <div className="flex-1 space-y-2">
+                  <Input 
+                    value={item.description}
+                    onChange={(e) => {
+                      const newList = [...formData.quality_checklist];
+                      newList[index].description = e.target.value;
+                      setFormData({...formData, quality_checklist: newList});
+                    }}
+                    placeholder="Ex: Impressão sem falhas de cobertura"
+                    className="h-8"
+                  />
+                  <div className="flex items-center gap-2">
+                    <Checkbox 
+                      id={`req-${item.id}`} 
+                      checked={item.required}
+                      onCheckedChange={(checked) => {
+                        const newList = [...formData.quality_checklist];
+                        newList[index].required = !!checked;
+                        setFormData({...formData, quality_checklist: newList});
+                      }}
+                    />
+                    <Label htmlFor={`req-${item.id}`} className="text-xs cursor-pointer">Obrigatório para aprovação</Label>
+                  </div>
+                </div>
+                <Button 
+                  type="button" 
+                  variant="ghost" 
+                  size="icon" 
+                  className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
+                  onClick={() => {
+                    const newList = formData.quality_checklist.filter((_, i) => i !== index);
+                    setFormData({...formData, quality_checklist: newList});
+                  }}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <Separator className="my-6" />
+
+        <div className="space-y-4">
+          <h3 className="text-sm font-semibold flex items-center gap-2">
+            <AlertTriangle className="h-4 w-4 text-amber-500" />
             Orientações de Produção e Qualidade
           </h3>
           
@@ -271,7 +360,7 @@ export function EditorBasicInfo({ formData, setFormData, techniques, categories,
               />
             </div>
             <div className="space-y-2">
-              <Label>Requisitos de Qualidade</Label>
+              <Label>Requisitos de Qualidade (Resumo)</Label>
               <Input 
                 value={formData.quality_requirements} 
                 onChange={(e) => setFormData({...formData, quality_requirements: e.target.value})} 
@@ -291,7 +380,7 @@ export function EditorBasicInfo({ formData, setFormData, techniques, categories,
           </div>
 
           <div className="space-y-2">
-            <Label>Cenários de Falha (O que evitar)</Label>
+            <Label className="text-rose-600">Cenários de Falha (O que evitar)</Label>
             <Textarea 
               value={formData.failure_scenarios} 
               onChange={(e) => setFormData({...formData, failure_scenarios: e.target.value})} 
