@@ -33,6 +33,8 @@ export interface SequencingSuggestion {
   optimizedSequence: DbJob[];
   estimatedSavings: number; // minutes saved
   colorGroups: ColorGroup[];
+  bottleneckRisk: 'low' | 'medium' | 'high';
+  estimatedColumnTime?: string; // e.g., "2h 15m"
 }
 
 export interface ColorGroup {
@@ -152,8 +154,15 @@ export function useSmartSequencing() {
       });
 
       const estimatedSavings = calculateSetupSavings(currentSequence, optimizedSequence, setupTime);
+      
+      const totalMinutes = optimizedSequence.reduce((acc, job) => acc + (job.estimated_duration || 0), 0);
+      const hours = Math.floor(totalMinutes / 60);
+      const mins = totalMinutes % 60;
+      const estimatedColumnTime = hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;
 
-      if (estimatedSavings > 0) {
+      const bottleneckRisk = totalMinutes > 480 ? 'high' : totalMinutes > 300 ? 'medium' : 'low';
+
+      if (estimatedSavings > 0 || totalMinutes > 0) {
         result.push({
           machineId,
           machineName: machine.name,
@@ -163,6 +172,8 @@ export function useSmartSequencing() {
           currentSequence,
           optimizedSequence,
           estimatedSavings,
+          estimatedColumnTime,
+          bottleneckRisk,
           colorGroups: Array.from(colorGroups.entries()).map(([color, jobs]) => ({
             color,
             jobs,
