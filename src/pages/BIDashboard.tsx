@@ -382,7 +382,14 @@ export default function BIDashboard() {
               <FuturisticBI biMetrics={biMetrics} kpis={kpis} oeeData={oeeData} />
             ) : (
               <div className="space-y-8">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <Tabs defaultValue="overview" className="w-full">
+                  <TabsList className="grid w-full grid-cols-2 mb-8 bg-muted/50 p-1">
+                    <TabsTrigger value="overview" className="gap-2"><Layout className="h-4 w-4" /> Visão Geral</TabsTrigger>
+                    <TabsTrigger value="analysis" className="gap-2"><AlertTriangle className="h-4 w-4" /> Análise de Causa Raiz</TabsTrigger>
+                  </TabsList>
+                  
+                  <TabsContent value="overview" className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                   <BIStatCard 
                     title="OEE Geral" 
                     value={`${oeeData.overallOEE.toFixed(1)}%`} 
