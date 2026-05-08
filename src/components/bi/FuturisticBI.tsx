@@ -166,12 +166,23 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
     if (biMetrics.periodJobsList) {
       const filtered = biMetrics.periodJobsList.filter((j: any) => {
         if (segment === 'all') return true;
-        // Check if segment matches status, machine, or technique
+        const s = segment.toLowerCase();
+        
+        // Match logic for various drill-down scenarios
         return (
-          j.status === segment.toLowerCase() || 
+          j.status === s || 
           j.machine_id === segment || 
           j.technique_id === segment ||
-          (segment.includes('Studio') && j.technique_id) // Basic studio match
+          (s === 'lost' && (j.lost_pieces || 0) > 0) ||
+          (s === 'delayed' && j.status === 'delayed') ||
+          (s === 'queue' && (j.status === 'scheduled' || j.status === 'queue')) ||
+          (s === 'production' && j.status === 'production') ||
+          (segment.includes('Studio') && (
+            // Logical mapping to Studio groups
+            (segment === 'Studio Alfa' && j.technique_id?.includes('Laser')) ||
+            (segment === 'Studio Beta' && j.technique_id?.includes('UV')) ||
+            (segment === 'Studio Gamma' && !j.technique_id?.includes('Laser') && !j.technique_id?.includes('UV'))
+          ))
         );
       }).map((j: any) => ({
         id: j.id,
