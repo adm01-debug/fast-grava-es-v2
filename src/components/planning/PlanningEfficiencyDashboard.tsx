@@ -110,25 +110,25 @@ export function PlanningEfficiencyDashboard() {
         <CardContent className="p-4">
           <div className="flex items-center justify-between mb-2">
             <div className="p-2 bg-purple-500/10 rounded-lg group-hover:bg-purple-500/20 transition-colors">
-              <TrendingUp className="h-5 w-5 text-purple-400" />
+              <BarChart3 className="h-5 w-5 text-purple-400" />
             </div>
           </div>
-          <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider mb-1">Vazão do Dia</p>
+          <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider mb-1">OEE da Planta</p>
           <div className="flex items-end gap-2 mb-3">
-            <h3 className="text-3xl font-bold font-display">{stats.totalJobs}</h3>
-            <div className="text-[10px] text-muted-foreground font-bold mb-1 uppercase">
-              Jobs Ativos
+            <h3 className="text-3xl font-bold font-display">88<span className="text-lg opacity-50">%</span></h3>
+            <div className="text-[10px] text-purple-400 font-bold flex items-center mb-1 uppercase">
+              Alta Performance
             </div>
           </div>
           <div className="flex items-center gap-1.5">
             <div className="flex -space-x-1.5">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="w-5 h-5 rounded-full bg-muted border-2 border-card flex items-center justify-center text-[8px] font-bold">
-                  {i}
+              {stats.totalJobs > 0 && Array.from({ length: Math.min(3, stats.totalJobs) }).map((_, i) => (
+                <div key={i} className="w-5 h-5 rounded-full bg-primary/20 border-2 border-background flex items-center justify-center text-[8px] font-bold text-primary">
+                  {i + 1}
                 </div>
               ))}
             </div>
-            <span className="text-[10px] text-muted-foreground">OEE em 88%</span>
+            <span className="text-[10px] text-muted-foreground">{stats.totalJobs} jobs ativos em processamento</span>
           </div>
         </CardContent>
       </Card>
