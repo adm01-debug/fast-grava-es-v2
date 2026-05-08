@@ -411,6 +411,30 @@ export function ExecutionDetailsModal({ isOpen, onClose, recordId }: ExecutionDe
                 </div>
               )}
 
+              {/* Insumos e Consumíveis na OS */}
+              {record.technical_sheet?.consumables && record.technical_sheet.consumables.length > 0 && (
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold flex items-center gap-2">
+                    <Package className="h-5 w-5 text-primary" />
+                    Insumos e Consumíveis (OS)
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {record.technical_sheet.consumables.map((c: any) => (
+                      <div key={c.id} className="flex justify-between items-center p-3 rounded-lg bg-primary/5 border border-primary/10">
+                        <div className="flex flex-col">
+                          <span className="text-xs font-bold uppercase text-primary">Insumo</span>
+                          <span className="text-sm font-medium">{c.name}</span>
+                        </div>
+                        <div className="flex flex-col items-end">
+                          <span className="text-xs font-bold uppercase text-muted-foreground">Qtd Sugerida</span>
+                          <span className="text-sm">{c.quantity}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* Checklist de Qualidade Aplicado */}
               {record.quality_responses && record.quality_responses.length > 0 && (
                 <div className="space-y-4">
