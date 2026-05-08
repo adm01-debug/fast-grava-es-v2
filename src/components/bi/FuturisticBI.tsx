@@ -40,6 +40,8 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { DrillDownDialog } from './drilldown/DrillDownDialog';
 import { LossesTable } from './losses/LossesTable';
 import { DelaysAnalysis } from './delays/DelaysAnalysis';
+import { exportProductionReport, exportLossesReport, exportDelaysReport } from '@/lib/pdfExport';
+import { subDays } from 'date-fns';
 
 
 
@@ -78,21 +80,81 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
 
   const handleExport = async (format: 'csv' | 'pdf', type: string) => {
     setIsExporting(true);
-    toast.info(`Iniciando exportação de ${type} em ${format.toUpperCase()}...`);
+    const dateRange = { start: subDays(new Date(), 30), end: new Date(), label: 'Últimos 30 dias' };
     
-    // Simulate export logic for demonstration
-    setTimeout(() => {
+    try {
       if (format === 'csv') {
-        // In a real scenario, we'd filter data here
-        exportJobs({ format: 'csv', fileName: `BI_Export_${type}_${new Date().getTime()}` });
+        toast.info(`Gerando CSV para ${type}...`);
+        
+        let dataToExport: any[] = [];
+        let filename = `BI_Export_${type}_${formatDate(new Date(), 'yyyyMMdd')}`;
+
+        if (type.includes('Perdas')) {
+          dataToExport = jobsWithLosses;
+        } else if (type.includes('Atrasos')) {
+          dataToExport = delayedJobsList;
+        } else if (type.includes('Pedidos_A_Fazer')) {
+          dataToExport = (biMetrics.periodJobsList || []).filter((j: any) => j.status === 'scheduled' || j.status === 'queue');
+        } else {
+          dataToExport = biMetrics.periodJobsList || [];
+        }
+
+        if (dataToExport.length === 0) {
+          toast.warning("Nenhum dado encontrado para exportar.");
+          setIsExporting(false);
+          return;
+        }
+
+        // Simple CSV generation helper
+        const headers = Object.keys(dataToExport[0]).join(',');
+        const rows = dataToExport.map(obj => 
+          Object.values(obj).map(val => `"${String(val).replace(/"/g, '""')}"`).join(',')
+        ).join('\n');
+        
+        const blob = new Blob([`\uFEFF${headers}\n${rows}`], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.setAttribute('download', `${filename}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        toast.success(`Exportação CSV de ${type} concluída.`);
       } else {
-        toast.success(`Exportação PDF de ${type} concluída com sucesso.`);
-        // In a real app, we'd use a library like jspdf here
-        window.print(); 
+        toast.info(`Gerando PDF para ${type}...`);
+        
+        if (type.includes('Perdas')) {
+          await exportLossesReport(jobsWithLosses, dateRange);
+        } else if (type.includes('Atrasos')) {
+          await exportDelaysReport(delayedJobsList, dateRange);
+        } else {
+          const jobs = (biMetrics.periodJobsList || []).map((j: any) => ({
+            order_number: j.order_number || `OS-${j.id?.slice(0, 5)}`,
+            client: j.client_name || 'Cliente',
+            product: j.product_name || 'Produto',
+            status: j.status,
+            quantity: j.quantity,
+            produced_quantity: j.produced_quantity,
+            lost_pieces: j.lost_pieces,
+            scheduled_date: j.scheduled_date
+          }));
+          await exportProductionReport(jobs, dateRange, `Relatório: ${type.replace(/_/g, ' ')}`);
+        }
+        
+        toast.success(`Relatório PDF de ${type} gerado com sucesso.`);
       }
+    } catch (error) {
+      console.error('Export error:', error);
+      toast.error("Falha ao gerar exportação.");
+    } finally {
       setIsExporting(false);
-    }, 1500);
+    }
   };
+
+  // Helper function for date formatting in filename
+  function formatDate(date: Date, pattern: string): string {
+    return format(date, pattern);
+  }
   const [drillDownOpen, setDrillDownOpen] = useState(false);
   const [drillDownTitle, setDrillDownTitle] = useState('');
   const [drillDownJobs, setDrillDownJobs] = useState<any[]>([]);
@@ -206,15 +268,14 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
       {/* Top Layer: Critical Real-time Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <FuturisticStatCard 
-          title="OEE Global" 
-          value={`${oeeData.overallOEE.toFixed(1)}%`} 
-          subtitle="Meta: 85%"
-          icon={Gauge} 
-          trend="up"
-          trendValue="+2.4%"
-          gradient={GRADIENTS.primary}
-          glowColor="primary"
-          onExport={(format: 'csv' | 'pdf') => handleExport(format, 'OEE_Global')}
+          title="Pedidos a Fazer" 
+          value={biMetrics.toDoJobs || 0} 
+          subtitle="Fila de Espera"
+          icon={Package} 
+          gradient={GRADIENTS.purple}
+          glowColor="purple"
+          onExport={(format: 'csv' | 'pdf') => handleExport(format, 'Pedidos_A_Fazer')}
+          onClick={() => handleDrillDown('PEDIDOS A FAZER', 'queue')}
         />
         <FuturisticStatCard 
           title="Jobs em Produção" 
@@ -224,16 +285,18 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
           gradient={GRADIENTS.success}
           glowColor="success"
           onExport={(format: 'csv' | 'pdf') => handleExport(format, 'Producao_Atual')}
+          onClick={() => handleDrillDown('PEDIDOS EM PRODUÇÃO', 'production')}
         />
         <FuturisticStatCard 
           title="Atrasos Críticos" 
           value={kpis.delayedJobs} 
-          subtitle="Ação requerida em 3"
+          subtitle={`Ação requerida em ${kpis.delayedJobs}`}
           icon={ShieldAlert} 
           variant="danger"
           gradient={GRADIENTS.danger}
           glowColor="danger"
           onExport={(format: 'csv' | 'pdf') => handleExport(format, 'Atrasos_Criticos')}
+          onClick={() => handleDrillDown('PEDIDOS ATRASADOS', 'delayed')}
         />
         <FuturisticStatCard 
           title="Taxa de Perda" 
@@ -245,6 +308,7 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
           gradient={GRADIENTS.warning}
           glowColor="warning"
           onExport={(format: 'csv' | 'pdf') => handleExport(format, 'Perdas_Qualidade')}
+          onClick={() => handleDrillDown('PEDIDOS COM PERDAS', 'lost')}
         />
       </div>
 
@@ -623,7 +687,7 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
   );
 }
 
-function FuturisticStatCard({ title, value, subtitle, icon: Icon, trend, trendValue, variant = 'default', gradient, glowColor, onExport }: any) {
+function FuturisticStatCard({ title, value, subtitle, icon: Icon, trend, trendValue, variant = 'default', gradient, glowColor, onExport, onClick }: any) {
   const glowStyles = {
     primary: 'hover:shadow-[0_0_30px_rgba(14,165,233,0.3)]',
     success: 'hover:shadow-[0_0_30px_rgba(16,185,129,0.3)]',
@@ -636,7 +700,9 @@ function FuturisticStatCard({ title, value, subtitle, icon: Icon, trend, trendVa
       whileHover={{ scale: 1.02, y: -5 }}
       transition={{ type: "spring", stiffness: 300, damping: 20 }}
     >
-      <Card className={cn(
+      <Card 
+        onClick={onClick}
+        className={cn(
         "bg-black/40 border-white/10 backdrop-blur-xl transition-all duration-500 relative overflow-hidden group cursor-pointer",
         glowStyles[glowColor as keyof typeof glowStyles]
       )}>
