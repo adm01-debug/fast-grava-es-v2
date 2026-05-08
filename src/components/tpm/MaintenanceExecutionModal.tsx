@@ -171,6 +171,29 @@ export function MaintenanceExecutionModal({
       }
     }
 
+    // Validação de parâmetros de regulagem
+    if (selectedSheetId) {
+      const sheet = technicalSheets.find(s => s.id === selectedSheetId);
+      const settings = sheet?.machine_settings as any;
+      const alerts: string[] = [];
+
+      if (settings) {
+        if (settings.squeegee_passes && adjustmentParams.squeegee_passes !== settings.squeegee_passes) {
+          alerts.push(`Passadas de Rodo: Informado ${adjustmentParams.squeegee_passes}, Recomendado ${settings.squeegee_passes}`);
+        }
+        if (settings.pressure && adjustmentParams.pressure !== settings.pressure) {
+          alerts.push(`Pressão: Informado ${adjustmentParams.pressure}, Recomendado ${settings.pressure}`);
+        }
+        // ... mais validações se necessário
+      }
+
+      if (alerts.length > 0) {
+        toast.warning("Atenção: Parâmetros fora do recomendado", {
+          description: alerts.join('\n')
+        });
+      }
+    }
+
     onComplete({
       notes,
       total_cost: totalCost,
@@ -182,7 +205,12 @@ export function MaintenanceExecutionModal({
       parts,
       signature,
       checklist_version: checklist?.version,
-      checklist_snapshot: checklist
+      checklist_snapshot: checklist,
+      technical_sheet_id: selectedSheetId || undefined,
+      adjustment_parameters: {
+        ...adjustmentParams,
+        recommended: selectedSheetId ? (technicalSheets.find(s => s.id === selectedSheetId)?.machine_settings) : null
+      }
     });
   };
 
