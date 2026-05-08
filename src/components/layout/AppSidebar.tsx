@@ -76,8 +76,8 @@ export function AppSidebar() {
         <div className={cn('flex items-center h-24 px-8 border-b border-primary/10 bg-primary/[0.02]', collapsed && !isMobile ? 'justify-center' : 'justify-between')}>
           {(!collapsed || isMobile) && (
             <div className="flex items-center gap-4 animate-in fade-in duration-500">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary to-primary-glow flex items-center justify-center shadow-2xl shadow-primary/30 ring-4 ring-primary/15 scale-110 group cursor-pointer transition-transform active:scale-95">
-                <Terminal className="w-6 h-6 text-primary-foreground group-hover:animate-pulse" />
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary to-primary-glow flex items-center justify-center shadow-[0_0_30px_hsl(var(--primary)/0.4)] ring-4 ring-primary/20 scale-110 group cursor-pointer transition-all duration-500 active:scale-95 hover:rotate-6">
+                <Terminal className="w-6 h-6 text-primary-foreground group-hover:scale-110 transition-transform" />
               </div>
               <div className="space-y-0.5">
                 <h1 className="font-display font-black text-sidebar-foreground text-xl tracking-tighter leading-none">Fast Gravações</h1>
