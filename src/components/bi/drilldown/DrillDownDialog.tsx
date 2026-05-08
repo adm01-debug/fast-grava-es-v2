@@ -114,6 +114,7 @@ export function DrillDownDialog({ open, onOpenChange, title, jobs, onExport }: D
                   <TableHead className="text-primary text-xs uppercase font-bold">Produto</TableHead>
                   <TableHead className="text-primary text-xs uppercase font-bold text-center">Status</TableHead>
                   <TableHead className="text-primary text-xs uppercase font-bold text-center">Qtd</TableHead>
+                  <TableHead className="text-primary text-xs uppercase font-bold text-center">Perdas</TableHead>
                   <TableHead className="text-primary text-xs uppercase font-bold text-right">Eficiência</TableHead>
                 </TableRow>
               </TableHeader>
@@ -135,6 +136,13 @@ export function DrillDownDialog({ open, onOpenChange, title, jobs, onExport }: D
                         </Badge>
                       </TableCell>
                       <TableCell className="text-center font-bold text-white/90">{job.quantity}</TableCell>
+                      <TableCell className="text-center">
+                        {job.lost_pieces > 0 ? (
+                          <span className="text-primary font-bold text-xs">-{job.lost_pieces}</span>
+                        ) : (
+                          <span className="text-emerald-400/50 text-xs">0</span>
+                        )}
+                      </TableCell>
                       <TableCell className="text-right font-mono text-primary/80">
                         {job.efficiency}
                       </TableCell>
