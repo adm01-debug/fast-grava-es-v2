@@ -621,17 +621,23 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {[1, 2, 3, 4, 5].map((i) => (
-                        <TableRow key={i} className="border-white/5 hover:bg-white/5 cursor-pointer" onClick={() => handleDrillDown(`DETALHES ATRASO OS-2024-${200 + i}`, `OS-2024-${200 + i}`)}>
-                          <TableCell className="text-xs font-medium">OS-2024-{200 + i}</TableCell>
-                          <TableCell>
-                            <span className="text-xs text-rose-400 font-bold">{15 * i} min</span>
-                          </TableCell>
-                          <TableCell className="text-right text-[10px]">
-                            {operators[i % operators.length]?.operatorName || 'Operador X'}
-                          </TableCell>
+                      {delayedJobsList.length > 0 ? (
+                        delayedJobsList.map((job: any) => (
+                          <TableRow key={job.id} className="border-white/5 hover:bg-white/5 cursor-pointer" onClick={() => navigate(`/job/${job.id}`)}>
+                            <TableCell className="text-xs font-medium">{job.order_number || `OS-${job.id.slice(0, 5)}`}</TableCell>
+                            <TableCell>
+                              <span className="text-xs text-rose-400 font-bold">Atrasado</span>
+                            </TableCell>
+                            <TableCell className="text-right text-[10px]">
+                              {job.operator_id || 'Não atribuído'}
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      ) : (
+                        <TableRow>
+                          <TableCell colSpan={3} className="text-center py-8 text-muted-foreground">Nenhum pedido atrasado</TableCell>
                         </TableRow>
-                      ))}
+                      )}
                     </TableBody>
                   </Table>
                 </ScrollArea>
