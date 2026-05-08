@@ -273,11 +273,14 @@ export default function TPMDashboard() {
                   onSelectSchedule={(schedule) => handleStartMaintenance(schedule.id)} 
                 />
               </div>
-              <TPMAlertsPanel
-                alerts={alerts}
-                onResolve={(id) => resolveAlert.mutate(id)}
-                onStartMaintenance={handleStartMaintenance}
-              />
+              <div className="space-y-6">
+                <TPMAlertsPanel
+                  alerts={alerts}
+                  onResolve={(id) => resolveAlert.mutate(id)}
+                  onStartMaintenance={handleStartMaintenance}
+                />
+                <TPMParameterAlerts />
+              </div>
             </div>
           </TabsContent>
 
