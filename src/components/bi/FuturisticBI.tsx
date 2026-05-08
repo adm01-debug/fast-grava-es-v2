@@ -676,7 +676,7 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
                 <TableBody>
                   {drillDownJobs.length > 0 ? (
                     drillDownJobs.map((job: any) => (
-                      <TableRow key={job.id} className="border-white/10 hover:bg-primary/5 transition-colors">
+                      <TableRow key={job.id} className="border-white/10 hover:bg-primary/5 transition-colors cursor-pointer" onClick={() => navigate(`/job/${job.id}`)}>
                         <TableCell className="font-mono text-sm">{job.order_number}</TableCell>
                         <TableCell className="text-xs">{job.product}</TableCell>
                         <TableCell className="text-center">
