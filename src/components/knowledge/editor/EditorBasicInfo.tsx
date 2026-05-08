@@ -3,7 +3,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ProductCategory, Material } from '@/hooks/useTechnicalSheets';
-import { Info, Plus, Trash2, CheckSquare, AlertTriangle } from 'lucide-react';
+import { Info, Plus, Trash2, CheckSquare, AlertTriangle, Package } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 
