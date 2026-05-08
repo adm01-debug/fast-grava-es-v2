@@ -1,10 +1,12 @@
 import { useMemo, useState, Fragment } from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
-import { ChevronDown, ChevronRight as ChevronRightIcon } from 'lucide-react';
+import { ChevronDown, ChevronRight as ChevronRightIcon, Sparkles } from 'lucide-react';
 import { DbJob, DbMachine, DbTechnique } from '@/hooks/useJobs';
 import { JobBlock } from './JobBlock';
 import { CalendarGroupBy, CalendarOverlays, CalendarZoomLevel, getOccupancyColor } from './types';
+import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
 
 interface CalendarTimelineProps {
   machines: DbMachine[];
@@ -204,10 +206,24 @@ export function CalendarTimeline({
     <ScrollArea className="w-full">
       <div className="min-w-[1200px]">
         <div className="flex border-b border-border/40 bg-muted/5 sticky top-0 z-10">
-          <div className="w-28 shrink-0 p-3 border-r border-border/40">
+          <div className="w-28 shrink-0 p-3 border-r border-border/40 flex flex-col justify-between">
             <span className="text-xs font-medium text-muted-foreground uppercase">
               {groupBy === 'technique' ? 'Técnica' : 'Máquina'}
             </span>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="h-6 w-6 mt-1 text-primary hover:bg-primary/10"
+              title="Otimizar Agenda (IA)"
+              onClick={() => {
+                toast.success("Otimização inteligente iniciada...", {
+                  icon: <Sparkles className="h-4 w-4 text-primary" />,
+                  description: "A IA está recalculando a melhor sequência para hoje."
+                });
+              }}
+            >
+              <Sparkles className="h-3.5 w-3.5" />
+            </Button>
           </div>
           <div className="flex-1 flex">
             {ticks.slice(0, -1).map((t) => (

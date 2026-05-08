@@ -1,10 +1,11 @@
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { Badge } from '@/components/ui/badge';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle, Fingerprint } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { DbJob } from '@/hooks/useJobs';
 import { JobStatus } from '@/types/scheduling';
 import { statusColors, statusLabels } from './types';
+import { useHapticFeedback } from '@/hooks/use-haptic-feedback';
 
 interface JobBlockProps {
   job: DbJob;
@@ -15,11 +16,17 @@ interface JobBlockProps {
 }
 
 export function JobBlock({ job, position, hasConflict, ghost, onClick }: JobBlockProps) {
+  const { trigger } = useHapticFeedback();
+
+  const handleJobClick = () => {
+    trigger('light');
+    onClick(job);
+  };
   return (
     <Tooltip>
       <TooltipTrigger asChild>
         <button
-          onClick={() => onClick(job)}
+          onClick={handleJobClick}
           aria-label={`Job ${job.order_number} — ${statusLabels[job.status as JobStatus]}`}
           className={cn(
             'absolute top-2 rounded-md border cursor-pointer',
