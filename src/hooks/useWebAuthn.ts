@@ -90,11 +90,11 @@ export function useWebAuthn() {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setCredentials(data || []);
+      if (isMounted.current) setCredentials(data || []);
     } catch (error) {
       if (import.meta.env.DEV) console.error('Error fetching credentials:', error);
     } finally {
-      setIsLoading(false);
+      safeSetIsLoading(false);
     }
   }, [user]);
 
@@ -105,7 +105,7 @@ export function useWebAuthn() {
       return false;
     }
 
-    setIsRegistering(true);
+    safeSetIsRegistering(true);
     try {
       const challenge = generateChallenge();
       
@@ -197,7 +197,7 @@ export function useWebAuthn() {
       }
       return false;
     } finally {
-      setIsRegistering(false);
+      safeSetIsRegistering(false);
     }
   }, [user, isSupported, fetchCredentials]);
 
@@ -208,7 +208,7 @@ export function useWebAuthn() {
       return { success: false };
     }
 
-    setIsAuthenticating(true);
+    safeSetIsAuthenticating(true);
     try {
       const challenge = generateChallenge();
       
@@ -284,32 +284,14 @@ export function useWebAuthn() {
       }
       return { success: false };
     } finally {
-      setIsAuthenticating(false);
+      safeSetIsAuthenticating(false);
     }
   }, [isSupported]);
-
-  // Remove a passkey
-  const removePasskey = useCallback(async (credentialId: string): Promise<boolean> => {
-    if (!user) return false;
-
-    try {
-      const { error } = await supabase
-        .from('webauthn_credentials')
-        .delete()
-        .eq('id', credentialId)
-        .eq('user_id', user.id);
-
-      if (error) throw error;
-
-      toast.success('Passkey removida com sucesso');
-      await fetchCredentials();
-      return true;
-    } catch (error) {
-      if (import.meta.env.DEV) console.error('Error removing passkey:', error);
-      toast.error('Erro ao remover passkey');
-      return false;
+...
+    } finally {
+      setIsLoading(false);
     }
-  }, [user, fetchCredentials]);
+  }, [user]);
 
   return {
     credentials,
