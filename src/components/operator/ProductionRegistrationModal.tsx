@@ -85,6 +85,7 @@ export function ProductionRegistrationModal({
   const [producedQuantity, setProducedQuantity] = useState<number>(0);
   const [lostPieces, setLostPieces] = useState<number>(0);
   const [notes, setNotes] = useState('');
+  const [lossCategory, setLossCategory] = useState<string | null>(null);
   const [photos, setPhotos] = useState<string[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -97,6 +98,7 @@ export function ProductionRegistrationModal({
       setProducedQuantity(job.quantity);
       setLostPieces(job.lost_pieces || 0);
       setNotes(job.notes || '');
+      setLossCategory(job.loss_category || null);
       setPhotos([]);
     }
     onOpenChange(open);
