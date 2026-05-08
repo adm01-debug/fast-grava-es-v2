@@ -648,21 +648,22 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
 
       {/* Drill-down Dialog */}
       <Dialog open={drillDownOpen} onOpenChange={setDrillDownOpen}>
-        <DialogContent className="max-w-4xl bg-black/90 border-primary/30 backdrop-blur-2xl text-white">
-          <DialogHeader className="flex flex-row items-center justify-between space-y-0">
-            <div>
-              <DialogTitle className="text-2xl font-display tracking-widest text-primary uppercase">
+        <DialogContent className="max-w-5xl border-border/40 bg-card/40 backdrop-blur-3xl shadow-2xl rounded-[2rem] overflow-hidden ring-1 ring-white/10 p-0">
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.08] via-transparent to-transparent pointer-events-none" />
+          <DialogHeader className="relative z-10 flex flex-row items-center justify-between p-10 pb-6 border-b border-border/40">
+            <div className="space-y-2">
+              <DialogTitle className="text-3xl font-display font-black tracking-tight text-primary uppercase gradient-text">
                 {drillDownTitle}
               </DialogTitle>
               <DialogDescription className="text-muted-foreground">
                 Lista detalhada de pedidos e métricas de execução para o segmento selecionado.
               </DialogDescription>
             </div>
-            <div className="flex items-center gap-2 pr-8">
+            <div className="flex items-center gap-3">
               <Button 
                 variant="outline" 
                 size="sm" 
-                className="h-8 gap-2 bg-white/5 border-white/10 hover:bg-primary/20 text-xs"
+                className="h-10 px-4 gap-2 bg-muted/20 border-border/40 hover:bg-primary/10 rounded-xl font-bold text-xs"
                 onClick={() => handleExport('csv', `DrillDown_${drillDownTitle.replace(/\s+/g, '_')}`)}
               >
                 <FileSpreadsheet className="h-3.5 w-3.5" /> CSV
@@ -677,30 +678,30 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
               </Button>
             </div>
           </DialogHeader>
-          <div className="mt-4">
+          <div className="relative z-10 p-10 pt-6">
             <ScrollArea className="h-[500px] pr-4">
               <Table>
                 <TableHeader>
-                  <TableRow className="border-white/20">
-                    <TableHead className="text-primary text-xs uppercase font-bold">OS</TableHead>
-                    <TableHead className="text-primary text-xs uppercase font-bold">Produto</TableHead>
-                    <TableHead className="text-primary text-xs uppercase font-bold text-center">Status</TableHead>
-                    <TableHead className="text-primary text-xs uppercase font-bold text-center">Qtd</TableHead>
-                    <TableHead className="text-primary text-xs uppercase font-bold text-right">Eficiência</TableHead>
+                  <TableRow className="border-border/40 hover:bg-transparent">
+                    <TableHead className="h-12 text-muted-foreground text-xs uppercase font-black tracking-widest">OS</TableHead>
+                    <TableHead className="h-12 text-muted-foreground text-xs uppercase font-black tracking-widest">Produto</TableHead>
+                    <TableHead className="h-12 text-muted-foreground text-xs uppercase font-black tracking-widest text-center">Status</TableHead>
+                    <TableHead className="h-12 text-muted-foreground text-xs uppercase font-black tracking-widest text-center">Qtd</TableHead>
+                    <TableHead className="h-12 text-muted-foreground text-xs uppercase font-black tracking-widest text-right">Eficiência</TableHead>
                   </TableRow>
                 </TableHeader>
-                <TableBody>
+                <TableBody className="divide-y divide-border/40">
                   {drillDownJobs.length > 0 ? (
                     drillDownJobs.map((job: any) => (
-                      <TableRow key={job.id} className="border-white/10 hover:bg-primary/5 transition-colors cursor-pointer" onClick={() => navigate(`/job/${job.id}`)}>
-                        <TableCell className="font-mono text-sm">{job.order_number}</TableCell>
-                        <TableCell className="text-xs">{job.product}</TableCell>
+                      <TableRow key={job.id} className="group hover:bg-primary/[0.02] transition-colors border-border/40 cursor-pointer" onClick={() => navigate(`/job/${job.id}`)}>
+                        <TableCell className="py-5 font-mono text-sm font-bold text-primary">{job.order_number}</TableCell>
+                        <TableCell className="py-5 text-sm font-medium">{job.product}</TableCell>
                         <TableCell className="text-center">
                           <Badge variant="outline" className={cn(
                             "text-[10px] uppercase",
-                            job.status === 'finished' ? "text-emerald-400 border-emerald-400/30 bg-emerald-400/5" :
-                            job.status === 'production' ? "text-blue-400 border-blue-400/30 bg-blue-400/5" :
-                            "text-amber-400 border-amber-400/30 bg-amber-400/5"
+                            job.status === 'finished' ? "text-emerald-500 border-emerald-500/20 bg-emerald-500/10" :
+                            job.status === 'production' ? "text-blue-500 border-blue-500/20 bg-blue-500/10" :
+                            "text-amber-500 border-amber-500/20 bg-amber-500/10"
                           )}>
                             {job.status}
                           </Badge>
