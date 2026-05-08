@@ -18,6 +18,7 @@ export function TPMReports() {
   const { machines, records, maintenanceTypes } = useTPM();
   const [selectedMachineId, setSelectedMachineId] = useState<string>('all');
   const [period, setPeriod] = useState<string>('30');
+  const { metrics, summary } = useMTBFMTTR(parseInt(period));
   const [isGenerating, setIsGenerating] = useState(false);
 
   const getFilteredRecords = () => {
