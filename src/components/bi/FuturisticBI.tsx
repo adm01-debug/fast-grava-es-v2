@@ -61,6 +61,15 @@ interface FuturisticBIProps {
 export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
   const { operators, overallStats } = useOperatorProductivity(30);
   const { stats: tpmStats, records: tpmRecords } = useTPM();
+  const [drillDownOpen, setDrillDownOpen] = useState(false);
+  const [drillDownTitle, setDrillDownTitle] = useState('');
+  const [drillDownJobs, setDrillDownJobs] = useState<any[]>([]);
+
+  const handleDrillDown = (title: string, filteredJobs: any[]) => {
+    setDrillDownTitle(title);
+    setDrillDownJobs(filteredJobs);
+    setDrillDownOpen(true);
+  };
 
   // Derived data for "Studios" (Mock grouping machines into studios)
   const studioData = useMemo(() => {
