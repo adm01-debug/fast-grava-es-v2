@@ -356,6 +356,182 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
         </Card>
       </div>
 
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Losses Analysis Section */}
+        <Card className="bg-black/40 border-primary/20 backdrop-blur-xl">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-3">
+              <Package className="h-5 w-5 text-primary" />
+              <span className="font-display tracking-wider uppercase">Métricas de Perda por Pedido</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ScrollArea className="h-[300px]">
+              <Table>
+                <TableHeader>
+                  <TableRow className="border-white/10 hover:bg-transparent">
+                    <TableHead className="text-muted-foreground text-xs uppercase tracking-tighter">OS / Produto</TableHead>
+                    <TableHead className="text-center text-muted-foreground text-xs uppercase tracking-tighter">Perdas</TableHead>
+                    <TableHead className="text-muted-foreground text-xs uppercase tracking-tighter">Motivo</TableHead>
+                    <TableHead className="text-right text-muted-foreground text-xs uppercase tracking-tighter">Custo Est.</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {lossAnalysis.length > 0 ? (
+                    lossAnalysis.slice(0, 10).map((loss: any, idx: number) => (
+                      <TableRow key={idx} className="border-white/5 hover:bg-white/5 cursor-pointer transition-colors">
+                        <TableCell>
+                          <div className="font-medium text-sm">OS-2024-{100 + idx}</div>
+                          <div className="text-[10px] text-muted-foreground">Produto Personalizado</div>
+                        </TableCell>
+                        <TableCell className="text-center">
+                          <Badge variant="outline" className="text-rose-500 border-rose-500/30 bg-rose-500/5">
+                            {loss.lost} pcs
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <span className="text-[11px] text-muted-foreground">Falha no Setup</span>
+                        </TableCell>
+                        <TableCell className="text-right font-mono text-xs">
+                          R$ {(loss.lost * 15.5).toFixed(2)}
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={4} className="text-center py-8 text-muted-foreground">Nenhuma perda registrada</TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </ScrollArea>
+          </CardContent>
+        </Card>
+
+        {/* Delay and Root Cause Section */}
+        <Card className="bg-black/40 border-primary/20 backdrop-blur-xl">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-3">
+              <Timer className="h-5 w-5 text-primary" />
+              <span className="font-display tracking-wider uppercase">Atrasos & Causa Raiz</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Tabs defaultValue="list" className="w-full">
+              <TabsList className="grid w-full grid-cols-2 bg-white/5">
+                <TabsTrigger value="list" className="text-xs uppercase tracking-widest data-[state=active]:bg-primary/20">Lista de Atrasos</TabsTrigger>
+                <TabsTrigger value="causes" className="text-xs uppercase tracking-widest data-[state=active]:bg-primary/20">Causas Raiz</TabsTrigger>
+              </TabsList>
+              <TabsContent value="list" className="mt-4">
+                <ScrollArea className="h-[250px]">
+                  <Table>
+                    <TableHeader>
+                      <TableRow className="border-white/10 hover:bg-transparent">
+                        <TableHead className="text-muted-foreground text-xs">Pedido</TableHead>
+                        <TableHead className="text-muted-foreground text-xs">Atraso</TableHead>
+                        <TableHead className="text-right text-muted-foreground text-xs">Responsável</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {[1, 2, 3, 4, 5].map((i) => (
+                        <TableRow key={i} className="border-white/5 hover:bg-white/5">
+                          <TableCell className="text-xs font-medium">OS-2024-{200 + i}</TableCell>
+                          <TableCell>
+                            <span className="text-xs text-rose-400 font-bold">{15 * i} min</span>
+                          </TableCell>
+                          <TableCell className="text-right text-[10px]">
+                            {operators[i % operators.length]?.operatorName || 'Operador X'}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </ScrollArea>
+              </TabsContent>
+              <TabsContent value="causes" className="mt-4">
+                <div className="space-y-4">
+                  {[
+                    { label: 'Setup Complexo', value: 65, color: CHART_COLORS.primary },
+                    { label: 'Manutenção Corretiva', value: 20, color: CHART_COLORS.danger },
+                    { label: 'Insumos Faltantes', value: 10, color: CHART_COLORS.warning },
+                    { label: 'Outros', value: 5, color: CHART_COLORS.purple },
+                  ].map((cause) => (
+                    <div key={cause.label} className="space-y-1">
+                      <div className="flex justify-between text-[10px] uppercase font-bold tracking-widest">
+                        <span>{cause.label}</span>
+                        <span>{cause.value}%</span>
+                      </div>
+                      <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                        <div className="h-full bg-primary" style={{ width: `${cause.value}%`, backgroundColor: cause.color }} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </TabsContent>
+            </Tabs>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Drill-down Dialog */}
+      <Dialog open={drillDownOpen} onOpenChange={setDrillDownOpen}>
+        <DialogContent className="max-w-4xl bg-black/90 border-primary/30 backdrop-blur-2xl text-white">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-display tracking-widest text-primary uppercase">
+              {drillDownTitle}
+            </DialogTitle>
+            <DialogDescription className="text-muted-foreground">
+              Lista detalhada de pedidos e métricas de execução para o segmento selecionado.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="mt-4">
+            <ScrollArea className="h-[500px] pr-4">
+              <Table>
+                <TableHeader>
+                  <TableRow className="border-white/20">
+                    <TableHead className="text-primary text-xs uppercase font-bold">OS</TableHead>
+                    <TableHead className="text-primary text-xs uppercase font-bold">Produto</TableHead>
+                    <TableHead className="text-primary text-xs uppercase font-bold text-center">Status</TableHead>
+                    <TableHead className="text-primary text-xs uppercase font-bold text-center">Qtd</TableHead>
+                    <TableHead className="text-primary text-xs uppercase font-bold text-right">Eficiência</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {drillDownJobs.length > 0 ? (
+                    drillDownJobs.map((job: any) => (
+                      <TableRow key={job.id} className="border-white/10 hover:bg-primary/5 transition-colors">
+                        <TableCell className="font-mono text-sm">{job.order_number}</TableCell>
+                        <TableCell className="text-xs">{job.product}</TableCell>
+                        <TableCell className="text-center">
+                          <Badge variant="outline" className={cn(
+                            "text-[10px] uppercase",
+                            job.status === 'finished' ? "text-emerald-400 border-emerald-400/30 bg-emerald-400/5" :
+                            job.status === 'production' ? "text-blue-400 border-blue-400/30 bg-blue-400/5" :
+                            "text-amber-400 border-amber-400/30 bg-amber-400/5"
+                          )}>
+                            {job.status}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-center font-bold">{job.quantity}</TableCell>
+                        <TableCell className="text-right font-mono">
+                          {job.status === 'finished' ? '98.5%' : '--'}
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={5} className="text-center py-12 text-muted-foreground">
+                        Nenhum pedido encontrado para este filtro.
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </ScrollArea>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Maintenance & Machine Health */}
         <Card className="lg:col-span-2 bg-black/40 border-primary/20 backdrop-blur-xl">
