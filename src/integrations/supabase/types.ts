@@ -1566,49 +1566,61 @@ export type Database = {
       }
       maintenance_records: {
         Row: {
+          approved_at: string | null
+          approver_id: string | null
           completed_at: string | null
           created_at: string
           downtime_minutes: number | null
           id: string
           machine_id: string
           maintenance_type_id: string
+          next_scheduled_date_after_approval: string | null
           notes: string | null
           performed_by: string | null
           performed_by_name: string | null
           photos: string[] | null
           schedule_id: string
+          signature_url: string | null
           started_at: string
           status: string
           total_cost: number | null
         }
         Insert: {
+          approved_at?: string | null
+          approver_id?: string | null
           completed_at?: string | null
           created_at?: string
           downtime_minutes?: number | null
           id?: string
           machine_id: string
           maintenance_type_id: string
+          next_scheduled_date_after_approval?: string | null
           notes?: string | null
           performed_by?: string | null
           performed_by_name?: string | null
           photos?: string[] | null
           schedule_id: string
+          signature_url?: string | null
           started_at?: string
           status?: string
           total_cost?: number | null
         }
         Update: {
+          approved_at?: string | null
+          approver_id?: string | null
           completed_at?: string | null
           created_at?: string
           downtime_minutes?: number | null
           id?: string
           machine_id?: string
           maintenance_type_id?: string
+          next_scheduled_date_after_approval?: string | null
           notes?: string | null
           performed_by?: string | null
           performed_by_name?: string | null
           photos?: string[] | null
           schedule_id?: string
+          signature_url?: string | null
           started_at?: string
           status?: string
           total_cost?: number | null

@@ -16,6 +16,7 @@ export function useTPM() {
     alerts,
     machines,
     isLoading,
+    fetchRecordDetails,
   } = useTPMData();
 
   // Mutations for CRUD operations
@@ -23,6 +24,7 @@ export function useTPM() {
     createSchedule,
     startMaintenance,
     completeMaintenance,
+    approveMaintenance,
     checkAndGenerateAlerts,
     resolveAlert,
   } = useTPMMutations({ schedules, alerts });
@@ -42,6 +44,7 @@ export function useTPM() {
     
     // Loading
     isLoading,
+    fetchRecordDetails,
     
     // Helpers
     getSchedulesByStatus,
@@ -50,6 +53,7 @@ export function useTPM() {
     createSchedule,
     startMaintenance,
     completeMaintenance,
+    approveMaintenance,
     checkAndGenerateAlerts,
     resolveAlert,
   };

@@ -19,6 +19,7 @@ import { ChecklistManager } from '@/components/tpm/ChecklistManager';
 import { MTBFMTTRWidget } from '@/components/reliability/MTBFMTTRWidget';
 import { MaintenanceExecutionModal } from '@/components/tpm/MaintenanceExecutionModal';
 import { TPMReports } from '@/components/tpm/TPMReports';
+import { TPMExecutionHistory } from '@/components/tpm/TPMExecutionHistory';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { FavoriteButton, FavoritesDropdown } from '@/components/navigation/FavoritesManager';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
@@ -244,6 +245,9 @@ export default function TPMDashboard() {
             <TabsTrigger value="list" className="data-[state=active]:shadow-glow-primary data-[state=active]:bg-primary/10 transition-all duration-300">
               Lista
             </TabsTrigger>
+            <TabsTrigger value="history" className="data-[state=active]:shadow-glow-primary data-[state=active]:bg-primary/10 transition-all duration-300">
+              Histórico
+            </TabsTrigger>
             <TabsTrigger value="alerts" className="data-[state=active]:shadow-glow-primary data-[state=active]:bg-primary/10 transition-all duration-300">
               Alertas
               {stats.activeAlerts > 0 && (
@@ -281,6 +285,10 @@ export default function TPMDashboard() {
               schedules={schedules}
               onStartMaintenance={handleStartMaintenance}
             />
+          </TabsContent>
+
+          <TabsContent value="history" className="animate-fade-in">
+            <TPMExecutionHistory />
           </TabsContent>
 
           <TabsContent value="alerts" className="animate-fade-in">

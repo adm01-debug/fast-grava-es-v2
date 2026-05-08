@@ -166,6 +166,47 @@ export function useTPMData() {
     ...defaultQueryOptions,
   });
 
+  // Fetch record details function
+  const fetchRecordDetails = async (recordId: string) => {
+    try {
+      const { data: record, error: recordError } = await supabase
+        .from('maintenance_records')
+        .select('*, machines(id, name, code), maintenance_types(*)')
+        .eq('id', recordId)
+        .single();
+      
+      if (recordError) throw recordError;
+
+      const { data: responses, error: responsesError } = await supabase
+        .from('maintenance_item_responses')
+        .select('*, maintenance_checklist_items(*)')
+        .eq('record_id', recordId);
+      
+      if (responsesError) throw responsesError;
+
+      const { data: parts, error: partsError } = await supabase
+        .from('tpm_execution_parts')
+        .select('*')
+        .eq('execution_id', recordId);
+      
+      if (partsError) throw partsError;
+
+      return {
+        ...record,
+        machine: record.machines,
+        maintenance_type: record.maintenance_types,
+        responses: responses.map((r: any) => ({
+          ...r,
+          item: r.maintenance_checklist_items
+        })),
+        parts
+      };
+    } catch (err) {
+      if (import.meta.env.DEV) console.error('[useTPM] fetchRecordDetails error:', err);
+      throw err;
+    }
+  };
+
   // Fetch alerts
   const { data: alerts = [], isLoading: loadingAlerts } = useQuery({
     queryKey: ['maintenance-alerts'],
@@ -227,5 +268,6 @@ export function useTPMData() {
     alerts,
     machines,
     isLoading: loadingTypes || loadingSchedules || loadingChecklists || loadingRecords || loadingAlerts,
+    fetchRecordDetails,
   };
 }
