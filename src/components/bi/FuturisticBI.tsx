@@ -68,13 +68,27 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
   const [drillDownTitle, setDrillDownTitle] = useState('');
   const [drillDownJobs, setDrillDownJobs] = useState<any[]>([]);
 
-  const handleDrillDown = (title: string, segment: string) => {
+  const handleDrillDown = (title: string, category: string) => {
     setDrillDownTitle(title);
-    setDrillDownJobs([
-      { id: '1', order_number: 'OS-2024-501', product: 'Premium Bottle', status: 'production', quantity: 150, operator: 'John Doe' },
-      { id: '2', order_number: 'OS-2024-502', product: 'Executive Pen', status: 'finished', quantity: 500, operator: 'Jane Smith' },
-      { id: '3', order_number: 'OS-2024-503', product: 'Tech Backpack', status: 'delayed', quantity: 85, operator: 'Mike Wilson' },
-    ]);
+    
+    // In a real scenario, we would filter biMetrics.periodJobs or similar
+    // For now, let's create dynamic data based on the selection
+    const mockOperators = ['John Doe', 'Jane Smith', 'Mike Wilson', 'Sarah Parker'];
+    const mockProducts = ['Premium Bottle', 'Executive Pen', 'Tech Backpack', 'Metal Mug', 'Eco Bag'];
+    
+    const count = category === 'Atrasados' ? biMetrics.periodJobs * 0.1 : 5;
+    const jobs = Array.from({ length: Math.max(3, Math.min(10, Math.floor(count))) }).map((_, i) => ({
+      id: `drill-${i}`,
+      order_number: `OS-2024-${500 + i}`,
+      product: mockProducts[Math.floor(Math.random() * mockProducts.length)],
+      status: category.toLowerCase().includes('finalizado') ? 'finished' : 
+              category.toLowerCase().includes('produção') ? 'production' : 
+              category.toLowerCase().includes('atrasado') ? 'delayed' : 'scheduled',
+      quantity: 50 + Math.floor(Math.random() * 500),
+      operator: mockOperators[Math.floor(Math.random() * mockOperators.length)]
+    }));
+
+    setDrillDownJobs(jobs);
     setDrillDownOpen(true);
   };
 
@@ -246,7 +260,7 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
               </div>
             </div>
             
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-4 mb-8">
               <div className="p-5 rounded-2xl bg-amber-500/5 border border-amber-500/10 space-y-2">
                 <div className="flex items-center gap-2">
                   <ShieldAlert className="h-4 w-4 text-amber-500" />
@@ -260,6 +274,30 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
                   <span className="text-[10px] font-black uppercase tracking-widest text-emerald-600/70">Asset Health</span>
                 </div>
                 <p className="text-xl font-black">98.2% <span className="text-xs font-bold text-muted-foreground uppercase tracking-tighter">Up-time</span></p>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <h4 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                <TrendingUp className="h-3.5 w-3.5" /> Recent Losses by Category
+              </h4>
+              <div className="space-y-2">
+                {[
+                  { cat: 'Setup Error', count: 12, impact: 'High' },
+                  { cat: 'Material Defect', count: 8, impact: 'Medium' },
+                  { cat: 'Machine Fail', count: 5, impact: 'Critical' }
+                ].map((l, i) => (
+                  <div key={i} className="flex items-center justify-between p-3 rounded-xl bg-background/20 border border-white/5">
+                    <span className="text-xs font-bold text-foreground/70">{l.cat}</span>
+                    <div className="flex items-center gap-3">
+                      <span className="text-xs font-black">{l.count} pçs</span>
+                      <Badge variant="outline" className={cn(
+                        "text-[8px] font-black uppercase",
+                        l.impact === 'Critical' ? "border-rose-500/30 text-rose-500" : "border-amber-500/30 text-amber-500"
+                      )}>{l.impact}</Badge>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           </CardContent>

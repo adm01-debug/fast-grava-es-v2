@@ -159,6 +159,31 @@ export function useNotifications(options?: { limit?: number; unreadOnly?: boolea
 // Helper function for status change notifications
 export function notifyStatusChange(jobId: string, oldStatus: string, newStatus: string) {
   if (import.meta.env.DEV) console.log(`Job ${jobId} status changed from ${oldStatus} to ${newStatus}`);
-  // This would typically trigger a toast or notification
-  // Using a simple console.log for now as the full notification system is available via useNotifications hook
+}
+
+export async function createSystemNotification({ 
+  userId, 
+  title, 
+  body, 
+  type = 'info' 
+}: { 
+  userId: string; 
+  title: string; 
+  body: string; 
+  type?: 'info' | 'warning' | 'error' | 'success' 
+}) {
+  const { error } = await supabase
+    .from('push_notifications')
+    .insert([{
+      user_id: userId,
+      title,
+      body,
+      status: 'pending'
+    }]);
+  
+  if (error) {
+    console.error('Error creating notification:', error);
+    return false;
+  }
+  return true;
 }
