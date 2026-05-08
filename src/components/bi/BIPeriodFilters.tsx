@@ -3,8 +3,15 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
-import { CalendarIcon, Filter } from 'lucide-react';
+import { CalendarIcon, Filter, Users, Printer, LayoutGrid } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 type PeriodFilter = '7d' | '30d' | '90d' | 'custom';
 
@@ -31,6 +38,15 @@ interface BIPeriodFiltersProps {
   setIsCalendarOpen2: (v: boolean) => void;
   periodLabel2: string;
   periodJobs2: number;
+  studioFilter: string;
+  setStudioFilter: (v: string) => void;
+  collaboratorFilter: string;
+  setCollaboratorFilter: (v: string) => void;
+  machineFilter: string;
+  setMachineFilter: (v: string) => void;
+  studios: string[];
+  collaborators: { id: string; name: string }[];
+  machines: { id: string; name: string }[];
 }
 
 export function BIPeriodFilters({
@@ -38,6 +54,8 @@ export function BIPeriodFilters({
   isCalendarOpen, setIsCalendarOpen, periodLabel, periodJobs,
   comparisonMode, periodFilter2, setPeriodFilter2, customRange2, setCustomRange2,
   isCalendarOpen2, setIsCalendarOpen2, periodLabel2, periodJobs2,
+  studioFilter, setStudioFilter, collaboratorFilter, setCollaboratorFilter,
+  machineFilter, setMachineFilter, studios, collaborators, machines,
 }: BIPeriodFiltersProps) {
   return (
     <Card className="border-primary/20 bg-gradient-to-r from-primary/5 via-primary/10 to-xp/5 glass-card">
@@ -84,6 +102,60 @@ export function BIPeriodFilters({
             <Badge variant="secondary" className="ml-auto">
               {periodLabel} • {periodJobs} jobs
             </Badge>
+          </div>
+
+          {/* Advanced Filters */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-border/50">
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
+                <LayoutGrid className="h-3.5 w-3.5" /> Studio
+              </div>
+              <Select value={studioFilter} onValueChange={setStudioFilter}>
+                <SelectTrigger className="bg-background/50 border-primary/20">
+                  <SelectValue placeholder="Todos os Studios" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todos os Studios</SelectItem>
+                  {studios.map(s => (
+                    <SelectItem key={s} value={s}>{s}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
+                <Users className="h-3.5 w-3.5" /> Colaborador
+              </div>
+              <Select value={collaboratorFilter} onValueChange={setCollaboratorFilter}>
+                <SelectTrigger className="bg-background/50 border-primary/20">
+                  <SelectValue placeholder="Todos os Colaboradores" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todos os Colaboradores</SelectItem>
+                  {collaborators.map(c => (
+                    <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
+                <Printer className="h-3.5 w-3.5" /> Máquina
+              </div>
+              <Select value={machineFilter} onValueChange={setMachineFilter}>
+                <SelectTrigger className="bg-background/50 border-primary/20">
+                  <SelectValue placeholder="Todas as Máquinas" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todas as Máquinas</SelectItem>
+                  {machines.map(m => (
+                    <SelectItem key={m.id} value={m.id}>{m.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
           {/* Period 2 */}
