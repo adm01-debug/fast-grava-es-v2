@@ -170,6 +170,24 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
     }).sort((a, b) => b.jobs - a.jobs);
   }, [biMetrics.machineUtilization]);
 
+  // Balance Score Calculation
+  const balanceMetrics = useMemo(() => {
+    if (studioData.length < 2) return { score: 100, status: 'Balanced' };
+    const values = studioData.map(s => s.jobs);
+    const max = Math.max(...values);
+    const min = Math.min(...values);
+    const diff = max - min;
+    const avg = values.reduce((a, b) => a + b, 0) / values.length;
+    const deviation = (diff / avg) * 100;
+    
+    let status = 'Equilibrado';
+    let color = 'text-success';
+    if (deviation > 50) { status = 'Desequilibrado'; color = 'text-destructive'; }
+    else if (deviation > 25) { status = 'Atenção'; color = 'text-warning'; }
+    
+    return { score: Math.max(0, 100 - deviation), status, color, deviation };
+  }, [studioData]);
+
   // Derived data for "Losses per Job"
   const lossAnalysis = useMemo(() => {
     if (!biMetrics.dailyTrend) return [];
