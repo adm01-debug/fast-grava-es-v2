@@ -195,6 +195,14 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
     }
   };
 
+  if (!biMetrics.periodJobsList || biMetrics.periodJobsList.length === 0) {
+    return (
+      <div className="py-12">
+        <BIEmptyState />
+      </div>
+    );
+  }
+
   return (
     <motion.div 
       variants={containerVariants}
@@ -202,6 +210,7 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
       animate="visible"
       className="space-y-8"
     >
+
       {/* Top Layer: Critical Real-time Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <FuturisticStatCard 
