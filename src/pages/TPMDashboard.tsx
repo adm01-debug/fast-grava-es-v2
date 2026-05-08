@@ -220,6 +220,9 @@ export default function TPMDashboard() {
                 </span>
               )}
             </TabsTrigger>
+            <TabsTrigger value="config" className="data-[state=active]:shadow-glow-primary data-[state=active]:bg-primary/10 transition-all duration-300">
+              Configurações
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="calendar" className="space-y-6 animate-fade-in">
