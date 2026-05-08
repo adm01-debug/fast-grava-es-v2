@@ -4,7 +4,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { CheckCircle2, XCircle, Clock, Search, Filter, RefreshCw, AlertCircle, PlayCircle, BarChart3 } from 'lucide-react';
+import { CheckCircle2, XCircle, Clock, Search, RefreshCw, AlertCircle, PlayCircle, BarChart3 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -29,7 +29,7 @@ export function TPMNotificationQueue() {
       if (error) throw error;
       return data;
     },
-    refetchInterval: 5000 // Atualiza a cada 5s
+    refetchInterval: 5000
   });
 
   const retryMutation = useMutation({
@@ -81,7 +81,7 @@ export function TPMNotificationQueue() {
         <Card className="bg-amber-500/5 border-amber-500/20">
           <CardHeader className="p-4 pb-0">
             <CardTitle className="text-xs font-semibold uppercase text-amber-500 flex items-center gap-2">
-              <RefreshCw className="h-4 w-4 animate-spin-slow" /> Processando
+              <RefreshCw className="h-4 w-4" /> Processando
             </CardTitle>
           </CardHeader>
           <CardContent className="p-4">
@@ -148,7 +148,7 @@ export function TPMNotificationQueue() {
               filteredQueue?.map((item) => (
                 <TableRow key={item.id}>
                   <TableCell className="text-xs">
-                    {format(new Date(item.created_at), 'dd/MM HH:mm', { locale: ptBR })}
+                    {item.created_at ? format(new Date(item.created_at), 'dd/MM HH:mm', { locale: ptBR }) : '-'}
                   </TableCell>
                   <TableCell>
                     <span className="font-medium text-sm">{item.machine?.name}</span>
@@ -164,8 +164,8 @@ export function TPMNotificationQueue() {
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
-                      <span className="text-xs font-mono">{item.retry_count}/{item.max_retries}</span>
-                      <Progress value={(item.retry_count / item.max_retries) * 100} className="h-1 w-12" />
+                      <span className="text-xs font-mono">{(item.retry_count || 0)}/{(item.max_retries || 3)}</span>
+                      <Progress value={((item.retry_count || 0) / (item.max_retries || 3)) * 100} className="h-1 w-12" />
                     </div>
                   </TableCell>
                   <TableCell>
