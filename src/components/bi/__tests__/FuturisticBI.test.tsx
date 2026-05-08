@@ -30,6 +30,9 @@ vi.mock('@/hooks/useDataExport', () => ({
 const mockBiMetrics = {
   periodLossRate: 1.5,
   toDoJobs: 15,
+  periodCompletedJobs: 80,
+  periodCompletedPieces: 1200,
+  periodLostPieces: 18,
   periodJobsList: [
     { id: 'job-1', order_number: 'OS-1001', status: 'completed', quantity: 100, produced_quantity: 100, lost_pieces: 2 },
     { id: 'job-2', order_number: 'OS-1002', status: 'delayed', quantity: 50, produced_quantity: 40, lost_pieces: 0, delay_time: '2h' },
