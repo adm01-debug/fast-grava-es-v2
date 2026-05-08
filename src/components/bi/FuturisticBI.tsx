@@ -281,17 +281,17 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
         <FuturisticStatCard 
           title="Pedidos a Fazer" 
           value={biMetrics.toDoJobs || 0} 
-          subtitle="Fila de Espera"
+          subtitle="Aguardando Início"
           icon={Package} 
           gradient={GRADIENTS.purple}
           glowColor="purple"
           onExport={(format: 'csv' | 'pdf') => handleExport(format, 'Pedidos_A_Fazer')}
-          onClick={() => handleDrillDown('PEDIDOS A FAZER', 'queue')}
+          onClick={() => handleDrillDown('PEDIDOS AGUARDANDO', 'queue')}
         />
         <FuturisticStatCard 
           title="Jobs em Produção" 
           value={kpis.inProgressJobs} 
-          subtitle="Capacidade: 92%"
+          subtitle="Atividade em Tempo Real"
           icon={Zap} 
           gradient={GRADIENTS.success}
           glowColor="success"
@@ -301,7 +301,7 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
         <FuturisticStatCard 
           title="Atrasos Críticos" 
           value={kpis.delayedJobs} 
-          subtitle={`Ação requerida em ${kpis.delayedJobs}`}
+          subtitle="Necessitam Intervenção"
           icon={ShieldAlert} 
           variant="danger"
           gradient={GRADIENTS.danger}
@@ -312,10 +312,10 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
         <FuturisticStatCard 
           title="Taxa de Perda" 
           value={`${biMetrics.periodLossRate.toFixed(2)}%`} 
-          subtitle="Redução de 0.5%"
+          subtitle="Eficiência de Qualidade"
           icon={Target} 
-          trend="down"
-          trendValue="-1.2%"
+          trend={biMetrics.periodLossRate > 5 ? 'up' : 'down'}
+          trendValue={biMetrics.periodLossRate > 5 ? "+0.5%" : "-1.2%"}
           gradient={GRADIENTS.warning}
           glowColor="warning"
           onExport={(format: 'csv' | 'pdf') => handleExport(format, 'Perdas_Qualidade')}
