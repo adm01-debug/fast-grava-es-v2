@@ -22,7 +22,8 @@ import {
 import { 
   Edit, Clock, Wrench, ListOrdered, Package, Lightbulb,
   AlertTriangle, Info, CheckCircle2, FileDown, Copy,
-  QrCode, Maximize2, Zap, Droplets, MoveHorizontal, Thermometer
+  QrCode, Maximize2, Zap, Droplets, MoveHorizontal, Thermometer,
+  CheckSquare
 } from 'lucide-react';
 import { useTechnicalSheetDetails } from '@/hooks/useTechnicalSheets';
 import { KnowledgeSheetQRCode } from './KnowledgeSheetQRCode';
