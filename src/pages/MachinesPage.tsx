@@ -17,6 +17,56 @@ import { toast } from 'sonner';
 
 export default function MachinesPage() {
   const { machines, techniques, isLoadingMachines, getTechniqueById } = useSchedulingData();
+  const { user, profile } = useAuth();
+  const { 
+    schedules, 
+    maintenanceTypes,
+    startMaintenance, 
+    completeMaintenance, 
+    createSchedule 
+  } = useTPM();
+
+  const [selectedMachine, setSelectedMachine] = useState<any>(null);
+  const [executionModalOpen, setExecutionModalOpen] = useState(false);
+  const [createScheduleModalOpen, setCreateScheduleModalOpen] = useState(false);
+  const [selectedSchedule, setSelectedSchedule] = useState<any>(null);
+  const [currentRecordId, setCurrentRecordId] = useState<string | null>(null);
+
+  const handleStartMaintenance = (scheduleId: string) => {
+    if (!user || !profile) {
+      toast.error('Você precisa estar logado para iniciar uma manutenção');
+      return;
+    }
+
+    const schedule = schedules.find(s => s.id === scheduleId);
+    setSelectedSchedule(schedule);
+
+    startMaintenance.mutate({
+      schedule_id: scheduleId,
+      performed_by: user.id,
+      performed_by_name: profile.full_name || 'Usuário',
+    }, {
+      onSuccess: (record) => {
+        setCurrentRecordId(record.id);
+        setExecutionModalOpen(true);
+      }
+    });
+  };
+
+  const handleCompleteMaintenance = (data: any) => {
+    if (!currentRecordId) return;
+    
+    completeMaintenance.mutate({
+      record_id: currentRecordId,
+      ...data
+    }, {
+      onSuccess: () => {
+        setExecutionModalOpen(false);
+        setSelectedSchedule(null);
+        setCurrentRecordId(null);
+      }
+    });
+  };
 
   // Group machines by technique
   const machinesByTechnique = machines.reduce((acc, machine) => {
