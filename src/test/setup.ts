@@ -3,6 +3,13 @@ import { vi } from 'vitest';
 
 // Guard: skip browser mocks when running in node environment
 if (typeof window !== 'undefined') {
+  // Ensure we have a document for testing-library
+  if (!document.getElementById('root')) {
+    const root = document.createElement('div');
+    root.id = 'root';
+    document.body.appendChild(root);
+  }
+
   // Mock matchMedia
   Object.defineProperty(window, 'matchMedia', {
     writable: true,
@@ -47,3 +54,4 @@ if (typeof window !== 'undefined') {
 // Mock import.meta.env
 vi.stubEnv('VITE_SUPABASE_URL', 'https://test.supabase.co');
 vi.stubEnv('VITE_SUPABASE_PUBLISHABLE_KEY', 'test-key');
+
