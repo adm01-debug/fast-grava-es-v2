@@ -32,6 +32,7 @@ interface MaintenanceExecutionModalProps {
     checklist_snapshot?: any;
     technical_sheet_id?: string;
     technical_sheet_version?: number;
+    quality_responses?: any[];
     adjustment_parameters?: any;
   }) => void;
 }
