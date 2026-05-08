@@ -366,33 +366,5 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
   };
 }
 
-// Helper mutation for batch approval
-function approveBatch(queryClient: any) {
-  return useMutation({
-    mutationFn: async (data: {
-      record_ids: string[];
-      approver_id: string;
-    }) => {
-      const results = [];
-      for (const id of data.record_ids) {
-        try {
-          // Aqui chamamos a lógica de aprovação individual para cada item do lote
-          // No mundo real, faríamos um RPC para garantir atomicidade e validação em massa
-          // Call individual approve mutation logic for batch processing
-          await approveMaintenance.mutateAsync({
-            record_id: id,
-            approver_id: data.approver_id
-          });
-          results.push(id);
-        } catch (e) {
-          console.error(`Falha ao aprovar item ${id}:`, e);
-        }
-      }
-      return results;
-    },
-    onSuccess: (ids) => {
-      queryClient.invalidateQueries({ queryKey: ['maintenance-records'] });
-      toast.success(`${ids.length} manutenções aprovadas em lote`);
-    }
-  });
-}
+// Approve batch helper (can be moved inside hook or kept separate if exported)
+// In this case, I will merge batch approval logic into the main useTPMMutations hook for better access to other mutations.
