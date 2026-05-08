@@ -1593,10 +1593,13 @@ export type Database = {
           created_at: string
           downtime_minutes: number | null
           id: string
+          justification: string | null
           machine_id: string
           maintenance_type_id: string
           next_scheduled_date_after_approval: string | null
           notes: string | null
+          override_by: string | null
+          override_justification: string | null
           performed_by: string | null
           performed_by_name: string | null
           photos: string[] | null
@@ -1621,10 +1624,13 @@ export type Database = {
           created_at?: string
           downtime_minutes?: number | null
           id?: string
+          justification?: string | null
           machine_id: string
           maintenance_type_id: string
           next_scheduled_date_after_approval?: string | null
           notes?: string | null
+          override_by?: string | null
+          override_justification?: string | null
           performed_by?: string | null
           performed_by_name?: string | null
           photos?: string[] | null
@@ -1649,10 +1655,13 @@ export type Database = {
           created_at?: string
           downtime_minutes?: number | null
           id?: string
+          justification?: string | null
           machine_id?: string
           maintenance_type_id?: string
           next_scheduled_date_after_approval?: string | null
           notes?: string | null
+          override_by?: string | null
+          override_justification?: string | null
           performed_by?: string | null
           performed_by_name?: string | null
           photos?: string[] | null
@@ -3529,6 +3538,7 @@ export type Database = {
           execution_id: string
           expected_range: string | null
           id: string
+          is_critical: boolean | null
           parameter_name: string | null
           resolved: boolean | null
           severity: string | null
@@ -3542,6 +3552,7 @@ export type Database = {
           execution_id: string
           expected_range?: string | null
           id?: string
+          is_critical?: boolean | null
           parameter_name?: string | null
           resolved?: boolean | null
           severity?: string | null
@@ -3555,6 +3566,7 @@ export type Database = {
           execution_id?: string
           expected_range?: string | null
           id?: string
+          is_critical?: boolean | null
           parameter_name?: string | null
           resolved?: boolean | null
           severity?: string | null
@@ -4014,32 +4026,47 @@ export type Database = {
       tpm_parameter_alerts: {
         Row: {
           created_at: string | null
+          evidence_files: string[] | null
+          evidence_notes: string | null
+          evidence_url: string | null
           execution_id: string | null
           id: string
+          is_critical: boolean | null
           is_resolved: boolean | null
           parameter_name: string
           recommended_range: string | null
           recorded_value: string | null
+          risk_level: string | null
           severity: string | null
         }
         Insert: {
           created_at?: string | null
+          evidence_files?: string[] | null
+          evidence_notes?: string | null
+          evidence_url?: string | null
           execution_id?: string | null
           id?: string
+          is_critical?: boolean | null
           is_resolved?: boolean | null
           parameter_name: string
           recommended_range?: string | null
           recorded_value?: string | null
+          risk_level?: string | null
           severity?: string | null
         }
         Update: {
           created_at?: string | null
+          evidence_files?: string[] | null
+          evidence_notes?: string | null
+          evidence_url?: string | null
           execution_id?: string | null
           id?: string
+          is_critical?: boolean | null
           is_resolved?: boolean | null
           parameter_name?: string
           recommended_range?: string | null
           recorded_value?: string | null
+          risk_level?: string | null
           severity?: string | null
         }
         Relationships: [

@@ -107,9 +107,12 @@ async function generateMaintenanceReport(data: any, options: any): Promise<Uint8
     content += `ALERTAS E CENÁRIOS DE FALHA (RISCO DE PERDA)\n`;
     content += `-------------------------------------------\n`;
     alerts.forEach((a: any) => {
-      content += `! ${a.description} (Valor: ${a.actual_value} / Esperado: ${a.expected_range})\n`;
+      content += `! ${a.severity === 'critical' ? '[RISCO CRÍTICO] ' : '[AVISO] '}${a.description} (Valor: ${a.actual_value} / Esperado: ${a.expected_range})\n`;
       if (a.evidence_urls && a.evidence_urls.length > 0) {
         content += `  Evidências: ${a.evidence_urls.length} fotos anexadas.\n`;
+        a.evidence_urls.forEach((url: string, idx: number) => {
+           content += `  - Link Evidência ${idx + 1}: ${url}\n`;
+        });
       }
     });
     content += `\n`;
