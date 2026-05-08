@@ -6,10 +6,10 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import {
-  Edit, ListOrdered, Package, Lightbulb,
-  AlertTriangle, Info, FileDown,
-  QrCode, Zap, Droplets, Thermometer,
-  ShieldCheck, Activity, Settings2, Beaker
+  Edit, Clock, Wrench, ListOrdered, Package, Lightbulb,
+  AlertTriangle, Info, CheckCircle2, FileDown, Copy,
+  QrCode, Zap, Droplets, MoveHorizontal, Thermometer,
+  CheckSquare, History, ShieldCheck, Activity, Settings2, Beaker
 } from 'lucide-react';
 import { useTechnicalSheetDetails } from '@/hooks/useTechnicalSheets';
 import { KnowledgeSheetQRCode } from './KnowledgeSheetQRCode';
