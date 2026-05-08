@@ -331,42 +331,60 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
               </div>
 
             </CardTitle>
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-3 mr-4">
-                <button 
-                  onClick={() => toggleSeries('produced')}
-                  className={cn("flex items-center gap-1.5 transition-opacity", !visibleSeries.produced && "opacity-30")}
-                >
-                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: CHART_COLORS.primary }} />
-                  <span className="text-[10px] uppercase font-bold text-white/70">Produzido</span>
-                </button>
-                <button 
-                  onClick={() => toggleSeries('lost')}
-                  className={cn("flex items-center gap-1.5 transition-opacity", !visibleSeries.lost && "opacity-30")}
-                >
-                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: CHART_COLORS.danger }} />
-                  <span className="text-[10px] uppercase font-bold text-white/70">Perda</span>
-                </button>
+            <div className="flex flex-wrap items-center gap-4">
+              <div className="flex items-center gap-4 bg-white/5 px-3 py-1.5 rounded-full border border-white/10">
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button 
+                        onClick={() => toggleSeries('produced')}
+                        className={cn("flex items-center gap-2 transition-all hover:scale-105", !visibleSeries.produced && "opacity-30 grayscale")}
+                      >
+                        <div className="w-2.5 h-2.5 rounded-full shadow-[0_0_8px_rgba(14,165,233,0.5)]" style={{ backgroundColor: CHART_COLORS.primary }} />
+                        <span className="text-[10px] uppercase font-black tracking-tighter text-white/70">Produzido</span>
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent>Alternar visibilidade de Produção</TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+
+                <div className="w-px h-3 bg-white/10" />
+
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button 
+                        onClick={() => toggleSeries('lost')}
+                        className={cn("flex items-center gap-2 transition-all hover:scale-105", !visibleSeries.lost && "opacity-30 grayscale")}
+                      >
+                        <div className="w-2.5 h-2.5 rounded-full shadow-[0_0_8px_rgba(239,44,44,0.5)]" style={{ backgroundColor: CHART_COLORS.danger }} />
+                        <span className="text-[10px] uppercase font-black tracking-tighter text-white/70">Perdas</span>
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent>Alternar visibilidade de Perdas</TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               </div>
+
               <div className="flex items-center gap-2">
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="h-8 w-8 text-muted-foreground hover:text-primary"
-                onClick={() => handleExport('csv', 'Tendencia_Producao')}
-              >
-                <FileSpreadsheet className="h-4 w-4" />
-              </Button>
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="h-8 w-8 text-muted-foreground hover:text-primary"
-                onClick={() => handleExport('pdf', 'Tendencia_Producao')}
-              >
-                <FileText className="h-4 w-4" />
-              </Button>
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="h-8 w-8 text-muted-foreground hover:text-primary transition-all hover:bg-primary/10"
+                  onClick={() => handleExport('csv', 'Tendencia_Producao')}
+                >
+                  <FileSpreadsheet className="h-4 w-4" />
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="h-8 w-8 text-muted-foreground hover:text-primary transition-all hover:bg-primary/10"
+                  onClick={() => handleExport('pdf', 'Tendencia_Producao')}
+                >
+                  <FileText className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
-          </div>
         </CardHeader>
           <CardContent className="relative z-10">
             <ResponsiveContainer width="100%" height={350}>
