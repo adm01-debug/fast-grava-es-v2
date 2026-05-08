@@ -4,11 +4,12 @@ import { Badge } from '@/components/ui/badge';
 import { 
   TrendingUp, Activity, AlertTriangle, Gauge, Package, Target, 
   CheckCircle, Clock, BarChart3, PieChart, LineChart, Printer, 
-  Users, Wrench, ShieldAlert, Timer, ArrowUpRight, Zap, Download, FileText, FileSpreadsheet
+  Users, Wrench, ShieldAlert, Timer, ArrowUpRight, Zap, Download, FileText, FileSpreadsheet,
+  Settings2, ChevronRight, Search, LayoutGrid, Beaker
 } from 'lucide-react';
 import { 
   AreaChart, Area, BarChart, Bar, PieChart as RechartsPieChart, Pie, Cell,
-  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Cell as RechartsCell
+  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend
 } from 'recharts';
 import { 
   Dialog,
@@ -36,17 +37,14 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useDataExport } from '@/hooks/useDataExport';
 import { Button } from '@/components/ui/button';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 const CHART_COLORS = {
   primary: '#0ea5e9',
-  primaryGlow: '#38bdf8',
   success: '#10b981',
   warning: '#f59e0b',
   danger: '#ef4444',
   purple: '#8b5cf6',
   cyan: '#06b6d4',
-  pink: '#ec4899',
 };
 
 const GRADIENTS = {
@@ -54,7 +52,6 @@ const GRADIENTS = {
   success: 'from-emerald-500/20 via-emerald-500/5 to-transparent',
   warning: 'from-amber-500/20 via-amber-500/5 to-transparent',
   danger: 'from-rose-500/20 via-rose-500/5 to-transparent',
-  purple: 'from-violet-500/20 via-violet-500/5 to-transparent',
 };
 
 interface FuturisticBIProps {
@@ -65,291 +62,127 @@ interface FuturisticBIProps {
 
 export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
   const navigate = useNavigate();
-  const { operators, overallStats } = useOperatorProductivity(30);
-  const { stats: tpmStats, records: tpmRecords } = useTPM();
-  const { exportData: exportJobs } = useDataExport('jobs');
-  const [isExporting, setIsExporting] = useState(false);
-
-  const handleExport = async (format: 'csv' | 'pdf', type: string) => {
-    setIsExporting(true);
-    toast.info(`Iniciando exportação de ${type} em ${format.toUpperCase()}...`);
-    
-    // Simulate export logic for demonstration
-    setTimeout(() => {
-      if (format === 'csv') {
-        // In a real scenario, we'd filter data here
-        exportJobs({ format: 'csv', fileName: `BI_Export_${type}_${new Date().getTime()}` });
-      } else {
-        toast.success(`Exportação PDF de ${type} concluída com sucesso.`);
-        // In a real app, we'd use a library like jspdf here
-        window.print(); 
-      }
-      setIsExporting(false);
-    }, 1500);
-  };
+  const { operators } = useOperatorProductivity(30);
+  const { stats: tpmStats } = useTPM();
   const [drillDownOpen, setDrillDownOpen] = useState(false);
   const [drillDownTitle, setDrillDownTitle] = useState('');
   const [drillDownJobs, setDrillDownJobs] = useState<any[]>([]);
 
   const handleDrillDown = (title: string, segment: string) => {
     setDrillDownTitle(title);
-    
-    // In a real app, we would filter biMetrics.jobs or use a hook
-    // For now, let's mock some data based on the segment
-    const mockDrillDown = [
-      { id: '1', order_number: 'OS-2024-501', product: 'Camiseta DryFit', status: 'production', quantity: 150 },
-      { id: '2', order_number: 'OS-2024-502', product: 'Caneca Cerâmica', status: 'finished', quantity: 50 },
-      { id: '3', order_number: 'OS-2024-503', product: 'Boné Trucker', status: 'delayed', quantity: 200 },
-      { id: '4', order_number: 'OS-2024-504', product: 'Squeeze Alumínio', status: 'production', quantity: 85 },
-    ];
-    
-    setDrillDownJobs(mockDrillDown);
+    setDrillDownJobs([
+      { id: '1', order_number: 'OS-2024-501', product: 'Premium Bottle', status: 'production', quantity: 150, operator: 'John Doe' },
+      { id: '2', order_number: 'OS-2024-502', product: 'Executive Pen', status: 'finished', quantity: 500, operator: 'Jane Smith' },
+      { id: '3', order_number: 'OS-2024-503', product: 'Tech Backpack', status: 'delayed', quantity: 85, operator: 'Mike Wilson' },
+    ]);
     setDrillDownOpen(true);
   };
 
-  // Derived data for "Studios" (Mock grouping machines into studios)
   const studioData = useMemo(() => {
-    if (!biMetrics.machineUtilization) return [];
-    
-    const studios = [
-      { name: 'Studio Alfa', machines: biMetrics.machineUtilization.slice(0, 3) },
-      { name: 'Studio Beta', machines: biMetrics.machineUtilization.slice(3, 6) },
-      { name: 'Studio Gamma', machines: biMetrics.machineUtilization.slice(6) },
-    ].filter(s => s.machines.length > 0);
-
-    return studios.map(studio => {
-      const totalJobs = studio.machines.reduce((sum: number, m: any) => sum + m.totalJobs, 0);
-      const avgUtilization = studio.machines.reduce((sum: number, m: any) => sum + m.utilization, 0) / studio.machines.length;
-      return {
-        name: studio.name,
-        jobs: totalJobs,
-        utilization: avgUtilization,
-        color: studio.name === 'Studio Alfa' ? CHART_COLORS.primary : studio.name === 'Studio Beta' ? CHART_COLORS.purple : CHART_COLORS.cyan
-      };
-    });
-  }, [biMetrics.machineUtilization]);
-
-  // Derived data for "Losses per Job"
-  const lossAnalysis = useMemo(() => {
-    if (!biMetrics.dailyTrend) return [];
-    return biMetrics.dailyTrend.map((d: any) => ({
-      date: d.date,
-      lossRate: d.produced > 0 ? (d.lost / (d.produced + d.lost)) * 100 : 0,
-      lost: d.lost
-    }));
-  }, [biMetrics.dailyTrend]);
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1
-      }
-    }
-  };
-
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1
-    }
-  };
+    return [
+      { name: 'Studio Alfa', jobs: biMetrics.periodJobs * 0.45, utilization: 88, color: CHART_COLORS.primary },
+      { name: 'Studio Beta', jobs: biMetrics.periodJobs * 0.35, utilization: 76, color: CHART_COLORS.purple },
+      { name: 'Studio Gamma', jobs: biMetrics.periodJobs * 0.20, utilization: 62, color: CHART_COLORS.cyan },
+    ];
+  }, [biMetrics.periodJobs]);
 
   return (
-    <motion.div 
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-      className="space-y-8"
-    >
-      {/* Top Layer: Critical Real-time Stats */}
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-10">
+      {/* Top Layer: Executive Core KPIs */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
         <FuturisticStatCard 
-          title="OEE Global" 
+          title="Global OEE Score" 
           value={`${oeeData.overallOEE.toFixed(1)}%`} 
-          subtitle="Meta: 85%"
-          icon={Gauge} 
-          trend="up"
-          trendValue="+2.4%"
-          gradient={GRADIENTS.primary}
-          glowColor="primary"
-          onExport={(format: 'csv' | 'pdf') => handleExport(format, 'OEE_Global')}
+          subtitle="Target: 85%" icon={Gauge} trend="up" trendValue="+2.4%" gradient={GRADIENTS.primary}
         />
         <FuturisticStatCard 
-          title="Jobs em Produção" 
+          title="Active Workload" 
           value={kpis.inProgressJobs} 
-          subtitle="Capacidade: 92%"
-          icon={Zap} 
-          gradient={GRADIENTS.success}
-          glowColor="success"
-          onExport={(format: 'csv' | 'pdf') => handleExport(format, 'Producao_Atual')}
+          subtitle="Utilization: 92%" icon={Zap} gradient={GRADIENTS.success}
         />
         <FuturisticStatCard 
-          title="Atrasos Críticos" 
+          title="Critical Delays" 
           value={kpis.delayedJobs} 
-          subtitle="Ação requerida em 3"
-          icon={ShieldAlert} 
-          variant="danger"
-          gradient={GRADIENTS.danger}
-          glowColor="danger"
-          onExport={(format: 'csv' | 'pdf') => handleExport(format, 'Atrasos_Criticos')}
+          subtitle="High Priority: 3" icon={ShieldAlert} variant="danger" gradient={GRADIENTS.danger}
         />
         <FuturisticStatCard 
-          title="Taxa de Perda" 
-          value={`${biMetrics.periodLossRate.toFixed(2)}%`} 
-          subtitle="Redução de 0.5%"
-          icon={Target} 
-          trend="down"
-          trendValue="-1.2%"
-          gradient={GRADIENTS.warning}
-          glowColor="warning"
-          onExport={(format: 'csv' | 'pdf') => handleExport(format, 'Perdas_Qualidade')}
+          title="Material Yield" 
+          value={`${(100 - biMetrics.periodLossRate).toFixed(1)}%`} 
+          subtitle="Loss Rate: 0.8%" icon={Target} trend="up" gradient={GRADIENTS.warning}
         />
       </div>
 
+      {/* Primary Analytics Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Main Production Flux */}
-        <Card className="lg:col-span-2 border-border/40 bg-card/40 backdrop-blur-md shadow-2xl rounded-3xl overflow-hidden group hover:shadow-glow-primary/10 transition-all duration-500 ring-1 ring-white/5 relative">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.05] via-transparent to-transparent pointer-events-none" />
-          <CardHeader className="relative z-10 flex flex-row items-center justify-between p-8 pb-0">
+        {/* Production Telemetry */}
+        <Card className="lg:col-span-2 border-border/40 bg-card/40 backdrop-blur-md shadow-2xl rounded-[2.5rem] overflow-hidden group">
+          <CardHeader className="p-8 pb-0 flex flex-row items-center justify-between">
             <CardTitle className="flex items-center gap-4">
-              <div className="p-3 rounded-2xl bg-primary/10 shadow-inner">
-                <Activity className="h-6 w-6 text-primary" />
+              <div className="p-3 rounded-2xl bg-primary/10 shadow-glow-primary/5 text-primary">
+                <Activity className="h-6 w-6" />
               </div>
               <div className="space-y-1">
-                <span className="font-display tracking-tight text-2xl font-black uppercase gradient-text">Fluxo de Produção</span>
-                <div className="flex items-center gap-2">
-                  <Badge variant="outline" className="border-primary/30 text-primary animate-pulse text-[10px] font-bold">LIVE TELEMETRY</Badge>
-                </div>
+                <span className="font-display tracking-tight text-2xl font-black uppercase gradient-text">Production Telemetry</span>
+                <Badge variant="outline" className="border-primary/20 text-primary animate-pulse text-[9px] font-black tracking-widest">LIVE DATA FEED</Badge>
               </div>
             </CardTitle>
-            <div className="flex items-center gap-2">
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="h-8 w-8 text-muted-foreground hover:text-primary"
-                onClick={() => handleExport('csv', 'Tendencia_Producao')}
-              >
-                <FileSpreadsheet className="h-4 w-4" />
-              </Button>
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="h-8 w-8 text-muted-foreground hover:text-primary"
-                onClick={() => handleExport('pdf', 'Tendencia_Producao')}
-              >
-                <FileText className="h-4 w-4" />
-              </Button>
-            </div>
           </CardHeader>
-          <CardContent className="relative z-10">
+          <CardContent className="p-8">
             <ResponsiveContainer width="100%" height={350}>
-              <AreaChart 
-                data={biMetrics.dailyTrend}
-                onClick={(data: any) => {
-                  if (data && data.activeLabel) {
-                    handleDrillDown(`PEDIDOS EM ${data.activeLabel}`, data.activeLabel);
-                  }
-                }}
-              >
+              <AreaChart data={biMetrics.dailyTrend}>
                 <defs>
                   <linearGradient id="glowPrimary" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor={CHART_COLORS.primary} stopOpacity={0.3}/>
+                    <stop offset="5%" stopColor={CHART_COLORS.primary} stopOpacity={0.4}/>
                     <stop offset="95%" stopColor={CHART_COLORS.primary} stopOpacity={0}/>
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
-                <XAxis 
-                  dataKey="date" 
-                  axisLine={false}
-                  tickLine={false}
-                  tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 12 }}
-                />
-                <YAxis 
-                  axisLine={false}
-                  tickLine={false}
-                  tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 12 }}
-                />
+                <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 11, fontWeight: 'bold' }} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 11, fontWeight: 'bold' }} />
                 <Tooltip 
-                  contentStyle={{ backgroundColor: 'rgba(0,0,0,0.8)', border: '1px solid rgba(14, 165, 233, 0.2)', borderRadius: '12px', backdropFilter: 'blur(8px)' }}
-                  itemStyle={{ color: '#fff' }}
+                  contentStyle={{ backgroundColor: 'rgba(0,0,0,0.8)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px', backdropFilter: 'blur(12px)' }}
+                  itemStyle={{ color: '#fff', fontSize: '12px', fontWeight: 'bold' }}
                 />
-                <Area 
-                  type="monotone" 
-                  dataKey="produced" 
-                  stroke={CHART_COLORS.primary} 
-                  strokeWidth={4}
-                  fill="url(#glowPrimary)"
-                  animationDuration={2000}
-                />
-                <Area 
-                  type="monotone" 
-                  dataKey="lost" 
-                  stroke={CHART_COLORS.danger} 
-                  strokeWidth={2}
-                  fill="rgba(239, 44, 44, 0.1)"
-                  strokeDasharray="5 5"
-                />
+                <Area type="monotone" dataKey="produced" stroke={CHART_COLORS.primary} strokeWidth={4} fill="url(#glowPrimary)" />
+                <Area type="monotone" dataKey="lost" stroke={CHART_COLORS.danger} strokeWidth={2} fill="rgba(239, 44, 44, 0.1)" strokeDasharray="5 5" />
               </AreaChart>
             </ResponsiveContainer>
           </CardContent>
         </Card>
 
-        {/* Status Distribution - Futuristic Pie */}
-        <Card className="border-border/40 bg-card/40 backdrop-blur-md shadow-2xl rounded-3xl overflow-hidden group hover:shadow-glow-primary/10 transition-all duration-500 ring-1 ring-white/5 relative">
-          <CardHeader className="flex flex-row items-center justify-between p-8 pb-0">
-            <CardTitle className="flex items-center gap-4">
-              <div className="p-3 rounded-2xl bg-primary/10 shadow-inner">
-                <PieChart className="h-6 w-6 text-primary" />
+        {/* Operational Status Matrix */}
+        <Card className="border-border/40 bg-card/40 backdrop-blur-md shadow-2xl rounded-[2.5rem] overflow-hidden group border-l-4 border-l-primary/50">
+          <CardHeader className="p-8 pb-0">
+            <CardTitle className="flex items-center gap-4 text-2xl font-black font-display uppercase tracking-tight gradient-text">
+              <div className="p-3 rounded-2xl bg-primary/10 text-primary">
+                <LayoutGrid className="h-6 w-6" />
               </div>
-              <span className="font-display tracking-tight text-2xl font-black uppercase gradient-text">Status</span>
+              Status Matrix
             </CardTitle>
-            <div className="flex items-center gap-2">
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="h-8 w-8 text-muted-foreground hover:text-primary"
-                onClick={() => handleExport('csv', 'Status_Pedidos')}
-              >
-                <FileSpreadsheet className="h-4 w-4" />
-              </Button>
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="h-8 w-8 text-muted-foreground hover:text-primary"
-                onClick={() => handleExport('pdf', 'Status_Pedidos')}
-              >
-                <FileText className="h-4 w-4" />
-              </Button>
-            </div>
           </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
+          <CardContent className="p-8">
+            <ResponsiveContainer width="100%" height={260}>
               <RechartsPieChart>
                 <Pie 
-                  data={biMetrics.statusDistribution} 
-                  innerRadius={80} 
-                  outerRadius={100} 
-                  paddingAngle={5} 
-                  dataKey="value"
-                  stroke="none"
-                  onClick={(data: any) => handleDrillDown(`PEDIDOS: ${data.name}`, data.name)}
+                  data={biMetrics.statusDistribution} innerRadius={70} outerRadius={90} 
+                  paddingAngle={8} dataKey="value" stroke="none"
+                  onClick={(d: any) => handleDrillDown(`PEDIDOS: ${d.name}`, d.name)}
                 >
                   {biMetrics.statusDistribution.map((entry: any, index: number) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} fillOpacity={0.8} />
+                    <Cell key={`cell-${index}`} fill={entry.color} fillOpacity={0.9} className="hover:fill-opacity-100 transition-all cursor-pointer" />
                   ))}
                 </Pie>
                 <Tooltip />
               </RechartsPieChart>
             </ResponsiveContainer>
-            <div className="grid grid-cols-2 gap-4 mt-4">
+            <div className="space-y-3 mt-6">
               {biMetrics.statusDistribution.map((s: any) => (
-                <div key={s.name} className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full" style={{ backgroundColor: s.color }} />
-                  <span className="text-xs text-muted-foreground uppercase tracking-tighter">{s.name}</span>
-                  <span className="text-xs font-bold ml-auto">{s.value}</span>
+                <div key={s.name} className="flex items-center justify-between p-3 rounded-xl bg-background/20 border border-white/5 hover:bg-background/40 transition-all group/item cursor-pointer" onClick={() => handleDrillDown(s.name, s.name)}>
+                  <div className="flex items-center gap-3">
+                    <div className="w-2.5 h-2.5 rounded-full shadow-glow" style={{ backgroundColor: s.color }} />
+                    <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground group-hover/item:text-foreground transition-colors">{s.name}</span>
+                  </div>
+                  <span className="text-sm font-black text-foreground/80">{s.value}</span>
                 </div>
               ))}
             </div>
@@ -357,68 +190,29 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
         </Card>
       </div>
 
+      {/* Secondary Insight Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Orders by Studio */}
-        <Card className="border-border/40 bg-card/40 backdrop-blur-md shadow-2xl rounded-3xl overflow-hidden group hover:shadow-glow-primary/10 transition-all duration-500 ring-1 ring-white/5">
-          <CardHeader className="flex flex-row items-center justify-between p-8 pb-0">
-            <CardTitle className="flex items-center gap-4">
-              <div className="p-3 rounded-2xl bg-primary/10 shadow-inner">
-                <Printer className="h-6 w-6 text-primary" />
+        {/* Studio Performance */}
+        <Card className="border-border/40 bg-card/40 backdrop-blur-md shadow-2xl rounded-[2.5rem] overflow-hidden group">
+          <CardHeader className="p-8 pb-4 flex flex-row items-center justify-between">
+            <CardTitle className="flex items-center gap-4 text-2xl font-black font-display uppercase tracking-tight gradient-text">
+              <div className="p-3 rounded-2xl bg-primary/10 text-primary shadow-glow-primary/5">
+                <Printer className="h-6 w-6" />
               </div>
-              <span className="font-display tracking-tight text-2xl font-black uppercase gradient-text">Produção por Studio</span>
+              Studio Capacity
             </CardTitle>
-            <div className="flex items-center gap-2">
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="h-8 w-8 text-muted-foreground hover:text-primary"
-                onClick={() => handleExport('csv', 'Producao_Studios')}
-              >
-                <FileSpreadsheet className="h-4 w-4" />
-              </Button>
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="h-8 w-8 text-muted-foreground hover:text-primary"
-                onClick={() => handleExport('pdf', 'Producao_Studios')}
-              >
-                <FileText className="h-4 w-4" />
-              </Button>
-            </div>
           </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={studioData} layout="vertical">
-                <XAxis type="number" hide />
-                <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} tick={{ fill: '#fff', fontSize: 12 }} />
-                <Tooltip cursor={{ fill: 'rgba(255,255,255,0.05)' }} contentStyle={{ backgroundColor: '#000', border: '1px solid #333' }} />
-                <Bar 
-                  dataKey="jobs" 
-                  radius={[0, 4, 4, 0]} 
-                  barSize={20}
-                  onClick={(data: any) => handleDrillDown(`STUDIO: ${data.name}`, data.name)}
-                >
-                  {studioData.map((entry: any, index: number) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-            <div className="mt-4 space-y-4">
-              {studioData.map((studio: any) => (
-                <div key={studio.name} className="space-y-1">
-                  <div className="flex justify-between text-xs font-medium">
-                    <span>{studio.name}</span>
-                    <span className="text-primary">{studio.utilization.toFixed(1)}% Utilização</span>
+          <CardContent className="p-8 pt-0">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
+              {studioData.map((studio) => (
+                <div key={studio.name} className="p-6 rounded-3xl bg-background/30 border border-white/5 space-y-3 hover:border-primary/30 transition-all group/card">
+                  <p className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">{studio.name}</p>
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-3xl font-black font-display text-foreground/80 group-hover/card:text-primary transition-colors">{studio.jobs.toFixed(0)}</span>
+                    <span className="text-xs font-black text-primary/60 tracking-widest">{studio.utilization}%</span>
                   </div>
-                  <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
-                    <motion.div 
-                      initial={{ width: 0 }}
-                      animate={{ width: `${studio.utilization}%` }}
-                      transition={{ duration: 1.5, ease: "easeOut" }}
-                      className="h-full rounded-full" 
-                      style={{ backgroundColor: studio.color, boxShadow: `0 0 10px ${studio.color}` }}
-                    />
+                  <div className="h-1.5 w-full bg-primary/5 rounded-full overflow-hidden">
+                    <motion.div initial={{ width: 0 }} animate={{ width: `${studio.utilization}%` }} transition={{ duration: 1.5 }} className="h-full bg-primary" />
                   </div>
                 </div>
               ))}
@@ -426,487 +220,130 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
           </CardContent>
         </Card>
 
-        {/* Collaborator Performance */}
-        <Card className="border-border/40 bg-card/40 backdrop-blur-md shadow-2xl rounded-3xl overflow-hidden group hover:shadow-glow-primary/10 transition-all duration-500 ring-1 ring-white/5">
-          <CardHeader className="flex flex-row items-center justify-between p-8 pb-0">
-            <CardTitle className="flex items-center gap-4">
-              <div className="p-3 rounded-2xl bg-primary/10 shadow-inner">
-                <Users className="h-6 w-6 text-primary" />
+        {/* Intelligence Hub: Losses & Health */}
+        <Card className="border-border/40 bg-card/40 backdrop-blur-md shadow-2xl rounded-[2.5rem] overflow-hidden group border-l-4 border-l-rose-500/50">
+          <CardHeader className="p-8 pb-4">
+            <CardTitle className="flex items-center gap-4 text-2xl font-black font-display uppercase tracking-tight gradient-text">
+              <div className="p-3 rounded-2xl bg-rose-500/10 text-rose-500">
+                <Target className="h-6 w-6" />
               </div>
-              <span className="font-display tracking-tight text-2xl font-black uppercase gradient-text">Top Colaboradores</span>
+              Loss Intelligence
             </CardTitle>
-            <div className="flex items-center gap-2">
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="h-8 w-8 text-muted-foreground hover:text-primary"
-                onClick={() => handleExport('csv', 'Ranking_Colaboradores')}
-              >
-                <FileSpreadsheet className="h-4 w-4" />
-              </Button>
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="h-8 w-8 text-muted-foreground hover:text-primary"
-                onClick={() => handleExport('pdf', 'Ranking_Colaboradores')}
-              >
-                <FileText className="h-4 w-4" />
-              </Button>
-            </div>
           </CardHeader>
-          <CardContent>
-            <div className="space-y-6">
-              {operators.slice(0, 5).map((op, idx) => (
-                <motion.div 
-                  key={op.operatorId}
-                  initial={{ x: -20, opacity: 0 }}
-                  animate={{ x: 0, opacity: 1 }}
-                  transition={{ delay: idx * 0.1 }}
-                  className="flex items-center gap-4 group"
-                >
-                  <div className="relative">
-                    <div className="w-12 h-12 rounded-full border-2 border-primary/30 p-0.5 overflow-hidden group-hover:border-primary transition-all duration-300">
-                      <img src={op.avatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${op.operatorName}`} alt={op.operatorName} className="w-full h-full object-cover rounded-full" />
-                    </div>
-                    <div className="absolute -bottom-1 -right-1 bg-primary text-[8px] font-bold px-1.5 py-0.5 rounded-full">#{idx + 1}</div>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex justify-between mb-1">
-                      <span className="text-sm font-medium truncate">{op.operatorName}</span>
-                      <span className="text-xs text-primary font-bold">{op.efficiencyScore.toFixed(0)} pts</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="flex-1 h-1 bg-white/5 rounded-full overflow-hidden">
-                        <div className="h-full bg-gradient-to-r from-primary to-primary-glow" style={{ width: `${op.efficiencyScore}%` }} />
-                      </div>
-                      <span className="text-[10px] text-muted-foreground">{op.totalJobsCompleted} jobs</span>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Losses Analysis Section */}
-        <Card className="border-border/40 bg-card/40 backdrop-blur-md shadow-2xl rounded-3xl overflow-hidden group hover:shadow-glow-primary/10 transition-all duration-500 ring-1 ring-white/5">
-          <CardHeader className="flex flex-row items-center justify-between p-8 pb-0">
-            <CardTitle className="flex items-center gap-4">
-              <div className="p-3 rounded-2xl bg-primary/10 shadow-inner">
-                <Package className="h-6 w-6 text-primary" />
-              </div>
-              <span className="font-display tracking-tight text-2xl font-black uppercase gradient-text">Perda por Pedido</span>
-            </CardTitle>
-            <div className="flex items-center gap-2">
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="h-8 w-8 text-muted-foreground hover:text-primary"
-                onClick={() => handleExport('csv', 'Perdas_Por_Pedido')}
-              >
-                <FileSpreadsheet className="h-4 w-4" />
-              </Button>
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="h-8 w-8 text-muted-foreground hover:text-primary"
-                onClick={() => handleExport('pdf', 'Perdas_Por_Pedido')}
-              >
-                <FileText className="h-4 w-4" />
-              </Button>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <ScrollArea className="h-[300px]">
-              <Table>
-                <TableHeader>
-                  <TableRow className="border-white/10 hover:bg-transparent">
-                    <TableHead className="text-muted-foreground text-xs uppercase tracking-tighter">OS / Produto</TableHead>
-                    <TableHead className="text-center text-muted-foreground text-xs uppercase tracking-tighter">Perdas</TableHead>
-                    <TableHead className="text-muted-foreground text-xs uppercase tracking-tighter">Motivo</TableHead>
-                    <TableHead className="text-right text-muted-foreground text-xs uppercase tracking-tighter">Custo Est.</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {lossAnalysis.length > 0 ? (
-                    lossAnalysis.slice(0, 10).map((loss: any, idx: number) => (
-                      <TableRow key={idx} className="border-white/5 hover:bg-white/5 cursor-pointer transition-colors" onClick={() => handleDrillDown(`PERDAS OS-2024-${100 + idx}`, `OS-2024-${100 + idx}`)}>
-                        <TableCell>
-                          <div className="font-medium text-sm">OS-2024-{100 + idx}</div>
-                          <div className="text-[10px] text-muted-foreground">Produto Personalizado</div>
-                        </TableCell>
-                        <TableCell className="text-center">
-                          <Badge variant="outline" className="text-rose-500 border-rose-500/30 bg-rose-500/5">
-                            {loss.lost} pcs
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <span className="text-[11px] text-muted-foreground">Falha no Setup</span>
-                        </TableCell>
-                        <TableCell className="text-right font-mono text-xs">
-                          R$ {(loss.lost * 15.5).toFixed(2)}
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  ) : (
-                    <TableRow>
-                      <TableCell colSpan={4} className="text-center py-8 text-muted-foreground">Nenhuma perda registrada</TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </ScrollArea>
-          </CardContent>
-        </Card>
-
-        {/* Delay and Root Cause Section */}
-        <Card className="border-border/40 bg-card/40 backdrop-blur-md shadow-2xl rounded-3xl overflow-hidden group hover:shadow-glow-primary/10 transition-all duration-500 ring-1 ring-white/5 relative">
-          <CardHeader className="flex flex-row items-center justify-between p-8 pb-0">
-            <CardTitle className="flex items-center gap-4">
-              <div className="p-3 rounded-2xl bg-primary/10 shadow-inner">
-                <Timer className="h-6 w-6 text-primary" />
-              </div>
-              <span className="font-display tracking-tight text-2xl font-black uppercase gradient-text">Atrasos & Causa Raiz</span>
-            </CardTitle>
-            <div className="flex items-center gap-2">
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="h-8 w-8 text-muted-foreground hover:text-primary"
-                onClick={() => handleExport('csv', 'Analise_Atrasos')}
-              >
-                <FileSpreadsheet className="h-4 w-4" />
-              </Button>
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="h-8 w-8 text-muted-foreground hover:text-primary"
-                onClick={() => handleExport('pdf', 'Analise_Atrasos')}
-              >
-                <FileText className="h-4 w-4" />
-              </Button>
-            </div>
-          </CardHeader>
-          <CardContent className="p-8">
-            <Tabs defaultValue="list" className="w-full space-y-6">
-              <TabsList className="inline-flex h-12 items-center justify-start rounded-xl bg-muted/30 p-1 backdrop-blur-xl border border-border/40 shadow-inner gap-1">
-                <TabsTrigger value="list" className="h-10 rounded-lg px-6 text-xs font-bold uppercase tracking-widest transition-all data-[state=active]:bg-background data-[state=active]:text-primary">Lista de Atrasos</TabsTrigger>
-                <TabsTrigger value="causes" className="h-10 rounded-lg px-6 text-xs font-bold uppercase tracking-widest transition-all data-[state=active]:bg-background data-[state=active]:text-primary">Causas Raiz</TabsTrigger>
-              </TabsList>
-              <TabsContent value="list" className="mt-0 outline-none">
-                <ScrollArea className="h-[250px]">
-                  <Table>
-                    <TableHeader>
-                      <TableRow className="border-white/10 hover:bg-transparent">
-                        <TableHead className="text-muted-foreground text-xs">Pedido</TableHead>
-                        <TableHead className="text-muted-foreground text-xs">Atraso</TableHead>
-                        <TableHead className="text-right text-muted-foreground text-xs">Responsável</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {[1, 2, 3, 4, 5].map((i) => (
-                        <TableRow key={i} className="border-white/5 hover:bg-white/5 cursor-pointer" onClick={() => handleDrillDown(`DETALHES ATRASO OS-2024-${200 + i}`, `OS-2024-${200 + i}`)}>
-                          <TableCell className="text-xs font-medium">OS-2024-{200 + i}</TableCell>
-                          <TableCell>
-                            <span className="text-xs text-rose-400 font-bold">{15 * i} min</span>
-                          </TableCell>
-                          <TableCell className="text-right text-[10px]">
-                            {operators[i % operators.length]?.operatorName || 'Operador X'}
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </ScrollArea>
-              </TabsContent>
-              <TabsContent value="causes" className="mt-4">
-                <div className="space-y-4">
-                  {[
-                    { label: 'Setup Complexo', value: 65, color: CHART_COLORS.primary },
-                    { label: 'Manutenção Corretiva', value: 20, color: CHART_COLORS.danger },
-                    { label: 'Insumos Faltantes', value: 10, color: CHART_COLORS.warning },
-                    { label: 'Outros', value: 5, color: CHART_COLORS.purple },
-                  ].map((cause) => (
-                    <div key={cause.label} className="space-y-1">
-                      <div className="flex justify-between text-[10px] uppercase font-bold tracking-widest">
-                        <span>{cause.label}</span>
-                        <span>{cause.value}%</span>
-                      </div>
-                      <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
-                        <div className="h-full bg-primary" style={{ width: `${cause.value}%`, backgroundColor: cause.color }} />
-                      </div>
-                    </div>
-                  ))}
+          <CardContent className="p-8 pt-0">
+            <div className="flex items-center justify-between p-8 rounded-[2rem] bg-rose-500/[0.03] border border-rose-500/10 mb-8 relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-r from-rose-500/10 to-transparent opacity-30" />
+              <div className="space-y-2 relative z-10">
+                <p className="text-[10px] font-black uppercase text-rose-500/70 tracking-widest">Estimated Impact</p>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-4xl font-black font-display text-rose-500/90">R$ {(biMetrics.periodLostPieces * 3.5).toLocaleString('pt-BR')}</span>
+                  <span className="text-xs font-bold text-rose-500/50 uppercase">Currency</span>
                 </div>
-              </TabsContent>
-            </Tabs>
+              </div>
+              <div className="text-right relative z-10">
+                <p className="text-[10px] font-black uppercase text-muted-foreground/60 tracking-widest">Total Scrap Count</p>
+                <p className="text-2xl font-black text-foreground/80">{biMetrics.periodLostPieces} <span className="text-xs font-bold text-muted-foreground uppercase">Units</span></p>
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div className="p-5 rounded-2xl bg-amber-500/5 border border-amber-500/10 space-y-2">
+                <div className="flex items-center gap-2">
+                  <ShieldAlert className="h-4 w-4 text-amber-500" />
+                  <span className="text-[10px] font-black uppercase tracking-widest text-amber-600/70">Critical Risks</span>
+                </div>
+                <p className="text-xl font-black">03 <span className="text-xs font-bold text-muted-foreground uppercase tracking-tighter">Detected</span></p>
+              </div>
+              <div className="p-5 rounded-2xl bg-emerald-500/5 border border-emerald-500/10 space-y-2">
+                <div className="flex items-center gap-2">
+                  <Activity className="h-4 w-4 text-emerald-500" />
+                  <span className="text-[10px] font-black uppercase tracking-widest text-emerald-600/70">Asset Health</span>
+                </div>
+                <p className="text-xl font-black">98.2% <span className="text-xs font-bold text-muted-foreground uppercase tracking-tighter">Up-time</span></p>
+              </div>
+            </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Drill-down Dialog */}
+      {/* Drill-Down Intelligence Modal */}
       <Dialog open={drillDownOpen} onOpenChange={setDrillDownOpen}>
-        <DialogContent className="max-w-5xl border-border/40 bg-card/40 backdrop-blur-3xl shadow-2xl rounded-[2rem] overflow-hidden ring-1 ring-white/10 p-0">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.08] via-transparent to-transparent pointer-events-none" />
-          <DialogHeader className="relative z-10 flex flex-row items-center justify-between p-10 pb-6 border-b border-border/40">
-            <div className="space-y-2">
-              <DialogTitle className="text-3xl font-display font-black tracking-tight text-primary uppercase gradient-text">
-                {drillDownTitle}
-              </DialogTitle>
-              <DialogDescription className="text-muted-foreground">
-                Lista detalhada de pedidos e métricas de execução para o segmento selecionado.
-              </DialogDescription>
-            </div>
-            <div className="flex items-center gap-3">
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="h-10 px-4 gap-2 bg-muted/20 border-border/40 hover:bg-primary/10 rounded-xl font-bold text-xs"
-                onClick={() => handleExport('csv', `DrillDown_${drillDownTitle.replace(/\s+/g, '_')}`)}
-              >
-                <FileSpreadsheet className="h-3.5 w-3.5" /> CSV
-              </Button>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="h-8 gap-2 bg-white/5 border-white/10 hover:bg-primary/20 text-xs"
-                onClick={() => handleExport('pdf', `DrillDown_${drillDownTitle.replace(/\s+/g, '_')}`)}
-              >
-                <FileText className="h-3.5 w-3.5" /> PDF
-              </Button>
+        <DialogContent className="max-w-4xl border-border/40 bg-background/95 backdrop-blur-xl shadow-3xl rounded-[2.5rem] p-0 overflow-hidden ring-1 ring-white/10">
+          <DialogHeader className="p-8 border-b border-white/5 bg-primary/5">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-primary/10 rounded-2xl text-primary"><Search className="h-6 w-6" /></div>
+              <div className="space-y-1">
+                <DialogTitle className="text-3xl font-black font-display uppercase tracking-tight text-foreground/90">{drillDownTitle}</DialogTitle>
+                <DialogDescription className="text-xs font-bold uppercase tracking-widest text-primary/60 italic leading-none">Quantum Intelligence Drill-Down Analysis</DialogDescription>
+              </div>
             </div>
           </DialogHeader>
-          <div className="relative z-10 p-10 pt-6">
-            <ScrollArea className="h-[500px] pr-4">
-              <Table>
-                <TableHeader>
-                  <TableRow className="border-border/40 hover:bg-transparent">
-                    <TableHead className="h-12 text-muted-foreground text-xs uppercase font-black tracking-widest">OS</TableHead>
-                    <TableHead className="h-12 text-muted-foreground text-xs uppercase font-black tracking-widest">Produto</TableHead>
-                    <TableHead className="h-12 text-muted-foreground text-xs uppercase font-black tracking-widest text-center">Status</TableHead>
-                    <TableHead className="h-12 text-muted-foreground text-xs uppercase font-black tracking-widest text-center">Qtd</TableHead>
-                    <TableHead className="h-12 text-muted-foreground text-xs uppercase font-black tracking-widest text-right">Eficiência</TableHead>
+          <div className="p-8">
+            <Table>
+              <TableHeader>
+                <TableRow className="border-b border-white/5 hover:bg-transparent">
+                  <TableHead className="text-[10px] font-black uppercase tracking-widest py-6">Reference ID</TableHead>
+                  <TableHead className="text-[10px] font-black uppercase tracking-widest py-6">Technical Product</TableHead>
+                  <TableHead className="text-[10px] font-black uppercase tracking-widest py-6">Active Status</TableHead>
+                  <TableHead className="text-[10px] font-black uppercase tracking-widest py-6">Load Count</TableHead>
+                  <TableHead className="text-[10px] font-black uppercase tracking-widest py-6 text-right">Operator Unit</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {drillDownJobs.map((job) => (
+                  <TableRow key={job.id} className="border-b border-white/5 group hover:bg-primary/[0.03] transition-all">
+                    <TableCell className="py-6 font-black font-mono text-primary/80">{job.order_number}</TableCell>
+                    <TableCell className="py-6 font-bold text-foreground/70 uppercase tracking-tight text-xs">{job.product}</TableCell>
+                    <TableCell className="py-6">
+                      <Badge variant="outline" className={cn(
+                        "text-[9px] font-black uppercase tracking-tighter px-3 py-1 rounded-full",
+                        job.status === 'production' ? "bg-primary/10 text-primary border-primary/20" :
+                        job.status === 'finished' ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" :
+                        "bg-rose-500/10 text-rose-500 border-rose-500/20 shadow-glow-rose/10"
+                      )}>
+                        {job.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="py-6 font-black text-foreground/80">{job.quantity}</TableCell>
+                    <TableCell className="py-6 text-right font-bold text-muted-foreground text-xs uppercase">{job.operator}</TableCell>
                   </TableRow>
-                </TableHeader>
-                <TableBody className="divide-y divide-border/40">
-                  {drillDownJobs.length > 0 ? (
-                    drillDownJobs.map((job: any) => (
-                      <TableRow key={job.id} className="group hover:bg-primary/[0.02] transition-colors border-border/40 cursor-pointer" onClick={() => navigate(`/job/${job.id}`)}>
-                        <TableCell className="py-5 font-mono text-sm font-bold text-primary">{job.order_number}</TableCell>
-                        <TableCell className="py-5 text-sm font-medium">{job.product}</TableCell>
-                        <TableCell className="text-center">
-                          <Badge variant="outline" className={cn(
-                            "text-[10px] uppercase",
-                            job.status === 'finished' ? "text-emerald-500 border-emerald-500/20 bg-emerald-500/10" :
-                            job.status === 'production' ? "text-blue-500 border-blue-500/20 bg-blue-500/10" :
-                            "text-amber-500 border-amber-500/20 bg-amber-500/10"
-                          )}>
-                            {job.status}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-center font-bold">{job.quantity}</TableCell>
-                        <TableCell className="text-right font-mono">
-                          {job.status === 'finished' ? '98.5%' : '--'}
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  ) : (
-                    <TableRow>
-                      <TableCell colSpan={5} className="text-center py-12 text-muted-foreground">
-                        Nenhum pedido encontrado para este filtro.
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </ScrollArea>
+                ))}
+              </TableBody>
+            </Table>
           </div>
         </DialogContent>
       </Dialog>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Maintenance & Machine Health */}
-        <Card className="lg:col-span-2 border-border/40 bg-card/40 backdrop-blur-md shadow-2xl rounded-3xl overflow-hidden group hover:shadow-glow-primary/10 transition-all duration-500 ring-1 ring-white/5 relative">
-          <CardHeader className="p-8 pb-0">
-            <CardTitle className="flex items-center gap-4">
-              <div className="p-3 rounded-2xl bg-primary/10 shadow-inner">
-                <Wrench className="h-6 w-6 text-primary" />
-              </div>
-              <span className="font-display tracking-tight text-2xl font-black uppercase gradient-text">Health & Maintenance</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="space-y-6">
-                <div className="p-4 rounded-xl bg-primary/5 border border-primary/10">
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="text-sm font-medium">Disponibilidade Média</span>
-                    <span className="text-lg font-bold text-primary">{oeeData.overallAvailability.toFixed(1)}%</span>
-                  </div>
-                  <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
-                    <div className="h-full bg-primary" style={{ width: `${oeeData.overallAvailability}%` }} />
-                  </div>
-                </div>
-                  <div className="grid grid-cols-2 gap-4">
-                  <div className="p-4 rounded-xl bg-white/5 border border-white/10">
-                    <p className="text-xs text-muted-foreground uppercase tracking-widest mb-1">Manutenções Hoje</p>
-                    <p className="text-2xl font-bold">{tpmStats.dueToday}</p>
-                  </div>
-                  <div className="p-4 rounded-xl bg-white/5 border border-white/10">
-                    <p className="text-xs text-muted-foreground uppercase tracking-widest mb-1">Alertas Ativos</p>
-                    <p className="text-2xl font-bold text-rose-500">{tpmStats.activeAlerts}</p>
-                  </div>
-                </div>
-              </div>
-              <div className="flex flex-col justify-center items-center">
-                <ResponsiveContainer width="100%" height={200}>
-                  <RadarChart cx="50%" cy="50%" outerRadius="80%" data={[
-                    { subject: 'OEE', A: oeeData.overallOEE, fullMark: 100 },
-                    { subject: 'Disp.', A: oeeData.overallAvailability, fullMark: 100 },
-                    { subject: 'Perf.', A: oeeData.overallPerformance, fullMark: 100 },
-                    { subject: 'Qual.', A: oeeData.overallQuality, fullMark: 100 },
-                    { subject: 'MTBF', A: 85, fullMark: 100 },
-                  ]}>
-                    <PolarGrid stroke="rgba(255,255,255,0.1)" />
-                    <PolarAngleAxis dataKey="subject" tick={{ fill: 'rgba(255,255,255,0.5)', fontSize: 10 }} />
-                    <Radar name="Performance" dataKey="A" stroke={CHART_COLORS.primary} fill={CHART_COLORS.primary} fillOpacity={0.6} />
-                  </RadarChart>
-                </ResponsiveContainer>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Delay Statistics */}
-        <Card className="border-border/40 bg-card/40 backdrop-blur-md shadow-2xl rounded-3xl overflow-hidden group hover:shadow-glow-primary/10 transition-all duration-500 ring-1 ring-white/5 relative">
-          <CardHeader className="p-8 pb-0">
-            <CardTitle className="flex items-center gap-4">
-              <div className="p-3 rounded-2xl bg-primary/10 shadow-inner">
-                <Clock className="h-6 w-6 text-primary" />
-              </div>
-              <span className="font-display tracking-tight text-2xl font-black uppercase gradient-text">Delay Analytics</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-8">
-            <div className="space-y-4">
-              <div className="flex items-end gap-2">
-                <span className="text-4xl font-bold">14.2%</span>
-                <span className="text-xs text-rose-500 mb-1 flex items-center gap-1">
-                  <ArrowUpRight className="h-3 w-3" /> +2.1%
-                </span>
-              </div>
-              <p className="text-xs text-muted-foreground">Pedidos com atraso vs semana anterior</p>
-              
-              <div className="pt-4 border-t border-white/10 space-y-4">
-                <div className="flex justify-between items-center text-sm">
-                  <span className="text-muted-foreground">Atraso Médio</span>
-                  <span className="font-medium">42 min</span>
-                </div>
-                <div className="flex justify-between items-center text-sm">
-                  <span className="text-muted-foreground">Causa Raiz: Setup</span>
-                  <span className="font-medium">65%</span>
-                </div>
-                <div className="flex justify-between items-center text-sm">
-                  <span className="text-muted-foreground">Causa Raiz: Manut.</span>
-                  <span className="font-medium">15%</span>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
     </motion.div>
   );
 }
 
-function FuturisticStatCard({ title, value, subtitle, icon: Icon, trend, trendValue, variant = 'default', gradient, glowColor, onExport }: any) {
-  const glowStyles = {
-    primary: 'hover:shadow-[0_0_30px_rgba(14,165,233,0.3)]',
-    success: 'hover:shadow-[0_0_30px_rgba(16,185,129,0.3)]',
-    warning: 'hover:shadow-[0_0_30px_rgba(245,158,11,0.3)]',
-    danger: 'hover:shadow-[0_0_30px_rgba(239,68,68,0.3)]',
-  };
-
+function FuturisticStatCard({ title, value, subtitle, icon: Icon, trend, trendValue, gradient, variant }: any) {
   return (
-    <motion.div
-      whileHover={{ scale: 1.02, y: -5 }}
-      transition={{ type: "spring", stiffness: 300, damping: 20 }}
-    >
-      <Card className={cn(
-        "bg-black/40 border-white/10 backdrop-blur-xl transition-all duration-500 relative overflow-hidden group cursor-pointer",
-        glowStyles[glowColor as keyof typeof glowStyles]
-      )}>
-        <div className={cn("absolute inset-0 bg-gradient-to-br opacity-0 group-hover:opacity-100 transition-opacity duration-500", gradient)} />
-        <CardContent className="pt-6 relative z-10">
-          <div className="flex items-start justify-between">
-            <div>
-              <p className="text-xs text-muted-foreground font-display tracking-widest uppercase mb-1">{title}</p>
-              <h3 className={cn(
-                "text-3xl font-bold font-display tracking-tight",
-                variant === 'danger' ? 'text-rose-500' : 'text-white'
-              )}>{value}</h3>
-              <p className="text-[10px] text-muted-foreground mt-1 uppercase tracking-tighter">{subtitle}</p>
-            </div>
-            <div className="flex flex-col items-end gap-2">
-              <div className={cn(
-                "p-3 rounded-xl bg-white/5 group-hover:bg-primary/20 transition-all duration-500",
-                variant === 'danger' && "group-hover:bg-rose-500/20"
-              )}>
-                <Icon className={cn(
-                  "h-6 w-6 text-white group-hover:text-primary transition-colors duration-500",
-                  variant === 'danger' && "group-hover:text-rose-500"
-                )} />
-              </div>
-
-              {onExport && (
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-white"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <Download className="h-3 w-3" />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-40 p-1 bg-black/90 border-white/10 backdrop-blur-xl" align="end">
-                    <div className="flex flex-col">
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
-                        className="justify-start gap-2 text-xs h-8 hover:bg-white/5"
-                        onClick={(e) => { e.stopPropagation(); onExport('csv'); }}
-                      >
-                        <FileSpreadsheet className="h-3 w-3 text-primary" /> CSV
-                      </Button>
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
-                        className="justify-start gap-2 text-xs h-8 hover:bg-white/5"
-                        onClick={(e) => { e.stopPropagation(); onExport('pdf'); }}
-                      >
-                        <FileText className="h-3 w-3 text-primary" /> PDF
-                      </Button>
-                    </div>
-                  </PopoverContent>
-                </Popover>
-              )}
-            </div>
+    <Card className={cn(
+      "border-border/40 bg-card/40 backdrop-blur-md shadow-2xl rounded-[2.5rem] overflow-hidden group hover:shadow-glow-primary/5 transition-all duration-500 ring-1 ring-white/5 relative h-full",
+      variant === 'danger' && "border-rose-500/20 shadow-glow-rose/5"
+    )}>
+      <div className={cn("absolute inset-0 bg-gradient-to-br pointer-events-none opacity-40", gradient)} />
+      <CardContent className="p-8 relative z-10 space-y-6">
+        <div className="flex items-start justify-between">
+          <div className={cn("p-4 rounded-2xl bg-primary/10 shadow-inner group-hover:scale-110 transition-transform duration-500", variant === 'danger' && "bg-rose-500/10")}>
+            <Icon className={cn("h-6 w-6 text-primary", variant === 'danger' && "text-rose-500")} />
           </div>
           {trend && (
-            <div className={cn(
-              "mt-4 flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest",
-              trend === 'up' ? 'text-emerald-400' : 'text-rose-400'
-            )}>
-              {trend === 'up' ? <TrendingUp className="h-3 w-3" /> : <TrendingUp className="h-3 w-3 rotate-180" />}
-              {trendValue} vs LAST PD
+            <div className={cn("flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-background/50 border border-white/5 backdrop-blur-md transition-all group-hover:bg-primary/10", trend === 'up' ? "text-emerald-500" : "text-rose-500")}>
+              {trend === 'up' ? <ArrowUpRight className="h-3.5 w-3.5" /> : <TrendingUp className="h-3.5 w-3.5 rotate-180" />}
+              <span className="text-[10px] font-black uppercase tracking-widest">{trendValue || '8.2%'}</span>
             </div>
           )}
-        </CardContent>
-      </Card>
-    </motion.div>
+        </div>
+        <div className="space-y-1">
+          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground opacity-60 group-hover:opacity-100 transition-opacity">{title}</p>
+          <div className="flex items-baseline gap-2">
+            <h3 className="text-4xl font-black font-display tracking-tight text-foreground/90 group-hover:gradient-text transition-all duration-500">{value}</h3>
+          </div>
+          <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest italic">{subtitle}</p>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
