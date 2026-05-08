@@ -210,38 +210,34 @@ const Index = () => {
             </div>
           }
         >
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5 shrink-0 stagger-children">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-10 shrink-0 stagger-children">
             <StatsCard
-              title={t('dashboard.jobsQueue')}
+              title="Active Queue"
               value={stats.todayScheduled.toString()}
-              subtitle={`${stats.scheduled} ${t('jobs.statuses.scheduled')}`}
+              subtitle="Planned for next 24h"
               icon={Calendar}
               variant="primary"
-              compact
             />
             <StatsCard
-              title={t('dashboard.jobsInProduction')}
+              title="Live Units"
               value={stats.inProgress.toString()}
-              subtitle={`${machines.length} ${t('machines.title')}`}
-              icon={Printer}
+              subtitle={`${machines.length} nodes active`}
+              icon={Activity}
               variant="info"
-              compact
             />
             <StatsCard
-              title={t('dashboard.jobsFinished')}
+              title="Global Output"
               value={stats.todayCompleted.toString()}
-              subtitle={`${stats.completedPieces.toLocaleString('pt-BR')} pçs`}
+              subtitle={`${stats.completedPieces.toLocaleString('pt-BR')} units finished`}
               icon={CheckCircle2}
               variant="success"
-              compact
             />
             <StatsCard
-              title={t('alerts.types.warning')}
+              title="Integrity Risks"
               value={stats.delayed.toString()}
-              subtitle={stats.delayed > 0 ? t('alerts.types.warning') : t('common.success')}
-              icon={AlertTriangle}
+              subtitle={stats.delayed > 0 ? "Action required" : "All systems normal"}
+              icon={ShieldAlert}
               variant="warning"
-              compact
             />
           </div>
         </ContentTransition>
