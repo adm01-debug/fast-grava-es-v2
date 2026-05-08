@@ -18,6 +18,7 @@ import { CalendarOnboarding } from '@/components/calendar/CalendarOnboarding';
 import { CalendarEmptyState } from '@/components/calendar/CalendarEmptyState';
 import { MobileFAB } from '@/components/calendar/MobileFAB';
 import { OptimizationAssistant } from '@/components/calendar/OptimizationAssistant';
+import { PlanningEfficiencyDashboard } from '@/components/planning/PlanningEfficiencyDashboard';
 import { useSchedulingData } from '@/hooks/useSchedulingData';
 import { useCalendarFilters } from '@/hooks/useCalendarFilters';
 import { useCalendarPreferences } from '@/hooks/useCalendarPreferences';
@@ -174,6 +175,8 @@ export default function DailyCalendar() {
 
       <div ref={printAreaRef} className="p-4 sm:p-6 space-y-4 sm:space-y-6 animate-fade-in-up calendar-print-area">
         <Breadcrumbs />
+
+        <PlanningEfficiencyDashboard />
 
         <CalendarHeader
           title="Calendário Diário"

@@ -19,6 +19,7 @@ import { KanbanFiltersBar, ViewMode, SwimlanesMode } from '@/components/kanban/K
 import { KanbanAIAdvisor } from '@/components/kanban/KanbanAIAdvisor';
 import { SmartSequencingPanel } from '@/components/planning/SmartSequencingPanel';
 import { LoadBalancingPanel } from '@/components/planning/LoadBalancingPanel';
+import { PlanningEfficiencyDashboard } from '@/components/planning/PlanningEfficiencyDashboard';
 import { useKanbanDragDrop } from '@/hooks/useKanbanDragDrop';
 import { FavoriteButton, FavoritesDropdown } from '@/components/navigation/FavoritesManager';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
@@ -301,6 +302,9 @@ export default function KanbanBoard() {
             </div>
           </div>
           
+          {/* Planning Efficiency Dashboard */}
+          <PlanningEfficiencyDashboard />
+
           {/* Smart Panels */}
           <div className="space-y-4">
             <SmartSequencingPanel />
