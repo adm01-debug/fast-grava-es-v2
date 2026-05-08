@@ -426,6 +426,41 @@ export function MaintenanceExecutionModal({
                     );
                   })}
                 </div>
+
+                {selectedSheetId && technicalSheets.find(s => s.id === selectedSheetId)?.setup_instructions && (
+                  <div className="p-4 rounded-lg bg-blue-500/5 border border-blue-500/10 space-y-2">
+                    <Label className="text-xs text-blue-700 font-bold uppercase flex items-center gap-1">
+                      <Info className="h-3 w-3" /> Setup e Preparação
+                    </Label>
+                    <p className="text-xs text-blue-800 whitespace-pre-wrap">
+                      {technicalSheets.find(s => s.id === selectedSheetId)?.setup_instructions}
+                    </p>
+                  </div>
+                )}
+
+                {selectedSheetId && technicalSheets.find(s => s.id === selectedSheetId)?.quality_checklist && (technicalSheets.find(s => s.id === selectedSheetId)?.quality_checklist?.length || 0) > 0 && (
+                  <div className="space-y-3 pt-2">
+                    <Label className="text-sm font-semibold flex items-center gap-2">
+                      <CheckSquare className="h-4 w-4 text-emerald-500" />
+                      Checklist de Qualidade
+                    </Label>
+                    <div className="grid grid-cols-1 gap-2">
+                      {technicalSheets.find(s => s.id === selectedSheetId)?.quality_checklist?.map((item) => (
+                        <div key={item.id} className="flex items-center gap-3 p-3 rounded-lg bg-emerald-500/5 border border-emerald-500/10">
+                          <Checkbox 
+                            id={`quality-${item.id}`}
+                            checked={qualityResponses[item.id] || false}
+                            onCheckedChange={(checked) => setQualityResponses(prev => ({ ...prev, [item.id]: !!checked }))}
+                          />
+                          <Label htmlFor={`quality-${item.id}`} className="text-sm cursor-pointer flex-1">
+                            {item.description}
+                            {item.required && <span className="text-destructive ml-1">*</span>}
+                          </Label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
