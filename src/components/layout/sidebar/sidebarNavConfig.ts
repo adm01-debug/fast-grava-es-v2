@@ -8,15 +8,15 @@ import { NavGroup } from './NavGroupComponent';
 import { NavItem } from './NavButton';
 
 export const navGroups: NavGroup[] = [
-  { id: 'home', icon: Home, label: 'Início', items: [{ icon: Home, label: 'Dashboard', href: '/' }], defaultOpen: true },
-  { id: 'planning', icon: Calendar, label: 'Planejamento', items: [
+  { id: 'home', icon: Home, label: 'Control Center', items: [{ icon: Home, label: 'Executive Pulse', href: '/' }], defaultOpen: true },
+  { id: 'planning', icon: Calendar, label: 'Operations Flow', items: [
     { icon: Calendar, label: 'Calendário Diário', href: '/calendar/daily' },
     { icon: CalendarDays, label: 'Calendário Semanal', href: '/calendar/weekly' },
     { icon: CalendarRange, label: 'Calendário Mensal', href: '/calendar/monthly' },
     { icon: LayoutGrid, label: 'Kanban', href: '/kanban' },
     { icon: List, label: 'Pendências', href: '/pending' },
   ]},
-  { id: 'analytics', icon: BarChart3, label: 'Analytics', items: [
+  { id: 'analytics', icon: BarChart3, label: 'Strategic Insights', items: [
     { icon: BarChart3, label: 'BI Executivo', href: '/bi' },
     { icon: FileDown, label: 'Dashboard Executivo', href: '/executive' },
     { icon: TrendingUp, label: 'KPIs e Ocupação', href: '/kpis' },
@@ -25,14 +25,14 @@ export const navGroups: NavGroup[] = [
     { icon: Activity, label: 'SPC Qualidade', href: '/spc' },
     { icon: Coins, label: 'Custeio ABC', href: '/abc' },
   ]},
-  { id: 'operations', icon: Wrench, label: 'Operações', items: [
+  { id: 'operations', icon: Wrench, label: 'Performance Units', items: [
     { icon: Wrench, label: 'TPM', href: '/tpm' },
     { icon: Cpu, label: 'Máquinas', href: '/machines' },
     { icon: ArrowRightLeft, label: 'Comparativo Máquinas', href: '/machines/compare' },
     { icon: BatteryCharging, label: 'Energia', href: '/energy' },
     { icon: Package, label: 'Rastreabilidade', href: '/traceability' },
   ]},
-  { id: 'team', icon: Users, label: 'Equipe', items: [
+  { id: 'team', icon: Users, label: 'Human Capital', items: [
     { icon: Users, label: 'Operadores', href: '/operators' },
     { icon: TrendingUp, label: 'Produtividade', href: '/operators/productivity' },
     { icon: Activity, label: 'Histórico de Ações', href: '/operator-history' },
@@ -40,13 +40,13 @@ export const navGroups: NavGroup[] = [
     { icon: ArrowRightLeft, label: 'Passagem de Turno', href: '/shift-handover' },
     { icon: UserCircle, label: 'Visão Operador', href: '/operator' },
   ]},
-  { id: 'intelligence', icon: Brain, label: 'Inteligência', items: [
+  { id: 'intelligence', icon: Brain, label: 'Cognitive Engine', items: [
     { icon: Brain, label: 'ML Preditivo', href: '/ml-predictions' },
     { icon: Bot, label: 'Assistente IA', href: '/assistant' },
     { icon: BookOpen, label: 'Base de Conhecimento', href: '/knowledge' },
     { icon: FileText, label: 'Documentos', href: '/documents' },
   ]},
-  { id: 'system', icon: Cog, label: 'Sistema', items: [
+  { id: 'system', icon: Cog, label: 'Global Systems', items: [
     { icon: AlertTriangle, label: 'Alertas', href: '/alerts' },
     { icon: Bell, label: 'Notificações', href: '/notifications' },
     { icon: ShieldCheck, label: 'Audit Trail', href: '/audit' },
