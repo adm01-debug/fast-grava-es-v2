@@ -203,7 +203,7 @@ export type Database = {
           created_at: string
           entity_id: string
           entity_type: string
-          hash: string
+          hash: string | null
           id: string
           metadata: Json | null
           new_data: Json | null
@@ -218,7 +218,7 @@ export type Database = {
           created_at?: string
           entity_id: string
           entity_type: string
-          hash: string
+          hash?: string | null
           id?: string
           metadata?: Json | null
           new_data?: Json | null
@@ -233,7 +233,7 @@ export type Database = {
           created_at?: string
           entity_id?: string
           entity_type?: string
-          hash?: string
+          hash?: string | null
           id?: string
           metadata?: Json | null
           new_data?: Json | null
@@ -894,10 +894,12 @@ export type Database = {
           actual_start_time: string | null
           client: string
           created_at: string
+          delay_reason: string | null
           end_time: string | null
           estimated_duration: number
           gravure_color: string | null
           id: string
+          loss_category: string | null
           lost_pieces: number | null
           machine_id: string | null
           notes: string | null
@@ -905,8 +907,10 @@ export type Database = {
           priority: string
           produced_quantity: number | null
           product: string
+          product_category_id: string | null
           production_photos: string[] | null
           quantity: number
+          rework_reason: string | null
           scheduled_date: string | null
           start_time: string | null
           status: string
@@ -918,10 +922,12 @@ export type Database = {
           actual_start_time?: string | null
           client: string
           created_at?: string
+          delay_reason?: string | null
           end_time?: string | null
           estimated_duration?: number
           gravure_color?: string | null
           id?: string
+          loss_category?: string | null
           lost_pieces?: number | null
           machine_id?: string | null
           notes?: string | null
@@ -929,8 +935,10 @@ export type Database = {
           priority?: string
           produced_quantity?: number | null
           product: string
+          product_category_id?: string | null
           production_photos?: string[] | null
           quantity: number
+          rework_reason?: string | null
           scheduled_date?: string | null
           start_time?: string | null
           status?: string
@@ -942,10 +950,12 @@ export type Database = {
           actual_start_time?: string | null
           client?: string
           created_at?: string
+          delay_reason?: string | null
           end_time?: string | null
           estimated_duration?: number
           gravure_color?: string | null
           id?: string
+          loss_category?: string | null
           lost_pieces?: number | null
           machine_id?: string | null
           notes?: string | null
@@ -953,8 +963,10 @@ export type Database = {
           priority?: string
           produced_quantity?: number | null
           product?: string
+          product_category_id?: string | null
           production_photos?: string[] | null
           quantity?: number
+          rework_reason?: string | null
           scheduled_date?: string | null
           start_time?: string | null
           status?: string
@@ -967,6 +979,13 @@ export type Database = {
             columns: ["machine_id"]
             isOneToOne: false
             referencedRelation: "machines"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "jobs_product_category_id_fkey"
+            columns: ["product_category_id"]
+            isOneToOne: false
+            referencedRelation: "product_categories"
             referencedColumns: ["id"]
           },
           {
@@ -2099,12 +2118,18 @@ export type Database = {
           checked_by_name: string | null
           color_verified: boolean
           completed_at: string | null
+          consumables_confirmed: Json | null
           created_at: string
           id: string
           job_id: string
           machine_clean: boolean
           material_verified: boolean
           notes: string | null
+          pressure: string | null
+          speed: string | null
+          squeegee_passes: string | null
+          technical_sheet_version: number | null
+          temperature: string | null
           tools_ready: boolean
         }
         Insert: {
@@ -2112,12 +2137,18 @@ export type Database = {
           checked_by_name?: string | null
           color_verified?: boolean
           completed_at?: string | null
+          consumables_confirmed?: Json | null
           created_at?: string
           id?: string
           job_id: string
           machine_clean?: boolean
           material_verified?: boolean
           notes?: string | null
+          pressure?: string | null
+          speed?: string | null
+          squeegee_passes?: string | null
+          technical_sheet_version?: number | null
+          temperature?: string | null
           tools_ready?: boolean
         }
         Update: {
@@ -2125,12 +2156,18 @@ export type Database = {
           checked_by_name?: string | null
           color_verified?: boolean
           completed_at?: string | null
+          consumables_confirmed?: Json | null
           created_at?: string
           id?: string
           job_id?: string
           machine_clean?: boolean
           material_verified?: boolean
           notes?: string | null
+          pressure?: string | null
+          speed?: string | null
+          squeegee_passes?: string | null
+          technical_sheet_version?: number | null
+          temperature?: string | null
           tools_ready?: boolean
         }
         Relationships: [
@@ -3394,6 +3431,7 @@ export type Database = {
       technical_sheets: {
         Row: {
           challenges_notes: string | null
+          consumables: Json | null
           created_at: string
           created_by: string | null
           description: string | null
@@ -3420,6 +3458,7 @@ export type Database = {
         }
         Insert: {
           challenges_notes?: string | null
+          consumables?: Json | null
           created_at?: string
           created_by?: string | null
           description?: string | null
@@ -3446,6 +3485,7 @@ export type Database = {
         }
         Update: {
           challenges_notes?: string | null
+          consumables?: Json | null
           created_at?: string
           created_by?: string | null
           description?: string | null
