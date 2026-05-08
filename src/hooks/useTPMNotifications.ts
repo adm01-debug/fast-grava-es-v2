@@ -145,7 +145,7 @@ export const useTPMNotifications = () => {
     });
   }, [sendNotification]);
 
-  // Send upcoming maintenance reminder
+  // Send upcoming reminder
   const sendUpcomingReminder = useCallback((machineName: string, scheduleName: string, daysUntilDue: number) => {
     const prefs = getPreferences();
     if (!prefs.upcomingMaintenance) return null;
@@ -159,8 +159,12 @@ export const useTPMNotifications = () => {
   }, [sendNotification]);
 
   // Send test notification
-  const sendTestNotification = useCallback(async (machineId: string, channel: 'email' | 'whatsapp' | 'push') => {
+  const sendTestNotification = useCallback(async (machineId: string, channel: 'email' | 'whatsapp' | 'push', forceSend = false): Promise<any> => {
     try {
+      const { data: settings } = await supabase
+        .from('user_notification_settings')
+        .select('*');
+      
       const { data: machine } = await supabase
         .from('machines')
         .select('name, code')
@@ -169,8 +173,26 @@ export const useTPMNotifications = () => {
 
       if (!machine) throw new Error('Máquina não encontrada');
 
-      // In a real scenario, this would call an edge function
-      // For now, we simulate success and log it
+      const recipients = settings?.filter(s => {
+        const isChannelEnabled = 
+          (channel === 'email' && s.email_enabled) ||
+          (channel === 'whatsapp' && s.whatsapp_enabled) ||
+          (channel === 'push' && s.push_enabled);
+        
+        const isMachineAllowed = s.machine_filters.length === 0 || s.machine_filters.includes(machineId);
+        
+        return isChannelEnabled && isMachineAllowed;
+      }) || [];
+
+      if (recipients.length === 0) {
+        toast.warning('Nenhum destinatário configurado para este canal e máquina.');
+        return { success: false, recipients: [] };
+      }
+
+      if (!forceSend) {
+        return { success: true, needsValidation: true, recipients, machine };
+      }
+
       const { data: user } = await supabase.auth.getUser();
       
       const { error: logError } = await supabase
@@ -181,8 +203,8 @@ export const useTPMNotifications = () => {
           channel,
           severity: 'critical',
           status: 'success',
-          recipient: 'Teste',
-          payload: { test: true, machine_name: machine.name }
+          recipient: `${recipients.length} destinatários`,
+          payload: { test: true, machine_name: machine.name, recipients: recipients.map(r => r.user_id) }
         });
 
       if (logError) throw logError;
@@ -190,17 +212,17 @@ export const useTPMNotifications = () => {
       if (channel === 'push') {
         sendNotification({
           title: '🚨 Teste de Notificação TPM',
-          body: `Máquina: ${machine.name} - Este é um teste de notificação push.`,
+          body: `Máquina: ${machine.name} - Este é um teste para ${recipients.length} destinatários.`,
           tag: 'tpm-test',
         });
       }
 
-      toast.success(`Notificação de teste enviada via ${channel}`);
-      return true;
+      toast.success(`Notificação de teste enviada via ${channel} para ${recipients.length} usuários.`);
+      return { success: true, recipients };
     } catch (error: any) {
       console.error('Error sending test notification:', error);
-      toast.error('Erro ao enviar notificação de teste');
-      return false;
+      toast.error('Erro ao processar notificação de teste');
+      return { success: false, recipients: [] };
     }
   }, [sendNotification]);
 
@@ -220,7 +242,6 @@ export const useTPMNotifications = () => {
         async (payload) => {
           const newAlert = payload.new as MaintenanceAlert;
           
-          // Fetch machine info
           const { data: machine } = await supabase
             .from('machines')
             .select('id, name, code')
