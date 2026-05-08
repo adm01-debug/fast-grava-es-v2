@@ -135,6 +135,17 @@ export function DroppableColumn({
           )}>
             Risco de Gargalo: {totalEstimatedTime > 480 ? "Alto" : totalEstimatedTime > 300 ? "Médio" : "Baixo"}
           </span>
+          <Badge 
+            variant="outline" 
+            className={cn(
+              "ml-auto text-[8px] h-4 px-1 leading-none",
+              totalEstimatedTime > 480 ? "border-red-500/50 text-red-500 bg-red-500/10" : 
+              totalEstimatedTime > 300 ? "border-amber-500/50 text-amber-500 bg-amber-500/10" : 
+              "border-green-500/50 text-green-500 bg-green-500/10"
+            )}
+          >
+            {totalEstimatedTime > 480 ? "CRÍTICO" : totalEstimatedTime > 300 ? "ATENÇÃO" : "OK"}
+          </Badge>
         </div>
       )}
 
