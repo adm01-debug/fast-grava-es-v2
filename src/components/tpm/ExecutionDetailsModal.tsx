@@ -14,6 +14,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
+import { supabase } from '@/integrations/supabase/client';
 
 interface ExecutionDetailsModalProps {
   isOpen: boolean;
@@ -141,6 +142,40 @@ export function ExecutionDetailsModal({ isOpen, onClose, recordId }: ExecutionDe
     }
   };
 
+  const handleExportPDF = async () => {
+    if (!record) return;
+    try {
+      setIsLoading(true);
+      const { data, error } = await supabase.functions.invoke('pdf-generator', {
+        body: {
+          type: 'maintenance-report',
+          data: {
+            execution: record,
+            machine: record.machine,
+            technical_sheet: record.technical_sheet,
+            supplies: record.supplies_used,
+            alerts: record.execution_alerts
+          }
+        }
+      });
+
+      if (error) throw error;
+
+      const blob = new Blob([data], { type: 'application/pdf' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `OS_Tecnica_${record.id.substring(0, 8)}.pdf`;
+      link.click();
+      toast.success("PDF gerado com sucesso via servidor");
+    } catch (e) {
+      console.error(e);
+      toast.error("Erro ao gerar PDF profissional. Usando impressão padrão...");
+      window.print();
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleExportCSV = () => {
     if (!record) return;
     
@@ -224,8 +259,8 @@ export function ExecutionDetailsModal({ isOpen, onClose, recordId }: ExecutionDe
                   <Button variant="outline" size="sm" onClick={handleExportCSV} className="gap-2">
                     <FileSpreadsheet className="h-4 w-4" /> CSV
                   </Button>
-                  <Button variant="outline" size="sm" onClick={() => window.print()} className="gap-2">
-                    <Download className="h-4 w-4" /> PDF
+                  <Button variant="outline" size="sm" onClick={handleExportPDF} className="gap-2 bg-primary/10 text-primary border-primary/20 hover:bg-primary/20">
+                    <Download className="h-4 w-4" /> PDF Técnico
                   </Button>
                 </div>
               )}
@@ -412,23 +447,74 @@ export function ExecutionDetailsModal({ isOpen, onClose, recordId }: ExecutionDe
               )}
 
               {/* Insumos e Consumíveis na OS */}
-              {record.technical_sheet?.consumables && record.technical_sheet.consumables.length > 0 && (
+              {((record.technical_sheet?.consumables && record.technical_sheet.consumables.length > 0) || (record.supplies_used && record.supplies_used.length > 0)) && (
                 <div className="space-y-4">
                   <h3 className="text-lg font-semibold flex items-center gap-2">
                     <Package className="h-5 w-5 text-primary" />
                     Insumos e Consumíveis (OS)
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    {record.technical_sheet.consumables.map((c: any) => (
-                      <div key={c.id} className="flex justify-between items-center p-3 rounded-lg bg-primary/5 border border-primary/10">
-                        <div className="flex flex-col">
-                          <span className="text-xs font-bold uppercase text-primary">Insumo</span>
-                          <span className="text-sm font-medium">{c.name}</span>
+                    {/* Exibe o que foi REALMENTE usado se houver registro, senão exibe o sugerido */}
+                    {record.supplies_used && record.supplies_used.length > 0 ? (
+                      record.supplies_used.map((s: any, idx: number) => (
+                        <div key={idx} className="flex justify-between items-center p-3 rounded-lg bg-emerald-500/5 border border-emerald-500/10">
+                          <div className="flex flex-col">
+                            <span className="text-[10px] font-bold uppercase text-emerald-600">Utilizado {s.alternative_used ? '(Alternativo)' : ''}</span>
+                            <span className="text-sm font-medium">{s.name}</span>
+                          </div>
+                          <div className="flex flex-col items-end">
+                            <span className="text-[10px] font-bold uppercase text-muted-foreground">Quantidade</span>
+                            <span className="text-sm font-bold">{s.quantity}</span>
+                          </div>
                         </div>
-                        <div className="flex flex-col items-end">
-                          <span className="text-xs font-bold uppercase text-muted-foreground">Qtd Sugerida</span>
-                          <span className="text-sm">{c.quantity}</span>
+                      ))
+                    ) : (
+                      record.technical_sheet?.consumables?.map((c: any) => (
+                        <div key={c.id} className="flex justify-between items-center p-3 rounded-lg bg-primary/5 border border-primary/10">
+                          <div className="flex flex-col">
+                            <span className="text-xs font-bold uppercase text-primary">Insumo Sugerido</span>
+                            <span className="text-sm font-medium">{c.name}</span>
+                          </div>
+                          <div className="flex flex-col items-end">
+                            <span className="text-xs font-bold uppercase text-muted-foreground">Qtd Sugerida</span>
+                            <span className="text-sm">{c.quantity}</span>
+                          </div>
                         </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Alertas de Risco e Cenários de Falha */}
+              {record.execution_alerts && record.execution_alerts.length > 0 && (
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold flex items-center gap-2 text-destructive">
+                    <AlertTriangle className="h-5 w-5" />
+                    Alertas de Risco e Falha
+                  </h3>
+                  <div className="space-y-3">
+                    {record.execution_alerts.map((alert: any, idx: number) => (
+                      <div key={idx} className="p-4 rounded-xl bg-destructive/5 border border-destructive/20 space-y-3">
+                        <div className="flex justify-between items-start">
+                          <div className="space-y-1">
+                            <p className="text-sm font-bold text-destructive">{alert.description}</p>
+                            <p className="text-xs text-muted-foreground">Parâmetro: {alert.parameter_name} | Range: {alert.expected_range} | Valor: {alert.actual_value}</p>
+                          </div>
+                          <Badge variant="destructive" className="uppercase text-[10px]">{alert.severity}</Badge>
+                        </div>
+                        {alert.evidence_urls && alert.evidence_urls.length > 0 && (
+                          <div className="flex flex-wrap gap-2 pt-2">
+                            {alert.evidence_urls.map((url: string, i: number) => (
+                              <a key={i} href={url} target="_blank" rel="noreferrer" className="block relative group">
+                                <img src={url} alt="Evidência" className="h-20 w-20 object-cover rounded-lg border border-destructive/20 transition-transform group-hover:scale-105" />
+                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-lg">
+                                  <Eye className="h-4 w-4 text-white" />
+                                </div>
+                              </a>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>

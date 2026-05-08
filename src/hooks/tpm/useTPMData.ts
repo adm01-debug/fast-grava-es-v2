@@ -191,15 +191,36 @@ export function useTPMData() {
       
       if (partsError) throw partsError;
 
+      const { data: supplies, error: suppliesError } = await supabase
+        .from('tpm_execution_supplies')
+        .select('*')
+        .eq('execution_id', recordId);
+      
+      if (suppliesError) throw suppliesError;
+
+      const { data: executionAlerts, error: alertsError } = await supabase
+        .from('tpm_execution_alerts')
+        .select('*')
+        .eq('execution_id', recordId);
+      
+      if (alertsError) throw alertsError;
+
+      const { data: technicalSheet, error: sheetError } = record.technical_sheet_id 
+        ? await supabase.from('technical_sheets').select('*, techniques(*), product_categories(*), machines(*)').eq('id', record.technical_sheet_id).single()
+        : { data: null, error: null };
+
       return {
         ...record,
         machine: record.machines,
         maintenance_type: record.maintenance_types,
+        technical_sheet: technicalSheet,
         responses: responses.map((r: any) => ({
           ...r,
           item: r.maintenance_checklist_items
         })),
-        parts
+        parts,
+        supplies_used: supplies,
+        execution_alerts: executionAlerts
       };
     } catch (err) {
       if (import.meta.env.DEV) console.error('[useTPM] fetchRecordDetails error:', err);

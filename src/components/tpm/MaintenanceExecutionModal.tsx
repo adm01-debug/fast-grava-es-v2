@@ -34,6 +34,9 @@ interface MaintenanceExecutionModalProps {
     technical_sheet_version?: number;
     quality_responses?: any[];
     adjustment_parameters?: any;
+    supplies_used?: any[];
+    execution_alerts?: any[];
+    failure_risk_detected?: boolean;
   }) => void;
 }
 
@@ -54,7 +57,23 @@ export function MaintenanceExecutionModal({
     temperature: ''
   });
   const [qualityResponses, setQualityResponses] = useState<Record<string, { approved: boolean; justification?: string }>>({});
-  const [parameterAlerts, setParameterAlerts] = useState<string[]>([]);
+  const [activeAlerts, setActiveAlerts] = useState<Array<{
+    alert_type: string;
+    parameter_name?: string;
+    expected_range?: string;
+    actual_value?: string;
+    severity: 'info' | 'warning' | 'critical';
+    description: string;
+    evidence_urls: string[];
+    is_critical_risk: boolean;
+  }>>([]);
+  
+  const [suppliesUsed, setSuppliesUsed] = useState<Record<string, {
+    quantity: string;
+    alternative_used: boolean;
+    name: string;
+    is_checked: boolean;
+  }>>({});
   
   const [notes, setNotes] = useState('');
   const [totalCost, setTotalCost] = useState(0);
@@ -99,8 +118,64 @@ export function MaintenanceExecutionModal({
           temperature: settings.temperature || ''
         });
       }
+
+      if (sheet?.consumables) {
+        const initialSupplies: Record<string, any> = {};
+        sheet.consumables.forEach((c: any) => {
+          initialSupplies[c.id] = {
+            name: c.name,
+            quantity: c.quantity,
+            alternative_used: false,
+            is_checked: true,
+          };
+        });
+        setSuppliesUsed(initialSupplies);
+      }
     }
   }, [selectedSheetId, technicalSheets]);
+
+  // Real-time parameter validation
+  useEffect(() => {
+    if (!selectedSheetId) return;
+    
+    const sheet = technicalSheets.find(s => s.id === selectedSheetId);
+    if (!sheet) return;
+
+    const ranges = (sheet?.settings_ranges as any) || {};
+    const newAlerts: typeof activeAlerts = [];
+
+    const checkRange = (name: string, value: string, range: any, paramKey: string) => {
+      if (!range || (!range.min && !range.max)) return;
+      const val = parseFloat(value.replace(/[^0-9.]/g, ''));
+      if (isNaN(val) && value !== '') return;
+      
+      const min = range.min ? parseFloat(range.min.replace(/[^0-9.]/g, '')) : -Infinity;
+      const max = range.max ? parseFloat(range.max.replace(/[^0-9.]/g, '')) : Infinity;
+      
+      if (!isNaN(val) && (val < min || val > max)) {
+        // Find existing alert to preserve evidence_urls
+        const existingAlert = activeAlerts.find(a => a.parameter_name === name);
+        
+        newAlerts.push({
+          alert_type: 'out_of_range',
+          parameter_name: name,
+          expected_range: `Mín: ${range.min || '-'} / Máx: ${range.max || '-'}`,
+          actual_value: value,
+          severity: 'critical',
+          description: `Risco de Perda: ${name} fora do intervalo recomendado (${value}).`,
+          evidence_urls: existingAlert?.evidence_urls || [],
+          is_critical_risk: true
+        });
+      }
+    };
+
+    checkRange('Passadas de Rodo', adjustmentParams.squeegee_passes, ranges.squeegee_passes, 'squeegee_passes');
+    checkRange('Pressão', adjustmentParams.pressure, ranges.pressure, 'pressure');
+    checkRange('Velocidade', adjustmentParams.speed, ranges.speed, 'speed');
+    checkRange('Temperatura', adjustmentParams.temperature, ranges.temperature, 'temperature');
+
+    setActiveAlerts(newAlerts);
+  }, [adjustmentParams, selectedSheetId, technicalSheets]);
 
   useEffect(() => {
     if (checklist?.items) {
@@ -163,6 +238,36 @@ export function MaintenanceExecutionModal({
     }
   };
 
+  const handleAlertEvidenceUpload = async (alertIndex: number, file: File) => {
+    try {
+      setIsUploading(true);
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Math.random()}.${fileExt}`;
+      const filePath = `execution-alerts/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('execution-evidence')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('execution-evidence')
+        .getPublicUrl(filePath);
+
+      const newAlerts = [...activeAlerts];
+      newAlerts[alertIndex].evidence_urls = [...newAlerts[alertIndex].evidence_urls, publicUrl];
+      setActiveAlerts(newAlerts);
+      
+      toast.success('Evidência anexada com sucesso');
+    } catch (error) {
+      console.error('Error uploading evidence:', error);
+      toast.error('Erro ao enviar evidência');
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   const handleComplete = () => {
     // Validação obrigatória de Produto/Técnica (Ficha Técnica)
     if (!selectedSheetId) {
@@ -196,38 +301,13 @@ export function MaintenanceExecutionModal({
       }
     }
 
-    // Validação de parâmetros de regulagem
-    if (selectedSheetId) {
-      const sheet = technicalSheets.find(s => s.id === selectedSheetId);
-      const settings = sheet?.machine_settings as any;
-      const ranges = (sheet?.settings_ranges as any) || {};
-      const alerts: string[] = [];
-
-      const validateRange = (name: string, value: string, range: { min?: string; max?: string }) => {
-        if (!range || (!range.min && !range.max)) return;
-        const val = parseFloat(value.replace(/[^0-9.]/g, ''));
-        const min = range.min ? parseFloat(range.min.replace(/[^0-9.]/g, '')) : -Infinity;
-        const max = range.max ? parseFloat(range.max.replace(/[^0-9.]/g, '')) : Infinity;
-        
-        if (!isNaN(val)) {
-          if (val < min || val > max) {
-            alerts.push(`${name}: Informado ${value}, Recomendado entre ${range.min || '-'} e ${range.max || '-'}`);
-            return true;
-          }
-        }
-        return false;
-      };
-
-      validateRange('Passadas de Rodo', adjustmentParams.squeegee_passes, ranges.squeegee_passes);
-      validateRange('Pressão', adjustmentParams.pressure, ranges.pressure);
-      validateRange('Velocidade', adjustmentParams.speed, ranges.speed);
-      validateRange('Temperatura', adjustmentParams.temperature, ranges.temperature);
-
-      if (alerts.length > 0) {
-        toast.warning("Parâmetros fora do intervalo recomendado", {
-          description: alerts.join('\n')
-        });
-      }
+    // Validação de riscos críticos (Alertas de parâmetros)
+    const criticalAlertsWithoutEvidence = activeAlerts.filter(a => a.is_critical_risk && a.evidence_urls.length === 0);
+    if (criticalAlertsWithoutEvidence.length > 0) {
+      toast.error(`Atenção: Existem riscos críticos (parâmetros fora do range) que exigem o anexo de evidências (fotos) antes de prosseguir.`, {
+        description: `Parâmetros: ${criticalAlertsWithoutEvidence.map(a => a.parameter_name).join(', ')}`
+      });
+      return;
     }
 
     onComplete({
@@ -244,15 +324,25 @@ export function MaintenanceExecutionModal({
       checklist_snapshot: checklist,
       technical_sheet_id: selectedSheetId || undefined,
       technical_sheet_version: selectedSheetId ? (technicalSheets.find(s => s.id === selectedSheetId)?.version) : undefined,
-      quality_responses: Object.entries(qualityResponses).map(([id, confirmed]) => ({
+      quality_responses: Object.entries(qualityResponses).map(([id, data]) => ({
         id,
-        confirmed
+        ...data
       })),
       adjustment_parameters: {
         ...adjustmentParams,
         recommended: selectedSheetId ? (technicalSheets.find(s => s.id === selectedSheetId)?.machine_settings) : null,
         ranges: selectedSheetId ? (technicalSheets.find(s => s.id === selectedSheetId)?.settings_ranges) : null
-      }
+      },
+      supplies_used: Object.entries(suppliesUsed)
+        .filter(([_, data]) => data.is_checked)
+        .map(([id, data]) => ({
+          original_recommended_id: id,
+          name: data.name,
+          quantity: data.quantity,
+          alternative_used: data.alternative_used
+        })),
+      execution_alerts: activeAlerts,
+      failure_risk_detected: activeAlerts.length > 0
     });
   };
 
@@ -422,6 +512,7 @@ export function MaintenanceExecutionModal({
                           placeholder={recommended || "Valor"}
                           value={(adjustmentParams as any)[param]}
                           onChange={(e) => setAdjustmentParams(prev => ({ ...prev, [param]: e.target.value }))}
+                          className={activeAlerts.some(a => a.parameter_name === labels[param]) ? "border-destructive ring-destructive/20" : ""}
                         />
                         {range && (range.min || range.max) && (
                           <div className="text-[10px] text-muted-foreground bg-secondary/30 px-1.5 py-0.5 rounded flex justify-between">
@@ -434,6 +525,58 @@ export function MaintenanceExecutionModal({
                   })}
                 </div>
 
+                {/* Real-time Alerts Panel */}
+                {activeAlerts.length > 0 && (
+                  <div className="space-y-3">
+                    <Label className="text-xs font-bold text-destructive uppercase flex items-center gap-1">
+                      <AlertTriangle className="h-3 w-3" /> Alertas de Risco Identificados
+                    </Label>
+                    <div className="space-y-2">
+                      {activeAlerts.map((alert, idx) => (
+                        <div key={idx} className="p-3 rounded-lg bg-destructive/5 border border-destructive/20 flex items-start justify-between gap-3">
+                          <div className="flex-1 space-y-1">
+                            <p className="text-sm font-semibold text-destructive">{alert.description}</p>
+                            <p className="text-[10px] text-muted-foreground">Range: {alert.expected_range}</p>
+                            {alert.evidence_urls.length > 0 && (
+                              <div className="flex flex-wrap gap-2 mt-2">
+                                {alert.evidence_urls.map((url, i) => (
+                                  <img key={i} src={url} alt="Evidência" className="h-10 w-10 object-cover rounded border" />
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                          <div className="flex flex-col items-end gap-2">
+                            <div className="relative">
+                              <Input 
+                                type="file" 
+                                className="hidden" 
+                                id={`evidence-${idx}`}
+                                accept="image/*"
+                                onChange={(e) => {
+                                  const file = e.target.files?.[0];
+                                  if (file) handleAlertEvidenceUpload(idx, file);
+                                }}
+                                disabled={isUploading}
+                              />
+                              <Label 
+                                htmlFor={`evidence-${idx}`}
+                                className="inline-flex items-center justify-center rounded-md text-[10px] font-medium border border-destructive/20 bg-background hover:bg-destructive/5 h-7 px-2 cursor-pointer gap-1 text-destructive"
+                              >
+                                <Camera className="h-3 w-3" /> Anexar Evidência
+                              </Label>
+                            </div>
+                            {alert.is_critical_risk && alert.evidence_urls.length === 0 && (
+                              <Badge variant="outline" className="text-[8px] bg-destructive/10 text-destructive border-destructive/20 uppercase">
+                                Bloqueante
+                              </Badge>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 {selectedSheetId && technicalSheets.find(s => s.id === selectedSheetId)?.setup_instructions && (
                   <div className="p-4 rounded-lg bg-blue-500/5 border border-blue-500/10 space-y-2">
                     <Label className="text-xs text-blue-700 font-bold uppercase flex items-center gap-1">
@@ -445,18 +588,55 @@ export function MaintenanceExecutionModal({
                   </div>
                 )}
 
-                {selectedSheetId && technicalSheets.find(s => s.id === selectedSheetId)?.consumables && (technicalSheets.find(s => s.id === selectedSheetId)?.consumables?.length || 0) > 0 && (
+                {/* Supplies Used Tracking */}
+                {selectedSheetId && Object.keys(suppliesUsed).length > 0 && (
                   <div className="p-4 rounded-lg bg-primary/5 border border-primary/10 space-y-3">
                     <Label className="text-xs text-primary font-bold uppercase flex items-center gap-1">
-                      <Package className="h-3 w-3" /> Insumos Recomendados
+                      <Package className="h-3 w-3" /> Insumos e Consumíveis Utilizados
                     </Label>
                     <div className="grid grid-cols-1 gap-2">
-                      {technicalSheets.find(s => s.id === selectedSheetId)?.consumables?.map((c: any) => (
-                        <div key={c.id} className="flex justify-between items-center text-xs p-2 bg-background rounded border border-border/50">
-                          <span className="font-medium">{c.name}</span>
-                          <div className="flex gap-2 text-muted-foreground">
-                            <span>Qtd: {c.quantity}</span>
-                            {c.alternative && <span className="text-[10px]">Alt: {c.alternative}</span>}
+                      {Object.entries(suppliesUsed).map(([id, data]) => (
+                        <div key={id} className="p-3 bg-background rounded border border-border/50 space-y-2">
+                          <div className="flex justify-between items-center">
+                            <div className="flex items-center gap-2">
+                              <Checkbox 
+                                id={`supply-${id}`}
+                                checked={data.is_checked}
+                                onCheckedChange={(checked) => setSuppliesUsed(prev => ({
+                                  ...prev,
+                                  [id]: { ...prev[id], is_checked: !!checked }
+                                }))}
+                              />
+                              <Label htmlFor={`supply-${id}`} className="text-xs font-medium cursor-pointer">
+                                {data.name}
+                              </Label>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <div className="flex items-center gap-2">
+                                <Label className="text-[10px] text-muted-foreground">Qtd:</Label>
+                                <Input 
+                                  className="h-7 w-16 text-xs"
+                                  value={data.quantity}
+                                  onChange={(e) => setSuppliesUsed(prev => ({
+                                    ...prev,
+                                    [id]: { ...prev[id], quantity: e.target.value }
+                                  }))}
+                                />
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2 pl-6">
+                            <Checkbox 
+                              id={`alt-${id}`}
+                              checked={data.alternative_used}
+                              onCheckedChange={(checked) => setSuppliesUsed(prev => ({
+                                ...prev,
+                                [id]: { ...prev[id], alternative_used: !!checked }
+                              }))}
+                            />
+                            <Label htmlFor={`alt-${id}`} className="text-[10px] text-muted-foreground cursor-pointer">
+                              Utilizado Insumo Alternativo
+                            </Label>
                           </div>
                         </div>
                       ))}
