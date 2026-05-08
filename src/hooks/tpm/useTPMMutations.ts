@@ -149,13 +149,21 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
             severity: 'warning'
           });
         }
-        // ... repete para outros parâmetros
-        if (rec.pressure && params.pressure !== rec.pressure) {
+        if (rec.speed && params.speed !== rec.speed) {
           alertsToInsert.push({
             execution_id: data.record_id,
-            parameter_name: 'Pressão',
-            recorded_value: params.pressure,
-            recommended_range: rec.pressure,
+            parameter_name: 'Velocidade',
+            recorded_value: params.speed,
+            recommended_range: rec.speed,
+            severity: 'warning'
+          });
+        }
+        if (rec.temperature && params.temperature !== rec.temperature) {
+          alertsToInsert.push({
+            execution_id: data.record_id,
+            parameter_name: 'Temperatura',
+            recorded_value: params.temperature,
+            recommended_range: rec.temperature,
             severity: 'warning'
           });
         }
