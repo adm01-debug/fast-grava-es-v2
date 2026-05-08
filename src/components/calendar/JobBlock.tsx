@@ -16,10 +16,10 @@ interface JobBlockProps {
 }
 
 export function JobBlock({ job, position, hasConflict, ghost, onClick }: JobBlockProps) {
-  const { impact } = useHapticFeedback();
+  const { trigger } = useHapticFeedback();
 
   const handleJobClick = () => {
-    impact('light');
+    trigger('light');
     onClick(job);
   };
   return (
