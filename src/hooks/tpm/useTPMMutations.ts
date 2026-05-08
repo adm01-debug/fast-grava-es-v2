@@ -89,6 +89,7 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
       checklist_version?: number;
       checklist_snapshot?: any;
       technical_sheet_id?: string;
+      technical_sheet_version?: number;
       adjustment_parameters?: any;
       responses?: Array<{
         checklist_item_id: string;
