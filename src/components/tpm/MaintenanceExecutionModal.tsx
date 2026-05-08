@@ -512,6 +512,7 @@ export function MaintenanceExecutionModal({
                           placeholder={recommended || "Valor"}
                           value={(adjustmentParams as any)[param]}
                           onChange={(e) => setAdjustmentParams(prev => ({ ...prev, [param]: e.target.value }))}
+                          className={activeAlerts.some(a => a.parameter_name === labels[param]) ? "border-destructive ring-destructive/20" : ""}
                         />
                         {range && (range.min || range.max) && (
                           <div className="text-[10px] text-muted-foreground bg-secondary/30 px-1.5 py-0.5 rounded flex justify-between">
@@ -524,6 +525,58 @@ export function MaintenanceExecutionModal({
                   })}
                 </div>
 
+                {/* Real-time Alerts Panel */}
+                {activeAlerts.length > 0 && (
+                  <div className="space-y-3">
+                    <Label className="text-xs font-bold text-destructive uppercase flex items-center gap-1">
+                      <AlertTriangle className="h-3 w-3" /> Alertas de Risco Identificados
+                    </Label>
+                    <div className="space-y-2">
+                      {activeAlerts.map((alert, idx) => (
+                        <div key={idx} className="p-3 rounded-lg bg-destructive/5 border border-destructive/20 flex items-start justify-between gap-3">
+                          <div className="flex-1 space-y-1">
+                            <p className="text-sm font-semibold text-destructive">{alert.description}</p>
+                            <p className="text-[10px] text-muted-foreground">Range: {alert.expected_range}</p>
+                            {alert.evidence_urls.length > 0 && (
+                              <div className="flex flex-wrap gap-2 mt-2">
+                                {alert.evidence_urls.map((url, i) => (
+                                  <img key={i} src={url} alt="Evidência" className="h-10 w-10 object-cover rounded border" />
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                          <div className="flex flex-col items-end gap-2">
+                            <div className="relative">
+                              <Input 
+                                type="file" 
+                                className="hidden" 
+                                id={`evidence-${idx}`}
+                                accept="image/*"
+                                onChange={(e) => {
+                                  const file = e.target.files?.[0];
+                                  if (file) handleAlertEvidenceUpload(idx, file);
+                                }}
+                                disabled={isUploading}
+                              />
+                              <Label 
+                                htmlFor={`evidence-${idx}`}
+                                className="inline-flex items-center justify-center rounded-md text-[10px] font-medium border border-destructive/20 bg-background hover:bg-destructive/5 h-7 px-2 cursor-pointer gap-1 text-destructive"
+                              >
+                                <Camera className="h-3 w-3" /> Anexar Evidência
+                              </Label>
+                            </div>
+                            {alert.is_critical_risk && alert.evidence_urls.length === 0 && (
+                              <Badge variant="outline" className="text-[8px] bg-destructive/10 text-destructive border-destructive/20 uppercase">
+                                Bloqueante
+                              </Badge>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 {selectedSheetId && technicalSheets.find(s => s.id === selectedSheetId)?.setup_instructions && (
                   <div className="p-4 rounded-lg bg-blue-500/5 border border-blue-500/10 space-y-2">
                     <Label className="text-xs text-blue-700 font-bold uppercase flex items-center gap-1">
@@ -535,18 +588,55 @@ export function MaintenanceExecutionModal({
                   </div>
                 )}
 
-                {selectedSheetId && technicalSheets.find(s => s.id === selectedSheetId)?.consumables && (technicalSheets.find(s => s.id === selectedSheetId)?.consumables?.length || 0) > 0 && (
+                {/* Supplies Used Tracking */}
+                {selectedSheetId && Object.keys(suppliesUsed).length > 0 && (
                   <div className="p-4 rounded-lg bg-primary/5 border border-primary/10 space-y-3">
                     <Label className="text-xs text-primary font-bold uppercase flex items-center gap-1">
-                      <Package className="h-3 w-3" /> Insumos Recomendados
+                      <Package className="h-3 w-3" /> Insumos e Consumíveis Utilizados
                     </Label>
                     <div className="grid grid-cols-1 gap-2">
-                      {technicalSheets.find(s => s.id === selectedSheetId)?.consumables?.map((c: any) => (
-                        <div key={c.id} className="flex justify-between items-center text-xs p-2 bg-background rounded border border-border/50">
-                          <span className="font-medium">{c.name}</span>
-                          <div className="flex gap-2 text-muted-foreground">
-                            <span>Qtd: {c.quantity}</span>
-                            {c.alternative && <span className="text-[10px]">Alt: {c.alternative}</span>}
+                      {Object.entries(suppliesUsed).map(([id, data]) => (
+                        <div key={id} className="p-3 bg-background rounded border border-border/50 space-y-2">
+                          <div className="flex justify-between items-center">
+                            <div className="flex items-center gap-2">
+                              <Checkbox 
+                                id={`supply-${id}`}
+                                checked={data.is_checked}
+                                onCheckedChange={(checked) => setSuppliesUsed(prev => ({
+                                  ...prev,
+                                  [id]: { ...prev[id], is_checked: !!checked }
+                                }))}
+                              />
+                              <Label htmlFor={`supply-${id}`} className="text-xs font-medium cursor-pointer">
+                                {data.name}
+                              </Label>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <div className="flex items-center gap-2">
+                                <Label className="text-[10px] text-muted-foreground">Qtd:</Label>
+                                <Input 
+                                  className="h-7 w-16 text-xs"
+                                  value={data.quantity}
+                                  onChange={(e) => setSuppliesUsed(prev => ({
+                                    ...prev,
+                                    [id]: { ...prev[id], quantity: e.target.value }
+                                  }))}
+                                />
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2 pl-6">
+                            <Checkbox 
+                              id={`alt-${id}`}
+                              checked={data.alternative_used}
+                              onCheckedChange={(checked) => setSuppliesUsed(prev => ({
+                                ...prev,
+                                [id]: { ...prev[id], alternative_used: !!checked }
+                              }))}
+                            />
+                            <Label htmlFor={`alt-${id}`} className="text-[10px] text-muted-foreground cursor-pointer">
+                              Utilizado Insumo Alternativo
+                            </Label>
                           </div>
                         </div>
                       ))}
