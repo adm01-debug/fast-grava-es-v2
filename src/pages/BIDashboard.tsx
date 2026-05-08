@@ -37,23 +37,8 @@ import { LossesTable } from '@/components/bi/losses/LossesTable';
 type PeriodFilter = '7d' | '30d' | '90d' | 'custom';
 interface DateRange { from: Date; to: Date; }
 
-const CHART_COLORS = {
-  primary: 'hsl(var(--primary))',
-  primaryGlow: 'hsl(var(--primary-glow))',
-  success: 'hsl(var(--success))',
-  warning: 'hsl(var(--warning))',
-  danger: 'hsl(var(--primary))',
-  info: 'hsl(var(--chart-1))',
-  muted: 'hsl(var(--muted-foreground))',
-  xp: 'hsl(var(--xp))',
-  coins: 'hsl(var(--coins))',
-  streak: 'hsl(var(--streak))',
-};
+import { CHART_COLORS, PIE_COLORS, STUDIO_MAP, STUDIO_LIST } from '@/constants/biConstants';
 
-const PIE_COLORS = [
-  'hsl(var(--success))', 'hsl(var(--primary))', 'hsl(var(--coins))',
-  'hsl(var(--primary-glow))', 'hsl(var(--xp))', 'hsl(var(--streak))'
-];
 
 export default function BIDashboard() {
   const navigate = useNavigate();

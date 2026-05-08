@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { 
@@ -10,151 +10,75 @@ import {
   AreaChart, Area, BarChart, Bar, PieChart as RechartsPieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, Radar
 } from 'recharts';
-import { 
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { format, parseISO } from 'date-fns';
+import { format } from 'date-fns';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { useOperatorProductivity } from '@/hooks/useOperatorProductivity';
 import { useTPM } from '@/hooks/useTPM';
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'sonner';
 import { useDataExport } from '@/hooks/useDataExport';
 import { Button } from '@/components/ui/button';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { useNavigate } from 'react-router-dom';
 import { DrillDownDialog } from './drilldown/DrillDownDialog';
 import { LossesTable } from './losses/LossesTable';
 import { DelaysAnalysis } from './delays/DelaysAnalysis';
 import { exportProductionReport, exportLossesReport, exportDelaysReport } from '@/lib/pdfExport';
 import { subDays } from 'date-fns';
+import { toast } from 'sonner';
+import { FuturisticStatCard } from './FuturisticStatCard';
+import { useBIExport } from '@/hooks/useBIExport';
+import { BITooltip } from './BITooltip';
 
 
+import { CHART_COLORS, GRADIENTS, getStudioName } from '@/constants/biConstants';
 
-
-const CHART_COLORS = {
-  primary: '#0ea5e9',
-  primaryGlow: '#38bdf8',
-  success: '#10b981',
-  warning: '#f59e0b',
-  danger: '#ef4444',
-  purple: '#8b5cf6',
-  cyan: '#06b6d4',
-  pink: '#ec4899',
-};
-
-const GRADIENTS = {
-  primary: 'from-primary/20 via-primary/5 to-transparent',
-  success: 'from-emerald-500/20 via-emerald-500/5 to-transparent',
-  warning: 'from-amber-500/20 via-amber-500/5 to-transparent',
-  danger: 'from-rose-500/20 via-rose-500/5 to-transparent',
-  purple: 'from-violet-500/20 via-violet-500/5 to-transparent',
-};
 
 interface FuturisticBIProps {
-  biMetrics: any;
-  kpis: any;
-  oeeData: any;
+  biMetrics: {
+    toDoJobs: number;
+    periodLossRate: number;
+    periodJobsList: any[];
+    dailyTrend: any[];
+    statusDistribution: any[];
+    machineUtilization: any[];
+  };
+  kpis: {
+    inProgressJobs: number;
+    delayedJobs: number;
+  };
+  oeeData: {
+    overallAvailability: number;
+    overallOEE: number;
+    overallPerformance: number;
+    overallQuality: number;
+  };
 }
+
 
 export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
   const navigate = useNavigate();
-  const { operators, overallStats } = useOperatorProductivity(30);
-  const { stats: tpmStats, records: tpmRecords } = useTPM();
-  const { exportData: exportJobs } = useDataExport('jobs');
-  const [isExporting, setIsExporting] = useState(false);
+  const { operators } = useOperatorProductivity(30);
+  const { stats: tpmStats } = useTPM();
+  const { isExporting, handleExport: baseHandleExport } = useBIExport(biMetrics);
 
-  const handleExport = async (format: 'csv' | 'pdf', type: string) => {
-    setIsExporting(true);
-    const dateRange = { start: subDays(new Date(), 30), end: new Date(), label: 'Últimos 30 dias' };
-    
-    try {
-      if (format === 'csv') {
-        toast.info(`Gerando CSV para ${type}...`);
-        
-        let dataToExport: any[] = [];
-        let filename = `BI_Export_${type}_${formatDate(new Date(), 'yyyyMMdd')}`;
+  const jobsWithLosses = useMemo(() => {
+    if (!biMetrics.periodJobsList) return [];
+    return biMetrics.periodJobsList
+      .filter((j: any) => (j.lost_pieces || 0) > 0)
+      .sort((a: any, b: any) => (b.lost_pieces || 0) - (a.lost_pieces || 0))
+      .slice(0, 10);
+  }, [biMetrics.periodJobsList]);
 
-        if (type.includes('Perdas')) {
-          dataToExport = jobsWithLosses;
-        } else if (type.includes('Atrasos')) {
-          dataToExport = delayedJobsList;
-        } else if (type.includes('Pedidos_A_Fazer')) {
-          dataToExport = (biMetrics.periodJobsList || []).filter((j: any) => j.status === 'scheduled' || j.status === 'queue');
-        } else {
-          dataToExport = biMetrics.periodJobsList || [];
-        }
+  const delayedJobsList = useMemo(() => {
+    if (!biMetrics.periodJobsList) return [];
+    return biMetrics.periodJobsList
+      .filter((j: any) => j.status === 'delayed')
+      .slice(0, 10);
+  }, [biMetrics.periodJobsList]);
 
-        if (dataToExport.length === 0) {
-          toast.warning("Nenhum dado encontrado para exportar.");
-          setIsExporting(false);
-          return;
-        }
+  const handleExport = useCallback((format: 'csv' | 'pdf', type: string) => {
+    baseHandleExport(format, type, { jobsWithLosses, delayedJobsList });
+  }, [baseHandleExport, jobsWithLosses, delayedJobsList]);
 
-        // Simple CSV generation helper
-        const headers = Object.keys(dataToExport[0]).join(',');
-        const rows = dataToExport.map(obj => 
-          Object.values(obj).map(val => `"${String(val).replace(/"/g, '""')}"`).join(',')
-        ).join('\n');
-        
-        const blob = new Blob([`\uFEFF${headers}\n${rows}`], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.setAttribute('download', `${filename}.csv`);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        
-        toast.success(`Exportação CSV de ${type} concluída.`);
-      } else {
-        toast.info(`Gerando PDF para ${type}...`);
-        
-        if (type.includes('Perdas')) {
-          await exportLossesReport(jobsWithLosses, dateRange);
-        } else if (type.includes('Atrasos')) {
-          await exportDelaysReport(delayedJobsList, dateRange);
-        } else {
-          const jobs = (biMetrics.periodJobsList || []).map((j: any) => ({
-            order_number: j.order_number || `OS-${j.id?.slice(0, 5)}`,
-            client: j.client_name || 'Cliente',
-            product: j.product_name || 'Produto',
-            status: j.status,
-            quantity: j.quantity,
-            produced_quantity: j.produced_quantity,
-            lost_pieces: j.lost_pieces,
-            scheduled_date: j.scheduled_date
-          }));
-          await exportProductionReport(jobs, dateRange, `Relatório: ${type.replace(/_/g, ' ')}`);
-        }
-        
-        toast.success(`Relatório PDF de ${type} gerado com sucesso.`);
-      }
-    } catch (error) {
-      console.error('Export error:', error);
-      toast.error("Falha ao gerar exportação.");
-    } finally {
-      setIsExporting(false);
-    }
-  };
-
-  // Helper function for date formatting in filename
-  function formatDate(date: Date, pattern: string): string {
-    return format(date, pattern);
-  }
   const [drillDownOpen, setDrillDownOpen] = useState(false);
   const [drillDownTitle, setDrillDownTitle] = useState('');
   const [drillDownJobs, setDrillDownJobs] = useState<any[]>([]);
@@ -236,20 +160,6 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
     }));
   }, [biMetrics.dailyTrend]);
 
-  const jobsWithLosses = useMemo(() => {
-    if (!biMetrics.periodJobsList) return [];
-    return biMetrics.periodJobsList
-      .filter((j: any) => (j.lost_pieces || 0) > 0)
-      .sort((a: any, b: any) => (b.lost_pieces || 0) - (a.lost_pieces || 0))
-      .slice(0, 10);
-  }, [biMetrics.periodJobsList]);
-
-  const delayedJobsList = useMemo(() => {
-    if (!biMetrics.periodJobsList) return [];
-    return biMetrics.periodJobsList
-      .filter((j: any) => j.status === 'delayed')
-      .slice(0, 10);
-  }, [biMetrics.periodJobsList]);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -382,10 +292,8 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
                   tickLine={false}
                   tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 12 }}
                 />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: 'rgba(0,0,0,0.8)', border: '1px solid rgba(14, 165, 233, 0.2)', borderRadius: '12px', backdropFilter: 'blur(8px)' }}
-                  itemStyle={{ color: '#fff' }}
-                />
+                <Tooltip content={<BITooltip />} />
+
                 <Area 
                   type="monotone" 
                   dataKey="produced" 
@@ -497,7 +405,7 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
               <BarChart data={studioData} layout="vertical">
                 <XAxis type="number" hide />
                 <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} tick={{ fill: '#fff', fontSize: 12 }} />
-                <Tooltip cursor={{ fill: 'rgba(255,255,255,0.05)' }} contentStyle={{ backgroundColor: '#000', border: '1px solid #333' }} />
+                <Tooltip content={<BITooltip />} cursor={{ fill: 'rgba(255,255,255,0.05)' }} />
                 <Bar 
                   dataKey="jobs" 
                   radius={[0, 4, 4, 0]} 
@@ -606,7 +514,6 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
         onExport={(format) => handleExport(format, `DrillDown_${drillDownTitle.replace(/\s+/g, '_')}`)}
       />
 
-
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Maintenance & Machine Health */}
         <Card className="lg:col-span-2 bg-black/40 border-primary/20 backdrop-blur-xl">
@@ -650,7 +557,9 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
                   ]}>
                     <PolarGrid stroke="rgba(255,255,255,0.1)" />
                     <PolarAngleAxis dataKey="subject" tick={{ fill: 'rgba(255,255,255,0.5)', fontSize: 10 }} />
+                    <Tooltip content={<BITooltip />} />
                     <Radar name="Performance" dataKey="A" stroke={CHART_COLORS.primary} fill={CHART_COLORS.primary} fillOpacity={0.6} />
+
                   </RadarChart>
                 </ResponsiveContainer>
               </div>
@@ -694,105 +603,7 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
           </CardContent>
         </Card>
       </div>
-      <DrillDownDialog 
-        open={drillDownOpen} 
-        onOpenChange={setDrillDownOpen} 
-        title={drillDownTitle} 
-        jobs={drillDownJobs} 
-        onExport={(format) => handleExport(format, drillDownTitle)}
-      />
     </motion.div>
   );
 }
 
-function FuturisticStatCard({ title, value, subtitle, icon: Icon, trend, trendValue, variant = 'default', gradient, glowColor, onExport, onClick }: any) {
-  const glowStyles = {
-    primary: 'hover:shadow-[0_0_30px_rgba(14,165,233,0.3)]',
-    success: 'hover:shadow-[0_0_30px_rgba(16,185,129,0.3)]',
-    warning: 'hover:shadow-[0_0_30px_rgba(245,158,11,0.3)]',
-    danger: 'hover:shadow-[0_0_30px_rgba(239,68,68,0.3)]',
-  };
-
-  return (
-    <motion.div
-      whileHover={{ scale: 1.02, y: -5 }}
-      transition={{ type: "spring", stiffness: 300, damping: 20 }}
-    >
-      <Card 
-        onClick={onClick}
-        className={cn(
-        "bg-black/40 border-white/10 backdrop-blur-xl transition-all duration-500 relative overflow-hidden group cursor-pointer",
-        glowStyles[glowColor as keyof typeof glowStyles]
-      )}>
-        <div className={cn("absolute inset-0 bg-gradient-to-br opacity-0 group-hover:opacity-100 transition-opacity duration-500", gradient)} />
-        <CardContent className="pt-6 relative z-10">
-          <div className="flex items-start justify-between">
-            <div>
-              <p className="text-xs text-muted-foreground font-display tracking-widest uppercase mb-1">{title}</p>
-              <h3 className={cn(
-                "text-3xl font-bold font-display tracking-tight",
-                variant === 'danger' ? 'text-rose-500' : 'text-white'
-              )}>{value}</h3>
-              <p className="text-[10px] text-muted-foreground mt-1 uppercase tracking-tighter">{subtitle}</p>
-            </div>
-            <div className="flex flex-col items-end gap-2">
-              <div className={cn(
-                "p-3 rounded-xl bg-white/5 group-hover:bg-primary/20 transition-all duration-500",
-                variant === 'danger' && "group-hover:bg-rose-500/20"
-              )}>
-                <Icon className={cn(
-                  "h-6 w-6 text-white group-hover:text-primary transition-colors duration-500",
-                  variant === 'danger' && "group-hover:text-rose-500"
-                )} />
-              </div>
-
-              {onExport && (
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-white"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <Download className="h-3 w-3" />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-40 p-1 bg-black/90 border-white/10 backdrop-blur-xl" align="end">
-                    <div className="flex flex-col">
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
-                        className="justify-start gap-2 text-xs h-8 hover:bg-white/5"
-                        onClick={(e) => { e.stopPropagation(); onExport('csv'); }}
-                      >
-                        <FileSpreadsheet className="h-3 w-3 text-primary" /> CSV
-                      </Button>
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
-                        className="justify-start gap-2 text-xs h-8 hover:bg-white/5"
-                        onClick={(e) => { e.stopPropagation(); onExport('pdf'); }}
-                      >
-                        <FileText className="h-3 w-3 text-primary" /> PDF
-                      </Button>
-                    </div>
-                  </PopoverContent>
-                </Popover>
-              )}
-            </div>
-          </div>
-          {trend && (
-            <div className={cn(
-              "mt-4 flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest",
-              trend === 'up' ? 'text-emerald-400' : 'text-rose-400'
-            )}>
-              {trend === 'up' ? <TrendingUp className="h-3 w-3" /> : <TrendingUp className="h-3 w-3 rotate-180" />}
-              {trendValue} vs LAST PD
-            </div>
-          )}
-        </CardContent>
-      </Card>
-    </motion.div>
-  );
-}
