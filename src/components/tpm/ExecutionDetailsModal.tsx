@@ -411,6 +411,40 @@ export function ExecutionDetailsModal({ isOpen, onClose, recordId }: ExecutionDe
                 </div>
               )}
 
+                </div>
+              )}
+
+              {/* Checklist de Qualidade Aplicado */}
+              {record.quality_responses && record.quality_responses.length > 0 && (
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold flex items-center gap-2">
+                    <CheckSquare className="h-5 w-5 text-emerald-500" />
+                    Conformidade de Qualidade
+                  </h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {record.quality_responses.map((resp: any) => {
+                      const sheet = record.technical_sheet_id ? record.technical_sheet : null;
+                      const crit = record.adjustment_parameters?.quality_checklist?.find((c: any) => c.id === resp.id) || 
+                                   (record.technical_sheet?.quality_checklist?.find((c: any) => c.id === resp.id));
+                      
+                      return (
+                        <div key={resp.id} className={`flex items-center gap-3 p-3 rounded-lg border ${resp.confirmed ? 'bg-emerald-500/5 border-emerald-500/10' : 'bg-rose-500/5 border-rose-500/10'}`}>
+                          {resp.confirmed ? (
+                            <CheckCircle2 className="h-4 w-4 text-emerald-600 flex-shrink-0" />
+                          ) : (
+                            <AlertTriangle className="h-4 w-4 text-rose-600 flex-shrink-0" />
+                          )}
+                          <span className="text-sm font-medium">{crit?.description || 'Critério de Qualidade'}</span>
+                          <Badge variant={resp.confirmed ? 'outline' : 'destructive'} className="ml-auto text-[10px]">
+                            {resp.confirmed ? 'OK' : 'FALHA'}
+                          </Badge>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
               {/* Checklist */}
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold flex items-center gap-2">
