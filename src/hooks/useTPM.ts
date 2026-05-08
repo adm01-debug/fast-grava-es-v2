@@ -16,6 +16,7 @@ export function useTPM() {
     alerts,
     machines,
     isLoading,
+    fetchRecordDetails,
   } = useTPMData();
 
   // Mutations for CRUD operations
@@ -43,6 +44,7 @@ export function useTPM() {
     
     // Loading
     isLoading,
+    fetchRecordDetails,
     
     // Helpers
     getSchedulesByStatus,
