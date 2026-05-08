@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Bell, BellOff, Volume2, VolumeX, Clock, AlertTriangle, AlertCircle, Calendar, Mail, MessageCircle, Settings, Check } from 'lucide-react';
+import { Bell, BellOff, Volume2, VolumeX, Clock, AlertTriangle, AlertCircle, Calendar, Mail, MessageCircle, Settings, Check, Send, History, Layout } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
@@ -13,12 +13,20 @@ import { toast } from 'sonner';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { cn } from '@/lib/utils';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { TPMNotificationTemplates } from './TPMNotificationTemplates';
+import { TPMNotificationLogs } from './TPMNotificationLogs';
+import { TPMSeverityConfigs } from './TPMSeverityConfigs';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 export function TPMNotificationSettings() {
-  const { permission, isSupported, requestPermission } = useTPMNotifications();
+  const { permission, isSupported, requestPermission, sendTestNotification } = useTPMNotifications();
   const { settings, isLoading, updateSettings } = useNotificationSettings();
   const { machines } = useTPM();
   const [whatsappNumber, setWhatsappNumber] = useState('');
+  const [testMachineId, setTestMachineId] = useState<string>('');
+  const [testChannel, setTestChannel] = useState<'email' | 'whatsapp' | 'push'>('push');
+  const [isSendingTest, setIsSendingTest] = useState(false);
 
   useEffect(() => {
     if (settings?.whatsapp_number) {
