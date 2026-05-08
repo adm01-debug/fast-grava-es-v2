@@ -34,7 +34,8 @@ export function PlanningEfficiencyDashboard() {
     const delayedCount = jobs.filter(j => j.status === 'delayed').length;
     const deadlineHealth = Math.round(((totalJobs - delayedCount) / totalJobs) * 100) || 0;
 
-    const estimatedOEE = oeeData?.overallOEE || Math.min(95, 75 + (efficiencyScore / 10));
+    // Use actual OEE from real flow metrics (Availability, Performance, Quality)
+    const estimatedOEE = oeeData?.overallOEE ?? 75;
 
     return { efficiencyScore, deadlineHealth, totalJobs, delayedCount, estimatedOEE, oeeData };
   }, [jobs, balancingSuggestions, totalSavings, oeeData]);

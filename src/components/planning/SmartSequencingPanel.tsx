@@ -243,7 +243,7 @@ export function SmartSequencingPanel() {
                 </div>
                 <div className="p-3 rounded-lg bg-green-500/5 border border-green-500/10 text-center">
                   <p className="text-[9px] text-green-500/70 uppercase font-bold mb-1">Produtividade</p>
-                  <p className="text-xl font-bold text-green-500">+{Math.round((suggestionToDetail.estimatedSavings / (suggestionToDetail.totalMinutes || 1)) * 100)}%</p>
+                  <p className="text-xl font-bold text-green-500">+{Math.round((suggestionToDetail.estimatedSavings / (suggestionToDetail.totalMinutes + suggestionToDetail.estimatedSavings || 1)) * 100)}%</p>
                 </div>
               </div>
 
