@@ -297,6 +297,8 @@ export default function KanbanBoard() {
                 <Command className="h-3 w-3" /><span className="text-xs">⌘K</span>
               </Badge>
             </div>
+          </div>
+
           {/* AI Advisor */}
           <KanbanAIAdvisor />
 
