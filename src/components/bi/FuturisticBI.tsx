@@ -65,6 +65,26 @@ interface FuturisticBIProps {
 export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
   const { operators, overallStats } = useOperatorProductivity(30);
   const { stats: tpmStats, records: tpmRecords } = useTPM();
+  const { exportData: exportJobs } = useDataExport('jobs');
+  const [isExporting, setIsExporting] = useState(false);
+
+  const handleExport = async (format: 'csv' | 'pdf', type: string) => {
+    setIsExporting(true);
+    toast.info(`Iniciando exportação de ${type} em ${format.toUpperCase()}...`);
+    
+    // Simulate export logic for demonstration
+    setTimeout(() => {
+      if (format === 'csv') {
+        // In a real scenario, we'd filter data here
+        exportJobs({ format: 'csv', fileName: `BI_Export_${type}_${new Date().getTime()}` });
+      } else {
+        toast.success(`Exportação PDF de ${type} concluída com sucesso.`);
+        // In a real app, we'd use a library like jspdf here
+        window.print(); 
+      }
+      setIsExporting(false);
+    }, 1500);
+  };
   const [drillDownOpen, setDrillDownOpen] = useState(false);
   const [drillDownTitle, setDrillDownTitle] = useState('');
   const [drillDownJobs, setDrillDownJobs] = useState<any[]>([]);
