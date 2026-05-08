@@ -386,9 +386,29 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
                   tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 12 }}
                 />
                 <Tooltip content={<BITooltip showPercentage />} />
+                <Legend 
+                  content={({ payload }) => (
+                    <div className="flex justify-center gap-6 mt-4">
+                      {payload?.map((entry: any, index: number) => (
+                        <button
+                          key={`item-${index}`}
+                          onClick={() => toggleSeries(entry.dataKey)}
+                          className={cn(
+                            "flex items-center gap-2 transition-all hover:scale-105",
+                            !visibleSeries[entry.dataKey] && "opacity-30 grayscale"
+                          )}
+                        >
+                          <div className="w-3 h-3 rounded-full shadow-[0_0_8px_rgba(var(--color),0.5)]" style={{ backgroundColor: entry.color, '--color': entry.color === CHART_COLORS.primary ? '14, 165, 233' : '239, 44, 44' } as any} />
+                          <span className="text-xs font-bold uppercase tracking-widest text-white/80">{entry.value === 'produced' ? 'Produzido' : 'Perdas'}</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                />
 
                 {visibleSeries.produced && (
                   <Area 
+                    name="produced"
                     type="monotone" 
                     dataKey="produced" 
                     stroke={CHART_COLORS.primary} 
@@ -399,6 +419,7 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
                 )}
                 {visibleSeries.lost && (
                   <Area 
+                    name="lost"
                     type="monotone" 
                     dataKey="lost" 
                     stroke={CHART_COLORS.danger} 
