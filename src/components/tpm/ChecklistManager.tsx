@@ -1,0 +1,257 @@
+import { useState } from 'react';
+import { useTPM } from '@/hooks/useTPM';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { ClipboardList, Plus, Trash2, Save, AlertCircle } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+import { useQueryClient } from '@tanstack/react-query';
+import { MaintenanceChecklistItem } from '@/hooks/tpm/types';
+
+export function ChecklistManager() {
+  const { maintenanceTypes, checklists } = useTPM();
+  const queryClient = useQueryClient();
+  const [selectedTypeId, setSelectedTypeId] = useState<string>('');
+  const [isSaving, setIsSaving] = useState(false);
+
+  // Find existing checklist for selected type or create local state for a new one
+  const existingChecklist = checklists.find(c => c.maintenance_type_id === selectedTypeId);
+  
+  const [localItems, setLocalItems] = useState<Partial<MaintenanceChecklistItem>[]>([]);
+
+  // Update local items when selected type changes
+  const handleTypeChange = (typeId: string) => {
+    setSelectedTypeId(typeId);
+    const checklist = checklists.find(c => c.maintenance_type_id === typeId);
+    if (checklist && checklist.items) {
+      setLocalItems(checklist.items);
+    } else {
+      setLocalItems([]);
+    }
+  };
+
+  const addItem = () => {
+    setLocalItems([
+      ...localItems,
+      {
+        description: '',
+        is_critical: false,
+        requires_photo: false,
+        requires_measurement: false,
+        item_order: localItems.length + 1,
+      }
+    ]);
+  };
+
+  const removeItem = (index: number) => {
+    setLocalItems(localItems.filter((_, i) => i !== index));
+  };
+
+  const updateItem = (index: number, updates: Partial<MaintenanceChecklistItem>) => {
+    const newItems = [...localItems];
+    newItems[index] = { ...newItems[index], ...updates };
+    setLocalItems(newItems);
+  };
+
+  const handleSave = async () => {
+    if (!selectedTypeId) return;
+    setIsSaving(true);
+    
+    try {
+      // 1. Ensure checklist exists
+      let checklistId = existingChecklist?.id;
+      
+      if (!checklistId) {
+        const type = maintenanceTypes.find(t => t.id === selectedTypeId);
+        const { data, error } = await supabase
+          .from('maintenance_checklists')
+          .insert({
+            maintenance_type_id: selectedTypeId,
+            name: `Checklist: ${type?.name}`,
+            is_active: true
+          })
+          .select()
+          .single();
+        
+        if (error) throw error;
+        checklistId = data.id;
+      }
+
+      // 2. Clear existing items and insert new ones (simple approach for sync)
+      if (existingChecklist?.id) {
+        const { error: deleteError } = await supabase
+          .from('maintenance_checklist_items')
+          .delete()
+          .eq('checklist_id', existingChecklist.id);
+        
+        if (deleteError) throw deleteError;
+      }
+
+      if (localItems.length > 0) {
+        const itemsToInsert = localItems.map((item, index) => ({
+          checklist_id: checklistId,
+          description: item.description || '',
+          is_critical: !!item.is_critical,
+          requires_photo: !!item.requires_photo,
+          requires_measurement: !!item.requires_measurement,
+          measurement_unit: item.measurement_unit || null,
+          min_value: item.min_value || null,
+          max_value: item.max_value || null,
+          item_order: index + 1,
+        }));
+
+        const { error: insertError } = await supabase
+          .from('maintenance_checklist_items')
+          .insert(itemsToInsert);
+        
+        if (insertError) throw insertError;
+      }
+
+      toast.success('Checklist salvo com sucesso');
+      queryClient.invalidateQueries({ queryKey: ['maintenance-checklists'] });
+    } catch (error) {
+      console.error('Error saving checklist:', error);
+      toast.error('Erro ao salvar checklist');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  return (
+    <Card className=\"glass-card\">
+      <CardHeader>
+        <CardTitle className=\"flex items-center gap-2\">
+          <ClipboardList className=\"h-5 w-5 text-primary\" />
+          Configuração de Checklists
+        </CardTitle>
+        <CardDescription>
+          Defina os itens obrigatórios para cada tipo de manutenção.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className=\"space-y-6\">
+        <div className=\"grid gap-2\">
+          <Label>Selecione o Tipo de Manutenção</Label>
+          <Select value={selectedTypeId} onValueChange={handleTypeChange}>
+            <SelectTrigger>
+              <SelectValue placeholder=\"Selecione um tipo...\" />
+            </SelectTrigger>
+            <SelectContent>
+              {maintenanceTypes.map((type) => (
+                <SelectItem key={type.id} value={type.id}>
+                  {type.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        {selectedTypeId && (
+          <div className=\"space-y-4 animate-in fade-in slide-in-from-top-2 duration-300\">
+            <div className=\"flex items-center justify-between\">
+              <h3 className=\"font-medium\">Itens do Checklist</h3>
+              <Button size=\"sm\" onClick={addItem} className=\"gap-1\">
+                <Plus className=\"h-4 w-4\" /> Adicionar Item
+              </Button>
+            </div>
+
+            {localItems.length === 0 ? (
+              <div className=\"flex flex-col items-center justify-center py-8 border-2 border-dashed rounded-lg text-muted-foreground\">
+                <AlertCircle className=\"h-8 w-8 mb-2 opacity-20\" />
+                <p>Nenhum item configurado para este tipo.</p>
+              </div>
+            ) : (
+              <div className=\"space-y-3\">
+                {localItems.map((item, index) => (
+                  <div key={index} className=\"p-4 rounded-lg bg-secondary/20 border border-border/50 space-y-3\">
+                    <div className=\"flex items-start gap-3\">
+                      <div className=\"flex-1\">
+                        <Input
+                          placeholder=\"Descrição do item (ex: Verificar nível de óleo)\"
+                          value={item.description}
+                          onChange={(e) => updateItem(index, { description: e.target.value })}
+                        />
+                      </div>
+                      <Button variant=\"ghost\" size=\"icon\" onClick={() => removeItem(index)} className=\"text-destructive hover:text-destructive hover:bg-destructive/10\">
+                        <Trash2 className=\"h-4 w-4\" />
+                      </Button>
+                    </div>
+
+                    <div className=\"flex flex-wrap gap-4 text-sm\">
+                      <div className=\"flex items-center gap-2\">
+                        <Checkbox 
+                          id={`critical-${index}`} 
+                          checked={item.is_critical} 
+                          onCheckedChange={(checked) => updateItem(index, { is_critical: !!checked })}
+                        />
+                        <Label htmlFor={`critical-${index}`} className=\"cursor-pointer\">Crítico (obrigatório)</Label>
+                      </div>
+                      <div className=\"flex items-center gap-2\">
+                        <Checkbox 
+                          id={`photo-${index}`} 
+                          checked={item.requires_photo} 
+                          onCheckedChange={(checked) => updateItem(index, { requires_photo: !!checked })}
+                        />
+                        <Label htmlFor={`photo-${index}`} className=\"cursor-pointer\">Exige Foto</Label>
+                      </div>
+                      <div className=\"flex items-center gap-2\">
+                        <Checkbox 
+                          id={`measure-${index}`} 
+                          checked={item.requires_measurement} 
+                          onCheckedChange={(checked) => updateItem(index, { requires_measurement: !!checked })}
+                        />
+                        <Label htmlFor={`measure-${index}`} className=\"cursor-pointer\">Exige Medição</Label>
+                      </div>
+                    </div>
+
+                    {item.requires_measurement && (
+                      <div className=\"grid grid-cols-3 gap-3 pt-2 animate-in fade-in duration-200\">
+                        <div className=\"space-y-1\">
+                          <Label className=\"text-xs\">Unidade</Label>
+                          <Input 
+                            size={1}
+                            placeholder=\"ex: bar, °C\" 
+                            value={item.measurement_unit || ''} 
+                            onChange={(e) => updateItem(index, { measurement_unit: e.target.value })}
+                          />
+                        </div>
+                        <div className=\"space-y-1\">
+                          <Label className=\"text-xs\">Min</Label>
+                          <Input 
+                            type=\"number\" 
+                            placeholder=\"Min\" 
+                            value={item.min_value || ''} 
+                            onChange={(e) => updateItem(index, { min_value: parseFloat(e.target.value) })}
+                          />
+                        </div>
+                        <div className=\"space-y-1\">
+                          <Label className=\"text-xs\">Max</Label>
+                          <Input 
+                            type=\"number\" 
+                            placeholder=\"Max\" 
+                            value={item.max_value || ''} 
+                            onChange={(e) => updateItem(index, { max_value: parseFloat(e.target.value) })}
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <div className=\"flex justify-end pt-4\">
+              <Button onClick={handleSave} disabled={isSaving || localItems.length === 0} className=\"gap-2\">
+                {isSaving ? <Plus className=\"h-4 w-4 animate-spin\" /> : <Save className=\"h-4 w-4\" />}
+                Salvar Checklist
+              </Button>
+            </div>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
