@@ -1,11 +1,19 @@
+import { useState } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Printer, CheckCircle2, XCircle } from 'lucide-react';
+import { Printer, CheckCircle2, XCircle, Info, Settings } from 'lucide-react';
 import { useSchedulingData } from '@/hooks/useSchedulingData';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { VoiceButton } from '@/components/voice/VoiceCommands';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { MachineTPMPanel } from '@/components/tpm/MachineTPMPanel';
+import { useTPM } from '@/hooks/useTPM';
+import { MaintenanceExecutionModal } from '@/components/tpm/MaintenanceExecutionModal';
+import { CreateScheduleModal } from '@/components/tpm/CreateScheduleModal';
+import { useAuth } from '@/contexts/AuthContext';
+import { toast } from 'sonner';
 
 export default function MachinesPage() {
   const { machines, techniques, isLoadingMachines, getTechniqueById } = useSchedulingData();
