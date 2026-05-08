@@ -175,30 +175,38 @@ export function ChecklistManager() {
                       </Button>
                     </div>
 
-                    <div className="flex flex-wrap gap-4 text-sm">
-                      <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap gap-4 pt-2">
+                      <div className="flex items-center space-x-2 bg-secondary/30 p-2 rounded-md border border-border/50">
                         <Checkbox 
-                          id={`critical-${index}`} 
-                          checked={item.is_critical} 
+                          id={`critical-${index}`}
+                          checked={item.is_critical}
                           onCheckedChange={(checked) => updateItem(index, { is_critical: !!checked })}
                         />
-                        <Label htmlFor={`critical-${index}`} className="cursor-pointer">Crítico (obrigatório)</Label>
+                        <Label htmlFor={`critical-${index}`} className="text-xs font-semibold text-destructive flex items-center gap-1 cursor-pointer">
+                          <AlertTriangle className="h-3 w-3" /> Item Crítico
+                        </Label>
                       </div>
-                      <div className="flex items-center gap-2">
+                      
+                      <div className="flex items-center space-x-2 bg-secondary/30 p-2 rounded-md border border-border/50">
                         <Checkbox 
-                          id={`photo-${index}`} 
-                          checked={item.requires_photo} 
+                          id={`photo-${index}`}
+                          checked={item.requires_photo}
                           onCheckedChange={(checked) => updateItem(index, { requires_photo: !!checked })}
                         />
-                        <Label htmlFor={`photo-${index}`} className="cursor-pointer">Exige Foto</Label>
+                        <Label htmlFor={`photo-${index}`} className="text-xs font-semibold text-primary flex items-center gap-1 cursor-pointer">
+                          <Camera className="h-3 w-3" /> Exige Foto
+                        </Label>
                       </div>
-                      <div className="flex items-center gap-2">
+
+                      <div className="flex items-center space-x-2 bg-secondary/30 p-2 rounded-md border border-border/50">
                         <Checkbox 
-                          id={`measure-${index}`} 
-                          checked={item.requires_measurement} 
+                          id={`measure-${index}`}
+                          checked={item.requires_measurement}
                           onCheckedChange={(checked) => updateItem(index, { requires_measurement: !!checked })}
                         />
-                        <Label htmlFor={`measure-${index}`} className="cursor-pointer">Exige Medição</Label>
+                        <Label htmlFor={`measure-${index}`} className="text-xs font-semibold text-blue-500 flex items-center gap-1 cursor-pointer">
+                          <Activity className="h-3 w-3" /> Exige Medição
+                        </Label>
                       </div>
                     </div>
 
