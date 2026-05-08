@@ -53,7 +53,7 @@ export function MaintenanceExecutionModal({
     speed: '',
     temperature: ''
   });
-  const [qualityResponses, setQualityResponses] = useState<Record<string, boolean>>({});
+  const [qualityResponses, setQualityResponses] = useState<Record<string, { approved: boolean; justification?: string }>>({});
   const [parameterAlerts, setParameterAlerts] = useState<string[]>([]);
   
   const [notes, setNotes] = useState('');
@@ -164,6 +164,12 @@ export function MaintenanceExecutionModal({
   };
 
   const handleComplete = () => {
+    // Validação obrigatória de Produto/Técnica (Ficha Técnica)
+    if (!selectedSheetId) {
+      toast.error("Seleção de Ficha Técnica (Produto/Técnica) é obrigatória para esta execução.");
+      return;
+    }
+
     if (checklist?.items) {
       const missingCritical = checklist.items.filter(item => 
         item.is_critical && !responses[item.id]?.is_checked
@@ -180,11 +186,11 @@ export function MaintenanceExecutionModal({
       const sheet = technicalSheets.find(s => s.id === selectedSheetId);
       if (sheet?.quality_checklist && sheet.quality_checklist.length > 0) {
         const missingQuality = sheet.quality_checklist.filter(item => 
-          item.required && !qualityResponses[item.id]
+          item.required && (!qualityResponses[item.id] || !qualityResponses[item.id].approved)
         );
 
         if (missingQuality.length > 0) {
-          toast.error(`Existem requisitos de qualidade obrigatórios não atendidos.`);
+          toast.error(`Existem requisitos de qualidade obrigatórios não atendidos ou reprovados.`);
           return;
         }
       }
@@ -363,21 +369,22 @@ export function MaintenanceExecutionModal({
               </h3>
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label>Vincular Ficha Técnica (Opcional)</Label>
+                  <Label>Vincular Ficha Técnica (Obrigatório) *</Label>
                   <Select 
                     value={selectedSheetId || ""} 
                     onValueChange={(value) => setSelectedSheetId(value || null)}
                   >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecione uma ficha técnica..." />
+                    <SelectTrigger className={!selectedSheetId ? "border-destructive/50" : ""}>
+                      <SelectValue placeholder="Selecione o Produto/Técnica..." />
                     </SelectTrigger>
                     <SelectContent>
                       {technicalSheets.filter(s => s.recommended_machine_id === schedule.machine_id).map(sheet => (
-                        <SelectItem key={sheet.id} value={sheet.id}>{sheet.title}</SelectItem>
+                        <SelectItem key={sheet.id} value={sheet.id}>{sheet.title} ({sheet.techniques?.name || 'Técnica'})</SelectItem>
                       ))}
                       {technicalSheets.filter(s => s.recommended_machine_id !== schedule.machine_id).length > 0 && (
                         <>
                           <Separator className="my-2" />
+                          <p className="px-2 py-1 text-[10px] font-bold uppercase text-muted-foreground">Outras Máquinas</p>
                           {technicalSheets.filter(s => s.recommended_machine_id !== schedule.machine_id).map(sheet => (
                             <SelectItem key={sheet.id} value={sheet.id}>{sheet.title} (Outra Máquina)</SelectItem>
                           ))}
@@ -438,24 +445,61 @@ export function MaintenanceExecutionModal({
                   </div>
                 )}
 
+                {selectedSheetId && technicalSheets.find(s => s.id === selectedSheetId)?.consumables && (technicalSheets.find(s => s.id === selectedSheetId)?.consumables?.length || 0) > 0 && (
+                  <div className="p-4 rounded-lg bg-primary/5 border border-primary/10 space-y-3">
+                    <Label className="text-xs text-primary font-bold uppercase flex items-center gap-1">
+                      <Package className="h-3 w-3" /> Insumos Recomendados
+                    </Label>
+                    <div className="grid grid-cols-1 gap-2">
+                      {technicalSheets.find(s => s.id === selectedSheetId)?.consumables?.map((c: any) => (
+                        <div key={c.id} className="flex justify-between items-center text-xs p-2 bg-background rounded border border-border/50">
+                          <span className="font-medium">{c.name}</span>
+                          <div className="flex gap-2 text-muted-foreground">
+                            <span>Qtd: {c.quantity}</span>
+                            {c.alternative && <span className="text-[10px]">Alt: {c.alternative}</span>}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 {selectedSheetId && technicalSheets.find(s => s.id === selectedSheetId)?.quality_checklist && (technicalSheets.find(s => s.id === selectedSheetId)?.quality_checklist?.length || 0) > 0 && (
                   <div className="space-y-3 pt-2">
                     <Label className="text-sm font-semibold flex items-center gap-2">
                       <CheckSquare className="h-4 w-4 text-emerald-500" />
-                      Checklist de Qualidade
+                      Checklist de Qualidade (Obrigatório)
                     </Label>
-                    <div className="grid grid-cols-1 gap-2">
+                    <div className="grid grid-cols-1 gap-3">
                       {technicalSheets.find(s => s.id === selectedSheetId)?.quality_checklist?.map((item) => (
-                        <div key={item.id} className="flex items-center gap-3 p-3 rounded-lg bg-emerald-500/5 border border-emerald-500/10">
-                          <Checkbox 
-                            id={`quality-${item.id}`}
-                            checked={qualityResponses[item.id] || false}
-                            onCheckedChange={(checked) => setQualityResponses(prev => ({ ...prev, [item.id]: !!checked }))}
-                          />
-                          <Label htmlFor={`quality-${item.id}`} className="text-sm cursor-pointer flex-1">
-                            {item.description}
-                            {item.required && <span className="text-destructive ml-1">*</span>}
-                          </Label>
+                        <div key={item.id} className="space-y-2 p-3 rounded-lg bg-emerald-500/5 border border-emerald-500/10">
+                          <div className="flex items-center gap-3">
+                            <Checkbox 
+                              id={`quality-${item.id}`}
+                              checked={qualityResponses[item.id]?.approved || false}
+                              onCheckedChange={(checked) => setQualityResponses(prev => ({ 
+                                ...prev, 
+                                [item.id]: { ...prev[item.id], approved: !!checked } 
+                              }))}
+                            />
+                            <Label htmlFor={`quality-${item.id}`} className="text-sm cursor-pointer flex-1">
+                              {item.description}
+                              {item.required && <span className="text-destructive ml-1">*</span>}
+                            </Label>
+                          </div>
+                          {!qualityResponses[item.id]?.approved && (
+                            <div className="pl-7">
+                              <Input 
+                                placeholder="Justificativa da reprovação/pendência..."
+                                className="h-8 text-xs bg-background"
+                                value={qualityResponses[item.id]?.justification || ""}
+                                onChange={(e) => setQualityResponses(prev => ({
+                                  ...prev,
+                                  [item.id]: { ...prev[item.id], justification: e.target.value }
+                                }))}
+                              />
+                            </div>
+                          )}
                         </div>
                       ))}
                     </div>

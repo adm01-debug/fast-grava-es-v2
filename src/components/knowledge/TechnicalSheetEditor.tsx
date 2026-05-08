@@ -38,6 +38,7 @@ export const TechnicalSheetEditor = ({ sheetId, techniques, categories, material
     gap_specifications: '', challenges_notes: '', failure_scenarios: '', quality_requirements: '',
     setup_instructions: '',
     quality_checklist: [] as Array<{ id: string; description: string; required: boolean }>,
+    consumables: [] as Array<{ id: string; name: string; quantity: string; alternative?: string }>,
     version: '1'
   });
 
@@ -81,6 +82,7 @@ export const TechnicalSheetEditor = ({ sheetId, techniques, categories, material
         quality_requirements: sheet.quality_requirements || '',
         setup_instructions: sheet.setup_instructions || '',
         quality_checklist: sheet.quality_checklist || [],
+        consumables: sheet.consumables || [],
         version: sheet.version?.toString() || '1'
       });
     }
@@ -114,7 +116,8 @@ export const TechnicalSheetEditor = ({ sheetId, techniques, categories, material
       failure_scenarios: formData.failure_scenarios || undefined,
       quality_requirements: formData.quality_requirements || undefined,
       setup_instructions: formData.setup_instructions || undefined,
-      quality_checklist: formData.quality_checklist || []
+      quality_checklist: formData.quality_checklist || [],
+      consumables: formData.consumables || []
     };
     if (isNew) { await createSheet.mutateAsync(payload); onClose(); }
     else { await updateSheet.mutateAsync({ id: sheetId!, ...payload }); toast.success('Ficha atualizada!'); }

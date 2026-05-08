@@ -36,6 +36,7 @@ interface EditorBasicInfoProps {
     quality_requirements: string;
     setup_instructions: string;
     quality_checklist: Array<{ id: string; description: string; required: boolean }>;
+    consumables: Array<{ id: string; name: string; quantity: string; alternative?: string }>;
     version: string;
   };
   setFormData: (data: any) => void;
@@ -333,6 +334,94 @@ export function EditorBasicInfo({ formData, setFormData, techniques, categories,
                   onClick={() => {
                     const newList = formData.quality_checklist.filter((_, i) => i !== index);
                     setFormData({...formData, quality_checklist: newList});
+                  }}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <Separator className="my-6" />
+
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-semibold flex items-center gap-2">
+              <Package className="h-4 w-4 text-primary" />
+              Insumos e Consumíveis
+            </h3>
+            <Button 
+              type="button" 
+              variant="outline" 
+              size="sm" 
+              onClick={() => {
+                const newItem = { id: crypto.randomUUID(), name: '', quantity: '', alternative: '' };
+                setFormData({...formData, consumables: [...formData.consumables, newItem]});
+              }}
+              className="h-8 gap-1"
+            >
+              <Plus className="h-3 w-3" /> Adicionar Insumo
+            </Button>
+          </div>
+          
+          <div className="space-y-2">
+            {formData.consumables.length === 0 && (
+              <p className="text-xs text-muted-foreground italic p-4 border border-dashed rounded-lg text-center">
+                Nenhum insumo definido.
+              </p>
+            )}
+            {formData.consumables.map((item, index) => (
+              <div key={item.id} className="flex items-start gap-3 p-3 bg-secondary/10 rounded-lg border border-border/50">
+                <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-2">
+                  <div className="space-y-1">
+                    <Label className="text-[10px] uppercase">Nome</Label>
+                    <Input 
+                      value={item.name}
+                      onChange={(e) => {
+                        const newList = [...formData.consumables];
+                        newList[index].name = e.target.value;
+                        setFormData({...formData, consumables: newList});
+                      }}
+                      placeholder="Ex: Tinta Branca"
+                      className="h-8 text-xs"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-[10px] uppercase">Quantidade Sugerida</Label>
+                    <Input 
+                      value={item.quantity}
+                      onChange={(e) => {
+                        const newList = [...formData.consumables];
+                        newList[index].quantity = e.target.value;
+                        setFormData({...formData, consumables: newList});
+                      }}
+                      placeholder="Ex: 500ml"
+                      className="h-8 text-xs"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-[10px] uppercase">Alternativa Compatível</Label>
+                    <Input 
+                      value={item.alternative}
+                      onChange={(e) => {
+                        const newList = [...formData.consumables];
+                        newList[index].alternative = e.target.value;
+                        setFormData({...formData, consumables: newList});
+                      }}
+                      placeholder="Ex: Tinta Branca Marca Y"
+                      className="h-8 text-xs"
+                    />
+                  </div>
+                </div>
+                <Button 
+                  type="button" 
+                  variant="ghost" 
+                  size="icon" 
+                  className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10 self-end"
+                  onClick={() => {
+                    const newList = formData.consumables.filter((_, i) => i !== index);
+                    setFormData({...formData, consumables: newList});
                   }}
                 >
                   <Trash2 className="h-4 w-4" />
