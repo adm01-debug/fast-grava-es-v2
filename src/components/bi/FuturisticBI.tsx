@@ -440,6 +440,10 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
             <CardTitle className="flex items-center gap-3">
               <Printer className="h-5 w-5 text-primary" />
               <span className="font-display tracking-wider uppercase">Produção por Studio</span>
+              <div className={cn("ml-auto mr-4 flex items-center gap-2 px-2 py-0.5 rounded-full bg-white/5 border border-white/10", balanceMetrics.color)}>
+                <Activity className="h-3 w-3" />
+                <span className="text-[10px] font-bold uppercase tracking-tighter">Balanceamento: {balanceMetrics.status}</span>
+              </div>
             </CardTitle>
             <div className="flex items-center gap-2">
               <Button 
