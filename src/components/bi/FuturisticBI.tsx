@@ -268,7 +268,17 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
                 <Activity className="h-5 w-5 text-primary" />
               </div>
               <span className="font-display tracking-wider text-xl uppercase">Fluxo de Produção</span>
-              <Badge variant="outline" className="border-primary/30 text-primary animate-pulse ml-2">LIVE</Badge>
+              <div className="flex items-center gap-3 ml-2">
+                <Badge variant="outline" className="border-primary/30 text-primary animate-pulse bg-primary/5">
+                  <div className="w-1.5 h-1.5 rounded-full bg-primary mr-2 animate-ping" />
+                  LIVE
+                </Badge>
+                <div className="hidden sm:flex items-center gap-1.5 text-[10px] text-muted-foreground bg-white/5 px-2 py-1 rounded-full border border-white/5">
+                  <Clock className="h-3 w-3" />
+                  Sincronizado: {format(lastUpdated, 'HH:mm:ss')}
+                </div>
+              </div>
+
             </CardTitle>
             <div className="flex items-center gap-2">
               <Button 
