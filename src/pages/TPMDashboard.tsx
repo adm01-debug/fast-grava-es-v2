@@ -40,6 +40,10 @@ export default function TPMDashboard() {
     resolveAlert,
   } = useTPM();
   
+  const [executionModalOpen, setExecutionModalOpen] = useState(false);
+  const [selectedSchedule, setSelectedSchedule] = useState<any>(null);
+  const [currentRecordId, setCurrentRecordId] = useState<string | null>(null);
+  
   // Initialize TPM notifications listener
   useTPMNotifications();
 
