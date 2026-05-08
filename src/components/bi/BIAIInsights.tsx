@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Sparkles, ArrowUpRight, ArrowDownRight, AlertCircle, CheckCircle2, Lightbulb, Clock, ChevronRight, ChevronDown } from 'lucide-react';
+import { Sparkles, ArrowUpRight, ArrowDownRight, AlertCircle, CheckCircle2, Lightbulb, Clock, ChevronRight, ChevronDown, Zap } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -40,7 +40,8 @@ export function BIAIInsights({ biMetrics, oeeData }: BIAIInsightsProps) {
       type: "info",
       icon: Clock,
       impact: "Médio",
-      action: "Otimizar Sequenciamento"
+      action: "Otimizar Sequenciamento",
+      remedy: "Priorize pedidos com menor tempo de setup para aumentar o giro imediato de caixa."
     });
 
     if (oeeData.overallOEE < 60) {
@@ -51,7 +52,8 @@ export function BIAIInsights({ biMetrics, oeeData }: BIAIInsightsProps) {
         type: "warning",
         icon: AlertCircle,
         impact: "Crítico",
-        action: "Ver OEE Detalhado"
+        action: "Ver OEE Detalhado",
+        remedy: "Verifique registros de paradas por falha técnica e antecipe manutenções nos equipamentos com maior tempo de setup."
       });
     } else if (oeeData.overallOEE > 85) {
       list.push({
@@ -61,7 +63,8 @@ export function BIAIInsights({ biMetrics, oeeData }: BIAIInsightsProps) {
         type: "success",
         icon: CheckCircle2,
         impact: "Alto",
-        action: "Exportar Relatório"
+        action: "Exportar Relatório",
+        remedy: "Documente os parâmetros de setup deste período como 'padrão ouro' para replicar em outros turnos."
       });
     }
 
@@ -73,7 +76,8 @@ export function BIAIInsights({ biMetrics, oeeData }: BIAIInsightsProps) {
         type: "danger",
         icon: AlertCircle,
         impact: "Médio",
-        action: "Ver Tabela de Perdas"
+        action: "Ver Tabela de Perdas",
+        remedy: "Execute um teste de centragem e foco no Studio Alfa antes de iniciar o próximo lote de alta tiragem."
       });
     }
 
@@ -85,7 +89,8 @@ export function BIAIInsights({ biMetrics, oeeData }: BIAIInsightsProps) {
         type: "warning",
         icon: Lightbulb,
         impact: "Alto",
-        action: "Balancear Carga"
+        action: "Balancear Carga",
+        remedy: "Mova os pedidos de tecnologia híbrida para o Studio Beta para desafogar a linha principal do Studio Alfa."
       });
     }
 
@@ -158,6 +163,16 @@ export function BIAIInsights({ biMetrics, oeeData }: BIAIInsightsProps) {
                           <p className="text-[11px] text-primary/80 leading-relaxed italic border-t border-white/5 pt-3">
                             "{insight.details}"
                           </p>
+                          {insight.remedy && (
+                            <div className="bg-primary/10 border border-primary/20 p-2 rounded-lg">
+                              <p className="text-[10px] text-white/90 font-bold uppercase mb-1 flex items-center gap-1">
+                                <Zap className="h-3 w-3 text-primary" /> Ação Corretiva Recomendada
+                              </p>
+                              <p className="text-[11px] text-primary/90 leading-tight">
+                                {insight.remedy}
+                              </p>
+                            </div>
+                          )}
                           <Button size="sm" variant="outline" className="h-7 text-[10px] w-full border-primary/20 hover:bg-primary/10">
                             {insight.action}
                           </Button>
