@@ -301,38 +301,13 @@ export function MaintenanceExecutionModal({
       }
     }
 
-    // Validação de parâmetros de regulagem
-    if (selectedSheetId) {
-      const sheet = technicalSheets.find(s => s.id === selectedSheetId);
-      const settings = sheet?.machine_settings as any;
-      const ranges = (sheet?.settings_ranges as any) || {};
-      const alerts: string[] = [];
-
-      const validateRange = (name: string, value: string, range: { min?: string; max?: string }) => {
-        if (!range || (!range.min && !range.max)) return;
-        const val = parseFloat(value.replace(/[^0-9.]/g, ''));
-        const min = range.min ? parseFloat(range.min.replace(/[^0-9.]/g, '')) : -Infinity;
-        const max = range.max ? parseFloat(range.max.replace(/[^0-9.]/g, '')) : Infinity;
-        
-        if (!isNaN(val)) {
-          if (val < min || val > max) {
-            alerts.push(`${name}: Informado ${value}, Recomendado entre ${range.min || '-'} e ${range.max || '-'}`);
-            return true;
-          }
-        }
-        return false;
-      };
-
-      validateRange('Passadas de Rodo', adjustmentParams.squeegee_passes, ranges.squeegee_passes);
-      validateRange('Pressão', adjustmentParams.pressure, ranges.pressure);
-      validateRange('Velocidade', adjustmentParams.speed, ranges.speed);
-      validateRange('Temperatura', adjustmentParams.temperature, ranges.temperature);
-
-      if (alerts.length > 0) {
-        toast.warning("Parâmetros fora do intervalo recomendado", {
-          description: alerts.join('\n')
-        });
-      }
+    // Validação de riscos críticos (Alertas de parâmetros)
+    const criticalAlertsWithoutEvidence = activeAlerts.filter(a => a.is_critical_risk && a.evidence_urls.length === 0);
+    if (criticalAlertsWithoutEvidence.length > 0) {
+      toast.error(`Atenção: Existem riscos críticos (parâmetros fora do range) que exigem o anexo de evidências (fotos) antes de prosseguir.`, {
+        description: `Parâmetros: ${criticalAlertsWithoutEvidence.map(a => a.parameter_name).join(', ')}`
+      });
+      return;
     }
 
     onComplete({
@@ -349,15 +324,25 @@ export function MaintenanceExecutionModal({
       checklist_snapshot: checklist,
       technical_sheet_id: selectedSheetId || undefined,
       technical_sheet_version: selectedSheetId ? (technicalSheets.find(s => s.id === selectedSheetId)?.version) : undefined,
-      quality_responses: Object.entries(qualityResponses).map(([id, confirmed]) => ({
+      quality_responses: Object.entries(qualityResponses).map(([id, data]) => ({
         id,
-        confirmed
+        ...data
       })),
       adjustment_parameters: {
         ...adjustmentParams,
         recommended: selectedSheetId ? (technicalSheets.find(s => s.id === selectedSheetId)?.machine_settings) : null,
         ranges: selectedSheetId ? (technicalSheets.find(s => s.id === selectedSheetId)?.settings_ranges) : null
-      }
+      },
+      supplies_used: Object.entries(suppliesUsed)
+        .filter(([_, data]) => data.is_checked)
+        .map(([id, data]) => ({
+          original_recommended_id: id,
+          name: data.name,
+          quantity: data.quantity,
+          alternative_used: data.alternative_used
+        })),
+      execution_alerts: activeAlerts,
+      failure_risk_detected: activeAlerts.length > 0
     });
   };
 
