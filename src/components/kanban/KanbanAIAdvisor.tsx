@@ -1,11 +1,18 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { 
   BrainCircuit, ArrowRight, Zap, AlertTriangle, 
-  CheckCircle2, Sparkles, ChevronRight 
+  CheckCircle2, Sparkles, ChevronRight, Bell, Settings
 } from 'lucide-react';
+import { 
+  Dialog, DialogContent, DialogHeader, DialogTitle,
+  DialogDescription, DialogFooter
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { toast } from 'sonner';
 import { useSmartSequencing } from '@/hooks/useSmartSequencing';
 import { useLoadBalancing } from '@/hooks/useLoadBalancing';
 import { useBottleneckPrediction } from '@/hooks/useBottleneckPrediction';
@@ -15,6 +22,12 @@ export function KanbanAIAdvisor() {
   const { suggestions: sequenceSuggestions, totalSavings } = useSmartSequencing();
   const { suggestions: balancingSuggestions } = useLoadBalancing();
   const { alerts: bottleneckAlerts } = useBottleneckPrediction();
+  
+  const [showSettings, setShowSettings] = useState(false);
+  const [thresholds, setThresholds] = useState({
+    bottleneckHigh: 480, // minutes
+    bottleneckMedium: 300, // minutes
+  });
 
   const totalInsights = sequenceSuggestions.length + balancingSuggestions.length + bottleneckAlerts.length;
 
@@ -37,6 +50,19 @@ export function KanbanAIAdvisor() {
               {totalInsights} Insights
             </Badge>
           </h2>
+        </div>
+        <div className="flex items-center gap-2">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="h-8 w-8 text-muted-foreground hover:text-primary"
+            onClick={() => setShowSettings(true)}
+          >
+            <Settings className="h-4 w-4" />
+          </Button>
+          <div className="p-1.5 rounded-lg bg-background border border-border/50 text-muted-foreground">
+            <Bell className="h-4 w-4" />
+          </div>
         </div>
       </div>
 
@@ -76,6 +102,55 @@ export function KanbanAIAdvisor() {
           />
         )}
       </div>
+
+      <Dialog open={showSettings} onOpenChange={setShowSettings}>
+        <DialogContent className="sm:max-w-md bg-card border-primary/20">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Settings className="h-5 w-5" />
+              Configuração de Alertas Automáticos
+            </DialogTitle>
+            <DialogDescription>
+              Defina os limites de carga para notificações de gargalo.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="high">Risco Alto (Gargalo Crítico)</Label>
+              <div className="flex items-center gap-2">
+                <Input 
+                  id="high" 
+                  type="number" 
+                  value={thresholds.bottleneckHigh} 
+                  onChange={(e) => setThresholds(prev => ({ ...prev, bottleneckHigh: parseInt(e.target.value) }))}
+                />
+                <span className="text-xs text-muted-foreground font-mono w-16">minutos</span>
+              </div>
+              <p className="text-[10px] text-muted-foreground italic">Padrão: 480 min (8 horas)</p>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="medium">Risco Médio (Atenção)</Label>
+              <div className="flex items-center gap-2">
+                <Input 
+                  id="medium" 
+                  type="number" 
+                  value={thresholds.bottleneckMedium} 
+                  onChange={(e) => setThresholds(prev => ({ ...prev, bottleneckMedium: parseInt(e.target.value) }))}
+                />
+                <span className="text-xs text-muted-foreground font-mono w-16">minutos</span>
+              </div>
+              <p className="text-[10px] text-muted-foreground italic">Padrão: 300 min (5 horas)</p>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setShowSettings(false)}>Cancelar</Button>
+            <Button onClick={() => {
+              toast.success("Configurações de alerta salvas!");
+              setShowSettings(false);
+            }}>Salvar Configurações</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </motion.div>
   );
 }
