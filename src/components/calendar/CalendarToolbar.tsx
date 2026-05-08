@@ -169,6 +169,6 @@ export function CalendarToolbar({
         {extraSlot}
       </div>
     </div>
-    </div>
   );
+}
 }
