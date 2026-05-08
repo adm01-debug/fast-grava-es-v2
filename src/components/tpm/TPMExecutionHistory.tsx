@@ -17,6 +17,7 @@ import { useTPM } from '@/hooks/useTPM';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { ExecutionDetailsModal } from './ExecutionDetailsModal';
+import { BatchApprovalPreviewModal } from './BatchApprovalPreviewModal';
 
 export function TPMExecutionHistory() {
   const { records, machines, isLoading, approveBatch } = useTPM();
@@ -28,6 +29,7 @@ export function TPMExecutionHistory() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [isBatchProcessing, setIsBatchProcessing] = useState(false);
+  const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
 
   const filteredRecords = useMemo(() => {
     return records.filter(record => {
@@ -91,17 +93,25 @@ export function TPMExecutionHistory() {
     );
   };
 
-  const handleApproveBatch = async () => {
+  const handleApproveBatch = () => {
+    if (selectedIds.length === 0) return;
+    setIsPreviewModalOpen(true);
+  };
+
+  const confirmApproveBatch = async () => {
     if (!user || selectedIds.length === 0) return;
-    
+    setIsBatchProcessing(true);
     try {
       await approveBatch.mutateAsync({
         record_ids: selectedIds,
         approver_id: user.id
       });
       setSelectedIds([]);
+      setIsPreviewModalOpen(false);
     } catch (error) {
       // Handled by mutation
+    } finally {
+      setIsBatchProcessing(false);
     }
   };
 
@@ -124,9 +134,9 @@ export function TPMExecutionHistory() {
                 variant="default" 
                 className="bg-emerald-600 hover:bg-emerald-700 animate-in fade-in zoom-in-95 gap-2"
                 onClick={handleApproveBatch}
-                disabled={approveBatch.isPending}
+                disabled={approveBatch.isPending || isBatchProcessing}
               >
-                {approveBatch.isPending ? <Clock className="h-4 w-4 animate-spin" /> : <CheckSquare className="h-4 w-4" />}
+                {approveBatch.isPending || isBatchProcessing ? <Clock className="h-4 w-4 animate-spin" /> : <CheckSquare className="h-4 w-4" />}
                 Aprovar Selecionados ({selectedIds.length})
               </Button>
             )}
@@ -267,6 +277,14 @@ export function TPMExecutionHistory() {
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
           recordId={selectedRecordId}
+        />
+
+        <BatchApprovalPreviewModal
+          isOpen={isPreviewModalOpen}
+          onClose={() => setIsPreviewModalOpen(false)}
+          recordIds={selectedIds}
+          onConfirm={confirmApproveBatch}
+          isProcessing={isBatchProcessing}
         />
       </CardContent>
     </Card>

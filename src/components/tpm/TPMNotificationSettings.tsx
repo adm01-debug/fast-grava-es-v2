@@ -219,10 +219,62 @@ export function TPMNotificationSettings() {
               </CardHeader>
               <CardContent>
                 <TPMSeverityConfigs />
-              </CardContent>
-            </Card>
+            </CardContent>
+          </Card>
 
-            <Card className="glass-card">
+          <Card className="glass-card">
+            <CardHeader>
+              <CardTitle className="text-lg">Eventos de Fluxo</CardTitle>
+              <CardDescription>Notificações automáticas baseadas em mudanças de status.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {[
+                { id: 'awaiting_correction', label: 'Aguardando Correção', desc: 'Quando uma execução é devolvida para ajustes.' },
+                { id: 'critical_item_approved', label: 'Item Crítico Aprovado', desc: 'Quando um item marcado como crítico é aprovado.' }
+              ].map(event => (
+                <div key={event.id} className="p-4 rounded-lg border border-border/50 space-y-3">
+                  <div className="flex flex-col">
+                    <span className="font-medium">{event.label}</span>
+                    <span className="text-xs text-muted-foreground">{event.desc}</span>
+                  </div>
+                  <div className="flex items-center gap-6">
+                    <div className="flex items-center gap-2">
+                      <Switch 
+                        checked={settings?.event_configs?.[event.id]?.email} 
+                        onCheckedChange={(checked) => {
+                          const currentConfigs = settings?.event_configs || {};
+                          updateSettings.mutate({ 
+                            event_configs: { 
+                              ...currentConfigs, 
+                              [event.id]: { ...currentConfigs[event.id], email: checked } 
+                            } 
+                          });
+                        }}
+                      />
+                      <Label className="text-xs">E-mail</Label>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Switch 
+                        checked={settings?.event_configs?.[event.id]?.in_app} 
+                        onCheckedChange={(checked) => {
+                          const currentConfigs = settings?.event_configs || {};
+                          updateSettings.mutate({ 
+                            event_configs: { 
+                              ...currentConfigs, 
+                              [event.id]: { ...currentConfigs[event.id], in_app: checked } 
+                            } 
+                          });
+                        }}
+                      />
+                      <Label className="text-xs">In-App</Label>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+
+          <Card className="glass-card">
               <CardHeader>
                 <CardTitle className="text-lg">Filtros Ativos</CardTitle>
               </CardHeader>

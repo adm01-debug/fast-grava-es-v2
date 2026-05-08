@@ -88,7 +88,7 @@ export function useTPMData() {
       try {
         const { data, error } = await supabase
           .from('maintenance_schedules')
-          .select('*, machines(id, name, code), maintenance_types(*)')
+          .select('*, machines(id, name, code, technique_id), maintenance_types(*)')
           .eq('is_active', true)
           .order('next_due_at');
         if (error) {
@@ -145,7 +145,7 @@ export function useTPMData() {
       try {
         const { data, error } = await supabase
           .from('maintenance_records')
-          .select('*, machines(id, name, code)')
+          .select('*, machines(id, name, code, technique_id)')
           .order('started_at', { ascending: false })
           .limit(200);
         if (error) {
@@ -171,7 +171,7 @@ export function useTPMData() {
     try {
       const { data: record, error: recordError } = await supabase
         .from('maintenance_records')
-        .select('*, machines(id, name, code), maintenance_types(*)')
+        .select('*, machines(id, name, code, technique_id), maintenance_types(*)')
         .eq('id', recordId)
         .single();
       
@@ -213,9 +213,9 @@ export function useTPMData() {
     queryFn: async () => {
       try {
         const { data, error } = await supabase
-          .from('maintenance_alerts')
-          .select('*, machines(id, name, code)')
-          .eq('is_resolved', false)
+        .from('maintenance_alerts')
+        .select('*, machines(id, name, code, technique_id)')
+        .eq('is_resolved', false)
           .order('created_at', { ascending: false });
         if (error) {
           const appError = createAppError(error, TPM_ERROR_CONTEXT.alerts);
