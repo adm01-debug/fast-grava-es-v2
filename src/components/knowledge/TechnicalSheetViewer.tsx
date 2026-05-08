@@ -195,7 +195,10 @@ export const TechnicalSheetViewer = ({ sheetId, onEdit, onDuplicate }: Technical
                   <Badge variant="secondary">{sheet.materials.name}</Badge>
                 )}
               </div>
-              <CardTitle className="text-xl">{sheet.title}</CardTitle>
+              <div className="flex items-center gap-3">
+                <CardTitle className="text-xl">{sheet.title}</CardTitle>
+                <Badge variant="outline" className="text-[10px] font-bold">v{sheet.version || '1'}</Badge>
+              </div>
               {sheet.description && (
                 <p className="text-sm text-muted-foreground mt-2">{sheet.description}</p>
               )}
