@@ -17,6 +17,7 @@ import { DragOverlayCard } from '@/components/kanban/DragOverlayCard';
 import { KanbanMetricsBar } from '@/components/kanban/KanbanMetricsBar';
 import { KanbanFiltersBar, ViewMode, SwimlanesMode } from '@/components/kanban/KanbanFiltersBar';
 import { KanbanAIAdvisor } from '@/components/kanban/KanbanAIAdvisor';
+import { SmartSequencingPanel } from '@/components/planning/SmartSequencingPanel';
 import { useKanbanDragDrop } from '@/hooks/useKanbanDragDrop';
 import { FavoriteButton, FavoritesDropdown } from '@/components/navigation/FavoritesManager';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
@@ -298,6 +299,9 @@ export default function KanbanBoard() {
               </Badge>
             </div>
           </div>
+          
+          {/* Smart Sequencing Panel */}
+          <SmartSequencingPanel />
 
           {/* AI Advisor */}
           <KanbanAIAdvisor />
