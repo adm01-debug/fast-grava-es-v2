@@ -15,6 +15,7 @@ import { BILoadingSkeleton } from '@/components/bi/BILoadingSkeleton';
 import { BIPeriodFilters } from '@/components/bi/BIPeriodFilters';
 import { BIHeader } from '@/components/bi/BIHeader';
 import { FuturisticBI } from '@/components/bi/FuturisticBI';
+import { BINormalView } from '@/components/bi/BINormalView';
 import { DrillDownDialog } from '@/components/bi/drilldown/DrillDownDialog';
 import { useToast } from '@/hooks/use-toast';
 import {
