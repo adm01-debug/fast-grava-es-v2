@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { renderHook, act, cleanup } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { renderHook, act } from '@testing-library/react';
 import { useDataExport } from '../useDataExport';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -32,10 +32,8 @@ global.URL.revokeObjectURL = vi.fn();
 describe('useDataExport', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-  });
-
-  afterEach(() => {
-    cleanup();
+    // Setup initial DOM for tests that might need it
+    document.body.innerHTML = '';
   });
 
   it('should initialize with isExporting as false', () => {
@@ -52,7 +50,6 @@ describe('useDataExport', () => {
 
     const { result } = renderHook(() => useDataExport('jobs' as any));
     
-    // Mocking document.createElement for download
     const link = { click: vi.fn(), href: '', download: '', style: {} };
     vi.spyOn(document, 'createElement').mockReturnValue(link as any);
     vi.spyOn(document.body, 'appendChild').mockImplementation(() => null as any);
