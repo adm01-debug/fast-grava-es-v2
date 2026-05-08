@@ -13,7 +13,7 @@ import { MaintenanceRecord } from '@/hooks/tpm/types';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useTPM } from '@/hooks/useTPM';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 
 interface ExecutionDetailsModalProps {
