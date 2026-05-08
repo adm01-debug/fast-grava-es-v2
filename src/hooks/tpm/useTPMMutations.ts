@@ -127,10 +127,43 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
           signature_url: data.signature,
           checklist_version: data.checklist_version,
           checklist_snapshot: data.checklist_snapshot,
+          technical_sheet_id: data.technical_sheet_id,
+          adjustment_parameters: data.adjustment_parameters,
         })
         .eq('id', data.record_id);
       
       if (recordError) throw recordError;
+
+      // Se houver parâmetros fora do recomendado, registrar alertas
+      if (data.adjustment_parameters?.recommended) {
+        const params = data.adjustment_parameters;
+        const rec = params.recommended;
+        const alertsToInsert = [];
+
+        if (rec.squeegee_passes && params.squeegee_passes !== rec.squeegee_passes) {
+          alertsToInsert.push({
+            execution_id: data.record_id,
+            parameter_name: 'Passadas de Rodo',
+            recorded_value: params.squeegee_passes,
+            recommended_range: rec.squeegee_passes,
+            severity: 'warning'
+          });
+        }
+        // ... repete para outros parâmetros
+        if (rec.pressure && params.pressure !== rec.pressure) {
+          alertsToInsert.push({
+            execution_id: data.record_id,
+            parameter_name: 'Pressão',
+            recorded_value: params.pressure,
+            recommended_range: rec.pressure,
+            severity: 'warning'
+          });
+        }
+
+        if (alertsToInsert.length > 0) {
+          await supabase.from('tpm_parameter_alerts').insert(alertsToInsert);
+        }
+      }
 
       // Insert checklist responses if provided
       if (data.responses && data.responses.length > 0) {
