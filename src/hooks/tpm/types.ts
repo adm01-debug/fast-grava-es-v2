@@ -30,8 +30,10 @@ export interface MaintenanceSchedule {
 export interface MaintenanceChecklist {
   id: string;
   maintenance_type_id: string;
+  technique_id: string | null;
   name: string;
   description: string | null;
+  version: number;
   is_active: boolean;
   created_at: string;
   updated_at: string;
@@ -72,6 +74,8 @@ export interface MaintenanceRecord {
   approver_id: string | null;
   approved_at: string | null;
   next_scheduled_date_after_approval: string | null;
+  checklist_version: number | null;
+  checklist_snapshot: any | null;
   created_at: string;
   schedule?: MaintenanceSchedule;
   machine?: { id: string; name: string; code: string };
