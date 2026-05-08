@@ -2,10 +2,12 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogD
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { AlertCircle, CheckCircle2, XCircle, Clock } from 'lucide-react';
+import { AlertCircle, CheckCircle2, XCircle, Clock, Eye, FileSpreadsheet, Download } from 'lucide-react';
 import { MaintenanceRecord } from '@/hooks/tpm/types';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useTPM } from '@/hooks/useTPM';
+import { ExecutionDetailsModal } from './ExecutionDetailsModal';
+import { toast } from 'sonner';
 
 interface BatchApprovalPreviewModalProps {
   isOpen: boolean;
@@ -23,6 +25,8 @@ export function BatchApprovalPreviewModal({
   isProcessing
 }: BatchApprovalPreviewModalProps) {
   const { records } = useTPM();
+  const [selectedRecordId, setSelectedRecordId] = useState<string | null>(null);
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   
   const selectedRecords = useMemo(() => {
     return records.filter(r => recordIds.includes(r.id));
@@ -47,6 +51,30 @@ export function BatchApprovalPreviewModal({
 
   const allValid = validationResults.every(v => v.isValid);
 
+  const handleViewDetails = (id: string) => {
+    setSelectedRecordId(id);
+    setIsDetailsOpen(true);
+  };
+
+  const handleExportCSV = () => {
+    if (validationResults.length === 0) return;
+    const headers = ['Máquina', 'Código', 'Data', 'Status Validação', 'Pendências'];
+    const rows = validationResults.map(v => [
+      v.machine?.name || '',
+      v.machine?.code || '',
+      v.completed_at ? new Date(v.completed_at).toLocaleDateString() : 'N/A',
+      v.isValid ? 'Pronto' : 'Incompleto',
+      v.issues.join('; ')
+    ]);
+    const csvContent = [headers, ...rows].map(e => e.join(',')).join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `previa_aprovacao_lote_${new Date().getTime()}.csv`;
+    link.click();
+    toast.success('Relatório de prévia exportado com sucesso');
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-3xl max-h-[80vh] flex flex-col">
@@ -60,6 +88,15 @@ export function BatchApprovalPreviewModal({
           </DialogDescription>
         </DialogHeader>
 
+        <div className="flex items-center justify-between px-1 mb-2">
+          <Badge variant="outline" className="text-[10px] text-muted-foreground">
+            {recordIds.length} manutenções selecionadas
+          </Badge>
+          <Button variant="ghost" size="sm" onClick={handleExportCSV} className="h-7 text-xs gap-1.5">
+            <FileSpreadsheet className="h-3.5 w-3.5" /> Exportar Prévia
+          </Button>
+        </div>
+
         <div className="flex-1 overflow-auto py-4">
           <Table>
             <TableHeader>
@@ -68,6 +105,7 @@ export function BatchApprovalPreviewModal({
                 <TableHead>Data</TableHead>
                 <TableHead>Status Validação</TableHead>
                 <TableHead>Problemas</TableHead>
+                <TableHead className="text-right">Ação</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -94,11 +132,27 @@ export function BatchApprovalPreviewModal({
                   <TableCell className="text-xs text-destructive">
                     {v.issues.join(', ') || '-'}
                   </TableCell>
+                  <TableCell className="text-right">
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      onClick={() => handleViewDetails(v.id)}
+                      className="h-8 w-8 p-0"
+                    >
+                      <Eye className="h-4 w-4" />
+                    </Button>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
         </div>
+
+        <ExecutionDetailsModal 
+          isOpen={isDetailsOpen}
+          onClose={() => setIsDetailsOpen(false)}
+          recordId={selectedRecordId}
+        />
 
         <DialogFooter className="gap-2">
           <Button variant="outline" onClick={onClose} disabled={isProcessing}>
