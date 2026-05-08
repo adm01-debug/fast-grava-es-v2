@@ -116,7 +116,7 @@ export function AppSidebar() {
           )}
         </nav>
 
-        <div className={cn('p-3 border-t border-sidebar-border/50', collapsed && !isMobile && 'p-2')}>
+        <div className={cn('p-6 border-t border-sidebar-border/30', collapsed && !isMobile && 'p-2')}>
           {(!collapsed || isMobile) && <div className="mb-4 px-1 scale-110 origin-left"><LanguageSwitcher /></div>}
           <div className={cn('flex items-center gap-3 rounded-lg p-2', collapsed && !isMobile && 'justify-center p-2')}>
             <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center text-primary font-bold text-lg border border-primary/10 shadow-sm">{profile?.full_name?.charAt(0)?.toUpperCase() || 'U'}</div>
