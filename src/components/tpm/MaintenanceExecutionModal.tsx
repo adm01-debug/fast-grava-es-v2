@@ -302,10 +302,20 @@ export function MaintenanceExecutionModal({
     }
 
     // Validação de riscos críticos (Alertas de parâmetros)
-    const criticalAlertsWithoutEvidence = activeAlerts.filter(a => a.is_critical_risk && a.evidence_urls.length === 0);
-    if (criticalAlertsWithoutEvidence.length > 0) {
+    const criticalAlerts = activeAlerts.filter(a => a.is_critical_risk);
+    const criticalWithoutEvidence = criticalAlerts.filter(a => a.evidence_urls.length === 0);
+    
+    if (criticalWithoutEvidence.length > 0) {
       toast.error(`Atenção: Existem riscos críticos (parâmetros fora do range) que exigem o anexo de evidências (fotos) antes de prosseguir.`, {
-        description: `Parâmetros: ${criticalAlertsWithoutEvidence.map(a => a.parameter_name).join(', ')}`
+        description: `Parâmetros: ${criticalWithoutEvidence.map(a => a.parameter_name).join(', ')}`
+      });
+      return;
+    }
+
+    // Se houver riscos críticos mas com evidências, solicitar justificativa final
+    if (criticalAlerts.length > 0 && !notes) {
+      toast.warning("Riscos críticos detectados. Por favor, preencha as Observações/Justificativa final antes de concluir.", {
+        description: "Você anexou as evidências, mas uma explicação textual é necessária para o override."
       });
       return;
     }
