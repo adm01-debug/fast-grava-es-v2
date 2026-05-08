@@ -268,9 +268,18 @@ export function ExecutionDetailsModal({ isOpen, onClose, recordId }: ExecutionDe
 
               {/* Checklist Version Info */}
               {record.checklist_snapshot && (
-                <div className="flex items-center gap-2 text-[10px] text-muted-foreground bg-secondary/10 w-fit px-2 py-1 rounded">
-                  <ClipboardList className="h-3 w-3" />
-                  Versão do Checklist: Execução baseada em snapshot da data de início.
+                <div className="flex items-center gap-4 bg-secondary/10 px-3 py-2 rounded-lg border border-border/50">
+                  <div className="flex items-center gap-2 text-[10px] text-muted-foreground uppercase font-semibold">
+                    <ClipboardList className="h-3.5 w-3.5 text-primary" />
+                    Checklist Versão
+                  </div>
+                  <Badge variant="outline" className="font-bold">
+                    v{record.checklist_version || record.checklist_snapshot.version || '1'}
+                  </Badge>
+                  <div className="flex items-center gap-2 text-[10px] text-muted-foreground ml-auto">
+                    <Calendar className="h-3.5 w-3.5" />
+                    Snapshot de: {record.started_at ? format(new Date(record.started_at), "dd/MM/yyyy", { locale: ptBR }) : '-'}
+                  </div>
                 </div>
               )}
               {/* Header for print only */}

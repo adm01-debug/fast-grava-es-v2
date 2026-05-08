@@ -110,14 +110,28 @@ export function TPMNotificationLogs() {
                     <span className="font-medium">{log.machine?.name}</span>
                     <span className="text-xs text-muted-foreground block">{log.machine?.code}</span>
                   </TableCell>
-                  <TableCell className="capitalize">{log.channel}</TableCell>
+                  <TableCell className="capitalize">
+                    <div className="flex flex-col">
+                      <span className="capitalize">{log.channel}</span>
+                      {log.severity === 'correction' && (
+                        <Badge variant="outline" className="text-[9px] h-4 px-1 w-fit bg-amber-500/10 text-amber-600 border-amber-200 uppercase">
+                          Correção
+                        </Badge>
+                      )}
+                      {log.severity === 'critical_approved' && (
+                        <Badge variant="outline" className="text-[9px] h-4 px-1 w-fit bg-emerald-500/10 text-emerald-600 border-emerald-200 uppercase">
+                          Crítico Aprovado
+                        </Badge>
+                      )}
+                    </div>
+                  </TableCell>
                   <TableCell>
                     <Badge variant={
-                      log.severity === 'critical' ? 'destructive' : 
-                      log.severity === 'overdue' ? 'secondary' : 
+                      log.severity === 'critical' || log.severity === 'critical_approved' ? 'destructive' : 
+                      log.severity === 'overdue' || log.severity === 'correction' ? 'secondary' : 
                       log.severity === 'due' ? 'outline' : 'secondary'
                     } className="capitalize">
-                      {log.severity}
+                      {log.severity.replace('_', ' ')}
                     </Badge>
                   </TableCell>
                   <TableCell>
