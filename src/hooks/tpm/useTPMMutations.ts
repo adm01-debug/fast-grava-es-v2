@@ -354,6 +354,54 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
     },
   });
 
+  // Approve batch mutation
+  const approveBatch = useMutation({
+    mutationFn: async (data: {
+      record_ids: string[];
+      approver_id: string;
+    }) => {
+      const results = [];
+      for (const id of data.record_ids) {
+        const { data: record } = await supabase
+          .from('maintenance_records')
+          .select('*, schedule:maintenance_schedules(*)')
+          .eq('id', id)
+          .single();
+
+        if (!record) continue;
+
+        const nextDue = addDays(new Date(), record.schedule?.interval_days || 30).toISOString();
+
+        await supabase
+          .from('maintenance_records')
+          .update({
+            status: 'approved',
+            approver_id: data.approver_id,
+            approved_at: new Date().toISOString(),
+            next_scheduled_date_after_approval: nextDue,
+          })
+          .eq('id', id);
+
+        if (record.schedule) {
+          await supabase
+            .from('maintenance_schedules')
+            .update({
+              last_completed_at: new Date().toISOString(),
+              next_due_at: nextDue,
+            })
+            .eq('id', record.schedule.id);
+        }
+        results.push(id);
+      }
+      return results;
+    },
+    onSuccess: (ids) => {
+      queryClient.invalidateQueries({ queryKey: ['maintenance-records'] });
+      queryClient.invalidateQueries({ queryKey: ['maintenance-schedules'] });
+      toast.success(`${ids.length} manutenções aprovadas em lote`);
+    },
+  });
+
   return {
     createSchedule,
     startMaintenance,
@@ -365,6 +413,3 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
     resolveAlert,
   };
 }
-
-// Approve batch helper (can be moved inside hook or kept separate if exported)
-// In this case, I will merge batch approval logic into the main useTPMMutations hook for better access to other mutations.
