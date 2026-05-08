@@ -5,12 +5,7 @@ import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
-import { 
-  Wrench, CheckCircle2, AlertTriangle, Clock, 
-  User, Calendar, Package, FileText, Camera, PenTool,
-  CheckCircle, Download, FileSpreadsheet, File, Archive,
-  Eye
-} from 'lucide-react';
+import { ClipboardList, Plus, Trash2, Save, FileText, Camera, PenTool, CheckCircle, Download, FileSpreadsheet, File, Archive, Eye, Activity, AlertTriangle, Clock, User, Calendar, CheckCircle2 } from 'lucide-react';
 import { MaintenanceRecord } from '@/hooks/tpm/types';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -268,6 +263,14 @@ export function ExecutionDetailsModal({ isOpen, onClose, recordId }: ExecutionDe
                     <Clock className="h-4 w-4" /> Correção em Andamento
                   </h4>
                   <p className="text-xs text-amber-700/80 pl-6">Motivo: {record.correction_notes}</p>
+                </div>
+              )}
+
+              {/* Checklist Version Info */}
+              {record.checklist_snapshot && (
+                <div className="flex items-center gap-2 text-[10px] text-muted-foreground bg-secondary/10 w-fit px-2 py-1 rounded">
+                  <ClipboardList className="h-3 w-3" />
+                  Versão do Checklist: Execução baseada em snapshot da data de início.
                 </div>
               )}
               {/* Header for print only */}

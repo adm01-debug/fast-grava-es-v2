@@ -7,20 +7,26 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { 
   History, Search, Filter, FileSpreadsheet, Download, 
-  Eye, Calendar, Wrench, CheckCircle, Clock, AlertTriangle 
+  Eye, Calendar, Wrench, CheckCircle, Clock, AlertTriangle,
+  CheckSquare, XSquare
 } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import { toast } from 'sonner';
 import { useTPM } from '@/hooks/useTPM';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { ExecutionDetailsModal } from './ExecutionDetailsModal';
 
 export function TPMExecutionHistory() {
-  const { records, machines, isLoading } = useTPM();
+  const { records, machines, isLoading, approveMaintenance } = useTPM();
+  const { user } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [machineFilter, setMachineFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
   const [selectedRecordId, setSelectedRecordId] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [isBatchProcessing, setIsBatchProcessing] = useState(false);
 
   const filteredRecords = useMemo(() => {
     return records.filter(record => {
@@ -78,6 +84,37 @@ export function TPMExecutionHistory() {
     setIsModalOpen(true);
   };
 
+  const handleToggleSelect = (id: string) => {
+    setSelectedIds(prev => 
+      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+    );
+  };
+
+  const handleApproveBatch = async () => {
+    if (!user || selectedIds.length === 0) return;
+    setIsBatchProcessing(true);
+    let successCount = 0;
+    
+    try {
+      for (const id of selectedIds) {
+        const record = records.find(r => r.id === id);
+        if (record?.status === 'completed') {
+          await approveMaintenance.mutateAsync({
+            record_id: id,
+            approver_id: user.id
+          });
+          successCount++;
+        }
+      }
+      toast.success(`${successCount} execuções aprovadas com sucesso.`);
+      setSelectedIds([]);
+    } catch (error) {
+      toast.error("Erro no processamento em lote. Verifique se há itens com pendências.");
+    } finally {
+      setIsBatchProcessing(false);
+    }
+  };
+
   return (
     <Card className="card-glass border-primary/10 shadow-lg">
       <CardHeader className="pb-4">
@@ -92,6 +129,17 @@ export function TPMExecutionHistory() {
             </div>
           </div>
           <div className="flex items-center gap-2">
+            {selectedIds.length > 0 && (
+              <Button 
+                variant="default" 
+                className="bg-emerald-600 hover:bg-emerald-700 animate-in fade-in zoom-in-95 gap-2"
+                onClick={handleApproveBatch}
+                disabled={isBatchProcessing}
+              >
+                {isBatchProcessing ? <Clock className="h-4 w-4 animate-spin" /> : <CheckSquare className="h-4 w-4" />}
+                Aprovar Selecionados ({selectedIds.length})
+              </Button>
+            )}
             <Button variant="outline" onClick={handleExportAllCSV} className="gap-2">
               <FileSpreadsheet className="h-4 w-4" /> Exportar CSV
             </Button>
@@ -153,6 +201,7 @@ export function TPMExecutionHistory() {
             <Table>
               <TableHeader>
                 <TableRow className="bg-muted/50">
+                  <TableHead className="w-[40px]"></TableHead>
                   <TableHead className="w-[120px]">Data</TableHead>
                   <TableHead>Máquina</TableHead>
                   <TableHead>Tipo</TableHead>
@@ -164,7 +213,15 @@ export function TPMExecutionHistory() {
               </TableHeader>
               <TableBody>
                 {filteredRecords.map((record) => (
-                  <TableRow key={record.id} className="hover:bg-muted/30 transition-colors">
+                  <TableRow key={record.id} className={`hover:bg-muted/30 transition-colors ${selectedIds.includes(record.id) ? 'bg-primary/5' : ''}`}>
+                    <TableCell>
+                      {record.status === 'completed' && (
+                        <Checkbox 
+                          checked={selectedIds.includes(record.id)} 
+                          onCheckedChange={() => handleToggleSelect(record.id)}
+                        />
+                      )}
+                    </TableCell>
                     <TableCell className="font-medium">
                       {record.completed_at 
                         ? format(new Date(record.completed_at), 'dd/MM/yyyy', { locale: ptBR })

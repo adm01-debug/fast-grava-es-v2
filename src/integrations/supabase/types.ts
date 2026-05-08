@@ -1484,6 +1484,7 @@ export type Database = {
           description: string | null
           id: string
           is_active: boolean
+          machine_category: string | null
           maintenance_type_id: string
           name: string
           updated_at: string
@@ -1493,6 +1494,7 @@ export type Database = {
           description?: string | null
           id?: string
           is_active?: boolean
+          machine_category?: string | null
           maintenance_type_id: string
           name: string
           updated_at?: string
@@ -1502,6 +1504,7 @@ export type Database = {
           description?: string | null
           id?: string
           is_active?: boolean
+          machine_category?: string | null
           maintenance_type_id?: string
           name?: string
           updated_at?: string
@@ -1568,6 +1571,7 @@ export type Database = {
         Row: {
           approved_at: string | null
           approver_id: string | null
+          checklist_snapshot: Json | null
           completed_at: string | null
           correction_deadline: string | null
           correction_notes: string | null
@@ -1590,6 +1594,7 @@ export type Database = {
         Insert: {
           approved_at?: string | null
           approver_id?: string | null
+          checklist_snapshot?: Json | null
           completed_at?: string | null
           correction_deadline?: string | null
           correction_notes?: string | null
@@ -1612,6 +1617,7 @@ export type Database = {
         Update: {
           approved_at?: string | null
           approver_id?: string | null
+          checklist_snapshot?: Json | null
           completed_at?: string | null
           correction_deadline?: string | null
           correction_notes?: string | null
