@@ -16,7 +16,7 @@ interface MachineTimelineProps {
   machineId: string;
 }
 
-export function MachineTPMTimeline({ machineId }: MachineTPMTimelineProps) {
+export function MachineTPMTimeline({ machineId }: MachineTimelineProps) {
   const { records } = useTPM();
   const [selectedRecordId, setSelectedRecordId] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
