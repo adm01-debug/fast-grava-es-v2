@@ -105,7 +105,7 @@ export function AppSidebar() {
           </div>
         )}
 
-        <nav className="flex-1 overflow-y-auto scrollbar-thin p-2 space-y-1" id="main-navigation">
+        <nav className="flex-1 overflow-y-auto scrollbar-hide px-3 py-2 space-y-2" id="main-navigation">
           {filteredNavGroups.map(group => <NavGroupComponent key={group.id} group={group} collapsed={collapsed} isMobile={isMobile} isActive={isActive} alertCount={alertCount} openGroups={openGroups} toggleGroup={toggleGroup} />)}
           {filteredAdminNavItems.length > 0 && (
             <>
