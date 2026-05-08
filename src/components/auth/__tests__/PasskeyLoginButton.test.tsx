@@ -27,8 +27,10 @@ describe('PasskeyLoginButton', () => {
     } as any;
   });
 
-  it('renders correctly when supported', () => {
-    render(<PasskeyLoginButton />);
+  it('renders correctly when supported', async () => {
+    await act(async () => {
+      render(<PasskeyLoginButton />);
+    });
     expect(screen.getByText(/Login com Biometria/i)).toBeInTheDocument();
   });
 
@@ -43,14 +45,16 @@ describe('PasskeyLoginButton', () => {
     expect(container.firstChild).toBeNull();
   });
 
-  it('shows authenticating state', () => {
+  it('shows authenticating state', async () => {
     (useWebAuthn as any).mockReturnValue({
       isSupported: true,
       isAuthenticating: true,
       authenticateWithPasskey: mockAuthenticateWithPasskey,
     });
 
-    render(<PasskeyLoginButton />);
+    await act(async () => {
+      render(<PasskeyLoginButton />);
+    });
     expect(screen.getByText(/Autenticando.../i)).toBeInTheDocument();
   });
 
@@ -58,7 +62,9 @@ describe('PasskeyLoginButton', () => {
     mockAuthenticateWithPasskey.mockResolvedValue({ success: true, userId: 'user-123' });
     const onSuccess = vi.fn();
     
-    render(<PasskeyLoginButton onSuccess={onSuccess} />);
+    await act(async () => {
+      render(<PasskeyLoginButton onSuccess={onSuccess} />);
+    });
     
     const button = screen.getByRole('button');
     await act(async () => {
