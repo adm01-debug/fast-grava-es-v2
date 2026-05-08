@@ -73,6 +73,10 @@ export const TechnicalSheetEditor = ({ sheetId, techniques, categories, material
         speed_max: ranges.speed?.max || '',
         temperature_min: ranges.temperature?.min || '',
         temperature_max: ranges.temperature?.max || '',
+        gap_specifications: sheet.gap_specifications || '',
+        challenges_notes: sheet.challenges_notes || '',
+        failure_scenarios: sheet.failure_scenarios || '',
+        quality_requirements: sheet.quality_requirements || '',
         version: sheet.version?.toString() || '1'
       });
     }
