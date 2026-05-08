@@ -15,6 +15,10 @@ export interface TechnicalSheet {
   is_active: boolean;
   created_at: string;
   updated_at: string;
+  gap_specifications?: string | null;
+  challenges_notes?: string | null;
+  failure_scenarios?: string | null;
+  quality_requirements?: string | null;
   techniques?: { id: string; name: string; color: string; short_name: string };
   product_categories?: { id: string; name: string };
   materials?: { id: string; name: string };
