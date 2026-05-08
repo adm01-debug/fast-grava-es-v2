@@ -37,6 +37,7 @@ export default function TPMDashboard() {
     isLoading,
     createSchedule,
     startMaintenance,
+    completeMaintenance,
     checkAndGenerateAlerts,
     resolveAlert,
   } = useTPM();
