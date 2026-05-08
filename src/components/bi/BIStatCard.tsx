@@ -35,7 +35,7 @@ export function BIStatCard({ title, value, subtitle, icon: Icon, trend, trendVal
             <p className="text-3xl font-bold font-display bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/80">{value}</p>
             {subtitle && <p className="text-xs text-muted-foreground">{subtitle}</p>}
             {trend && trendValue && (
-              <div className={cn("flex items-center gap-1 text-sm font-medium", trendColor)}>
+              <div className={cn("flex items-center gap-1 text-sm font-medium", trendColor)} data-testid="trend-container">
                 <TrendIcon className="h-4 w-4 trend-icon" data-testid="trend-icon" />
                 <span>{trendValue}</span>
               </div>
@@ -49,4 +49,5 @@ export function BIStatCard({ title, value, subtitle, icon: Icon, trend, trendVal
     </Card>
   );
 }
+
 
