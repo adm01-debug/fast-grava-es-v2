@@ -18,6 +18,7 @@ import { TPMNotificationSettings } from '@/components/tpm/TPMNotificationSetting
 import { ChecklistManager } from '@/components/tpm/ChecklistManager';
 import { MTBFMTTRWidget } from '@/components/reliability/MTBFMTTRWidget';
 import { MaintenanceExecutionModal } from '@/components/tpm/MaintenanceExecutionModal';
+import { TPMReports } from '@/components/tpm/TPMReports';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { FavoriteButton, FavoritesDropdown } from '@/components/navigation/FavoritesManager';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
