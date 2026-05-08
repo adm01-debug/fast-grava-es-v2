@@ -293,11 +293,29 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
 
         {/* Status Distribution - Futuristic Pie */}
         <Card className="bg-black/40 border-primary/20 backdrop-blur-xl hover:border-primary/40 transition-all duration-500 overflow-hidden relative">
-          <CardHeader>
+          <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="flex items-center gap-3">
               <PieChart className="h-5 w-5 text-primary" />
-              <span className="font-display tracking-wider">STATUS DOS PEDIDOS</span>
+              <span className="font-display tracking-wider uppercase">Status dos Pedidos</span>
             </CardTitle>
+            <div className="flex items-center gap-2">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="h-8 w-8 text-muted-foreground hover:text-primary"
+                onClick={() => handleExport('csv', 'Status_Pedidos')}
+              >
+                <FileSpreadsheet className="h-4 w-4" />
+              </Button>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="h-8 w-8 text-muted-foreground hover:text-primary"
+                onClick={() => handleExport('pdf', 'Status_Pedidos')}
+              >
+                <FileText className="h-4 w-4" />
+              </Button>
+            </div>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
