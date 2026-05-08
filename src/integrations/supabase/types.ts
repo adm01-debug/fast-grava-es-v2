@@ -1605,6 +1605,7 @@ export type Database = {
           started_at: string
           status: string
           technical_sheet_id: string | null
+          technical_sheet_version: number | null
           total_cost: number | null
         }
         Insert: {
@@ -1631,6 +1632,7 @@ export type Database = {
           started_at?: string
           status?: string
           technical_sheet_id?: string | null
+          technical_sheet_version?: number | null
           total_cost?: number | null
         }
         Update: {
@@ -1657,6 +1659,7 @@ export type Database = {
           started_at?: string
           status?: string
           technical_sheet_id?: string | null
+          technical_sheet_version?: number | null
           total_cost?: number | null
         }
         Relationships: [
