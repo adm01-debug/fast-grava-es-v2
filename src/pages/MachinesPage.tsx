@@ -1,14 +1,72 @@
+import { useState } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Printer, CheckCircle2, XCircle } from 'lucide-react';
+import { Printer, CheckCircle2, XCircle, Info, Settings } from 'lucide-react';
 import { useSchedulingData } from '@/hooks/useSchedulingData';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { VoiceButton } from '@/components/voice/VoiceCommands';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { MachineTPMPanel } from '@/components/tpm/MachineTPMPanel';
+import { useTPM } from '@/hooks/useTPM';
+import { MaintenanceExecutionModal } from '@/components/tpm/MaintenanceExecutionModal';
+import { CreateScheduleModal } from '@/components/tpm/CreateScheduleModal';
+import { useAuth } from '@/contexts/AuthContext';
+import { toast } from 'sonner';
 
 export default function MachinesPage() {
   const { machines, techniques, isLoadingMachines, getTechniqueById } = useSchedulingData();
+  const { user, profile } = useAuth();
+  const { 
+    schedules, 
+    maintenanceTypes,
+    startMaintenance, 
+    completeMaintenance, 
+    createSchedule 
+  } = useTPM();
+
+  const [selectedMachine, setSelectedMachine] = useState<any>(null);
+  const [executionModalOpen, setExecutionModalOpen] = useState(false);
+  const [createScheduleModalOpen, setCreateScheduleModalOpen] = useState(false);
+  const [selectedSchedule, setSelectedSchedule] = useState<any>(null);
+  const [currentRecordId, setCurrentRecordId] = useState<string | null>(null);
+
+  const handleStartMaintenance = (scheduleId: string) => {
+    if (!user || !profile) {
+      toast.error('Você precisa estar logado para iniciar uma manutenção');
+      return;
+    }
+
+    const schedule = schedules.find(s => s.id === scheduleId);
+    setSelectedSchedule(schedule);
+
+    startMaintenance.mutate({
+      schedule_id: scheduleId,
+      performed_by: user.id,
+      performed_by_name: profile.full_name || 'Usuário',
+    }, {
+      onSuccess: (record) => {
+        setCurrentRecordId(record.id);
+        setExecutionModalOpen(true);
+      }
+    });
+  };
+
+  const handleCompleteMaintenance = (data: any) => {
+    if (!currentRecordId) return;
+    
+    completeMaintenance.mutate({
+      record_id: currentRecordId,
+      ...data
+    }, {
+      onSuccess: () => {
+        setExecutionModalOpen(false);
+        setSelectedSchedule(null);
+        setCurrentRecordId(null);
+      }
+    });
+  };
 
   // Group machines by technique
   const machinesByTechnique = machines.reduce((acc, machine) => {
@@ -100,7 +158,8 @@ export default function MachinesPage() {
                     {techMachines.map((machine) => (
                       <div 
                         key={machine.id}
-                        className="flex items-center justify-between p-3 rounded-lg bg-secondary/30 border border-border/30"
+                        className="flex items-center justify-between p-3 rounded-lg bg-secondary/30 border border-border/30 hover:border-primary/50 hover:bg-secondary/50 transition-all cursor-pointer group"
+                        onClick={() => setSelectedMachine(machine)}
                       >
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center">
@@ -126,6 +185,51 @@ export default function MachinesPage() {
             );
           })}
         </div>
+
+        {/* Machine Profile / TPM Dialog */}
+        <Dialog open={!!selectedMachine} onOpenChange={() => setSelectedMachine(null)}>
+          <DialogContent className="sm:max-w-xl">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Printer className="h-5 w-5 text-primary" />
+                Perfil da Máquina: {selectedMachine?.code}
+              </DialogTitle>
+              <DialogDescription>
+                {selectedMachine?.name} - {getTechniqueById(selectedMachine?.technique_id)?.name}
+              </DialogDescription>
+            </DialogHeader>
+            
+            {selectedMachine && (
+              <MachineTPMPanel 
+                machineId={selectedMachine.id} 
+                onStartMaintenance={handleStartMaintenance}
+                onOpenCreateSchedule={() => setCreateScheduleModalOpen(true)}
+              />
+            )}
+          </DialogContent>
+        </Dialog>
+
+        {/* Execution Modal */}
+        <MaintenanceExecutionModal
+          isOpen={executionModalOpen}
+          onClose={() => setExecutionModalOpen(false)}
+          schedule={selectedSchedule}
+          recordId={currentRecordId}
+          onComplete={handleCompleteMaintenance}
+        />
+
+        {/* Create Schedule Modal */}
+        {selectedMachine && (
+          <CreateScheduleModal
+            machines={machines}
+            maintenanceTypes={maintenanceTypes}
+            initialMachineId={selectedMachine.id}
+            isOpen={createScheduleModalOpen}
+            onOpenChange={setCreateScheduleModalOpen}
+            onSubmit={(data) => createSchedule.mutate(data)}
+            isSubmitting={createSchedule.isPending}
+          />
+        )}
       </div>
     </MainLayout>
   );

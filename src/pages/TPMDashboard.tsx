@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { useNavigate } from 'react-router-dom';
 import { Wrench, AlertTriangle, CheckCircle, Clock, CalendarCheck, RefreshCw, Settings, Command } from 'lucide-react';
@@ -14,7 +15,10 @@ import { TPMCalendar } from '@/components/tpm/TPMCalendar';
 import { TPMScheduleList } from '@/components/tpm/TPMScheduleList';
 import { CreateScheduleModal } from '@/components/tpm/CreateScheduleModal';
 import { TPMNotificationSettings } from '@/components/tpm/TPMNotificationSettings';
+import { ChecklistManager } from '@/components/tpm/ChecklistManager';
 import { MTBFMTTRWidget } from '@/components/reliability/MTBFMTTRWidget';
+import { MaintenanceExecutionModal } from '@/components/tpm/MaintenanceExecutionModal';
+import { TPMReports } from '@/components/tpm/TPMReports';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { FavoriteButton, FavoritesDropdown } from '@/components/navigation/FavoritesManager';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
@@ -34,9 +38,14 @@ export default function TPMDashboard() {
     isLoading,
     createSchedule,
     startMaintenance,
+    completeMaintenance,
     checkAndGenerateAlerts,
     resolveAlert,
   } = useTPM();
+  
+  const [executionModalOpen, setExecutionModalOpen] = useState(false);
+  const [selectedSchedule, setSelectedSchedule] = useState<any>(null);
+  const [currentRecordId, setCurrentRecordId] = useState<string | null>(null);
   
   // Initialize TPM notifications listener
   useTPMNotifications();
@@ -46,10 +55,34 @@ export default function TPMDashboard() {
       toast.error('Você precisa estar logado para iniciar uma manutenção');
       return;
     }
+
+    const schedule = schedules.find(s => s.id === scheduleId);
+    setSelectedSchedule(schedule);
+
     startMaintenance.mutate({
       schedule_id: scheduleId,
       performed_by: user.id,
       performed_by_name: profile.full_name || 'Usuário',
+    }, {
+      onSuccess: (record) => {
+        setCurrentRecordId(record.id);
+        setExecutionModalOpen(true);
+      }
+    });
+  };
+
+  const handleCompleteMaintenance = (data: any) => {
+    if (!currentRecordId) return;
+    
+    completeMaintenance.mutate({
+      record_id: currentRecordId,
+      ...data
+    }, {
+      onSuccess: () => {
+        setExecutionModalOpen(false);
+        setSelectedSchedule(null);
+        setCurrentRecordId(null);
+      }
     });
   };
 
@@ -219,6 +252,12 @@ export default function TPMDashboard() {
                 </span>
               )}
             </TabsTrigger>
+            <TabsTrigger value="reports" className="data-[state=active]:shadow-glow-primary data-[state=active]:bg-primary/10 transition-all duration-300">
+              Relatórios
+            </TabsTrigger>
+            <TabsTrigger value="config" className="data-[state=active]:shadow-glow-primary data-[state=active]:bg-primary/10 transition-all duration-300">
+              Configurações
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="calendar" className="space-y-6 animate-fade-in">
@@ -251,7 +290,23 @@ export default function TPMDashboard() {
               onStartMaintenance={handleStartMaintenance}
             />
           </TabsContent>
+
+          <TabsContent value="reports" className="animate-fade-in">
+            <TPMReports />
+          </TabsContent>
+
+          <TabsContent value="config" className="animate-fade-in">
+            <ChecklistManager />
+          </TabsContent>
         </Tabs>
+
+        <MaintenanceExecutionModal
+          isOpen={executionModalOpen}
+          onClose={() => setExecutionModalOpen(false)}
+          schedule={selectedSchedule}
+          recordId={currentRecordId}
+          onComplete={handleCompleteMaintenance}
+        />
       </div>
     </MainLayout>
   );

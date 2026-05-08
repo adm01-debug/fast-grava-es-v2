@@ -1,215 +1,173 @@
 import { useState, useEffect } from 'react';
-import { Bell, BellOff, Volume2, VolumeX, Clock, AlertTriangle, AlertCircle, Calendar } from 'lucide-react';
+import { Bell, BellOff, Volume2, VolumeX, Clock, AlertTriangle, AlertCircle, Calendar, Mail, MessageCircle, Settings, Check } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { useTPMNotifications, saveTPMNotificationPreferences } from '@/hooks/useTPMNotifications';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { useTPMNotifications } from '@/hooks/useTPMNotifications';
+import { useNotificationSettings } from '@/hooks/useNotificationSettings';
+import { useTPM } from '@/hooks/useTPM';
 import { toast } from 'sonner';
-
-interface NotificationPreferences {
-  upcomingMaintenance: boolean;
-  dueMaintenance: boolean;
-  overdueMaintenance: boolean;
-  criticalAlerts: boolean;
-  soundEnabled: boolean;
-}
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
+import { cn } from '@/lib/utils';
 
 export function TPMNotificationSettings() {
-  const { permission, isSupported, requestPermission, getPreferences } = useTPMNotifications();
-  const [preferences, setPreferences] = useState<NotificationPreferences>(getPreferences());
+  const { permission, isSupported, requestPermission } = useTPMNotifications();
+  const { settings, isLoading, updateSettings } = useNotificationSettings();
+  const { machines } = useTPM();
+  const [whatsappNumber, setWhatsappNumber] = useState('');
 
   useEffect(() => {
-    setPreferences(getPreferences());
-  }, []);
-
-  const handleToggle = (key: keyof NotificationPreferences) => {
-    const newValue = !preferences[key];
-    const updated = saveTPMNotificationPreferences({ [key]: newValue });
-    setPreferences(updated);
-    toast.success(`Configuração atualizada`);
-  };
-
-  const handleRequestPermission = async () => {
-    const granted = await requestPermission();
-    if (granted) {
-      toast.success('Notificações de manutenção ativadas!');
+    if (settings?.whatsapp_number) {
+      setWhatsappNumber(settings.whatsapp_number);
     }
+  }, [settings]);
+
+  const handleToggleType = (type: string) => {
+    if (!settings) return;
+    const currentTypes = settings.notification_types || [];
+    const newTypes = currentTypes.includes(type)
+      ? currentTypes.filter(t => t !== type)
+      : [...currentTypes, type];
+    
+    updateSettings.mutate({ notification_types: newTypes });
   };
 
-  if (!isSupported) {
-    return (
-      <Card className="glass-card">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <BellOff className="h-5 w-5 text-muted-foreground" />
-            Notificações Não Suportadas
-          </CardTitle>
-          <CardDescription>
-            Seu navegador não suporta notificações push.
-          </CardDescription>
-        </CardHeader>
-      </Card>
-    );
-  }
+  const handleToggleMachine = (machineId: string) => {
+    if (!settings) return;
+    const currentFilters = settings.machine_filters || [];
+    const newFilters = currentFilters.includes(machineId)
+      ? currentFilters.filter(id => id !== machineId)
+      : [...currentFilters, machineId];
+    
+    updateSettings.mutate({ machine_filters: newFilters });
+  };
+
+  if (isLoading) return <div className="p-8 text-center">Carregando configurações...</div>;
 
   return (
-    <Card className="glass-card hover:shadow-glow-primary/20 transition-shadow duration-300">
+    <Card className="glass-card">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Bell className="h-5 w-5 text-primary" />
-          Notificações de Manutenção
+          <Settings className="h-5 w-5 text-primary" />
+          Configurações de Alerta TPM
         </CardTitle>
         <CardDescription>
-          Configure quais alertas de manutenção você deseja receber
+          Personalize como e quando você deseja ser notificado sobre manutenções.
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-6">
-        {/* Permission Status */}
-        <div className="flex items-center justify-between p-4 rounded-lg bg-muted/50">
-          <div className="flex items-center gap-3">
-            {permission === 'granted' ? (
-              <Bell className="h-5 w-5 text-emerald-500" />
-            ) : (
-              <BellOff className="h-5 w-5 text-muted-foreground" />
-            )}
-            <div>
-              <p className="font-medium">Status das Notificações</p>
-              <p className="text-sm text-muted-foreground">
-                {permission === 'granted' 
-                  ? 'Notificações ativadas' 
-                  : permission === 'denied'
-                  ? 'Bloqueadas no navegador'
-                  : 'Não configuradas'}
-              </p>
-            </div>
-          </div>
-          {permission !== 'granted' && (
-            <Button onClick={handleRequestPermission} size="sm">
-              Ativar
-            </Button>
-          )}
-          {permission === 'granted' && (
-            <Badge variant="default" className="bg-emerald-500">
-              Ativo
-            </Badge>
-          )}
-        </div>
-
-        {/* Notification Types */}
+      <CardContent className="space-y-8">
+        {/* Channels */}
         <div className="space-y-4">
-          <NotificationToggle
-            icon={<Calendar className="h-5 w-5 text-blue-500" />}
-            label="Manutenções Próximas"
-            description="Aviso quando manutenção estiver a 3 dias de vencer"
-            checked={preferences.upcomingMaintenance}
-            onCheckedChange={() => handleToggle('upcomingMaintenance')}
-            disabled={permission !== 'granted'}
-          />
-
-          <NotificationToggle
-            icon={<Clock className="h-5 w-5 text-amber-500" />}
-            label="Manutenções do Dia"
-            description="Alerta quando manutenção vence hoje"
-            checked={preferences.dueMaintenance}
-            onCheckedChange={() => handleToggle('dueMaintenance')}
-            disabled={permission !== 'granted'}
-          />
-
-          <NotificationToggle
-            icon={<AlertTriangle className="h-5 w-5 text-orange-500" />}
-            label="Manutenções Atrasadas"
-            description="Alerta para manutenções vencidas"
-            checked={preferences.overdueMaintenance}
-            onCheckedChange={() => handleToggle('overdueMaintenance')}
-            priority="Alta"
-            disabled={permission !== 'granted'}
-          />
-
-          <NotificationToggle
-            icon={<AlertCircle className="h-5 w-5 text-destructive" />}
-            label="Alertas Críticos"
-            description="Notificação urgente para problemas críticos"
-            checked={preferences.criticalAlerts}
-            onCheckedChange={() => handleToggle('criticalAlerts')}
-            priority="Crítica"
-            disabled={permission !== 'granted'}
-          />
-        </div>
-
-        {/* Sound Settings */}
-        <div className="pt-4 border-t border-border">
-          <div className="flex items-center justify-between p-4 rounded-lg bg-muted/50">
+          <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Canais de Notificação</h3>
+          
+          <div className="flex items-center justify-between p-4 rounded-lg border border-border/50 bg-secondary/10">
             <div className="flex items-center gap-3">
-              {preferences.soundEnabled ? (
-                <Volume2 className="h-5 w-5 text-primary" />
-              ) : (
-                <VolumeX className="h-5 w-5 text-muted-foreground" />
-              )}
+              <Mail className="h-5 w-5 text-blue-500" />
               <div>
-                <p className="font-medium">Sons de Alerta</p>
-                <p className="text-sm text-muted-foreground">
-                  Tocar som para alertas críticos e atrasados
-                </p>
+                <p className="font-medium">E-mail</p>
+                <p className="text-xs text-muted-foreground">Receba alertas detalhados na sua caixa de entrada</p>
               </div>
             </div>
-            <Switch
-              checked={preferences.soundEnabled}
-              onCheckedChange={() => handleToggle('soundEnabled')}
+            <Switch 
+              checked={settings?.email_enabled} 
+              onCheckedChange={(checked) => updateSettings.mutate({ email_enabled: checked })}
+            />
+          </div>
+
+          <div className="flex items-center justify-between p-4 rounded-lg border border-border/50 bg-secondary/10">
+            <div className="flex items-center gap-3">
+              <Bell className="h-5 w-5 text-emerald-500" />
+              <div>
+                <p className="font-medium">Push (Navegador)</p>
+                <p className="text-xs text-muted-foreground">Notificações em tempo real na tela</p>
+              </div>
+            </div>
+            <Switch 
+              checked={settings?.push_enabled} 
+              onCheckedChange={(checked) => updateSettings.mutate({ push_enabled: checked })}
               disabled={permission !== 'granted'}
             />
+          </div>
+
+          <div className="p-4 rounded-lg border border-border/50 bg-secondary/10 space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <MessageCircle className="h-5 w-5 text-green-500" />
+                <div>
+                  <p className="font-medium">WhatsApp</p>
+                  <p className="text-xs text-muted-foreground">Alertas críticos via WhatsApp Business</p>
+                </div>
+              </div>
+              <Switch 
+                checked={settings?.whatsapp_enabled} 
+                onCheckedChange={(checked) => updateSettings.mutate({ whatsapp_enabled: checked })}
+              />
+            </div>
+            {settings?.whatsapp_enabled && (
+              <div className="flex gap-2 animate-in fade-in slide-in-from-top-2">
+                <Input 
+                  placeholder="+55 11 99999-9999" 
+                  value={whatsappNumber}
+                  onChange={(e) => setWhatsappNumber(e.target.value)}
+                />
+                <Button size="sm" onClick={() => updateSettings.mutate({ whatsapp_number: whatsappNumber })}>Salvar</Button>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Alert Types */}
+        <div className="space-y-4">
+          <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Tipos de Alerta</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {[
+              { id: 'upcoming', label: 'Próximas', icon: <Calendar className="h-4 w-4 text-blue-400" /> },
+              { id: 'due', label: 'Vence Hoje', icon: <Clock className="h-4 w-4 text-amber-400" /> },
+              { id: 'overdue', label: 'Atrasadas', icon: <AlertTriangle className="h-4 w-4 text-orange-400" /> },
+              { id: 'critical', label: 'Críticas', icon: <AlertCircle className="h-4 w-4 text-destructive" /> },
+            ].map(type => (
+              <div 
+                key={type.id}
+                onClick={() => handleToggleType(type.id)}
+                className={cn(
+                  "flex items-center gap-3 p-3 rounded-lg border border-border/50 cursor-pointer transition-all",
+                  settings?.notification_types.includes(type.id) ? "bg-primary/10 border-primary/40" : "bg-card hover:bg-secondary/20"
+                )}
+              >
+                {type.icon}
+                <span className="text-sm font-medium">{type.label}</span>
+                {settings?.notification_types.includes(type.id) && <Check className="h-4 w-4 ml-auto text-primary" />}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Machine Filters */}
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Filtro por Máquina</h3>
+            <Badge variant="outline">{settings?.machine_filters.length === 0 ? 'Todas as Máquinas' : `${settings?.machine_filters.length} Selecionadas`}</Badge>
+          </div>
+          <p className="text-xs text-muted-foreground">Selecione máquinas específicas para receber alertas. Deixe vazio para todas.</p>
+          
+          <div className="flex flex-wrap gap-2">
+            {machines.map(machine => (
+              <Badge 
+                key={machine.id}
+                variant={settings?.machine_filters.includes(machine.id) ? "default" : "outline"}
+                className="cursor-pointer"
+                onClick={() => handleToggleMachine(machine.id)}
+              >
+                {machine.code}
+              </Badge>
+            ))}
           </div>
         </div>
       </CardContent>
     </Card>
-  );
-}
-
-interface NotificationToggleProps {
-  icon: React.ReactNode;
-  label: string;
-  description: string;
-  checked: boolean;
-  onCheckedChange: () => void;
-  priority?: string;
-  disabled?: boolean;
-}
-
-function NotificationToggle({
-  icon,
-  label,
-  description,
-  checked,
-  onCheckedChange,
-  priority,
-  disabled,
-}: NotificationToggleProps) {
-  return (
-    <div className={`flex items-center justify-between p-4 rounded-lg border transition-colors ${
-      checked && !disabled ? 'border-primary/30 bg-primary/5' : 'border-border bg-card'
-    } ${disabled ? 'opacity-50' : ''}`}>
-      <div className="flex items-center gap-3">
-        {icon}
-        <div>
-          <div className="flex items-center gap-2">
-            <p className="font-medium">{label}</p>
-            {priority && (
-              <Badge 
-                variant={priority === 'Crítica' ? 'destructive' : 'secondary'}
-                className="text-xs"
-              >
-                {priority}
-              </Badge>
-            )}
-          </div>
-          <p className="text-sm text-muted-foreground">{description}</p>
-        </div>
-      </div>
-      <Switch
-        checked={checked}
-        onCheckedChange={onCheckedChange}
-        disabled={disabled}
-      />
-    </div>
   );
 }

@@ -86,6 +86,13 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
       notes?: string;
       total_cost?: number;
       downtime_minutes?: number;
+      responses?: Array<{
+        checklist_item_id: string;
+        is_checked: boolean;
+        measurement_value?: number;
+        notes?: string;
+        photo_url?: string;
+      }>;
     }) => {
       const { data: recordData, error: recordFetchError } = await supabase
         .from('maintenance_records')
@@ -97,6 +104,7 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
         throw new Error('Registro não encontrado');
       }
 
+      // Update the main record
       const { error: recordError } = await supabase
         .from('maintenance_records')
         .update({
@@ -107,7 +115,22 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
           downtime_minutes: data.downtime_minutes || 0,
         })
         .eq('id', data.record_id);
+      
       if (recordError) throw recordError;
+
+      // Insert checklist responses if provided
+      if (data.responses && data.responses.length > 0) {
+        const responsesToInsert = data.responses.map(resp => ({
+          record_id: data.record_id,
+          ...resp
+        }));
+
+        const { error: respError } = await supabase
+          .from('maintenance_item_responses')
+          .insert(responsesToInsert);
+        
+        if (respError) throw respError;
+      }
 
       const { data: scheduleData } = await supabase
         .from('maintenance_schedules')
