@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useLocation, Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ChevronLeft, ChevronRight, Printer, Plus, LogOut } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Printer, Plus, LogOut, Terminal } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { prefetchRoute } from '@/lib/prefetch';
 import { Button } from '@/components/ui/button';
@@ -76,8 +76,8 @@ export function AppSidebar() {
         <div className={cn('flex items-center h-24 px-8 border-b border-primary/10 bg-primary/[0.02]', collapsed && !isMobile ? 'justify-center' : 'justify-between')}>
           {(!collapsed || isMobile) && (
             <div className="flex items-center gap-4 animate-in fade-in duration-500">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary to-primary-glow flex items-center justify-center shadow-2xl shadow-primary/30 ring-4 ring-primary/15 scale-110">
-                <Printer className="w-6 h-6 text-primary-foreground" />
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary to-primary-glow flex items-center justify-center shadow-2xl shadow-primary/30 ring-4 ring-primary/15 scale-110 group cursor-pointer transition-transform active:scale-95">
+                <Terminal className="w-6 h-6 text-primary-foreground group-hover:animate-pulse" />
               </div>
               <div className="space-y-0.5">
                 <h1 className="font-display font-black text-sidebar-foreground text-xl tracking-tighter leading-none">Fast Gravações</h1>
