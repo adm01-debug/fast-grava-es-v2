@@ -51,6 +51,7 @@ interface SanitizedPayload {
 function sanitizeOperatorPayload(data: {
   produced_quantity?: number;
   lost_pieces?: number;
+  loss_category?: string | null;
   actual_start_time?: string;
   actual_end_time?: string;
   production_photos?: string[] | null;
@@ -59,24 +60,13 @@ function sanitizeOperatorPayload(data: {
 }): SanitizedPayload {
   const sanitized: SanitizedPayload = {};
   
-  if (data.produced_quantity !== undefined) {
-    sanitized.produced_quantity = data.produced_quantity;
-  }
-  if (data.lost_pieces !== undefined) {
-    sanitized.lost_pieces = data.lost_pieces;
-  }
-  if (data.actual_start_time !== undefined) {
-    sanitized.actual_start_time = data.actual_start_time;
-  }
-  if (data.actual_end_time !== undefined) {
-    sanitized.actual_end_time = data.actual_end_time;
-  }
-  if (data.production_photos !== undefined) {
-    sanitized.production_photos = data.production_photos;
-  }
-  if (data.notes !== undefined) {
-    sanitized.notes = data.notes;
-  }
+  if (data.produced_quantity !== undefined) sanitized.produced_quantity = data.produced_quantity;
+  if (data.lost_pieces !== undefined) sanitized.lost_pieces = data.lost_pieces;
+  if (data.loss_category !== undefined) sanitized.loss_category = data.loss_category;
+  if (data.actual_start_time !== undefined) sanitized.actual_start_time = data.actual_start_time;
+  if (data.actual_end_time !== undefined) sanitized.actual_end_time = data.actual_end_time;
+  if (data.production_photos !== undefined) sanitized.production_photos = data.production_photos;
+  if (data.notes !== undefined) sanitized.notes = data.notes;
   
   return sanitized;
 }
