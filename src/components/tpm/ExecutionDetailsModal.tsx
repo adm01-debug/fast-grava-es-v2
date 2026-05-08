@@ -308,12 +308,12 @@ export function ExecutionDetailsModal({ isOpen, onClose, recordId }: ExecutionDe
                     <p className="text-sm">{record.completed_at ? format(new Date(record.completed_at), 'dd/MM/yyyy HH:mm') : 'N/A'}</p>
                   </div>
                   <div>
-                    <p className="text-[10px] text-muted-foreground uppercase font-bold">Máquina</p>
-                    <p className="text-sm">{record.machine?.name} ({record.machine?.code})</p>
+                    <p className="text-[10px] text-muted-foreground uppercase font-bold">Máquina / Equipamento</p>
+                    <p className="text-sm font-bold">{record.machine?.name} ({record.machine?.code})</p>
                   </div>
                   <div>
-                    <p className="text-[10px] text-muted-foreground uppercase font-bold">Status</p>
-                    <p className="text-sm font-bold">{record.status === 'approved' ? 'APROVADA' : 'PENDENTE'}</p>
+                    <p className="text-[10px] text-muted-foreground uppercase font-bold">Produto / Técnica</p>
+                    <p className="text-sm font-bold text-primary">{record.technical_sheet?.title || 'Não Vinculado'}</p>
                   </div>
                 </div>
               </div>
@@ -425,16 +425,23 @@ export function ExecutionDetailsModal({ isOpen, onClose, recordId }: ExecutionDe
                                    (record.technical_sheet?.quality_checklist?.find((c: any) => c.id === resp.id));
                       
                       return (
-                        <div key={resp.id} className={`flex items-center gap-3 p-3 rounded-lg border ${resp.confirmed ? 'bg-emerald-500/5 border-emerald-500/10' : 'bg-rose-500/5 border-rose-500/10'}`}>
-                          {resp.confirmed ? (
-                            <CheckCircle2 className="h-4 w-4 text-emerald-600 flex-shrink-0" />
-                          ) : (
-                            <AlertTriangle className="h-4 w-4 text-rose-600 flex-shrink-0" />
+                        <div key={resp.id} className={`p-3 rounded-lg border ${resp.confirmed ? 'bg-emerald-500/5 border-emerald-500/10' : 'bg-rose-500/5 border-rose-500/10'}`}>
+                          <div className="flex items-center gap-3">
+                            {resp.confirmed ? (
+                              <CheckCircle2 className="h-4 w-4 text-emerald-600 flex-shrink-0" />
+                            ) : (
+                              <AlertTriangle className="h-4 w-4 text-rose-600 flex-shrink-0" />
+                            )}
+                            <span className="text-sm font-medium">{crit?.description || 'Critério de Qualidade'}</span>
+                            <Badge variant={resp.confirmed ? 'outline' : 'destructive'} className="ml-auto text-[10px]">
+                              {resp.confirmed ? 'APROVADO' : 'REPROVADO'}
+                            </Badge>
+                          </div>
+                          {resp.justification && (
+                            <p className="mt-2 text-[10px] italic text-muted-foreground pl-7 bg-muted/30 p-1.5 rounded">
+                              Obs: {resp.justification}
+                            </p>
                           )}
-                          <span className="text-sm font-medium">{crit?.description || 'Critério de Qualidade'}</span>
-                          <Badge variant={resp.confirmed ? 'outline' : 'destructive'} className="ml-auto text-[10px]">
-                            {resp.confirmed ? 'OK' : 'FALHA'}
-                          </Badge>
                         </div>
                       );
                     })}
