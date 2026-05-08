@@ -307,6 +307,8 @@ export function JobDetailsModal({ job, open, onOpenChange, onStatusChange }: Job
       </DialogContent>
     </Dialog>
   );
+}
+
 function JobHistoryTab({ jobId }: { jobId: string }) {
   const { data, isLoading, error } = useEntityAuditTrail('jobs', jobId);
 

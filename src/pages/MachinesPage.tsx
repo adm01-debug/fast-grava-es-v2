@@ -253,6 +253,8 @@ export default function MachinesPage() {
       </div>
     </MainLayout>
   );
+}
+
 function MachineHistoryTab({ machineId }: { machineId: string }) {
   const { data, isLoading, error } = useEntityAuditTrail('machines', machineId);
 
