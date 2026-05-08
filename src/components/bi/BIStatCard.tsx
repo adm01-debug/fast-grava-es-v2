@@ -45,8 +45,15 @@ export function BIStatCard({ title, value, subtitle, icon: Icon, trend, trendVal
               </div>
             )}
           </div>
-          <div className="p-3 rounded-xl bg-primary/10 group-hover:bg-primary/20 group-hover:shadow-glow-primary transition-all duration-300">
-            <Icon className="h-6 w-6 text-primary group-hover:scale-110 transition-transform duration-300" />
+          <div className="flex flex-col items-end gap-3">
+            <div className="p-3 rounded-xl bg-primary/10 group-hover:bg-primary/20 group-hover:shadow-glow-primary transition-all duration-300">
+              <Icon className="h-6 w-6 text-primary group-hover:scale-110 transition-transform duration-300" />
+            </div>
+            {onClick && (
+              <span className="text-[10px] text-primary/40 uppercase tracking-tighter font-bold opacity-0 group-hover:opacity-100 transition-opacity">
+                Ver detalhes
+              </span>
+            )}
           </div>
         </div>
       </CardContent>
