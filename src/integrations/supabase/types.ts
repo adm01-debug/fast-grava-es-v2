@@ -1600,6 +1600,7 @@ export type Database = {
           performed_by: string | null
           performed_by_name: string | null
           photos: string[] | null
+          quality_responses: Json | null
           schedule_id: string
           signature_url: string | null
           started_at: string
@@ -1627,6 +1628,7 @@ export type Database = {
           performed_by?: string | null
           performed_by_name?: string | null
           photos?: string[] | null
+          quality_responses?: Json | null
           schedule_id: string
           signature_url?: string | null
           started_at?: string
@@ -1654,6 +1656,7 @@ export type Database = {
           performed_by?: string | null
           performed_by_name?: string | null
           photos?: string[] | null
+          quality_responses?: Json | null
           schedule_id?: string
           signature_url?: string | null
           started_at?: string
@@ -3394,9 +3397,11 @@ export type Database = {
           machine_settings: Json | null
           material_id: string | null
           product_category_id: string | null
+          quality_checklist: Json | null
           quality_requirements: string | null
           recommended_machine_id: string | null
           settings_ranges: Json | null
+          setup_instructions: string | null
           technique_id: string
           title: string
           tooling_specifications: string | null
@@ -3418,9 +3423,11 @@ export type Database = {
           machine_settings?: Json | null
           material_id?: string | null
           product_category_id?: string | null
+          quality_checklist?: Json | null
           quality_requirements?: string | null
           recommended_machine_id?: string | null
           settings_ranges?: Json | null
+          setup_instructions?: string | null
           technique_id: string
           title: string
           tooling_specifications?: string | null
@@ -3442,9 +3449,11 @@ export type Database = {
           machine_settings?: Json | null
           material_id?: string | null
           product_category_id?: string | null
+          quality_checklist?: Json | null
           quality_requirements?: string | null
           recommended_machine_id?: string | null
           settings_ranges?: Json | null
+          setup_instructions?: string | null
           technique_id?: string
           title?: string
           tooling_specifications?: string | null
