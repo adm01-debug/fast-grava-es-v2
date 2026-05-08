@@ -188,7 +188,7 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
             <ResponsiveContainer width="100%" height={350}>
               <AreaChart 
                 data={biMetrics.dailyTrend}
-                onClick={(data) => {
+                onClick={(data: any) => {
                   if (data && data.activeLabel) {
                     handleDrillDown(`PEDIDOS EM ${data.activeLabel}`, []);
                   }
@@ -255,7 +255,7 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
                   paddingAngle={5} 
                   dataKey="value"
                   stroke="none"
-                  onClick={(data) => handleDrillDown(`PEDIDOS: ${data.name}`, [])}
+                  onClick={(data: any) => handleDrillDown(`PEDIDOS: ${data.name}`, [])}
                 >
                   {biMetrics.statusDistribution.map((entry: any, index: number) => (
                     <Cell key={`cell-${index}`} fill={entry.color} fillOpacity={0.8} />
@@ -296,7 +296,7 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
                   dataKey="jobs" 
                   radius={[0, 4, 4, 0]} 
                   barSize={20}
-                  onClick={(data) => handleDrillDown(`STUDIO: ${data.name}`, [])}
+                  onClick={(data: any) => handleDrillDown(`STUDIO: ${data.name}`, [])}
                 >
                   {studioData.map((entry: any, index: number) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
