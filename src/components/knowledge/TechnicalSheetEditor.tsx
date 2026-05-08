@@ -71,6 +71,14 @@ export const TechnicalSheetEditor = ({ sheetId, techniques, categories, material
       material_id: formData.material_id || undefined,
       estimated_time_minutes: formData.estimated_time_minutes ? parseInt(formData.estimated_time_minutes) : undefined,
       recommended_machine_id: formData.recommended_machine_id || undefined,
+      ink_specifications: formData.ink_specifications || undefined,
+      tooling_specifications: formData.tooling_specifications || undefined,
+      machine_settings: {
+        squeegee_passes: formData.squeegee_passes,
+        pressure: formData.pressure,
+        speed: formData.speed,
+        temperature: formData.temperature,
+      }
     };
     if (isNew) { await createSheet.mutateAsync(payload); onClose(); }
     else { await updateSheet.mutateAsync({ id: sheetId!, ...payload }); toast.success('Ficha atualizada!'); }
