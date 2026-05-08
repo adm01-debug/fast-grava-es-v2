@@ -61,11 +61,15 @@ export interface MaintenanceRecord {
   performed_by_name: string | null;
   started_at: string;
   completed_at: string | null;
-  status: 'in_progress' | 'completed' | 'cancelled' | 'pending_parts';
+  status: 'in_progress' | 'completed' | 'approved' | 'cancelled' | 'pending_parts';
   notes: string | null;
   photos: string[];
   total_cost: number;
   downtime_minutes: number;
+  signature_url: string | null;
+  approver_id: string | null;
+  approved_at: string | null;
+  next_scheduled_date_after_approval: string | null;
   created_at: string;
   schedule?: MaintenanceSchedule;
   machine?: { id: string; name: string; code: string };

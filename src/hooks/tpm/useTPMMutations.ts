@@ -111,7 +111,7 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
         throw new Error('Registro não encontrado');
       }
 
-      // Update the main record
+      // Update the main record to 'completed' (Pending Approval)
       const { error: recordError } = await supabase
         .from('maintenance_records')
         .update({
@@ -120,7 +120,7 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
           notes: data.notes,
           total_cost: data.total_cost || 0,
           downtime_minutes: data.downtime_minutes || 0,
-          signature_url: data.signature, // Reuse field or map accordingly
+          signature_url: data.signature,
         })
         .eq('id', data.record_id);
       
@@ -158,24 +158,65 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
         if (partsError) throw partsError;
       }
 
-      const { data: scheduleData } = await supabase
-        .from('maintenance_schedules')
-        .select('interval_days')
-        .eq('id', recordData.schedule_id)
+      // Scheduling recalculation moved to approveMaintenance
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['maintenance-records'] });
+      queryClient.invalidateQueries({ queryKey: ['maintenance-schedules'] });
+      toast.success('Execução concluída e enviada para revisão');
+    },
+    onError: (error) => {
+      if (import.meta.env.DEV) console.error('[useTPM] completeMaintenance failed:', categorizeError(error), error);
+      showErrorToast(error, 'Erro ao concluir manutenção', TPM_ERROR_CONTEXT.records);
+    },
+  });
+
+  // Approve maintenance mutation
+  const approveMaintenance = useMutation({
+    mutationFn: async (data: {
+      record_id: string;
+      approver_id: string;
+    }) => {
+      const { data: recordData, error: recordFetchError } = await supabase
+        .from('maintenance_records')
+        .select('*, schedule:maintenance_schedules(*)')
+        .eq('id', data.record_id)
         .maybeSingle();
       
+      if (recordFetchError || !recordData) {
+        throw new Error('Registro não encontrado');
+      }
+
+      const scheduleData = recordData.schedule;
+      const nextDue = addDays(new Date(), scheduleData?.interval_days || 30).toISOString();
+
+      // Update the record to 'approved'
+      const { error: recordError } = await supabase
+        .from('maintenance_records')
+        .update({
+          status: 'approved',
+          approver_id: data.approver_id,
+          approved_at: new Date().toISOString(),
+          next_scheduled_date_after_approval: nextDue,
+        })
+        .eq('id', data.record_id);
+      
+      if (recordError) throw recordError;
+
+      // Update the schedule
       if (scheduleData) {
-        const nextDue = addDays(new Date(), scheduleData.interval_days).toISOString();
         const { error: scheduleError } = await supabase
           .from('maintenance_schedules')
           .update({
             last_completed_at: new Date().toISOString(),
             next_due_at: nextDue,
           })
-          .eq('id', recordData.schedule_id);
+          .eq('id', scheduleData.id);
+        
         if (scheduleError) throw scheduleError;
       }
 
+      // Resolve alerts
       await supabase
         .from('maintenance_alerts')
         .update({ is_resolved: true, resolved_at: new Date().toISOString() })
@@ -186,11 +227,11 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
       queryClient.invalidateQueries({ queryKey: ['maintenance-records'] });
       queryClient.invalidateQueries({ queryKey: ['maintenance-schedules'] });
       queryClient.invalidateQueries({ queryKey: ['maintenance-alerts'] });
-      toast.success('Manutenção concluída');
+      toast.success('Manutenção aprovada e próximo agendamento atualizado');
     },
     onError: (error) => {
-      if (import.meta.env.DEV) console.error('[useTPM] completeMaintenance failed:', categorizeError(error), error);
-      showErrorToast(error, 'Erro ao concluir manutenção', TPM_ERROR_CONTEXT.records);
+      if (import.meta.env.DEV) console.error('[useTPM] approveMaintenance failed:', categorizeError(error), error);
+      showErrorToast(error, 'Erro ao aprovar manutenção', TPM_ERROR_CONTEXT.records);
     },
   });
 
@@ -276,6 +317,7 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
   return {
     createSchedule,
     startMaintenance,
+    approveMaintenance,
     completeMaintenance,
     checkAndGenerateAlerts,
     resolveAlert,
