@@ -33,7 +33,7 @@ export const useTechnicalSheets = () => {
           .order('technique_id', { ascending: true });
 
         if (error) throw error;
-        return data as TechnicalSheet[];
+        return data as unknown as TechnicalSheet[];
       } catch (error) {
         const appError = createAppError(error, SHEETS_ERROR_CONTEXT.sheets);
         if (import.meta.env.DEV) console.error('[useTechnicalSheets]', appError);
@@ -132,7 +132,7 @@ export const useTechnicalSheetDetails = (sheetId: string | null) => {
 
         if (error) throw error;
         if (!data) return null;
-        return data as TechnicalSheet;
+        return data as unknown as TechnicalSheet;
       } catch (error) {
         const appError = createAppError(error, SHEETS_ERROR_CONTEXT.sheetDetails);
         if (import.meta.env.DEV) console.error('[useTechnicalSheetDetails]', appError);

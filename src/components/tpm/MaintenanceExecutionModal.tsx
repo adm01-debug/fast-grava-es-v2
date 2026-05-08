@@ -9,7 +9,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
-import { Wrench, CheckCircle2, Camera, AlertTriangle, Clock, Plus, Trash2, PenTool, Zap, MoveHorizontal, Thermometer } from 'lucide-react';
+import { Wrench, CheckCircle2, Camera, AlertTriangle, Clock, Plus, Trash2, PenTool, Zap, MoveHorizontal, Thermometer, Info, CheckSquare } from 'lucide-react';
 import { MaintenanceSchedule, MaintenanceChecklist, MaintenanceChecklistItem } from '@/hooks/tpm/types';
 import { useTPM } from '@/hooks/useTPM';
 import { useTechnicalSheets } from '@/hooks/useTechnicalSheets';
@@ -32,6 +32,7 @@ interface MaintenanceExecutionModalProps {
     checklist_snapshot?: any;
     technical_sheet_id?: string;
     technical_sheet_version?: number;
+    quality_responses?: any[];
     adjustment_parameters?: any;
   }) => void;
 }
@@ -52,6 +53,7 @@ export function MaintenanceExecutionModal({
     speed: '',
     temperature: ''
   });
+  const [qualityResponses, setQualityResponses] = useState<Record<string, boolean>>({});
   const [parameterAlerts, setParameterAlerts] = useState<string[]>([]);
   
   const [notes, setNotes] = useState('');
@@ -173,6 +175,21 @@ export function MaintenanceExecutionModal({
       }
     }
 
+    // Validação de Requisitos de Qualidade da Ficha Técnica
+    if (selectedSheetId) {
+      const sheet = technicalSheets.find(s => s.id === selectedSheetId);
+      if (sheet?.quality_checklist && sheet.quality_checklist.length > 0) {
+        const missingQuality = sheet.quality_checklist.filter(item => 
+          item.required && !qualityResponses[item.id]
+        );
+
+        if (missingQuality.length > 0) {
+          toast.error(`Existem requisitos de qualidade obrigatórios não atendidos.`);
+          return;
+        }
+      }
+    }
+
     // Validação de parâmetros de regulagem
     if (selectedSheetId) {
       const sheet = technicalSheets.find(s => s.id === selectedSheetId);
@@ -221,6 +238,10 @@ export function MaintenanceExecutionModal({
       checklist_snapshot: checklist,
       technical_sheet_id: selectedSheetId || undefined,
       technical_sheet_version: selectedSheetId ? (technicalSheets.find(s => s.id === selectedSheetId)?.version) : undefined,
+      quality_responses: Object.entries(qualityResponses).map(([id, confirmed]) => ({
+        id,
+        confirmed
+      })),
       adjustment_parameters: {
         ...adjustmentParams,
         recommended: selectedSheetId ? (technicalSheets.find(s => s.id === selectedSheetId)?.machine_settings) : null,
@@ -405,6 +426,41 @@ export function MaintenanceExecutionModal({
                     );
                   })}
                 </div>
+
+                {selectedSheetId && technicalSheets.find(s => s.id === selectedSheetId)?.setup_instructions && (
+                  <div className="p-4 rounded-lg bg-blue-500/5 border border-blue-500/10 space-y-2">
+                    <Label className="text-xs text-blue-700 font-bold uppercase flex items-center gap-1">
+                      <Info className="h-3 w-3" /> Setup e Preparação
+                    </Label>
+                    <p className="text-xs text-blue-800 whitespace-pre-wrap">
+                      {technicalSheets.find(s => s.id === selectedSheetId)?.setup_instructions}
+                    </p>
+                  </div>
+                )}
+
+                {selectedSheetId && technicalSheets.find(s => s.id === selectedSheetId)?.quality_checklist && (technicalSheets.find(s => s.id === selectedSheetId)?.quality_checklist?.length || 0) > 0 && (
+                  <div className="space-y-3 pt-2">
+                    <Label className="text-sm font-semibold flex items-center gap-2">
+                      <CheckSquare className="h-4 w-4 text-emerald-500" />
+                      Checklist de Qualidade
+                    </Label>
+                    <div className="grid grid-cols-1 gap-2">
+                      {technicalSheets.find(s => s.id === selectedSheetId)?.quality_checklist?.map((item) => (
+                        <div key={item.id} className="flex items-center gap-3 p-3 rounded-lg bg-emerald-500/5 border border-emerald-500/10">
+                          <Checkbox 
+                            id={`quality-${item.id}`}
+                            checked={qualityResponses[item.id] || false}
+                            onCheckedChange={(checked) => setQualityResponses(prev => ({ ...prev, [item.id]: !!checked }))}
+                          />
+                          <Label htmlFor={`quality-${item.id}`} className="text-sm cursor-pointer flex-1">
+                            {item.description}
+                            {item.required && <span className="text-destructive ml-1">*</span>}
+                          </Label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 

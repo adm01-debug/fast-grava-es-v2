@@ -91,6 +91,7 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
       technical_sheet_id?: string;
       technical_sheet_version?: number;
       adjustment_parameters?: any;
+      quality_responses?: any[];
       responses?: Array<{
         checklist_item_id: string;
         is_checked: boolean;
@@ -131,6 +132,7 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
           technical_sheet_id: data.technical_sheet_id,
           technical_sheet_version: data.technical_sheet_version,
           adjustment_parameters: data.adjustment_parameters,
+          quality_responses: data.quality_responses,
         })
         .eq('id', data.record_id);
       
