@@ -16,9 +16,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 interface UserProfile {
   id: string;
-  email: string;
-  full_name: string;
-  avatar_url: string;
+  email?: string;
+  full_name: string | null;
+  avatar_url: string | null;
   role: AppRole;
   is_active: boolean;
   created_at: string;
@@ -46,7 +46,7 @@ export default function UserManagementPage() {
 
       if (rolesError) throw rolesError;
 
-      const combinedData = profiles.map(profile => {
+      const combinedData: UserProfile[] = profiles.map(profile => {
         const userRole = roles.find(r => r.user_id === profile.id);
         return {
           ...profile,
