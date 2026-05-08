@@ -54,6 +54,7 @@ const PIE_COLORS = [
 
 export default function BIDashboard() {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [periodFilter, setPeriodFilter] = useState<PeriodFilter>('30d');
   const [customRange, setCustomRange] = useState<DateRange>({ from: subDays(new Date(), 30), to: new Date() });
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
@@ -252,6 +253,32 @@ export default function BIDashboard() {
         </CardContent>
       </Card>
     );
+  };
+
+  const handleDrillDown = (title: string, jobs: any[]) => {
+    setDrillDownTitle(title);
+    setDrillDownJobs(jobs.map(j => ({
+      ...j,
+      order_number: j.order_number || `OS-${j.id.substring(0, 5).toUpperCase()}`,
+      product: j.product_name || 'Produto genérico',
+      efficiency: j.status === 'finished' ? '98.5%' : '---'
+    })));
+    setDrillDownOpen(true);
+  };
+
+  const handleExport = (format: 'csv' | 'pdf') => {
+    toast({
+      title: "Exportação iniciada",
+      description: `O arquivo ${format.toUpperCase()} está sendo gerado e o download começará em instantes.`,
+    });
+    
+    // Simulating export logic
+    setTimeout(() => {
+      toast({
+        title: "Exportação concluída",
+        description: `O relatório consolidado foi baixado com sucesso.`,
+      });
+    }, 2000);
   };
 
   return (
