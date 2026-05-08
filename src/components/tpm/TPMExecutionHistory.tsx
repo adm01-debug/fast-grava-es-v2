@@ -19,7 +19,7 @@ import { ptBR } from 'date-fns/locale';
 import { ExecutionDetailsModal } from './ExecutionDetailsModal';
 
 export function TPMExecutionHistory() {
-  const { records, machines, isLoading, approveMaintenance } = useTPM();
+  const { records, machines, isLoading, approveBatch } = useTPM();
   const { user } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [machineFilter, setMachineFilter] = useState('all');
@@ -93,26 +93,15 @@ export function TPMExecutionHistory() {
 
   const handleApproveBatch = async () => {
     if (!user || selectedIds.length === 0) return;
-    setIsBatchProcessing(true);
-    let successCount = 0;
     
     try {
-      for (const id of selectedIds) {
-        const record = records.find(r => r.id === id);
-        if (record?.status === 'completed') {
-          await approveMaintenance.mutateAsync({
-            record_id: id,
-            approver_id: user.id
-          });
-          successCount++;
-        }
-      }
-      toast.success(`${successCount} execuções aprovadas com sucesso.`);
+      await approveBatch.mutateAsync({
+        record_ids: selectedIds,
+        approver_id: user.id
+      });
       setSelectedIds([]);
     } catch (error) {
-      toast.error("Erro no processamento em lote. Verifique se há itens com pendências.");
-    } finally {
-      setIsBatchProcessing(false);
+      // Handled by mutation
     }
   };
 
@@ -135,9 +124,9 @@ export function TPMExecutionHistory() {
                 variant="default" 
                 className="bg-emerald-600 hover:bg-emerald-700 animate-in fade-in zoom-in-95 gap-2"
                 onClick={handleApproveBatch}
-                disabled={isBatchProcessing}
+                disabled={approveBatch.isPending}
               >
-                {isBatchProcessing ? <Clock className="h-4 w-4 animate-spin" /> : <CheckSquare className="h-4 w-4" />}
+                {approveBatch.isPending ? <Clock className="h-4 w-4 animate-spin" /> : <CheckSquare className="h-4 w-4" />}
                 Aprovar Selecionados ({selectedIds.length})
               </Button>
             )}
