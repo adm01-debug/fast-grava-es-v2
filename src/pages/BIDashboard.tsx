@@ -16,7 +16,7 @@ import { BIPeriodFilters } from '@/components/bi/BIPeriodFilters';
 import { BIHeader } from '@/components/bi/BIHeader';
 import { FuturisticBI } from '@/components/bi/FuturisticBI';
 import { DrillDownDialog } from '@/components/bi/drilldown/DrillDownDialog';
-import { toast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 import {
   TrendingUp, AlertTriangle, Printer, CheckCircle, Clock, Target,
   BarChart3, PieChart, LineChart, ArrowUp, ArrowDown, Minus,
