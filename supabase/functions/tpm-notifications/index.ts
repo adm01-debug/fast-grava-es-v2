@@ -22,12 +22,12 @@ serve(async (req) => {
     // 1. Verificar manutenções que precisam ser notificadas (Regras atuais)
     // Buscamos manutenções pendentes/atrasadas
     const { data: schedules, error: scheduleError } = await supabase
-      .from('tpm_schedules')
+      .from('maintenance_schedules')
       .select(`
         *,
         machine:machines(id, name, code)
       `)
-      .in('status', ['pending', 'overdue'])
+      .eq('is_active', true)
 
     if (scheduleError) throw scheduleError
 
