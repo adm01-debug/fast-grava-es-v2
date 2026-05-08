@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Bell, BellOff, Volume2, VolumeX, Clock, AlertTriangle, AlertCircle, Calendar, Mail, MessageCircle, Settings, Check, Send, History, Layout, Users, ShieldCheck, X } from 'lucide-react';
+import { Bell, BellOff, Volume2, VolumeX, Clock, AlertTriangle, AlertCircle, Calendar, Mail, MessageCircle, Settings, Check, Send, History, Layout, Users, ShieldCheck, X, ListTodo, Activity } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
@@ -17,6 +17,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { TPMNotificationTemplates } from './TPMNotificationTemplates';
 import { TPMNotificationLogs } from './TPMNotificationLogs';
 import { TPMSeverityConfigs } from './TPMSeverityConfigs';
+import { TPMNotificationQueue } from './TPMNotificationQueue';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
@@ -80,12 +81,15 @@ export function TPMNotificationSettings() {
   return (
     <>
     <Tabs defaultValue="channels" className="space-y-4">
-      <TabsList className="grid w-full grid-cols-3 lg:w-fit">
+      <TabsList className="grid w-full grid-cols-4 lg:w-fit">
         <TabsTrigger value="channels" className="flex items-center gap-2">
           <Settings className="h-4 w-4" /> Canais e Regras
         </TabsTrigger>
         <TabsTrigger value="templates" className="flex items-center gap-2">
           <Layout className="h-4 w-4" /> Templates
+        </TabsTrigger>
+        <TabsTrigger value="queue" className="flex items-center gap-2">
+          <Activity className="h-4 w-4" /> Fila e Status
         </TabsTrigger>
         <TabsTrigger value="audit" className="flex items-center gap-2">
           <History className="h-4 w-4" /> Auditoria
@@ -283,6 +287,18 @@ export function TPMNotificationSettings() {
           </CardHeader>
           <CardContent>
             <TPMNotificationTemplates />
+          </CardContent>
+        </Card>
+      </TabsContent>
+
+      <TabsContent value="queue">
+        <Card className="glass-card">
+          <CardHeader>
+            <CardTitle>Status da Fila de Notificações</CardTitle>
+            <CardDescription>Acompanhe o processamento em tempo real e gerencie retentativas.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <TPMNotificationQueue />
           </CardContent>
         </Card>
       </TabsContent>
