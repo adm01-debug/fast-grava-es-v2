@@ -286,7 +286,7 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
         />
         <FuturisticStatCard 
           title="Receita Estimada" 
-          value={`R$ ${(biMetrics.periodCompletedPieces * 2.5).toLocaleString()}`} 
+          value={`R$ ${(biMetrics.periodCompletedPieces * 2.5).toLocaleString('pt-BR', { maximumFractionDigits: 0 })}`} 
           subtitle="Projeção de Faturamento"
           icon={TrendingUp} 
           trend="up"
@@ -295,6 +295,17 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
           glowColor="primary"
           onExport={(format: 'csv' | 'pdf') => handleExport(format, 'Receita_Estimada')}
           onClick={() => handleDrillDown('PROJEÇÃO DE RECEITA', 'revenue')}
+        />
+        <FuturisticStatCard 
+          title="Balanceamento" 
+          value={`${balanceMetrics.score.toFixed(0)}%`} 
+          subtitle={balanceMetrics.status}
+          icon={RefreshCcw} 
+          variant={balanceMetrics.score < 70 ? 'danger' : balanceMetrics.score < 90 ? 'warning' : 'success'}
+          gradient={balanceMetrics.score < 70 ? GRADIENTS.danger : balanceMetrics.score < 90 ? GRADIENTS.warning : GRADIENTS.success}
+          glowColor={balanceMetrics.score < 70 ? 'danger' : balanceMetrics.score < 90 ? 'warning' : 'success'}
+          onExport={(format: 'csv' | 'pdf') => handleExport(format, 'Load_Balancing')}
+          onClick={() => navigate('/admin/telemetria')}
         />
       </div>
 
