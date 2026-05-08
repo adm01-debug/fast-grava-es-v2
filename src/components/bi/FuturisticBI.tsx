@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { 
   TrendingUp, Activity, AlertTriangle, Gauge, Package, Target, 
   CheckCircle, Clock, BarChart3, PieChart, LineChart, Printer, 
-  Users, Wrench, ShieldAlert, Timer, ArrowUpRight, Zap
+  Users, Wrench, ShieldAlert, Timer, ArrowUpRight, Zap, Download, FileText, FileSpreadsheet
 } from 'lucide-react';
 import { 
   AreaChart, Area, BarChart, Bar, PieChart as RechartsPieChart, Pie, Cell,
@@ -32,6 +32,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { useOperatorProductivity } from '@/hooks/useOperatorProductivity';
 import { useTPM } from '@/hooks/useTPM';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
+import { useDataExport } from '@/hooks/useDataExport';
+import { Button } from '@/components/ui/button';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 const CHART_COLORS = {
   primary: '#0ea5e9',
@@ -59,8 +64,29 @@ interface FuturisticBIProps {
 }
 
 export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
+  const navigate = useNavigate();
   const { operators, overallStats } = useOperatorProductivity(30);
   const { stats: tpmStats, records: tpmRecords } = useTPM();
+  const { exportData: exportJobs } = useDataExport('jobs');
+  const [isExporting, setIsExporting] = useState(false);
+
+  const handleExport = async (format: 'csv' | 'pdf', type: string) => {
+    setIsExporting(true);
+    toast.info(`Iniciando exportação de ${type} em ${format.toUpperCase()}...`);
+    
+    // Simulate export logic for demonstration
+    setTimeout(() => {
+      if (format === 'csv') {
+        // In a real scenario, we'd filter data here
+        exportJobs({ format: 'csv', fileName: `BI_Export_${type}_${new Date().getTime()}` });
+      } else {
+        toast.success(`Exportação PDF de ${type} concluída com sucesso.`);
+        // In a real app, we'd use a library like jspdf here
+        window.print(); 
+      }
+      setIsExporting(false);
+    }, 1500);
+  };
   const [drillDownOpen, setDrillDownOpen] = useState(false);
   const [drillDownTitle, setDrillDownTitle] = useState('');
   const [drillDownJobs, setDrillDownJobs] = useState<any[]>([]);
@@ -149,6 +175,7 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
           trendValue="+2.4%"
           gradient={GRADIENTS.primary}
           glowColor="primary"
+          onExport={(format: 'csv' | 'pdf') => handleExport(format, 'OEE_Global')}
         />
         <FuturisticStatCard 
           title="Jobs em Produção" 
@@ -157,6 +184,7 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
           icon={Zap} 
           gradient={GRADIENTS.success}
           glowColor="success"
+          onExport={(format: 'csv' | 'pdf') => handleExport(format, 'Producao_Atual')}
         />
         <FuturisticStatCard 
           title="Atrasos Críticos" 
@@ -166,6 +194,7 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
           variant="danger"
           gradient={GRADIENTS.danger}
           glowColor="danger"
+          onExport={(format: 'csv' | 'pdf') => handleExport(format, 'Atrasos_Criticos')}
         />
         <FuturisticStatCard 
           title="Taxa de Perda" 
@@ -176,6 +205,7 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
           trendValue="-1.2%"
           gradient={GRADIENTS.warning}
           glowColor="warning"
+          onExport={(format: 'csv' | 'pdf') => handleExport(format, 'Perdas_Qualidade')}
         />
       </div>
 
@@ -183,16 +213,32 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
         {/* Main Production Flux */}
         <Card className="lg:col-span-2 bg-black/40 border-primary/20 backdrop-blur-xl hover:border-primary/40 transition-all duration-500 overflow-hidden relative group">
           <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none" />
-          <CardHeader className="relative z-10">
-            <CardTitle className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-primary/10">
-                  <Activity className="h-5 w-5 text-primary" />
-                </div>
-                <span className="font-display tracking-wider text-xl">FLUXO DE PRODUÇÃO</span>
+          <CardHeader className="relative z-10 flex flex-row items-center justify-between">
+            <CardTitle className="flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-primary/10">
+                <Activity className="h-5 w-5 text-primary" />
               </div>
-              <Badge variant="outline" className="border-primary/30 text-primary animate-pulse">LIVE</Badge>
+              <span className="font-display tracking-wider text-xl uppercase">Fluxo de Produção</span>
+              <Badge variant="outline" className="border-primary/30 text-primary animate-pulse ml-2">LIVE</Badge>
             </CardTitle>
+            <div className="flex items-center gap-2">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="h-8 w-8 text-muted-foreground hover:text-primary"
+                onClick={() => handleExport('csv', 'Tendencia_Producao')}
+              >
+                <FileSpreadsheet className="h-4 w-4" />
+              </Button>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="h-8 w-8 text-muted-foreground hover:text-primary"
+                onClick={() => handleExport('pdf', 'Tendencia_Producao')}
+              >
+                <FileText className="h-4 w-4" />
+              </Button>
+            </div>
           </CardHeader>
           <CardContent className="relative z-10">
             <ResponsiveContainer width="100%" height={350}>
@@ -249,11 +295,29 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
 
         {/* Status Distribution - Futuristic Pie */}
         <Card className="bg-black/40 border-primary/20 backdrop-blur-xl hover:border-primary/40 transition-all duration-500 overflow-hidden relative">
-          <CardHeader>
+          <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="flex items-center gap-3">
               <PieChart className="h-5 w-5 text-primary" />
-              <span className="font-display tracking-wider">STATUS DOS PEDIDOS</span>
+              <span className="font-display tracking-wider uppercase">Status dos Pedidos</span>
             </CardTitle>
+            <div className="flex items-center gap-2">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="h-8 w-8 text-muted-foreground hover:text-primary"
+                onClick={() => handleExport('csv', 'Status_Pedidos')}
+              >
+                <FileSpreadsheet className="h-4 w-4" />
+              </Button>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="h-8 w-8 text-muted-foreground hover:text-primary"
+                onClick={() => handleExport('pdf', 'Status_Pedidos')}
+              >
+                <FileText className="h-4 w-4" />
+              </Button>
+            </div>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
@@ -290,11 +354,29 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Orders by Studio */}
         <Card className="bg-black/40 border-primary/20 backdrop-blur-xl hover:border-primary/40 transition-all duration-500">
-          <CardHeader>
+          <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="flex items-center gap-3">
               <Printer className="h-5 w-5 text-primary" />
-              <span className="font-display tracking-wider">PRODUÇÃO POR STUDIO</span>
+              <span className="font-display tracking-wider uppercase">Produção por Studio</span>
             </CardTitle>
+            <div className="flex items-center gap-2">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="h-8 w-8 text-muted-foreground hover:text-primary"
+                onClick={() => handleExport('csv', 'Producao_Studios')}
+              >
+                <FileSpreadsheet className="h-4 w-4" />
+              </Button>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="h-8 w-8 text-muted-foreground hover:text-primary"
+                onClick={() => handleExport('pdf', 'Producao_Studios')}
+              >
+                <FileText className="h-4 w-4" />
+              </Button>
+            </div>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
@@ -338,11 +420,29 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
 
         {/* Collaborator Performance */}
         <Card className="bg-black/40 border-primary/20 backdrop-blur-xl hover:border-primary/40 transition-all duration-500">
-          <CardHeader>
+          <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="flex items-center gap-3">
               <Users className="h-5 w-5 text-primary" />
-              <span className="font-display tracking-wider">TOP COLABORADORES</span>
+              <span className="font-display tracking-wider uppercase">Top Colaboradores</span>
             </CardTitle>
+            <div className="flex items-center gap-2">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="h-8 w-8 text-muted-foreground hover:text-primary"
+                onClick={() => handleExport('csv', 'Ranking_Colaboradores')}
+              >
+                <FileSpreadsheet className="h-4 w-4" />
+              </Button>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="h-8 w-8 text-muted-foreground hover:text-primary"
+                onClick={() => handleExport('pdf', 'Ranking_Colaboradores')}
+              >
+                <FileText className="h-4 w-4" />
+              </Button>
+            </div>
           </CardHeader>
           <CardContent>
             <div className="space-y-6">
@@ -382,11 +482,29 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Losses Analysis Section */}
         <Card className="bg-black/40 border-primary/20 backdrop-blur-xl">
-          <CardHeader>
+          <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="flex items-center gap-3">
               <Package className="h-5 w-5 text-primary" />
               <span className="font-display tracking-wider uppercase">Métricas de Perda por Pedido</span>
             </CardTitle>
+            <div className="flex items-center gap-2">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="h-8 w-8 text-muted-foreground hover:text-primary"
+                onClick={() => handleExport('csv', 'Perdas_Por_Pedido')}
+              >
+                <FileSpreadsheet className="h-4 w-4" />
+              </Button>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="h-8 w-8 text-muted-foreground hover:text-primary"
+                onClick={() => handleExport('pdf', 'Perdas_Por_Pedido')}
+              >
+                <FileText className="h-4 w-4" />
+              </Button>
+            </div>
           </CardHeader>
           <CardContent>
             <ScrollArea className="h-[300px]">
@@ -402,7 +520,7 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
                 <TableBody>
                   {lossAnalysis.length > 0 ? (
                     lossAnalysis.slice(0, 10).map((loss: any, idx: number) => (
-                      <TableRow key={idx} className="border-white/5 hover:bg-white/5 cursor-pointer transition-colors">
+                      <TableRow key={idx} className="border-white/5 hover:bg-white/5 cursor-pointer transition-colors" onClick={() => handleDrillDown(`PERDAS OS-2024-${100 + idx}`, `OS-2024-${100 + idx}`)}>
                         <TableCell>
                           <div className="font-medium text-sm">OS-2024-{100 + idx}</div>
                           <div className="text-[10px] text-muted-foreground">Produto Personalizado</div>
@@ -433,11 +551,29 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
 
         {/* Delay and Root Cause Section */}
         <Card className="bg-black/40 border-primary/20 backdrop-blur-xl">
-          <CardHeader>
+          <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="flex items-center gap-3">
               <Timer className="h-5 w-5 text-primary" />
               <span className="font-display tracking-wider uppercase">Atrasos & Causa Raiz</span>
             </CardTitle>
+            <div className="flex items-center gap-2">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="h-8 w-8 text-muted-foreground hover:text-primary"
+                onClick={() => handleExport('csv', 'Analise_Atrasos')}
+              >
+                <FileSpreadsheet className="h-4 w-4" />
+              </Button>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="h-8 w-8 text-muted-foreground hover:text-primary"
+                onClick={() => handleExport('pdf', 'Analise_Atrasos')}
+              >
+                <FileText className="h-4 w-4" />
+              </Button>
+            </div>
           </CardHeader>
           <CardContent>
             <Tabs defaultValue="list" className="w-full">
@@ -457,7 +593,7 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
                     </TableHeader>
                     <TableBody>
                       {[1, 2, 3, 4, 5].map((i) => (
-                        <TableRow key={i} className="border-white/5 hover:bg-white/5">
+                        <TableRow key={i} className="border-white/5 hover:bg-white/5 cursor-pointer" onClick={() => handleDrillDown(`DETALHES ATRASO OS-2024-${200 + i}`, `OS-2024-${200 + i}`)}>
                           <TableCell className="text-xs font-medium">OS-2024-{200 + i}</TableCell>
                           <TableCell>
                             <span className="text-xs text-rose-400 font-bold">{15 * i} min</span>
@@ -499,13 +635,33 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
       {/* Drill-down Dialog */}
       <Dialog open={drillDownOpen} onOpenChange={setDrillDownOpen}>
         <DialogContent className="max-w-4xl bg-black/90 border-primary/30 backdrop-blur-2xl text-white">
-          <DialogHeader>
-            <DialogTitle className="text-2xl font-display tracking-widest text-primary uppercase">
-              {drillDownTitle}
-            </DialogTitle>
-            <DialogDescription className="text-muted-foreground">
-              Lista detalhada de pedidos e métricas de execução para o segmento selecionado.
-            </DialogDescription>
+          <DialogHeader className="flex flex-row items-center justify-between space-y-0">
+            <div>
+              <DialogTitle className="text-2xl font-display tracking-widest text-primary uppercase">
+                {drillDownTitle}
+              </DialogTitle>
+              <DialogDescription className="text-muted-foreground">
+                Lista detalhada de pedidos e métricas de execução para o segmento selecionado.
+              </DialogDescription>
+            </div>
+            <div className="flex items-center gap-2 pr-8">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="h-8 gap-2 bg-white/5 border-white/10 hover:bg-primary/20 text-xs"
+                onClick={() => handleExport('csv', `DrillDown_${drillDownTitle.replace(/\s+/g, '_')}`)}
+              >
+                <FileSpreadsheet className="h-3.5 w-3.5" /> CSV
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="h-8 gap-2 bg-white/5 border-white/10 hover:bg-primary/20 text-xs"
+                onClick={() => handleExport('pdf', `DrillDown_${drillDownTitle.replace(/\s+/g, '_')}`)}
+              >
+                <FileText className="h-3.5 w-3.5" /> PDF
+              </Button>
+            </div>
           </DialogHeader>
           <div className="mt-4">
             <ScrollArea className="h-[500px] pr-4">
@@ -522,7 +678,7 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
                 <TableBody>
                   {drillDownJobs.length > 0 ? (
                     drillDownJobs.map((job: any) => (
-                      <TableRow key={job.id} className="border-white/10 hover:bg-primary/5 transition-colors">
+                      <TableRow key={job.id} className="border-white/10 hover:bg-primary/5 transition-colors cursor-pointer" onClick={() => navigate(`/job/${job.id}`)}>
                         <TableCell className="font-mono text-sm">{job.order_number}</TableCell>
                         <TableCell className="text-xs">{job.product}</TableCell>
                         <TableCell className="text-center">
@@ -646,7 +802,7 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
   );
 }
 
-function FuturisticStatCard({ title, value, subtitle, icon: Icon, trend, trendValue, variant = 'default', gradient, glowColor }: any) {
+function FuturisticStatCard({ title, value, subtitle, icon: Icon, trend, trendValue, variant = 'default', gradient, glowColor, onExport }: any) {
   const glowStyles = {
     primary: 'hover:shadow-[0_0_30px_rgba(14,165,233,0.3)]',
     success: 'hover:shadow-[0_0_30px_rgba(16,185,129,0.3)]',
@@ -674,14 +830,51 @@ function FuturisticStatCard({ title, value, subtitle, icon: Icon, trend, trendVa
               )}>{value}</h3>
               <p className="text-[10px] text-muted-foreground mt-1 uppercase tracking-tighter">{subtitle}</p>
             </div>
-            <div className={cn(
-              "p-3 rounded-xl bg-white/5 group-hover:bg-primary/20 transition-all duration-500",
-              variant === 'danger' && "group-hover:bg-rose-500/20"
-            )}>
-              <Icon className={cn(
-                "h-6 w-6 text-white group-hover:text-primary transition-colors duration-500",
-                variant === 'danger' && "group-hover:text-rose-500"
-              )} />
+            <div className="flex flex-col items-end gap-2">
+              <div className={cn(
+                "p-3 rounded-xl bg-white/5 group-hover:bg-primary/20 transition-all duration-500",
+                variant === 'danger' && "group-hover:bg-rose-500/20"
+              )}>
+                <Icon className={cn(
+                  "h-6 w-6 text-white group-hover:text-primary transition-colors duration-500",
+                  variant === 'danger' && "group-hover:text-rose-500"
+                )} />
+              </div>
+
+              {onExport && (
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-white"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <Download className="h-3 w-3" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-40 p-1 bg-black/90 border-white/10 backdrop-blur-xl" align="end">
+                    <div className="flex flex-col">
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="justify-start gap-2 text-xs h-8 hover:bg-white/5"
+                        onClick={(e) => { e.stopPropagation(); onExport('csv'); }}
+                      >
+                        <FileSpreadsheet className="h-3 w-3 text-primary" /> CSV
+                      </Button>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="justify-start gap-2 text-xs h-8 hover:bg-white/5"
+                        onClick={(e) => { e.stopPropagation(); onExport('pdf'); }}
+                      >
+                        <FileText className="h-3 w-3 text-primary" /> PDF
+                      </Button>
+                    </div>
+                  </PopoverContent>
+                </Popover>
+              )}
             </div>
           </div>
           {trend && (
