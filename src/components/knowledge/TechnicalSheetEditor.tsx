@@ -36,6 +36,8 @@ export const TechnicalSheetEditor = ({ sheetId, techniques, categories, material
     speed_min: '', speed_max: '',
     temperature_min: '', temperature_max: '',
     gap_specifications: '', challenges_notes: '', failure_scenarios: '', quality_requirements: '',
+    setup_instructions: '',
+    quality_checklist: [] as Array<{ id: string; description: string; required: boolean }>,
     version: '1'
   });
 
