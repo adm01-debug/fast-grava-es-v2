@@ -23,6 +23,7 @@ export function BIStatCard({ title, value, subtitle, icon: Icon, trend, trendVal
   const TrendIcon = trend === 'up' ? ArrowUp : trend === 'down' ? ArrowDown : Minus;
   const trendColor = trend === 'up' ? 'text-success' : trend === 'down' ? 'text-primary' : 'text-muted-foreground';
 
+  return (
     <Card 
       onClick={onClick}
       className={cn(
