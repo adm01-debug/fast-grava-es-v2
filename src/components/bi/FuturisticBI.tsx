@@ -29,6 +29,7 @@ import { FuturisticStatCard } from './FuturisticStatCard';
 import { useBIExport } from '@/hooks/useBIExport';
 import { BITooltip } from './BITooltip';
 import { BIEmptyState } from './BIEmptyState';
+import { BIAIInsights } from './BIAIInsights';
 
 
 
@@ -43,6 +44,9 @@ interface FuturisticBIProps {
     dailyTrend: any[];
     statusDistribution: any[];
     machineUtilization: any[];
+    periodCompletedJobs: number;
+    periodCompletedPieces: number;
+    periodLostPieces: number;
   };
   kpis: {
     inProgressJobs: number;
@@ -98,6 +102,11 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
   const [drillDownOpen, setDrillDownOpen] = useState(false);
   const [drillDownTitle, setDrillDownTitle] = useState('');
   const [drillDownJobs, setDrillDownJobs] = useState<any[]>([]);
+  const [visibleSeries, setVisibleSeries] = useState<Record<string, boolean>>({ produced: true, lost: true });
+
+  const toggleSeries = (key: string) => {
+    setVisibleSeries(prev => ({ ...prev, [key]: !prev[key] }));
+  };
 
   const handleDrillDown = (title: string, segment: string) => {
     setDrillDownTitle(title);
@@ -165,6 +174,24 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
       };
     }).sort((a, b) => b.jobs - a.jobs);
   }, [biMetrics.machineUtilization]);
+
+  // Balance Score Calculation
+  const balanceMetrics = useMemo(() => {
+    if (studioData.length < 2) return { score: 100, status: 'Balanced' };
+    const values = studioData.map(s => s.jobs);
+    const max = Math.max(...values);
+    const min = Math.min(...values);
+    const diff = max - min;
+    const avg = values.reduce((a, b) => a + b, 0) / values.length;
+    const deviation = (diff / avg) * 100;
+    
+    let status = 'Equilibrado';
+    let color = 'text-success';
+    if (deviation > 50) { status = 'Desequilibrado'; color = 'text-destructive'; }
+    else if (deviation > 25) { status = 'Atenção'; color = 'text-warning'; }
+    
+    return { score: Math.max(0, 100 - deviation), status, color, deviation };
+  }, [studioData]);
 
   // Derived data for "Losses per Job"
   const lossAnalysis = useMemo(() => {
@@ -258,7 +285,7 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
         />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Main Production Flux */}
         <Card className="lg:col-span-2 bg-black/40 border-primary/20 backdrop-blur-xl hover:border-primary/40 transition-all duration-500 overflow-hidden relative group">
           <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none" />
@@ -280,7 +307,24 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
               </div>
 
             </CardTitle>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3 mr-4">
+                <button 
+                  onClick={() => toggleSeries('produced')}
+                  className={cn("flex items-center gap-1.5 transition-opacity", !visibleSeries.produced && "opacity-30")}
+                >
+                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: CHART_COLORS.primary }} />
+                  <span className="text-[10px] uppercase font-bold text-white/70">Produzido</span>
+                </button>
+                <button 
+                  onClick={() => toggleSeries('lost')}
+                  className={cn("flex items-center gap-1.5 transition-opacity", !visibleSeries.lost && "opacity-30")}
+                >
+                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: CHART_COLORS.danger }} />
+                  <span className="text-[10px] uppercase font-bold text-white/70">Perda</span>
+                </button>
+              </div>
+              <div className="flex items-center gap-2">
               <Button 
                 variant="ghost" 
                 size="icon" 
@@ -298,7 +342,8 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
                 <FileText className="h-4 w-4" />
               </Button>
             </div>
-          </CardHeader>
+          </div>
+        </CardHeader>
           <CardContent className="relative z-10">
             <ResponsiveContainer width="100%" height={350}>
               <AreaChart 
@@ -329,22 +374,26 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
                 />
                 <Tooltip content={<BITooltip showPercentage />} />
 
-                <Area 
-                  type="monotone" 
-                  dataKey="produced" 
-                  stroke={CHART_COLORS.primary} 
-                  strokeWidth={4}
-                  fill="url(#glowPrimary)"
-                  animationDuration={2000}
-                />
-                <Area 
-                  type="monotone" 
-                  dataKey="lost" 
-                  stroke={CHART_COLORS.danger} 
-                  strokeWidth={2}
-                  fill="rgba(239, 44, 44, 0.1)"
-                  strokeDasharray="5 5"
-                />
+                {visibleSeries.produced && (
+                  <Area 
+                    type="monotone" 
+                    dataKey="produced" 
+                    stroke={CHART_COLORS.primary} 
+                    strokeWidth={4}
+                    fill="url(#glowPrimary)"
+                    animationDuration={2000}
+                  />
+                )}
+                {visibleSeries.lost && (
+                  <Area 
+                    type="monotone" 
+                    dataKey="lost" 
+                    stroke={CHART_COLORS.danger} 
+                    strokeWidth={2}
+                    fill="rgba(239, 44, 44, 0.1)"
+                    strokeDasharray="5 5"
+                  />
+                )}
               </AreaChart>
             </ResponsiveContainer>
           </CardContent>
@@ -406,6 +455,9 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
             </div>
           </CardContent>
         </Card>
+
+        {/* AI Insights - Futuristic intelligence panel */}
+        <BIAIInsights biMetrics={biMetrics} oeeData={oeeData} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -415,6 +467,10 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
             <CardTitle className="flex items-center gap-3">
               <Printer className="h-5 w-5 text-primary" />
               <span className="font-display tracking-wider uppercase">Produção por Studio</span>
+              <div className={cn("ml-auto mr-4 flex items-center gap-2 px-2 py-0.5 rounded-full bg-white/5 border border-white/10", balanceMetrics.color)}>
+                <Activity className="h-3 w-3" />
+                <span className="text-[10px] font-bold uppercase tracking-tighter">Balanceamento: {balanceMetrics.status}</span>
+              </div>
             </CardTitle>
             <div className="flex items-center gap-2">
               <Button 
