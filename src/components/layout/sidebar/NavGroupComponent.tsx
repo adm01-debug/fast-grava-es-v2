@@ -49,10 +49,10 @@ export const NavGroupComponent = memo(function NavGroupComponent({
         variant="ghost"
         onClick={() => toggleGroup(group.id)}
         className={cn(
-          "w-full justify-between gap-3 h-12 px-4 rounded-xl transition-all duration-300", 
-          "hover:bg-primary/[0.04] hover:text-primary", 
+          "w-full justify-between gap-4 h-14 px-5 rounded-2xl transition-all duration-300", 
+          "hover:bg-primary/[0.06] hover:text-primary", 
           "text-muted-foreground/80", 
-          hasActiveItem && "text-primary font-bold bg-primary/[0.02]"
+          hasActiveItem && "text-primary font-bold bg-primary/[0.04]"
         )}
         aria-expanded={isOpen}
         aria-controls={`nav-group-${group.id}`}
@@ -68,7 +68,7 @@ export const NavGroupComponent = memo(function NavGroupComponent({
       <AnimatePresence initial={false}>
         {isOpen && (
           <motion.div id={`nav-group-${group.id}`} initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.2, ease: "easeInOut" }} className="overflow-hidden">
-            <div className="pl-4 space-y-0.5 border-l-2 border-border/30 ml-5">
+            <div className="pl-6 space-y-1 border-l-2 border-primary/10 ml-7 py-2">
               {itemsWithBadge.map(item => <NavButton key={item.href} item={item} collapsed={false} isMobile={isMobile} isActive={isActive(item.href)} />)}
             </div>
           </motion.div>

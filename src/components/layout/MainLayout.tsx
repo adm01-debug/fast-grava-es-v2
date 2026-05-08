@@ -98,9 +98,9 @@ export function MainLayout({ children }: MainLayoutProps) {
           
           {/* Content with proper padding and safe-area insets */}
           <MainContent className={cn(
-            "pt-12 md:pt-4",
-            "pb-24 md:pb-4",
-            "px-4 sm:px-6 lg:px-8",
+            "pt-20 md:pt-10",
+            "pb-28 md:pb-10",
+            "px-6 sm:px-10 lg:px-16",
             "min-h-0"
           )}>
             {shouldAnimate ? (
