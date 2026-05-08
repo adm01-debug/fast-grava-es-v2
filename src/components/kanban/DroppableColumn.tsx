@@ -8,7 +8,7 @@ import { DbJob } from '@/hooks/useJobs';
 import { JobStatus } from '@/types/scheduling';
 import { DraggableJobCard } from './DraggableJobCard';
 import { useMemo } from 'react';
-import { ChevronDown, ChevronRight, AlertTriangle, Clock } from 'lucide-react';
+import { ChevronDown, ChevronRight, AlertTriangle, Clock, Activity } from 'lucide-react';
 import { ViewMode } from './KanbanFiltersBar';
 
 interface DroppableColumnProps {
@@ -120,6 +120,23 @@ export function DroppableColumn({
           </div>
         )}
       </div>
+      
+      {/* Bottleneck Risk Indicator */}
+      {totalEstimatedTime > 0 && (
+        <div className="flex items-center gap-2 mb-2 px-1 text-[10px] font-bold uppercase tracking-wider">
+          <Activity className={cn(
+            "h-3 w-3",
+            totalEstimatedTime > 480 ? "text-red-500 animate-pulse" : 
+            totalEstimatedTime > 300 ? "text-amber-500" : "text-green-500"
+          )} />
+          <span className={cn(
+            totalEstimatedTime > 480 ? "text-red-500" : 
+            totalEstimatedTime > 300 ? "text-amber-500" : "text-green-500"
+          )}>
+            Risco de Gargalo: {totalEstimatedTime > 480 ? "Alto" : totalEstimatedTime > 300 ? "Médio" : "Baixo"}
+          </span>
+        </div>
+      )}
 
       {/* WIP indicator bar */}
       {effectiveWipLimit < 50 && (

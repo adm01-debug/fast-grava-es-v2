@@ -35,6 +35,7 @@ export interface SequencingSuggestion {
   colorGroups: ColorGroup[];
   bottleneckRisk: 'low' | 'medium' | 'high';
   estimatedColumnTime?: string; // e.g., "2h 15m"
+  totalMinutes: number;
 }
 
 export interface ColorGroup {
@@ -174,6 +175,7 @@ export function useSmartSequencing() {
           estimatedSavings,
           estimatedColumnTime,
           bottleneckRisk,
+          totalMinutes,
           colorGroups: Array.from(colorGroups.entries()).map(([color, jobs]) => ({
             color,
             jobs,

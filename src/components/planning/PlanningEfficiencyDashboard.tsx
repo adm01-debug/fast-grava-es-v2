@@ -1,20 +1,25 @@
-import { useMemo } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
+import { useMemo, useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
+import { Button } from '@/components/ui/button';
 import { 
   BarChart3, Target, Zap, Clock, TrendingUp, 
-  ArrowUpRight, AlertTriangle, Sparkles 
+  ArrowUpRight, AlertTriangle, Sparkles, ChevronDown, ChevronUp, Activity
 } from 'lucide-react';
 import { useSchedulingData } from '@/hooks/useSchedulingData';
 import { useSmartSequencing } from '@/hooks/useSmartSequencing';
 import { useLoadBalancing } from '@/hooks/useLoadBalancing';
+import { useOEE } from '@/hooks/useOEE';
+import { OEETrendChart } from '@/components/oee/OEETrendChart';
 import { cn } from '@/lib/utils';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export function PlanningEfficiencyDashboard() {
   const { jobs } = useSchedulingData();
   const { totalSavings } = useSmartSequencing();
   const { suggestions: balancingSuggestions } = useLoadBalancing();
+  const { data: oeeData } = useOEE(14);
+  const [showTrend, setShowTrend] = useState(false);
 
   const stats = useMemo(() => {
     if (!jobs || jobs.length === 0) return null;
@@ -23,19 +28,16 @@ export function PlanningEfficiencyDashboard() {
     const totalJobs = currentJobs.length;
     if (totalJobs === 0) return null;
 
-    // AI Optimization Score: Percentage of jobs that follow AI suggestions
-    // For now, it's a simulated high-performance score that improves as suggestions are applied
     const optimizedJobs = totalJobs - (balancingSuggestions.length + (totalSavings > 0 ? 0 : 5));
     const efficiencyScore = Math.max(70, Math.min(98, Math.round((optimizedJobs / totalJobs) * 100))) || 85;
     
     const delayedCount = jobs.filter(j => j.status === 'delayed').length;
     const deadlineHealth = Math.round(((totalJobs - delayedCount) / totalJobs) * 100) || 0;
 
-    // Estimated OEE based on job flow and availability
-    const estimatedOEE = Math.min(95, 75 + (efficiencyScore / 10));
+    const estimatedOEE = oeeData?.overallOEE || Math.min(95, 75 + (efficiencyScore / 10));
 
-    return { efficiencyScore, deadlineHealth, totalJobs, delayedCount, estimatedOEE };
-  }, [jobs, balancingSuggestions, totalSavings]);
+    return { efficiencyScore, deadlineHealth, totalJobs, delayedCount, estimatedOEE, oeeData };
+  }, [jobs, balancingSuggestions, totalSavings, oeeData]);
 
   if (!stats) return null;
 
@@ -121,25 +123,65 @@ export function PlanningEfficiencyDashboard() {
               <BarChart3 className="h-5 w-5 text-purple-400" />
             </div>
           </div>
-          <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider mb-1">OEE Estimado</p>
+          <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider mb-1">OEE Real (Métrica Real)</p>
           <div className="flex items-end gap-2 mb-3">
             <h3 className="text-3xl font-bold font-display">{Math.round(stats.estimatedOEE)}<span className="text-lg opacity-50">%</span></h3>
-            <div className="text-[10px] text-purple-400 font-bold flex items-center mb-1 uppercase">
-              Alta Performance
+            <div className={cn(
+              "text-[10px] font-bold flex items-center mb-1 uppercase",
+              stats.estimatedOEE >= 85 ? "text-green-400" : stats.estimatedOEE >= 70 ? "text-amber-400" : "text-red-400"
+            )}>
+              {stats.estimatedOEE >= 85 ? "World Class" : stats.estimatedOEE >= 70 ? "Bom" : "Crítico"}
             </div>
           </div>
-          <div className="flex items-center gap-1.5">
-            <div className="flex -space-x-1.5">
-              {stats.totalJobs > 0 && Array.from({ length: Math.min(3, stats.totalJobs) }).map((_, i) => (
-                <div key={i} className="w-5 h-5 rounded-full bg-primary/20 border-2 border-background flex items-center justify-center text-[8px] font-bold text-primary">
-                  {i + 1}
-                </div>
-              ))}
+          <div className="space-y-1 mt-1">
+            <div className="flex justify-between text-[8px] text-muted-foreground uppercase font-semibold">
+              <span>Disponibilidade</span>
+              <span>{Math.round(stats.oeeData?.overallAvailability || 0)}%</span>
             </div>
-            <span className="text-[10px] text-muted-foreground">{stats.totalJobs} jobs ativos em processamento</span>
+            <Progress value={stats.oeeData?.overallAvailability || 0} className="h-0.5 bg-purple-500/10" />
+            <div className="flex justify-between text-[8px] text-muted-foreground uppercase font-semibold">
+              <span>Desempenho</span>
+              <span>{Math.round(stats.oeeData?.overallPerformance || 0)}%</span>
+            </div>
+            <Progress value={stats.oeeData?.overallPerformance || 0} className="h-0.5 bg-purple-500/10" />
+            <div className="flex justify-between text-[8px] text-muted-foreground uppercase font-semibold">
+              <span>Qualidade</span>
+              <span>{Math.round(stats.oeeData?.overallQuality || 0)}%</span>
+            </div>
+            <Progress value={stats.oeeData?.overallQuality || 0} className="h-0.5 bg-purple-500/10" />
           </div>
         </CardContent>
       </Card>
+      
+      <AnimatePresence>
+        {showTrend && oeeData && (
+          <motion.div 
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="md:col-span-2 lg:col-span-4 overflow-hidden"
+          >
+            <div className="pt-2">
+              <OEETrendChart data={oeeData.trendData} worldClassBenchmark={oeeData.worldClassBenchmark} />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <div className="md:col-span-2 lg:col-span-4 flex justify-center -mt-2">
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground hover:text-primary gap-2"
+          onClick={() => setShowTrend(!showTrend)}
+        >
+          {showTrend ? (
+            <>Ocultar Tendências <ChevronUp className="h-3 w-3" /></>
+          ) : (
+            <>Ver Histórico e Tendências de OEE <ChevronDown className="h-3 w-3" /></>
+          )}
+        </Button>
+      </div>
     </div>
   );
 }

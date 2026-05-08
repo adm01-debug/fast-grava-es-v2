@@ -3,9 +3,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { 
+  Dialog, DialogContent, DialogHeader, DialogTitle,
+  DialogDescription, DialogFooter
+} from '@/components/ui/dialog';
+import { 
   BrainCircuit, ArrowRight, Zap, AlertTriangle, 
   CheckCircle2, Sparkles, ChevronRight, LayoutPanelTop,
-  Search, Filter, Clock
+  Search, Filter, Clock, TrendingDown, TrendingUp, Info
 } from 'lucide-react';
 import { useSmartSequencing, SequencingSuggestion } from '@/hooks/useSmartSequencing';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -18,6 +22,7 @@ export function SmartSequencingPanel() {
   const { suggestions, totalSavings, hasSuggestions } = useSmartSequencing();
   const [isApplying, setIsApplying] = useState(false);
   const [selectedMachine, setSelectedMachine] = useState<string | null>(null);
+  const [suggestionToDetail, setSuggestionToDetail] = useState<SequencingSuggestion | null>(null);
   const queryClient = useQueryClient();
 
   const handleApplyOptimization = async (suggestion: SequencingSuggestion) => {
@@ -94,7 +99,7 @@ export function SmartSequencingPanel() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               className="group p-4 rounded-xl border border-border/50 bg-card/30 hover:bg-card/50 transition-all cursor-pointer relative overflow-hidden"
-              onClick={() => setSelectedMachine(selectedMachine === suggestion.machineId ? null : suggestion.machineId)}
+              onClick={() => setSuggestionToDetail(suggestion)}
             >
               <div className="absolute top-0 right-0 p-2 opacity-10 group-hover:opacity-20 transition-opacity">
                 <LayoutPanelTop className="h-12 w-12" />
@@ -155,41 +160,122 @@ export function SmartSequencingPanel() {
                 <ArrowRight className="h-3 w-3" />
               </Button>
 
-              <AnimatePresence>
-                {selectedMachine === suggestion.machineId && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: 'auto', opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    className="overflow-hidden pt-4 mt-4 border-t border-border/30"
-                  >
-                    <p className="text-[10px] text-muted-foreground mb-2">ORDEM SUGERIDA:</p>
-                    <div className="space-y-1.5">
-                      {suggestion.optimizedSequence.slice(0, 4).map((job, i) => (
-                        <div key={job.id} className="flex items-center gap-2 text-[11px] bg-muted/30 p-1.5 rounded-md">
-                          <span className="w-4 h-4 flex items-center justify-center rounded-full bg-primary/10 text-primary text-[9px] font-bold">
-                            {i + 1}
-                          </span>
-                          <span className="font-medium truncate flex-1">{job.client}</span>
-                          <div 
-                            className="w-2 h-2 rounded-full" 
-                            style={{ backgroundColor: job.gravure_color || '#444' }} 
-                          />
-                        </div>
-                      ))}
-                      {suggestion.optimizedSequence.length > 4 && (
-                        <p className="text-[10px] text-center text-muted-foreground pt-1">
-                          + {suggestion.optimizedSequence.length - 4} jobs adicionais
-                        </p>
-                      )}
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
             </motion.div>
           ))}
         </div>
       </CardContent>
+
+      <Dialog open={!!suggestionToDetail} onOpenChange={(open) => !open && setSuggestionToDetail(null)}>
+        <DialogContent className="max-w-2xl bg-card border-primary/20">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Zap className="h-5 w-5 text-yellow-400" />
+              Otimização de Fluxo: {suggestionToDetail?.machineName}
+            </DialogTitle>
+            <DialogDescription>
+              Comparativo entre o sequenciamento atual e a sugestão otimizada pela IA.
+            </DialogDescription>
+          </DialogHeader>
+
+          {suggestionToDetail && (
+            <div className="space-y-6 my-4">
+              <div className="grid grid-cols-2 gap-4">
+                <Card className="bg-muted/30 border-none p-4">
+                  <h4 className="text-[10px] font-bold text-muted-foreground uppercase mb-3">Status Atual</h4>
+                  <div className="space-y-2">
+                    {suggestionToDetail.currentSequence.slice(0, 5).map((job, i) => (
+                      <div key={job.id} className="flex items-center gap-2 text-[11px] opacity-60">
+                        <span className="w-4 h-4 flex items-center justify-center rounded-full bg-muted text-[9px]">{i + 1}</span>
+                        <span className="truncate flex-1">{job.client}</span>
+                        <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: job.gravure_color || '#444' }} />
+                      </div>
+                    ))}
+                    {suggestionToDetail.currentSequence.length > 5 && (
+                      <p className="text-[9px] text-center italic text-muted-foreground">+ {suggestionToDetail.currentSequence.length - 5} outros jobs</p>
+                    )}
+                  </div>
+                </Card>
+
+                <Card className="bg-primary/5 border-primary/20 p-4 relative overflow-hidden">
+                  <div className="absolute top-0 right-0 p-2 opacity-5">
+                    <TrendingUp className="h-12 w-12" />
+                  </div>
+                  <h4 className="text-[10px] font-bold text-primary uppercase mb-3 flex items-center gap-1">
+                    Sugestão IA Otimizada
+                    <Sparkles className="h-2 w-2" />
+                  </h4>
+                  <div className="space-y-2">
+                    {suggestionToDetail.optimizedSequence.slice(0, 5).map((job, i) => (
+                      <div key={job.id} className="flex items-center gap-2 text-[11px] font-medium">
+                        <span className="w-4 h-4 flex items-center justify-center rounded-full bg-primary/20 text-primary text-[9px] font-bold">{i + 1}</span>
+                        <span className="truncate flex-1">{job.client}</span>
+                        <div className="w-1.5 h-1.5 rounded-full shadow-[0_0_5px_rgba(255,255,255,0.2)]" style={{ backgroundColor: job.gravure_color || '#444' }} />
+                      </div>
+                    ))}
+                    {suggestionToDetail.optimizedSequence.length > 5 && (
+                      <p className="text-[9px] text-center italic text-primary/70 font-semibold">+ {suggestionToDetail.optimizedSequence.length - 5} jobs otimizados</p>
+                    )}
+                  </div>
+                </Card>
+              </div>
+
+              <div className="grid grid-cols-3 gap-4">
+                <div className="p-3 rounded-lg bg-yellow-500/5 border border-yellow-500/10 text-center">
+                  <p className="text-[9px] text-yellow-500/70 uppercase font-bold mb-1">Economia Setup</p>
+                  <p className="text-xl font-bold text-yellow-500">{suggestionToDetail.estimatedSavings}m</p>
+                </div>
+                <div className="p-3 rounded-lg bg-blue-500/5 border border-blue-500/10 text-center">
+                  <p className="text-[9px] text-blue-500/70 uppercase font-bold mb-1">Carga Estimada</p>
+                  <p className="text-xl font-bold text-blue-500">{suggestionToDetail.estimatedColumnTime}</p>
+                </div>
+                <div className="p-3 rounded-lg bg-green-500/5 border border-green-500/10 text-center">
+                  <p className="text-[9px] text-green-500/70 uppercase font-bold mb-1">Produtividade</p>
+                  <p className="text-xl font-bold text-green-500">+{Math.round((suggestionToDetail.estimatedSavings / (suggestionToDetail.totalMinutes || 1)) * 100)}%</p>
+                </div>
+              </div>
+
+              <div className="p-4 rounded-lg bg-primary/5 border border-primary/20">
+                <h4 className="text-xs font-bold mb-2 flex items-center gap-2">
+                  <Info className="h-3.5 w-3.5" />
+                  Recomendações IA
+                </h4>
+                <ul className="text-[11px] space-y-2 text-muted-foreground">
+                  <li className="flex items-start gap-2">
+                    <div className="w-1 h-1 rounded-full bg-primary mt-1.5" />
+                    Agrupamento por cores semelhantes reduz o tempo de limpeza de clichês e troca de tintas.
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <div className="w-1 h-1 rounded-full bg-primary mt-1.5" />
+                    Manter jobs de alta prioridade no início de cada grupo de cor para garantir prazos.
+                  </li>
+                  {suggestionToDetail.bottleneckRisk === 'high' && (
+                    <li className="flex items-start gap-2 text-red-400 font-medium">
+                      <AlertTriangle className="h-3 w-3 mt-0.5" />
+                      Carga de trabalho elevada detectada para este equipamento nas próximas 24h.
+                    </li>
+                  )}
+                </ul>
+              </div>
+            </div>
+          )}
+
+          <DialogFooter className="gap-2">
+            <Button variant="ghost" size="sm" onClick={() => setSuggestionToDetail(null)}>Fechar</Button>
+            <Button 
+              size="sm" 
+              className="gap-2 bg-primary hover:bg-primary/90"
+              onClick={() => {
+                if (suggestionToDetail) handleApplyOptimization(suggestionToDetail);
+                setSuggestionToDetail(null);
+              }}
+              disabled={isApplying}
+            >
+              {isApplying ? 'Aplicando...' : 'Aplicar Sequência Otimizada'}
+              <ArrowRight className="h-4 w-4" />
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 }
