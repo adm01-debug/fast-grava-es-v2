@@ -28,6 +28,8 @@ import { toast } from 'sonner';
 import { FuturisticStatCard } from './FuturisticStatCard';
 import { useBIExport } from '@/hooks/useBIExport';
 import { BITooltip } from './BITooltip';
+import { BIEmptyState } from './BIEmptyState';
+
 
 
 import { CHART_COLORS, GRADIENTS, getStudioName } from '@/constants/biConstants';
