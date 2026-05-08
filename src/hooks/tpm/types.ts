@@ -61,7 +61,9 @@ export interface MaintenanceRecord {
   performed_by_name: string | null;
   started_at: string;
   completed_at: string | null;
-  status: 'in_progress' | 'completed' | 'approved' | 'cancelled' | 'pending_parts';
+  status: 'in_progress' | 'completed' | 'approved' | 'cancelled' | 'pending_parts' | 'correction_requested';
+  correction_notes: string | null;
+  correction_deadline: string | null;
   notes: string | null;
   photos: string[];
   total_cost: number;

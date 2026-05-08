@@ -1,21 +1,25 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useTPM } from '@/hooks/useTPM';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { 
   CheckCircle2, Clock, Wrench, Package, 
-  Camera, User, ArrowRight, AlertTriangle 
+  Camera, User, ArrowRight, AlertTriangle, Eye
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import { Button } from '@/components/ui/button';
+import { ExecutionDetailsModal } from './ExecutionDetailsModal';
 
 interface MachineTimelineProps {
   machineId: string;
 }
 
-export function MachineTPMTimeline({ machineId }: MachineTimelineProps) {
+export function MachineTPMTimeline({ machineId }: MachineTPMTimelineProps) {
   const { records } = useTPM();
+  const [selectedRecordId, setSelectedRecordId] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const machineRecords = useMemo(() => {
     return records
@@ -36,17 +40,27 @@ export function MachineTPMTimeline({ machineId }: MachineTimelineProps) {
     }
   };
 
+  const handleViewDetails = (id: string) => {
+    setSelectedRecordId(id);
+    setIsModalOpen(true);
+  };
+
   return (
     <div className="space-y-8 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px before:h-full before:w-0.5 before:bg-gradient-to-b before:from-primary/20 before:via-border before:to-transparent">
       {machineRecords.length > 0 ? (
         machineRecords.map((record, index) => (
           <div key={record.id} className="relative flex items-start gap-6 stagger-fade-in" style={{ animationDelay: `${index * 50}ms` }}>
             {/* Dot/Icon */}
-            <div className="absolute left-0 flex items-center justify-center w-10 h-10 rounded-full bg-background border-2 border-border shadow-sm z-10">
+            <div className="absolute left-0 flex items-center justify-center w-10 h-10 rounded-full bg-background border-2 border-border shadow-sm z-10 cursor-pointer hover:border-primary transition-colors" onClick={() => handleViewDetails(record.id)}>
               {getStatusIcon(record.status)}
             </div>
 
-            <Card className="flex-1 ml-12 hover:shadow-md transition-shadow border-primary/5">
+            <Card className="flex-1 ml-12 hover:shadow-md transition-shadow border-primary/5 group relative">
+              <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => handleViewDetails(record.id)}>
+                  <Eye className="h-4 w-4" />
+                </Button>
+              </div>
               <CardHeader className="p-4 pb-2">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
@@ -104,6 +118,12 @@ export function MachineTPMTimeline({ machineId }: MachineTimelineProps) {
           Nenhuma execução registrada para esta máquina.
         </div>
       )}
+
+      <ExecutionDetailsModal 
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        recordId={selectedRecordId}
+      />
     </div>
   );
 }
