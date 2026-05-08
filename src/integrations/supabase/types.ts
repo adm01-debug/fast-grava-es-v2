@@ -3439,6 +3439,44 @@ export type Database = {
         }
         Relationships: []
       }
+      tpm_execution_audit_logs: {
+        Row: {
+          changed_by: string | null
+          created_at: string | null
+          execution_id: string
+          field_name: string
+          id: string
+          new_value: string | null
+          old_value: string | null
+        }
+        Insert: {
+          changed_by?: string | null
+          created_at?: string | null
+          execution_id: string
+          field_name: string
+          id?: string
+          new_value?: string | null
+          old_value?: string | null
+        }
+        Update: {
+          changed_by?: string | null
+          created_at?: string | null
+          execution_id?: string
+          field_name?: string
+          id?: string
+          new_value?: string | null
+          old_value?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tpm_execution_audit_logs_execution_id_fkey"
+            columns: ["execution_id"]
+            isOneToOne: false
+            referencedRelation: "maintenance_records"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tpm_execution_checklist: {
         Row: {
           created_at: string | null

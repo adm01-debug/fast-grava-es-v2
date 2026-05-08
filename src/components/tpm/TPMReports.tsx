@@ -3,7 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { FileDown, FileText, Table as TableIcon, Calendar, Filter, Activity } from 'lucide-react';
+import { FileDown, FileText, Table as TableIcon, Calendar, Filter, Activity, Archive } from 'lucide-react';
+import JSZip from 'jszip';
 import { useTPM } from '@/hooks/useTPM';
 import { useMTBFMTTR } from '@/hooks/useMTBFMTTR';
 import { format, subDays } from 'date-fns';
@@ -166,6 +167,58 @@ export function TPMReports() {
     }
   };
 
+  const generateZIP = async () => {
+    setIsGenerating(true);
+    try {
+      const filteredRecords = getFilteredRecords();
+      const zip = new JSZip();
+      const photosFolder = zip.folder("evidencias_fotograficas");
+      
+      // 1. Add CSV Data
+      const headers = ['Data', 'Máquina', 'Tipo', 'Técnico', 'Status', 'Downtime', 'Custo', 'Notas'];
+      const rows = filteredRecords.map(r => [
+        format(new Date(r.started_at), 'dd/MM/yyyy HH:mm'),
+        r.machine?.name || 'N/A',
+        r.maintenance_type_id,
+        r.performed_by_name || 'N/A',
+        r.status,
+        r.downtime_minutes,
+        r.total_cost,
+        r.notes || ''
+      ]);
+      
+      const csvContent = [headers, ...rows].map(e => e.join(',')).join('\n');
+      zip.file("relatorio_execucoes.csv", csvContent);
+
+      // 2. Fetch and add photos
+      const recordsWithPhotos = filteredRecords.filter(r => r.photos && r.photos.length > 0);
+      
+      toast.info(`Processando ${recordsWithPhotos.length} registros com fotos...`);
+
+      for (const record of recordsWithPhotos) {
+        const recordFolder = photosFolder?.folder(`manutencao_${record.id.substring(0, 8)}`);
+        for (let i = 0; i < record.photos.length; i++) {
+          try {
+            const response = await fetch(record.photos[i]);
+            const blob = await response.blob();
+            recordFolder?.file(`evidencia_${i + 1}.jpg`, blob);
+          } catch (err) {
+            console.error(`Failed to fetch photo: ${record.photos[i]}`, err);
+          }
+        }
+      }
+
+      const content = await zip.generateAsync({ type: "blob" });
+      saveAs(content, `tpm_completo_${format(new Date(), 'yyyy-MM-dd')}.zip`);
+      toast.success('Arquivo ZIP gerado com sucesso!');
+    } catch (error) {
+      console.error('Error generating ZIP:', error);
+      toast.error('Erro ao gerar arquivo ZIP');
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   return (
     <Card className="glass-card">
       <CardHeader>
@@ -229,6 +282,14 @@ export function TPMReports() {
               disabled={isGenerating || records.length === 0}
             >
               <TableIcon className="h-4 w-4" /> Excel
+            </Button>
+            <Button 
+              variant="outline" 
+              className="flex-1 gap-2" 
+              onClick={generateZIP}
+              disabled={isGenerating || records.length === 0}
+            >
+              <Archive className="h-4 w-4" /> ZIP (com Fotos)
             </Button>
           </div>
         </div>

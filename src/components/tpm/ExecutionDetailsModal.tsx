@@ -50,12 +50,32 @@ export function ExecutionDetailsModal({ isOpen, onClose, recordId }: ExecutionDe
 
   const handleApprove = async () => {
     if (!recordId || !user) return;
+    
+    // Automatic Validation
+    const incompleteItems = record.responses?.filter((r: any) => 
+      !r.is_checked && r.item?.is_critical
+    );
+    
+    const missingEvidence = record.responses?.filter((r: any) => 
+      r.item?.requires_photo && !r.photo_url
+    );
+
+    if (incompleteItems?.length > 0) {
+      toast.error(`Não é possível aprovar: Existem ${incompleteItems.length} itens críticos não realizados.`);
+      return;
+    }
+
+    if (missingEvidence?.length > 0) {
+      toast.error(`Não é possível aprovar: ${missingEvidence.length} itens obrigatórios estão sem evidência fotográfica.`);
+      return;
+    }
+
     try {
       await approveMaintenance.mutateAsync({
         record_id: recordId,
         approver_id: user.id
       });
-      loadDetails(); // Refresh
+      loadDetails();
     } catch (error) {
       // Error handled by mutation
     }
