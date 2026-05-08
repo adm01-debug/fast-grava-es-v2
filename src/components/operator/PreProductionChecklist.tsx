@@ -117,7 +117,7 @@ export function PreProductionChecklist({ jobId, onComplete, onSkip }: PreProduct
   const allChecked = allChecklistItemsChecked && regulationFieldsFilled && consumablesConfirmed;
 
   const validateRanges = () => {
-    if (!technicalSheet?.settings_ranges) return true;
+    if (!technicalSheet?.settings_ranges) return { valid: true, warnings: [] };
     const ranges = technicalSheet.settings_ranges as any;
     const warnings: string[] = [];
 
@@ -135,18 +135,25 @@ export function PreProductionChecklist({ jobId, onComplete, onSkip }: PreProduct
     if (state.speed) checkValue(state.speed, ranges.speed, 'Velocidade');
     if (state.temperature) checkValue(state.temperature, ranges.temperature, 'Temperatura');
 
-    if (warnings.length > 0) {
-      warnings.forEach(w => toast.warning(w));
-      return false;
-    }
-    return true;
+    return { valid: warnings.length === 0, warnings };
   };
 
   const handleSubmit = async () => {
     if (!user) return;
     
-    // Validate ranges but allow submission with confirmation or log as warning
-    validateRanges();
+    const { valid, warnings } = validateRanges();
+    if (!valid) {
+      warnings.forEach(w => toast.warning(w));
+      // Create system notifications for deviations
+      import('@/hooks/useNotifications').then(({ createSystemNotification }) => {
+        createSystemNotification({
+          userId: user.id,
+          title: `Desvio de Parâmetros: ${job?.order_number || 'Job'}`,
+          body: `Operador informou regulagem fora da faixa recomendada: ${warnings.join(', ')}`,
+          type: 'warning'
+        });
+      });
+    }
 
     setIsSubmitting(true);
     try {
