@@ -562,11 +562,13 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
         </Card>
 
         {/* Delay and Root Cause Section */}
-        <Card className="bg-black/40 border-primary/20 backdrop-blur-xl">
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle className="flex items-center gap-3">
-              <Timer className="h-5 w-5 text-primary" />
-              <span className="font-display tracking-wider uppercase">Atrasos & Causa Raiz</span>
+        <Card className="border-border/40 bg-card/40 backdrop-blur-md shadow-2xl rounded-3xl overflow-hidden group hover:shadow-glow-primary/10 transition-all duration-500 ring-1 ring-white/5 relative">
+          <CardHeader className="flex flex-row items-center justify-between p-8 pb-0">
+            <CardTitle className="flex items-center gap-4">
+              <div className="p-3 rounded-2xl bg-primary/10 shadow-inner">
+                <Timer className="h-6 w-6 text-primary" />
+              </div>
+              <span className="font-display tracking-tight text-2xl font-black uppercase gradient-text">Atrasos & Causa Raiz</span>
             </CardTitle>
             <div className="flex items-center gap-2">
               <Button 
@@ -587,13 +589,13 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
               </Button>
             </div>
           </CardHeader>
-          <CardContent>
-            <Tabs defaultValue="list" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 bg-white/5">
-                <TabsTrigger value="list" className="text-xs uppercase tracking-widest data-[state=active]:bg-primary/20">Lista de Atrasos</TabsTrigger>
-                <TabsTrigger value="causes" className="text-xs uppercase tracking-widest data-[state=active]:bg-primary/20">Causas Raiz</TabsTrigger>
+          <CardContent className="p-8">
+            <Tabs defaultValue="list" className="w-full space-y-6">
+              <TabsList className="inline-flex h-12 items-center justify-start rounded-xl bg-muted/30 p-1 backdrop-blur-xl border border-border/40 shadow-inner gap-1">
+                <TabsTrigger value="list" className="h-10 rounded-lg px-6 text-xs font-bold uppercase tracking-widest transition-all data-[state=active]:bg-background data-[state=active]:text-primary">Lista de Atrasos</TabsTrigger>
+                <TabsTrigger value="causes" className="h-10 rounded-lg px-6 text-xs font-bold uppercase tracking-widest transition-all data-[state=active]:bg-background data-[state=active]:text-primary">Causas Raiz</TabsTrigger>
               </TabsList>
-              <TabsContent value="list" className="mt-4">
+              <TabsContent value="list" className="mt-0 outline-none">
                 <ScrollArea className="h-[250px]">
                   <Table>
                     <TableHeader>
@@ -723,16 +725,18 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
         </DialogContent>
       </Dialog>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Maintenance & Machine Health */}
-        <Card className="lg:col-span-2 bg-black/40 border-primary/20 backdrop-blur-xl">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-3">
-              <Wrench className="h-5 w-5 text-primary" />
-              <span className="font-display tracking-wider">SAÚDE DAS MÁQUINAS & MANUTENÇÃO</span>
+        <Card className="lg:col-span-2 border-border/40 bg-card/40 backdrop-blur-md shadow-2xl rounded-3xl overflow-hidden group hover:shadow-glow-primary/10 transition-all duration-500 ring-1 ring-white/5 relative">
+          <CardHeader className="p-8 pb-0">
+            <CardTitle className="flex items-center gap-4">
+              <div className="p-3 rounded-2xl bg-primary/10 shadow-inner">
+                <Wrench className="h-6 w-6 text-primary" />
+              </div>
+              <span className="font-display tracking-tight text-2xl font-black uppercase gradient-text">Health & Maintenance</span>
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="space-y-6">
                 <div className="p-4 rounded-xl bg-primary/5 border border-primary/10">
@@ -775,14 +779,16 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
         </Card>
 
         {/* Delay Statistics */}
-        <Card className="bg-black/40 border-primary/20 backdrop-blur-xl">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-3">
-              <Timer className="h-5 w-5 text-primary" />
-              <span className="font-display tracking-wider">ANÁLISE DE ATRASOS</span>
+        <Card className="border-border/40 bg-card/40 backdrop-blur-md shadow-2xl rounded-3xl overflow-hidden group hover:shadow-glow-primary/10 transition-all duration-500 ring-1 ring-white/5 relative">
+          <CardHeader className="p-8 pb-0">
+            <CardTitle className="flex items-center gap-4">
+              <div className="p-3 rounded-2xl bg-primary/10 shadow-inner">
+                <Clock className="h-6 w-6 text-primary" />
+              </div>
+              <span className="font-display tracking-tight text-2xl font-black uppercase gradient-text">Delay Analytics</span>
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-8">
             <div className="space-y-4">
               <div className="flex items-end gap-2">
                 <span className="text-4xl font-bold">14.2%</span>
