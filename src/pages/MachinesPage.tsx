@@ -185,6 +185,51 @@ export default function MachinesPage() {
             );
           })}
         </div>
+
+        {/* Machine Profile / TPM Dialog */}
+        <Dialog open={!!selectedMachine} onOpenChange={() => setSelectedMachine(null)}>
+          <DialogContent className="sm:max-w-xl">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Printer className="h-5 w-5 text-primary" />
+                Perfil da Máquina: {selectedMachine?.code}
+              </DialogTitle>
+              <DialogDescription>
+                {selectedMachine?.name} - {getTechniqueById(selectedMachine?.technique_id)?.name}
+              </DialogDescription>
+            </DialogHeader>
+            
+            {selectedMachine && (
+              <MachineTPMPanel 
+                machineId={selectedMachine.id} 
+                onStartMaintenance={handleStartMaintenance}
+                onOpenCreateSchedule={() => setCreateScheduleModalOpen(true)}
+              />
+            )}
+          </DialogContent>
+        </Dialog>
+
+        {/* Execution Modal */}
+        <MaintenanceExecutionModal
+          isOpen={executionModalOpen}
+          onClose={() => setExecutionModalOpen(false)}
+          schedule={selectedSchedule}
+          recordId={currentRecordId}
+          onComplete={handleCompleteMaintenance}
+        />
+
+        {/* Create Schedule Modal */}
+        {selectedMachine && (
+          <CreateScheduleModal
+            machines={machines}
+            maintenanceTypes={maintenanceTypes}
+            initialMachineId={selectedMachine.id}
+            isOpen={createScheduleModalOpen}
+            onOpenChange={setCreateScheduleModalOpen}
+            onSubmit={(data) => createSchedule.mutate(data)}
+            isSubmitting={createSchedule.isPending}
+          />
+        )}
       </div>
     </MainLayout>
   );
