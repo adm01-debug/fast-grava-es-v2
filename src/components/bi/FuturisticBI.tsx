@@ -327,7 +327,7 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
                   tickLine={false}
                   tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 12 }}
                 />
-                <Tooltip content={<BITooltip />} />
+                <Tooltip content={<BITooltip showPercentage />} />
 
                 <Area 
                   type="monotone" 
