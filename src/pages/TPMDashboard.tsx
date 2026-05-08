@@ -291,6 +291,14 @@ export default function TPMDashboard() {
             <ChecklistManager />
           </TabsContent>
         </Tabs>
+
+        <MaintenanceExecutionModal
+          isOpen={executionModalOpen}
+          onClose={() => setExecutionModalOpen(false)}
+          schedule={selectedSchedule}
+          recordId={currentRecordId}
+          onComplete={handleCompleteMaintenance}
+        />
       </div>
     </MainLayout>
   );
