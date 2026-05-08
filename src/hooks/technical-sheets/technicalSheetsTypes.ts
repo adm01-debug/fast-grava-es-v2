@@ -7,6 +7,9 @@ export interface TechnicalSheet {
   description: string | null;
   estimated_time_minutes: number | null;
   recommended_machine_id: string | null;
+  machine_settings: Record<string, any> | null;
+  ink_specifications: string | null;
+  tooling_specifications: string | null;
   is_active: boolean;
   created_at: string;
   updated_at: string;
