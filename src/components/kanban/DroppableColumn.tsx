@@ -85,7 +85,7 @@ export function DroppableColumn({
 
   return (
     <div className={cn(
-      "flex flex-col",
+      "flex flex-col group/column transition-all duration-300",
       viewMode === 'compact' ? 'min-w-[300px] sm:min-w-[400px]' : 'min-w-[240px] sm:min-w-[280px] max-w-[320px]'
     )}>
       {/* Column header */}
@@ -93,24 +93,29 @@ export function DroppableColumn({
         <Button
           variant="ghost"
           size="icon"
-          className="h-5 w-5 p-0"
+          className="h-5 w-5 p-0 hover:bg-primary/10"
           onClick={() => setIsCollapsed(!isCollapsed)}
         >
           {isCollapsed ? <ChevronRight className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
         </Button>
-        <Icon className={cn("h-4 w-4", color)} />
-        <h3 className="font-semibold text-sm">{label}</h3>
+        <div className={cn("p-1 rounded-md bg-card border border-border/50 shadow-sm", color)}>
+          <Icon className="h-4 w-4" />
+        </div>
+        <h3 className="font-semibold text-sm tracking-tight">{label}</h3>
         <Badge 
           variant={isOverWip ? "destructive" : "secondary"} 
-          className={cn("ml-auto text-xs", isOverWip && "animate-pulse")}
+          className={cn(
+            "ml-auto text-xs font-mono", 
+            isOverWip && "animate-pulse shadow-[0_0_10px_rgba(239,68,68,0.5)]"
+          )}
         >
           {jobs.length}
-          {effectiveWipLimit < 50 && <span className="text-[9px] opacity-70">/{effectiveWipLimit}</span>}
+          {effectiveWipLimit < 50 && <span className="text-[9px] opacity-70 ml-1">/{effectiveWipLimit}</span>}
         </Badge>
-        {isOverWip && <AlertTriangle className="h-3.5 w-3.5 text-destructive" />}
+        {isOverWip && <AlertTriangle className="h-3.5 w-3.5 text-destructive animate-bounce" />}
         {leadTimeLabel && (
-          <div className="flex items-center gap-1 text-[10px] text-muted-foreground bg-muted/20 px-1.5 py-0.5 rounded-md ml-1" title="Tempo total estimado para processar esta coluna">
-            <Clock className="h-3 w-3" />
+          <div className="flex items-center gap-1 text-[10px] font-medium text-muted-foreground bg-muted/40 px-2 py-0.5 rounded-full border border-border/50 ml-1" title="Tempo total estimado para processar esta coluna">
+            <Clock className="h-3 w-3 text-primary/70" />
             {leadTimeLabel}
           </div>
         )}
@@ -147,13 +152,14 @@ export function DroppableColumn({
         <div
           ref={setNodeRef}
           className={cn(
-            "flex-1 p-2 rounded-xl border transition-all duration-200",
-            "bg-gradient-to-b from-muted/20 to-card/5 backdrop-blur-[2px]",
-            "space-y-1.5 min-h-[300px] max-h-[65vh] overflow-y-auto scrollbar-thin",
+            "flex-1 p-2 rounded-xl border transition-all duration-300",
+            "bg-gradient-to-b from-muted/30 to-card/10 backdrop-blur-md shadow-inner",
+            "space-y-1.5 min-h-[400px] max-h-[70vh] overflow-y-auto scrollbar-thin",
+            "group-hover/column:border-border/60",
             isOver 
-              ? "border-primary/50 bg-primary/5 ring-2 ring-primary/20" 
+              ? "border-primary/50 bg-primary/10 ring-4 ring-primary/5 shadow-[0_0_20px_rgba(var(--primary),0.1)]" 
               : isOverWip 
-                ? "border-destructive/30" 
+                ? "border-destructive/40 bg-destructive/5" 
                 : "border-border/30"
           )}
         >
