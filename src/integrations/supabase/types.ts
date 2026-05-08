@@ -3389,11 +3389,13 @@ export type Database = {
           material_id: string | null
           product_category_id: string | null
           recommended_machine_id: string | null
+          settings_ranges: Json | null
           technique_id: string
           title: string
           tooling_specifications: string | null
           updated_at: string
           updated_by: string | null
+          version: number | null
         }
         Insert: {
           created_at?: string
@@ -3407,11 +3409,13 @@ export type Database = {
           material_id?: string | null
           product_category_id?: string | null
           recommended_machine_id?: string | null
+          settings_ranges?: Json | null
           technique_id: string
           title: string
           tooling_specifications?: string | null
           updated_at?: string
           updated_by?: string | null
+          version?: number | null
         }
         Update: {
           created_at?: string
@@ -3425,11 +3429,13 @@ export type Database = {
           material_id?: string | null
           product_category_id?: string | null
           recommended_machine_id?: string | null
+          settings_ranges?: Json | null
           technique_id?: string
           title?: string
           tooling_specifications?: string | null
           updated_at?: string
           updated_by?: string | null
+          version?: number | null
         }
         Relationships: [
           {
@@ -3622,6 +3628,7 @@ export type Database = {
           started_at: string | null
           status: string | null
           technical_sheet_id: string | null
+          technical_sheet_version: number | null
           technician_id: string | null
           updated_at: string | null
         }
@@ -3640,6 +3647,7 @@ export type Database = {
           started_at?: string | null
           status?: string | null
           technical_sheet_id?: string | null
+          technical_sheet_version?: number | null
           technician_id?: string | null
           updated_at?: string | null
         }
@@ -3658,6 +3666,7 @@ export type Database = {
           started_at?: string | null
           status?: string | null
           technical_sheet_id?: string | null
+          technical_sheet_version?: number | null
           technician_id?: string | null
           updated_at?: string | null
         }
