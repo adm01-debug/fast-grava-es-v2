@@ -93,6 +93,8 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
           dataToExport = jobsWithLosses;
         } else if (type.includes('Atrasos')) {
           dataToExport = delayedJobsList;
+        } else if (type.includes('Pedidos_A_Fazer')) {
+          dataToExport = (biMetrics.periodJobsList || []).filter((j: any) => j.status === 'scheduled' || j.status === 'queue');
         } else {
           dataToExport = biMetrics.periodJobsList || [];
         }
