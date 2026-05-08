@@ -35,7 +35,7 @@ export function TPMSeverityConfigs({ machineId }: TPMSeverityConfigsProps) {
       } else {
         query = query.is('machine_id', null);
       }
-      const { data, error } = await supabase.from('tpm_severity_configs').select('*').eq('machine_id', machineId);
+      const { data, error } = await query;
       if (error) throw error;
       return data as SeverityConfig[];
     }
@@ -43,9 +43,14 @@ export function TPMSeverityConfigs({ machineId }: TPMSeverityConfigsProps) {
 
   const upsertConfig = useMutation({
     mutationFn: async (config: Partial<SeverityConfig>) => {
+      const payload: any = { 
+        ...config, 
+        machine_id: machineId || null 
+      };
+      
       const { error } = await supabase
         .from('tpm_severity_configs')
-        .upsert({ ...config, machine_id: machineId });
+        .upsert(payload);
       if (error) throw error;
     },
     onSuccess: () => {

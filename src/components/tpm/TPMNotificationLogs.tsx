@@ -73,7 +73,7 @@ export function TPMNotificationLogs() {
               filteredLogs?.map((log) => (
                 <TableRow key={log.id}>
                   <TableCell className="whitespace-nowrap">
-                    {format(new Date(log.sent_at), 'dd/MM/yyyy HH:mm', { locale: ptBR })}
+                    {log.sent_at ? format(new Date(log.sent_at), 'dd/MM/yyyy HH:mm', { locale: ptBR }) : '-'}
                   </TableCell>
                   <TableCell>
                     <span className="font-medium">{log.machine?.name}</span>
@@ -96,7 +96,7 @@ export function TPMNotificationLogs() {
                         <span>Sucesso</span>
                       </div>
                     ) : (
-                      <div className="flex items-center text-destructive gap-1" title={log.error_message}>
+                      <div className="flex items-center text-destructive gap-1" title={log.error_message || undefined}>
                         <XCircle className="h-4 w-4" />
                         <span>Falha</span>
                       </div>
