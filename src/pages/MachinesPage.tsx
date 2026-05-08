@@ -158,7 +158,8 @@ export default function MachinesPage() {
                     {techMachines.map((machine) => (
                       <div 
                         key={machine.id}
-                        className="flex items-center justify-between p-3 rounded-lg bg-secondary/30 border border-border/30"
+                        className="flex items-center justify-between p-3 rounded-lg bg-secondary/30 border border-border/30 hover:border-primary/50 hover:bg-secondary/50 transition-all cursor-pointer group"
+                        onClick={() => setSelectedMachine(machine)}
                       >
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center">
