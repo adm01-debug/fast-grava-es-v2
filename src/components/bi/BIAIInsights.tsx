@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Sparkles, ArrowUpRight, ArrowDownRight, AlertCircle, CheckCircle2, Lightbulb, Clock, ChevronRight, ChevronDown, Zap, Target, TrendingUp, Cpu } from 'lucide-react';
+import { Sparkles, ArrowUpRight, ArrowDownRight, AlertCircle, CheckCircle2, Lightbulb, Clock, ChevronRight, ChevronDown, Zap, Target, TrendingUp, Cpu, RefreshCcw } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -279,6 +279,3 @@ export function BIAIInsights({ biMetrics, oeeData }: BIAIInsightsProps) {
     </Card>
   );
 }
-
-// Add RefreshCcw to imports if not there (it was used in simulation logic but not in the main list)
-import { RefreshCcw } from 'lucide-react';
