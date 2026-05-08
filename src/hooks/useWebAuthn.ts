@@ -49,6 +49,18 @@ export function useWebAuthn() {
   const [isLoading, setIsLoading] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
   const [isAuthenticating, setIsAuthenticating] = useState(false);
+  const isMounted = useRef(true);
+
+  useEffect(() => {
+    isMounted.current = true;
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
+
+  const safeSetIsLoading = (val: boolean) => isMounted.current && setIsLoading(val);
+  const safeSetIsRegistering = (val: boolean) => isMounted.current && setIsRegistering(val);
+  const safeSetIsAuthenticating = (val: boolean) => isMounted.current && setIsAuthenticating(val);
 
   // Check if WebAuthn is supported
   const isSupported = typeof window !== 'undefined' && 
