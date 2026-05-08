@@ -14,6 +14,7 @@ import { PageTransition } from "@/components/layout/PageTransition";
 import { useRBAC, ROLE_PERMISSIONS } from "@/hooks/useRBAC";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils";
 
 interface UserProfile {
   id: string;
