@@ -266,22 +266,25 @@ export function ExecutionDetailsModal({ isOpen, onClose, recordId }: ExecutionDe
                 </div>
               )}
 
-              {/* Checklist Version Info */}
-              {record.checklist_snapshot && (
-                <div className="flex items-center gap-4 bg-secondary/10 px-3 py-2 rounded-lg border border-border/50">
-                  <div className="flex items-center gap-2 text-[10px] text-muted-foreground uppercase font-semibold">
-                    <ClipboardList className="h-3.5 w-3.5 text-primary" />
-                    Checklist Versão
+              {/* Technical Sheet & Checklist Info */}
+              <div className="flex flex-col sm:flex-row gap-4">
+                {record.checklist_snapshot && (
+                  <div className="flex-1 flex items-center gap-4 bg-secondary/10 px-3 py-2 rounded-lg border border-border/50">
+                    <div className="flex items-center gap-2 text-[10px] text-muted-foreground uppercase font-semibold">
+                      <ClipboardList className="h-3.5 w-3.5 text-primary" />
+                      Checklist v{record.checklist_version || record.checklist_snapshot.version || '1'}
+                    </div>
                   </div>
-                  <Badge variant="outline" className="font-bold">
-                    v{record.checklist_version || record.checklist_snapshot.version || '1'}
-                  </Badge>
-                  <div className="flex items-center gap-2 text-[10px] text-muted-foreground ml-auto">
-                    <Calendar className="h-3.5 w-3.5" />
-                    Snapshot de: {record.started_at ? format(new Date(record.started_at), "dd/MM/yyyy", { locale: ptBR }) : '-'}
+                )}
+                {record.technical_sheet_id && (
+                  <div className="flex-1 flex items-center gap-4 bg-primary/5 px-3 py-2 rounded-lg border border-primary/10">
+                    <div className="flex items-center gap-2 text-[10px] text-primary uppercase font-semibold">
+                      <Zap className="h-3.5 w-3.5" />
+                      Ficha Técnica v{record.technical_sheet_version || '1'}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
+              </div>
               {/* Header for print only */}
               <div className="hidden print:block text-center border-b pb-4 mb-8">
                 <div className="flex justify-between items-center mb-4">
@@ -361,6 +364,52 @@ export function ExecutionDetailsModal({ isOpen, onClose, recordId }: ExecutionDe
                   <p className="text-sm font-semibold text-primary">{record.status.toUpperCase()}</p>
                 </div>
               </div>
+
+              {/* Regulagem Técnica */}
+              {record.adjustment_parameters && (
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold flex items-center gap-2">
+                    <PenTool className="h-5 w-5 text-amber-500" />
+                    Regulagem Técnica Aplicada
+                  </h3>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {['squeegee_passes', 'pressure', 'speed', 'temperature'].map((param) => {
+                      const labels: Record<string, string> = {
+                        squeegee_passes: 'Passadas',
+                        pressure: 'Pressão',
+                        speed: 'Velocidade',
+                        temperature: 'Temperatura'
+                      };
+                      const value = record.adjustment_parameters[param];
+                      const range = record.adjustment_parameters.ranges?.[param];
+                      const isOutOfRange = (val: string, r: any) => {
+                        if (!r || (!r.min && !r.max)) return false;
+                        const v = parseFloat(val.replace(/[^0-9.]/g, ''));
+                        const min = r.min ? parseFloat(r.min.replace(/[^0-9.]/g, '')) : -Infinity;
+                        const max = r.max ? parseFloat(r.max.replace(/[^0-9.]/g, '')) : Infinity;
+                        return !isNaN(v) && (v < min || v > max);
+                      };
+
+                      const outOfRange = isOutOfRange(value || '', range);
+
+                      return (
+                        <div key={param} className={`p-3 rounded-lg border ${outOfRange ? 'bg-destructive/5 border-destructive/20' : 'bg-secondary/20 border-border/50'}`}>
+                          <p className="text-[10px] text-muted-foreground uppercase font-bold mb-1">{labels[param]}</p>
+                          <p className={`text-lg font-bold ${outOfRange ? 'text-destructive' : ''}`}>
+                            {value || '-'}
+                            {outOfRange && <AlertTriangle className="h-3 w-3 inline ml-1" />}
+                          </p>
+                          {range && (range.min || range.max) && (
+                            <p className="text-[10px] text-muted-foreground mt-1">
+                              Ref: {range.min || '-'} a {range.max || '-'}
+                            </p>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
 
               {/* Checklist */}
               <div className="space-y-4">

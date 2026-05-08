@@ -30,7 +30,12 @@ export const TechnicalSheetEditor = ({ sheetId, techniques, categories, material
     technique_id: '', product_category_id: '', material_id: '',
     title: '', description: '', estimated_time_minutes: '', recommended_machine_id: '',
     ink_specifications: '', tooling_specifications: '',
-    squeegee_passes: '', pressure: '', speed: '', temperature: ''
+    squeegee_passes: '', pressure: '', speed: '', temperature: '',
+    squeegee_passes_min: '', squeegee_passes_max: '',
+    pressure_min: '', pressure_max: '',
+    speed_min: '', speed_max: '',
+    temperature_min: '', temperature_max: '',
+    version: '1'
   });
 
   const { data: machines = [] } = useQuery({
@@ -44,6 +49,7 @@ export const TechnicalSheetEditor = ({ sheetId, techniques, categories, material
 
   useEffect(() => {
     if (sheet) {
+      const ranges = (sheet.settings_ranges as any) || {};
       setFormData({
         technique_id: sheet.technique_id,
         product_category_id: sheet.product_category_id || '',
@@ -58,6 +64,15 @@ export const TechnicalSheetEditor = ({ sheetId, techniques, categories, material
         pressure: (sheet.machine_settings as any)?.pressure || '',
         speed: (sheet.machine_settings as any)?.speed || '',
         temperature: (sheet.machine_settings as any)?.temperature || '',
+        squeegee_passes_min: ranges.squeegee_passes?.min || '',
+        squeegee_passes_max: ranges.squeegee_passes?.max || '',
+        pressure_min: ranges.pressure?.min || '',
+        pressure_max: ranges.pressure?.max || '',
+        speed_min: ranges.speed?.min || '',
+        speed_max: ranges.speed?.max || '',
+        temperature_min: ranges.temperature?.min || '',
+        temperature_max: ranges.temperature?.max || '',
+        version: sheet.version?.toString() || '1'
       });
     }
   }, [sheet]);
@@ -78,6 +93,12 @@ export const TechnicalSheetEditor = ({ sheetId, techniques, categories, material
         pressure: formData.pressure,
         speed: formData.speed,
         temperature: formData.temperature,
+      },
+      settings_ranges: {
+        squeegee_passes: { min: formData.squeegee_passes_min, max: formData.squeegee_passes_max },
+        pressure: { min: formData.pressure_min, max: formData.pressure_max },
+        speed: { min: formData.speed_min, max: formData.speed_max },
+        temperature: { min: formData.temperature_min, max: formData.temperature_max },
       }
     };
     if (isNew) { await createSheet.mutateAsync(payload); onClose(); }

@@ -89,6 +89,7 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
       checklist_version?: number;
       checklist_snapshot?: any;
       technical_sheet_id?: string;
+      technical_sheet_version?: number;
       adjustment_parameters?: any;
       responses?: Array<{
         checklist_item_id: string;
@@ -128,6 +129,7 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
           checklist_version: data.checklist_version,
           checklist_snapshot: data.checklist_snapshot,
           technical_sheet_id: data.technical_sheet_id,
+          technical_sheet_version: data.technical_sheet_version,
           adjustment_parameters: data.adjustment_parameters,
         })
         .eq('id', data.record_id);
@@ -135,38 +137,34 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
       if (recordError) throw recordError;
 
       // Se houver parâmetros fora do recomendado, registrar alertas
-      if (data.adjustment_parameters?.recommended) {
+      if (data.adjustment_parameters?.ranges) {
         const params = data.adjustment_parameters;
-        const rec = params.recommended;
-        const alertsToInsert = [];
+        const ranges = params.ranges;
+        const alertsToInsert: any[] = [];
 
-        if (rec.squeegee_passes && params.squeegee_passes !== rec.squeegee_passes) {
-          alertsToInsert.push({
-            execution_id: data.record_id,
-            parameter_name: 'Passadas de Rodo',
-            recorded_value: params.squeegee_passes,
-            recommended_range: rec.squeegee_passes,
-            severity: 'warning'
-          });
-        }
-        if (rec.speed && params.speed !== rec.speed) {
-          alertsToInsert.push({
-            execution_id: data.record_id,
-            parameter_name: 'Velocidade',
-            recorded_value: params.speed,
-            recommended_range: rec.speed,
-            severity: 'warning'
-          });
-        }
-        if (rec.temperature && params.temperature !== rec.temperature) {
-          alertsToInsert.push({
-            execution_id: data.record_id,
-            parameter_name: 'Temperatura',
-            recorded_value: params.temperature,
-            recommended_range: rec.temperature,
-            severity: 'warning'
-          });
-        }
+        const checkRange = (name: string, value: string, range: any) => {
+          if (!range || (!range.min && !range.max)) return;
+          const val = parseFloat(value.replace(/[^0-9.]/g, ''));
+          const min = range.min ? parseFloat(range.min.replace(/[^0-9.]/g, '')) : -Infinity;
+          const max = range.max ? parseFloat(range.max.replace(/[^0-9.]/g, '')) : Infinity;
+          
+          if (!isNaN(val)) {
+            if (val < min || val > max) {
+              alertsToInsert.push({
+                execution_id: data.record_id,
+                parameter_name: name,
+                recorded_value: value,
+                recommended_range: `Mín: ${range.min || '-'} / Máx: ${range.max || '-'}`,
+                severity: 'warning'
+              });
+            }
+          }
+        };
+
+        checkRange('Passadas de Rodo', params.squeegee_passes, ranges.squeegee_passes);
+        checkRange('Pressão', params.pressure, ranges.pressure);
+        checkRange('Velocidade', params.speed, ranges.speed);
+        checkRange('Temperatura', params.temperature, ranges.temperature);
 
         if (alertsToInsert.length > 0) {
           await supabase.from('tpm_parameter_alerts').insert(alertsToInsert);

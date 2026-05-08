@@ -9,7 +9,7 @@ export const useTechnicalSheetMutations = () => {
   const queryClient = useQueryClient();
 
   const createSheet = useMutation({
-    mutationFn: async (sheet: { technique_id: string; title: string; description?: string; product_category_id?: string; material_id?: string; estimated_time_minutes?: number; recommended_machine_id?: string }) => {
+    mutationFn: async (sheet: Partial<TechnicalSheet> & { technique_id: string; title: string }) => {
       const { data: userData } = await supabase.auth.getUser();
       const { data, error } = await supabase
         .from('technical_sheets')
@@ -21,6 +21,11 @@ export const useTechnicalSheetMutations = () => {
           material_id: sheet.material_id || null,
           estimated_time_minutes: sheet.estimated_time_minutes || null,
           recommended_machine_id: sheet.recommended_machine_id || null,
+          machine_settings: sheet.machine_settings || {},
+          settings_ranges: sheet.settings_ranges || {},
+          ink_specifications: sheet.ink_specifications || null,
+          tooling_specifications: sheet.tooling_specifications || null,
+          version: 1,
           created_by: userData.user?.id,
           updated_by: userData.user?.id
         }])

@@ -31,6 +31,7 @@ interface MaintenanceExecutionModalProps {
     checklist_version?: number;
     checklist_snapshot?: any;
     technical_sheet_id?: string;
+    technical_sheet_version?: number;
     adjustment_parameters?: any;
   }) => void;
 }
@@ -176,25 +177,31 @@ export function MaintenanceExecutionModal({
     if (selectedSheetId) {
       const sheet = technicalSheets.find(s => s.id === selectedSheetId);
       const settings = sheet?.machine_settings as any;
+      const ranges = (sheet?.settings_ranges as any) || {};
       const alerts: string[] = [];
 
-      if (settings) {
-        if (settings.squeegee_passes && adjustmentParams.squeegee_passes !== settings.squeegee_passes) {
-          alerts.push(`Passadas de Rodo: Informado ${adjustmentParams.squeegee_passes}, Recomendado ${settings.squeegee_passes}`);
+      const validateRange = (name: string, value: string, range: { min?: string; max?: string }) => {
+        if (!range || (!range.min && !range.max)) return;
+        const val = parseFloat(value.replace(/[^0-9.]/g, ''));
+        const min = range.min ? parseFloat(range.min.replace(/[^0-9.]/g, '')) : -Infinity;
+        const max = range.max ? parseFloat(range.max.replace(/[^0-9.]/g, '')) : Infinity;
+        
+        if (!isNaN(val)) {
+          if (val < min || val > max) {
+            alerts.push(`${name}: Informado ${value}, Recomendado entre ${range.min || '-'} e ${range.max || '-'}`);
+            return true;
+          }
         }
-        if (settings.pressure && adjustmentParams.pressure !== settings.pressure) {
-          alerts.push(`Pressão: Informado ${adjustmentParams.pressure}, Recomendado ${settings.pressure}`);
-        }
-        if (settings.speed && adjustmentParams.speed !== settings.speed) {
-          alerts.push(`Velocidade: Informado ${adjustmentParams.speed}, Recomendado ${settings.speed}`);
-        }
-        if (settings.temperature && adjustmentParams.temperature !== settings.temperature) {
-          alerts.push(`Temperatura: Informado ${adjustmentParams.temperature}, Recomendado ${settings.temperature}`);
-        }
-      }
+        return false;
+      };
+
+      validateRange('Passadas de Rodo', adjustmentParams.squeegee_passes, ranges.squeegee_passes);
+      validateRange('Pressão', adjustmentParams.pressure, ranges.pressure);
+      validateRange('Velocidade', adjustmentParams.speed, ranges.speed);
+      validateRange('Temperatura', adjustmentParams.temperature, ranges.temperature);
 
       if (alerts.length > 0) {
-        toast.warning("Atenção: Parâmetros fora do recomendado", {
+        toast.warning("Parâmetros fora do intervalo recomendado", {
           description: alerts.join('\n')
         });
       }
@@ -213,9 +220,11 @@ export function MaintenanceExecutionModal({
       checklist_version: checklist?.version,
       checklist_snapshot: checklist,
       technical_sheet_id: selectedSheetId || undefined,
+      technical_sheet_version: selectedSheetId ? (technicalSheets.find(s => s.id === selectedSheetId)?.version) : undefined,
       adjustment_parameters: {
         ...adjustmentParams,
-        recommended: selectedSheetId ? (technicalSheets.find(s => s.id === selectedSheetId)?.machine_settings) : null
+        recommended: selectedSheetId ? (technicalSheets.find(s => s.id === selectedSheetId)?.machine_settings) : null,
+        ranges: selectedSheetId ? (technicalSheets.find(s => s.id === selectedSheetId)?.settings_ranges) : null
       }
     });
   };
@@ -358,42 +367,43 @@ export function MaintenanceExecutionModal({
                 </div>
 
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                  <div className="space-y-2">
-                    <Label className="flex items-center gap-1 text-xs">
-                      <MoveHorizontal className="h-3 w-3" /> Passadas
-                    </Label>
-                    <Input 
-                      placeholder="Ex: 2"
-                      value={adjustmentParams.squeegee_passes}
-                      onChange={(e) => setAdjustmentParams(prev => ({ ...prev, squeegee_passes: e.target.value }))}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label className="text-xs">Pressão</Label>
-                    <Input 
-                      placeholder="Ex: 4 bar"
-                      value={adjustmentParams.pressure}
-                      onChange={(e) => setAdjustmentParams(prev => ({ ...prev, pressure: e.target.value }))}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label className="text-xs">Velocidade</Label>
-                    <Input 
-                      placeholder="Ex: 50%"
-                      value={adjustmentParams.speed}
-                      onChange={(e) => setAdjustmentParams(prev => ({ ...prev, speed: e.target.value }))}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label className="flex items-center gap-1 text-xs">
-                      <Thermometer className="h-3 w-3" /> Temp.
-                    </Label>
-                    <Input 
-                      placeholder="Ex: 180°C"
-                      value={adjustmentParams.temperature}
-                      onChange={(e) => setAdjustmentParams(prev => ({ ...prev, temperature: e.target.value }))}
-                    />
-                  </div>
+                  {['squeegee_passes', 'pressure', 'speed', 'temperature'].map((param) => {
+                    const labels: Record<string, string> = {
+                      squeegee_passes: 'Passadas',
+                      pressure: 'Pressão',
+                      speed: 'Velocidade',
+                      temperature: 'Temp.'
+                    };
+                    const Icons: Record<string, any> = {
+                      squeegee_passes: MoveHorizontal,
+                      pressure: PenTool,
+                      speed: Zap,
+                      temperature: Thermometer
+                    };
+                    const Icon = Icons[param];
+                    const sheet = technicalSheets.find(s => s.id === selectedSheetId);
+                    const range = (sheet?.settings_ranges as any)?.[param];
+                    const recommended = (sheet?.machine_settings as any)?.[param];
+
+                    return (
+                      <div key={param} className="space-y-2">
+                        <Label className="flex items-center gap-1 text-xs">
+                          {Icon && <Icon className="h-3 w-3" />} {labels[param]}
+                        </Label>
+                        <Input 
+                          placeholder={recommended || "Valor"}
+                          value={(adjustmentParams as any)[param]}
+                          onChange={(e) => setAdjustmentParams(prev => ({ ...prev, [param]: e.target.value }))}
+                        />
+                        {range && (range.min || range.max) && (
+                          <div className="text-[10px] text-muted-foreground bg-secondary/30 px-1.5 py-0.5 rounded flex justify-between">
+                            <span>Mín: {range.min || '-'}</span>
+                            <span>Máx: {range.max || '-'}</span>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             </div>
