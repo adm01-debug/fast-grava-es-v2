@@ -407,6 +407,9 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
             </div>
           </CardContent>
         </Card>
+
+        {/* AI Insights - Futuristic intelligence panel */}
+        <BIAIInsights biMetrics={biMetrics} oeeData={oeeData} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
