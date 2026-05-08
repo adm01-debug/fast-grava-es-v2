@@ -3432,9 +3432,12 @@ export type Database = {
           channel: string
           error_message: string | null
           id: string
+          idempotency_key: string | null
+          last_retry_at: string | null
           machine_id: string | null
           payload: Json | null
           recipient: string | null
+          retry_attempts: number | null
           sent_at: string | null
           severity: string
           status: string
@@ -3444,9 +3447,12 @@ export type Database = {
           channel: string
           error_message?: string | null
           id?: string
+          idempotency_key?: string | null
+          last_retry_at?: string | null
           machine_id?: string | null
           payload?: Json | null
           recipient?: string | null
+          retry_attempts?: number | null
           sent_at?: string | null
           severity: string
           status: string
@@ -3456,9 +3462,12 @@ export type Database = {
           channel?: string
           error_message?: string | null
           id?: string
+          idempotency_key?: string | null
+          last_retry_at?: string | null
           machine_id?: string | null
           payload?: Json | null
           recipient?: string | null
+          retry_attempts?: number | null
           sent_at?: string | null
           severity?: string
           status?: string
@@ -3470,6 +3479,72 @@ export type Database = {
             columns: ["machine_id"]
             isOneToOne: false
             referencedRelation: "machines"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tpm_notification_queue: {
+        Row: {
+          channel: string
+          created_at: string | null
+          error_log: string | null
+          id: string
+          machine_id: string | null
+          max_retries: number | null
+          next_retry_at: string | null
+          payload: Json | null
+          processed_at: string | null
+          recipient: string
+          retry_count: number | null
+          severity: string
+          status: string | null
+          template_id: string | null
+        }
+        Insert: {
+          channel: string
+          created_at?: string | null
+          error_log?: string | null
+          id?: string
+          machine_id?: string | null
+          max_retries?: number | null
+          next_retry_at?: string | null
+          payload?: Json | null
+          processed_at?: string | null
+          recipient: string
+          retry_count?: number | null
+          severity: string
+          status?: string | null
+          template_id?: string | null
+        }
+        Update: {
+          channel?: string
+          created_at?: string | null
+          error_log?: string | null
+          id?: string
+          machine_id?: string | null
+          max_retries?: number | null
+          next_retry_at?: string | null
+          payload?: Json | null
+          processed_at?: string | null
+          recipient?: string
+          retry_count?: number | null
+          severity?: string
+          status?: string | null
+          template_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tpm_notification_queue_machine_id_fkey"
+            columns: ["machine_id"]
+            isOneToOne: false
+            referencedRelation: "machines"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tpm_notification_queue_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "tpm_notification_templates_published"
             referencedColumns: ["id"]
           },
         ]
@@ -3856,6 +3931,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      process_tpm_notifications_cron: { Args: never; Returns: undefined }
       verify_audit_chain: {
         Args: { _limit?: number }
         Returns: {
