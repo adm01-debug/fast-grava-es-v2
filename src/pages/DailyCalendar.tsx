@@ -17,6 +17,7 @@ import { CalendarToolbar } from '@/components/calendar/CalendarToolbar';
 import { CalendarOnboarding } from '@/components/calendar/CalendarOnboarding';
 import { CalendarEmptyState } from '@/components/calendar/CalendarEmptyState';
 import { MobileFAB } from '@/components/calendar/MobileFAB';
+import { OptimizationAssistant } from '@/components/calendar/OptimizationAssistant';
 import { useSchedulingData } from '@/hooks/useSchedulingData';
 import { useCalendarFilters } from '@/hooks/useCalendarFilters';
 import { useCalendarPreferences } from '@/hooks/useCalendarPreferences';
@@ -212,6 +213,12 @@ export default function DailyCalendar() {
             onExportPdf={handleExportPdf}
             onExportICal={handleExportICal}
             onShowOnboarding={() => setOnboardingOpen(true)}
+            extraSlot={
+              <OptimizationAssistant 
+                utilizationByMachine={utilizationByMachine} 
+                machineCount={filteredMachines.length}
+              />
+            }
           />
         </div>
 
