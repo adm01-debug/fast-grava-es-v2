@@ -1582,9 +1582,11 @@ export type Database = {
       }
       maintenance_records: {
         Row: {
+          adjustment_parameters: Json | null
           approved_at: string | null
           approver_id: string | null
           checklist_snapshot: Json | null
+          checklist_version: number | null
           completed_at: string | null
           correction_deadline: string | null
           correction_notes: string | null
@@ -1602,12 +1604,15 @@ export type Database = {
           signature_url: string | null
           started_at: string
           status: string
+          technical_sheet_id: string | null
           total_cost: number | null
         }
         Insert: {
+          adjustment_parameters?: Json | null
           approved_at?: string | null
           approver_id?: string | null
           checklist_snapshot?: Json | null
+          checklist_version?: number | null
           completed_at?: string | null
           correction_deadline?: string | null
           correction_notes?: string | null
@@ -1625,12 +1630,15 @@ export type Database = {
           signature_url?: string | null
           started_at?: string
           status?: string
+          technical_sheet_id?: string | null
           total_cost?: number | null
         }
         Update: {
+          adjustment_parameters?: Json | null
           approved_at?: string | null
           approver_id?: string | null
           checklist_snapshot?: Json | null
+          checklist_version?: number | null
           completed_at?: string | null
           correction_deadline?: string | null
           correction_notes?: string | null
@@ -1648,6 +1656,7 @@ export type Database = {
           signature_url?: string | null
           started_at?: string
           status?: string
+          technical_sheet_id?: string | null
           total_cost?: number | null
         }
         Relationships: [
@@ -1670,6 +1679,13 @@ export type Database = {
             columns: ["schedule_id"]
             isOneToOne: false
             referencedRelation: "maintenance_schedules"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "maintenance_records_technical_sheet_id_fkey"
+            columns: ["technical_sheet_id"]
+            isOneToOne: false
+            referencedRelation: "technical_sheets"
             referencedColumns: ["id"]
           },
         ]
