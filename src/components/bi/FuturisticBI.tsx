@@ -223,12 +223,6 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
                   strokeWidth={4}
                   fill="url(#glowPrimary)"
                   animationDuration={2000}
-                  onClick={(data) => {
-                    if (data && data.activePayload) {
-                      const date = data.activePayload[0].payload.date;
-                      handleDrillDown(`PEDIDOS EM ${date}`, []); // Mocking drilldown logic
-                    }
-                  }}
                 />
                 <Area 
                   type="monotone" 
