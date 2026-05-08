@@ -78,7 +78,25 @@ export interface MaintenanceRecord {
   checklist_snapshot: any | null;
   created_at: string;
   technical_sheet_id?: string | null;
+  technical_sheet_version?: number | null;
   adjustment_parameters?: any | null;
+  quality_checklist_results?: any | null;
+  failure_risk_detected?: boolean;
+  supplies_used?: Array<{
+    name: string;
+    quantity: string;
+    alternative_used?: boolean;
+    original_recommended_id?: string;
+  }>;
+  execution_alerts?: Array<{
+    alert_type: string;
+    parameter_name?: string;
+    expected_range?: string;
+    actual_value?: string;
+    severity?: string;
+    description?: string;
+    evidence_urls?: string[];
+  }>;
   schedule?: MaintenanceSchedule;
   machine?: { id: string; name: string; code: string; technique_id?: string };
 }
