@@ -72,17 +72,18 @@ interface BINormalViewProps {
   kpis: any;
   oeeData: any;
   getPeriodLabel: () => string;
+  onDrillDown: (title: string, segment: string) => void;
 }
 
-export function BINormalView({ biMetrics, kpis, oeeData, getPeriodLabel }: BINormalViewProps) {
+export function BINormalView({ biMetrics, kpis, oeeData, getPeriodLabel, onDrillDown }: BINormalViewProps) {
   return (
     <>
       {/* Primary KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard title="OEE Geral" value={`${oeeData.overallOEE.toFixed(1)}%`} subtitle="Eficiência Global dos Equipamentos" icon={Gauge} variant={oeeData.overallOEE >= 85 ? 'success' : oeeData.overallOEE >= 65 ? 'warning' : 'danger'} />
-        <StatCard title="Taxa de Qualidade" value={`${oeeData.overallQuality.toFixed(1)}%`} subtitle={`${biMetrics.periodLostPieces.toLocaleString()} peças perdidas`} icon={Target} variant={oeeData.overallQuality >= 95 ? 'success' : oeeData.overallQuality >= 85 ? 'warning' : 'danger'} />
-        <StatCard title="Jobs Concluídos" value={biMetrics.periodCompletedJobs} subtitle={`de ${biMetrics.periodJobs} no período`} icon={CheckCircle} trend={biMetrics.productionTrend} trendValue={`${biMetrics.trendPercentage}% vs período anterior`} />
-        <StatCard title="Peças Produzidas" value={biMetrics.periodCompletedPieces.toLocaleString()} subtitle={`Taxa de perda: ${biMetrics.periodLossRate.toFixed(2)}%`} icon={Package} variant={biMetrics.periodLossRate > 5 ? 'warning' : 'success'} />
+        <StatCard onClick={() => onDrillDown('VISÃO OEE', 'all')} title="OEE Geral" value={`${oeeData.overallOEE.toFixed(1)}%`} subtitle="Eficiência Global dos Equipamentos" icon={Gauge} variant={oeeData.overallOEE >= 85 ? 'success' : oeeData.overallOEE >= 65 ? 'warning' : 'danger'} />
+        <StatCard onClick={() => onDrillDown('PEDIDOS COM PERDAS', 'lost')} title="Taxa de Qualidade" value={`${oeeData.overallQuality.toFixed(1)}%`} subtitle={`${biMetrics.periodLostPieces.toLocaleString()} peças perdidas`} icon={Target} variant={oeeData.overallQuality >= 95 ? 'success' : oeeData.overallQuality >= 85 ? 'warning' : 'danger'} />
+        <StatCard onClick={() => onDrillDown('JOBS CONCLUÍDOS', 'finished')} title="Jobs Concluídos" value={biMetrics.periodCompletedJobs} subtitle={`de ${biMetrics.periodJobs} no período`} icon={CheckCircle} trend={biMetrics.productionTrend} trendValue={`${biMetrics.trendPercentage}% vs período anterior`} />
+        <StatCard onClick={() => onDrillDown('PEDIDOS PRODUZIDOS', 'finished')} title="Peças Produzidas" value={biMetrics.periodCompletedPieces.toLocaleString()} subtitle={`Taxa de perda: ${biMetrics.periodLossRate.toFixed(2)}%`} icon={Package} variant={biMetrics.periodLossRate > 5 ? 'warning' : 'success'} />
       </div>
 
       {/* Secondary KPIs */}
@@ -113,7 +114,10 @@ export function BINormalView({ biMetrics, kpis, oeeData, getPeriodLabel }: BINor
             </div>
           </CardContent>
         </Card>
-        <Card className="card-interactive bg-gradient-to-br from-success/10 via-success/5 to-transparent border-success/20 group hover:shadow-glow-success">
+        <Card 
+          onClick={() => onDrillDown('PEDIDOS EM PRODUÇÃO', 'production')}
+          className="card-interactive bg-gradient-to-br from-success/10 via-success/5 to-transparent border-success/20 group hover:shadow-glow-success cursor-pointer"
+        >
           <CardContent className="pt-4 pb-4">
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-lg bg-success/10 group-hover:bg-success/20 transition-all">
@@ -126,7 +130,10 @@ export function BINormalView({ biMetrics, kpis, oeeData, getPeriodLabel }: BINor
             </div>
           </CardContent>
         </Card>
-        <Card className="card-interactive bg-gradient-to-br from-warning/10 via-warning/5 to-transparent border-warning/20 group hover:shadow-[0_0_20px_hsl(var(--warning)/0.3)]">
+        <Card 
+          onClick={() => onDrillDown('PEDIDOS ATRASADOS', 'delayed')}
+          className="card-interactive bg-gradient-to-br from-warning/10 via-warning/5 to-transparent border-warning/20 group hover:shadow-[0_0_20px_hsl(var(--warning)/0.3)] cursor-pointer"
+        >
           <CardContent className="pt-4 pb-4">
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-lg bg-warning/10 group-hover:bg-warning/20 transition-all">
