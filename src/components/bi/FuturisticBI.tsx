@@ -386,7 +386,7 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
                 </Button>
               </div>
             </div>
-        </CardHeader>
+          </CardHeader>
           <CardContent className="relative z-10">
             <ResponsiveContainer width="100%" height={350}>
               <AreaChart 
@@ -415,7 +415,7 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
                   tickLine={false}
                   tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 12 }}
                 />
-                <Tooltip content={<BITooltip showPercentage />} />
+                <RechartsTooltip content={<BITooltip showPercentage />} />
                 <Legend 
                   content={({ payload }) => (
                     <div className="flex justify-center gap-6 mt-4">
