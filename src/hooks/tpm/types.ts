@@ -23,7 +23,7 @@ export interface MaintenanceSchedule {
   created_by: string | null;
   created_at: string;
   updated_at: string;
-  machine?: { id: string; name: string; code: string };
+  machine?: { id: string; name: string; code: string; technique_id?: string };
   maintenance_type?: MaintenanceType;
 }
 
@@ -78,7 +78,7 @@ export interface MaintenanceRecord {
   checklist_snapshot: any | null;
   created_at: string;
   schedule?: MaintenanceSchedule;
-  machine?: { id: string; name: string; code: string };
+  machine?: { id: string; name: string; code: string; technique_id?: string };
 }
 
 export interface MaintenanceAlert {
@@ -93,7 +93,7 @@ export interface MaintenanceAlert {
   resolved_at: string | null;
   created_at: string;
   schedule?: MaintenanceSchedule;
-  machine?: { id: string; name: string; code: string };
+  machine?: { id: string; name: string; code: string; technique_id?: string };
 }
 
 export interface TPMStats {
