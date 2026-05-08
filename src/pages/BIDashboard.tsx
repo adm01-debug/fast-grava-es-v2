@@ -13,10 +13,11 @@ import { BIStatCard } from '@/components/bi/BIStatCard';
 import { BILoadingSkeleton } from '@/components/bi/BILoadingSkeleton';
 import { BIPeriodFilters } from '@/components/bi/BIPeriodFilters';
 import { BIHeader } from '@/components/bi/BIHeader';
+import { FuturisticBI } from '@/components/bi/FuturisticBI';
 import {
   TrendingUp, AlertTriangle, Printer, CheckCircle, Clock, Target,
   BarChart3, PieChart, LineChart, ArrowUp, ArrowDown, Minus,
-  Download, Gauge, Activity, ArrowRight, Package
+  Download, Gauge, Activity, ArrowRight, Package, Layout
 } from 'lucide-react';
 import { 
   AreaChart, Area, BarChart, Bar, PieChart as RechartsPieChart, Pie, Cell,
@@ -62,6 +63,7 @@ export default function BIDashboard() {
   const [customRange2, setCustomRange2] = useState<DateRange>({ from: subDays(new Date(), 60), to: subDays(new Date(), 31) });
   const [isCalendarOpen2, setIsCalendarOpen2] = useState(false);
 
+  const [viewMode, setViewMode] = useState<'futuristic' | 'classic'>('futuristic');
   const periodDays = useMemo(() => {
     if (periodFilter === 'custom') return differenceInDays(customRange.to, customRange.from) || 30;
     return periodFilter === '7d' ? 7 : periodFilter === '90d' ? 90 : 30;
@@ -224,7 +226,27 @@ export default function BIDashboard() {
     <MainLayout>
       <div className="p-6 space-y-8 animate-fade-in">
         <Breadcrumbs />
-        <BIHeader comparisonMode={comparisonMode} setComparisonMode={setComparisonMode} onNavigate={(path) => navigate(path)} />
+        <div className="flex items-center justify-between">
+          <BIHeader comparisonMode={comparisonMode} setComparisonMode={setComparisonMode} onNavigate={(path) => navigate(path)} />
+          <div className="flex items-center gap-2">
+            <Button 
+              variant={viewMode === 'classic' ? 'default' : 'outline'} 
+              size="sm" 
+              onClick={() => setViewMode('classic')}
+              className="gap-2"
+            >
+              <Layout className="h-4 w-4" /> Clássico
+            </Button>
+            <Button 
+              variant={viewMode === 'futuristic' ? 'default' : 'outline'} 
+              size="sm" 
+              onClick={() => setViewMode('futuristic')}
+              className="gap-2"
+            >
+              <Activity className="h-4 w-4" /> Futurista
+            </Button>
+          </div>
+        </div>
 
         <BIPeriodFilters
           periodFilter={periodFilter} setPeriodFilter={setPeriodFilter}
@@ -308,7 +330,11 @@ export default function BIDashboard() {
           </>
         ) : (
           <>
-            {/* Normal View - KPI Cards */}
+            {viewMode === 'futuristic' ? (
+              <FuturisticBI biMetrics={biMetrics} kpis={kpis} oeeData={oeeData} />
+            ) : (
+              <>
+                {/* Normal View - KPI Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <BIStatCard title="OEE Geral" value={`${oeeData.overallOEE.toFixed(1)}%`} subtitle="Eficiência Global dos Equipamentos" icon={Gauge} variant={oeeData.overallOEE >= 85 ? 'success' : oeeData.overallOEE >= 65 ? 'warning' : 'danger'} />
               <BIStatCard title="Taxa de Qualidade" value={`${oeeData.overallQuality.toFixed(1)}%`} subtitle={`${biMetrics.periodLostPieces.toLocaleString()} peças perdidas`} icon={Target} variant={oeeData.overallQuality >= 95 ? 'success' : oeeData.overallQuality >= 85 ? 'warning' : 'danger'} />
