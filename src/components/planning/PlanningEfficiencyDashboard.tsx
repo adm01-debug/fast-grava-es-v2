@@ -75,7 +75,7 @@ export function PlanningEfficiencyDashboard() {
               </div>
             )}
           </div>
-          <Progress value={stats.deadlineHealth} className="h-1.5 bg-green-500/10" indicatorClassName="bg-green-400" />
+          <Progress value={stats.deadlineHealth} className="h-1.5 bg-green-500/10" variant="success" />
         </CardContent>
       </Card>
 
