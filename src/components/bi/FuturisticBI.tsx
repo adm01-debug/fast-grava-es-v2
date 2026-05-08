@@ -307,7 +307,24 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
               </div>
 
             </CardTitle>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3 mr-4">
+                <button 
+                  onClick={() => toggleSeries('produced')}
+                  className={cn("flex items-center gap-1.5 transition-opacity", !visibleSeries.produced && "opacity-30")}
+                >
+                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: CHART_COLORS.primary }} />
+                  <span className="text-[10px] uppercase font-bold text-white/70">Produzido</span>
+                </button>
+                <button 
+                  onClick={() => toggleSeries('lost')}
+                  className={cn("flex items-center gap-1.5 transition-opacity", !visibleSeries.lost && "opacity-30")}
+                >
+                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: CHART_COLORS.danger }} />
+                  <span className="text-[10px] uppercase font-bold text-white/70">Perda</span>
+                </button>
+              </div>
+              <div className="flex items-center gap-2">
               <Button 
                 variant="ghost" 
                 size="icon" 
