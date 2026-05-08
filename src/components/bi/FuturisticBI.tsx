@@ -694,6 +694,13 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
           </CardContent>
         </Card>
       </div>
+      <DrillDownDialog 
+        open={drillDownOpen} 
+        onOpenChange={setDrillDownOpen} 
+        title={drillDownTitle} 
+        jobs={drillDownJobs} 
+        onExport={(format) => handleExport(format, drillDownTitle)}
+      />
     </motion.div>
   );
 }

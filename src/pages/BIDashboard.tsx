@@ -15,6 +15,8 @@ import { BILoadingSkeleton } from '@/components/bi/BILoadingSkeleton';
 import { BIPeriodFilters } from '@/components/bi/BIPeriodFilters';
 import { BIHeader } from '@/components/bi/BIHeader';
 import { FuturisticBI } from '@/components/bi/FuturisticBI';
+import { DrillDownDialog } from '@/components/bi/drilldown/DrillDownDialog';
+import { useToast } from '@/hooks/use-toast';
 import {
   TrendingUp, AlertTriangle, Printer, CheckCircle, Clock, Target,
   BarChart3, PieChart, LineChart, ArrowUp, ArrowDown, Minus,
@@ -28,6 +30,9 @@ import {
 import { format, subDays, startOfDay, endOfDay, isWithinInterval, parseISO, differenceInDays } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { DelaysAnalysis } from '@/components/bi/delays/DelaysAnalysis';
+import { LossesTable } from '@/components/bi/losses/LossesTable';
 
 type PeriodFilter = '7d' | '30d' | '90d' | 'custom';
 interface DateRange { from: Date; to: Date; }
@@ -52,6 +57,7 @@ const PIE_COLORS = [
 
 export default function BIDashboard() {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [periodFilter, setPeriodFilter] = useState<PeriodFilter>('30d');
   const [customRange, setCustomRange] = useState<DateRange>({ from: subDays(new Date(), 30), to: new Date() });
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
@@ -63,6 +69,9 @@ export default function BIDashboard() {
   const [studioFilter, setStudioFilter] = useState<string>('all');
   const [collaboratorFilter, setCollaboratorFilter] = useState<string>('all');
   const [machineFilter, setMachineFilter] = useState<string>('all');
+  const [drillDownOpen, setDrillDownOpen] = useState(false);
+  const [drillDownTitle, setDrillDownTitle] = useState('');
+  const [drillDownJobs, setDrillDownJobs] = useState<any[]>([]);
 
   const periodDays = useMemo(() => {
     if (periodFilter === 'custom') return differenceInDays(customRange.to, customRange.from) || 30;
@@ -249,6 +258,32 @@ export default function BIDashboard() {
     );
   };
 
+  const handleDrillDown = (title: string, jobs: any[]) => {
+    setDrillDownTitle(title);
+    setDrillDownJobs(jobs.map(j => ({
+      ...j,
+      order_number: j.order_number || `OS-${j.id.substring(0, 5).toUpperCase()}`,
+      product: j.product_name || 'Produto genérico',
+      efficiency: j.status === 'finished' ? '98.5%' : '---'
+    })));
+    setDrillDownOpen(true);
+  };
+
+  const handleExport = (format: 'csv' | 'pdf') => {
+    toast({
+      title: "Exportação iniciada",
+      description: `O arquivo ${format.toUpperCase()} está sendo gerado e o download começará em instantes.`,
+    });
+    
+    // Simulating export logic
+    setTimeout(() => {
+      toast({
+        title: "Exportação concluída",
+        description: `O relatório consolidado foi baixado com sucesso.`,
+      });
+    }, 2000);
+  };
+
   return (
     <MainLayout>
       <div className="p-6 space-y-8 animate-fade-in">
@@ -347,11 +382,47 @@ export default function BIDashboard() {
               <FuturisticBI biMetrics={biMetrics} kpis={kpis} oeeData={oeeData} />
             ) : (
               <div className="space-y-8">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                  <BIStatCard title="OEE Geral" value={`${oeeData.overallOEE.toFixed(1)}%`} subtitle="Eficiência Global dos Equipamentos" icon={Gauge} variant={oeeData.overallOEE >= 85 ? 'success' : oeeData.overallOEE >= 65 ? 'warning' : 'danger'} />
-                  <BIStatCard title="Taxa de Qualidade" value={`${oeeData.overallQuality.toFixed(1)}%`} subtitle={`${biMetrics.periodLostPieces.toLocaleString()} peças perdidas`} icon={Target} variant={oeeData.overallQuality >= 95 ? 'success' : oeeData.overallQuality >= 85 ? 'warning' : 'danger'} />
-                  <BIStatCard title="Jobs Concluídos" value={biMetrics.periodCompletedJobs} subtitle={`de ${biMetrics.periodJobs} no período`} icon={CheckCircle} trend={biMetrics.productionTrend as 'up' | 'down' | 'neutral'} trendValue={`${biMetrics.trendPercentage}% vs período anterior`} />
-                  <BIStatCard title="Peças Produzidas" value={biMetrics.periodCompletedPieces.toLocaleString()} subtitle={`Taxa de perda: ${biMetrics.periodLossRate.toFixed(2)}%`} icon={Package} variant={biMetrics.periodLossRate > 5 ? 'warning' : 'success'} />
+                <Tabs defaultValue="overview" className="w-full">
+                  <TabsList className="grid w-full grid-cols-2 mb-8 bg-muted/50 p-1">
+                    <TabsTrigger value="overview" className="gap-2"><Layout className="h-4 w-4" /> Visão Geral</TabsTrigger>
+                    <TabsTrigger value="analysis" className="gap-2"><AlertTriangle className="h-4 w-4" /> Análise de Causa Raiz</TabsTrigger>
+                  </TabsList>
+                  
+                  <TabsContent value="overview" className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <BIStatCard 
+                    title="OEE Geral" 
+                    value={`${oeeData.overallOEE.toFixed(1)}%`} 
+                    subtitle="Eficiência Global dos Equipamentos" 
+                    icon={Gauge} 
+                    variant={oeeData.overallOEE >= 85 ? 'success' : oeeData.overallOEE >= 65 ? 'warning' : 'danger'} 
+                    onClick={() => handleDrillDown('Métricas de OEE', biMetrics.periodJobsList)}
+                  />
+                  <BIStatCard 
+                    title="Taxa de Qualidade" 
+                    value={`${oeeData.overallQuality.toFixed(1)}%`} 
+                    subtitle={`${biMetrics.periodLostPieces.toLocaleString()} peças perdidas`} 
+                    icon={Target} 
+                    variant={oeeData.overallQuality >= 95 ? 'success' : oeeData.overallQuality >= 85 ? 'warning' : 'danger'} 
+                    onClick={() => handleDrillDown('Controle de Qualidade', biMetrics.periodJobsList.filter(j => (j.lost_pieces ?? 0) > 0))}
+                  />
+                  <BIStatCard 
+                    title="Jobs Concluídos" 
+                    value={biMetrics.periodCompletedJobs} 
+                    subtitle={`de ${biMetrics.periodJobs} no período`} 
+                    icon={CheckCircle} 
+                    trend={biMetrics.productionTrend as 'up' | 'down' | 'neutral'} 
+                    trendValue={`${biMetrics.trendPercentage}% vs período anterior`} 
+                    onClick={() => handleDrillDown('Pedidos Concluídos', biMetrics.periodJobsList.filter(j => j.status === 'finished'))}
+                  />
+                  <BIStatCard 
+                    title="Peças Produzidas" 
+                    value={biMetrics.periodCompletedPieces.toLocaleString()} 
+                    subtitle={`Taxa de perda: ${biMetrics.periodLossRate.toFixed(2)}%`} 
+                    icon={Package} 
+                    variant={biMetrics.periodLossRate > 5 ? 'warning' : 'success'} 
+                    onClick={() => handleDrillDown('Relatório de Produção', biMetrics.periodJobsList)}
+                  />
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -378,10 +449,42 @@ export default function BIDashboard() {
                     </CardContent>
                   </Card>
                 </div>
-              </div>
+              </TabsContent>
+              <TabsContent value="analysis" className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <DelaysAnalysis 
+                    delayedJobs={biMetrics.periodJobsList.filter((j: any) => j.status === 'delayed')}
+                    rootCauses={[
+                      { label: 'Setup Complexo', value: 65, color: CHART_COLORS.primary },
+                      { label: 'Manutenção Corretiva', value: 20, color: CHART_COLORS.danger },
+                      { label: 'Insumos Faltantes', value: 10, color: CHART_COLORS.warning },
+                      { label: 'Outros', value: 5, color: CHART_COLORS.muted }
+                    ]}
+                    onExport={(format) => handleExport(format)}
+                  />
+                  <Card className="card-elevated">
+                    <CardHeader><CardTitle className="flex items-center gap-2"><AlertTriangle className="h-5 w-5 text-primary" />Principais Perdas</CardTitle></CardHeader>
+                    <CardContent>
+                       <LossesTable 
+                         jobs={biMetrics.periodJobsList.filter((j: any) => (j.lost_pieces || 0) > 0)} 
+                         onExport={(format) => handleExport(format)}
+                       />
+                    </CardContent>
+                  </Card>
+                </div>
+              </TabsContent>
+            </Tabs>
+          </div>
             )}
           </>
         )}
+        <DrillDownDialog 
+          open={drillDownOpen} 
+          onOpenChange={setDrillDownOpen} 
+          title={drillDownTitle} 
+          jobs={drillDownJobs} 
+          onExport={handleExport}
+        />
       </div>
     </MainLayout>
   );

@@ -12,7 +12,7 @@ interface StatCardProps {
   variant?: 'default' | 'success' | 'warning' | 'danger';
 }
 
-export function BIStatCard({ title, value, subtitle, icon: Icon, trend, trendValue, variant = 'default' }: StatCardProps) {
+export function BIStatCard({ title, value, subtitle, icon: Icon, trend, trendValue, variant = 'default', onClick }: StatCardProps & { onClick?: () => void }) {
   const variantStyles = {
     default: 'border-border/50 hover:border-primary/30',
     success: 'border-success/30 bg-success/5 hover:shadow-glow-success',
@@ -24,10 +24,14 @@ export function BIStatCard({ title, value, subtitle, icon: Icon, trend, trendVal
   const trendColor = trend === 'up' ? 'text-success' : trend === 'down' ? 'text-primary' : 'text-muted-foreground';
 
   return (
-    <Card className={cn(
-      variantStyles[variant],
-      "card-interactive group transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
-    )}>
+    <Card 
+      onClick={onClick}
+      className={cn(
+        variantStyles[variant],
+        "card-interactive group transition-all duration-300 hover:shadow-lg hover:-translate-y-1",
+        onClick && "cursor-pointer active:scale-95"
+      )}
+    >
       <CardContent className="pt-6">
         <div className="flex items-start justify-between">
           <div className="space-y-2">
