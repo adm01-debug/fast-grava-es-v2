@@ -1,22 +1,25 @@
-import { useMemo } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
+import { useMemo, useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
+import { Button } from '@/components/ui/button';
 import { 
   BarChart3, Target, Zap, Clock, TrendingUp, 
-  ArrowUpRight, AlertTriangle, Sparkles 
+  ArrowUpRight, AlertTriangle, Sparkles, ChevronDown, ChevronUp, Activity
 } from 'lucide-react';
 import { useSchedulingData } from '@/hooks/useSchedulingData';
 import { useSmartSequencing } from '@/hooks/useSmartSequencing';
 import { useLoadBalancing } from '@/hooks/useLoadBalancing';
 import { useOEE } from '@/hooks/useOEE';
+import { OEETrendChart } from '@/components/oee/OEETrendChart';
 import { cn } from '@/lib/utils';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export function PlanningEfficiencyDashboard() {
   const { jobs } = useSchedulingData();
   const { totalSavings } = useSmartSequencing();
   const { suggestions: balancingSuggestions } = useLoadBalancing();
-  const { data: oeeData } = useOEE(7);
+  const { data: oeeData } = useOEE(14);
+  const [showTrend, setShowTrend] = useState(false);
 
   const stats = useMemo(() => {
     if (!jobs || jobs.length === 0) return null;
@@ -149,6 +152,36 @@ export function PlanningEfficiencyDashboard() {
           </div>
         </CardContent>
       </Card>
+      
+      <AnimatePresence>
+        {showTrend && oeeData && (
+          <motion.div 
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="md:col-span-2 lg:col-span-4 overflow-hidden"
+          >
+            <div className="pt-2">
+              <OEETrendChart data={oeeData.trendData} worldClassBenchmark={oeeData.worldClassBenchmark} />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <div className="md:col-span-2 lg:col-span-4 flex justify-center -mt-2">
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground hover:text-primary gap-2"
+          onClick={() => setShowTrend(!showTrend)}
+        >
+          {showTrend ? (
+            <>Ocultar Tendências <ChevronUp className="h-3 w-3" /></>
+          ) : (
+            <>Ver Histórico e Tendências de OEE <ChevronDown className="h-3 w-3" /></>
+          )}
+        </Button>
+      </div>
     </div>
   );
 }
