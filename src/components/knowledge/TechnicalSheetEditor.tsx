@@ -112,7 +112,9 @@ export const TechnicalSheetEditor = ({ sheetId, techniques, categories, material
       gap_specifications: formData.gap_specifications || undefined,
       challenges_notes: formData.challenges_notes || undefined,
       failure_scenarios: formData.failure_scenarios || undefined,
-      quality_requirements: formData.quality_requirements || undefined
+      quality_requirements: formData.quality_requirements || undefined,
+      setup_instructions: formData.setup_instructions || undefined,
+      quality_checklist: formData.quality_checklist || []
     };
     if (isNew) { await createSheet.mutateAsync(payload); onClose(); }
     else { await updateSheet.mutateAsync({ id: sheetId!, ...payload }); toast.success('Ficha atualizada!'); }
