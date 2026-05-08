@@ -62,6 +62,18 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
   const { operators } = useOperatorProductivity(30);
   const { stats: tpmStats } = useTPM();
   const { isExporting, handleExport: baseHandleExport } = useBIExport(biMetrics);
+  const [lastUpdated, setLastUpdated] = useState(new Date());
+
+  useEffect(() => {
+    // Simulate real-time data flow indicator
+    const interval = setInterval(() => {
+      // Small random chance to "update" the timestamp to simulate activity
+      if (Math.random() > 0.8) {
+        setLastUpdated(new Date());
+      }
+    }, 30000);
+    return () => clearInterval(interval);
+  }, []);
 
   const jobsWithLosses = useMemo(() => {
     if (!biMetrics.periodJobsList) return [];
@@ -81,6 +93,7 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
   const handleExport = useCallback((format: 'csv' | 'pdf', type: string) => {
     baseHandleExport(format, type, { jobsWithLosses, delayedJobsList });
   }, [baseHandleExport, jobsWithLosses, delayedJobsList]);
+
 
   const [drillDownOpen, setDrillDownOpen] = useState(false);
   const [drillDownTitle, setDrillDownTitle] = useState('');
