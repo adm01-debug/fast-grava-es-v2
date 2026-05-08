@@ -284,8 +284,35 @@ export function ExecutionDetailsModal({ isOpen, onClose, recordId }: ExecutionDe
               )}
               {/* Header for print only */}
               <div className="hidden print:block text-center border-b pb-4 mb-8">
-                <h1 className="text-2xl font-bold uppercase">Relatório de Execução TPM</h1>
-                <p className="text-sm text-muted-foreground">Documento Gerado em {format(new Date(), 'dd/MM/yyyy HH:mm')}</p>
+                <div className="flex justify-between items-center mb-4">
+                  <div className="text-left">
+                    <h1 className="text-2xl font-bold uppercase">Ordem de Serviço Técnica</h1>
+                    <p className="text-sm font-semibold">TPM - Total Productive Maintenance</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-xs">Documento nº: {record.id.substring(0, 8)}</p>
+                    <p className="text-xs">Emissão: {format(new Date(), 'dd/MM/yyyy HH:mm')}</p>
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4 text-left border p-4 rounded-lg mb-4">
+                  <div>
+                    <p className="text-[10px] text-muted-foreground uppercase font-bold">Operador/Técnico</p>
+                    <p className="text-sm">{record.performed_by_name || 'N/A'}</p>
+                  </div>
+                  <div>
+                    <p className="text-[10px] text-muted-foreground uppercase font-bold">Data de Execução</p>
+                    <p className="text-sm">{record.completed_at ? format(new Date(record.completed_at), 'dd/MM/yyyy HH:mm') : 'N/A'}</p>
+                  </div>
+                  <div>
+                    <p className="text-[10px] text-muted-foreground uppercase font-bold">Máquina</p>
+                    <p className="text-sm">{record.machine?.name} ({record.machine?.code})</p>
+                  </div>
+                  <div>
+                    <p className="text-[10px] text-muted-foreground uppercase font-bold">Status</p>
+                    <p className="text-sm font-bold">{record.status === 'approved' ? 'APROVADA' : 'PENDENTE'}</p>
+                  </div>
+                </div>
               </div>
 
               {/* Basic Info Grid */}
