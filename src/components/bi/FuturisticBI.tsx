@@ -563,13 +563,33 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
       {/* Drill-down Dialog */}
       <Dialog open={drillDownOpen} onOpenChange={setDrillDownOpen}>
         <DialogContent className="max-w-4xl bg-black/90 border-primary/30 backdrop-blur-2xl text-white">
-          <DialogHeader>
-            <DialogTitle className="text-2xl font-display tracking-widest text-primary uppercase">
-              {drillDownTitle}
-            </DialogTitle>
-            <DialogDescription className="text-muted-foreground">
-              Lista detalhada de pedidos e métricas de execução para o segmento selecionado.
-            </DialogDescription>
+          <DialogHeader className="flex flex-row items-center justify-between space-y-0">
+            <div>
+              <DialogTitle className="text-2xl font-display tracking-widest text-primary uppercase">
+                {drillDownTitle}
+              </DialogTitle>
+              <DialogDescription className="text-muted-foreground">
+                Lista detalhada de pedidos e métricas de execução para o segmento selecionado.
+              </DialogDescription>
+            </div>
+            <div className="flex items-center gap-2 pr-8">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="h-8 gap-2 bg-white/5 border-white/10 hover:bg-primary/20 text-xs"
+                onClick={() => handleExport('csv', `DrillDown_${drillDownTitle.replace(/\s+/g, '_')}`)}
+              >
+                <FileSpreadsheet className="h-3.5 w-3.5" /> CSV
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="h-8 gap-2 bg-white/5 border-white/10 hover:bg-primary/20 text-xs"
+                onClick={() => handleExport('pdf', `DrillDown_${drillDownTitle.replace(/\s+/g, '_')}`)}
+              >
+                <FileText className="h-3.5 w-3.5" /> PDF
+              </Button>
+            </div>
           </DialogHeader>
           <div className="mt-4">
             <ScrollArea className="h-[500px] pr-4">
