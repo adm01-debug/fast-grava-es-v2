@@ -235,6 +235,33 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
     },
   });
 
+  // Request correction mutation
+  const requestCorrection = useMutation({
+    mutationFn: async (data: {
+      record_id: string;
+      notes: string;
+      deadline?: string;
+    }) => {
+      const { error } = await supabase
+        .from('maintenance_records')
+        .update({
+          status: 'correction_requested',
+          correction_notes: data.notes,
+          correction_deadline: data.deadline,
+        })
+        .eq('id', data.record_id);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['maintenance-records'] });
+      toast.info('Solicitação de correção enviada ao técnico');
+    },
+    onError: (error) => {
+      showErrorToast(error, 'Erro ao solicitar correção', TPM_ERROR_CONTEXT.records);
+    },
+  });
+
   // Generate alerts for due maintenance (parallel execution)
   const checkAndGenerateAlerts = useMutation({
     mutationFn: async () => {
@@ -318,6 +345,7 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
     createSchedule,
     startMaintenance,
     approveMaintenance,
+    requestCorrection,
     completeMaintenance,
     checkAndGenerateAlerts,
     resolveAlert,

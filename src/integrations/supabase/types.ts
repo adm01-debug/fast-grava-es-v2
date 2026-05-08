@@ -1569,6 +1569,8 @@ export type Database = {
           approved_at: string | null
           approver_id: string | null
           completed_at: string | null
+          correction_deadline: string | null
+          correction_notes: string | null
           created_at: string
           downtime_minutes: number | null
           id: string
@@ -1589,6 +1591,8 @@ export type Database = {
           approved_at?: string | null
           approver_id?: string | null
           completed_at?: string | null
+          correction_deadline?: string | null
+          correction_notes?: string | null
           created_at?: string
           downtime_minutes?: number | null
           id?: string
@@ -1609,6 +1613,8 @@ export type Database = {
           approved_at?: string | null
           approver_id?: string | null
           completed_at?: string | null
+          correction_deadline?: string | null
+          correction_notes?: string | null
           created_at?: string
           downtime_minutes?: number | null
           id?: string

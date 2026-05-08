@@ -1,13 +1,15 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
+import { Textarea } from '@/components/ui/textarea';
 import { 
   Wrench, CheckCircle2, AlertTriangle, Clock, 
   User, Calendar, Package, FileText, Camera, PenTool,
-  CheckCircle, Download, FileSpreadsheet, File
+  CheckCircle, Download, FileSpreadsheet, File, Archive,
+  Eye
 } from 'lucide-react';
 import { MaintenanceRecord } from '@/hooks/tpm/types';
 import { format } from 'date-fns';
@@ -15,6 +17,8 @@ import { ptBR } from 'date-fns/locale';
 import { useTPM } from '@/hooks/useTPM';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
+import JSZip from 'jszip';
+import { saveAs } from 'file-saver';
 
 interface ExecutionDetailsModalProps {
   isOpen: boolean;
@@ -23,10 +27,12 @@ interface ExecutionDetailsModalProps {
 }
 
 export function ExecutionDetailsModal({ isOpen, onClose, recordId }: ExecutionDetailsModalProps) {
-  const { fetchRecordDetails, approveMaintenance } = useTPM();
+  const { fetchRecordDetails, approveMaintenance, requestCorrection } = useTPM();
   const { user } = useAuth();
   const [record, setRecord] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isRequestingCorrection, setIsRequestingCorrection] = useState(false);
+  const [correctionNotes, setCorrectionNotes] = useState('');
 
   useEffect(() => {
     if (isOpen && recordId) {
@@ -48,25 +54,36 @@ export function ExecutionDetailsModal({ isOpen, onClose, recordId }: ExecutionDe
     }
   };
 
+  const validationErrors = useMemo(() => {
+    if (!record) return [];
+    const errors: string[] = [];
+    
+    record.responses?.forEach((r: any) => {
+      if (!r.is_checked && r.item?.is_critical) {
+        errors.push(`Item Crítico Incompleto: ${r.item.description}`);
+      }
+      if (r.item?.requires_photo && !r.photo_url) {
+        errors.push(`Foto Obrigatória Ausente: ${r.item.description}`);
+      }
+      if (r.item?.requires_measurement && (r.measurement_value === null || r.measurement_value === undefined)) {
+        errors.push(`Medição Obrigatória Ausente: ${r.item.description}`);
+      }
+    });
+
+    if (!record.signature_url) {
+      errors.push("Assinatura do técnico é obrigatória.");
+    }
+
+    return errors;
+  }, [record]);
+
   const handleApprove = async () => {
     if (!recordId || !user) return;
     
-    // Automatic Validation
-    const incompleteItems = record.responses?.filter((r: any) => 
-      !r.is_checked && r.item?.is_critical
-    );
-    
-    const missingEvidence = record.responses?.filter((r: any) => 
-      r.item?.requires_photo && !r.photo_url
-    );
-
-    if (incompleteItems?.length > 0) {
-      toast.error(`Não é possível aprovar: Existem ${incompleteItems.length} itens críticos não realizados.`);
-      return;
-    }
-
-    if (missingEvidence?.length > 0) {
-      toast.error(`Não é possível aprovar: ${missingEvidence.length} itens obrigatórios estão sem evidência fotográfica.`);
+    if (validationErrors.length > 0) {
+      toast.error("Não é possível aprovar", {
+        description: `Existem ${validationErrors.length} pendências que precisam ser corrigidas.`
+      });
       return;
     }
 
@@ -78,6 +95,54 @@ export function ExecutionDetailsModal({ isOpen, onClose, recordId }: ExecutionDe
       loadDetails();
     } catch (error) {
       // Error handled by mutation
+    }
+  };
+
+  const handleRequestCorrection = async () => {
+    if (!recordId || !correctionNotes) {
+      toast.error("Por favor, informe o motivo da correção.");
+      return;
+    }
+
+    try {
+      await requestCorrection.mutateAsync({
+        record_id: recordId,
+        notes: correctionNotes
+      });
+      setIsRequestingCorrection(false);
+      setCorrectionNotes('');
+      loadDetails();
+    } catch (error) {
+      // Error handled
+    }
+  };
+
+  const handleExportZIP = async () => {
+    if (!record) return;
+    try {
+      const zip = new JSZip();
+      const folder = zip.folder(`execucao_${record.id.substring(0, 8)}`);
+      
+      // Photos
+      const photosFolder = folder?.folder("fotos");
+      const photoResponses = record.responses.filter((r: any) => r.photo_url);
+      
+      for (let i = 0; i < photoResponses.length; i++) {
+        const resp = photoResponses[i];
+        try {
+          const response = await fetch(resp.photo_url);
+          const blob = await response.blob();
+          photosFolder?.file(`item_${i+1}_${resp.item?.description.substring(0, 20)}.jpg`, blob);
+        } catch (e) { console.error(e); }
+      }
+
+      // Metadata
+      folder?.file("detalhes.json", JSON.stringify(record, null, 2));
+
+      const content = await zip.generateAsync({ type: "blob" });
+      saveAs(content, `tpm_execucao_${record.id.substring(0, 8)}.zip`);
+    } catch (e) {
+      toast.error("Erro ao gerar ZIP");
     }
   };
 
@@ -153,8 +218,14 @@ export function ExecutionDetailsModal({ isOpen, onClose, recordId }: ExecutionDe
             </div>
             <div className="flex flex-col items-end gap-2">
               {record && getStatusBadge(record.status)}
+              {record.status === 'correction_requested' && (
+                <Badge variant="destructive" className="animate-pulse">Aguardando Correção</Badge>
+              )}
               {record && (
                 <div className="flex gap-2">
+                  <Button variant="outline" size="sm" onClick={handleExportZIP} className="gap-2">
+                    <Archive className="h-4 w-4" /> ZIP
+                  </Button>
                   <Button variant="outline" size="sm" onClick={handleExportCSV} className="gap-2">
                     <FileSpreadsheet className="h-4 w-4" /> CSV
                   </Button>
@@ -175,7 +246,30 @@ export function ExecutionDetailsModal({ isOpen, onClose, recordId }: ExecutionDe
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
             </div>
           ) : record ? (
-            <div className="space-y-8 print:space-y-4 print:p-0">
+          <div className="space-y-8 print:space-y-4 print:p-0">
+              {/* Validation Feedback */}
+              {record.status === 'completed' && validationErrors.length > 0 && (
+                <div className="p-4 bg-destructive/10 border border-destructive/20 rounded-xl space-y-2 animate-in fade-in slide-in-from-top-2">
+                  <h4 className="text-sm font-bold text-destructive flex items-center gap-2">
+                    <AlertTriangle className="h-4 w-4" /> Pendências Encontradas ({validationErrors.length})
+                  </h4>
+                  <ul className="text-xs space-y-1 text-destructive/80 pl-6 list-disc">
+                    {validationErrors.map((err, i) => (
+                      <li key={i}>{err}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Correction requested info */}
+              {record.status === 'correction_requested' && (
+                <div className="p-4 bg-amber-500/10 border border-amber-500/20 rounded-xl space-y-2">
+                  <h4 className="text-sm font-bold text-amber-600 flex items-center gap-2">
+                    <Clock className="h-4 w-4" /> Correção em Andamento
+                  </h4>
+                  <p className="text-xs text-amber-700/80 pl-6">Motivo: {record.correction_notes}</p>
+                </div>
+              )}
               {/* Header for print only */}
               <div className="hidden print:block text-center border-b pb-4 mb-8">
                 <h1 className="text-2xl font-bold uppercase">Relatório de Execução TPM</h1>
@@ -348,10 +442,34 @@ export function ExecutionDetailsModal({ isOpen, onClose, recordId }: ExecutionDe
                       <p className="text-[10px] text-muted-foreground">Em: {record.approved_at ? format(new Date(record.approved_at), "dd/MM/yyyy 'às' HH:mm") : '-'}</p>
                     </div>
                   ) : record.status === 'completed' ? (
-                    <div className="flex items-center justify-center md:justify-end">
-                      <Button onClick={handleApprove} className="bg-emerald-600 hover:bg-emerald-700 gap-2">
-                        <CheckCircle className="h-4 w-4" /> Aprovar Execução
-                      </Button>
+                    <div className="flex flex-col items-center md:items-end gap-3">
+                      {isRequestingCorrection ? (
+                        <div className="w-full max-w-sm space-y-3 animate-in fade-in zoom-in-95">
+                          <Textarea 
+                            placeholder="Descreva o que precisa ser corrigido..."
+                            value={correctionNotes}
+                            onChange={(e) => setCorrectionNotes(e.target.value)}
+                            className="text-xs min-h-[80px]"
+                          />
+                          <div className="flex gap-2 justify-end">
+                            <Button variant="ghost" size="sm" onClick={() => setIsRequestingCorrection(false)}>Cancelar</Button>
+                            <Button size="sm" variant="destructive" onClick={handleRequestCorrection}>Enviar Solicitação</Button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-3">
+                          <Button variant="outline" onClick={() => setIsRequestingCorrection(true)} className="text-destructive hover:bg-destructive/5 gap-2">
+                            <AlertTriangle className="h-4 w-4" /> Solicitar Correção
+                          </Button>
+                          <Button 
+                            onClick={handleApprove} 
+                            disabled={validationErrors.length > 0}
+                            className="bg-emerald-600 hover:bg-emerald-700 gap-2 shadow-glow-success"
+                          >
+                            <CheckCircle className="h-4 w-4" /> Aprovar Execução
+                          </Button>
+                        </div>
+                      )}
                     </div>
                   ) : null}
                 </div>
