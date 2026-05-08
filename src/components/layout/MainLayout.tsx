@@ -75,7 +75,7 @@ export function MainLayout({ children }: MainLayoutProps) {
                 <NetworkStatusIndicator />
               </Suspense>
               <div className="w-px h-6 bg-border/40 mx-1" />
-              <ThemeToggle />
+              <ThemeToggle className="border-0 bg-transparent hover:bg-primary/10 h-8 w-8" />
               <div className="w-px h-6 bg-border/40 mx-1" />
               <SectionErrorBoundary section="Realtime" compact>
                 <Suspense fallback={EmptyFallback}>
@@ -93,7 +93,7 @@ export function MainLayout({ children }: MainLayoutProps) {
             <Suspense fallback={EmptyFallback}>
               <OfflineReadyIndicator />
             </Suspense>
-            <ThemeToggle />
+            <ThemeToggle className="bg-card/40 backdrop-blur-md" />
           </div>
           
           {/* Content with proper padding and safe-area insets */}
