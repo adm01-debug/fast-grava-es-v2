@@ -148,10 +148,18 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
     if (!biMetrics.dailyTrend) return [];
     return biMetrics.dailyTrend.map((d: any) => ({
       date: d.date,
-      lossRate: d.produced > 0 ? (d.lost / (d.produced + d.lost)) * 100 : 0,
+      lossRate: (d.produced + d.lost) > 0 ? (d.lost / (d.produced + d.lost)) * 100 : 0,
       lost: d.lost
     }));
   }, [biMetrics.dailyTrend]);
+
+  const jobsWithLosses = useMemo(() => {
+    if (!biMetrics.periodJobsList) return [];
+    return biMetrics.periodJobsList
+      .filter((j: any) => (j.lost_pieces || 0) > 0)
+      .sort((a: any, b: any) => (b.lost_pieces || 0) - (a.lost_pieces || 0))
+      .slice(0, 10);
+  }, [biMetrics.periodJobsList]);
 
   const containerVariants = {
     hidden: { opacity: 0 },
