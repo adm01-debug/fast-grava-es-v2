@@ -296,11 +296,14 @@ export default function TPMDashboard() {
           </TabsContent>
 
           <TabsContent value="alerts" className="animate-fade-in">
-            <TPMAlertsPanel
-              alerts={alerts}
-              onResolve={(id) => resolveAlert.mutate(id)}
-              onStartMaintenance={handleStartMaintenance}
-            />
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <TPMAlertsPanel
+                alerts={alerts}
+                onResolve={(id) => resolveAlert.mutate(id)}
+                onStartMaintenance={handleStartMaintenance}
+              />
+              <TPMParameterAlerts />
+            </div>
           </TabsContent>
 
           <TabsContent value="reports" className="animate-fade-in">
