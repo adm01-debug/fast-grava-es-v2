@@ -15,6 +15,8 @@ import { BILoadingSkeleton } from '@/components/bi/BILoadingSkeleton';
 import { BIPeriodFilters } from '@/components/bi/BIPeriodFilters';
 import { BIHeader } from '@/components/bi/BIHeader';
 import { FuturisticBI } from '@/components/bi/FuturisticBI';
+import { DrillDownDialog } from '@/components/bi/drilldown/DrillDownDialog';
+import { toast } from '@/components/ui/use-toast';
 import {
   TrendingUp, AlertTriangle, Printer, CheckCircle, Clock, Target,
   BarChart3, PieChart, LineChart, ArrowUp, ArrowDown, Minus,
@@ -63,6 +65,9 @@ export default function BIDashboard() {
   const [studioFilter, setStudioFilter] = useState<string>('all');
   const [collaboratorFilter, setCollaboratorFilter] = useState<string>('all');
   const [machineFilter, setMachineFilter] = useState<string>('all');
+  const [drillDownOpen, setDrillDownOpen] = useState(false);
+  const [drillDownTitle, setDrillDownTitle] = useState('');
+  const [drillDownJobs, setDrillDownJobs] = useState<any[]>([]);
 
   const periodDays = useMemo(() => {
     if (periodFilter === 'custom') return differenceInDays(customRange.to, customRange.from) || 30;
