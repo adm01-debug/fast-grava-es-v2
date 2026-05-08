@@ -252,6 +252,9 @@ export default function TPMDashboard() {
                 </span>
               )}
             </TabsTrigger>
+            <TabsTrigger value="reports" className="data-[state=active]:shadow-glow-primary data-[state=active]:bg-primary/10 transition-all duration-300">
+              Relatórios
+            </TabsTrigger>
             <TabsTrigger value="config" className="data-[state=active]:shadow-glow-primary data-[state=active]:bg-primary/10 transition-all duration-300">
               Configurações
             </TabsTrigger>
