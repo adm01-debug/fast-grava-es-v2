@@ -111,9 +111,9 @@ export function DrillDownDialog({ open, onOpenChange, title, jobs, onExport }: D
         <div className="mt-4">
           <ScrollArea className="h-[500px] pr-4">
             <Table>
-              <TableHeader>
-                <TableRow className="border-white/20">
-                  <TableHead className="text-primary text-xs uppercase font-bold">OS</TableHead>
+              <TableHeader className="sticky top-0 bg-black/95 z-10">
+                <TableRow className="border-white/20 hover:bg-transparent">
+                  <TableHead className="text-primary text-xs uppercase font-bold w-[120px]">OS</TableHead>
                   <TableHead className="text-primary text-xs uppercase font-bold">Produto</TableHead>
                   <TableHead className="text-primary text-xs uppercase font-bold text-center">Status</TableHead>
                   <TableHead className="text-primary text-xs uppercase font-bold text-center">Qtd</TableHead>
@@ -153,7 +153,7 @@ export function DrillDownDialog({ open, onOpenChange, title, jobs, onExport }: D
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={5} className="text-center py-20 text-muted-foreground">
+                    <TableCell colSpan={6} className="text-center py-20 text-muted-foreground">
                       <div className="flex flex-col items-center gap-2">
                         <Filter className="h-8 w-8 text-muted-foreground/30" />
                         <p>Nenhum pedido corresponde à sua pesquisa.</p>
