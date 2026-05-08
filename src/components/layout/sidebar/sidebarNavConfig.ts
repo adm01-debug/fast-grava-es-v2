@@ -57,8 +57,8 @@ export const navGroups: NavGroup[] = [
 ];
 
 export const adminNavItems: NavItem[] = [
-  { icon: Code2, label: 'Qualidade de Código', href: '/code-quality' },
-  { icon: RefreshCw, label: 'Bitrix24', href: '/integrations/bitrix24' },
-  { icon: Palette, label: 'Design System', href: '/design-system' },
-  { icon: Download, label: 'Instalar App', href: '/install' },
+  { icon: Code2, label: 'Optimization Engine', href: '/code-quality' },
+  { icon: RefreshCw, label: 'Data Bridge', href: '/integrations/bitrix24' },
+  { icon: Palette, label: 'Visual Language', href: '/design-system' },
+  { icon: Download, label: 'Platform Deployment', href: '/install' },
 ];

@@ -110,7 +110,7 @@ export function AppSidebar() {
           {filteredAdminNavItems.length > 0 && (
             <>
               <div className="my-4 border-t border-sidebar-border/50" />
-              {(!collapsed || isMobile) && <p className="text-xs font-medium text-sidebar-foreground/30 uppercase tracking-wider px-3 py-2">Administração</p>}
+              {(!collapsed || isMobile) && <p className="text-[10px] font-black text-primary/40 uppercase tracking-[0.2em] px-5 py-3">Core Infrastructure</p>}
               {filteredAdminNavItems.map(item => <NavButton key={item.href} item={item} collapsed={collapsed} isMobile={isMobile} isActive={isActive(item.href)} />)}
             </>
           )}
