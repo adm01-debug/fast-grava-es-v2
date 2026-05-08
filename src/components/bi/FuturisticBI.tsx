@@ -216,6 +216,12 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
                   strokeWidth={4}
                   fill="url(#glowPrimary)"
                   animationDuration={2000}
+                  onClick={(data) => {
+                    if (data && data.activePayload) {
+                      const date = data.activePayload[0].payload.date;
+                      handleDrillDown(`PEDIDOS EM ${date}`, []); // Mocking drilldown logic
+                    }
+                  }}
                 />
                 <Area 
                   type="monotone" 
@@ -248,6 +254,7 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
                   paddingAngle={5} 
                   dataKey="value"
                   stroke="none"
+                  onClick={(data) => handleDrillDown(`PEDIDOS: ${data.name}`, [])}
                 >
                   {biMetrics.statusDistribution.map((entry: any, index: number) => (
                     <Cell key={`cell-${index}`} fill={entry.color} fillOpacity={0.8} />
@@ -284,7 +291,12 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
                 <XAxis type="number" hide />
                 <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} tick={{ fill: '#fff', fontSize: 12 }} />
                 <Tooltip cursor={{ fill: 'rgba(255,255,255,0.05)' }} contentStyle={{ backgroundColor: '#000', border: '1px solid #333' }} />
-                <Bar dataKey="jobs" radius={[0, 4, 4, 0]} barSize={20}>
+                <Bar 
+                  dataKey="jobs" 
+                  radius={[0, 4, 4, 0]} 
+                  barSize={20}
+                  onClick={(data) => handleDrillDown(`STUDIO: ${data.name}`, [])}
+                >
                   {studioData.map((entry: any, index: number) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
