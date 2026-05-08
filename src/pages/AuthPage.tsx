@@ -79,7 +79,41 @@ export default function AuthPage() {
   return (
     <AuthErrorBoundary>
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-primary/5 p-4 relative overflow-hidden">
-...
+        <div className="absolute inset-0 overflow-hidden pointer-events-none"><div className="absolute -top-40 -right-40 w-80 h-80 bg-primary/10 rounded-full blur-3xl" /><div className="absolute -bottom-40 -left-40 w-80 h-80 bg-accent/10 rounded-full blur-3xl" /></div>
+        <div className="absolute top-4 right-4 flex items-center gap-2 z-10">
+          <LanguageSwitcher />
+          <Button variant="ghost" size="icon" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} className="h-9 w-9 rounded-lg"><Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" /><Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" /></Button>
+        </div>
+        <div className="w-full max-w-md space-y-8 relative z-10">
+          <div className="text-center space-y-3">
+            <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5, ease: [0.175, 0.885, 0.32, 1.275] }} className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-primary to-accent mb-4 shadow-xl shadow-primary/25"><Printer className="h-10 w-10 text-white" /></motion.div>
+            <motion.h1 initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.15 }} className="text-4xl font-display font-bold tracking-tight"><span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">{t('common.appName')}</span></motion.h1>
+            <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.25 }} className="text-muted-foreground text-lg">Sistema de Gestão de Produção</motion.p>
+          </div>
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.35 }}>
+            <Card variant="elevated" className="border-border/60 shadow-xl dark:shadow-glow-primary/20 backdrop-blur-xl">
+              <CardContent className="pt-6">
+                <Tabs defaultValue="login" className="w-full">
+                  <TabsList className="grid w-full grid-cols-2 mb-6"><TabsTrigger value="login">{t('auth.login')}</TabsTrigger><TabsTrigger value="signup">{t('auth.register')}</TabsTrigger></TabsList>
+                  <TabsContent value="login">
+                    <AuthLoginForm loginEmail={loginEmail} loginPassword={loginPassword} rememberMe={rememberMe} isLoading={isLoading} socialLoading={socialLoading} errors={errors} onEmailChange={setLoginEmail} onPasswordChange={setLoginPassword} onRememberMeChange={setRememberMe} onSubmit={handleLogin} onGoogleLogin={handleGoogleLogin} onForgotPassword={() => setShowForgotPassword(true)} onPasskeySuccess={() => navigate('/')} />
+                  </TabsContent>
+                  <TabsContent value="signup">
+                    <AuthSignupForm signupName={signupName} signupEmail={signupEmail} signupPassword={signupPassword} signupConfirmPassword={signupConfirmPassword} isLoading={isLoading} errors={errors} onNameChange={setSignupName} onEmailChange={setSignupEmail} onPasswordChange={setSignupPassword} onConfirmPasswordChange={setSignupConfirmPassword} onSubmit={handleSignup} />
+                  </TabsContent>
+                </Tabs>
+              </CardContent>
+            </Card>
+          </motion.div>
+        </div>
+        <Dialog open={showForgotPassword} onOpenChange={setShowForgotPassword}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader><DialogTitle className="flex items-center gap-2"><KeyRound className="h-5 w-5 text-primary" />{t('auth.resetPassword')}</DialogTitle><DialogDescription>{t('auth.resetNeedsApproval', 'Digite seu e-mail. A solicitação será enviada para aprovação do gestor.')}</DialogDescription></DialogHeader>
+            <form onSubmit={handleForgotPassword} className="space-y-4">
+              <div className="space-y-2"><Label htmlFor="forgot-email">{t('auth.email')}</Label><Input id="forgot-email" type="email" placeholder={t('auth.email')} value={forgotEmail} onChange={(e) => setForgotEmail(e.target.value)} disabled={isSendingReset} autoFocus /><p className="text-xs text-muted-foreground">{t('auth.resetApprovalNote', 'Sua solicitação será analisada por um gestor antes do envio do e-mail de redefinição.')}</p></div>
+              <div className="flex gap-2 justify-end"><Button type="button" variant="outline" onClick={() => setShowForgotPassword(false)} disabled={isSendingReset}>{t('common.cancel')}</Button><Button type="submit" disabled={isSendingReset}>{isSendingReset ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />{t('common.loading')}</> : t('auth.sendRequest', 'Enviar Solicitação')}</Button></div>
+            </form>
+          </DialogContent>
         </Dialog>
       </div>
     </AuthErrorBoundary>
