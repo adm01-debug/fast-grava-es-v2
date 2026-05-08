@@ -411,9 +411,6 @@ export function ExecutionDetailsModal({ isOpen, onClose, recordId }: ExecutionDe
                 </div>
               )}
 
-                </div>
-              )}
-
               {/* Checklist de Qualidade Aplicado */}
               {record.quality_responses && record.quality_responses.length > 0 && (
                 <div className="space-y-4">
