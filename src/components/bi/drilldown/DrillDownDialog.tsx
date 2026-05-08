@@ -33,38 +33,78 @@ interface DrillDownDialogProps {
 
 export function DrillDownDialog({ open, onOpenChange, title, jobs, onExport }: DrillDownDialogProps) {
   const navigate = useNavigate();
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const filteredJobs = useMemo(() => {
+    if (!searchTerm) return jobs;
+    const lowerSearch = searchTerm.toLowerCase();
+    return jobs.filter(job => 
+      job.order_number?.toLowerCase().includes(lowerSearch) ||
+      job.product?.toLowerCase().includes(lowerSearch) ||
+      job.status?.toLowerCase().includes(lowerSearch)
+    );
+  }, [jobs, searchTerm]);
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl bg-black/90 border-primary/30 backdrop-blur-2xl text-white">
-        <DialogHeader className="flex flex-row items-center justify-between space-y-0">
-          <div>
-            <DialogTitle className="text-2xl font-display tracking-widest text-primary uppercase">
-              {title}
-            </DialogTitle>
-            <DialogDescription className="text-muted-foreground">
-              Lista detalhada de pedidos e métricas de execução para o segmento selecionado.
-            </DialogDescription>
+    <Dialog open={open} onOpenChange={(val) => {
+      onOpenChange(val);
+      if (!val) setSearchTerm("");
+    }}>
+      <DialogContent className="max-w-4xl bg-black/95 border-primary/30 backdrop-blur-3xl text-white shadow-[0_0_50px_rgba(0,0,0,0.5)]">
+        <DialogHeader className="flex flex-col space-y-4">
+          <div className="flex flex-row items-center justify-between">
+            <div className="flex flex-col">
+              <div className="flex items-center gap-3">
+                <DialogTitle className="text-2xl font-display tracking-widest text-primary uppercase">
+                  {title}
+                </DialogTitle>
+                <Badge variant="secondary" className="bg-primary/20 text-primary border-primary/30 h-6">
+                  {jobs.length} itens
+                </Badge>
+              </div>
+              <DialogDescription className="text-muted-foreground mt-1">
+                Lista detalhada de pedidos e métricas de execução para o segmento selecionado.
+              </DialogDescription>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="h-9 gap-2 bg-white/5 border-white/10 hover:bg-primary/20 text-xs text-white"
+                onClick={() => onExport('csv')}
+              >
+                <FileSpreadsheet className="h-4 w-4 text-emerald-400" /> CSV
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="h-9 gap-2 bg-white/5 border-white/10 hover:bg-primary/20 text-xs text-white"
+                onClick={() => onExport('pdf')}
+              >
+                <FileText className="h-4 w-4 text-primary" /> PDF
+              </Button>
+            </div>
           </div>
-          <div className="flex items-center gap-2 pr-8">
-            <Button 
-              variant="outline" 
-              size="sm" 
-              className="h-8 gap-2 bg-white/5 border-white/10 hover:bg-primary/20 text-xs text-white"
-              onClick={() => onExport('csv')}
-            >
-              <FileSpreadsheet className="h-3.5 w-3.5" /> CSV
-            </Button>
-            <Button 
-              variant="outline" 
-              size="sm" 
-              className="h-8 gap-2 bg-white/5 border-white/10 hover:bg-primary/20 text-xs text-white"
-              onClick={() => onExport('pdf')}
-            >
-              <FileText className="h-3.5 w-3.5" /> PDF
-            </Button>
+
+          <div className="relative group">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+            <Input
+              placeholder="Pesquisar por OS, produto ou status..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 bg-white/5 border-white/10 focus:border-primary/50 transition-all h-10 pr-10"
+            />
+            {searchTerm && (
+              <button 
+                onClick={() => setSearchTerm("")}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-white"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )}
           </div>
         </DialogHeader>
+
         <div className="mt-4">
           <ScrollArea className="h-[500px] pr-4">
             <Table>
