@@ -14,6 +14,7 @@ import { PageTransition } from "@/components/layout/PageTransition";
 import { useRBAC, ROLE_PERMISSIONS } from "@/hooks/useRBAC";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils";
 
 interface UserProfile {
   id: string;
@@ -156,104 +157,114 @@ export default function UserManagementPage() {
 
   return (
     <PageTransition>
-      <div className="container mx-auto p-4 sm:p-6 space-y-6 max-w-7xl">
-        <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-primary/10 rounded-lg">
-              <UsersIcon className="h-6 w-6 text-primary" />
+      <div className="container mx-auto p-4 sm:p-8 space-y-10 max-w-7xl animate-in fade-in slide-in-from-bottom-4 duration-700">
+        <header className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 border-b border-border/40 pb-8">
+          <div className="flex items-start gap-5">
+            <div className="p-4 bg-primary/10 rounded-2xl shadow-glow-primary/10 ring-1 ring-primary/20">
+              <UsersIcon className="h-8 w-8 text-primary" />
             </div>
-            <div>
-              <h1 className="text-2xl font-bold tracking-tight">Gestão de Usuários</h1>
-              <p className="text-sm text-muted-foreground">Controle acessos, cargos e permissões do sistema</p>
+            <div className="space-y-1">
+              <h1 className="text-4xl font-bold tracking-tight font-display gradient-text">Gestão de Usuários</h1>
+              <p className="text-base text-muted-foreground font-medium">Controle de acessos, cargos e governança de dados.</p>
             </div>
           </div>
-          <Button className="w-fit">
-            <UserPlusIcon className="mr-2 h-4 w-4" />
+          <Button className="w-full sm:w-auto h-12 px-6 rounded-xl shadow-lg hover:shadow-glow-primary transition-all duration-300 font-semibold gap-2">
+            <UserPlusIcon className="h-5 w-5" />
             Convidar Usuário
           </Button>
         </header>
 
-        <Tabs defaultValue="users" className="w-full">
-          <TabsList className="grid w-full sm:w-[600px] grid-cols-3">
-            <TabsTrigger value="users">Usuários</TabsTrigger>
-            <TabsTrigger value="roles">Cargos & Permissões</TabsTrigger>
-            <TabsTrigger value="matrix">Matriz & Testes</TabsTrigger>
+        <Tabs defaultValue="users" className="w-full space-y-8">
+          <TabsList className="inline-flex h-14 items-center justify-start rounded-2xl bg-muted/30 p-1.5 backdrop-blur-xl border border-border/40 shadow-inner">
+            <TabsTrigger value="users" className="h-11 rounded-xl px-8 text-sm font-semibold transition-all data-[state=active]:bg-background data-[state=active]:text-primary data-[state=active]:shadow-md">Usuários</TabsTrigger>
+            <TabsTrigger value="roles" className="h-11 rounded-xl px-8 text-sm font-semibold transition-all data-[state=active]:bg-background data-[state=active]:text-primary data-[state=active]:shadow-md">Cargos & Permissões</TabsTrigger>
+            <TabsTrigger value="matrix" className="h-11 rounded-xl px-8 text-sm font-semibold transition-all data-[state=active]:bg-background data-[state=active]:text-primary data-[state=active]:shadow-md">Matriz & Segurança</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="users" className="space-y-4 pt-4">
-            <Card className="border-border/40 bg-card/50 backdrop-blur-sm">
-              <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle className="text-lg">Equipe Ativa</CardTitle>
-                    <CardDescription>Gerencie quem tem acesso ao sistema</CardDescription>
+          <TabsContent value="users" className="space-y-6 outline-none">
+            <Card className="border-border/40 bg-card/40 backdrop-blur-md shadow-2xl rounded-3xl overflow-hidden ring-1 ring-white/5">
+              <CardHeader className="p-8 pb-0">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                  <div className="space-y-1">
+                    <CardTitle className="text-2xl font-bold font-display">Equipe Ativa</CardTitle>
+                    <CardDescription className="text-base">Monitoramento em tempo real dos acessos concedidos.</CardDescription>
                   </div>
-                  <div className="relative w-full max-w-xs">
-                    <SearchIcon className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                  <div className="relative w-full md:w-96 group">
+                    <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground transition-colors group-focus-within:text-primary" />
                     <Input
                       placeholder="Buscar por nome ou e-mail..."
-                      className="pl-9"
+                      className="h-12 pl-12 pr-4 bg-muted/20 border-border/40 rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all text-base"
                       value={search}
                       onChange={(e) => setSearch(e.target.value)}
                     />
                   </div>
                 </div>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-8">
                 {isLoading ? (
-                  <div className="space-y-2">
-                    <Skeleton className="h-10 w-full" />
-                    <Skeleton className="h-10 w-full" />
-                    <Skeleton className="h-10 w-full" />
+                  <div className="space-y-4 py-8">
+                    <Skeleton className="h-16 w-full rounded-2xl" />
+                    <Skeleton className="h-16 w-full rounded-2xl" />
+                    <Skeleton className="h-16 w-full rounded-2xl" />
                   </div>
                 ) : (
-                  <div className="rounded-md border border-border/50 overflow-hidden">
+                  <div className="rounded-2xl border border-border/40 bg-background/20 backdrop-blur-sm overflow-hidden shadow-sm">
                     <Table>
-                      <TableHeader className="bg-muted/50">
-                        <TableRow>
-                          <TableHead>Usuário</TableHead>
-                          <TableHead>Cargo</TableHead>
-                          <TableHead>Status</TableHead>
-                          <TableHead>Criado em</TableHead>
-                          <TableHead className="text-right">Ações</TableHead>
+                      <TableHeader className="bg-muted/30">
+                        <TableRow className="hover:bg-transparent border-b border-border/40">
+                          <TableHead className="h-14 px-6 text-sm font-bold uppercase tracking-wider text-muted-foreground">Usuário</TableHead>
+                          <TableHead className="h-14 px-6 text-sm font-bold uppercase tracking-wider text-muted-foreground">Nível de Acesso</TableHead>
+                          <TableHead className="h-14 px-6 text-sm font-bold uppercase tracking-wider text-muted-foreground">Status</TableHead>
+                          <TableHead className="h-14 px-6 text-sm font-bold uppercase tracking-wider text-muted-foreground">Data de Ingresso</TableHead>
+                          <TableHead className="h-14 px-6 text-right text-sm font-bold uppercase tracking-wider text-muted-foreground">Ações</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
                         {filteredUsers.map((user) => (
-                          <TableRow key={user.id} className="hover:bg-muted/30 transition-colors">
-                            <TableCell>
-                              <div className="flex flex-col">
-                                <span className="font-medium">{user.full_name || 'Usuário Sem Nome'}</span>
-                                <span className="text-xs text-muted-foreground">{user.email}</span>
+                          <TableRow key={user.id} className="group hover:bg-primary/[0.02] transition-colors border-b border-border/40 last:border-0">
+                            <TableCell className="px-6 py-5">
+                              <div className="flex items-center gap-4">
+                                <div className="h-11 w-11 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center border border-primary/10 shadow-sm text-primary font-bold">
+                                  {user.full_name?.charAt(0) || user.email?.charAt(0).toUpperCase()}
+                                </div>
+                                <div className="flex flex-col">
+                                  <span className="font-bold text-base text-foreground/90 leading-none mb-1">{user.full_name || 'Usuário Sem Nome'}</span>
+                                  <span className="text-xs font-medium text-muted-foreground/80 tracking-wide lowercase">{user.email}</span>
+                                </div>
                               </div>
                             </TableCell>
-                            <TableCell>
+                            <TableCell className="px-6 py-5">
                               <Select
                                 value={user.role}
                                 onValueChange={(val) => handleRoleChange(user.id, val as AppRole)}
                                 disabled={!hasPermission('users:change_role')}
                               >
-                                <SelectTrigger className="w-[140px] h-8 text-xs">
+                                <SelectTrigger className="w-[160px] h-10 rounded-xl bg-muted/10 border-border/40 text-sm font-semibold hover:bg-muted/20 transition-all focus:ring-primary/20">
                                   <SelectValue />
                                 </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="coordinator">Coordenador</SelectItem>
-                                  <SelectItem value="manager">Gerente</SelectItem>
-                                  <SelectItem value="operator">Operador</SelectItem>
+                                <SelectContent className="rounded-xl border-border/40 shadow-2xl backdrop-blur-xl">
+                                  <SelectItem value="coordinator" className="rounded-lg py-2.5 font-medium">Coordenador</SelectItem>
+                                  <SelectItem value="manager" className="rounded-lg py-2.5 font-medium">Gerente</SelectItem>
+                                  <SelectItem value="operator" className="rounded-lg py-2.5 font-medium">Operador</SelectItem>
                                 </SelectContent>
                               </Select>
                             </TableCell>
-                            <TableCell>
-                              <Badge variant={user.is_active ? "default" : "secondary"} className="text-[10px] px-1.5 py-0 h-5">
+                            <TableCell className="px-6 py-5">
+                              <Badge variant={user.is_active ? "default" : "secondary"} className={cn(
+                                "text-[10px] font-bold px-3 py-1 h-6 rounded-full tracking-wider uppercase shadow-sm",
+                                user.is_active ? "bg-success/10 text-success border-success/20" : "bg-muted/50 text-muted-foreground border-border"
+                              )}>
                                 {user.is_active ? "Ativo" : "Inativo"}
                               </Badge>
                             </TableCell>
-                            <TableCell className="text-xs text-muted-foreground">
-                              {new Date(user.created_at).toLocaleDateString('pt-BR')}
+                            <TableCell className="px-6 py-5">
+                              <span className="text-sm font-medium text-muted-foreground">
+                                {new Date(user.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })}
+                              </span>
                             </TableCell>
-                            <TableCell className="text-right">
-                              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                                <Settings2Icon className="h-4 w-4" />
+                            <TableCell className="px-6 py-5 text-right">
+                              <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl hover:bg-primary/10 hover:text-primary transition-all opacity-0 group-hover:opacity-100">
+                                <Settings2Icon className="h-5 w-5" />
                               </Button>
                             </TableCell>
                           </TableRow>
@@ -266,61 +277,73 @@ export default function UserManagementPage() {
             </Card>
           </TabsContent>
 
-          <TabsContent value="roles" className="pt-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <TabsContent value="roles" className="outline-none pt-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {(['coordinator', 'manager', 'operator'] as AppRole[]).map((role) => (
-                <Card key={role} className="border-border/40 bg-card/50">
-                  <CardHeader>
-                    <CardTitle className="capitalize flex items-center justify-between">
+                <Card key={role} className="border-border/40 bg-card/40 backdrop-blur-md shadow-xl rounded-3xl overflow-hidden group hover:shadow-glow-primary/10 transition-all duration-500 ring-1 ring-white/5">
+                  <CardHeader className="p-8 pb-4">
+                    <CardTitle className="capitalize flex items-center justify-between text-2xl font-bold font-display">
                       {role === 'coordinator' ? 'Coordenador' : role === 'manager' ? 'Gerente' : 'Operador'}
-                      <Badge variant="outline" className="ml-2">Ativo</Badge>
+                      <Badge variant="outline" className="rounded-full px-3 py-1 text-[10px] font-bold border-primary/20 text-primary bg-primary/5">Ativo</Badge>
                     </CardTitle>
-                    <CardDescription>
-                      {role === 'coordinator' ? 'Acesso total a todas as funções admin.' : 
-                       role === 'manager' ? 'Acesso gerencial completo e relatórios.' : 
-                       'Acesso operacional limitado a execução.'}
+                    <CardDescription className="text-base font-medium leading-relaxed mt-2">
+                      {role === 'coordinator' ? 'Supervisão técnica total e orquestração do sistema.' : 
+                       role === 'manager' ? 'Governança estratégica, relatórios e controle de pessoal.' : 
+                       'Foco exclusivo na execução de jobs e registros operacionais.'}
                     </CardDescription>
                   </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <ActivityIcon className="h-4 w-4" />
-                      <span>Log de auditoria obrigatório</span>
+                  <CardContent className="p-8 space-y-6">
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-3 text-sm font-semibold text-foreground/70">
+                        <div className="p-1.5 bg-primary/5 rounded-lg border border-primary/10">
+                          <ActivityIcon className="h-4 w-4 text-primary" />
+                        </div>
+                        <span>Audit Log Obrigatório</span>
+                      </div>
+                      <div className="flex items-center gap-3 text-sm font-semibold text-foreground/70">
+                        <div className="p-1.5 bg-primary/5 rounded-lg border border-primary/10">
+                          <ShieldAlertIcon className="h-4 w-4 text-primary" />
+                        </div>
+                        <span>Controle de IP Ativo</span>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <ShieldAlertIcon className="h-4 w-4" />
-                      <span>Restrição por IP habilitada</span>
-                    </div>
-                    <Button variant="outline" className="w-full text-xs" size="sm">Ver Permissões Detalhadas</Button>
+                    <Button variant="outline" className="w-full h-11 rounded-xl border-border/40 hover:bg-primary/5 hover:text-primary transition-all font-bold text-xs uppercase tracking-widest" size="sm">Configurar Permissões</Button>
                   </CardContent>
                 </Card>
               ))}
             </div>
           </TabsContent>
-          <TabsContent value="matrix" className="pt-4 space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <Card className="lg:col-span-2 border-border/40 bg-card/50">
-                <CardHeader>
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <LayoutGrid className="h-5 w-5 text-primary" />
-                    Matriz de Acesso por Recurso
-                  </CardTitle>
-                  <CardDescription>Visualização rápida de permissões críticas por estúdio/equipe</CardDescription>
+          <TabsContent value="matrix" className="outline-none pt-4 space-y-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              <Card className="lg:col-span-2 border-border/40 bg-card/40 backdrop-blur-md shadow-2xl rounded-3xl overflow-hidden ring-1 ring-white/5">
+                <CardHeader className="p-8">
+                  <div className="flex items-center gap-4">
+                    <div className="p-3 bg-primary/10 rounded-2xl shadow-inner">
+                      <LayoutGrid className="h-6 w-6 text-primary" />
+                    </div>
+                    <div className="space-y-1">
+                      <CardTitle className="text-2xl font-bold font-display">Matriz de Governança</CardTitle>
+                      <CardDescription className="text-base font-medium">Visualização granular de permissões por ecossistema.</CardDescription>
+                    </div>
+                  </div>
                 </CardHeader>
-                <CardContent>
-                  <div className="rounded-md border border-border/50 overflow-hidden">
+                <CardContent className="px-8 pb-8 pt-0">
+                  <div className="rounded-2xl border border-border/40 bg-background/20 backdrop-blur-sm overflow-hidden shadow-sm">
                     <Table>
-                      <TableHeader className="bg-muted/50">
-                        <TableRow>
-                          <TableHead className="w-[200px]">Recurso / Módulo</TableHead>
+                      <TableHeader className="bg-muted/30">
+                        <TableRow className="hover:bg-transparent border-b border-border/40">
+                          <TableHead className="w-[240px] h-14 px-6 text-sm font-bold uppercase tracking-wider text-muted-foreground">Módulo / Domínio</TableHead>
                           {permissionMatrix.roles.map(role => (
-                            <TableHead key={role} className="text-center capitalize">{role === 'coordinator' ? 'Coord.' : role === 'manager' ? 'Gerente' : 'Operador'}</TableHead>
+                            <TableHead key={role} className="h-14 px-6 text-center text-sm font-bold uppercase tracking-wider text-muted-foreground capitalize">
+                              {role === 'coordinator' ? 'Coord.' : role === 'manager' ? 'Gerente' : 'Operador'}
+                            </TableHead>
                           ))}
                         </TableRow>
                       </TableHeader>
                       <TableBody>
                         {permissionMatrix.resources.map(res => (
-                          <TableRow key={res.id}>
-                            <TableCell className="font-medium text-sm">{res.label}</TableCell>
+                          <TableRow key={res.id} className="hover:bg-primary/[0.01] transition-colors border-b border-border/40 last:border-0">
+                            <TableCell className="px-6 py-5 font-bold text-base text-foreground/80">{res.label}</TableCell>
                             {permissionMatrix.roles.map(role => {
                               const hasAll = res.perms.every(p => ROLE_PERMISSIONS[role].includes(p));
                               const hasSome = res.perms.some(p => ROLE_PERMISSIONS[role].includes(p));
@@ -362,40 +385,52 @@ export default function UserManagementPage() {
                 </CardContent>
               </Card>
 
-              <Card className="border-border/40 bg-card/50">
-                <CardHeader>
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <ShieldCheckIcon className="h-5 w-5 text-primary" />
-                    Validação Automática
-                  </CardTitle>
-                  <CardDescription>Testes de integridade de RLS e RBAC</CardDescription>
+              <Card className="border-border/40 bg-card/40 backdrop-blur-md shadow-2xl rounded-3xl overflow-hidden ring-1 ring-white/5">
+                <CardHeader className="p-8 pb-4">
+                  <div className="flex items-center gap-4">
+                    <div className="p-3 bg-primary/10 rounded-2xl shadow-inner">
+                      <ShieldCheckIcon className="h-6 w-6 text-primary" />
+                    </div>
+                    <div className="space-y-1">
+                      <CardTitle className="text-2xl font-bold font-display">Integridade</CardTitle>
+                      <CardDescription className="text-base font-medium">Testes automatizados de RBAC/RLS.</CardDescription>
+                    </div>
+                  </div>
                 </CardHeader>
-                <CardContent className="space-y-4">
+                <CardContent className="p-8 space-y-6">
                   <Button 
-                    className="w-full gap-2" 
+                    className="w-full h-12 gap-2 rounded-xl shadow-lg hover:shadow-glow-primary transition-all duration-300 font-bold" 
                     variant="secondary" 
                     onClick={runPermissionTests}
                     disabled={isTesting}
                   >
-                    {isTesting ? "Validando..." : "Executar Testes de Segurança"}
+                    {isTesting ? "Validando Protocolos..." : "Auditar Segurança"}
                   </Button>
 
-                  <div className="space-y-3 pt-2">
+                  <div className="space-y-4 pt-2">
                     {testResults.map((test, i) => (
-                      <div key={i} className="p-3 rounded-lg border border-border/50 bg-background/50 text-xs space-y-1">
+                      <div key={i} className="p-5 rounded-2xl border border-border/40 bg-background/30 backdrop-blur-sm text-sm space-y-3 shadow-sm animate-in fade-in zoom-in-95 duration-500">
                         <div className="flex items-center justify-between">
-                          <span className="font-bold">{test.name}</span>
-                          <Badge variant={test.status === 'pass' ? 'default' : 'destructive'} className="h-4 text-[9px]">
-                            {test.status === 'pass' ? 'PASS' : 'FAIL'}
+                          <span className="font-bold text-foreground/80 tracking-tight">{test.name}</span>
+                          <Badge variant={test.status === 'pass' ? 'default' : 'destructive'} className={cn(
+                            "h-5 px-3 text-[10px] font-black tracking-widest uppercase rounded-md shadow-sm transition-colors",
+                            test.status === 'pass' 
+                              ? "bg-emerald-500/10 text-emerald-600 border border-emerald-500/20" 
+                              : "bg-rose-500/10 text-rose-600 border border-rose-500/20"
+                          )}>
+                            {test.status === 'pass' ? 'Passed' : 'Failed'}
                           </Badge>
                         </div>
-                        <p className="text-muted-foreground leading-relaxed">{test.message}</p>
+                        <p className="text-muted-foreground font-medium leading-relaxed">{test.message}</p>
                       </div>
                     ))}
                     {testResults.length === 0 && (
-                      <p className="text-center text-muted-foreground py-8 text-xs italic">
-                        Nenhum teste executado recentemente.
-                      </p>
+                      <div className="flex flex-col items-center justify-center py-12 px-6 border border-dashed border-border/60 rounded-2xl bg-muted/5 opacity-60">
+                        <ShieldAlertIcon className="h-10 w-10 text-muted-foreground mb-4" />
+                        <p className="text-center text-muted-foreground text-sm font-medium italic">
+                          Aguardando execução dos protocolos de auditoria.
+                        </p>
+                      </div>
                     )}
                   </div>
                 </CardContent>
