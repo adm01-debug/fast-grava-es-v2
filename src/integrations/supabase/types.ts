@@ -3592,6 +3592,7 @@ export type Database = {
       }
       tpm_executions: {
         Row: {
+          adjustment_parameters: Json | null
           checklist_snapshot: Json | null
           checklist_version: number | null
           created_at: string | null
@@ -3604,10 +3605,12 @@ export type Database = {
           signature_url: string | null
           started_at: string | null
           status: string | null
+          technical_sheet_id: string | null
           technician_id: string | null
           updated_at: string | null
         }
         Insert: {
+          adjustment_parameters?: Json | null
           checklist_snapshot?: Json | null
           checklist_version?: number | null
           created_at?: string | null
@@ -3620,10 +3623,12 @@ export type Database = {
           signature_url?: string | null
           started_at?: string | null
           status?: string | null
+          technical_sheet_id?: string | null
           technician_id?: string | null
           updated_at?: string | null
         }
         Update: {
+          adjustment_parameters?: Json | null
           checklist_snapshot?: Json | null
           checklist_version?: number | null
           created_at?: string | null
@@ -3636,6 +3641,7 @@ export type Database = {
           signature_url?: string | null
           started_at?: string | null
           status?: string | null
+          technical_sheet_id?: string | null
           technician_id?: string | null
           updated_at?: string | null
         }
@@ -3652,6 +3658,13 @@ export type Database = {
             columns: ["schedule_id"]
             isOneToOne: false
             referencedRelation: "maintenance_schedules"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tpm_executions_technical_sheet_id_fkey"
+            columns: ["technical_sheet_id"]
+            isOneToOne: false
+            referencedRelation: "technical_sheets"
             referencedColumns: ["id"]
           },
         ]
@@ -3851,6 +3864,47 @@ export type Database = {
             columns: ["template_id"]
             isOneToOne: false
             referencedRelation: "tpm_notification_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tpm_parameter_alerts: {
+        Row: {
+          created_at: string | null
+          execution_id: string | null
+          id: string
+          is_resolved: boolean | null
+          parameter_name: string
+          recommended_range: string | null
+          recorded_value: string | null
+          severity: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          execution_id?: string | null
+          id?: string
+          is_resolved?: boolean | null
+          parameter_name: string
+          recommended_range?: string | null
+          recorded_value?: string | null
+          severity?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          execution_id?: string | null
+          id?: string
+          is_resolved?: boolean | null
+          parameter_name?: string
+          recommended_range?: string | null
+          recorded_value?: string | null
+          severity?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tpm_parameter_alerts_execution_id_fkey"
+            columns: ["execution_id"]
+            isOneToOne: false
+            referencedRelation: "tpm_executions"
             referencedColumns: ["id"]
           },
         ]
