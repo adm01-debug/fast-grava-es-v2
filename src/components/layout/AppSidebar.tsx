@@ -119,11 +119,11 @@ export function AppSidebar() {
         <div className={cn('p-3 border-t border-sidebar-border/50', collapsed && !isMobile && 'p-2')}>
           {(!collapsed || isMobile) && <div className="mb-2 px-1"><LanguageSwitcher /></div>}
           <div className={cn('flex items-center gap-3 rounded-lg p-2', collapsed && !isMobile && 'justify-center p-2')}>
-            <div className="w-9 h-9 rounded-full gradient-primary flex items-center justify-center text-primary-foreground font-semibold text-sm">{profile?.full_name?.charAt(0)?.toUpperCase() || 'U'}</div>
-            {(!collapsed || isMobile) && <div className="flex-1 min-w-0"><p className="text-sm font-medium text-sidebar-foreground truncate">{profile?.full_name || 'Usuário'}</p><p className="text-xs text-sidebar-foreground/40 truncate capitalize">{role === 'coordinator' ? 'Coordenador' : role === 'manager' ? 'Gestão' : 'Operador'}</p></div>}
+            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center text-primary font-bold text-base border border-primary/10 shadow-sm">{profile?.full_name?.charAt(0)?.toUpperCase() || 'U'}</div>
+            {(!collapsed || isMobile) && <div className="flex-1 min-w-0"><p className="text-sm font-bold text-sidebar-foreground truncate tracking-tight">{profile?.full_name || 'Usuário'}</p><p className="text-[10px] font-black text-primary/60 uppercase tracking-widest">{role === 'coordinator' ? 'Coordenador' : role === 'manager' ? 'Gerente' : 'Operador'}</p></div>}
           </div>
-          <Button variant="ghost" size={(collapsed && !isMobile) ? "icon" : "sm"} onClick={handleSignOut} className={cn('w-full mt-2 text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-muted focus:ring-2 focus:ring-primary focus:ring-offset-2', collapsed && !isMobile && 'px-0')}>
-            <LogOut className="h-4 w-4" />{(!collapsed || isMobile) && <span className="ml-2">{t('common.logout')}</span>}
+          <Button variant="ghost" size={(collapsed && !isMobile) ? "icon" : "sm"} onClick={handleSignOut} className={cn('w-full h-11 mt-2 text-rose-500 hover:text-rose-600 hover:bg-rose-500/10 rounded-xl transition-all font-bold', collapsed && !isMobile && 'px-0')}>
+            <LogOut className="h-5 w-5" />{(!collapsed || isMobile) && <span className="ml-2">Sair do Sistema</span>}
           </Button>
         </div>
       </aside>
