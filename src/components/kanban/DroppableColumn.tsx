@@ -8,7 +8,7 @@ import { DbJob } from '@/hooks/useJobs';
 import { JobStatus } from '@/types/scheduling';
 import { DraggableJobCard } from './DraggableJobCard';
 import { useMemo } from 'react';
-import { ChevronDown, ChevronRight, AlertTriangle } from 'lucide-react';
+import { ChevronDown, ChevronRight, AlertTriangle, Clock } from 'lucide-react';
 import { ViewMode } from './KanbanFiltersBar';
 
 interface DroppableColumnProps {
@@ -61,6 +61,18 @@ export function DroppableColumn({
   const isOverWip = jobs.length > effectiveWipLimit;
   const wipPercentage = Math.min(100, (jobs.length / effectiveWipLimit) * 100);
 
+  const totalEstimatedTime = useMemo(() => {
+    return jobs.reduce((acc, job) => acc + (job.estimated_duration || 0), 0);
+  }, [jobs]);
+
+  const leadTimeLabel = useMemo(() => {
+    if (totalEstimatedTime === 0) return null;
+    const hours = Math.floor(totalEstimatedTime / 60);
+    const mins = totalEstimatedTime % 60;
+    if (hours > 0) return `${hours}h ${mins}m`;
+    return `${mins}m`;
+  }, [totalEstimatedTime]);
+
   const sortedJobs = useMemo(() => {
     return [...jobs].sort((a, b) => {
       const priorityDiff = (priorityOrder[b.priority] || 0) - (priorityOrder[a.priority] || 0);
@@ -96,6 +108,12 @@ export function DroppableColumn({
           {effectiveWipLimit < 50 && <span className="text-[9px] opacity-70">/{effectiveWipLimit}</span>}
         </Badge>
         {isOverWip && <AlertTriangle className="h-3.5 w-3.5 text-destructive" />}
+        {leadTimeLabel && (
+          <div className="flex items-center gap-1 text-[10px] text-muted-foreground bg-muted/20 px-1.5 py-0.5 rounded-md ml-1" title="Tempo total estimado para processar esta coluna">
+            <Clock className="h-3 w-3" />
+            {leadTimeLabel}
+          </div>
+        )}
       </div>
 
       {/* WIP indicator bar */}
@@ -130,7 +148,7 @@ export function DroppableColumn({
           ref={setNodeRef}
           className={cn(
             "flex-1 p-2 rounded-xl border transition-all duration-200",
-            "bg-gradient-to-b from-muted/20 to-muted/5",
+            "bg-gradient-to-b from-muted/20 to-card/5 backdrop-blur-[2px]",
             "space-y-1.5 min-h-[300px] max-h-[65vh] overflow-y-auto scrollbar-thin",
             isOver 
               ? "border-primary/50 bg-primary/5 ring-2 ring-primary/20" 

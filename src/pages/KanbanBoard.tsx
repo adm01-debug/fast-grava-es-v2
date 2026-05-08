@@ -17,6 +17,9 @@ import { DragOverlayCard } from '@/components/kanban/DragOverlayCard';
 import { KanbanMetricsBar } from '@/components/kanban/KanbanMetricsBar';
 import { KanbanFiltersBar, ViewMode, SwimlanesMode } from '@/components/kanban/KanbanFiltersBar';
 import { KanbanAIAdvisor } from '@/components/kanban/KanbanAIAdvisor';
+import { SmartSequencingPanel } from '@/components/planning/SmartSequencingPanel';
+import { LoadBalancingPanel } from '@/components/planning/LoadBalancingPanel';
+import { PlanningEfficiencyDashboard } from '@/components/planning/PlanningEfficiencyDashboard';
 import { useKanbanDragDrop } from '@/hooks/useKanbanDragDrop';
 import { FavoriteButton, FavoritesDropdown } from '@/components/navigation/FavoritesManager';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
@@ -297,6 +300,15 @@ export default function KanbanBoard() {
                 <Command className="h-3 w-3" /><span className="text-xs">⌘K</span>
               </Badge>
             </div>
+          </div>
+          
+          {/* Planning Efficiency Dashboard */}
+          <PlanningEfficiencyDashboard />
+
+          {/* Smart Panels */}
+          <div className="space-y-4">
+            <SmartSequencingPanel />
+            <LoadBalancingPanel />
           </div>
 
           {/* AI Advisor */}
