@@ -80,7 +80,7 @@ export function AppSidebar() {
                 <Printer className="w-6 h-6 text-primary-foreground" />
               </div>
               <div className="space-y-0.5">
-                <h1 className="font-display font-extrabold text-sidebar-foreground text-lg tracking-tight leading-none">Fast Gravações</h1>
+                <h1 className="font-display font-extrabold text-sidebar-foreground text-lg tracking-tighter leading-none">Fast Gravações</h1>
                 <p className="text-[10px] font-black text-primary/70 uppercase tracking-[0.2em]">Master Control</p>
               </div>
             </div>
@@ -119,7 +119,7 @@ export function AppSidebar() {
         <div className={cn('p-6 border-t border-sidebar-border/30', collapsed && !isMobile && 'p-2')}>
           {(!collapsed || isMobile) && <div className="mb-4 px-1 scale-110 origin-left"><LanguageSwitcher /></div>}
           <div className={cn('flex items-center gap-4 rounded-2xl p-4 bg-primary/5 border border-primary/10 mb-3 shadow-[0_4px_15px_-3px_hsl(var(--primary)/0.05)]', collapsed && !isMobile && 'justify-center p-2')}>
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center text-primary font-bold text-lg border border-primary/10 shadow-sm">{profile?.full_name?.charAt(0)?.toUpperCase() || 'U'}</div>
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary/30 to-primary/5 flex items-center justify-center text-primary font-bold text-lg border border-primary/20 shadow-inner group-hover:scale-105 transition-transform duration-500">{profile?.full_name?.charAt(0)?.toUpperCase() || 'U'}</div>
             {(!collapsed || isMobile) && <div className="flex-1 min-w-0"><p className="text-sm font-bold text-sidebar-foreground truncate tracking-tight">{profile?.full_name || 'Usuário'}</p><p className="text-[9px] font-black text-primary uppercase tracking-[0.2em]">{role === 'coordinator' ? 'System Architect' : role === 'manager' ? 'Global Manager' : 'Field Operator'}</p></div>}
           </div>
           <Button variant="ghost" size={(collapsed && !isMobile) ? "icon" : "sm"} onClick={handleSignOut} className={cn('w-full h-12 mt-2 text-rose-500 hover:text-rose-600 hover:bg-rose-500/10 rounded-xl transition-all duration-300 font-bold border border-transparent hover:border-rose-500/20 active:scale-95', collapsed && !isMobile && 'px-0')}>
