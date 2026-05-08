@@ -90,9 +90,15 @@ export function EditorBasicInfo({ formData, setFormData, techniques, categories,
         </div>
       </div>
 
-      <div className="space-y-2">
-        <Label>Título *</Label>
-        <Input value={formData.title} onChange={(e) => setFormData({...formData, title: e.target.value})} placeholder="Ex: Serigrafia em Camiseta 100% Algodão" />
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="md:col-span-3 space-y-2">
+          <Label>Título *</Label>
+          <Input value={formData.title} onChange={(e) => setFormData({...formData, title: e.target.value})} placeholder="Ex: Serigrafia em Camiseta 100% Algodão" />
+        </div>
+        <div className="space-y-2">
+          <Label>Versão</Label>
+          <Input value={formData.version} disabled className="bg-muted" />
+        </div>
       </div>
       <div className="space-y-2">
         <Label>Descrição</Label>
