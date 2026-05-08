@@ -266,16 +266,14 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
       {/* Top Layer: Critical Real-time Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <FuturisticStatCard 
-          title="OEE Global" 
-          value={`${oeeData.overallOEE.toFixed(1)}%`} 
-          subtitle="Meta: 85%"
-          icon={Gauge} 
-          trend="up"
-          trendValue="+2.4%"
-          gradient={GRADIENTS.primary}
-          glowColor="primary"
-          onExport={(format: 'csv' | 'pdf') => handleExport(format, 'OEE_Global')}
-          onClick={() => handleDrillDown('KPI: OEE Global', 'all')}
+          title="Pedidos a Fazer" 
+          value={biMetrics.toDoJobs || 0} 
+          subtitle="Fila de Espera"
+          icon={Package} 
+          gradient={GRADIENTS.purple}
+          glowColor="purple"
+          onExport={(format: 'csv' | 'pdf') => handleExport(format, 'Pedidos_A_Fazer')}
+          onClick={() => handleDrillDown('PEDIDOS A FAZER', 'queue')}
         />
         <FuturisticStatCard 
           title="Jobs em Produção" 
