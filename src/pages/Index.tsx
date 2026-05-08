@@ -37,7 +37,9 @@ import {
   Clock,
   Cpu,
   MessageCircle,
-  FileText
+  FileText,
+  Activity,
+  ShieldAlert
 } from 'lucide-react';
 
 // Type definitions for widget components
@@ -155,15 +157,17 @@ const Index = () => {
       <div className="container mx-auto p-4 sm:p-8 space-y-10 max-w-7xl animate-in fade-in duration-700">
         {/* Compact Header */}
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6 border-b border-border/40 pb-8">
-          <div className="flex items-center gap-5">
-            <div className="w-2 h-12 rounded-full bg-gradient-to-b from-primary to-primary-glow shadow-glow-primary/30" />
+          <div className="flex items-center gap-6">
+            <div className="w-2.5 h-14 rounded-full bg-gradient-to-b from-primary via-primary-glow to-primary shadow-glow-primary/40" />
             <div className="space-y-1">
-              <h1 className="text-4xl font-display font-black tracking-tight leading-none uppercase gradient-text">
+              <h1 className="text-5xl font-display font-black tracking-tighter leading-none uppercase bg-clip-text text-transparent bg-gradient-to-r from-primary via-primary-glow to-primary drop-shadow-sm">
                 {t('dashboard.title')}
               </h1>
-              <p className="text-base font-bold text-muted-foreground/80 uppercase tracking-[0.3em]">{profile?.full_name || 'System Intelligence'}</p>
+              <p className="text-[11px] font-black text-muted-foreground/60 uppercase tracking-[0.5em]">{profile?.full_name || 'System Intelligence'}</p>
             </div>
-            <FavoriteButton path="/" name={t('dashboard.title')} />
+            <div className="ml-2 scale-125 origin-left">
+              <FavoriteButton path="/" name={t('dashboard.title')} />
+            </div>
             {isOperator && (
               <Badge variant="secondary" className="gap-1 text-xs glass">
                 <User className="h-3 w-3" />
@@ -208,38 +212,34 @@ const Index = () => {
             </div>
           }
         >
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5 shrink-0 stagger-children">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-10 shrink-0 stagger-children">
             <StatsCard
-              title={t('dashboard.jobsQueue')}
+              title="Active Queue"
               value={stats.todayScheduled.toString()}
-              subtitle={`${stats.scheduled} ${t('jobs.statuses.scheduled')}`}
+              subtitle="Planned for next 24h"
               icon={Calendar}
               variant="primary"
-              compact
             />
             <StatsCard
-              title={t('dashboard.jobsInProduction')}
+              title="Live Units"
               value={stats.inProgress.toString()}
-              subtitle={`${machines.length} ${t('machines.title')}`}
-              icon={Printer}
+              subtitle={`${machines.length} nodes active`}
+              icon={Activity}
               variant="info"
-              compact
             />
             <StatsCard
-              title={t('dashboard.jobsFinished')}
+              title="Global Output"
               value={stats.todayCompleted.toString()}
-              subtitle={`${stats.completedPieces.toLocaleString('pt-BR')} pçs`}
+              subtitle={`${stats.completedPieces.toLocaleString('pt-BR')} units finished`}
               icon={CheckCircle2}
               variant="success"
-              compact
             />
             <StatsCard
-              title={t('alerts.types.warning')}
+              title="Integrity Risks"
               value={stats.delayed.toString()}
-              subtitle={stats.delayed > 0 ? t('alerts.types.warning') : t('common.success')}
-              icon={AlertTriangle}
+              subtitle={stats.delayed > 0 ? "Action required" : "All systems normal"}
+              icon={ShieldAlert}
               variant="warning"
-              compact
             />
           </div>
         </ContentTransition>

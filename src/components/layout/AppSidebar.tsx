@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useLocation, Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ChevronLeft, ChevronRight, Printer, Plus, LogOut } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Printer, Plus, LogOut, Terminal } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { prefetchRoute } from '@/lib/prefetch';
 import { Button } from '@/components/ui/button';
@@ -65,7 +65,7 @@ export function AppSidebar() {
           'dark:bg-gradient-to-b dark:from-sidebar/95 dark:to-background',
           'backdrop-blur-xl border-r border-sidebar-border/40',
           'shadow-[1px_0_10px_-2px_hsl(var(--primary)/0.05)] dark:shadow-[4px_0_24px_-4px_hsl(0_0%_0%/0.4)]',
-          'hidden md:flex', collapsed ? 'w-20' : 'w-72',
+          'hidden md:flex', collapsed ? 'w-24' : 'w-80',
           isMobile && 'fixed inset-y-0 left-0 z-50 w-80',
           isMobile && (mobileOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'),
           isMobile && 'flex'
@@ -73,15 +73,15 @@ export function AppSidebar() {
         role="navigation" aria-label="Menu principal" id="navigation"
       >
         {/* Header */}
-        <div className={cn('flex items-center h-20 px-6 border-b border-sidebar-border/30', collapsed && !isMobile ? 'justify-center' : 'justify-between')}>
+        <div className={cn('flex items-center h-24 px-8 border-b border-primary/10 bg-primary/[0.02]', collapsed && !isMobile ? 'justify-center' : 'justify-between')}>
           {(!collapsed || isMobile) && (
             <div className="flex items-center gap-4 animate-in fade-in duration-500">
-              <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-primary to-primary-glow flex items-center justify-center shadow-lg shadow-primary/20 ring-4 ring-primary/10">
-                <Printer className="w-6 h-6 text-primary-foreground" />
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary to-primary-glow flex items-center justify-center shadow-[0_0_30px_hsl(var(--primary)/0.4)] ring-4 ring-primary/20 scale-110 group cursor-pointer transition-all duration-500 active:scale-95 hover:rotate-6">
+                <Terminal className="w-6 h-6 text-primary-foreground group-hover:scale-110 transition-transform" />
               </div>
               <div className="space-y-0.5">
-                <h1 className="font-display font-extrabold text-sidebar-foreground text-lg tracking-tight leading-none">Fast Gravações</h1>
-                <p className="text-[10px] font-black text-primary/70 uppercase tracking-[0.2em]">Master Control</p>
+                <h1 className="font-display font-black text-sidebar-foreground text-xl tracking-tighter leading-none">Fast Gravações</h1>
+                <p className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Master Console</p>
               </div>
             </div>
           )}
@@ -93,37 +93,39 @@ export function AppSidebar() {
         </div>
 
         {role !== 'operator' && (
-          <div className={cn('p-5', collapsed && !isMobile && 'px-3')}>
+          <div className={cn('p-6', collapsed && !isMobile && 'px-4')}>
             <Link to="/new-job" onMouseEnter={handleNewJobPrefetch} onFocus={handleNewJobPrefetch}>
               <Button className={cn(
-                'w-full h-12 gap-2 bg-gradient-to-r from-primary to-primary-glow hover:shadow-glow-primary transition-all duration-300 shadow-lg rounded-xl font-bold border-0',
-                collapsed && !isMobile && 'px-0 justify-center'
+                'w-full h-14 gap-3 bg-gradient-to-r from-primary via-primary-glow to-primary hover:shadow-glow-primary transition-all duration-500 shadow-xl rounded-2xl font-black border-0 uppercase tracking-widest text-[10px]',
+                collapsed && !isMobile && 'px-0 justify-center h-12'
               )}>
-                <Plus className="h-5 w-5" />{(!collapsed || isMobile) && <span>Novo Agendamento</span>}
+                <Plus className="h-5 w-5" />{(!collapsed || isMobile) && <span>Operations Launch</span>}
               </Button>
             </Link>
           </div>
         )}
 
-        <nav className="flex-1 overflow-y-auto scrollbar-hide px-3 py-2 space-y-2" id="main-navigation">
+        <nav className="flex-1 overflow-y-auto scrollbar-hide px-5 py-4 space-y-3" id="main-navigation">
           {filteredNavGroups.map(group => <NavGroupComponent key={group.id} group={group} collapsed={collapsed} isMobile={isMobile} isActive={isActive} alertCount={alertCount} openGroups={openGroups} toggleGroup={toggleGroup} />)}
           {filteredAdminNavItems.length > 0 && (
             <>
-              <div className="my-4 border-t border-sidebar-border/50" />
-              {(!collapsed || isMobile) && <p className="text-[10px] font-black text-primary/40 uppercase tracking-[0.2em] px-5 py-3">Core Infrastructure</p>}
-              {filteredAdminNavItems.map(item => <NavButton key={item.href} item={item} collapsed={collapsed} isMobile={isMobile} isActive={isActive(item.href)} />)}
+              <div className="my-8 border-t border-primary/10 shadow-[0_1px_0_hsl(0_0%_100%/0.05)]" />
+              {(!collapsed || isMobile) && <p className="text-[10px] font-black text-primary/30 uppercase tracking-[0.4em] px-8 py-5">Core Systems</p>}
+              <div className="px-2 space-y-2">
+                {filteredAdminNavItems.map(item => <NavButton key={item.href} item={item} collapsed={collapsed} isMobile={isMobile} isActive={isActive(item.href)} />)}
+              </div>
             </>
           )}
         </nav>
 
-        <div className={cn('p-6 border-t border-sidebar-border/30', collapsed && !isMobile && 'p-2')}>
-          {(!collapsed || isMobile) && <div className="mb-4 px-1 scale-110 origin-left"><LanguageSwitcher /></div>}
-          <div className={cn('flex items-center gap-4 rounded-2xl p-3 bg-muted/20 border border-border/40 mb-2', collapsed && !isMobile && 'justify-center p-2')}>
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center text-primary font-bold text-lg border border-primary/10 shadow-sm">{profile?.full_name?.charAt(0)?.toUpperCase() || 'U'}</div>
-            {(!collapsed || isMobile) && <div className="flex-1 min-w-0"><p className="text-sm font-bold text-sidebar-foreground truncate tracking-tight">{profile?.full_name || 'Usuário'}</p><p className="text-[10px] font-black text-primary/60 uppercase tracking-[0.2em]">{role === 'coordinator' ? 'System Architect' : role === 'manager' ? 'Global Manager' : 'Field Operator'}</p></div>}
+        <div className={cn('p-8 border-t border-primary/10 bg-gradient-to-t from-primary/[0.03] to-transparent', collapsed && !isMobile && 'p-2')}>
+          {(!collapsed || isMobile) && <div className="mb-6 px-1 scale-110 origin-left"><LanguageSwitcher /></div>}
+          <div className={cn('flex items-center gap-5 rounded-2xl p-5 bg-primary/[0.03] border border-primary/10 mb-4 shadow-[0_8px_30px_-10px_hsl(var(--primary)/0.1)] ring-1 ring-white/5 group cursor-default transition-all duration-500 hover:bg-primary/[0.05]', collapsed && !isMobile && 'justify-center p-2')}>
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary/40 via-primary/20 to-primary/5 flex items-center justify-center text-primary font-black text-xl border border-primary/30 shadow-inner group-hover:scale-110 transition-transform duration-500">{profile?.full_name?.charAt(0)?.toUpperCase() || 'U'}</div>
+            {(!collapsed || isMobile) && <div className="flex-1 min-w-0"><p className="text-base font-black text-sidebar-foreground truncate tracking-tighter">{profile?.full_name || 'Usuário'}</p><p className="text-[10px] font-black text-primary/60 uppercase tracking-[0.25em]">{role === 'coordinator' ? 'Lead Architect' : role === 'manager' ? 'Global Manager' : 'Field Specialist'}</p></div>}
           </div>
-          <Button variant="ghost" size={(collapsed && !isMobile) ? "icon" : "sm"} onClick={handleSignOut} className={cn('w-full h-11 mt-2 text-rose-500 hover:text-rose-600 hover:bg-rose-500/10 rounded-xl transition-all font-bold', collapsed && !isMobile && 'px-0')}>
-            <LogOut className="h-5 w-5" />{(!collapsed || isMobile) && <span className="ml-2">Sair do Sistema</span>}
+          <Button variant="ghost" size={(collapsed && !isMobile) ? "icon" : "sm"} onClick={handleSignOut} className={cn('w-full h-14 mt-2 text-rose-500 hover:text-rose-600 hover:bg-rose-500/10 rounded-2xl transition-all duration-500 font-black border border-transparent hover:border-rose-500/30 active:scale-95 shadow-lg shadow-transparent hover:shadow-rose-500/10', collapsed && !isMobile && 'px-0')}>
+            <LogOut className="h-6 w-6" />{(!collapsed || isMobile) && <span className="ml-3 font-display uppercase tracking-[0.2em] text-[11px]">Terminate Session</span>}
           </Button>
         </div>
       </aside>
