@@ -57,7 +57,7 @@ export function TPMNotificationSettings() {
     updateSettings.mutate({ machine_filters: newFilters });
   };
 
-  const handleSendTest = async (force = false) => {
+  const handleSendTest = async (force: boolean = false) => {
     if (!testMachineId) {
       toast.error('Selecione uma máquina para o teste');
       return;
@@ -65,10 +65,10 @@ export function TPMNotificationSettings() {
     setIsSendingTest(true);
     const result = await sendTestNotification(testMachineId, testChannel, force);
     
-    if (result.needsValidation) {
+    if (result && result.needsValidation) {
       setValidationData(result);
       setShowValidation(true);
-    } else if (result.success) {
+    } else if (result && result.success) {
       setShowValidation(false);
     }
     
@@ -197,7 +197,7 @@ export function TPMNotificationSettings() {
                 <Button 
                   className="w-full" 
                   variant="outline" 
-                  onClick={handleSendTest}
+                  onClick={() => handleSendTest(false)}
                   disabled={isSendingTest}
                 >
                   <Send className={cn("h-4 w-4 mr-2", isSendingTest && "animate-pulse")} />
