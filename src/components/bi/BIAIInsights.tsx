@@ -23,8 +23,20 @@ interface BIAIInsightsProps {
 export function BIAIInsights({ biMetrics, oeeData }: BIAIInsightsProps) {
   const insights = useMemo(() => {
     const list = [];
+    
+    // Predicative Calculation: Backlog Clearance
+    const avgPiecesPerHour = 45; // Mock avg production rate
+    const totalRemainingPieces = biMetrics.toDoJobs * 100; // Mock avg quantity per job
+    const hoursToClear = totalRemainingPieces / avgPiecesPerHour;
+    const daysToClear = (hoursToClear / 8).toFixed(1); // Assuming 8h shifts
 
-    // OEE Insight
+    list.push({
+      title: "Previsão de Entrega",
+      description: `Com a carga atual de ${biMetrics.toDoJobs} pedidos, estima-se ${daysToClear} dias para limpar o backlog (fluxo normal).`,
+      type: "info",
+      icon: Clock,
+      impact: "Médio"
+    });
     if (oeeData.overallOEE < 60) {
       list.push({
         title: "Eficiência Global Baixa",
