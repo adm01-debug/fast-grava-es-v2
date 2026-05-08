@@ -37,7 +37,9 @@ import {
   Clock,
   Cpu,
   MessageCircle,
-  FileText
+  FileText,
+  Activity,
+  ShieldAlert
 } from 'lucide-react';
 
 // Type definitions for widget components
