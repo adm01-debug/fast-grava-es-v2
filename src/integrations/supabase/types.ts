@@ -3427,6 +3427,127 @@ export type Database = {
         }
         Relationships: []
       }
+      tpm_notification_logs: {
+        Row: {
+          channel: string
+          error_message: string | null
+          id: string
+          machine_id: string | null
+          payload: Json | null
+          recipient: string | null
+          sent_at: string | null
+          severity: string
+          status: string
+          user_id: string | null
+        }
+        Insert: {
+          channel: string
+          error_message?: string | null
+          id?: string
+          machine_id?: string | null
+          payload?: Json | null
+          recipient?: string | null
+          sent_at?: string | null
+          severity: string
+          status: string
+          user_id?: string | null
+        }
+        Update: {
+          channel?: string
+          error_message?: string | null
+          id?: string
+          machine_id?: string | null
+          payload?: Json | null
+          recipient?: string | null
+          sent_at?: string | null
+          severity?: string
+          status?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tpm_notification_logs_machine_id_fkey"
+            columns: ["machine_id"]
+            isOneToOne: false
+            referencedRelation: "machines"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tpm_notification_templates: {
+        Row: {
+          channel: string
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          severity: string
+          subject: string | null
+          template_body: string
+          updated_at: string | null
+        }
+        Insert: {
+          channel: string
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          severity: string
+          subject?: string | null
+          template_body: string
+          updated_at?: string | null
+        }
+        Update: {
+          channel?: string
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          severity?: string
+          subject?: string | null
+          template_body?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      tpm_severity_configs: {
+        Row: {
+          created_at: string | null
+          days_threshold: number | null
+          id: string
+          is_enabled: boolean | null
+          machine_id: string | null
+          message_override: string | null
+          severity: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          days_threshold?: number | null
+          id?: string
+          is_enabled?: boolean | null
+          machine_id?: string | null
+          message_override?: string | null
+          severity: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          days_threshold?: number | null
+          id?: string
+          is_enabled?: boolean | null
+          machine_id?: string | null
+          message_override?: string | null
+          severity?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tpm_severity_configs_machine_id_fkey"
+            columns: ["machine_id"]
+            isOneToOne: false
+            referencedRelation: "machines"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_devices: {
         Row: {
           browser_name: string | null
