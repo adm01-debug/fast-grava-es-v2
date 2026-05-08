@@ -3,7 +3,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
-import { CalendarIcon, Filter, Users, Printer, LayoutGrid } from 'lucide-react';
+import { CalendarIcon, Filter, Users, Printer, LayoutGrid, Search } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import {
   Select,
@@ -155,6 +156,17 @@ export function BIPeriodFilters({
                   ))}
                 </SelectContent>
               </Select>
+            </div>
+          </div>
+          
+          {/* Global Search Filter */}
+          <div className="pt-4 border-t border-border/50">
+            <div className="relative group max-w-md">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+              <Input 
+                placeholder="Filtrar visão geral por OS ou Produto..." 
+                className="pl-10 bg-background/50 border-primary/20 focus:border-primary/50 transition-all h-9 text-xs"
+              />
             </div>
           </div>
 

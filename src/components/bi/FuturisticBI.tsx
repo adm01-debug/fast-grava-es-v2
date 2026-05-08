@@ -124,6 +124,7 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
           j.technique_id === segment ||
           (s === 'lost' && (j.lost_pieces || 0) > 0) ||
           (s === 'delayed' && j.status === 'delayed') ||
+          (s === 'revenue' && j.status === 'finished') ||
           (s === 'queue' && (j.status === 'scheduled' || j.status === 'queue')) ||
           (s === 'production' && j.status === 'production') ||
           (segment.includes('Studio') && (
@@ -282,6 +283,18 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
           glowColor="warning"
           onExport={(format: 'csv' | 'pdf') => handleExport(format, 'Perdas_Qualidade')}
           onClick={() => handleDrillDown('PEDIDOS COM PERDAS', 'lost')}
+        />
+        <FuturisticStatCard 
+          title="Receita Estimada" 
+          value={`R$ ${(biMetrics.periodCompletedPieces * 2.5).toLocaleString()}`} 
+          subtitle="Projeção de Faturamento"
+          icon={TrendingUp} 
+          trend="up"
+          trendValue="+15%"
+          gradient={GRADIENTS.primary}
+          glowColor="primary"
+          onExport={(format: 'csv' | 'pdf') => handleExport(format, 'Receita_Estimada')}
+          onClick={() => handleDrillDown('PROJEÇÃO DE RECEITA', 'revenue')}
         />
       </div>
 

@@ -109,15 +109,22 @@ export function FuturisticStatCard({
               )}
             </div>
           </div>
-          {trend && (
-            <div className={cn(
-              "mt-4 flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest",
-              trend === 'up' ? 'text-emerald-400' : 'text-rose-400'
-            )}>
-              {trend === 'up' ? <TrendingUp className="h-3 w-3" /> : <TrendingUp className="h-3 w-3 rotate-180" />}
-              {trendValue} vs LAST PD
-            </div>
-          )}
+          <div className="flex items-center justify-between mt-4">
+            {trend ? (
+              <div className={cn(
+                "flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest",
+                trend === 'up' ? 'text-emerald-400' : 'text-rose-400'
+              )}>
+                {trend === 'up' ? <TrendingUp className="h-3 w-3" /> : <TrendingUp className="h-3 w-3 rotate-180" />}
+                {trendValue} vs LAST PD
+              </div>
+            ) : <div />}
+            {onClick && (
+              <div className="flex items-center gap-1 text-[8px] text-primary/40 uppercase font-display tracking-[0.2em] opacity-0 group-hover:opacity-100 transition-opacity">
+                Drill-down <motion.div animate={{ x: [0, 3, 0] }} transition={{ repeat: Infinity, duration: 1.5 }}><TrendingUp className="h-2 w-2 rotate-90" /></motion.div>
+              </div>
+            )}
+          </div>
         </CardContent>
       </Card>
     </motion.div>

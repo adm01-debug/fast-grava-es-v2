@@ -82,6 +82,9 @@ export interface KPIData {
     inProgress: number;
     delayed: number;
   };
+  // Financial (Simulated for drill-down)
+  estimatedRevenue: number;
+  costOfLosses: number;
 }
 
 export function useKPIs(): { data: KPIData | null; isLoading: boolean } {
@@ -203,6 +206,8 @@ export function useKPIs(): { data: KPIData | null; isLoading: boolean } {
       productivityByMachine,
       productivityByTechnique,
       todayStats,
+      estimatedRevenue: completedPieces * 2.5, // Mock $2.5 per piece
+      costOfLosses: lostPieces * 1.8, // Mock $1.8 loss per piece
     };
   }, [jobs, techniques, machines]);
 
