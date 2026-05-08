@@ -15,6 +15,7 @@ import { BILoadingSkeleton } from '@/components/bi/BILoadingSkeleton';
 import { BIPeriodFilters } from '@/components/bi/BIPeriodFilters';
 import { BIHeader } from '@/components/bi/BIHeader';
 import { FuturisticBI } from '@/components/bi/FuturisticBI';
+import { BINormalView } from '@/components/bi/BINormalView';
 import { DrillDownDialog } from '@/components/bi/drilldown/DrillDownDialog';
 import { useToast } from '@/hooks/use-toast';
 import {
@@ -366,100 +367,43 @@ export default function BIDashboard() {
             {viewMode === 'futuristic' ? (
               <FuturisticBI biMetrics={biMetrics} kpis={kpis} oeeData={oeeData} />
             ) : (
-              <div className="space-y-8">
-                <Tabs defaultValue="overview" className="w-full">
-                  <TabsList className="grid w-full grid-cols-2 mb-8 bg-muted/50 p-1">
-                    <TabsTrigger value="overview" className="gap-2"><Layout className="h-4 w-4" /> Visão Geral</TabsTrigger>
-                    <TabsTrigger value="analysis" className="gap-2"><AlertTriangle className="h-4 w-4" /> Análise de Causa Raiz</TabsTrigger>
-                  </TabsList>
+              <BINormalView 
+                biMetrics={biMetrics} 
+                kpis={kpis} 
+                oeeData={oeeData} 
+                getPeriodLabel={getPeriodLabel}
+                onDrillDown={(title, segment) => {
+                  setDrillDownTitle(title);
                   
-                  <TabsContent value="overview" className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                  <BIStatCard 
-                    title="OEE Geral" 
-                    value={`${oeeData.overallOEE.toFixed(1)}%`} 
-                    subtitle="Eficiência Global dos Equipamentos" 
-                    icon={Gauge} 
-                    variant={oeeData.overallOEE >= 85 ? 'success' : oeeData.overallOEE >= 65 ? 'warning' : 'danger'} 
-                    onClick={() => handleDrillDown('Métricas de OEE', biMetrics.periodJobsList)}
-                  />
-                  <BIStatCard 
-                    title="Taxa de Qualidade" 
-                    value={`${oeeData.overallQuality.toFixed(1)}%`} 
-                    subtitle={`${biMetrics.periodLostPieces.toLocaleString()} peças perdidas`} 
-                    icon={Target} 
-                    variant={oeeData.overallQuality >= 95 ? 'success' : oeeData.overallQuality >= 85 ? 'warning' : 'danger'} 
-                    onClick={() => handleDrillDown('Controle de Qualidade', biMetrics.periodJobsList.filter(j => (j.lost_pieces ?? 0) > 0))}
-                  />
-                  <BIStatCard 
-                    title="Jobs Concluídos" 
-                    value={biMetrics.periodCompletedJobs} 
-                    subtitle={`de ${biMetrics.periodJobs} no período`} 
-                    icon={CheckCircle} 
-                    trend={biMetrics.productionTrend as 'up' | 'down' | 'neutral'} 
-                    trendValue={`${biMetrics.trendPercentage}% vs período anterior`} 
-                    onClick={() => handleDrillDown('Pedidos Concluídos', biMetrics.periodJobsList.filter(j => j.status === 'finished'))}
-                  />
-                  <BIStatCard 
-                    title="Peças Produzidas" 
-                    value={biMetrics.periodCompletedPieces.toLocaleString()} 
-                    subtitle={`Taxa de perda: ${biMetrics.periodLossRate.toFixed(2)}%`} 
-                    icon={Package} 
-                    variant={biMetrics.periodLossRate > 5 ? 'warning' : 'success'} 
-                    onClick={() => handleDrillDown('Relatório de Produção', biMetrics.periodJobsList)}
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  <Card className="card-elevated group">
-                    <CardHeader><CardTitle className="flex items-center gap-2"><LineChart className="h-5 w-5 text-primary" />Tendência de Produção</CardTitle></CardHeader>
-                    <CardContent>
-                      <ResponsiveContainer width="100%" height={280}>
-                        <AreaChart data={biMetrics.dailyTrend}>
-                          <defs><linearGradient id="colorProduced" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={CHART_COLORS.success} stopOpacity={0.4}/><stop offset="95%" stopColor={CHART_COLORS.success} stopOpacity={0}/></linearGradient></defs>
-                          <CartesianGrid strokeDasharray="3 3" className="stroke-border/50" /><XAxis dataKey="date" className="text-xs" /><YAxis className="text-xs" /><Tooltip />
-                          <Area type="monotone" dataKey="produced" stroke={CHART_COLORS.success} fill="url(#colorProduced)" name="Produzidas" />
-                          <Line type="monotone" dataKey="jobs" stroke={CHART_COLORS.primary} strokeWidth={2} name="Jobs" />
-                        </AreaChart>
-                      </ResponsiveContainer>
-                    </CardContent>
-                  </Card>
-
-                  <Card className="card-elevated">
-                    <CardHeader><CardTitle className="flex items-center gap-2"><PieChart className="h-5 w-5 text-primary" />Distribuição por Status</CardTitle></CardHeader>
-                    <CardContent>
-                      <ResponsiveContainer width="100%" height={280}>
-                        <RechartsPieChart><Pie data={biMetrics.statusDistribution} cx="50%" cy="50%" innerRadius={60} outerRadius={100} paddingAngle={2} dataKey="value" label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`} labelLine={false}>{biMetrics.statusDistribution.map((e, i) => <Cell key={i} fill={e.color} />)}</Pie><Tooltip /></RechartsPieChart>
-                      </ResponsiveContainer>
-                    </CardContent>
-                  </Card>
-                </div>
-              </TabsContent>
-              <TabsContent value="analysis" className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  <DelaysAnalysis 
-                    delayedJobs={biMetrics.periodJobsList.filter((j: any) => j.status === 'delayed')}
-                    rootCauses={[
-                      { label: 'Setup Complexo', value: 65, color: CHART_COLORS.primary },
-                      { label: 'Manutenção Corretiva', value: 20, color: CHART_COLORS.danger },
-                      { label: 'Insumos Faltantes', value: 10, color: CHART_COLORS.warning },
-                      { label: 'Outros', value: 5, color: CHART_COLORS.muted }
-                    ]}
-                    onExport={(format) => handleExport(format)}
-                  />
-                  <Card className="card-elevated">
-                    <CardHeader><CardTitle className="flex items-center gap-2"><AlertTriangle className="h-5 w-5 text-primary" />Principais Perdas</CardTitle></CardHeader>
-                    <CardContent>
-                       <LossesTable 
-                         jobs={biMetrics.periodJobsList.filter((j: any) => (j.lost_pieces || 0) > 0)} 
-                         onExport={(format) => handleExport(format)}
-                       />
-                    </CardContent>
-                  </Card>
-                </div>
-              </TabsContent>
-            </Tabs>
-          </div>
+                  if (biMetrics.periodJobsList) {
+                    const filtered = biMetrics.periodJobsList.filter((j: any) => {
+                      if (segment === 'all') return true;
+                      const s = segment.toLowerCase();
+                      
+                      return (
+                        j.status === s || 
+                        j.machine_id === segment || 
+                        j.technique_id === segment ||
+                        (s === 'lost' && (j.lost_pieces || 0) > 0) ||
+                        (s === 'delayed' && j.status === 'delayed') ||
+                        (s === 'queue' && (j.status === 'scheduled' || j.status === 'queue')) ||
+                        (s === 'production' && j.status === 'production')
+                      );
+                    }).map((j: any) => ({
+                      id: j.id,
+                      order_number: j.order_number || `OS-${j.id.slice(0, 5)}`,
+                      product: j.product_name || 'Produto',
+                      status: j.status,
+                      quantity: j.quantity,
+                      efficiency: j.produced_quantity > 0 ? (((j.produced_quantity - (j.lost_pieces || 0)) / j.produced_quantity) * 100).toFixed(1) + '%' : '--'
+                    }));
+                    setDrillDownJobs(filtered);
+                  } else {
+                    setDrillDownJobs([]);
+                  }
+                  setDrillDownOpen(true);
+                }}
+              />
             )}
           </>
         )}
