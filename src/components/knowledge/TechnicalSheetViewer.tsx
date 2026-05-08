@@ -23,7 +23,7 @@ import {
   Edit, Clock, Wrench, ListOrdered, Package, Lightbulb,
   AlertTriangle, Info, CheckCircle2, FileDown, Copy,
   QrCode, Maximize2, Zap, Droplets, MoveHorizontal, Thermometer,
-  CheckSquare, History, ShieldCheck, ChevronRight
+  CheckSquare, History, ShieldCheck, ChevronRight, Activity, Settings2
 } from 'lucide-react';
 import { useTechnicalSheetDetails } from '@/hooks/useTechnicalSheets';
 import { KnowledgeSheetQRCode } from './KnowledgeSheetQRCode';
@@ -556,13 +556,14 @@ export const TechnicalSheetViewer = ({ sheetId, onEdit, onDuplicate }: Technical
         )}
       </aside>
 
-      {/* QR Code Dialog */}
-      <KnowledgeSheetQRCode 
-        isOpen={showQR} 
-        onClose={() => setShowQR(false)} 
-        sheetId={sheetId}
-        sheetTitle={sheet.title}
-      />
+      {showQR && (
+        <div className="absolute top-24 right-8 z-50 animate-in fade-in zoom-in-95 shadow-2xl rounded-3xl overflow-hidden ring-4 ring-primary/20">
+          <KnowledgeSheetQRCode 
+            sheetId={sheetId}
+            title={sheet.title}
+          />
+        </div>
+      )}
     </div>
   );
 };
