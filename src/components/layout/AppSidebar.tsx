@@ -105,22 +105,22 @@ export function AppSidebar() {
           </div>
         )}
 
-        <nav className="flex-1 overflow-y-auto scrollbar-thin p-2 space-y-1" id="main-navigation">
+        <nav className="flex-1 overflow-y-auto scrollbar-hide px-3 py-2 space-y-2" id="main-navigation">
           {filteredNavGroups.map(group => <NavGroupComponent key={group.id} group={group} collapsed={collapsed} isMobile={isMobile} isActive={isActive} alertCount={alertCount} openGroups={openGroups} toggleGroup={toggleGroup} />)}
           {filteredAdminNavItems.length > 0 && (
             <>
               <div className="my-4 border-t border-sidebar-border/50" />
-              {(!collapsed || isMobile) && <p className="text-xs font-medium text-sidebar-foreground/30 uppercase tracking-wider px-3 py-2">Administração</p>}
+              {(!collapsed || isMobile) && <p className="text-[10px] font-black text-primary/40 uppercase tracking-[0.2em] px-5 py-3">Core Infrastructure</p>}
               {filteredAdminNavItems.map(item => <NavButton key={item.href} item={item} collapsed={collapsed} isMobile={isMobile} isActive={isActive(item.href)} />)}
             </>
           )}
         </nav>
 
-        <div className={cn('p-3 border-t border-sidebar-border/50', collapsed && !isMobile && 'p-2')}>
-          {(!collapsed || isMobile) && <div className="mb-2 px-1"><LanguageSwitcher /></div>}
-          <div className={cn('flex items-center gap-3 rounded-lg p-2', collapsed && !isMobile && 'justify-center p-2')}>
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center text-primary font-bold text-base border border-primary/10 shadow-sm">{profile?.full_name?.charAt(0)?.toUpperCase() || 'U'}</div>
-            {(!collapsed || isMobile) && <div className="flex-1 min-w-0"><p className="text-sm font-bold text-sidebar-foreground truncate tracking-tight">{profile?.full_name || 'Usuário'}</p><p className="text-[10px] font-black text-primary/60 uppercase tracking-widest">{role === 'coordinator' ? 'Coordenador' : role === 'manager' ? 'Gerente' : 'Operador'}</p></div>}
+        <div className={cn('p-6 border-t border-sidebar-border/30', collapsed && !isMobile && 'p-2')}>
+          {(!collapsed || isMobile) && <div className="mb-4 px-1 scale-110 origin-left"><LanguageSwitcher /></div>}
+          <div className={cn('flex items-center gap-4 rounded-2xl p-3 bg-muted/20 border border-border/40 mb-2', collapsed && !isMobile && 'justify-center p-2')}>
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center text-primary font-bold text-lg border border-primary/10 shadow-sm">{profile?.full_name?.charAt(0)?.toUpperCase() || 'U'}</div>
+            {(!collapsed || isMobile) && <div className="flex-1 min-w-0"><p className="text-sm font-bold text-sidebar-foreground truncate tracking-tight">{profile?.full_name || 'Usuário'}</p><p className="text-[10px] font-black text-primary/60 uppercase tracking-[0.2em]">{role === 'coordinator' ? 'System Architect' : role === 'manager' ? 'Global Manager' : 'Field Operator'}</p></div>}
           </div>
           <Button variant="ghost" size={(collapsed && !isMobile) ? "icon" : "sm"} onClick={handleSignOut} className={cn('w-full h-11 mt-2 text-rose-500 hover:text-rose-600 hover:bg-rose-500/10 rounded-xl transition-all font-bold', collapsed && !isMobile && 'px-0')}>
             <LogOut className="h-5 w-5" />{(!collapsed || isMobile) && <span className="ml-2">Sair do Sistema</span>}
