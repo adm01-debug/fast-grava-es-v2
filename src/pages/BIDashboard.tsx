@@ -206,8 +206,11 @@ export default function BIDashboard() {
   if (isLoading || !biMetrics || !kpis || !oeeData) {
     return (
       <MainLayout>
-        <div className="p-6 space-y-6">
-          <div><h1 className="text-3xl font-bold font-display">Business Intelligence</h1><p className="text-muted-foreground">Visão executiva consolidada</p></div>
+        <div className="container mx-auto p-4 sm:p-8 space-y-10 max-w-7xl animate-in fade-in duration-700">
+          <div className="space-y-2">
+            <h1 className="text-4xl font-black font-display tracking-tight gradient-text">Business Intelligence</h1>
+            <p className="text-base font-medium text-muted-foreground">Visão executiva e estratégica consolidada.</p>
+          </div>
           <BILoadingSkeleton />
         </div>
       </MainLayout>
@@ -250,27 +253,36 @@ export default function BIDashboard() {
 
   return (
     <MainLayout>
-      <div className="p-6 space-y-8 animate-fade-in">
-        <Breadcrumbs />
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <BIHeader comparisonMode={comparisonMode} setComparisonMode={setComparisonMode} onNavigate={(path) => navigate(path)} />
-          <div className="flex items-center gap-2 bg-muted/50 p-1 rounded-lg">
-            <Button 
-              variant={viewMode === 'classic' ? 'secondary' : 'ghost'} 
-              size="sm" 
-              onClick={() => setViewMode('classic')}
-              className="gap-2"
-            >
-              <Layout className="h-4 w-4" /> Clássico
-            </Button>
-            <Button 
-              variant={viewMode === 'futuristic' ? 'secondary' : 'ghost'} 
-              size="sm" 
-              onClick={() => setViewMode('futuristic')}
-              className="gap-2"
-            >
-              <Activity className="h-4 w-4" /> Futurista
-            </Button>
+      <div className="container mx-auto p-4 sm:p-8 space-y-10 max-w-7xl animate-in fade-in slide-in-from-bottom-4 duration-700">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-border/40 pb-8">
+          <div className="space-y-4">
+            <Breadcrumbs />
+            <div className="space-y-1">
+              <h1 className="text-4xl font-black font-display tracking-tight gradient-text">Business Intelligence</h1>
+              <p className="text-base font-medium text-muted-foreground">Análise avançada de performance e produtividade.</p>
+            </div>
+          </div>
+          
+          <div className="flex flex-wrap items-center gap-4">
+            <BIHeader comparisonMode={comparisonMode} setComparisonMode={setComparisonMode} onNavigate={(path) => navigate(path)} />
+            <div className="inline-flex h-12 items-center rounded-xl bg-muted/30 p-1 backdrop-blur-xl border border-border/40 shadow-inner">
+              <Button 
+                variant={viewMode === 'classic' ? 'secondary' : 'ghost'} 
+                size="sm" 
+                onClick={() => setViewMode('classic')}
+                className="h-10 px-4 rounded-lg text-sm font-semibold transition-all data-[state=active]:bg-background"
+              >
+                <Layout className="h-4 w-4 mr-2" /> Clássico
+              </Button>
+              <Button 
+                variant={viewMode === 'futuristic' ? 'secondary' : 'ghost'} 
+                size="sm" 
+                onClick={() => setViewMode('futuristic')}
+                className="h-10 px-4 rounded-lg text-sm font-semibold transition-all data-[state=active]:bg-background"
+              >
+                <Activity className="h-4 w-4 mr-2" /> Futurista
+              </Button>
+            </div>
           </div>
         </div>
 
