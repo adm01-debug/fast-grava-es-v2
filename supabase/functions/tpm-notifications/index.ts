@@ -33,10 +33,20 @@ serve(async (req) => {
 
     // 2. Processar cada agendamento e verificar regras de severidade
     for (const schedule of schedules) {
-      // Lógica de severidade e throttling aqui (simplificada para o exemplo)
-      // No mundo real, verificaríamos tpm_severity_configs e tpm_notification_logs
-      // para evitar duplicidade e respeitar o throttle.
-      
+      // Verificar se existe execução em andamento ou aguardando aprovação
+      const { data: ongoingRecords } = await supabase
+        .from('maintenance_records')
+        .select('id, status')
+        .eq('schedule_id', schedule.id)
+        .in('status', ['in_progress', 'completed'])
+        .limit(1)
+
+      if (ongoingRecords && ongoingRecords.length > 0) {
+        console.log(`Pulando notificações para ${schedule.machine.code}: Manutenção em execução ou aguardando revisão.`)
+        continue
+      }
+
+      // Lógica de severidade e throttling aqui...
       console.log(`Verificando máquina: ${schedule.machine.code}`)
     }
 
