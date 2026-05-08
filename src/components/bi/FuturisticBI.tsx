@@ -17,6 +17,7 @@ import { useOperatorProductivity } from '@/hooks/useOperatorProductivity';
 import { useTPM } from '@/hooks/useTPM';
 import { useDataExport } from '@/hooks/useDataExport';
 import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
 import { DrillDownDialog } from './drilldown/DrillDownDialog';
 import { LossesTable } from './losses/LossesTable';
 import { DelaysAnalysis } from './delays/DelaysAnalysis';
@@ -24,6 +25,7 @@ import { exportProductionReport, exportLossesReport, exportDelaysReport } from '
 import { subDays } from 'date-fns';
 import { toast } from 'sonner';
 import { FuturisticStatCard } from './FuturisticStatCard';
+
 
 const CHART_COLORS = {
   primary: '#0ea5e9',
