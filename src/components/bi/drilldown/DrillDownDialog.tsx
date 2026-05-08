@@ -36,13 +36,16 @@ export function DrillDownDialog({ open, onOpenChange, title, jobs, onExport }: D
   const [searchTerm, setSearchTerm] = useState("");
 
   const filteredJobs = useMemo(() => {
-    if (!searchTerm) return jobs;
-    const lowerSearch = searchTerm.toLowerCase();
-    return jobs.filter(job => 
-      job.order_number?.toLowerCase().includes(lowerSearch) ||
-      job.product?.toLowerCase().includes(lowerSearch) ||
-      job.status?.toLowerCase().includes(lowerSearch)
-    );
+    let result = jobs;
+    if (searchTerm) {
+      const lowerSearch = searchTerm.toLowerCase();
+      result = result.filter(job => 
+        job.order_number?.toLowerCase().includes(lowerSearch) ||
+        job.product?.toLowerCase().includes(lowerSearch) ||
+        job.status?.toLowerCase().includes(lowerSearch)
+      );
+    }
+    return result;
   }, [jobs, searchTerm]);
 
   return (
