@@ -449,7 +449,29 @@ export default function BIDashboard() {
                     </CardContent>
                   </Card>
                 </div>
-              </div>
+              </TabsContent>
+              <TabsContent value="analysis" className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <DelaysAnalysis 
+                    delayedJobs={biMetrics.periodJobsList.filter((j: any) => j.status === 'delayed')}
+                    rootCauses={[
+                      { label: 'Setup Complexo', value: 65, color: CHART_COLORS.primary },
+                      { label: 'Manutenção Corretiva', value: 20, color: CHART_COLORS.danger },
+                      { label: 'Insumos Faltantes', value: 10, color: CHART_COLORS.warning },
+                      { label: 'Outros', value: 5, color: CHART_COLORS.muted }
+                    ]}
+                    onExport={(format) => handleExport(format)}
+                  />
+                  <Card className="card-elevated">
+                    <CardHeader><CardTitle className="flex items-center gap-2"><AlertTriangle className="h-5 w-5 text-primary" />Principais Perdas</CardTitle></CardHeader>
+                    <CardContent>
+                       <LossesTable jobs={biMetrics.periodJobsList.filter((j: any) => (j.lost_pieces || 0) > 0)} />
+                    </CardContent>
+                  </Card>
+                </div>
+              </TabsContent>
+            </Tabs>
+          </div>
             )}
           </>
         )}
