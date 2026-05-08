@@ -57,29 +57,32 @@ export function MainLayout({ children }: MainLayoutProps) {
           <OfflineStatusBanner />
           
           {/* Desktop top bar */}
-          <div className="fixed top-4 right-4 z-40 hidden md:flex items-center gap-2" role="toolbar" aria-label="Ações rápidas">
-            <SectionErrorBoundary section="Favoritos" compact>
+          <div className="fixed top-6 right-8 z-40 hidden md:flex items-center gap-3" role="toolbar" aria-label="Ações rápidas">
+            <div className="flex items-center gap-2 px-4 py-2 bg-card/40 backdrop-blur-xl border border-border/40 rounded-2xl shadow-xl ring-1 ring-white/5">
+              <SectionErrorBoundary section="Favoritos" compact>
+                <Suspense fallback={EmptyFallback}>
+                  <QuickFavoritesBar />
+                </Suspense>
+              </SectionErrorBoundary>
+              <div className="w-px h-6 bg-border/40 mx-1" />
+              <SectionErrorBoundary section="Máquinas" compact>
+                <Suspense fallback={EmptyFallback}>
+                  <OperatorMachinesIndicator />
+                </Suspense>
+              </SectionErrorBoundary>
+              <div className="w-px h-6 bg-border/40 mx-1" />
               <Suspense fallback={EmptyFallback}>
-                <QuickFavoritesBar />
+                <NetworkStatusIndicator />
               </Suspense>
-            </SectionErrorBoundary>
-            <SectionErrorBoundary section="Máquinas" compact>
-              <Suspense fallback={EmptyFallback}>
-                <OperatorMachinesIndicator />
-              </Suspense>
-            </SectionErrorBoundary>
-            <Suspense fallback={EmptyFallback}>
-              <NetworkStatusIndicator />
-            </Suspense>
-            <Suspense fallback={EmptyFallback}>
-              <OfflineReadyIndicator />
-            </Suspense>
-            <ThemeToggle />
-            <SectionErrorBoundary section="Realtime" compact>
-              <Suspense fallback={EmptyFallback}>
-                <RealtimeIndicator />
-              </Suspense>
-            </SectionErrorBoundary>
+              <div className="w-px h-6 bg-border/40 mx-1" />
+              <ThemeToggle />
+              <div className="w-px h-6 bg-border/40 mx-1" />
+              <SectionErrorBoundary section="Realtime" compact>
+                <Suspense fallback={EmptyFallback}>
+                  <RealtimeIndicator />
+                </Suspense>
+              </SectionErrorBoundary>
+            </div>
           </div>
           
           {/* Mobile/Tablet top bar */}
