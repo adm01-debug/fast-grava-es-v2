@@ -13,64 +13,78 @@ const ENTITY_OPTIONS = ['jobs', 'lot_components', 'lot_quality_inspections'];
 
 export function AuditFilters({ filters, onChange }: AuditFiltersProps) {
   return (
-    <Card className="p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 bg-card border-border">
-      <div className="space-y-1.5">
-        <Label htmlFor="entity-filter" className="text-xs">Entidade</Label>
+    <div className="space-y-6">
+      <div className="space-y-3">
+        <Label htmlFor="entity-filter" className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/70 flex items-center gap-2">
+          <div className="h-1.5 w-1.5 rounded-full bg-primary" />
+          Target Entity
+        </Label>
         <Select
           value={filters.entityType ?? 'all'}
           onValueChange={(v) => onChange({ ...filters, entityType: v === 'all' ? undefined : v })}
         >
-          <SelectTrigger id="entity-filter">
-            <SelectValue placeholder="Todas" />
+          <SelectTrigger id="entity-filter" className="h-12 rounded-xl bg-background/40 border-border/40 focus:ring-primary/20 hover:bg-background/60 transition-colors">
+            <SelectValue placeholder="All Entities" />
           </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Todas</SelectItem>
+          <SelectContent className="rounded-xl border-border/40 bg-popover/95 backdrop-blur-xl">
+            <SelectItem value="all" className="rounded-lg">All Entities</SelectItem>
             {ENTITY_OPTIONS.map((e) => (
-              <SelectItem key={e} value={e}>{e}</SelectItem>
+              <SelectItem key={e} value={e} className="rounded-lg uppercase text-[10px] font-bold tracking-wider">{e}</SelectItem>
             ))}
           </SelectContent>
         </Select>
       </div>
 
-      <div className="space-y-1.5">
-        <Label htmlFor="action-filter" className="text-xs">Ação</Label>
+      <div className="space-y-3">
+        <Label htmlFor="action-filter" className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/70 flex items-center gap-2">
+          <div className="h-1.5 w-1.5 rounded-full bg-primary" />
+          Operation Type
+        </Label>
         <Select
           value={filters.action ?? 'all'}
           onValueChange={(v) =>
             onChange({ ...filters, action: v === 'all' ? undefined : (v as AuditFiltersType['action']) })
           }
         >
-          <SelectTrigger id="action-filter">
-            <SelectValue placeholder="Todas" />
+          <SelectTrigger id="action-filter" className="h-12 rounded-xl bg-background/40 border-border/40 focus:ring-primary/20 hover:bg-background/60 transition-colors">
+            <SelectValue placeholder="All Operations" />
           </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Todas</SelectItem>
-            <SelectItem value="INSERT">Criação</SelectItem>
-            <SelectItem value="UPDATE">Atualização</SelectItem>
-            <SelectItem value="DELETE">Exclusão</SelectItem>
+          <SelectContent className="rounded-xl border-border/40 bg-popover/95 backdrop-blur-xl">
+            <SelectItem value="all" className="rounded-lg">All Operations</SelectItem>
+            <SelectItem value="INSERT" className="rounded-lg font-bold text-emerald-500">CREATION</SelectItem>
+            <SelectItem value="UPDATE" className="rounded-lg font-bold text-amber-500">MUTATION</SelectItem>
+            <SelectItem value="DELETE" className="rounded-lg font-bold text-rose-500">DELETION</SelectItem>
           </SelectContent>
         </Select>
       </div>
 
-      <div className="space-y-1.5">
-        <Label htmlFor="from-date" className="text-xs">De</Label>
+      <div className="space-y-3">
+        <Label htmlFor="from-date" className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/70 flex items-center gap-2">
+          <div className="h-1.5 w-1.5 rounded-full bg-primary" />
+          Temporal Horizon (Start)
+        </Label>
         <Input
           id="from-date"
           type="datetime-local"
           value={filters.fromDate ?? ''}
+          className="h-12 rounded-xl bg-background/40 border-border/40 focus:ring-primary/20 hover:bg-background/60 transition-colors text-xs font-mono"
           onChange={(e) => onChange({ ...filters, fromDate: e.target.value || undefined })}
         />
       </div>
 
-      <div className="space-y-1.5">
-        <Label htmlFor="to-date" className="text-xs">Até</Label>
+      <div className="space-y-3">
+        <Label htmlFor="to-date" className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/70 flex items-center gap-2">
+          <div className="h-1.5 w-1.5 rounded-full bg-primary" />
+          Temporal Horizon (End)
+        </Label>
         <Input
           id="to-date"
           type="datetime-local"
           value={filters.toDate ?? ''}
+          className="h-12 rounded-xl bg-background/40 border-border/40 focus:ring-primary/20 hover:bg-background/60 transition-colors text-xs font-mono"
           onChange={(e) => onChange({ ...filters, toDate: e.target.value || undefined })}
         />
       </div>
-    </Card>
+    </div>
   );
 }
