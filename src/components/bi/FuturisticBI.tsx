@@ -161,6 +161,13 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
       .slice(0, 10);
   }, [biMetrics.periodJobsList]);
 
+  const delayedJobsList = useMemo(() => {
+    if (!biMetrics.periodJobsList) return [];
+    return biMetrics.periodJobsList
+      .filter((j: any) => j.status === 'delayed')
+      .slice(0, 10);
+  }, [biMetrics.periodJobsList]);
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
