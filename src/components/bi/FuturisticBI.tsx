@@ -710,7 +710,7 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
   );
 }
 
-function FuturisticStatCard({ title, value, subtitle, icon: Icon, trend, trendValue, variant = 'default', gradient, glowColor }: any) {
+function FuturisticStatCard({ title, value, subtitle, icon: Icon, trend, trendValue, variant = 'default', gradient, glowColor, onExport }: any) {
   const glowStyles = {
     primary: 'hover:shadow-[0_0_30px_rgba(14,165,233,0.3)]',
     success: 'hover:shadow-[0_0_30px_rgba(16,185,129,0.3)]',
@@ -738,14 +738,51 @@ function FuturisticStatCard({ title, value, subtitle, icon: Icon, trend, trendVa
               )}>{value}</h3>
               <p className="text-[10px] text-muted-foreground mt-1 uppercase tracking-tighter">{subtitle}</p>
             </div>
-            <div className={cn(
-              "p-3 rounded-xl bg-white/5 group-hover:bg-primary/20 transition-all duration-500",
-              variant === 'danger' && "group-hover:bg-rose-500/20"
-            )}>
-              <Icon className={cn(
-                "h-6 w-6 text-white group-hover:text-primary transition-colors duration-500",
-                variant === 'danger' && "group-hover:text-rose-500"
-              )} />
+            <div className="flex flex-col items-end gap-2">
+              <div className={cn(
+                "p-3 rounded-xl bg-white/5 group-hover:bg-primary/20 transition-all duration-500",
+                variant === 'danger' && "group-hover:bg-rose-500/20"
+              )}>
+                <Icon className={cn(
+                  "h-6 w-6 text-white group-hover:text-primary transition-colors duration-500",
+                  variant === 'danger' && "group-hover:text-rose-500"
+                )} />
+              </div>
+
+              {onExport && (
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-white"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <Download className="h-3 w-3" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-40 p-1 bg-black/90 border-white/10 backdrop-blur-xl" align="end">
+                    <div className="flex flex-col">
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="justify-start gap-2 text-xs h-8 hover:bg-white/5"
+                        onClick={(e) => { e.stopPropagation(); onExport('csv'); }}
+                      >
+                        <FileSpreadsheet className="h-3 w-3 text-primary" /> CSV
+                      </Button>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="justify-start gap-2 text-xs h-8 hover:bg-white/5"
+                        onClick={(e) => { e.stopPropagation(); onExport('pdf'); }}
+                      >
+                        <FileText className="h-3 w-3 text-primary" /> PDF
+                      </Button>
+                    </div>
+                  </PopoverContent>
+                </Popover>
+              )}
             </div>
           </div>
           {trend && (
