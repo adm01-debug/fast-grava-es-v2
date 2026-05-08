@@ -32,6 +32,8 @@ interface EditorBasicInfoProps {
     challenges_notes: string;
     failure_scenarios: string;
     quality_requirements: string;
+    setup_instructions: string;
+    quality_checklist: Array<{ id: string; description: string; required: boolean }>;
     version: string;
   };
   setFormData: (data: any) => void;
