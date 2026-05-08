@@ -255,6 +255,10 @@ export default function TPMDashboard() {
               onStartMaintenance={handleStartMaintenance}
             />
           </TabsContent>
+
+          <TabsContent value="config" className="animate-fade-in">
+            <ChecklistManager />
+          </TabsContent>
         </Tabs>
       </div>
     </MainLayout>
