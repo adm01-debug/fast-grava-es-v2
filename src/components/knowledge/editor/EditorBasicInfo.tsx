@@ -19,6 +19,15 @@ interface EditorBasicInfoProps {
     pressure: string;
     speed: string;
     temperature: string;
+    squeegee_passes_min: string;
+    squeegee_passes_max: string;
+    pressure_min: string;
+    pressure_max: string;
+    speed_min: string;
+    speed_max: string;
+    temperature_min: string;
+    temperature_max: string;
+    version: string;
   };
   setFormData: (data: any) => void;
   techniques: Array<{ id: string; name: string; color: string; short_name: string }>;
