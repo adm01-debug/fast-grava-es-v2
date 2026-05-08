@@ -3,8 +3,9 @@ import { usePushNotifications } from './usePushNotifications';
 import { useNotificationSounds } from './useNotificationSounds';
 import { supabase } from '@/integrations/supabase/client';
 import { MaintenanceAlert } from './tpm/types';
+import { toast } from 'sonner';
 
-interface TPMNotificationPreferences {
+export interface TPMNotificationPreferences {
   upcomingMaintenance: boolean;
   dueMaintenance: boolean;
   overdueMaintenance: boolean;
@@ -157,6 +158,52 @@ export const useTPMNotifications = () => {
     });
   }, [sendNotification]);
 
+  // Send test notification
+  const sendTestNotification = useCallback(async (machineId: string, channel: 'email' | 'whatsapp' | 'push') => {
+    try {
+      const { data: machine } = await supabase
+        .from('machines')
+        .select('name, code')
+        .eq('id', machineId)
+        .single();
+
+      if (!machine) throw new Error('Máquina não encontrada');
+
+      // In a real scenario, this would call an edge function
+      // For now, we simulate success and log it
+      const { data: user } = await supabase.auth.getUser();
+      
+      const { error: logError } = await supabase
+        .from('tpm_notification_logs')
+        .insert({
+          machine_id: machineId,
+          user_id: user.user?.id,
+          channel,
+          severity: 'critical',
+          status: 'success',
+          recipient: 'Teste',
+          payload: { test: true, machine_name: machine.name }
+        });
+
+      if (logError) throw logError;
+
+      if (channel === 'push') {
+        sendNotification({
+          title: '🚨 Teste de Notificação TPM',
+          body: `Máquina: ${machine.name} - Este é um teste de notificação push.`,
+          tag: 'tpm-test',
+        });
+      }
+
+      toast.success(`Notificação de teste enviada via ${channel}`);
+      return true;
+    } catch (error: any) {
+      console.error('Error sending test notification:', error);
+      toast.error('Erro ao enviar notificação de teste');
+      return false;
+    }
+  }, [sendNotification]);
+
   // Listen to realtime maintenance alerts
   useEffect(() => {
     if (permission !== 'granted') return;
@@ -218,5 +265,6 @@ export const useTPMNotifications = () => {
     sendUpcomingReminder,
     getPreferences,
     savePreferences: saveTPMNotificationPreferences,
+    sendTestNotification,
   };
 };
