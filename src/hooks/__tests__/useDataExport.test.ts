@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { renderHook } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { renderHook, act } from '@testing-library/react';
 import { useDataExport } from '../useDataExport';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -45,7 +45,6 @@ describe('useDataExport', () => {
       { id: '2', name: 'Job 2', quantity: 20 },
     ];
 
-    // Setup mocking chain for supabase query
     (supabase.from as any).mockReturnValue({
       select: vi.fn().mockReturnThis(),
       order: vi.fn().mockResolvedValue({ data: mockData, error: null }),
@@ -53,13 +52,14 @@ describe('useDataExport', () => {
 
     const { result } = renderHook(() => useDataExport('jobs' as any));
     
-    // Mocking document.createElement for download
     const link = { click: vi.fn(), href: '', download: '', style: {} };
     vi.spyOn(document, 'createElement').mockReturnValue(link as any);
     vi.spyOn(document.body, 'appendChild').mockImplementation(() => null as any);
     vi.spyOn(document.body, 'removeChild').mockImplementation(() => null as any);
 
-    await result.current.exportData();
+    await act(async () => {
+      await result.current.exportData();
+    });
 
     expect(supabase.from).toHaveBeenCalledWith('jobs');
     expect(toast.success).toHaveBeenCalledWith('2 registros exportados');
@@ -74,7 +74,10 @@ describe('useDataExport', () => {
     });
 
     const { result } = renderHook(() => useDataExport('jobs' as any));
-    await result.current.exportData();
+    
+    await act(async () => {
+      await result.current.exportData();
+    });
 
     expect(toast.info).toHaveBeenCalledWith('Nenhum dado para exportar');
   });
@@ -87,9 +90,13 @@ describe('useDataExport', () => {
     });
 
     const { result } = renderHook(() => useDataExport('jobs' as any));
-    await result.current.exportData();
+    
+    await act(async () => {
+      await result.current.exportData();
+    });
 
     expect(toast.error).toHaveBeenCalledWith(expect.stringContaining('Database error'));
   });
 });
+
 

@@ -43,7 +43,6 @@ describe('BIStatCard', () => {
     );
     
     expect(screen.getByText('+5%')).toBeInTheDocument();
-    // Check for up arrow icon (ArrowUp)
     const arrowUp = container.querySelector('svg.text-success');
     expect(arrowUp).not.toBeNull();
   });
@@ -63,4 +62,5 @@ describe('BIStatCard', () => {
     expect(card.className).toContain('bg-primary/5');
   });
 });
+
 
