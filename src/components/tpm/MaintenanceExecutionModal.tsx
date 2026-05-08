@@ -53,6 +53,7 @@ export function MaintenanceExecutionModal({
     speed: '',
     temperature: ''
   });
+  const [qualityResponses, setQualityResponses] = useState<Record<string, boolean>>({});
   const [parameterAlerts, setParameterAlerts] = useState<string[]>([]);
   
   const [notes, setNotes] = useState('');
