@@ -2,33 +2,16 @@ import { useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { 
-  TrendingUp, Activity, AlertTriangle, Gauge, Package, Target, 
-  CheckCircle, Clock, BarChart3, PieChart, LineChart, Printer, 
-  Users, Wrench, ShieldAlert, Timer, ArrowUpRight, Zap, Download, FileText, FileSpreadsheet
+  TrendingUp, Activity, Gauge, Target, 
+  CheckCircle, PieChart, LineChart, Printer, 
+  Users, Wrench, ShieldAlert, Zap, Download, FileText, FileSpreadsheet
 } from 'lucide-react';
 import { 
   AreaChart, Area, BarChart, Bar, PieChart as RechartsPieChart, Pie, Cell,
-  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Cell as RechartsCell
+  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from 'recharts';
-import { 
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { format, parseISO } from 'date-fns';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { useOperatorProductivity } from '@/hooks/useOperatorProductivity';
 import { useTPM } from '@/hooks/useTPM';
@@ -37,6 +20,10 @@ import { toast } from 'sonner';
 import { useDataExport } from '@/hooks/useDataExport';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { DrillDownDialog } from './drilldown/DrillDownDialog';
+import { LossesTable } from './losses/LossesTable';
+import { DelaysAnalysis } from './delays/DelaysAnalysis';
+
 
 const CHART_COLORS = {
   primary: '#0ea5e9',
