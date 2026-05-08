@@ -105,12 +105,12 @@ export function AppSidebar() {
           </div>
         )}
 
-        <nav className="flex-1 overflow-y-auto scrollbar-hide px-3 py-2 space-y-2" id="main-navigation">
+        <nav className="flex-1 overflow-y-auto scrollbar-hide px-5 py-4 space-y-3" id="main-navigation">
           {filteredNavGroups.map(group => <NavGroupComponent key={group.id} group={group} collapsed={collapsed} isMobile={isMobile} isActive={isActive} alertCount={alertCount} openGroups={openGroups} toggleGroup={toggleGroup} />)}
           {filteredAdminNavItems.length > 0 && (
             <>
               <div className="my-8 border-t border-primary/10 shadow-[0_1px_0_hsl(0_0%_100%/0.05)]" />
-              {(!collapsed || isMobile) && <p className="text-[9px] font-black text-primary/30 uppercase tracking-[0.3em] px-8 py-4">Global Infrastructure</p>}
+              {(!collapsed || isMobile) && <p className="text-[10px] font-black text-primary/30 uppercase tracking-[0.4em] px-8 py-5">Core Systems</p>}
               <div className="px-2 space-y-2">
                 {filteredAdminNavItems.map(item => <NavButton key={item.href} item={item} collapsed={collapsed} isMobile={isMobile} isActive={isActive(item.href)} />)}
               </div>
