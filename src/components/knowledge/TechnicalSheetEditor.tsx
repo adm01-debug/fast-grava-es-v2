@@ -49,6 +49,7 @@ export const TechnicalSheetEditor = ({ sheetId, techniques, categories, material
 
   useEffect(() => {
     if (sheet) {
+      const ranges = (sheet.settings_ranges as any) || {};
       setFormData({
         technique_id: sheet.technique_id,
         product_category_id: sheet.product_category_id || '',
@@ -63,6 +64,15 @@ export const TechnicalSheetEditor = ({ sheetId, techniques, categories, material
         pressure: (sheet.machine_settings as any)?.pressure || '',
         speed: (sheet.machine_settings as any)?.speed || '',
         temperature: (sheet.machine_settings as any)?.temperature || '',
+        squeegee_passes_min: ranges.squeegee_passes?.min || '',
+        squeegee_passes_max: ranges.squeegee_passes?.max || '',
+        pressure_min: ranges.pressure?.min || '',
+        pressure_max: ranges.pressure?.max || '',
+        speed_min: ranges.speed?.min || '',
+        speed_max: ranges.speed?.max || '',
+        temperature_min: ranges.temperature?.min || '',
+        temperature_max: ranges.temperature?.max || '',
+        version: sheet.version?.toString() || '1'
       });
     }
   }, [sheet]);
