@@ -360,7 +360,7 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
                 data={biMetrics.dailyTrend}
                 onClick={(data: any) => {
                   if (data && data.activeLabel) {
-                    handleDrillDown(`PEDIDOS EM ${data.activeLabel}`, data.activeLabel);
+                    handleDrillDown(`PEDIDOS EM ${data.activeLabel}`, 'all');
                   }
                 }}
               >
