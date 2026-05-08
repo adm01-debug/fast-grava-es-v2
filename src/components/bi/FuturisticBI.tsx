@@ -472,21 +472,34 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
                   onClick={(data: any) => handleDrillDown(`PEDIDOS: ${data.name}`, data.name)}
                 >
                   {biMetrics.statusDistribution.map((entry: any, index: number) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} fillOpacity={0.8} />
+                    <Cell 
+                      key={`cell-${index}`} 
+                      fill={entry.color} 
+                      fillOpacity={0.8} 
+                      className="cursor-pointer hover:fill-opacity-100 transition-all duration-300"
+                    />
                   ))}
                 </Pie>
                 <Tooltip content={<BITooltip showPercentage />} />
+                <Legend 
+                  content={({ payload }) => (
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-2 mt-4">
+                      {payload?.map((entry: any, index: number) => (
+                        <button
+                          key={`item-${index}`}
+                          onClick={() => handleDrillDown(`PEDIDOS: ${entry.value}`, entry.value)}
+                          className="flex items-center gap-2 transition-all hover:translate-x-1"
+                        >
+                          <div className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color }} />
+                          <span className="text-[10px] text-muted-foreground uppercase tracking-tighter whitespace-nowrap">{entry.value}</span>
+                          <span className="text-[10px] font-bold ml-auto text-white/90">{biMetrics.statusDistribution.find((s: any) => s.name === entry.value)?.value}</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                />
               </RechartsPieChart>
             </ResponsiveContainer>
-            <div className="grid grid-cols-2 gap-4 mt-4">
-              {biMetrics.statusDistribution.map((s: any) => (
-                <div key={s.name} className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full" style={{ backgroundColor: s.color }} />
-                  <span className="text-xs text-muted-foreground uppercase tracking-tighter">{s.name}</span>
-                  <span className="text-xs font-bold ml-auto">{s.value}</span>
-                </div>
-              ))}
-            </div>
           </CardContent>
         </Card>
 
