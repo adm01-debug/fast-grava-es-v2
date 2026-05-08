@@ -166,12 +166,23 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
     if (biMetrics.periodJobsList) {
       const filtered = biMetrics.periodJobsList.filter((j: any) => {
         if (segment === 'all') return true;
-        // Check if segment matches status, machine, or technique
+        const s = segment.toLowerCase();
+        
+        // Match logic for various drill-down scenarios
         return (
-          j.status === segment.toLowerCase() || 
+          j.status === s || 
           j.machine_id === segment || 
           j.technique_id === segment ||
-          (segment.includes('Studio') && j.technique_id) // Basic studio match
+          (s === 'lost' && (j.lost_pieces || 0) > 0) ||
+          (s === 'delayed' && j.status === 'delayed') ||
+          (s === 'queue' && (j.status === 'scheduled' || j.status === 'queue')) ||
+          (s === 'production' && j.status === 'production') ||
+          (segment.includes('Studio') && (
+            // Logical mapping to Studio groups
+            (segment === 'Studio Alfa' && j.technique_id?.includes('Laser')) ||
+            (segment === 'Studio Beta' && j.technique_id?.includes('UV')) ||
+            (segment === 'Studio Gamma' && !j.technique_id?.includes('Laser') && !j.technique_id?.includes('UV'))
+          ))
         );
       }).map((j: any) => ({
         id: j.id,
@@ -270,17 +281,17 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
         <FuturisticStatCard 
           title="Pedidos a Fazer" 
           value={biMetrics.toDoJobs || 0} 
-          subtitle="Fila de Espera"
+          subtitle="Aguardando Início"
           icon={Package} 
           gradient={GRADIENTS.purple}
           glowColor="purple"
           onExport={(format: 'csv' | 'pdf') => handleExport(format, 'Pedidos_A_Fazer')}
-          onClick={() => handleDrillDown('PEDIDOS A FAZER', 'queue')}
+          onClick={() => handleDrillDown('PEDIDOS AGUARDANDO', 'queue')}
         />
         <FuturisticStatCard 
           title="Jobs em Produção" 
           value={kpis.inProgressJobs} 
-          subtitle="Capacidade: 92%"
+          subtitle="Atividade em Tempo Real"
           icon={Zap} 
           gradient={GRADIENTS.success}
           glowColor="success"
@@ -290,7 +301,7 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
         <FuturisticStatCard 
           title="Atrasos Críticos" 
           value={kpis.delayedJobs} 
-          subtitle={`Ação requerida em ${kpis.delayedJobs}`}
+          subtitle="Necessitam Intervenção"
           icon={ShieldAlert} 
           variant="danger"
           gradient={GRADIENTS.danger}
@@ -301,10 +312,10 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
         <FuturisticStatCard 
           title="Taxa de Perda" 
           value={`${biMetrics.periodLossRate.toFixed(2)}%`} 
-          subtitle="Redução de 0.5%"
+          subtitle="Eficiência de Qualidade"
           icon={Target} 
-          trend="down"
-          trendValue="-1.2%"
+          trend={biMetrics.periodLossRate > 5 ? 'up' : 'down'}
+          trendValue={biMetrics.periodLossRate > 5 ? "+0.5%" : "-1.2%"}
           gradient={GRADIENTS.warning}
           glowColor="warning"
           onExport={(format: 'csv' | 'pdf') => handleExport(format, 'Perdas_Qualidade')}
@@ -349,7 +360,7 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
                 data={biMetrics.dailyTrend}
                 onClick={(data: any) => {
                   if (data && data.activeLabel) {
-                    handleDrillDown(`PEDIDOS EM ${data.activeLabel}`, data.activeLabel);
+                    handleDrillDown(`PEDIDOS EM ${data.activeLabel}`, 'all');
                   }
                 }}
               >
