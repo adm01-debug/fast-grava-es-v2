@@ -2,9 +2,9 @@ import { useState, useMemo, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useFuseSearch } from '@/hooks/useFuseSearch';
 import { MainLayout } from '@/components/layout/MainLayout';
-import { Card } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { BookOpen, Plus, Lightbulb } from 'lucide-react';
+import { BookOpen, Plus, Lightbulb, Search, Filter, ShieldCheck, ChevronLeft, Zap, Layers, Beaker, Settings2 } from 'lucide-react';
 import { useTechnicalSheets, useTechnicalSheetMutations, TechnicalSheet } from '@/hooks/useTechnicalSheets';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -15,6 +15,9 @@ import { KnowledgeSheetList } from '@/components/knowledge/KnowledgeSheetList';
 import { useAuth } from '@/contexts/AuthContext';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { toast } from 'sonner';
+import { PageTransition } from '@/components/layout/PageTransition';
+import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
 
 const TechnicalKnowledgeBase = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -136,111 +139,155 @@ const TechnicalKnowledgeBase = () => {
 
   return (
     <MainLayout>
-      <div className="flex flex-col h-[calc(100vh-4rem)] p-4 sm:p-6">
-        <Breadcrumbs />
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 sm:mb-6 gap-3">
-          <div>
-            <h1 className="text-xl sm:text-2xl font-display font-bold text-foreground flex items-center gap-2 sm:gap-3">
-              <BookOpen className="h-5 w-5 sm:h-7 sm:w-7 text-primary" />
-              <span className="text-base sm:text-2xl">Base de Conhecimento</span>
-            </h1>
-            <p className="text-xs sm:text-base text-muted-foreground mt-1">
-              Fichas técnicas para personalização
-            </p>
-          </div>
-          {canEdit && (
-            <Button onClick={handleCreateNew} className="gap-2 self-start sm:self-auto" size="sm">
-              <Plus className="h-4 w-4" />
-              <span className="hidden sm:inline">Nova Ficha Técnica</span>
-              <span className="sm:hidden">Nova Ficha</span>
-            </Button>
-          )}
-        </div>
+      <PageTransition>
+        <div className="flex flex-col h-[calc(100vh-4rem)] p-4 sm:p-8 space-y-8 max-w-[1600px] mx-auto animate-in fade-in duration-700">
+          {/* Header Section */}
+          <header className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 border-b border-border/40 pb-8">
+            <div className="flex items-start gap-5">
+              <div className="p-4 bg-primary/10 rounded-2xl shadow-glow-primary/10 ring-1 ring-primary/20">
+                <BookOpen className="h-8 w-8 text-primary" aria-hidden />
+              </div>
+              <div className="space-y-1">
+                <h1 className="text-4xl font-black font-display tracking-tight leading-none uppercase gradient-text">Knowledge Base</h1>
+                <p className="text-base text-muted-foreground font-medium uppercase tracking-[0.2em] opacity-80">Industrial Technical Documentation Hub</p>
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-3">
+              {canEdit && (
+                <Button 
+                  onClick={handleCreateNew} 
+                  className="h-12 px-6 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-bold uppercase tracking-widest text-xs shadow-glow-primary/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  New Technical Sheet
+                </Button>
+              )}
+              <Badge variant="outline" className="h-12 px-4 rounded-xl border-primary/20 bg-primary/5 text-[10px] font-black tracking-[0.15em] uppercase text-primary">
+                <ShieldCheck className="h-3.5 w-3.5 mr-2" />
+                Validated Protocols
+              </Badge>
+            </div>
+          </header>
 
-        {/* Stats */}
-        <KnowledgeBaseStats sheets={sheets} techniques={techniques} />
-
-        {/* Content */}
-        <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 flex-1 min-h-0">
-          {/* Left Panel */}
-          <div className={`${selectedSheet || isCreating || isEditing ? 'hidden lg:flex' : 'flex'} w-full lg:w-80 flex-shrink-0 flex-col`}>
-            <KnowledgeSheetList
-              sheets={groupedSheets}
-              techniques={techniques}
-              categories={categories}
-              machines={machines}
-              searchTerm={searchTerm}
-              onSearchChange={setSearchTerm}
-              selectedTechnique={selectedTechnique}
-              onTechniqueChange={setSelectedTechnique}
-              selectedCategory={selectedCategory}
-              onCategoryChange={setSelectedCategory}
-              selectedMachine={selectedMachine}
-              onMachineChange={setSelectedMachine}
-              selectedSheet={selectedSheet}
-              onSheetClick={handleSheetClick}
-              canEdit={canEdit}
-              onCreateNew={handleCreateNew}
-              isLoading={isLoadingSheets}
-              hasFilters={hasFilters}
-            />
+          {/* Stats Section */}
+          <div className="animate-in slide-in-from-top duration-700 delay-100">
+            <KnowledgeBaseStats sheets={sheets} techniques={techniques} />
           </div>
 
-          {/* Right Panel */}
-          <div className={`${!selectedSheet && !isCreating && !isEditing ? 'hidden lg:block' : 'block'} flex-1 min-w-0`}>
-            {(selectedSheet || isCreating || isEditing) && (
-              <Button
-                variant="ghost"
-                size="sm"
-                className="lg:hidden mb-3"
-                onClick={() => {
-                  setSelectedSheet(null);
-                  setIsCreating(false);
-                  setIsEditing(false);
-                }}
-              >
-                ← Voltar para lista
-              </Button>
-            )}
-
-            {isCreating ? (
-              <TechnicalSheetEditor
-                techniques={techniques}
-                categories={categories}
-                materials={materials}
-                onClose={handleCloseEditor}
-              />
-            ) : isEditing && selectedSheet ? (
-              <TechnicalSheetEditor
-                sheetId={selectedSheet}
-                techniques={techniques}
-                categories={categories}
-                materials={materials}
-                onClose={handleCloseEditor}
-              />
-            ) : selectedSheet ? (
-              <TechnicalSheetViewer
-                sheetId={selectedSheet}
-                onEdit={canEdit ? handleEdit : undefined}
-                onDuplicate={canEdit ? handleDuplicate : undefined}
-              />
-            ) : (
-              <Card className="glass-card border-border/50 h-full flex items-center justify-center">
-                <div className="text-center p-8">
-                  <Lightbulb className="h-12 w-12 sm:h-16 sm:w-16 text-muted-foreground/30 mx-auto mb-4" />
-                  <h3 className="text-base sm:text-lg font-medium text-muted-foreground">
-                    Selecione uma ficha técnica
+          {/* Main Workspace */}
+          <div className="flex flex-col lg:flex-row gap-8 flex-1 min-h-0">
+            {/* Left Panel: Navigation & Search */}
+            <aside 
+              className={cn(
+                "w-full lg:w-[400px] flex-shrink-0 flex flex-col transition-all duration-500",
+                (selectedSheet || isCreating || isEditing) ? 'hidden lg:flex opacity-0 lg:opacity-100' : 'flex'
+              )}
+            >
+              <Card className="flex-1 flex flex-col border-border/40 bg-card/40 backdrop-blur-md shadow-2xl rounded-[2.5rem] overflow-hidden ring-1 ring-white/5">
+                <div className="p-8 pb-4 border-b border-border/20">
+                  <h3 className="text-lg font-bold font-display uppercase tracking-wider flex items-center gap-2 mb-6">
+                    <Filter className="h-4 w-4 text-primary" />
+                    Protocol Registry
                   </h3>
-                  <p className="text-xs sm:text-sm text-muted-foreground/70 mt-1">
-                    Escolha uma ficha na lista para visualizar
-                  </p>
+                  <KnowledgeSheetList
+                    sheets={groupedSheets}
+                    techniques={techniques}
+                    categories={categories}
+                    machines={machines}
+                    searchTerm={searchTerm}
+                    onSearchChange={setSearchTerm}
+                    selectedTechnique={selectedTechnique}
+                    onTechniqueChange={setSelectedTechnique}
+                    selectedCategory={selectedCategory}
+                    onCategoryChange={setSelectedCategory}
+                    selectedMachine={selectedMachine}
+                    onMachineChange={setSelectedMachine}
+                    selectedSheet={selectedSheet}
+                    onSheetClick={handleSheetClick}
+                    canEdit={canEdit}
+                    onCreateNew={handleCreateNew}
+                    isLoading={isLoadingSheets}
+                    hasFilters={hasFilters}
+                  />
                 </div>
               </Card>
-            )}
+            </aside>
+
+            {/* Right Panel: Content Display */}
+            <main 
+              className={cn(
+                "flex-1 min-w-0 transition-all duration-500",
+                (!selectedSheet && !isCreating && !isEditing) ? 'hidden lg:block opacity-40 grayscale-[0.5]' : 'block opacity-100'
+              )}
+            >
+              {(selectedSheet || isCreating || isEditing) && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="lg:hidden mb-6 h-10 px-4 rounded-xl hover:bg-primary/10 text-primary font-bold uppercase tracking-widest text-[10px]"
+                  onClick={() => {
+                    setSelectedSheet(null);
+                    setIsCreating(false);
+                    setIsEditing(false);
+                  }}
+                >
+                  <ChevronLeft className="h-4 w-4 mr-1" />
+                  Back to Registry
+                </Button>
+              )}
+
+              <div className="h-full animate-in zoom-in-95 duration-500">
+                {isCreating ? (
+                  <TechnicalSheetEditor
+                    techniques={techniques}
+                    categories={categories}
+                    materials={materials}
+                    onClose={handleCloseEditor}
+                  />
+                ) : isEditing && selectedSheet ? (
+                  <TechnicalSheetEditor
+                    sheetId={selectedSheet}
+                    techniques={techniques}
+                    categories={categories}
+                    materials={materials}
+                    onClose={handleCloseEditor}
+                  />
+                ) : selectedSheet ? (
+                  <TechnicalSheetViewer
+                    sheetId={selectedSheet}
+                    onEdit={canEdit ? handleEdit : undefined}
+                    onDuplicate={canEdit ? handleDuplicate : undefined}
+                  />
+                ) : (
+                  <Card className="border-border/40 bg-card/20 backdrop-blur-sm h-full flex items-center justify-center rounded-[2.5rem] border-dashed">
+                    <CardContent className="text-center p-12 max-w-md space-y-6">
+                      <div className="relative inline-block">
+                        <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full" />
+                        <Lightbulb className="h-24 w-24 text-primary/30 relative z-10 mx-auto animate-pulse" />
+                      </div>
+                      <div className="space-y-2">
+                        <h3 className="text-2xl font-bold font-display uppercase tracking-tight text-muted-foreground/80">
+                          Select a Protocol
+                        </h3>
+                        <p className="text-sm text-muted-foreground font-medium italic leading-relaxed">
+                          Choose a technical specification from the left registry to initialize the workstation parameters.
+                        </p>
+                      </div>
+                      <div className="flex justify-center gap-4 pt-4 grayscale opacity-40">
+                        <Zap className="h-6 w-6" />
+                        <Layers className="h-6 w-6" />
+                        <Beaker className="h-6 w-6" />
+                        <Settings2 className="h-6 w-6" />
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+              </div>
+            </main>
           </div>
         </div>
-      </div>
+      </PageTransition>
     </MainLayout>
   );
 };
