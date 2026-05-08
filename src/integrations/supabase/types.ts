@@ -3381,16 +3381,20 @@ export type Database = {
       }
       technical_sheets: {
         Row: {
+          challenges_notes: string | null
           created_at: string
           created_by: string | null
           description: string | null
           estimated_time_minutes: number | null
+          failure_scenarios: string | null
+          gap_specifications: string | null
           id: string
           ink_specifications: string | null
           is_active: boolean
           machine_settings: Json | null
           material_id: string | null
           product_category_id: string | null
+          quality_requirements: string | null
           recommended_machine_id: string | null
           settings_ranges: Json | null
           technique_id: string
@@ -3401,16 +3405,20 @@ export type Database = {
           version: number | null
         }
         Insert: {
+          challenges_notes?: string | null
           created_at?: string
           created_by?: string | null
           description?: string | null
           estimated_time_minutes?: number | null
+          failure_scenarios?: string | null
+          gap_specifications?: string | null
           id?: string
           ink_specifications?: string | null
           is_active?: boolean
           machine_settings?: Json | null
           material_id?: string | null
           product_category_id?: string | null
+          quality_requirements?: string | null
           recommended_machine_id?: string | null
           settings_ranges?: Json | null
           technique_id: string
@@ -3421,16 +3429,20 @@ export type Database = {
           version?: number | null
         }
         Update: {
+          challenges_notes?: string | null
           created_at?: string
           created_by?: string | null
           description?: string | null
           estimated_time_minutes?: number | null
+          failure_scenarios?: string | null
+          gap_specifications?: string | null
           id?: string
           ink_specifications?: string | null
           is_active?: boolean
           machine_settings?: Json | null
           material_id?: string | null
           product_category_id?: string | null
+          quality_requirements?: string | null
           recommended_machine_id?: string | null
           settings_ranges?: Json | null
           technique_id?: string
