@@ -21,6 +21,7 @@ export interface DbJob {
   quantity: number;
   produced_quantity: number | null;
   technique_id: string;
+  product_category_id: string | null;
   machine_id: string | null;
   scheduled_date: string | null;
   start_time: string | null;
