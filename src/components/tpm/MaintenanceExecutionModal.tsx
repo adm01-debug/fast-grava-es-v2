@@ -167,7 +167,37 @@ export function MaintenanceExecutionModal({
           is_critical_risk: true
         });
       }
-    };
+  };
+
+  const handleAlertEvidenceUpload = async (alertIndex: number, file: File) => {
+    try {
+      setIsUploading(true);
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Math.random()}.${fileExt}`;
+      const filePath = `execution-alerts/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('execution-evidence')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('execution-evidence')
+        .getPublicUrl(filePath);
+
+      const newAlerts = [...activeAlerts];
+      newAlerts[alertIndex].evidence_urls = [...newAlerts[alertIndex].evidence_urls, publicUrl];
+      setActiveAlerts(newAlerts);
+      
+      toast.success('Evidência anexada com sucesso');
+    } catch (error) {
+      console.error('Error uploading evidence:', error);
+      toast.error('Erro ao enviar evidência');
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
     checkRange('Passadas de Rodo', adjustmentParams.squeegee_passes, ranges.squeegee_passes, 'squeegee_passes');
     checkRange('Pressão', adjustmentParams.pressure, ranges.pressure, 'pressure');
