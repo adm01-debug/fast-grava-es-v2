@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { UsersIcon, ShieldAlertIcon, SearchIcon, UserPlusIcon, ActivityIcon, Settings2Icon, CheckCircle2, XCircle, InfoIcon, ShieldCheckIcon } from "lucide-react";
+import { UsersIcon, ShieldAlertIcon, SearchIcon, UserPlusIcon, ActivityIcon, Settings2Icon, CheckCircle2, XCircle, InfoIcon, ShieldCheckIcon, LayoutGrid } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
