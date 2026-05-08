@@ -40,6 +40,8 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { DrillDownDialog } from './drilldown/DrillDownDialog';
 import { LossesTable } from './losses/LossesTable';
 import { DelaysAnalysis } from './delays/DelaysAnalysis';
+import { exportProductionReport, exportLossesReport, exportDelaysReport } from '@/lib/pdfExport';
+import { subDays } from 'date-fns';
 
 
 
