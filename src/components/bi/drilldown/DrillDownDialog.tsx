@@ -1,3 +1,4 @@
+import { useMemo, useState } from "react";
 import { 
   Dialog,
   DialogContent,
@@ -16,9 +17,11 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { FileSpreadsheet, FileText } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { FileSpreadsheet, FileText, Search, Filter, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
+
 
 interface DrillDownDialogProps {
   open: boolean;
