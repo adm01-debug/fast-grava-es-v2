@@ -123,29 +123,36 @@ export function DroppableColumn({
       
       {/* Bottleneck Risk Indicator */}
       {totalEstimatedTime > 0 && (
-        <div className="flex items-center gap-2 mb-2 px-1 text-[10px] font-bold uppercase tracking-wider">
-          <Activity className={cn(
-            "h-3 w-3",
-            totalEstimatedTime > 480 ? "text-red-500 animate-pulse" : 
-            totalEstimatedTime > 300 ? "text-amber-500" : "text-green-500"
-          )} />
-          <span className={cn(
-            totalEstimatedTime > 480 ? "text-red-500" : 
-            totalEstimatedTime > 300 ? "text-amber-500" : "text-green-500"
-          )}>
-            Risco de Gargalo: {totalEstimatedTime > 480 ? "Alto" : totalEstimatedTime > 300 ? "Médio" : "Baixo"}
-          </span>
-          <Badge 
-            variant="outline" 
-            className={cn(
-              "ml-auto text-[8px] h-4 px-1 leading-none",
-              totalEstimatedTime > 480 ? "border-red-500/50 text-red-500 bg-red-500/10" : 
-              totalEstimatedTime > 300 ? "border-amber-500/50 text-amber-500 bg-amber-500/10" : 
-              "border-green-500/50 text-green-500 bg-green-500/10"
-            )}
-          >
-            {totalEstimatedTime > 480 ? "CRÍTICO" : totalEstimatedTime > 300 ? "ATENÇÃO" : "OK"}
-          </Badge>
+        <div className="flex flex-col gap-1 mb-2 px-1">
+          <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider">
+            <Activity className={cn(
+              "h-3 w-3",
+              totalEstimatedTime > 480 ? "text-red-500 animate-pulse" : 
+              totalEstimatedTime > 300 ? "text-amber-500" : "text-green-500"
+            )} />
+            <span className={cn(
+              totalEstimatedTime > 480 ? "text-red-500" : 
+              totalEstimatedTime > 300 ? "text-amber-500" : "text-green-500"
+            )}>
+              Risco: {totalEstimatedTime > 480 ? "Alto" : totalEstimatedTime > 300 ? "Médio" : "Baixo"}
+            </span>
+            <Badge 
+              variant="outline" 
+              className={cn(
+                "ml-auto text-[8px] h-4 px-1 leading-none",
+                totalEstimatedTime > 480 ? "border-red-500/50 text-red-500 bg-red-500/10" : 
+                totalEstimatedTime > 300 ? "border-amber-500/50 text-amber-500 bg-amber-500/10" : 
+                "border-green-500/50 text-green-500 bg-green-500/10"
+              )}
+            >
+              {totalEstimatedTime > 480 ? "GARGALO" : totalEstimatedTime > 300 ? "ATENÇÃO" : "ESTÁVEL"}
+            </Badge>
+          </div>
+          {totalEstimatedTime > 480 && (
+            <div className="text-[9px] text-red-400 font-medium bg-red-500/5 border border-red-500/10 rounded px-1.5 py-0.5 mt-0.5 animate-in fade-in slide-in-from-top-1">
+              Capacidade excedida: Recomenda-se balancear carga.
+            </div>
+          )}
         </div>
       )}
 

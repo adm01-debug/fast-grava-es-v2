@@ -161,7 +161,14 @@ export function useSmartSequencing() {
       const mins = totalMinutes % 60;
       const estimatedColumnTime = hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;
 
+      // Calculate bottleneck risk based on capacity (480min = 8h shift)
       const bottleneckRisk = totalMinutes > 480 ? 'high' : totalMinutes > 300 ? 'medium' : 'low';
+      
+      // Load historical data for this machine (simulation for graph trend)
+      const historicalLoad = [
+        { period: 'Manhã', load: Math.min(100, (totalMinutes / 240) * 100) },
+        { period: 'Tarde', load: Math.min(100, (totalMinutes / 240) * 80) },
+      ];
 
       if (estimatedSavings > 0 || totalMinutes > 0) {
         result.push({
