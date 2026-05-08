@@ -23,6 +23,7 @@ export function useTPM() {
     createSchedule,
     startMaintenance,
     completeMaintenance,
+    approveMaintenance,
     checkAndGenerateAlerts,
     resolveAlert,
   } = useTPMMutations({ schedules, alerts });
@@ -50,6 +51,7 @@ export function useTPM() {
     createSchedule,
     startMaintenance,
     completeMaintenance,
+    approveMaintenance,
     checkAndGenerateAlerts,
     resolveAlert,
   };
