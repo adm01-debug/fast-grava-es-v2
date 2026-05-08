@@ -683,7 +683,7 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
   );
 }
 
-function FuturisticStatCard({ title, value, subtitle, icon: Icon, trend, trendValue, variant = 'default', gradient, glowColor, onExport }: any) {
+function FuturisticStatCard({ title, value, subtitle, icon: Icon, trend, trendValue, variant = 'default', gradient, glowColor, onExport, onClick }: any) {
   const glowStyles = {
     primary: 'hover:shadow-[0_0_30px_rgba(14,165,233,0.3)]',
     success: 'hover:shadow-[0_0_30px_rgba(16,185,129,0.3)]',
