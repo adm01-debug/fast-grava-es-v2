@@ -86,6 +86,8 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
       notes?: string;
       total_cost?: number;
       downtime_minutes?: number;
+      checklist_version?: number;
+      checklist_snapshot?: any;
       responses?: Array<{
         checklist_item_id: string;
         is_checked: boolean;
@@ -121,6 +123,8 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
           total_cost: data.total_cost || 0,
           downtime_minutes: data.downtime_minutes || 0,
           signature_url: data.signature,
+          checklist_version: data.checklist_version,
+          checklist_snapshot: data.checklist_snapshot,
         })
         .eq('id', data.record_id);
       
