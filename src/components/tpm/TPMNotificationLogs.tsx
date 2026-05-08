@@ -4,9 +4,11 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { CheckCircle2, XCircle, Clock, Search, Filter } from 'lucide-react';
+import { CheckCircle2, XCircle, Clock, Search, Filter, Download, FileJson, FileSpreadsheet } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
 
 export function TPMNotificationLogs() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -34,6 +36,32 @@ export function TPMNotificationLogs() {
     log.channel.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const handleExportCSV = () => {
+    if (!filteredLogs || filteredLogs.length === 0) return;
+
+    const headers = ['Data/Hora', 'Máquina', 'Canal', 'Severidade', 'Status', 'Destinatário', 'Erro'];
+    const csvContent = [
+      headers.join(','),
+      ...filteredLogs.map(log => [
+        log.sent_at ? format(new Date(log.sent_at), 'dd/MM/yyyy HH:mm') : '',
+        log.machine?.name || '',
+        log.channel,
+        log.severity,
+        log.status,
+        log.recipient || '',
+        log.error_message || ''
+      ].map(field => `"${field}"`).join(','))
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', `tpm_notifications_${format(new Date(), 'yyyy-MM-dd')}.csv`);
+    link.click();
+    toast.success('Log exportado com sucesso');
+  };
+
   if (isLoading) return <div className="p-8 text-center">Carregando logs...</div>;
 
   return (
@@ -43,11 +71,14 @@ export function TPMNotificationLogs() {
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Filtrar por máquina, severidade ou canal..."
-            className="pl-9"
+            className="pl-9 h-9"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
+        <Button variant="outline" size="sm" onClick={handleExportCSV} className="h-9">
+          <FileSpreadsheet className="h-4 w-4 mr-2" /> Exportar CSV
+        </Button>
       </div>
 
       <div className="rounded-md border">

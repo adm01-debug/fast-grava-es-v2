@@ -3480,7 +3480,9 @@ export type Database = {
           created_at: string | null
           id: string
           is_active: boolean | null
+          last_published_at: string | null
           severity: string
+          status: string | null
           subject: string | null
           template_body: string
           updated_at: string | null
@@ -3490,7 +3492,9 @@ export type Database = {
           created_at?: string | null
           id?: string
           is_active?: boolean | null
+          last_published_at?: string | null
           severity: string
+          status?: string | null
           subject?: string | null
           template_body: string
           updated_at?: string | null
@@ -3500,12 +3504,52 @@ export type Database = {
           created_at?: string | null
           id?: string
           is_active?: boolean | null
+          last_published_at?: string | null
           severity?: string
+          status?: string | null
           subject?: string | null
           template_body?: string
           updated_at?: string | null
         }
         Relationships: []
+      }
+      tpm_notification_templates_published: {
+        Row: {
+          channel: string
+          id: string
+          published_at: string | null
+          severity: string
+          subject: string | null
+          template_body: string
+          template_id: string | null
+        }
+        Insert: {
+          channel: string
+          id?: string
+          published_at?: string | null
+          severity: string
+          subject?: string | null
+          template_body: string
+          template_id?: string | null
+        }
+        Update: {
+          channel?: string
+          id?: string
+          published_at?: string | null
+          severity?: string
+          subject?: string | null
+          template_body?: string
+          template_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tpm_notification_templates_published_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "tpm_notification_templates"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       tpm_severity_configs: {
         Row: {
@@ -3787,6 +3831,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      check_tpm_schedules_notifications: { Args: never; Returns: undefined }
       compute_audit_hash: {
         Args: {
           _action: string

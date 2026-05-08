@@ -7,8 +7,9 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
-import { Save, Mail, MessageCircle, Info } from 'lucide-react';
+import { Save, Mail, MessageCircle, Info, Rocket, Eye, RotateCcw } from 'lucide-react';
 import { toast } from 'sonner';
+import { cn } from '@/lib/utils';
 
 interface Template {
   id: string;
@@ -16,6 +17,8 @@ interface Template {
   severity: 'upcoming' | 'due' | 'overdue' | 'critical';
   subject: string | null;
   template_body: string;
+  status: 'draft' | 'published';
+  last_published_at: string | null;
 }
 
 export function TPMNotificationTemplates() {
@@ -35,15 +38,44 @@ export function TPMNotificationTemplates() {
 
   const updateTemplate = useMutation({
     mutationFn: async (template: Partial<Template> & { id: string }) => {
+      const updates = { ...template, status: 'draft' as const };
       const { error } = await supabase
         .from('tpm_notification_templates')
-        .update(template)
+        .update(updates)
         .eq('id', template.id);
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tpm-notification-templates'] });
-      toast.success('Template atualizado com sucesso');
+      toast.success('Rascunho salvo com sucesso');
+    }
+  });
+
+  const publishTemplate = useMutation({
+    mutationFn: async (template: Template) => {
+      const { error: updateError } = await supabase
+        .from('tpm_notification_templates')
+        .update({ status: 'published', last_published_at: new Date().toISOString() })
+        .eq('id', template.id);
+      
+      if (updateError) throw updateError;
+
+      const { error: publishError } = await supabase
+        .from('tpm_notification_templates_published')
+        .upsert({
+          template_id: template.id,
+          channel: template.channel,
+          severity: template.severity,
+          subject: template.subject,
+          template_body: template.template_body,
+          published_at: new Date().toISOString()
+        }, { onConflict: 'template_id' });
+
+      if (publishError) throw publishError;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['tpm-notification-templates'] });
+      toast.success('Template publicado e ativo para uso!');
     }
   });
 
@@ -54,20 +86,42 @@ export function TPMNotificationTemplates() {
     if (!template) return null;
 
     return (
-      <div className="space-y-4 p-4 border rounded-lg bg-secondary/5 mb-4">
+      <div className={cn(
+        "space-y-4 p-4 border rounded-lg mb-4 transition-colors",
+        template.status === 'draft' ? "bg-amber-500/5 border-amber-500/20" : "bg-emerald-500/5 border-emerald-500/20"
+      )}>
         <div className="flex items-center justify-between">
-          <Badge variant="outline" className="capitalize">{severity}</Badge>
-          <Button 
-            size="sm" 
-            variant="ghost"
-            onClick={() => {
-              const subject = (document.getElementById(`subject-${template.id}`) as HTMLInputElement)?.value;
-              const body = (document.getElementById(`body-${template.id}`) as HTMLTextAreaElement)?.value;
-              updateTemplate.mutate({ id: template.id, subject, template_body: body });
-            }}
-          >
-            <Save className="h-4 w-4 mr-2" /> Salvar
-          </Button>
+          <div className="flex items-center gap-2">
+            <Badge variant="outline" className="capitalize">{severity}</Badge>
+            {template.status === 'draft' ? (
+              <Badge variant="secondary" className="bg-amber-100 text-amber-700 border-amber-200">Rascunho</Badge>
+            ) : (
+              <Badge variant="secondary" className="bg-emerald-100 text-emerald-700 border-emerald-200">Publicado</Badge>
+            )}
+          </div>
+          <div className="flex items-center gap-2">
+            <Button 
+              size="sm" 
+              variant="outline"
+              className="h-8"
+              onClick={() => {
+                const subject = (document.getElementById(`subject-${template.id}`) as HTMLInputElement)?.value;
+                const body = (document.getElementById(`body-${template.id}`) as HTMLTextAreaElement)?.value;
+                updateTemplate.mutate({ id: template.id, subject, template_body: body });
+              }}
+            >
+              <Save className="h-4 w-4 mr-2" /> Salvar Rascunho
+            </Button>
+            <Button 
+              size="sm" 
+              variant="default"
+              className="h-8 bg-emerald-600 hover:bg-emerald-700"
+              disabled={template.status === 'published' && !updateTemplate.isPending}
+              onClick={() => publishTemplate.mutate(template)}
+            >
+              <Rocket className="h-4 w-4 mr-2" /> Publicar
+            </Button>
+          </div>
         </div>
         
         {activeTab === 'email' && (
