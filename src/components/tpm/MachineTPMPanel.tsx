@@ -8,6 +8,7 @@ import { format, isPast, isToday, differenceInDays } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { TPMSeverityConfigs } from './TPMSeverityConfigs';
+import { MachineTPMTimeline } from './MachineTPMTimeline';
 
 interface MachineTPMPanelProps {
   machineId: string;
@@ -40,9 +41,12 @@ export function MachineTPMPanel({ machineId, onStartMaintenance, onOpenCreateSch
 
   return (
     <Tabs defaultValue="overview" className="space-y-6">
-      <TabsList className="grid w-full grid-cols-2 max-w-[400px]">
+      <TabsList className="grid w-full grid-cols-3 max-w-[500px]">
         <TabsTrigger value="overview" className="flex items-center gap-2">
           <Layout className="h-4 w-4" /> Visão Geral
+        </TabsTrigger>
+        <TabsTrigger value="timeline" className="flex items-center gap-2">
+          <History className="h-4 w-4" /> Linha do Tempo
         </TabsTrigger>
         <TabsTrigger value="notifications" className="flex items-center gap-2">
           <Settings className="h-4 w-4" /> Notificações
@@ -156,6 +160,18 @@ export function MachineTPMPanel({ machineId, onStartMaintenance, onOpenCreateSch
           Ver Painel TPM Completo <Clock className="h-3 w-3" />
         </Button>
       </div>
+    </TabsContent>
+
+    <TabsContent value="timeline" className="animate-fade-in">
+      <Card className="glass-card border-none bg-transparent shadow-none">
+        <CardHeader className="px-0">
+          <CardTitle className="text-lg">Histórico de Intervenções</CardTitle>
+          <CardDescription>Rastreabilidade completa de manutenções realizadas.</CardDescription>
+        </CardHeader>
+        <CardContent className="px-0">
+          <MachineTPMTimeline machineId={machineId} />
+        </CardContent>
+      </Card>
     </TabsContent>
 
     <TabsContent value="notifications">
