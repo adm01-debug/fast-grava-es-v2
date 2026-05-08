@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { renderHook, act } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { renderHook, act, cleanup } from '@testing-library/react';
 import { useDataExport } from '../useDataExport';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -32,6 +32,10 @@ global.URL.revokeObjectURL = vi.fn();
 describe('useDataExport', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    cleanup();
   });
 
   it('should initialize with isExporting as false', () => {
@@ -98,5 +102,6 @@ describe('useDataExport', () => {
     expect(toast.error).toHaveBeenCalledWith(expect.stringContaining('Database error'));
   });
 });
+
 
 
