@@ -44,6 +44,9 @@ interface FuturisticBIProps {
     dailyTrend: any[];
     statusDistribution: any[];
     machineUtilization: any[];
+    periodCompletedJobs: number;
+    periodCompletedPieces: number;
+    periodLostPieces: number;
   };
   kpis: {
     inProgressJobs: number;
