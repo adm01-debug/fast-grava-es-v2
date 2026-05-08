@@ -179,7 +179,8 @@ export const useTPMNotifications = () => {
           (channel === 'whatsapp' && s.whatsapp_enabled) ||
           (channel === 'push' && s.push_enabled);
         
-        const isMachineAllowed = s.machine_filters.length === 0 || s.machine_filters.includes(machineId);
+        const machineFilters = s.machine_filters || [];
+        const isMachineAllowed = machineFilters.length === 0 || machineFilters.includes(machineId);
         
         return isChannelEnabled && isMachineAllowed;
       }) || [];
