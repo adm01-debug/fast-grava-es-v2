@@ -3,12 +3,11 @@ import { vi } from 'vitest';
 
 // Guard: skip browser mocks when running in node environment
 if (typeof window !== 'undefined') {
-  // Ensure we have a document for testing-library
-  if (!document.getElementById('root')) {
-    const root = document.createElement('div');
-    root.id = 'root';
-    document.body.appendChild(root);
+  // Ensure we have a document body
+  if (!document.body) {
+    document.body = document.createElement('body');
   }
+
 
   // Mock matchMedia
   Object.defineProperty(window, 'matchMedia', {
