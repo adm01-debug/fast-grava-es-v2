@@ -310,7 +310,7 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
                     animationDuration={2500}
                     strokeLinecap="round"
                     filter="url(#glow)"
-                    activeDot={{ r: 8, stroke: CHART_COLORS.primary, strokeWidth: 3, fill: '#fff', shadow: '0 0 15px rgba(14,165,233,0.8)' }}
+                    activeDot={{ r: 8, stroke: CHART_COLORS.primary, strokeWidth: 3, fill: '#fff' }}
                   />
                 )}
                 {visibleSeries.lost && (
