@@ -547,23 +547,23 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {lossAnalysis.length > 0 ? (
-                    lossAnalysis.slice(0, 10).map((loss: any, idx: number) => (
-                      <TableRow key={idx} className="border-white/5 hover:bg-white/5 cursor-pointer transition-colors" onClick={() => handleDrillDown(`PERDAS OS-2024-${100 + idx}`, `OS-2024-${100 + idx}`)}>
+                  {jobsWithLosses.length > 0 ? (
+                    jobsWithLosses.map((job: any) => (
+                      <TableRow key={job.id} className="border-white/5 hover:bg-white/5 cursor-pointer transition-colors" onClick={() => navigate(`/job/${job.id}`)}>
                         <TableCell>
-                          <div className="font-medium text-sm">OS-2024-{100 + idx}</div>
-                          <div className="text-[10px] text-muted-foreground">Produto Personalizado</div>
+                          <div className="font-medium text-sm">{job.order_number || `OS-${job.id.slice(0, 5)}`}</div>
+                          <div className="text-[10px] text-muted-foreground">{job.product_name || 'Produto'}</div>
                         </TableCell>
                         <TableCell className="text-center">
                           <Badge variant="outline" className="text-rose-500 border-rose-500/30 bg-rose-500/5">
-                            {loss.lost} pcs
+                            {job.lost_pieces} pcs
                           </Badge>
                         </TableCell>
                         <TableCell>
-                          <span className="text-[11px] text-muted-foreground">Falha no Setup</span>
+                          <span className="text-[11px] text-muted-foreground">Perda na Produção</span>
                         </TableCell>
                         <TableCell className="text-right font-mono text-xs">
-                          R$ {(loss.lost * 15.5).toFixed(2)}
+                          R$ {(job.lost_pieces * 15.5).toFixed(2)}
                         </TableCell>
                       </TableRow>
                     ))
