@@ -135,38 +135,113 @@ export function EditorBasicInfo({ formData, setFormData, techniques, categories,
           </div>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="space-y-2">
-            <Label>Passadas (Rodo)</Label>
-            <Input 
-              value={formData.squeegee_passes} 
-              onChange={(e) => setFormData({...formData, squeegee_passes: e.target.value})} 
-              placeholder="Ex: 2 passadas" 
-            />
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+            <div className="space-y-2">
+              <Label>Passadas (Rodo)</Label>
+              <Input 
+                value={formData.squeegee_passes} 
+                onChange={(e) => setFormData({...formData, squeegee_passes: e.target.value})} 
+                placeholder="Valor" 
+              />
+            </div>
+            <div className="space-y-2">
+              <Label className="text-xs text-muted-foreground">Mínimo</Label>
+              <Input 
+                value={formData.squeegee_passes_min} 
+                onChange={(e) => setFormData({...formData, squeegee_passes_min: e.target.value})} 
+                placeholder="Mín" 
+              />
+            </div>
+            <div className="space-y-2">
+              <Label className="text-xs text-muted-foreground">Máximo</Label>
+              <Input 
+                value={formData.squeegee_passes_max} 
+                onChange={(e) => setFormData({...formData, squeegee_passes_max: e.target.value})} 
+                placeholder="Máx" 
+              />
+            </div>
           </div>
-          <div className="space-y-2">
-            <Label>Pressão</Label>
-            <Input 
-              value={formData.pressure} 
-              onChange={(e) => setFormData({...formData, pressure: e.target.value})} 
-              placeholder="Ex: 4.5 bar" 
-            />
+
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+            <div className="space-y-2">
+              <Label>Pressão</Label>
+              <Input 
+                value={formData.pressure} 
+                onChange={(e) => setFormData({...formData, pressure: e.target.value})} 
+                placeholder="Valor" 
+              />
+            </div>
+            <div className="space-y-2">
+              <Label className="text-xs text-muted-foreground">Mínimo</Label>
+              <Input 
+                value={formData.pressure_min} 
+                onChange={(e) => setFormData({...formData, pressure_min: e.target.value})} 
+                placeholder="Mín" 
+              />
+            </div>
+            <div className="space-y-2">
+              <Label className="text-xs text-muted-foreground">Máximo</Label>
+              <Input 
+                value={formData.pressure_max} 
+                onChange={(e) => setFormData({...formData, pressure_max: e.target.value})} 
+                placeholder="Máx" 
+              />
+            </div>
           </div>
-          <div className="space-y-2">
-            <Label>Velocidade</Label>
-            <Input 
-              value={formData.speed} 
-              onChange={(e) => setFormData({...formData, speed: e.target.value})} 
-              placeholder="Ex: 800 mm/s" 
-            />
+
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+            <div className="space-y-2">
+              <Label>Velocidade</Label>
+              <Input 
+                value={formData.speed} 
+                onChange={(e) => setFormData({...formData, speed: e.target.value})} 
+                placeholder="Valor" 
+              />
+            </div>
+            <div className="space-y-2">
+              <Label className="text-xs text-muted-foreground">Mínimo</Label>
+              <Input 
+                value={formData.speed_min} 
+                onChange={(e) => setFormData({...formData, speed_min: e.target.value})} 
+                placeholder="Mín" 
+              />
+            </div>
+            <div className="space-y-2">
+              <Label className="text-xs text-muted-foreground">Máximo</Label>
+              <Input 
+                value={formData.speed_max} 
+                onChange={(e) => setFormData({...formData, speed_max: e.target.value})} 
+                placeholder="Máx" 
+              />
+            </div>
           </div>
-          <div className="space-y-2">
-            <Label>Temperatura</Label>
-            <Input 
-              value={formData.temperature} 
-              onChange={(e) => setFormData({...formData, temperature: e.target.value})} 
-              placeholder="Ex: 160°C" 
-            />
+
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+            <div className="space-y-2">
+              <Label>Temperatura</Label>
+              <Input 
+                value={formData.temperature} 
+                onChange={(e) => setFormData({...formData, temperature: e.target.value})} 
+                placeholder="Valor" 
+              />
+            </div>
+            <div className="space-y-2">
+              <Label className="text-xs text-muted-foreground">Mínimo</Label>
+              <Input 
+                value={formData.temperature_min} 
+                onChange={(e) => setFormData({...formData, temperature_min: e.target.value})} 
+                placeholder="Mín" 
+              />
+            </div>
+            <div className="space-y-2">
+              <Label className="text-xs text-muted-foreground">Máximo</Label>
+              <Input 
+                value={formData.temperature_max} 
+                onChange={(e) => setFormData({...formData, temperature_max: e.target.value})} 
+                placeholder="Máx" 
+              />
+            </div>
           </div>
         </div>
       </div>
