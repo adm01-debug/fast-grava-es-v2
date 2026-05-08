@@ -3367,12 +3367,15 @@ export type Database = {
           description: string | null
           estimated_time_minutes: number | null
           id: string
+          ink_specifications: string | null
           is_active: boolean
+          machine_settings: Json | null
           material_id: string | null
           product_category_id: string | null
           recommended_machine_id: string | null
           technique_id: string
           title: string
+          tooling_specifications: string | null
           updated_at: string
           updated_by: string | null
         }
@@ -3382,12 +3385,15 @@ export type Database = {
           description?: string | null
           estimated_time_minutes?: number | null
           id?: string
+          ink_specifications?: string | null
           is_active?: boolean
+          machine_settings?: Json | null
           material_id?: string | null
           product_category_id?: string | null
           recommended_machine_id?: string | null
           technique_id: string
           title: string
+          tooling_specifications?: string | null
           updated_at?: string
           updated_by?: string | null
         }
@@ -3397,12 +3403,15 @@ export type Database = {
           description?: string | null
           estimated_time_minutes?: number | null
           id?: string
+          ink_specifications?: string | null
           is_active?: boolean
+          machine_settings?: Json | null
           material_id?: string | null
           product_category_id?: string | null
           recommended_machine_id?: string | null
           technique_id?: string
           title?: string
+          tooling_specifications?: string | null
           updated_at?: string
           updated_by?: string | null
         }

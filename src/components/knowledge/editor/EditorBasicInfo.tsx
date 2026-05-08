@@ -13,6 +13,12 @@ interface EditorBasicInfoProps {
     description: string;
     estimated_time_minutes: string;
     recommended_machine_id: string;
+    ink_specifications: string;
+    tooling_specifications: string;
+    squeegee_passes: string;
+    pressure: string;
+    speed: string;
+    temperature: string;
   };
   setFormData: (data: any) => void;
   techniques: Array<{ id: string; name: string; color: string; short_name: string }>;
@@ -87,6 +93,70 @@ export function EditorBasicInfo({ formData, setFormData, techniques, categories,
         <Label>Tempo Estimado (minutos)</Label>
         <Input type="number" value={formData.estimated_time_minutes} onChange={(e) => setFormData({...formData, estimated_time_minutes: e.target.value})} placeholder="Ex: 30" />
       </div>
+
+      <Separator className="my-6" />
+      
+      <div className="space-y-4">
+        <h3 className="text-sm font-semibold flex items-center gap-2">
+          Configurações Técnicas e Regulagem
+        </h3>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label>Especificação de Tinta / Solventes</Label>
+            <Input 
+              value={formData.ink_specifications} 
+              onChange={(e) => setFormData({...formData, ink_specifications: e.target.value})} 
+              placeholder="Ex: Tinta Vinílica Branca + 10% Retardador" 
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>Ferramental (Rodo, Lâmina, etc.)</Label>
+            <Input 
+              value={formData.tooling_specifications} 
+              onChange={(e) => setFormData({...formData, tooling_specifications: e.target.value})} 
+              placeholder="Ex: Rodo Poliuretano 70 shores" 
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="space-y-2">
+            <Label>Passadas (Rodo)</Label>
+            <Input 
+              value={formData.squeegee_passes} 
+              onChange={(e) => setFormData({...formData, squeegee_passes: e.target.value})} 
+              placeholder="Ex: 2 passadas" 
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>Pressão</Label>
+            <Input 
+              value={formData.pressure} 
+              onChange={(e) => setFormData({...formData, pressure: e.target.value})} 
+              placeholder="Ex: 4.5 bar" 
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>Velocidade</Label>
+            <Input 
+              value={formData.speed} 
+              onChange={(e) => setFormData({...formData, speed: e.target.value})} 
+              placeholder="Ex: 800 mm/s" 
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>Temperatura</Label>
+            <Input 
+              value={formData.temperature} 
+              onChange={(e) => setFormData({...formData, temperature: e.target.value})} 
+              placeholder="Ex: 160°C" 
+            />
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
+
+import { Separator } from '@/components/ui/separator';

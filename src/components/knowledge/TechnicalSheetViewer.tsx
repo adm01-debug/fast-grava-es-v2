@@ -1,5 +1,6 @@
-import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useState, useMemo } from 'react';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -19,7 +20,7 @@ import {
 import { 
   Edit, Clock, Wrench, ListOrdered, Package, Lightbulb,
   AlertTriangle, Info, CheckCircle2, FileDown, Copy,
-  QrCode, Maximize2
+  QrCode, Maximize2, Zap, Droplets, MoveHorizontal, Thermometer
 } from 'lucide-react';
 import { useTechnicalSheetDetails } from '@/hooks/useTechnicalSheets';
 import { KnowledgeSheetQRCode } from './KnowledgeSheetQRCode';
@@ -269,7 +270,74 @@ export const TechnicalSheetViewer = ({ sheetId, onEdit, onDuplicate }: Technical
 
         <CardContent className="flex-1 overflow-hidden p-0">
           <ScrollArea className="h-full">
-            <div className="p-6 space-y-6">
+            <div className="p-6 space-y-8">
+              {/* Technical Settings Section */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {(sheet.ink_specifications || sheet.tooling_specifications) && (
+                  <div className="space-y-4">
+                    <h3 className="flex items-center gap-2 text-sm font-semibold text-primary">
+                      <Droplets className="h-4 w-4" />
+                      Insumos e Ferramental
+                    </h3>
+                    <div className="space-y-3">
+                      {sheet.ink_specifications && (
+                        <div className="p-3 rounded-lg bg-primary/5 border border-primary/10">
+                          <Label className="text-[10px] text-muted-foreground uppercase">Tinta / Solventes</Label>
+                          <p className="text-sm font-medium">{sheet.ink_specifications}</p>
+                        </div>
+                      )}
+                      {sheet.tooling_specifications && (
+                        <div className="p-3 rounded-lg bg-secondary/20 border border-border/30">
+                          <Label className="text-[10px] text-muted-foreground uppercase">Ferramental (Rodo/Lâmina)</Label>
+                          <p className="text-sm font-medium">{sheet.tooling_specifications}</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {sheet.machine_settings && Object.values(sheet.machine_settings).some(v => v) && (
+                  <div className="space-y-4">
+                    <h3 className="flex items-center gap-2 text-sm font-semibold text-amber-600">
+                      <Zap className="h-4 w-4" />
+                      Regulagem da Máquina
+                    </h3>
+                    <div className="grid grid-cols-2 gap-3">
+                      {(sheet.machine_settings as any).squeegee_passes && (
+                        <div className="p-3 rounded-lg bg-amber-500/5 border border-amber-500/10">
+                          <Label className="text-[10px] text-muted-foreground uppercase flex items-center gap-1">
+                            <MoveHorizontal className="h-3 w-3" /> Passadas
+                          </Label>
+                          <p className="text-sm font-bold">{(sheet.machine_settings as any).squeegee_passes}</p>
+                        </div>
+                      )}
+                      {(sheet.machine_settings as any).pressure && (
+                        <div className="p-3 rounded-lg bg-amber-500/5 border border-amber-500/10">
+                          <Label className="text-[10px] text-muted-foreground uppercase">Pressão</Label>
+                          <p className="text-sm font-bold">{(sheet.machine_settings as any).pressure}</p>
+                        </div>
+                      )}
+                      {(sheet.machine_settings as any).speed && (
+                        <div className="p-3 rounded-lg bg-amber-500/5 border border-amber-500/10">
+                          <Label className="text-[10px] text-muted-foreground uppercase">Velocidade</Label>
+                          <p className="text-sm font-bold">{(sheet.machine_settings as any).speed}</p>
+                        </div>
+                      )}
+                      {(sheet.machine_settings as any).temperature && (
+                        <div className="p-3 rounded-lg bg-amber-500/5 border border-amber-500/10">
+                          <Label className="text-[10px] text-muted-foreground uppercase flex items-center gap-1">
+                            <Thermometer className="h-3 w-3" /> Temperatura
+                          </Label>
+                          <p className="text-sm font-bold">{(sheet.machine_settings as any).temperature}</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <Separator />
+
               {sheetMaterials.length > 0 && (
                 <div>
                   <h3 className="flex items-center gap-2 text-sm font-semibold mb-3">
