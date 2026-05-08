@@ -88,6 +88,8 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
       downtime_minutes?: number;
       checklist_version?: number;
       checklist_snapshot?: any;
+      technical_sheet_id?: string;
+      adjustment_parameters?: any;
       responses?: Array<{
         checklist_item_id: string;
         is_checked: boolean;
