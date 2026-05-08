@@ -60,6 +60,7 @@ const MachineComparisonPage = lazy(() => import("@/pages/MachineComparisonPage")
 const OperatorHistoryPage = lazy(() => import("@/pages/OperatorHistoryPage"));
 const AdminTelemetriaPage = lazy(() => import("@/pages/AdminTelemetriaPage"));
 const AuditTrailPage = lazy(() => import("@/pages/AuditTrailPage"));
+const UserManagement = lazy(() => import("@/pages/UserManagement"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 
 // Helper para rotas protegidas com Suspense
@@ -165,6 +166,7 @@ export function AnimatedRoutes() {
         <Route path="/audit" element={<ProtectedPage fallback={<ListPageSkeleton />} allowedRoles={['coordinator', 'manager']}><AuditTrailPage /></ProtectedPage>} />
         <Route path="/code-quality" element={<ProtectedPage fallback={<KPIPageSkeleton />} allowedRoles={['coordinator', 'manager']}><CodeQualityDashboard /></ProtectedPage>} />
         <Route path="/admin/telemetria" element={<ProtectedPage fallback={<KPIPageSkeleton />} allowedRoles={['coordinator', 'manager']}><AdminTelemetriaPage /></ProtectedPage>} />
+        <Route path="/admin/users" element={<ProtectedPage fallback={<ListPageSkeleton />} allowedRoles={['coordinator', 'manager']}><UserManagement /></ProtectedPage>} />
 
         {/* Kiosk */}
         <Route path="/kiosk" element={<ProtectedPage fallback={<DashboardPageSkeleton />}><KioskPage /></ProtectedPage>} />
