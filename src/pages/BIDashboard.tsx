@@ -380,10 +380,39 @@ export default function BIDashboard() {
             ) : (
               <div className="space-y-8">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                  <BIStatCard title="OEE Geral" value={`${oeeData.overallOEE.toFixed(1)}%`} subtitle="Eficiência Global dos Equipamentos" icon={Gauge} variant={oeeData.overallOEE >= 85 ? 'success' : oeeData.overallOEE >= 65 ? 'warning' : 'danger'} />
-                  <BIStatCard title="Taxa de Qualidade" value={`${oeeData.overallQuality.toFixed(1)}%`} subtitle={`${biMetrics.periodLostPieces.toLocaleString()} peças perdidas`} icon={Target} variant={oeeData.overallQuality >= 95 ? 'success' : oeeData.overallQuality >= 85 ? 'warning' : 'danger'} />
-                  <BIStatCard title="Jobs Concluídos" value={biMetrics.periodCompletedJobs} subtitle={`de ${biMetrics.periodJobs} no período`} icon={CheckCircle} trend={biMetrics.productionTrend as 'up' | 'down' | 'neutral'} trendValue={`${biMetrics.trendPercentage}% vs período anterior`} />
-                  <BIStatCard title="Peças Produzidas" value={biMetrics.periodCompletedPieces.toLocaleString()} subtitle={`Taxa de perda: ${biMetrics.periodLossRate.toFixed(2)}%`} icon={Package} variant={biMetrics.periodLossRate > 5 ? 'warning' : 'success'} />
+                  <BIStatCard 
+                    title="OEE Geral" 
+                    value={`${oeeData.overallOEE.toFixed(1)}%`} 
+                    subtitle="Eficiência Global dos Equipamentos" 
+                    icon={Gauge} 
+                    variant={oeeData.overallOEE >= 85 ? 'success' : oeeData.overallOEE >= 65 ? 'warning' : 'danger'} 
+                    onClick={() => handleDrillDown('Métricas de OEE', biMetrics.periodJobsList)}
+                  />
+                  <BIStatCard 
+                    title="Taxa de Qualidade" 
+                    value={`${oeeData.overallQuality.toFixed(1)}%`} 
+                    subtitle={`${biMetrics.periodLostPieces.toLocaleString()} peças perdidas`} 
+                    icon={Target} 
+                    variant={oeeData.overallQuality >= 95 ? 'success' : oeeData.overallQuality >= 85 ? 'warning' : 'danger'} 
+                    onClick={() => handleDrillDown('Controle de Qualidade', biMetrics.periodJobsList.filter(j => (j.lost_pieces ?? 0) > 0))}
+                  />
+                  <BIStatCard 
+                    title="Jobs Concluídos" 
+                    value={biMetrics.periodCompletedJobs} 
+                    subtitle={`de ${biMetrics.periodJobs} no período`} 
+                    icon={CheckCircle} 
+                    trend={biMetrics.productionTrend as 'up' | 'down' | 'neutral'} 
+                    trendValue={`${biMetrics.trendPercentage}% vs período anterior`} 
+                    onClick={() => handleDrillDown('Pedidos Concluídos', biMetrics.periodJobsList.filter(j => j.status === 'finished'))}
+                  />
+                  <BIStatCard 
+                    title="Peças Produzidas" 
+                    value={biMetrics.periodCompletedPieces.toLocaleString()} 
+                    subtitle={`Taxa de perda: ${biMetrics.periodLossRate.toFixed(2)}%`} 
+                    icon={Package} 
+                    variant={biMetrics.periodLossRate > 5 ? 'warning' : 'success'} 
+                    onClick={() => handleDrillDown('Relatório de Produção', biMetrics.periodJobsList)}
+                  />
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
