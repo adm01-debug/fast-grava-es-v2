@@ -1,4 +1,4 @@
-import { useMemo, useState, useCallback } from 'react';
+import { useMemo, useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -63,6 +63,10 @@ export default function BIDashboard() {
   const [studioFilter, setStudioFilter] = useState<string>('all');
   const [collaboratorFilter, setCollaboratorFilter] = useState<string>('all');
   const [machineFilter, setMachineFilter] = useState<string>('all');
+
+  useEffect(() => {
+    document.title = 'Strategic Intelligence — Fast Gravações';
+  }, []);
 
   const periodDays = useMemo(() => {
     if (periodFilter === 'custom') return differenceInDays(customRange.to, customRange.from) || 30;
@@ -208,7 +212,7 @@ export default function BIDashboard() {
       <MainLayout>
         <div className="container mx-auto p-4 sm:p-8 space-y-10 max-w-7xl animate-in fade-in duration-700">
           <div className="space-y-2">
-            <h1 className="text-4xl font-black font-display tracking-tight gradient-text">Business Intelligence</h1>
+            <h1 className="text-4xl font-black font-display tracking-tight gradient-text uppercase">Strategic Intelligence</h1>
             <p className="text-base font-medium text-muted-foreground">Visão executiva e estratégica consolidada.</p>
           </div>
           <BILoadingSkeleton />
@@ -258,7 +262,7 @@ export default function BIDashboard() {
           <div className="space-y-4">
             <Breadcrumbs />
             <div className="space-y-1">
-              <h1 className="text-4xl font-black font-display tracking-tight gradient-text">Business Intelligence</h1>
+              <h1 className="text-4xl font-black font-display tracking-tight gradient-text uppercase">Strategic Intelligence</h1>
               <p className="text-base font-medium text-muted-foreground">Análise avançada de performance e produtividade.</p>
             </div>
           </div>
@@ -270,7 +274,7 @@ export default function BIDashboard() {
                 variant={viewMode === 'classic' ? 'secondary' : 'ghost'} 
                 size="sm" 
                 onClick={() => setViewMode('classic')}
-                className="h-10 px-4 rounded-lg text-sm font-semibold transition-all data-[state=active]:bg-background"
+                className="h-10 px-6 rounded-lg text-xs font-black uppercase tracking-widest transition-all data-[state=active]:bg-background"
               >
                 <Layout className="h-4 w-4 mr-2" /> Clássico
               </Button>
@@ -278,7 +282,7 @@ export default function BIDashboard() {
                 variant={viewMode === 'futuristic' ? 'secondary' : 'ghost'} 
                 size="sm" 
                 onClick={() => setViewMode('futuristic')}
-                className="h-10 px-4 rounded-lg text-sm font-semibold transition-all data-[state=active]:bg-background"
+                className="h-10 px-6 rounded-lg text-xs font-black uppercase tracking-widest transition-all data-[state=active]:bg-background"
               >
                 <Activity className="h-4 w-4 mr-2" /> Futurista
               </Button>
