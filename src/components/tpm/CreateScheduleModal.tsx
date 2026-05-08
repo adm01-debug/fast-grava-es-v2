@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Plus, X } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Plus } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -21,17 +21,26 @@ interface CreateScheduleModalProps {
     estimated_duration_minutes: number;
   }) => void;
   isSubmitting: boolean;
+  initialMachineId?: string;
+  isOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 export function CreateScheduleModal({ 
   machines, 
   maintenanceTypes, 
   onSubmit, 
-  isSubmitting 
+  isSubmitting,
+  initialMachineId,
+  isOpen: propsOpen,
+  onOpenChange: propsOnOpenChange
 }: CreateScheduleModalProps) {
-  const [open, setOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+  const open = propsOpen !== undefined ? propsOpen : internalOpen;
+  const setOpen = propsOnOpenChange || setInternalOpen;
+
   const [formData, setFormData] = useState({
-    machine_id: '',
+    machine_id: initialMachineId || '',
     maintenance_type_id: '',
     name: '',
     description: '',
@@ -39,6 +48,12 @@ export function CreateScheduleModal({
     next_due_at: new Date().toISOString().split('T')[0],
     estimated_duration_minutes: 60,
   });
+
+  useEffect(() => {
+    if (initialMachineId) {
+      setFormData(prev => ({ ...prev, machine_id: initialMachineId }));
+    }
+  }, [initialMachineId]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,7 +63,7 @@ export function CreateScheduleModal({
     });
     setOpen(false);
     setFormData({
-      machine_id: '',
+      machine_id: initialMachineId || '',
       maintenance_type_id: '',
       name: '',
       description: '',
@@ -58,16 +73,16 @@ export function CreateScheduleModal({
     });
   };
 
-  const selectedType = maintenanceTypes.find(t => t.id === formData.maintenance_type_id);
-
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button className="gap-2">
-          <Plus className="h-4 w-4" />
-          Agendar Manutenção
-        </Button>
-      </DialogTrigger>
+      {!propsOpen && (
+        <DialogTrigger asChild>
+          <Button className="gap-2">
+            <Plus className="h-4 w-4" />
+            Agendar Manutenção
+          </Button>
+        </DialogTrigger>
+      )}
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle className="font-display">Nova Manutenção Programada</DialogTitle>
