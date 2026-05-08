@@ -413,8 +413,10 @@ export default function UserManagementPage() {
                         <div className="flex items-center justify-between">
                           <span className="font-bold text-foreground/80 tracking-tight">{test.name}</span>
                           <Badge variant={test.status === 'pass' ? 'default' : 'destructive'} className={cn(
-                            "h-5 px-2 text-[9px] font-black tracking-widest uppercase rounded-md",
-                            test.status === 'pass' ? "bg-success/10 text-success border-success/20" : "bg-destructive/10 text-destructive border-destructive/20"
+                            "h-5 px-3 text-[10px] font-black tracking-widest uppercase rounded-md shadow-sm transition-colors",
+                            test.status === 'pass' 
+                              ? "bg-emerald-500/10 text-emerald-600 border border-emerald-500/20" 
+                              : "bg-rose-500/10 text-rose-600 border border-rose-500/20"
                           )}>
                             {test.status === 'pass' ? 'Passed' : 'Failed'}
                           </Badge>
