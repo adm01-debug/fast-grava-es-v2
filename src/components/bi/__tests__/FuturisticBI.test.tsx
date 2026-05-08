@@ -7,8 +7,8 @@ import { BrowserRouter } from 'react-router-dom';
 vi.mock('@/hooks/useOperatorProductivity', () => ({
   useOperatorProductivity: vi.fn().mockReturnValue({
     operators: [
-      { id: '1', operatorName: 'Operator A', efficiencyScore: 85, totalJobsCompleted: 10 },
-      { id: '2', operatorName: 'Operator B', efficiencyScore: 92, totalJobsCompleted: 12 },
+      { operatorId: '1', operatorName: 'Operator A', efficiencyScore: 85, totalJobsCompleted: 10 },
+      { operatorId: '2', operatorName: 'Operator B', efficiencyScore: 92, totalJobsCompleted: 12 },
     ],
     overallStats: { totalJobs: 22, avgEfficiency: 88.5 }
   }),
