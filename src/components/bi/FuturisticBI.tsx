@@ -440,7 +440,7 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
               <BarChart data={studioData} layout="vertical">
                 <XAxis type="number" hide />
                 <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} tick={{ fill: '#fff', fontSize: 12 }} />
-                <Tooltip content={<BITooltip />} cursor={{ fill: 'rgba(255,255,255,0.05)' }} />
+                <Tooltip content={<BITooltip showPercentage />} cursor={{ fill: 'rgba(255,255,255,0.05)' }} />
                 <Bar 
                   dataKey="jobs" 
                   radius={[0, 4, 4, 0]} 
