@@ -29,6 +29,8 @@ export const TechnicalSheetEditor = ({ sheetId, techniques, categories, material
   const [formData, setFormData] = useState({
     technique_id: '', product_category_id: '', material_id: '',
     title: '', description: '', estimated_time_minutes: '', recommended_machine_id: '',
+    ink_specifications: '', tooling_specifications: '',
+    squeegee_passes: '', pressure: '', speed: '', temperature: ''
   });
 
   const { data: machines = [] } = useQuery({
