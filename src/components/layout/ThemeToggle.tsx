@@ -2,6 +2,7 @@ import { Moon, Sun, Volume2, VolumeX } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
+import { cn } from '@/lib/utils';
 import { createPortal } from 'react-dom';
 import { useThemeSound } from '@/hooks/useThemeSound';
 import {
