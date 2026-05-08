@@ -3,10 +3,10 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { FileDown, FileText, Table as TableIcon, Calendar, Filter } from 'lucide-react';
+import { FileDown, FileText, Table as TableIcon, Calendar, Filter, Activity } from 'lucide-react';
 import { useTPM } from '@/hooks/useTPM';
-import { format, subDays, startOfMonth, endOfMonth } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+import { useMTBFMTTR } from '@/hooks/useMTBFMTTR';
+import { format, subDays } from 'date-fns';
 import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
 import * as XLSX from 'xlsx';
@@ -17,6 +17,7 @@ export function TPMReports() {
   const { machines, records, maintenanceTypes } = useTPM();
   const [selectedMachineId, setSelectedMachineId] = useState<string>('all');
   const [period, setPeriod] = useState<string>('30');
+  const { metrics, summary } = useMTBFMTTR(parseInt(period));
   const [isGenerating, setIsGenerating] = useState(false);
 
   const getFilteredRecords = () => {
@@ -51,6 +52,30 @@ export function TPMReports() {
       doc.text(`Período: Últimos ${period} dias`, 14, 35);
       doc.text(`Gerado em: ${format(new Date(), 'dd/MM/yyyy HH:mm')}`, 14, 40);
 
+      // Reliability Summary section
+      if (selectedMachineId !== 'all') {
+        const metric = metrics.find(m => m.machineId === selectedMachineId);
+        if (metric) {
+          doc.setFontSize(14);
+          doc.setTextColor(0);
+          doc.text('Métricas de Confiabilidade', 14, 52);
+          doc.setFontSize(10);
+          doc.text(`MTBF: ${metric.mtbf ? metric.mtbf.toFixed(1) + 'h' : 'N/A'}`, 14, 60);
+          doc.text(`MTTR: ${metric.mttr ? metric.mttr.toFixed(1) + 'min' : 'N/A'}`, 60, 60);
+          doc.text(`Disponibilidade: ${metric.availability.toFixed(1)}%`, 110, 60);
+          doc.text(`Total de Falhas: ${metric.totalFailures}`, 160, 60);
+        }
+      } else {
+        doc.setFontSize(14);
+        doc.setTextColor(0);
+        doc.text('Métricas Médias da Frota', 14, 52);
+        doc.setFontSize(10);
+        doc.text(`MTBF Médio: ${summary.averageMTBF ? summary.averageMTBF.toFixed(1) + 'h' : 'N/A'}`, 14, 60);
+        doc.text(`MTTR Médio: ${summary.averageMTTR ? summary.averageMTTR.toFixed(1) + 'min' : 'N/A'}`, 60, 60);
+        doc.text(`Disponibilidade Média: ${summary.averageAvailability.toFixed(1)}%`, 110, 60);
+        doc.text(`Total de Falhas: ${summary.totalFailures}`, 160, 60);
+      }
+
       // Table
       const tableData = filteredRecords.map(r => [
         format(new Date(r.started_at), 'dd/MM/yyyy'),
@@ -62,7 +87,7 @@ export function TPMReports() {
       ]);
 
       (doc as any).autoTable({
-        startY: 50,
+        startY: 70,
         head: [['Data', 'Máquina', 'Tipo', 'Status', 'Executado por', 'Downtime']],
         body: tableData,
         theme: 'striped',
@@ -83,7 +108,32 @@ export function TPMReports() {
     setIsGenerating(true);
     try {
       const filteredRecords = getFilteredRecords();
-      const data = filteredRecords.map(r => ({
+      
+      // Performance metrics sheet
+      let performanceData = [];
+      if (selectedMachineId !== 'all') {
+        const m = metrics.find(metric => metric.machineId === selectedMachineId);
+        if (m) {
+          performanceData.push({
+            'Máquina': m.machineName,
+            'MTBF (h)': m.mtbf,
+            'MTTR (min)': m.mttr,
+            'Disponibilidade (%)': m.availability,
+            'Total Falhas': m.totalFailures
+          });
+        }
+      } else {
+        performanceData = metrics.map(m => ({
+          'Máquina': m.machineName,
+          'MTBF (h)': m.mtbf,
+          'MTTR (min)': m.mttr,
+          'Disponibilidade (%)': m.availability,
+          'Total Falhas': m.totalFailures
+        }));
+      }
+
+      // History data sheet
+      const historyData = filteredRecords.map(r => ({
         'Data': format(new Date(r.started_at), 'dd/MM/yyyy HH:mm'),
         'Máquina': r.machine?.name || 'N/A',
         'Código Máquina': r.machine?.code || 'N/A',
@@ -95,9 +145,13 @@ export function TPMReports() {
         'Notas': r.notes || ''
       }));
 
-      const worksheet = XLSX.utils.json_to_sheet(data);
       const workbook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(workbook, worksheet, 'Histórico');
+      
+      const performanceWs = XLSX.utils.json_to_sheet(performanceData);
+      XLSX.utils.book_append_sheet(workbook, performanceWs, 'Métricas de Performance');
+      
+      const historyWs = XLSX.utils.json_to_sheet(historyData);
+      XLSX.utils.book_append_sheet(workbook, historyWs, 'Histórico de Atividades');
       
       const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
       const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
@@ -178,6 +232,47 @@ export function TPMReports() {
             </Button>
           </div>
         </div>
+
+        {records.length > 0 && (
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 p-4 bg-muted/20 rounded-lg border border-border/50">
+            <div className="space-y-1">
+              <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">MTBF</p>
+              <p className="text-lg font-bold text-primary">
+                {selectedMachineId === 'all' 
+                  ? (summary.averageMTBF ? summary.averageMTBF.toFixed(1) + 'h' : 'N/A')
+                  : (metrics.find(m => m.machineId === selectedMachineId)?.mtbf?.toFixed(1) + 'h' || 'N/A')
+                }
+              </p>
+            </div>
+            <div className="space-y-1">
+              <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">MTTR</p>
+              <p className="text-lg font-bold text-orange-400">
+                {selectedMachineId === 'all' 
+                  ? (summary.averageMTTR ? summary.averageMTTR.toFixed(1) + 'min' : 'N/A')
+                  : (metrics.find(m => m.machineId === selectedMachineId)?.mttr?.toFixed(1) + 'min' || 'N/A')
+                }
+              </p>
+            </div>
+            <div className="space-y-1">
+              <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">Disponibilidade</p>
+              <p className="text-lg font-bold text-emerald-400">
+                {selectedMachineId === 'all' 
+                  ? summary.averageAvailability.toFixed(1) + '%'
+                  : (metrics.find(m => m.machineId === selectedMachineId)?.availability.toFixed(1) + '%' || '100%')
+                }
+              </p>
+            </div>
+            <div className="space-y-1">
+              <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">Total Falhas</p>
+              <p className="text-lg font-bold text-primary">
+                {selectedMachineId === 'all' 
+                  ? summary.totalFailures
+                  : (metrics.find(m => m.machineId === selectedMachineId)?.totalFailures || 0)
+                }
+              </p>
+            </div>
+          </div>
+        )}
 
         {records.length === 0 && (
           <div className="py-8 text-center text-muted-foreground bg-muted/20 rounded-lg border-2 border-dashed">
