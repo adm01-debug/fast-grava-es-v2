@@ -8,12 +8,13 @@ import {
 } from 'lucide-react';
 import { 
   AreaChart, Area, BarChart, Bar, PieChart as RechartsPieChart, Pie, Cell,
-  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, Radar, Legend
+  XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, Radar, Legend
 } from 'recharts';
 
 import { format } from 'date-fns';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useOperatorProductivity } from '@/hooks/useOperatorProductivity';
 import { useTPM } from '@/hooks/useTPM';
 import { useDataExport } from '@/hooks/useDataExport';
