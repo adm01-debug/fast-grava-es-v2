@@ -268,18 +268,37 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
               <AreaChart data={biMetrics.dailyTrend}>
                 <defs>
                   <linearGradient id="colorProduced" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor={CHART_COLORS.primary} stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor={CHART_COLORS.primary} stopOpacity={0}/>
+                    <stop offset="5%" stopColor={CHART_COLORS.primary} stopOpacity={0.6}/>
+                    <stop offset="40%" stopColor={CHART_COLORS.primary} stopOpacity={0.2}/>
+                    <stop offset="100%" stopColor={CHART_COLORS.primary} stopOpacity={0}/>
                   </linearGradient>
                   <linearGradient id="colorLost" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor={CHART_COLORS.danger} stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor={CHART_COLORS.danger} stopOpacity={0}/>
+                    <stop offset="5%" stopColor={CHART_COLORS.danger} stopOpacity={0.6}/>
+                    <stop offset="40%" stopColor={CHART_COLORS.danger} stopOpacity={0.2}/>
+                    <stop offset="100%" stopColor={CHART_COLORS.danger} stopOpacity={0}/>
                   </linearGradient>
+                  <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+                    <feGaussianBlur stdDeviation="3" result="blur" />
+                    <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                  </filter>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
-                <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 10 }} />
-                <YAxis axisLine={false} tickLine={false} tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 10 }} />
-                <RechartsTooltip content={<BITooltip showPercentage />} cursor={{ stroke: 'rgba(14, 165, 233, 0.2)', strokeWidth: 2 }} />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.03)" />
+                <XAxis 
+                  dataKey="date" 
+                  axisLine={false} 
+                  tickLine={false} 
+                  tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 10, fontWeight: 600 }} 
+                  dy={10}
+                />
+                <YAxis 
+                  axisLine={false} 
+                  tickLine={false} 
+                  tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 10, fontWeight: 600 }} 
+                />
+                <RechartsTooltip 
+                  content={<BITooltip showPercentage />} 
+                  cursor={{ stroke: 'rgba(14, 165, 233, 0.3)', strokeWidth: 1, strokeDasharray: '5 5' }} 
+                />
                 {visibleSeries.produced && (
                   <Area 
                     type="monotone" 
@@ -288,8 +307,10 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
                     strokeWidth={4} 
                     fillOpacity={1} 
                     fill="url(#colorProduced)" 
-                    animationDuration={2000}
-                    activeDot={{ r: 6, stroke: CHART_COLORS.primary, strokeWidth: 2, fill: '#fff' }}
+                    animationDuration={2500}
+                    strokeLinecap="round"
+                    filter="url(#glow)"
+                    activeDot={{ r: 8, stroke: CHART_COLORS.primary, strokeWidth: 3, fill: '#fff', shadow: '0 0 15px rgba(14,165,233,0.8)' }}
                   />
                 )}
                 {visibleSeries.lost && (
@@ -297,11 +318,13 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
                     type="monotone" 
                     dataKey="lost" 
                     stroke={CHART_COLORS.danger} 
-                    strokeWidth={2} 
+                    strokeWidth={3} 
                     fillOpacity={1} 
                     fill="url(#colorLost)" 
-                    animationDuration={2000}
-                    activeDot={{ r: 4, stroke: CHART_COLORS.danger, strokeWidth: 2, fill: '#fff' }}
+                    animationDuration={2500}
+                    strokeLinecap="round"
+                    filter="url(#glow)"
+                    activeDot={{ r: 6, stroke: CHART_COLORS.danger, strokeWidth: 3, fill: '#fff' }}
                   />
                 )}
               </AreaChart>
