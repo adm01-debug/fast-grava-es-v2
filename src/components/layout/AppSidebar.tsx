@@ -65,7 +65,7 @@ export function AppSidebar() {
           'dark:bg-gradient-to-b dark:from-sidebar/95 dark:to-background',
           'backdrop-blur-xl border-r border-sidebar-border/40',
           'shadow-[1px_0_10px_-2px_hsl(var(--primary)/0.05)] dark:shadow-[4px_0_24px_-4px_hsl(0_0%_0%/0.4)]',
-          'hidden md:flex', collapsed ? 'w-20' : 'w-72',
+          'hidden md:flex', collapsed ? 'w-24' : 'w-80',
           isMobile && 'fixed inset-y-0 left-0 z-50 w-80',
           isMobile && (mobileOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'),
           isMobile && 'flex'
@@ -73,15 +73,15 @@ export function AppSidebar() {
         role="navigation" aria-label="Menu principal" id="navigation"
       >
         {/* Header */}
-        <div className={cn('flex items-center h-20 px-6 border-b border-sidebar-border/30', collapsed && !isMobile ? 'justify-center' : 'justify-between')}>
+        <div className={cn('flex items-center h-24 px-8 border-b border-primary/10 bg-primary/[0.02]', collapsed && !isMobile ? 'justify-center' : 'justify-between')}>
           {(!collapsed || isMobile) && (
             <div className="flex items-center gap-4 animate-in fade-in duration-500">
-              <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-primary to-primary-glow flex items-center justify-center shadow-lg shadow-primary/20 ring-4 ring-primary/10">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary to-primary-glow flex items-center justify-center shadow-2xl shadow-primary/30 ring-4 ring-primary/15 scale-110">
                 <Printer className="w-6 h-6 text-primary-foreground" />
               </div>
               <div className="space-y-0.5">
-                <h1 className="font-display font-extrabold text-sidebar-foreground text-lg tracking-tighter leading-none">Fast Gravações</h1>
-                <p className="text-[10px] font-black text-primary/70 uppercase tracking-[0.2em]">Master Control</p>
+                <h1 className="font-display font-black text-sidebar-foreground text-xl tracking-tighter leading-none">Fast Gravações</h1>
+                <p className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Master Console</p>
               </div>
             </div>
           )}
