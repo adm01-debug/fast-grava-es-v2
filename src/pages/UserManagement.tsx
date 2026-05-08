@@ -351,7 +351,7 @@ export default function UserManagementPage() {
                                       </TooltipContent>
                                     </Tooltip>
                                   </TooltipProvider>
-                               TableCell>
+                                </TableCell>
                               );
                             })}
                           </TableRow>
@@ -402,6 +402,8 @@ export default function UserManagementPage() {
               </Card>
             </div>
           </TabsContent>
+        </Tabs>
+      </div>
     </PageTransition>
   );
 }
