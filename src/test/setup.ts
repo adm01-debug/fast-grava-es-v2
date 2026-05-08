@@ -1,12 +1,19 @@
 import '@testing-library/jest-dom';
 import { vi } from 'vitest';
 
-// Guard: skip browser mocks when running in node environment
+// Minimal DOM setup for testing-library
 if (typeof window !== 'undefined') {
-  // Mock matchMedia
+  // Ensure we have a document for testing-library
+  if (!document.getElementById('root')) {
+    const root = document.createElement('div');
+    root.id = 'root';
+    document.body.appendChild(root);
+  }
+
+  // Polyfill for matchMedia
   Object.defineProperty(window, 'matchMedia', {
     writable: true,
-    value: vi.fn().mockImplementation((query: string) => ({
+    value: vi.fn().mockImplementation((query) => ({
       matches: false,
       media: query,
       onchange: null,
@@ -18,7 +25,7 @@ if (typeof window !== 'undefined') {
     })),
   });
 
-  // Mock IntersectionObserver
+  // Polyfill for IntersectionObserver
   class MockIntersectionObserver {
     observe = vi.fn();
     unobserve = vi.fn();
@@ -29,7 +36,7 @@ if (typeof window !== 'undefined') {
     value: MockIntersectionObserver,
   });
 
-  // Mock ResizeObserver
+  // Polyfill for ResizeObserver
   class MockResizeObserver {
     observe = vi.fn();
     unobserve = vi.fn();
@@ -39,11 +46,10 @@ if (typeof window !== 'undefined') {
     writable: true,
     value: MockResizeObserver,
   });
-
-  // Mock scrollTo
-  window.scrollTo = vi.fn() as any;
+  
+  window.scrollTo = vi.fn();
 }
 
-// Mock import.meta.env
+// Mock environment variables
 vi.stubEnv('VITE_SUPABASE_URL', 'https://test.supabase.co');
 vi.stubEnv('VITE_SUPABASE_PUBLISHABLE_KEY', 'test-key');
