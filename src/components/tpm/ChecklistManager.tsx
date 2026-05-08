@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useTPM } from '@/hooks/useTPM';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -13,22 +13,38 @@ import { useQueryClient } from '@tanstack/react-query';
 import { MaintenanceChecklistItem } from '@/hooks/tpm/types';
 
 export function ChecklistManager() {
-  const { maintenanceTypes, checklists } = useTPM();
+  const { maintenanceTypes, checklists, machines } = useTPM();
   const queryClient = useQueryClient();
   const [selectedTypeId, setSelectedTypeId] = useState<string>('');
+  const [selectedTechniqueId, setSelectedTechniqueId] = useState<string>('');
   const [isSaving, setIsSaving] = useState(false);
-
   const [localItems, setLocalItems] = useState<Partial<MaintenanceChecklistItem>[]>([]);
 
-  const handleTypeChange = (typeId: string) => {
-    setSelectedTypeId(typeId);
-    const checklist = checklists.find(c => c.maintenance_type_id === typeId);
-    if (checklist && checklist.items) {
-      setLocalItems(checklist.items);
+  // Get unique techniques from machines
+  const techniques = useMemo(() => {
+    const uniqueTechniques = new Map();
+    machines.forEach(m => {
+      if (m.technique_id) {
+        uniqueTechniques.set(m.technique_id, m.technique_id);
+      }
+    });
+    return Array.from(uniqueTechniques.keys());
+  }, [machines]);
+
+  const currentChecklist = useMemo(() => {
+    return checklists.find(c => 
+      c.maintenance_type_id === selectedTypeId && 
+      (c.technique_id === selectedTechniqueId || (!c.technique_id && !selectedTechniqueId))
+    );
+  }, [checklists, selectedTypeId, selectedTechniqueId]);
+
+  useEffect(() => {
+    if (currentChecklist && currentChecklist.items) {
+      setLocalItems(currentChecklist.items);
     } else {
       setLocalItems([]);
     }
-  };
+  }, [currentChecklist]);
 
   const addItem = () => {
     setLocalItems([
@@ -54,34 +70,50 @@ export function ChecklistManager() {
   };
 
   const handleSave = async () => {
-    if (!selectedTypeId) return;
+    if (!selectedTypeId) {
+      toast.error('Selecione o tipo de manutenção');
+      return;
+    }
     setIsSaving(true);
     
     try {
-      const existingChecklist = checklists.find(c => c.maintenance_type_id === selectedTypeId);
-      let checklistId = existingChecklist?.id;
+      const type = maintenanceTypes.find(t => t.id === selectedTypeId);
+      const newVersion = (currentChecklist?.version || 0) + 1;
+      
+      let checklistId = currentChecklist?.id;
       
       if (!checklistId) {
-        const type = maintenanceTypes.find(t => t.id === selectedTypeId);
         const { data, error } = await supabase
           .from('maintenance_checklists')
           .insert({
             maintenance_type_id: selectedTypeId,
-            name: `Checklist: ${type?.name}`,
-            is_active: true
+            technique_id: selectedTechniqueId || null,
+            name: `Checklist: ${type?.name}${selectedTechniqueId ? ` (${selectedTechniqueId})` : ''}`,
+            is_active: true,
+            version: 1
           })
           .select()
           .single();
         
         if (error) throw error;
         checklistId = data.id;
-      }
+      } else {
+        // Update version and potentially name
+        const { error: updateError } = await supabase
+          .from('maintenance_checklists')
+          .update({
+            version: newVersion,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', checklistId);
+        
+        if (updateError) throw updateError;
 
-      if (existingChecklist?.id) {
+        // Clean up old items
         const { error: deleteError } = await supabase
           .from('maintenance_checklist_items')
           .delete()
-          .eq('checklist_id', existingChecklist.id);
+          .eq('checklist_id', checklistId);
         
         if (deleteError) throw deleteError;
       }
@@ -106,7 +138,7 @@ export function ChecklistManager() {
         if (insertError) throw insertError;
       }
 
-      toast.success('Checklist salvo com sucesso');
+      toast.success(`Checklist ${currentChecklist ? 'atualizado' : 'criado'} para versão ${newVersion}`);
       queryClient.invalidateQueries({ queryKey: ['maintenance-checklists'] });
     } catch (error) {
       console.error('Error saving checklist:', error);
@@ -116,32 +148,85 @@ export function ChecklistManager() {
     }
   };
 
+  const handleToggleActive = async () => {
+    if (!currentChecklist) return;
+    try {
+      const { error } = await supabase
+        .from('maintenance_checklists')
+        .update({ is_active: !currentChecklist.is_active })
+        .eq('id', currentChecklist.id);
+      
+      if (error) throw error;
+      toast.success(`Checklist ${currentChecklist.is_active ? 'desativado' : 'ativado'}`);
+      queryClient.invalidateQueries({ queryKey: ['maintenance-checklists'] });
+    } catch (error) {
+      toast.error('Erro ao alterar status');
+    }
+  };
+
   return (
     <Card className="glass-card">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <ClipboardList className="h-5 w-5 text-primary" />
-          Configuração de Checklists
-        </CardTitle>
-        <CardDescription>
-          Defina os itens obrigatórios para cada tipo de manutenção.
-        </CardDescription>
+        <div className="flex items-center justify-between">
+          <div className="space-y-1">
+            <CardTitle className="flex items-center gap-2">
+              <ClipboardList className="h-5 w-5 text-primary" />
+              Configuração de Modelos de Checklist
+            </CardTitle>
+            <CardDescription>
+              Defina itens obrigatórios por tipo de manutenção e categoria de máquina.
+            </CardDescription>
+          </div>
+          {currentChecklist && (
+            <div className="flex items-center gap-2">
+              <Badge variant={currentChecklist.is_active ? "success" : "secondary"}>
+                v{currentChecklist.version || 1}
+              </Badge>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={handleToggleActive}
+                className={currentChecklist.is_active ? "text-destructive" : "text-emerald-600"}
+              >
+                {currentChecklist.is_active ? 'Desativar' : 'Ativar'}
+              </Button>
+            </div>
+          )}
+        </div>
       </CardHeader>
       <CardContent className="space-y-6">
-        <div className="grid gap-2">
-          <Label>Selecione o Tipo de Manutenção</Label>
-          <Select value={selectedTypeId} onValueChange={handleTypeChange}>
-            <SelectTrigger>
-              <SelectValue placeholder="Selecione um tipo..." />
-            </SelectTrigger>
-            <SelectContent>
-              {maintenanceTypes.map((type) => (
-                <SelectItem key={type.id} value={type.id}>
-                  {type.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label>Tipo de Manutenção</Label>
+            <Select value={selectedTypeId} onValueChange={setSelectedTypeId}>
+              <SelectTrigger>
+                <SelectValue placeholder="Selecione o tipo..." />
+              </SelectTrigger>
+              <SelectContent>
+                {maintenanceTypes.map((type) => (
+                  <SelectItem key={type.id} value={type.id}>
+                    {type.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-2">
+            <Label>Tipo/Categoria de Máquina (Opcional)</Label>
+            <Select value={selectedTechniqueId} onValueChange={setSelectedTechniqueId}>
+              <SelectTrigger>
+                <SelectValue placeholder="Global (Toda as máquinas)" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">Global (Todas as máquinas)</SelectItem>
+                {techniques.map((tech) => (
+                  <SelectItem key={tech} value={tech}>
+                    {tech}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
         {selectedTypeId && (
