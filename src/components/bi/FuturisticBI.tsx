@@ -288,7 +288,7 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
         <FuturisticStatCard 
           title="Atrasos Críticos" 
           value={kpis.delayedJobs} 
-          subtitle="Ação requerida em 3"
+          subtitle={`Ação requerida em ${kpis.delayedJobs}`}
           icon={ShieldAlert} 
           variant="danger"
           gradient={GRADIENTS.danger}
