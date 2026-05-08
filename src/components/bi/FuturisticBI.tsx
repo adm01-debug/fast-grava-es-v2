@@ -392,7 +392,7 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
                     <Cell key={`cell-${index}`} fill={entry.color} fillOpacity={0.8} />
                   ))}
                 </Pie>
-                <Tooltip />
+                <Tooltip content={<BITooltip showPercentage />} />
               </RechartsPieChart>
             </ResponsiveContainer>
             <div className="grid grid-cols-2 gap-4 mt-4">
