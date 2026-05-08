@@ -17,7 +17,7 @@ import { useTheme } from 'next-themes';
 import { LanguageSwitcher } from '@/components/layout/LanguageSwitcher';
 import { AuthLoginForm } from '@/components/auth/AuthLoginForm';
 import { AuthSignupForm } from '@/components/auth/AuthSignupForm';
-import { ErrorBoundary } from '@/components/ui/error-boundary';
+import { AuthErrorBoundary } from '@/components/auth/AuthErrorBoundary';
 import { motion } from 'framer-motion';
 
 export default function AuthPage() {
@@ -77,7 +77,7 @@ export default function AuthPage() {
   };
 
   return (
-    <ErrorBoundary componentName="AuthPage">
+    <AuthErrorBoundary>
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-primary/5 p-4 relative overflow-hidden">
         <div className="absolute inset-0 overflow-hidden pointer-events-none"><div className="absolute -top-40 -right-40 w-80 h-80 bg-primary/10 rounded-full blur-3xl" /><div className="absolute -bottom-40 -left-40 w-80 h-80 bg-accent/10 rounded-full blur-3xl" /></div>
         <div className="absolute top-4 right-4 flex items-center gap-2 z-10">
@@ -116,6 +116,6 @@ export default function AuthPage() {
           </DialogContent>
         </Dialog>
       </div>
-    </ErrorBoundary>
+    </AuthErrorBoundary>
   );
 }
