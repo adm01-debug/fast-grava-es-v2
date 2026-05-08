@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Bell, BellOff, Volume2, VolumeX, Clock, AlertTriangle, AlertCircle, Calendar, Mail, MessageCircle, Settings, Check, Send, History, Layout } from 'lucide-react';
+import { Bell, BellOff, Volume2, VolumeX, Clock, AlertTriangle, AlertCircle, Calendar, Mail, MessageCircle, Settings, Check, Send, History, Layout, Users, ShieldCheck, X } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
@@ -18,6 +18,7 @@ import { TPMNotificationTemplates } from './TPMNotificationTemplates';
 import { TPMNotificationLogs } from './TPMNotificationLogs';
 import { TPMSeverityConfigs } from './TPMSeverityConfigs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 export function TPMNotificationSettings() {
   const { permission, isSupported, requestPermission, sendTestNotification } = useTPMNotifications();
@@ -27,6 +28,8 @@ export function TPMNotificationSettings() {
   const [testMachineId, setTestMachineId] = useState<string>('');
   const [testChannel, setTestChannel] = useState<'email' | 'whatsapp' | 'push'>('push');
   const [isSendingTest, setIsSendingTest] = useState(false);
+  const [validationData, setValidationData] = useState<any>(null);
+  const [showValidation, setShowValidation] = useState(false);
 
   useEffect(() => {
     if (settings?.whatsapp_number) {
@@ -54,19 +57,28 @@ export function TPMNotificationSettings() {
     updateSettings.mutate({ machine_filters: newFilters });
   };
 
-  const handleSendTest = async () => {
+  const handleSendTest = async (force = false) => {
     if (!testMachineId) {
       toast.error('Selecione uma máquina para o teste');
       return;
     }
     setIsSendingTest(true);
-    await sendTestNotification(testMachineId, testChannel);
+    const result = await sendTestNotification(testMachineId, testChannel, force);
+    
+    if (result.needsValidation) {
+      setValidationData(result);
+      setShowValidation(true);
+    } else if (result.success) {
+      setShowValidation(false);
+    }
+    
     setIsSendingTest(false);
   };
 
   if (isLoading) return <div className="p-8 text-center">Carregando configurações...</div>;
 
   return (
+    <>
     <Tabs defaultValue="channels" className="space-y-4">
       <TabsList className="grid w-full grid-cols-3 lg:w-fit">
         <TabsTrigger value="channels" className="flex items-center gap-2">
@@ -287,5 +299,62 @@ export function TPMNotificationSettings() {
         </Card>
       </TabsContent>
     </Tabs>
+
+    <Dialog open={showValidation} onOpenChange={setShowValidation}>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <ShieldCheck className="h-5 w-5 text-primary" />
+            Validação de Destinatários
+          </DialogTitle>
+          <DialogDescription>
+            Confirme os detalhes do teste antes de realizar o envio real.
+          </DialogDescription>
+        </DialogHeader>
+        
+        {validationData && (
+          <div className="space-y-4 py-4">
+            <div className="p-3 bg-secondary/20 rounded-lg border border-border/50 space-y-2">
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Máquina:</span>
+                <span className="font-medium">{validationData.machine.code} - {validationData.machine.name}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Canal:</span>
+                <Badge variant="outline" className="capitalize">{testChannel}</Badge>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <h4 className="text-sm font-semibold flex items-center gap-2">
+                <Users className="h-4 w-4" />
+                Destinatários ({validationData.recipients.length})
+              </h4>
+              <div className="max-h-[200px] overflow-y-auto space-y-2 pr-2">
+                {validationData.recipients.map((r: any, idx: number) => (
+                  <div key={idx} className="text-xs p-2 border rounded bg-card flex justify-between items-center">
+                    <span className="truncate max-w-[150px]">{r.user_id}</span>
+                    {testChannel === 'whatsapp' && r.whatsapp_number && (
+                      <span className="text-muted-foreground">{r.whatsapp_number}</span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        <DialogFooter>
+          <Button variant="ghost" onClick={() => setShowValidation(false)}>Cancelar</Button>
+          <Button 
+            onClick={() => handleSendTest(true)} 
+            disabled={isSendingTest}
+          >
+            {isSendingTest ? 'Enviando...' : 'Confirmar Envio Real'}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+    </>
   );
 }

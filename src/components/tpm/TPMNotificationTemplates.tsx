@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
-import { Save, Mail, MessageCircle, Info } from 'lucide-react';
+import { Save, Mail, MessageCircle, Info, Rocket, Eye, RotateCcw } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface Template {
@@ -16,6 +16,8 @@ interface Template {
   severity: 'upcoming' | 'due' | 'overdue' | 'critical';
   subject: string | null;
   template_body: string;
+  status: 'draft' | 'published';
+  last_published_at: string | null;
 }
 
 export function TPMNotificationTemplates() {
