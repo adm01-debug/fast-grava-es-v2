@@ -132,6 +132,7 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
           technical_sheet_id: data.technical_sheet_id,
           technical_sheet_version: data.technical_sheet_version,
           adjustment_parameters: data.adjustment_parameters,
+          quality_responses: data.quality_responses,
         })
         .eq('id', data.record_id);
       
