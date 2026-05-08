@@ -905,6 +905,7 @@ export type Database = {
           priority: string
           produced_quantity: number | null
           product: string
+          product_category_id: string | null
           production_photos: string[] | null
           quantity: number
           scheduled_date: string | null
@@ -929,6 +930,7 @@ export type Database = {
           priority?: string
           produced_quantity?: number | null
           product: string
+          product_category_id?: string | null
           production_photos?: string[] | null
           quantity: number
           scheduled_date?: string | null
@@ -953,6 +955,7 @@ export type Database = {
           priority?: string
           produced_quantity?: number | null
           product?: string
+          product_category_id?: string | null
           production_photos?: string[] | null
           quantity?: number
           scheduled_date?: string | null
@@ -967,6 +970,13 @@ export type Database = {
             columns: ["machine_id"]
             isOneToOne: false
             referencedRelation: "machines"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "jobs_product_category_id_fkey"
+            columns: ["product_category_id"]
+            isOneToOne: false
+            referencedRelation: "product_categories"
             referencedColumns: ["id"]
           },
           {
