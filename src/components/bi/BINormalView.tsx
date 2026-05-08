@@ -163,7 +163,14 @@ export function BINormalView({ biMetrics, kpis, oeeData, getPeriodLabel, onDrill
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={280}>
-              <AreaChart data={biMetrics.dailyTrend}>
+              <AreaChart 
+                data={biMetrics.dailyTrend}
+                onClick={(data: any) => {
+                  if (data && data.activeLabel) {
+                    onDrillDown(`PEDIDOS EM ${data.activeLabel}`, 'all');
+                  }
+                }}
+              >
                 <defs>
                   <linearGradient id="colorProduced" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor={CHART_COLORS.success} stopOpacity={0.4}/>
@@ -191,7 +198,18 @@ export function BINormalView({ biMetrics, kpis, oeeData, getPeriodLabel, onDrill
           <CardContent>
             <ResponsiveContainer width="100%" height={280}>
               <RechartsPieChart>
-                <Pie data={biMetrics.statusDistribution} cx="50%" cy="50%" innerRadius={60} outerRadius={100} paddingAngle={2} dataKey="value" label={({ name, percent }: any) => `${name} (${(percent * 100).toFixed(0)}%)`} labelLine={false}>
+                <Pie 
+                  data={biMetrics.statusDistribution} 
+                  cx="50%" 
+                  cy="50%" 
+                  innerRadius={60} 
+                  outerRadius={100} 
+                  paddingAngle={2} 
+                  dataKey="value" 
+                  label={({ name, percent }: any) => `${name} (${(percent * 100).toFixed(0)}%)`} 
+                  labelLine={false}
+                  onClick={(data: any) => onDrillDown(`PEDIDOS: ${data.name}`, data.name)}
+                >
                   {biMetrics.statusDistribution.map((entry: any, index: number) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
@@ -221,8 +239,20 @@ export function BINormalView({ biMetrics, kpis, oeeData, getPeriodLabel, onDrill
                 <XAxis type="number" tick={{ fill: 'hsl(var(--muted-foreground))' }} />
                 <YAxis dataKey="name" type="category" width={80} tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }} />
                 <Tooltip contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '12px' }} />
-                <Bar dataKey="produced" fill={CHART_COLORS.success} name="Produzidas" radius={[0, 6, 6, 0]} />
-                <Bar dataKey="lost" fill={CHART_COLORS.danger} name="Perdidas" radius={[0, 6, 6, 0]} />
+                <Bar 
+                  dataKey="produced" 
+                  fill={CHART_COLORS.success} 
+                  name="Produzidas" 
+                  radius={[0, 6, 6, 0]} 
+                  onClick={(data: any) => onDrillDown(`TÉCNICA: ${data.name}`, data.id)}
+                />
+                <Bar 
+                  dataKey="lost" 
+                  fill={CHART_COLORS.danger} 
+                  name="Perdidas" 
+                  radius={[0, 6, 6, 0]} 
+                  onClick={(data: any) => onDrillDown(`PERDAS EM ${data.name}`, data.id)}
+                />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
