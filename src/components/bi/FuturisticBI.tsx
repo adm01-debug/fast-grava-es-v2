@@ -80,21 +80,79 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
 
   const handleExport = async (format: 'csv' | 'pdf', type: string) => {
     setIsExporting(true);
-    toast.info(`Iniciando exportação de ${type} em ${format.toUpperCase()}...`);
+    const dateRange = { start: subDays(new Date(), 30), end: new Date() };
     
-    // Simulate export logic for demonstration
-    setTimeout(() => {
+    try {
       if (format === 'csv') {
-        // In a real scenario, we'd filter data here
-        exportJobs({ format: 'csv', fileName: `BI_Export_${type}_${new Date().getTime()}` });
+        toast.info(`Gerando CSV para ${type}...`);
+        
+        let dataToExport: any[] = [];
+        let filename = `BI_Export_${type}_${formatDate(new Date(), 'yyyyMMdd')}`;
+
+        if (type.includes('Perdas')) {
+          dataToExport = jobsWithLosses;
+        } else if (type.includes('Atrasos')) {
+          dataToExport = delayedJobsList;
+        } else {
+          dataToExport = biMetrics.periodJobsList || [];
+        }
+
+        if (dataToExport.length === 0) {
+          toast.warning("Nenhum dado encontrado para exportar.");
+          setIsExporting(false);
+          return;
+        }
+
+        // Simple CSV generation helper
+        const headers = Object.keys(dataToExport[0]).join(',');
+        const rows = dataToExport.map(obj => 
+          Object.values(obj).map(val => `"${String(val).replace(/"/g, '""')}"`).join(',')
+        ).join('\n');
+        
+        const blob = new Blob([`\uFEFF${headers}\n${rows}`], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.setAttribute('download', `${filename}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        toast.success(`Exportação CSV de ${type} concluída.`);
       } else {
-        toast.success(`Exportação PDF de ${type} concluída com sucesso.`);
-        // In a real app, we'd use a library like jspdf here
-        window.print(); 
+        toast.info(`Gerando PDF para ${type}...`);
+        
+        if (type.includes('Perdas')) {
+          await exportLossesReport(jobsWithLosses, dateRange);
+        } else if (type.includes('Atrasos')) {
+          await exportDelaysReport(delayedJobsList, dateRange);
+        } else {
+          const jobs = (biMetrics.periodJobsList || []).map((j: any) => ({
+            order_number: j.order_number || `OS-${j.id?.slice(0, 5)}`,
+            client: j.client_name || 'Cliente',
+            product: j.product_name || 'Produto',
+            status: j.status,
+            quantity: j.quantity,
+            produced_quantity: j.produced_quantity,
+            lost_pieces: j.lost_pieces,
+            scheduled_date: j.scheduled_date
+          }));
+          await exportProductionReport(jobs, dateRange, `Relatório: ${type.replace(/_/g, ' ')}`);
+        }
+        
+        toast.success(`Relatório PDF de ${type} gerado com sucesso.`);
       }
+    } catch (error) {
+      console.error('Export error:', error);
+      toast.error("Falha ao gerar exportação.");
+    } finally {
       setIsExporting(false);
-    }, 1500);
+    }
   };
+
+  // Helper function for date formatting in filename
+  function formatDate(date: Date, pattern: string): string {
+    return format(date, pattern);
+  }
   const [drillDownOpen, setDrillDownOpen] = useState(false);
   const [drillDownTitle, setDrillDownTitle] = useState('');
   const [drillDownJobs, setDrillDownJobs] = useState<any[]>([]);
