@@ -238,6 +238,10 @@ export function MaintenanceExecutionModal({
       checklist_snapshot: checklist,
       technical_sheet_id: selectedSheetId || undefined,
       technical_sheet_version: selectedSheetId ? (technicalSheets.find(s => s.id === selectedSheetId)?.version) : undefined,
+      quality_responses: Object.entries(qualityResponses).map(([id, confirmed]) => ({
+        id,
+        confirmed
+      })),
       adjustment_parameters: {
         ...adjustmentParams,
         recommended: selectedSheetId ? (technicalSheets.find(s => s.id === selectedSheetId)?.machine_settings) : null,
