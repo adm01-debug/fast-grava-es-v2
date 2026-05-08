@@ -133,9 +133,9 @@ export function DraggableJobCard({ job, technique, machine, onClick, viewMode = 
       }}
       className={cn(
         "p-3 rounded-lg border border-l-[3px] cursor-pointer transition-all duration-200",
-        "bg-card/50 backdrop-blur-sm border-border/50",
-        "hover:bg-card hover:border-border hover:shadow-lg",
-        "group touch-none relative",
+        "bg-card/40 backdrop-blur-md border-border/40 shadow-sm",
+        "hover:bg-card/70 hover:border-primary/30 hover:shadow-xl hover:-translate-y-0.5",
+        "active:scale-95 transition-all duration-300",
         isDragging && "opacity-50 shadow-2xl scale-105 z-50 ring-2 ring-primary",
         isSorting && "cursor-grabbing",
         isSelected && "ring-2 ring-primary bg-primary/5"

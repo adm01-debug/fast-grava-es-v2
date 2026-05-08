@@ -148,7 +148,7 @@ export function DroppableColumn({
           ref={setNodeRef}
           className={cn(
             "flex-1 p-2 rounded-xl border transition-all duration-200",
-            "bg-gradient-to-b from-muted/20 to-muted/5",
+            "bg-gradient-to-b from-muted/20 to-card/5 backdrop-blur-[2px]",
             "space-y-1.5 min-h-[300px] max-h-[65vh] overflow-y-auto scrollbar-thin",
             isOver 
               ? "border-primary/50 bg-primary/5 ring-2 ring-primary/20" 
