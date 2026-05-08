@@ -33,6 +33,9 @@ export interface DbJob {
   actual_start_time: string | null;
   actual_end_time: string | null;
   lost_pieces: number | null;
+  loss_category: string | null;
+  delay_reason: string | null;
+  rework_reason: string | null;
   priority: 'low' | 'medium' | 'high' | 'urgent';
   created_at: string;
   updated_at: string;
