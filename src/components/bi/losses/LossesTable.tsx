@@ -11,9 +11,10 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 interface LossesTableProps {
   jobs: any[];
   onExport: (format: 'csv' | 'pdf', type: string) => void;
+  onShowDetails?: (job: any) => void;
 }
 
-export function LossesTable({ jobs, onExport }: LossesTableProps) {
+export function LossesTable({ jobs, onExport, onShowDetails }: LossesTableProps) {
   const navigate = useNavigate();
 
   return (
@@ -89,7 +90,7 @@ export function LossesTable({ jobs, onExport }: LossesTableProps) {
                         isCritical && "bg-rose-500/5 hover:bg-rose-500/10 shadow-[inset_0_0_20px_rgba(244,63,94,0.05)]",
                         isExtreme && "bg-rose-500/10 hover:bg-rose-500/15"
                       )} 
-                      onClick={() => navigate(`/job/${job.id}`)}
+                      onClick={() => onShowDetails ? onShowDetails(job) : navigate(`/job/${job.id}`)}
                     >
                       <TableCell className="py-4">
                         <div className="flex items-center gap-3">
@@ -151,7 +152,7 @@ export function LossesTable({ jobs, onExport }: LossesTableProps) {
                         </div>
                       </TableCell>
                       <TableCell className="text-right">
-                        <div className="flex flex-col items-end">
+                        <div className="flex flex-col items-end group/cost relative">
                           <span className={cn(
                             "font-mono text-sm font-bold",
                             isCritical ? "text-rose-400" : "text-white"
@@ -164,6 +165,17 @@ export function LossesTable({ jobs, onExport }: LossesTableProps) {
                               Alto Impacto
                             </div>
                           )}
+                          <div className="absolute right-0 top-full mt-1 bg-black/95 border border-white/10 p-2 rounded-lg opacity-0 group-hover/cost:opacity-100 transition-opacity z-50 min-w-[150px] pointer-events-none shadow-2xl">
+                            <p className="text-[10px] text-muted-foreground uppercase mb-1">Impacto Financeiro</p>
+                            <div className="flex justify-between text-[10px]">
+                              <span>Custo Material:</span>
+                              <span className="text-white font-mono">R$ {(job.lost_pieces * 10).toFixed(2)}</span>
+                            </div>
+                            <div className="flex justify-between text-[10px]">
+                              <span>Hora Máquina:</span>
+                              <span className="text-white font-mono">R$ {(job.lost_pieces * 5.5).toFixed(2)}</span>
+                            </div>
+                          </div>
                         </div>
                       </TableCell>
                       {isCritical && (

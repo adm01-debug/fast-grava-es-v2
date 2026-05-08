@@ -3,7 +3,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Timer, FileSpreadsheet, FileText } from "lucide-react";
+import { Timer, FileSpreadsheet, FileText, Activity } from "lucide-react";
+import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 
 interface DelaysAnalysisProps {
@@ -87,13 +88,29 @@ export function DelaysAnalysis({ delayedJobs, rootCauses, onExport }: DelaysAnal
           <TabsContent value="causes" className="mt-4">
             <div className="space-y-4">
               {rootCauses.map((cause) => (
-                <div key={cause.label} className="space-y-1">
-                  <div className="flex justify-between text-[10px] uppercase font-bold tracking-widest">
+                <div key={cause.label} className="group/cause relative">
+                  <div className="flex justify-between text-[10px] uppercase font-bold tracking-widest mb-1">
                     <span>{cause.label}</span>
-                    <span>{cause.value}%</span>
+                    <span className="text-primary">{cause.value}%</span>
                   </div>
-                  <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
-                    <div className="h-full" style={{ width: `${cause.value}%`, backgroundColor: cause.color }} />
+                  <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden relative">
+                    <motion.div 
+                      initial={{ width: 0 }}
+                      animate={{ width: `${cause.value}%` }}
+                      transition={{ duration: 1, ease: "easeOut" }}
+                      className="h-full relative" 
+                      style={{ backgroundColor: cause.color }}
+                    >
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer" />
+                    </motion.div>
+                  </div>
+                  <div className="mt-2 opacity-0 group-hover/cause:opacity-100 transition-opacity flex items-center gap-2">
+                    <span className="text-[9px] text-muted-foreground uppercase">Ação Recomendada:</span>
+                    <span className="text-[9px] text-primary font-bold uppercase">
+                      {cause.label.includes('Máquina') ? 'Manutenção Preventiva' : 
+                       cause.label.includes('Material') ? 'Revisão de Lote' : 
+                       'Ajuste de Fluxo'}
+                    </span>
                   </div>
                 </div>
               ))}
