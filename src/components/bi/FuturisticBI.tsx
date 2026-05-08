@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { 
   TrendingUp, Activity, AlertTriangle, Gauge, Package, Target, 
   CheckCircle, Clock, BarChart3, PieChart, LineChart, Printer, 
-  Users, Wrench, ShieldAlert, Timer, ArrowUpRight, Zap
+  Users, Wrench, ShieldAlert, Timer, ArrowUpRight, Zap, Download, FileText, FileSpreadsheet
 } from 'lucide-react';
 import { 
   AreaChart, Area, BarChart, Bar, PieChart as RechartsPieChart, Pie, Cell,
