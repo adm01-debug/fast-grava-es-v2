@@ -80,7 +80,7 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
 
   const handleExport = async (format: 'csv' | 'pdf', type: string) => {
     setIsExporting(true);
-    const dateRange = { start: subDays(new Date(), 30), end: new Date() };
+    const dateRange = { start: subDays(new Date(), 30), end: new Date(), label: 'Últimos 30 dias' };
     
     try {
       if (format === 'csv') {
