@@ -11,9 +11,10 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 interface LossesTableProps {
   jobs: any[];
   onExport: (format: 'csv' | 'pdf', type: string) => void;
+  onShowDetails?: (job: any) => void;
 }
 
-export function LossesTable({ jobs, onExport }: LossesTableProps) {
+export function LossesTable({ jobs, onExport, onShowDetails }: LossesTableProps) {
   const navigate = useNavigate();
 
   return (
@@ -89,7 +90,7 @@ export function LossesTable({ jobs, onExport }: LossesTableProps) {
                         isCritical && "bg-rose-500/5 hover:bg-rose-500/10 shadow-[inset_0_0_20px_rgba(244,63,94,0.05)]",
                         isExtreme && "bg-rose-500/10 hover:bg-rose-500/15"
                       )} 
-                      onClick={() => navigate(`/job/${job.id}`)}
+                      onClick={() => onShowDetails ? onShowDetails(job) : navigate(`/job/${job.id}`)}
                     >
                       <TableCell className="py-4">
                         <div className="flex items-center gap-3">

@@ -299,7 +299,11 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <LossesTable jobs={jobsWithLosses} onExport={handleExport} />
+        <LossesTable 
+          jobs={jobsWithLosses} 
+          onExport={handleExport} 
+          onShowDetails={(job) => handleDrillDown(`PERDAS DETALHADAS: ${job.order_number || job.id}`, 'lost')}
+        />
         <Card className="bg-black/40 border-primary/20 backdrop-blur-xl">
           <CardHeader>
             <CardTitle className="flex items-center gap-3">
