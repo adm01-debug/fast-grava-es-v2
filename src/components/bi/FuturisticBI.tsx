@@ -32,6 +32,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { useOperatorProductivity } from '@/hooks/useOperatorProductivity';
 import { useTPM } from '@/hooks/useTPM';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useDataExport } from '@/hooks/useDataExport';
 import { Button } from '@/components/ui/button';
