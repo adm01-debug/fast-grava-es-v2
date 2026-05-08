@@ -374,22 +374,26 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
                 />
                 <Tooltip content={<BITooltip showPercentage />} />
 
-                <Area 
-                  type="monotone" 
-                  dataKey="produced" 
-                  stroke={CHART_COLORS.primary} 
-                  strokeWidth={4}
-                  fill="url(#glowPrimary)"
-                  animationDuration={2000}
-                />
-                <Area 
-                  type="monotone" 
-                  dataKey="lost" 
-                  stroke={CHART_COLORS.danger} 
-                  strokeWidth={2}
-                  fill="rgba(239, 44, 44, 0.1)"
-                  strokeDasharray="5 5"
-                />
+                {visibleSeries.produced && (
+                  <Area 
+                    type="monotone" 
+                    dataKey="produced" 
+                    stroke={CHART_COLORS.primary} 
+                    strokeWidth={4}
+                    fill="url(#glowPrimary)"
+                    animationDuration={2000}
+                  />
+                )}
+                {visibleSeries.lost && (
+                  <Area 
+                    type="monotone" 
+                    dataKey="lost" 
+                    stroke={CHART_COLORS.danger} 
+                    strokeWidth={2}
+                    fill="rgba(239, 44, 44, 0.1)"
+                    strokeDasharray="5 5"
+                  />
+                )}
               </AreaChart>
             </ResponsiveContainer>
           </CardContent>
