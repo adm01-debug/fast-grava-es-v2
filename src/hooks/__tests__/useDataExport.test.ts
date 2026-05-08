@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { renderHook, waitFor, act } from '@testing-library/react';
+import { renderHook, act } from '@testing-library/react';
 import { useDataExport } from '../useDataExport';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -26,17 +26,16 @@ vi.mock('sonner', () => ({
   },
 }));
 
-// Mock URL.createObjectURL and other browser APIs
-if (typeof window !== 'undefined') {
-  global.URL.createObjectURL = vi.fn(() => 'mock-url');
-  global.URL.revokeObjectURL = vi.fn();
-}
-
 describe('useDataExport', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    
+    // Mock browser APIs locally to avoid document issues
+    global.URL.createObjectURL = vi.fn(() => 'mock-url');
+    global.URL.revokeObjectURL = vi.fn();
+    
+    // Minimal document mock if not present
     if (typeof document !== 'undefined') {
-      // Mock document.createElement for download link
       document.createElement = vi.fn().mockImplementation((tagName) => {
         if (tagName === 'a') {
           return {
@@ -47,8 +46,16 @@ describe('useDataExport', () => {
         }
         return {};
       });
-      document.body.appendChild = vi.fn();
-      document.body.removeChild = vi.fn();
+      // Mock body methods
+      if (!document.body) {
+        (document as any).body = {
+          appendChild: vi.fn(),
+          removeChild: vi.fn(),
+        };
+      } else {
+        document.body.appendChild = vi.fn();
+        document.body.removeChild = vi.fn();
+      }
     }
   });
 
