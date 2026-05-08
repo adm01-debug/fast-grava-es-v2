@@ -109,21 +109,23 @@ export function AppSidebar() {
           {filteredNavGroups.map(group => <NavGroupComponent key={group.id} group={group} collapsed={collapsed} isMobile={isMobile} isActive={isActive} alertCount={alertCount} openGroups={openGroups} toggleGroup={toggleGroup} />)}
           {filteredAdminNavItems.length > 0 && (
             <>
-              <div className="my-4 border-t border-sidebar-border/50" />
-              {(!collapsed || isMobile) && <p className="text-[10px] font-black text-primary/40 uppercase tracking-[0.2em] px-5 py-3">Core Infrastructure</p>}
-              {filteredAdminNavItems.map(item => <NavButton key={item.href} item={item} collapsed={collapsed} isMobile={isMobile} isActive={isActive(item.href)} />)}
+              <div className="my-8 border-t border-primary/10 shadow-[0_1px_0_hsl(0_0%_100%/0.05)]" />
+              {(!collapsed || isMobile) && <p className="text-[9px] font-black text-primary/30 uppercase tracking-[0.3em] px-8 py-4">Global Infrastructure</p>}
+              <div className="px-2 space-y-2">
+                {filteredAdminNavItems.map(item => <NavButton key={item.href} item={item} collapsed={collapsed} isMobile={isMobile} isActive={isActive(item.href)} />)}
+              </div>
             </>
           )}
         </nav>
 
-        <div className={cn('p-6 border-t border-sidebar-border/30', collapsed && !isMobile && 'p-2')}>
-          {(!collapsed || isMobile) && <div className="mb-4 px-1 scale-110 origin-left"><LanguageSwitcher /></div>}
-          <div className={cn('flex items-center gap-4 rounded-2xl p-4 bg-primary/5 border border-primary/10 mb-3 shadow-[0_4px_15px_-3px_hsl(var(--primary)/0.05)]', collapsed && !isMobile && 'justify-center p-2')}>
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary/30 to-primary/5 flex items-center justify-center text-primary font-bold text-lg border border-primary/20 shadow-inner group-hover:scale-105 transition-transform duration-500">{profile?.full_name?.charAt(0)?.toUpperCase() || 'U'}</div>
-            {(!collapsed || isMobile) && <div className="flex-1 min-w-0"><p className="text-sm font-bold text-sidebar-foreground truncate tracking-tight">{profile?.full_name || 'Usuário'}</p><p className="text-[9px] font-black text-primary uppercase tracking-[0.2em]">{role === 'coordinator' ? 'System Architect' : role === 'manager' ? 'Global Manager' : 'Field Operator'}</p></div>}
+        <div className={cn('p-8 border-t border-primary/10 bg-gradient-to-t from-primary/[0.03] to-transparent', collapsed && !isMobile && 'p-2')}>
+          {(!collapsed || isMobile) && <div className="mb-6 px-1 scale-110 origin-left"><LanguageSwitcher /></div>}
+          <div className={cn('flex items-center gap-5 rounded-2xl p-5 bg-primary/[0.03] border border-primary/10 mb-4 shadow-[0_8px_30px_-10px_hsl(var(--primary)/0.1)] ring-1 ring-white/5 group cursor-default transition-all duration-500 hover:bg-primary/[0.05]', collapsed && !isMobile && 'justify-center p-2')}>
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary/40 via-primary/20 to-primary/5 flex items-center justify-center text-primary font-black text-xl border border-primary/30 shadow-inner group-hover:scale-110 transition-transform duration-500">{profile?.full_name?.charAt(0)?.toUpperCase() || 'U'}</div>
+            {(!collapsed || isMobile) && <div className="flex-1 min-w-0"><p className="text-base font-black text-sidebar-foreground truncate tracking-tighter">{profile?.full_name || 'Usuário'}</p><p className="text-[10px] font-black text-primary/60 uppercase tracking-[0.25em]">{role === 'coordinator' ? 'Lead Architect' : role === 'Global Manager' ? 'Global Manager' : 'Field Specialist'}</p></div>}
           </div>
-          <Button variant="ghost" size={(collapsed && !isMobile) ? "icon" : "sm"} onClick={handleSignOut} className={cn('w-full h-12 mt-2 text-rose-500 hover:text-rose-600 hover:bg-rose-500/10 rounded-xl transition-all duration-300 font-bold border border-transparent hover:border-rose-500/20 active:scale-95', collapsed && !isMobile && 'px-0')}>
-            <LogOut className="h-5 w-5" />{(!collapsed || isMobile) && <span className="ml-2 font-display uppercase tracking-widest text-[10px]">Sair do Sistema</span>}
+          <Button variant="ghost" size={(collapsed && !isMobile) ? "icon" : "sm"} onClick={handleSignOut} className={cn('w-full h-14 mt-2 text-rose-500 hover:text-rose-600 hover:bg-rose-500/10 rounded-2xl transition-all duration-500 font-black border border-transparent hover:border-rose-500/30 active:scale-95 shadow-lg shadow-transparent hover:shadow-rose-500/10', collapsed && !isMobile && 'px-0')}>
+            <LogOut className="h-6 w-6" />{(!collapsed || isMobile) && <span className="ml-3 font-display uppercase tracking-[0.2em] text-[11px]">Terminate Session</span>}
           </Button>
         </div>
       </aside>
