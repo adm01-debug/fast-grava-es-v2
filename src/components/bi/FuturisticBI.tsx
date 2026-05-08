@@ -418,11 +418,29 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
 
         {/* Collaborator Performance */}
         <Card className="bg-black/40 border-primary/20 backdrop-blur-xl hover:border-primary/40 transition-all duration-500">
-          <CardHeader>
+          <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="flex items-center gap-3">
               <Users className="h-5 w-5 text-primary" />
-              <span className="font-display tracking-wider">TOP COLABORADORES</span>
+              <span className="font-display tracking-wider uppercase">Top Colaboradores</span>
             </CardTitle>
+            <div className="flex items-center gap-2">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="h-8 w-8 text-muted-foreground hover:text-primary"
+                onClick={() => handleExport('csv', 'Ranking_Colaboradores')}
+              >
+                <FileSpreadsheet className="h-4 w-4" />
+              </Button>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="h-8 w-8 text-muted-foreground hover:text-primary"
+                onClick={() => handleExport('pdf', 'Ranking_Colaboradores')}
+              >
+                <FileText className="h-4 w-4" />
+              </Button>
+            </div>
           </CardHeader>
           <CardContent>
             <div className="space-y-6">
