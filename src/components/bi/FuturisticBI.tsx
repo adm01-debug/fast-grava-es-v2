@@ -4,12 +4,29 @@ import { Badge } from '@/components/ui/badge';
 import { 
   TrendingUp, Activity, Gauge, Target, 
   CheckCircle, PieChart, LineChart, Printer, 
-  Users, Wrench, ShieldAlert, Zap, Download, FileText, FileSpreadsheet
+  Users, Wrench, ShieldAlert, Zap, Download, FileText, FileSpreadsheet, Package, Timer
 } from 'lucide-react';
 import { 
   AreaChart, Area, BarChart, Bar, PieChart as RechartsPieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from 'recharts';
+import { 
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { format, parseISO } from 'date-fns';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -23,6 +40,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { DrillDownDialog } from './drilldown/DrillDownDialog';
 import { LossesTable } from './losses/LossesTable';
 import { DelaysAnalysis } from './delays/DelaysAnalysis';
+
 
 
 const CHART_COLORS = {
