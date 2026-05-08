@@ -72,7 +72,6 @@ describe('useDataExport', () => {
       order: vi.fn().mockResolvedValue({ data: [], error: null }),
     });
 
-    // Re-render for fresh test context
     const { result } = renderHook(() => useDataExport('jobs' as any));
     
     await act(async () => {
@@ -89,7 +88,6 @@ describe('useDataExport', () => {
       order: vi.fn().mockResolvedValue({ data: null, error: mockError }),
     });
 
-    // Re-render for fresh test context
     const { result } = renderHook(() => useDataExport('jobs' as any));
     
     await act(async () => {

@@ -31,7 +31,7 @@ describe('BIStatCard', () => {
     expect(screen.getByText('Last 30 days')).toBeInTheDocument();
   });
 
-  it('renders trend value and icon when provided', () => {
+  it('renders trend value and container when provided', () => {
     render(
       <BIStatCard 
         title="Growth" 
@@ -43,8 +43,8 @@ describe('BIStatCard', () => {
     );
     
     expect(screen.getByText('+5%')).toBeInTheDocument();
-    const trendContainer = screen.getByTestId('trend-container');
-    expect(trendContainer).toHaveClass('text-success');
+    const trendIndicator = screen.getByTestId('trend-indicator');
+    expect(trendIndicator).toHaveClass('text-success');
   });
 
   it('applies variant styles correctly', () => {
@@ -62,6 +62,7 @@ describe('BIStatCard', () => {
     expect(card.className).toContain('bg-primary/5');
   });
 });
+
 
 
 
