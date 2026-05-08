@@ -3519,6 +3519,56 @@ export type Database = {
         }
         Relationships: []
       }
+      tpm_execution_alerts: {
+        Row: {
+          actual_value: string | null
+          alert_type: string
+          created_at: string | null
+          description: string | null
+          evidence_urls: string[] | null
+          execution_id: string
+          expected_range: string | null
+          id: string
+          parameter_name: string | null
+          resolved: boolean | null
+          severity: string | null
+        }
+        Insert: {
+          actual_value?: string | null
+          alert_type: string
+          created_at?: string | null
+          description?: string | null
+          evidence_urls?: string[] | null
+          execution_id: string
+          expected_range?: string | null
+          id?: string
+          parameter_name?: string | null
+          resolved?: boolean | null
+          severity?: string | null
+        }
+        Update: {
+          actual_value?: string | null
+          alert_type?: string
+          created_at?: string | null
+          description?: string | null
+          evidence_urls?: string[] | null
+          execution_id?: string
+          expected_range?: string | null
+          id?: string
+          parameter_name?: string | null
+          resolved?: boolean | null
+          severity?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tpm_execution_alerts_execution_id_fkey"
+            columns: ["execution_id"]
+            isOneToOne: false
+            referencedRelation: "tpm_executions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tpm_execution_audit_logs: {
         Row: {
           changed_by: string | null
@@ -3636,6 +3686,44 @@ export type Database = {
           },
         ]
       }
+      tpm_execution_supplies: {
+        Row: {
+          alternative_used: boolean | null
+          created_at: string | null
+          execution_id: string
+          id: string
+          name: string
+          original_recommended_id: string | null
+          quantity: string
+        }
+        Insert: {
+          alternative_used?: boolean | null
+          created_at?: string | null
+          execution_id: string
+          id?: string
+          name: string
+          original_recommended_id?: string | null
+          quantity: string
+        }
+        Update: {
+          alternative_used?: boolean | null
+          created_at?: string | null
+          execution_id?: string
+          id?: string
+          name?: string
+          original_recommended_id?: string | null
+          quantity?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tpm_execution_supplies_execution_id_fkey"
+            columns: ["execution_id"]
+            isOneToOne: false
+            referencedRelation: "tpm_executions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tpm_executions: {
         Row: {
           adjustment_parameters: Json | null
@@ -3643,10 +3731,12 @@ export type Database = {
           checklist_version: number | null
           created_at: string | null
           duration_minutes: number | null
+          failure_risk_detected: boolean | null
           finished_at: string | null
           id: string
           machine_id: string | null
           notes: string | null
+          quality_checklist_results: Json | null
           schedule_id: string | null
           signature_url: string | null
           started_at: string | null
@@ -3662,10 +3752,12 @@ export type Database = {
           checklist_version?: number | null
           created_at?: string | null
           duration_minutes?: number | null
+          failure_risk_detected?: boolean | null
           finished_at?: string | null
           id?: string
           machine_id?: string | null
           notes?: string | null
+          quality_checklist_results?: Json | null
           schedule_id?: string | null
           signature_url?: string | null
           started_at?: string | null
@@ -3681,10 +3773,12 @@ export type Database = {
           checklist_version?: number | null
           created_at?: string | null
           duration_minutes?: number | null
+          failure_risk_detected?: boolean | null
           finished_at?: string | null
           id?: string
           machine_id?: string | null
           notes?: string | null
+          quality_checklist_results?: Json | null
           schedule_id?: string | null
           signature_url?: string | null
           started_at?: string | null
