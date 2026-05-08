@@ -31,10 +31,10 @@ export const NavButton = memo(forwardRef<HTMLDivElement, NavButtonProps>(functio
       <Button
         variant="ghost"
         className={cn(
-          'w-full justify-start gap-3 h-11 px-3 relative transition-all duration-200 group/nav',
-          'hover:bg-primary/8 hover:text-sidebar-foreground',
-          isActive && 'bg-primary/12 text-primary font-medium border-l-[3px] border-primary shadow-[inset_0_0_20px_hsl(var(--primary)/0.05)]',
-          !isActive && 'border-l-[3px] border-transparent',
+          'w-full justify-start gap-3 h-12 px-3 relative transition-all duration-300 group/nav rounded-xl',
+          'hover:bg-primary/[0.04] hover:text-primary active:scale-[0.98]',
+          isActive && 'bg-primary/10 text-primary font-bold shadow-[inset_0_0_20px_hsl(var(--primary)/0.03)] ring-1 ring-primary/30',
+          !isActive && 'text-muted-foreground font-semibold',
           collapsed && !isMobile && 'justify-center px-0'
         )}
       >

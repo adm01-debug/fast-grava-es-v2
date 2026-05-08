@@ -211,15 +211,19 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main Production Flux */}
-        <Card className="lg:col-span-2 bg-black/40 border-primary/20 backdrop-blur-xl hover:border-primary/40 transition-all duration-500 overflow-hidden relative group">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none" />
-          <CardHeader className="relative z-10 flex flex-row items-center justify-between">
-            <CardTitle className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-primary/10">
-                <Activity className="h-5 w-5 text-primary" />
+        <Card className="lg:col-span-2 border-border/40 bg-card/40 backdrop-blur-md shadow-2xl rounded-3xl overflow-hidden group hover:shadow-glow-primary/10 transition-all duration-500 ring-1 ring-white/5 relative">
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.05] via-transparent to-transparent pointer-events-none" />
+          <CardHeader className="relative z-10 flex flex-row items-center justify-between p-8 pb-0">
+            <CardTitle className="flex items-center gap-4">
+              <div className="p-3 rounded-2xl bg-primary/10 shadow-inner">
+                <Activity className="h-6 w-6 text-primary" />
               </div>
-              <span className="font-display tracking-wider text-xl uppercase">Fluxo de Produção</span>
-              <Badge variant="outline" className="border-primary/30 text-primary animate-pulse ml-2">LIVE</Badge>
+              <div className="space-y-1">
+                <span className="font-display tracking-tight text-2xl font-black uppercase gradient-text">Fluxo de Produção</span>
+                <div className="flex items-center gap-2">
+                  <Badge variant="outline" className="border-primary/30 text-primary animate-pulse text-[10px] font-bold">LIVE TELEMETRY</Badge>
+                </div>
+              </div>
             </CardTitle>
             <div className="flex items-center gap-2">
               <Button 
@@ -294,11 +298,13 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
         </Card>
 
         {/* Status Distribution - Futuristic Pie */}
-        <Card className="bg-black/40 border-primary/20 backdrop-blur-xl hover:border-primary/40 transition-all duration-500 overflow-hidden relative">
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle className="flex items-center gap-3">
-              <PieChart className="h-5 w-5 text-primary" />
-              <span className="font-display tracking-wider uppercase">Status dos Pedidos</span>
+        <Card className="border-border/40 bg-card/40 backdrop-blur-md shadow-2xl rounded-3xl overflow-hidden group hover:shadow-glow-primary/10 transition-all duration-500 ring-1 ring-white/5 relative">
+          <CardHeader className="flex flex-row items-center justify-between p-8 pb-0">
+            <CardTitle className="flex items-center gap-4">
+              <div className="p-3 rounded-2xl bg-primary/10 shadow-inner">
+                <PieChart className="h-6 w-6 text-primary" />
+              </div>
+              <span className="font-display tracking-tight text-2xl font-black uppercase gradient-text">Status</span>
             </CardTitle>
             <div className="flex items-center gap-2">
               <Button 
@@ -353,7 +359,7 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Orders by Studio */}
-        <Card className="bg-black/40 border-primary/20 backdrop-blur-xl hover:border-primary/40 transition-all duration-500">
+        <Card className="border-border/40 bg-card/40 backdrop-blur-md shadow-2xl rounded-3xl overflow-hidden group hover:shadow-glow-primary/10 transition-all duration-500 ring-1 ring-white/5">
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="flex items-center gap-3">
               <Printer className="h-5 w-5 text-primary" />
@@ -419,7 +425,7 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
         </Card>
 
         {/* Collaborator Performance */}
-        <Card className="bg-black/40 border-primary/20 backdrop-blur-xl hover:border-primary/40 transition-all duration-500">
+        <Card className="border-border/40 bg-card/40 backdrop-blur-md shadow-2xl rounded-3xl overflow-hidden group hover:shadow-glow-primary/10 transition-all duration-500 ring-1 ring-white/5">
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="flex items-center gap-3">
               <Users className="h-5 w-5 text-primary" />

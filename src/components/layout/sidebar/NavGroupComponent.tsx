@@ -48,13 +48,18 @@ export const NavGroupComponent = memo(function NavGroupComponent({
       <Button
         variant="ghost"
         onClick={() => toggleGroup(group.id)}
-        className={cn("w-full justify-between gap-3 h-10 px-3", "hover:bg-sidebar-muted/50 hover:text-sidebar-foreground", "text-sidebar-foreground/70", hasActiveItem && "text-sidebar-foreground font-medium")}
+        className={cn(
+          "w-full justify-between gap-3 h-12 px-4 rounded-xl transition-all duration-300", 
+          "hover:bg-primary/[0.04] hover:text-primary", 
+          "text-muted-foreground/80", 
+          hasActiveItem && "text-primary font-bold bg-primary/[0.02]"
+        )}
         aria-expanded={isOpen}
         aria-controls={`nav-group-${group.id}`}
       >
         <div className="flex items-center gap-3">
-          <Icon className={cn("h-4 w-4 shrink-0", hasActiveItem && "text-primary")} />
-          <span className="text-sm">{group.label}</span>
+          <Icon className={cn("h-5 w-5 shrink-0 transition-transform duration-300", hasActiveItem && "text-primary")} />
+          <span className="text-sm tracking-tight">{group.label}</span>
         </div>
         <motion.div animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.2 }}>
           <ChevronDown className="h-4 w-4 opacity-50" />
