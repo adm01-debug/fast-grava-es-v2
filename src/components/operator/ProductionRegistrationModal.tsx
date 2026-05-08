@@ -274,7 +274,24 @@ export function ProductionRegistrationModal({
               </p>
             </div>
 
-            {/* Notes */}
+            {/* Loss Category */}
+            {lostPieces > 0 && (
+              <div className="space-y-2 animate-in slide-in-from-top-2 duration-300">
+                <Label htmlFor="loss_category">Motivo da Perda</Label>
+                <Select value={lossCategory || ''} onValueChange={setLossCategory}>
+                  <SelectTrigger className="bg-background">
+                    <SelectValue placeholder="Selecione o motivo..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="setup_error">Erro de Setup</SelectItem>
+                    <SelectItem value="material_defect">Defeito de Material</SelectItem>
+                    <SelectItem value="machine_fail">Falha de Máquina</SelectItem>
+                    <SelectItem value="process_deviation">Desvio de Processo</SelectItem>
+                    <SelectItem value="other">Outros</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
             <div className="space-y-2">
               <Label htmlFor="notes">Observações</Label>
               <Textarea
