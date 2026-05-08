@@ -84,15 +84,18 @@ export function TPMReports() {
         maintenanceTypes.find(t => t.id === r.maintenance_type_id)?.name || r.maintenance_type_id,
         r.status === 'approved' ? 'Aprovada' : r.status === 'completed' ? 'Aguardando Revisão' : 'Em andamento',
         r.performed_by_name || 'N/A',
-        `${r.downtime_minutes} min`
+        `${r.downtime_minutes} min`,
+        r.adjustment_parameters ? `Passadas: ${r.adjustment_parameters.squeegee_passes || '-'}\nPressão: ${r.adjustment_parameters.pressure || '-'}\nVelocidade: ${r.adjustment_parameters.speed || '-'}\nTemp: ${r.adjustment_parameters.temperature || '-'}` : '-'
       ]);
 
       (doc as any).autoTable({
         startY: 70,
-        head: [['Data', 'Máquina', 'Tipo', 'Status', 'Executado por', 'Downtime']],
+        head: [['Data', 'Máquina', 'Tipo', 'Status', 'Executado por', 'Downtime', 'Regulagem']],
         body: tableData,
         theme: 'striped',
         headStyles: { fillColor: [59, 130, 246] },
+        styles: { fontSize: 8 },
+        columnStyles: { 6: { cellWidth: 40 } }
       });
 
       doc.save(`relatorio-tpm-${format(new Date(), 'yyyy-MM-dd')}.pdf`);

@@ -185,7 +185,12 @@ export function MaintenanceExecutionModal({
         if (settings.pressure && adjustmentParams.pressure !== settings.pressure) {
           alerts.push(`Pressão: Informado ${adjustmentParams.pressure}, Recomendado ${settings.pressure}`);
         }
-        // ... mais validações se necessário
+        if (settings.speed && adjustmentParams.speed !== settings.speed) {
+          alerts.push(`Velocidade: Informado ${adjustmentParams.speed}, Recomendado ${settings.speed}`);
+        }
+        if (settings.temperature && adjustmentParams.temperature !== settings.temperature) {
+          alerts.push(`Temperatura: Informado ${adjustmentParams.temperature}, Recomendado ${settings.temperature}`);
+        }
       }
 
       if (alerts.length > 0) {
