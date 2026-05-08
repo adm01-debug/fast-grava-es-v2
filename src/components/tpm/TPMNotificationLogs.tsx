@@ -43,7 +43,7 @@ export function TPMNotificationLogs() {
     const csvContent = [
       headers.join(','),
       ...filteredLogs.map(log => [
-        format(new Date(log.sent_at), 'dd/MM/yyyy HH:mm'),
+        log.sent_at ? format(new Date(log.sent_at), 'dd/MM/yyyy HH:mm') : '',
         log.machine?.name || '',
         log.channel,
         log.severity,
