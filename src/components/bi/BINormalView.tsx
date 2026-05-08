@@ -102,7 +102,7 @@ export function BINormalView({ biMetrics, kpis, oeeData, getPeriodLabel, onDrill
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard onClick={() => onDrillDown('VISÃO OEE', 'all')} title="OEE Geral" value={`${oeeData.overallOEE.toFixed(1)}%`} subtitle="Eficiência Global dos Equipamentos" icon={Gauge} variant={oeeData.overallOEE >= 85 ? 'success' : oeeData.overallOEE >= 65 ? 'warning' : 'danger'} />
         <StatCard onClick={() => onDrillDown('PEDIDOS COM PERDAS', 'lost')} title="Taxa de Qualidade" value={`${oeeData.overallQuality.toFixed(1)}%`} subtitle={`${biMetrics.periodLostPieces.toLocaleString()} peças perdidas`} icon={Target} variant={oeeData.overallQuality >= 95 ? 'success' : oeeData.overallQuality >= 85 ? 'warning' : 'danger'} />
-        <StatCard onClick={() => onDrillDown('JOBS CONCLUÍDOS', 'finished')} title="Jobs Concluídos" value={biMetrics.periodCompletedJobs} subtitle={`de ${biMetrics.periodJobs} no período`} icon={CheckCircle} trend={biMetrics.productionTrend} trendValue={`${biMetrics.trendPercentage}% vs período anterior`} />
+        <StatCard onClick={() => onDrillDown('RECEITA ESTIMADA', 'revenue')} title="Receita Estimada" value={`R$ ${(biMetrics.periodCompletedPieces * 2.5).toLocaleString()}`} subtitle="Projeção baseada na produção" icon={TrendingUp} variant="success" />
         <StatCard onClick={() => onDrillDown('PEDIDOS PRODUZIDOS', 'finished')} title="Peças Produzidas" value={biMetrics.periodCompletedPieces.toLocaleString()} subtitle={`Taxa de perda: ${biMetrics.periodLossRate.toFixed(2)}%`} icon={Package} variant={biMetrics.periodLossRate > 5 ? 'warning' : 'success'} />
       </div>
 
