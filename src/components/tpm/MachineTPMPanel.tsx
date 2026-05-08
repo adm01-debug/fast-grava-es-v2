@@ -2,10 +2,12 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Wrench, Calendar, History, Plus, AlertTriangle, CheckCircle2, Clock } from 'lucide-react';
+import { Wrench, Calendar, History, Plus, AlertTriangle, CheckCircle2, Clock, Settings, Layout } from 'lucide-react';
 import { useTPM } from '@/hooks/useTPM';
 import { format, isPast, isToday, differenceInDays } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { TPMSeverityConfigs } from './TPMSeverityConfigs';
 
 interface MachineTPMPanelProps {
   machineId: string;
@@ -37,8 +39,18 @@ export function MachineTPMPanel({ machineId, onStartMaintenance, onOpenCreateSch
   };
 
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <Tabs defaultValue="overview" className="space-y-6">
+      <TabsList className="grid w-full grid-cols-2 max-w-[400px]">
+        <TabsTrigger value="overview" className="flex items-center gap-2">
+          <Layout className="h-4 w-4" /> Visão Geral
+        </TabsTrigger>
+        <TabsTrigger value="notifications" className="flex items-center gap-2">
+          <Settings className="h-4 w-4" /> Notificações
+        </TabsTrigger>
+      </TabsList>
+
+      <TabsContent value="overview" className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Next Schedules */}
         <Card className="glass-card border-primary/20">
           <CardHeader className="pb-3">
@@ -144,6 +156,19 @@ export function MachineTPMPanel({ machineId, onStartMaintenance, onOpenCreateSch
           Ver Painel TPM Completo <Clock className="h-3 w-3" />
         </Button>
       </div>
-    </div>
+    </TabsContent>
+
+    <TabsContent value="notifications">
+      <Card className="glass-card">
+        <CardHeader>
+          <CardTitle className="text-lg">Regras de Severidade Específicas</CardTitle>
+          <CardDescription>Defina regras personalizadas de notificação para esta máquina.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <TPMSeverityConfigs machineId={machineId} />
+        </CardContent>
+      </Card>
+    </TabsContent>
+  </Tabs>
   );
 }
