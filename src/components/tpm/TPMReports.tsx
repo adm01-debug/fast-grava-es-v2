@@ -81,7 +81,7 @@ export function TPMReports() {
         format(new Date(r.started_at), 'dd/MM/yyyy'),
         r.machine?.name || 'N/A',
         maintenanceTypes.find(t => t.id === r.maintenance_type_id)?.name || r.maintenance_type_id,
-        r.status === 'completed' ? 'Concluída' : 'Em andamento',
+        r.status === 'approved' ? 'Aprovada' : r.status === 'completed' ? 'Aguardando Revisão' : 'Em andamento',
         r.performed_by_name || 'N/A',
         `${r.downtime_minutes} min`
       ]);
@@ -138,7 +138,7 @@ export function TPMReports() {
         'Máquina': r.machine?.name || 'N/A',
         'Código Máquina': r.machine?.code || 'N/A',
         'Tipo Manutenção': maintenanceTypes.find(t => t.id === r.maintenance_type_id)?.name || r.maintenance_type_id,
-        'Status': r.status === 'completed' ? 'Concluída' : 'Em andamento',
+        'Status': r.status === 'approved' ? 'Aprovada' : r.status === 'completed' ? 'Aguardando Revisão' : 'Em andamento',
         'Executado por': r.performed_by_name || 'N/A',
         'Downtime (min)': r.downtime_minutes,
         'Custo': r.total_cost,
