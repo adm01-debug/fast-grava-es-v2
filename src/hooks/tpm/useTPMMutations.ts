@@ -129,6 +129,7 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
           checklist_version: data.checklist_version,
           checklist_snapshot: data.checklist_snapshot,
           technical_sheet_id: data.technical_sheet_id,
+          technical_sheet_version: data.technical_sheet_version,
           adjustment_parameters: data.adjustment_parameters,
         })
         .eq('id', data.record_id);
