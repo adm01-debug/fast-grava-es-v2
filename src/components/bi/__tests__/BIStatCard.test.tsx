@@ -43,6 +43,9 @@ describe('BIStatCard', () => {
     );
     
     expect(screen.getByText('+5%')).toBeInTheDocument();
+    const trendIcon = screen.getByTestId('trend-icon');
+    expect(trendIcon).toBeInTheDocument();
+    expect(trendIcon).toHaveClass('text-success');
   });
 
   it('applies variant styles correctly', () => {
@@ -60,6 +63,7 @@ describe('BIStatCard', () => {
     expect(card.className).toContain('bg-primary/5');
   });
 });
+
 
 
 
