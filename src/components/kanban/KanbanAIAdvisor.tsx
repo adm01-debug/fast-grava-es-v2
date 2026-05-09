@@ -251,7 +251,7 @@ export function KanbanAIAdvisor() {
                   </div>
                   
                   <div className="space-y-2">
-                    <p className="text-xs font-bold">{a.machineName}</p>
+                    <p className="text-xs font-bold">{a.techniqueName}</p>
                     <p className="text-[11px] leading-relaxed text-muted-foreground">
                       {a.message}
                     </p>
