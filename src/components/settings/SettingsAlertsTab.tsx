@@ -7,6 +7,7 @@ import { AlertTriangle, Save, RotateCcw } from 'lucide-react';
 interface AlertThresholds {
   lowBuffer: number; criticalBuffer: number; delayedJobMinutes: number;
   oeeWarning: number; oeeCritical: number; energyPeakKw: number;
+  bottleneckRiskMinutes: number; estimatedLoadLimitPercentage: number;
 }
 
 interface SettingsAlertsTabProps {
