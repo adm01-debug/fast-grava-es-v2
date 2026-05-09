@@ -160,10 +160,13 @@ export function KioskMode({
                 )}>
                   <CardContent className="p-4">
                     {/* Header */}
-                    <div className="flex items-start justify-between mb-3">
+                    <div className="flex items-start justify-between mb-2">
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold truncate">{job.client}</h3>
-                        <p className="text-sm text-muted-foreground truncate">{job.product}</p>
+                        <div className="flex items-center gap-1.5">
+                           <span className="text-[10px] font-mono text-muted-foreground">{job.orderNumber}</span>
+                           <h3 className="font-bold truncate text-lg leading-tight">{job.client}</h3>
+                        </div>
+                        <p className="text-xs text-muted-foreground truncate">{job.product}</p>
                       </div>
                       <Badge className={priority.color}>{priority.label}</Badge>
                     </div>
