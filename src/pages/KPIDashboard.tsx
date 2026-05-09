@@ -383,9 +383,16 @@ export default function KPIDashboard() {
                           )}>
                             {kpis.lossRate.toFixed(2)}%
                           </p>
-                          <p className="text-xs text-muted-foreground mt-1 truncate">
-                            {kpis.lostPieces.toLocaleString()} peças perdidas
-                          </p>
+                          <div className="flex items-center gap-1.5 mt-0.5">
+                            <Badge variant="outline" className={cn(
+                              "h-5 px-1 text-[10px] gap-0.5 border-none bg-transparent",
+                              kpis.comparison.lossRateDiff <= 0 ? "text-green-400" : "text-primary"
+                            )}>
+                              {kpis.comparison.lossRateDiff <= 0 ? <TrendingDown className="h-3 w-3" /> : <TrendingUp className="h-3 w-3" />}
+                              {Math.abs(kpis.comparison.lossRateDiff).toFixed(2)}%
+                            </Badge>
+                            <span className="text-[10px] text-muted-foreground truncate">vs anterior</span>
+                          </div>
                         </div>
                         <div className={cn(
                           "h-10 w-10 sm:h-12 sm:w-12 rounded-xl flex items-center justify-center flex-shrink-0",
