@@ -6,13 +6,15 @@ import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useKPIs, formatDuration } from '@/hooks/useKPIs';
 import { useOperatorProductivity } from '@/hooks/useOperatorProductivity';
+import { useGoalAlerts } from '@/hooks/useGoalAlerts';
+import { useDataExport } from '@/hooks/useDataExport';
 import { 
   BarChart, 
   Bar, 
   XAxis, 
   YAxis, 
   CartesianGrid, 
-  Tooltip, 
+  Tooltip as RechartsTooltip, 
   ResponsiveContainer,
   PieChart,
   Pie,
@@ -36,7 +38,9 @@ import {
   Settings2,
   Calendar,
   Search,
-  ArrowUpRight
+  ArrowUpRight,
+  Download,
+  Filter
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
@@ -46,11 +50,22 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { 
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+  DropdownMenuLabel
+} from '@/components/ui/dropdown-menu';
 
 export default function KPIDashboard() {
   const [activeTab, setActiveTab] = useState('overview');
   const { data: kpis, isLoading: isLoadingKPIs } = useKPIs();
   const { operators, isLoading: isLoadingOperators } = useOperatorProductivity('all');
+  const { goalAlerts } = useGoalAlerts({ enableNotifications: false });
+  const { exportToExcel, exportToPDF } = useDataExport();
+  const [searchTerm, setSearchTerm] = useState('');
 
   const isLoading = isLoadingKPIs || isLoadingOperators;
 
@@ -108,16 +123,37 @@ export default function KPIDashboard() {
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" className="gap-2 glass-button">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="gap-2 glass-button">
+                  <Download className="h-4 w-4" />
+                  Exportar
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuLabel>Formato do Relatório</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => exportToExcel(kpis.productivityByMachine, 'kpi-maquinas')}>
+                  Excel (.xlsx)
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => exportToPDF('kpi-dashboard-content', 'kpi-dashboard')}>
+                  PDF (.pdf)
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            
+            <Button variant="outline" size="sm" className="gap-2 glass-button hidden sm:flex">
               <Calendar className="h-4 w-4" />
               Últimos 7 dias
             </Button>
             <Button variant="outline" size="icon" className="glass-button h-9 w-9">
-              <Settings2 className="h-4 w-4" />
+              <Filter className="h-4 w-4" />
             </Button>
             <VoiceButton />
           </div>
         </div>
+
+        <div id="kpi-dashboard-content" className="space-y-6">
 
         <Tabs defaultValue="overview" className="w-full" onValueChange={setActiveTab}>
           <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4 mb-6">
@@ -273,7 +309,7 @@ export default function KPIDashboard() {
                       <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
                       <XAxis dataKey="date" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
                       <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
-                      <Tooltip 
+                      <RechartsTooltip 
                         contentStyle={{ 
                           backgroundColor: 'hsl(var(--card))', 
                           border: '1px solid hsl(var(--border))',
@@ -313,7 +349,7 @@ export default function KPIDashboard() {
                           <Cell key={`cell-${index}`} fill={entry.color} />
                         ))}
                       </Pie>
-                      <Tooltip 
+                      <RechartsTooltip 
                         contentStyle={{ 
                           backgroundColor: 'hsl(var(--card))', 
                           border: '1px solid hsl(var(--border))',
@@ -372,7 +408,12 @@ export default function KPIDashboard() {
                   </div>
                   <div className="relative w-64">
                     <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                    <Input placeholder="Filtrar máquinas..." className="pl-8 h-9" />
+                    <Input 
+                      placeholder="Filtrar máquinas..." 
+                      className="pl-8 h-9" 
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                    />
                   </div>
                 </div>
               </CardHeader>
@@ -390,7 +431,9 @@ export default function KPIDashboard() {
                       </tr>
                     </thead>
                     <tbody>
-                      {kpis.productivityByMachine.map((machine) => (
+                      {kpis.productivityByMachine
+                        .filter(m => m.machineName.toLowerCase().includes(searchTerm.toLowerCase()))
+                        .map((machine) => (
                         <tr key={machine.machineId} className="border-b border-border/30 hover:bg-muted/10 transition-colors">
                           <td className="py-4 px-4">
                             <div className="flex flex-col">
@@ -532,6 +575,39 @@ export default function KPIDashboard() {
           </TabsContent>
 
           <TabsContent value="alerts" className="space-y-6">
+            {goalAlerts.length > 0 && (
+              <Card className="glass-card border-amber-500/20 bg-amber-500/5">
+                <CardHeader>
+                  <CardTitle className="text-lg flex items-center gap-2 text-amber-500">
+                    <Target className="h-5 w-5" />
+                    Alertas de Metas de Operadores
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {goalAlerts.map(alert => (
+                    <div key={alert.goalId} className={cn(
+                      "p-4 rounded-xl border flex items-center justify-between",
+                      alert.riskLevel === 'critical' ? "bg-red-500/10 border-red-500/20" : "bg-amber-500/10 border-amber-500/20"
+                    )}>
+                      <div>
+                        <p className="font-bold text-sm">{alert.operatorName}</p>
+                        <p className="text-xs text-muted-foreground">{alert.message}</p>
+                      </div>
+                      <div className="text-right">
+                        <span className={cn(
+                          "text-lg font-bold",
+                          alert.riskLevel === 'critical' ? "text-red-500" : "text-amber-500"
+                        )}>
+                          {alert.progressPercentage.toFixed(0)}%
+                        </span>
+                        <Progress value={alert.progressPercentage} className="h-1 w-16 mt-1" />
+                      </div>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+            )}
+
             <Card className="glass-card">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -589,6 +665,7 @@ export default function KPIDashboard() {
             </Card>
           </TabsContent>
         </Tabs>
+        </div>
       </div>
     </MainLayout>
   );
