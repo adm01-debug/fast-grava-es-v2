@@ -115,7 +115,7 @@ export function PlanningEfficiencyDashboard() {
               <Clock className="h-5 w-5 text-green-400" />
             </div>
           </div>
-          <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider mb-1">
+          <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest mb-1">
             {stats.hasHighBottleneck ? "⚠️ RISCO DE GARGALO" : "Saúde dos Prazos"}
           </p>
           <div className="flex items-end gap-2 mb-3">
