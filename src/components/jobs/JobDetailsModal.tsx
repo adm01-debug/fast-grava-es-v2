@@ -5,6 +5,10 @@ import { Separator } from "@/components/ui/separator";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { 
   Calendar, 
   Clock, 
@@ -23,10 +27,14 @@ import {
   Copy,
   History,
   DollarSign,
-  Activity
+  Activity,
+  Pencil,
+  Trash2,
+  Save,
+  X
 } from "lucide-react";
 import { useSchedulingData } from "@/hooks/useSchedulingData";
-import { DbJob } from "@/hooks/useJobs";
+import { DbJob, useUpdateJob, useDeleteJob } from "@/hooks/useJobs";
 import { JobQRCode } from "@/components/qrcode/JobQRCode";
 import { useDuplicateJob } from "@/hooks/useDuplicateJob";
 import { useEntityAuditTrail } from "@/hooks/useAuditTrail";
@@ -37,8 +45,25 @@ import { JobCostsTab } from "./JobCostsTab";
 import { JobTraceabilityTab } from "./JobTraceabilityTab";
 import { JobQualityTab } from "./JobQualityTab";
 import { JobInstructionsTab } from "./JobInstructionsTab";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useDataExport } from "@/hooks/useDataExport";
+import { useConfirmation } from "@/contexts/ConfirmationContext";
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { toast } from "sonner";
+
+const jobEditSchema = z.object({
+  order_number: z.string().min(1, 'Número da OS é obrigatório'),
+  client: z.string().min(1, 'Cliente é obrigatório'),
+  product: z.string().min(1, 'Produto é obrigatório'),
+  quantity: z.number().min(1, 'Quantidade é obrigatória'),
+  gravure_color: z.string().optional(),
+  notes: z.string().optional(),
+  priority: z.string(),
+});
+
+type JobEditValues = z.infer<typeof jobEditSchema>;
 
 interface JobDetailsModalProps {
   job: DbJob | null;
