@@ -143,7 +143,54 @@ export default function MachinesPage() {
     <MainLayout>
       <div className="space-y-6">
         <Breadcrumbs />
-        
+
+        <AnimatePresence>
+          {selectedMachines.size > 0 && (
+            <motion.div 
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 50 }}
+              className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-card border border-primary/20 shadow-2xl rounded-full px-6 py-3 flex items-center gap-6 glass-card"
+            >
+              <div className="flex items-center gap-2 border-r border-border pr-6">
+                <Badge variant="primary" className="h-6 w-6 rounded-full p-0 flex items-center justify-center">
+                  {selectedMachines.size}
+                </Badge>
+                <span className="text-sm font-medium">Máquinas selecionadas</span>
+              </div>
+              
+              <div className="flex items-center gap-3">
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  className="h-9 gap-2 border-success/30 text-success hover:bg-success/10 hover:text-success"
+                  onClick={() => handleToggleBulk(true)}
+                >
+                  <CheckCircle2 className="h-4 w-4" />
+                  Ativar
+                </Button>
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  className="h-9 gap-2 border-warning/30 text-warning hover:bg-warning/10 hover:text-warning"
+                  onClick={() => handleToggleBulk(false)}
+                >
+                  <XCircle className="h-4 w-4" />
+                  Desativar
+                </Button>
+                <Button 
+                  size="sm" 
+                  variant="ghost" 
+                  className="h-9 text-muted-foreground"
+                  onClick={() => setSelectedMachines(new Set())}
+                >
+                  Cancelar
+                </Button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl font-display font-bold gradient-text">Máquinas</h1>
