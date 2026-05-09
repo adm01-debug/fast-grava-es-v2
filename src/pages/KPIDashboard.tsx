@@ -62,7 +62,10 @@ import {
 
 export default function KPIDashboard() {
   const [activeTab, setActiveTab] = useState('overview');
-  const { data: kpis, isLoading: isLoadingKPIs } = useKPIs();
+  const [period, setPeriod] = useState<KPIPeriod>('all');
+  const [customTargets, setCustomTargets] = useState<Partial<KPITargets>>({});
+  
+  const { data: kpis, isLoading: isLoadingKPIs } = useKPIs(period, customTargets);
   const { operators, isLoading: isLoadingOperators } = useOperatorProductivity('all');
   const { goalAlerts } = useGoalAlerts({ enableNotifications: false });
   const { handleExport } = useBIExport({ periodJobsList: [] });
@@ -73,6 +76,8 @@ export default function KPIDashboard() {
     loss: true,
     delayed: true
   });
+  
+  const [isEditingTargets, setIsEditingTargets] = useState(false);
 
   const isLoading = isLoadingKPIs || isLoadingOperators;
 
