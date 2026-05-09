@@ -18,6 +18,8 @@ import { BalancingTab } from '@/components/efficiency/BalancingTab';
 import { BottlenecksTab } from '@/components/efficiency/BottlenecksTab';
 import { HistoryTab } from '@/components/efficiency/HistoryTab';
 import { EfficiencyAlertHistoryWidget } from '@/components/dashboard/EfficiencyAlertHistoryWidget';
+import { OEELoadTrendWidget } from '@/components/dashboard/OEELoadTrendWidget';
+import { LeaderboardWidget } from '@/components/dashboard/LeaderboardWidget';
 
 export default function EfficiencyDashboard() {
   const navigate = useNavigate();
@@ -67,6 +69,12 @@ export default function EfficiencyDashboard() {
           <KPITooltip {...KPI_DEFINITIONS.efficiency} trend={avgOccupancy >= 60 ? 'up' : avgOccupancy >= 40 ? 'stable' : 'down'} trendValue={`${avgOccupancy}%`}>
             <Card className="glass-card border-border/50"><CardContent className="p-3 sm:p-4"><div className="flex items-center gap-2 sm:gap-3"><div className="p-2 sm:p-2.5 rounded-xl bg-accent/10"><BarChart3 className="h-4 w-4 sm:h-5 sm:w-5 text-accent" /></div><div className="min-w-0"><p className="text-lg sm:text-2xl font-bold text-foreground">{avgOccupancy}%</p><p className="text-[10px] sm:text-xs text-muted-foreground">Ocupação</p></div></div></CardContent></Card>
           </KPITooltip>
+        </div>
+
+        {/* Historical Trends & Top Performance */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          <OEELoadTrendWidget />
+          <LeaderboardWidget />
         </div>
 
         {/* Main Content Tabs */}
