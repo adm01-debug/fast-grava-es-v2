@@ -75,6 +75,7 @@ export default function TraceabilityPage() {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [sortField, setSortField] = useState<SortField>('production_date');
   const [sortDir, setSortDir] = useState<SortDir>('desc');
+  const [signatureModal, setSignatureModal] = useState<{ open: boolean; status: string }>({ open: false, status: '' });
   const [newLot, setNewLot] = useState({
     lot_number: '', product_name: '', quantity: 0, job_id: '',
     production_date: format(new Date(), 'yyyy-MM-dd'), expiration_date: '', notes: ''
