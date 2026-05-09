@@ -37,6 +37,8 @@ interface EditorBasicInfoProps {
     setup_instructions: string;
     quality_checklist: Array<{ id: string; description: string; required: boolean }>;
     consumables: Array<{ id: string; name: string; quantity: string; alternative?: string }>;
+    gold_standard_image_url: string;
+    failure_standard_image_url: string;
     version: string;
   };
   setFormData: (data: any) => void;
