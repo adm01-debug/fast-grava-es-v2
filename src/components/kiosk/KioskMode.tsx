@@ -201,6 +201,22 @@ export function KioskMode({
                       <span>{status.label}</span>
                     </div>
 
+                    {/* Extra Info Pills */}
+                    <div className="flex flex-wrap gap-1.5 mb-4">
+                       <Badge variant="secondary" className="h-5 px-1.5 text-[9px] bg-secondary/50 flex items-center gap-1">
+                          <Activity className="h-2.5 w-2.5" /> OEE
+                       </Badge>
+                       <Badge variant="secondary" className="h-5 px-1.5 text-[9px] bg-secondary/50 flex items-center gap-1">
+                          <History className="h-2.5 w-2.5" /> Hist.
+                       </Badge>
+                       <Badge variant="secondary" className="h-5 px-1.5 text-[9px] bg-secondary/50 flex items-center gap-1">
+                          <Zap className="h-2.5 w-2.5" /> Ener.
+                       </Badge>
+                       <Badge variant="secondary" className="h-5 px-1.5 text-[9px] bg-secondary/50 flex items-center gap-1">
+                          <DollarSign className="h-2.5 w-2.5" /> ABC
+                       </Badge>
+                    </div>
+
                     {/* Actions */}
                     <div className="flex gap-2">
                       {job.status === "ready" && (
