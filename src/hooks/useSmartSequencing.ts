@@ -180,7 +180,6 @@ export function useSmartSequencing() {
         { period: 'Tarde', load: Math.min(100, (totalMinutes / 240) * 80) },
       ];
 
-      if (estimatedSavings > 0 || totalMinutes > 0) {
         result.push({
           machineId,
           machineName: machine.name,
@@ -193,6 +192,8 @@ export function useSmartSequencing() {
           estimatedColumnTime,
           bottleneckRisk,
           totalMinutes,
+          aiPriorityScore,
+          setupComplexity,
           colorGroups: Array.from(colorGroups.entries()).map(([color, jobs]) => ({
             color,
             jobs,
