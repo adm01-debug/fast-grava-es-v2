@@ -25,7 +25,6 @@ import { toast } from 'sonner';
 import { MachineReliabilityTab } from '@/components/machines/MachineReliabilityTab';
 import { useMTBFMTTR } from '@/hooks/useMTBFMTTR';
 import { useDataExport } from '@/hooks/useDataExport';
-import { useCallback } from 'react';
 
 export default function MachinesPage() {
   const { machines, techniques, isLoadingMachines, getTechniqueById } = useSchedulingData();
