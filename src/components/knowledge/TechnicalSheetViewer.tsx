@@ -106,6 +106,19 @@ export const TechnicalSheetViewer = ({ sheetId, onEdit, onDuplicate }: Technical
         y += 5;
       }
 
+      if (sheet.quality_checklist && sheet.quality_checklist.length > 0) {
+        doc.setFontSize(12);
+        doc.text('Critérios de Qualidade', 14, y);
+        y += 7;
+        doc.setFontSize(9);
+        sheet.quality_checklist.forEach(item => {
+          doc.text(`[ ] ${item.description}${item.required ? ' (OBRIGATÓRIO)' : ''}`, 18, y);
+          y += 5;
+          if (y > 270) { doc.addPage(); y = 20; }
+        });
+        y += 5;
+      }
+
       if (steps.length > 0) {
         doc.setFontSize(12);
         doc.text('Passo a Passo', 14, y);
