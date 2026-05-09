@@ -1,0 +1,185 @@
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Skeleton } from "@/components/ui/skeleton";
+import { 
+  Settings, 
+  Activity, 
+  History, 
+  ShieldAlert,
+  Zap,
+  Info,
+  Clock,
+  Gauge
+} from "lucide-react";
+import { useState } from "react";
+import { useEntityAuditTrail } from "@/hooks/useAuditTrail";
+import { AuditEntryCard } from "@/components/audit/AuditEntryCard";
+import { HistoryPeriodFilter, type HistoryPeriodValue } from "@/components/audit/HistoryPeriodFilter";
+import { MachineReliabilityTab } from "./MachineReliabilityTab";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+
+interface MachineDetailsModalProps {
+  machine: any | null;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}
+
+export function MachineDetailsModal({ machine, open, onOpenChange }: MachineDetailsModalProps) {
+  if (!machine) return null;
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-2xl bg-card border-border/50 backdrop-blur-sm">
+        <DialogHeader>
+          <div className="flex items-center justify-between">
+            <DialogTitle className="text-xl font-bold text-foreground flex items-center gap-2">
+              <Settings className="h-5 w-5 text-primary" />
+              {machine.code} - {machine.name}
+            </DialogTitle>
+            <div className="flex items-center gap-2">
+              <Badge variant="outline" className={machine.status === 'active' ? 'text-green-400 border-green-500/30' : 'text-red-400 border-red-500/30'}>
+                {machine.status === 'active' ? 'Operacional' : 'Manutenção'}
+              </Badge>
+            </div>
+          </div>
+          <DialogDescription>
+            Informações detalhadas, confiabilidade e histórico da máquina.
+          </DialogDescription>
+        </DialogHeader>
+
+        <Tabs defaultValue="details" className="mt-4">
+          <TabsList className="grid w-full grid-cols-3 h-auto">
+            <TabsTrigger value="details" className="text-xs">
+              <Info className="h-3 w-3 mr-1.5" />
+              Detalhes
+            </TabsTrigger>
+            <TabsTrigger value="reliability" className="text-xs">
+              <ShieldAlert className="h-3 w-3 mr-1.5" />
+              Confiabilidade
+            </TabsTrigger>
+            <TabsTrigger value="history" className="text-xs">
+              <History className="h-3 w-3 mr-1.5" />
+              Histórico
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="details" className="space-y-6 mt-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="p-4 rounded-xl bg-muted/20 border border-border/30">
+                <p className="text-[10px] text-muted-foreground uppercase font-bold mb-2">Capacidade e Performance</p>
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-xs text-muted-foreground flex items-center gap-1.5">
+                      <Zap className="h-3 w-3" /> Setup Médio
+                    </span>
+                    <span className="text-sm font-medium">15 min</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-xs text-muted-foreground flex items-center gap-1.5">
+                      <Clock className="h-3 w-3" /> Turnos
+                    </span>
+                    <span className="text-sm font-medium">1º e 2º</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-xs text-muted-foreground flex items-center gap-1.5">
+                      <Gauge className="h-3 w-3" /> Carga Atual
+                    </span>
+                    <span className="text-sm font-medium">65%</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="p-4 rounded-xl bg-muted/20 border border-border/30">
+                <p className="text-[10px] text-muted-foreground uppercase font-bold mb-2">Especificações</p>
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-xs text-muted-foreground">Fabricante</span>
+                    <span className="text-sm font-medium">Indústria X</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-xs text-muted-foreground">Ano</span>
+                    <span className="text-sm font-medium">2022</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-xs text-muted-foreground">Técnica Principal</span>
+                    <span className="text-sm font-medium">Serigrafia</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-4 rounded-xl bg-primary/5 border border-primary/20">
+              <h4 className="text-xs font-bold mb-3 flex items-center gap-2">
+                <Activity className="h-3.5 w-3.5" />
+                Saúde em Tempo Real (Métricas OEE)
+              </h4>
+              <div className="grid grid-cols-3 gap-4">
+                <div className="text-center">
+                  <p className="text-[9px] text-muted-foreground uppercase mb-1">Disponibilidade</p>
+                  <p className="text-lg font-bold">92%</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-[9px] text-muted-foreground uppercase mb-1">Performance</p>
+                  <p className="text-lg font-bold">88%</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-[9px] text-muted-foreground uppercase mb-1">Qualidade</p>
+                  <p className="text-lg font-bold">99.2%</p>
+                </div>
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="reliability">
+            <div className="mt-4">
+              <MachineReliabilityTab machineId={machine.id} />
+            </div>
+          </TabsContent>
+
+          <TabsContent value="history">
+            <MachineHistoryTab machineId={machine.id} />
+          </TabsContent>
+        </Tabs>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function MachineHistoryTab({ machineId }: { machineId: string }) {
+  const [period, setPeriod] = useState<HistoryPeriodValue>({ preset: 'all' });
+  const { data, isLoading, error } = useEntityAuditTrail('machines', machineId, {
+    fromDate: period.fromDate,
+    toDate: period.toDate,
+  });
+
+  return (
+    <div className="mt-4">
+      <HistoryPeriodFilter value={period} onChange={setPeriod} resultCount={data?.length} />
+      {isLoading ? (
+        <div className="space-y-3">
+          <Skeleton className="h-24 w-full" />
+          <Skeleton className="h-24 w-full" />
+          <Skeleton className="h-24 w-full" />
+        </div>
+      ) : error ? (
+        <div className="text-sm text-destructive p-4 border border-destructive/30 rounded-md bg-destructive/10">
+          Não foi possível carregar o histórico.
+        </div>
+      ) : !data || data.length === 0 ? (
+        <div className="text-sm text-muted-foreground text-center py-12 border border-dashed rounded-xl">
+          Nenhum registro encontrado no período selecionado.
+        </div>
+      ) : (
+        <ScrollArea className="h-[420px] pr-4">
+          <div className="space-y-3 pb-4">
+            {data.map((entry) => (
+              <AuditEntryCard key={entry.id} entry={entry} />
+            ))}
+          </div>
+        </ScrollArea>
+      )}
+    </div>
+  );
+}
