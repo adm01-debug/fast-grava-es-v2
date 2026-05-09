@@ -26,7 +26,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
@@ -355,12 +355,13 @@ function InventoryHistoryTable() {
             <th className="text-left p-4 font-bold text-[10px] uppercase tracking-widest text-muted-foreground">Tipo</th>
             <th className="text-right p-4 font-bold text-[10px] uppercase tracking-widest text-muted-foreground">Qtd</th>
             <th className="text-left p-4 font-bold text-[10px] uppercase tracking-widest text-muted-foreground">Usuário</th>
-            <th className="text-left p-4 font-bold text-[10px] uppercase tracking-widest text-muted-foreground">Motivo</th>
+            <th className="text-left p-4 font-bold text-[10px] uppercase tracking-widest text-muted-foreground">Motivo / Local</th>
+            <th className="text-center p-4 font-bold text-[10px] uppercase tracking-widest text-muted-foreground">Ações</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-border/30">
           {movements?.map((m: any) => (
-            <tr key={m.id} className="hover:bg-muted/10 transition-colors">
+            <tr key={m.id} className="hover:bg-muted/10 transition-colors group">
               <td className="p-4 text-xs font-medium">
                 {format(new Date(m.created_at), "dd/MM/yy HH:mm", { locale: ptBR })}
               </td>
@@ -374,23 +375,44 @@ function InventoryHistoryTable() {
                     "text-[9px] font-black uppercase",
                     m.type === 'IN' ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" : 
                     m.type === 'OUT' ? "bg-red-500/10 text-red-500 border-red-500/20" : 
-                    "bg-blue-500/10 text-blue-500 border-blue-500/20"
+                    m.type === 'TRANSFER' ? "bg-blue-500/10 text-blue-500 border-blue-500/20" :
+                    "bg-amber-500/10 text-amber-500 border-amber-500/20"
                   )}
                 >
-                  {m.type === 'IN' ? 'Entrada' : m.type === 'OUT' ? 'Saída' : 'Ajuste'}
+                  {m.type === 'IN' ? 'Entrada' : m.type === 'OUT' ? 'Saída' : m.type === 'TRANSFER' ? 'Transf.' : 'Ajuste'}
                 </Badge>
               </td>
               <td className={cn(
                 "p-4 text-right font-black",
-                m.type === 'IN' ? "text-emerald-500" : "text-red-500"
+                m.type === 'IN' ? "text-emerald-500" : m.type === 'OUT' ? "text-red-500" : "text-blue-500"
               )}>
-                {m.type === 'IN' ? '+' : '-'}{m.quantity}
+                {m.type === 'IN' ? '+' : m.type === 'OUT' ? '-' : ''}{m.quantity || (m.type === 'TRANSFER' ? '→' : '')}
               </td>
               <td className="p-4 text-xs text-muted-foreground">
                 {m.profiles?.display_name || 'Sistema'}
               </td>
-              <td className="p-4 text-xs text-muted-foreground italic">
-                {m.reason || '-'}
+              <td className="p-4 text-xs text-muted-foreground">
+                <div className="flex flex-col">
+                  <span className="italic">{m.reason || '-'}</span>
+                  {m.type === 'TRANSFER' && (
+                    <span className="text-[10px] font-bold text-primary mt-1">
+                      {m.from_location} → {m.to_location}
+                    </span>
+                  )}
+                </div>
+              </td>
+              <td className="p-4 text-center">
+                {m.type !== 'ADJUST' && (
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-red-500"
+                    onClick={() => handleRollback(m)}
+                    title="Desfazer Movimentação"
+                  >
+                    <TrendingDown className="h-4 w-4 rotate-180" />
+                  </Button>
+                )}
               </td>
             </tr>
           ))}
