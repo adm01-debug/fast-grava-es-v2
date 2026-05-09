@@ -175,7 +175,21 @@ export function SmartSequencingPanel() {
           </DialogHeader>
 
           {suggestionToDetail && (
-            <div className="space-y-6 my-4">
+            <div className="space-y-6 my-4 overflow-x-hidden">
+              <div className="flex items-center gap-2 p-3 rounded-lg bg-primary/5 border border-primary/20">
+                <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-black text-xs">
+                  {suggestionToDetail.aiPriorityScore}
+                </div>
+                <div>
+                  <p className="text-[10px] font-black text-primary uppercase tracking-widest leading-none">Score de Prioridade IA</p>
+                  <p className="text-[11px] text-muted-foreground mt-0.5">Baseado em criticidade de jobs e otimização de setup</p>
+                </div>
+                <div className="ml-auto flex items-center gap-1">
+                   <div className="w-1.5 h-1.5 rounded-full bg-primary animate-ping" />
+                   <span className="text-[9px] font-bold text-primary uppercase">Alta Eficiência</span>
+                </div>
+              </div>
+
               <div className="grid grid-cols-2 gap-4">
                 <Card className="bg-muted/30 border-none p-4">
                   <h4 className="text-[10px] font-bold text-muted-foreground uppercase mb-3">Status Atual</h4>
