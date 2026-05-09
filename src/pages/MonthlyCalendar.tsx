@@ -156,11 +156,13 @@ export default function MonthlyCalendar() {
                 <div className="grid grid-cols-7 gap-1.5">
                   {days.map((day) => {
                     const k = format(day, 'yyyy-MM-dd');
-                    const count = jobsByDay[k] || 0;
+                    const dayJobs = jobsByDay[k] || [];
+                    const count = dayJobs.length;
                     const ratio = count / maxJobsInDay;
                     const inMonth = isSameMonth(day, selectedDate);
                     const today = isToday(day);
                     const selected = isSameDay(day, selectedDate);
+
 
                     return (
                       <Popover key={k}>
