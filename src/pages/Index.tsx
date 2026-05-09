@@ -111,7 +111,11 @@ const COORDINATOR_ONLY_WIDGETS = ['sequencing', 'loadbalancing', 'bottleneck', '
 
 const Index = () => {
   const { t } = useTranslation();
-  const { stats, machines, isLoading, isOperator } = useOperatorDashboardData();
+  const [dateRange, setDateRange] = useState<DateRange | undefined>({
+    from: startOfDay(new Date()),
+    to: endOfDay(new Date()),
+  });
+  const { stats, machines, isLoading, isOperator } = useOperatorDashboardData(dateRange);
   const { profile } = useAuth();
   useSmartDelayAlerts(); // Run background delay monitoring
   const {
