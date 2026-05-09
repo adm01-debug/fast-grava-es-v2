@@ -21,6 +21,8 @@ export interface SequencingSuggestion {
   optimizedSequence: DbJob[];
   estimatedSavings: number; // minutes saved
   colorGroups: ColorGroup[];
+  bottleneckRisk: 'low' | 'medium' | 'high';
+  totalMinutes: number;
 }
 
 export interface ColorGroup {

@@ -313,7 +313,7 @@ export function PlanningEfficiencyDashboard() {
         )}
       </AnimatePresence>
 
-      <div className="md:col-span-2 lg:col-span-4 flex justify-center -mt-2">
+      <div className="md:col-span-2 lg:col-span-4 flex justify-between items-center -mt-2">
         <Button 
           variant="ghost" 
           size="sm" 
@@ -326,6 +326,23 @@ export function PlanningEfficiencyDashboard() {
             <>Ver Histórico e Tendências de OEE <ChevronDown className="h-3 w-3" /></>
           )}
         </Button>
+
+        {hasSuggestions && (
+          <Button 
+            size="sm" 
+            variant="outline"
+            disabled={isApplying}
+            className="text-[10px] uppercase font-bold tracking-widest gap-2 bg-primary/5 border-primary/20 hover:bg-primary/10 hover:border-primary/40 text-primary animate-in fade-in zoom-in duration-500"
+            onClick={handleBulkOptimization}
+          >
+            {isApplying ? (
+              <Activity className="h-3 w-3 animate-spin" />
+            ) : (
+              <Sparkles className="h-3 w-3" />
+            )}
+            {isApplying ? 'Otimizando...' : 'Executar Otimização em Massa'}
+          </Button>
+        )}
       </div>
     </div>
   );
