@@ -34,6 +34,7 @@ const TechnicalKnowledgeBase = lazy(() => import("@/pages/TechnicalKnowledgeBase
 const DesignSystemPage = lazy(() => import("@/pages/DesignSystemPage"));
 const NewJobPage = lazy(() => import("@/pages/NewJobPage"));
 const MachinesPage = lazy(() => import("@/pages/MachinesPage"));
+const InventoryPage = lazy(() => import("@/pages/InventoryPage"));
 const OperatorsPage = lazy(() => import("@/pages/OperatorsPage"));
 const OperatorProductivityPage = lazy(() => import("@/pages/OperatorProductivityPage"));
 const OEEDashboard = lazy(() => import("@/pages/OEEDashboard"));
@@ -143,6 +144,7 @@ export function AnimatedRoutes() {
         <Route path="/machines" element={<ProtectedPage fallback={<ListPageSkeleton />} allowedRoles={['coordinator', 'manager']}><MachinesPage /></ProtectedPage>} />
         <Route path="/machines/compare" element={<ProtectedPage fallback={<KPIPageSkeleton />} allowedRoles={['coordinator', 'manager']}><MachineComparisonPage /></ProtectedPage>} />
         <Route path="/energy" element={<ProtectedPage fallback={<KPIPageSkeleton />} allowedRoles={['coordinator', 'manager']}><EnergyDashboard /></ProtectedPage>} />
+        <Route path="/inventory" element={<ProtectedPage fallback={<ListPageSkeleton />} allowedRoles={['coordinator', 'manager']}><InventoryPage /></ProtectedPage>} />
 
         {/* Quality & Traceability */}
         <Route path="/traceability" element={<ProtectedPage fallback={<ListPageSkeleton />} allowedRoles={['coordinator', 'manager']}><TraceabilityPage /></ProtectedPage>} />

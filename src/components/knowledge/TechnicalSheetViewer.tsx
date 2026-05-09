@@ -33,9 +33,11 @@ import {
   useTechnicalSheetFavorites,
   useTechnicalSheetMutations 
 } from '@/hooks/useTechnicalSheets';
+import { useInventory } from '@/hooks/useInventory';
 import { KnowledgeSheetQRCode } from './KnowledgeSheetQRCode';
 import { KnowledgeStatusBadge } from './KnowledgeStatusBadge';
 import { toast } from 'sonner';
+import { cn } from '@/lib/utils';
 
 interface TechnicalSheetViewerProps {
   sheetId: string;
@@ -47,6 +49,7 @@ export const TechnicalSheetViewer = ({ sheetId, onEdit, onDuplicate }: Technical
   const { sheet, steps, sheetMaterials, tips, isLoading } = useTechnicalSheetDetails(sheetId);
   const { data: auditLogs = [], isLoading: isLoadingAudit } = useTechnicalSheetAudit(sheetId);
   const { data: favorites = [] } = useTechnicalSheetFavorites();
+  const { items: inventoryItems } = useInventory();
   const { toggleFavorite } = useTechnicalSheetMutations();
   const [checklistMode, setChecklistMode] = useState(false);
   const [completedSteps, setCompletedSteps] = useState<Set<string>>(new Set());
@@ -593,17 +596,41 @@ export const TechnicalSheetViewer = ({ sheetId, onEdit, onDuplicate }: Technical
                           scaledQuantity = `${((num * productionQuantity) / 100).toFixed(2)}${unit}`;
                         }
 
+                        const inventoryItem = inventoryItems.find(i => i.name.toLowerCase().includes(mat.name.toLowerCase()));
+                        const isOutOfStock = inventoryItem ? inventoryItem.current_stock <= 0 : false;
+                        const isLowStock = inventoryItem ? inventoryItem.current_stock <= inventoryItem.min_stock_level : false;
+
                         return (
-                          <div key={idx} className="flex items-start justify-between p-3 bg-muted/30 rounded-lg border border-border/50 group hover:border-primary/30 transition-colors">
-                            <div className="flex flex-col">
-                              <span className="text-sm font-medium">{mat.name}</span>
-                              {mat.notes && (
-                                <span className="text-[10px] text-muted-foreground">{mat.notes}</span>
-                              )}
+                          <div key={idx} className={cn(
+                            "flex flex-col p-3 bg-muted/30 rounded-lg border border-border/50 group hover:border-primary/30 transition-colors",
+                            isOutOfStock && "border-red-500/30 bg-red-500/5",
+                            isLowStock && !isOutOfStock && "border-amber-500/30 bg-amber-500/5"
+                          )}>
+                            <div className="flex items-start justify-between">
+                              <div className="flex flex-col">
+                                <span className="text-sm font-bold">{mat.name}</span>
+                                {mat.notes && (
+                                  <span className="text-[10px] text-muted-foreground">{mat.notes}</span>
+                                )}
+                              </div>
+                              <Badge variant="outline" className="bg-primary/5 text-primary border-primary/20 font-mono text-[10px]">
+                                {scaledQuantity}
+                              </Badge>
                             </div>
-                            <Badge variant="outline" className="bg-primary/5 text-primary border-primary/20 font-mono text-[10px]">
-                              {scaledQuantity}
-                            </Badge>
+                            
+                            {inventoryItem && (
+                              <div className="mt-2 pt-2 border-t border-border/30 flex items-center justify-between">
+                                <span className={cn(
+                                  "text-[9px] font-black uppercase tracking-tighter",
+                                  isOutOfStock ? "text-red-500" : isLowStock ? "text-amber-600" : "text-emerald-600"
+                                )}>
+                                  {isOutOfStock ? "SEM ESTOQUE" : isLowStock ? "ESTOQUE CRÍTICO" : "DISPONÍVEL"}
+                                </span>
+                                <span className="text-[10px] font-bold text-muted-foreground">
+                                  Saldo: {inventoryItem.current_stock} {inventoryItem.unit}
+                                </span>
+                              </div>
+                            )}
                           </div>
                         );
                       })}

@@ -21,6 +21,7 @@ import { useSmartDelayAlerts } from '@/hooks/useSmartDelayAlerts';
 
 import { VoiceButton } from '@/components/voice/VoiceCommands';
 import { ActivityFeedWidget } from '@/components/dashboard/ActivityFeedWidget';
+import { InventoryAlertsWidget } from '@/components/dashboard/InventoryAlertsWidget';
 import { BufferPromotionStatus } from '@/components/dashboard/BufferPromotionStatus';
 import { LiveMachineStatusPanel } from '@/components/dashboard/LiveMachineStatusPanel';
 import { AutoShiftSummary } from '@/components/shift/AutoShiftSummary';
@@ -324,6 +325,7 @@ const Index = () => {
                 <ScrollArea className="flex-1">
                   <div className="space-y-4 pr-2">
                     <AutoShiftSummary />
+                    <InventoryAlertsWidget />
                     <OperatorGoalsWidget />
                     <ShiftHandoverWidget />
                     <LeaderboardWidget />
