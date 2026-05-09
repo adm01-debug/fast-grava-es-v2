@@ -168,6 +168,7 @@ export function AnimatedRoutes() {
         <Route path="/settings" element={<ProtectedPage fallback={<DashboardPageSkeleton />} allowedRoles={['coordinator', 'manager']}><SettingsPage /></ProtectedPage>} />
         <Route path="/security" element={<ProtectedPage fallback={<DashboardPageSkeleton />} allowedRoles={['coordinator', 'manager']}><SecurityDashboard /></ProtectedPage>} />
         <Route path="/audit" element={<ProtectedPage fallback={<ListPageSkeleton />} allowedRoles={['coordinator', 'manager']}><AuditTrailPage /></ProtectedPage>} />
+        <Route path="/master-api" element={<ProtectedPage fallback={<KPIPageSkeleton />} allowedRoles={['coordinator', 'manager']}><MasterAPIPage /></ProtectedPage>} />
         <Route path="/code-quality" element={<ProtectedPage fallback={<KPIPageSkeleton />} allowedRoles={['coordinator', 'manager']}><CodeQualityDashboard /></ProtectedPage>} />
         <Route path="/admin/telemetria" element={<ProtectedPage fallback={<KPIPageSkeleton />} allowedRoles={['coordinator', 'manager']}><AdminTelemetriaPage /></ProtectedPage>} />
 
