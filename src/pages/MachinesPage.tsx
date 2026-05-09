@@ -243,7 +243,12 @@ export default function MachinesPage() {
               </Card>
             );
           })}
-        </div>
+          </TabsContent>
+
+          <TabsContent value="heatmap">
+             <FactoryHeatmap machines={machines} techniques={techniques} />
+          </TabsContent>
+        </Tabs>
 
         {/* Machine Profile / TPM Dialog */}
         <Dialog open={!!selectedMachine} onOpenChange={() => setSelectedMachine(null)}>
