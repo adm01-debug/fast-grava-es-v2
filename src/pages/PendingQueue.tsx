@@ -460,6 +460,14 @@ export default function PendingQueue() {
               <Table>
                 <TableHeader>
                   <TableRow className="border-border/50 hover:bg-transparent">
+                    <TableHead className="w-[40px]">
+                      <input 
+                        type="checkbox" 
+                        checked={selectedJobs.size === filteredJobs.length && filteredJobs.length > 0}
+                        onChange={handleSelectAll}
+                        className="rounded border-border accent-primary"
+                      />
+                    </TableHead>
                     <TableHead 
                       className="cursor-pointer hover:text-foreground transition-colors w-[100px]"
                       onClick={() => handleSort('orderNumber')}
