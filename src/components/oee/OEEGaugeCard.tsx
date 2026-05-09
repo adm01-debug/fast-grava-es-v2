@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
+import { TrendingUp, TrendingDown } from 'lucide-react';
 
 interface OEEGaugeCardProps {
   title: string;
@@ -9,6 +10,7 @@ interface OEEGaugeCardProps {
   description?: string;
   benchmark?: number;
   size?: 'sm' | 'md' | 'lg';
+  trend?: number;
 }
 
 export function OEEGaugeCard({ 
