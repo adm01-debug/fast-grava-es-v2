@@ -22,6 +22,12 @@ import { useKPIs } from '@/hooks/useKPIs';
 import { useEnergy } from '@/hooks/useEnergy';
 
 export default function DigitalTwin() {
+  const { data: kpiData } = useKPIs('day');
+  const { totalEnergyToday } = useEnergy();
+
+  const oee = kpiData?.productivityByTechnique?.[0]?.occupancyRate || 92.4;
+  const machinesCount = kpiData?.totalJobs || 0;
+
   return (
     <MainLayout>
       <Helmet>
@@ -60,13 +66,13 @@ export default function DigitalTwin() {
                   <CardHeader className="pb-2">
                     <CardTitle className="text-xs font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
                       <Zap className="h-4 w-4 text-yellow-500" />
-                      Consumo Energético Total
+                      Consumo Energético Real
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-3xl font-black">42.5 <span className="text-sm font-bold text-muted-foreground">kW/h</span></p>
+                    <p className="text-3xl font-black">{totalEnergyToday.toFixed(1)} <span className="text-sm font-bold text-muted-foreground">kW/h</span></p>
                     <div className="mt-2 flex items-center gap-1 text-emerald-500 text-[10px] font-bold">
-                       <TrendingUp className="h-3 w-3" /> -12% vs Ontem
+                       <TrendingUp className="h-3 w-3" /> Sincronizado com Fábrica
                     </div>
                   </CardContent>
                </Card>
@@ -79,9 +85,9 @@ export default function DigitalTwin() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-3xl font-black text-primary">92.4 <span className="text-sm font-bold text-muted-foreground">%</span></p>
+                    <p className="text-3xl font-black text-primary">{oee.toFixed(1)} <span className="text-sm font-bold text-muted-foreground">%</span></p>
                     <div className="mt-2 flex items-center gap-1 text-emerald-500 text-[10px] font-bold">
-                       <TrendingUp className="h-3 w-3" /> +2.1% Acima da Meta
+                       <TrendingUp className="h-3 w-3" /> {oee > 90 ? 'Excelente' : 'Abaixo da Meta'}
                     </div>
                   </CardContent>
                </Card>
@@ -90,13 +96,13 @@ export default function DigitalTwin() {
                   <CardHeader className="pb-2">
                     <CardTitle className="text-xs font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
                       <Settings className="h-4 w-4 text-blue-500" />
-                      Utilização da Frota
+                      Frota Ativa
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-3xl font-black">78.0 <span className="text-sm font-bold text-muted-foreground">%</span></p>
+                    <p className="text-3xl font-black">{machinesCount} <span className="text-sm font-bold text-muted-foreground">Estatísticas</span></p>
                     <div className="mt-2 flex items-center gap-1 text-amber-500 text-[10px] font-bold">
-                       <Info className="h-3 w-3" /> 2 Máquinas em Manutenção
+                       <Info className="h-3 w-3" /> {kpiData?.inProgressJobs || 0} OPs em execução
                     </div>
                   </CardContent>
                </Card>
