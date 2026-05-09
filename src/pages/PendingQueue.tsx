@@ -469,8 +469,8 @@ export default function PendingQueue() {
           </div>
           <CollapsibleContent className="animate-accordion-down">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
-              <SmartSequencingWidget />
-              <LoadBalancingWidget />
+              <SmartSequencingPanel />
+              <LoadBalancingPanel />
               <Card className="glass-card">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-sm font-bold flex items-center gap-2">
