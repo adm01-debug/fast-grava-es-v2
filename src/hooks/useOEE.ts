@@ -112,6 +112,8 @@ function getOEEColor(oee: number): string {
 }
 
 export function useOEE(daysBack: number = 30) {
+  // Always use at least 30 days for better historical trends
+  const effectiveDaysBack = Math.max(daysBack, 30);
   const { jobs, machines, techniques, isLoading } = useSchedulingData();
   
   const data = useMemo<OEEData | null>(() => {
