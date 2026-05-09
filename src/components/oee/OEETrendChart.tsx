@@ -1,4 +1,7 @@
+import { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { 
   LineChart, 
   Line, 
@@ -12,6 +15,7 @@ import {
 } from 'recharts';
 import { format, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { cn } from '@/lib/utils';
 
 interface TrendDataPoint {
   date: string;
@@ -24,18 +28,50 @@ interface TrendDataPoint {
 interface OEETrendChartProps {
   data: TrendDataPoint[];
   worldClassBenchmark: number;
+  comparison?: {
+    currentOEE: number;
+    previousOEE: number;
+  };
 }
 
-export function OEETrendChart({ data, worldClassBenchmark }: OEETrendChartProps) {
-  const chartData = data.map(d => ({
-    ...d,
-    dateLabel: format(parseISO(d.date), 'dd/MM', { locale: ptBR })
-  }));
+export function OEETrendChart({ data, worldClassBenchmark, comparison }: OEETrendChartProps) {
+  const chartData = useMemo(() => {
+    // Only show the most recent half of the data in the main chart to keep it readable,
+    // while using the full set for the comparison metrics
+    const displayData = data.slice(Math.floor(data.length / 2));
+    return displayData.map(d => ({
+      ...d,
+      dateLabel: format(parseISO(d.date), 'dd/MM', { locale: ptBR })
+    }));
+  }, [data]);
+
+  const oeeDiff = comparison ? comparison.currentOEE - comparison.previousOEE : 0;
+  const isPositive = oeeDiff > 0;
+  const isNegative = oeeDiff < 0;
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Evolução do OEE (Últimos 14 dias)</CardTitle>
+        <CardTitle className="flex items-center justify-between">
+          <span>Evolução do OEE (Timeline Comparativa)</span>
+          {comparison && (
+            <div className="flex items-center gap-2">
+              <Badge variant="outline" className={cn(
+                "flex items-center gap-1 px-2 py-1",
+                isPositive ? "text-emerald-500 border-emerald-500/30 bg-emerald-500/10" : 
+                isNegative ? "text-red-500 border-red-500/30 bg-red-500/10" : 
+                "text-muted-foreground border-border bg-muted/20"
+              )}>
+                {isPositive ? <TrendingUp className="h-3 w-3" /> : 
+                 isNegative ? <TrendingDown className="h-3 w-3" /> : 
+                 <Minus className="h-3 w-3" />}
+                <span className="text-xs font-bold">
+                  {isPositive ? '+' : ''}{oeeDiff.toFixed(1)}% vs período anterior
+                </span>
+              </Badge>
+            </div>
+          )}
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="h-80">
