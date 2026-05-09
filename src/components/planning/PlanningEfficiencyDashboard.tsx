@@ -171,9 +171,9 @@ export function PlanningEfficiencyDashboard() {
               <Badge variant="destructive" className="text-[8px] px-1 py-0 h-4">RISCO ALTO</Badge>
             )}
           </div>
-          <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider mb-1">Confiabilidade de Ativos</p>
+          <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest mb-1">Confiabilidade de Ativos</p>
           <div className="flex items-end gap-2 mb-3">
-            <h3 className="text-3xl font-bold font-display">{Math.round(reliabilitySummary.averageAvailability)}<span className="text-lg opacity-50">%</span></h3>
+            <h3 className="text-3xl font-black font-display tracking-tighter">{Math.round(reliabilitySummary.averageAvailability)}<span className="text-lg opacity-50">%</span></h3>
             <div className="text-[10px] text-muted-foreground font-bold flex items-center mb-1 uppercase">
               Disponibilidade
             </div>
