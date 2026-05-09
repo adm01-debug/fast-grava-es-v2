@@ -1,5 +1,5 @@
 import { Badge } from '@/components/ui/badge';
-import { TechnicalSheet } from '@/hooks/useTechnicalSheets';
+import { TechnicalSheet } from '@/hooks/technical-sheets/technicalSheetsTypes';
 import { CheckCircle2, FileEdit, AlertCircle } from 'lucide-react';
 
 interface KnowledgeStatusBadgeProps {

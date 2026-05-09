@@ -6,7 +6,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Search, Plus, Clock, ChevronRight, FileText, Star, TrendingUp } from 'lucide-react';
-import { TechnicalSheet } from '@/hooks/useTechnicalSheets';
+import { TechnicalSheet } from '@/hooks/technical-sheets/technicalSheetsTypes';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { KnowledgeStatusBadge } from './KnowledgeStatusBadge';
 
@@ -119,7 +119,7 @@ export const KnowledgeSheetList = ({
                 Favoritos
               </div>
               <div className="space-y-2">
-                {Object.values(sheets).flat().filter(s => favorites.includes(s.id)).map(sheet => (
+                {sheets.filter(s => favorites.includes(s.id)).map(sheet => (
                   <button
                     key={`fav-${sheet.id}`}
                     onClick={() => onSheetClick(sheet.id)}
