@@ -85,6 +85,8 @@ export const TechnicalSheetEditor = ({ sheetId, techniques, categories, material
         setup_instructions: sheet.setup_instructions || '',
         quality_checklist: sheet.quality_checklist || [],
         consumables: sheet.consumables || [],
+        gold_standard_image_url: sheet.gold_standard_image_url || '',
+        failure_standard_image_url: sheet.failure_standard_image_url || '',
         version: sheet.version?.toString() || '1'
       });
     }
