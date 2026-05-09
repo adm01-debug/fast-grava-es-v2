@@ -237,9 +237,15 @@ export const TechnicalSheetViewer = ({ sheetId, onEdit, onDuplicate }: Technical
                 <KnowledgeStatusBadge status={sheet.status} />
                 <Badge variant="outline" className="text-[10px] font-bold">v{sheet.version || '1'}</Badge>
               </div>
-              <div className="flex items-center gap-2 mt-1">
-                <span className="text-[10px] text-muted-foreground uppercase font-semibold">Última atualização:</span>
-                <span className="text-[10px] text-muted-foreground">{format(new Date(sheet.updated_at), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}</span>
+              <div className="flex items-center gap-4 mt-1">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[10px] text-muted-foreground uppercase font-semibold">Última atualização:</span>
+                  <span className="text-[10px] text-muted-foreground">{format(new Date(sheet.updated_at), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <TrendingUp className="h-3 w-3 text-emerald-500" />
+                  <span className="text-[10px] text-muted-foreground font-semibold uppercase">{sheet.view_count || 0} ACESSOS</span>
+                </div>
               </div>
               {sheet.description && (
                 <p className="text-sm text-muted-foreground mt-2">{sheet.description}</p>
