@@ -242,11 +242,11 @@ export function LoadBalancingPanel() {
                 <ul className="text-[11px] space-y-2 text-muted-foreground">
                   <li className="flex items-start gap-2">
                     <div className="w-1 h-1 rounded-full bg-blue-400 mt-1.5" />
-                    Esta transferência reduzirá o tempo de espera na fila da máquina {selectedSuggestion.currentMachineCode} em aproximadamente 45 minutos.
+                    Esta transferência reduzirá o tempo de espera na fila da máquina {selectedSuggestion.currentMachineId.split('-')[0]} em aproximadamente 45 minutos.
                   </li>
                   <li className="flex items-start gap-2">
                     <div className="w-1 h-1 rounded-full bg-blue-400 mt-1.5" />
-                    A máquina {selectedSuggestion.suggestedMachineCode} possui capacidade ociosa compatível com a técnica exigida.
+                    A máquina {selectedSuggestion.suggestedMachineId.split('-')[0]} possui capacidade ociosa compatível com a técnica exigida.
                   </li>
                   <li className="flex items-start gap-2">
                     <div className="w-1 h-1 rounded-full bg-blue-400 mt-1.5" />
