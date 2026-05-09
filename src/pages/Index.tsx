@@ -50,7 +50,8 @@ import {
   MessageCircle,
   FileText,
   Brain,
-  Users
+  Users,
+  ShieldCheck
 } from 'lucide-react';
 
 
@@ -173,10 +174,13 @@ const Index = () => {
         {/* Compact Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5 px-1 shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-1 h-8 rounded-full gradient-primary" />
-            <h1 className="text-2xl font-display font-bold tracking-tight">
+            <div className="w-1.5 h-8 rounded-full gradient-primary animate-pulse-glow" />
+            <h1 className="text-3xl font-display font-black tracking-tighter">
               <span className="gradient-text">{t('dashboard.title')}</span>
             </h1>
+            <Badge variant="outline" className="hidden sm:flex gap-1.5 px-2.5 border-primary/30 bg-primary/5 text-primary text-[10px] font-black uppercase">
+               <ShieldCheck className="h-3 w-3" /> Orquestrado 10/10
+            </Badge>
             <FavoriteButton path="/" name={t('dashboard.title')} />
             {isOperator && (
               <Badge variant="secondary" className="gap-1 text-xs glass">

@@ -2,7 +2,8 @@ import {
   Calendar, CalendarDays, CalendarRange, LayoutGrid, List, AlertTriangle, Settings, Users, Home,
   BarChart3, Gauge, Coins, Wrench, Brain, Code2, Zap, Bot, QrCode, RefreshCw,
   BookOpen, Palette, Download, Bell, ArrowRightLeft, Package, Activity, FileDown,
-  Trophy, BatteryCharging, FileText, Cog, TrendingUp, Cpu, UserCircle, ShieldCheck
+  Trophy, BatteryCharging, FileText, Cog, TrendingUp, Cpu, UserCircle, ShieldCheck,
+  Factory
 } from 'lucide-react';
 import { NavGroup } from './NavGroupComponent';
 import { NavItem } from './NavButton';
@@ -18,7 +19,7 @@ export const navGroups: NavGroup[] = [
   ]},
   { id: 'analytics', icon: BarChart3, label: 'Analytics', items: [
     { icon: BarChart3, label: 'BI Executivo', href: '/bi' },
-    { icon: FileDown, label: 'Fábrica Autônoma', href: '/executive' },
+    { icon: Factory, label: 'Fábrica Autônoma', href: '/executive' },
     { icon: FileText, label: 'Construtor de Relatórios', href: '/report-builder' },
     { icon: TrendingUp, label: 'KPIs e Ocupação', href: '/kpis' },
     { icon: Gauge, label: 'OEE', href: '/oee' },

@@ -146,62 +146,79 @@ export default function ExecutiveDashboard() {
 
   return (
     <MainLayout>
-      <div className="p-4 sm:p-6 lg:p-8 space-y-6 animate-fade-in-up">
-        <Breadcrumbs />
+      <div className="p-4 sm:p-6 lg:p-8 space-y-10 animate-fade-in-up">
+        <Breadcrumbs className="mb-0" />
         
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <div className="flex-1">
-            <div className="flex items-center gap-3">
-              <h1 className="text-2xl sm:text-3xl font-display font-bold">
-                <span className="gradient-text animate-pulse-glow">Fábrica Autônoma 360</span>
-              </h1>
-              <Badge variant="outline" className="gap-1 px-2 border-primary/30 bg-primary/5 text-primary animate-pulse">
-                <ShieldCheck className="h-3 w-3" /> Ecossistema: 10/10
-              </Badge>
+        {/* Header Section */}
+        <div className="flex flex-col xl:flex-row justify-between items-start xl:items-end gap-6 pb-2 border-b border-border/40">
+          <div className="space-y-1.5 flex-1">
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="p-2.5 rounded-2xl bg-primary shadow-glow-primary animate-float">
+                <ShieldCheck className="h-6 w-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-3xl sm:text-4xl font-display font-black tracking-tighter">
+                  <span className="gradient-text animate-pulse-glow">Fábrica Autônoma 360</span>
+                </h1>
+                <div className="flex flex-wrap items-center gap-2 mt-1">
+                  <Badge variant="outline" className="gap-1.5 px-2.5 py-0.5 border-primary/30 bg-primary/5 text-primary text-[10px] font-black uppercase tracking-widest">
+                    <div className="w-1.5 h-1.5 rounded-full bg-primary animate-ping" />
+                    Status: Ecossistema 10/10
+                  </Badge>
+                  <Badge variant="secondary" className="text-[10px] font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-600 dark:text-emerald-500 border-emerald-500/20">
+                    Governança Total Ativa
+                  </Badge>
+                </div>
+              </div>
             </div>
-            <p className="text-muted-foreground mt-1 font-medium italic">Orquestração Inteligente & Governança de Dados Industrial</p>
+            <p className="text-muted-foreground text-sm font-medium italic pl-1">
+              Orquestração Inteligente & Governança de Dados Industrial de Alta Performance
+            </p>
           </div>
           
-          <div className="flex items-center gap-3">
-            <VoiceButton onCommand={(cmd) => {
-              if (cmd.startsWith('search:')) {
-                toast.info(`Busca: ${cmd.replace('search:', '')}`);
-              }
-            }} />
+          <div className="flex flex-wrap items-center gap-3 w-full xl:w-auto">
+            <div className="flex-1 xl:flex-none">
+              <VoiceButton onCommand={(cmd) => {
+                if (cmd.startsWith('search:')) {
+                  toast.info(`Busca: ${cmd.replace('search:', '')}`);
+                }
+              }} />
+            </div>
             
-            <Select 
-              value={selectedRange.label} 
-              onValueChange={(value) => {
-                const preset = datePresets.find(p => p.label === value);
-                if (preset) setSelectedRange(preset);
-              }}
-            >
-              <SelectTrigger className="w-[180px]">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {datePresets.map(preset => (
-                  <SelectItem key={preset.label} value={preset.label}>
-                    {preset.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className="flex gap-2 flex-1 xl:flex-none">
+              <Select 
+                value={selectedRange.label} 
+                onValueChange={(value) => {
+                  const preset = datePresets.find(p => p.label === value);
+                  if (preset) setSelectedRange(preset);
+                }}
+              >
+                <SelectTrigger className="w-full xl:w-[200px] h-11 rounded-xl glass-card font-bold text-xs uppercase tracking-wider">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="rounded-xl border-primary/20">
+                  {datePresets.map(preset => (
+                    <SelectItem key={preset.label} value={preset.label} className="font-bold text-xs">
+                      {preset.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
 
-            <Button onClick={handleExportPDF} className="gap-2">
-              <FileDown className="h-4 w-4" />
-              Exportar PDF
-            </Button>
+              <Button onClick={handleExportPDF} className="gap-2 h-11 rounded-xl gradient-primary font-black uppercase tracking-widest text-xs px-6 shadow-glow-primary hover:scale-105 active:scale-95 transition-all">
+                <FileDown className="h-4 w-4" />
+                Exportar
+              </Button>
+            </div>
           </div>
         </div>
 
         {/* Autonomous Control & North Star Metric Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          <div className="lg:col-span-1">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 h-[420px]">
+          <div className="lg:col-span-1 h-full overflow-hidden">
              <AutonomousEventLog />
           </div>
-          <Card className="glass-card lg:col-span-1 border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
+          <Card className="glass-card lg:col-span-1 border-primary/20 bg-gradient-to-br from-primary/5 to-transparent h-full flex flex-col">
             <CardHeader className="pb-0">
               <CardTitle className="text-sm font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
                 <Target className="h-4 w-4 text-primary" />
@@ -249,7 +266,7 @@ export default function ExecutiveDashboard() {
             </CardContent>
           </Card>
 
-          <Card className="glass-card lg:col-span-2 border-amber-500/20 bg-gradient-to-br from-amber-500/5 to-transparent relative overflow-hidden group">
+          <Card className="glass-card lg:col-span-2 border-amber-500/20 bg-gradient-to-br from-amber-500/5 to-transparent relative overflow-hidden group h-full flex flex-col">
             <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
               <Zap className="h-32 w-32 text-amber-500" />
             </div>
@@ -260,8 +277,8 @@ export default function ExecutiveDashboard() {
               </CardTitle>
               <CardDescription>Análise inteligente de performance do período</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-start gap-4">
+            <CardContent className="space-y-4 flex-1 overflow-y-auto pr-2 custom-scrollbar">
+              <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-start gap-4 hover:bg-amber-500/15 transition-all duration-300">
                 <div className="h-10 w-10 rounded-full bg-amber-500/20 flex items-center justify-center flex-shrink-0">
                   <TrendingUp className="h-5 w-5 text-amber-600" />
                 </div>
@@ -273,7 +290,7 @@ export default function ExecutiveDashboard() {
                 </div>
               </div>
               
-              <div className="p-4 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-start gap-4">
+              <div className="p-4 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-start gap-4 hover:bg-blue-500/15 transition-all duration-300">
                 <div className="h-10 w-10 rounded-full bg-blue-500/20 flex items-center justify-center flex-shrink-0">
                   <Clock className="h-5 w-5 text-blue-600" />
                 </div>
@@ -281,6 +298,18 @@ export default function ExecutiveDashboard() {
                   <h4 className="font-bold text-sm">Previsão de Gargalo</h4>
                   <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
                     Com base no volume de <span className="text-foreground font-semibold">{kpis.totalJobsInProgress} jobs</span> em produção, prevemos um pico de demanda nas próximas 48h. Recomendamos antecipar a manutenção das máquinas auxiliares.
+                  </p>
+                </div>
+              </div>
+
+              <div className="p-4 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-start gap-4 hover:bg-purple-500/15 transition-all duration-300">
+                <div className="h-10 w-10 rounded-full bg-purple-500/20 flex items-center justify-center flex-shrink-0">
+                  <BrainCircuit className="h-5 w-5 text-purple-600" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-sm">Governança Industrial Automática</h4>
+                  <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+                    Integridade de dados auditada em <span className="text-foreground font-semibold">100% dos processos</span>. Sincronização em tempo real com Bitrix24 garantindo orquestração 10/10.
                   </p>
                 </div>
               </div>
