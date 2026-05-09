@@ -142,6 +142,9 @@ export function MainLayout({ children }: MainLayoutProps) {
         <Suspense fallback={EmptyFallback}>
           <NotificationIntegrator />
         </Suspense>
+        <Suspense fallback={EmptyFallback}>
+          <CommandPaletteAdvanced />
+        </Suspense>
       </div>
     </SessionProvider>
   );
