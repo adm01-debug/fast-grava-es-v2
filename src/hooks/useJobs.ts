@@ -44,6 +44,9 @@ export interface DbTechnique {
   short_name: string;
   color: string;
   setup_time: number;
+  low_threshold: number | null;
+  medium_threshold: number | null;
+  high_threshold: number | null;
 }
 
 export interface DbMachine {

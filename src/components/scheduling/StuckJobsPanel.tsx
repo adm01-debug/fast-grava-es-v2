@@ -29,7 +29,7 @@ export function StuckJobsPanel() {
             <div className="p-1.5 rounded-lg bg-destructive/20">
               <AlertCircle className="h-4 w-4 text-destructive" />
             </div>
-            <span className="text-destructive font-bold uppercase tracking-wider text-[11px]">Jobs Possivelmente Travados</span>
+            <span className="text-destructive font-bold uppercase tracking-wider text-[11px]">Risco: Jobs Parados</span>
           </div>
           <Badge variant="destructive" className="h-5 px-1.5 text-[10px] animate-pulse">
             {stuckJobs.length} {stuckJobs.length === 1 ? 'Job' : 'Jobs'}

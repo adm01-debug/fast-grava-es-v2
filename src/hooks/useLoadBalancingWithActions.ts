@@ -169,11 +169,13 @@ export function useLoadBalancingWithActions(targetDate?: Date) {
       const technique = techniques.find(t => t.id === machine.technique_id);
       if (!technique) return;
 
+      const dailyCapacity = technique.medium_threshold || DAILY_CAPACITY_MINUTES;
+
       machineLoads.set(machine.id, {
         machine,
         technique,
         scheduledMinutes: 0,
-        availableMinutes: DAILY_CAPACITY_MINUTES,
+        availableMinutes: dailyCapacity,
         occupancyRate: 0,
         jobCount: 0,
         jobs: []
@@ -198,8 +200,9 @@ export function useLoadBalancingWithActions(targetDate?: Date) {
 
     // Calculate occupancy rates
     machineLoads.forEach(load => {
-      load.occupancyRate = Math.min(100, (load.scheduledMinutes / DAILY_CAPACITY_MINUTES) * 100);
-      load.availableMinutes = Math.max(0, DAILY_CAPACITY_MINUTES - load.scheduledMinutes);
+      const dailyCapacity = load.technique.medium_threshold || DAILY_CAPACITY_MINUTES;
+      load.occupancyRate = Math.min(100, (load.scheduledMinutes / dailyCapacity) * 100);
+      load.availableMinutes = Math.max(0, dailyCapacity - load.scheduledMinutes);
     });
 
     // Group by technique and find imbalances

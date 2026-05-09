@@ -130,14 +130,34 @@ export function useDataExport(tableName: TableName) {
       const formattedFileName = fileName ?? `audit_export_${format(new Date(), 'yyyy-MM-dd')}`;
       
       if (formatType === 'pdf') {
-        // Simple PDF simulation since we don't have a library like jspdf easily available without adding it
-        // and we want to avoid complex dependencies if possible.
-        // For a real production app, we would use a PDF library or an Edge Function.
-        toast.info('Geração de PDF iniciada...');
-        // In a real scenario, we'd call a PDF generation service or library.
-        // For now, let's keep CSV as primary and mention PDF in UI is coming or simulated.
-        const csv = convertToCSV(data as Record<string, unknown>[]);
-        downloadFile(csv, `${formattedFileName}.csv`, 'text/csv');
+        const { default: jsPDF } = await import('jspdf');
+        const { default: autoTable } = await import('jspdf-autotable');
+        
+        const doc = new jsPDF();
+        doc.setFontSize(16);
+        doc.text(`Relatório de Auditoria - ${filters.entityType || 'Geral'}`, 14, 15);
+        doc.setFontSize(10);
+        doc.text(`Data: ${format(new Date(), 'dd/MM/yyyy HH:mm')}`, 14, 22);
+
+        const tableHeaders = ['Data', 'Ação', 'Usuário', 'Entidade', 'Campos Alterados'];
+        const tableBody = data.map((entry: any) => [
+          format(new Date(entry.created_at), 'dd/MM/yy HH:mm'),
+          entry.action,
+          entry.actor_email || entry.actor_id || 'Sistema',
+          `${entry.entity_type} (#${entry.entity_id.slice(0, 8)})`,
+          entry.changed_fields?.join(', ') || '-'
+        ]);
+
+        autoTable(doc, {
+          startY: 28,
+          head: [tableHeaders],
+          body: tableBody,
+          theme: 'striped',
+          styles: { fontSize: 8 },
+          headStyles: { fillColor: [59, 130, 246] }
+        });
+
+        doc.save(`${formattedFileName}.pdf`);
       } else {
         const csv = convertToCSV(data as Record<string, unknown>[]);
         downloadFile(csv, `${formattedFileName}.csv`, 'text/csv');

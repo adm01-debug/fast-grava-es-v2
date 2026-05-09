@@ -3578,7 +3578,10 @@ export type Database = {
         Row: {
           color: string
           created_at: string
+          high_threshold: number | null
           id: string
+          low_threshold: number | null
+          medium_threshold: number | null
           name: string
           setup_time: number
           short_name: string
@@ -3586,7 +3589,10 @@ export type Database = {
         Insert: {
           color: string
           created_at?: string
+          high_threshold?: number | null
           id: string
+          low_threshold?: number | null
+          medium_threshold?: number | null
           name: string
           setup_time?: number
           short_name: string
@@ -3594,7 +3600,10 @@ export type Database = {
         Update: {
           color?: string
           created_at?: string
+          high_threshold?: number | null
           id?: string
+          low_threshold?: number | null
+          medium_threshold?: number | null
           name?: string
           setup_time?: number
           short_name?: string

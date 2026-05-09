@@ -197,7 +197,6 @@ export function useSmartSequencingWithActions() {
     const result: SequencingSuggestion[] = [];
     const today = new Date();
     
-    // Validate date before using
     if (!today || isNaN(today.getTime())) {
       if (import.meta.env.DEV) console.warn('[useSmartSequencingWithActions] Invalid current date');
       return [];
@@ -208,16 +207,14 @@ export function useSmartSequencingWithActions() {
     tomorrow.setDate(tomorrow.getDate() + 1);
     let suggestionId = 0;
 
-    // Group scheduled jobs by machine for today and tomorrow
     const jobsByMachine = new Map<string, DbJob[]>();
     
     jobs.forEach(job => {
       if (!job.machine_id || !job.scheduled_date) return;
       if (!['scheduled', 'ready', 'queue'].includes(job.status)) return;
       
-      // Validate job scheduled_date
       const jobDate = new Date(job.scheduled_date);
-      if (isNaN(jobDate.getTime())) return; // Skip jobs with invalid dates
+      if (isNaN(jobDate.getTime())) return;
       
       jobDate.setHours(0, 0, 0, 0);
       
@@ -228,7 +225,6 @@ export function useSmartSequencingWithActions() {
       jobsByMachine.set(job.machine_id, existing);
     });
 
-    // Analyze each machine
     jobsByMachine.forEach((machineJobs, machineId) => {
       if (machineJobs.length < 2) return;
 
@@ -238,12 +234,10 @@ export function useSmartSequencingWithActions() {
       const technique = techniques.find(t => t.id === machine.technique_id);
       if (!technique) return;
 
-      // Current sequence (by start time)
       const currentSequence = [...machineJobs].sort((a, b) => 
         (a.start_time || '').localeCompare(b.start_time || '')
       );
 
-      // Group by color
       const colorGroups = new Map<string, DbJob[]>();
       machineJobs.forEach(job => {
         const color = normalizeColor(job.gravure_color);
@@ -252,10 +246,9 @@ export function useSmartSequencingWithActions() {
         colorGroups.set(color, group);
       });
 
-      // Create optimized sequence (grouped by color, maintaining priority within groups)
       const optimizedSequence: DbJob[] = [];
       const sortedColorGroups = Array.from(colorGroups.entries())
-        .sort((a, b) => b[1].length - a[1].length); // Larger groups first
+        .sort((a, b) => b[1].length - a[1].length);
 
       sortedColorGroups.forEach(([_, groupJobs]) => {
         const sortedGroup = groupJobs.sort((a, b) => {
@@ -272,7 +265,13 @@ export function useSmartSequencingWithActions() {
       const estimatedSavings = calculateSetupSavings(currentChanges, optimizedChanges, technique.setup_time);
       const totalMinutes = optimizedSequence.reduce((acc, job) => acc + (job.estimated_duration || 0), 0);
       const totalQuantity = optimizedSequence.reduce((acc, job) => acc + (job.quantity || 0), 0);
-      const bottleneckRisk = totalMinutes > 480 ? 'high' : totalMinutes > 300 ? 'medium' : 'low';
+      
+      // Use dynamic thresholds from technique
+      const lowT = technique.low_threshold || 300;
+      const medT = technique.medium_threshold || 480;
+      const highT = technique.high_threshold || 600;
+      
+      const bottleneckRisk = totalMinutes > medT ? 'high' : totalMinutes > lowT ? 'medium' : 'low';
 
       if (estimatedSavings > 0) {
         result.push({

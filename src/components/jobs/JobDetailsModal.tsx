@@ -358,13 +358,13 @@ function JobHistoryTab({ jobId }: { jobId: string }) {
   });
   const { exportAuditTrail } = useDataExport('jobs' as any);
 
-  const handleExport = useCallback(() => {
+  const handleExport = useCallback((format: 'csv' | 'pdf') => {
     exportAuditTrail({
       entityType: 'jobs',
       entityId: jobId,
       fromDate: period.fromDate,
       toDate: period.toDate,
-    }, `auditoria_job_${jobId.slice(0, 8)}`);
+    }, `auditoria_job_${jobId.slice(0, 8)}`, format);
   }, [jobId, period, exportAuditTrail]);
 
   return (
