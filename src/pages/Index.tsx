@@ -310,6 +310,7 @@ const Index = () => {
                     <DailySummaryCard />
                     <MaintenanceAlertsWidget />
                     <EnergyWidget />
+                    <PredictiveAnalyticsWidget />
                     <SortableWidgetSection
                       widgets={sidebarWidgets}
                       section="sidebar"
