@@ -44,6 +44,7 @@ export const navGroups: NavGroup[] = [
   ]},
   { id: 'intelligence', icon: Brain, label: 'Inteligência', items: [
     { icon: Brain, label: 'ML Preditivo', href: '/ml-predictions' },
+    { icon: Cpu, label: 'Digital Twin', href: '/digital-twin' },
     { icon: Bot, label: 'Assistente IA', href: '/assistant' },
     { icon: BookOpen, label: 'Base de Conhecimento', href: '/knowledge' },
     { icon: FileText, label: 'Documentos', href: '/documents' },

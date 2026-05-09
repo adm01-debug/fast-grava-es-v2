@@ -13,9 +13,14 @@ import {
   AlertTriangle,
   Search,
   Filter,
-  ArrowLeftRight
+  ArrowLeftRight,
+  Map,
+  Boxes,
+  QrCode,
+  TrendingDown
 } from 'lucide-react';
 import { useInventory, useInventoryMovements, InventoryItem } from '@/hooks/useInventory';
+import { WarehouseMap } from '@/components/inventory/WarehouseMap';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { format } from 'date-fns';
@@ -51,6 +56,10 @@ export default function InventoryPage() {
             <p className="text-muted-foreground mt-1">Inventory Intelligence & Controle de Insumos</p>
           </div>
           <div className="flex gap-2">
+             <Button variant="outline" className="gap-2">
+               <QrCode className="h-4 w-4" />
+               Escanear QR
+             </Button>
              <Button className="gap-2">
                <Plus className="h-4 w-4" />
                Novo Item
@@ -58,8 +67,8 @@ export default function InventoryPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card className="glass-card">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <Card className="glass-card hover:shadow-glow-primary transition-all duration-300">
             <CardContent className="pt-6">
               <div className="flex items-center justify-between mb-2">
                 <div className="p-2 bg-primary/10 rounded-lg">
@@ -72,7 +81,7 @@ export default function InventoryPage() {
             </CardContent>
           </Card>
 
-          <Card className={cn("glass-card border-red-500/20", lowStockItems.length > 0 && "bg-red-500/5")}>
+          <Card className={cn("glass-card border-red-500/20", lowStockItems.length > 0 && "bg-red-500/5 shadow-glow-destructive")}>
             <CardContent className="pt-6">
               <div className="flex items-center justify-between mb-2">
                 <div className="p-2 bg-red-500/10 rounded-lg">
@@ -81,7 +90,7 @@ export default function InventoryPage() {
                 {lowStockItems.length > 0 && <Badge variant="destructive" className="animate-pulse">CRÍTICO</Badge>}
               </div>
               <p className="text-3xl font-bold text-red-500">{lowStockItems.length}</p>
-              <p className="text-xs text-muted-foreground uppercase font-semibold tracking-tighter">Itens com Estoque Baixo</p>
+              <p className="text-xs text-muted-foreground uppercase font-semibold tracking-tighter">Estoque Baixo</p>
             </CardContent>
           </Card>
 
@@ -96,6 +105,18 @@ export default function InventoryPage() {
               <p className="text-xs text-muted-foreground uppercase font-semibold tracking-tighter">Movimentações (24h)</p>
             </CardContent>
           </Card>
+
+          <Card className="glass-card">
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between mb-2">
+                <div className="p-2 bg-amber-500/10 rounded-lg">
+                  <TrendingDown className="h-5 w-5 text-amber-500" />
+                </div>
+              </div>
+              <p className="text-3xl font-bold">R$ 12k</p>
+              <p className="text-xs text-muted-foreground uppercase font-semibold tracking-tighter">Valor em Estoque</p>
+            </CardContent>
+          </Card>
         </div>
 
         <Tabs defaultValue="inventory" className="space-y-6">
@@ -104,9 +125,13 @@ export default function InventoryPage() {
               <Package className="h-4 w-4" />
               Estoque Atual
             </TabsTrigger>
+            <TabsTrigger value="wms" className="gap-2">
+              <Map className="h-4 w-4" />
+              Mapa WMS
+            </TabsTrigger>
             <TabsTrigger value="history" className="gap-2">
               <History className="h-4 w-4" />
-              Histórico de Movimentações
+              Histórico
             </TabsTrigger>
           </TabsList>
 
@@ -115,7 +140,7 @@ export default function InventoryPage() {
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input 
-                  placeholder="Buscar material..." 
+                  placeholder="Buscar material por nome, especificação ou localização..." 
                   className="pl-10" 
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
@@ -142,6 +167,35 @@ export default function InventoryPage() {
               ) : filteredItems.map((item) => (
                 <InventoryCard key={item.id} item={item} onMovement={recordMovement} />
               ))}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="wms" className="space-y-6 animate-fade-in">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+               <div className="lg:col-span-2">
+                  <WarehouseMap items={items} />
+               </div>
+               <div className="space-y-6">
+                  <Card className="glass-card">
+                    <CardHeader>
+                      <CardTitle className="text-sm font-display flex items-center gap-2">
+                        <Boxes className="h-4 w-4 text-primary" />
+                        Sugestões de Re-alocação
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                       <div className="p-3 rounded-lg bg-primary/5 border border-primary/20">
+                          <p className="text-xs font-bold uppercase mb-1">Otimização de Fluxo</p>
+                          <p className="text-[11px] text-muted-foreground">
+                            O material "Tinta Azul" tem alto giro. Sugere-se mover de B4 para A1 para facilitar o picking.
+                          </p>
+                       </div>
+                       <Button variant="outline" size="sm" className="w-full text-[10px] font-bold uppercase">
+                          Ver Todas Sugestões (AI)
+                       </Button>
+                    </CardContent>
+                  </Card>
+               </div>
             </div>
           </TabsContent>
 
@@ -176,7 +230,7 @@ function InventoryCard({ item, onMovement }: { item: InventoryItem, onMovement: 
 
   return (
     <Card className={cn(
-      "glass-card hover:border-primary/30 transition-all overflow-hidden",
+      "glass-card hover:border-primary/30 transition-all overflow-hidden hover:shadow-glow-primary group",
       isLowStock && "border-red-500/30"
     )}>
       <CardHeader className="pb-3 border-b border-border/50 bg-muted/20">
@@ -184,11 +238,18 @@ function InventoryCard({ item, onMovement }: { item: InventoryItem, onMovement: 
           <Badge variant="outline" className="text-[9px] uppercase font-black border-primary/20">
             {item.category}
           </Badge>
-          {isLowStock && (
-            <Badge variant="destructive" className="text-[9px] font-black h-5">ESTOQUE BAIXO</Badge>
-          )}
+          <div className="flex gap-1">
+            {item.location && (
+              <Badge variant="secondary" className="text-[9px] font-black h-5 flex items-center gap-1">
+                <Map className="h-2 w-2" /> {item.location}
+              </Badge>
+            )}
+            {isLowStock && (
+              <Badge variant="destructive" className="text-[9px] font-black h-5 animate-pulse">ESTOQUE BAIXO</Badge>
+            )}
+          </div>
         </div>
-        <CardTitle className="text-lg font-bold mt-2">{item.name}</CardTitle>
+        <CardTitle className="text-lg font-bold mt-2 group-hover:text-primary transition-colors">{item.name}</CardTitle>
         <p className="text-xs text-muted-foreground line-clamp-1">{item.specification || 'Sem especificação'}</p>
       </CardHeader>
       <CardContent className="pt-4 space-y-4">
@@ -209,7 +270,7 @@ function InventoryCard({ item, onMovement }: { item: InventoryItem, onMovement: 
           <div 
             className={cn(
               "h-full transition-all",
-              isLowStock ? "bg-red-500" : "bg-primary"
+              isLowStock ? "bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]" : "bg-primary shadow-glow-primary"
             )} 
             style={{ width: `${Math.min(100, (item.current_stock / (item.min_stock_level * 3)) * 100)}%` }}
           />
@@ -218,7 +279,7 @@ function InventoryCard({ item, onMovement }: { item: InventoryItem, onMovement: 
         <div className="flex gap-2">
           <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
             <DialogTrigger asChild>
-              <Button variant="outline" size="sm" className="flex-1 text-xs gap-1.5" onClick={() => setMovementType('IN')}>
+              <Button variant="outline" size="sm" className="flex-1 text-xs gap-1.5 hover:bg-emerald-500/10 hover:text-emerald-500 hover:border-emerald-500/50" onClick={() => setMovementType('IN')}>
                 <ArrowUpRight className="h-3 w-3" /> Entrada
               </Button>
             </DialogTrigger>
@@ -244,11 +305,11 @@ function InventoryCard({ item, onMovement }: { item: InventoryItem, onMovement: 
                   <Input type="number" value={quantity} onChange={(e) => setQuantity(e.target.value)} />
                 </div>
               </div>
-              <Button onClick={handleRecord}>Confirmar Movimentação</Button>
+              <Button onClick={handleRecord} className="w-full">Confirmar Movimentação</Button>
             </DialogContent>
           </Dialog>
 
-          <Button variant="outline" size="sm" className="flex-1 text-xs gap-1.5" onClick={() => { setMovementType('OUT'); setIsModalOpen(true); }}>
+          <Button variant="outline" size="sm" className="flex-1 text-xs gap-1.5 hover:bg-red-500/10 hover:text-red-500 hover:border-red-500/50" onClick={() => { setMovementType('OUT'); setIsModalOpen(true); }}>
             <ArrowDownRight className="h-3 w-3" /> Saída
           </Button>
         </div>

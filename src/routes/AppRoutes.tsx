@@ -63,6 +63,7 @@ const MachineComparisonPage = lazy(() => import("@/pages/MachineComparisonPage")
 const OperatorHistoryPage = lazy(() => import("@/pages/OperatorHistoryPage"));
 const AdminTelemetriaPage = lazy(() => import("@/pages/AdminTelemetriaPage"));
 const AuditTrailPage = lazy(() => import("@/pages/AuditTrailPage"));
+const DigitalTwin = lazy(() => import("@/pages/DigitalTwin"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 
 // Helper para rotas protegidas com Suspense
@@ -135,6 +136,7 @@ export function AnimatedRoutes() {
         {/* TPM & ML */}
         <Route path="/tpm" element={<ProtectedPage fallback={<KPIPageSkeleton />} allowedRoles={['coordinator', 'manager']}><TPMDashboard /></ProtectedPage>} />
         <Route path="/ml-predictions" element={<ProtectedPage fallback={<KPIPageSkeleton />} allowedRoles={['coordinator', 'manager']}><MLPredictionsDashboard /></ProtectedPage>} />
+        <Route path="/digital-twin" element={<ProtectedPage fallback={<KPIPageSkeleton />} allowedRoles={['coordinator', 'manager']}><DigitalTwin /></ProtectedPage>} />
 
         {/* Operators */}
         <Route path="/operator" element={<ProtectedPage fallback={<ListPageSkeleton />}><OperatorView /></ProtectedPage>} />

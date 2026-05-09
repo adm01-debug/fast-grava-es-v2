@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { useNavigate } from 'react-router-dom';
-import { Wrench, AlertTriangle, CheckCircle, Clock, CalendarCheck, RefreshCw, Settings, Command, Zap } from 'lucide-react';
+import { Wrench, AlertTriangle, CheckCircle, Clock, CalendarCheck, RefreshCw, Settings, Command, Zap, BrainCircuit } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -27,6 +27,8 @@ import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 import { VoiceButton } from '@/components/voice/VoiceCommands';
+import { PredictiveHealthCard } from '@/components/tpm/PredictiveHealthCard';
+import { VirtualSensorPanel } from '@/components/tpm/VirtualSensorPanel';
 
 export default function TPMDashboard() {
   const navigate = useNavigate();
@@ -243,6 +245,10 @@ export default function TPMDashboard() {
             <TabsTrigger value="calendar" className="data-[state=active]:shadow-glow-primary data-[state=active]:bg-primary/10 transition-all duration-300">
               Calendário
             </TabsTrigger>
+            <TabsTrigger value="predictive" className="data-[state=active]:shadow-glow-primary data-[state=active]:bg-primary/10 transition-all duration-300">
+              <BrainCircuit className="h-4 w-4 mr-2" />
+              Preditiva IA
+            </TabsTrigger>
             <TabsTrigger value="list" className="data-[state=active]:shadow-glow-primary data-[state=active]:bg-primary/10 transition-all duration-300">
               Lista
             </TabsTrigger>
@@ -280,6 +286,39 @@ export default function TPMDashboard() {
                   onStartMaintenance={handleStartMaintenance}
                 />
                 <TPMParameterAlerts />
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="predictive" className="space-y-6 animate-fade-in">
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+              <div className="lg:col-span-1 space-y-6">
+                <PredictiveHealthCard machineId={machines[0]?.id} />
+                <Card className="glass-card">
+                  <CardContent className="pt-6">
+                    <h3 className="text-sm font-bold mb-2">Monitoramento Ativo</h3>
+                    <p className="text-xs text-muted-foreground mb-4">
+                      Sensores virtuais processando telemetria em tempo real para detecção de anomalias.
+                    </p>
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-xs">
+                        <span>Análise Vibracional</span>
+                        <span className="text-emerald-500">OK</span>
+                      </div>
+                      <div className="flex justify-between text-xs">
+                        <span>Perfil Térmico</span>
+                        <span className="text-emerald-500">OK</span>
+                      </div>
+                      <div className="flex justify-between text-xs">
+                        <span>Consumo Energético</span>
+                        <span className="text-amber-500">Nominal</span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+              <div className="lg:col-span-3">
+                <VirtualSensorPanel machineId={machines[0]?.id} />
               </div>
             </div>
           </TabsContent>
