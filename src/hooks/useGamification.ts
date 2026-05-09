@@ -28,7 +28,10 @@ export interface OperatorRanking {
   period_start: string;
   period_end: string;
   calculated_at: string;
-  profile?: { full_name: string | null };
+  profile?: { full_name: string | null; avatar_url?: string | null };
+  level?: number;
+  xp_progress?: number;
+  xp_target?: number;
 }
 
 export function useGamification(period: 'daily' | 'weekly' | 'monthly' = 'weekly') {
