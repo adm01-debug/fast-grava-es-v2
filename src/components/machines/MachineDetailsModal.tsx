@@ -12,8 +12,9 @@ import {
   Clock,
   Gauge
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useEntityAuditTrail } from "@/hooks/useAuditTrail";
+import { useDataExport } from "@/hooks/useDataExport";
 import { AuditEntryCard } from "@/components/audit/AuditEntryCard";
 import { HistoryPeriodFilter, type HistoryPeriodValue } from "@/components/audit/HistoryPeriodFilter";
 import { MachineReliabilityTab } from "./MachineReliabilityTab";
@@ -153,10 +154,25 @@ function MachineHistoryTab({ machineId }: { machineId: string }) {
     fromDate: period.fromDate,
     toDate: period.toDate,
   });
+  const { exportAuditTrail } = useDataExport('machines' as any);
+
+  const handleExport = useCallback(() => {
+    exportAuditTrail({
+      entityType: 'machines',
+      entityId: machineId,
+      fromDate: period.fromDate,
+      toDate: period.toDate,
+    }, `auditoria_maquina_${machineId.slice(0, 8)}`);
+  }, [machineId, period, exportAuditTrail]);
 
   return (
     <div className="mt-4">
-      <HistoryPeriodFilter value={period} onChange={setPeriod} resultCount={data?.length} />
+      <HistoryPeriodFilter 
+        value={period} 
+        onChange={setPeriod} 
+        onExport={handleExport}
+        resultCount={data?.length} 
+      />
       {isLoading ? (
         <div className="space-y-3">
           <Skeleton className="h-24 w-full" />
