@@ -657,6 +657,20 @@ export default function PendingQueue() {
                               <TableCell>
                                 <StatusBadge status={job.status} />
                               </TableCell>
+                              <TableCell className="hidden lg:table-cell">
+                                <div className="flex flex-wrap gap-1">
+                                  {jobsInOptimizedSequence.has(job.id) && (
+                                    <Badge variant="outline" className="bg-amber-500/10 text-amber-500 border-amber-500/20 text-[10px] gap-1 px-1.5 h-5">
+                                      <Zap className="h-2.5 w-2.5" /> Otimizar Setup
+                                    </Badge>
+                                  )}
+                                  {jobsWithBalancingSuggestion.has(job.id) && (
+                                    <Badge variant="outline" className="bg-blue-500/10 text-blue-500 border-blue-500/20 text-[10px] gap-1 px-1.5 h-5">
+                                      <BrainCircuit className="h-2.5 w-2.5" /> Reequilibrar: {jobsWithBalancingSuggestion.get(job.id)}
+                                    </Badge>
+                                  )}
+                                </div>
+                              </TableCell>
                             </TableRow>
                           );
                         })}
