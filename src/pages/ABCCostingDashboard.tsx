@@ -65,7 +65,7 @@ export default function ABCCostingDashboard() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-display font-bold">Custeio ABC</h1>
+            <h1 className="text-3xl font-display font-black tracking-tighter">Custeio ABC</h1>
             <p className="text-muted-foreground">
               Activity-Based Costing - Custos por atividade e produto
             </p>
