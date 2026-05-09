@@ -249,7 +249,10 @@ export function SmartSequencingPanel() {
                 </div>
               </div>
 
-              <div className="p-4 rounded-lg bg-primary/5 border border-primary/20">
+              <div className="p-4 rounded-lg bg-primary/5 border border-primary/20 relative overflow-hidden">
+                <div className="absolute -bottom-2 -right-2 opacity-5 rotate-12">
+                   <BrainCircuit className="h-16 w-16" />
+                </div>
                 <h4 className="text-xs font-bold mb-2 flex items-center gap-2">
                   <Info className="h-3.5 w-3.5" />
                   Recomendações IA
