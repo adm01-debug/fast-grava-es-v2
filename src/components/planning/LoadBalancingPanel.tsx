@@ -203,7 +203,7 @@ export function LoadBalancingPanel() {
                     <Sparkles className="h-2 w-2" />
                   </h4>
                   <p className="font-bold text-sm mb-1">{selectedSuggestion.suggestedMachineName}</p>
-                  <p className="text-xs text-muted-foreground mb-3">{selectedSuggestion.suggestedMachineCode}</p>
+                  <p className="text-[10px] text-muted-foreground mb-3">{selectedSuggestion.suggestedMachineId.split('-')[0]}</p>
                   <div className="space-y-1">
                     <div className="flex justify-between text-[10px] mb-1">
                       <span>Carga Após Transferência</span>
