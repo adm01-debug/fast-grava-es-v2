@@ -37,6 +37,7 @@ import { TraceabilityStatsCards } from '@/components/traceability/TraceabilitySt
 import { LotQRCode } from '@/components/traceability/LotQRCode';
 import { LotLabelPrint } from '@/components/traceability/LotLabelPrint';
 import { VoiceButton } from '@/components/voice/VoiceCommands';
+import { BlockchainIntegrityCard } from '@/components/traceability/BlockchainIntegrityCard';
 import { toast } from 'sonner';
 
 const STATUS_CONFIG: Record<string, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }> = {
