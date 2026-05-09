@@ -274,6 +274,30 @@ export function OEEMachineTable({ machines }: OEEMachineTableProps) {
           </Table>
         </div>
       </CardContent>
+
+      <Dialog open={detailsOpen} onOpenChange={setDetailsOpen}>
+        <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
+          <DialogHeader>
+            <DialogTitle>Detalhes da Máquina</DialogTitle>
+            <DialogDescription>Dados de performance e manutenção</DialogDescription>
+          </DialogHeader>
+          
+          {selectedMachineId && (
+            <Tabs defaultValue="tpm" className="flex-1 flex flex-col overflow-hidden">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="tpm">Manutenção (TPM)</TabsTrigger>
+                <TabsTrigger value="reliability">Confiabilidade</TabsTrigger>
+              </TabsList>
+              <TabsContent value="tpm" className="flex-1 overflow-auto pt-4">
+                <MachineTPMPanel machineId={selectedMachineId} />
+              </TabsContent>
+              <TabsContent value="reliability" className="flex-1 overflow-auto pt-4">
+                <MachineReliabilityTab machineId={selectedMachineId} />
+              </TabsContent>
+            </Tabs>
+          )}
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 }
