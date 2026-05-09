@@ -9,22 +9,41 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 export function FactoryFloorMap() {
   const { machines } = useTPM();
   const [liveData, setLiveData] = useState<Record<string, any>>({});
+  const [activeJobs, setActiveJobs] = useState<Record<string, any>>({});
 
   useEffect(() => {
+    const fetchActiveJobs = async () => {
+      const { data } = await supabase
+        .from('jobs')
+        .select('*, machines(id, name)')
+        .eq('status', 'in_progress');
+      
+      const jobsByMachine: Record<string, any> = {};
+      data?.forEach(job => {
+        if (job.machine_id) {
+          jobsByMachine[job.machine_id] = job;
+        }
+      });
+      setActiveJobs(jobsByMachine);
+    };
+
+    fetchActiveJobs();
+    
     const interval = setInterval(() => {
       const newData: Record<string, any> = {};
       machines.forEach(m => {
+        const hasJob = !!activeJobs[m.id];
         newData[m.id] = {
-          load: Math.floor(Math.random() * 40) + 60, // 60-100%
-          temp: Math.floor(Math.random() * 20) + 35, // 35-55C
-          efficiency: Math.floor(Math.random() * 15) + 85, // 85-100%
-          isWorking: Math.random() > 0.2 // 80% chance of being active for simulation
+          load: hasJob ? Math.floor(Math.random() * 20) + 80 : 0, // 80-100% if job, else 0
+          temp: hasJob ? Math.floor(Math.random() * 20) + 45 : 30, // Higher temp if working
+          efficiency: hasJob ? Math.floor(Math.random() * 10) + 90 : 0,
+          isWorking: hasJob
         };
       });
       setLiveData(newData);
     }, 3000);
     return () => clearInterval(interval);
-  }, [machines]);
+  }, [machines, activeJobs]);
 
   return (
     <div className="relative w-full aspect-[2/1] bg-secondary/10 rounded-xl border border-border/50 overflow-hidden p-8 group/map">
