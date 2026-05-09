@@ -22,11 +22,16 @@ import {
 } from '@/components/ui/alert-dialog';
 import { 
   Edit, Clock, Wrench, ListOrdered, Package, Lightbulb,
-  AlertTriangle, Info, CheckCircle2, FileDown, Copy,
+  AlertTriangle, Info, CheckCircle2, FileDown, Copy, Star,
   QrCode, Maximize2, Zap, Droplets, MoveHorizontal, Thermometer,
   CheckSquare, History, ArrowLeftRight 
 } from 'lucide-react';
-import { useTechnicalSheetDetails, useTechnicalSheetAudit } from '@/hooks/useTechnicalSheets';
+import { 
+  useTechnicalSheetDetails, 
+  useTechnicalSheetAudit, 
+  useTechnicalSheetFavorites,
+  useTechnicalSheetMutations 
+} from '@/hooks/useTechnicalSheets';
 import { KnowledgeSheetQRCode } from './KnowledgeSheetQRCode';
 import { KnowledgeStatusBadge } from './KnowledgeStatusBadge';
 import { toast } from 'sonner';
