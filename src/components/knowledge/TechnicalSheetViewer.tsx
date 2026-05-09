@@ -599,37 +599,37 @@ export const TechnicalSheetViewer = ({ sheetId, onEdit, onDuplicate }: Technical
                 </div>
               )}
 
-              {tips.length > 0 && (
-                <div>
-                  <h3 className="flex items-center gap-2 text-sm font-semibold mb-3">
-                    <Lightbulb className="h-4 w-4 text-accent-foreground" />
-                    Dicas e Observações
-                  </h3>
-                  <div className="space-y-2">
-                    {tips.map(tip => (
-                      <div
-                        key={tip.id}
-                        className={`p-3 rounded-lg border flex items-start gap-2 ${getTipBgColor(tip.tip_type)}`}
-                      >
-                        {getTipIcon(tip.tip_type)}
-                        <span className="text-sm">{tip.content}</span>
+                  {tips.length > 0 && (
+                    <div>
+                      <h3 className="flex items-center gap-2 text-sm font-semibold mb-3">
+                        <Lightbulb className="h-4 w-4 text-accent-foreground" />
+                        Dicas e Observações
+                      </h3>
+                      <div className="space-y-2">
+                        {tips.map(tip => (
+                          <div
+                            key={tip.id}
+                            className={`p-3 rounded-lg border flex items-start gap-2 ${getTipBgColor(tip.tip_type)}`}
+                          >
+                            {getTipIcon(tip.tip_type)}
+                            <span className="text-sm">{tip.content}</span>
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
-                </div>
-              )}
+                    </div>
+                  )}
 
-              {steps.length === 0 && sheetMaterials.length === 0 && tips.length === 0 && (
-                <div className="text-center py-8 text-muted-foreground">
-                  <p>Esta ficha técnica ainda não possui conteúdo detalhado.</p>
-                  {onEdit && (
-                    <Button variant="link" onClick={onEdit} className="mt-2">
-                      Adicionar conteúdo
-                    </Button>
+                  {steps.length === 0 && sheetMaterials.length === 0 && tips.length === 0 && (
+                    <div className="text-center py-8 text-muted-foreground">
+                      <p>Esta ficha técnica ainda não possui conteúdo detalhado.</p>
+                      {onEdit && (
+                        <Button variant="link" onClick={onEdit} className="mt-2">
+                          Adicionar conteúdo
+                        </Button>
+                      )}
+                    </div>
                   )}
                 </div>
-              )}
-            </div>
               </ScrollArea>
             </TabsContent>
 
