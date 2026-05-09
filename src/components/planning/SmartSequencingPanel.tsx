@@ -18,7 +18,11 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
 
-export function SmartSequencingPanel() {
+interface SmartSequencingPanelProps {
+  onExplain?: (suggestion: SequencingSuggestion) => void;
+}
+
+export function SmartSequencingPanel({ onExplain }: SmartSequencingPanelProps) {
   const { suggestions, totalSavings, hasSuggestions, applySequencing, isApplying } = useSmartSequencing();
   const [suggestionToDetail, setSuggestionToDetail] = useState<SequencingSuggestion | null>(null);
   const queryClient = useQueryClient();
