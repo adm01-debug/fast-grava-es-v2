@@ -198,6 +198,13 @@ export const VoiceButton = forwardRef<HTMLDivElement, {
     }
   }, [isListening, showFeedback]);
 
+  useEffect(() => {
+    if (lastCommand && !isListening) {
+      const timer = setTimeout(() => speak(lastCommand), 500);
+      return () => clearTimeout(timer);
+    }
+  }, [lastCommand, isListening, speak]);
+
   if (!isSupported) return null;
 
   return (
