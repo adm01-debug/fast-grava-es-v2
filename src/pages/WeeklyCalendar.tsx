@@ -9,6 +9,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { JobDetailsModal } from '@/components/jobs/JobDetailsModal';
 import { CalendarHeader } from '@/components/calendar/CalendarHeader';
+import { UtilizationHeatmap } from '@/components/scheduling/UtilizationHeatmap';
 import { CalendarFilters } from '@/components/calendar/CalendarFilters';
 import { CalendarLegend } from '@/components/calendar/CalendarLegend';
 import { CalendarEmptyState } from '@/components/calendar/CalendarEmptyState';
