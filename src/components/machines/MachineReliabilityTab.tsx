@@ -2,7 +2,7 @@ import { useMTBFMTTR } from '@/hooks/useMTBFMTTR';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Clock, Tooltop, Activity, AlertTriangle, CheckCircle2, TrendingUp } from 'lucide-react';
+import { Clock, Wrench, Activity, AlertTriangle, CheckCircle2, TrendingUp } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { 
   BarChart, 
