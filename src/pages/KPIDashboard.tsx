@@ -218,7 +218,10 @@ export default function KPIDashboard() {
                         <Factory className="h-5 w-5 sm:h-6 sm:w-6 text-cyan-400" />
                       </div>
                     </div>
-                    <Progress value={kpis.averageOccupancy} className="mt-3 h-2 [&>div]:bg-cyan-500" />
+                    <div className="relative mt-3">
+                      <Progress value={kpis.averageOccupancy} className="h-2 [&>div]:bg-cyan-500" />
+                      <div className="absolute top-[-4px] left-[80%] w-[2px] h-4 bg-foreground/20" title="Meta: 80%" />
+                    </div>
                   </CardContent>
                 </Card>
               </KPITooltip>
