@@ -48,7 +48,11 @@ import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 export default function KPIDashboard() {
-  const { data: kpis, isLoading } = useKPIs();
+  const [activeTab, setActiveTab] = useState('overview');
+  const { data: kpis, isLoading: isLoadingKPIs } = useKPIs();
+  const { operators, isLoading: isLoadingOperators } = useOperatorProductivity('all');
+
+  const isLoading = isLoadingKPIs || isLoadingOperators;
 
   if (isLoading) {
     return (
@@ -61,12 +65,13 @@ export default function KPIDashboard() {
             ))}
           </div>
           <Skeleton className="h-80" />
+          <Skeleton className="h-80" />
         </div>
       </MainLayout>
     );
   }
 
-  if (!kpis) {
+  if (!kpis || !operators) {
     return (
       <MainLayout>
         <div className="p-8 flex items-center justify-center h-[50vh]">
