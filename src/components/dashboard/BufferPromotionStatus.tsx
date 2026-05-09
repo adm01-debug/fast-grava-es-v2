@@ -4,6 +4,8 @@ import { Badge } from '@/components/ui/badge';
 import { Layers, CheckCircle2, RefreshCw, Box } from 'lucide-react';
 import { useSchedulingData } from '@/hooks/useSchedulingData';
 import { cn } from '@/lib/utils';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Button } from '@/components/ui/button';
 
 export function BufferPromotionStatus() {
   const { bufferTarget, isPromoting, triggerPromotion } = useAutoBufferPromotion();
