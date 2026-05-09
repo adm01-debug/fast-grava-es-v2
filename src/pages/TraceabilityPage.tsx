@@ -218,9 +218,9 @@ export default function TraceabilityPage() {
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-3">
-              <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
-                <Package className="h-8 w-8" />
-                Rastreabilidade de Produtos
+              <h1 className="text-3xl font-display font-black tracking-tighter flex items-center gap-3">
+                <Package className="h-8 w-8 text-primary animate-float" />
+                Hyper-Traceability 13/10 (Blockchain IA)
               </h1>
               <FavoriteButton path="/traceability" name="Rastreabilidade" />
             </div>
