@@ -283,6 +283,10 @@ const Index = () => {
               <Brain className="h-4 w-4" />
               <span className="hidden sm:inline">Inteligência</span>
             </TabsTrigger>
+            <TabsTrigger value="team" className="gap-2 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all duration-200">
+              <Users className="h-4 w-4" />
+              <span className="hidden sm:inline">Equipe</span>
+            </TabsTrigger>
             <TabsTrigger value="chat" className="gap-2 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all duration-200">
               <MessageCircle className="h-4 w-4" />
               <span className="hidden sm:inline">Chat</span>
@@ -292,6 +296,7 @@ const Index = () => {
               <span className="hidden sm:inline">Jobs</span>
             </TabsTrigger>
           </TabsList>
+
 
           {/* Overview Tab - Main Dashboard */}
           <TabsContent value="overview" className="flex-1 mt-4 min-h-0">
