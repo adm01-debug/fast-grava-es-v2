@@ -119,7 +119,7 @@ export function JobDetailsModal({ job, open, onOpenChange, onStatusChange }: Job
 
   const handleSave = async (data: JobEditValues) => {
     try {
-      await updateJobMutation.mutateAsync({ jobId: job.id, data });
+      await updateJobMutation.mutateAsync({ jobId: job.id, data: data as any });
       toast.success('Job atualizado com sucesso');
       setIsEditing(false);
     } catch (error) {
