@@ -19,7 +19,8 @@ export function OEEGaugeCard({
   icon, 
   description,
   benchmark = 85,
-  size = 'md'
+  size = 'md',
+  trend
 }: OEEGaugeCardProps) {
   const gaugeData = useMemo(() => {
     const percentage = Math.min(100, Math.max(0, value));
