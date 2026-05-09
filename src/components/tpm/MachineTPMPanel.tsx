@@ -12,8 +12,8 @@ import { MachineTPMTimeline } from './MachineTPMTimeline';
 
 interface MachineTPMPanelProps {
   machineId: string;
-  onStartMaintenance: (scheduleId: string) => void;
-  onOpenCreateSchedule: () => void;
+  onStartMaintenance?: (scheduleId: string) => void;
+  onOpenCreateSchedule?: () => void;
 }
 
 export function MachineTPMPanel({ machineId, onStartMaintenance, onOpenCreateSchedule }: MachineTPMPanelProps) {
@@ -63,9 +63,11 @@ export function MachineTPMPanel({ machineId, onStartMaintenance, onOpenCreateSch
                 <Calendar className="h-4 w-4 text-primary" />
                 Próximas Manutenções
               </div>
-              <Button variant="ghost" size="icon" className="h-6 w-6" onClick={onOpenCreateSchedule}>
-                <Plus className="h-4 w-4" />
-              </Button>
+              {onOpenCreateSchedule && (
+                <Button variant="ghost" size="icon" className="h-6 w-6" onClick={onOpenCreateSchedule}>
+                  <Plus className="h-4 w-4" />
+                </Button>
+              )}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -81,9 +83,11 @@ export function MachineTPMPanel({ machineId, onStartMaintenance, onOpenCreateSch
                     </div>
                     <div className="flex items-center gap-2">
                       {getStatusBadge(schedule)}
-                      <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => onStartMaintenance(schedule.id)}>
-                        <Wrench className="h-3 w-3" />
-                      </Button>
+                      {onStartMaintenance && (
+                        <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => onStartMaintenance(schedule.id)}>
+                          <Wrench className="h-3 w-3" />
+                        </Button>
+                      )}
                     </div>
                   </div>
                 ))}

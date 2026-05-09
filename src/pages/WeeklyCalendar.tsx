@@ -9,6 +9,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { JobDetailsModal } from '@/components/jobs/JobDetailsModal';
 import { CalendarHeader } from '@/components/calendar/CalendarHeader';
+import { UtilizationHeatmap } from '@/components/scheduling/UtilizationHeatmap';
 import { CalendarFilters } from '@/components/calendar/CalendarFilters';
 import { CalendarLegend } from '@/components/calendar/CalendarLegend';
 import { CalendarEmptyState } from '@/components/calendar/CalendarEmptyState';
@@ -110,31 +111,36 @@ export default function WeeklyCalendar() {
       <div className="p-4 sm:p-6 space-y-4 sm:space-y-6 animate-fade-in-up calendar-print-area">
         <Breadcrumbs />
 
-        <CalendarHeader
-          title="Calendário Semanal"
-          subtitle="Visualização panorâmica da semana por máquina"
-          selectedDate={selectedDate}
-          onDateChange={setSelectedDate}
-          onPrev={() => setSelectedDate(subWeeks(selectedDate, 1))}
-          onNext={() => setSelectedDate(addWeeks(selectedDate, 1))}
-          onToday={() => setSelectedDate(new Date())}
-          conflictCount={weekConflicts.length}
-          jobCount={weekJobs.length}
-          rangeLabel={`${format(weekStart, 'dd MMM', { locale: ptBR })} - ${format(weekEnd, 'dd MMM', { locale: ptBR })}`}
-          todayLabel="Esta Semana"
-          filtersSlot={
-            <CalendarFilters
-              filters={filters}
-              jobs={jobs}
-              techniques={techniques}
-              machines={machines}
-              activeCount={activeCount}
-              onToggle={toggleArrayValue}
-              onUpdate={updateFilter}
-              onClear={clearFilters}
-            />
-          }
-        />
+        <div className="space-y-4">
+          <CalendarHeader
+            title="Calendário Semanal"
+            subtitle="Visualização panorâmica da semana por máquina"
+            selectedDate={selectedDate}
+            onDateChange={setSelectedDate}
+            onPrev={() => setSelectedDate(subWeeks(selectedDate, 1))}
+            onNext={() => setSelectedDate(addWeeks(selectedDate, 1))}
+            onToday={() => setSelectedDate(new Date())}
+            conflictCount={weekConflicts.length}
+            jobCount={weekJobs.length}
+            rangeLabel={`${format(weekStart, 'dd MMM', { locale: ptBR })} - ${format(weekEnd, 'dd MMM', { locale: ptBR })}`}
+            todayLabel="Esta Semana"
+            filtersSlot={
+              <CalendarFilters
+                filters={filters}
+                jobs={jobs}
+                techniques={techniques}
+                machines={machines}
+                activeCount={activeCount}
+                onToggle={toggleArrayValue}
+                onUpdate={updateFilter}
+                onClear={clearFilters}
+              />
+            }
+          />
+          <Card className="p-3 bg-card/50 border-border/40">
+             <UtilizationHeatmap jobs={weekJobs} machines={filteredMachines} />
+          </Card>
+        </div>
 
         <Card className="bg-card border border-border/40 rounded-xl overflow-hidden">
           <CardHeader className="border-b border-border/40 pb-3 px-3 sm:px-6">

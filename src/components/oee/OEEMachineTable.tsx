@@ -20,8 +20,12 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
-import { ArrowUpDown, Search, TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { ArrowUpDown, Search, TrendingUp, TrendingDown, Minus, Eye } from 'lucide-react';
 import { MachineOEE, getOEEColor } from '@/hooks/useOEE';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { MachineTPMPanel } from '@/components/tpm/MachineTPMPanel';
+import { MachineReliabilityTab } from '@/components/machines/MachineReliabilityTab';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface OEEMachineTableProps {
   machines: MachineOEE[];
@@ -35,6 +39,8 @@ export function OEEMachineTable({ machines }: OEEMachineTableProps) {
   const [techniqueFilter, setTechniqueFilter] = useState<string>('all');
   const [sortField, setSortField] = useState<SortField>('oee');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
+  const [selectedMachineId, setSelectedMachineId] = useState<string | null>(null);
+  const [detailsOpen, setDetailsOpen] = useState(false);
 
   const techniques = [...new Set(machines.map(m => m.techniqueId))];
   const techniqueNames = machines.reduce((acc, m) => {
@@ -195,6 +201,7 @@ export function OEEMachineTable({ machines }: OEEMachineTableProps) {
                 </TableHead>
                 <TableHead>Jobs</TableHead>
                 <TableHead>Classificação</TableHead>
+                <TableHead></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -248,6 +255,18 @@ export function OEEMachineTable({ machines }: OEEMachineTableProps) {
                         {getOEEClassLabel(machine.oeeClass)}
                       </Badge>
                     </TableCell>
+                    <TableCell>
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        onClick={() => {
+                          setSelectedMachineId(machine.machineId);
+                          setDetailsOpen(true);
+                        }}
+                      >
+                        <Eye className="h-4 w-4" />
+                      </Button>
+                    </TableCell>
                   </TableRow>
                 ))
               )}
@@ -255,6 +274,30 @@ export function OEEMachineTable({ machines }: OEEMachineTableProps) {
           </Table>
         </div>
       </CardContent>
+
+      <Dialog open={detailsOpen} onOpenChange={setDetailsOpen}>
+        <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
+          <DialogHeader>
+            <DialogTitle>Detalhes da Máquina</DialogTitle>
+            <DialogDescription>Dados de performance e manutenção</DialogDescription>
+          </DialogHeader>
+          
+          {selectedMachineId && (
+            <Tabs defaultValue="tpm" className="flex-1 flex flex-col overflow-hidden">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="tpm">Manutenção (TPM)</TabsTrigger>
+                <TabsTrigger value="reliability">Confiabilidade</TabsTrigger>
+              </TabsList>
+              <TabsContent value="tpm" className="flex-1 overflow-auto pt-4">
+                <MachineTPMPanel machineId={selectedMachineId} />
+              </TabsContent>
+              <TabsContent value="reliability" className="flex-1 overflow-auto pt-4">
+                <MachineReliabilityTab machineId={selectedMachineId} />
+              </TabsContent>
+            </Tabs>
+          )}
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 }

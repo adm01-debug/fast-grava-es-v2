@@ -51,6 +51,7 @@ export default function KioskPage() {
           id: job.id,
           client: job.client,
           product: job.product,
+          orderNumber: job.order_number,
           quantity: job.quantity,
           produced: job.produced_quantity || undefined,
           status: job.status as "ready" | "production" | "paused" | "completed",

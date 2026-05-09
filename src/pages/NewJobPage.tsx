@@ -19,6 +19,7 @@ import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
+import { MachineSuggestionPanel } from '@/components/scheduling/MachineSuggestionPanel';
 import { useMachineSuggestion } from '@/hooks/useMachineSuggestion';
 export default function NewJobPage() {
   const navigate = useNavigate();
@@ -175,59 +176,49 @@ export default function NewJobPage() {
               </div>
 
               {/* Row 3 - Technique & Machine */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>Técnica *</Label>
-                  <Select value={formData.technique_id} onValueChange={(v) => handleChange('technique_id', v)}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecione a técnica" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {techniques.map((tech) => (
-                        <SelectItem key={tech.id} value={tech.id}>
-                          {tech.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Técnica *</Label>
+                    <Select value={formData.technique_id} onValueChange={(v) => handleChange('technique_id', v)}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione a técnica" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {techniques.map((tech) => (
+                          <SelectItem key={tech.id} value={tech.id}>
+                            {tech.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Máquina</Label>
+                    <Select 
+                      value={formData.machine_id} 
+                      onValueChange={(v) => handleChange('machine_id', v)}
+                      disabled={!formData.technique_id}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder={formData.technique_id ? "Selecione a máquina" : "Selecione uma técnica primeiro"} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {availableMachines.map((machine) => (
+                          <SelectItem key={machine.id} value={machine.id}>
+                            {machine.code} - {machine.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <Label>Máquina</Label>
-                  <Select 
-                    value={formData.machine_id} 
-                    onValueChange={(v) => handleChange('machine_id', v)}
-                    disabled={!formData.technique_id}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder={formData.technique_id ? "Selecione a máquina" : "Selecione uma técnica primeiro"} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {availableMachines.map((machine) => (
-                        <SelectItem key={machine.id} value={machine.id}>
-                          {machine.code} - {machine.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {/* Machine Suggestion */}
-                  {bestMachine && !formData.machine_id && (
-                    <div className="md:col-span-2 flex items-center gap-2 p-3 rounded-lg bg-primary/10 border border-primary/20">
-                      <Lightbulb className="h-4 w-4 text-primary shrink-0" />
-                      <span className="text-sm text-foreground">
-                        Sugestão: <strong>{bestMachine.machineCode} - {bestMachine.machineName}</strong> — {bestMachine.reason}
-                      </span>
-                      <Button
-                        type="button"
-                        size="sm"
-                        variant="outline"
-                        className="ml-auto shrink-0"
-                        onClick={() => handleChange('machine_id', bestMachine.machineId)}
-                      >
-                        Usar
-                      </Button>
-                    </div>
-                  )}
-                </div>
+
+                {/* AI-Driven Machine Suggestion Panel */}
+                <MachineSuggestionPanel 
+                  techniqueId={formData.technique_id} 
+                  onSelectMachine={(id) => handleChange('machine_id', id)}
+                />
               </div>
 
               {/* Row 4 - Date & Times */}

@@ -17,6 +17,10 @@ import {
   WifiOff,
   Maximize,
   Minimize,
+  History,
+  Activity,
+  Zap,
+  DollarSign
 } from "lucide-react";
 
 interface KioskJob {
@@ -30,6 +34,7 @@ interface KioskJob {
   technique?: string;
   techniqueColor?: string;
   machine?: string;
+  orderNumber?: string;
 }
 
 interface KioskModeProps {
@@ -155,10 +160,13 @@ export function KioskMode({
                 )}>
                   <CardContent className="p-4">
                     {/* Header */}
-                    <div className="flex items-start justify-between mb-3">
+                    <div className="flex items-start justify-between mb-2">
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold truncate">{job.client}</h3>
-                        <p className="text-sm text-muted-foreground truncate">{job.product}</p>
+                        <div className="flex items-center gap-1.5">
+                           <span className="text-[10px] font-mono text-muted-foreground">{job.orderNumber}</span>
+                           <h3 className="font-bold truncate text-lg leading-tight">{job.client}</h3>
+                        </div>
+                        <p className="text-xs text-muted-foreground truncate">{job.product}</p>
                       </div>
                       <Badge className={priority.color}>{priority.label}</Badge>
                     </div>
@@ -191,6 +199,22 @@ export function KioskMode({
                     <div className={cn("flex items-center gap-2 text-sm mb-4", status.color)}>
                       <status.icon className="h-4 w-4" />
                       <span>{status.label}</span>
+                    </div>
+
+                    {/* Extra Info Pills */}
+                    <div className="flex flex-wrap gap-1.5 mb-4">
+                       <Badge variant="secondary" className="h-5 px-1.5 text-[9px] bg-secondary/50 flex items-center gap-1">
+                          <Activity className="h-2.5 w-2.5" /> OEE
+                       </Badge>
+                       <Badge variant="secondary" className="h-5 px-1.5 text-[9px] bg-secondary/50 flex items-center gap-1">
+                          <History className="h-2.5 w-2.5" /> Hist.
+                       </Badge>
+                       <Badge variant="secondary" className="h-5 px-1.5 text-[9px] bg-secondary/50 flex items-center gap-1">
+                          <Zap className="h-2.5 w-2.5" /> Ener.
+                       </Badge>
+                       <Badge variant="secondary" className="h-5 px-1.5 text-[9px] bg-secondary/50 flex items-center gap-1">
+                          <DollarSign className="h-2.5 w-2.5" /> ABC
+                       </Badge>
                     </div>
 
                     {/* Actions */}
