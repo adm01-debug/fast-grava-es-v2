@@ -926,6 +926,61 @@ export default function KPIDashboard() {
         </Tabs>
       </div>
     </div>
+
+    {/* Drill-down Dialog */}
+    <Dialog open={!!selectedMachine} onOpenChange={() => setSelectedMachine(null)}>
+      <DialogContent className="max-w-2xl glass-card border-border/50">
+        <DialogHeader>
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+              <Cpu className="h-5 w-5 text-primary" />
+            </div>
+            <div>
+              <DialogTitle>{selectedMachine?.machineName}</DialogTitle>
+              <DialogDescription>ID: {selectedMachine?.machineId}</DialogDescription>
+            </div>
+          </div>
+        </DialogHeader>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-4">
+          <div className="p-4 rounded-xl bg-muted/20 border border-border/30">
+            <p className="text-xs text-muted-foreground uppercase mb-1">Total de Peças</p>
+            <p className="text-2xl font-bold">{selectedMachine?.totalPieces.toLocaleString()}</p>
+          </div>
+          <div className="p-4 rounded-xl bg-muted/20 border border-border/30">
+            <p className="text-xs text-muted-foreground uppercase mb-1">Índice de Perdas</p>
+            <p className={cn(
+              "text-2xl font-bold",
+              selectedMachine?.lossRate > 5 ? "text-primary" : "text-green-400"
+            )}>
+              {selectedMachine?.lossRate.toFixed(1)}%
+            </p>
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          <h4 className="text-sm font-bold flex items-center gap-2">
+            <History className="h-4 w-4" />
+            Performance Recente
+          </h4>
+          <div className="h-[200px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={kpis.performanceHistory.slice(-5)}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
+                <XAxis dataKey="date" fontSize={10} axisLine={false} tickLine={false} />
+                <YAxis fontSize={10} axisLine={false} tickLine={false} />
+                <RechartsTooltip />
+                <Area type="monotone" dataKey="efficiency" stroke="#10B981" fill="#10B981" fillOpacity={0.1} />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+          <div className="flex justify-end">
+            <Button variant="outline" size="sm" onClick={() => setSelectedMachine(null)}>Fechar</Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+
     </MainLayout>
   );
 }
