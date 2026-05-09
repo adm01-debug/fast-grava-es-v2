@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { FavoriteButton, FavoritesDropdown } from '@/components/navigation/FavoritesManager';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { KPITooltip, KPI_DEFINITIONS } from '@/components/ui/kpi-tooltip';
-import { Layers, Scale, AlertTriangle, TrendingUp, Timer, BarChart3, History, Command } from 'lucide-react';
+import { Layers, Scale, AlertTriangle, TrendingUp, Timer, BarChart3, History, Command, Users } from 'lucide-react';
 import { useSmartSequencing } from '@/hooks/useSmartSequencing';
 import { useLoadBalancing } from '@/hooks/useLoadBalancing';
 import { useBottleneckPrediction } from '@/hooks/useBottleneckPrediction';
@@ -18,13 +18,21 @@ import { BalancingTab } from '@/components/efficiency/BalancingTab';
 import { BottlenecksTab } from '@/components/efficiency/BottlenecksTab';
 import { HistoryTab } from '@/components/efficiency/HistoryTab';
 import { EfficiencyAlertHistoryWidget } from '@/components/dashboard/EfficiencyAlertHistoryWidget';
+import { OEELoadTrendWidget } from '@/components/dashboard/OEELoadTrendWidget';
+import { LeaderboardWidget } from '@/components/dashboard/LeaderboardWidget';
+import { EfficiencyAlertTrendChart } from '@/components/dashboard/EfficiencyAlertTrendChart';
+import { useOEE } from '@/hooks/useOEE';
+import { OperatorGoalsWidget } from '@/components/dashboard/OperatorGoalsWidget';
 
 export default function EfficiencyDashboard() {
   const navigate = useNavigate();
   const { suggestions: sequencingSuggestions, totalSavings } = useSmartSequencing();
   const { byTechnique, suggestions: balancingSuggestions, isLoading: loadBalancingLoading } = useLoadBalancing();
   const { alerts, capacityByDate, isLoading: bottleneckLoading, criticalCount } = useBottleneckPrediction();
-  const { resolvedAlerts, isLoading: historyLoading } = useEfficiencyAlertHistory();
+  const { alerts: allAlertHistory, resolvedAlerts, isLoading: historyLoading } = useEfficiencyAlertHistory();
+  const { data: oeeData } = useOEE(30);
+  
+  const overallOEE = oeeData?.overallOEE || 0;
 
   const totalSetupSaved = totalSavings;
   const allMachineLoads = byTechnique.flatMap(t => t.machines);
@@ -64,9 +72,15 @@ export default function EfficiencyDashboard() {
           <KPITooltip title="Gargalos Críticos" description="Técnicas ou máquinas operando acima de 90%." formula="Count(ocupação > 90%)" target="0" trend={criticalBottlenecks > 0 ? 'down' : 'stable'} trendValue={criticalBottlenecks > 0 ? 'Atenção necessária' : 'OK'}>
             <Card className="glass-card border-border/50"><CardContent className="p-3 sm:p-4"><div className="flex items-center gap-2 sm:gap-3"><div className="p-2 sm:p-2.5 rounded-xl bg-warning/10"><AlertTriangle className="h-4 w-4 sm:h-5 sm:w-5 text-warning" /></div><div className="min-w-0"><p className="text-lg sm:text-2xl font-bold text-foreground">{criticalBottlenecks}</p><p className="text-[10px] sm:text-xs text-muted-foreground">Gargalos</p></div></div></CardContent></Card>
           </KPITooltip>
-          <KPITooltip {...KPI_DEFINITIONS.efficiency} trend={avgOccupancy >= 60 ? 'up' : avgOccupancy >= 40 ? 'stable' : 'down'} trendValue={`${avgOccupancy}%`}>
-            <Card className="glass-card border-border/50"><CardContent className="p-3 sm:p-4"><div className="flex items-center gap-2 sm:gap-3"><div className="p-2 sm:p-2.5 rounded-xl bg-accent/10"><BarChart3 className="h-4 w-4 sm:h-5 sm:w-5 text-accent" /></div><div className="min-w-0"><p className="text-lg sm:text-2xl font-bold text-foreground">{avgOccupancy}%</p><p className="text-[10px] sm:text-xs text-muted-foreground">Ocupação</p></div></div></CardContent></Card>
+          <KPITooltip title="OEE Global" description="Eficácia Geral do Equipamento considerando Disponibilidade, Performance e Qualidade." formula="Disponibilidade x Performance x Qualidade" target="85%" trend={overallOEE >= 85 ? 'up' : overallOEE >= 65 ? 'stable' : 'down'} trendValue={`${overallOEE}%`}>
+            <Card className="glass-card border-border/50"><CardContent className="p-3 sm:p-4"><div className="flex items-center gap-2 sm:gap-3"><div className="p-2 sm:p-2.5 rounded-xl bg-accent/10"><BarChart3 className="h-4 w-4 sm:h-5 sm:w-5 text-accent" /></div><div className="min-w-0"><p className="text-lg sm:text-2xl font-bold text-foreground">{overallOEE}%</p><p className="text-[10px] sm:text-xs text-muted-foreground">OEE Global</p></div></div></CardContent></Card>
           </KPITooltip>
+        </div>
+
+        {/* Historical Trends & Top Performance */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          <OEELoadTrendWidget />
+          <LeaderboardWidget />
         </div>
 
         {/* Main Content Tabs */}
@@ -76,14 +90,36 @@ export default function EfficiencyDashboard() {
               <TabsTrigger value="sequencing" className="gap-1.5 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3"><Layers className="h-3.5 w-3.5 sm:h-4 sm:w-4" /><span className="hidden xs:inline">Sequenc.</span></TabsTrigger>
               <TabsTrigger value="balancing" className="gap-1.5 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3"><Scale className="h-3.5 w-3.5 sm:h-4 sm:w-4" /><span className="hidden xs:inline">Balanc.</span></TabsTrigger>
               <TabsTrigger value="bottlenecks" className="gap-1.5 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3"><AlertTriangle className="h-3.5 w-3.5 sm:h-4 sm:w-4" /><span className="hidden xs:inline">Gargalos</span></TabsTrigger>
+              <TabsTrigger value="performance" className="gap-1.5 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3"><Users className="h-3.5 w-3.5 sm:h-4 sm:w-4" /><span className="hidden xs:inline">Operadores</span></TabsTrigger>
               <TabsTrigger value="history" className="gap-1.5 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3"><History className="h-3.5 w-3.5 sm:h-4 sm:w-4" /><span className="hidden xs:inline">Histórico</span></TabsTrigger>
             </TabsList>
           </div>
           <TabsContent value="sequencing" className="space-y-4"><SequencingTab suggestions={sequencingSuggestions} /></TabsContent>
           <TabsContent value="balancing" className="space-y-4"><BalancingTab machineLoads={allMachineLoads} suggestions={balancingSuggestions} /></TabsContent>
           <TabsContent value="bottlenecks" className="space-y-4"><BottlenecksTab alerts={alerts} capacityByDate={capacityByDate} /></TabsContent>
+          <TabsContent value="performance" className="space-y-4">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <LeaderboardWidget />
+              <OperatorGoalsWidget />
+            </div>
+          </TabsContent>
           <TabsContent value="history" className="space-y-4">
-            <EfficiencyAlertHistoryWidget />
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+              <div className="lg:col-span-2">
+                <Card className="glass-card border-border/50">
+                  <CardHeader>
+                    <CardTitle className="text-sm font-display flex items-center gap-2">
+                      <TrendingUp className="h-4 w-4 text-primary" />
+                      Tendência de Alertas
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <EfficiencyAlertTrendChart alerts={allAlertHistory} />
+                  </CardContent>
+                </Card>
+              </div>
+              <EfficiencyAlertHistoryWidget />
+            </div>
             <HistoryTab resolvedAlerts={resolvedAlerts} isLoading={historyLoading} />
           </TabsContent>
         </Tabs>
