@@ -1,5 +1,6 @@
-import { Wifi, WifiOff, RefreshCw, Loader2 } from 'lucide-react';
+import { Wifi, WifiOff, RefreshCw, Loader2, Database } from 'lucide-react';
 import { useRealtimeConnection } from '@/hooks/useRealtimeConnection';
+import { useIsMutating } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
