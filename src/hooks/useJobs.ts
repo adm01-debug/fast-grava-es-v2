@@ -258,6 +258,58 @@ export function useUpdateJobStatus() {
   });
 }
 
+export function useUpdateJob() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ jobId, data }: { jobId: string; data: Partial<DbJob> }) => {
+      try {
+        const { error } = await supabase
+          .from('jobs')
+          .update(data)
+          .eq('id', jobId);
+        
+        if (error) throw error;
+      } catch (error) {
+        const appError = createAppError(error, JOBS_ERROR_CONTEXT.hooks.updateJob);
+        if (import.meta.env.DEV) console.error('[useUpdateJob]', appError);
+        throw error;
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['jobs'] });
+      queryClient.invalidateQueries({ queryKey: ['paginated-jobs'] });
+    },
+    onError: createMutationErrorHandler('Erro ao atualizar job'),
+  });
+}
+
+export function useDeleteJob() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (jobId: string) => {
+      try {
+        const { error } = await supabase
+          .from('jobs')
+          .delete()
+          .eq('id', jobId);
+        
+        if (error) throw error;
+      } catch (error) {
+        const appError = createAppError(error, JOBS_ERROR_CONTEXT.hooks.deleteJob);
+        if (import.meta.env.DEV) console.error('[useDeleteJob]', appError);
+        throw error;
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['jobs'] });
+      queryClient.invalidateQueries({ queryKey: ['paginated-jobs'] });
+    },
+    onError: createMutationErrorHandler('Erro ao excluir job'),
+  });
+}
+
 export interface BufferTechniqueStatus {
   technique: DbTechnique;
   readyCount: number;
