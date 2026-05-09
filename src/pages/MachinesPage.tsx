@@ -207,8 +207,12 @@ export default function MachinesPage() {
             
             {selectedMachine && (
               <Tabs defaultValue="tpm" className="mt-2 flex-1 flex flex-col">
-                <TabsList className="grid w-full grid-cols-2">
+                <TabsList className="grid w-full grid-cols-3">
                   <TabsTrigger value="tpm">Manutenção (TPM)</TabsTrigger>
+                  <TabsTrigger value="reliability" className="flex items-center gap-2">
+                    <Activity className="h-4 w-4" />
+                    Confiabilidade
+                  </TabsTrigger>
                   <TabsTrigger value="history" className="flex items-center gap-2">
                     <History className="h-4 w-4" />
                     Histórico
