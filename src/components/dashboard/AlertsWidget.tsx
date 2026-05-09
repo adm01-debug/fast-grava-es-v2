@@ -78,9 +78,20 @@ export function AlertsWidget() {
         });
       }
     });
+    
+    // Stuck Jobs Alerts
+    stuckJobs.forEach(stuck => {
+      alertList.push({
+        id: `stuck-${stuck.job.id}`,
+        type: stuck.severity === 'critical' ? 'delayed' : 'warning',
+        title: stuck.severity === 'critical' ? 'Job Travado' : 'Aviso de Job Lento',
+        description: stuck.message,
+        time: now
+      });
+    });
 
     return alertList.slice(0, 10);
-  }, [jobs]);
+  }, [jobs, stuckJobs]);
 
   const selectedJob = useMemo(() => selectedJobId ? jobs.find(j => j.id === selectedJobId) || null : null, [selectedJobId, jobs]);
 
