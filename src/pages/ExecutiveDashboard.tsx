@@ -174,9 +174,10 @@ export default function ExecutiveDashboard() {
     {
       title: 'Eficiência',
       value: `${kpis.productionEfficiency.toFixed(1)}%`,
-      subtitle: `Meta: 85%`,
+      subtitle: `Meta: ${globalGoal}%`,
       icon: Target,
-      trend: kpis.productionEfficiency >= 85 ? 'up' : 'down',
+      trend: kpis.trends.efficiency >= 0 ? 'up' : 'down',
+      trendValue: kpis.trends.efficiency,
       color: 'text-green-500',
       bgColor: 'bg-green-500/10',
     },
@@ -185,7 +186,8 @@ export default function ExecutiveDashboard() {
       value: `${kpis.qualityRate.toFixed(1)}%`,
       subtitle: `${kpis.totalPiecesLost.toLocaleString('pt-BR')} perdas`,
       icon: CheckCircle2,
-      trend: kpis.qualityRate >= 98 ? 'up' : 'down',
+      trend: kpis.trends.quality >= 0 ? 'up' : 'down',
+      trendValue: kpis.trends.quality,
       color: 'text-purple-500',
       bgColor: 'bg-purple-500/10',
     },
@@ -194,7 +196,8 @@ export default function ExecutiveDashboard() {
       value: `${kpis.machineUtilization.toFixed(1)}%`,
       subtitle: `${kpis.activeMachines} de ${kpis.totalMachines} ativas`,
       icon: Factory,
-      trend: kpis.machineUtilization >= 70 ? 'up' : 'down',
+      trend: kpis.trends.utilization >= 0 ? 'up' : 'down',
+      trendValue: kpis.trends.utilization,
       color: 'text-amber-500',
       bgColor: 'bg-amber-500/10',
     },
@@ -204,9 +207,11 @@ export default function ExecutiveDashboard() {
       subtitle: 'Status: 11/10 Ativo',
       icon: ShieldCheck,
       trend: 'up',
+      trendValue: 0.2,
       color: 'text-purple-600',
       bgColor: 'bg-purple-600/10',
     },
+
   ];
 
   return (
