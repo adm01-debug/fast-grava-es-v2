@@ -86,6 +86,16 @@ export interface OEEData {
   availabilityLosses: number;
   performanceLosses: number;
   qualityLosses: number;
+  comparison?: {
+    currentOEE: number;
+    previousOEE: number;
+    currentAvailability: number;
+    previousAvailability: number;
+    currentPerformance: number;
+    previousPerformance: number;
+    currentQuality: number;
+    previousQuality: number;
+  };
 }
 
 // Operating hours per day (7:00 to 18:00 = 11 hours, can extend to 20:00 = 13 hours)
