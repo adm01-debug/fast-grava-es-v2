@@ -1,0 +1,110 @@
+import { useMemo } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useOEE } from '@/hooks/useOEE';
+import { useSchedulingData } from '@/hooks/useSchedulingData';
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
+import { AreaChart, Area, XAxis, YAxis, ResponsiveContainer, CartesianGrid, LineChart, Line, Legend } from 'recharts';
+import { TrendingUp, BarChart3, Activity } from 'lucide-react';
+import { format, subDays, startOfDay, endOfDay, eachDayOfInterval } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+
+const chartConfig = {
+  oee: { label: "OEE %", color: "hsl(var(--primary))" },
+  load: { label: "Carga %", color: "hsl(var(--chart-2))" },
+};
+
+export function OEELoadTrendWidget() {
+  const { data: oeeData } = useOEE(14);
+  const { jobs } = useSchedulingData();
+
+  const trendData = useMemo(() => {
+    if (!oeeData) return [];
+
+    const today = new Date();
+    const days = eachDayOfInterval({ start: subDays(today, 13), end: today });
+
+    return days.map(day => {
+      const dateStr = day.toISOString().split('T')[0];
+      const oeeDay = oeeData.trendData.find(d => d.date.startsWith(dateStr));
+      
+      // Calculate average load for this day
+      // (This is simplified, ideally we'd have historical load data)
+      const dayLoad = oeeDay ? (oeeDay.availability + oeeDay.performance) / 2 : 0;
+
+      return {
+        date: format(day, 'dd/MM', { locale: ptBR }),
+        oee: oeeDay ? Math.round(oeeDay.oee) : 0,
+        load: Math.round(dayLoad),
+      };
+    });
+  }, [oeeData]);
+
+  return (
+    <Card className="glass-card col-span-1 xl:col-span-2">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-sm font-display flex items-center gap-2">
+          <TrendingUp className="h-4 w-4 text-primary" />
+          Tendência de Carga e OEE
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="h-[240px] w-full mt-4">
+          <ChartContainer config={chartConfig} className="h-full w-full">
+            <AreaChart data={trendData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+              <defs>
+                <linearGradient id="fillOEE" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                </linearGradient>
+                <linearGradient id="fillLoad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="hsl(var(--chart-2))" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="hsl(var(--chart-2))" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="hsl(var(--border))" />
+              <XAxis 
+                dataKey="date" 
+                tickLine={false} 
+                axisLine={false} 
+                tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} 
+              />
+              <YAxis 
+                tickLine={false} 
+                axisLine={false} 
+                tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} 
+                domain={[0, 100]}
+              />
+              <ChartTooltip content={<ChartTooltipContent />} />
+              <Area 
+                type="monotone" 
+                dataKey="oee" 
+                stroke="hsl(var(--primary))" 
+                fill="url(#fillOEE)" 
+                strokeWidth={2}
+                name="OEE"
+              />
+              <Area 
+                type="monotone" 
+                dataKey="load" 
+                stroke="hsl(var(--chart-2))" 
+                fill="url(#fillLoad)" 
+                strokeWidth={2}
+                name="Carga"
+              />
+            </AreaChart>
+          </ChartContainer>
+        </div>
+        <div className="flex items-center justify-center gap-6 mt-4">
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-primary" />
+            <span className="text-xs text-muted-foreground font-medium">OEE Estimado</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-[hsl(var(--chart-2))]" />
+            <span className="text-xs text-muted-foreground font-medium">Carga Estimada</span>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
