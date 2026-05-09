@@ -129,8 +129,8 @@ export function useExecutiveDashboard(dateRange: DateRange, filters?: { machineI
       };
 
       // Charts and other data
-      const productionTrend = calculateDailyTrend(jobs, dateRange);
-      const efficiencyTrend = calculateEfficiencyTrend(jobs, dateRange);
+      const productionTrend = calculateDailyTrend(jobs, prevJobs, dateRange);
+      const efficiencyTrend = calculateEfficiencyTrend(jobs, prevJobs, dateRange);
       const techniqueDistribution = techniques.map(t => ({
         technique: t.short_name || t.name,
         count: jobs.filter(j => j.technique_id === t.id).length,
