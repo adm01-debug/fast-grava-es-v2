@@ -28,8 +28,12 @@ import { QuickChat } from '@/components/chat/QuickChat';
 import { MaintenanceAlertsWidget } from '@/components/dashboard/MaintenanceAlertsWidget';
 import { EnergyWidget } from '@/components/dashboard/EnergyWidget';
 import { PredictiveAnalyticsWidget } from '@/components/dashboard/PredictiveAnalyticsWidget';
+import { ShiftHandoverWidget } from '@/components/dashboard/ShiftHandoverWidget';
+import { LeaderboardWidget } from '@/components/dashboard/LeaderboardWidget';
+import { OperatorGoalsWidget } from '@/components/dashboard/OperatorGoalsWidget';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
+
 import { 
   Calendar, 
   CheckCircle2, 
@@ -44,8 +48,10 @@ import {
   Cpu,
   MessageCircle,
   FileText,
-  Brain
+  Brain,
+  Users
 } from 'lucide-react';
+
 
 // Type definitions for widget components
 interface WidgetComponentConfig {
@@ -279,6 +285,10 @@ const Index = () => {
               <Brain className="h-4 w-4" />
               <span className="hidden sm:inline">Inteligência</span>
             </TabsTrigger>
+            <TabsTrigger value="team" className="gap-2 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all duration-200">
+              <Users className="h-4 w-4" />
+              <span className="hidden sm:inline">Equipe</span>
+            </TabsTrigger>
             <TabsTrigger value="chat" className="gap-2 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all duration-200">
               <MessageCircle className="h-4 w-4" />
               <span className="hidden sm:inline">Chat</span>
@@ -288,6 +298,7 @@ const Index = () => {
               <span className="hidden sm:inline">Jobs</span>
             </TabsTrigger>
           </TabsList>
+
 
           {/* Overview Tab - Main Dashboard */}
           <TabsContent value="overview" className="flex-1 mt-4 min-h-0">
@@ -313,11 +324,16 @@ const Index = () => {
                 <ScrollArea className="flex-1">
                   <div className="space-y-4 pr-2">
                     <AutoShiftSummary />
+                    <OperatorGoalsWidget />
+                    <ShiftHandoverWidget />
+                    <LeaderboardWidget />
                     <ActivityFeedWidget />
+
                     <DailySummaryCard />
                     <MaintenanceAlertsWidget />
                     <EnergyWidget />
                     <PredictiveAnalyticsWidget />
+
                     <SortableWidgetSection
                       widgets={sidebarWidgets}
                       section="sidebar"
@@ -381,6 +397,19 @@ const Index = () => {
               </div>
             </ScrollArea>
           </TabsContent>
+
+          {/* Team Tab */}
+          <TabsContent value="team" className="flex-1 mt-4 min-h-0">
+            <ScrollArea className="h-full">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 pr-2">
+                <LeaderboardWidget />
+                <ShiftHandoverWidget />
+                <ActivityFeedWidget />
+                <DailySummaryCard />
+              </div>
+            </ScrollArea>
+          </TabsContent>
+
 
           {/* Chat Tab */}
           <TabsContent value="chat" className="flex-1 mt-4 min-h-0">
