@@ -358,8 +358,9 @@ export default function PendingQueue() {
             </CollapsibleTrigger>
           </div>
           <CollapsibleContent className="animate-accordion-down">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
               <SmartSequencingWidget />
+              <LoadBalancingWidget />
               <Card className="glass-card">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-sm font-bold flex items-center gap-2">
@@ -371,6 +372,7 @@ export default function PendingQueue() {
                   <p>• Agrupe jobs pela mesma cor de gravura para reduzir o tempo de setup.</p>
                   <p>• Priorize jobs urgentes, mas tente encaixá-los em grupos de cores existentes.</p>
                   <p>• Utilize o balanceamento de carga para não sobrecarregar uma única máquina.</p>
+                  <p>• O sequenciamento inteligente agrupa por cor e prioridade automaticamente.</p>
                 </CardContent>
               </Card>
             </div>
