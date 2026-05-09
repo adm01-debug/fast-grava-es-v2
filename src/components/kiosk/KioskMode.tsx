@@ -20,7 +20,10 @@ import {
   History,
   Activity,
   Zap,
-  DollarSign
+  DollarSign,
+  Target,
+  Eye,
+  EyeOff
 } from "lucide-react";
 
 interface KioskJob {
