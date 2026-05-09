@@ -36,6 +36,8 @@ export default function WeeklyCalendar() {
 
   const { jobs, techniques, machines, getTechniqueById } = useSchedulingData();
   const { conflicts } = useSchedulingConflicts();
+  const { prefs, setZoom, setGroupBy, toggleOverlay } = useCalendarPreferences('weekly');
+  
   useCalendarHotkeys({ selectedDate, onDateChange: setSelectedDate, scope: 'weekly' });
   const {
     filters,
