@@ -214,11 +214,11 @@ export default function ExecutiveDashboard() {
         </div>
 
         {/* Autonomous Control & North Star Metric Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          <div className="lg:col-span-1">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 h-[420px]">
+          <div className="lg:col-span-1 h-full overflow-hidden">
              <AutonomousEventLog />
           </div>
-          <Card className="glass-card lg:col-span-1 border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
+          <Card className="glass-card lg:col-span-1 border-primary/20 bg-gradient-to-br from-primary/5 to-transparent h-full flex flex-col">
             <CardHeader className="pb-0">
               <CardTitle className="text-sm font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
                 <Target className="h-4 w-4 text-primary" />
