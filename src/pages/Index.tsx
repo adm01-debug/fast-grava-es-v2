@@ -394,6 +394,19 @@ const Index = () => {
             </ScrollArea>
           </TabsContent>
 
+          {/* Team Tab */}
+          <TabsContent value="team" className="flex-1 mt-4 min-h-0">
+            <ScrollArea className="h-full">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 pr-2">
+                <LeaderboardWidget />
+                <ShiftHandoverWidget />
+                <ActivityFeedWidget />
+                <DailySummaryCard />
+              </div>
+            </ScrollArea>
+          </TabsContent>
+
+
           {/* Chat Tab */}
           <TabsContent value="chat" className="flex-1 mt-4 min-h-0">
             <div className="h-full">
