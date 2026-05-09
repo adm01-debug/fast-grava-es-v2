@@ -324,6 +324,10 @@ export function JobDetailsModal({ job, open, onOpenChange, onStatusChange }: Job
             </div>
           </TabsContent>
 
+          <TabsContent value="instructions">
+            <JobInstructionsTab techniqueId={job.technique_id} productCategoryId={job.product_category_id} />
+          </TabsContent>
+
           <TabsContent value="quality">
             <JobQualityTab jobId={job.id} techniqueId={job.technique_id} machineId={job.machine_id} />
           </TabsContent>
