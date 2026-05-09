@@ -15,6 +15,11 @@ interface MachineSuggestionPanelProps {
 
 export function MachineSuggestionPanel({ techniqueId, onSelectMachine }: MachineSuggestionPanelProps) {
   const { suggestions, bestMachine } = useMachineSuggestion(techniqueId);
+  const { data: oeeData } = useOEE(7); // Last 7 days for historical efficiency context
+
+  const machineOEE = (machineId: string) => {
+    return oeeData?.byMachine.find(m => m.machineId === machineId)?.oee || 0;
+  };
 
   if (!techniqueId) return null;
 
