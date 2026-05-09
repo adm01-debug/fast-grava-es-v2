@@ -38,18 +38,18 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 
-const statusColumns: { status: JobStatus; label: string; icon: React.ElementType; color: string }[] = [
-  { status: 'queue', label: 'Na Fila', icon: Clock, color: 'text-blue-400' },
-  { status: 'ready', label: 'No Jeito', icon: Package, color: 'text-amber-400' },
-  { status: 'scheduled', label: 'Agendado', icon: Calendar, color: 'text-purple-400' },
-  { status: 'production', label: 'Em Produção', icon: Play, color: 'text-cyan-400' },
-  { status: 'finished', label: 'Finalizado', icon: CheckCircle2, color: 'text-green-400' },
+const statusColumns: { status: JobStatus; label: string; icon: React.ElementType; color: string; wipLimit?: number }[] = [
+  { status: 'queue', label: 'Na Fila', icon: Clock, color: 'text-blue-400', wipLimit: 25 },
+  { status: 'ready', label: 'No Jeito', icon: Package, color: 'text-amber-400', wipLimit: 12 },
+  { status: 'scheduled', label: 'Agendado', icon: Calendar, color: 'text-purple-400', wipLimit: 15 },
+  { status: 'production', label: 'Em Produção', icon: Play, color: 'text-cyan-400', wipLimit: 10 },
+  { status: 'finished', label: 'Finalizado', icon: CheckCircle2, color: 'text-green-400', wipLimit: 100 },
 ];
 
-const exceptionStatuses: { status: JobStatus; label: string; icon: React.ElementType; color: string }[] = [
-  { status: 'paused', label: 'Pausado', icon: Pause, color: 'text-orange-400' },
-  { status: 'delayed', label: 'Atrasado', icon: AlertTriangle, color: 'text-red-400' },
-  { status: 'rework', label: 'Retrabalho', icon: RotateCcw, color: 'text-pink-400' },
+const exceptionStatuses: { status: JobStatus; label: string; icon: React.ElementType; color: string; wipLimit?: number }[] = [
+  { status: 'paused', label: 'Pausado', icon: Pause, color: 'text-orange-400', wipLimit: 8 },
+  { status: 'delayed', label: 'Atrasado', icon: AlertTriangle, color: 'text-red-400', wipLimit: 8 },
+  { status: 'rework', label: 'Retrabalho', icon: RotateCcw, color: 'text-pink-400', wipLimit: 5 },
 ];
 
 const quickActionMap: Record<string, { status: JobStatus; label: string }> = {
@@ -190,15 +190,40 @@ export default function KanbanBoard() {
   }, [jobs, handleJobsUpdate]);
 
   // Bulk actions
-  const handleBulkAction = useCallback(async (action: 'delete' | 'move', targetStatus?: JobStatus) => {
+  const handleBulkAction = useCallback(async (action: 'delete' | 'move' | 'rework' | 'pause', targetStatus?: JobStatus) => {
     if (selectedJobs.size === 0) return;
     
     if (action === 'move' && targetStatus) {
+      const updateData: Record<string, any> = { 
+        status: targetStatus, 
+        updated_at: new Date().toISOString() 
+      };
+
+      // Add timestamps if needed
+      if (targetStatus === 'production') updateData.actual_start_time = new Date().toISOString();
+      if (targetStatus === 'finished') updateData.actual_end_time = new Date().toISOString();
+
       const updates = Array.from(selectedJobs).map(id =>
-        supabase.from('jobs').update({ status: targetStatus, updated_at: new Date().toISOString() }).eq('id', id)
+        supabase.from('jobs').update(updateData).eq('id', id)
       );
       await Promise.all(updates);
       toast.success(`${selectedJobs.size} jobs movidos para "${targetStatus}"`);
+      setSelectedJobs(new Set());
+      handleJobsUpdate();
+    } else if (action === 'rework') {
+      const updates = Array.from(selectedJobs).map(id =>
+        supabase.from('jobs').update({ status: 'rework', updated_at: new Date().toISOString() }).eq('id', id)
+      );
+      await Promise.all(updates);
+      toast.success(`${selectedJobs.size} jobs marcados como Retrabalho`);
+      setSelectedJobs(new Set());
+      handleJobsUpdate();
+    } else if (action === 'delete') {
+      const updates = Array.from(selectedJobs).map(id =>
+        supabase.from('jobs').delete().eq('id', id)
+      );
+      await Promise.all(updates);
+      toast.success(`${selectedJobs.size} jobs excluídos permanentemente`);
       setSelectedJobs(new Set());
       handleJobsUpdate();
     }
@@ -332,10 +357,22 @@ export default function KanbanBoard() {
           </div>
 
           {/* AI Advisor */}
-          <KanbanAIAdvisor />
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+          >
+            <KanbanAIAdvisor />
+          </motion.div>
 
           {/* Metrics Bar */}
-          <KanbanMetricsBar jobs={jobs} />
+          <motion.div
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.4 }}
+          >
+            <KanbanMetricsBar jobs={jobs} />
+          </motion.div>
 
           {/* Filters Bar */}
           <KanbanFiltersBar
@@ -359,15 +396,24 @@ export default function KanbanBoard() {
 
           {/* Bulk actions bar */}
           {selectedJobs.size > 0 && (
-            <div className="flex items-center gap-3 p-3 rounded-lg bg-primary/5 border border-primary/20">
-              <Badge variant="secondary">{selectedJobs.size} selecionados</Badge>
-              <Button size="sm" variant="outline" className="h-7 text-xs gap-1" onClick={() => handleBulkAction('move', 'production')}>
-                <ArrowRight className="h-3 w-3" /> Mover p/ Produção
+            <div className="flex flex-wrap items-center gap-3 p-3 rounded-lg bg-primary/5 border border-primary/20 sticky top-2 z-30 backdrop-blur-md shadow-lg animate-in slide-in-from-top-4 duration-300">
+              <Badge variant="secondary" className="font-bold">{selectedJobs.size} selecionados</Badge>
+              <div className="h-4 w-px bg-border/50 mx-1 hidden sm:block" />
+              <Button size="sm" variant="outline" className="h-7 text-[10px] uppercase font-bold tracking-wider gap-1 border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10" onClick={() => handleBulkAction('move', 'production')}>
+                <Play className="h-3 w-3" /> Iniciar Produção
               </Button>
-              <Button size="sm" variant="outline" className="h-7 text-xs gap-1" onClick={() => handleBulkAction('move', 'finished')}>
+              <Button size="sm" variant="outline" className="h-7 text-[10px] uppercase font-bold tracking-wider gap-1 border-green-500/30 text-green-400 hover:bg-green-500/10" onClick={() => handleBulkAction('move', 'finished')}>
                 <CheckCircle2 className="h-3 w-3" /> Finalizar
               </Button>
-              <Button size="sm" variant="ghost" className="h-7 text-xs ml-auto" onClick={() => setSelectedJobs(new Set())}>
+              <Button size="sm" variant="outline" className="h-7 text-[10px] uppercase font-bold tracking-wider gap-1 border-pink-500/30 text-pink-400 hover:bg-pink-500/10" onClick={() => handleBulkAction('rework')}>
+                <RotateCcw className="h-3 w-3" /> Retrabalho
+              </Button>
+              <Button size="sm" variant="outline" className="h-7 text-[10px] uppercase font-bold tracking-wider gap-1 border-red-500/30 text-red-400 hover:bg-red-500/10" onClick={() => {
+                if (window.confirm('Excluir permanentemente estes jobs?')) handleBulkAction('delete');
+              }}>
+                <Trash2 className="h-3 w-3" /> Excluir
+              </Button>
+              <Button size="sm" variant="ghost" className="h-7 text-[10px] uppercase font-bold tracking-wider ml-auto text-muted-foreground" onClick={() => setSelectedJobs(new Set())}>
                 Limpar seleção
               </Button>
             </div>
@@ -425,32 +471,44 @@ export default function KanbanBoard() {
           )}
 
           {/* Exception Statuses */}
-          <Card className="glass-card border-orange-500/20">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base flex items-center gap-2">
-                <AlertTriangle className="h-4 w-4 text-orange-400" />
-                Status de Exceção
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-thin">
-                {exceptionStatuses.map((column) => (
-                  <DroppableColumn 
-                    key={column.status} 
-                    {...column}
-                    jobs={getJobsByStatus(column.status)}
-                    getTechniqueById={getTechniqueById}
-                    getMachineById={getMachineById}
-                    onJobClick={handleJobClick}
-                    viewMode={viewMode}
-                    selectedJobs={selectedJobs}
-                    onSelectJob={handleSelectJob}
-                    onQuickAction={handleQuickAction}
-                  />
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
+            <Card className="glass-card border-orange-500/20">
+              <CardHeader className="pb-3 px-4 sm:px-6">
+                <CardTitle className="text-base flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <AlertTriangle className="h-4 w-4 text-orange-400" />
+                    Status de Exceção
+                  </div>
+                  <Badge variant="outline" className="text-[10px] font-black uppercase tracking-widest text-orange-400 border-orange-500/30">
+                    Ação Requerida
+                  </Badge>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="px-4 sm:px-6 pb-6">
+                <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-thin">
+                  {exceptionStatuses.map((column) => (
+                    <DroppableColumn 
+                      key={column.status} 
+                      {...column}
+                      jobs={getJobsByStatus(column.status)}
+                      getTechniqueById={getTechniqueById}
+                      getMachineById={getMachineById}
+                      onJobClick={handleJobClick}
+                      viewMode={viewMode}
+                      wipLimit={column.wipLimit}
+                      selectedJobs={selectedJobs}
+                      onSelectJob={handleSelectJob}
+                      onQuickAction={handleQuickAction}
+                    />
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
         </div>
 
         <DragOverlay>

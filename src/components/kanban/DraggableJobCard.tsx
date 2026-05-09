@@ -165,8 +165,8 @@ export function DraggableJobCard({ job, technique, machine, onClick, viewMode = 
           >
             <GripVertical className="h-4 w-4 text-muted-foreground hover:text-foreground transition-colors" />
           </div>
-          <Badge variant="outline" className={cn("text-[10px] px-1.5 py-0 h-5 gap-0.5", priority.color)}>
-            <PriorityIcon className="h-3 w-3" />
+          <Badge variant="outline" className={cn("text-[9px] px-1.5 py-0 h-4 gap-0.5 font-black uppercase tracking-widest", priority.color)}>
+            <PriorityIcon className="h-2.5 w-2.5" />
             <span className="hidden sm:inline">{priority.label}</span>
           </Badge>
           {/* Aging dot */}
@@ -177,11 +177,11 @@ export function DraggableJobCard({ job, technique, machine, onClick, viewMode = 
         </div>
         <Badge 
           variant="outline" 
-          className="text-xs shrink-0"
+          className="text-[10px] font-black tracking-tighter shrink-0 border-2"
           style={{ 
             borderColor: technique?.color,
             color: technique?.color,
-            backgroundColor: `${technique?.color}15`
+            backgroundColor: `${technique?.color}10`
           }}
         >
           {technique?.name || 'N/A'}
@@ -189,23 +189,25 @@ export function DraggableJobCard({ job, technique, machine, onClick, viewMode = 
       </div>
       
       {/* Client + Product */}
-      <p className="font-medium text-sm text-foreground truncate mb-0.5">{job.client}</p>
-      <p className="text-xs text-muted-foreground truncate mb-2">{job.product}</p>
+      <div className="flex-1 min-w-0">
+        <p className="font-bold text-sm text-foreground truncate mb-0.5 group-hover:text-primary transition-colors">{job.client}</p>
+        <p className="text-[11px] leading-tight text-muted-foreground line-clamp-2 mb-2 h-8">{job.product}</p>
+      </div>
       
       {/* Progress bar */}
-      {job.produced_quantity != null && job.quantity > 0 && (
-        <div className="mb-2">
+      {job.produced_quantity != null && job.quantity > 0 && job.status !== 'finished' && (
+        <div className="mb-2 bg-muted/40 p-1.5 rounded-md border border-border/20">
           <div className="flex items-center justify-between text-[10px] text-muted-foreground mb-1">
-            <span>{job.produced_quantity?.toLocaleString()} / {job.quantity.toLocaleString()} pçs</span>
-            <span className="font-medium">{progress}%</span>
+            <span className="font-bold">{job.produced_quantity?.toLocaleString()} / {job.quantity.toLocaleString()} pçs</span>
+            <Badge variant="outline" className="text-[9px] h-3.5 px-1 leading-none font-bold border-primary/30 text-primary">{progress}%</Badge>
           </div>
-          <Progress value={progress} className="h-1.5" />
+          <Progress value={progress} className="h-1 bg-background" />
         </div>
       )}
       
       {/* OS + qty */}
-      <div className="flex items-center justify-between text-xs text-muted-foreground">
-        <span className="font-mono">OS {job.order_number}</span>
+      <div className="flex items-center justify-between text-[10px] font-bold text-muted-foreground bg-muted/20 px-2 py-1 rounded border border-border/10">
+        <span className="font-mono text-primary/80">OS {job.order_number}</span>
         {!job.produced_quantity && <span>{job.quantity.toLocaleString()} pçs</span>}
       </div>
       

@@ -36,14 +36,26 @@ const priorityOrder: Record<string, number> = {
   'low': 1,
 };
 
+const statusOrder: Record<JobStatus, number> = {
+  'rework': 0,
+  'delayed': 1,
+  'paused': 2,
+  'queue': 3,
+  'ready': 4,
+  'scheduled': 5,
+  'production': 6,
+  'finished': 7,
+  'cancelled': 8,
+};
+
 const WIP_LIMITS: Record<string, number> = {
-  'queue': 20,
-  'ready': 10,
+  'queue': 25,
+  'ready': 12,
   'scheduled': 15,
-  'production': 8,
-  'finished': 50,
-  'paused': 5,
-  'delayed': 5,
+  'production': 10,
+  'finished': 100,
+  'paused': 8,
+  'delayed': 8,
   'rework': 5,
 };
 
@@ -99,9 +111,24 @@ export function DroppableColumn({
 
   const sortedJobs = useMemo(() => {
     return [...jobs].sort((a, b) => {
+      // 1. Status severity (exceptions first if in the same column, though status columns are usually distinct)
+      const statusDiff = (statusOrder[a.status] || 0) - (statusOrder[b.status] || 0);
+      if (statusDiff !== 0) return statusDiff;
+
+      // 2. Priority (High to Low)
       const priorityDiff = (priorityOrder[b.priority] || 0) - (priorityOrder[a.priority] || 0);
       if (priorityDiff !== 0) return priorityDiff;
-      return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+
+      // 3. Date (Ascending - closer first)
+      if (a.scheduled_date && b.scheduled_date) {
+        const dateDiff = new Date(a.scheduled_date).getTime() - new Date(b.scheduled_date).getTime();
+        if (dateDiff !== 0) return dateDiff;
+      }
+      if (a.scheduled_date) return -1;
+      if (b.scheduled_date) return 1;
+
+      // 4. Creation (Newest first)
+      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
     });
   }, [jobs]);
 
