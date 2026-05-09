@@ -27,7 +27,8 @@ import {
   Play,
   Trash2,
   BrainCircuit,
-  Zap
+  Zap,
+  TrendingDown
 } from "lucide-react";
 import { useSchedulingData } from "@/hooks/useSchedulingData";
 import { useQueryClient } from "@tanstack/react-query";
