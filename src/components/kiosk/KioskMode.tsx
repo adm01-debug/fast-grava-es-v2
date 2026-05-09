@@ -34,6 +34,7 @@ interface KioskJob {
   technique?: string;
   techniqueColor?: string;
   machine?: string;
+  orderNumber?: string;
 }
 
 interface KioskModeProps {
