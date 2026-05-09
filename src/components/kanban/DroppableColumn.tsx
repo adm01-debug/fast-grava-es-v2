@@ -49,13 +49,13 @@ const statusOrder: Record<JobStatus, number> = {
 };
 
 const WIP_LIMITS: Record<string, number> = {
-  'queue': 20,
-  'ready': 10,
+  'queue': 25,
+  'ready': 12,
   'scheduled': 15,
-  'production': 8,
-  'finished': 50,
-  'paused': 5,
-  'delayed': 5,
+  'production': 10,
+  'finished': 100,
+  'paused': 8,
+  'delayed': 8,
   'rework': 5,
 };
 
