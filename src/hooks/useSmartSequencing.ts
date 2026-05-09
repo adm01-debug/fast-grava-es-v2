@@ -156,6 +156,14 @@ export function useSmartSequencing() {
         optimizedSequence.push(...sortedGroup);
       });
 
+      // Calculate complexity and priority score
+      const colorComplexity = colorGroups.size;
+      const setupComplexity = colorComplexity > 5 ? 'high' : colorComplexity > 3 ? 'medium' : 'low';
+      
+      const urgentJobs = machineJobs.filter(j => j.priority === 'urgent').length;
+      const highPriorityJobs = machineJobs.filter(j => j.priority === 'high').length;
+      const aiPriorityScore = Math.min(100, (urgentJobs * 30) + (highPriorityJobs * 15) + (machineJobs.length * 5));
+
       const estimatedSavings = calculateSetupSavings(currentSequence, optimizedSequence, setupTime);
       
       const totalMinutes = optimizedSequence.reduce((acc, job) => acc + (job.estimated_duration || 0), 0);
