@@ -395,41 +395,10 @@ export const TechnicalSheetViewer = ({ sheetId, onEdit, onDuplicate }: Technical
                         </div>
                       </div>
                     )}
-                    <h3 className="flex items-center gap-2 text-sm font-semibold text-amber-600">
-                      <Zap className="h-4 w-4" />
-                      Regulagem da Máquina
-                    </h3>
-                    <div className="grid grid-cols-2 gap-3">
-                      {['squeegee_passes', 'pressure', 'speed', 'temperature'].map((param) => {
-                        const labels: Record<string, string> = {
-                          squeegee_passes: 'Passadas',
-                          pressure: 'Pressão',
-                          speed: 'Velocidade',
-                          temperature: 'Temperatura'
-                        };
-                        const value = (sheet.machine_settings as any)?.[param];
-                        const range = (sheet.settings_ranges as any)?.[param];
-                        
-                        if (!value && (!range || (!range.min && !range.max))) return null;
-
-                        return (
-                          <div key={param} className="p-3 rounded-lg bg-amber-500/5 border border-amber-500/10">
-                            <Label className="text-[10px] text-muted-foreground uppercase flex items-center gap-1">
-                              {param === 'temperature' ? <Thermometer className="h-3 w-3" /> : param === 'squeegee_passes' ? <MoveHorizontal className="h-3 w-3" /> : <Zap className="h-3 w-3" />} {labels[param]}
-                            </Label>
-                            <p className="text-sm font-bold">{value || '-'}</p>
-                            {range && (range.min || range.max) && (
-                              <p className="text-[10px] text-muted-foreground mt-1 border-t border-amber-500/10 pt-1">
-                                Faixa: {range.min || '-'} a {range.max || '-'}
-                              </p>
-                            )}
-                          </div>
-                        );
-                      })}
-                    </div>
                   </div>
-                  </div>
-              </div>
+                </div>
+              </ScrollArea>
+            </TabsContent>
 
               {sheet.setup_instructions && (
                 <div className="space-y-4">
