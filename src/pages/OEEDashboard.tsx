@@ -243,6 +243,7 @@ export default function OEEDashboard() {
             <OEETrendChart 
               data={data.trendData} 
               worldClassBenchmark={data.worldClassBenchmark} 
+              comparison={data.comparison}
             />
           </TabsContent>
           

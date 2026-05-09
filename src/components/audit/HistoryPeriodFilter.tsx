@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
-import { CalendarIcon } from 'lucide-react';
+import { CalendarIcon, Download } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
@@ -19,6 +19,7 @@ export interface HistoryPeriodValue {
 interface Props {
   value: HistoryPeriodValue;
   onChange: (next: HistoryPeriodValue) => void;
+  onExport?: (format: 'csv' | 'pdf') => void;
   resultCount?: number;
 }
 
@@ -45,7 +46,7 @@ export function computePeriodRange(preset: HistoryPeriodPreset, range?: DateRang
   return {};
 }
 
-export function HistoryPeriodFilter({ value, onChange, resultCount }: Props) {
+export function HistoryPeriodFilter({ value, onChange, onExport, resultCount }: Props) {
   const [range, setRange] = useState<DateRange | undefined>(
     value.fromDate ? { from: new Date(value.fromDate), to: value.toDate ? new Date(value.toDate) : undefined } : undefined,
   );
@@ -109,6 +110,18 @@ export function HistoryPeriodFilter({ value, onChange, resultCount }: Props) {
           />
         </PopoverContent>
       </Popover>
+
+      {onExport && (
+        <Button
+          size="sm"
+          variant="outline"
+          className="h-8 gap-1 ml-2 text-muted-foreground"
+          onClick={() => onExport('csv')}
+        >
+          <Download className="h-3.5 w-3.5" />
+          Exportar CSV
+        </Button>
+      )}
 
       {typeof resultCount === 'number' && (
         <span className="text-xs text-muted-foreground ml-auto">

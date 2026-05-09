@@ -1,12 +1,14 @@
 import { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { TrendingUp, TrendingDown, Minus, BarChart3, Activity } from 'lucide-react';
 import { useOEE } from '@/hooks/useOEE';
 import { useSchedulingData } from '@/hooks/useSchedulingData';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { AreaChart, Area, XAxis, YAxis, ResponsiveContainer, CartesianGrid, LineChart, Line, Legend } from 'recharts';
-import { TrendingUp, BarChart3, Activity } from 'lucide-react';
 import { format, subDays, startOfDay, endOfDay, eachDayOfInterval } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { cn } from '@/lib/utils';
 
 const chartConfig = {
   oee: { label: "OEE %", color: "hsl(var(--primary))" },
@@ -38,12 +40,38 @@ export function OEELoadTrendWidget() {
     });
   }, [oeeData]);
 
+  const comparisonData = useMemo(() => {
+    if (!oeeData || !oeeData.comparison) return null;
+    const { currentOEE, previousOEE } = oeeData.comparison;
+    const diff = currentOEE - previousOEE;
+    return {
+      diff: diff.toFixed(1),
+      isPositive: diff > 0,
+      isNegative: diff < 0
+    };
+  }, [oeeData]);
+
   return (
     <Card className="glass-card col-span-1 xl:col-span-2">
       <CardHeader className="pb-2">
-        <CardTitle className="text-sm font-display flex items-center gap-2">
-          <TrendingUp className="h-4 w-4 text-primary" />
-          Tendência de Carga e OEE
+        <CardTitle className="text-sm font-display flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <TrendingUp className="h-4 w-4 text-primary" />
+            Tendência de Carga e OEE
+          </div>
+          {comparisonData && (
+            <Badge variant="outline" className={cn(
+              "text-[10px] py-0 px-2 h-5 flex items-center gap-1",
+              comparisonData.isPositive ? "text-emerald-500 border-emerald-500/30" : 
+              comparisonData.isNegative ? "text-red-500 border-red-500/30" : 
+              "text-muted-foreground"
+            )}>
+              {comparisonData.isPositive ? <TrendingUp className="h-3 w-3" /> : 
+               comparisonData.isNegative ? <TrendingDown className="h-3 w-3" /> : 
+               <Minus className="h-3 w-3" />}
+              {comparisonData.isPositive ? '+' : ''}{comparisonData.diff}%
+            </Badge>
+          )}
         </CardTitle>
       </CardHeader>
       <CardContent>

@@ -86,6 +86,16 @@ export interface OEEData {
   availabilityLosses: number;
   performanceLosses: number;
   qualityLosses: number;
+  comparison?: {
+    currentOEE: number;
+    previousOEE: number;
+    currentAvailability: number;
+    previousAvailability: number;
+    currentPerformance: number;
+    previousPerformance: number;
+    currentQuality: number;
+    previousQuality: number;
+  };
 }
 
 // Operating hours per day (7:00 to 18:00 = 11 hours, can extend to 20:00 = 13 hours)
@@ -112,8 +122,9 @@ function getOEEColor(oee: number): string {
 }
 
 export function useOEE(daysBack: number = 30) {
-  // Always use at least 30 days for better historical trends
-  const effectiveDaysBack = Math.max(daysBack, 30);
+  // Always use at least 30 days for better historical trends, 
+  // but allow more for comparison (e.g., 60 days to compare last 30 vs previous 30)
+  const effectiveDaysBack = Math.max(daysBack, 60);
   const { jobs, machines, techniques, isLoading } = useSchedulingData();
   
   const data = useMemo<OEEData | null>(() => {
@@ -344,6 +355,24 @@ export function useOEE(daysBack: number = 30) {
       });
     }
     
+    // Calculate period-over-period comparison (e.g., last 14 days vs previous 14 days)
+    const midPoint = Math.floor(trendData.length / 2);
+    const currentPeriod = trendData.slice(midPoint);
+    const previousPeriod = trendData.slice(0, midPoint);
+
+    const avg = (arr: any[], key: string) => arr.length > 0 ? arr.reduce((s, x) => s + x[key], 0) / arr.length : 0;
+
+    const comparison = {
+      currentOEE: avg(currentPeriod, 'oee'),
+      previousOEE: avg(previousPeriod, 'oee'),
+      currentAvailability: avg(currentPeriod, 'availability'),
+      previousAvailability: avg(previousPeriod, 'availability'),
+      currentPerformance: avg(currentPeriod, 'performance'),
+      previousPerformance: avg(previousPeriod, 'performance'),
+      currentQuality: avg(currentPeriod, 'quality'),
+      previousQuality: avg(previousPeriod, 'quality'),
+    };
+
     return {
       overallOEE: Math.round(overallOEE * 10) / 10,
       overallAvailability: Math.round(overallAvailability * 10) / 10,
@@ -353,6 +382,7 @@ export function useOEE(daysBack: number = 30) {
       byMachine,
       byTechnique,
       trendData,
+      comparison,
       
       worldClassBenchmark: WORLD_CLASS_OEE,
       

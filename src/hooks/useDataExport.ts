@@ -1,6 +1,8 @@
 import { useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 import type { Database } from '@/integrations/supabase/types';
 
 type TableName = keyof Database['public']['Tables'];
@@ -108,8 +110,39 @@ export function useDataExport(tableName: TableName) {
     }
   }, [tableName]);
 
+  const exportAuditTrail = useCallback(async (filters: any, fileName?: string) => {
+    setIsExporting(true);
+    try {
+      let query = supabase.from('audit_log').select('*').order('created_at', { ascending: false });
+      
+      if (filters.entityType) query = query.eq('entity_type', filters.entityType);
+      if (filters.entityId) query = query.eq('entity_id', filters.entityId);
+      if (filters.fromDate) query = query.gte('created_at', filters.fromDate);
+      if (filters.toDate) query = query.lte('created_at', filters.toDate);
+
+      const { data, error } = await query;
+      if (error) throw error;
+      if (!data || data.length === 0) {
+        toast.info('Nenhum dado para exportar');
+        return;
+      }
+
+      // PDF Export using the existing pdfExport logic or simple CSV
+      const formattedFileName = fileName ?? `audit_export_${format(new Date(), 'yyyy-MM-dd')}`;
+      const csv = convertToCSV(data as Record<string, unknown>[]);
+      downloadFile(csv, `${formattedFileName}.csv`, 'text/csv');
+      
+      toast.success(`${data.length} registros de auditoria exportados`);
+    } catch (error) {
+      toast.error('Erro na exportação de auditoria');
+    } finally {
+      setIsExporting(false);
+    }
+  }, []);
+
   return {
     exportData,
+    exportAuditTrail,
     isExporting,
   };
 }

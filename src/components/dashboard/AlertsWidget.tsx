@@ -33,11 +33,20 @@ export function AlertsWidget() {
 
     // Load alerts configuration for thresholds
     const storedThresholds = localStorage.getItem('alert-thresholds');
+    const entityThresholdsStored = localStorage.getItem('entity-thresholds');
     let thresholds = { bottleneckRiskMinutes: 480 };
+    let entityThresholds: Record<string, number> = {};
+    
     if (storedThresholds) {
       try {
         const parsed = JSON.parse(storedThresholds);
         if (parsed.bottleneckRiskMinutes) thresholds.bottleneckRiskMinutes = parsed.bottleneckRiskMinutes;
+      } catch (e) {}
+    }
+    
+    if (entityThresholdsStored) {
+      try {
+        entityThresholds = JSON.parse(entityThresholdsStored);
       } catch (e) {}
     }
 
@@ -64,23 +73,29 @@ export function AlertsWidget() {
     });
 
     // Bottleneck risks from Kanban columns with configurable limits
-    const columnsWithJobs: Record<string, number> = {};
+    const columnsWithJobs: Record<string, { totalTime: number, limit: number }> = {};
     jobs.forEach(job => {
       if (!['finished', 'cancelled'].includes(job.status)) {
-        columnsWithJobs[job.status] = (columnsWithJobs[job.status] || 0) + (job.estimated_duration || 0);
+        if (!columnsWithJobs[job.status]) {
+          // Check for specific entity threshold if any machine/technique in this column has one
+          const entityId = job.machine_id || job.technique_id;
+          const limit = (entityId && entityThresholds[entityId]) || thresholds.bottleneckRiskMinutes;
+          columnsWithJobs[job.status] = { totalTime: 0, limit };
+        }
+        columnsWithJobs[job.status].totalTime += (job.estimated_duration || 0);
       }
     });
 
-    Object.entries(columnsWithJobs).forEach(([status, totalTime]) => {
-      if (totalTime > thresholds.bottleneckRiskMinutes) {
+    Object.entries(columnsWithJobs).forEach(([status, data]) => {
+      if (data.totalTime > data.limit) {
         alertList.push({
           id: `bottleneck-high-${status}`,
           type: 'delayed',
           title: 'Gargalo Crítico',
-          description: `Coluna "${status}" ultrapassou ${Math.round(thresholds.bottleneckRiskMinutes / 60)}h de carga estimada.`,
+          description: `Coluna "${status}" ultrapassou ${Math.round(data.limit / 60)}h de carga estimada.`,
           time: now
         });
-      } else if (totalTime > thresholds.bottleneckRiskMinutes * 0.7) {
+      } else if (data.totalTime > data.limit * 0.7) {
         alertList.push({
           id: `bottleneck-medium-${status}`,
           type: 'warning',

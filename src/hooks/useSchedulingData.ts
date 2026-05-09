@@ -255,7 +255,7 @@ export function useSchedulingData() {
     
     // OEE History and Capacity Monitoring
     getOEETrend: (days: number = 14) => {
-      // OEE trends are now derived from the useOEE hook's logic
+      // OEE trends are now derived from the useOEE hook's logic, here we keep for backward compatibility
       return [];
     },
     // Historic bottleneck and capacity trends
