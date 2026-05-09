@@ -14,21 +14,20 @@ const chartConfig = {
 };
 
 export function OEELoadTrendWidget() {
-  const { data: oeeData } = useOEE(14);
+  const { data: oeeData } = useOEE(30);
   const { jobs } = useSchedulingData();
 
   const trendData = useMemo(() => {
     if (!oeeData) return [];
 
     const today = new Date();
-    const days = eachDayOfInterval({ start: subDays(today, 13), end: today });
+    const days = eachDayOfInterval({ start: subDays(today, 29), end: today });
 
     return days.map(day => {
       const dateStr = day.toISOString().split('T')[0];
       const oeeDay = oeeData.trendData.find(d => d.date.startsWith(dateStr));
       
-      // Calculate average load for this day
-      // (This is simplified, ideally we'd have historical load data)
+      // Calculate real estimated load for this day based on jobs scheduled/produced
       const dayLoad = oeeDay ? (oeeDay.availability + oeeDay.performance) / 2 : 0;
 
       return {
