@@ -36,6 +36,7 @@ export default function WeeklyCalendar() {
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
 
   const { jobs, techniques, machines, getTechniqueById } = useSchedulingData();
+  const { mutate: updateStatus } = useUpdateJobStatus();
   const { conflicts } = useSchedulingConflicts();
   const { prefs, setZoom, setGroupBy, toggleOverlay } = useCalendarPreferences('weekly');
   
