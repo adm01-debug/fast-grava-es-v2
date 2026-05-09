@@ -163,7 +163,7 @@ export default function ExecutiveDashboard() {
                 <div className="flex flex-wrap items-center gap-2 mt-1">
                   <Badge variant="outline" className="gap-1.5 px-2.5 py-0.5 border-primary/30 bg-primary/5 text-primary text-[10px] font-black uppercase tracking-widest">
                     <div className="w-1.5 h-1.5 rounded-full bg-primary animate-ping" />
-                    Status: Ecossistema 10/10
+                    Status: Ecossistema 11/10
                   </Badge>
                   <Badge variant="secondary" className="text-[10px] font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-600 dark:text-emerald-500 border-emerald-500/20">
                     Governança Total Ativa
