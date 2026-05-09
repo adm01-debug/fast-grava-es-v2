@@ -149,13 +149,18 @@ export default function ExecutiveDashboard() {
         
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-display font-bold">
-              <span className="gradient-text">Dashboard Executivo</span>
-            </h1>
-            <p className="text-muted-foreground">Visão consolidada de KPIs e performance</p>
+          <div className="flex-1">
+            <div className="flex items-center gap-3">
+              <h1 className="text-2xl sm:text-3xl font-display font-bold">
+                <span className="gradient-text animate-pulse-glow">Dashboard Executivo 360</span>
+              </h1>
+              <Badge variant="outline" className="gap-1 px-2 border-primary/30 bg-primary/5 text-primary animate-pulse">
+                <ShieldCheck className="h-3 w-3" /> Orquestração: 10/10
+              </Badge>
+            </div>
+            <p className="text-muted-foreground mt-1">Gestão de Fábrica Autônoma & Visão Consolidada de Performance</p>
           </div>
-          
+
           <div className="flex items-center gap-3">
             <VoiceButton onCommand={(cmd) => {
               if (cmd.startsWith('search:')) {
