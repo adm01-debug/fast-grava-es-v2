@@ -20,13 +20,14 @@ import { HistoryTab } from '@/components/efficiency/HistoryTab';
 import { EfficiencyAlertHistoryWidget } from '@/components/dashboard/EfficiencyAlertHistoryWidget';
 import { OEELoadTrendWidget } from '@/components/dashboard/OEELoadTrendWidget';
 import { LeaderboardWidget } from '@/components/dashboard/LeaderboardWidget';
+import { EfficiencyAlertTrendChart } from '@/components/dashboard/EfficiencyAlertTrendChart';
 
 export default function EfficiencyDashboard() {
   const navigate = useNavigate();
   const { suggestions: sequencingSuggestions, totalSavings } = useSmartSequencing();
   const { byTechnique, suggestions: balancingSuggestions, isLoading: loadBalancingLoading } = useLoadBalancing();
   const { alerts, capacityByDate, isLoading: bottleneckLoading, criticalCount } = useBottleneckPrediction();
-  const { resolvedAlerts, isLoading: historyLoading } = useEfficiencyAlertHistory();
+  const { alerts: allAlertHistory, resolvedAlerts, isLoading: historyLoading } = useEfficiencyAlertHistory();
 
   const totalSetupSaved = totalSavings;
   const allMachineLoads = byTechnique.flatMap(t => t.machines);
@@ -91,7 +92,22 @@ export default function EfficiencyDashboard() {
           <TabsContent value="balancing" className="space-y-4"><BalancingTab machineLoads={allMachineLoads} suggestions={balancingSuggestions} /></TabsContent>
           <TabsContent value="bottlenecks" className="space-y-4"><BottlenecksTab alerts={alerts} capacityByDate={capacityByDate} /></TabsContent>
           <TabsContent value="history" className="space-y-4">
-            <EfficiencyAlertHistoryWidget />
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+              <div className="lg:col-span-2">
+                <Card className="glass-card border-border/50">
+                  <CardHeader>
+                    <CardTitle className="text-sm font-display flex items-center gap-2">
+                      <TrendingUp className="h-4 w-4 text-primary" />
+                      Tendência de Alertas
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <EfficiencyAlertTrendChart alerts={allAlertHistory} />
+                  </CardContent>
+                </Card>
+              </div>
+              <EfficiencyAlertHistoryWidget />
+            </div>
             <HistoryTab resolvedAlerts={resolvedAlerts} isLoading={historyLoading} />
           </TabsContent>
         </Tabs>
