@@ -396,11 +396,30 @@ function InventoryHistoryTable() {
           ))}
           {(!movements || movements.length === 0) && (
             <tr>
-              <td colSpan={6} className="p-8 text-center text-muted-foreground italic">Nenhuma movimentação registrada.</td>
+              <td colSpan={7} className="p-8 text-center text-muted-foreground italic">Nenhuma movimentação registrada.</td>
             </tr>
           )}
         </tbody>
       </table>
+
+      <Dialog open={!!rollbackId} onOpenChange={(open) => !open && setRollbackId(null)}>
+        <DialogContent className="sm:max-w-[350px]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <History className="h-5 w-5 text-red-500" />
+              Desfazer Movimentação
+            </DialogTitle>
+            <DialogDescription>
+              Tem certeza que deseja remover este registro e reverter o impacto no sistema? 
+              O saldo do estoque NÃO será ajustado automaticamente, apenas o histórico será removido.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex gap-2">
+            <Button variant="outline" className="flex-1" onClick={() => setRollbackId(null)}>Cancelar</Button>
+            <Button variant="destructive" className="flex-1" onClick={confirmRollback}>Confirmar Rollback</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
