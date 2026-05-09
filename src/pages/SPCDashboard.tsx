@@ -1,7 +1,8 @@
 import { useState, useMemo } from 'react';
 import { Helmet } from 'react-helmet';
 import { format } from 'date-fns';
-import { Activity, Plus, AlertTriangle, CheckCircle, TrendingUp, Target, Settings } from 'lucide-react';
+import { Activity, Plus, AlertTriangle, CheckCircle, TrendingUp, Target, Settings, Zap, History, LayoutPanelTop, BrainCircuit } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
