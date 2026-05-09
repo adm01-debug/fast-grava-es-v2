@@ -3,7 +3,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ProductCategory, Material } from '@/hooks/useTechnicalSheets';
-import { Info, Plus, Trash2, CheckSquare, AlertTriangle, Package } from 'lucide-react';
+import { Info, Plus, Trash2, CheckSquare, AlertTriangle, Package, Maximize2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 
@@ -37,6 +37,8 @@ interface EditorBasicInfoProps {
     setup_instructions: string;
     quality_checklist: Array<{ id: string; description: string; required: boolean }>;
     consumables: Array<{ id: string; name: string; quantity: string; alternative?: string }>;
+    gold_standard_image_url: string;
+    failure_standard_image_url: string;
     version: string;
   };
   setFormData: (data: any) => void;
@@ -428,6 +430,35 @@ export function EditorBasicInfo({ formData, setFormData, techniques, categories,
                 </Button>
               </div>
             ))}
+          </div>
+        </div>
+
+        <Separator className="my-6" />
+
+        <div className="space-y-4">
+          <h3 className="text-sm font-semibold flex items-center gap-2">
+            <Maximize2 className="h-4 w-4 text-emerald-500" />
+            Padrões Visuais de Qualidade
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label>URL da Imagem - Padrão de Ouro</Label>
+              <Input 
+                value={formData.gold_standard_image_url} 
+                onChange={(e) => setFormData({...formData, gold_standard_image_url: e.target.value})} 
+                placeholder="https://exemplo.com/imagem-ouro.jpg" 
+              />
+              <p className="text-[10px] text-muted-foreground">URL da imagem que representa o resultado perfeito.</p>
+            </div>
+            <div className="space-y-2">
+              <Label>URL da Imagem - Padrão de Falha</Label>
+              <Input 
+                value={formData.failure_standard_image_url} 
+                onChange={(e) => setFormData({...formData, failure_standard_image_url: e.target.value})} 
+                placeholder="https://exemplo.com/imagem-falha.jpg" 
+              />
+              <p className="text-[10px] text-muted-foreground">URL da imagem que representa erros a serem evitados.</p>
+            </div>
           </div>
         </div>
 

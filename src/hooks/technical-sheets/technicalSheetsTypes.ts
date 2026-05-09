@@ -16,10 +16,13 @@ export interface TechnicalSheet {
   is_active: boolean;
   created_at: string;
   updated_at: string;
+  view_count?: number;
   gap_specifications?: string | null;
   challenges_notes?: string | null;
   failure_scenarios?: string | null;
   quality_requirements?: string | null;
+  gold_standard_image_url?: string | null;
+  failure_standard_image_url?: string | null;
   quality_checklist?: Array<{ id: string; description: string; required: boolean }>;
   setup_instructions?: string | null;
   consumables?: Array<{ id: string; name: string; quantity: string; alternative?: string }>;

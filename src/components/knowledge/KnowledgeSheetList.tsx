@@ -5,9 +5,9 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Search, Plus, Clock, ChevronRight, FileText, Star, TrendingUp } from 'lucide-react';
+import { Search, Plus, Clock, ChevronRight, FileText, Star, TrendingUp, Filter } from 'lucide-react';
 import { TechnicalSheet } from '@/hooks/technical-sheets/technicalSheetsTypes';
-import { useLocalStorage } from '@/hooks/useLocalStorage';
+import { useTechnicalSheetFavorites, useTechnicalSheetMutations } from '@/hooks/useTechnicalSheets';
 import { KnowledgeStatusBadge } from './KnowledgeStatusBadge';
 
 interface KnowledgeSheetListProps {
@@ -51,13 +51,12 @@ export const KnowledgeSheetList = ({
   isLoading,
   hasFilters,
 }: KnowledgeSheetListProps) => {
-  const [favorites, setFavorites] = useLocalStorage<string[]>('kb-favorites', []);
+  const { data: favorites = [] } = useTechnicalSheetFavorites();
+  const { toggleFavorite: toggleFavoriteMutation } = useTechnicalSheetMutations();
 
   const toggleFavorite = (e: React.MouseEvent, sheetId: string) => {
     e.stopPropagation();
-    setFavorites(prev =>
-      prev.includes(sheetId) ? prev.filter(id => id !== sheetId) : [...prev, sheetId]
-    );
+    toggleFavoriteMutation.mutate({ sheetId, isFavorite: favorites.includes(sheetId) });
   };
 
   return (

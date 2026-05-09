@@ -1,6 +1,7 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
@@ -22,11 +23,16 @@ import {
 } from '@/components/ui/alert-dialog';
 import { 
   Edit, Clock, Wrench, ListOrdered, Package, Lightbulb,
-  AlertTriangle, Info, CheckCircle2, FileDown, Copy,
+  AlertTriangle, Info, CheckCircle2, FileDown, Copy, Star, TrendingUp,
   QrCode, Maximize2, Zap, Droplets, MoveHorizontal, Thermometer,
-  CheckSquare, History, ArrowLeftRight
+  CheckSquare, History, ArrowLeftRight 
 } from 'lucide-react';
-import { useTechnicalSheetDetails } from '@/hooks/useTechnicalSheets';
+import { 
+  useTechnicalSheetDetails, 
+  useTechnicalSheetAudit, 
+  useTechnicalSheetFavorites,
+  useTechnicalSheetMutations 
+} from '@/hooks/useTechnicalSheets';
 import { KnowledgeSheetQRCode } from './KnowledgeSheetQRCode';
 import { KnowledgeStatusBadge } from './KnowledgeStatusBadge';
 import { toast } from 'sonner';
@@ -39,9 +45,22 @@ interface TechnicalSheetViewerProps {
 
 export const TechnicalSheetViewer = ({ sheetId, onEdit, onDuplicate }: TechnicalSheetViewerProps) => {
   const { sheet, steps, sheetMaterials, tips, isLoading } = useTechnicalSheetDetails(sheetId);
+  const { data: auditLogs = [], isLoading: isLoadingAudit } = useTechnicalSheetAudit(sheetId);
+  const { data: favorites = [] } = useTechnicalSheetFavorites();
+  const { toggleFavorite } = useTechnicalSheetMutations();
   const [checklistMode, setChecklistMode] = useState(false);
   const [completedSteps, setCompletedSteps] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    if (sheetId) {
+      supabase.rpc('increment_sheet_view_count', { sheet_id: sheetId })
+        .then(({ error }) => {
+          if (error) console.error('Error incrementing view count:', error);
+        });
+    }
+  }, [sheetId]);
   const [showQR, setShowQR] = useState(false);
+  const [productionQuantity, setProductionQuantity] = useState(100);
 
   const toggleStep = (stepId: string) => {
     setCompletedSteps(prev => {
@@ -91,6 +110,19 @@ export const TechnicalSheetViewer = ({ sheetId, onEdit, onDuplicate }: Technical
         doc.setFontSize(9);
         sheetMaterials.forEach(m => {
           doc.text(`• ${m.name}${m.quantity ? ` (${m.quantity})` : ''}${m.specification ? ` - ${m.specification}` : ''}`, 18, y);
+          y += 5;
+          if (y > 270) { doc.addPage(); y = 20; }
+        });
+        y += 5;
+      }
+
+      if (sheet.quality_checklist && sheet.quality_checklist.length > 0) {
+        doc.setFontSize(12);
+        doc.text('Critérios de Qualidade', 14, y);
+        y += 7;
+        doc.setFontSize(9);
+        sheet.quality_checklist.forEach(item => {
+          doc.text(`[ ] ${item.description}${item.required ? ' (OBRIGATÓRIO)' : ''}`, 18, y);
           y += 5;
           if (y > 270) { doc.addPage(); y = 20; }
         });
@@ -205,15 +237,30 @@ export const TechnicalSheetViewer = ({ sheetId, onEdit, onDuplicate }: Technical
                 <KnowledgeStatusBadge status={sheet.status} />
                 <Badge variant="outline" className="text-[10px] font-bold">v{sheet.version || '1'}</Badge>
               </div>
-              <div className="flex items-center gap-2 mt-1">
-                <span className="text-[10px] text-muted-foreground uppercase font-semibold">Última atualização:</span>
-                <span className="text-[10px] text-muted-foreground">{format(new Date(sheet.updated_at), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}</span>
+              <div className="flex items-center gap-4 mt-1">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[10px] text-muted-foreground uppercase font-semibold">Última atualização:</span>
+                  <span className="text-[10px] text-muted-foreground">{format(new Date(sheet.updated_at), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <TrendingUp className="h-3 w-3 text-emerald-500" />
+                  <span className="text-[10px] text-muted-foreground font-semibold uppercase">{sheet.view_count || 0} ACESSOS</span>
+                </div>
               </div>
               {sheet.description && (
                 <p className="text-sm text-muted-foreground mt-2">{sheet.description}</p>
               )}
             </div>
             <div className="flex gap-1.5 flex-shrink-0">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={() => toggleFavorite.mutate({ sheetId, isFavorite: favorites.includes(sheetId) })}
+                className={favorites.includes(sheetId) ? "text-amber-500 fill-amber-500" : "text-muted-foreground"}
+                title={favorites.includes(sheetId) ? "Remover dos favoritos" : "Adicionar aos favoritos"}
+              >
+                <Star className="h-4 w-4" />
+              </Button>
               {onDuplicate && (
                 <Button variant="ghost" size="icon" onClick={onDuplicate} title="Duplicar ficha">
                   <Copy className="h-4 w-4" />
@@ -309,9 +356,18 @@ export const TechnicalSheetViewer = ({ sheetId, onEdit, onDuplicate }: Technical
                         </CardTitle>
                       </CardHeader>
                       <CardContent className="px-4 pb-4">
-                        <div className="aspect-video bg-muted rounded flex flex-col items-center justify-center border-2 border-dashed border-emerald-500/20 group cursor-pointer hover:bg-emerald-500/5 transition-colors">
-                          <Maximize2 className="h-6 w-6 text-emerald-500/40 group-hover:scale-110 transition-transform" />
-                          <span className="text-[10px] text-emerald-600/60 mt-2 font-medium">VER REFERÊNCIA VISUAL</span>
+                        <div 
+                          className="aspect-video bg-muted rounded flex flex-col items-center justify-center border-2 border-dashed border-emerald-500/20 group cursor-pointer hover:bg-emerald-500/5 transition-colors overflow-hidden"
+                          onClick={() => sheet.gold_standard_image_url && window.open(sheet.gold_standard_image_url, '_blank')}
+                        >
+                          {sheet.gold_standard_image_url ? (
+                            <img src={sheet.gold_standard_image_url} alt="Padrão Ouro" className="w-full h-full object-cover" />
+                          ) : (
+                            <>
+                              <Maximize2 className="h-6 w-6 text-emerald-500/40 group-hover:scale-110 transition-transform" />
+                              <span className="text-[10px] text-emerald-600/60 mt-2 font-medium uppercase">Sem referência visual</span>
+                            </>
+                          )}
                         </div>
                         <p className="text-[10px] mt-2 text-muted-foreground italic text-center">Referência visual homologada para este processo</p>
                       </CardContent>
@@ -325,9 +381,18 @@ export const TechnicalSheetViewer = ({ sheetId, onEdit, onDuplicate }: Technical
                         </CardTitle>
                       </CardHeader>
                       <CardContent className="px-4 pb-4">
-                        <div className="aspect-video bg-muted rounded flex flex-col items-center justify-center border-2 border-dashed border-rose-500/20 group cursor-pointer hover:bg-rose-500/5 transition-colors">
-                          <AlertTriangle className="h-6 w-6 text-rose-500/40 group-hover:shake transition-transform" />
-                          <span className="text-[10px] text-rose-600/60 mt-2 font-medium">VER EXEMPLOS DE REJEIÇÃO</span>
+                        <div 
+                          className="aspect-video bg-muted rounded flex flex-col items-center justify-center border-2 border-dashed border-rose-500/20 group cursor-pointer hover:bg-rose-500/5 transition-colors overflow-hidden"
+                          onClick={() => sheet.failure_standard_image_url && window.open(sheet.failure_standard_image_url, '_blank')}
+                        >
+                          {sheet.failure_standard_image_url ? (
+                            <img src={sheet.failure_standard_image_url} alt="Padrão Falha" className="w-full h-full object-cover" />
+                          ) : (
+                            <>
+                              <AlertTriangle className="h-6 w-6 text-rose-500/40 group-hover:shake transition-transform" />
+                              <span className="text-[10px] text-rose-600/60 mt-2 font-medium uppercase">Sem exemplos de rejeição</span>
+                            </>
+                          )}
                         </div>
                         <p className="text-[10px] mt-2 text-muted-foreground italic text-center">Erros comuns que levam ao descarte</p>
                       </CardContent>
@@ -396,6 +461,30 @@ export const TechnicalSheetViewer = ({ sheetId, onEdit, onDuplicate }: Technical
                       </div>
                     )}
                   </div>
+
+                  {sheet.machines && (
+                    <Card className="bg-primary/5 border-primary/10 overflow-hidden">
+                      <div className="p-3 bg-primary/10 border-b border-primary/10 flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <Wrench className="h-4 w-4 text-primary" />
+                          <span className="text-xs font-bold text-primary uppercase tracking-tight">Suporte Técnico: {sheet.machines.name}</span>
+                        </div>
+                        <Button variant="link" size="sm" className="h-auto p-0 text-[10px] text-primary" onClick={() => window.open('/machines', '_self')}>
+                          Ver Máquina
+                        </Button>
+                      </div>
+                      <div className="p-3 space-y-2">
+                        <div className="flex items-center gap-2">
+                          <Info className="h-3 w-3 text-primary/60" />
+                          <span className="text-[10px] text-muted-foreground">Em caso de falha mecânica, acione a manutenção via canal de TPM ou WhatsApp corporativo.</span>
+                        </div>
+                        <div className="flex gap-2">
+                          <Badge variant="outline" className="text-[9px] bg-background">MANUAL PDF</Badge>
+                          <Badge variant="outline" className="text-[9px] bg-background">CHECKLIST TPM</Badge>
+                        </div>
+                      </div>
+                    </Card>
+                  )}
 
                   {sheet.setup_instructions && (
                     <div className="space-y-4">
@@ -485,30 +574,44 @@ export const TechnicalSheetViewer = ({ sheetId, onEdit, onDuplicate }: Technical
                         <span className="text-[10px] font-bold text-primary">CALCULAR PARA:</span>
                         <input 
                           type="number" 
-                          defaultValue="100" 
-                          className="w-12 bg-transparent border-none text-[10px] font-bold text-primary focus:ring-0 p-0 text-center" 
+                          value={productionQuantity}
+                          onChange={(e) => setProductionQuantity(Number(e.target.value))}
+                          className="w-16 bg-transparent border-none text-[10px] font-bold text-primary focus:ring-0 p-0 text-center" 
                         />
                         <span className="text-[10px] font-bold text-primary">UNIDADES</span>
                       </div>
                     </div>
                     
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      {(sheetMaterials.length > 0 ? sheetMaterials : [
-                        { name: 'Tinta Base Water', quantity: '500g', notes: 'Alternativa: Tinta Eco-Friendly' },
-                        { name: 'Catalisador 202', quantity: '50g', notes: 'N/A' }
-                      ]).map((mat, idx) => (
-                        <div key={idx} className="flex items-start justify-between p-3 bg-muted/30 rounded-lg border border-border/50 group hover:border-primary/30 transition-colors">
-                          <div className="flex flex-col">
-                            <span className="text-sm font-medium">{mat.name}</span>
-                            {mat.notes && (
-                              <span className="text-[10px] text-muted-foreground">{mat.notes}</span>
-                            )}
+                      {sheetMaterials.map((mat, idx) => {
+                        const baseQuantityMatch = mat.quantity?.match(/^(\d+)(\D.*)$/);
+                        let scaledQuantity = mat.quantity;
+                        
+                        if (baseQuantityMatch) {
+                          const num = parseFloat(baseQuantityMatch[1]);
+                          const unit = baseQuantityMatch[2];
+                          scaledQuantity = `${((num * productionQuantity) / 100).toFixed(2)}${unit}`;
+                        }
+
+                        return (
+                          <div key={idx} className="flex items-start justify-between p-3 bg-muted/30 rounded-lg border border-border/50 group hover:border-primary/30 transition-colors">
+                            <div className="flex flex-col">
+                              <span className="text-sm font-medium">{mat.name}</span>
+                              {mat.notes && (
+                                <span className="text-[10px] text-muted-foreground">{mat.notes}</span>
+                              )}
+                            </div>
+                            <Badge variant="outline" className="bg-primary/5 text-primary border-primary/20 font-mono text-[10px]">
+                              {scaledQuantity}
+                            </Badge>
                           </div>
-                          <Badge variant="outline" className="bg-primary/5 text-primary border-primary/20 font-mono text-[10px]">
-                            {mat.quantity}
-                          </Badge>
+                        );
+                      })}
+                      {sheetMaterials.length === 0 && (
+                        <div className="col-span-full py-4 text-center text-xs text-muted-foreground">
+                          Nenhum insumo cadastrado para esta ficha.
                         </div>
-                      ))}
+                      )}
                     </div>
                   </div>
 
@@ -610,36 +713,48 @@ export const TechnicalSheetViewer = ({ sheetId, onEdit, onDuplicate }: Technical
                   </div>
                   
                   <div className="space-y-4">
-                    {/* Placeholder for real logs from table we just created */}
-                    <div className="relative pl-8 pb-8 border-l last:border-l-0">
-                      <div className="absolute -left-1.5 top-0 w-3 h-3 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
-                      <div className="bg-muted/30 p-4 rounded-lg border border-border/50">
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="text-xs font-bold text-emerald-600 uppercase tracking-wider">Publicação</span>
-                          <span className="text-xs text-muted-foreground">{format(new Date(sheet.updated_at), "dd/MM/yyyy 'às' HH:mm")}</span>
+                    {isLoadingAudit ? (
+                      <div className="text-center py-4 text-xs text-muted-foreground">Carregando histórico...</div>
+                    ) : auditLogs.length > 0 ? (
+                      auditLogs.map((log: any) => (
+                        <div key={log.id} className="relative pl-8 pb-8 border-l last:border-l-0">
+                          <div className={`absolute -left-1.5 top-0 w-3 h-3 rounded-full ${
+                            log.action === 'CREATE' ? 'bg-emerald-500' : 
+                            log.action === 'DELETE' ? 'bg-rose-500' : 'bg-primary'
+                          } shadow-sm`} />
+                          <div className="bg-muted/30 p-4 rounded-lg border border-border/50">
+                            <div className="flex items-center justify-between mb-2">
+                              <span className="text-xs font-bold uppercase tracking-wider">
+                                {log.action === 'CREATE' ? 'Criação' : 
+                                 log.action === 'UPDATE' ? 'Atualização' : 
+                                 log.action === 'VERSION_BUMP' ? 'Nova Versão' : log.action}
+                              </span>
+                              <span className="text-xs text-muted-foreground">
+                                {format(new Date(log.created_at), "dd/MM/yyyy 'às' HH:mm")}
+                              </span>
+                            </div>
+                            <p className="text-sm">
+                              {log.change_summary || (log.action === 'CREATE' ? 'Ficha técnica criada.' : 'Alterações realizadas nos parâmetros.')}
+                            </p>
+                            <div className="flex items-center gap-2 mt-3">
+                              {log.profiles?.avatar_url ? (
+                                <img src={log.profiles.avatar_url} alt={log.profiles.display_name} className="h-6 w-6 rounded-full" />
+                              ) : (
+                                <div className="h-6 w-6 rounded-full bg-primary/20 flex items-center justify-center text-[10px] font-bold">
+                                  {log.profiles?.display_name?.substring(0, 2).toUpperCase() || '??'}
+                                </div>
+                              )}
+                              <span className="text-xs font-medium">{log.profiles?.display_name || 'Sistema'}</span>
+                            </div>
+                          </div>
                         </div>
-                        <p className="text-sm">Ficha técnica homologada para produção.</p>
-                        <div className="flex items-center gap-2 mt-3">
-                          <div className="h-6 w-6 rounded-full bg-primary/20 flex items-center justify-center text-[10px] font-bold">JD</div>
-                          <span className="text-xs font-medium">João Diretor (Qualidade)</span>
-                        </div>
+                      ))
+                    ) : (
+                      <div className="text-center py-8 text-muted-foreground">
+                        <History className="h-8 w-8 mx-auto mb-2 opacity-20" />
+                        <p className="text-xs">Nenhum registro de auditoria encontrado.</p>
                       </div>
-                    </div>
-
-                    <div className="relative pl-8 pb-8 border-l last:border-l-0">
-                      <div className="absolute -left-1.5 top-0 w-3 h-3 rounded-full bg-primary/50" />
-                      <div className="bg-muted/30 p-4 rounded-lg border border-border/50">
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="text-xs font-bold text-primary uppercase tracking-wider">Edição de Parâmetros</span>
-                          <span className="text-xs text-muted-foreground">01/05/2024 às 10:20</span>
-                        </div>
-                        <p className="text-sm">Alteração na temperatura de fusão de 180°C para 195°C para melhorar aderência.</p>
-                        <div className="flex items-center gap-2 mt-3">
-                          <div className="h-6 w-6 rounded-full bg-primary/20 flex items-center justify-center text-[10px] font-bold">TC</div>
-                          <span className="text-xs font-medium">Técnico Camilo</span>
-                        </div>
-                      </div>
-                    </div>
+                    )}
                   </div>
                 </div>
               </ScrollArea>

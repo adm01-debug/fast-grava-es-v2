@@ -11,6 +11,7 @@ export const KnowledgeBaseStats = ({ sheets, techniques }: KnowledgeBaseStatsPro
   const totalSheets = sheets.length;
   const avgTime = sheets.reduce((sum, s) => sum + (s.estimated_time_minutes || 0), 0) / (totalSheets || 1);
   const techniquesUsed = new Set(sheets.map(s => s.technique_id)).size;
+  const totalViews = sheets.reduce((sum, s) => sum + (s.view_count || 0), 0);
   const withSteps = sheets.filter(s => s.description).length;
 
   const stats = [
@@ -36,11 +37,11 @@ export const KnowledgeBaseStats = ({ sheets, techniques }: KnowledgeBaseStatsPro
       bg: 'bg-muted/50',
     },
     {
-      label: 'Com Descrição',
-      value: `${totalSheets > 0 ? Math.round((withSteps / totalSheets) * 100) : 0}%`,
+      label: 'Total de Acessos',
+      value: totalViews,
       icon: CheckCircle2,
-      color: 'text-primary',
-      bg: 'bg-primary/10',
+      color: 'text-emerald-500',
+      bg: 'bg-emerald-500/10',
     },
   ];
 
