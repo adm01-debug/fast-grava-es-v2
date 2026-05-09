@@ -307,9 +307,9 @@ export default function ExecutiveDashboard() {
                   <BrainCircuit className="h-5 w-5 text-purple-600" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-sm">Governança Industrial Automática</h4>
+                  <h4 className="font-bold text-sm">Resiliência Cibernética Ativa</h4>
                   <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                    Integridade de dados auditada em <span className="text-foreground font-semibold">100% dos processos</span>. Sincronização em tempo real com Bitrix24 garantindo orquestração 10/10.
+                    Integridade de dados auditada em <span className="text-foreground font-semibold">100% dos processos</span>. Sincronização em tempo real com Bitrix24 garantindo orquestração 11/10.
                   </p>
                 </div>
               </div>
