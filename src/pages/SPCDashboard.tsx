@@ -45,6 +45,16 @@ export default function SPCDashboard() {
     return calculateCapabilityIndices(measurements, selectedParameter.upper_spec_limit, selectedParameter.lower_spec_limit);
   }, [measurements, selectedParameter]);
 
+  const runRuleViolations = useMemo(() => {
+    if (!measurements || !selectedParameter || !selectedParameter.upper_control_limit || !selectedParameter.lower_control_limit) return [];
+    return detectRunRules(
+      measurements, 
+      selectedParameter.upper_control_limit, 
+      selectedParameter.lower_control_limit, 
+      selectedParameter.target_value
+    );
+  }, [measurements, selectedParameter]);
+
   const stats = {
     total: parameters?.length || 0,
     active: parameters?.filter(p => p.is_active).length || 0,
