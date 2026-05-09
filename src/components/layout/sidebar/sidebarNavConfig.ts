@@ -19,7 +19,7 @@ export const navGroups: NavGroup[] = [
   ]},
   { id: 'analytics', icon: BarChart3, label: 'Analytics', items: [
     { icon: BarChart3, label: 'BI Executivo', href: '/bi' },
-    { icon: Factory, label: 'Fábrica 11/10', href: '/executive' },
+    { icon: Factory, label: 'Fábrica 13/10', href: '/executive' },
     { icon: FileText, label: 'Construtor de Relatórios', href: '/report-builder' },
     { icon: TrendingUp, label: 'KPIs e Ocupação', href: '/kpis' },
     { icon: Gauge, label: 'OEE', href: '/oee' },
