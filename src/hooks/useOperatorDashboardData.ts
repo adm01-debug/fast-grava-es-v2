@@ -10,7 +10,7 @@ import { isWithinInterval, startOfDay, endOfDay } from 'date-fns';
  * Operators see only their assigned machines and related jobs.
  * Coordinators and managers see all data.
  */
-export function useOperatorDashboardData() {
+export function useOperatorDashboardData(dateRange?: DateRange) {
   const { user, isOperator } = useAuth();
   const schedulingData = useSchedulingData();
   const { assignments, isLoading: isLoadingAssignments } = useOperatorMachines(user?.id);
