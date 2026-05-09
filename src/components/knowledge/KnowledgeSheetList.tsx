@@ -51,13 +51,12 @@ export const KnowledgeSheetList = ({
   isLoading,
   hasFilters,
 }: KnowledgeSheetListProps) => {
-  const [favorites, setFavorites] = useLocalStorage<string[]>('kb-favorites', []);
+  const { data: favorites = [] } = useTechnicalSheetFavorites();
+  const { toggleFavorite: toggleFavoriteMutation } = useTechnicalSheetMutations();
 
   const toggleFavorite = (e: React.MouseEvent, sheetId: string) => {
     e.stopPropagation();
-    setFavorites(prev =>
-      prev.includes(sheetId) ? prev.filter(id => id !== sheetId) : [...prev, sheetId]
-    );
+    toggleFavoriteMutation.mutate({ sheetId, isFavorite: favorites.includes(sheetId) });
   };
 
   return (
