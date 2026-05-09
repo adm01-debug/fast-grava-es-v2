@@ -139,9 +139,9 @@ export function PlanningEfficiencyDashboard() {
               <Zap className="h-5 w-5 text-amber-400" />
             </div>
           </div>
-          <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider mb-1">Recuperação de Setup</p>
+          <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest mb-1">Recuperação de Setup</p>
           <div className="flex items-end gap-2 mb-3">
-            <h3 className="text-3xl font-bold font-display">{totalSavings}m</h3>
+            <h3 className="text-3xl font-black font-display tracking-tighter">-{totalSavings}m</h3>
             <div className="text-[10px] text-amber-400 font-bold flex items-center mb-1 uppercase">
               Economia de IA
             </div>
