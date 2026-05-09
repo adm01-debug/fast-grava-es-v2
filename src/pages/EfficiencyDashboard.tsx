@@ -55,8 +55,15 @@ export default function EfficiencyDashboard() {
           </div>
           <div className="flex items-center gap-2 flex-wrap">
             <FavoritesDropdown onNavigate={(url) => navigate(url)} />
-            <Badge variant="outline" className="gap-1 text-xs hidden sm:flex"><Command className="h-3 w-3" />K para buscar</Badge>
+            <Badge 
+              variant="outline" 
+              className="gap-1 text-xs hidden sm:flex cursor-pointer hover:bg-accent"
+              onClick={() => document.dispatchEvent(new KeyboardEvent("keydown", { key: "k", metaKey: true, bubbles: true }))}
+            >
+              <Command className="h-3 w-3" />K para buscar
+            </Badge>
             <Button variant="outline" size="sm" className="gap-1.5 sm:gap-2 text-xs sm:text-sm"><History className="h-3.5 w-3.5 sm:h-4 sm:w-4" />Histórico</Button>
+            <VoiceButton className="no-export" />
             <Button size="sm" className="gap-1.5 sm:gap-2 gradient-primary text-xs sm:text-sm"><TrendingUp className="h-3.5 w-3.5 sm:h-4 sm:w-4" />Otimizar</Button>
           </div>
         </div>
