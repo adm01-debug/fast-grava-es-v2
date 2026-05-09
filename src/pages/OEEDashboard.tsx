@@ -329,15 +329,15 @@ export default function OEEDashboard() {
                 </div>
                 <div className="space-y-4">
                   {data.byTechnique.map((tech) => (
-                    <div key={tech.name} className="space-y-2">
+                    <div key={tech.techniqueId} className="space-y-2">
                       <div className="flex justify-between text-sm">
-                        <span className="font-medium">{tech.name}</span>
-                        <span className="text-emerald-600 font-bold">Eco-Score: {(tech.oee * 0.8 + 20).toFixed(0)}</span>
+                        <span className="font-medium">{tech.techniqueName}</span>
+                        <span className="text-emerald-600 font-bold">Eco-Score: {(tech.averageOEE * 0.8 + 20).toFixed(0)}</span>
                       </div>
                       <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
                         <div 
                           className="h-full bg-emerald-500 transition-all" 
-                          style={{ width: `${tech.oee}%` }}
+                          style={{ width: `${tech.averageOEE}%` }}
                         />
                       </div>
                     </div>
