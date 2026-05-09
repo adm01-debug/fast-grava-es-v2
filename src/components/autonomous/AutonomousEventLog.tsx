@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Brain, Cpu, Zap, RefreshCw, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Brain, Cpu, Zap, RefreshCw, AlertCircle, CheckCircle2, Target, ShieldCheck } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export function AutonomousEventLog() {
