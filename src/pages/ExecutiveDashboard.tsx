@@ -87,7 +87,7 @@ export default function ExecutiveDashboard() {
   const { data: techniques } = useQuery({
     queryKey: ['techniques-list'],
     queryFn: async () => {
-      const { data } = await supabase.from('techniques').select('id, name');
+      const { data } = await supabase.from('techniques').select('id, name, short_name');
       return data || [];
     }
   });
