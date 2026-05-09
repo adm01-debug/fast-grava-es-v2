@@ -75,6 +75,25 @@ export default function PendingQueue() {
   const queryClient = useQueryClient();
 
   const { exportData, isExporting } = useDataExport('jobs');
+  const { suggestions: seqSuggestions } = useSmartSequencingWithActions();
+  const { suggestions: balancingSuggestions } = useLoadBalancingWithActions();
+
+  // Create lookup maps for AI insights
+  const jobsInOptimizedSequence = useMemo(() => {
+    const set = new Set<string>();
+    seqSuggestions.forEach(s => {
+      s.optimizedSequence.forEach(j => set.add(j.id));
+    });
+    return set;
+  }, [seqSuggestions]);
+
+  const jobsWithBalancingSuggestion = useMemo(() => {
+    const map = new Map<string, string>();
+    balancingSuggestions.forEach(s => {
+      map.set(s.jobId, s.suggestedMachineName);
+    });
+    return map;
+  }, [balancingSuggestions]);
 
   // Fetch real data from Supabase
   const { 
