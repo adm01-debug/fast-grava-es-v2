@@ -10,6 +10,8 @@ const JOBS_ERROR_CONTEXT = {
     machines: { entity: 'machines', operation: 'fetch' },
     jobs: { entity: 'jobs', operation: 'fetch' },
     updateStatus: { entity: 'jobs', operation: 'update_status' },
+    updateJob: { entity: 'jobs', operation: 'update' },
+    deleteJob: { entity: 'jobs', operation: 'delete' },
   }
 };
 
