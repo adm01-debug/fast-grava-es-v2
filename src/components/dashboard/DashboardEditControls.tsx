@@ -30,7 +30,7 @@ export const DashboardEditControls = memo(function DashboardEditControls({
   className,
 }: DashboardEditControlsProps) {
   return (
-    <div className="flex items-center gap-2">
+    <div className={cn("flex items-center gap-2", className)}>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="outline" size="sm" className="gap-2">
