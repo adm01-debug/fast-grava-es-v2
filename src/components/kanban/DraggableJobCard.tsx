@@ -49,6 +49,8 @@ function getDeadlineInfo(job: DbJob): { label: string; isOverdue: boolean; color
 }
 
 export function DraggableJobCard({ job, technique, machine, onClick, viewMode = 'expanded', isSelected, onSelect, onQuickAction }: DraggableJobCardProps) {
+  const { isAvailable, lowStockItems, outOfStockItems } = useJobInventoryCheck(job.technique_id);
+
   const {
     attributes,
     listeners,
