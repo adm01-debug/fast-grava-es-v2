@@ -1,4 +1,5 @@
 import { useTechnicalSheets } from '@/hooks/useTechnicalSheets';
+import { useDocuments } from '@/hooks/useDocuments';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -12,11 +13,14 @@ import {
   ChevronRight,
   BookOpen,
   Wrench,
-  CheckCircle2
+  CheckCircle2,
+  ExternalLink,
+  Download
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
 import { TechnicalSheet } from '@/hooks/technical-sheets/technicalSheetsTypes';
+import { Button } from '@/components/ui/button';
 
 interface JobInstructionsTabProps {
   techniqueId: string;
