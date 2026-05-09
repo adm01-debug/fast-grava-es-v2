@@ -15,6 +15,7 @@ export interface InventoryItem {
   min_stock_level: number;
   location: string | null;
   specification: string | null;
+  price_per_unit: number;
   created_at: string;
   updated_at: string;
 }
@@ -23,9 +24,11 @@ export interface InventoryMovement {
   id: string;
   item_id: string;
   user_id: string | null;
-  type: 'IN' | 'OUT' | 'ADJUST';
+  type: 'IN' | 'OUT' | 'ADJUST' | 'TRANSFER';
   quantity: number;
   reason: string | null;
+  from_location: string | null;
+  to_location: string | null;
   job_id: string | null;
   created_at: string;
 }
@@ -58,7 +61,7 @@ export function useInventory() {
       return isAfter(parseISO(m.created_at), last24h);
     });
     
-    const totalValue = (itemsQuery.data || []).reduce((sum, item) => sum + (item.current_stock * 15.5), 0);
+    const totalValue = (itemsQuery.data || []).reduce((sum, item) => sum + (item.current_stock * (item.price_per_unit || 0)), 0);
 
     return {
       movementsCount24h: recentMovements.length,
@@ -103,8 +106,79 @@ export function useInventory() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['inventory-items'] });
-      toast.success('Item atualizado com sucesso');
     },
+  });
+
+  const deleteMovementMutation = useMutation({
+    mutationFn: async (movementId: string) => {
+      // Get movement details first for rollback logic if needed
+      const { data: movement, error: fetchError } = await supabase
+        .from('inventory_movements')
+        .select('*')
+        .eq('id', movementId)
+        .single();
+      
+      if (fetchError) throw fetchError;
+
+      const { error: deleteError } = await supabase
+        .from('inventory_movements')
+        .delete()
+        .eq('id', movementId);
+
+      if (deleteError) throw deleteError;
+      return movement;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['inventory-items'] });
+      queryClient.invalidateQueries({ queryKey: ['inventory-movements'] });
+      toast.success('Movimentação excluída e estoque sincronizado');
+    },
+    onError: (error) => {
+      console.error('Error deleting movement:', error);
+      toast.error('Erro ao excluir movimentação');
+    }
+  });
+
+  const transferItemsMutation = useMutation({
+    mutationFn: async ({ fromLocation, toLocation, itemIds }: { fromLocation: string, toLocation: string, itemIds: string[] }) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      const results = await Promise.all(itemIds.map(async (itemId) => {
+        // 1. Update item location
+        const { error: updateError } = await supabase
+          .from('inventory_items')
+          .update({ location: toLocation })
+          .eq('id', itemId);
+        
+        if (updateError) throw updateError;
+
+        // 2. Record movement
+        const { error: moveError } = await supabase
+          .from('inventory_movements')
+          .insert([{
+            item_id: itemId,
+            user_id: user?.id,
+            type: 'TRANSFER',
+            quantity: 0, // Transfer doesn't change quantity
+            from_location: fromLocation,
+            to_location: toLocation,
+            reason: `Transferência de ${fromLocation} para ${toLocation}`
+          }]);
+          
+        if (moveError) throw moveError;
+      }));
+      
+      return results;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['inventory-items'] });
+      queryClient.invalidateQueries({ queryKey: ['inventory-movements'] });
+      toast.success('Transferência realizada com sucesso');
+    },
+    onError: (error) => {
+      console.error('Error transferring items:', error);
+      toast.error('Erro ao transferir itens');
+    }
   });
 
   return {
@@ -113,6 +187,9 @@ export function useInventory() {
     recordMovement: createMovementMutation.mutateAsync,
     isMoving: createMovementMutation.isPending,
     updateItem: updateItemMutation.mutateAsync,
+    transferItems: transferItemsMutation.mutateAsync,
+    deleteMovement: deleteMovementMutation.mutateAsync,
+    isTransferring: transferItemsMutation.isPending,
     stats,
   };
 }
