@@ -110,6 +110,42 @@ export function WarehouseMap({ items }: WarehouseMapProps) {
           <div className="flex items-center gap-1.5"><div className="h-3 w-3 rounded bg-muted/10 border border-border/30" /> Vazio</div>
         </div>
       </CardContent>
+
+      <Dialog open={isTransferring} onOpenChange={setIsTransferring}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Transferência de Localização: {selectedLocation}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="p-3 bg-muted/50 rounded-lg">
+              <p className="text-xs font-bold uppercase mb-2">Itens nesta posição:</p>
+              {items.filter(i => i.location === selectedLocation).map(i => (
+                <div key={i.id} className="text-xs flex justify-between py-1 border-b border-border/30 last:border-0">
+                  <span>{i.name}</span>
+                  <span className="font-mono">{i.current_stock} {i.unit}</span>
+                </div>
+              ))}
+            </div>
+            <div className="space-y-2">
+              <Label>Nova Localização (Ex: A2, B4)</Label>
+              <Input 
+                placeholder="Ex: A2" 
+                value={newLocation} 
+                onChange={(e) => setNewLocation(e.target.value.toUpperCase())}
+                maxLength={2}
+              />
+            </div>
+            <Button className="w-full gap-2" onClick={() => {
+              toast.info(`Iniciando transferência de ${selectedLocation} para ${newLocation}`);
+              setIsTransferring(false);
+              setNewLocation('');
+            }}>
+              <Move className="h-4 w-4" />
+              Confirmar Transferência
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 }
