@@ -146,8 +146,8 @@ export default function ExecutiveDashboard() {
 
   return (
     <MainLayout>
-      <div className="p-4 sm:p-6 lg:p-8 space-y-6 animate-fade-in-up">
-        <Breadcrumbs />
+      <div className="p-4 sm:p-6 lg:p-8 space-y-10 animate-fade-in-up">
+        <Breadcrumbs className="mb-0" />
         
         {/* Header Section */}
         <div className="flex flex-col xl:flex-row justify-between items-start xl:items-end gap-6 pb-2 border-b border-border/40">
