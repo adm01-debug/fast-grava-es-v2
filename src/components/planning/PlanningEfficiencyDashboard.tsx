@@ -22,7 +22,7 @@ export function PlanningEfficiencyDashboard() {
   const { jobs } = useSchedulingData();
   const { totalSavings, suggestions: sequencingSuggestions, applyAllSequencing, isApplying: isApplyingSequencing } = useSmartSequencingWithActions();
   const { suggestions: balancingSuggestions, byTechnique, applyAllSuggestions, isApplying: isApplyingBalancing } = useLoadBalancingWithActions();
-  const { data: oeeData } = useOEE(30);
+  const { data: oeeData } = useOEE(14, 14); // Compare last 14 days vs previous 14
   const { summary: reliabilitySummary } = useMTBFMTTR(30);
   const [showTrend, setShowTrend] = useState(false);
 
@@ -254,7 +254,11 @@ export function PlanningEfficiencyDashboard() {
           >
             <div className="pt-4 grid grid-cols-1 lg:grid-cols-3 gap-4">
               <div className="lg:col-span-2">
-                <OEETrendChart data={oeeData.trendData} worldClassBenchmark={oeeData.worldClassBenchmark} />
+                <OEETrendChart 
+                  data={oeeData.trendData} 
+                  worldClassBenchmark={oeeData.worldClassBenchmark} 
+                  comparison={oeeData.comparison}
+                />
               </div>
               
               {/* Technique Load Distribution */}
