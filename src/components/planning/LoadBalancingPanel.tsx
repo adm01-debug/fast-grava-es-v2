@@ -11,12 +11,17 @@ import {
   CheckCircle2, Info, ArrowLeftRight, Sparkles, Clock, Zap
 } from 'lucide-react';
 import { useLoadBalancing, LoadBalancingSuggestion } from '@/hooks/useLoadBalancing';
+import { useLoadBalancingWithActions } from '@/hooks/useLoadBalancingWithActions';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
 
-export function LoadBalancingPanel() {
+interface LoadBalancingPanelProps {
+  onExplain?: (suggestion: LoadBalancingSuggestion) => void;
+}
+
+export function LoadBalancingPanel({ onExplain }: LoadBalancingPanelProps) {
   const { suggestions, byTechnique, isLoading } = useLoadBalancing();
   const [isApplying, setIsApplying] = useState(false);
   const [showAll, setShowAll] = useState(false);
@@ -133,7 +138,11 @@ export function LoadBalancingPanel() {
                     className="h-8 px-2 border-blue-500/20 hover:bg-blue-500/5 text-blue-400"
                     onClick={(e) => {
                       e.stopPropagation();
+                    if (onExplain) {
+                      onExplain(suggestion);
+                    } else {
                       setSelectedSuggestion(suggestion);
+                    }
                     }}
                   >
                     <Info className="h-3.5 w-3.5" />

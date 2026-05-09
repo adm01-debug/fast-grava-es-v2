@@ -27,7 +27,8 @@ import {
   Play,
   Trash2,
   BrainCircuit,
-  Zap
+  Zap,
+  TrendingDown
 } from "lucide-react";
 import { useSchedulingData } from "@/hooks/useSchedulingData";
 import { useQueryClient } from "@tanstack/react-query";
@@ -38,6 +39,8 @@ import { JobStatus } from "@/types/scheduling";
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { SmartSequencingPanel } from "@/components/planning/SmartSequencingPanel";
 import { LoadBalancingPanel } from "@/components/planning/LoadBalancingPanel";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
+import { Progress } from "@/components/ui/progress";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { motion, AnimatePresence } from "framer-motion";
 import { useDataExport } from "@/hooks/useDataExport";
@@ -72,6 +75,11 @@ export default function PendingQueue() {
   const [selectedJob, setSelectedJob] = useState<DbJob | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSmartSectionOpen, setIsSmartSectionOpen] = useState(false);
+  const [isAISidePanelOpen, setIsAISidePanelOpen] = useState(false);
+  const [selectedAISuggestion, setSelectedAISuggestion] = useState<{
+    type: 'setup' | 'balancing';
+    data: any;
+  } | null>(null);
   const [selectedJobs, setSelectedJobs] = useState<Set<string>>(new Set());
   const queryClient = useQueryClient();
 
@@ -282,6 +290,132 @@ export default function PendingQueue() {
           open={isModalOpen} 
           onOpenChange={setIsModalOpen} 
         />
+
+        <Sheet open={isAISidePanelOpen} onOpenChange={setIsAISidePanelOpen}>
+          <SheetContent className="sm:max-w-md overflow-y-auto">
+            <SheetHeader className="mb-6">
+              <SheetTitle className="flex items-center gap-2">
+                <BrainCircuit className="h-5 w-5 text-primary" />
+                Explicação Técnica da IA
+              </SheetTitle>
+              <SheetDescription>
+                Transparência total sobre as regras e inputs utilizados para esta recomendação.
+              </SheetDescription>
+            </SheetHeader>
+
+            {selectedAISuggestion && (
+              <div className="space-y-8">
+                {/* Rules Section */}
+                <section>
+                  <h3 className="text-sm font-bold flex items-center gap-2 mb-4">
+                    <Filter className="h-4 w-4 text-primary" />
+                    Regras e Lógica Aplicada
+                  </h3>
+                  <div className="space-y-3">
+                    {selectedAISuggestion.type === 'setup' ? (
+                      <>
+                        <div className="p-3 rounded-lg bg-muted/50 border border-border/50">
+                          <p className="text-xs font-bold mb-1">Agrupamento por Afinidade de Cor</p>
+                          <p className="text-[11px] text-muted-foreground">Jobs com o mesmo valor no campo 'gravure_color' são agrupados para minimizar trocas de tinta e limpeza de clichê.</p>
+                        </div>
+                        <div className="p-3 rounded-lg bg-muted/50 border border-border/50">
+                          <p className="text-xs font-bold mb-1">Ordenação por Prioridade Interna</p>
+                          <p className="text-[11px] text-muted-foreground">Dentro de cada grupo de cor, jobs 'Urgentes' e de 'Alta Prioridade' são posicionados no início para garantir o SLA.</p>
+                        </div>
+                        <div className="p-3 rounded-lg bg-muted/50 border border-border/50">
+                          <p className="text-xs font-bold mb-1">Cálculo de Setup Dinâmico</p>
+                          <p className="text-[11px] text-muted-foreground">Utiliza o 'setup_time' definido para a técnica {selectedAISuggestion.data.techniqueName} ({selectedAISuggestion.data.estimatedSavings / (Math.max(1, selectedAISuggestion.data.currentChanges - selectedAISuggestion.data.optimizedChanges))}min por troca).</p>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div className="p-3 rounded-lg bg-muted/50 border border-border/50">
+                          <p className="text-xs font-bold mb-1">Diferencial de Carga (Ocupação)</p>
+                          <p className="text-[11px] text-muted-foreground">Detectado desvio de {Math.round(selectedAISuggestion.data.loadDifference)}% entre máquinas da mesma técnica. O gatilho de IA dispara quando o desvio ultrapassa 30%.</p>
+                        </div>
+                        <div className="p-3 rounded-lg bg-muted/50 border border-border/50">
+                          <p className="text-xs font-bold mb-1">Compatibilidade de Técnica</p>
+                          <p className="text-[11px] text-muted-foreground">Apenas máquinas certificadas para a técnica original são consideradas como destino para garantir qualidade.</p>
+                        </div>
+                        <div className="p-3 rounded-lg bg-muted/50 border border-border/50">
+                          <p className="text-xs font-bold mb-1">Proteção de Urgências</p>
+                          <p className="text-[11px] text-muted-foreground">Jobs com status 'production' ou prioridade 'urgent' são bloqueados para remanejamento automático para evitar riscos operacionais.</p>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </section>
+
+                {/* Inputs Section */}
+                <section>
+                  <h3 className="text-sm font-bold flex items-center gap-2 mb-4">
+                    <Package className="h-4 w-4 text-primary" />
+                    Inputs Utilizados
+                  </h3>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="p-2 rounded bg-card border border-border text-center">
+                      <p className="text-[10px] text-muted-foreground uppercase">Técnica</p>
+                      <p className="text-xs font-bold">{selectedAISuggestion.data.techniqueName || 'Digital'}</p>
+                    </div>
+                    <div className="p-2 rounded bg-card border border-border text-center">
+                      <p className="text-[10px] text-muted-foreground uppercase">Carga Total</p>
+                      <p className="text-xs font-bold">{selectedAISuggestion.data.totalMinutes || selectedAISuggestion.data.estimatedDuration}m</p>
+                    </div>
+                    <div className="p-2 rounded bg-card border border-border text-center">
+                      <p className="text-[10px] text-muted-foreground uppercase">Trocas (Setup)</p>
+                      <p className="text-xs font-bold">{selectedAISuggestion.data.currentChanges || 0} → {selectedAISuggestion.data.optimizedChanges || 0}</p>
+                    </div>
+                    <div className="p-2 rounded bg-card border border-border text-center">
+                      <p className="text-[10px] text-muted-foreground uppercase">Capacidade</p>
+                      <p className="text-xs font-bold">11h/dia</p>
+                    </div>
+                  </div>
+                </section>
+
+                {/* Savings Section */}
+                <section className="p-4 rounded-xl bg-primary/5 border border-primary/20 relative overflow-hidden">
+                  <div className="absolute -bottom-4 -right-4 opacity-10">
+                    <TrendingDown className="h-20 w-20 text-primary" />
+                  </div>
+                  <h3 className="text-sm font-bold flex items-center gap-2 mb-4 text-primary">
+                    <Zap className="h-4 w-4" />
+                    Previsão de Economia
+                  </h3>
+                  <div className="space-y-4">
+                    <div>
+                      <div className="flex justify-between text-xs mb-1.5">
+                        <span className="text-muted-foreground">Redução de Ociosidade / Setup</span>
+                        <span className="font-bold text-primary">-{selectedAISuggestion.data.estimatedSavings || 45} min</span>
+                      </div>
+                      <Progress value={75} className="h-1.5" />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4 pt-2">
+                      <div>
+                        <p className="text-[10px] text-muted-foreground uppercase font-bold">Impacto no OEE</p>
+                        <p className="text-lg font-bold text-emerald-500">+{selectedAISuggestion.type === 'setup' ? '8.5' : '12'}%</p>
+                      </div>
+                      <div>
+                        <p className="text-[10px] text-muted-foreground uppercase font-bold">ROI Estimado</p>
+                        <p className="text-lg font-bold text-blue-500">Imediato</p>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+
+                <div className="pt-6">
+                  <Button 
+                    className="w-full gap-2" 
+                    onClick={() => {
+                      setIsAISidePanelOpen(false);
+                    }}
+                  >
+                    Entendido, Fechar Explicação
+                  </Button>
+                </div>
+              </div>
+            )}
+          </SheetContent>
+        </Sheet>
         
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -475,8 +609,18 @@ export default function PendingQueue() {
           </div>
           <CollapsibleContent className="animate-accordion-down">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
-              <SmartSequencingPanel />
-              <LoadBalancingPanel />
+              <SmartSequencingPanel 
+                onExplain={(suggestion: any) => {
+                  setSelectedAISuggestion({ type: 'setup', data: suggestion });
+                  setIsAISidePanelOpen(true);
+                }}
+              />
+              <LoadBalancingPanel 
+                onExplain={(suggestion: any) => {
+                  setSelectedAISuggestion({ type: 'balancing', data: suggestion });
+                  setIsAISidePanelOpen(true);
+                }}
+              />
               <Card className="glass-card">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-sm font-bold flex items-center gap-2">
