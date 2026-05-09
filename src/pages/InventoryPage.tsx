@@ -434,7 +434,7 @@ function InventoryHistoryTable() {
 
             <tr key={m.id} className="hover:bg-muted/10 transition-colors group">
               <td className="p-4 text-xs font-medium">
-                {format(new Date(m.created_at), "dd/MM/yy HH:mm", { locale: ptBR })}
+                {format(new Date(m.created_at || ''), "dd/MM/yy HH:mm", { locale: ptBR })}
               </td>
               <td className="p-4 font-bold">
                 {m.inventory_items?.name}
