@@ -9,6 +9,9 @@ import { ptBR } from 'date-fns/locale';
 
 export function RealtimeIndicator() {
   const { status, isConnected, lastUpdate, reconnect } = useRealtimeConnection();
+  const isMutating = useIsMutating();
+
+  const isSyncing = isConnected && isMutating > 0;
 
   const statusConfig = {
     connecting: {
