@@ -37,6 +37,7 @@ import { useInventory } from '@/hooks/useInventory';
 import { KnowledgeSheetQRCode } from './KnowledgeSheetQRCode';
 import { KnowledgeStatusBadge } from './KnowledgeStatusBadge';
 import { toast } from 'sonner';
+import { cn } from '@/lib/utils';
 
 interface TechnicalSheetViewerProps {
   sheetId: string;
