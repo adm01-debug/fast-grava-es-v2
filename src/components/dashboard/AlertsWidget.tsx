@@ -49,7 +49,35 @@ export function AlertsWidget() {
       if (count < 3) alertList.push({ id: `buffer-${techniqueId}`, type: 'warning', title: 'Buffer Baixo', description: `Técnica ${techniqueId} com apenas ${count} job(s) prontos`, time: now });
     });
 
-    return alertList.slice(0, 6);
+    // Bottleneck risks from Kanban columns
+    const columnsWithJobs: Record<string, number> = {};
+    jobs.forEach(job => {
+      if (!['finished', 'cancelled'].includes(job.status)) {
+        columnsWithJobs[job.status] = (columnsWithJobs[job.status] || 0) + (job.estimated_duration || 0);
+      }
+    });
+
+    Object.entries(columnsWithJobs).forEach(([status, totalTime]) => {
+      if (totalTime > 480) {
+        alertList.push({
+          id: `bottleneck-high-${status}`,
+          type: 'delayed',
+          title: 'Gargalo Crítico',
+          description: `Coluna "${status}" ultrapassou 8h de carga estimada.`,
+          time: now
+        });
+      } else if (totalTime > 300) {
+        alertList.push({
+          id: `bottleneck-medium-${status}`,
+          type: 'warning',
+          title: 'Aviso de Gargalo',
+          description: `Coluna "${status}" está com carga elevada (>5h).`,
+          time: now
+        });
+      }
+    });
+
+    return alertList.slice(0, 10);
   }, [jobs]);
 
   const selectedJob = useMemo(() => selectedJobId ? jobs.find(j => j.id === selectedJobId) || null : null, [selectedJobId, jobs]);
