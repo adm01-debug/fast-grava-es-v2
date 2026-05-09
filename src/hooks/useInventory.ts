@@ -209,15 +209,32 @@ export function useInventory() {
   const transferItemsMutation = useMutation({
     mutationFn: async ({ fromLocation, toLocation, itemIds }: { fromLocation: string, toLocation: string, itemIds: string[] }) => {
       // Validate location format (e.g., A1, B4)
-      const locationRegex = /^[A-Z][0-9]+$/;
+      const locationRegex = /^[A-D][1-4]$/;
       if (!locationRegex.test(toLocation)) {
-        throw new Error('Formato de localização inválido. Use letra maiúscula e número (ex: A1).');
+        throw new Error('Formato de localização inválido. Use Corredor (A-D) e Nível (1-4). Ex: A1, B4.');
+      }
+
+      if (fromLocation === toLocation) {
+        throw new Error('O destino deve ser diferente da origem.');
       }
 
       const { data: { user } } = await supabase.auth.getUser();
       
+      // Perform as a sequence (Supabase JS doesn't have easy multi-row logic in one call with related inserts without a function)
       const results = await Promise.all(itemIds.map(async (itemId) => {
-        // 1. Update item location
+        // 1. Get current item to ensure it's still there
+        const { data: item } = await supabase
+          .from('inventory_items')
+          .select('location, current_stock')
+          .eq('id', itemId)
+          .single();
+        
+        if (!item || item.location !== fromLocation) {
+           console.warn(`Item ${itemId} not found in location ${fromLocation}`);
+           return null;
+        }
+
+        // 2. Update item location
         const { error: updateError } = await supabase
           .from('inventory_items')
           .update({ location: toLocation })
@@ -225,32 +242,33 @@ export function useInventory() {
         
         if (updateError) throw updateError;
 
-        // 2. Record movement
+        // 3. Record movement
         const { error: moveError } = await supabase
           .from('inventory_movements')
           .insert([{
             item_id: itemId,
             user_id: user?.id,
             type: 'TRANSFER',
-            quantity: 0, // Transfer doesn't change quantity
+            quantity: 0, 
             from_location: fromLocation,
             to_location: toLocation,
-            reason: `Transferência de ${fromLocation} para ${toLocation}`
+            reason: `WMS: Transferência de ${fromLocation} para ${toLocation}`
           }]);
           
         if (moveError) throw moveError;
+        return itemId;
       }));
       
-      return results;
+      return results.filter(Boolean);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['inventory-items'] });
       queryClient.invalidateQueries({ queryKey: ['inventory-movements'] });
-      toast.success('Transferência realizada com sucesso');
+      toast.success('Transferência WMS concluída com sucesso');
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.error('Error transferring items:', error);
-      toast.error('Erro ao transferir itens');
+      toast.error(error.message || 'Erro ao transferir itens');
     }
   });
 
