@@ -22,6 +22,7 @@ export function AlertsWidget() {
   const { jobs, machines, refetchJobs: refetch } = useSchedulingData();
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
   const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
+  const { stuckJobs } = useStuckJobsDetection();
 
   const alerts = useMemo(() => {
     const alertList: Alert[] = [];
