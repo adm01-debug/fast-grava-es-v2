@@ -63,6 +63,8 @@ export default function PendingQueue() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSmartSectionOpen, setIsSmartSectionOpen] = useState(false);
 
+  const { exportData, isExporting } = useDataExport('jobs');
+
   // Fetch real data from Supabase
   const { 
     jobs, 
