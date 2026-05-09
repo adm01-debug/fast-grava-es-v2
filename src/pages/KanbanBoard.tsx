@@ -46,10 +46,10 @@ const statusColumns: { status: JobStatus; label: string; icon: React.ElementType
   { status: 'finished', label: 'Finalizado', icon: CheckCircle2, color: 'text-green-400', wipLimit: 100 },
 ];
 
-const exceptionStatuses: { status: JobStatus; label: string; icon: React.ElementType; color: string }[] = [
-  { status: 'paused', label: 'Pausado', icon: Pause, color: 'text-orange-400' },
-  { status: 'delayed', label: 'Atrasado', icon: AlertTriangle, color: 'text-red-400' },
-  { status: 'rework', label: 'Retrabalho', icon: RotateCcw, color: 'text-pink-400' },
+const exceptionStatuses: { status: JobStatus; label: string; icon: React.ElementType; color: string; wipLimit?: number }[] = [
+  { status: 'paused', label: 'Pausado', icon: Pause, color: 'text-orange-400', wipLimit: 8 },
+  { status: 'delayed', label: 'Atrasado', icon: AlertTriangle, color: 'text-red-400', wipLimit: 8 },
+  { status: 'rework', label: 'Retrabalho', icon: RotateCcw, color: 'text-pink-400', wipLimit: 5 },
 ];
 
 const quickActionMap: Record<string, { status: JobStatus; label: string }> = {
