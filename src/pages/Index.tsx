@@ -99,6 +99,7 @@ const Index = () => {
   const { t } = useTranslation();
   const { stats, machines, isLoading, isOperator } = useOperatorDashboardData();
   const { profile } = useAuth();
+  useSmartDelayAlerts(); // Run background delay monitoring
   const {
     widgets,
     isEditMode,
