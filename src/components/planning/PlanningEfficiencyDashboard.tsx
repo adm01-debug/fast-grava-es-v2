@@ -16,9 +16,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 export function PlanningEfficiencyDashboard() {
   const { jobs } = useSchedulingData();
-  const { totalSavings } = useSmartSequencing();
+  const { totalSavings, suggestions: sequencingSuggestions } = useSmartSequencing();
   const { suggestions: balancingSuggestions } = useLoadBalancing();
-  const { data: oeeData } = useOEE(14);
+  const { data: oeeData } = useOEE(30);
   const [showTrend, setShowTrend] = useState(false);
 
   const stats = useMemo(() => {
@@ -44,8 +44,12 @@ export function PlanningEfficiencyDashboard() {
 
     // Use actual OEE from real flow metrics (Availability, Performance, Quality)
     const estimatedOEE = oeeData?.overallOEE ?? 75;
+    
+    // Calculate bottleneck risk (High if any machine or column has > 480min)
+    const hasHighBottleneck = (sequencingSuggestions?.some(s => s.bottleneckRisk === 'high')) || 
+                             (balancingSuggestions?.some(s => s.currentLoad > 95));
 
-    return { efficiencyScore, deadlineHealth, totalJobs, delayedCount, estimatedOEE, oeeData };
+    return { efficiencyScore, deadlineHealth, totalJobs, delayedCount, estimatedOEE, oeeData, hasHighBottleneck };
   }, [jobs, oeeData]);
 
   if (!stats) return null;
@@ -77,14 +81,19 @@ export function PlanningEfficiencyDashboard() {
       </Card>
 
       {/* Deadline Health */}
-      <Card className="glass-card overflow-hidden group border-green-500/20">
+      <Card className={cn(
+        "glass-card overflow-hidden group border-green-500/20",
+        stats.hasHighBottleneck && "border-red-500/50 shadow-[0_0_15px_rgba(239,68,68,0.1)]"
+      )}>
         <CardContent className="p-4">
           <div className="flex items-center justify-between mb-2">
             <div className="p-2 bg-green-500/10 rounded-lg group-hover:bg-green-500/20 transition-colors">
               <Clock className="h-5 w-5 text-green-400" />
             </div>
           </div>
-          <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider mb-1">Saúde dos Prazos</p>
+          <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider mb-1">
+            {stats.hasHighBottleneck ? "⚠️ RISCO DE GARGALO" : "Saúde dos Prazos"}
+          </p>
           <div className="flex items-end gap-2 mb-3">
             <h3 className="text-3xl font-bold font-display">{stats.deadlineHealth}%</h3>
             {stats.delayedCount > 0 && (
@@ -132,7 +141,7 @@ export function PlanningEfficiencyDashboard() {
               <BarChart3 className="h-5 w-5 text-purple-400" />
             </div>
           </div>
-          <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider mb-1">OEE Real (Métrica Real)</p>
+          <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider mb-1">OEE Real (Fluxo de Produção)</p>
           <div className="flex items-end gap-2 mb-3">
             <h3 className="text-3xl font-bold font-display">{Math.round(stats.estimatedOEE)}<span className="text-lg opacity-50">%</span></h3>
             <div className={cn(
