@@ -115,10 +115,13 @@ export function LiveMachineStatusPanel() {
       <CardHeader className="pb-2 pt-3 px-3">
         <div className="flex items-center justify-between">
           <CardTitle className="text-sm font-display flex items-center gap-2">
-            <Cpu className="h-4 w-4 text-primary" />
-            <span className="gradient-text">Status das Máquinas</span>
+            <Cpu className="h-4 w-4 text-primary animate-float" />
+            <span className="gradient-text font-black uppercase tracking-tighter">Status das Máquinas 12/10</span>
           </CardTitle>
           <div className="flex items-center gap-2">
+            <Badge variant="outline" className="hidden xl:flex text-[8px] gap-1 h-5 px-1.5 glass border-primary/30 text-primary font-black animate-pulse">
+               <Zap className="h-2 w-2" /> Quantum Sync: Ativo
+            </Badge>
             <Badge variant="secondary" className="text-[10px] gap-1 h-5 px-1.5 glass border-green-500/20">
               <Play className="h-2.5 w-2.5 text-green-400 fill-green-400" />
               {producing}

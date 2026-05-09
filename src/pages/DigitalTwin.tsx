@@ -16,6 +16,8 @@ import {
   Info
 } from 'lucide-react';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
+import { SupplyChainPanel } from '@/components/digital-twin/SupplyChainPanel';
+import { CostSimulationCard } from '@/components/digital-twin/CostSimulationCard';
 
 export default function DigitalTwin() {
   return (
@@ -29,11 +31,11 @@ export default function DigitalTwin() {
         
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h1 className="text-3xl font-display font-bold flex items-center gap-3">
-              <Cpu className="h-8 w-8 text-primary" />
-              Gêmeo Digital (Factory 4.0)
+            <h1 className="text-3xl font-display font-black tracking-tighter flex items-center gap-3">
+              <Cpu className="h-8 w-8 text-primary animate-pulse" />
+              Gêmeo Digital 12/10 (IA Quântica)
             </h1>
-            <p className="text-muted-foreground mt-1">Simulação em Tempo Real e Espelhamento de Operações</p>
+            <p className="text-muted-foreground mt-1 font-medium italic">Simulação de Hiper-Performance e Orquestração Global Autônoma</p>
           </div>
           <div className="flex gap-2">
              <Button variant="outline" className="gap-2 border-primary/20 hover:bg-primary/5">
@@ -100,20 +102,23 @@ export default function DigitalTwin() {
           </div>
 
           <div className="space-y-6">
-            <Card className="glass-card border-primary/20 bg-primary/5">
+            <SupplyChainPanel />
+            <CostSimulationCard />
+            
+            <Card className="glass-card border-primary/20 bg-primary/5 relative overflow-hidden group">
                <CardHeader>
                   <CardTitle className="text-sm font-black uppercase flex items-center gap-2">
                     <Sparkles className="h-4 w-4 text-primary" />
-                    Insight de Simulação
+                    Insight Espacial IA
                   </CardTitle>
                </CardHeader>
                <CardContent className="space-y-4">
                   <div className="p-3 rounded-lg bg-background/50 border border-border/50 text-[11px] leading-relaxed">
-                     <p className="font-bold text-primary mb-1">Cenário A: Aumento de 20% na Carga</p>
-                     A IA simulou um aumento de demanda. O gargalo será a <strong>Área de Acabamento</strong> em aproximadamente 4 horas. Sugere-se redistribuir 1 operador da Serigrafia.
+                     <p className="font-bold text-primary mb-1">Otimização de Layout</p>
+                     A IA identificou que mover o <strong>Almoxarifado de Tintas</strong> 5 metros para a esquerda reduzirá o tempo de deslocamento em 12%.
                   </div>
                   <Button variant="outline" size="sm" className="w-full text-[10px] font-bold uppercase h-8 border-primary/30">
-                     Aplicar Otimização
+                     Ver Detalhes do Estudo
                   </Button>
                </CardContent>
             </Card>
