@@ -1,9 +1,11 @@
+import { useState } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useKPIs, formatDuration } from '@/hooks/useKPIs';
+import { useOperatorProductivity } from '@/hooks/useOperatorProductivity';
 import { 
   BarChart, 
   Bar, 
@@ -15,7 +17,9 @@ import {
   PieChart,
   Pie,
   Cell,
-  Legend
+  Legend,
+  AreaChart,
+  Area
 } from 'recharts';
 import { 
   TrendingUp, 
@@ -26,13 +30,22 @@ import {
   Clock,
   Percent,
   Factory,
-  Target
+  Target,
+  Users,
+  Cpu,
+  Settings2,
+  Calendar,
+  Search,
+  ArrowUpRight
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { KPITooltip, KPI_DEFINITIONS } from '@/components/ui/kpi-tooltip';
 import { VoiceButton } from '@/components/voice/VoiceCommands';
-import { useNavigate } from 'react-router-dom';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 export default function KPIDashboard() {
   const { data: kpis, isLoading } = useKPIs();
