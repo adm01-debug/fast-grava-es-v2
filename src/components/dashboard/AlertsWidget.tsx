@@ -91,9 +91,22 @@ export function AlertsWidget() {
         time: now
       });
     });
+    
+    // Low OEE Alerts
+    if (oeeData) {
+      oeeData.byMachine.filter(m => m.oee < 50 && m.totalJobs > 0).forEach(m => {
+        alertList.push({
+          id: `oee-low-${m.machineId}`,
+          type: 'delayed',
+          title: 'Eficiência Crítica (OEE)',
+          description: `Máquina ${m.machineCode} operando com ${m.oee}% de OEE`,
+          time: now
+        });
+      });
+    }
 
     return alertList.slice(0, 10);
-  }, [jobs, stuckJobs]);
+  }, [jobs, stuckJobs, oeeData]);
 
   const selectedJob = useMemo(() => selectedJobId ? jobs.find(j => j.id === selectedJobId) || null : null, [selectedJobId, jobs]);
 
