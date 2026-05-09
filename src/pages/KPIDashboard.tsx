@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Switch } from '@/components/ui/switch';
-import { useKPIs, formatDuration } from '@/hooks/useKPIs';
+import { useKPIs, formatDuration, KPIPeriod, KPITargets } from '@/hooks/useKPIs';
 import { useOperatorProductivity } from '@/hooks/useOperatorProductivity';
 import { useGoalAlerts } from '@/hooks/useGoalAlerts';
 import { useBIExport } from '@/hooks/useBIExport';
