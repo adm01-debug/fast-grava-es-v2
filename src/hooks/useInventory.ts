@@ -72,6 +72,8 @@ export function useInventory() {
   const createMovementMutation = useMutation({
     mutationFn: async (movement: Omit<InventoryMovement, 'id' | 'created_at' | 'user_id'>) => {
       const { data: { user } } = await supabase.auth.getUser();
+      
+      // 1. Record movement
       const { data, error } = await supabase
         .from('inventory_movements')
         .insert([{ ...movement, user_id: user?.id }])
@@ -79,6 +81,28 @@ export function useInventory() {
         .single();
 
       if (error) throw error;
+
+      // 2. Update actual stock in inventory_items
+      const { data: item } = await supabase
+        .from('inventory_items')
+        .select('current_stock')
+        .eq('id', movement.item_id)
+        .single();
+
+      if (item) {
+        let newStock = item.current_stock;
+        if (movement.type === 'IN') newStock += movement.quantity;
+        if (movement.type === 'OUT') newStock -= movement.quantity;
+        if (movement.type === 'ADJUST') newStock = movement.quantity;
+
+        const { error: updateError } = await supabase
+          .from('inventory_items')
+          .update({ current_stock: newStock })
+          .eq('id', movement.item_id);
+          
+        if (updateError) throw updateError;
+      }
+
       return data;
     },
     onSuccess: () => {
