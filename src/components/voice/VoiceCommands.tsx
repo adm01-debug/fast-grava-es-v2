@@ -124,6 +124,15 @@ export const VoiceButton = forwardRef<HTMLDivElement, {
 }, ref) {
   const [showFeedback, setShowFeedback] = useState(false);
   const [lastCommand, setLastCommand] = useState('');
+  const { speak } = useVoiceFeedback();
+
+  useEffect(() => {
+    if (lastCommand && !isListening) {
+      // Small delay for natural feel
+      const timer = setTimeout(() => speak(lastCommand), 500);
+      return () => clearTimeout(timer);
+    }
+  }, [lastCommand, isListening, speak]);
 
   const commands: VoiceCommand[] = [
     {
