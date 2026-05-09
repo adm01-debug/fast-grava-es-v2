@@ -180,6 +180,38 @@ export function JobInstructionsTab({ techniqueId, productCategoryId }: JobInstru
             </Card>
           </div>
 
+          {/* Technical Documents Section */}
+          {documents && documents.length > 0 && (
+            <section className="space-y-3">
+              <h4 className="text-sm font-semibold flex items-center gap-2 text-muted-foreground uppercase tracking-wider">
+                <FileText className="h-4 w-4" /> Arquivos e Desenhos Técnicos
+              </h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {documents.map(doc => (
+                  <div key={doc.id} className="p-3 rounded-lg bg-secondary/30 border border-border/50 flex items-center justify-between group">
+                    <div className="flex items-center gap-3 overflow-hidden">
+                      <div className="p-2 rounded bg-background border border-border/30">
+                        <FileText className="h-4 w-4 text-primary" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-xs font-bold truncate">{doc.title}</p>
+                        <p className="text-[10px] text-muted-foreground uppercase">{doc.file_type.split('/')[1] || 'PDF'} • {(doc.file_size / 1024 / 1024).toFixed(1)} MB</p>
+                      </div>
+                    </div>
+                    <Button 
+                      size="icon" 
+                      variant="ghost" 
+                      className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
+                      onClick={() => window.open(doc.file_url, '_blank')}
+                    >
+                      <Download className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
           <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/20 space-y-2">
             <div className="flex items-center gap-2 mb-1 text-amber-500">
               <Lightbulb className="h-4 w-4" />
