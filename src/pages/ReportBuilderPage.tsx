@@ -73,7 +73,7 @@ export default function ReportBuilderPage() {
     setIsGenerating(true);
     try {
       const { data, error } = await supabase
-        .from(selectedTable)
+        .from(selectedTable as any)
         .select(selectedColumns.join(','));
       
       if (error) throw error;
