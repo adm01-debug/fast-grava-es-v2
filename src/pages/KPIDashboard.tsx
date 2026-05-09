@@ -961,7 +961,7 @@ export default function KPIDashboard() {
 
         <div className="space-y-4">
           <h4 className="text-sm font-bold flex items-center gap-2">
-            <History className="h-4 w-4" />
+            <HistoryIcon className="h-4 w-4" />
             Performance Recente
           </h4>
           <div className="h-[200px] w-full">
