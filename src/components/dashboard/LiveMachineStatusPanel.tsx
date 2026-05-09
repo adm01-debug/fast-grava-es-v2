@@ -118,35 +118,61 @@ export function LiveMachineStatusPanel() {
                 )}
               >
                 {/* Machine header */}
-                <div className="flex items-center justify-between mb-1">
+                <div className="flex items-center justify-between mb-1.5">
                   <div className="flex items-center gap-2">
                     <span className="font-semibold text-sm">{machine.machineCode}</span>
                     <div
                       className="w-2 h-2 rounded-full"
                       style={{ backgroundColor: machine.techniqueColor }}
                     />
+                    
+                    {/* ML Risk Indicator */}
+                    {predictions.find(p => p.machine_id === machine.machineId) && (
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div className="flex items-center">
+                              <BrainCircuit className={cn(
+                                "h-3 w-3",
+                                getRiskLevel(predictions.find(p => p.machine_id === machine.machineId)!.risk_score).color === 'destructive' ? 'text-red-400 animate-pulse' : 'text-primary/70'
+                              )} />
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p className="text-xs">Saúde Preditiva (ML): {100 - predictions.find(p => p.machine_id === machine.machineId)!.risk_score}%</p>
+                            <p className="text-[10px] text-muted-foreground">{getRiskLevel(predictions.find(p => p.machine_id === machine.machineId)!.risk_score).label} risco de falha</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    )}
                   </div>
-                  {machine.status === 'producing' && (
-                    <Badge className="bg-green-500/20 text-green-400 border-green-500/50 text-[10px] px-1.5 py-0">
-                      <Play className="h-2.5 w-2.5 mr-0.5" />
-                      Produzindo
-                    </Badge>
-                  )}
-                  {machine.status === 'paused' && (
-                    <Badge className="bg-orange-500/20 text-orange-400 border-orange-500/50 text-[10px] px-1.5 py-0">
-                      <Pause className="h-2.5 w-2.5 mr-0.5" />
-                      Pausado
-                    </Badge>
-                  )}
-                  {machine.status === 'idle' && (
-                    <Badge variant="outline" className="text-[10px] px-1.5 py-0">
-                      <CheckCircle2 className="h-2.5 w-2.5 mr-0.5" />
-                      Livre
-                    </Badge>
-                  )}
+                  <div className="flex gap-1">
+                    {machine.status === 'producing' && (
+                      <Badge className="bg-green-500/20 text-green-400 border-green-500/50 text-[10px] px-1.5 py-0">
+                        Produzindo
+                      </Badge>
+                    )}
+                    {machine.status === 'paused' && (
+                      <Badge className="bg-orange-500/20 text-orange-400 border-orange-500/50 text-[10px] px-1.5 py-0">
+                        Pausado
+                      </Badge>
+                    )}
+                    {machine.status === 'idle' && (
+                      <Badge variant="outline" className="text-[10px] px-1.5 py-0">
+                        Livre
+                      </Badge>
+                    )}
+                  </div>
                 </div>
 
-                <p className="text-xs text-muted-foreground mb-1">{machine.machineName}</p>
+                <div className="flex justify-between items-center mb-1">
+                  <p className="text-xs text-muted-foreground truncate">{machine.machineName}</p>
+                  {predictions.find(p => p.machine_id === machine.machineId) && (
+                    <span className="text-[9px] font-mono text-muted-foreground">
+                      AI Health: {100 - predictions.find(p => p.machine_id === machine.machineId)!.risk_score}%
+                    </span>
+                  )}
+                </div>
 
                 {machine.currentJob && (
                   <div className="mt-2 space-y-1.5">
