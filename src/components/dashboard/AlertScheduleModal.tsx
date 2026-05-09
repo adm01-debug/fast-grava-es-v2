@@ -1,15 +1,17 @@
-import { useMemo, useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { useMemo, useState, useEffect } from 'react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Calendar, Clock, Sparkles, Settings2, ListTodo, AlertCircle, Check, X } from 'lucide-react';
+import { Calendar, Clock, Sparkles, Settings2, ListTodo, AlertCircle, Check, X, TrendingUp, TrendingDown, Info, Zap } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { Card } from '@/components/ui/card';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface Job {
   id: string;
