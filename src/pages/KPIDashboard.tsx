@@ -313,7 +313,7 @@ export default function KPIDashboard() {
                       </div>
                       <div className="relative mt-3">
                         <Progress value={completionRate} className="h-2 [&>div]:bg-green-500" />
-                        <div className="absolute top-[-4px] left-[95%] w-[2px] h-4 bg-foreground/20" title="Meta: 95%" />
+                        <div className="absolute top-[-4px] w-[2px] h-4 bg-foreground/20" style={{ left: `${kpis.targets.completionRate}%` }} title={`Meta: ${kpis.targets.completionRate}%`} />
                       </div>
                     </CardContent>
                   </Card>
