@@ -25,6 +25,8 @@ import { toast } from 'sonner';
 import { MachineReliabilityTab } from '@/components/machines/MachineReliabilityTab';
 import { useMTBFMTTR } from '@/hooks/useMTBFMTTR';
 import { useDataExport } from '@/hooks/useDataExport';
+import { supabase } from '@/integrations/supabase/client';
+import { useQueryClient } from '@tanstack/react-query';
 
 export default function MachinesPage() {
   const { machines, techniques, isLoadingMachines, getTechniqueById } = useSchedulingData();
