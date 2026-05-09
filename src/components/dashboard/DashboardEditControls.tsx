@@ -1,6 +1,7 @@
 import { memo } from 'react';
 import { Settings2, RotateCcw, Check, Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 import {
   DropdownMenu,
   DropdownMenuContent,
