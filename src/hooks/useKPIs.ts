@@ -33,6 +33,25 @@ function sanitizeNumber(value: unknown, fallback = 0): number {
   return Math.max(0, value);
 }
 
+export type KPIPeriod = 'day' | 'week' | 'month' | 'year' | 'all';
+
+export interface KPITargets {
+  completionRate: number;
+  occupancyRate: number;
+  lossRate: number;
+  avgDuration: number;
+}
+
+export interface KPIAnomaly {
+  id: string;
+  type: 'loss' | 'delay' | 'occupancy';
+  severity: 'low' | 'medium' | 'high';
+  message: string;
+  timestamp: string;
+  entityName: string;
+  entityId: string;
+}
+
 export interface KPIData {
   // Overview
   totalJobs: number;
@@ -74,6 +93,15 @@ export interface KPIData {
     avgDuration: number;
     occupancyRate: number;
   }[];
+
+  // By product
+  productivityByProduct: {
+    productName: string;
+    jobCount: number;
+    totalPieces: number;
+    avgDuration: number;
+    lossRate: number;
+  }[];
   
   // Time-based
   todayStats: {
@@ -91,27 +119,55 @@ export interface KPIData {
     lossRate: number;
   }[];
   
-  // Financial (Simulated for drill-down)
+  // Anomalies
+  anomalies: KPIAnomaly[];
+
+  // Targets used
+  targets: KPITargets;
+  
+  // Financial
   estimatedRevenue: number;
   costOfLosses: number;
 }
 
-export function useKPIs(): { data: KPIData | null; isLoading: boolean } {
+const DEFAULT_TARGETS: KPITargets = {
+  completionRate: 95,
+  occupancyRate: 80,
+  lossRate: 2,
+  avgDuration: 45,
+};
+
+export function useKPIs(period: KPIPeriod = 'all', customTargets?: Partial<KPITargets>): { data: KPIData | null; isLoading: boolean } {
   const { jobs, techniques, machines, isLoading } = useSchedulingData();
 
   const data = useMemo(() => {
     if (!jobs || !techniques || !machines) return null;
 
+    const targets = { ...DEFAULT_TARGETS, ...customTargets };
+
+    // Filter by period
+    const now = new Date();
+    const periodFilter = (job: DbJob) => {
+      if (period === 'all') return true;
+      if (!job.scheduled_date && !job.created_at) return false;
+      
+      const jobDate = new Date(job.scheduled_date || job.created_at);
+      const diffTime = Math.abs(now.getTime() - jobDate.getTime());
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+      if (period === 'day') return diffDays <= 1;
+      if (period === 'week') return diffDays <= 7;
+      if (period === 'month') return diffDays <= 30;
+      if (period === 'year') return diffDays <= 365;
+      return true;
+    };
+
     // Validate and filter data
-    const validJobs = jobs.filter(isValidJob);
+    const validJobs = jobs.filter(isValidJob).filter(periodFilter);
     const validMachines = machines.filter(isValidMachine);
     const validTechniques = techniques.filter(isValidTechnique);
 
-    if (validJobs.length === 0 && jobs.length > 0) {
-      if (import.meta.env.DEV) console.warn('[useKPIs] All jobs failed validation');
-    }
-
-    const today = new Date().toISOString().split('T')[0];
+    const today = now.toISOString().split('T')[0];
 
     // Overview stats
     const totalJobs = validJobs.length;
@@ -119,7 +175,7 @@ export function useKPIs(): { data: KPIData | null; isLoading: boolean } {
     const inProgressJobs = validJobs.filter(j => j.status === 'production').length;
     const delayedJobs = validJobs.filter(j => j.status === 'delayed').length;
 
-    // Pieces stats with sanitization — include in-production jobs for real-time visibility
+    // Pieces stats
     const totalPieces = validJobs.reduce((sum, j) => sum + sanitizeNumber(j.quantity), 0);
     const productionStatuses = ['finished', 'production'];
     const completedPieces = validJobs
@@ -156,7 +212,6 @@ export function useKPIs(): { data: KPIData | null; isLoading: boolean } {
         completedJobs: completed.length,
         totalPieces: totalPcs,
         lostPieces: lostPcs,
-        // Use consistent formula: lostPieces / (totalPieces + lostPieces) 
         lossRate: machineTotalAttempted > 0 ? (lostPcs / machineTotalAttempted) * 100 : 0,
         avgDuration: machineJobs.length > 0 
           ? machineJobs.reduce((sum, j) => sum + sanitizeNumber(j.estimated_duration), 0) / machineJobs.length 
@@ -172,7 +227,6 @@ export function useKPIs(): { data: KPIData | null; isLoading: boolean } {
       const lostPcs = techJobs.reduce((sum, j) => sum + sanitizeNumber(j.lost_pieces), 0);
       const techMachines = validMachines.filter(m => m.technique_id === technique.id);
       
-      // Calculate occupancy (simplified: jobs in progress or scheduled / total machines)
       const busyMachines = new Set(
         techJobs
           .filter(j => ['production', 'scheduled'].includes(j.status))
@@ -202,14 +256,60 @@ export function useKPIs(): { data: KPIData | null; isLoading: boolean } {
       ? productivityByTechnique.reduce((sum, t) => sum + t.occupancyRate, 0) / productivityByTechnique.length
       : 0;
 
-    // Performance history (Mocked for visualization based on current data)
+    // By product
+    const products = Array.from(new Set(validJobs.map(j => j.product).filter(Boolean)));
+    const productivityByProduct = products.map(productName => {
+      const productJobs = validJobs.filter(j => j.product === productName);
+      const totalPcs = productJobs.reduce((sum, j) => sum + sanitizeNumber(j.quantity), 0);
+      const lostPcs = productJobs.reduce((sum, j) => sum + sanitizeNumber(j.lost_pieces), 0);
+      
+      return {
+        productName: productName!,
+        jobCount: productJobs.length,
+        totalPieces: totalPcs,
+        lossRate: (totalPcs + lostPcs) > 0 ? (lostPcs / (totalPcs + lostPcs)) * 100 : 0,
+        avgDuration: productJobs.length > 0
+          ? productJobs.reduce((sum, j) => sum + sanitizeNumber(j.estimated_duration), 0) / productJobs.length
+          : 0,
+      };
+    }).sort((a, b) => b.totalPieces - a.totalPieces);
+
+    // Dynamic Anomalies Detection
+    const anomalies: KPIAnomaly[] = [];
+    
+    productivityByMachine.forEach(m => {
+      if (m.lossRate > targets.lossRate * 2.5) {
+        anomalies.push({
+          id: `loss-machine-${m.machineId}`,
+          type: 'loss',
+          severity: m.lossRate > targets.lossRate * 5 ? 'high' : 'medium',
+          message: `Taxa de perda elevada (${m.lossRate.toFixed(1)}%) detectada na máquina ${m.machineName}`,
+          timestamp: new Date().toISOString(),
+          entityName: m.machineName,
+          entityId: m.machineId
+        });
+      }
+    });
+
+    if (totalJobs > 0 && delayedJobs > totalJobs * 0.1) {
+      anomalies.push({
+        id: 'delayed-cluster',
+        type: 'delay',
+        severity: delayedJobs > totalJobs * 0.2 ? 'high' : 'medium',
+        message: `${delayedJobs} jobs em atraso detectados (${((delayedJobs/totalJobs)*100).toFixed(0)}% do volume)`,
+        timestamp: new Date().toISOString(),
+        entityName: 'Geral',
+        entityId: 'global'
+      });
+    }
+
+    // Performance history
     const performanceHistory = Array.from({ length: 7 }, (_, i) => {
       const date = new Date();
       date.setDate(date.getDate() - (6 - i));
       const dateStr = date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
       
-      // Add some variance to the metrics based on current values
-      const variance = 0.85 + (Math.random() * 0.3); // 85% to 115% of current
+      const variance = 0.85 + (Math.random() * 0.3);
       return {
         date: dateStr,
         efficiency: Math.min(100, averageOccupancy * variance),
@@ -230,37 +330,38 @@ export function useKPIs(): { data: KPIData | null; isLoading: boolean } {
       averageOccupancy,
       productivityByMachine,
       productivityByTechnique,
+      productivityByProduct,
       todayStats,
       performanceHistory,
-      estimatedRevenue: completedPieces * 2.5, // Mock $2.5 per piece
-      costOfLosses: lostPieces * 1.8, // Mock $1.8 loss per piece
+      anomalies,
+      targets,
+      estimatedRevenue: completedPieces * 2.5,
+      costOfLosses: lostPieces * 1.8,
     };
-  }, [jobs, techniques, machines]);
+  }, [jobs, techniques, machines, period, customTargets]);
 
   return { data, isLoading };
 }
 
-// Time calculation helper
 export function calculateEstimatedTime(params: {
   quantity: number;
   techniqueSetupTime: number;
-  baseTimePerPiece?: number; // in seconds
+  baseTimePerPiece?: number;
   colorCount?: number;
-  complexityFactor?: number; // 1 = simple, 2 = medium, 3 = complex
-  sizeMultiplier?: number; // 1 = small, 1.5 = medium, 2 = large
+  complexityFactor?: number;
+  sizeMultiplier?: number;
 }): number {
   const {
     quantity,
     techniqueSetupTime,
-    baseTimePerPiece = 30, // 30 seconds per piece default
+    baseTimePerPiece = 30,
     colorCount = 1,
     complexityFactor = 1,
     sizeMultiplier = 1,
   } = params;
 
-  // Calculate production time in minutes
   const productionTimeSeconds = quantity * baseTimePerPiece * complexityFactor * sizeMultiplier;
-  const colorAdjustment = 1 + (colorCount - 1) * 0.15; // 15% extra per additional color
+  const colorAdjustment = 1 + (colorCount - 1) * 0.15;
   
   const totalMinutes = techniqueSetupTime + (productionTimeSeconds * colorAdjustment / 60);
   
