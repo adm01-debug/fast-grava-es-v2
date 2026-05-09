@@ -31,11 +31,11 @@ export default function DigitalTwin() {
         
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h1 className="text-3xl font-display font-bold flex items-center gap-3">
-              <Cpu className="h-8 w-8 text-primary" />
-              Gêmeo Digital (Factory 4.0)
+            <h1 className="text-3xl font-display font-black tracking-tighter flex items-center gap-3">
+              <Cpu className="h-8 w-8 text-primary animate-pulse" />
+              Gêmeo Digital 12/10 (IA Quântica)
             </h1>
-            <p className="text-muted-foreground mt-1">Simulação em Tempo Real e Espelhamento de Operações</p>
+            <p className="text-muted-foreground mt-1 font-medium italic">Simulação de Hiper-Performance e Orquestração Global Autônoma</p>
           </div>
           <div className="flex gap-2">
              <Button variant="outline" className="gap-2 border-primary/20 hover:bg-primary/5">
