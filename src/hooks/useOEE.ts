@@ -180,27 +180,25 @@ export function useOEE(daysBack: number = 30) {
       const daysWithJobs = new Set(
         machineJobs.map(j => j.actual_end_time ? startOfDay(parseISO(j.actual_end_time)).toISOString() : null)
           .filter(Boolean)
-      ).size;
+      ).size || 1; // Default to 1 to avoid division by zero
       
       const plannedMinutes = Math.max(daysWithJobs * PLANNED_MINUTES_PER_DAY, totalEstimatedMinutes);
       
-      // AVAILABILITY = (Planned Time - Downtime) / Planned Time
-      // We'll estimate downtime based on delayed jobs and gaps in production
-      const delayedMinutes = machineJobs
-        .filter(j => j.status === 'delayed')
-        .reduce((acc, job) => acc + sanitizeNumber(job.estimated_duration, 30), 0);
+      // REAL OEE CALCULATION based on flow metrics:
       
+      // AVAILABILITY = Actual Operating Time / Planned Production Time
+      // Availability = (Total Time - Downtime) / Total Time
       const availability = plannedMinutes > 0 
-        ? Math.min(100, ((totalActualMinutes - (delayedMinutes * 0.5)) / plannedMinutes) * 100)
+        ? Math.min(100, (totalActualMinutes / plannedMinutes) * 100)
         : 100;
       
-      // PERFORMANCE = Ideal Cycle Time / Actual Cycle Time
-      // = Estimated Duration / Actual Duration
+      // PERFORMANCE = (Total Produced Pieces * Ideal Cycle Time per Piece) / Operating Time
+      // Or simply: Ideal Cycle Time for Total Production / Actual Operating Time
       const performance = totalActualMinutes > 0
         ? Math.min(100, (totalEstimatedMinutes / totalActualMinutes) * 100)
         : 100;
       
-      // QUALITY = Good Pieces / Total Pieces
+      // QUALITY = Good Pieces / Total Pieces Produced
       const goodPieces = totalProducedPieces - totalLostPieces;
       const quality = totalProducedPieces > 0
         ? Math.min(100, (goodPieces / totalProducedPieces) * 100)

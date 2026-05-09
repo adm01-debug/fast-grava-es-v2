@@ -9,9 +9,9 @@ import {
 import { 
   BrainCircuit, ArrowRight, Zap, AlertTriangle, 
   CheckCircle2, Sparkles, ChevronRight, LayoutPanelTop,
-  Search, Filter, Clock, TrendingDown, TrendingUp, Info
+  Search, Filter, Clock, TrendingDown, TrendingUp, Info, Activity
 } from 'lucide-react';
-import { useSmartSequencing, SequencingSuggestion } from '@/hooks/useSmartSequencing';
+import { useSmartSequencingWithActions as useSmartSequencing, SequencingSuggestion } from '@/hooks/useSmartSequencingWithActions';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
@@ -19,46 +19,9 @@ import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
 
 export function SmartSequencingPanel() {
-  const { suggestions, totalSavings, hasSuggestions } = useSmartSequencing();
-  const [isApplying, setIsApplying] = useState(false);
-  const [selectedMachine, setSelectedMachine] = useState<string | null>(null);
+  const { suggestions, totalSavings, hasSuggestions, applySequencing, isApplying } = useSmartSequencing();
   const [suggestionToDetail, setSuggestionToDetail] = useState<SequencingSuggestion | null>(null);
   const queryClient = useQueryClient();
-
-  const handleApplyOptimization = async (suggestion: SequencingSuggestion) => {
-    setIsApplying(true);
-    try {
-      // Update each job's start_time according to the optimized sequence
-      const updates = suggestion.optimizedSequence.map((job, index) => {
-        // Simple logic: maintain same dates but update start_time sequence
-        const hour = 7 + Math.floor(index / 2);
-        const minute = (index % 2) * 30;
-        const startTime = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
-        
-        return supabase
-          .from('jobs')
-          .update({ 
-            start_time: startTime,
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', job.id);
-      });
-
-      await Promise.all(updates);
-      
-      toast.success(`Sequenciamento otimizado para ${suggestion.machineName}`, {
-        description: `Economia estimada: ${suggestion.estimatedSavings} minutos de setup.`,
-        icon: <Zap className="h-4 w-4 text-yellow-400" />
-      });
-      
-      queryClient.invalidateQueries({ queryKey: ['jobs'] });
-    } catch (error) {
-      console.error('Error applying optimization:', error);
-      toast.error('Erro ao aplicar otimização');
-    } finally {
-      setIsApplying(false);
-    }
-  };
 
   if (!hasSuggestions) {
     return null;
@@ -114,12 +77,13 @@ export function SmartSequencingPanel() {
                     <Zap className="h-3 w-3" />
                     {suggestion.estimatedSavings} min economizados
                   </div>
-                  {suggestion.estimatedColumnTime && (
-                    <div className="text-[9px] text-muted-foreground font-mono flex items-center gap-1">
-                      <Clock className="h-2 w-2" />
-                      Carga: {suggestion.estimatedColumnTime}
-                    </div>
-                  )}
+                  <div className={cn(
+                    "text-[9px] font-bold flex items-center gap-1",
+                    suggestion.bottleneckRisk === 'high' ? "text-red-400" : suggestion.bottleneckRisk === 'medium' ? "text-orange-400" : "text-emerald-400"
+                  )}>
+                    <Activity className="h-2 w-2" />
+                    Risco: {suggestion.bottleneckRisk === 'high' ? 'Alto' : suggestion.bottleneckRisk === 'medium' ? 'Médio' : 'Baixo'}
+                  </div>
                 </div>
               </div>
 
@@ -153,7 +117,7 @@ export function SmartSequencingPanel() {
                   className="flex-1 h-8 text-xs gap-2 bg-primary/10 hover:bg-primary/20 text-primary border-none"
                   onClick={(e) => {
                     e.stopPropagation();
-                    handleApplyOptimization(suggestion);
+                    applySequencing(suggestion);
                   }}
                   disabled={isApplying}
                 >
@@ -199,7 +163,7 @@ export function SmartSequencingPanel() {
                     {suggestionToDetail.currentSequence.slice(0, 5).map((job, i) => (
                       <div key={job.id} className="flex items-center gap-2 text-[11px] opacity-60">
                         <span className="w-4 h-4 flex items-center justify-center rounded-full bg-muted text-[9px]">{i + 1}</span>
-                        <span className="truncate flex-1">{job.client}</span>
+                        <span className="truncate flex-1">{job.order_number} - {job.client}</span>
                         <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: job.gravure_color || '#444' }} />
                       </div>
                     ))}
@@ -221,7 +185,7 @@ export function SmartSequencingPanel() {
                     {suggestionToDetail.optimizedSequence.slice(0, 5).map((job, i) => (
                       <div key={job.id} className="flex items-center gap-2 text-[11px] font-medium">
                         <span className="w-4 h-4 flex items-center justify-center rounded-full bg-primary/20 text-primary text-[9px] font-bold">{i + 1}</span>
-                        <span className="truncate flex-1">{job.client}</span>
+                        <span className="truncate flex-1">{job.order_number} - {job.client}</span>
                         <div className="w-1.5 h-1.5 rounded-full shadow-[0_0_5px_rgba(255,255,255,0.2)]" style={{ backgroundColor: job.gravure_color || '#444' }} />
                       </div>
                     ))}
@@ -232,18 +196,22 @@ export function SmartSequencingPanel() {
                 </Card>
               </div>
 
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 <div className="p-3 rounded-lg bg-yellow-500/5 border border-yellow-500/10 text-center">
                   <p className="text-[9px] text-yellow-500/70 uppercase font-bold mb-1">Economia Setup</p>
                   <p className="text-xl font-bold text-yellow-500">{suggestionToDetail.estimatedSavings}m</p>
                 </div>
                 <div className="p-3 rounded-lg bg-blue-500/5 border border-blue-500/10 text-center">
                   <p className="text-[9px] text-blue-500/70 uppercase font-bold mb-1">Carga Estimada</p>
-                  <p className="text-xl font-bold text-blue-500">{suggestionToDetail.estimatedColumnTime}</p>
+                  <p className="text-xl font-bold text-blue-500">{suggestionToDetail.totalMinutes}m</p>
+                </div>
+                <div className="p-3 rounded-lg bg-purple-500/5 border border-purple-500/10 text-center">
+                  <p className="text-[9px] text-purple-500/70 uppercase font-bold mb-1">Redução Trocas</p>
+                  <p className="text-xl font-bold text-purple-500">{suggestionToDetail.currentChanges} → {suggestionToDetail.optimizedChanges}</p>
                 </div>
                 <div className="p-3 rounded-lg bg-green-500/5 border border-green-500/10 text-center">
-                  <p className="text-[9px] text-green-500/70 uppercase font-bold mb-1">Produtividade</p>
-                  <p className="text-xl font-bold text-green-500">+{Math.round((suggestionToDetail.estimatedSavings / (suggestionToDetail.totalMinutes + suggestionToDetail.estimatedSavings || 1)) * 100)}%</p>
+                  <p className="text-[9px] text-green-500/70 uppercase font-bold mb-1">Total Peças</p>
+                  <p className="text-lg font-bold text-green-500">{suggestionToDetail.totalQuantity.toLocaleString()}</p>
                 </div>
               </div>
 
@@ -284,7 +252,7 @@ export function SmartSequencingPanel() {
               size="sm" 
               className="gap-2 bg-primary hover:bg-primary/90"
               onClick={() => {
-                if (suggestionToDetail) handleApplyOptimization(suggestionToDetail);
+                if (suggestionToDetail) applySequencing(suggestionToDetail);
                 setSuggestionToDetail(null);
               }}
               disabled={isApplying}

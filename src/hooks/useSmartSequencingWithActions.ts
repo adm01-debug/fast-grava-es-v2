@@ -23,6 +23,9 @@ export interface SequencingSuggestion {
   colorGroups: ColorGroup[];
   bottleneckRisk: 'low' | 'medium' | 'high';
   totalMinutes: number;
+  currentChanges: number;
+  optimizedChanges: number;
+  totalQuantity: number;
 }
 
 export interface ColorGroup {
@@ -43,20 +46,17 @@ function normalizeColor(color: string | null): string {
   return color.toLowerCase().trim().replace(/\s+/g, '-');
 }
 
-function calculateSetupSavings(currentSequence: DbJob[], optimizedSequence: DbJob[], setupTime: number): number {
-  const countColorChanges = (jobs: DbJob[]): number => {
-    let changes = 0;
-    for (let i = 1; i < jobs.length; i++) {
-      if (normalizeColor(jobs[i].gravure_color) !== normalizeColor(jobs[i - 1].gravure_color)) {
-        changes++;
-      }
+function countSequenceChanges(jobs: DbJob[]): number {
+  let changes = 0;
+  for (let i = 1; i < jobs.length; i++) {
+    if (normalizeColor(jobs[i].gravure_color) !== normalizeColor(jobs[i - 1].gravure_color)) {
+      changes++;
     }
-    return changes;
-  };
+  }
+  return changes;
+}
 
-  const currentChanges = countColorChanges(currentSequence);
-  const optimizedChanges = countColorChanges(optimizedSequence);
-  
+function calculateSetupSavings(currentChanges: number, optimizedChanges: number, setupTime: number): number {
   return (currentChanges - optimizedChanges) * setupTime;
 }
 
@@ -267,8 +267,11 @@ export function useSmartSequencingWithActions() {
         optimizedSequence.push(...sortedGroup);
       });
 
-      const estimatedSavings = calculateSetupSavings(currentSequence, optimizedSequence, technique.setup_time);
+      const currentChanges = countSequenceChanges(currentSequence);
+      const optimizedChanges = countSequenceChanges(optimizedSequence);
+      const estimatedSavings = calculateSetupSavings(currentChanges, optimizedChanges, technique.setup_time);
       const totalMinutes = optimizedSequence.reduce((acc, job) => acc + (job.estimated_duration || 0), 0);
+      const totalQuantity = optimizedSequence.reduce((acc, job) => acc + (job.quantity || 0), 0);
       const bottleneckRisk = totalMinutes > 480 ? 'high' : totalMinutes > 300 ? 'medium' : 'low';
 
       if (estimatedSavings > 0) {
@@ -281,7 +284,10 @@ export function useSmartSequencingWithActions() {
           techniqueName: technique.name,
           currentSequence,
           optimizedSequence,
+          currentChanges,
+          optimizedChanges,
           estimatedSavings,
+          totalQuantity,
           bottleneckRisk,
           totalMinutes,
           colorGroups: Array.from(colorGroups.entries()).map(([color, jobs]) => ({
