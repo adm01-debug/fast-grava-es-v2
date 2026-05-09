@@ -194,6 +194,8 @@ const Index = () => {
           </div>
         </div>
 
+        <GamificationBanner />
+
         {/* Edit Mode Indicator */}
         {isEditMode && (
           <div className="bg-primary/10 border border-primary/20 rounded-lg p-2 text-center text-sm text-primary mb-3 shrink-0">
