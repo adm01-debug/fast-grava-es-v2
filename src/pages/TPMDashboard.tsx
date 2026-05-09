@@ -29,6 +29,7 @@ import { toast } from 'sonner';
 import { VoiceButton } from '@/components/voice/VoiceCommands';
 import { PredictiveHealthCard } from '@/components/tpm/PredictiveHealthCard';
 import { VirtualSensorPanel } from '@/components/tpm/VirtualSensorPanel';
+import { HolographicReliabilityWidget } from '@/components/tpm/HolographicReliabilityWidget';
 
 export default function TPMDashboard() {
   const navigate = useNavigate();
