@@ -136,6 +136,7 @@ export function AnimatedRoutes() {
         {/* TPM & ML */}
         <Route path="/tpm" element={<ProtectedPage fallback={<KPIPageSkeleton />} allowedRoles={['coordinator', 'manager']}><TPMDashboard /></ProtectedPage>} />
         <Route path="/ml-predictions" element={<ProtectedPage fallback={<KPIPageSkeleton />} allowedRoles={['coordinator', 'manager']}><MLPredictionsDashboard /></ProtectedPage>} />
+        <Route path="/digital-twin" element={<ProtectedPage fallback={<KPIPageSkeleton />} allowedRoles={['coordinator', 'manager']}><DigitalTwin /></ProtectedPage>} />
 
         {/* Operators */}
         <Route path="/operator" element={<ProtectedPage fallback={<ListPageSkeleton />}><OperatorView /></ProtectedPage>} />
