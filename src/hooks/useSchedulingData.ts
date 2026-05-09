@@ -1,6 +1,7 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useEffect, useMemo, useCallback } from 'react';
+import { differenceInMinutes } from 'date-fns';
 import { DbJob, DbTechnique, DbMachine } from './useJobs';
 import { categorizeError, ErrorCodes, createAppError } from '@/lib/errorHandling';
 
