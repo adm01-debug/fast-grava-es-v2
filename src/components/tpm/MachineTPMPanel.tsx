@@ -12,8 +12,8 @@ import { MachineTPMTimeline } from './MachineTPMTimeline';
 
 interface MachineTPMPanelProps {
   machineId: string;
-  onStartMaintenance: (scheduleId: string) => void;
-  onOpenCreateSchedule: () => void;
+  onStartMaintenance?: (scheduleId: string) => void;
+  onOpenCreateSchedule?: () => void;
 }
 
 export function MachineTPMPanel({ machineId, onStartMaintenance, onOpenCreateSchedule }: MachineTPMPanelProps) {
