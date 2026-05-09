@@ -59,6 +59,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuLabel
 } from '@/components/ui/dropdown-menu';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { BrainCircuit, Sparkles, Zap } from 'lucide-react';
 
 export default function KPIDashboard() {
   const [activeTab, setActiveTab] = useState('overview');
