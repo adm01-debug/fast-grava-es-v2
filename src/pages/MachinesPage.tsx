@@ -30,6 +30,7 @@ import { useQueryClient } from '@tanstack/react-query';
 
 export default function MachinesPage() {
   const { machines, techniques, isLoadingMachines, getTechniqueById } = useSchedulingData();
+  const queryClient = useQueryClient();
   const [selectedMachines, setSelectedMachines] = useState<Set<string>>(new Set());
 
   const { user, profile } = useAuth();
