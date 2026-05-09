@@ -106,7 +106,7 @@ export default function AuditTrailPage() {
                 <CardContent>
                   <div className="flex items-center justify-between">
                     <p className="text-2xl font-black text-emerald-600">
-                      {new Set(data?.map(e => e.user_id)).size}
+                      {new Set(data?.map(e => e.actor_id)).size}
                     </p>
                     <UserCheck className="h-5 w-5 text-emerald-500 opacity-50" />
                   </div>
