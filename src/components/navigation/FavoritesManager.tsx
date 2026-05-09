@@ -151,7 +151,7 @@ export function FavoritesDropdown({ onNavigate, className }: FavoritesDropdownPr
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="ghost" size="sm" className="gap-2">
+        <Button variant="ghost" size="sm" className={cn("gap-2", className)}>
           <Star className="h-4 w-4 text-warning fill-warning" />
           <span className="hidden md:inline">Favoritos</span>
           <span className="text-xs text-muted-foreground">({favorites.length})</span>
