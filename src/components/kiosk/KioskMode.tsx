@@ -62,7 +62,13 @@ export function KioskMode({
   isOnline = true,
 }: KioskModeProps) {
   const [isFullscreen, setIsFullscreen] = React.useState(false);
+  const [isFocusMode, setIsFocusMode] = React.useState(false);
   const [currentTime, setCurrentTime] = React.useState(new Date());
+
+  const activeJob = React.useMemo(() => 
+    jobs.find(j => j.status === "production"), 
+    [jobs]
+  );
 
   // Update time every minute
   React.useEffect(() => {
