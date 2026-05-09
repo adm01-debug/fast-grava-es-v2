@@ -223,6 +223,15 @@ export const TechnicalSheetViewer = ({ sheetId, onEdit, onDuplicate }: Technical
               )}
             </div>
             <div className="flex gap-1.5 flex-shrink-0">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={() => toggleFavorite.mutate({ sheetId, isFavorite: favorites.includes(sheetId) })}
+                className={favorites.includes(sheetId) ? "text-amber-500 fill-amber-500" : "text-muted-foreground"}
+                title={favorites.includes(sheetId) ? "Remover dos favoritos" : "Adicionar aos favoritos"}
+              >
+                <Star className="h-4 w-4" />
+              </Button>
               {onDuplicate && (
                 <Button variant="ghost" size="icon" onClick={onDuplicate} title="Duplicar ficha">
                   <Copy className="h-4 w-4" />
