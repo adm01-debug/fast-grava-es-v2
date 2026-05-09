@@ -301,6 +301,7 @@ const Index = () => {
                     <AutoShiftSummary />
                     <ActivityFeedWidget />
                     <DailySummaryCard />
+                    <MaintenanceAlertsWidget />
                     <SortableWidgetSection
                       widgets={sidebarWidgets}
                       section="sidebar"
