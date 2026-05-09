@@ -246,6 +246,10 @@ export default function TPMDashboard() {
             <TabsTrigger value="calendar" className="data-[state=active]:shadow-glow-primary data-[state=active]:bg-primary/10 transition-all duration-300">
               Calendário
             </TabsTrigger>
+            <TabsTrigger value="predictive" className="data-[state=active]:shadow-glow-primary data-[state=active]:bg-primary/10 transition-all duration-300">
+              <BrainCircuit className="h-4 w-4 mr-2" />
+              Preditiva IA
+            </TabsTrigger>
             <TabsTrigger value="list" className="data-[state=active]:shadow-glow-primary data-[state=active]:bg-primary/10 transition-all duration-300">
               Lista
             </TabsTrigger>
