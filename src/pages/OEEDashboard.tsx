@@ -25,9 +25,15 @@ import {
   Zap,
   Sparkles,
   FileDown,
-  ArrowRight
+  ArrowRight,
+  Calculator,
+  Lightbulb,
+  ArrowUpRight,
+  Play
 } from 'lucide-react';
 import { useOEE, WORLD_CLASS_OEE, getOEEColor } from '@/hooks/useOEE';
+import { Slider } from '@/components/ui/slider';
+import { Label } from '@/components/ui/label';
 import { OEEGaugeCard } from '@/components/oee/OEEGaugeCard';
 import { OEEMachineTable } from '@/components/oee/OEEMachineTable';
 import { OEETrendChart } from '@/components/oee/OEETrendChart';
