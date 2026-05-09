@@ -452,6 +452,28 @@ export default function PendingQueue() {
           </CollapsibleContent>
         </Collapsible>
 
+        {/* Bulk Actions Bar */}
+        {selectedJobs.size > 0 && (
+          <div className="flex flex-wrap items-center gap-3 p-3 rounded-lg bg-primary/5 border border-primary/20 sticky top-2 z-30 backdrop-blur-md shadow-lg animate-in slide-in-from-top-4 duration-300">
+            <Badge variant="secondary" className="font-bold">{selectedJobs.size} selecionados</Badge>
+            <div className="h-4 w-px bg-border/50 mx-1 hidden sm:block" />
+            <Button size="sm" variant="outline" className="h-7 text-[10px] uppercase font-bold tracking-wider gap-1 border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10" onClick={() => handleBulkAction('production')}>
+              <Play className="h-3 w-3" /> Iniciar Produção
+            </Button>
+            <Button size="sm" variant="outline" className="h-7 text-[10px] uppercase font-bold tracking-wider gap-1 border-amber-500/30 text-amber-400 hover:bg-amber-500/10" onClick={() => handleBulkAction('ready')}>
+              <Package className="h-3 w-3" /> Marcar No Jeito
+            </Button>
+            <Button size="sm" variant="outline" className="h-7 text-[10px] uppercase font-bold tracking-wider gap-1 border-red-500/30 text-red-400 hover:bg-red-500/10" onClick={() => {
+              if (window.confirm('Excluir permanentemente estes jobs?')) handleBulkAction('delete');
+            }}>
+              <Trash2 className="h-3 w-3" /> Excluir
+            </Button>
+            <Button size="sm" variant="ghost" className="h-7 text-[10px] uppercase font-bold tracking-wider ml-auto text-muted-foreground" onClick={() => setSelectedJobs(new Set())}>
+              Limpar seleção
+            </Button>
+          </div>
+        )}
+
         {/* Virtualized Table */}
         <Card className="bg-card/50 backdrop-blur-sm border-border/50">
           <CardContent className="p-0">
