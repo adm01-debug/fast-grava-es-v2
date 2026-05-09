@@ -169,39 +169,44 @@ export default function GamificationPage() {
                   <div 
                     key={r.id} 
                     className={cn(
-                      "flex items-center gap-4 p-3 rounded-lg transition-colors",
-                      index < 3 ? "bg-muted/50" : "hover:bg-muted/30"
+                      "flex flex-col sm:flex-row items-center gap-4 p-4 rounded-xl transition-all border group",
+                      index < 3 ? "bg-primary/5 border-primary/20 shadow-sm" : "hover:bg-muted/30 border-transparent"
                     )}
                   >
-                    <div className={cn(
-                      "w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg",
-                      index === 0 ? "bg-amber-500 text-amber-950" :
-                      index === 1 ? "bg-gray-400 text-gray-950" :
-                      index === 2 ? "bg-orange-600 text-orange-950" :
-                      "bg-muted text-muted-foreground"
-                    )}>
-                      {r.position}
-                    </div>
-                    
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium truncate">{r.profile?.full_name}</p>
-                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <span>{r.total_produced.toLocaleString()} pçs</span>
-                        <span>•</span>
-                        <span>{(r.efficiency_rate ?? 0).toFixed(0)}% efic.</span>
+                    <div className="flex items-center w-full gap-4">
+                      <div className={cn(
+                        "w-12 h-12 rounded-full flex items-center justify-center font-black text-xl shadow-inner",
+                        index === 0 ? "bg-amber-400 text-amber-950 ring-4 ring-amber-400/20" :
+                        index === 1 ? "bg-gray-300 text-gray-950 ring-4 ring-gray-300/20" :
+                        index === 2 ? "bg-orange-500 text-orange-950 ring-4 ring-orange-500/20" :
+                        "bg-muted text-muted-foreground"
+                      )}>
+                        {r.position}
                       </div>
-                    </div>
+                      
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <p className="font-bold text-base truncate">{r.profile?.full_name}</p>
+                          <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20 text-[10px] font-black h-5">
+                            NÍVEL {r.level}
+                          </Badge>
+                        </div>
+                        <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">
+                          <span className="flex items-center gap-1"><Package className="h-3 w-3" /> {r.total_produced.toLocaleString()}</span>
+                          <span>•</span>
+                          <span className="flex items-center gap-1"><Zap className="h-3 w-3" /> {r.total_points} pontos</span>
+                        </div>
+                      </div>
 
-                    <div className="text-right">
-                      <p className="font-bold text-lg">{r.total_points}</p>
-                      <p className="text-xs text-muted-foreground">pontos</p>
-                    </div>
-
-                    <div className="w-24 hidden sm:block">
-                      <Progress value={r.quality_rate ?? 0} className="h-2" />
-                      <p className="text-xs text-muted-foreground text-center mt-1">
-                        {(r.quality_rate ?? 0).toFixed(0)}% qual.
-                      </p>
+                      <div className="text-right hidden sm:block">
+                        <p className="text-[10px] font-bold text-muted-foreground uppercase mb-1">XP PROGRESS</p>
+                        <div className="w-32">
+                          <Progress value={(r.xp_progress! / r.xp_target!) * 100} className="h-1.5 bg-muted/50" />
+                          <p className="text-[9px] text-muted-foreground mt-1">
+                            {r.xp_progress} / {r.xp_target} XP
+                          </p>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 ))}
