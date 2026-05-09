@@ -44,6 +44,8 @@ import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { VoiceButton } from '@/components/voice/VoiceCommands';
+import { AutonomousEventLog } from '@/components/autonomous/AutonomousEventLog';
+import { BrainCircuit, ShieldCheck, Sparkles } from 'lucide-react';
 
 export default function ExecutiveDashboard() {
   const datePresets = getDateRangePresets();
