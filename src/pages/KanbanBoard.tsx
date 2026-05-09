@@ -63,13 +63,22 @@ export default function KanbanBoard() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   
-  // Filters
+  // Filters (initialized from localStorage)
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedTechnique, setSelectedTechnique] = useState('all');
-  const [selectedPriority, setSelectedPriority] = useState('all');
-  const [selectedMachine, setSelectedMachine] = useState('all');
-  const [viewMode, setViewMode] = useState<ViewMode>('expanded');
-  const [swimlanesMode, setSwimlanesMode] = useState<SwimlanesMode>('none');
+  const [selectedTechnique, setSelectedTechnique] = useState(() => localStorage.getItem('kanban-filter-technique') || 'all');
+  const [selectedPriority, setSelectedPriority] = useState(() => localStorage.getItem('kanban-filter-priority') || 'all');
+  const [selectedMachine, setSelectedMachine] = useState(() => localStorage.getItem('kanban-filter-machine') || 'all');
+  const [viewMode, setViewMode] = useState<ViewMode>(() => (localStorage.getItem('kanban-view-mode') as ViewMode) || 'expanded');
+  const [swimlanesMode, setSwimlanesMode] = useState<SwimlanesMode>(() => (localStorage.getItem('kanban-swimlanes-mode') as SwimlanesMode) || 'none');
+
+  // Persist filters on change
+  useEffect(() => {
+    localStorage.setItem('kanban-filter-technique', selectedTechnique);
+    localStorage.setItem('kanban-filter-priority', selectedPriority);
+    localStorage.setItem('kanban-filter-machine', selectedMachine);
+    localStorage.setItem('kanban-view-mode', viewMode);
+    localStorage.setItem('kanban-swimlanes-mode', swimlanesMode);
+  }, [selectedTechnique, selectedPriority, selectedMachine, viewMode, swimlanesMode]);
   
   // Selection
   const [selectedJobs, setSelectedJobs] = useState<Set<string>>(new Set());
