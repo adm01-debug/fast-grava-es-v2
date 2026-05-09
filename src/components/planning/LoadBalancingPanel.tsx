@@ -138,7 +138,11 @@ export function LoadBalancingPanel({ onExplain }: LoadBalancingPanelProps) {
                     className="h-8 px-2 border-blue-500/20 hover:bg-blue-500/5 text-blue-400"
                     onClick={(e) => {
                       e.stopPropagation();
+                    if (onExplain) {
+                      onExplain(suggestion);
+                    } else {
                       setSelectedSuggestion(suggestion);
+                    }
                     }}
                   >
                     <Info className="h-3.5 w-3.5" />
