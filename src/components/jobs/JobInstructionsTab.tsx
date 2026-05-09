@@ -39,8 +39,10 @@ export function JobInstructionsTab({ techniqueId, productCategoryId }: JobInstru
   ) || [];
 
   const selectedSheet = relevantSheets.find((s: TechnicalSheet) => s.id === selectedSheetId) || relevantSheets[0];
+  
+  const { documents, isLoading: isLoadingDocs } = useDocuments(selectedSheet?.id);
 
-  if (isLoadingSheets) {
+  if (isLoadingSheets || (selectedSheet && isLoadingDocs)) {
     return <div className="space-y-4 py-4"><Skeleton className="h-20 w-full" /><Skeleton className="h-40 w-full" /></div>;
   }
 
