@@ -38,12 +38,12 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 
-const statusColumns: { status: JobStatus; label: string; icon: React.ElementType; color: string }[] = [
-  { status: 'queue', label: 'Na Fila', icon: Clock, color: 'text-blue-400' },
-  { status: 'ready', label: 'No Jeito', icon: Package, color: 'text-amber-400' },
-  { status: 'scheduled', label: 'Agendado', icon: Calendar, color: 'text-purple-400' },
-  { status: 'production', label: 'Em Produção', icon: Play, color: 'text-cyan-400' },
-  { status: 'finished', label: 'Finalizado', icon: CheckCircle2, color: 'text-green-400' },
+const statusColumns: { status: JobStatus; label: string; icon: React.ElementType; color: string; wipLimit?: number }[] = [
+  { status: 'queue', label: 'Na Fila', icon: Clock, color: 'text-blue-400', wipLimit: 25 },
+  { status: 'ready', label: 'No Jeito', icon: Package, color: 'text-amber-400', wipLimit: 12 },
+  { status: 'scheduled', label: 'Agendado', icon: Calendar, color: 'text-purple-400', wipLimit: 15 },
+  { status: 'production', label: 'Em Produção', icon: Play, color: 'text-cyan-400', wipLimit: 10 },
+  { status: 'finished', label: 'Finalizado', icon: CheckCircle2, color: 'text-green-400', wipLimit: 100 },
 ];
 
 const exceptionStatuses: { status: JobStatus; label: string; icon: React.ElementType; color: string }[] = [
