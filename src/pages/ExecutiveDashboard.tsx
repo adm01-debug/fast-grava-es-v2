@@ -126,6 +126,16 @@ export default function ExecutiveDashboard() {
     }
   };
 
+  const handleSaveGoal = () => {
+    const val = parseFloat(tempGoal);
+    if (isNaN(val) || val < 0 || val > 100) {
+      toast.error('Por favor, insira um valor válido entre 0 e 100');
+      return;
+    }
+    setGlobalGoal(val);
+    setIsGoalDialogOpen(false);
+    toast.success(`Meta global atualizada para ${val}%`);
+  };
 
   if (isLoading) {
     return (
@@ -167,7 +177,8 @@ export default function ExecutiveDashboard() {
       value: kpis.totalPiecesProduced.toLocaleString('pt-BR'),
       subtitle: `${kpis.totalJobsCompleted} jobs concluídos`,
       icon: Package,
-      trend: kpis.productionEfficiency > 80 ? 'up' : 'down',
+      trend: kpis.trends.production >= 0 ? 'up' : 'down',
+      trendValue: kpis.trends.production,
       color: 'text-blue-500',
       bgColor: 'bg-blue-500/10',
     },
@@ -211,7 +222,6 @@ export default function ExecutiveDashboard() {
       color: 'text-purple-600',
       bgColor: 'bg-purple-600/10',
     },
-
   ];
 
   return (
@@ -314,13 +324,12 @@ export default function ExecutiveDashboard() {
           </div>
         </div>
 
-
         {/* Autonomous Control & North Star Metric Section */}
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 h-[420px]">
           <div className="lg:col-span-1 h-full overflow-hidden">
              <AutonomousEventLog />
           </div>
-          <Card className="glass-card lg:col-span-1 border-primary/20 bg-gradient-to-br from-primary/5 to-transparent h-full flex flex-col">
+          <Card className="glass-card lg:col-span-1 border-primary/20 bg-gradient-to-br from-primary/5 to-transparent h-full flex flex-col cursor-pointer hover:border-primary/40 transition-all" onClick={() => toast.info('Drill-down: OEE Global')}>
             <CardHeader className="pb-0">
               <CardTitle className="text-sm font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
                 <Target className="h-4 w-4 text-primary" />
@@ -422,7 +431,7 @@ export default function ExecutiveDashboard() {
         {/* KPI Grid */}
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
           {kpiCards.map((kpi, index) => (
-            <Card key={index} className="glass-card hover:border-primary/30 transition-all cursor-default">
+            <Card key={index} className="glass-card hover:border-primary/30 transition-all cursor-pointer" onClick={() => toast.info(`Drill-down: ${kpi.title}`)}>
               <CardContent className="p-4">
                 <div className="flex items-center justify-between mb-2">
                   <div className={cn('p-2 rounded-lg', kpi.bgColor)}>
@@ -432,7 +441,7 @@ export default function ExecutiveDashboard() {
                     "text-[10px]",
                     kpi.trend === 'up' ? "text-green-500 border-green-500/20" : "text-red-500 border-red-500/20"
                   )}>
-                    {kpi.trend === 'up' ? '+ ' : '- '}{(Math.random() * 5).toFixed(1)}%
+                    {kpi.trend === 'up' ? '+ ' : ''}{kpi.trendValue?.toFixed(1)}%
                   </Badge>
                 </div>
                 <p className="text-xl font-bold">{kpi.value}</p>
@@ -445,7 +454,7 @@ export default function ExecutiveDashboard() {
         {/* Charts Row 1 */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Production Trend */}
-          <Card className="glass-card">
+          <Card className="glass-card cursor-pointer hover:border-primary/20 transition-all" onClick={() => toast.info('Drill-down: Tendência de Produção')}>
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between">
                 <div>
@@ -493,7 +502,7 @@ export default function ExecutiveDashboard() {
           </Card>
 
           {/* Efficiency Trend */}
-          <Card className="glass-card">
+          <Card className="glass-card cursor-pointer hover:border-primary/20 transition-all" onClick={() => toast.info('Drill-down: Eficiência Temporal')}>
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between">
                 <div>
@@ -633,6 +642,37 @@ export default function ExecutiveDashboard() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Goals Configuration Dialog */}
+        <Dialog open={isGoalDialogOpen} onOpenChange={setIsGoalDialogOpen}>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Target className="h-5 w-5 text-primary" />
+                Configuração de Metas Executivas
+              </DialogTitle>
+              <CardDescription>Defina as metas estratégicas para o dashboard consolidado.</CardDescription>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="goal" className="text-right">Meta OEE (%)</Label>
+                <Input
+                  id="goal"
+                  value={tempGoal}
+                  onChange={(e) => setTempGoal(e.target.value)}
+                  className="col-span-3"
+                  type="number"
+                  min="0"
+                  max="100"
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setIsGoalDialogOpen(false)}>Cancelar</Button>
+              <Button onClick={handleSaveGoal}>Salvar Alterações</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </MainLayout>
   );
