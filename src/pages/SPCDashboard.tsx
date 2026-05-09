@@ -11,7 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
-import { useSPCParameters, useSPCMeasurements, useSPCAlerts, useSPCMutations, calculateCapabilityIndices, SPCParameter } from '@/hooks/useSPC';
+import { useSPCParameters, useSPCMeasurements, useSPCAlerts, useSPCMutations, calculateCapabilityIndices, detectRunRules, SPCParameter } from '@/hooks/useSPC';
 import { SPCCreateParameterModal } from '@/components/spc/SPCCreateParameterModal';
 import { SPCControlChart } from '@/components/spc/SPCControlChart';
 
