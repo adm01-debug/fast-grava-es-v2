@@ -505,8 +505,9 @@ export const TechnicalSheetViewer = ({ sheetId, onEdit, onDuplicate }: Technical
                         <span className="text-[10px] font-bold text-primary">CALCULAR PARA:</span>
                         <input 
                           type="number" 
-                          defaultValue="100" 
-                          className="w-12 bg-transparent border-none text-[10px] font-bold text-primary focus:ring-0 p-0 text-center" 
+                          value={productionQuantity}
+                          onChange={(e) => setProductionQuantity(Number(e.target.value))}
+                          className="w-16 bg-transparent border-none text-[10px] font-bold text-primary focus:ring-0 p-0 text-center" 
                         />
                         <span className="text-[10px] font-bold text-primary">UNIDADES</span>
                       </div>
