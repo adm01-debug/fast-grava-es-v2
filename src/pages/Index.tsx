@@ -179,7 +179,7 @@ const Index = () => {
               <span className="gradient-text">{t('dashboard.title')}</span>
             </h1>
             <Badge variant="outline" className="hidden sm:flex gap-1.5 px-2.5 border-primary/30 bg-primary/5 text-primary text-[10px] font-black uppercase">
-               <ShieldCheck className="h-3 w-3" /> Orquestrado 10/10
+               <ShieldCheck className="h-3 w-3" /> Orquestrado 11/10
             </Badge>
             <FavoriteButton path="/" name={t('dashboard.title')} />
             {isOperator && (
