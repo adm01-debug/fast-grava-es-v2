@@ -200,6 +200,7 @@ const Index = () => {
           
           <div className="flex items-center gap-2">
             <DateRangePicker date={dateRange} setDate={setDateRange} className="mr-1" />
+            <DashboardExport />
             <ConnectionStatus />
             <VoiceButton className="hidden md:flex" />
             <FavoritesDropdown onNavigate={(path) => navigate(path)} />
