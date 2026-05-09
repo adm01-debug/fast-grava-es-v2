@@ -1,8 +1,9 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Activity, BarChart2, Plus } from 'lucide-react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, ComposedChart } from 'recharts';
+import { Activity, BarChart2, Plus, Sparkles, TrendingUp, History, Info } from 'lucide-react';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, ComposedChart, Area } from 'recharts';
 import { SPCParameter } from '@/hooks/useSPC';
+import { cn } from '@/lib/utils';
 
 interface SPCControlChartProps {
   selectedParameter: SPCParameter | null;
@@ -11,7 +12,7 @@ interface SPCControlChartProps {
     ucl: number | null; lcl: number | null;
     usl: number; lsl: number; target: number; inControl: boolean;
   }>;
-  capability: { cp: number; cpk: number; mean: number; stdDev: number } | null;
+  capability: { cp: number; cpk: number; mean: number; stdDev: number; performance: string } | null;
   onCalculateLimits: () => void;
   onShowMeasurement: () => void;
   isCalculating: boolean;
