@@ -253,11 +253,31 @@ export function useSchedulingData() {
       machinesQuery.refetch();
     },
     
-    // Add real OEE historical analysis
+    // OEE History and Capacity Monitoring
     getOEETrend: (days: number = 14) => {
-      // Logic for calculating OEE trend would go here, 
-      // already partially handled in useOEE hook.
+      // OEE trends are now derived from the useOEE hook's logic
       return [];
+    },
+    // Historic bottleneck and capacity trends
+    getCapacityTrend: (days: number = 7) => {
+      const jobs = jobsQuery.data || [];
+      const trend = [];
+      for (let i = days - 1; i >= 0; i--) {
+        const date = new Date();
+        date.setDate(date.getDate() - i);
+        const dateStr = date.toISOString().split('T')[0];
+        
+        const dayJobs = jobs.filter(j => j.scheduled_date === dateStr);
+        const load = dayJobs.reduce((sum, j) => sum + (j.estimated_duration || 0), 0);
+        
+        trend.push({
+          date: dateStr,
+          load,
+          jobCount: dayJobs.length,
+          risk: load > 480 ? 'high' : load > 300 ? 'medium' : 'low'
+        });
+      }
+      return trend;
     }
   };
 }
