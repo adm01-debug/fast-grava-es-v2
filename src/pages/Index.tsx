@@ -322,11 +322,14 @@ const Index = () => {
                 <ScrollArea className="flex-1">
                   <div className="space-y-4 pr-2">
                     <AutoShiftSummary />
+                    <ShiftHandoverWidget />
+                    <LeaderboardWidget />
                     <ActivityFeedWidget />
                     <DailySummaryCard />
                     <MaintenanceAlertsWidget />
                     <EnergyWidget />
                     <PredictiveAnalyticsWidget />
+
                     <SortableWidgetSection
                       widgets={sidebarWidgets}
                       section="sidebar"
