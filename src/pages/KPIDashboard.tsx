@@ -31,6 +31,7 @@ import {
   AlertTriangle,
   CheckCircle2,
   Clock,
+  History,
   Percent,
   Factory,
   Target,
