@@ -31,21 +31,30 @@ interface OEETrendChartProps {
   comparison?: {
     currentOEE: number;
     previousOEE: number;
+    currentAvailability: number;
+    previousAvailability: number;
+    currentPerformance: number;
+    previousPerformance: number;
+    currentQuality: number;
+    previousQuality: number;
   };
 }
 
 export function OEETrendChart({ data, worldClassBenchmark, comparison }: OEETrendChartProps) {
   const chartData = useMemo(() => {
-    // Only show the most recent half of the data in the main chart to keep it readable,
-    // while using the full set for the comparison metrics
-    const displayData = data.slice(Math.floor(data.length / 2));
-    return displayData.map(d => ({
+    // Show data points based on the comparison requirement
+    // If we have comparison data, we show the full trend to visualize the periods
+    return data.map(d => ({
       ...d,
       dateLabel: format(parseISO(d.date), 'dd/MM', { locale: ptBR })
     }));
   }, [data]);
 
   const oeeDiff = comparison ? comparison.currentOEE - comparison.previousOEE : 0;
+  const availabilityDiff = comparison ? comparison.currentAvailability - comparison.previousAvailability : 0;
+  const performanceDiff = comparison ? comparison.currentPerformance - comparison.previousPerformance : 0;
+  const qualityDiff = comparison ? comparison.currentQuality - comparison.previousQuality : 0;
+  
   const isPositive = oeeDiff > 0;
   const isNegative = oeeDiff < 0;
 
@@ -55,19 +64,33 @@ export function OEETrendChart({ data, worldClassBenchmark, comparison }: OEETren
         <CardTitle className="flex items-center justify-between">
           <span>Evolução do OEE (Timeline Comparativa)</span>
           {comparison && (
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap gap-2">
               <Badge variant="outline" className={cn(
                 "flex items-center gap-1 px-2 py-1",
-                isPositive ? "text-emerald-500 border-emerald-500/30 bg-emerald-500/10" : 
-                isNegative ? "text-red-500 border-red-500/30 bg-red-500/10" : 
+                oeeDiff > 0 ? "text-emerald-500 border-emerald-500/30 bg-emerald-500/10" : 
+                oeeDiff < 0 ? "text-red-500 border-red-500/30 bg-red-500/10" : 
                 "text-muted-foreground border-border bg-muted/20"
               )}>
-                {isPositive ? <TrendingUp className="h-3 w-3" /> : 
-                 isNegative ? <TrendingDown className="h-3 w-3" /> : 
+                {oeeDiff > 0 ? <TrendingUp className="h-3 w-3" /> : 
+                 oeeDiff < 0 ? <TrendingDown className="h-3 w-3" /> : 
                  <Minus className="h-3 w-3" />}
                 <span className="text-xs font-bold">
-                  {isPositive ? '+' : ''}{oeeDiff.toFixed(1)}% vs período anterior
+                  OEE: {oeeDiff > 0 ? '+' : ''}{oeeDiff.toFixed(1)}%
                 </span>
+              </Badge>
+              
+              <Badge variant="outline" className={cn(
+                "flex items-center gap-1 px-2 py-1 text-[10px]",
+                availabilityDiff >= 0 ? "text-emerald-500/80" : "text-red-500/80"
+              )}>
+                Disponibilidade: {availabilityDiff > 0 ? '+' : ''}{availabilityDiff.toFixed(1)}%
+              </Badge>
+              
+              <Badge variant="outline" className={cn(
+                "flex items-center gap-1 px-2 py-1 text-[10px]",
+                performanceDiff >= 0 ? "text-emerald-500/80" : "text-red-500/80"
+              )}>
+                Desempenho: {performanceDiff > 0 ? '+' : ''}{performanceDiff.toFixed(1)}%
               </Badge>
             </div>
           )}

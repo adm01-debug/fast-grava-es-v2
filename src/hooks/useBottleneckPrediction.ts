@@ -48,9 +48,14 @@ export interface TechniqueCapacity {
 }
 
 const DAILY_CAPACITY_MINUTES = 11 * 60; // 07:00 - 18:00
-const CRITICAL_THRESHOLD = 90;
-const WARNING_THRESHOLD = 75;
-const DAYS_AHEAD = 14; // Estendido para 14 dias para tendências histórico-proativas
+let CRITICAL_THRESHOLD = 90;
+let WARNING_THRESHOLD = 75;
+const DAYS_AHEAD = 14; 
+
+export function setBottleneckThresholds(warning: number, critical: number) {
+  WARNING_THRESHOLD = warning;
+  CRITICAL_THRESHOLD = critical;
+}
 
 export function useBottleneckPrediction() {
   const { data: jobs } = useJobs();

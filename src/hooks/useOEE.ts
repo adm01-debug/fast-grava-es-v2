@@ -121,10 +121,9 @@ function getOEEColor(oee: number): string {
   return 'hsl(var(--destructive))';
 }
 
-export function useOEE(daysBack: number = 30) {
-  // Always use at least 30 days for better historical trends, 
-  // but allow more for comparison (e.g., 60 days to compare last 30 vs previous 30)
-  const effectiveDaysBack = Math.max(daysBack, 60);
+export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30) {
+  // Use at least double the period to have enough data for comparison
+  const effectiveDaysBack = Math.max(daysBack + comparisonDaysBack, 60);
   const { jobs, machines, techniques, isLoading } = useSchedulingData();
   
   const data = useMemo<OEEData | null>(() => {
@@ -298,7 +297,7 @@ export function useOEE(daysBack: number = 30) {
     
     // Generate trend data (last 30 days for better historical view)
     const trendData: OEEData['trendData'] = [];
-    const trendDays = 30;
+    const trendDays = validDaysBack;
     
     for (let i = trendDays - 1; i >= 0; i--) {
       const date = subDays(now, i);
@@ -355,10 +354,9 @@ export function useOEE(daysBack: number = 30) {
       });
     }
     
-    // Calculate period-over-period comparison (e.g., last 14 days vs previous 14 days)
-    const midPoint = Math.floor(trendData.length / 2);
-    const currentPeriod = trendData.slice(midPoint);
-    const previousPeriod = trendData.slice(0, midPoint);
+    // Calculate period-over-period comparison (e.g., last 30 days vs previous 30 days)
+    const currentPeriod = trendData.slice(Math.max(0, trendData.length - daysBack));
+    const previousPeriod = trendData.slice(0, Math.max(0, trendData.length - daysBack));
 
     const avg = (arr: any[], key: string) => arr.length > 0 ? arr.reduce((s, x) => s + x[key], 0) / arr.length : 0;
 
@@ -390,7 +388,7 @@ export function useOEE(daysBack: number = 30) {
       performanceLosses: Math.round(performanceLosses * 10) / 10,
       qualityLosses: Math.round(qualityLosses * 10) / 10
     };
-  }, [jobs, machines, techniques, effectiveDaysBack]);
+  }, [jobs, machines, techniques, effectiveDaysBack, daysBack]);
   
   return { data, isLoading };
 }

@@ -2,9 +2,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { Moon, RefreshCw, Database, Shield, Palette } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Slider } from '@/components/ui/slider';
+import { Moon, RefreshCw, Database, Shield, Palette, AlertTriangle } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { AutoThemeToggle } from '@/components/settings/AutoThemeToggle';
+import { useState } from 'react';
+import { setBottleneckThresholds } from '@/hooks/useBottleneckPrediction';
+import { toast } from 'sonner';
 
 interface SettingsGeneralTabProps {
   settings: { autoRefresh: boolean };
@@ -13,6 +18,13 @@ interface SettingsGeneralTabProps {
 
 export function SettingsGeneralTab({ settings, onSettingChange }: SettingsGeneralTabProps) {
   const { theme, setTheme } = useTheme();
+  const [warningThreshold, setWarningThreshold] = useState(75);
+  const [criticalThreshold, setCriticalThreshold] = useState(90);
+
+  const saveThresholds = () => {
+    setBottleneckThresholds(warningThreshold, criticalThreshold);
+    toast.success('Limites de gargalo atualizados');
+  };
 
   return (
     <div className="space-y-4">
@@ -39,6 +51,62 @@ export function SettingsGeneralTab({ settings, onSettingChange }: SettingsGenera
             </div>
             <Switch checked={settings.autoRefresh} onCheckedChange={(checked) => onSettingChange('autoRefresh', checked)} />
           </div>
+        </CardContent>
+      </Card>
+
+      <Card className="glass-card">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <AlertTriangle className="h-5 w-5 text-amber-500" />
+            Configuração de Risco de Gargalo
+          </CardTitle>
+          <CardDescription>Defina os gatilhos para alertas de saturação de capacidade</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-8">
+          <div className="space-y-4">
+            <div className="flex justify-between items-center">
+              <Label className="text-xs font-bold uppercase tracking-wider text-amber-500/80">
+                Aviso de Carga (Médio)
+              </Label>
+              <span className="text-sm font-mono font-bold bg-amber-500/10 text-amber-500 px-2 py-0.5 rounded">
+                {warningThreshold}%
+              </span>
+            </div>
+            <Slider
+              value={[warningThreshold]}
+              min={50}
+              max={criticalThreshold - 5}
+              step={1}
+              onValueChange={([val]) => setWarningThreshold(val)}
+              className="py-2"
+            />
+          </div>
+
+          <div className="space-y-4">
+            <div className="flex justify-between items-center">
+              <Label className="text-xs font-bold uppercase tracking-wider text-red-500/80">
+                Alerta Crítico (Alto)
+              </Label>
+              <span className="text-sm font-mono font-bold bg-red-500/10 text-red-500 px-2 py-0.5 rounded">
+                {criticalThreshold}%
+              </span>
+            </div>
+            <Slider
+              value={[criticalThreshold]}
+              min={warningThreshold + 5}
+              max={100}
+              step={1}
+              onValueChange={([val]) => setCriticalThreshold(val)}
+              className="py-2"
+            />
+          </div>
+
+          <Button 
+            className="w-full bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20"
+            onClick={saveThresholds}
+          >
+            Salvar Thresholds
+          </Button>
         </CardContent>
       </Card>
 

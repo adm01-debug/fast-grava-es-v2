@@ -4,6 +4,9 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { ShieldCheckIcon } from 'lucide-react';
 import { useEntityAuditTrail } from '@/hooks/useAuditTrail';
 import { AuditEntryCard } from './AuditEntryCard';
+import { HistoryPeriodFilter, type HistoryPeriodValue } from './HistoryPeriodFilter';
+import { useState, useCallback } from 'react';
+import { useDataExport } from '@/hooks/useDataExport';
 
 interface AuditTrailDrawerProps {
   open: boolean;
@@ -20,7 +23,22 @@ export function AuditTrailDrawer({
   entityId,
   entityLabel,
 }: AuditTrailDrawerProps) {
-  const { data, isLoading, error } = useEntityAuditTrail(entityType, entityId);
+  const [period, setPeriod] = useState<HistoryPeriodValue>({ preset: 'all' });
+  const { data, isLoading, error } = useEntityAuditTrail(entityType, entityId, {
+    fromDate: period.fromDate,
+    toDate: period.toDate,
+  });
+  
+  const { exportAuditTrail } = useDataExport(entityType as any);
+
+  const handleExport = useCallback(() => {
+    exportAuditTrail({
+      entityType,
+      entityId,
+      fromDate: period.fromDate,
+      toDate: period.toDate,
+    }, `auditoria_${entityType}_${entityId?.slice(0, 8)}`);
+  }, [entityType, entityId, period, exportAuditTrail]);
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -36,7 +54,16 @@ export function AuditTrailDrawer({
           </SheetDescription>
         </SheetHeader>
 
-        <ScrollArea className="flex-1 mt-4 -mx-6 px-6">
+        <div className="px-6 py-2">
+          <HistoryPeriodFilter 
+            value={period} 
+            onChange={setPeriod} 
+            onExport={handleExport}
+            resultCount={data?.length} 
+          />
+        </div>
+
+        <ScrollArea className="flex-1 -mx-6 px-6">
           <div className="space-y-3 pb-6">
             {isLoading && (
               <>

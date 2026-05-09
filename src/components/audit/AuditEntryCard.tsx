@@ -60,7 +60,7 @@ export const AuditEntryCard = memo(function AuditEntryCard({ entry }: AuditEntry
       {entry.changed_fields && entry.changed_fields.length > 0 && (
         <div className="flex flex-wrap gap-1">
           {entry.changed_fields.map((field) => (
-            <Badge key={field} variant="outline" className="text-xs">
+            <Badge key={field} variant="outline" className="text-[10px] uppercase font-bold bg-muted/30">
               {field}
             </Badge>
           ))}
