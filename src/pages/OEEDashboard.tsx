@@ -235,11 +235,15 @@ export default function OEEDashboard() {
 
         {/* Tabs */}
         <Tabs defaultValue="trend" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-4 max-w-lg">
+          <TabsList className="grid w-full grid-cols-5 max-w-2xl">
             <TabsTrigger value="trend">Evolução</TabsTrigger>
             <TabsTrigger value="losses">Perdas</TabsTrigger>
             <TabsTrigger value="techniques">Técnicas</TabsTrigger>
             <TabsTrigger value="machines">Máquinas</TabsTrigger>
+            <TabsTrigger value="sustainability" className="text-emerald-600 flex items-center gap-1.5">
+              <Leaf className="h-3 w-3" />
+              Sustentabilidade
+            </TabsTrigger>
           </TabsList>
           
           <TabsContent value="trend">
