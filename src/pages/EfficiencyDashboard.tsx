@@ -30,6 +30,9 @@ export default function EfficiencyDashboard() {
   const { byTechnique, suggestions: balancingSuggestions, isLoading: loadBalancingLoading } = useLoadBalancing();
   const { alerts, capacityByDate, isLoading: bottleneckLoading, criticalCount } = useBottleneckPrediction();
   const { alerts: allAlertHistory, resolvedAlerts, isLoading: historyLoading } = useEfficiencyAlertHistory();
+  const { data: oeeData } = useOEE(30);
+  
+  const overallOEE = oeeData?.overallOEE || 0;
 
   const totalSetupSaved = totalSavings;
   const allMachineLoads = byTechnique.flatMap(t => t.machines);
