@@ -707,8 +707,7 @@ export default function PendingQueue() {
             )}
           </CardContent>
         </Card>
-        </motion.div>
-      </div>
+      </motion.div>
     </MainLayout>
   );
 }
