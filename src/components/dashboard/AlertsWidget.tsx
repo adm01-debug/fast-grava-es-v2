@@ -7,6 +7,7 @@ import { useMemo, useState } from 'react';
 import { useSchedulingData } from '@/hooks/useSchedulingData';
 import { AlertScheduleModal } from './AlertScheduleModal';
 import { useStuckJobsDetection } from '@/hooks/useStuckJobsDetection';
+import { useOEE } from '@/hooks/useOEE';
 
 interface Alert {
   id: string;
