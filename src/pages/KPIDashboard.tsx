@@ -152,9 +152,48 @@ export default function KPIDashboard() {
               <Calendar className="h-4 w-4" />
               Últimos 7 dias
             </Button>
-            <Button variant="outline" size="icon" className="glass-button h-9 w-9">
-              <Filter className="h-4 w-4" />
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="icon" className="glass-button h-9 w-9">
+                  <Settings2 className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuLabel>Personalizar Dashboard</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <div className="p-2 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs">Taxa de Conclusão</span>
+                    <Switch 
+                      checked={visibleKPIs.completion} 
+                      onCheckedChange={(val) => setVisibleKPIs(prev => ({ ...prev, completion: val }))}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs">Ocupação Média</span>
+                    <Switch 
+                      checked={visibleKPIs.occupancy} 
+                      onCheckedChange={(val) => setVisibleKPIs(prev => ({ ...prev, occupancy: val }))}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs">Índice de Perdas</span>
+                    <Switch 
+                      checked={visibleKPIs.loss} 
+                      onCheckedChange={(val) => setVisibleKPIs(prev => ({ ...prev, loss: val }))}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs">Jobs Atrasados</span>
+                    <Switch 
+                      checked={visibleKPIs.delayed} 
+                      onCheckedChange={(val) => setVisibleKPIs(prev => ({ ...prev, delayed: val }))}
+                    />
+                  </div>
+                </div>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
             <VoiceButton />
           </div>
         </div>
