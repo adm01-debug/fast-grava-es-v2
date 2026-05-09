@@ -9,7 +9,7 @@ import {
 import { 
   BrainCircuit, ArrowRight, Zap, AlertTriangle, 
   CheckCircle2, Sparkles, ChevronRight, LayoutPanelTop,
-  Search, Filter, Clock, TrendingDown, TrendingUp, Info
+  Search, Filter, Clock, TrendingDown, TrendingUp, Info, Activity
 } from 'lucide-react';
 import { useSmartSequencingWithActions as useSmartSequencing, SequencingSuggestion } from '@/hooks/useSmartSequencingWithActions';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -22,41 +22,6 @@ export function SmartSequencingPanel() {
   const { suggestions, totalSavings, hasSuggestions, applySequencing, isApplying } = useSmartSequencing();
   const [suggestionToDetail, setSuggestionToDetail] = useState<SequencingSuggestion | null>(null);
   const queryClient = useQueryClient();
-
-  const handleApplyOptimization = async (suggestion: SequencingSuggestion) => {
-    setIsApplying(true);
-    try {
-      // Update each job's start_time according to the optimized sequence
-      const updates = suggestion.optimizedSequence.map((job, index) => {
-        // Simple logic: maintain same dates but update start_time sequence
-        const hour = 7 + Math.floor(index / 2);
-        const minute = (index % 2) * 30;
-        const startTime = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
-        
-        return supabase
-          .from('jobs')
-          .update({ 
-            start_time: startTime,
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', job.id);
-      });
-
-      await Promise.all(updates);
-      
-      toast.success(`Sequenciamento otimizado para ${suggestion.machineName}`, {
-        description: `Economia estimada: ${suggestion.estimatedSavings} minutos de setup.`,
-        icon: <Zap className="h-4 w-4 text-yellow-400" />
-      });
-      
-      queryClient.invalidateQueries({ queryKey: ['jobs'] });
-    } catch (error) {
-      console.error('Error applying optimization:', error);
-      toast.error('Erro ao aplicar otimização');
-    } finally {
-      setIsApplying(false);
-    }
-  };
 
   if (!hasSuggestions) {
     return null;
