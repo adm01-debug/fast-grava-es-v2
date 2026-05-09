@@ -152,8 +152,93 @@ export function KioskMode({
         </div>
       </div>
 
-      {/* Jobs Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+      {/* Jobs Content */}
+      {isFocusMode ? (
+        <div className="flex flex-col items-center justify-center flex-1 h-[70vh]">
+          {activeJob ? (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="w-full max-w-4xl"
+            >
+              <Card className="bg-primary/5 border-primary/20 shadow-2xl">
+                <CardContent className="p-8 md:p-12 space-y-8">
+                  <div className="flex justify-between items-start border-b border-primary/10 pb-6">
+                    <div>
+                      <Badge variant="outline" className="mb-2 text-primary border-primary/30 uppercase tracking-widest font-black">Em Produção Agora</Badge>
+                      <h2 className="text-4xl md:text-6xl font-black tracking-tighter">{activeJob.client}</h2>
+                      <p className="text-xl text-muted-foreground mt-2">{activeJob.product}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm font-mono text-muted-foreground">{activeJob.orderNumber}</p>
+                      <Badge className="bg-destructive mt-2">{priorityConfig[activeJob.priority || 'normal'].label}</Badge>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-end">
+                      <span className="text-4xl font-bold">{activeJob.produced || 0} <span className="text-xl text-muted-foreground font-medium">/ {activeJob.quantity} peças</span></span>
+                      <span className="text-4xl font-black text-primary">{Math.round(((activeJob.produced || 0) / activeJob.quantity) * 100)}%</span>
+                    </div>
+                    <Progress value={((activeJob.produced || 0) / activeJob.quantity) * 100} className="h-6 rounded-full" />
+                  </div>
+
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-6 pt-6">
+                     <div className="bg-background/50 p-4 rounded-xl border border-border/50 text-center">
+                        <Activity className="h-5 w-5 mx-auto mb-2 text-primary" />
+                        <p className="text-[10px] font-bold text-muted-foreground uppercase">OEE Estimado</p>
+                        <p className="text-xl font-black">94.2%</p>
+                     </div>
+                     <div className="bg-background/50 p-4 rounded-xl border border-border/50 text-center">
+                        <Zap className="h-5 w-5 mx-auto mb-2 text-amber-500" />
+                        <p className="text-[10px] font-bold text-muted-foreground uppercase">Consumo (kWh)</p>
+                        <p className="text-xl font-black">1.2</p>
+                     </div>
+                     <div className="bg-background/50 p-4 rounded-xl border border-border/50 text-center">
+                        <Target className="h-5 w-5 mx-auto mb-2 text-emerald-500" />
+                        <p className="text-[10px] font-bold text-muted-foreground uppercase">Tempo Médio</p>
+                        <p className="text-xl font-black">42s</p>
+                     </div>
+                     <div className="bg-background/50 p-4 rounded-xl border border-border/50 text-center">
+                        <Clock className="h-5 w-5 mx-auto mb-2 text-blue-500" />
+                        <p className="text-[10px] font-bold text-muted-foreground uppercase">Previsão Fim</p>
+                        <p className="text-xl font-black">16:45</p>
+                     </div>
+                  </div>
+
+                  <div className="flex gap-4 pt-4">
+                    <Button 
+                      variant="outline" 
+                      className="flex-1 h-20 text-2xl font-bold rounded-2xl"
+                      onClick={() => onPauseProduction(activeJob.id)}
+                    >
+                      <Pause className="h-8 w-8 mr-3" /> Pausar
+                    </Button>
+                    <Button 
+                      className="flex-1 h-20 text-2xl font-bold rounded-2xl bg-primary hover:bg-primary/90"
+                      onClick={() => onCompleteProduction(activeJob.id)}
+                    >
+                      <CheckCircle2 className="h-8 w-8 mr-3" /> Finalizar
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ) : (
+            <div className="text-center space-y-6">
+              <div className="h-32 w-32 rounded-full bg-muted flex items-center justify-center mx-auto animate-pulse">
+                <Play className="h-12 w-12 text-muted-foreground" />
+              </div>
+              <div className="space-y-2">
+                <h3 className="text-3xl font-bold">Nenhum Job em Produção</h3>
+                <p className="text-muted-foreground">Desative o Modo Foco para selecionar uma tarefa da fila.</p>
+              </div>
+              <Button size="lg" onClick={() => setIsFocusMode(false)}>Ver Lista de Tarefas</Button>
+            </div>
+          )}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         <AnimatePresence mode="popLayout">
           {jobs.map((job) => {
             const status = statusConfig[job.status];
