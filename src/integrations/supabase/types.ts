@@ -3596,6 +3596,7 @@ export type Database = {
           updated_at: string
           updated_by: string | null
           version: number | null
+          view_count: number | null
         }
         Insert: {
           challenges_notes?: string | null
@@ -3626,6 +3627,7 @@ export type Database = {
           updated_at?: string
           updated_by?: string | null
           version?: number | null
+          view_count?: number | null
         }
         Update: {
           challenges_notes?: string | null
@@ -3656,6 +3658,7 @@ export type Database = {
           updated_at?: string
           updated_by?: string | null
           version?: number | null
+          view_count?: number | null
         }
         Relationships: [
           {
@@ -4582,6 +4585,10 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      increment_sheet_view_count: {
+        Args: { sheet_id: string }
+        Returns: undefined
       }
       process_tpm_notifications_cron: { Args: never; Returns: undefined }
       verify_audit_chain: {
