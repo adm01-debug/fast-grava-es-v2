@@ -3350,6 +3350,41 @@ export type Database = {
           },
         ]
       }
+      technical_sheet_audit_logs: {
+        Row: {
+          action: string
+          changes: Json | null
+          created_at: string | null
+          id: string
+          technical_sheet_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          changes?: Json | null
+          created_at?: string | null
+          id?: string
+          technical_sheet_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          changes?: Json | null
+          created_at?: string | null
+          id?: string
+          technical_sheet_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "technical_sheet_audit_logs_technical_sheet_id_fkey"
+            columns: ["technical_sheet_id"]
+            isOneToOne: false
+            referencedRelation: "technical_sheets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       technical_sheet_materials: {
         Row: {
           created_at: string
@@ -3482,6 +3517,7 @@ export type Database = {
           recommended_machine_id: string | null
           settings_ranges: Json | null
           setup_instructions: string | null
+          status: Database["public"]["Enums"]["sheet_status"] | null
           technique_id: string
           title: string
           tooling_specifications: string | null
@@ -3509,6 +3545,7 @@ export type Database = {
           recommended_machine_id?: string | null
           settings_ranges?: Json | null
           setup_instructions?: string | null
+          status?: Database["public"]["Enums"]["sheet_status"] | null
           technique_id: string
           title: string
           tooling_specifications?: string | null
@@ -3536,6 +3573,7 @@ export type Database = {
           recommended_machine_id?: string | null
           settings_ranges?: Json | null
           setup_instructions?: string | null
+          status?: Database["public"]["Enums"]["sheet_status"] | null
           technique_id?: string
           title?: string
           tooling_specifications?: string | null
@@ -4482,6 +4520,7 @@ export type Database = {
     }
     Enums: {
       app_role: "coordinator" | "operator" | "manager"
+      sheet_status: "draft" | "published" | "review_needed"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -4610,6 +4649,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["coordinator", "operator", "manager"],
+      sheet_status: ["draft", "published", "review_needed"],
     },
   },
 } as const
