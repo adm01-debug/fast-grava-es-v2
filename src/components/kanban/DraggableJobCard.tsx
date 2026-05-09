@@ -177,11 +177,11 @@ export function DraggableJobCard({ job, technique, machine, onClick, viewMode = 
         </div>
         <Badge 
           variant="outline" 
-          className="text-xs shrink-0"
+          className="text-[10px] font-black tracking-tighter shrink-0 border-2"
           style={{ 
             borderColor: technique?.color,
             color: technique?.color,
-            backgroundColor: `${technique?.color}15`
+            backgroundColor: `${technique?.color}10`
           }}
         >
           {technique?.name || 'N/A'}
