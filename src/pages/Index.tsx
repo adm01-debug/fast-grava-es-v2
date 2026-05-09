@@ -30,8 +30,10 @@ import { EnergyWidget } from '@/components/dashboard/EnergyWidget';
 import { PredictiveAnalyticsWidget } from '@/components/dashboard/PredictiveAnalyticsWidget';
 import { ShiftHandoverWidget } from '@/components/dashboard/ShiftHandoverWidget';
 import { LeaderboardWidget } from '@/components/dashboard/LeaderboardWidget';
+import { OperatorGoalsWidget } from '@/components/dashboard/OperatorGoalsWidget';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
+
 import { 
   Calendar, 
   CheckCircle2, 
