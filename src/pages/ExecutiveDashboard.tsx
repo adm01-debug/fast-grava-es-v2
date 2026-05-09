@@ -74,6 +74,7 @@ export default function ExecutiveDashboard() {
   const [globalGoal, setGlobalGoal] = useState<number>(85);
   const [isGoalDialogOpen, setIsGoalDialogOpen] = useState(false);
   const [tempGoal, setTempGoal] = useState<string>('85');
+  const [showComparison, setShowComparison] = useState(false);
 
   const { data: machines } = useQuery({
     queryKey: ['machines-list'],
