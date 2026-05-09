@@ -143,6 +143,15 @@ export default function ExecutiveDashboard() {
       color: 'text-amber-500',
       bgColor: 'bg-amber-500/10',
     },
+    {
+      title: 'Ciber-Resiliência',
+      value: '98.5',
+      subtitle: 'Status: 11/10 Ativo',
+      icon: ShieldCheck,
+      trend: 'up',
+      color: 'text-purple-600',
+      bgColor: 'bg-purple-600/10',
+    },
   ];
 
   return (
