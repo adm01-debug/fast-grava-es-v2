@@ -443,9 +443,21 @@ export default function WeeklyCalendar() {
           </CardContent>
         </Card>
 
-        <CalendarLegend />
-      </div>
-      <MobileFAB />
-    </MainLayout>
-  );
+        <DragOverlay>
+          {activeId && activeJob ? (
+            <div className={cn(
+              'px-1.5 py-1 rounded text-xs font-medium border shadow-lg w-24',
+              statusColorsSolid[activeJob.status as JobStatus]
+            )}>
+              {activeJob.order_number.replace('OS-2024-', '')}
+            </div>
+          ) : null}
+        </DragOverlay>
+      </DndContext>
+
+      <CalendarLegend />
+    </div>
+    <MobileFAB />
+  </MainLayout>
+);
 }
