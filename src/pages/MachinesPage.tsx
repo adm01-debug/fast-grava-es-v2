@@ -109,13 +109,29 @@ export default function MachinesPage() {
       <div className="space-y-6">
         <Breadcrumbs />
         
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl font-display font-bold gradient-text">Máquinas</h1>
             <p className="text-muted-foreground">Gerencie as máquinas de produção por técnica</p>
           </div>
-          <VoiceButton />
+          <div className="flex items-center gap-3">
+             <VoiceButton />
+          </div>
         </div>
+
+        <Tabs defaultValue="list" className="space-y-6">
+          <TabsList className="bg-muted/50 p-1">
+            <TabsTrigger value="list" className="gap-2">
+              <Printer className="h-4 w-4" />
+              Lista de Máquinas
+            </TabsTrigger>
+            <TabsTrigger value="heatmap" className="gap-2 text-amber-600">
+              <MapIcon className="h-4 w-4" />
+              Mapa de Calor (Heatmap)
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="list" className="space-y-6">
 
         <div className="grid gap-4 md:grid-cols-4">
           <Card className="glass-card">
