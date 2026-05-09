@@ -119,7 +119,7 @@ export function PlanningEfficiencyDashboard() {
             {stats.hasHighBottleneck ? "⚠️ RISCO DE GARGALO" : "Saúde dos Prazos"}
           </p>
           <div className="flex items-end gap-2 mb-3">
-            <h3 className="text-3xl font-bold font-display">{stats.deadlineHealth}%</h3>
+            <h3 className="text-3xl font-black font-display tracking-tighter">{stats.deadlineHealth}%</h3>
             {stats.delayedCount > 0 && (
               <div className="text-[10px] text-red-400 font-bold flex items-center mb-1">
                 <AlertTriangle className="h-3 w-3 mr-0.5" />
