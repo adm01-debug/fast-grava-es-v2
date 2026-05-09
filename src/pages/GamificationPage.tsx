@@ -99,7 +99,39 @@ export default function GamificationPage() {
           </div>
         </div>
 
-        {/* Podium */}
+        {/* Main Content Area */}
+        {activeTab === 'rewards' ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {rewards.map((reward) => (
+              <Card key={reward.id} className="glass-card group hover:border-primary/50 transition-all overflow-hidden border-2 border-transparent">
+                <CardHeader className={cn("pb-2", reward.color)}>
+                  <div className="flex justify-between items-start">
+                    <div className="p-2 rounded-lg bg-white/20">
+                      <reward.icon className="h-6 w-6" />
+                    </div>
+                    <Badge variant="secondary" className="bg-white/30 text-current border-none font-bold">
+                      {reward.cost} PTS
+                    </Badge>
+                  </div>
+                  <CardTitle className="mt-4 text-xl">{reward.name}</CardTitle>
+                </CardHeader>
+                <CardContent className="pt-4">
+                  <p className="text-sm text-muted-foreground mb-6 h-10 line-clamp-2">
+                    {reward.description}
+                  </p>
+                  <Button className="w-full group-hover:scale-[1.02] transition-transform" disabled={true}>
+                    Resgatar Recompensa
+                  </Button>
+                  <p className="text-[10px] text-center text-muted-foreground mt-3 uppercase font-bold tracking-tighter">
+                    Saldo insuficiente para resgate
+                  </p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        ) : (
+          <>
+            {/* Podium */}
         <Card className="glass-card overflow-hidden">
           <CardHeader className="pb-2 bg-gradient-to-r from-amber-500/10 via-gray-500/10 to-orange-500/10">
             <CardTitle className="flex items-center gap-2">
