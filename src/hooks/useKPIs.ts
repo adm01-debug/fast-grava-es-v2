@@ -202,6 +202,22 @@ export function useKPIs(): { data: KPIData | null; isLoading: boolean } {
       ? productivityByTechnique.reduce((sum, t) => sum + t.occupancyRate, 0) / productivityByTechnique.length
       : 0;
 
+    // Performance history (Mocked for visualization based on current data)
+    const performanceHistory = Array.from({ length: 7 }, (_, i) => {
+      const date = new Date();
+      date.setDate(date.getDate() - (6 - i));
+      const dateStr = date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+      
+      // Add some variance to the metrics based on current values
+      const variance = 0.85 + (Math.random() * 0.3); // 85% to 115% of current
+      return {
+        date: dateStr,
+        efficiency: Math.min(100, averageOccupancy * variance),
+        productivity: Math.round(completedPieces / 7 * variance),
+        lossRate: Math.max(0, lossRate * (0.5 + Math.random())),
+      };
+    });
+
     return {
       totalJobs,
       completedJobs,
@@ -215,6 +231,7 @@ export function useKPIs(): { data: KPIData | null; isLoading: boolean } {
       productivityByMachine,
       productivityByTechnique,
       todayStats,
+      performanceHistory,
       estimatedRevenue: completedPieces * 2.5, // Mock $2.5 per piece
       costOfLosses: lostPieces * 1.8, // Mock $1.8 loss per piece
     };
