@@ -50,7 +50,8 @@ import {
   MessageCircle,
   FileText,
   Brain,
-  Users
+  Users,
+  ShieldCheck
 } from 'lucide-react';
 
 
