@@ -343,7 +343,16 @@ export default function KPIDashboard() {
                         <div className="min-w-0 flex-1">
                           <p className="text-xs sm:text-sm text-muted-foreground">Ocupação Média</p>
                           <p className="text-2xl sm:text-3xl font-bold">{kpis.averageOccupancy.toFixed(1)}%</p>
-                          <p className="text-xs text-muted-foreground mt-1">das máquinas em uso</p>
+                          <div className="flex items-center gap-1.5 mt-0.5">
+                            <Badge variant="outline" className={cn(
+                              "h-5 px-1 text-[10px] gap-0.5 border-none bg-transparent",
+                              kpis.comparison.occupancyDiff >= 0 ? "text-green-400" : "text-primary"
+                            )}>
+                              {kpis.comparison.occupancyDiff >= 0 ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
+                              {Math.abs(kpis.comparison.occupancyDiff).toFixed(1)}%
+                            </Badge>
+                            <span className="text-[10px] text-muted-foreground">vs anterior</span>
+                          </div>
                         </div>
                         <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl bg-cyan-500/20 flex items-center justify-center flex-shrink-0">
                           <Factory className="h-5 w-5 sm:h-6 sm:w-6 text-cyan-400" />
