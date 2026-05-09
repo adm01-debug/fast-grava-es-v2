@@ -19,8 +19,8 @@ interface DroppableColumnProps {
   icon: React.ElementType;
   color: string;
   jobs: DbJob[];
-  getTechniqueById: (id: string) => { id: string; name: string; short_name: string; color: string; setup_time: number } | undefined;
-  getMachineById: (id: string) => { id: string; code: string; name: string; technique_id: string; is_active: boolean } | undefined;
+  getTechniqueById: (id: string) => DbTechnique | undefined;
+  getMachineById: (id: string) => DbMachine | undefined;
   onJobClick: (job: DbJob) => void;
   wipLimit?: number;
   viewMode?: ViewMode;
