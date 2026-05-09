@@ -304,6 +304,8 @@ export default function GamificationPage() {
             </CardContent>
           </Card>
         </div>
+        </>
+        )}
       </div>
     </MainLayout>
   );
