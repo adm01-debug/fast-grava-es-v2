@@ -148,7 +148,7 @@ export function useInventory() {
       const { data: item } = await supabase
         .from('inventory_items')
         .select('current_stock')
-        .eq('id', movement.item_id)
+        .eq('id', movement.item_id!)
         .single();
 
       if (item) {
