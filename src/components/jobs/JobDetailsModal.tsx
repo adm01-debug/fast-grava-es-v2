@@ -317,6 +317,10 @@ export function JobDetailsModal({ job, open, onOpenChange, onStatusChange }: Job
             <JobCostsTab jobId={job.id} />
           </TabsContent>
 
+          <TabsContent value="traceability">
+            <JobTraceabilityTab jobId={job.id} />
+          </TabsContent>
+
           <TabsContent value="history">
             <JobHistoryTab jobId={job.id} />
           </TabsContent>
