@@ -135,7 +135,7 @@ export function OperatorGoalsTab({ operatorId }: OperatorGoalsTabProps) {
                 <Progress 
                   value={goal.progress_percentage} 
                   className="h-1.5" 
-                  indicatorClassName={goal.is_achieved ? "bg-success" : "bg-primary"}
+                  variant={goal.is_achieved ? "success" : "default"}
                 />
               </div>
             </CardContent>
