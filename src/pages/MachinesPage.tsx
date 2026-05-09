@@ -20,6 +20,7 @@ import { CreateScheduleModal } from '@/components/tpm/CreateScheduleModal';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { MachineReliabilityTab } from '@/components/machines/MachineReliabilityTab';
+import { useMTBFMTTR } from '@/hooks/useMTBFMTTR';
 
 export default function MachinesPage() {
   const { machines, techniques, isLoadingMachines, getTechniqueById } = useSchedulingData();
