@@ -433,7 +433,7 @@ function InventoryHistoryTable() {
             </DialogTitle>
             <DialogDescription>
               Tem certeza que deseja remover este registro e reverter o impacto no sistema? 
-              O saldo do estoque NÃO será ajustado automaticamente, apenas o histórico será removido.
+              O saldo do estoque será ajustado automaticamente para refletir a reversão desta operação.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="flex gap-2">

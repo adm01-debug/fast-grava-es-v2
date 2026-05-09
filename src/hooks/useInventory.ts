@@ -72,6 +72,8 @@ export function useInventory() {
   const createMovementMutation = useMutation({
     mutationFn: async (movement: Omit<InventoryMovement, 'id' | 'created_at' | 'user_id'>) => {
       const { data: { user } } = await supabase.auth.getUser();
+      
+      // 1. Record movement
       const { data, error } = await supabase
         .from('inventory_movements')
         .insert([{ ...movement, user_id: user?.id }])
@@ -79,6 +81,28 @@ export function useInventory() {
         .single();
 
       if (error) throw error;
+
+      // 2. Update actual stock in inventory_items
+      const { data: item } = await supabase
+        .from('inventory_items')
+        .select('current_stock')
+        .eq('id', movement.item_id)
+        .single();
+
+      if (item) {
+        let newStock = item.current_stock;
+        if (movement.type === 'IN') newStock += movement.quantity;
+        if (movement.type === 'OUT') newStock -= movement.quantity;
+        if (movement.type === 'ADJUST') newStock = movement.quantity;
+
+        const { error: updateError } = await supabase
+          .from('inventory_items')
+          .update({ current_stock: newStock })
+          .eq('id', movement.item_id!);
+          
+        if (updateError) throw updateError;
+      }
+
       return data;
     },
     onSuccess: () => {
@@ -111,7 +135,7 @@ export function useInventory() {
 
   const deleteMovementMutation = useMutation({
     mutationFn: async (movementId: string) => {
-      // Get movement details first for rollback logic if needed
+      // 1. Get movement details first for rollback logic
       const { data: movement, error: fetchError } = await supabase
         .from('inventory_movements')
         .select('*')
@@ -120,6 +144,29 @@ export function useInventory() {
       
       if (fetchError) throw fetchError;
 
+      // 2. Rollback stock change in inventory_items
+      const { data: item } = await supabase
+        .from('inventory_items')
+        .select('current_stock')
+        .eq('id', movement.item_id!)
+        .single();
+
+      if (item) {
+        let restoredStock = item.current_stock;
+        if (movement.type === 'IN') restoredStock -= movement.quantity;
+        if (movement.type === 'OUT') restoredStock += movement.quantity;
+        // ADJUST is harder to rollback perfectly without historical snapshots, 
+        // but for IN/OUT it's straightforward.
+
+        const { error: updateError } = await supabase
+          .from('inventory_items')
+          .update({ current_stock: restoredStock })
+          .eq('id', movement.item_id!);
+          
+        if (updateError) throw updateError;
+      }
+
+      // 3. Delete the movement record
       const { error: deleteError } = await supabase
         .from('inventory_movements')
         .delete()
@@ -141,6 +188,12 @@ export function useInventory() {
 
   const transferItemsMutation = useMutation({
     mutationFn: async ({ fromLocation, toLocation, itemIds }: { fromLocation: string, toLocation: string, itemIds: string[] }) => {
+      // Validate location format (e.g., A1, B4)
+      const locationRegex = /^[A-Z][0-9]+$/;
+      if (!locationRegex.test(toLocation)) {
+        throw new Error('Formato de localização inválido. Use letra maiúscula e número (ex: A1).');
+      }
+
       const { data: { user } } = await supabase.auth.getUser();
       
       const results = await Promise.all(itemIds.map(async (itemId) => {

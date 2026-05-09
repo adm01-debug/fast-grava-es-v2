@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
+import { TrendingUp, TrendingDown } from 'lucide-react';
 
 interface OEEGaugeCardProps {
   title: string;
@@ -9,6 +10,7 @@ interface OEEGaugeCardProps {
   description?: string;
   benchmark?: number;
   size?: 'sm' | 'md' | 'lg';
+  trend?: number;
 }
 
 export function OEEGaugeCard({ 
@@ -17,7 +19,8 @@ export function OEEGaugeCard({
   icon, 
   description,
   benchmark = 85,
-  size = 'md'
+  size = 'md',
+  trend
 }: OEEGaugeCardProps) {
   const gaugeData = useMemo(() => {
     const percentage = Math.min(100, Math.max(0, value));
@@ -97,14 +100,24 @@ export function OEEGaugeCard({
           
           {/* Value text */}
           <div className="absolute inset-0 flex items-end justify-center pb-2">
-            <span className={cn("font-bold font-display", config.text)} style={{ color: gaugeData.color }}>
+            <span className={cn("font-bold font-display leading-none", config.text)} style={{ color: gaugeData.color }}>
               {value.toFixed(1)}%
             </span>
           </div>
         </div>
+
+        {trend !== undefined && (
+          <div className={cn(
+            "flex items-center gap-1 text-[10px] font-black uppercase px-2 py-0.5 rounded-full mt-1",
+            trend > 0 ? "bg-success/10 text-success" : trend < 0 ? "bg-destructive/10 text-destructive" : "bg-muted text-muted-foreground"
+          )}>
+            {trend > 0 ? <TrendingUp className="h-3 w-3" /> : trend < 0 ? <TrendingDown className="h-3 w-3" /> : null}
+            {trend > 0 ? "+" : ""}{trend.toFixed(1)}% MoM
+          </div>
+        )}
         
         {description && (
-          <p className="text-xs text-muted-foreground text-center mt-2">{description}</p>
+          <p className="text-[10px] text-muted-foreground text-center mt-2 leading-tight px-2">{description}</p>
         )}
         
         {/* Scale labels */}
