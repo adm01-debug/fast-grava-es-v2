@@ -37,6 +37,7 @@ import { TraceabilityStatsCards } from '@/components/traceability/TraceabilitySt
 import { LotQRCode } from '@/components/traceability/LotQRCode';
 import { LotLabelPrint } from '@/components/traceability/LotLabelPrint';
 import { VoiceButton } from '@/components/voice/VoiceCommands';
+import { BlockchainIntegrityCard } from '@/components/traceability/BlockchainIntegrityCard';
 import { toast } from 'sonner';
 
 const STATUS_CONFIG: Record<string, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }> = {
@@ -218,9 +219,9 @@ export default function TraceabilityPage() {
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-3">
-              <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
-                <Package className="h-8 w-8" />
-                Rastreabilidade de Produtos
+              <h1 className="text-3xl font-display font-black tracking-tighter flex items-center gap-3">
+                <Package className="h-8 w-8 text-primary animate-float" />
+                Hyper-Traceability 13/10 (Blockchain IA)
               </h1>
               <FavoriteButton path="/traceability" name="Rastreabilidade" />
             </div>
@@ -318,8 +319,15 @@ export default function TraceabilityPage() {
           </div>
         </div>
 
-        {/* Stats Cards */}
-        <TraceabilityStatsCards lots={lots || []} />
+        {/* Stats & Integrity */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          <div className="lg:col-span-3">
+             <TraceabilityStatsCards lots={lots || []} />
+          </div>
+          <div className="lg:col-span-1">
+             <BlockchainIntegrityCard />
+          </div>
+        </div>
 
         {/* Bulk Actions Bar */}
         {selectedIds.size > 0 && (

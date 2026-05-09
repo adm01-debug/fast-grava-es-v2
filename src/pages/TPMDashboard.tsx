@@ -29,6 +29,7 @@ import { toast } from 'sonner';
 import { VoiceButton } from '@/components/voice/VoiceCommands';
 import { PredictiveHealthCard } from '@/components/tpm/PredictiveHealthCard';
 import { VirtualSensorPanel } from '@/components/tpm/VirtualSensorPanel';
+import { HolographicReliabilityWidget } from '@/components/tpm/HolographicReliabilityWidget';
 
 export default function TPMDashboard() {
   const navigate = useNavigate();
@@ -117,8 +118,8 @@ export default function TPMDashboard() {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 animate-fade-in">
           <div>
             <div className="flex items-center gap-3">
-              <h1 className="text-3xl font-display font-bold">
-                <span className="gradient-text animate-pulse-glow">TPM - Manutenção Preventiva</span>
+              <h1 className="text-3xl font-display font-black tracking-tighter">
+                <span className="gradient-text animate-pulse-glow">TPM 5.0 - Holographic Reliability 13/10</span>
               </h1>
               <FavoriteButton 
                 path="/tpm" 
@@ -293,6 +294,7 @@ export default function TPMDashboard() {
           <TabsContent value="predictive" className="space-y-6 animate-fade-in">
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
               <div className="lg:col-span-1 space-y-6">
+                <HolographicReliabilityWidget />
                 <PredictiveHealthCard machineId={machines[0]?.id} />
                 <Card className="glass-card">
                   <CardContent className="pt-6">
