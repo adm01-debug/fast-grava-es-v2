@@ -328,7 +328,7 @@ export default function ExecutiveDashboard() {
         </div>
 
         {/* KPI Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
           {kpiCards.map((kpi, index) => (
             <Card key={index} className="glass-card hover:border-primary/30 transition-all cursor-default">
               <CardContent className="p-4">
