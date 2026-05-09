@@ -292,7 +292,7 @@ export default function KPIDashboard() {
                   title="Taxa de Conclusão" 
                   description="Percentual de jobs finalizados em relação ao total."
                   formula="Jobs Concluídos / Total de Jobs"
-                  target="≥ 95%"
+                  target={`≥ ${kpis.targets.completionRate}%`}
                 >
                   <Card className="glass-card hover-scale relative overflow-hidden group">
                     <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
