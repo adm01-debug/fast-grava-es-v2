@@ -37,6 +37,7 @@ import { LeaderboardWidget } from '@/components/dashboard/LeaderboardWidget';
 import { OperatorGoalsWidget } from '@/components/dashboard/OperatorGoalsWidget';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { DashboardExport } from '@/components/dashboard/DashboardExport';
 
 import { 
   Calendar, 
