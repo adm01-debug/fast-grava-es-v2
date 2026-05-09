@@ -311,6 +311,15 @@ export default function ExecutiveDashboard() {
                 </SelectContent>
               </Select>
 
+              <div className="flex items-center gap-2 px-3 h-11 rounded-xl glass-card border border-primary/10">
+                <Switch 
+                  id="comparison-mode" 
+                  checked={showComparison} 
+                  onCheckedChange={setShowComparison}
+                />
+                <Label htmlFor="comparison-mode" className="text-[10px] font-bold uppercase cursor-pointer whitespace-nowrap">Comparar</Label>
+              </div>
+
               <div className="flex gap-1">
                 <Button onClick={handleExportPDF} variant="outline" size="icon" className="h-11 w-11 rounded-xl border-primary/20 hover:bg-primary/10" title="Exportar PDF">
                   <FileDown className="h-4 w-4" />
