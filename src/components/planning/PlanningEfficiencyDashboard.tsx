@@ -78,22 +78,25 @@ export function PlanningEfficiencyDashboard() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
       {/* Efficiency Score */}
-      <Card className="glass-card overflow-hidden group border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
+      <Card className="glass-card overflow-hidden group border-primary/20 bg-gradient-to-br from-primary/5 to-transparent relative">
+        <div className="absolute top-0 right-0 p-3 opacity-5 group-hover:opacity-10 transition-opacity">
+           <BrainCircuit className="h-16 w-16 text-primary" />
+        </div>
         <CardContent className="p-4">
           <div className="flex items-center justify-between mb-2">
             <div className="p-2 bg-primary/10 rounded-lg group-hover:bg-primary/20 transition-colors">
               <Target className="h-5 w-5 text-primary" />
             </div>
-            <div className="flex items-center gap-1 text-[10px] font-bold text-primary animate-pulse">
-              <Sparkles className="h-3 w-3" />
-              OTIMIZAÇÃO 10/10
+            <div className="flex items-center gap-1 text-[9px] font-black text-primary animate-pulse tracking-tighter">
+              <Sparkles className="h-2.5 w-2.5" />
+              AI-DRIVEN ENGINE
             </div>
           </div>
-          <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider mb-1">Score de Planejamento</p>
+          <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest mb-1">Score de Planejamento</p>
           <div className="flex items-end gap-2 mb-3">
-            <h3 className="text-3xl font-bold font-display">{stats.efficiencyScore}%</h3>
-            <div className="text-[10px] text-green-400 font-bold flex items-center mb-1">
-              <ArrowUpRight className="h-3 w-3 mr-0.5" />
+            <h3 className="text-3xl font-black font-display tracking-tighter">{stats.efficiencyScore}%</h3>
+            <div className="text-[10px] text-emerald-400 font-bold flex items-center mb-1 bg-emerald-500/10 px-1.5 py-0.5 rounded-full border border-emerald-500/20">
+              <ArrowUpRight className="h-2.5 w-2.5 mr-0.5" />
               +2.4%
             </div>
           </div>
