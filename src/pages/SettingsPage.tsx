@@ -35,13 +35,21 @@ function useAlertThresholds() {
     const stored = localStorage.getItem('alert-thresholds');
     return stored ? JSON.parse(stored) : { lowBuffer: 30, criticalBuffer: 10, delayedJobMinutes: 60, oeeWarning: 70, oeeCritical: 50, energyPeakKw: 100, bottleneckRiskMinutes: 480, estimatedLoadLimitPercentage: 90 };
   });
+
+  const [entityThresholds, setEntityThresholds] = useState<Record<string, number>>(() => {
+    const stored = localStorage.getItem('entity-thresholds');
+    return stored ? JSON.parse(stored) : {};
+  });
+
   useEffect(() => { localStorage.setItem('alert-thresholds', JSON.stringify(thresholds)); }, [thresholds]);
-  return [thresholds, setThresholds] as const;
+  useEffect(() => { localStorage.setItem('entity-thresholds', JSON.stringify(entityThresholds)); }, [entityThresholds]);
+
+  return [thresholds, setThresholds, entityThresholds, setEntityThresholds] as const;
 }
 
 export default function SettingsPage() {
   const [settings, setSettings] = usePersistedSettings();
-  const [thresholds, setThresholds] = useAlertThresholds();
+  const [thresholds, setThresholds, entityThresholds, setEntityThresholds] = useAlertThresholds();
 
   const handleSettingChange = (key: string, value: boolean) => {
     setSettings((prev: typeof settings) => ({ ...prev, [key]: value }));
@@ -51,7 +59,10 @@ export default function SettingsPage() {
   const handleThresholdChange = (key: string, value: number) => {
     setThresholds((prev: typeof thresholds) => ({ ...prev, [key]: value }));
   };
-
+  const handleEntityThresholdChange = (entityId: string, value: number) => {
+    setEntityThresholds((prev: Record<string, number>) => ({ ...prev, [entityId]: value }));
+    toast.success('Limite específico aplicado!');
+  };
   const handleExportData = async () => {
     toast.loading('Exportando dados...', { id: 'export' });
     try {
@@ -87,7 +98,7 @@ export default function SettingsPage() {
           <TabsContent value="general"><SettingsGeneralTab settings={settings} onSettingChange={handleSettingChange} /></TabsContent>
           <TabsContent value="security" className="space-y-4"><TwoFactorSetup /><IPAllowlist /><LoginAuditLog /></TabsContent>
           <TabsContent value="notifications"><SettingsNotificationsTab settings={settings} onSettingChange={handleSettingChange} /></TabsContent>
-          <TabsContent value="alerts"><SettingsAlertsTab thresholds={thresholds} onThresholdChange={handleThresholdChange} onSave={() => toast.success('Limites de alerta salvos!')} onReset={() => { setThresholds({ lowBuffer: 30, criticalBuffer: 10, delayedJobMinutes: 60, oeeWarning: 70, oeeCritical: 50, energyPeakKw: 100, bottleneckRiskMinutes: 480, estimatedLoadLimitPercentage: 90 }); toast.success('Limites restaurados para padrão'); }} /></TabsContent>
+          <TabsContent value="alerts"><SettingsAlertsTab thresholds={thresholds} entityThresholds={entityThresholds} onThresholdChange={handleThresholdChange} onEntityThresholdChange={handleEntityThresholdChange} onSave={() => toast.success('Limites de alerta salvos!')} onReset={() => { setThresholds({ lowBuffer: 30, criticalBuffer: 10, delayedJobMinutes: 60, oeeWarning: 70, oeeCritical: 50, energyPeakKw: 100, bottleneckRiskMinutes: 480, estimatedLoadLimitPercentage: 90 }); setEntityThresholds({}); toast.success('Limites restaurados para padrão'); }} /></TabsContent>
           <TabsContent value="users" className="space-y-4"><UserManagement /><PasswordResetRequests /></TabsContent>
           <TabsContent value="backup"><SettingsBackupTab onExportData={handleExportData} /></TabsContent>
           <TabsContent value="integrations"><IntegrationHub /></TabsContent>
