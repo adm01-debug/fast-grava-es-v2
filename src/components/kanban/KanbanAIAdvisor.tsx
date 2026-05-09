@@ -159,8 +159,15 @@ export function KanbanAIAdvisor() {
           <DialogFooter>
             <Button variant="ghost" onClick={() => setShowSettings(false)}>Cancelar</Button>
             <Button onClick={() => {
+              localStorage.setItem('alert-thresholds', JSON.stringify({
+                bottleneckHigh: thresholds.bottleneckHigh,
+                bottleneckRiskMinutes: thresholds.bottleneckMedium // Sync with DroppableColumn key
+              }));
               toast.success("Configurações de alerta salvas!");
               setShowSettings(false);
+              // Trigger reload or state sync if needed, but since it's in localStorage, 
+              // other components will pick it up on next render/mount.
+              window.location.reload(); // Quick way to sync across all components
             }}>Salvar Configurações</Button>
           </DialogFooter>
         </DialogContent>
