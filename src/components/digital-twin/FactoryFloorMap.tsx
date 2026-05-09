@@ -119,16 +119,30 @@ export function FactoryFloorMap() {
                     </div>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <div className="space-y-2 p-1">
+                    <div className="space-y-2 p-1 max-w-[200px]">
                       <p className="font-bold text-xs uppercase border-b pb-1 mb-1">{machine.name}</p>
-                      <div className="flex items-center gap-4 text-[10px] font-bold">
-                        <div className="flex items-center gap-1">
-                          <Activity className="h-3 w-3 text-primary" /> {status.efficiency}% OEE
+                      {isWorking ? (
+                        <div className="space-y-2">
+                           <div className="p-1.5 rounded bg-primary/10 border border-primary/20">
+                              <p className="text-[10px] font-black text-primary uppercase">OP em Andamento</p>
+                              <p className="text-[10px] font-bold truncate">{activeJobs[machine.id]?.title || 'Sem título'}</p>
+                              <div className="flex items-center justify-between mt-1">
+                                <span className="text-[8px] text-muted-foreground">Progresso</span>
+                                <span className="text-[8px] font-black">{activeJobs[machine.id]?.progress || 0}%</span>
+                              </div>
+                           </div>
+                           <div className="flex items-center gap-4 text-[10px] font-bold">
+                            <div className="flex items-center gap-1">
+                              <Activity className="h-3 w-3 text-primary" /> {status.efficiency}% OEE
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <Thermometer className="h-3 w-3 text-amber-500" /> {status.temp}°C
+                            </div>
+                          </div>
                         </div>
-                        <div className="flex items-center gap-1">
-                          <Thermometer className="h-3 w-3 text-amber-500" /> {status.temp}°C
-                        </div>
-                      </div>
+                      ) : (
+                        <p className="text-[10px] italic text-muted-foreground">Equipamento em Standby ou Setup</p>
+                      )}
                     </div>
                   </TooltipContent>
                 </Tooltip>
