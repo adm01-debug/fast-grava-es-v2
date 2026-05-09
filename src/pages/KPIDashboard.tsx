@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Switch } from '@/components/ui/switch';
 import { useKPIs, formatDuration } from '@/hooks/useKPIs';
 import { useOperatorProductivity } from '@/hooks/useOperatorProductivity';
 import { useGoalAlerts } from '@/hooks/useGoalAlerts';
@@ -66,6 +67,12 @@ export default function KPIDashboard() {
   const { goalAlerts } = useGoalAlerts({ enableNotifications: false });
   const { handleExport } = useBIExport({ periodJobsList: [] });
   const [searchTerm, setSearchTerm] = useState('');
+  const [visibleKPIs, setVisibleKPIs] = useState({
+    completion: true,
+    occupancy: true,
+    loss: true,
+    delayed: true
+  });
 
   const isLoading = isLoadingKPIs || isLoadingOperators;
 
@@ -146,9 +153,48 @@ export default function KPIDashboard() {
               <Calendar className="h-4 w-4" />
               Últimos 7 dias
             </Button>
-            <Button variant="outline" size="icon" className="glass-button h-9 w-9">
-              <Filter className="h-4 w-4" />
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="icon" className="glass-button h-9 w-9">
+                  <Settings2 className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuLabel>Personalizar Dashboard</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <div className="p-2 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs">Taxa de Conclusão</span>
+                    <Switch 
+                      checked={visibleKPIs.completion} 
+                      onCheckedChange={(val) => setVisibleKPIs(prev => ({ ...prev, completion: val }))}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs">Ocupação Média</span>
+                    <Switch 
+                      checked={visibleKPIs.occupancy} 
+                      onCheckedChange={(val) => setVisibleKPIs(prev => ({ ...prev, occupancy: val }))}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs">Índice de Perdas</span>
+                    <Switch 
+                      checked={visibleKPIs.loss} 
+                      onCheckedChange={(val) => setVisibleKPIs(prev => ({ ...prev, loss: val }))}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs">Jobs Atrasados</span>
+                    <Switch 
+                      checked={visibleKPIs.delayed} 
+                      onCheckedChange={(val) => setVisibleKPIs(prev => ({ ...prev, delayed: val }))}
+                    />
+                  </div>
+                </div>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
             <VoiceButton />
           </div>
         </div>
@@ -166,116 +212,130 @@ export default function KPIDashboard() {
           <TabsContent value="overview" className="space-y-6">
             {/* Main Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
-              <KPITooltip 
-                title="Taxa de Conclusão" 
-                description="Percentual de jobs finalizados em relação ao total."
-                formula="Jobs Concluídos / Total de Jobs"
-                target="≥ 95%"
-              >
-                <Card className="glass-card hover-scale relative overflow-hidden group">
-                  <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Button variant="ghost" size="icon" className="h-6 w-6"><Settings2 className="h-3 w-3" /></Button>
-                  </div>
-                  <CardContent className="pt-4 sm:pt-6">
-                    <div className="flex items-center justify-between gap-2">
-                      <div className="min-w-0 flex-1">
-                        <p className="text-xs sm:text-sm text-muted-foreground">Taxa de Conclusão</p>
-                        <p className="text-2xl sm:text-3xl font-bold">{completionRate.toFixed(1)}%</p>
-                        <p className="text-xs text-muted-foreground mt-1 truncate">
-                          {kpis.completedJobs} de {kpis.totalJobs} jobs
-                        </p>
-                      </div>
-                      <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl bg-green-500/20 flex items-center justify-center flex-shrink-0">
-                        <CheckCircle2 className="h-5 w-5 sm:h-6 sm:w-6 text-green-400" />
-                      </div>
+              {visibleKPIs.completion && (
+                <KPITooltip 
+                  title="Taxa de Conclusão" 
+                  description="Percentual de jobs finalizados em relação ao total."
+                  formula="Jobs Concluídos / Total de Jobs"
+                  target="≥ 95%"
+                >
+                  <Card className="glass-card hover-scale relative overflow-hidden group">
+                    <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Button variant="ghost" size="icon" className="h-6 w-6"><Settings2 className="h-3 w-3" /></Button>
                     </div>
-                    <Progress value={completionRate} className="mt-3 h-2 [&>div]:bg-green-500" />
-                  </CardContent>
-                </Card>
-              </KPITooltip>
+                    <CardContent className="pt-4 sm:pt-6">
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="min-w-0 flex-1">
+                          <p className="text-xs sm:text-sm text-muted-foreground">Taxa de Conclusão</p>
+                          <p className="text-2xl sm:text-3xl font-bold">{completionRate.toFixed(1)}%</p>
+                          <p className="text-xs text-muted-foreground mt-1 truncate">
+                            {kpis.completedJobs} de {kpis.totalJobs} jobs
+                          </p>
+                        </div>
+                        <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl bg-green-500/20 flex items-center justify-center flex-shrink-0">
+                          <CheckCircle2 className="h-5 w-5 sm:h-6 sm:w-6 text-green-400" />
+                        </div>
+                      </div>
+                      <div className="relative mt-3">
+                        <Progress value={completionRate} className="h-2 [&>div]:bg-green-500" />
+                        <div className="absolute top-[-4px] left-[95%] w-[2px] h-4 bg-foreground/20" title="Meta: 95%" />
+                      </div>
+                    </CardContent>
+                  </Card>
+                </KPITooltip>
+              )}
 
-              <KPITooltip 
-                title="Ocupação Média" 
-                description="Percentual médio de utilização das máquinas."
-                formula="Tempo em Uso / Tempo Disponível"
-                target="≥ 80%"
-              >
-                <Card className="glass-card hover-scale group">
-                  <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Button variant="ghost" size="icon" className="h-6 w-6"><Settings2 className="h-3 w-3" /></Button>
-                  </div>
-                  <CardContent className="pt-4 sm:pt-6">
-                    <div className="flex items-center justify-between gap-2">
-                      <div className="min-w-0 flex-1">
-                        <p className="text-xs sm:text-sm text-muted-foreground">Ocupação Média</p>
-                        <p className="text-2xl sm:text-3xl font-bold">{kpis.averageOccupancy.toFixed(1)}%</p>
-                        <p className="text-xs text-muted-foreground mt-1">das máquinas em uso</p>
-                      </div>
-                      <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl bg-cyan-500/20 flex items-center justify-center flex-shrink-0">
-                        <Factory className="h-5 w-5 sm:h-6 sm:w-6 text-cyan-400" />
-                      </div>
+              {visibleKPIs.occupancy && (
+                <KPITooltip 
+                  title="Ocupação Média" 
+                  description="Percentual médio de utilização das máquinas."
+                  formula="Tempo em Uso / Tempo Disponível"
+                  target="≥ 80%"
+                >
+                  <Card className="glass-card hover-scale group">
+                    <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Button variant="ghost" size="icon" className="h-6 w-6"><Settings2 className="h-3 w-3" /></Button>
                     </div>
-                    <Progress value={kpis.averageOccupancy} className="mt-3 h-2 [&>div]:bg-cyan-500" />
-                  </CardContent>
-                </Card>
-              </KPITooltip>
+                    <CardContent className="pt-4 sm:pt-6">
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="min-w-0 flex-1">
+                          <p className="text-xs sm:text-sm text-muted-foreground">Ocupação Média</p>
+                          <p className="text-2xl sm:text-3xl font-bold">{kpis.averageOccupancy.toFixed(1)}%</p>
+                          <p className="text-xs text-muted-foreground mt-1">das máquinas em uso</p>
+                        </div>
+                        <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl bg-cyan-500/20 flex items-center justify-center flex-shrink-0">
+                          <Factory className="h-5 w-5 sm:h-6 sm:w-6 text-cyan-400" />
+                        </div>
+                      </div>
+                      <div className="relative mt-3">
+                        <Progress value={kpis.averageOccupancy} className="h-2 [&>div]:bg-cyan-500" />
+                        <div className="absolute top-[-4px] left-[80%] w-[2px] h-4 bg-foreground/20" title="Meta: 80%" />
+                      </div>
+                    </CardContent>
+                  </Card>
+                </KPITooltip>
+              )}
 
-              <KPITooltip {...KPI_DEFINITIONS.lossRate}>
-                <Card className="glass-card hover-scale group">
-                  <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Button variant="ghost" size="icon" className="h-6 w-6"><Settings2 className="h-3 w-3" /></Button>
-                  </div>
+              {visibleKPIs.loss && (
+                <KPITooltip {...KPI_DEFINITIONS.lossRate}>
+                  <Card className="glass-card hover-scale group">
+                    <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Button variant="ghost" size="icon" className="h-6 w-6"><Settings2 className="h-3 w-3" /></Button>
+                    </div>
+                    <CardContent className="pt-4 sm:pt-6">
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="min-w-0 flex-1">
+                          <p className="text-xs sm:text-sm text-muted-foreground">Índice de Perdas</p>
+                          <p className={cn(
+                            "text-2xl sm:text-3xl font-bold",
+                            kpis.lossRate > 5 ? "text-primary" : kpis.lossRate > 2 ? "text-amber-400" : "text-green-400"
+                          )}>
+                            {kpis.lossRate.toFixed(2)}%
+                          </p>
+                          <p className="text-xs text-muted-foreground mt-1 truncate">
+                            {kpis.lostPieces.toLocaleString()} peças perdidas
+                          </p>
+                        </div>
+                        <div className={cn(
+                          "h-10 w-10 sm:h-12 sm:w-12 rounded-xl flex items-center justify-center flex-shrink-0",
+                          kpis.lossRate > 5 ? "bg-primary/20" : kpis.lossRate > 2 ? "bg-amber-500/20" : "bg-green-500/20"
+                        )}>
+                          {kpis.lossRate > 2 ? (
+                            <TrendingDown className={cn("h-5 w-5 sm:h-6 sm:w-6", kpis.lossRate > 5 ? "text-primary" : "text-amber-400")} />
+                          ) : (
+                            <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 text-green-400" />
+                          )}
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </KPITooltip>
+              )}
+
+              {visibleKPIs.delayed && (
+                <Card className="glass-card hover-scale">
                   <CardContent className="pt-4 sm:pt-6">
                     <div className="flex items-center justify-between gap-2">
                       <div className="min-w-0 flex-1">
-                        <p className="text-xs sm:text-sm text-muted-foreground">Índice de Perdas</p>
+                        <p className="text-xs sm:text-sm text-muted-foreground">Jobs Atrasados</p>
                         <p className={cn(
                           "text-2xl sm:text-3xl font-bold",
-                          kpis.lossRate > 5 ? "text-primary" : kpis.lossRate > 2 ? "text-amber-400" : "text-green-400"
+                          kpis.delayedJobs > 0 ? "text-primary" : "text-green-400"
                         )}>
-                          {kpis.lossRate.toFixed(2)}%
+                          {kpis.delayedJobs}
                         </p>
-                        <p className="text-xs text-muted-foreground mt-1 truncate">
-                          {kpis.lostPieces.toLocaleString()} peças perdidas
-                        </p>
+                        <p className="text-xs text-muted-foreground mt-1">requerem atenção</p>
                       </div>
                       <div className={cn(
                         "h-10 w-10 sm:h-12 sm:w-12 rounded-xl flex items-center justify-center flex-shrink-0",
-                        kpis.lossRate > 5 ? "bg-primary/20" : kpis.lossRate > 2 ? "bg-amber-500/20" : "bg-green-500/20"
+                        kpis.delayedJobs > 0 ? "bg-primary/20" : "bg-green-500/20"
                       )}>
-                        {kpis.lossRate > 2 ? (
-                          <TrendingDown className={cn("h-5 w-5 sm:h-6 sm:w-6", kpis.lossRate > 5 ? "text-primary" : "text-amber-400")} />
-                        ) : (
-                          <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 text-green-400" />
-                        )}
+                        <AlertTriangle className={cn("h-5 w-5 sm:h-6 sm:w-6", kpis.delayedJobs > 0 ? "text-primary" : "text-green-400")} />
                       </div>
                     </div>
                   </CardContent>
                 </Card>
-              </KPITooltip>
-
-              <Card className="glass-card hover-scale">
-                <CardContent className="pt-4 sm:pt-6">
-                  <div className="flex items-center justify-between gap-2">
-                    <div className="min-w-0 flex-1">
-                      <p className="text-xs sm:text-sm text-muted-foreground">Jobs Atrasados</p>
-                      <p className={cn(
-                        "text-2xl sm:text-3xl font-bold",
-                        kpis.delayedJobs > 0 ? "text-primary" : "text-green-400"
-                      )}>
-                        {kpis.delayedJobs}
-                      </p>
-                      <p className="text-xs text-muted-foreground mt-1">requerem atenção</p>
-                    </div>
-                    <div className={cn(
-                      "h-10 w-10 sm:h-12 sm:w-12 rounded-xl flex items-center justify-center flex-shrink-0",
-                      kpis.delayedJobs > 0 ? "bg-primary/20" : "bg-green-500/20"
-                    )}>
-                      <AlertTriangle className={cn("h-5 w-5 sm:h-6 sm:w-6", kpis.delayedJobs > 0 ? "text-primary" : "text-green-400")} />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              )}
             </div>
 
             {/* Performance Evolution (Historical) */}
@@ -318,6 +378,16 @@ export default function KPIDashboard() {
                       />
                       <Area type="monotone" dataKey="efficiency" stroke="#10B981" fillOpacity={1} fill="url(#colorEff)" name="Eficiência (%)" />
                       <Area type="monotone" dataKey="productivity" stroke="#06B6D4" fillOpacity={1} fill="url(#colorProd)" name="Produtividade (peças)" />
+                      {/* Target line for efficiency */}
+                      <Bar dataKey="none" /> {/* Spacer */}
+                      <Area 
+                        type="step" 
+                        dataKey={() => 85} 
+                        stroke="#94a3b8" 
+                        strokeDasharray="5 5" 
+                        fill="none" 
+                        name="Meta Eficiência (85%)" 
+                      />
                     </AreaChart>
                   </ResponsiveContainer>
                 </div>

@@ -48,8 +48,8 @@ export interface ExecutiveKPIs {
     utilization: number; // % change
   };
   
-  productionTrend: { date: string; produced: number; target: number }[];
-  efficiencyTrend: { date: string; efficiency: number }[];
+  productionTrend: { date: string; produced: number; target: number; prevProduced?: number }[];
+  efficiencyTrend: { date: string; efficiency: number; prevEfficiency?: number }[];
   techniqueDistribution: { technique: string; count: number; color: string }[];
   topOperators: { name: string; produced: number; efficiency: number }[];
   machinePerformance: { machine: string; utilization: number; oee: number }[];
@@ -129,8 +129,8 @@ export function useExecutiveDashboard(dateRange: DateRange, filters?: { machineI
       };
 
       // Charts and other data
-      const productionTrend = calculateDailyTrend(jobs, dateRange);
-      const efficiencyTrend = calculateEfficiencyTrend(jobs, dateRange);
+      const productionTrend = calculateDailyTrend(jobs, prevJobs, dateRange);
+      const efficiencyTrend = calculateEfficiencyTrend(jobs, prevJobs, dateRange);
       const techniqueDistribution = techniques.map(t => ({
         technique: t.short_name || t.name,
         count: jobs.filter(j => j.technique_id === t.id).length,
@@ -209,14 +209,17 @@ async function fetchPeriodData(startDate: string, endDate: string, filters?: { m
   };
 }
 
-function calculateDailyTrend(jobs: Job[], dateRange: DateRange) {
-  const days: Record<string, { produced: number; target: number }> = {};
+function calculateDailyTrend(jobs: Job[], prevJobs: Job[], dateRange: DateRange) {
+  const days: Record<string, { produced: number; target: number; prevProduced: number }> = {};
+  
+  // Calculate previous period offset in days
+  const duration = differenceInDays(dateRange.end, dateRange.start) + 1;
   
   // Initialize all days in range
-  let current = dateRange.start;
+  let current = new Date(dateRange.start);
   while (current <= dateRange.end) {
     const dateStr = format(current, 'dd/MM');
-    days[dateStr] = { produced: 0, target: 0 };
+    days[dateStr] = { produced: 0, target: 0, prevProduced: 0 };
     current = subDays(current, -1);
   }
   
@@ -225,19 +228,29 @@ function calculateDailyTrend(jobs: Job[], dateRange: DateRange) {
     if (days[date]) {
       days[date].produced += job.produced_quantity || 0;
       days[date].target += job.quantity || 0;
+    }
+  });
+
+  prevJobs.forEach(job => {
+    // Map previous period date to corresponding current period date string
+    const prevDate = new Date(job.created_at);
+    const mappedDate = format(subDays(prevDate, -duration), 'dd/MM');
+    if (days[mappedDate]) {
+      days[mappedDate].prevProduced += job.produced_quantity || 0;
     }
   });
 
   return Object.entries(days).map(([date, data]) => ({ date, ...data }));
 }
 
-function calculateEfficiencyTrend(jobs: Job[], dateRange: DateRange) {
-  const days: Record<string, { produced: number; target: number }> = {};
+function calculateEfficiencyTrend(jobs: Job[], prevJobs: Job[], dateRange: DateRange) {
+  const days: Record<string, { produced: number; target: number; prevProduced: number; prevTarget: number }> = {};
+  const duration = differenceInDays(dateRange.end, dateRange.start) + 1;
   
-  let current = dateRange.start;
+  let current = new Date(dateRange.start);
   while (current <= dateRange.end) {
     const dateStr = format(current, 'dd/MM');
-    days[dateStr] = { produced: 0, target: 0 };
+    days[dateStr] = { produced: 0, target: 0, prevProduced: 0, prevTarget: 0 };
     current = subDays(current, -1);
   }
   
@@ -249,9 +262,19 @@ function calculateEfficiencyTrend(jobs: Job[], dateRange: DateRange) {
     }
   });
 
+  prevJobs.forEach(job => {
+    const prevDate = new Date(job.created_at);
+    const mappedDate = format(subDays(prevDate, -duration), 'dd/MM');
+    if (days[mappedDate]) {
+      days[mappedDate].prevProduced += job.produced_quantity || 0;
+      days[mappedDate].prevTarget += job.quantity || 0;
+    }
+  });
+
   return Object.entries(days).map(([date, data]) => ({
     date,
     efficiency: data.target > 0 ? (data.produced / data.target) * 100 : 0,
+    prevEfficiency: data.prevTarget > 0 ? (data.prevProduced / data.prevTarget) * 100 : 0,
   }));
 }
 

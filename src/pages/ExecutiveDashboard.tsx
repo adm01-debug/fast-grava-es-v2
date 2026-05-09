@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Progress } from '@/components/ui/progress';
+import { Switch } from '@/components/ui/switch';
 import { useExecutiveDashboard, getDateRangePresets, DateRange } from '@/hooks/useExecutiveDashboard';
 import { exportExecutiveDashboardPDF } from '@/lib/pdfExport';
 import { exportExecutiveDashboardExcel } from '@/lib/excelExport';
@@ -73,6 +74,7 @@ export default function ExecutiveDashboard() {
   const [globalGoal, setGlobalGoal] = useState<number>(85);
   const [isGoalDialogOpen, setIsGoalDialogOpen] = useState(false);
   const [tempGoal, setTempGoal] = useState<string>('85');
+  const [showComparison, setShowComparison] = useState(false);
 
   const { data: machines } = useQuery({
     queryKey: ['machines-list'],
@@ -85,7 +87,7 @@ export default function ExecutiveDashboard() {
   const { data: techniques } = useQuery({
     queryKey: ['techniques-list'],
     queryFn: async () => {
-      const { data } = await supabase.from('techniques').select('id, name');
+      const { data } = await supabase.from('techniques').select('id, name, short_name');
       return data || [];
     }
   });
@@ -309,6 +311,15 @@ export default function ExecutiveDashboard() {
                 </SelectContent>
               </Select>
 
+              <div className="flex items-center gap-2 px-3 h-11 rounded-xl glass-card border border-primary/10">
+                <Switch 
+                  id="comparison-mode" 
+                  checked={showComparison} 
+                  onCheckedChange={setShowComparison}
+                />
+                <Label htmlFor="comparison-mode" className="text-[10px] font-bold uppercase cursor-pointer whitespace-nowrap">Comparar</Label>
+              </div>
+
               <div className="flex gap-1">
                 <Button onClick={handleExportPDF} variant="outline" size="icon" className="h-11 w-11 rounded-xl border-primary/20 hover:bg-primary/10" title="Exportar PDF">
                   <FileDown className="h-4 w-4" />
@@ -484,9 +495,20 @@ export default function ExecutiveDashboard() {
                       dataKey="target" 
                       stroke="#94a3b8" 
                       fill="#94a3b8" 
-                      fillOpacity={0.2}
+                      fillOpacity={0.1}
                       name="Meta"
                     />
+                    {showComparison && (
+                      <Area 
+                        type="monotone" 
+                        dataKey="prevProduced" 
+                        stroke="#94a3b8" 
+                        fill="#94a3b8" 
+                        fillOpacity={0.2}
+                        strokeDasharray="5 5"
+                        name="Produzido (Período Ant.)"
+                      />
+                    )}
                     <Area 
                       type="monotone" 
                       dataKey="produced" 
@@ -522,18 +544,33 @@ export default function ExecutiveDashboard() {
                     <XAxis dataKey="date" tick={{ fontSize: 11 }} />
                     <YAxis domain={[0, 100]} tick={{ fontSize: 11 }} />
                     <Tooltip 
-                      formatter={(value: number) => [`${value.toFixed(1)}%`, 'Eficiência']}
+                      formatter={(value: number, name: string) => [
+                        `${value.toFixed(1)}%`, 
+                        name === 'prevEfficiency' ? 'Eficiência (Ant.)' : 'Eficiência'
+                      ]}
                       contentStyle={{ 
                         backgroundColor: 'hsl(var(--card))', 
                         border: '1px solid hsl(var(--border))' 
                       }} 
                     />
+                    {showComparison && (
+                      <Line 
+                        type="monotone" 
+                        dataKey="prevEfficiency" 
+                        stroke="#94a3b8" 
+                        strokeWidth={2}
+                        strokeDasharray="5 5"
+                        dot={false}
+                        name="prevEfficiency"
+                      />
+                    )}
                     <Line 
                       type="monotone" 
                       dataKey="efficiency" 
                       stroke="#22c55e" 
                       strokeWidth={2}
                       dot={{ fill: '#22c55e', r: 3 }}
+                      name="efficiency"
                     />
                   </LineChart>
                 </ResponsiveContainer>
@@ -569,6 +606,14 @@ export default function ExecutiveDashboard() {
                         `${technique} ${(percent * 100).toFixed(0)}%`
                       }
                       labelLine={false}
+                      onClick={(data) => {
+                        const technique = techniques?.find(t => t.short_name === data.technique || t.name === data.technique);
+                        if (technique) {
+                          setTechniqueId(technique.id);
+                          toast.success(`Filtrando por técnica: ${technique.name}`);
+                        }
+                      }}
+                      className="cursor-pointer"
                     >
                       {kpis.techniqueDistribution.map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={entry.color} />
@@ -628,7 +673,17 @@ export default function ExecutiveDashboard() {
             <CardContent>
               <div className="space-y-3">
                 {kpis.machinePerformance.slice(0, 5).map((m, index) => (
-                  <div key={index} className="space-y-1">
+                  <div 
+                    key={index} 
+                    className="space-y-1 cursor-pointer hover:bg-primary/5 p-1 rounded-lg transition-colors"
+                    onClick={() => {
+                      const machine = machines?.find(mac => (mac.code || mac.name) === m.machine);
+                      if (machine) {
+                        setMachineId(machine.id);
+                        toast.success(`Filtrando por máquina: ${machine.code || machine.name}`);
+                      }
+                    }}
+                  >
                     <div className="flex items-center justify-between text-sm">
                       <span className="font-medium">{m.machine}</span>
                       <span className="text-muted-foreground">
