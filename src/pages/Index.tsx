@@ -21,6 +21,7 @@ import { useSmartDelayAlerts } from '@/hooks/useSmartDelayAlerts';
 
 import { VoiceButton } from '@/components/voice/VoiceCommands';
 import { ActivityFeedWidget } from '@/components/dashboard/ActivityFeedWidget';
+import { BufferPromotionStatus } from '@/components/dashboard/BufferPromotionStatus';
 import { LiveMachineStatusPanel } from '@/components/dashboard/LiveMachineStatusPanel';
 import { AutoShiftSummary } from '@/components/shift/AutoShiftSummary';
 import { QuickChat } from '@/components/chat/QuickChat';
