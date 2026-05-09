@@ -23,16 +23,26 @@ import {
   ChevronDown,
   RotateCcw,
   Sparkles,
-  Download
+  Download,
+  Play,
+  Trash2,
+  BrainCircuit,
+  Zap
 } from "lucide-react";
 import { useSchedulingData } from "@/hooks/useSchedulingData";
+import { useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import { DbJob, DbTechnique, DbMachine } from "@/hooks/useJobs";
 import { JobStatus } from "@/types/scheduling";
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
-import { SmartSequencingWidget } from "@/components/dashboard/SmartSequencingWidget";
-import { LoadBalancingWidget } from "@/components/dashboard/LoadBalancingWidget";
+import { SmartSequencingPanel } from "@/components/planning/SmartSequencingPanel";
+import { LoadBalancingPanel } from "@/components/planning/LoadBalancingPanel";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { motion, AnimatePresence } from "framer-motion";
 import { useDataExport } from "@/hooks/useDataExport";
+import { useSmartSequencingWithActions } from "@/hooks/useSmartSequencingWithActions";
+import { useLoadBalancingWithActions } from "@/hooks/useLoadBalancingWithActions";
 
 type SortField = 'orderNumber' | 'client' | 'scheduledDate' | 'priority' | 'quantity';
 type SortDirection = 'asc' | 'desc';
@@ -62,8 +72,29 @@ export default function PendingQueue() {
   const [selectedJob, setSelectedJob] = useState<DbJob | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSmartSectionOpen, setIsSmartSectionOpen] = useState(false);
+  const [selectedJobs, setSelectedJobs] = useState<Set<string>>(new Set());
+  const queryClient = useQueryClient();
 
   const { exportData, isExporting } = useDataExport('jobs');
+  const { suggestions: seqSuggestions } = useSmartSequencingWithActions();
+  const { suggestions: balancingSuggestions } = useLoadBalancingWithActions();
+
+  // Create lookup maps for AI insights
+  const jobsInOptimizedSequence = useMemo(() => {
+    const set = new Set<string>();
+    seqSuggestions.forEach(s => {
+      s.optimizedSequence.forEach(j => set.add(j.id));
+    });
+    return set;
+  }, [seqSuggestions]);
+
+  const jobsWithBalancingSuggestion = useMemo(() => {
+    const map = new Map<string, string>();
+    balancingSuggestions.forEach(s => {
+      map.set(s.jobId, s.suggestedMachineName);
+    });
+    return map;
+  }, [balancingSuggestions]);
 
   // Fetch real data from Supabase
   const { 
@@ -156,7 +187,8 @@ export default function PendingQueue() {
     urgent: filteredJobs.filter(j => j.priority === 'urgent').length,
     delayed: filteredJobs.filter(j => j.status === 'delayed').length,
     rework: filteredJobs.filter(j => j.status === 'rework').length,
-  }), [filteredJobs]);
+    optimizationPotential: seqSuggestions.reduce((acc, s) => acc + s.estimatedSavings, 0),
+  }), [filteredJobs, seqSuggestions]);
 
   // Virtualization
   const tableContainerRef = useRef<HTMLDivElement>(null);
@@ -170,6 +202,53 @@ export default function PendingQueue() {
   const handleJobClick = (dbJob: DbJob) => {
     setSelectedJob(dbJob);
     setIsModalOpen(true);
+  };
+
+  const handleSelectJob = (id: string) => {
+    setSelectedJobs(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const handleSelectAll = () => {
+    if (selectedJobs.size === filteredJobs.length) {
+      setSelectedJobs(new Set());
+    } else {
+      setSelectedJobs(new Set(filteredJobs.map(j => j.id)));
+    }
+  };
+
+  const handleBulkAction = async (action: 'production' | 'ready' | 'delete') => {
+    if (selectedJobs.size === 0) return;
+
+    try {
+      if (action === 'delete') {
+        const { error } = await supabase.from('jobs').delete().in('id', Array.from(selectedJobs));
+        if (error) throw error;
+        toast.success(`${selectedJobs.size} jobs excluídos`);
+      } else {
+        const updateData: Record<string, any> = { 
+          status: action,
+          updated_at: new Date().toISOString()
+        };
+        if (action === 'production') {
+          updateData.actual_start_time = new Date().toISOString();
+        }
+        
+        const { error } = await supabase.from('jobs').update(updateData).in('id', Array.from(selectedJobs));
+        if (error) throw error;
+        toast.success(`${selectedJobs.size} jobs movidos para "${action === 'production' ? 'Em Produção' : 'No Jeito'}"`);
+      }
+      
+      setSelectedJobs(new Set());
+      queryClient.invalidateQueries({ queryKey: ['jobs'] });
+    } catch (error) {
+      console.error('Error in bulk action:', error);
+      toast.error('Erro ao processar ação em massa');
+    }
   };
 
   if (isLoadingJobs || isLoadingTechniques) {
@@ -190,7 +269,12 @@ export default function PendingQueue() {
 
   return (
     <MainLayout>
-      <div className="min-h-screen bg-background p-4 sm:p-6 space-y-4 sm:space-y-6">
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="min-h-screen bg-background p-4 sm:p-6 space-y-4 sm:space-y-6"
+      >
         <Breadcrumbs />
         
         <JobDetailsModal 
@@ -268,6 +352,17 @@ export default function PendingQueue() {
               <div>
                 <p className="text-lg sm:text-2xl font-bold text-foreground">{stats.delayed}</p>
                 <p className="text-xs sm:text-sm text-muted-foreground">Atrasados</p>
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="bg-card/50 backdrop-blur-sm border-border/50">
+            <CardContent className="p-3 sm:p-4 flex items-center gap-2 sm:gap-3">
+              <div className="p-2 sm:p-3 rounded-xl bg-violet-500/20">
+                <BrainCircuit className="h-4 w-4 sm:h-5 sm:w-5 text-violet-400" />
+              </div>
+              <div>
+                <p className="text-lg sm:text-2xl font-bold text-foreground">{stats.optimizationPotential}m</p>
+                <p className="text-xs sm:text-sm text-muted-foreground">Setup Salvo (IA)</p>
               </div>
             </CardContent>
           </Card>
@@ -380,8 +475,8 @@ export default function PendingQueue() {
           </div>
           <CollapsibleContent className="animate-accordion-down">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
-              <SmartSequencingWidget />
-              <LoadBalancingWidget />
+              <SmartSequencingPanel />
+              <LoadBalancingPanel />
               <Card className="glass-card">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-sm font-bold flex items-center gap-2">
@@ -400,6 +495,28 @@ export default function PendingQueue() {
           </CollapsibleContent>
         </Collapsible>
 
+        {/* Bulk Actions Bar */}
+        {selectedJobs.size > 0 && (
+          <div className="flex flex-wrap items-center gap-3 p-3 rounded-lg bg-primary/5 border border-primary/20 sticky top-2 z-30 backdrop-blur-md shadow-lg animate-in slide-in-from-top-4 duration-300">
+            <Badge variant="secondary" className="font-bold">{selectedJobs.size} selecionados</Badge>
+            <div className="h-4 w-px bg-border/50 mx-1 hidden sm:block" />
+            <Button size="sm" variant="outline" className="h-7 text-[10px] uppercase font-bold tracking-wider gap-1 border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10" onClick={() => handleBulkAction('production')}>
+              <Play className="h-3 w-3" /> Iniciar Produção
+            </Button>
+            <Button size="sm" variant="outline" className="h-7 text-[10px] uppercase font-bold tracking-wider gap-1 border-amber-500/30 text-amber-400 hover:bg-amber-500/10" onClick={() => handleBulkAction('ready')}>
+              <Package className="h-3 w-3" /> Marcar No Jeito
+            </Button>
+            <Button size="sm" variant="outline" className="h-7 text-[10px] uppercase font-bold tracking-wider gap-1 border-red-500/30 text-red-400 hover:bg-red-500/10" onClick={() => {
+              if (window.confirm('Excluir permanentemente estes jobs?')) handleBulkAction('delete');
+            }}>
+              <Trash2 className="h-3 w-3" /> Excluir
+            </Button>
+            <Button size="sm" variant="ghost" className="h-7 text-[10px] uppercase font-bold tracking-wider ml-auto text-muted-foreground" onClick={() => setSelectedJobs(new Set())}>
+              Limpar seleção
+            </Button>
+          </div>
+        )}
+
         {/* Virtualized Table */}
         <Card className="bg-card/50 backdrop-blur-sm border-border/50">
           <CardContent className="p-0">
@@ -408,6 +525,14 @@ export default function PendingQueue() {
               <Table>
                 <TableHeader>
                   <TableRow className="border-border/50 hover:bg-transparent">
+                    <TableHead className="w-[40px]">
+                      <input 
+                        type="checkbox" 
+                        checked={selectedJobs.size === filteredJobs.length && filteredJobs.length > 0}
+                        onChange={handleSelectAll}
+                        className="rounded border-border accent-primary"
+                      />
+                    </TableHead>
                     <TableHead 
                       className="cursor-pointer hover:text-foreground transition-colors w-[100px]"
                       onClick={() => handleSort('orderNumber')}
@@ -454,6 +579,7 @@ export default function PendingQueue() {
                       </div>
                     </TableHead>
                     <TableHead>Status</TableHead>
+                    <TableHead className="hidden lg:table-cell">Insight IA</TableHead>
                   </TableRow>
                 </TableHeader>
               </Table>
@@ -498,6 +624,14 @@ export default function PendingQueue() {
                                 transform: `translateY(${virtualRow.start}px)`,
                               }}
                             >
+                              <TableCell className="w-[40px]" onClick={(e) => e.stopPropagation()}>
+                                <input 
+                                  type="checkbox" 
+                                  checked={selectedJobs.has(job.id)}
+                                  onChange={() => handleSelectJob(job.id)}
+                                  className="rounded border-border accent-primary"
+                                />
+                              </TableCell>
                               <TableCell className="font-medium text-foreground text-xs sm:text-sm w-[100px]">
                                 {job.order_number}
                               </TableCell>
@@ -524,7 +658,11 @@ export default function PendingQueue() {
                                 </Badge>
                               </TableCell>
                               <TableCell className="text-muted-foreground hidden xl:table-cell text-xs sm:text-sm">
-                                {machine?.code || '-'}
+                                {machine?.code || (
+                                  <Badge variant="outline" className="text-red-400 bg-red-400/5 border-red-400/10 text-[10px] animate-pulse">
+                                    NÃO ATRIBUÍDA
+                                  </Badge>
+                                )}
                               </TableCell>
                               <TableCell className="text-foreground hidden sm:table-cell text-xs sm:text-sm">
                                 <div className="flex items-center gap-1">
@@ -540,6 +678,20 @@ export default function PendingQueue() {
                               </TableCell>
                               <TableCell>
                                 <StatusBadge status={job.status} />
+                              </TableCell>
+                              <TableCell className="hidden lg:table-cell">
+                                <div className="flex flex-wrap gap-1">
+                                  {jobsInOptimizedSequence.has(job.id) && (
+                                    <Badge variant="outline" className="bg-amber-500/10 text-amber-500 border-amber-500/20 text-[10px] gap-1 px-1.5 h-5">
+                                      <Zap className="h-2.5 w-2.5" /> Otimizar Setup
+                                    </Badge>
+                                  )}
+                                  {jobsWithBalancingSuggestion.has(job.id) && (
+                                    <Badge variant="outline" className="bg-blue-500/10 text-blue-500 border-blue-500/20 text-[10px] gap-1 px-1.5 h-5">
+                                      <BrainCircuit className="h-2.5 w-2.5" /> Reequilibrar: {jobsWithBalancingSuggestion.get(job.id)}
+                                    </Badge>
+                                  )}
+                                </div>
                               </TableCell>
                             </TableRow>
                           );
@@ -559,7 +711,7 @@ export default function PendingQueue() {
             )}
           </CardContent>
         </Card>
-      </div>
+      </motion.div>
     </MainLayout>
   );
 }
