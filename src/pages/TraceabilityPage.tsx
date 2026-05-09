@@ -319,8 +319,15 @@ export default function TraceabilityPage() {
           </div>
         </div>
 
-        {/* Stats Cards */}
-        <TraceabilityStatsCards lots={lots || []} />
+        {/* Stats & Integrity */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          <div className="lg:col-span-3">
+             <TraceabilityStatsCards lots={lots || []} />
+          </div>
+          <div className="lg:col-span-1">
+             <BlockchainIntegrityCard />
+          </div>
+        </div>
 
         {/* Bulk Actions Bar */}
         {selectedIds.size > 0 && (
