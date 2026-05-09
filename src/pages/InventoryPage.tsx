@@ -190,7 +190,7 @@ export default function InventoryPage() {
                             O material "Tinta Azul" tem alto giro. Sugere-se mover de B4 para A1 para facilitar o picking.
                           </p>
                        </div>
-                       <Button variant="outline" size="sm" className="w-full text-[10px] font-bold uppercase">
+                       <Button variant="outline" size="sm" className="w-full text-[10px] font-bold uppercase" onClick={() => toast.success("AI analisando padrões de consumo...")}>
                           Ver Todas Sugestões (AI)
                        </Button>
                     </CardContent>
