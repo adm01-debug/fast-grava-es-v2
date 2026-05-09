@@ -1,6 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { subDays, isAfter, parseISO } from 'date-fns';
+import { useMemo } from 'react';
 
 export type InventoryCategory = 'ink' | 'screen' | 'solvent' | 'consumable' | 'other';
 
@@ -43,6 +45,26 @@ export function useInventory() {
       return data as InventoryItem[];
     },
   });
+
+  const movementsQuery = useInventoryMovements();
+  const movements = movementsQuery.data || [];
+
+  const stats = useMemo(() => {
+    const now = new Date();
+    const last24h = subDays(now, 1);
+    
+    const recentMovements = (movements as any[]).filter(m => {
+      if (!m.created_at) return false;
+      return isAfter(parseISO(m.created_at), last24h);
+    });
+    
+    const totalValue = (itemsQuery.data || []).reduce((sum, item) => sum + (item.current_stock * 15.5), 0);
+
+    return {
+      movementsCount24h: recentMovements.length,
+      inventoryValue: totalValue,
+    };
+  }, [movements, itemsQuery.data]);
 
   const createMovementMutation = useMutation({
     mutationFn: async (movement: Omit<InventoryMovement, 'id' | 'created_at' | 'user_id'>) => {
@@ -91,6 +113,7 @@ export function useInventory() {
     recordMovement: createMovementMutation.mutateAsync,
     isMoving: createMovementMutation.isPending,
     updateItem: updateItemMutation.mutateAsync,
+    stats,
   };
 }
 

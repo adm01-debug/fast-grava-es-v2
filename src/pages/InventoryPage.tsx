@@ -29,9 +29,10 @@ import { cn } from '@/lib/utils';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { toast } from 'sonner';
 
 export default function InventoryPage() {
-  const { items, isLoading, recordMovement } = useInventory();
+  const { items, isLoading, recordMovement, stats } = useInventory();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
 
@@ -101,7 +102,7 @@ export default function InventoryPage() {
                   <ArrowLeftRight className="h-5 w-5 text-blue-500" />
                 </div>
               </div>
-              <p className="text-3xl font-bold">24</p>
+              <p className="text-3xl font-bold">{stats?.movementsCount24h || 0}</p>
               <p className="text-xs text-muted-foreground uppercase font-semibold tracking-tighter">Movimentações (24h)</p>
             </CardContent>
           </Card>
@@ -113,7 +114,7 @@ export default function InventoryPage() {
                   <TrendingDown className="h-5 w-5 text-amber-500" />
                 </div>
               </div>
-              <p className="text-3xl font-bold">R$ 12k</p>
+              <p className="text-3xl font-bold">R$ {((stats?.inventoryValue || 0) / 1000).toFixed(1)}k</p>
               <p className="text-xs text-muted-foreground uppercase font-semibold tracking-tighter">Valor em Estoque</p>
             </CardContent>
           </Card>
@@ -190,7 +191,7 @@ export default function InventoryPage() {
                             O material "Tinta Azul" tem alto giro. Sugere-se mover de B4 para A1 para facilitar o picking.
                           </p>
                        </div>
-                       <Button variant="outline" size="sm" className="w-full text-[10px] font-bold uppercase">
+                       <Button variant="outline" size="sm" className="w-full text-[10px] font-bold uppercase" onClick={() => toast.success("AI analisando padrões de consumo...")}>
                           Ver Todas Sugestões (AI)
                        </Button>
                     </CardContent>
