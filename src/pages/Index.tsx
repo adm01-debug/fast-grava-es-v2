@@ -28,6 +28,8 @@ import { QuickChat } from '@/components/chat/QuickChat';
 import { MaintenanceAlertsWidget } from '@/components/dashboard/MaintenanceAlertsWidget';
 import { EnergyWidget } from '@/components/dashboard/EnergyWidget';
 import { PredictiveAnalyticsWidget } from '@/components/dashboard/PredictiveAnalyticsWidget';
+import { ShiftHandoverWidget } from '@/components/dashboard/ShiftHandoverWidget';
+import { LeaderboardWidget } from '@/components/dashboard/LeaderboardWidget';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { 
@@ -44,8 +46,10 @@ import {
   Cpu,
   MessageCircle,
   FileText,
-  Brain
+  Brain,
+  Users
 } from 'lucide-react';
+
 
 // Type definitions for widget components
 interface WidgetComponentConfig {
