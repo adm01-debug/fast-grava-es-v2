@@ -247,6 +247,7 @@ export const useTechnicalSheetMutations = () => {
     addMaterial,
     deleteMaterial,
     addTip,
-    deleteTip
+    deleteTip,
+    toggleFavorite
   };
 };
