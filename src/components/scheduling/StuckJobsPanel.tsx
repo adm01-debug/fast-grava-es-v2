@@ -29,11 +29,14 @@ export function StuckJobsPanel() {
             <div className="p-1.5 rounded-lg bg-destructive/20">
               <AlertCircle className="h-4 w-4 text-destructive" />
             </div>
-            <span className="text-destructive font-bold uppercase tracking-wider text-[11px]">Risco: Jobs Parados</span>
+            <span className="text-destructive font-black uppercase tracking-widest text-[11px]">Risco: Jobs Parados</span>
           </div>
-          <Badge variant="destructive" className="h-5 px-1.5 text-[10px] animate-pulse">
-            {stuckJobs.length} {stuckJobs.length === 1 ? 'Job' : 'Jobs'}
-          </Badge>
+          <div className="flex items-center gap-1.5">
+             <Badge variant="outline" className="h-5 px-1.5 text-[9px] font-black bg-destructive/10 text-destructive border-destructive/20 uppercase">Ação Requerida</Badge>
+             <Badge variant="destructive" className="h-5 px-1.5 text-[10px] animate-pulse">
+               {stuckJobs.length} {stuckJobs.length === 1 ? 'Job' : 'Jobs'}
+             </Badge>
+          </div>
         </CardTitle>
       </CardHeader>
       <CardContent className="px-4 pb-4">
