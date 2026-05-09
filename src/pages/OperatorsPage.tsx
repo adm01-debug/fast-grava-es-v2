@@ -50,6 +50,8 @@ export default function OperatorsPage() {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [operatorToRemove, setOperatorToRemove] = useState<OperatorWithProfile | null>(null);
   const [operatorToToggle, setOperatorToToggle] = useState<OperatorWithProfile | null>(null);
+  const [operatorToShowDetails, setOperatorToShowDetails] = useState<OperatorWithProfile | null>(null);
+  const [detailsModalOpen, setDetailsModalOpen] = useState(false);
 
   const activeOperators = operators.filter(op => op.is_active);
   const inactiveOperators = operators.filter(op => !op.is_active);
