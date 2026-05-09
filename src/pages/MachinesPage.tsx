@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Printer, CheckCircle2, XCircle, Info, Settings, History, Activity, AlertTriangle } from 'lucide-react';
+import { Printer, CheckCircle2, XCircle, Info, Settings, History, Activity, AlertTriangle, Map as MapIcon, Zap, Thermometer, Flame } from 'lucide-react';
 import { useSchedulingData } from '@/hooks/useSchedulingData';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
