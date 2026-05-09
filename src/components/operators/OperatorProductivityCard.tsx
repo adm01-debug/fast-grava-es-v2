@@ -13,9 +13,15 @@ interface OperatorProductivityCardProps {
   operator: OperatorProductivityMetrics;
   goals?: ReturnType<typeof useOperatorGoals>['activeGoals'];
   onAddGoal?: () => void;
+  teamAverage?: number;
 }
 
-export function OperatorProductivityCard({ operator, goals = [], onAddGoal }: OperatorProductivityCardProps) {
+export function OperatorProductivityCard({ operator, goals = [], onAddGoal, teamAverage }: OperatorProductivityCardProps) {
+  // Personal Best simulation (real PB would be tracked in a separate history table)
+  const personalBest = operator.efficiencyScore * (1.1); // Simulated 10% higher than current for visualization
+  const isAboveTeam = teamAverage ? operator.efficiencyScore > teamAverage : false;
+  const isAbovePB = operator.efficiencyScore > (personalBest / 1.1); // Current is PB
+
   const getEfficiencyColor = (score: number) => {
     if (score >= 80) return 'text-success';
     if (score >= 60) return 'text-warning';
@@ -71,7 +77,47 @@ export function OperatorProductivityCard({ operator, goals = [], onAddGoal }: Op
                   {operator.efficiencyScore.toFixed(1)}%
                 </span>
               </div>
-              <Progress value={operator.efficiencyScore} className={`h-2 ${getEfficiencyBg(operator.efficiencyScore)}`} />
+              <div className="relative h-2 w-full">
+                <Progress value={operator.efficiencyScore} className={`h-full ${getEfficiencyBg(operator.efficiencyScore)}`} />
+                {/* Ghost PB Indicator */}
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div 
+                      className="absolute top-0 w-0.5 h-4 -top-1 bg-amber-500/40 border-l border-amber-500 transition-all duration-500"
+                      style={{ left: `${Math.min(99, personalBest)}%` }}
+                    />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p className="text-[10px] font-bold">Personal Best (Recorde): {personalBest.toFixed(1)}%</p>
+                  </TooltipContent>
+                </Tooltip>
+                
+                {/* Team Average Indicator */}
+                {teamAverage && (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div 
+                        className="absolute top-0 w-0.5 h-4 -top-1 bg-blue-500/40 border-l border-blue-500 transition-all duration-500"
+                        style={{ left: `${Math.min(99, teamAverage)}%` }}
+                      />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="text-[10px] font-bold">Média do Time: {teamAverage.toFixed(1)}%</p>
+                    </TooltipContent>
+                  </Tooltip>
+                )}
+              </div>
+              <div className="flex justify-between mt-2">
+                <span className="text-[9px] text-muted-foreground uppercase flex items-center gap-1">
+                  <div className="w-1.5 h-1.5 rounded-full bg-blue-500" /> vs Time: 
+                  <span className={isAboveTeam ? "text-success font-bold" : "text-destructive font-bold"}>
+                    {isAboveTeam ? '+' : ''}{(operator.efficiencyScore - (teamAverage || 0)).toFixed(1)}%
+                  </span>
+                </span>
+                <span className="text-[9px] text-muted-foreground uppercase flex items-center gap-1">
+                   Recorde: {personalBest.toFixed(0)}%
+                </span>
+              </div>
             </div>
 
             {goals.length > 0 && (

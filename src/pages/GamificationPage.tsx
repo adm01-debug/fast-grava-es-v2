@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
@@ -10,7 +11,7 @@ import { FavoriteButton, FavoritesDropdown } from '@/components/navigation/Favor
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { VoiceButton } from '@/components/voice/VoiceCommands';
 import { useGamification } from '@/hooks/useGamification';
-import { Trophy, Medal, Star, Target, Zap, Award, Crown, TrendingUp, Command } from 'lucide-react';
+import { Trophy, Medal, Star, Target, Zap, Award, Crown, TrendingUp, Command, Package, Clock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -29,7 +30,16 @@ const achievementIcons: Record<string, React.ElementType> = {
 export default function GamificationPage() {
   const navigate = useNavigate();
   const [period, setPeriod] = useState<'daily' | 'weekly' | 'monthly'>('weekly');
+  const [activeTab, setActiveTab] = useState<'ranking' | 'rewards'>('ranking');
   const { rankings, achievements, isLoading, periodStart, periodEnd } = useGamification(period);
+
+  const rewards = [
+    { id: 1, name: 'Folga de Meio Período', cost: 2500, icon: Clock, color: 'bg-blue-500/10 text-blue-600', description: 'Ganhe 4 horas de folga remunerada.' },
+    { id: 2, name: 'Vale Presente R$ 50', cost: 1500, icon: Package, color: 'bg-green-500/10 text-green-600', description: 'Cartão presente para uso em parceiros.' },
+    { id: 3, name: 'Prioridade de Turno', cost: 3000, icon: Zap, color: 'bg-amber-500/10 text-amber-600', description: 'Escolha seu turno preferencial por 1 semana.' },
+    { id: 4, name: 'Café com a Diretoria', cost: 1000, icon: Star, color: 'bg-purple-500/10 text-purple-600', description: 'Apresente suas ideias diretamente aos diretores.' },
+    { id: 5, name: 'Bônus de Produtividade', cost: 5000, icon: TrendingUp, color: 'bg-rose-500/10 text-rose-600', description: 'Bônus em dinheiro no próximo fechamento.' },
+  ];
 
   if (isLoading) {
     return (
@@ -78,15 +88,51 @@ export default function GamificationPage() {
             </Badge>
             <Tabs value={period} onValueChange={(v) => setPeriod(v as 'daily' | 'weekly' | 'monthly')}>
               <TabsList>
-                <TabsTrigger value="daily">Diário</TabsTrigger>
-                <TabsTrigger value="weekly">Semanal</TabsTrigger>
-                <TabsTrigger value="monthly">Mensal</TabsTrigger>
+                <TabsTrigger value="daily" onClick={() => setActiveTab('ranking')}>Diário</TabsTrigger>
+                <TabsTrigger value="weekly" onClick={() => setActiveTab('ranking')}>Semanal</TabsTrigger>
+                <TabsTrigger value="monthly" onClick={() => setActiveTab('ranking')}>Mensal</TabsTrigger>
+                <TabsTrigger value="rewards" onClick={() => setActiveTab('rewards')} className="bg-primary/10 text-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                  <Star className="h-4 w-4 mr-2" />
+                  Loja de Recompensas
+                </TabsTrigger>
               </TabsList>
             </Tabs>
           </div>
         </div>
 
-        {/* Podium */}
+        {/* Main Content Area */}
+        {activeTab === 'rewards' ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {rewards.map((reward) => (
+              <Card key={reward.id} className="glass-card group hover:border-primary/50 transition-all overflow-hidden border-2 border-transparent">
+                <CardHeader className={cn("pb-2", reward.color)}>
+                  <div className="flex justify-between items-start">
+                    <div className="p-2 rounded-lg bg-white/20">
+                      <reward.icon className="h-6 w-6" />
+                    </div>
+                    <Badge variant="secondary" className="bg-white/30 text-current border-none font-bold">
+                      {reward.cost} PTS
+                    </Badge>
+                  </div>
+                  <CardTitle className="mt-4 text-xl">{reward.name}</CardTitle>
+                </CardHeader>
+                <CardContent className="pt-4">
+                  <p className="text-sm text-muted-foreground mb-6 h-10 line-clamp-2">
+                    {reward.description}
+                  </p>
+                  <Button className="w-full group-hover:scale-[1.02] transition-transform" disabled={true}>
+                    Resgatar Recompensa
+                  </Button>
+                  <p className="text-[10px] text-center text-muted-foreground mt-3 uppercase font-bold tracking-tighter">
+                    Saldo insuficiente para resgate
+                  </p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        ) : (
+          <>
+            {/* Podium */}
         <Card className="glass-card overflow-hidden">
           <CardHeader className="pb-2 bg-gradient-to-r from-amber-500/10 via-gray-500/10 to-orange-500/10">
             <CardTitle className="flex items-center gap-2">
@@ -169,39 +215,44 @@ export default function GamificationPage() {
                   <div 
                     key={r.id} 
                     className={cn(
-                      "flex items-center gap-4 p-3 rounded-lg transition-colors",
-                      index < 3 ? "bg-muted/50" : "hover:bg-muted/30"
+                      "flex flex-col sm:flex-row items-center gap-4 p-4 rounded-xl transition-all border group",
+                      index < 3 ? "bg-primary/5 border-primary/20 shadow-sm" : "hover:bg-muted/30 border-transparent"
                     )}
                   >
-                    <div className={cn(
-                      "w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg",
-                      index === 0 ? "bg-amber-500 text-amber-950" :
-                      index === 1 ? "bg-gray-400 text-gray-950" :
-                      index === 2 ? "bg-orange-600 text-orange-950" :
-                      "bg-muted text-muted-foreground"
-                    )}>
-                      {r.position}
-                    </div>
-                    
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium truncate">{r.profile?.full_name}</p>
-                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <span>{r.total_produced.toLocaleString()} pçs</span>
-                        <span>•</span>
-                        <span>{(r.efficiency_rate ?? 0).toFixed(0)}% efic.</span>
+                    <div className="flex items-center w-full gap-4">
+                      <div className={cn(
+                        "w-12 h-12 rounded-full flex items-center justify-center font-black text-xl shadow-inner",
+                        index === 0 ? "bg-amber-400 text-amber-950 ring-4 ring-amber-400/20" :
+                        index === 1 ? "bg-gray-300 text-gray-950 ring-4 ring-gray-300/20" :
+                        index === 2 ? "bg-orange-500 text-orange-950 ring-4 ring-orange-500/20" :
+                        "bg-muted text-muted-foreground"
+                      )}>
+                        {r.position}
                       </div>
-                    </div>
+                      
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <p className="font-bold text-base truncate">{r.profile?.full_name}</p>
+                          <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20 text-[10px] font-black h-5">
+                            NÍVEL {r.level}
+                          </Badge>
+                        </div>
+                        <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">
+                          <span className="flex items-center gap-1"><Package className="h-3 w-3" /> {r.total_produced.toLocaleString()}</span>
+                          <span>•</span>
+                          <span className="flex items-center gap-1"><Zap className="h-3 w-3" /> {r.total_points} pontos</span>
+                        </div>
+                      </div>
 
-                    <div className="text-right">
-                      <p className="font-bold text-lg">{r.total_points}</p>
-                      <p className="text-xs text-muted-foreground">pontos</p>
-                    </div>
-
-                    <div className="w-24 hidden sm:block">
-                      <Progress value={r.quality_rate ?? 0} className="h-2" />
-                      <p className="text-xs text-muted-foreground text-center mt-1">
-                        {(r.quality_rate ?? 0).toFixed(0)}% qual.
-                      </p>
+                      <div className="text-right hidden sm:block">
+                        <p className="text-[10px] font-bold text-muted-foreground uppercase mb-1">XP PROGRESS</p>
+                        <div className="w-32">
+                          <Progress value={(r.xp_progress! / r.xp_target!) * 100} className="h-1.5 bg-muted/50" />
+                          <p className="text-[9px] text-muted-foreground mt-1">
+                            {r.xp_progress} / {r.xp_target} XP
+                          </p>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -254,6 +305,8 @@ export default function GamificationPage() {
             </CardContent>
           </Card>
         </div>
+        </>
+        )}
       </div>
     </MainLayout>
   );

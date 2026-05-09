@@ -28,7 +28,10 @@ export interface OperatorRanking {
   period_start: string;
   period_end: string;
   calculated_at: string;
-  profile?: { full_name: string | null };
+  profile?: { full_name: string | null; avatar_url?: string | null };
+  level?: number;
+  xp_progress?: number;
+  xp_target?: number;
 }
 
 export function useGamification(period: 'daily' | 'weekly' | 'monthly' = 'weekly') {
@@ -74,15 +77,20 @@ export function useGamification(period: 'daily' | 'weekly' | 'monthly' = 'weekly
 
       const { data: profiles } = await supabase
         .from('profiles')
-        .select('id, full_name')
+        .select('id, full_name, avatar_url')
         .in('id', operatorIds);
 
       const profileMap = new Map(profiles?.map(p => [p.id, p]) || []);
 
-      return rankings?.map(r => ({
-        ...r,
-        profile: profileMap.get(r.operator_id) || { full_name: `Operador ${r.position}` },
-      })) as OperatorRanking[];
+      return rankings?.map(r => {
+        const profile = profileMap.get(r.operator_id) || { full_name: `Operador ${r.position}`, avatar_url: null };
+        const levelInfo = calculateLevelInfo(r.total_points);
+        return {
+          ...r,
+          profile,
+          ...levelInfo,
+        };
+      }) as OperatorRanking[];
     },
     staleTime: 60000,
   });
@@ -152,7 +160,7 @@ async function calculateRankingsLocally(
     .from('operator_machines')
     .select('operator_id, machine_id');
 
-  const { data: profiles } = await supabase.from('profiles').select('id, full_name');
+  const { data: profiles } = await supabase.from('profiles').select('id, full_name, avatar_url');
 
   // Build machine to operator map
   const machineToOperator: Record<string, string> = {};
@@ -186,23 +194,33 @@ async function calculateRankingsLocally(
         ? (stats.produced / (stats.produced + stats.lost)) * 100 
         : 100;
       
+      const points = Math.round(stats.produced + efficiency * 10 + quality * 5 + stats.jobs * 2);
+      
       return {
         id: crypto.randomUUID(),
         operator_id: id,
         ranking_type: period,
         position: 0,
-        total_points: Math.round(stats.produced + efficiency * 10 + quality * 5 + stats.jobs * 2),
+        total_points: points,
         total_produced: stats.produced,
         efficiency_rate: Math.round(efficiency * 100) / 100,
         quality_rate: Math.round(quality * 100) / 100,
         period_start: periodStart.toISOString(),
         period_end: periodEnd.toISOString(),
         calculated_at: new Date().toISOString(),
-        profile: profileMap.get(id) || { full_name: `Operador` },
+        profile: profileMap.get(id) || { full_name: `Operador`, avatar_url: null },
+        ...calculateLevelInfo(points),
       };
     })
     .sort((a, b) => b.total_points - a.total_points)
     .map((r, i) => ({ ...r, position: i + 1 }));
 
   return rankings;
+}
+
+function calculateLevelInfo(points: number) {
+  const level = Math.floor(points / 1000) + 1;
+  const xp_progress = points % 1000;
+  const xp_target = 1000;
+  return { level, xp_progress, xp_target };
 }

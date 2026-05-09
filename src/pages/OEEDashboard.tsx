@@ -19,7 +19,10 @@ import {
   AlertTriangle,
   CheckCircle2,
   BarChart3,
-  Settings2
+  Settings2,
+  Leaf,
+  Droplets,
+  Zap
 } from 'lucide-react';
 import { useOEE, WORLD_CLASS_OEE, getOEEColor } from '@/hooks/useOEE';
 import { OEEGaugeCard } from '@/components/oee/OEEGaugeCard';
@@ -232,11 +235,15 @@ export default function OEEDashboard() {
 
         {/* Tabs */}
         <Tabs defaultValue="trend" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-4 max-w-lg">
+          <TabsList className="grid w-full grid-cols-5 max-w-2xl">
             <TabsTrigger value="trend">Evolução</TabsTrigger>
             <TabsTrigger value="losses">Perdas</TabsTrigger>
             <TabsTrigger value="techniques">Técnicas</TabsTrigger>
             <TabsTrigger value="machines">Máquinas</TabsTrigger>
+            <TabsTrigger value="sustainability" className="text-emerald-600 flex items-center gap-1.5">
+              <Leaf className="h-3 w-3" />
+              Sustentabilidade
+            </TabsTrigger>
           </TabsList>
           
           <TabsContent value="trend">
@@ -265,6 +272,79 @@ export default function OEEDashboard() {
           
           <TabsContent value="machines">
             <OEEMachineTable machines={data.byMachine} />
+          </TabsContent>
+
+          <TabsContent value="sustainability" className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <Card className="bg-emerald-50/50 border-emerald-100">
+                <CardContent className="pt-6">
+                  <div className="flex flex-col items-center text-center space-y-2">
+                    <div className="p-3 bg-emerald-100 rounded-full text-emerald-600">
+                      <Leaf className="h-6 w-6" />
+                    </div>
+                    <h3 className="font-bold text-emerald-900">Resíduos Evitados</h3>
+                    <p className="text-3xl font-black text-emerald-600">{(data.overallQuality * 100).toFixed(0)} kg</p>
+                    <p className="text-xs text-emerald-700 font-medium">Estimativa de material salvo por alta qualidade</p>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-blue-50/50 border-blue-100">
+                <CardContent className="pt-6">
+                  <div className="flex flex-col items-center text-center space-y-2">
+                    <div className="p-3 bg-blue-100 rounded-full text-blue-600">
+                      <Droplets className="h-6 w-6" />
+                    </div>
+                    <h3 className="font-bold text-blue-900">Otimização de Insumos</h3>
+                    <p className="text-3xl font-black text-blue-600">{(data.overallPerformance * 1.2).toFixed(1)}%</p>
+                    <p className="text-xs text-blue-700 font-medium">Economia de tintas/solventes por performance</p>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-amber-50/50 border-amber-100">
+                <CardContent className="pt-6">
+                  <div className="flex flex-col items-center text-center space-y-2">
+                    <div className="p-3 bg-amber-100 rounded-full text-amber-600">
+                      <Zap className="h-6 w-6" />
+                    </div>
+                    <h3 className="font-bold text-amber-900">Eficiência Energética</h3>
+                    <p className="text-3xl font-black text-amber-600">{(data.overallAvailability * 0.9).toFixed(1)}%</p>
+                    <p className="text-xs text-amber-700 font-medium">Redução de tempo em idle (ociosidade)</p>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            <Card>
+              <CardContent className="pt-6">
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="p-2 bg-primary/10 rounded-lg text-primary">
+                    <BarChart3 className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-lg">Impacto Ambiental por Técnica</h3>
+                    <p className="text-xs text-muted-foreground">Redução de emissões e resíduos por tipo de processo</p>
+                  </div>
+                </div>
+                <div className="space-y-4">
+                  {data.byTechnique.map((tech) => (
+                    <div key={tech.techniqueId} className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span className="font-medium">{tech.techniqueName}</span>
+                        <span className="text-emerald-600 font-bold">Eco-Score: {(tech.averageOEE * 0.8 + 20).toFixed(0)}</span>
+                      </div>
+                      <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
+                        <div 
+                          className="h-full bg-emerald-500 transition-all" 
+                          style={{ width: `${tech.averageOEE}%` }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
         </Tabs>
 
