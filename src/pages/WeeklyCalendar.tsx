@@ -73,6 +73,18 @@ export default function WeeklyCalendar() {
     return m;
   }, [machines, filters.techniques, filters.machines]);
 
+  const groupedMachines = useMemo(() => {
+    if (prefs.groupBy !== 'technique') return null;
+    const map = new Map<string, { technique: DbTechnique; machines: DbMachine[] }>();
+    filteredMachines.forEach((m) => {
+      const tech = techniques.find((t) => t.id === m.technique_id);
+      if (!tech) return;
+      if (!map.has(tech.id)) map.set(tech.id, { technique: tech, machines: [] });
+      map.get(tech.id)!.machines.push(m);
+    });
+    return Array.from(map.values()).sort((a, b) => a.technique.name.localeCompare(b.technique.name));
+  }, [filteredMachines, techniques, prefs.groupBy]);
+
   const jobsByMachineAndDay = useMemo(() => {
     const grouped: Record<string, Record<string, DbJob[]>> = {};
     weekJobs.forEach((job) => {
@@ -84,6 +96,15 @@ export default function WeeklyCalendar() {
     });
     return grouped;
   }, [weekJobs]);
+
+  const toggleGroup = (id: string) => {
+    setCollapsed((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
 
   const weekConflicts = useMemo(() => {
     return conflicts.filter((c) => c.date >= weekStart && c.date <= weekEnd);
