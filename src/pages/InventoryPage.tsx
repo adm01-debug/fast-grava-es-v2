@@ -113,7 +113,7 @@ export default function InventoryPage() {
                   <TrendingDown className="h-5 w-5 text-amber-500" />
                 </div>
               </div>
-              <p className="text-3xl font-bold">R$ 12k</p>
+              <p className="text-3xl font-bold">R$ {((stats?.inventoryValue || 0) / 1000).toFixed(1)}k</p>
               <p className="text-xs text-muted-foreground uppercase font-semibold tracking-tighter">Valor em Estoque</p>
             </CardContent>
           </Card>
