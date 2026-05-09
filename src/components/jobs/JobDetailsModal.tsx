@@ -31,6 +31,7 @@ import { useEntityAuditTrail } from "@/hooks/useAuditTrail";
 import { AuditEntryCard } from "@/components/audit/AuditEntryCard";
 import { HistoryPeriodFilter, type HistoryPeriodValue } from "@/components/audit/HistoryPeriodFilter";
 import { Skeleton } from "@/components/ui/skeleton";
+import { JobCostsTab } from "./JobCostsTab";
 import { useState } from "react";
 
 interface JobDetailsModalProps {
