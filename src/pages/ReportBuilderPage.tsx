@@ -54,7 +54,7 @@ export default function ReportBuilderPage() {
     queryKey: ['report-preview', selectedTable, selectedColumns],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from(selectedTable)
+        .from(selectedTable as any)
         .select(selectedColumns.join(','))
         .limit(10);
       
