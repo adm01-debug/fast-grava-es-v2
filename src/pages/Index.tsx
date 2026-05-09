@@ -197,6 +197,7 @@ const Index = () => {
         </div>
 
         <GamificationBanner />
+        <BufferPromotionStatus />
 
         {/* Edit Mode Indicator */}
         {isEditMode && (
