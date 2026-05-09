@@ -170,12 +170,26 @@ export default function TraceabilityPage() {
       toast.error('Nenhum lote pode ser alterado para este status');
       return;
     }
+    
+    // Critical status changes require signature
+    if (['blocked', 'quarantine', 'active'].includes(newStatus)) {
+      setSignatureModal({ open: true, status: newStatus });
+    } else {
+      processBulkStatusUpdate(validLots, newStatus);
+    }
+  }, [filteredAndSortedLots, selectedIds]);
+
+  const processBulkStatusUpdate = (validLots: ProductionLot[], newStatus: string, reason?: string) => {
     validLots.forEach(lot => {
-      updateLot.mutate({ id: lot.id, status: newStatus });
+      updateLot.mutate({ 
+        id: lot.id, 
+        status: newStatus,
+        notes: reason ? `${lot.notes || ''}\n[Assinado]: ${reason}` : lot.notes
+      });
     });
     toast.success(`${validLots.length} lote(s) atualizados para ${STATUS_CONFIG[newStatus]?.label || newStatus}`);
     setSelectedIds(new Set());
-  }, [filteredAndSortedLots, selectedIds, updateLot]);
+  };
 
   const handleExportCSV = () => {
     const headers = ['Lote', 'Produto', 'Quantidade', 'Produzido', 'Status', 'Data Produção', 'Validade', 'Job'];
