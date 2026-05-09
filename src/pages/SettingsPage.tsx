@@ -33,7 +33,7 @@ function usePersistedSettings() {
 function useAlertThresholds() {
   const [thresholds, setThresholds] = useState(() => {
     const stored = localStorage.getItem('alert-thresholds');
-    return stored ? JSON.parse(stored) : { lowBuffer: 30, criticalBuffer: 10, delayedJobMinutes: 60, oeeWarning: 70, oeeCritical: 50, energyPeakKw: 100 };
+    return stored ? JSON.parse(stored) : { lowBuffer: 30, criticalBuffer: 10, delayedJobMinutes: 60, oeeWarning: 70, oeeCritical: 50, energyPeakKw: 100, bottleneckRiskMinutes: 480, estimatedLoadLimitPercentage: 90 };
   });
   useEffect(() => { localStorage.setItem('alert-thresholds', JSON.stringify(thresholds)); }, [thresholds]);
   return [thresholds, setThresholds] as const;
