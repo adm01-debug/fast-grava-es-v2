@@ -2,6 +2,8 @@ import { useMemo, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSchedulingData } from './useSchedulingData';
 import { useOperatorMachines } from './useOperatorMachines';
+import { DateRange } from 'react-day-picker';
+import { isWithinInterval, startOfDay, endOfDay } from 'date-fns';
 
 /**
  * Hook that provides dashboard data filtered by user role.
