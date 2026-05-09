@@ -58,6 +58,7 @@ export default function PendingQueue() {
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
   const [selectedJob, setSelectedJob] = useState<DbJob | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSmartSectionOpen, setIsSmartSectionOpen] = useState(false);
 
   // Fetch real data from Supabase
   const { 
