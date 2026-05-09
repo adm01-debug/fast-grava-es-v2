@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { format, startOfWeek, endOfWeek, addWeeks, subWeeks, addDays, isToday } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { CalendarDays, AlertTriangle } from 'lucide-react';
+import { CalendarDays, AlertTriangle, ChevronRight, ChevronDown } from 'lucide-react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -11,6 +11,7 @@ import { JobDetailsModal } from '@/components/jobs/JobDetailsModal';
 import { CalendarHeader } from '@/components/calendar/CalendarHeader';
 import { UtilizationHeatmap } from '@/components/scheduling/UtilizationHeatmap';
 import { CalendarFilters } from '@/components/calendar/CalendarFilters';
+import { CalendarToolbar } from '@/components/calendar/CalendarToolbar';
 import { CalendarLegend } from '@/components/calendar/CalendarLegend';
 import { CalendarEmptyState } from '@/components/calendar/CalendarEmptyState';
 import { MobileFAB } from '@/components/calendar/MobileFAB';
@@ -18,17 +19,20 @@ import { statusColorsSolid, statusLabels } from '@/components/calendar/types';
 import { cn } from '@/lib/utils';
 import { useSchedulingData } from '@/hooks/useSchedulingData';
 import { useCalendarFilters } from '@/hooks/useCalendarFilters';
+import { useCalendarPreferences } from '@/hooks/useCalendarPreferences';
 import { useCalendarHotkeys } from '@/hooks/useCalendarHotkeys';
 import { useSchedulingConflicts } from '@/hooks/useSchedulingConflicts';
-import { DbJob } from '@/hooks/useJobs';
+import { DbJob, DbMachine, DbTechnique } from '@/hooks/useJobs';
 import { JobStatus } from '@/types/scheduling';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
+import { Fragment } from 'react';
 import '@/components/calendar/calendar-print.css';
 
 export default function WeeklyCalendar() {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [selectedJob, setSelectedJob] = useState<DbJob | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
 
   const { jobs, techniques, machines, getTechniqueById } = useSchedulingData();
   const { conflicts } = useSchedulingConflicts();
