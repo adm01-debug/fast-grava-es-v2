@@ -162,6 +162,7 @@ export default function OEEDashboard() {
               icon={<Target className="h-4 w-4" />}
               description="Eficiência geral de todas as máquinas"
               benchmark={WORLD_CLASS_OEE}
+              trend={data.comparison ? data.comparison.currentOEE - data.comparison.previousOEE : undefined}
             />
           </KPITooltip>
           <KPITooltip {...KPI_DEFINITIONS.availability}>
@@ -171,6 +172,7 @@ export default function OEEDashboard() {
               icon={<Clock className="h-4 w-4" />}
               description="Tempo operando vs. tempo planejado"
               benchmark={90}
+              trend={data.comparison ? data.comparison.currentAvailability - data.comparison.previousAvailability : undefined}
             />
           </KPITooltip>
           <KPITooltip {...KPI_DEFINITIONS.performance}>
@@ -180,6 +182,7 @@ export default function OEEDashboard() {
               icon={<Gauge className="h-4 w-4" />}
               description="Velocidade real vs. velocidade ideal"
               benchmark={95}
+              trend={data.comparison ? data.comparison.currentPerformance - data.comparison.previousPerformance : undefined}
             />
           </KPITooltip>
           <KPITooltip {...KPI_DEFINITIONS.quality}>
@@ -189,6 +192,7 @@ export default function OEEDashboard() {
               icon={<CheckCircle2 className="h-4 w-4" />}
               description="Peças boas vs. total produzido"
               benchmark={99}
+              trend={data.comparison ? data.comparison.currentQuality - data.comparison.previousQuality : undefined}
             />
           </KPITooltip>
         </div>
