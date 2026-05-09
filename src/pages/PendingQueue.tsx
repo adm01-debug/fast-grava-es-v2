@@ -659,7 +659,7 @@ export default function PendingQueue() {
                               </TableCell>
                               <TableCell className="text-muted-foreground hidden xl:table-cell text-xs sm:text-sm">
                                 {machine?.code || (
-                                  <Badge variant="ghost" className="text-red-400 bg-red-400/5 border-red-400/10 text-[10px] animate-pulse">
+                                  <Badge variant="outline" className="text-red-400 bg-red-400/5 border-red-400/10 text-[10px] animate-pulse">
                                     NÃO ATRIBUÍDA
                                   </Badge>
                                 )}
