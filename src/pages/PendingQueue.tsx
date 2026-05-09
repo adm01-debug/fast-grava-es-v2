@@ -351,6 +351,17 @@ export default function PendingQueue() {
           </Card>
           <Card className="bg-card/50 backdrop-blur-sm border-border/50">
             <CardContent className="p-3 sm:p-4 flex items-center gap-2 sm:gap-3">
+              <div className="p-2 sm:p-3 rounded-xl bg-violet-500/20">
+                <BrainCircuit className="h-4 w-4 sm:h-5 sm:w-5 text-violet-400" />
+              </div>
+              <div>
+                <p className="text-lg sm:text-2xl font-bold text-foreground">{stats.optimizationPotential}m</p>
+                <p className="text-xs sm:text-sm text-muted-foreground">Setup Salvo (IA)</p>
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="bg-card/50 backdrop-blur-sm border-border/50">
+            <CardContent className="p-3 sm:p-4 flex items-center gap-2 sm:gap-3">
               <div className="p-2 sm:p-3 rounded-xl bg-purple-500/20">
                 <RotateCcw className="h-4 w-4 sm:h-5 sm:w-5 text-purple-400" />
               </div>
