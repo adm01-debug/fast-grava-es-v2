@@ -310,7 +310,7 @@ export default function MachinesPage() {
                             </CardTitle>
                             <Button 
                               variant="ghost" 
-                              size="xs" 
+                              size="sm" 
                               className="text-[10px] uppercase font-bold tracking-tighter"
                               onClick={() => {
                                 const allSelected = techMachines.every(m => selectedMachines.has(m.id));
