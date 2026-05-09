@@ -13,6 +13,7 @@ interface OperatorProductivityCardProps {
   operator: OperatorProductivityMetrics;
   goals?: ReturnType<typeof useOperatorGoals>['activeGoals'];
   onAddGoal?: () => void;
+  teamAverage?: number;
 }
 
 export function OperatorProductivityCard({ operator, goals = [], onAddGoal }: OperatorProductivityCardProps) {
