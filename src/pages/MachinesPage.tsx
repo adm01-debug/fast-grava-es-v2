@@ -114,7 +114,7 @@ export default function MachinesPage() {
           <VoiceButton />
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid gap-4 md:grid-cols-4">
           <Card className="glass-card">
             <CardContent className="pt-6">
               <div className="flex items-center gap-4">
@@ -138,6 +138,38 @@ export default function MachinesPage() {
                 <div>
                   <p className="text-3xl font-bold">{machines.filter(m => m.is_active).length}</p>
                   <p className="text-sm text-muted-foreground">Máquinas Ativas</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="glass-card">
+            <CardContent className="pt-6">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center">
+                  <Activity className="h-6 w-6 text-blue-500" />
+                </div>
+                <div>
+                  <p className="text-3xl font-bold">
+                    {isLoadingReliability ? <Skeleton className="h-8 w-12" /> : `${Math.round(reliabilitySummary.averageAvailability)}%`}
+                  </p>
+                  <p className="text-sm text-muted-foreground">Disponibilidade Média</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="glass-card">
+            <CardContent className="pt-6">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-xl bg-destructive/20 flex items-center justify-center">
+                  <AlertTriangle className="h-6 w-6 text-destructive" />
+                </div>
+                <div>
+                  <p className="text-3xl font-bold">
+                    {isLoadingReliability ? <Skeleton className="h-8 w-12" /> : reliabilitySummary.criticalMachines.length}
+                  </p>
+                  <p className="text-sm text-muted-foreground">Máquinas Críticas</p>
                 </div>
               </div>
             </CardContent>
