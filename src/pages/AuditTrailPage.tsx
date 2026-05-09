@@ -125,7 +125,7 @@ export default function AuditTrailPage() {
                 <CardContent>
                   <div className="space-y-4">
                     {['jobs', 'machines', 'technical_sheets', 'maintenance'].map(module => {
-                      const count = data?.filter(e => e.table_name === module).length || 0;
+                      const count = data?.filter(e => e.entity_type === module).length || 0;
                       const percentage = data?.length ? (count / data.length) * 100 : 0;
                       return (
                         <div key={module} className="space-y-1">
