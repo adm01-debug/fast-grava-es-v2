@@ -18,6 +18,8 @@ import {
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { SupplyChainPanel } from '@/components/digital-twin/SupplyChainPanel';
 import { CostSimulationCard } from '@/components/digital-twin/CostSimulationCard';
+import { useKPIs } from '@/hooks/useKPIs';
+import { useEnergy } from '@/hooks/useEnergy';
 
 export default function DigitalTwin() {
   return (
