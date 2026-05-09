@@ -6,6 +6,7 @@ import { format } from 'date-fns';
 import { useMemo, useState } from 'react';
 import { useSchedulingData } from '@/hooks/useSchedulingData';
 import { AlertScheduleModal } from './AlertScheduleModal';
+import { useStuckJobsDetection } from '@/hooks/useStuckJobsDetection';
 
 interface Alert {
   id: string;
