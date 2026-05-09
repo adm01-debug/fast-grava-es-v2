@@ -154,7 +154,11 @@ export function SmartSequencingPanel({ onExplain }: SmartSequencingPanelProps) {
                   className="h-8 px-2 border-primary/20 hover:bg-primary/5 text-primary"
                   onClick={(e) => {
                     e.stopPropagation();
-                    setSuggestionToDetail(suggestion);
+                    if (onExplain) {
+                      onExplain(suggestion);
+                    } else {
+                      setSuggestionToDetail(suggestion);
+                    }
                   }}
                 >
                   <Info className="h-3.5 w-3.5" />
