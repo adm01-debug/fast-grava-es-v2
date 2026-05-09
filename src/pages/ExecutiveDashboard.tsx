@@ -41,7 +41,8 @@ import {
   Lightbulb,
   BrainCircuit,
   ShieldCheck,
-  Sparkles
+  Sparkles,
+  ShieldAlert
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
@@ -142,6 +143,15 @@ export default function ExecutiveDashboard() {
       color: 'text-amber-500',
       bgColor: 'bg-amber-500/10',
     },
+    {
+      title: 'Ciber-Resiliência',
+      value: '98.5',
+      subtitle: 'Status: 11/10 Ativo',
+      icon: ShieldCheck,
+      trend: 'up',
+      color: 'text-purple-600',
+      bgColor: 'bg-purple-600/10',
+    },
   ];
 
   return (
@@ -163,7 +173,7 @@ export default function ExecutiveDashboard() {
                 <div className="flex flex-wrap items-center gap-2 mt-1">
                   <Badge variant="outline" className="gap-1.5 px-2.5 py-0.5 border-primary/30 bg-primary/5 text-primary text-[10px] font-black uppercase tracking-widest">
                     <div className="w-1.5 h-1.5 rounded-full bg-primary animate-ping" />
-                    Status: Ecossistema 10/10
+                    Status: Ecossistema 11/10
                   </Badge>
                   <Badge variant="secondary" className="text-[10px] font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-600 dark:text-emerald-500 border-emerald-500/20">
                     Governança Total Ativa
@@ -307,9 +317,9 @@ export default function ExecutiveDashboard() {
                   <BrainCircuit className="h-5 w-5 text-purple-600" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-sm">Governança Industrial Automática</h4>
+                  <h4 className="font-bold text-sm">Resiliência Cibernética Ativa</h4>
                   <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                    Integridade de dados auditada em <span className="text-foreground font-semibold">100% dos processos</span>. Sincronização em tempo real com Bitrix24 garantindo orquestração 10/10.
+                    Integridade de dados auditada em <span className="text-foreground font-semibold">100% dos processos</span>. Sincronização em tempo real com Bitrix24 garantindo orquestração 11/10.
                   </p>
                 </div>
               </div>
@@ -318,7 +328,7 @@ export default function ExecutiveDashboard() {
         </div>
 
         {/* KPI Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
           {kpiCards.map((kpi, index) => (
             <Card key={index} className="glass-card hover:border-primary/30 transition-all cursor-default">
               <CardContent className="p-4">

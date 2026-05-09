@@ -15,7 +15,7 @@ export function AutonomousEventLog() {
     { type: 'quality', message: 'Alerta SPC: Processo da Máquina 1 está tendendo ao limite superior. Ajuste sugerido.', icon: AlertCircle, color: 'text-destructive', bg: 'bg-destructive/10' },
     { type: 'sync', message: 'Sincronização Bitrix24 concluída: 12 novas ordens processadas.', icon: CheckCircle2, color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
     { type: 'efficiency', message: 'OEE Global atingiu 92% - Performance máxima detectada.', icon: Target, color: 'text-primary', bg: 'bg-primary/10' },
-    { type: 'security', message: 'Auditoria de integridade concluída: Nenhuma vulnerabilidade encontrada.', icon: ShieldCheck, color: 'text-blue-600', bg: 'bg-blue-600/10' }
+    { type: 'orchestration', message: 'Orquestração 11/10 Ativa: Sincronia total entre físico e digital.', icon: ShieldCheck, color: 'text-blue-600', bg: 'bg-blue-600/10' }
   ];
 
   useEffect(() => {

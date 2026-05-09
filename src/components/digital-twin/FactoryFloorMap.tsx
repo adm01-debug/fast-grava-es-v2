@@ -27,19 +27,32 @@ export function FactoryFloorMap() {
   }, [machines]);
 
   return (
-    <div className="relative w-full aspect-[2/1] bg-secondary/10 rounded-xl border border-border/50 overflow-hidden p-8">
+    <div className="relative w-full aspect-[2/1] bg-secondary/10 rounded-xl border border-border/50 overflow-hidden p-8 group/map">
       {/* Factory Grid Background */}
       <div className="absolute inset-0 opacity-10 pointer-events-none" 
            style={{ backgroundImage: 'radial-gradient(circle, hsl(var(--primary)) 1px, transparent 1px)', backgroundSize: '30px 30px' }} />
       
+      {/* Logistics Flow Animation (Evo 11/10) */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-20">
+        <div className="absolute top-1/2 left-0 w-full h-[2px] bg-primary animate-[shimmer_2s_infinite]" />
+        <div className="absolute top-0 left-1/2 w-[2px] h-full bg-primary animate-[shimmer_3s_infinite]" />
+        
+        {/* Animated Particles */}
+        <div className="absolute top-[20%] left-0 w-2 h-2 bg-primary rounded-full animate-[ping_1.5s_infinite] shadow-glow-primary" style={{ left: '25%' }} />
+        <div className="absolute top-[40%] left-0 w-2 h-2 bg-emerald-500 rounded-full animate-[ping_2s_infinite] shadow-glow-success" style={{ left: '65%' }} />
+        <div className="absolute top-[80%] left-0 w-2 h-2 bg-amber-500 rounded-full animate-[ping_2.5s_infinite] shadow-[0_0_10px_rgba(245,158,11,0.5)]" style={{ left: '45%' }} />
+      </div>
+
       {/* Walls/Areas */}
       <div className="absolute top-1/4 left-0 w-full h-0.5 bg-primary/20" />
       <div className="absolute top-0 left-1/3 w-0.5 h-full bg-primary/20" />
       
-      <div className="absolute top-4 left-4 text-[10px] font-black uppercase text-muted-foreground tracking-widest opacity-50">
+      <div className="absolute top-4 left-4 text-[10px] font-black uppercase text-primary/60 tracking-widest flex items-center gap-2">
+        <div className="w-1 h-1 bg-primary rounded-full animate-pulse" />
         Área de Impressão (Serigrafia)
       </div>
-      <div className="absolute top-4 left-[35%] text-[10px] font-black uppercase text-muted-foreground tracking-widest opacity-50">
+      <div className="absolute top-4 left-[35%] text-[10px] font-black uppercase text-primary/60 tracking-widest flex items-center gap-2">
+        <div className="w-1 h-1 bg-primary rounded-full animate-pulse" />
         Área de Acabamento
       </div>
 
