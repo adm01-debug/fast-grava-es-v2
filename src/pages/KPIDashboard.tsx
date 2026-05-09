@@ -7,7 +7,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useKPIs, formatDuration } from '@/hooks/useKPIs';
 import { useOperatorProductivity } from '@/hooks/useOperatorProductivity';
 import { useGoalAlerts } from '@/hooks/useGoalAlerts';
-import { useDataExport } from '@/hooks/useDataExport';
+import { useBIExport } from '@/hooks/useBIExport';
 import { 
   BarChart, 
   Bar, 
