@@ -7,8 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Badge } from '@/components/ui/badge';
-import { CalendarIcon, Plus, ArrowLeft, Lightbulb } from 'lucide-react';
+import { CalendarIcon, Plus, ArrowLeft } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSchedulingData } from '@/hooks/useSchedulingData';
@@ -20,73 +19,75 @@ import { ptBR } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { MachineSuggestionPanel } from '@/components/scheduling/MachineSuggestionPanel';
-import { useMachineSuggestion } from '@/hooks/useMachineSuggestion';
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+
+const jobSchema = z.object({
+  order_number: z.string().min(1, 'Número da OS é obrigatório'),
+  client: z.string().min(1, 'Cliente é obrigatório'),
+  product: z.string().min(1, 'Produto é obrigatório'),
+  quantity: z.string().min(1, 'Quantidade é obrigatória'),
+  technique_id: z.string().min(1, 'Técnica é obrigatória'),
+  machine_id: z.string().optional(),
+  start_time: z.string().optional(),
+  end_time: z.string().optional(),
+  notes: z.string().optional(),
+  priority: z.string().default('medium'),
+  gravure_color: z.string().optional(),
+});
+
+type JobFormValues = z.infer<typeof jobSchema>;
+
 export default function NewJobPage() {
   const navigate = useNavigate();
-  const { techniques, machines, getMachinesByTechnique, refetchJobs } = useSchedulingData();
+  const { techniques, getMachinesByTechnique, refetchJobs } = useSchedulingData();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [date, setDate] = useState<Date>();
   
-  const [formData, setFormData] = useState({
-    order_number: '',
-    client: '',
-    product: '',
-    quantity: '',
-    technique_id: '',
-    machine_id: '',
-    start_time: '',
-    end_time: '',
-    notes: '',
-    priority: 'medium',
-    gravure_color: '',
+  const { control, handleSubmit, watch, setValue, formState: { errors } } = useForm<JobFormValues>({
+    resolver: zodResolver(jobSchema),
+    defaultValues: {
+      order_number: '',
+      client: '',
+      product: '',
+      quantity: '',
+      technique_id: '',
+      machine_id: '',
+      start_time: '',
+      end_time: '',
+      notes: '',
+      priority: 'medium',
+      gravure_color: '',
+    }
   });
 
-  const availableMachines = formData.technique_id 
-    ? getMachinesByTechnique(formData.technique_id)
-    : [];
+  const techniqueId = watch('technique_id');
+  const availableMachines = techniqueId ? getMachinesByTechnique(techniqueId) : [];
 
-  const { bestMachine, suggestions } = useMachineSuggestion(formData.technique_id || null);
-
-  const handleChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-    
-    // Reset machine when technique changes
-    if (field === 'technique_id') {
-      setFormData(prev => ({ ...prev, machine_id: '' }));
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!formData.order_number || !formData.client || !formData.product || !formData.quantity || !formData.technique_id) {
-      toast.error('Preencha todos os campos obrigatórios');
-      return;
-    }
-
+  const onSubmit = async (data: JobFormValues) => {
     setIsSubmitting(true);
     
     try {
-      // Calculate estimated duration based on technique setup time and quantity
-      const selectedTechnique = techniques.find(t => t.id === formData.technique_id);
+      const selectedTechnique = techniques.find(t => t.id === data.technique_id);
       const estimatedDuration = calculateEstimatedTime({
-        quantity: parseInt(formData.quantity),
+        quantity: parseInt(data.quantity),
         techniqueSetupTime: selectedTechnique?.setup_time ?? 10,
       });
 
       const { error } = await supabase.from('jobs').insert({
-        order_number: formData.order_number,
-        client: formData.client,
-        product: formData.product,
-        quantity: parseInt(formData.quantity),
-        technique_id: formData.technique_id,
-        machine_id: formData.machine_id || null,
+        order_number: data.order_number,
+        client: data.client,
+        product: data.product,
+        quantity: parseInt(data.quantity),
+        technique_id: data.technique_id,
+        machine_id: data.machine_id || null,
         scheduled_date: date ? format(date, 'yyyy-MM-dd') : null,
-        start_time: formData.start_time || null,
-        end_time: formData.end_time || null,
-        notes: formData.notes || null,
-        priority: formData.priority,
-        gravure_color: formData.gravure_color || null,
+        start_time: data.start_time || null,
+        end_time: data.end_time || null,
+        notes: data.notes || null,
+        priority: data.priority,
+        gravure_color: data.gravure_color || null,
         status: 'queue',
         estimated_duration: estimatedDuration,
       });
@@ -119,109 +120,111 @@ export default function NewJobPage() {
           </div>
         </div>
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <Card className="glass-card">
             <CardHeader>
               <CardTitle className="text-lg">Informações do Job</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-              {/* Row 1 */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="order_number">Número da OS *</Label>
-                  <Input
-                    id="order_number"
-                    placeholder="Ex: OS-2024-001"
-                    value={formData.order_number}
-                    onChange={(e) => handleChange('order_number', e.target.value)}
-                    required
+                  <Controller
+                    name="order_number"
+                    control={control}
+                    render={({ field }) => (
+                      <Input {...field} id="order_number" placeholder="Ex: OS-2024-001" className={errors.order_number ? 'border-destructive' : ''} />
+                    )}
                   />
+                  {errors.order_number && <p className="text-xs text-destructive">{errors.order_number.message}</p>}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="client">Cliente *</Label>
-                  <Input
-                    id="client"
-                    placeholder="Nome do cliente"
-                    value={formData.client}
-                    onChange={(e) => handleChange('client', e.target.value)}
-                    required
+                  <Controller
+                    name="client"
+                    control={control}
+                    render={({ field }) => (
+                      <Input {...field} id="client" placeholder="Nome do cliente" className={errors.client ? 'border-destructive' : ''} />
+                    )}
                   />
+                  {errors.client && <p className="text-xs text-destructive">{errors.client.message}</p>}
                 </div>
               </div>
 
-              {/* Row 2 */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="product">Produto *</Label>
-                  <Input
-                    id="product"
-                    placeholder="Descrição do produto"
-                    value={formData.product}
-                    onChange={(e) => handleChange('product', e.target.value)}
-                    required
+                  <Controller
+                    name="product"
+                    control={control}
+                    render={({ field }) => (
+                      <Input {...field} id="product" placeholder="Descrição do produto" className={errors.product ? 'border-destructive' : ''} />
+                    )}
                   />
+                  {errors.product && <p className="text-xs text-destructive">{errors.product.message}</p>}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="quantity">Quantidade *</Label>
-                  <Input
-                    id="quantity"
-                    type="number"
-                    placeholder="0"
-                    min="1"
-                    value={formData.quantity}
-                    onChange={(e) => handleChange('quantity', e.target.value)}
-                    required
+                  <Controller
+                    name="quantity"
+                    control={control}
+                    render={({ field }) => (
+                      <Input {...field} id="quantity" type="number" placeholder="0" min="1" className={errors.quantity ? 'border-destructive' : ''} />
+                    )}
                   />
+                  {errors.quantity && <p className="text-xs text-destructive">{errors.quantity.message}</p>}
                 </div>
               </div>
 
-              {/* Row 3 - Technique & Machine */}
               <div className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label>Técnica *</Label>
-                    <Select value={formData.technique_id} onValueChange={(v) => handleChange('technique_id', v)}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione a técnica" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {techniques.map((tech) => (
-                          <SelectItem key={tech.id} value={tech.id}>
-                            {tech.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <Controller
+                      name="technique_id"
+                      control={control}
+                      render={({ field }) => (
+                        <Select onValueChange={(v) => { field.onChange(v); setValue('machine_id', ''); }} value={field.value}>
+                          <SelectTrigger className={errors.technique_id ? 'border-destructive' : ''}>
+                            <SelectValue placeholder="Selecione a técnica" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {techniques.map((tech) => (
+                              <SelectItem key={tech.id} value={tech.id}>{tech.name}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      )}
+                    />
+                    {errors.technique_id && <p className="text-xs text-destructive">{errors.technique_id.message}</p>}
                   </div>
                   <div className="space-y-2">
                     <Label>Máquina</Label>
-                    <Select 
-                      value={formData.machine_id} 
-                      onValueChange={(v) => handleChange('machine_id', v)}
-                      disabled={!formData.technique_id}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder={formData.technique_id ? "Selecione a máquina" : "Selecione uma técnica primeiro"} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {availableMachines.map((machine) => (
-                          <SelectItem key={machine.id} value={machine.id}>
-                            {machine.code} - {machine.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <Controller
+                      name="machine_id"
+                      control={control}
+                      render={({ field }) => (
+                        <Select onValueChange={field.onChange} value={field.value} disabled={!techniqueId}>
+                          <SelectTrigger>
+                            <SelectValue placeholder={techniqueId ? "Selecione a máquina" : "Selecione uma técnica primeiro"} />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {availableMachines.map((machine) => (
+                              <SelectItem key={machine.id} value={machine.id}>{machine.code} - {machine.name}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      )}
+                    />
                   </div>
                 </div>
 
-                {/* AI-Driven Machine Suggestion Panel */}
                 <MachineSuggestionPanel 
-                  techniqueId={formData.technique_id} 
-                  onSelectMachine={(id) => handleChange('machine_id', id)}
+                  techniqueId={techniqueId} 
+                  onSelectMachine={(id) => setValue('machine_id', id)}
                 />
               </div>
 
-              {/* Row 4 - Date & Times */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="space-y-2">
                   <Label>Data Agendada</Label>
@@ -250,64 +253,70 @@ export default function NewJobPage() {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="start_time">Hora Início</Label>
-                  <Input
-                    id="start_time"
-                    type="time"
-                    value={formData.start_time}
-                    onChange={(e) => handleChange('start_time', e.target.value)}
+                  <Controller
+                    name="start_time"
+                    control={control}
+                    render={({ field }) => (
+                      <Input {...field} id="start_time" type="time" />
+                    )}
                   />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="end_time">Hora Fim</Label>
-                  <Input
-                    id="end_time"
-                    type="time"
-                    value={formData.end_time}
-                    onChange={(e) => handleChange('end_time', e.target.value)}
+                  <Controller
+                    name="end_time"
+                    control={control}
+                    render={({ field }) => (
+                      <Input {...field} id="end_time" type="time" />
+                    )}
                   />
                 </div>
               </div>
 
-              {/* Row 5 - Priority & Color */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label>Prioridade</Label>
-                  <Select value={formData.priority} onValueChange={(v) => handleChange('priority', v)}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="low">Baixa</SelectItem>
-                      <SelectItem value="medium">Média</SelectItem>
-                      <SelectItem value="high">Alta</SelectItem>
-                      <SelectItem value="urgent">Urgente</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <Controller
+                    name="priority"
+                    control={control}
+                    render={({ field }) => (
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="low">Baixa</SelectItem>
+                          <SelectItem value="medium">Média</SelectItem>
+                          <SelectItem value="high">Alta</SelectItem>
+                          <SelectItem value="urgent">Urgente</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    )}
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="gravure_color">Cor da Gravação</Label>
-                  <Input
-                    id="gravure_color"
-                    placeholder="Ex: Preto, Branco, CMYK"
-                    value={formData.gravure_color}
-                    onChange={(e) => handleChange('gravure_color', e.target.value)}
+                  <Controller
+                    name="gravure_color"
+                    control={control}
+                    render={({ field }) => (
+                      <Input {...field} id="gravure_color" placeholder="Ex: Preto, Branco, CMYK" />
+                    )}
                   />
                 </div>
               </div>
 
-              {/* Notes */}
               <div className="space-y-2">
                 <Label htmlFor="notes">Observações</Label>
-                <Textarea
-                  id="notes"
-                  placeholder="Observações adicionais sobre o job..."
-                  value={formData.notes}
-                  onChange={(e) => handleChange('notes', e.target.value)}
-                  rows={3}
+                <Controller
+                  name="notes"
+                  control={control}
+                  render={({ field }) => (
+                    <Textarea {...field} id="notes" placeholder="Observações adicionais sobre o job..." rows={3} />
+                  )}
                 />
               </div>
 
-              {/* Submit */}
               <div className="flex justify-end gap-3 pt-4">
                 <Button type="button" variant="outline" onClick={() => navigate(-1)}>
                   Cancelar

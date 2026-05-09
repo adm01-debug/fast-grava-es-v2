@@ -10,6 +10,8 @@ const JOBS_ERROR_CONTEXT = {
     machines: { entity: 'machines', operation: 'fetch' },
     jobs: { entity: 'jobs', operation: 'fetch' },
     updateStatus: { entity: 'jobs', operation: 'update_status' },
+    updateJob: { entity: 'jobs', operation: 'update' },
+    deleteJob: { entity: 'jobs', operation: 'delete' },
   }
 };
 
@@ -253,6 +255,58 @@ export function useUpdateJobStatus() {
       queryClient.invalidateQueries({ queryKey: ['jobs'] });
     },
     onError: createMutationErrorHandler('Erro ao atualizar status do job'),
+  });
+}
+
+export function useUpdateJob() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ jobId, data }: { jobId: string; data: Partial<DbJob> }) => {
+      try {
+        const { error } = await supabase
+          .from('jobs')
+          .update(data)
+          .eq('id', jobId);
+        
+        if (error) throw error;
+      } catch (error) {
+        const appError = createAppError(error, JOBS_ERROR_CONTEXT.hooks.updateJob);
+        if (import.meta.env.DEV) console.error('[useUpdateJob]', appError);
+        throw error;
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['jobs'] });
+      queryClient.invalidateQueries({ queryKey: ['paginated-jobs'] });
+    },
+    onError: createMutationErrorHandler('Erro ao atualizar job'),
+  });
+}
+
+export function useDeleteJob() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (jobId: string) => {
+      try {
+        const { error } = await supabase
+          .from('jobs')
+          .delete()
+          .eq('id', jobId);
+        
+        if (error) throw error;
+      } catch (error) {
+        const appError = createAppError(error, JOBS_ERROR_CONTEXT.hooks.deleteJob);
+        if (import.meta.env.DEV) console.error('[useDeleteJob]', appError);
+        throw error;
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['jobs'] });
+      queryClient.invalidateQueries({ queryKey: ['paginated-jobs'] });
+    },
+    onError: createMutationErrorHandler('Erro ao excluir job'),
   });
 }
 
