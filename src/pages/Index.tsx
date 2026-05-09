@@ -83,6 +83,7 @@ const WIDGET_COMPONENTS: Record<string, WidgetComponentConfig> = {
   sequencing: { component: SmartSequencingWidget, skeletonHeight: 'h-48' },
   loadbalancing: { component: LoadBalancingWidget, skeletonHeight: 'h-48' },
   bottleneck: { component: BottleneckWidget, skeletonHeight: 'h-48' },
+  trends: { component: OEELoadTrendWidget, skeletonHeight: 'h-64' },
   timeline: { component: CompactTimeline, skeletonHeight: 'h-40' },
   jobs: { component: RecentJobsTable, skeletonHeight: 'h-64' },
 };
