@@ -12,43 +12,7 @@ import { JobStatus } from '@/types/scheduling';
 import { HoverLift } from '@/components/ui/micro-interactions';
 import { useIsMobile } from '@/hooks/use-device';
 
-// Inline JobQuickActions component
-interface JobQuickActionsProps {
-  jobId: string;
-  currentStatus: JobStatus;
-  onStatusChange: (jobId: string, newStatus: JobStatus) => void;
-  isExpanded?: boolean;
-}
-
-const JobQuickActions = memo(function JobQuickActions({ jobId, currentStatus, onStatusChange, isExpanded }: JobQuickActionsProps) {
-  const actions: Array<{ status: JobStatus; icon: typeof Play; label: string }> = [
-    { status: 'production', icon: Play, label: 'Iniciar' },
-    { status: 'paused', icon: Pause, label: 'Pausar' },
-    { status: 'finished', icon: Check, label: 'Finalizar' },
-  ];
-
-  const availableActions = actions.filter(a => a.status !== currentStatus);
-
-  return (
-    <div className="flex gap-1">
-      {availableActions.slice(0, 2).map(action => (
-        <Button
-          key={action.status}
-          size="icon"
-          variant="ghost"
-          className="h-7 w-7"
-          onClick={(e) => {
-            e.stopPropagation();
-            onStatusChange(jobId, action.status);
-          }}
-          title={action.label}
-        >
-          <action.icon className="h-3.5 w-3.5" />
-        </Button>
-      ))}
-    </div>
-  );
-});
+import { JobQuickActions } from './JobQuickActions';
 
 interface AgendaViewProps {
   jobs: DbJob[];
