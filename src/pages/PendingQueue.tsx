@@ -22,7 +22,8 @@ import {
   ChevronUp,
   ChevronDown,
   RotateCcw,
-  Sparkles
+  Sparkles,
+  Download
 } from "lucide-react";
 import { useSchedulingData } from "@/hooks/useSchedulingData";
 import { DbJob, DbTechnique, DbMachine } from "@/hooks/useJobs";
@@ -31,6 +32,7 @@ import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { SmartSequencingWidget } from "@/components/dashboard/SmartSequencingWidget";
 import { LoadBalancingWidget } from "@/components/dashboard/LoadBalancingWidget";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { useDataExport } from "@/hooks/useDataExport";
 
 type SortField = 'orderNumber' | 'client' | 'scheduledDate' | 'priority' | 'quantity';
 type SortDirection = 'asc' | 'desc';
