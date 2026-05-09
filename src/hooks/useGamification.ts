@@ -77,7 +77,7 @@ export function useGamification(period: 'daily' | 'weekly' | 'monthly' = 'weekly
 
       const { data: profiles } = await supabase
         .from('profiles')
-        .select('id, full_name')
+        .select('id, full_name, avatar_url')
         .in('id', operatorIds);
 
       const profileMap = new Map(profiles?.map(p => [p.id, p]) || []);
