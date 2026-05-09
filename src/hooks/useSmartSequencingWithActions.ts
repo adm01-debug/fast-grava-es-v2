@@ -267,8 +267,11 @@ export function useSmartSequencingWithActions() {
         optimizedSequence.push(...sortedGroup);
       });
 
-      const estimatedSavings = calculateSetupSavings(currentSequence, optimizedSequence, technique.setup_time);
+      const currentChanges = countSequenceChanges(currentSequence);
+      const optimizedChanges = countSequenceChanges(optimizedSequence);
+      const estimatedSavings = calculateSetupSavings(currentChanges, optimizedChanges, technique.setup_time);
       const totalMinutes = optimizedSequence.reduce((acc, job) => acc + (job.estimated_duration || 0), 0);
+      const totalQuantity = optimizedSequence.reduce((acc, job) => acc + (job.quantity || 0), 0);
       const bottleneckRisk = totalMinutes > 480 ? 'high' : totalMinutes > 300 ? 'medium' : 'low';
 
       if (estimatedSavings > 0) {
@@ -281,7 +284,10 @@ export function useSmartSequencingWithActions() {
           techniqueName: technique.name,
           currentSequence,
           optimizedSequence,
+          currentChanges,
+          optimizedChanges,
           estimatedSavings,
+          totalQuantity,
           bottleneckRisk,
           totalMinutes,
           colorGroups: Array.from(colorGroups.entries()).map(([color, jobs]) => ({
