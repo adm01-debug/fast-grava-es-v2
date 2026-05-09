@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useTPM } from '@/hooks/useTPM';
+import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
-import { Activity, Zap, Thermometer } from 'lucide-react';
+import { Activity, Zap, Thermometer, Box } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 export function FactoryFloorMap() {
