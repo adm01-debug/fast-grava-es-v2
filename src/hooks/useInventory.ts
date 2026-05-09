@@ -161,7 +161,7 @@ export function useInventory() {
         const { error: updateError } = await supabase
           .from('inventory_items')
           .update({ current_stock: restoredStock })
-          .eq('id', movement.item_id);
+          .eq('id', movement.item_id!);
           
         if (updateError) throw updateError;
       }
