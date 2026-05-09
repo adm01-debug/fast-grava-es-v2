@@ -129,14 +129,18 @@ export function JobDetailsModal({ job, open, onOpenChange, onStatusChange }: Job
         </DialogHeader>
 
         <Tabs defaultValue="details" className="mt-4">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="details">Detalhes</TabsTrigger>
-            <TabsTrigger value="costs" className="flex items-center gap-2">
-              <DollarSign className="h-4 w-4" />
-              Custos (ABC)
+          <TabsList className="grid w-full grid-cols-4 h-auto">
+            <TabsTrigger value="details" className="text-[10px] sm:text-xs">Detalhes</TabsTrigger>
+            <TabsTrigger value="costs" className="flex items-center gap-1 text-[10px] sm:text-xs">
+              <DollarSign className="h-3 w-3" />
+              Custos
             </TabsTrigger>
-            <TabsTrigger value="history" className="flex items-center gap-2">
-              <History className="h-4 w-4" />
+            <TabsTrigger value="traceability" className="flex items-center gap-1 text-[10px] sm:text-xs">
+              <Package className="h-3 w-3" />
+              Rastreio
+            </TabsTrigger>
+            <TabsTrigger value="history" className="flex items-center gap-1 text-[10px] sm:text-xs">
+              <History className="h-3 w-3" />
               Histórico
             </TabsTrigger>
           </TabsList>
