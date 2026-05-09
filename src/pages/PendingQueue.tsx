@@ -561,6 +561,7 @@ export default function PendingQueue() {
                       </div>
                     </TableHead>
                     <TableHead>Status</TableHead>
+                    <TableHead className="hidden lg:table-cell">Insight IA</TableHead>
                   </TableRow>
                 </TableHeader>
               </Table>
