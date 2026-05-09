@@ -324,6 +324,16 @@ export default function KPIDashboard() {
                       />
                       <Area type="monotone" dataKey="efficiency" stroke="#10B981" fillOpacity={1} fill="url(#colorEff)" name="Eficiência (%)" />
                       <Area type="monotone" dataKey="productivity" stroke="#06B6D4" fillOpacity={1} fill="url(#colorProd)" name="Produtividade (peças)" />
+                      {/* Target line for efficiency */}
+                      <Bar dataKey="none" /> {/* Spacer */}
+                      <Area 
+                        type="step" 
+                        dataKey={() => 85} 
+                        stroke="#94a3b8" 
+                        strokeDasharray="5 5" 
+                        fill="none" 
+                        name="Meta Eficiência (85%)" 
+                      />
                     </AreaChart>
                   </ResponsiveContainer>
                 </div>
