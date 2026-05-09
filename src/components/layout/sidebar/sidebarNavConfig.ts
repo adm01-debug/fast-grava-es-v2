@@ -19,6 +19,7 @@ export const navGroups: NavGroup[] = [
   { id: 'analytics', icon: BarChart3, label: 'Analytics', items: [
     { icon: BarChart3, label: 'BI Executivo', href: '/bi' },
     { icon: FileDown, label: 'Dashboard Executivo', href: '/executive' },
+    { icon: FileText, label: 'Construtor de Relatórios', href: '/report-builder' },
     { icon: TrendingUp, label: 'KPIs e Ocupação', href: '/kpis' },
     { icon: Gauge, label: 'OEE', href: '/oee' },
     { icon: Zap, label: 'Eficiência', href: '/efficiency' },
@@ -52,6 +53,7 @@ export const navGroups: NavGroup[] = [
     { icon: Bell, label: 'Notificações', href: '/notifications' },
     { icon: ShieldCheck, label: 'Trilha de Auditoria', href: '/audit' },
     { icon: QrCode, label: 'Scanner QR', href: '/scanner' },
+    { icon: Code2, label: 'Master API Hub', href: '/master-api' },
     { icon: Settings, label: 'Configurações', href: '/settings' },
   ]},
 ];

@@ -1,7 +1,8 @@
 import { useState, useMemo } from 'react';
 import { Helmet } from 'react-helmet';
 import { format } from 'date-fns';
-import { Activity, Plus, AlertTriangle, CheckCircle, TrendingUp, Target, Settings } from 'lucide-react';
+import { Activity, Plus, AlertTriangle, CheckCircle, TrendingUp, Target, Settings, Zap, History, LayoutPanelTop, BrainCircuit } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -11,7 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
-import { useSPCParameters, useSPCMeasurements, useSPCAlerts, useSPCMutations, calculateCapabilityIndices, SPCParameter } from '@/hooks/useSPC';
+import { useSPCParameters, useSPCMeasurements, useSPCAlerts, useSPCMutations, calculateCapabilityIndices, detectRunRules, SPCParameter } from '@/hooks/useSPC';
 import { SPCCreateParameterModal } from '@/components/spc/SPCCreateParameterModal';
 import { SPCControlChart } from '@/components/spc/SPCControlChart';
 
@@ -43,6 +44,16 @@ export default function SPCDashboard() {
   const capability = useMemo(() => {
     if (!measurements || !selectedParameter) return null;
     return calculateCapabilityIndices(measurements, selectedParameter.upper_spec_limit, selectedParameter.lower_spec_limit);
+  }, [measurements, selectedParameter]);
+
+  const runRuleViolations = useMemo(() => {
+    if (!measurements || !selectedParameter || !selectedParameter.upper_control_limit || !selectedParameter.lower_control_limit) return [];
+    return detectRunRules(
+      measurements, 
+      selectedParameter.upper_control_limit, 
+      selectedParameter.lower_control_limit, 
+      selectedParameter.target_value
+    );
   }, [measurements, selectedParameter]);
 
   const stats = {
@@ -78,17 +89,66 @@ export default function SPCDashboard() {
         <Breadcrumbs />
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2"><Activity className="h-8 w-8" />Controle Estatístico de Processo</h1>
-            <p className="text-muted-foreground">Gráficos de controle X-barra, R e análise de capacidade</p>
+            <h1 className="text-3xl font-black font-display tracking-tight flex items-center gap-3">
+              <Activity className="h-8 w-8 text-primary" />
+              Statistical Process Control (SPC)
+            </h1>
+            <p className="text-muted-foreground mt-1 font-medium">Controle de Qualidade em Tempo Real e Análise de Tendências</p>
           </div>
-          <Button onClick={() => setShowCreateModal(true)}><Plus className="h-4 w-4 mr-2" />Novo Parâmetro</Button>
+          <div className="flex gap-3">
+            <Button variant="outline" className="gap-2">
+              <TrendingUp className="h-4 w-4" /> Relatório Completo
+            </Button>
+            <Button onClick={() => setShowCreateModal(true)} className="gap-2">
+              <Plus className="h-4 w-4" /> Novo Parâmetro
+            </Button>
+          </div>
         </div>
 
         <div className="grid gap-4 md:grid-cols-4">
-          <Card><CardContent className="pt-4"><div className="flex items-center gap-3"><div className="p-2 rounded-lg bg-primary/10"><Target className="h-5 w-5 text-primary" /></div><div><p className="text-sm text-muted-foreground">Parâmetros</p><p className="text-2xl font-bold">{stats.total}</p></div></div></CardContent></Card>
-          <Card><CardContent className="pt-4"><div className="flex items-center gap-3"><div className="p-2 rounded-lg bg-green-500/10"><CheckCircle className="h-5 w-5 text-green-500" /></div><div><p className="text-sm text-muted-foreground">Em Controle</p><p className="text-2xl font-bold">{stats.inControl}</p></div></div></CardContent></Card>
-          <Card><CardContent className="pt-4"><div className="flex items-center gap-3"><div className="p-2 rounded-lg bg-red-500/10"><AlertTriangle className="h-5 w-5 text-red-500" /></div><div><p className="text-sm text-muted-foreground">Fora de Controle</p><p className="text-2xl font-bold">{stats.outOfControl}</p></div></div></CardContent></Card>
-          <Card><CardContent className="pt-4"><div className="flex items-center gap-3"><div className="p-2 rounded-lg bg-yellow-500/10"><TrendingUp className="h-5 w-5 text-yellow-500" /></div><div><p className="text-sm text-muted-foreground">Cpk Médio</p><p className="text-2xl font-bold">{capability?.cpk?.toFixed(2) || '-'}</p></div></div></CardContent></Card>
+          <Card className="glass-card bg-gradient-to-br from-primary/5 to-transparent border-primary/20">
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between mb-2">
+                 <Target className="h-5 w-5 text-primary" />
+                 <Badge variant="outline" className="text-[10px] font-black uppercase">Monitoramento</Badge>
+              </div>
+              <p className="text-3xl font-black">{stats.total}</p>
+              <p className="text-xs text-muted-foreground uppercase font-bold tracking-widest">Itens Monitorados</p>
+            </CardContent>
+          </Card>
+          
+          <Card className="glass-card border-green-500/20 bg-green-500/5">
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between mb-2">
+                 <CheckCircle className="h-5 w-5 text-green-500" />
+                 <Badge variant="outline" className="text-[10px] font-black uppercase text-green-600 border-green-500/30">Estável</Badge>
+              </div>
+              <p className="text-3xl font-black text-green-600">{stats.inControl}</p>
+              <p className="text-xs text-muted-foreground uppercase font-bold tracking-widest">Pontos em Controle</p>
+            </CardContent>
+          </Card>
+
+          <Card className={cn("glass-card", stats.outOfControl > 0 ? "border-red-500/30 bg-red-500/5 shadow-[0_0_15px_rgba(239,68,68,0.1)]" : "border-border/50")}>
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between mb-2">
+                 <AlertTriangle className={cn("h-5 w-5", stats.outOfControl > 0 ? "text-red-500 animate-pulse" : "text-muted-foreground")} />
+                 {stats.outOfControl > 0 && <Badge variant="destructive" className="text-[9px] font-black uppercase animate-bounce">Ação Requerida</Badge>}
+              </div>
+              <p className={cn("text-3xl font-black", stats.outOfControl > 0 ? "text-red-500" : "text-foreground")}>{stats.outOfControl}</p>
+              <p className="text-xs text-muted-foreground uppercase font-bold tracking-widest">Fora de Controle</p>
+            </CardContent>
+          </Card>
+
+          <Card className="glass-card border-amber-500/20 bg-amber-500/5">
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between mb-2">
+                 <TrendingUp className="h-5 w-5 text-amber-500" />
+                 <Badge variant="outline" className="text-[10px] font-black uppercase text-amber-600 border-amber-500/30">Capacidade</Badge>
+              </div>
+              <p className="text-3xl font-black text-amber-600">{capability?.cpk?.toFixed(2) || '-'}</p>
+              <p className="text-xs text-muted-foreground uppercase font-bold tracking-widest">Cpk (Índice Médio)</p>
+            </CardContent>
+          </Card>
         </div>
 
         <div className="grid gap-6 lg:grid-cols-3">
@@ -109,7 +169,45 @@ export default function SPCDashboard() {
               ) : <p className="text-center text-muted-foreground py-8">Nenhum parâmetro</p>}
             </CardContent>
           </Card>
-          <SPCControlChart selectedParameter={selectedParameter} chartData={chartData} capability={capability} onCalculateLimits={() => selectedParameter && calculateControlLimits.mutate(selectedParameter.id)} onShowMeasurement={() => setShowMeasurementModal(true)} isCalculating={calculateControlLimits.isPending} />
+          <div className="lg:col-span-2 space-y-6">
+            <SPCControlChart 
+              selectedParameter={selectedParameter} 
+              chartData={chartData} 
+              capability={capability} 
+              onCalculateLimits={() => selectedParameter && calculateControlLimits.mutate(selectedParameter.id)} 
+              onShowMeasurement={() => setShowMeasurementModal(true)} 
+              isCalculating={calculateControlLimits.isPending} 
+            />
+
+            {selectedParameter && runRuleViolations.length > 0 && (
+              <Card className="border-amber-500/20 bg-amber-500/5 overflow-hidden">
+                <CardHeader className="py-3 bg-amber-500/10">
+                   <CardTitle className="text-sm font-black uppercase tracking-widest text-amber-600 flex items-center gap-2">
+                     <BrainCircuit className="h-4 w-4" />
+                     Análise Automática de Tendências (Western Electric)
+                   </CardTitle>
+                </CardHeader>
+                <CardContent className="pt-4">
+                  <div className="grid gap-3 md:grid-cols-2">
+                    {runRuleViolations.map((violation, idx) => (
+                      <div key={idx} className="p-3 rounded-lg bg-background border border-amber-500/30 flex items-start gap-3 shadow-sm">
+                         <div className="p-2 rounded-full bg-amber-500/10 text-amber-600">
+                           <AlertTriangle className="h-4 w-4" />
+                         </div>
+                         <div>
+                            <p className="text-xs font-black uppercase text-amber-600 tracking-tighter">{violation.rule}</p>
+                            <p className="text-[11px] text-muted-foreground font-medium leading-tight mt-0.5">{violation.description}</p>
+                         </div>
+                      </div>
+                    ))}
+                  </div>
+                  <p className="text-[10px] text-muted-foreground mt-4 italic">
+                    💡 A IA detectou padrões de variação não aleatória. Recomenda-se verificação de setup ou calibração de ferramenta.
+                  </p>
+                </CardContent>
+              </Card>
+            )}
+          </div>
         </div>
 
         {alerts && alerts.length > 0 && (

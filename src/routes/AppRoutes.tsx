@@ -35,6 +35,8 @@ const DesignSystemPage = lazy(() => import("@/pages/DesignSystemPage"));
 const NewJobPage = lazy(() => import("@/pages/NewJobPage"));
 const MachinesPage = lazy(() => import("@/pages/MachinesPage"));
 const InventoryPage = lazy(() => import("@/pages/InventoryPage"));
+const ReportBuilderPage = lazy(() => import("@/pages/ReportBuilderPage"));
+const MasterAPIPage = lazy(() => import("@/pages/MasterAPIPage"));
 const OperatorsPage = lazy(() => import("@/pages/OperatorsPage"));
 const OperatorProductivityPage = lazy(() => import("@/pages/OperatorProductivityPage"));
 const OEEDashboard = lazy(() => import("@/pages/OEEDashboard"));
@@ -124,6 +126,7 @@ export function AnimatedRoutes() {
         <Route path="/spc" element={<ProtectedPage fallback={<KPIPageSkeleton />} allowedRoles={['coordinator', 'manager']}><SPCDashboard /></ProtectedPage>} />
         <Route path="/executive" element={<ProtectedPage fallback={<KPIPageSkeleton />} allowedRoles={['manager', 'coordinator']}><ExecutiveDashboard /></ProtectedPage>} />
         <Route path="/bi" element={<ProtectedPage fallback={<KPIPageSkeleton />} allowedRoles={['manager', 'coordinator']}><BIDashboard /></ProtectedPage>} />
+        <Route path="/report-builder" element={<ProtectedPage fallback={<KPIPageSkeleton />} allowedRoles={['manager', 'coordinator']}><ReportBuilderPage /></ProtectedPage>} />
 
         {/* ABC Costing — canonical + alias */}
         <Route path="/abc-costing" element={<ProtectedPage fallback={<KPIPageSkeleton />} allowedRoles={['coordinator', 'manager']}><ABCCostingDashboard /></ProtectedPage>} />
@@ -165,6 +168,7 @@ export function AnimatedRoutes() {
         <Route path="/settings" element={<ProtectedPage fallback={<DashboardPageSkeleton />} allowedRoles={['coordinator', 'manager']}><SettingsPage /></ProtectedPage>} />
         <Route path="/security" element={<ProtectedPage fallback={<DashboardPageSkeleton />} allowedRoles={['coordinator', 'manager']}><SecurityDashboard /></ProtectedPage>} />
         <Route path="/audit" element={<ProtectedPage fallback={<ListPageSkeleton />} allowedRoles={['coordinator', 'manager']}><AuditTrailPage /></ProtectedPage>} />
+        <Route path="/master-api" element={<ProtectedPage fallback={<KPIPageSkeleton />} allowedRoles={['coordinator', 'manager']}><MasterAPIPage /></ProtectedPage>} />
         <Route path="/code-quality" element={<ProtectedPage fallback={<KPIPageSkeleton />} allowedRoles={['coordinator', 'manager']}><CodeQualityDashboard /></ProtectedPage>} />
         <Route path="/admin/telemetria" element={<ProtectedPage fallback={<KPIPageSkeleton />} allowedRoles={['coordinator', 'manager']}><AdminTelemetriaPage /></ProtectedPage>} />
 
