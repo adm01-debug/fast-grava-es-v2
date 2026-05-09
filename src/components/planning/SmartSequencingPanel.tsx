@@ -73,16 +73,26 @@ export function SmartSequencingPanel() {
                   {suggestion.machineCode}
                 </Badge>
                 <div className="flex flex-col items-end gap-1">
-                  <div className="flex items-center gap-1 text-xs font-medium text-yellow-400">
-                    <Zap className="h-3 w-3" />
-                    {suggestion.estimatedSavings} min economizados
+                  <div className="flex items-center gap-1.5">
+                    <Badge variant="outline" className={cn(
+                      "text-[9px] font-black uppercase px-1.5 h-4",
+                      suggestion.setupComplexity === 'high' ? "bg-red-500/10 text-red-500 border-red-500/20" : 
+                      suggestion.setupComplexity === 'medium' ? "bg-amber-500/10 text-amber-500 border-amber-500/20" : 
+                      "bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
+                    )}>
+                      Setup {suggestion.setupComplexity === 'high' ? 'Complexo' : suggestion.setupComplexity === 'medium' ? 'Médio' : 'Simples'}
+                    </Badge>
+                  </div>
+                  <div className="flex items-center gap-1 text-xs font-bold text-yellow-500">
+                    <Zap className="h-3 w-3 fill-yellow-500/20" />
+                    -{suggestion.estimatedSavings}m setup
                   </div>
                   <div className={cn(
-                    "text-[9px] font-bold flex items-center gap-1",
-                    suggestion.bottleneckRisk === 'high' ? "text-red-400" : suggestion.bottleneckRisk === 'medium' ? "text-orange-400" : "text-emerald-400"
+                    "text-[10px] font-black flex items-center gap-1 uppercase tracking-tighter",
+                    suggestion.bottleneckRisk === 'high' ? "text-red-500" : suggestion.bottleneckRisk === 'medium' ? "text-amber-500" : "text-emerald-500"
                   )}>
-                    <Activity className="h-2 w-2" />
-                    Risco: {suggestion.bottleneckRisk === 'high' ? 'Alto' : suggestion.bottleneckRisk === 'medium' ? 'Médio' : 'Baixo'}
+                    <Activity className="h-2.5 w-2.5" />
+                    {suggestion.bottleneckRisk === 'high' ? 'Crítico' : suggestion.bottleneckRisk === 'medium' ? 'Alerta' : 'Estável'}
                   </div>
                 </div>
               </div>
