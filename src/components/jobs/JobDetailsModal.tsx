@@ -36,6 +36,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { JobCostsTab } from "./JobCostsTab";
 import { JobTraceabilityTab } from "./JobTraceabilityTab";
 import { JobQualityTab } from "./JobQualityTab";
+import { JobInstructionsTab } from "./JobInstructionsTab";
 import { useState } from "react";
 
 interface JobDetailsModalProps {
