@@ -177,6 +177,53 @@ export default function PendingQueue() {
     setIsModalOpen(true);
   };
 
+  const handleSelectJob = (id: string) => {
+    setSelectedJobs(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const handleSelectAll = () => {
+    if (selectedJobs.size === filteredJobs.length) {
+      setSelectedJobs(new Set());
+    } else {
+      setSelectedJobs(new Set(filteredJobs.map(j => j.id)));
+    }
+  };
+
+  const handleBulkAction = async (action: 'production' | 'ready' | 'delete') => {
+    if (selectedJobs.size === 0) return;
+
+    try {
+      if (action === 'delete') {
+        const { error } = await supabase.from('jobs').delete().in('id', Array.from(selectedJobs));
+        if (error) throw error;
+        toast.success(`${selectedJobs.size} jobs excluídos`);
+      } else {
+        const updateData: Record<string, any> = { 
+          status: action,
+          updated_at: new Date().toISOString()
+        };
+        if (action === 'production') {
+          updateData.actual_start_time = new Date().toISOString();
+        }
+        
+        const { error } = await supabase.from('jobs').update(updateData).in('id', Array.from(selectedJobs));
+        if (error) throw error;
+        toast.success(`${selectedJobs.size} jobs movidos para "${action === 'production' ? 'Em Produção' : 'No Jeito'}"`);
+      }
+      
+      setSelectedJobs(new Set());
+      queryClient.invalidateQueries({ queryKey: ['jobs'] });
+    } catch (error) {
+      console.error('Error in bulk action:', error);
+      toast.error('Erro ao processar ação em massa');
+    }
+  };
+
   if (isLoadingJobs || isLoadingTechniques) {
     return (
       <MainLayout>
