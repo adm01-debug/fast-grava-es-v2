@@ -2,6 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
+import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { Moon, RefreshCw, Database, Shield, Palette, AlertTriangle } from 'lucide-react';
 import { useTheme } from 'next-themes';
