@@ -294,6 +294,7 @@ export default function TPMDashboard() {
           <TabsContent value="predictive" className="space-y-6 animate-fade-in">
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
               <div className="lg:col-span-1 space-y-6">
+                <HolographicReliabilityWidget />
                 <PredictiveHealthCard machineId={machines[0]?.id} />
                 <Card className="glass-card">
                   <CardContent className="pt-6">
