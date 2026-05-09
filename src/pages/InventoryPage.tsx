@@ -220,6 +220,11 @@ function InventoryCard({ item, onMovement }: { item: InventoryItem, onMovement: 
   const [quantity, setQuantity] = useState('1');
 
   const handleRecord = async () => {
+    if (movementType === 'OUT' && Number(quantity) > item.current_stock) {
+      toast.error('Saldo insuficiente para realizar a saída');
+      return;
+    }
+
     await onMovement({
       item_id: item.id,
       type: movementType,
@@ -321,6 +326,22 @@ function InventoryCard({ item, onMovement }: { item: InventoryItem, onMovement: 
 
 function InventoryHistoryTable() {
   const { data: movements, isLoading } = useInventoryMovements();
+  const { deleteMovement } = useInventory();
+  const [rollbackId, setRollbackId] = useState<string | null>(null);
+
+  const handleRollback = async (m: any) => {
+    setRollbackId(m.id);
+  };
+
+  const confirmRollback = async () => {
+    if (!rollbackId) return;
+    try {
+      await deleteMovement(rollbackId);
+      setRollbackId(null);
+    } catch (error) {
+      // Handled by hook
+    }
+  };
 
   if (isLoading) return <div className="p-8 text-center"><Skeleton className="h-20 w-full" /></div>;
 
