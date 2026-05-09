@@ -102,20 +102,23 @@ export default function DigitalTwin() {
           </div>
 
           <div className="space-y-6">
-            <Card className="glass-card border-primary/20 bg-primary/5">
+            <SupplyChainPanel />
+            <CostSimulationCard />
+            
+            <Card className="glass-card border-primary/20 bg-primary/5 relative overflow-hidden group">
                <CardHeader>
                   <CardTitle className="text-sm font-black uppercase flex items-center gap-2">
                     <Sparkles className="h-4 w-4 text-primary" />
-                    Insight de Simulação
+                    Insight Espacial IA
                   </CardTitle>
                </CardHeader>
                <CardContent className="space-y-4">
                   <div className="p-3 rounded-lg bg-background/50 border border-border/50 text-[11px] leading-relaxed">
-                     <p className="font-bold text-primary mb-1">Cenário A: Aumento de 20% na Carga</p>
-                     A IA simulou um aumento de demanda. O gargalo será a <strong>Área de Acabamento</strong> em aproximadamente 4 horas. Sugere-se redistribuir 1 operador da Serigrafia.
+                     <p className="font-bold text-primary mb-1">Otimização de Layout</p>
+                     A IA identificou que mover o <strong>Almoxarifado de Tintas</strong> 5 metros para a esquerda reduzirá o tempo de deslocamento em 12%.
                   </div>
                   <Button variant="outline" size="sm" className="w-full text-[10px] font-bold uppercase h-8 border-primary/30">
-                     Aplicar Otimização
+                     Ver Detalhes do Estudo
                   </Button>
                </CardContent>
             </Card>
