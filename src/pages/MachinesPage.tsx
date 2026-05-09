@@ -19,6 +19,7 @@ import { MaintenanceExecutionModal } from '@/components/tpm/MaintenanceExecution
 import { CreateScheduleModal } from '@/components/tpm/CreateScheduleModal';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
+import { MachineReliabilityTab } from '@/components/machines/MachineReliabilityTab';
 
 export default function MachinesPage() {
   const { machines, techniques, isLoadingMachines, getTechniqueById } = useSchedulingData();
