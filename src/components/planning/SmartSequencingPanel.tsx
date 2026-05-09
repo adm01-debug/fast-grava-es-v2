@@ -107,9 +107,12 @@ export function SmartSequencingPanel() {
                 </div>
               </div>
 
-              <div className="space-y-2 mb-4">
-                <div className="flex items-center justify-between text-[10px] text-muted-foreground uppercase tracking-widest">
-                  <span>Agrupamento por Cor</span>
+              <div className="space-y-2 mb-4 bg-muted/20 p-2 rounded-lg border border-border/50">
+                <div className="flex items-center justify-between text-[9px] font-black text-muted-foreground uppercase tracking-wider">
+                  <div className="flex items-center gap-1">
+                    <LayoutPanelTop className="h-2.5 w-2.5" />
+                    Agrupamento AI
+                  </div>
                   <span>{suggestion.optimizedSequence.length} jobs</span>
                 </div>
                 <div className="flex gap-1">
