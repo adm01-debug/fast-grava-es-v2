@@ -9,6 +9,7 @@ import { DbJob, DbTechnique, DbMachine } from '@/hooks/useJobs';
 import { format, differenceInHours, differenceInDays } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { ViewMode } from './KanbanFiltersBar';
+import { useJobInventoryCheck } from '@/hooks/useJobInventoryCheck';
 
 interface DraggableJobCardProps {
   job: DbJob;
