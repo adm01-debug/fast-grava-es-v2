@@ -33,6 +33,7 @@ import { AuditEntryCard } from "@/components/audit/AuditEntryCard";
 import { HistoryPeriodFilter, type HistoryPeriodValue } from "@/components/audit/HistoryPeriodFilter";
 import { Skeleton } from "@/components/ui/skeleton";
 import { JobCostsTab } from "./JobCostsTab";
+import { JobTraceabilityTab } from "./JobTraceabilityTab";
 import { useState } from "react";
 
 interface JobDetailsModalProps {
