@@ -11,6 +11,7 @@ export type {
 export {
   useTechnicalSheets,
   useTechnicalSheetDetails,
+  useTechnicalSheetAudit,
 } from './technical-sheets/useTechnicalSheetsQueries';
 
 export { useTechnicalSheetMutations } from './technical-sheets/useTechnicalSheetMutations';
