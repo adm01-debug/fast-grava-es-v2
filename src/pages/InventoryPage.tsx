@@ -101,7 +101,7 @@ export default function InventoryPage() {
                   <ArrowLeftRight className="h-5 w-5 text-blue-500" />
                 </div>
               </div>
-              <p className="text-3xl font-bold">24</p>
+              <p className="text-3xl font-bold">{stats?.movementsCount24h || 0}</p>
               <p className="text-xs text-muted-foreground uppercase font-semibold tracking-tighter">Movimentações (24h)</p>
             </CardContent>
           </Card>
