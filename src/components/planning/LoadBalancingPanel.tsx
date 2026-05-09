@@ -3,8 +3,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { 
+  Dialog, DialogContent, DialogHeader, DialogTitle,
+  DialogDescription, DialogFooter
+} from '@/components/ui/dialog';
+import { 
   Scale, ArrowRight, TrendingDown, AlertCircle, 
-  CheckCircle2, Info, ArrowLeftRight
+  CheckCircle2, Info, ArrowLeftRight, Sparkles, Clock, Zap
 } from 'lucide-react';
 import { useLoadBalancing, LoadBalancingSuggestion } from '@/hooks/useLoadBalancing';
 import { motion, AnimatePresence } from 'framer-motion';
