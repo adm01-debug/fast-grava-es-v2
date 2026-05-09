@@ -17,6 +17,7 @@ import { SequencingTab } from '@/components/efficiency/SequencingTab';
 import { BalancingTab } from '@/components/efficiency/BalancingTab';
 import { BottlenecksTab } from '@/components/efficiency/BottlenecksTab';
 import { HistoryTab } from '@/components/efficiency/HistoryTab';
+import { EfficiencyAlertHistoryWidget } from '@/components/dashboard/EfficiencyAlertHistoryWidget';
 
 export default function EfficiencyDashboard() {
   const navigate = useNavigate();
@@ -81,7 +82,10 @@ export default function EfficiencyDashboard() {
           <TabsContent value="sequencing" className="space-y-4"><SequencingTab suggestions={sequencingSuggestions} /></TabsContent>
           <TabsContent value="balancing" className="space-y-4"><BalancingTab machineLoads={allMachineLoads} suggestions={balancingSuggestions} /></TabsContent>
           <TabsContent value="bottlenecks" className="space-y-4"><BottlenecksTab alerts={alerts} capacityByDate={capacityByDate} /></TabsContent>
-          <TabsContent value="history" className="space-y-4"><HistoryTab resolvedAlerts={resolvedAlerts} isLoading={historyLoading} /></TabsContent>
+          <TabsContent value="history" className="space-y-4">
+            <EfficiencyAlertHistoryWidget />
+            <HistoryTab resolvedAlerts={resolvedAlerts} isLoading={historyLoading} />
+          </TabsContent>
         </Tabs>
       </div>
     </MainLayout>
