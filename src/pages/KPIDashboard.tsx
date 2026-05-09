@@ -687,6 +687,32 @@ export default function KPIDashboard() {
                   </CardContent>
                 </Card>
 
+                 <Card className="glass-card">
+                  <CardHeader>
+                    <CardTitle className="text-base flex items-center gap-2">
+                      <Package className="h-4 w-4 text-purple-400" />
+                      Performance por Produto
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {kpis.productivityByProduct.slice(0, 3).map(prod => (
+                      <div key={prod.productName} className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-medium truncate max-w-[120px]">{prod.productName}</span>
+                          <span className="text-xs font-mono">{prod.totalPieces.toLocaleString()} pcs</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Progress value={Math.max(5, 100 - prod.lossRate)} className="h-1 flex-1" />
+                          <span className="text-[10px] text-muted-foreground">{prod.lossRate.toFixed(1)}% perdas</span>
+                        </div>
+                      </div>
+                    ))}
+                    {kpis.productivityByProduct.length === 0 && (
+                      <p className="text-xs text-muted-foreground text-center py-4">Sem dados de produtos</p>
+                    )}
+                  </CardContent>
+                </Card>
+
                 <Card className="glass-card bg-primary/5 border-primary/20 overflow-hidden relative">
                   <div className="absolute -right-4 -bottom-4 opacity-10">
                     <Target className="h-32 w-32" />
