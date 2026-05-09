@@ -38,6 +38,8 @@ import { JobStatus } from "@/types/scheduling";
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { SmartSequencingPanel } from "@/components/planning/SmartSequencingPanel";
 import { LoadBalancingPanel } from "@/components/planning/LoadBalancingPanel";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
+import { Progress } from "@/components/ui/progress";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { motion, AnimatePresence } from "framer-motion";
 import { useDataExport } from "@/hooks/useDataExport";
