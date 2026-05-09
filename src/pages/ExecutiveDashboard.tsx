@@ -8,6 +8,9 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Progress } from '@/components/ui/progress';
 import { useExecutiveDashboard, getDateRangePresets, DateRange } from '@/hooks/useExecutiveDashboard';
 import { exportExecutiveDashboardPDF } from '@/lib/pdfExport';
+import { exportExecutiveDashboardExcel } from '@/lib/excelExport';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { 
   XAxis, 
   YAxis, 
@@ -42,23 +45,61 @@ import {
   BrainCircuit,
   ShieldCheck,
   Sparkles,
-  ShieldAlert
+  ShieldAlert,
+  FileSpreadsheet,
+  Settings2
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { VoiceButton } from '@/components/voice/VoiceCommands';
 import { AutonomousEventLog } from '@/components/autonomous/AutonomousEventLog';
+import { 
+  Dialog, 
+  DialogContent, 
+  DialogHeader, 
+  DialogTitle, 
+  DialogTrigger,
+  DialogFooter
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 export default function ExecutiveDashboard() {
   const datePresets = getDateRangePresets();
-  const [selectedRange, setSelectedRange] = useState<DateRange>(datePresets[1]); // Este Mês
+  const [selectedRange, setSelectedRange] = useState<DateRange>(datePresets[2] || datePresets[1]); // Este Mês
+  const [machineId, setMachineId] = useState<string>('all');
+  const [techniqueId, setTechniqueId] = useState<string>('all');
+  const [globalGoal, setGlobalGoal] = useState<number>(85);
+  const [isGoalDialogOpen, setIsGoalDialogOpen] = useState(false);
+  const [tempGoal, setTempGoal] = useState<string>('85');
 
-  const { data: kpis, isLoading, error } = useExecutiveDashboard(selectedRange);
+  const { data: machines } = useQuery({
+    queryKey: ['machines-list'],
+    queryFn: async () => {
+      const { data } = await supabase.from('machines').select('id, name, code');
+      return data || [];
+    }
+  });
+
+  const { data: techniques } = useQuery({
+    queryKey: ['techniques-list'],
+    queryFn: async () => {
+      const { data } = await supabase.from('techniques').select('id, name');
+      return data || [];
+    }
+  });
+
+  const { data: kpis, isLoading, error } = useExecutiveDashboard(
+    selectedRange, 
+    { 
+      machineId: machineId === 'all' ? undefined : machineId,
+      techniqueId: techniqueId === 'all' ? undefined : techniqueId
+    }
+  );
 
   const handleExportPDF = async () => {
     if (!kpis) return;
-    
     try {
       await exportExecutiveDashboardPDF({
         title: 'Dashboard Executivo',
@@ -67,10 +108,24 @@ export default function ExecutiveDashboard() {
       });
       toast.success('Relatório PDF exportado com sucesso!');
     } catch (error) {
-      if (import.meta.env.DEV) console.error('Error exporting PDF:', error);
-      toast.error('Erro ao exportar relatório');
+      toast.error('Erro ao exportar PDF');
     }
   };
+
+  const handleExportExcel = async () => {
+    if (!kpis) return;
+    try {
+      await exportExecutiveDashboardExcel({
+        title: 'Dashboard Executivo',
+        dateRange: selectedRange,
+        kpis,
+      });
+      toast.success('Relatório Excel exportado com sucesso!');
+    } catch (error) {
+      toast.error('Erro ao exportar Excel');
+    }
+  };
+
 
   if (isLoading) {
     return (
