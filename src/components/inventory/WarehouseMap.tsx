@@ -15,12 +15,23 @@ interface WarehouseMapProps {
 }
 
 export function WarehouseMap({ items }: WarehouseMapProps) {
+  const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
+  const [newLocation, setNewLocation] = useState('');
+  const [isTransferring, setIsTransferring] = useState(false);
+
   // Group items by location prefix (e.g., A1, A2 -> Area A)
   const areas = ['A', 'B', 'C', 'D'];
   const levels = [1, 2, 3, 4];
 
   const getItemsAt = (area: string, level: number) => {
-    return items.filter(item => item.location?.startsWith(`${area}${level}`));
+    return items.filter(item => item.location === `${area}${level}`);
+  };
+
+  const handleTransfer = (location: string) => {
+    const locationItems = items.filter(item => item.location === location);
+    if (locationItems.length === 0) return;
+    setSelectedLocation(location);
+    setIsTransferring(true);
   };
 
   return (
