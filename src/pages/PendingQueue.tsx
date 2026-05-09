@@ -216,6 +216,23 @@ export default function PendingQueue() {
                 {stats.urgent} urgentes
               </Badge>
             )}
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="h-8 border-primary/20 hover:bg-primary/5"
+              onClick={() => exportData({ 
+                fileName: `pendencias_${new Date().toISOString().split('T')[0]}`,
+                filters: {
+                  status: pendingStatuses,
+                  ...(selectedTechnique !== 'all' && { technique_id: selectedTechnique }),
+                  ...(selectedPriority !== 'all' && { priority: selectedPriority })
+                }
+              })}
+              disabled={isExporting || filteredJobs.length === 0}
+            >
+              <Download className="h-4 w-4 mr-1" />
+              {isExporting ? 'Exportando...' : 'Exportar CSV'}
+            </Button>
           </div>
         </div>
 
