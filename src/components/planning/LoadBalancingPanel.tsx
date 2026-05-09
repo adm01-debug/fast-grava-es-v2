@@ -20,6 +20,7 @@ export function LoadBalancingPanel() {
   const { suggestions, byTechnique, isLoading } = useLoadBalancing();
   const [isApplying, setIsApplying] = useState(false);
   const [showAll, setShowAll] = useState(false);
+  const [selectedSuggestion, setSelectedSuggestion] = useState<LoadBalancingSuggestion | null>(null);
   const queryClient = useQueryClient();
 
   const handleApplyBalancing = async (suggestion: LoadBalancingSuggestion) => {
