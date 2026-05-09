@@ -111,9 +111,24 @@ export function DroppableColumn({
 
   const sortedJobs = useMemo(() => {
     return [...jobs].sort((a, b) => {
+      // 1. Status severity (exceptions first if in the same column, though status columns are usually distinct)
+      const statusDiff = (statusOrder[a.status] || 0) - (statusOrder[b.status] || 0);
+      if (statusDiff !== 0) return statusDiff;
+
+      // 2. Priority (High to Low)
       const priorityDiff = (priorityOrder[b.priority] || 0) - (priorityOrder[a.priority] || 0);
       if (priorityDiff !== 0) return priorityDiff;
-      return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+
+      // 3. Date (Ascending - closer first)
+      if (a.scheduled_date && b.scheduled_date) {
+        const dateDiff = new Date(a.scheduled_date).getTime() - new Date(b.scheduled_date).getTime();
+        if (dateDiff !== 0) return dateDiff;
+      }
+      if (a.scheduled_date) return -1;
+      if (b.scheduled_date) return 1;
+
+      // 4. Creation (Newest first)
+      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
     });
   }, [jobs]);
 
