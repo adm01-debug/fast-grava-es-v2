@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Switch } from '@/components/ui/switch';
-import { useKPIs, formatDuration } from '@/hooks/useKPIs';
+import { useKPIs, formatDuration, KPIPeriod, KPITargets } from '@/hooks/useKPIs';
 import { useOperatorProductivity } from '@/hooks/useOperatorProductivity';
 import { useGoalAlerts } from '@/hooks/useGoalAlerts';
 import { useBIExport } from '@/hooks/useBIExport';
@@ -62,7 +62,10 @@ import {
 
 export default function KPIDashboard() {
   const [activeTab, setActiveTab] = useState('overview');
-  const { data: kpis, isLoading: isLoadingKPIs } = useKPIs();
+  const [period, setPeriod] = useState<KPIPeriod>('all');
+  const [customTargets, setCustomTargets] = useState<Partial<KPITargets>>({});
+  
+  const { data: kpis, isLoading: isLoadingKPIs } = useKPIs(period, customTargets);
   const { operators, isLoading: isLoadingOperators } = useOperatorProductivity('all');
   const { goalAlerts } = useGoalAlerts({ enableNotifications: false });
   const { handleExport } = useBIExport({ periodJobsList: [] });
@@ -73,6 +76,8 @@ export default function KPIDashboard() {
     loss: true,
     delayed: true
   });
+  
+  const [isEditingTargets, setIsEditingTargets] = useState(false);
 
   const isLoading = isLoadingKPIs || isLoadingOperators;
 
@@ -149,47 +154,117 @@ export default function KPIDashboard() {
               </DropdownMenuContent>
             </DropdownMenu>
             
-            <Button variant="outline" size="sm" className="gap-2 glass-button hidden sm:flex">
-              <Calendar className="h-4 w-4" />
-              Últimos 7 dias
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="gap-2 glass-button">
+                  <Calendar className="h-4 w-4" />
+                  {period === 'all' ? 'Todo o período' : 
+                   period === 'day' ? 'Hoje' : 
+                   period === 'week' ? 'Últimos 7 dias' : 
+                   period === 'month' ? 'Últimos 30 dias' : 'Último ano'}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => setPeriod('day')}>Hoje</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setPeriod('week')}>Últimos 7 dias</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setPeriod('month')}>Últimos 30 dias</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setPeriod('year')}>Último ano</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setPeriod('all')}>Todo o período</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="icon" className="glass-button h-9 w-9">
                   <Settings2 className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuContent align="end" className="w-64">
                 <DropdownMenuLabel>Personalizar Dashboard</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <div className="p-2 space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs">Taxa de Conclusão</span>
-                    <Switch 
-                      checked={visibleKPIs.completion} 
-                      onCheckedChange={(val) => setVisibleKPIs(prev => ({ ...prev, completion: val }))}
-                    />
+                <div className="p-3 space-y-4">
+                  <div className="space-y-2">
+                    <p className="text-[10px] uppercase font-bold text-muted-foreground">Visibilidade</p>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs">Taxa de Conclusão</span>
+                      <Switch 
+                        checked={visibleKPIs.completion} 
+                        onCheckedChange={(val) => setVisibleKPIs(prev => ({ ...prev, completion: val }))}
+                      />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs">Ocupação Média</span>
+                      <Switch 
+                        checked={visibleKPIs.occupancy} 
+                        onCheckedChange={(val) => setVisibleKPIs(prev => ({ ...prev, occupancy: val }))}
+                      />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs">Índice de Perdas</span>
+                      <Switch 
+                        checked={visibleKPIs.loss} 
+                        onCheckedChange={(val) => setVisibleKPIs(prev => ({ ...prev, loss: val }))}
+                      />
+                    </div>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs">Ocupação Média</span>
-                    <Switch 
-                      checked={visibleKPIs.occupancy} 
-                      onCheckedChange={(val) => setVisibleKPIs(prev => ({ ...prev, occupancy: val }))}
-                    />
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs">Índice de Perdas</span>
-                    <Switch 
-                      checked={visibleKPIs.loss} 
-                      onCheckedChange={(val) => setVisibleKPIs(prev => ({ ...prev, loss: val }))}
-                    />
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs">Jobs Atrasados</span>
-                    <Switch 
-                      checked={visibleKPIs.delayed} 
-                      onCheckedChange={(val) => setVisibleKPIs(prev => ({ ...prev, delayed: val }))}
-                    />
+
+                  <DropdownMenuSeparator />
+                  
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <p className="text-[10px] uppercase font-bold text-muted-foreground">Metas (Targets)</p>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="h-6 px-2 text-[10px]"
+                        onClick={() => setIsEditingTargets(!isEditingTargets)}
+                      >
+                        {isEditingTargets ? 'Fechar' : 'Editar'}
+                      </Button>
+                    </div>
+                    
+                    {isEditingTargets ? (
+                      <div className="space-y-3 pt-2">
+                        <div className="space-y-1">
+                          <label className="text-[10px]">Meta de Conclusão (%)</label>
+                          <Input 
+                            type="number" 
+                            className="h-7 text-xs" 
+                            defaultValue={kpis.targets.completionRate}
+                            onBlur={(e) => setCustomTargets(prev => ({ ...prev, completionRate: Number(e.target.value) }))}
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-[10px]">Meta de Ocupação (%)</label>
+                          <Input 
+                            type="number" 
+                            className="h-7 text-xs" 
+                            defaultValue={kpis.targets.occupancyRate}
+                            onBlur={(e) => setCustomTargets(prev => ({ ...prev, occupancyRate: Number(e.target.value) }))}
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-[10px]">Meta de Perda Máx (%)</label>
+                          <Input 
+                            type="number" 
+                            className="h-7 text-xs" 
+                            defaultValue={kpis.targets.lossRate}
+                            onBlur={(e) => setCustomTargets(prev => ({ ...prev, lossRate: Number(e.target.value) }))}
+                          />
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-2 gap-2 pt-1">
+                        <div className="bg-muted/30 p-2 rounded text-center">
+                          <p className="text-[10px] text-muted-foreground">Conclusão</p>
+                          <p className="text-xs font-bold">{kpis.targets.completionRate}%</p>
+                        </div>
+                        <div className="bg-muted/30 p-2 rounded text-center">
+                          <p className="text-[10px] text-muted-foreground">Ocupação</p>
+                          <p className="text-xs font-bold">{kpis.targets.occupancyRate}%</p>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </DropdownMenuContent>
@@ -217,7 +292,7 @@ export default function KPIDashboard() {
                   title="Taxa de Conclusão" 
                   description="Percentual de jobs finalizados em relação ao total."
                   formula="Jobs Concluídos / Total de Jobs"
-                  target="≥ 95%"
+                  target={`≥ ${kpis.targets.completionRate}%`}
                 >
                   <Card className="glass-card hover-scale relative overflow-hidden group">
                     <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -238,7 +313,7 @@ export default function KPIDashboard() {
                       </div>
                       <div className="relative mt-3">
                         <Progress value={completionRate} className="h-2 [&>div]:bg-green-500" />
-                        <div className="absolute top-[-4px] left-[95%] w-[2px] h-4 bg-foreground/20" title="Meta: 95%" />
+                        <div className="absolute top-[-4px] w-[2px] h-4 bg-foreground/20" style={{ left: `${kpis.targets.completionRate}%` }} title={`Meta: ${kpis.targets.completionRate}%`} />
                       </div>
                     </CardContent>
                   </Card>
@@ -250,7 +325,7 @@ export default function KPIDashboard() {
                   title="Ocupação Média" 
                   description="Percentual médio de utilização das máquinas."
                   formula="Tempo em Uso / Tempo Disponível"
-                  target="≥ 80%"
+                  target={`≥ ${kpis.targets.occupancyRate}%`}
                 >
                   <Card className="glass-card hover-scale group">
                     <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -269,7 +344,7 @@ export default function KPIDashboard() {
                       </div>
                       <div className="relative mt-3">
                         <Progress value={kpis.averageOccupancy} className="h-2 [&>div]:bg-cyan-500" />
-                        <div className="absolute top-[-4px] left-[80%] w-[2px] h-4 bg-foreground/20" title="Meta: 80%" />
+                        <div className="absolute top-[-4px] w-[2px] h-4 bg-foreground/20" style={{ left: `${kpis.targets.occupancyRate}%` }} title={`Meta: ${kpis.targets.occupancyRate}%`} />
                       </div>
                     </CardContent>
                   </Card>
@@ -612,6 +687,32 @@ export default function KPIDashboard() {
                   </CardContent>
                 </Card>
 
+                 <Card className="glass-card">
+                  <CardHeader>
+                    <CardTitle className="text-base flex items-center gap-2">
+                      <Package className="h-4 w-4 text-purple-400" />
+                      Performance por Produto
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {kpis.productivityByProduct.slice(0, 3).map(prod => (
+                      <div key={prod.productName} className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-medium truncate max-w-[120px]">{prod.productName}</span>
+                          <span className="text-xs font-mono">{prod.totalPieces.toLocaleString()} pcs</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Progress value={Math.max(5, 100 - prod.lossRate)} className="h-1 flex-1" />
+                          <span className="text-[10px] text-muted-foreground">{prod.lossRate.toFixed(1)}% perdas</span>
+                        </div>
+                      </div>
+                    ))}
+                    {kpis.productivityByProduct.length === 0 && (
+                      <p className="text-xs text-muted-foreground text-center py-4">Sem dados de produtos</p>
+                    )}
+                  </CardContent>
+                </Card>
+
                 <Card className="glass-card bg-primary/5 border-primary/20 overflow-hidden relative">
                   <div className="absolute -right-4 -bottom-4 opacity-10">
                     <Target className="h-32 w-32" />
@@ -688,54 +789,54 @@ export default function KPIDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {kpis.delayedJobs > 0 && (
-                    <div className="flex items-start gap-4 p-4 rounded-xl border border-primary/20 bg-primary/5">
-                      <div className="p-2 rounded-lg bg-primary/20">
-                        <AlertTriangle className="h-5 w-5 text-primary" />
+                  {kpis.anomalies.map(anomaly => (
+                    <div key={anomaly.id} className={cn(
+                      "flex items-start gap-4 p-4 rounded-xl border animate-in fade-in slide-in-from-left-4 duration-300",
+                      anomaly.severity === 'high' ? "border-primary/40 bg-primary/10" : "border-amber-500/20 bg-amber-500/5"
+                    )}>
+                      <div className={cn(
+                        "p-2 rounded-lg",
+                        anomaly.severity === 'high' ? "bg-primary/20" : "bg-amber-500/20"
+                      )}>
+                        {anomaly.type === 'loss' ? <Percent className={cn("h-5 w-5", anomaly.severity === 'high' ? "text-primary" : "text-amber-500")} /> : 
+                         anomaly.type === 'delay' ? <Clock className={cn("h-5 w-5", anomaly.severity === 'high' ? "text-primary" : "text-amber-500")} /> : 
+                         <AlertTriangle className={cn("h-5 w-5", anomaly.severity === 'high' ? "text-primary" : "text-amber-500")} />}
                       </div>
                       <div className="flex-1">
                         <div className="flex items-center justify-between">
-                          <h4 className="font-bold text-sm">Gargalo Detectado: Jobs Atrasados</h4>
-                          <span className="text-[10px] text-muted-foreground uppercase">Há 12 min</span>
+                          <h4 className="font-bold text-sm">
+                            {anomaly.type === 'loss' ? 'Perda Excessiva' : 
+                             anomaly.type === 'delay' ? 'Risco de Atraso' : 'Anomalia'}
+                          </h4>
+                          <span className="text-[10px] text-muted-foreground uppercase">Tempo real</span>
                         </div>
                         <p className="text-xs text-muted-foreground mt-1">
-                          Existem {kpis.delayedJobs} jobs com status de atraso que podem impactar a meta diária de entrega.
+                          {anomaly.message}
                         </p>
-                        <Button variant="link" size="sm" className="h-auto p-0 text-primary text-xs mt-2">
-                          Ver jobs afetados <ArrowUpRight className="h-3 w-3 ml-1" />
-                        </Button>
-                      </div>
-                    </div>
-                  )}
-
-                  {kpis.lossRate > 3 && (
-                    <div className="flex items-start gap-4 p-4 rounded-xl border border-amber-500/20 bg-amber-500/5">
-                      <div className="p-2 rounded-lg bg-amber-500/20">
-                        <TrendingDown className="h-5 w-5 text-amber-400" />
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center justify-between">
-                          <h4 className="font-bold text-sm">Aumento na Taxa de Perdas</h4>
-                          <span className="text-[10px] text-muted-foreground uppercase">Há 45 min</span>
+                        <div className="flex items-center gap-2 mt-2">
+                          <Badge variant="outline" className="text-[10px] h-5">{anomaly.entityName}</Badge>
+                          <Button variant="link" size="sm" className="h-auto p-0 text-primary text-xs">
+                            Analisar causa raiz <ArrowUpRight className="h-3 w-3 ml-1" />
+                          </Button>
                         </div>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          A taxa de perdas subiu para {kpis.lossRate.toFixed(2)}%, ultrapassando o limite crítico de 3%.
-                        </p>
                       </div>
                     </div>
-                  )}
+                  ))}
 
-                  <div className="flex items-center justify-center py-12 border-2 border-dashed border-muted/20 rounded-xl">
-                    <div className="text-center">
-                      <p className="text-sm text-muted-foreground italic">Fim do histórico de alertas recentes</p>
+                  {kpis.anomalies.length === 0 && (
+                    <div className="text-center py-12 space-y-3">
+                      <div className="h-12 w-12 rounded-full bg-green-500/10 flex items-center justify-center mx-auto">
+                        <CheckCircle2 className="h-6 w-6 text-green-500" />
+                      </div>
+                      <p className="text-sm font-medium">Nenhum desvio crítico detectado</p>
+                      <p className="text-xs text-muted-foreground">O sistema está operando dentro dos parâmetros de normalidade.</p>
                     </div>
-                  </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
           </TabsContent>
         </Tabs>
-        </div>
       </div>
     </MainLayout>
   );
