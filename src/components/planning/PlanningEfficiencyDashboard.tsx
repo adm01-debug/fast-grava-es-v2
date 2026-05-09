@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { 
   BarChart3, Target, Zap, Clock, TrendingUp, 
   ArrowUpRight, AlertTriangle, Sparkles, ChevronDown, ChevronUp, Activity,
-  LayoutGrid
+  LayoutGrid, BrainCircuit, History
 } from 'lucide-react';
 import { useSchedulingData } from '@/hooks/useSchedulingData';
 import { useSmartSequencingWithActions } from '@/hooks/useSmartSequencingWithActions';
