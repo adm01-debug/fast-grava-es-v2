@@ -201,6 +201,7 @@ export function OEEMachineTable({ machines }: OEEMachineTableProps) {
                 </TableHead>
                 <TableHead>Jobs</TableHead>
                 <TableHead>Classificação</TableHead>
+                <TableHead></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
