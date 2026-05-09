@@ -225,13 +225,19 @@ export function DraggableJobCard({ job, technique, machine, onClick, viewMode = 
         </div>
       )}
 
-      {/* Deadline warning */}
-      {deadline && (
-        <div className="mt-1.5">
-          <Badge variant="outline" className={cn("text-[10px] px-1.5 py-0 h-5", deadline.color)}>
-            <Clock className="h-3 w-3 mr-0.5" />
-            {deadline.label}
-          </Badge>
+      {/* Stock warning */}
+      {(outOfStockItems.length > 0 || lowStockItems.length > 0) && job.status !== 'finished' && (
+        <div className="mt-2 flex flex-wrap gap-1">
+          {outOfStockItems.map(item => (
+            <Badge key={item} variant="destructive" className="text-[8px] px-1 py-0 h-4 font-black uppercase">
+              SEM {item}
+            </Badge>
+          ))}
+          {outOfStockItems.length === 0 && lowStockItems.map(item => (
+            <Badge key={item} variant="outline" className="text-[8px] px-1 py-0 h-4 font-black uppercase bg-amber-500/10 text-amber-500 border-amber-500/30">
+              BAIXO {item}
+            </Badge>
+          ))}
         </div>
       )}
 
