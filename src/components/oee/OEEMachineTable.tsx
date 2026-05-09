@@ -255,6 +255,18 @@ export function OEEMachineTable({ machines }: OEEMachineTableProps) {
                         {getOEEClassLabel(machine.oeeClass)}
                       </Badge>
                     </TableCell>
+                    <TableCell>
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        onClick={() => {
+                          setSelectedMachineId(machine.machineId);
+                          setDetailsOpen(true);
+                        }}
+                      >
+                        <Eye className="h-4 w-4" />
+                      </Button>
+                    </TableCell>
                   </TableRow>
                 ))
               )}
