@@ -16,7 +16,12 @@ interface OperatorProductivityCardProps {
   teamAverage?: number;
 }
 
-export function OperatorProductivityCard({ operator, goals = [], onAddGoal }: OperatorProductivityCardProps) {
+export function OperatorProductivityCard({ operator, goals = [], onAddGoal, teamAverage }: OperatorProductivityCardProps) {
+  // Personal Best simulation (real PB would be tracked in a separate history table)
+  const personalBest = operator.efficiencyScore * (1.1); // Simulated 10% higher than current for visualization
+  const isAboveTeam = teamAverage ? operator.efficiencyScore > teamAverage : false;
+  const isAbovePB = operator.efficiencyScore > (personalBest / 1.1); // Current is PB
+
   const getEfficiencyColor = (score: number) => {
     if (score >= 80) return 'text-success';
     if (score >= 60) return 'text-warning';
