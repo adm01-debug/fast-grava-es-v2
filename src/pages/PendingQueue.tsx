@@ -62,6 +62,8 @@ export default function PendingQueue() {
   const [selectedJob, setSelectedJob] = useState<DbJob | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSmartSectionOpen, setIsSmartSectionOpen] = useState(false);
+  const [selectedJobs, setSelectedJobs] = useState<Set<string>>(new Set());
+  const queryClient = useQueryClient();
 
   const { exportData, isExporting } = useDataExport('jobs');
 
