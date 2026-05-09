@@ -544,18 +544,33 @@ export default function ExecutiveDashboard() {
                     <XAxis dataKey="date" tick={{ fontSize: 11 }} />
                     <YAxis domain={[0, 100]} tick={{ fontSize: 11 }} />
                     <Tooltip 
-                      formatter={(value: number) => [`${value.toFixed(1)}%`, 'Eficiência']}
+                      formatter={(value: number, name: string) => [
+                        `${value.toFixed(1)}%`, 
+                        name === 'prevEfficiency' ? 'Eficiência (Ant.)' : 'Eficiência'
+                      ]}
                       contentStyle={{ 
                         backgroundColor: 'hsl(var(--card))', 
                         border: '1px solid hsl(var(--border))' 
                       }} 
                     />
+                    {showComparison && (
+                      <Line 
+                        type="monotone" 
+                        dataKey="prevEfficiency" 
+                        stroke="#94a3b8" 
+                        strokeWidth={2}
+                        strokeDasharray="5 5"
+                        dot={false}
+                        name="prevEfficiency"
+                      />
+                    )}
                     <Line 
                       type="monotone" 
                       dataKey="efficiency" 
                       stroke="#22c55e" 
                       strokeWidth={2}
                       dot={{ fill: '#22c55e', r: 3 }}
+                      name="efficiency"
                     />
                   </LineChart>
                 </ResponsiveContainer>
