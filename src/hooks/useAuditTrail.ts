@@ -15,15 +15,24 @@ async function fetchAuditEntries(filters: AuditFilters): Promise<AuditLogEntry[]
   let query = supabase
     .from('audit_log')
     .select('*')
-    .order('created_at', { ascending: false })
-    .limit(filters.limit);
+    .order('created_at', { ascending: false });
 
+  if (filters.limit) query = query.limit(filters.limit);
   if (filters.entityType) query = query.eq('entity_type', filters.entityType);
   if (filters.entityId) query = query.eq('entity_id', filters.entityId);
   if (filters.actorId) query = query.eq('actor_id', filters.actorId);
   if (filters.action) query = query.eq('action', filters.action);
-  if (filters.fromDate) query = query.gte('created_at', filters.fromDate);
-  if (filters.toDate) query = query.lte('created_at', filters.toDate);
+  
+  if (filters.fromDate) {
+    const fromDate = new Date(filters.fromDate);
+    query = query.gte('created_at', fromDate.toISOString());
+  }
+  if (filters.toDate) {
+    const toDate = new Date(filters.toDate);
+    // Include the entire end day
+    toDate.setHours(23, 59, 59, 999);
+    query = query.lte('created_at', toDate.toISOString());
+  }
 
   const { data, error } = await query;
   if (error) {

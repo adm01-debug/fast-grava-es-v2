@@ -31,6 +31,16 @@ export function AlertsWidget() {
     const now = new Date();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
+    // Load alerts configuration for thresholds
+    const storedThresholds = localStorage.getItem('alert-thresholds');
+    let thresholds = { bottleneckRiskMinutes: 480 };
+    if (storedThresholds) {
+      try {
+        const parsed = JSON.parse(storedThresholds);
+        if (parsed.bottleneckRiskMinutes) thresholds.bottleneckRiskMinutes = parsed.bottleneckRiskMinutes;
+      } catch (e) {}
+    }
+
     jobs.filter(job => job.priority === 'urgent' && !job.scheduled_date && !['finished', 'cancelled'].includes(job.status)).forEach(job => {
       alertList.push({ id: `urgent-${job.id}`, type: 'conflict', title: 'Urgente Sem Agendamento', description: `${job.order_number} (${job.client}) precisa ser agendado`, time: job.created_at ? new Date(job.created_at) : now, jobId: job.id, canSchedule: true });
     });
@@ -53,7 +63,7 @@ export function AlertsWidget() {
       if (count < 3) alertList.push({ id: `buffer-${techniqueId}`, type: 'warning', title: 'Buffer Baixo', description: `Técnica ${techniqueId} com apenas ${count} job(s) prontos`, time: now });
     });
 
-    // Bottleneck risks from Kanban columns
+    // Bottleneck risks from Kanban columns with configurable limits
     const columnsWithJobs: Record<string, number> = {};
     jobs.forEach(job => {
       if (!['finished', 'cancelled'].includes(job.status)) {
@@ -62,20 +72,20 @@ export function AlertsWidget() {
     });
 
     Object.entries(columnsWithJobs).forEach(([status, totalTime]) => {
-      if (totalTime > 480) {
+      if (totalTime > thresholds.bottleneckRiskMinutes) {
         alertList.push({
           id: `bottleneck-high-${status}`,
           type: 'delayed',
           title: 'Gargalo Crítico',
-          description: `Coluna "${status}" ultrapassou 8h de carga estimada.`,
+          description: `Coluna "${status}" ultrapassou ${Math.round(thresholds.bottleneckRiskMinutes / 60)}h de carga estimada.`,
           time: now
         });
-      } else if (totalTime > 300) {
+      } else if (totalTime > thresholds.bottleneckRiskMinutes * 0.7) {
         alertList.push({
           id: `bottleneck-medium-${status}`,
           type: 'warning',
           title: 'Aviso de Gargalo',
-          description: `Coluna "${status}" está com carga elevada (>5h).`,
+          description: `Coluna "${status}" está com carga elevada.`,
           time: now
         });
       }
