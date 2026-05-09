@@ -3350,6 +3350,47 @@ export type Database = {
           },
         ]
       }
+      technical_sheet_audit: {
+        Row: {
+          action: string
+          change_summary: string | null
+          created_at: string | null
+          id: string
+          new_data: Json | null
+          previous_data: Json | null
+          technical_sheet_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          change_summary?: string | null
+          created_at?: string | null
+          id?: string
+          new_data?: Json | null
+          previous_data?: Json | null
+          technical_sheet_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          change_summary?: string | null
+          created_at?: string | null
+          id?: string
+          new_data?: Json | null
+          previous_data?: Json | null
+          technical_sheet_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "technical_sheet_audit_technical_sheet_id_fkey"
+            columns: ["technical_sheet_id"]
+            isOneToOne: false
+            referencedRelation: "technical_sheets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       technical_sheet_audit_logs: {
         Row: {
           action: string
@@ -3378,6 +3419,35 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "technical_sheet_audit_logs_technical_sheet_id_fkey"
+            columns: ["technical_sheet_id"]
+            isOneToOne: false
+            referencedRelation: "technical_sheets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      technical_sheet_favorites: {
+        Row: {
+          created_at: string | null
+          id: string
+          technical_sheet_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          technical_sheet_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          technical_sheet_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "technical_sheet_favorites_technical_sheet_id_fkey"
             columns: ["technical_sheet_id"]
             isOneToOne: false
             referencedRelation: "technical_sheets"
@@ -3505,7 +3575,9 @@ export type Database = {
           description: string | null
           estimated_time_minutes: number | null
           failure_scenarios: string | null
+          failure_standard_image_url: string | null
           gap_specifications: string | null
+          gold_standard_image_url: string | null
           id: string
           ink_specifications: string | null
           is_active: boolean
@@ -3533,7 +3605,9 @@ export type Database = {
           description?: string | null
           estimated_time_minutes?: number | null
           failure_scenarios?: string | null
+          failure_standard_image_url?: string | null
           gap_specifications?: string | null
+          gold_standard_image_url?: string | null
           id?: string
           ink_specifications?: string | null
           is_active?: boolean
@@ -3561,7 +3635,9 @@ export type Database = {
           description?: string | null
           estimated_time_minutes?: number | null
           failure_scenarios?: string | null
+          failure_standard_image_url?: string | null
           gap_specifications?: string | null
+          gold_standard_image_url?: string | null
           id?: string
           ink_specifications?: string | null
           is_active?: boolean
