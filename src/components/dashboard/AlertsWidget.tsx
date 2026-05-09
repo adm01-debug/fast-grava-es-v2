@@ -33,11 +33,20 @@ export function AlertsWidget() {
 
     // Load alerts configuration for thresholds
     const storedThresholds = localStorage.getItem('alert-thresholds');
+    const entityThresholdsStored = localStorage.getItem('entity-thresholds');
     let thresholds = { bottleneckRiskMinutes: 480 };
+    let entityThresholds: Record<string, number> = {};
+    
     if (storedThresholds) {
       try {
         const parsed = JSON.parse(storedThresholds);
         if (parsed.bottleneckRiskMinutes) thresholds.bottleneckRiskMinutes = parsed.bottleneckRiskMinutes;
+      } catch (e) {}
+    }
+    
+    if (entityThresholdsStored) {
+      try {
+        entityThresholds = JSON.parse(entityThresholdsStored);
       } catch (e) {}
     }
 
