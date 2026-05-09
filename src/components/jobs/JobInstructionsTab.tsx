@@ -11,10 +11,12 @@ import {
   AlertTriangle,
   ChevronRight,
   BookOpen,
-  Wrench
+  Wrench,
+  CheckCircle2
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
+import { TechnicalSheet } from '@/hooks/technical-sheets/technicalSheetsTypes';
 
 interface JobInstructionsTabProps {
   techniqueId: string;
@@ -22,19 +24,19 @@ interface JobInstructionsTabProps {
 }
 
 export function JobInstructionsTab({ techniqueId, productCategoryId }: JobInstructionsTabProps) {
-  const { data: allSheets, isLoading } = useTechnicalSheets();
+  const { sheets, isLoadingSheets } = useTechnicalSheets();
   const [selectedSheetId, setSelectedSheetId] = useState<string | null>(null);
 
   // Filter sheets relevant to this job
-  const relevantSheets = allSheets?.filter(s => 
+  const relevantSheets = sheets?.filter((s: TechnicalSheet) => 
     s.is_active && 
     (s.technique_id === techniqueId) &&
     (!productCategoryId || !s.product_category_id || s.product_category_id === productCategoryId)
   ) || [];
 
-  const selectedSheet = relevantSheets.find(s => s.id === selectedSheetId) || relevantSheets[0];
+  const selectedSheet = relevantSheets.find((s: TechnicalSheet) => s.id === selectedSheetId) || relevantSheets[0];
 
-  if (isLoading) {
+  if (isLoadingSheets) {
     return <div className="space-y-4 py-4"><Skeleton className="h-20 w-full" /><Skeleton className="h-40 w-full" /></div>;
   }
 
