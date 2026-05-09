@@ -53,6 +53,7 @@ export const navGroups: NavGroup[] = [
     { icon: Bell, label: 'Notificações', href: '/notifications' },
     { icon: ShieldCheck, label: 'Trilha de Auditoria', href: '/audit' },
     { icon: QrCode, label: 'Scanner QR', href: '/scanner' },
+    { icon: Code2, label: 'Master API Hub', href: '/master-api' },
     { icon: Settings, label: 'Configurações', href: '/settings' },
   ]},
 ];
