@@ -39,6 +39,7 @@ import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { SmartSequencingPanel } from "@/components/planning/SmartSequencingPanel";
 import { LoadBalancingPanel } from "@/components/planning/LoadBalancingPanel";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { motion, AnimatePresence } from "framer-motion";
 import { useDataExport } from "@/hooks/useDataExport";
 import { useSmartSequencingWithActions } from "@/hooks/useSmartSequencingWithActions";
 import { useLoadBalancingWithActions } from "@/hooks/useLoadBalancingWithActions";
