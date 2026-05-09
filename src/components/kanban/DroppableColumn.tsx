@@ -55,6 +55,7 @@ export function DroppableColumn({
 }: DroppableColumnProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [thresholds, setThresholds] = useState({ bottleneckRiskMinutes: 480 });
+  const [entityThresholds, setEntityThresholds] = useState<Record<string, number>>({});
   const { metrics: reliabilityMetrics } = useMTBFMTTR(30);
 
   useEffect(() => {
@@ -68,7 +69,11 @@ export function DroppableColumn({
       } catch (e) {
         console.error('Error loading thresholds', e);
       }
-    }
+        }
+        const entityStored = localStorage.getItem('entity-thresholds');
+        if (entityStored) {
+          setEntityThresholds(JSON.parse(entityStored));
+        }
   }, []);
 
   const { setNodeRef, isOver } = useDroppable({
@@ -109,6 +114,21 @@ export function DroppableColumn({
       (m.reliabilityScore === 'critical' || m.reliabilityScore === 'poor')
     );
   }, [jobs, reliabilityMetrics]);
+
+  // Determine the bottleneck limit for this specific column if applicable
+  // For columns that represent a technique or machine, we could look it up.
+  // In the general Kanban view, status is the ID.
+  const columnLimit = useMemo(() => {
+    // Check if any machine in this column has a specific threshold
+    const machineWithThreshold = jobs.map(j => j.machine_id).find(id => id && entityThresholds[id]);
+    if (machineWithThreshold) return entityThresholds[machineWithThreshold!];
+
+    // Check if any technique in this column has a specific threshold
+    const techniqueWithThreshold = jobs.map(j => j.technique_id).find(id => id && entityThresholds[id]);
+    if (techniqueWithThreshold) return entityThresholds[techniqueWithThreshold!];
+
+    return thresholds.bottleneckRiskMinutes;
+  }, [jobs, entityThresholds, thresholds.bottleneckRiskMinutes]);
 
   return (
     <div className={cn(
