@@ -499,6 +499,10 @@ export default function OperatorsPage() {
                   <TrendingUp className="h-4 w-4" />
                   Desempenho
                 </TabsTrigger>
+                <TabsTrigger value="goals" className="flex items-center gap-2">
+                  <Trophy className="h-4 w-4" />
+                  Metas
+                </TabsTrigger>
                 <TabsTrigger value="machines" className="flex items-center gap-2">
                   <Settings2 className="h-4 w-4" />
                   Máquinas & Config
@@ -508,6 +512,12 @@ export default function OperatorsPage() {
               <TabsContent value="performance" className="flex-1 mt-4 overflow-auto min-h-0">
                 {operatorToShowDetails && (
                   <OperatorPerformanceTab operatorId={operatorToShowDetails.user_id} />
+                )}
+              </TabsContent>
+
+              <TabsContent value="goals" className="flex-1 mt-4 overflow-auto min-h-0">
+                {operatorToShowDetails && (
+                  <OperatorGoalsTab operatorId={operatorToShowDetails.user_id} />
                 )}
               </TabsContent>
 
