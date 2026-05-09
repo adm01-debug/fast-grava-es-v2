@@ -26,6 +26,8 @@ export interface SequencingSuggestion {
   currentChanges: number;
   optimizedChanges: number;
   totalQuantity: number;
+  aiPriorityScore: number;
+  setupComplexity: 'low' | 'medium' | 'high';
 }
 
 export interface ColorGroup {
