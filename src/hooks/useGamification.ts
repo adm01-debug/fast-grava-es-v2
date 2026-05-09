@@ -199,14 +199,15 @@ async function calculateRankingsLocally(
         operator_id: id,
         ranking_type: period,
         position: 0,
-        total_points: Math.round(stats.produced + efficiency * 10 + quality * 5 + stats.jobs * 2),
+        total_points: points,
         total_produced: stats.produced,
         efficiency_rate: Math.round(efficiency * 100) / 100,
         quality_rate: Math.round(quality * 100) / 100,
         period_start: periodStart.toISOString(),
         period_end: periodEnd.toISOString(),
         calculated_at: new Date().toISOString(),
-        profile: profileMap.get(id) || { full_name: `Operador` },
+        profile: profileMap.get(id) || { full_name: `Operador`, avatar_url: null },
+        ...calculateLevelInfo(points),
       };
     })
     .sort((a, b) => b.total_points - a.total_points)
