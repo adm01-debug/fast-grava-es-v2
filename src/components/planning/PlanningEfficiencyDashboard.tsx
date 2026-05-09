@@ -217,9 +217,9 @@ export function PlanningEfficiencyDashboard() {
               <BarChart3 className="h-5 w-5 text-blue-400" />
             </div>
           </div>
-          <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider mb-1">OEE Real (Fluxo de Produção)</p>
+          <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest mb-1">OEE Real (Fluxo Fabril)</p>
           <div className="flex items-end gap-2 mb-3">
-            <h3 className="text-3xl font-bold font-display">{Math.round(stats.estimatedOEE)}<span className="text-lg opacity-50">%</span></h3>
+            <h3 className="text-3xl font-black font-display tracking-tighter">{Math.round(stats.estimatedOEE)}<span className="text-lg opacity-50">%</span></h3>
             <div className={cn(
               "text-[10px] font-bold flex items-center mb-1 uppercase",
               stats.estimatedOEE >= 85 ? "text-green-400" : stats.estimatedOEE >= 70 ? "text-amber-400" : "text-red-400"
