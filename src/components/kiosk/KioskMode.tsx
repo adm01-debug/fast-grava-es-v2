@@ -366,6 +366,7 @@ export function KioskMode({
           })}
         </AnimatePresence>
       </div>
+      )}
 
       {/* Empty state */}
       {jobs.length === 0 && (
