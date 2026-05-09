@@ -12,6 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useEntityAuditTrail } from '@/hooks/useAuditTrail';
 import { AuditEntryCard } from '@/components/audit/AuditEntryCard';
+import { HistoryPeriodFilter, type HistoryPeriodValue } from '@/components/audit/HistoryPeriodFilter';
 import { MachineTPMPanel } from '@/components/tpm/MachineTPMPanel';
 import { useTPM } from '@/hooks/useTPM';
 import { MaintenanceExecutionModal } from '@/components/tpm/MaintenanceExecutionModal';
@@ -256,41 +257,39 @@ export default function MachinesPage() {
 }
 
 function MachineHistoryTab({ machineId }: { machineId: string }) {
-  const { data, isLoading, error } = useEntityAuditTrail('machines', machineId);
-
-  if (isLoading) {
-    return (
-      <div className="space-y-3">
-        <Skeleton className="h-24 w-full" />
-        <Skeleton className="h-24 w-full" />
-        <Skeleton className="h-24 w-full" />
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="text-sm text-destructive p-4 border border-destructive/30 rounded-md bg-destructive/10">
-        Não foi possível carregar o histórico.
-      </div>
-    );
-  }
-
-  if (!data || data.length === 0) {
-    return (
-      <div className="text-sm text-muted-foreground text-center py-12 border border-dashed rounded-xl">
-        Nenhum registro encontrado para esta máquina.
-      </div>
-    );
-  }
+  const [period, setPeriod] = useState<HistoryPeriodValue>({ preset: 'all' });
+  const { data, isLoading, error } = useEntityAuditTrail('machines', machineId, {
+    fromDate: period.fromDate,
+    toDate: period.toDate,
+  });
 
   return (
-    <ScrollArea className="h-[400px] pr-4">
-      <div className="space-y-3 pb-4">
-        {data.map((entry) => (
-          <AuditEntryCard key={entry.id} entry={entry} />
-        ))}
-      </div>
-    </ScrollArea>
+    <div>
+      <HistoryPeriodFilter value={period} onChange={setPeriod} resultCount={data?.length} />
+      {isLoading ? (
+        <div className="space-y-3">
+          <Skeleton className="h-24 w-full" />
+          <Skeleton className="h-24 w-full" />
+          <Skeleton className="h-24 w-full" />
+        </div>
+      ) : error ? (
+        <div className="text-sm text-destructive p-4 border border-destructive/30 rounded-md bg-destructive/10">
+          Não foi possível carregar o histórico.
+        </div>
+      ) : !data || data.length === 0 ? (
+        <div className="text-sm text-muted-foreground text-center py-12 border border-dashed rounded-xl">
+          Nenhum registro encontrado no período selecionado.
+        </div>
+      ) : (
+        <ScrollArea className="h-[400px] pr-4">
+          <div className="space-y-3 pb-4">
+            {data.map((entry) => (
+              <AuditEntryCard key={entry.id} entry={entry} />
+            ))}
+          </div>
+        </ScrollArea>
+      )}
+    </div>
   );
 }
+

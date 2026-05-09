@@ -29,7 +29,9 @@ import { JobQRCode } from "@/components/qrcode/JobQRCode";
 import { useDuplicateJob } from "@/hooks/useDuplicateJob";
 import { useEntityAuditTrail } from "@/hooks/useAuditTrail";
 import { AuditEntryCard } from "@/components/audit/AuditEntryCard";
+import { HistoryPeriodFilter, type HistoryPeriodValue } from "@/components/audit/HistoryPeriodFilter";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useState } from "react";
 
 interface JobDetailsModalProps {
   job: DbJob | null;
@@ -310,41 +312,38 @@ export function JobDetailsModal({ job, open, onOpenChange, onStatusChange }: Job
 }
 
 function JobHistoryTab({ jobId }: { jobId: string }) {
-  const { data, isLoading, error } = useEntityAuditTrail('jobs', jobId);
-
-  if (isLoading) {
-    return (
-      <div className="space-y-3 mt-4">
-        <Skeleton className="h-24 w-full" />
-        <Skeleton className="h-24 w-full" />
-        <Skeleton className="h-24 w-full" />
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="text-sm text-destructive p-4 border border-destructive/30 rounded-md bg-destructive/10 mt-4">
-        Não foi possível carregar o histórico.
-      </div>
-    );
-  }
-
-  if (!data || data.length === 0) {
-    return (
-      <div className="text-sm text-muted-foreground text-center py-12 mt-4 border border-dashed rounded-xl">
-        Nenhum registro encontrado para este Job.
-      </div>
-    );
-  }
+  const [period, setPeriod] = useState<HistoryPeriodValue>({ preset: 'all' });
+  const { data, isLoading, error } = useEntityAuditTrail('jobs', jobId, {
+    fromDate: period.fromDate,
+    toDate: period.toDate,
+  });
 
   return (
-    <ScrollArea className="h-[450px] mt-4 pr-4">
-      <div className="space-y-3 pb-4">
-        {data.map((entry) => (
-          <AuditEntryCard key={entry.id} entry={entry} />
-        ))}
-      </div>
-    </ScrollArea>
+    <div className="mt-4">
+      <HistoryPeriodFilter value={period} onChange={setPeriod} resultCount={data?.length} />
+      {isLoading ? (
+        <div className="space-y-3">
+          <Skeleton className="h-24 w-full" />
+          <Skeleton className="h-24 w-full" />
+          <Skeleton className="h-24 w-full" />
+        </div>
+      ) : error ? (
+        <div className="text-sm text-destructive p-4 border border-destructive/30 rounded-md bg-destructive/10">
+          Não foi possível carregar o histórico.
+        </div>
+      ) : !data || data.length === 0 ? (
+        <div className="text-sm text-muted-foreground text-center py-12 border border-dashed rounded-xl">
+          Nenhum registro encontrado no período selecionado.
+        </div>
+      ) : (
+        <ScrollArea className="h-[420px] pr-4">
+          <div className="space-y-3 pb-4">
+            {data.map((entry) => (
+              <AuditEntryCard key={entry.id} entry={entry} />
+            ))}
+          </div>
+        </ScrollArea>
+      )}
+    </div>
   );
 }

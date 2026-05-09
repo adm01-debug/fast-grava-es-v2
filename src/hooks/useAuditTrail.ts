@@ -49,11 +49,21 @@ export function useAuditTrail(filters: AuditFilters) {
   });
 }
 
-export function useEntityAuditTrail(entityType: string, entityId: string | undefined) {
+export function useEntityAuditTrail(
+  entityType: string,
+  entityId: string | undefined,
+  options?: { fromDate?: string; toDate?: string },
+) {
   return useQuery({
-    queryKey: ['audit-trail', 'entity', entityType, entityId],
+    queryKey: ['audit-trail', 'entity', entityType, entityId, options?.fromDate, options?.toDate],
     queryFn: () =>
-      fetchAuditEntries({ entityType, entityId: entityId ?? '', limit: 200 }),
+      fetchAuditEntries({
+        entityType,
+        entityId: entityId ?? '',
+        limit: 200,
+        fromDate: options?.fromDate,
+        toDate: options?.toDate,
+      }),
     enabled: Boolean(entityId),
     staleTime: 15_000,
   });
