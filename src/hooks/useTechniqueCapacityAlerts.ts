@@ -45,8 +45,11 @@ export function useTechniqueCapacityAlerts() {
       const occupancy = maxCapacity > 0 ? (activeJobs.length / maxCapacity) * 100 : 0;
 
       let status: 'normal' | 'warning' | 'critical' = 'normal';
-      if (occupancy >= 85) status = 'critical';
-      else if (occupancy >= 75) status = 'warning';
+      const warningT = tech.medium_threshold ? (tech.medium_threshold / 600) * 100 : 75;
+      const criticalT = tech.high_threshold ? (tech.high_threshold / 600) * 100 : 85;
+
+      if (occupancy >= criticalT) status = 'critical';
+      else if (occupancy >= warningT) status = 'warning';
 
       return {
         techniqueId: tech.id,

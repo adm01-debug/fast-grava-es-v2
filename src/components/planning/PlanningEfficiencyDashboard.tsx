@@ -66,9 +66,9 @@ export function PlanningEfficiencyDashboard() {
     // Use actual OEE from real flow metrics (Availability, Performance, Quality)
     const estimatedOEE = oeeData?.overallOEE ?? 75;
     
-    // Calculate bottleneck risk (High if any machine or column has > 480min)
+    // Calculate bottleneck risk
     const hasHighBottleneck = (sequencingSuggestions?.some(s => s.bottleneckRisk === 'high')) || 
-                             (balancingSuggestions?.some(s => s.currentLoad > 95));
+                             (balancingSuggestions?.some(s => s.currentLoad > 90));
 
     return { efficiencyScore, deadlineHealth, totalJobs, delayedCount, estimatedOEE, oeeData, hasHighBottleneck };
   }, [jobs, oeeData]);
