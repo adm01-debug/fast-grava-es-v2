@@ -3,12 +3,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
-import { Box, MapPin, Move } from 'lucide-react';
+import { Box, MapPin, Move, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
+import { useInventory } from '@/hooks/useInventory';
 
 interface WarehouseMapProps {
   items: any[];
@@ -18,6 +19,8 @@ export function WarehouseMap({ items }: WarehouseMapProps) {
   const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
   const [newLocation, setNewLocation] = useState('');
   const [isTransferring, setIsTransferring] = useState(false);
+  const [isConfirming, setIsConfirming] = useState(false);
+  const { transferItems, isTransferring: isApiProcessing } = useInventory();
 
   // Group items by location prefix (e.g., A1, A2 -> Area A)
   const areas = ['A', 'B', 'C', 'D'];
@@ -27,11 +30,52 @@ export function WarehouseMap({ items }: WarehouseMapProps) {
     return items.filter(item => item.location === `${area}${level}`);
   };
 
-  const handleTransfer = (location: string) => {
+  const handleTransferInit = (location: string) => {
     const locationItems = items.filter(item => item.location === location);
-    if (locationItems.length === 0) return;
+    if (locationItems.length === 0) {
+      toast.error('Não existem itens nesta posição para transferir');
+      return;
+    }
     setSelectedLocation(location);
     setIsTransferring(true);
+  };
+
+  const validateLocation = (loc: string) => {
+    const pattern = /^[A-D][1-4]$/;
+    return pattern.test(loc);
+  };
+
+  const handleTransferExecute = async () => {
+    if (!validateLocation(newLocation)) {
+      toast.error('Localização inválida. Use o formato Corredor (A-D) + Nível (1-4). Ex: A2');
+      return;
+    }
+
+    if (newLocation === selectedLocation) {
+      toast.error('O destino não pode ser igual à origem');
+      return;
+    }
+
+    setIsConfirming(true);
+  };
+
+  const confirmTransfer = async () => {
+    const locationItems = items.filter(item => item.location === selectedLocation);
+    const itemIds = locationItems.map(i => i.id);
+
+    try {
+      await transferItems({
+        fromLocation: selectedLocation!,
+        toLocation: newLocation,
+        itemIds
+      });
+      setIsTransferring(false);
+      setIsConfirming(false);
+      setNewLocation('');
+      setSelectedLocation(null);
+    } catch (error) {
+      // Error handled by hook
+    }
   };
 
   return (
@@ -59,7 +103,7 @@ export function WarehouseMap({ items }: WarehouseMapProps) {
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <div 
-                            onClick={() => handleTransfer(`${area}${level}`)}
+                            onClick={() => handleTransferInit(`${area}${level}`)}
                             className={cn(
                             "h-12 border rounded-md flex items-center justify-center transition-all cursor-pointer relative group active:scale-95",
                             locationItems.length > 0 ? "bg-primary/5 border-primary/20" : "bg-muted/10 border-border/30 opacity-50",
@@ -113,39 +157,80 @@ export function WarehouseMap({ items }: WarehouseMapProps) {
         </div>
       </CardContent>
 
-      <Dialog open={isTransferring} onOpenChange={setIsTransferring}>
-        <DialogContent>
+      <Dialog open={isTransferring} onOpenChange={(open) => !isApiProcessing && setIsTransferring(open)}>
+        <DialogContent className="sm:max-w-[425px] glass-card border-primary/20">
           <DialogHeader>
-            <DialogTitle>Transferência de Localização: {selectedLocation}</DialogTitle>
+            <DialogTitle className="flex items-center gap-2">
+              <Move className="h-5 w-5 text-primary" />
+              Transferência de Localização
+            </DialogTitle>
+            <DialogDescription>
+              Mover itens da posição <Badge variant="outline" className="font-mono">{selectedLocation}</Badge> para uma nova área.
+            </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
-            <div className="p-3 bg-muted/50 rounded-lg">
-              <p className="text-xs font-bold uppercase mb-2">Itens nesta posição:</p>
-              {items.filter(i => i.location === selectedLocation).map(i => (
-                <div key={i.id} className="text-xs flex justify-between py-1 border-b border-border/30 last:border-0">
-                  <span>{i.name}</span>
-                  <span className="font-mono">{i.current_stock} {i.unit}</span>
-                </div>
-              ))}
+            <div className="p-3 bg-muted/30 rounded-lg border border-border/50">
+              <p className="text-[10px] font-black uppercase text-muted-foreground mb-2 tracking-widest">Conteúdo da Posição:</p>
+              <div className="space-y-1 max-h-[120px] overflow-y-auto pr-1">
+                {items.filter(i => i.location === selectedLocation).map(i => (
+                  <div key={i.id} className="text-[11px] flex justify-between py-1 border-b border-border/10 last:border-0">
+                    <span className="font-medium truncate mr-2">{i.name}</span>
+                    <span className="font-black text-primary flex-shrink-0">{i.current_stock} {i.unit}</span>
+                  </div>
+                ))}
+              </div>
             </div>
             <div className="space-y-2">
-              <Label>Nova Localização (Ex: A2, B4)</Label>
-              <Input 
-                placeholder="Ex: A2" 
-                value={newLocation} 
-                onChange={(e) => setNewLocation(e.target.value.toUpperCase())}
-                maxLength={2}
-              />
+              <Label className="text-[11px] uppercase font-black text-muted-foreground">Nova Localização (Ex: A2, B4)</Label>
+              <div className="relative">
+                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-primary/50" />
+                <Input 
+                  placeholder="Ex: A2" 
+                  value={newLocation} 
+                  onChange={(e) => setNewLocation(e.target.value.toUpperCase())}
+                  maxLength={2}
+                  className="pl-10 font-black tracking-widest text-lg"
+                  disabled={isApiProcessing}
+                />
+              </div>
             </div>
-            <Button className="w-full gap-2" onClick={() => {
-              toast.info(`Iniciando transferência de ${selectedLocation} para ${newLocation}`);
-              setIsTransferring(false);
-              setNewLocation('');
-            }}>
-              <Move className="h-4 w-4" />
-              Confirmar Transferência
-            </Button>
           </div>
+          <DialogFooter>
+            <Button 
+              className="w-full gap-2 font-black uppercase text-xs h-11" 
+              onClick={handleTransferExecute}
+              disabled={isApiProcessing || !newLocation}
+            >
+              {isApiProcessing ? "Processando..." : (
+                <>
+                  <Move className="h-4 w-4" />
+                  Solicitar Transferência
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isConfirming} onOpenChange={setIsConfirming}>
+        <DialogContent className="sm:max-w-[350px] border-amber-500/50 bg-amber-500/5">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-amber-500">
+              <AlertCircle className="h-5 w-5" />
+              Confirmar Operação
+            </DialogTitle>
+            <DialogDescription className="text-foreground">
+              Você confirma a transferência de todos os itens da posição <strong>{selectedLocation}</strong> para <strong>{newLocation}</strong>?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex-col sm:flex-row gap-2">
+            <Button variant="outline" className="flex-1" onClick={() => setIsConfirming(false)} disabled={isApiProcessing}>
+              Cancelar
+            </Button>
+            <Button className="flex-1 bg-amber-500 hover:bg-amber-600 text-white" onClick={confirmTransfer} disabled={isApiProcessing}>
+              {isApiProcessing ? "Transferindo..." : "Confirmar"}
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </Card>

@@ -918,6 +918,7 @@ export type Database = {
           location: string | null
           min_stock_level: number
           name: string
+          price_per_unit: number | null
           specification: string | null
           unit: string
           updated_at: string | null
@@ -930,6 +931,7 @@ export type Database = {
           location?: string | null
           min_stock_level?: number
           name: string
+          price_per_unit?: number | null
           specification?: string | null
           unit: string
           updated_at?: string | null
@@ -942,6 +944,7 @@ export type Database = {
           location?: string | null
           min_stock_level?: number
           name?: string
+          price_per_unit?: number | null
           specification?: string | null
           unit?: string
           updated_at?: string | null
@@ -951,31 +954,37 @@ export type Database = {
       inventory_movements: {
         Row: {
           created_at: string | null
+          from_location: string | null
           id: string
           item_id: string | null
           job_id: string | null
           quantity: number
           reason: string | null
+          to_location: string | null
           type: string
           user_id: string | null
         }
         Insert: {
           created_at?: string | null
+          from_location?: string | null
           id?: string
           item_id?: string | null
           job_id?: string | null
           quantity: number
           reason?: string | null
+          to_location?: string | null
           type: string
           user_id?: string | null
         }
         Update: {
           created_at?: string | null
+          from_location?: string | null
           id?: string
           item_id?: string | null
           job_id?: string | null
           quantity?: number
           reason?: string | null
+          to_location?: string | null
           type?: string
           user_id?: string | null
         }
