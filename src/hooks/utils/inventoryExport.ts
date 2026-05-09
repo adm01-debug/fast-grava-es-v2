@@ -1,4 +1,4 @@
-import { InventoryMovement } from '../hooks/useInventory';
+import { InventoryMovement } from '../useInventory';
 
 export function exportInventoryMovementsToCSV(movements: any[]) {
   if (!movements || movements.length === 0) return;

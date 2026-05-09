@@ -86,6 +86,9 @@ describe('useInventory Logic & Security', () => {
       type: 'OUT',
       quantity: 10,
       reason: 'Test',
+      from_location: null,
+      to_location: null,
+      job_id: null,
     })).rejects.toThrow(/insuficiente/);
   });
 });

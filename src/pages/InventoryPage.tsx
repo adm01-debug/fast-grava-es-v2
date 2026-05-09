@@ -350,7 +350,7 @@ function InventoryHistoryTable() {
       if (dateFilter === '24h') cutoff = subDays(now, 1);
       if (dateFilter === '7d') cutoff = subDays(now, 7);
       if (dateFilter === '30d') cutoff = subDays(now, 30);
-      result = result.filter(m => isAfter(parseISO(m.created_at), cutoff));
+      result = result.filter(m => isAfter(parseISO(m.created_at || ''), cutoff));
     }
 
     return result;
