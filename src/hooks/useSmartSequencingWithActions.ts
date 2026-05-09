@@ -299,6 +299,8 @@ export function useSmartSequencingWithActions() {
           totalQuantity,
           bottleneckRisk,
           totalMinutes,
+          aiPriorityScore,
+          setupComplexity,
           colorGroups: Array.from(colorGroups.entries()).map(([color, jobs]) => ({
             color,
             jobs,
