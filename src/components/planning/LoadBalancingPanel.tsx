@@ -179,7 +179,7 @@ export function LoadBalancingPanel() {
                   </div>
                   <h4 className="text-[10px] font-bold text-muted-foreground uppercase mb-3">Origem (Sobrecarregada)</h4>
                   <p className="font-bold text-sm mb-1">{selectedSuggestion.currentMachineName}</p>
-                  <p className="text-xs text-muted-foreground mb-3">{selectedSuggestion.currentMachineCode}</p>
+                  <p className="text-[10px] text-muted-foreground mb-3">{selectedSuggestion.currentMachineId.split('-')[0]}</p>
                   <div className="space-y-1">
                     <div className="flex justify-between text-[10px] mb-1">
                       <span>Carga Atual</span>
