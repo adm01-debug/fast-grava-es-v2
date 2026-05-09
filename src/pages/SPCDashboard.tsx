@@ -169,7 +169,45 @@ export default function SPCDashboard() {
               ) : <p className="text-center text-muted-foreground py-8">Nenhum parâmetro</p>}
             </CardContent>
           </Card>
-          <SPCControlChart selectedParameter={selectedParameter} chartData={chartData} capability={capability} onCalculateLimits={() => selectedParameter && calculateControlLimits.mutate(selectedParameter.id)} onShowMeasurement={() => setShowMeasurementModal(true)} isCalculating={calculateControlLimits.isPending} />
+          <div className="lg:col-span-2 space-y-6">
+            <SPCControlChart 
+              selectedParameter={selectedParameter} 
+              chartData={chartData} 
+              capability={capability} 
+              onCalculateLimits={() => selectedParameter && calculateControlLimits.mutate(selectedParameter.id)} 
+              onShowMeasurement={() => setShowMeasurementModal(true)} 
+              isCalculating={calculateControlLimits.isPending} 
+            />
+
+            {selectedParameter && runRuleViolations.length > 0 && (
+              <Card className="border-amber-500/20 bg-amber-500/5 overflow-hidden">
+                <CardHeader className="py-3 bg-amber-500/10">
+                   <CardTitle className="text-sm font-black uppercase tracking-widest text-amber-600 flex items-center gap-2">
+                     <BrainCircuit className="h-4 w-4" />
+                     Análise Automática de Tendências (Western Electric)
+                   </CardTitle>
+                </CardHeader>
+                <CardContent className="pt-4">
+                  <div className="grid gap-3 md:grid-cols-2">
+                    {runRuleViolations.map((violation, idx) => (
+                      <div key={idx} className="p-3 rounded-lg bg-background border border-amber-500/30 flex items-start gap-3 shadow-sm">
+                         <div className="p-2 rounded-full bg-amber-500/10 text-amber-600">
+                           <AlertTriangle className="h-4 w-4" />
+                         </div>
+                         <div>
+                            <p className="text-xs font-black uppercase text-amber-600 tracking-tighter">{violation.rule}</p>
+                            <p className="text-[11px] text-muted-foreground font-medium leading-tight mt-0.5">{violation.description}</p>
+                         </div>
+                      </div>
+                    ))}
+                  </div>
+                  <p className="text-[10px] text-muted-foreground mt-4 italic">
+                    💡 A IA detectou padrões de variação não aleatória. Recomenda-se verificação de setup ou calibração de ferramenta.
+                  </p>
+                </CardContent>
+              </Card>
+            )}
+          </div>
         </div>
 
         {alerts && alerts.length > 0 && (
