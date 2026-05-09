@@ -20,6 +20,7 @@ import { KanbanAIAdvisor } from '@/components/kanban/KanbanAIAdvisor';
 import { SmartSequencingPanel } from '@/components/planning/SmartSequencingPanel';
 import { LoadBalancingPanel } from '@/components/planning/LoadBalancingPanel';
 import { PlanningEfficiencyDashboard } from '@/components/planning/PlanningEfficiencyDashboard';
+import { StuckJobsPanel } from '@/components/scheduling/StuckJobsPanel';
 import { useKanbanDragDrop } from '@/hooks/useKanbanDragDrop';
 import { FavoriteButton, FavoritesDropdown } from '@/components/navigation/FavoritesManager';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
