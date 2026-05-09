@@ -49,6 +49,15 @@ export const TechnicalSheetViewer = ({ sheetId, onEdit, onDuplicate }: Technical
   const { toggleFavorite } = useTechnicalSheetMutations();
   const [checklistMode, setChecklistMode] = useState(false);
   const [completedSteps, setCompletedSteps] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    if (sheetId) {
+      supabase.rpc('increment_sheet_view_count', { sheet_id: sheetId })
+        .then(({ error }) => {
+          if (error) console.error('Error incrementing view count:', error);
+        });
+    }
+  }, [sheetId]);
   const [showQR, setShowQR] = useState(false);
   const [productionQuantity, setProductionQuantity] = useState(100);
 
