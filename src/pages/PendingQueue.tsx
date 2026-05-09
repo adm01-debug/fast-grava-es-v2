@@ -27,6 +27,9 @@ import { useSchedulingData } from "@/hooks/useSchedulingData";
 import { DbJob, DbTechnique, DbMachine } from "@/hooks/useJobs";
 import { JobStatus } from "@/types/scheduling";
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
+import { SmartSequencingWidget } from "@/components/dashboard/SmartSequencingWidget";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Sparkles, ChevronDown, ChevronUp } from "lucide-react";
 
 type SortField = 'orderNumber' | 'client' | 'scheduledDate' | 'priority' | 'quantity';
 type SortDirection = 'asc' | 'desc';
