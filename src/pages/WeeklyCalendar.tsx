@@ -18,6 +18,7 @@ import { MobileFAB } from '@/components/calendar/MobileFAB';
 import { statusColorsSolid, statusLabels } from '@/components/calendar/types';
 import { cn } from '@/lib/utils';
 import { useSchedulingData } from '@/hooks/useSchedulingData';
+import { useUpdateJobStatus } from '@/hooks/useJobs';
 import { useCalendarFilters } from '@/hooks/useCalendarFilters';
 import { useCalendarPreferences } from '@/hooks/useCalendarPreferences';
 import { useCalendarHotkeys } from '@/hooks/useCalendarHotkeys';
