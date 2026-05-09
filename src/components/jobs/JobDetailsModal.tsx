@@ -308,6 +308,10 @@ export function JobDetailsModal({ job, open, onOpenChange, onStatusChange }: Job
             </div>
           </TabsContent>
 
+          <TabsContent value="costs">
+            <JobCostsTab jobId={job.id} />
+          </TabsContent>
+
           <TabsContent value="history">
             <JobHistoryTab jobId={job.id} />
           </TabsContent>
