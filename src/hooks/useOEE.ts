@@ -390,7 +390,52 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30) {
     };
   }, [jobs, machines, techniques, effectiveDaysBack, daysBack]);
   
-  return { data, isLoading };
+  const downloadReport = async () => {
+    if (!data) return;
+    try {
+      const { exportExecutiveDashboardExcel } = await import('@/lib/excelExport');
+      // We adapt OEE data to the executive format or similar
+      await exportExecutiveDashboardExcel({
+        title: 'Relatório de OEE',
+        dateRange: {
+          start: subDays(new Date(), daysBack),
+          end: new Date(),
+          label: `Últimos ${daysBack} dias`
+        },
+        kpis: {
+          totalJobsCompleted: data.byMachine.reduce((sum, m) => sum + m.completedJobs, 0),
+          totalJobsInProgress: 0,
+          totalPiecesProduced: data.byMachine.reduce((sum, m) => sum + m.totalPiecesProduced, 0),
+          totalPiecesLost: data.byMachine.reduce((sum, m) => sum + m.lostPieces, 0),
+          productionEfficiency: data.overallPerformance,
+          averageCycleTime: 0,
+          totalMachines: machines?.length || 0,
+          activeMachines: data.byMachine.filter(m => m.totalJobs > 0).length,
+          machineUtilization: data.overallAvailability,
+          maintenanceCompleted: 0,
+          maintenancePending: 0,
+          averageDowntime: 0,
+          qualityRate: data.overallQuality,
+          defectRate: 100 - data.overallQuality,
+          trends: {
+            production: 0,
+            efficiency: data.comparison ? data.comparison.currentOEE - data.comparison.previousOEE : 0,
+            quality: data.comparison ? data.comparison.currentQuality - data.comparison.previousQuality : 0,
+            utilization: data.comparison ? data.comparison.currentAvailability - data.comparison.previousAvailability : 0,
+          },
+          productionTrend: data.trendData.map(t => ({ date: t.date, produced: t.oee, target: 85 })),
+          efficiencyTrend: data.trendData.map(t => ({ date: t.date, efficiency: t.oee })),
+          techniqueDistribution: data.byTechnique.map(t => ({ technique: t.techniqueName, count: t.machines.length, color: t.techniqueColor })),
+          topOperators: [],
+          machinePerformance: data.byMachine.map(m => ({ machine: m.machineName, utilization: m.availability, oee: m.oee }))
+        }
+      });
+    } catch (err) {
+      console.error('Error exporting OEE:', err);
+    }
+  };
+
+  return { data, isLoading, downloadReport };
 }
 
 export { getOEEColor, classifyOEE, WORLD_CLASS_OEE };
