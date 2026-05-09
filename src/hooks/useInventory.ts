@@ -73,7 +73,21 @@ export function useInventory() {
     mutationFn: async (movement: Omit<InventoryMovement, 'id' | 'created_at' | 'user_id'>) => {
       const { data: { user } } = await supabase.auth.getUser();
       
-      // 1. Record movement
+      // 1. Get current stock
+      const { data: item, error: itemError } = await supabase
+        .from('inventory_items')
+        .select('current_stock, name')
+        .eq('id', movement.item_id)
+        .single();
+
+      if (itemError) throw itemError;
+
+      // Validate OUT movements
+      if (movement.type === 'OUT' && item.current_stock < movement.quantity) {
+        throw new Error(`Estoque insuficiente para ${item.name}. Disponível: ${item.current_stock}`);
+      }
+
+      // 2. Record movement
       const { data, error } = await supabase
         .from('inventory_movements')
         .insert([{ ...movement, user_id: user?.id }])
@@ -82,26 +96,18 @@ export function useInventory() {
 
       if (error) throw error;
 
-      // 2. Update actual stock in inventory_items
-      const { data: item } = await supabase
+      // 3. Update actual stock in inventory_items
+      let newStock = item.current_stock;
+      if (movement.type === 'IN') newStock += movement.quantity;
+      if (movement.type === 'OUT') newStock -= movement.quantity;
+      if (movement.type === 'ADJUST') newStock = movement.quantity;
+
+      const { error: updateError } = await supabase
         .from('inventory_items')
-        .select('current_stock')
-        .eq('id', movement.item_id)
-        .single();
-
-      if (item) {
-        let newStock = item.current_stock;
-        if (movement.type === 'IN') newStock += movement.quantity;
-        if (movement.type === 'OUT') newStock -= movement.quantity;
-        if (movement.type === 'ADJUST') newStock = movement.quantity;
-
-        const { error: updateError } = await supabase
-          .from('inventory_items')
-          .update({ current_stock: newStock })
-          .eq('id', movement.item_id!);
-          
-        if (updateError) throw updateError;
-      }
+        .update({ current_stock: newStock })
+        .eq('id', movement.item_id!);
+        
+      if (updateError) throw updateError;
 
       return data;
     },
@@ -110,14 +116,16 @@ export function useInventory() {
       queryClient.invalidateQueries({ queryKey: ['inventory-movements'] });
       toast.success('Movimentação registrada com sucesso');
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.error('Error recording movement:', error);
-      toast.error('Erro ao registrar movimentação');
+      toast.error(error.message || 'Erro ao registrar movimentação');
     },
   });
 
   const updateItemMutation = useMutation({
     mutationFn: async ({ id, ...updates }: Partial<InventoryItem> & { id: string }) => {
+      // If updating stock directly, we should probably record an ADJUST movement
+      // but if it's just metadata (name, price), it's fine.
       const { data, error } = await supabase
         .from('inventory_items')
         .update(updates)
@@ -130,7 +138,12 @@ export function useInventory() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['inventory-items'] });
+      toast.success('Item atualizado com sucesso');
     },
+    onError: (error) => {
+      console.error('Error updating item:', error);
+      toast.error('Erro ao atualizar item');
+    }
   });
 
   const deleteMovementMutation = useMutation({
@@ -147,23 +160,30 @@ export function useInventory() {
       // 2. Rollback stock change in inventory_items
       const { data: item } = await supabase
         .from('inventory_items')
-        .select('current_stock')
+        .select('current_stock, location')
         .eq('id', movement.item_id!)
         .single();
 
       if (item) {
-        let restoredStock = item.current_stock;
-        if (movement.type === 'IN') restoredStock -= movement.quantity;
-        if (movement.type === 'OUT') restoredStock += movement.quantity;
-        // ADJUST is harder to rollback perfectly without historical snapshots, 
-        // but for IN/OUT it's straightforward.
+        let updates: Partial<InventoryItem> = {};
+        
+        if (movement.type === 'IN') updates.current_stock = item.current_stock - movement.quantity;
+        if (movement.type === 'OUT') updates.current_stock = item.current_stock + movement.quantity;
+        if (movement.type === 'TRANSFER' && movement.from_location) {
+           // Rollback location if it's the most recent one (simple check)
+           if (item.location === movement.to_location) {
+             updates.location = movement.from_location;
+           }
+        }
 
-        const { error: updateError } = await supabase
-          .from('inventory_items')
-          .update({ current_stock: restoredStock })
-          .eq('id', movement.item_id!);
-          
-        if (updateError) throw updateError;
+        if (Object.keys(updates).length > 0) {
+          const { error: updateError } = await supabase
+            .from('inventory_items')
+            .update(updates)
+            .eq('id', movement.item_id!);
+            
+          if (updateError) throw updateError;
+        }
       }
 
       // 3. Delete the movement record
@@ -178,26 +198,43 @@ export function useInventory() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['inventory-items'] });
       queryClient.invalidateQueries({ queryKey: ['inventory-movements'] });
-      toast.success('Movimentação excluída e estoque sincronizado');
+      toast.success('Movimentação desfeita (rollback) com sucesso');
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.error('Error deleting movement:', error);
-      toast.error('Erro ao excluir movimentação');
+      toast.error(error.message || 'Erro ao desfazer movimentação');
     }
   });
 
   const transferItemsMutation = useMutation({
     mutationFn: async ({ fromLocation, toLocation, itemIds }: { fromLocation: string, toLocation: string, itemIds: string[] }) => {
       // Validate location format (e.g., A1, B4)
-      const locationRegex = /^[A-Z][0-9]+$/;
+      const locationRegex = /^[A-D][1-4]$/;
       if (!locationRegex.test(toLocation)) {
-        throw new Error('Formato de localização inválido. Use letra maiúscula e número (ex: A1).');
+        throw new Error('Formato de localização inválido. Use Corredor (A-D) e Nível (1-4). Ex: A1, B4.');
+      }
+
+      if (fromLocation === toLocation) {
+        throw new Error('O destino deve ser diferente da origem.');
       }
 
       const { data: { user } } = await supabase.auth.getUser();
       
+      // Perform as a sequence (Supabase JS doesn't have easy multi-row logic in one call with related inserts without a function)
       const results = await Promise.all(itemIds.map(async (itemId) => {
-        // 1. Update item location
+        // 1. Get current item to ensure it's still there
+        const { data: item } = await supabase
+          .from('inventory_items')
+          .select('location, current_stock')
+          .eq('id', itemId)
+          .single();
+        
+        if (!item || item.location !== fromLocation) {
+           console.warn(`Item ${itemId} not found in location ${fromLocation}`);
+           return null;
+        }
+
+        // 2. Update item location
         const { error: updateError } = await supabase
           .from('inventory_items')
           .update({ location: toLocation })
@@ -205,32 +242,33 @@ export function useInventory() {
         
         if (updateError) throw updateError;
 
-        // 2. Record movement
+        // 3. Record movement
         const { error: moveError } = await supabase
           .from('inventory_movements')
           .insert([{
             item_id: itemId,
             user_id: user?.id,
             type: 'TRANSFER',
-            quantity: 0, // Transfer doesn't change quantity
+            quantity: 0, 
             from_location: fromLocation,
             to_location: toLocation,
-            reason: `Transferência de ${fromLocation} para ${toLocation}`
+            reason: `WMS: Transferência de ${fromLocation} para ${toLocation}`
           }]);
           
         if (moveError) throw moveError;
+        return itemId;
       }));
       
-      return results;
+      return results.filter(Boolean);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['inventory-items'] });
       queryClient.invalidateQueries({ queryKey: ['inventory-movements'] });
-      toast.success('Transferência realizada com sucesso');
+      toast.success('Transferência WMS concluída com sucesso');
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.error('Error transferring items:', error);
-      toast.error('Erro ao transferir itens');
+      toast.error(error.message || 'Erro ao transferir itens');
     }
   });
 
