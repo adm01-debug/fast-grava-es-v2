@@ -227,6 +227,10 @@ export default function MachinesPage() {
                   />
                 </TabsContent>
 
+                <TabsContent value="reliability" className="flex-1 mt-4 overflow-auto">
+                  <MachineReliabilityTab machineId={selectedMachine.id} />
+                </TabsContent>
+
                 <TabsContent value="history" className="flex-1 mt-4 overflow-hidden">
                   <MachineHistoryTab machineId={selectedMachine.id} />
                 </TabsContent>
