@@ -30,6 +30,7 @@ export const navGroups: NavGroup[] = [
     { icon: Cpu, label: 'Máquinas', href: '/machines' },
     { icon: ArrowRightLeft, label: 'Comparativo Máquinas', href: '/machines/compare' },
     { icon: BatteryCharging, label: 'Energia', href: '/energy' },
+    { icon: Package, label: 'Estoque', href: '/inventory' },
     { icon: Package, label: 'Rastreabilidade', href: '/traceability' },
   ]},
   { id: 'team', icon: Users, label: 'Equipe', items: [
