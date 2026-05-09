@@ -32,6 +32,24 @@ export interface InventoryMovement {
 export function useInventory() {
   const queryClient = useQueryClient();
 
+  const movementsQuery = useInventoryMovements();
+  const movements = movementsQuery.data || [];
+
+  const stats = useMemo(() => {
+    const now = new Date();
+    const last24h = subDays(now, 1);
+    
+    const recentMovements = movements.filter(m => isAfter(parseISO(m.created_at), last24h));
+    const totalValue = (queryClient.getQueryData(['inventory-items']) as InventoryItem[] || []).reduce((sum, item) => sum + (item.current_stock * 15.5), 0); // Simulated R$ 15.5 average price
+
+    return {
+      movementsCount24h: recentMovements.length,
+      inventoryValue: totalValue,
+    };
+  }, [movements, queryClient]);
+
+  const queryClient = useQueryClient();
+
   const itemsQuery = useQuery({
     queryKey: ['inventory-items'],
     queryFn: async () => {
