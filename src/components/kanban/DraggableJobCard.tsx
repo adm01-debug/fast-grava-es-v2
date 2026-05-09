@@ -165,8 +165,8 @@ export function DraggableJobCard({ job, technique, machine, onClick, viewMode = 
           >
             <GripVertical className="h-4 w-4 text-muted-foreground hover:text-foreground transition-colors" />
           </div>
-          <Badge variant="outline" className={cn("text-[10px] px-1.5 py-0 h-5 gap-0.5", priority.color)}>
-            <PriorityIcon className="h-3 w-3" />
+          <Badge variant="outline" className={cn("text-[9px] px-1.5 py-0 h-4 gap-0.5 font-black uppercase tracking-widest", priority.color)}>
+            <PriorityIcon className="h-2.5 w-2.5" />
             <span className="hidden sm:inline">{priority.label}</span>
           </Badge>
           {/* Aging dot */}
