@@ -12,6 +12,7 @@ export {
   useTechnicalSheets,
   useTechnicalSheetDetails,
   useTechnicalSheetAudit,
+  useTechnicalSheetFavorites,
 } from './technical-sheets/useTechnicalSheetsQueries';
 
 export { useTechnicalSheetMutations } from './technical-sheets/useTechnicalSheetMutations';
