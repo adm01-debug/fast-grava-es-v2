@@ -673,7 +673,17 @@ export default function ExecutiveDashboard() {
             <CardContent>
               <div className="space-y-3">
                 {kpis.machinePerformance.slice(0, 5).map((m, index) => (
-                  <div key={index} className="space-y-1">
+                  <div 
+                    key={index} 
+                    className="space-y-1 cursor-pointer hover:bg-primary/5 p-1 rounded-lg transition-colors"
+                    onClick={() => {
+                      const machine = machines?.find(mac => (mac.code || mac.name) === m.machine);
+                      if (machine) {
+                        setMachineId(machine.id);
+                        toast.success(`Filtrando por máquina: ${machine.code || machine.name}`);
+                      }
+                    }}
+                  >
                     <div className="flex items-center justify-between text-sm">
                       <span className="font-medium">{m.machine}</span>
                       <span className="text-muted-foreground">
