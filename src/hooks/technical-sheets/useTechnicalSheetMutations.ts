@@ -213,6 +213,30 @@ export const useTechnicalSheetMutations = () => {
     }
   });
 
+  const toggleFavorite = useMutation({
+    mutationFn: async ({ sheetId, isFavorite }: { sheetId: string; isFavorite: boolean }) => {
+      const { data: userData } = await supabase.auth.getUser();
+      if (!userData.user) throw new Error('Not authenticated');
+
+      if (isFavorite) {
+        const { error } = await supabase
+          .from('technical_sheet_favorites')
+          .delete()
+          .eq('user_id', userData.user.id)
+          .eq('technical_sheet_id', sheetId);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from('technical_sheet_favorites')
+          .insert([{ user_id: userData.user.id, technical_sheet_id: sheetId }]);
+        if (error) throw error;
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['technical-sheet-favorites'] });
+    }
+  });
+
   return {
     createSheet,
     updateSheet,
