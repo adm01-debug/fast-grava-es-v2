@@ -31,15 +31,20 @@ interface OEETrendChartProps {
   comparison?: {
     currentOEE: number;
     previousOEE: number;
+    currentAvailability: number;
+    previousAvailability: number;
+    currentPerformance: number;
+    previousPerformance: number;
+    currentQuality: number;
+    previousQuality: number;
   };
 }
 
 export function OEETrendChart({ data, worldClassBenchmark, comparison }: OEETrendChartProps) {
   const chartData = useMemo(() => {
-    // Only show the most recent half of the data in the main chart to keep it readable,
-    // while using the full set for the comparison metrics
-    const displayData = data.slice(Math.floor(data.length / 2));
-    return displayData.map(d => ({
+    // Show data points based on the comparison requirement
+    // If we have comparison data, we show the full trend to visualize the periods
+    return data.map(d => ({
       ...d,
       dateLabel: format(parseISO(d.date), 'dd/MM', { locale: ptBR })
     }));
