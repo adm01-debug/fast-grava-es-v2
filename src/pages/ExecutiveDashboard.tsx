@@ -250,7 +250,31 @@ export default function ExecutiveDashboard() {
               }} />
             </div>
             
-            <div className="flex gap-2 flex-1 xl:flex-none">
+            <div className="flex flex-wrap gap-2 w-full xl:w-auto">
+              <Select value={machineId} onValueChange={setMachineId}>
+                <SelectTrigger className="w-[140px] h-11 rounded-xl glass-card font-bold text-[10px] uppercase tracking-wider">
+                  <SelectValue placeholder="Máquina" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todas Máquinas</SelectItem>
+                  {machines?.map(m => (
+                    <SelectItem key={m.id} value={m.id}>{m.code || m.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <Select value={techniqueId} onValueChange={setTechniqueId}>
+                <SelectTrigger className="w-[140px] h-11 rounded-xl glass-card font-bold text-[10px] uppercase tracking-wider">
+                  <SelectValue placeholder="Técnica" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todas Técnicas</SelectItem>
+                  {techniques?.map(t => (
+                    <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
               <Select 
                 value={selectedRange.label} 
                 onValueChange={(value) => {
@@ -258,7 +282,7 @@ export default function ExecutiveDashboard() {
                   if (preset) setSelectedRange(preset);
                 }}
               >
-                <SelectTrigger className="w-full xl:w-[200px] h-11 rounded-xl glass-card font-bold text-xs uppercase tracking-wider">
+                <SelectTrigger className="w-[160px] h-11 rounded-xl glass-card font-bold text-[10px] uppercase tracking-wider">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="rounded-xl border-primary/20">
@@ -270,13 +294,21 @@ export default function ExecutiveDashboard() {
                 </SelectContent>
               </Select>
 
-              <Button onClick={handleExportPDF} className="gap-2 h-11 rounded-xl gradient-primary font-black uppercase tracking-widest text-xs px-6 shadow-glow-primary hover:scale-105 active:scale-95 transition-all">
-                <FileDown className="h-4 w-4" />
-                Exportar
-              </Button>
+              <div className="flex gap-1">
+                <Button onClick={handleExportPDF} variant="outline" size="icon" className="h-11 w-11 rounded-xl border-primary/20 hover:bg-primary/10" title="Exportar PDF">
+                  <FileDown className="h-4 w-4" />
+                </Button>
+                <Button onClick={handleExportExcel} variant="outline" size="icon" className="h-11 w-11 rounded-xl border-primary/20 hover:bg-primary/10" title="Exportar Excel">
+                  <FileSpreadsheet className="h-4 w-4" />
+                </Button>
+                <Button onClick={() => setIsGoalDialogOpen(true)} variant="outline" size="icon" className="h-11 w-11 rounded-xl border-primary/20 hover:bg-primary/10" title="Configurar Metas">
+                  <Settings2 className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
           </div>
         </div>
+
 
         {/* Autonomous Control & North Star Metric Section */}
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 h-[420px]">
