@@ -312,6 +312,8 @@ export default function KanbanBoard() {
           >
             <PlanningEfficiencyDashboard />
           </motion.div>
+          
+          <CapacityHealthPanel />
 
           {/* Smart Panels */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
