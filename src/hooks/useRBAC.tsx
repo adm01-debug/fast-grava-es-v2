@@ -24,6 +24,7 @@ export const ROLE_PERMISSIONS: Record<AppRole, string[]> = {
     'shifts:read', 'shifts:manage',
     'bitrix:read', 'bitrix:sync',
     'audit:read',
+    'inventory:read', 'inventory:transfer', 'inventory:adjust', 'inventory:delete',
   ],
   manager: [
     // Most access except user management and some sensitive operations
@@ -45,6 +46,7 @@ export const ROLE_PERMISSIONS: Record<AppRole, string[]> = {
     'shifts:read', 'shifts:manage',
     'bitrix:read',
     'audit:read',
+    'inventory:read', 'inventory:transfer', 'inventory:adjust',
   ],
   operator: [
     // Limited access - only their own data and assigned machines
@@ -57,6 +59,7 @@ export const ROLE_PERMISSIONS: Record<AppRole, string[]> = {
     'alerts:read',
     'shifts:read',
     'maintenance:read', // Can view maintenance schedules
+    'inventory:read',
   ],
 };
 
@@ -78,6 +81,7 @@ const ROUTE_PERMISSIONS: Record<string, string[]> = {
   '/spc': ['spc:read'],
   '/shifts': ['shifts:read'],
   '/bitrix': ['bitrix:read'],
+  '/inventory': ['inventory:read'],
 };
 
 export interface RBACResult {
