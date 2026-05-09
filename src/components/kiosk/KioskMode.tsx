@@ -17,6 +17,10 @@ import {
   WifiOff,
   Maximize,
   Minimize,
+  History,
+  Activity,
+  Zap,
+  DollarSign
 } from "lucide-react";
 
 interface KioskJob {
