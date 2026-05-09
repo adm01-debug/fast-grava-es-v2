@@ -160,7 +160,7 @@ async function calculateRankingsLocally(
     .from('operator_machines')
     .select('operator_id, machine_id');
 
-  const { data: profiles } = await supabase.from('profiles').select('id, full_name');
+  const { data: profiles } = await supabase.from('profiles').select('id, full_name, avatar_url');
 
   // Build machine to operator map
   const machineToOperator: Record<string, string> = {};
