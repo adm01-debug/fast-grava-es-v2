@@ -186,7 +186,8 @@ export default function PendingQueue() {
     urgent: filteredJobs.filter(j => j.priority === 'urgent').length,
     delayed: filteredJobs.filter(j => j.status === 'delayed').length,
     rework: filteredJobs.filter(j => j.status === 'rework').length,
-  }), [filteredJobs]);
+    optimizationPotential: seqSuggestions.reduce((acc, s) => acc + s.estimatedSavings, 0),
+  }), [filteredJobs, seqSuggestions]);
 
   // Virtualization
   const tableContainerRef = useRef<HTMLDivElement>(null);
