@@ -1,4 +1,6 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
+import { useRBAC, PermissionGate } from '@/hooks/useRBAC';
+import { subDays, isAfter, parseISO } from 'date-fns';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -32,7 +34,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { toast } from 'sonner';
 
 export default function InventoryPage() {
-  const { items, isLoading, recordMovement, stats } = useInventory();
+  const { items, isLoading, recordMovement, stats, transferItems, deleteMovement } = useInventory();
+  const { hasPermission } = useRBAC();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
 
@@ -315,9 +318,11 @@ function InventoryCard({ item, onMovement }: { item: InventoryItem, onMovement: 
             </DialogContent>
           </Dialog>
 
-          <Button variant="outline" size="sm" className="flex-1 text-xs gap-1.5 hover:bg-red-500/10 hover:text-red-500 hover:border-red-500/50" onClick={() => { setMovementType('OUT'); setIsModalOpen(true); }}>
-            <ArrowDownRight className="h-3 w-3" /> Saída
-          </Button>
+          <PermissionGate permission="inventory:adjust">
+            <Button variant="outline" size="sm" className="flex-1 text-xs gap-1.5 hover:bg-red-500/10 hover:text-red-500 hover:border-red-500/50" onClick={() => { setMovementType('OUT'); setIsModalOpen(true); }}>
+              <ArrowDownRight className="h-3 w-3" /> Saída
+            </Button>
+          </PermissionGate>
         </div>
       </CardContent>
     </Card>
@@ -325,13 +330,42 @@ function InventoryCard({ item, onMovement }: { item: InventoryItem, onMovement: 
 }
 
 function InventoryHistoryTable() {
+  const [dateFilter, setDateFilter] = useState<'all' | '24h' | '7d' | '30d'>('all');
+  const [typeFilter, setTypeFilter] = useState<string>('all');
   const { data: movements, isLoading } = useInventoryMovements();
   const { deleteMovement } = useInventory();
   const [rollbackId, setRollbackId] = useState<string | null>(null);
 
+  const filteredMovements = useMemo(() => {
+    if (!movements) return [];
+    let result = [...movements];
+
+    if (typeFilter !== 'all') {
+      result = result.filter(m => m.type === typeFilter);
+    }
+
+    if (dateFilter !== 'all') {
+      const now = new Date();
+      let cutoff = new Date();
+      if (dateFilter === '24h') cutoff = subDays(now, 1);
+      if (dateFilter === '7d') cutoff = subDays(now, 7);
+      if (dateFilter === '30d') cutoff = subDays(now, 30);
+      result = result.filter(m => isAfter(parseISO(m.created_at), cutoff));
+    }
+
+    return result;
+  }, [movements, typeFilter, dateFilter]);
+
+  const handleExportCSV = () => {
+    import('@/hooks/utils/inventoryExport').then(module => {
+      module.exportInventoryMovementsToCSV(filteredMovements);
+    });
+  };
+
   const handleRollback = async (m: any) => {
     setRollbackId(m.id);
   };
+
 
   const confirmRollback = async () => {
     if (!rollbackId) return;
@@ -346,21 +380,58 @@ function InventoryHistoryTable() {
   if (isLoading) return <div className="p-8 text-center"><Skeleton className="h-20 w-full" /></div>;
 
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full text-sm">
-        <thead>
-          <tr className="bg-muted/30 border-b border-border/50">
-            <th className="text-left p-4 font-bold text-[10px] uppercase tracking-widest text-muted-foreground">Data/Hora</th>
-            <th className="text-left p-4 font-bold text-[10px] uppercase tracking-widest text-muted-foreground">Item</th>
-            <th className="text-left p-4 font-bold text-[10px] uppercase tracking-widest text-muted-foreground">Tipo</th>
-            <th className="text-right p-4 font-bold text-[10px] uppercase tracking-widest text-muted-foreground">Qtd</th>
-            <th className="text-left p-4 font-bold text-[10px] uppercase tracking-widest text-muted-foreground">Usuário</th>
-            <th className="text-left p-4 font-bold text-[10px] uppercase tracking-widest text-muted-foreground">Motivo / Local</th>
-            <th className="text-center p-4 font-bold text-[10px] uppercase tracking-widest text-muted-foreground">Ações</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-border/30">
-          {movements?.map((m: any) => (
+    <div className="space-y-4">
+      <div className="p-4 border-b border-border/50 flex flex-col sm:flex-row gap-4 items-end">
+        <div className="space-y-1 flex-1">
+          <Label className="text-[10px] uppercase font-bold text-muted-foreground">Período</Label>
+          <Select value={dateFilter} onValueChange={(v: any) => setDateFilter(v)}>
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todo o histórico</SelectItem>
+              <SelectItem value="24h">Últimas 24h</SelectItem>
+              <SelectItem value="7d">Últimos 7 dias</SelectItem>
+              <SelectItem value="30d">Últimos 30 dias</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="space-y-1 flex-1">
+          <Label className="text-[10px] uppercase font-bold text-muted-foreground">Operação</Label>
+          <Select value={typeFilter} onValueChange={setTypeFilter}>
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todas</SelectItem>
+              <SelectItem value="IN">Entradas</SelectItem>
+              <SelectItem value="OUT">Saídas</SelectItem>
+              <SelectItem value="TRANSFER">Transferências</SelectItem>
+              <SelectItem value="ADJUST">Ajustes</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <Button variant="outline" className="gap-2" onClick={handleExportCSV} disabled={filteredMovements.length === 0}>
+          <Filter className="h-4 w-4" /> Exportar CSV
+        </Button>
+      </div>
+
+      <div className="overflow-x-auto">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="bg-muted/30 border-b border-border/50">
+              <th className="text-left p-4 font-bold text-[10px] uppercase tracking-widest text-muted-foreground">Data/Hora</th>
+              <th className="text-left p-4 font-bold text-[10px] uppercase tracking-widest text-muted-foreground">Item</th>
+              <th className="text-left p-4 font-bold text-[10px] uppercase tracking-widest text-muted-foreground">Tipo</th>
+              <th className="text-right p-4 font-bold text-[10px] uppercase tracking-widest text-muted-foreground">Qtd</th>
+              <th className="text-left p-4 font-bold text-[10px] uppercase tracking-widest text-muted-foreground">Usuário</th>
+              <th className="text-left p-4 font-bold text-[10px] uppercase tracking-widest text-muted-foreground">Origem/Destino</th>
+              <th className="text-center p-4 font-bold text-[10px] uppercase tracking-widest text-muted-foreground">Ações</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-border/30">
+            {filteredMovements.map((m: any) => (
+
             <tr key={m.id} className="hover:bg-muted/10 transition-colors group">
               <td className="p-4 text-xs font-medium">
                 {format(new Date(m.created_at), "dd/MM/yy HH:mm", { locale: ptBR })}
