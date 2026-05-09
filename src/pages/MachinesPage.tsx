@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Printer, CheckCircle2, XCircle, Info, Settings, History } from 'lucide-react';
+import { Printer, CheckCircle2, XCircle, Info, Settings, History, Activity, AlertTriangle } from 'lucide-react';
 import { useSchedulingData } from '@/hooks/useSchedulingData';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
@@ -19,6 +19,8 @@ import { MaintenanceExecutionModal } from '@/components/tpm/MaintenanceExecution
 import { CreateScheduleModal } from '@/components/tpm/CreateScheduleModal';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
+import { MachineReliabilityTab } from '@/components/machines/MachineReliabilityTab';
+import { useMTBFMTTR } from '@/hooks/useMTBFMTTR';
 
 export default function MachinesPage() {
   const { machines, techniques, isLoadingMachines, getTechniqueById } = useSchedulingData();
@@ -30,6 +32,7 @@ export default function MachinesPage() {
     completeMaintenance, 
     createSchedule 
   } = useTPM();
+  const { summary: reliabilitySummary, isLoading: isLoadingReliability } = useMTBFMTTR();
 
   const [selectedMachine, setSelectedMachine] = useState<any>(null);
   const [executionModalOpen, setExecutionModalOpen] = useState(false);
@@ -111,7 +114,7 @@ export default function MachinesPage() {
           <VoiceButton />
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid gap-4 md:grid-cols-4">
           <Card className="glass-card">
             <CardContent className="pt-6">
               <div className="flex items-center gap-4">
@@ -135,6 +138,38 @@ export default function MachinesPage() {
                 <div>
                   <p className="text-3xl font-bold">{machines.filter(m => m.is_active).length}</p>
                   <p className="text-sm text-muted-foreground">Máquinas Ativas</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="glass-card">
+            <CardContent className="pt-6">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center">
+                  <Activity className="h-6 w-6 text-blue-500" />
+                </div>
+                <div>
+                  <p className="text-3xl font-bold">
+                    {isLoadingReliability ? <Skeleton className="h-8 w-12" /> : `${Math.round(reliabilitySummary.averageAvailability)}%`}
+                  </p>
+                  <p className="text-sm text-muted-foreground">Disponibilidade Média</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="glass-card">
+            <CardContent className="pt-6">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-xl bg-destructive/20 flex items-center justify-center">
+                  <AlertTriangle className="h-6 w-6 text-destructive" />
+                </div>
+                <div>
+                  <p className="text-3xl font-bold">
+                    {isLoadingReliability ? <Skeleton className="h-8 w-12" /> : reliabilitySummary.criticalMachines.length}
+                  </p>
+                  <p className="text-sm text-muted-foreground">Máquinas Críticas</p>
                 </div>
               </div>
             </CardContent>
@@ -206,8 +241,12 @@ export default function MachinesPage() {
             
             {selectedMachine && (
               <Tabs defaultValue="tpm" className="mt-2 flex-1 flex flex-col">
-                <TabsList className="grid w-full grid-cols-2">
+                <TabsList className="grid w-full grid-cols-3">
                   <TabsTrigger value="tpm">Manutenção (TPM)</TabsTrigger>
+                  <TabsTrigger value="reliability" className="flex items-center gap-2">
+                    <Activity className="h-4 w-4" />
+                    Confiabilidade
+                  </TabsTrigger>
                   <TabsTrigger value="history" className="flex items-center gap-2">
                     <History className="h-4 w-4" />
                     Histórico
@@ -220,6 +259,10 @@ export default function MachinesPage() {
                     onStartMaintenance={handleStartMaintenance}
                     onOpenCreateSchedule={() => setCreateScheduleModalOpen(true)}
                   />
+                </TabsContent>
+
+                <TabsContent value="reliability" className="flex-1 mt-4 overflow-auto">
+                  <MachineReliabilityTab machineId={selectedMachine.id} />
                 </TabsContent>
 
                 <TabsContent value="history" className="flex-1 mt-4 overflow-hidden">

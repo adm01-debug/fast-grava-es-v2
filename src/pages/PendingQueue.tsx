@@ -21,12 +21,16 @@ import {
   ArrowUpDown,
   ChevronUp,
   ChevronDown,
-  RotateCcw
+  RotateCcw,
+  Sparkles
 } from "lucide-react";
 import { useSchedulingData } from "@/hooks/useSchedulingData";
 import { DbJob, DbTechnique, DbMachine } from "@/hooks/useJobs";
 import { JobStatus } from "@/types/scheduling";
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
+import { SmartSequencingWidget } from "@/components/dashboard/SmartSequencingWidget";
+import { LoadBalancingWidget } from "@/components/dashboard/LoadBalancingWidget";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 type SortField = 'orderNumber' | 'client' | 'scheduledDate' | 'priority' | 'quantity';
 type SortDirection = 'asc' | 'desc';
@@ -55,6 +59,7 @@ export default function PendingQueue() {
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
   const [selectedJob, setSelectedJob] = useState<DbJob | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSmartSectionOpen, setIsSmartSectionOpen] = useState(false);
 
   // Fetch real data from Supabase
   const { 
@@ -330,6 +335,49 @@ export default function PendingQueue() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Smart Recommendations Section */}
+        <Collapsible
+          open={isSmartSectionOpen}
+          onOpenChange={setIsSmartSectionOpen}
+          className="w-full"
+        >
+          <div className="flex items-center justify-between mb-2">
+            <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+              <Sparkles className="h-4 w-4 text-violet-400" />
+              Otimização de Planejamento
+            </h2>
+            <CollapsibleTrigger asChild>
+              <Button variant="ghost" size="sm" className="h-8 gap-2">
+                {isSmartSectionOpen ? (
+                  <>Ocultar <ChevronUp className="h-4 w-4" /></>
+                ) : (
+                  <>Ver Sugestões <ChevronDown className="h-4 w-4" /></>
+                )}
+              </Button>
+            </CollapsibleTrigger>
+          </div>
+          <CollapsibleContent className="animate-accordion-down">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
+              <SmartSequencingWidget />
+              <LoadBalancingWidget />
+              <Card className="glass-card">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-bold flex items-center gap-2">
+                    <Clock className="h-4 w-4 text-primary" />
+                    Dicas de Planejamento
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="text-xs text-muted-foreground space-y-2">
+                  <p>• Agrupe jobs pela mesma cor de gravura para reduzir o tempo de setup.</p>
+                  <p>• Priorize jobs urgentes, mas tente encaixá-los em grupos de cores existentes.</p>
+                  <p>• Utilize o balanceamento de carga para não sobrecarregar uma única máquina.</p>
+                  <p>• O sequenciamento inteligente agrupa por cor e prioridade automaticamente.</p>
+                </CardContent>
+              </Card>
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
 
         {/* Virtualized Table */}
         <Card className="bg-card/50 backdrop-blur-sm border-border/50">

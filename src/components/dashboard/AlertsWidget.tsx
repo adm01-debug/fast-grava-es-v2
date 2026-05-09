@@ -6,6 +6,7 @@ import { format } from 'date-fns';
 import { useMemo, useState } from 'react';
 import { useSchedulingData } from '@/hooks/useSchedulingData';
 import { AlertScheduleModal } from './AlertScheduleModal';
+import { useStuckJobsDetection } from '@/hooks/useStuckJobsDetection';
 
 interface Alert {
   id: string;
@@ -21,6 +22,7 @@ export function AlertsWidget() {
   const { jobs, machines, refetchJobs: refetch } = useSchedulingData();
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
   const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
+  const { stuckJobs } = useStuckJobsDetection();
 
   const alerts = useMemo(() => {
     const alertList: Alert[] = [];
@@ -76,9 +78,20 @@ export function AlertsWidget() {
         });
       }
     });
+    
+    // Stuck Jobs Alerts
+    stuckJobs.forEach(stuck => {
+      alertList.push({
+        id: `stuck-${stuck.job.id}`,
+        type: stuck.severity === 'critical' ? 'delayed' : 'warning',
+        title: stuck.severity === 'critical' ? 'Job Travado' : 'Aviso de Job Lento',
+        description: stuck.message,
+        time: now
+      });
+    });
 
     return alertList.slice(0, 10);
-  }, [jobs]);
+  }, [jobs, stuckJobs]);
 
   const selectedJob = useMemo(() => selectedJobId ? jobs.find(j => j.id === selectedJobId) || null : null, [selectedJobId, jobs]);
 

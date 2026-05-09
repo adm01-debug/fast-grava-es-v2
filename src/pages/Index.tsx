@@ -22,6 +22,8 @@ import { ActivityFeedWidget } from '@/components/dashboard/ActivityFeedWidget';
 import { LiveMachineStatusPanel } from '@/components/dashboard/LiveMachineStatusPanel';
 import { AutoShiftSummary } from '@/components/shift/AutoShiftSummary';
 import { QuickChat } from '@/components/chat/QuickChat';
+import { MaintenanceAlertsWidget } from '@/components/dashboard/MaintenanceAlertsWidget';
+import { EnergyWidget } from '@/components/dashboard/EnergyWidget';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { 
@@ -300,6 +302,8 @@ const Index = () => {
                     <AutoShiftSummary />
                     <ActivityFeedWidget />
                     <DailySummaryCard />
+                    <MaintenanceAlertsWidget />
+                    <EnergyWidget />
                     <SortableWidgetSection
                       widgets={sidebarWidgets}
                       section="sidebar"

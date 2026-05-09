@@ -21,7 +21,8 @@ import {
   Building,
   QrCode,
   Copy,
-  History
+  History,
+  DollarSign
 } from "lucide-react";
 import { useSchedulingData } from "@/hooks/useSchedulingData";
 import { DbJob } from "@/hooks/useJobs";
@@ -31,6 +32,8 @@ import { useEntityAuditTrail } from "@/hooks/useAuditTrail";
 import { AuditEntryCard } from "@/components/audit/AuditEntryCard";
 import { HistoryPeriodFilter, type HistoryPeriodValue } from "@/components/audit/HistoryPeriodFilter";
 import { Skeleton } from "@/components/ui/skeleton";
+import { JobCostsTab } from "./JobCostsTab";
+import { JobTraceabilityTab } from "./JobTraceabilityTab";
 import { useState } from "react";
 
 interface JobDetailsModalProps {
@@ -126,10 +129,18 @@ export function JobDetailsModal({ job, open, onOpenChange, onStatusChange }: Job
         </DialogHeader>
 
         <Tabs defaultValue="details" className="mt-4">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="details">Detalhes</TabsTrigger>
-            <TabsTrigger value="history" className="flex items-center gap-2">
-              <History className="h-4 w-4" />
+          <TabsList className="grid w-full grid-cols-4 h-auto">
+            <TabsTrigger value="details" className="text-[10px] sm:text-xs">Detalhes</TabsTrigger>
+            <TabsTrigger value="costs" className="flex items-center gap-1 text-[10px] sm:text-xs">
+              <DollarSign className="h-3 w-3" />
+              Custos
+            </TabsTrigger>
+            <TabsTrigger value="traceability" className="flex items-center gap-1 text-[10px] sm:text-xs">
+              <Package className="h-3 w-3" />
+              Rastreio
+            </TabsTrigger>
+            <TabsTrigger value="history" className="flex items-center gap-1 text-[10px] sm:text-xs">
+              <History className="h-3 w-3" />
               Histórico
             </TabsTrigger>
           </TabsList>
@@ -300,6 +311,14 @@ export function JobDetailsModal({ job, open, onOpenChange, onStatusChange }: Job
                 </Badge>
               )}
             </div>
+          </TabsContent>
+
+          <TabsContent value="costs">
+            <JobCostsTab jobId={job.id} />
+          </TabsContent>
+
+          <TabsContent value="traceability">
+            <JobTraceabilityTab jobId={job.id} />
           </TabsContent>
 
           <TabsContent value="history">
