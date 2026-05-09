@@ -29,7 +29,16 @@ const achievementIcons: Record<string, React.ElementType> = {
 export default function GamificationPage() {
   const navigate = useNavigate();
   const [period, setPeriod] = useState<'daily' | 'weekly' | 'monthly'>('weekly');
+  const [activeTab, setActiveTab] = useState<'ranking' | 'rewards'>('ranking');
   const { rankings, achievements, isLoading, periodStart, periodEnd } = useGamification(period);
+
+  const rewards = [
+    { id: 1, name: 'Folga de Meio Período', cost: 2500, icon: Clock, color: 'bg-blue-500/10 text-blue-600', description: 'Ganhe 4 horas de folga remunerada.' },
+    { id: 2, name: 'Vale Presente R$ 50', cost: 1500, icon: Package, color: 'bg-green-500/10 text-green-600', description: 'Cartão presente para uso em parceiros.' },
+    { id: 3, name: 'Prioridade de Turno', cost: 3000, icon: Zap, color: 'bg-amber-500/10 text-amber-600', description: 'Escolha seu turno preferencial por 1 semana.' },
+    { id: 4, name: 'Café com a Diretoria', cost: 1000, icon: Star, color: 'bg-purple-500/10 text-purple-600', description: 'Apresente suas ideias diretamente aos diretores.' },
+    { id: 5, name: 'Bônus de Produtividade', cost: 5000, icon: TrendingUp, color: 'bg-rose-500/10 text-rose-600', description: 'Bônus em dinheiro no próximo fechamento.' },
+  ];
 
   if (isLoading) {
     return (
