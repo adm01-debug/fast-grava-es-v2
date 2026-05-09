@@ -41,7 +41,8 @@ import {
   Lightbulb,
   BrainCircuit,
   ShieldCheck,
-  Sparkles
+  Sparkles,
+  ShieldAlert
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
