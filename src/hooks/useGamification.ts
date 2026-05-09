@@ -194,6 +194,8 @@ async function calculateRankingsLocally(
         ? (stats.produced / (stats.produced + stats.lost)) * 100 
         : 100;
       
+      const points = Math.round(stats.produced + efficiency * 10 + quality * 5 + stats.jobs * 2);
+      
       return {
         id: crypto.randomUUID(),
         operator_id: id,
