@@ -23,7 +23,9 @@ import {
   Leaf,
   Droplets,
   Zap,
-  Sparkles
+  Sparkles,
+  FileDown,
+  ArrowRight
 } from 'lucide-react';
 import { useOEE, WORLD_CLASS_OEE, getOEEColor } from '@/hooks/useOEE';
 import { OEEGaugeCard } from '@/components/oee/OEEGaugeCard';
@@ -35,6 +37,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { KPITooltip, KPI_DEFINITIONS } from '@/components/ui/kpi-tooltip';
 import { VoiceButton } from '@/components/voice/VoiceCommands';
+import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
 
 export default function OEEDashboard() {
   const [period, setPeriod] = useState<string>('30');
