@@ -39,6 +39,7 @@ import { useMFA } from '@/hooks/useMFA';
 import { useUserDevices } from '@/hooks/useUserDevices';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { VoiceButton } from '@/components/voice/VoiceCommands';
+import { CyberResilienceScore } from '@/components/security/CyberResilienceScore';
 
 export default function SecurityDashboard() {
   const navigate = useNavigate();
