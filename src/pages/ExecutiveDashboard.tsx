@@ -149,50 +149,67 @@ export default function ExecutiveDashboard() {
       <div className="p-4 sm:p-6 lg:p-8 space-y-6 animate-fade-in-up">
         <Breadcrumbs />
         
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <div className="flex-1">
-            <div className="flex items-center gap-3">
-              <h1 className="text-2xl sm:text-3xl font-display font-bold">
-                <span className="gradient-text animate-pulse-glow">Fábrica Autônoma 360</span>
-              </h1>
-              <Badge variant="outline" className="gap-1 px-2 border-primary/30 bg-primary/5 text-primary animate-pulse">
-                <ShieldCheck className="h-3 w-3" /> Ecossistema: 10/10
-              </Badge>
+        {/* Header Section */}
+        <div className="flex flex-col xl:flex-row justify-between items-start xl:items-end gap-6 pb-2 border-b border-border/40">
+          <div className="space-y-1.5 flex-1">
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="p-2.5 rounded-2xl bg-primary shadow-glow-primary animate-float">
+                <ShieldCheck className="h-6 w-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-3xl sm:text-4xl font-display font-black tracking-tighter">
+                  <span className="gradient-text animate-pulse-glow">Fábrica Autônoma 360</span>
+                </h1>
+                <div className="flex flex-wrap items-center gap-2 mt-1">
+                  <Badge variant="outline" className="gap-1.5 px-2.5 py-0.5 border-primary/30 bg-primary/5 text-primary text-[10px] font-black uppercase tracking-widest">
+                    <div className="w-1.5 h-1.5 rounded-full bg-primary animate-ping" />
+                    Status: Ecossistema 10/10
+                  </Badge>
+                  <Badge variant="secondary" className="text-[10px] font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-600 dark:text-emerald-500 border-emerald-500/20">
+                    Governança Total Ativa
+                  </Badge>
+                </div>
+              </div>
             </div>
-            <p className="text-muted-foreground mt-1 font-medium italic">Orquestração Inteligente & Governança de Dados Industrial</p>
+            <p className="text-muted-foreground text-sm font-medium italic pl-1">
+              Orquestração Inteligente & Governança de Dados Industrial de Alta Performance
+            </p>
           </div>
           
-          <div className="flex items-center gap-3">
-            <VoiceButton onCommand={(cmd) => {
-              if (cmd.startsWith('search:')) {
-                toast.info(`Busca: ${cmd.replace('search:', '')}`);
-              }
-            }} />
+          <div className="flex flex-wrap items-center gap-3 w-full xl:w-auto">
+            <div className="flex-1 xl:flex-none">
+              <VoiceButton onCommand={(cmd) => {
+                if (cmd.startsWith('search:')) {
+                  toast.info(`Busca: ${cmd.replace('search:', '')}`);
+                }
+              }} />
+            </div>
             
-            <Select 
-              value={selectedRange.label} 
-              onValueChange={(value) => {
-                const preset = datePresets.find(p => p.label === value);
-                if (preset) setSelectedRange(preset);
-              }}
-            >
-              <SelectTrigger className="w-[180px]">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {datePresets.map(preset => (
-                  <SelectItem key={preset.label} value={preset.label}>
-                    {preset.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className="flex gap-2 flex-1 xl:flex-none">
+              <Select 
+                value={selectedRange.label} 
+                onValueChange={(value) => {
+                  const preset = datePresets.find(p => p.label === value);
+                  if (preset) setSelectedRange(preset);
+                }}
+              >
+                <SelectTrigger className="w-full xl:w-[200px] h-11 rounded-xl glass-card font-bold text-xs uppercase tracking-wider">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="rounded-xl border-primary/20">
+                  {datePresets.map(preset => (
+                    <SelectItem key={preset.label} value={preset.label} className="font-bold text-xs">
+                      {preset.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
 
-            <Button onClick={handleExportPDF} className="gap-2">
-              <FileDown className="h-4 w-4" />
-              Exportar PDF
-            </Button>
+              <Button onClick={handleExportPDF} className="gap-2 h-11 rounded-xl gradient-primary font-black uppercase tracking-widest text-xs px-6 shadow-glow-primary hover:scale-105 active:scale-95 transition-all">
+                <FileDown className="h-4 w-4" />
+                Exportar
+              </Button>
+            </div>
           </div>
         </div>
 
