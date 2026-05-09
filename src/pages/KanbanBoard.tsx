@@ -471,33 +471,44 @@ export default function KanbanBoard() {
           )}
 
           {/* Exception Statuses */}
-          <Card className="glass-card border-orange-500/20">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base flex items-center gap-2">
-                <AlertTriangle className="h-4 w-4 text-orange-400" />
-                Status de Exceção
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-thin">
-                {exceptionStatuses.map((column) => (
-                  <DroppableColumn 
-                    key={column.status} 
-                    {...column}
-                    jobs={getJobsByStatus(column.status)}
-                    getTechniqueById={getTechniqueById}
-                    getMachineById={getMachineById}
-                    onJobClick={handleJobClick}
-                    viewMode={viewMode}
-                    wipLimit={column.wipLimit}
-                    selectedJobs={selectedJobs}
-                    onSelectJob={handleSelectJob}
-                    onQuickAction={handleQuickAction}
-                  />
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
+            <Card className="glass-card border-orange-500/20">
+              <CardHeader className="pb-3 px-4 sm:px-6">
+                <CardTitle className="text-base flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <AlertTriangle className="h-4 w-4 text-orange-400" />
+                    Status de Exceção
+                  </div>
+                  <Badge variant="outline" className="text-[10px] font-black uppercase tracking-widest text-orange-400 border-orange-500/30">
+                    Ação Requerida
+                  </Badge>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="px-4 sm:px-6 pb-6">
+                <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-thin">
+                  {exceptionStatuses.map((column) => (
+                    <DroppableColumn 
+                      key={column.status} 
+                      {...column}
+                      jobs={getJobsByStatus(column.status)}
+                      getTechniqueById={getTechniqueById}
+                      getMachineById={getMachineById}
+                      onJobClick={handleJobClick}
+                      viewMode={viewMode}
+                      wipLimit={column.wipLimit}
+                      selectedJobs={selectedJobs}
+                      onSelectJob={handleSelectJob}
+                      onQuickAction={handleQuickAction}
+                    />
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
         </div>
 
         <DragOverlay>
