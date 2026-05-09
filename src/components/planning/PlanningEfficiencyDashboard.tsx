@@ -2,9 +2,11 @@ import { useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { 
   BarChart3, Target, Zap, Clock, TrendingUp, 
-  ArrowUpRight, AlertTriangle, Sparkles, ChevronDown, ChevronUp, Activity
+  ArrowUpRight, AlertTriangle, Sparkles, ChevronDown, ChevronUp, Activity,
+  LayoutGrid
 } from 'lucide-react';
 import { useSchedulingData } from '@/hooks/useSchedulingData';
 import { useSmartSequencing } from '@/hooks/useSmartSequencing';
@@ -234,8 +236,62 @@ export function PlanningEfficiencyDashboard() {
             exit={{ opacity: 0, height: 0 }}
             className="md:col-span-2 lg:col-span-4 overflow-hidden"
           >
-            <div className="pt-2">
-              <OEETrendChart data={oeeData.trendData} worldClassBenchmark={oeeData.worldClassBenchmark} />
+            <div className="pt-4 grid grid-cols-1 lg:grid-cols-3 gap-4">
+              <div className="lg:col-span-2">
+                <OEETrendChart data={oeeData.trendData} worldClassBenchmark={oeeData.worldClassBenchmark} />
+              </div>
+              
+              {/* Technique Load Distribution */}
+              <Card className="glass-card border-primary/10">
+                <CardHeader className="p-4 pb-2">
+                  <div className="flex items-center gap-2">
+                    <LayoutGrid className="h-4 w-4 text-primary" />
+                    <CardTitle className="text-xs uppercase font-bold tracking-wider">Carga por Técnica</CardTitle>
+                  </div>
+                </CardHeader>
+                <CardContent className="p-4 pt-0 space-y-4">
+                  {byTechnique.map((tech) => (
+                    <div key={tech.technique.id} className="space-y-1">
+                      <div className="flex justify-between items-center text-[10px] mb-1">
+                        <span className="font-semibold truncate max-w-[150px]">{tech.technique.name}</span>
+                        <span className={cn(
+                          "font-bold",
+                          tech.averageOccupancy > 90 ? "text-red-400" : tech.averageOccupancy > 75 ? "text-amber-400" : "text-green-400"
+                        )}>
+                          {Math.round(tech.averageOccupancy)}%
+                        </span>
+                      </div>
+                      <div className="flex gap-1 h-1.5">
+                        {tech.machines.map((machine, idx) => (
+                          <TooltipProvider key={machine.machine.id}>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <div 
+                                  className={cn(
+                                    "flex-1 rounded-sm transition-all cursor-help",
+                                    machine.occupancyRate > 95 ? "bg-red-500" : 
+                                    machine.occupancyRate > 80 ? "bg-amber-500" : 
+                                    machine.occupancyRate < 20 ? "bg-blue-400/50" : "bg-primary/40"
+                                  )}
+                                />
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p className="text-[10px] font-bold">{machine.machine.name}</p>
+                                <p className="text-[10px]">{Math.round(machine.occupancyRate)}% de ocupação</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        ))}
+                      </div>
+                      {tech.isUnbalanced && (
+                        <p className="text-[8px] text-amber-400 flex items-center gap-1 mt-1">
+                          <AlertTriangle className="h-2 w-2" /> Desbalanceado (∆ {Math.round(tech.maxOccupancy - tech.minOccupancy)}%)
+                        </p>
+                      )}
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
             </div>
           </motion.div>
         )}
