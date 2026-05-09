@@ -40,6 +40,8 @@ import { SmartSequencingWidget } from "@/components/dashboard/SmartSequencingWid
 import { LoadBalancingWidget } from "@/components/dashboard/LoadBalancingWidget";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useDataExport } from "@/hooks/useDataExport";
+import { useSmartSequencingWithActions } from "@/hooks/useSmartSequencingWithActions";
+import { useLoadBalancingWithActions } from "@/hooks/useLoadBalancingWithActions";
 
 type SortField = 'orderNumber' | 'client' | 'scheduledDate' | 'priority' | 'quantity';
 type SortDirection = 'asc' | 'desc';
