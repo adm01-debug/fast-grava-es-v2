@@ -606,6 +606,14 @@ export default function ExecutiveDashboard() {
                         `${technique} ${(percent * 100).toFixed(0)}%`
                       }
                       labelLine={false}
+                      onClick={(data) => {
+                        const technique = techniques?.find(t => t.short_name === data.technique || t.name === data.technique);
+                        if (technique) {
+                          setTechniqueId(technique.id);
+                          toast.success(`Filtrando por técnica: ${technique.name}`);
+                        }
+                      }}
+                      className="cursor-pointer"
                     >
                       {kpis.techniqueDistribution.map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={entry.color} />
