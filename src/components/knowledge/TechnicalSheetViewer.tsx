@@ -514,22 +514,35 @@ export const TechnicalSheetViewer = ({ sheetId, onEdit, onDuplicate }: Technical
                     </div>
                     
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      {(sheetMaterials.length > 0 ? sheetMaterials : [
-                        { name: 'Tinta Base Water', quantity: '500g', notes: 'Alternativa: Tinta Eco-Friendly' },
-                        { name: 'Catalisador 202', quantity: '50g', notes: 'N/A' }
-                      ]).map((mat, idx) => (
-                        <div key={idx} className="flex items-start justify-between p-3 bg-muted/30 rounded-lg border border-border/50 group hover:border-primary/30 transition-colors">
-                          <div className="flex flex-col">
-                            <span className="text-sm font-medium">{mat.name}</span>
-                            {mat.notes && (
-                              <span className="text-[10px] text-muted-foreground">{mat.notes}</span>
-                            )}
+                      {sheetMaterials.map((mat, idx) => {
+                        const baseQuantityMatch = mat.quantity?.match(/^(\d+)(\D.*)$/);
+                        let scaledQuantity = mat.quantity;
+                        
+                        if (baseQuantityMatch) {
+                          const num = parseFloat(baseQuantityMatch[1]);
+                          const unit = baseQuantityMatch[2];
+                          scaledQuantity = `${((num * productionQuantity) / 100).toFixed(2)}${unit}`;
+                        }
+
+                        return (
+                          <div key={idx} className="flex items-start justify-between p-3 bg-muted/30 rounded-lg border border-border/50 group hover:border-primary/30 transition-colors">
+                            <div className="flex flex-col">
+                              <span className="text-sm font-medium">{mat.name}</span>
+                              {mat.notes && (
+                                <span className="text-[10px] text-muted-foreground">{mat.notes}</span>
+                              )}
+                            </div>
+                            <Badge variant="outline" className="bg-primary/5 text-primary border-primary/20 font-mono text-[10px]">
+                              {scaledQuantity}
+                            </Badge>
                           </div>
-                          <Badge variant="outline" className="bg-primary/5 text-primary border-primary/20 font-mono text-[10px]">
-                            {mat.quantity}
-                          </Badge>
+                        );
+                      })}
+                      {sheetMaterials.length === 0 && (
+                        <div className="col-span-full py-4 text-center text-xs text-muted-foreground">
+                          Nenhum insumo cadastrado para esta ficha.
                         </div>
-                      ))}
+                      )}
                     </div>
                   </div>
 
