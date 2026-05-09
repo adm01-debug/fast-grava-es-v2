@@ -36,6 +36,18 @@ const priorityOrder: Record<string, number> = {
   'low': 1,
 };
 
+const statusOrder: Record<JobStatus, number> = {
+  'rework': 0,
+  'delayed': 1,
+  'paused': 2,
+  'queue': 3,
+  'ready': 4,
+  'scheduled': 5,
+  'production': 6,
+  'finished': 7,
+  'cancelled': 8,
+};
+
 const WIP_LIMITS: Record<string, number> = {
   'queue': 20,
   'ready': 10,
