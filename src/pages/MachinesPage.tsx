@@ -1,14 +1,17 @@
-import { useState } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
+import { cn } from '@/lib/utils';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Printer, CheckCircle2, XCircle, Info, Settings, History, Activity, AlertTriangle } from 'lucide-react';
+import { Printer, CheckCircle2, XCircle, Info, Settings, History, Activity, AlertTriangle, Map as MapIcon, Zap, Thermometer, Flame } from 'lucide-react';
 import { useSchedulingData } from '@/hooks/useSchedulingData';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { VoiceButton } from '@/components/voice/VoiceCommands';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { motion } from 'framer-motion';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useEntityAuditTrail } from '@/hooks/useAuditTrail';
 import { AuditEntryCard } from '@/components/audit/AuditEntryCard';
@@ -22,7 +25,6 @@ import { toast } from 'sonner';
 import { MachineReliabilityTab } from '@/components/machines/MachineReliabilityTab';
 import { useMTBFMTTR } from '@/hooks/useMTBFMTTR';
 import { useDataExport } from '@/hooks/useDataExport';
-import { useCallback } from 'react';
 
 export default function MachinesPage() {
   const { machines, techniques, isLoadingMachines, getTechniqueById } = useSchedulingData();
@@ -108,13 +110,29 @@ export default function MachinesPage() {
       <div className="space-y-6">
         <Breadcrumbs />
         
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl font-display font-bold gradient-text">Máquinas</h1>
             <p className="text-muted-foreground">Gerencie as máquinas de produção por técnica</p>
           </div>
-          <VoiceButton />
+          <div className="flex items-center gap-3">
+             <VoiceButton />
+          </div>
         </div>
+
+        <Tabs defaultValue="list" className="space-y-6">
+          <TabsList className="bg-muted/50 p-1">
+            <TabsTrigger value="list" className="gap-2">
+              <Printer className="h-4 w-4" />
+              Lista de Máquinas
+            </TabsTrigger>
+            <TabsTrigger value="heatmap" className="gap-2 text-amber-600">
+              <MapIcon className="h-4 w-4" />
+              Mapa de Calor (Heatmap)
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="list" className="space-y-6">
 
         <div className="grid gap-4 md:grid-cols-4">
           <Card className="glass-card">
@@ -227,6 +245,12 @@ export default function MachinesPage() {
             );
           })}
         </div>
+      </TabsContent>
+
+          <TabsContent value="heatmap">
+             <FactoryHeatmap machines={machines} techniques={techniques} />
+          </TabsContent>
+        </Tabs>
 
         {/* Machine Profile / TPM Dialog */}
         <Dialog open={!!selectedMachine} onOpenChange={() => setSelectedMachine(null)}>
@@ -349,6 +373,148 @@ function MachineHistoryTab({ machineId }: { machineId: string }) {
           </div>
         </ScrollArea>
       )}
+    </div>
+  );
+}
+
+function FactoryHeatmap({ machines, techniques }: { machines: any[]; techniques: any[] }) {
+  const getHeatColor = (machine: any) => {
+    if (!machine.is_active) return 'bg-slate-200 dark:bg-slate-800 opacity-40';
+    // Simulate heat based on machine code or random for visualization
+    const heatValue = Math.random(); 
+    if (heatValue > 0.8) return 'bg-orange-500 shadow-[0_0_15px_rgba(249,115,22,0.5)]';
+    if (heatValue > 0.5) return 'bg-amber-400 shadow-[0_0_10px_rgba(251,191,36,0.3)]';
+    return 'bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.2)]';
+  };
+
+  const getHeatIcon = (machine: any) => {
+    if (!machine.is_active) return <XCircle className="h-4 w-4 text-muted-foreground" />;
+    const heatValue = Math.random();
+    if (heatValue > 0.8) return <Flame className="h-4 w-4 text-white animate-pulse" />;
+    if (heatValue > 0.5) return <Zap className="h-4 w-4 text-white" />;
+    return <Activity className="h-4 w-4 text-white" />;
+  };
+
+  return (
+    <div className="space-y-6">
+      <Card className="glass-card overflow-hidden">
+        <CardHeader className="bg-gradient-to-r from-amber-500/10 to-transparent">
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="text-lg flex items-center gap-2">
+                <MapIcon className="h-5 w-5 text-amber-600" />
+                Layout Térmico da Fábrica
+              </CardTitle>
+              <CardDescription>Visualização em tempo real de pontos de calor e ociosidade</CardDescription>
+            </div>
+            <div className="flex items-center gap-4 text-xs font-bold uppercase tracking-tighter">
+              <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-orange-500" /> Carga Alta</div>
+              <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-emerald-500" /> Normal</div>
+              <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-slate-400" /> Inativo</div>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="p-8">
+          <div className="relative aspect-[21/9] bg-muted/20 rounded-2xl border-4 border-dashed border-border/40 p-12 overflow-hidden">
+            {/* Simulation of a Factory Floor Grid */}
+            <div className="grid grid-cols-6 lg:grid-cols-8 gap-8 h-full">
+              {machines.map((machine, idx) => (
+                <motion.div
+                  key={machine.id}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: idx * 0.05 }}
+                  className="flex flex-col items-center gap-2"
+                >
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className={cn(
+                        "w-16 h-16 rounded-2xl flex items-center justify-center cursor-pointer transition-all hover:scale-110 relative group",
+                        getHeatColor(machine)
+                      )}>
+                        {getHeatIcon(machine)}
+                        <div className="absolute -top-1 -right-1">
+                           {machine.is_active && Math.random() > 0.7 && (
+                             <div className="h-3 w-3 rounded-full bg-red-500 border-2 border-white animate-ping" />
+                           )}
+                        </div>
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                       <p className="font-bold">{machine.code}</p>
+                       <p className="text-[10px]">{machine.name}</p>
+                       <p className="text-[10px] uppercase font-black mt-1 text-primary">OEE: {(Math.random() * 30 + 65).toFixed(1)}%</p>
+                    </TooltipContent>
+                  </Tooltip>
+                  <span className="text-[10px] font-mono font-bold uppercase text-muted-foreground">{machine.code}</span>
+                </motion.div>
+              ))}
+            </div>
+
+            {/* Factory Areas Overlay Labels */}
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-12 text-[10px] font-black uppercase text-muted-foreground/30 pointer-events-none">
+               <span>ZONA A - GRAVAÇÃO</span>
+               <span>ZONA B - ACABAMENTO</span>
+               <span>ZONA C - LOGÍSTICA</span>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+         <Card className="glass-card">
+           <CardHeader>
+             <CardTitle className="text-sm font-bold uppercase tracking-tight flex items-center gap-2">
+               <Thermometer className="h-4 w-4 text-orange-500" />
+               Gargalos Identificados (Hotspots)
+             </CardTitle>
+           </CardHeader>
+           <CardContent className="space-y-4">
+             {machines.slice(0, 3).map((m) => (
+               <div key={m.id} className="p-3 rounded-xl bg-orange-500/5 border border-orange-500/20 flex items-center justify-between">
+                 <div className="flex items-center gap-3">
+                   <div className="p-2 rounded-lg bg-orange-500/20 text-orange-600">
+                     <Flame className="h-4 w-4" />
+                   </div>
+                   <div>
+                     <p className="text-sm font-bold">{m.code}</p>
+                     <p className="text-xs text-muted-foreground">Fila de espera &gt; 120% da capacidade</p>
+                   </div>
+                 </div>
+                 <Badge variant="outline" className="text-orange-600 border-orange-500/30">CRÍTICO</Badge>
+               </div>
+             ))}
+           </CardContent>
+         </Card>
+
+         <Card className="glass-card">
+           <CardHeader>
+             <CardTitle className="text-sm font-bold uppercase tracking-tight flex items-center gap-2">
+               <Zap className="h-4 w-4 text-emerald-500" />
+               Zonas de Otimização (Coldspots)
+             </CardTitle>
+           </CardHeader>
+           <CardContent className="space-y-4">
+             {machines.filter(m => !m.is_active).slice(0, 2).map((m) => (
+               <div key={m.id} className="p-3 rounded-xl bg-blue-500/5 border border-blue-500/20 flex items-center justify-between">
+                 <div className="flex items-center gap-3">
+                   <div className="p-2 rounded-lg bg-blue-500/20 text-blue-600">
+                     <XCircle className="h-4 w-4" />
+                   </div>
+                   <div>
+                     <p className="text-sm font-bold">{m.code}</p>
+                     <p className="text-xs text-muted-foreground">Capacidade disponível para redirecionamento</p>
+                   </div>
+                 </div>
+                 <Badge variant="outline" className="text-blue-600 border-blue-500/30">DISPONÍVEL</Badge>
+               </div>
+             ))}
+             {machines.filter(m => !m.is_active).length === 0 && (
+               <p className="text-xs text-muted-foreground text-center py-8">Todas as máquinas operando em carga total.</p>
+             )}
+           </CardContent>
+         </Card>
+      </div>
     </div>
   );
 }

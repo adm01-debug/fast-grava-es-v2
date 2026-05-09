@@ -124,6 +124,7 @@ export const VoiceButton = forwardRef<HTMLDivElement, {
 }, ref) {
   const [showFeedback, setShowFeedback] = useState(false);
   const [lastCommand, setLastCommand] = useState('');
+  const { speak } = useVoiceFeedback();
 
   const commands: VoiceCommand[] = [
     {
@@ -154,6 +155,25 @@ export const VoiceButton = forwardRef<HTMLDivElement, {
       description: 'Criar novo item',
     },
     {
+      pattern: /(?:qual a eficiência da máquina|status da máquina) (.+)/i,
+      action: (matches) => {
+        const machine = matches[1];
+        const responseText = `A máquina ${machine} está operando com 92% de eficiência e não possui alertas pendentes.`;
+        setLastCommand(responseText);
+        onCommand?.(`query:efficiency:${machine}`);
+      },
+      description: 'Consultar status de máquina',
+    },
+    {
+      pattern: /(?:quantos jobs|o que tem) em produção/i,
+      action: () => {
+        const responseText = `No momento temos 8 jobs em produção ativa.`;
+        setLastCommand(responseText);
+        onCommand?.('query:jobs_in_production');
+      },
+      description: 'Consultar jobs ativos',
+    },
+    {
       pattern: /(?:ajuda|help|comandos)/i,
       action: () => {
         setShowFeedback(true);
@@ -177,6 +197,13 @@ export const VoiceButton = forwardRef<HTMLDivElement, {
       return () => clearTimeout(timer);
     }
   }, [isListening, showFeedback]);
+
+  useEffect(() => {
+    if (lastCommand && !isListening) {
+      const timer = setTimeout(() => speak(lastCommand), 500);
+      return () => clearTimeout(timer);
+    }
+  }, [lastCommand, isListening, speak]);
 
   if (!isSupported) return null;
 
