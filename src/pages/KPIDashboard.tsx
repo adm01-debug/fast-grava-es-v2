@@ -570,6 +570,57 @@ export default function KPIDashboard() {
                 </CardContent>
               </Card>
             </div>
+
+            {/* Predictive Insights */}
+            <Card className="glass-card border-primary/30 bg-primary/5 overflow-hidden">
+              <CardHeader className="pb-2">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <BrainCircuit className="h-5 w-5 text-primary animate-pulse" />
+                    Projeção de Performance (AI Insights)
+                  </CardTitle>
+                  <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20 gap-1">
+                    <Sparkles className="h-3 w-3" />
+                    PREDICTIVE
+                  </Badge>
+                </div>
+                <CardDescription>Tendências baseadas no histórico recente e volume atual</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                  <div className="lg:col-span-2 h-[200px]">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={kpis.predictions}>
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
+                        <XAxis dataKey="date" fontSize={10} axisLine={false} tickLine={false} />
+                        <YAxis fontSize={10} axisLine={false} tickLine={false} />
+                        <RechartsTooltip 
+                          contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px' }} 
+                        />
+                        <Bar dataKey="estimatedVolume" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} name="Volume Estimado" />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                  <div className="space-y-4">
+                    <div className="p-3 rounded-xl bg-muted/20 border border-border/50">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Zap className="h-4 w-4 text-amber-400" />
+                        <span className="text-xs font-bold uppercase tracking-wider">Insight da Semana</span>
+                      </div>
+                      <p className="text-xs text-muted-foreground leading-relaxed">
+                        Projeção indica um aumento de {Math.abs(kpis.comparison.volumeDiff).toFixed(1)}% na demanda. 
+                        Recomendado revisar manutenção preventiva para evitar gargalos em {kpis.predictions[2].date}.
+                      </p>
+                    </div>
+                    <div className="flex items-center justify-between p-2">
+                      <span className="text-xs text-muted-foreground">Confiança do Modelo</span>
+                      <span className="text-xs font-bold">{(kpis.predictions[0].confidence * 100).toFixed(0)}%</span>
+                    </div>
+                    <Progress value={kpis.predictions[0].confidence * 100} className="h-1" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
 
           <TabsContent value="machines" className="space-y-6">
