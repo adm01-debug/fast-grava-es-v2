@@ -45,6 +45,8 @@ interface TechnicalSheetViewerProps {
 export const TechnicalSheetViewer = ({ sheetId, onEdit, onDuplicate }: TechnicalSheetViewerProps) => {
   const { sheet, steps, sheetMaterials, tips, isLoading } = useTechnicalSheetDetails(sheetId);
   const { data: auditLogs = [], isLoading: isLoadingAudit } = useTechnicalSheetAudit(sheetId);
+  const { data: favorites = [] } = useTechnicalSheetFavorites();
+  const { toggleFavorite } = useTechnicalSheetMutations();
   const [checklistMode, setChecklistMode] = useState(false);
   const [completedSteps, setCompletedSteps] = useState<Set<string>>(new Set());
   const [showQR, setShowQR] = useState(false);
