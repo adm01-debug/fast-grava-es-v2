@@ -90,10 +90,22 @@ export default function OEEDashboard() {
             </p>
           </div>
           
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <VoiceButton />
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => {
+                downloadReport();
+                toast.success('Relatório OEE exportado!');
+              }}
+              className="hidden md:flex gap-2 border-primary/20 hover:bg-primary/5"
+            >
+              <FileDown className="h-4 w-4" />
+              Relatório
+            </Button>
             <Select value={period} onValueChange={setPeriod}>
-              <SelectTrigger className="w-40">
+              <SelectTrigger className="w-32 md:w-40 glass-card border-primary/20">
                 <SelectValue placeholder="Período" />
               </SelectTrigger>
               <SelectContent>
