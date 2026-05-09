@@ -37,38 +37,44 @@ export function useDashboardLayout() {
     const loadLayout = async () => {
       if (!user) return;
 
-      // 1. Try Loading from Supabase
-      const { data, error } = await supabase
-        .from('dashboard_layouts')
-        .select('layout')
-        .eq('user_id', user.id)
-        .maybeSingle();
+      try {
+        // 1. Try Loading from Supabase
+        const { data, error } = await supabase
+          .from('dashboard_layouts')
+          .select('layout')
+          .eq('user_id', user.id)
+          .maybeSingle();
 
-      if (data?.layout) {
-        const parsed = data.layout as WidgetConfig[];
-        // Merge with defaults to handle any new widgets added in code
-        const merged = DEFAULT_WIDGETS.map(defaultWidget => {
-          const savedWidget = parsed.find(w => w.id === defaultWidget.id);
-          return savedWidget ? { ...defaultWidget, ...savedWidget } : defaultWidget;
-        });
-        setWidgets(merged);
-        return;
-      }
+        if (error) throw error;
 
-      // 2. Fallback to localStorage
-      const storageKey = `${STORAGE_KEY}-${user.id}`;
-      const saved = localStorage.getItem(storageKey);
-      if (saved) {
-        try {
-          const parsed = JSON.parse(saved) as WidgetConfig[];
+        if (data?.layout) {
+          const parsed = data.layout as unknown as WidgetConfig[];
+          // Merge with defaults to handle any new widgets added in code
           const merged = DEFAULT_WIDGETS.map(defaultWidget => {
             const savedWidget = parsed.find(w => w.id === defaultWidget.id);
             return savedWidget ? { ...defaultWidget, ...savedWidget } : defaultWidget;
           });
           setWidgets(merged);
-        } catch (e) {
-          console.error("Error parsing local layout", e);
+          return;
         }
+
+        // 2. Fallback to localStorage
+        const storageKey = `${STORAGE_KEY}-${user.id}`;
+        const saved = localStorage.getItem(storageKey);
+        if (saved) {
+          try {
+            const parsed = JSON.parse(saved) as WidgetConfig[];
+            const merged = DEFAULT_WIDGETS.map(defaultWidget => {
+              const savedWidget = parsed.find(w => w.id === defaultWidget.id);
+              return savedWidget ? { ...defaultWidget, ...savedWidget } : defaultWidget;
+            });
+            setWidgets(merged);
+          } catch (e) {
+            console.error("Error parsing local layout", e);
+          }
+        }
+      } catch (err) {
+        console.error("Error loading layout:", err);
       }
     };
 
@@ -89,16 +95,15 @@ export function useDashboardLayout() {
         .from('dashboard_layouts')
         .upsert({ 
           user_id: user.id, 
-          layout: newWidgets,
+          layout: newWidgets as any,
           updated_at: new Date().toISOString()
-        }, { onConflict: 'user_id' });
+        } as any, { onConflict: 'user_id' });
 
       if (error) throw error;
     } catch (error) {
       console.error("Error saving layout to DB:", error);
       toast.error("Erro ao salvar layout na nuvem. Mantido localmente.");
     } finally {
-      setIsSaving(true); // Small delay before setting to false for UI feedback if needed
       setTimeout(() => setIsSaving(false), 500);
     }
   }, [user]);
