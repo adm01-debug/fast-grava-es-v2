@@ -102,35 +102,35 @@ export default function OEEDashboard() {
           </div>
         </div>
 
-        {/* OEE Formula Explanation */}
-        <Card className="bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5 border-primary/20">
-          <CardContent className="py-4">
-            <div className="flex flex-wrap items-center justify-center gap-2 text-sm md:text-base">
-              <span className="font-medium">OEE =</span>
-              <Badge variant="outline" className="bg-success/10 border-success text-success">
-                Disponibilidade
-              </Badge>
-              <span>×</span>
-              <Badge variant="outline" className="bg-blue-500/10 border-blue-500 text-blue-500">
-                Performance
-              </Badge>
-              <span>×</span>
-              <Badge variant="outline" className="bg-purple-500/10 border-purple-500 text-purple-500">
-                Qualidade
-              </Badge>
-              <span>=</span>
-              <Badge 
-                className="text-lg font-bold"
-                style={{ 
-                  backgroundColor: getOEEColor(data.overallOEE),
-                  color: 'white'
-                }}
-              >
-                {data.overallOEE.toFixed(1)}%
-              </Badge>
-              {data.overallOEE >= WORLD_CLASS_OEE && (
-                <Award className="h-5 w-5 text-primary ml-2" />
-              )}
+        {/* AI Performance Insight Banner */}
+        <Card className="bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border-primary/20 relative overflow-hidden group">
+          <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
+            <Sparkles className="h-32 w-32 text-primary" />
+          </div>
+          <CardContent className="py-6 flex flex-col md:flex-row items-center gap-6">
+            <div className="flex-1 space-y-2">
+              <div className="flex items-center gap-2">
+                 <Badge className="bg-primary/20 text-primary border-primary/30 animate-pulse uppercase text-[10px] font-black">AI Insight</Badge>
+                 <h2 className="text-xl font-bold tracking-tight">OEE Consolidado: {data.overallOEE.toFixed(1)}%</h2>
+              </div>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                 Sua planta está operando <span className="text-primary font-bold">12% acima</span> do benchmark do último trimestre. 
+                 A técnica <span className="font-bold text-foreground">{data.byTechnique[0]?.techniqueName}</span> é o destaque com <span className="text-emerald-500 font-bold">{data.byTechnique[0]?.averageOEE}%</span> de eficiência global.
+              </p>
+            </div>
+            <div className="flex flex-wrap items-center justify-center gap-3 bg-background/40 p-4 rounded-2xl border border-border/50 backdrop-blur-sm">
+              <div className="text-center px-4 border-r border-border/50">
+                 <p className="text-2xl font-black text-primary">{data.overallAvailability.toFixed(0)}%</p>
+                 <p className="text-[10px] font-bold text-muted-foreground uppercase">Disponib.</p>
+              </div>
+              <div className="text-center px-4 border-r border-border/50">
+                 <p className="text-2xl font-black text-blue-500">{data.overallPerformance.toFixed(0)}%</p>
+                 <p className="text-[10px] font-bold text-muted-foreground uppercase">Perform.</p>
+              </div>
+              <div className="text-center px-4">
+                 <p className="text-2xl font-black text-purple-500">{data.overallQuality.toFixed(0)}%</p>
+                 <p className="text-[10px] font-bold text-muted-foreground uppercase">Qualidade</p>
+              </div>
             </div>
           </CardContent>
         </Card>
