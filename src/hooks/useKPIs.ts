@@ -82,6 +82,15 @@ export interface KPIData {
     inProgress: number;
     delayed: number;
   };
+  
+  // Historical data for charts
+  performanceHistory: {
+    date: string;
+    efficiency: number;
+    productivity: number;
+    lossRate: number;
+  }[];
+  
   // Financial (Simulated for drill-down)
   estimatedRevenue: number;
   costOfLosses: number;
