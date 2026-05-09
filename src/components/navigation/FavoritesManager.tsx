@@ -138,9 +138,10 @@ export function FavoriteButton({ path, name, icon, variant = "icon" }: FavoriteB
 
 interface FavoritesDropdownProps {
   onNavigate?: (path: string) => void;
+  className?: string;
 }
 
-export function FavoritesDropdown({ onNavigate }: FavoritesDropdownProps) {
+export function FavoritesDropdown({ onNavigate, className }: FavoritesDropdownProps) {
   const { favorites, reorderFavorites, removeFavorite } = useFavorites();
 
   if (favorites.length === 0) {
