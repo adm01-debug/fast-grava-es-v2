@@ -19,6 +19,7 @@ const QuickFavoritesBar = lazy(() => import('./QuickFavoritesBar').then(m => ({ 
 const OfflineReadyIndicator = lazy(() => import('../offline/OfflineReadyIndicator').then(m => ({ default: m.OfflineReadyIndicator })));
 const MobileNavigation = lazy(() => import('../navigation/MobileNavigation').then(m => ({ default: m.MobileNavigation })));
 const MobileQuickActions = lazy(() => import('../navigation/MobileQuickActions').then(m => ({ default: m.MobileQuickActions })));
+const CommandPaletteAdvanced = lazy(() => import('../navigation/CommandPaletteAdvanced').then(m => ({ default: m.CommandPaletteAdvanced })));
 
 import { useDevice } from '@/hooks/use-device';
 import { cn } from '@/lib/utils';
@@ -140,6 +141,9 @@ export function MainLayout({ children }: MainLayoutProps) {
         </SectionErrorBoundary>
         <Suspense fallback={EmptyFallback}>
           <NotificationIntegrator />
+        </Suspense>
+        <Suspense fallback={EmptyFallback}>
+          <CommandPaletteAdvanced />
         </Suspense>
       </div>
     </SessionProvider>

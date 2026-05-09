@@ -16,14 +16,18 @@ import { Badge } from '@/components/ui/badge';
 import { FavoritesDropdown, FavoriteButton } from '@/components/navigation/FavoritesManager';
 import { ActivityLog, useActivityLog } from '@/components/activity/ActivityLog';
 import { OfflineBanner, ConnectionStatus } from '@/components/offline/OfflineMode';
+import { GamificationBanner } from '@/components/dashboard/GamificationBanner';
+import { useSmartDelayAlerts } from '@/hooks/useSmartDelayAlerts';
 
 import { VoiceButton } from '@/components/voice/VoiceCommands';
 import { ActivityFeedWidget } from '@/components/dashboard/ActivityFeedWidget';
+import { BufferPromotionStatus } from '@/components/dashboard/BufferPromotionStatus';
 import { LiveMachineStatusPanel } from '@/components/dashboard/LiveMachineStatusPanel';
 import { AutoShiftSummary } from '@/components/shift/AutoShiftSummary';
 import { QuickChat } from '@/components/chat/QuickChat';
 import { MaintenanceAlertsWidget } from '@/components/dashboard/MaintenanceAlertsWidget';
 import { EnergyWidget } from '@/components/dashboard/EnergyWidget';
+import { PredictiveAnalyticsWidget } from '@/components/dashboard/PredictiveAnalyticsWidget';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { 
@@ -39,7 +43,8 @@ import {
   Clock,
   Cpu,
   MessageCircle,
-  FileText
+  FileText,
+  Brain
 } from 'lucide-react';
 
 // Type definitions for widget components
@@ -97,6 +102,7 @@ const Index = () => {
   const { t } = useTranslation();
   const { stats, machines, isLoading, isOperator } = useOperatorDashboardData();
   const { profile } = useAuth();
+  useSmartDelayAlerts(); // Run background delay monitoring
   const {
     widgets,
     isEditMode,
@@ -191,6 +197,9 @@ const Index = () => {
           </div>
         </div>
 
+        <GamificationBanner />
+        <BufferPromotionStatus />
+
         {/* Edit Mode Indicator */}
         {isEditMode && (
           <div className="bg-primary/10 border border-primary/20 rounded-lg p-2 text-center text-sm text-primary mb-3 shrink-0">
@@ -266,6 +275,10 @@ const Index = () => {
               <Cpu className="h-4 w-4" />
               <span className="hidden sm:inline">Máquinas</span>
             </TabsTrigger>
+            <TabsTrigger value="intelligence" className="gap-2 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all duration-200">
+              <Brain className="h-4 w-4" />
+              <span className="hidden sm:inline">Inteligência</span>
+            </TabsTrigger>
             <TabsTrigger value="chat" className="gap-2 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all duration-200">
               <MessageCircle className="h-4 w-4" />
               <span className="hidden sm:inline">Chat</span>
@@ -304,6 +317,7 @@ const Index = () => {
                     <DailySummaryCard />
                     <MaintenanceAlertsWidget />
                     <EnergyWidget />
+                    <PredictiveAnalyticsWidget />
                     <SortableWidgetSection
                       widgets={sidebarWidgets}
                       section="sidebar"
@@ -353,6 +367,17 @@ const Index = () => {
             <ScrollArea className="h-full">
               <div className="pr-2">
                 <LiveMachineStatusPanel />
+              </div>
+            </ScrollArea>
+          </TabsContent>
+
+          {/* Intelligence & Insights Tab */}
+          <TabsContent value="intelligence" className="flex-1 mt-4 min-h-0">
+            <ScrollArea className="h-full">
+              <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 pr-2">
+                <PredictiveAnalyticsWidget />
+                <OEELoadTrendWidget />
+                <AlertsWidget />
               </div>
             </ScrollArea>
           </TabsContent>
