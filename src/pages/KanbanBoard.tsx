@@ -360,7 +360,13 @@ export default function KanbanBoard() {
           <KanbanAIAdvisor />
 
           {/* Metrics Bar */}
-          <KanbanMetricsBar jobs={jobs} />
+          <motion.div
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.4 }}
+          >
+            <KanbanMetricsBar jobs={jobs} />
+          </motion.div>
 
           {/* Filters Bar */}
           <KanbanFiltersBar
