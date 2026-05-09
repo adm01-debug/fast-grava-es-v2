@@ -42,6 +42,8 @@ import { toast } from 'sonner';
 
 export default function OEEDashboard() {
   const [period, setPeriod] = useState<string>('30');
+  const [showSimulator, setShowSimulator] = useState(false);
+  const [simValues, setSimValues] = useState({ availability: 85, performance: 90, quality: 98 });
   const { data, isLoading, downloadReport } = useOEE(parseInt(period));
 
   if (isLoading) {
