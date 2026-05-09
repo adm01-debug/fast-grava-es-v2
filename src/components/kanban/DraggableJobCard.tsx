@@ -189,8 +189,10 @@ export function DraggableJobCard({ job, technique, machine, onClick, viewMode = 
       </div>
       
       {/* Client + Product */}
-      <p className="font-medium text-sm text-foreground truncate mb-0.5">{job.client}</p>
-      <p className="text-xs text-muted-foreground truncate mb-2">{job.product}</p>
+      <div className="flex-1 min-w-0">
+        <p className="font-bold text-sm text-foreground truncate mb-0.5 group-hover:text-primary transition-colors">{job.client}</p>
+        <p className="text-[11px] leading-tight text-muted-foreground line-clamp-2 mb-2 h-8">{job.product}</p>
+      </div>
       
       {/* Progress bar */}
       {job.produced_quantity != null && job.quantity > 0 && (
