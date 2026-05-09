@@ -64,7 +64,7 @@ export default function KPIDashboard() {
   const { data: kpis, isLoading: isLoadingKPIs } = useKPIs();
   const { operators, isLoading: isLoadingOperators } = useOperatorProductivity('all');
   const { goalAlerts } = useGoalAlerts({ enableNotifications: false });
-  const { exportToExcel, exportToPDF } = useDataExport();
+  const { handleExport } = useBIExport({ periodJobsList: [] });
   const [searchTerm, setSearchTerm] = useState('');
 
   const isLoading = isLoadingKPIs || isLoadingOperators;
@@ -133,10 +133,10 @@ export default function KPIDashboard() {
               <DropdownMenuContent align="end" className="w-48">
                 <DropdownMenuLabel>Formato do Relatório</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => exportToExcel(kpis.productivityByMachine, 'kpi-maquinas')}>
-                  Excel (.xlsx)
+                <DropdownMenuItem onClick={() => handleExport('csv', 'Indicadores_KPI', kpis)}>
+                  CSV (.csv)
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => exportToPDF('kpi-dashboard-content', 'kpi-dashboard')}>
+                <DropdownMenuItem onClick={() => handleExport('pdf', 'Relatorio_Geral_KPI', kpis)}>
                   PDF (.pdf)
                 </DropdownMenuItem>
               </DropdownMenuContent>
