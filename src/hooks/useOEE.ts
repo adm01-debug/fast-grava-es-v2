@@ -283,17 +283,23 @@ export function useOEE(daysBack: number = 30) {
     const performanceLosses = (overallAvailability / 100) * (100 - overallPerformance);
     const qualityLosses = (overallAvailability / 100) * (overallPerformance / 100) * (100 - overallQuality);
     
-    // Generate trend data (last 14 days)
+    // Generate trend data (last 30 days for better historical view)
     const trendData: OEEData['trendData'] = [];
-    for (let i = 13; i >= 0; i--) {
+    const trendDays = 30;
+    
+    for (let i = trendDays - 1; i >= 0; i--) {
       const date = subDays(now, i);
       const dayStart = startOfDay(date);
       const dayEnd = endOfDay(date);
       
       const dayJobs = periodJobs.filter(job => {
         if (!job.actual_end_time) return false;
-        const endTime = parseISO(job.actual_end_time);
-        return isWithinInterval(endTime, { start: dayStart, end: dayEnd });
+        try {
+          const endTime = parseISO(job.actual_end_time);
+          return isWithinInterval(endTime, { start: dayStart, end: dayEnd });
+        } catch {
+          return false;
+        }
       });
       
       if (dayJobs.length === 0) {
@@ -311,12 +317,14 @@ export function useOEE(daysBack: number = 30) {
       let dayActual = 0, dayEstimated = 0, dayProduced = 0, dayLost = 0;
       
       for (const job of dayJobs) {
-        if (job.actual_start_time && job.actual_end_time) {
-          dayActual += differenceInMinutes(parseISO(job.actual_end_time), parseISO(job.actual_start_time));
+        if (isValidDate(job.actual_start_time) && isValidDate(job.actual_end_time)) {
+          try {
+            dayActual += differenceInMinutes(parseISO(job.actual_end_time!), parseISO(job.actual_start_time!));
+          } catch {}
         }
-        dayEstimated += job.estimated_duration ?? 60;
-        dayProduced += job.produced_quantity ?? job.quantity ?? 0;
-        dayLost += job.lost_pieces ?? 0;
+        dayEstimated += sanitizeNumber(job.estimated_duration, 60);
+        dayProduced += sanitizeNumber(job.produced_quantity ?? job.quantity);
+        dayLost += sanitizeNumber(job.lost_pieces);
       }
       
       const dayPlanned = Math.max(PLANNED_MINUTES_PER_DAY, dayEstimated);
