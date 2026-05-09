@@ -130,8 +130,12 @@ export function JobDetailsModal({ job, open, onOpenChange, onStatusChange }: Job
         </DialogHeader>
 
         <Tabs defaultValue="details" className="mt-4">
-          <TabsList className="grid w-full grid-cols-4 h-auto">
+          <TabsList className="grid w-full grid-cols-5 h-auto">
             <TabsTrigger value="details" className="text-[10px] sm:text-xs">Detalhes</TabsTrigger>
+            <TabsTrigger value="quality" className="flex items-center gap-1 text-[10px] sm:text-xs">
+              <Activity className="h-3 w-3" />
+              Qualidade
+            </TabsTrigger>
             <TabsTrigger value="costs" className="flex items-center gap-1 text-[10px] sm:text-xs">
               <DollarSign className="h-3 w-3" />
               Custos
