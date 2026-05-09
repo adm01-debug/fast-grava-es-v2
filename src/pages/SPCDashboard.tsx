@@ -88,17 +88,66 @@ export default function SPCDashboard() {
         <Breadcrumbs />
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2"><Activity className="h-8 w-8" />Controle Estatístico de Processo</h1>
-            <p className="text-muted-foreground">Gráficos de controle X-barra, R e análise de capacidade</p>
+            <h1 className="text-3xl font-black font-display tracking-tight flex items-center gap-3">
+              <Activity className="h-8 w-8 text-primary" />
+              Statistical Process Control (SPC)
+            </h1>
+            <p className="text-muted-foreground mt-1 font-medium">Controle de Qualidade em Tempo Real e Análise de Tendências</p>
           </div>
-          <Button onClick={() => setShowCreateModal(true)}><Plus className="h-4 w-4 mr-2" />Novo Parâmetro</Button>
+          <div className="flex gap-3">
+            <Button variant="outline" className="gap-2">
+              <TrendingUp className="h-4 w-4" /> Relatório Completo
+            </Button>
+            <Button onClick={() => setShowCreateModal(true)} className="gap-2">
+              <Plus className="h-4 w-4" /> Novo Parâmetro
+            </Button>
+          </div>
         </div>
 
         <div className="grid gap-4 md:grid-cols-4">
-          <Card><CardContent className="pt-4"><div className="flex items-center gap-3"><div className="p-2 rounded-lg bg-primary/10"><Target className="h-5 w-5 text-primary" /></div><div><p className="text-sm text-muted-foreground">Parâmetros</p><p className="text-2xl font-bold">{stats.total}</p></div></div></CardContent></Card>
-          <Card><CardContent className="pt-4"><div className="flex items-center gap-3"><div className="p-2 rounded-lg bg-green-500/10"><CheckCircle className="h-5 w-5 text-green-500" /></div><div><p className="text-sm text-muted-foreground">Em Controle</p><p className="text-2xl font-bold">{stats.inControl}</p></div></div></CardContent></Card>
-          <Card><CardContent className="pt-4"><div className="flex items-center gap-3"><div className="p-2 rounded-lg bg-red-500/10"><AlertTriangle className="h-5 w-5 text-red-500" /></div><div><p className="text-sm text-muted-foreground">Fora de Controle</p><p className="text-2xl font-bold">{stats.outOfControl}</p></div></div></CardContent></Card>
-          <Card><CardContent className="pt-4"><div className="flex items-center gap-3"><div className="p-2 rounded-lg bg-yellow-500/10"><TrendingUp className="h-5 w-5 text-yellow-500" /></div><div><p className="text-sm text-muted-foreground">Cpk Médio</p><p className="text-2xl font-bold">{capability?.cpk?.toFixed(2) || '-'}</p></div></div></CardContent></Card>
+          <Card className="glass-card bg-gradient-to-br from-primary/5 to-transparent border-primary/20">
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between mb-2">
+                 <Target className="h-5 w-5 text-primary" />
+                 <Badge variant="outline" className="text-[10px] font-black uppercase">Monitoramento</Badge>
+              </div>
+              <p className="text-3xl font-black">{stats.total}</p>
+              <p className="text-xs text-muted-foreground uppercase font-bold tracking-widest">Itens Monitorados</p>
+            </CardContent>
+          </Card>
+          
+          <Card className="glass-card border-green-500/20 bg-green-500/5">
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between mb-2">
+                 <CheckCircle className="h-5 w-5 text-green-500" />
+                 <Badge variant="outline" className="text-[10px] font-black uppercase text-green-600 border-green-500/30">Estável</Badge>
+              </div>
+              <p className="text-3xl font-black text-green-600">{stats.inControl}</p>
+              <p className="text-xs text-muted-foreground uppercase font-bold tracking-widest">Pontos em Controle</p>
+            </CardContent>
+          </Card>
+
+          <Card className={cn("glass-card", stats.outOfControl > 0 ? "border-red-500/30 bg-red-500/5 shadow-[0_0_15px_rgba(239,68,68,0.1)]" : "border-border/50")}>
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between mb-2">
+                 <AlertTriangle className={cn("h-5 w-5", stats.outOfControl > 0 ? "text-red-500 animate-pulse" : "text-muted-foreground")} />
+                 {stats.outOfControl > 0 && <Badge variant="destructive" className="text-[9px] font-black uppercase animate-bounce">Ação Requerida</Badge>}
+              </div>
+              <p className={cn("text-3xl font-black", stats.outOfControl > 0 ? "text-red-500" : "text-foreground")}>{stats.outOfControl}</p>
+              <p className="text-xs text-muted-foreground uppercase font-bold tracking-widest">Fora de Controle</p>
+            </CardContent>
+          </Card>
+
+          <Card className="glass-card border-amber-500/20 bg-amber-500/5">
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between mb-2">
+                 <TrendingUp className="h-5 w-5 text-amber-500" />
+                 <Badge variant="outline" className="text-[10px] font-black uppercase text-amber-600 border-amber-500/30">Capacidade</Badge>
+              </div>
+              <p className="text-3xl font-black text-amber-600">{capability?.cpk?.toFixed(2) || '-'}</p>
+              <p className="text-xs text-muted-foreground uppercase font-bold tracking-widest">Cpk (Índice Médio)</p>
+            </CardContent>
+          </Card>
         </div>
 
         <div className="grid gap-6 lg:grid-cols-3">
