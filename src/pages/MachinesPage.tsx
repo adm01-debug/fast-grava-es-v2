@@ -28,6 +28,8 @@ import { useDataExport } from '@/hooks/useDataExport';
 
 export default function MachinesPage() {
   const { machines, techniques, isLoadingMachines, getTechniqueById } = useSchedulingData();
+  const [selectedMachines, setSelectedMachines] = useState<Set<string>>(new Set());
+
   const { user, profile } = useAuth();
   const { 
     schedules, 
