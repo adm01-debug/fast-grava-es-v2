@@ -477,6 +477,7 @@ export default function KanbanBoard() {
                     getMachineById={getMachineById}
                     onJobClick={handleJobClick}
                     viewMode={viewMode}
+                    wipLimit={column.wipLimit}
                     selectedJobs={selectedJobs}
                     onSelectJob={handleSelectJob}
                     onQuickAction={handleQuickAction}
