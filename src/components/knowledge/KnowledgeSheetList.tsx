@@ -5,9 +5,10 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Search, Plus, Clock, ChevronRight, FileText, Star } from 'lucide-react';
-import { TechnicalSheet } from '@/hooks/useTechnicalSheets';
+import { Search, Plus, Clock, ChevronRight, FileText, Star, TrendingUp } from 'lucide-react';
+import { TechnicalSheet } from '@/hooks/technical-sheets/technicalSheetsTypes';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
+import { KnowledgeStatusBadge } from './KnowledgeStatusBadge';
 
 interface KnowledgeSheetListProps {
   sheets: Record<string, TechnicalSheet[]>;
@@ -111,6 +112,32 @@ export const KnowledgeSheetList = ({
       </CardHeader>
       <CardContent className="flex-1 p-0 overflow-hidden">
         <ScrollArea className="h-full px-4 pb-4">
+          {!isLoading && favorites.length > 0 && (
+            <div className="mb-6">
+              <div className="flex items-center gap-2 mb-2 text-xs font-semibold text-primary uppercase tracking-wider">
+                <Star className="h-3 w-3 fill-primary" />
+                Favoritos
+              </div>
+              <div className="space-y-2">
+                {Object.values(sheets).flat().filter((s: any) => favorites.includes(s.id)).map((sheet: any) => (
+                  <button
+                    key={`fav-${sheet.id}`}
+                    onClick={() => onSheetClick(sheet.id)}
+                    className={`w-full text-left p-2 rounded-lg border transition-all group ${
+                      selectedSheet === sheet.id
+                        ? 'border-primary bg-primary/10'
+                        : 'border-border/20 bg-muted/5'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="font-medium text-xs truncate">{sheet.title}</p>
+                      <Star className="h-3 w-3 fill-primary text-primary" />
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
           {isLoading ? (
             <div className="space-y-3">
               {[1, 2, 3, 4].map(i => (
@@ -170,8 +197,9 @@ export const KnowledgeSheetList = ({
                         >
                           <div className="flex items-start justify-between gap-2">
                             <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-1.5">
+                              <div className="flex items-center gap-2">
                                 <p className="font-medium text-sm truncate">{sheet.title}</p>
+                                <KnowledgeStatusBadge status={sheet.status} className="text-[9px] px-1 h-4" />
                                 <button
                                   onClick={(e) => toggleFavorite(e, sheet.id)}
                                   className="opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0"

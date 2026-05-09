@@ -11,6 +11,7 @@ export interface TechnicalSheet {
   settings_ranges: Record<string, { min: string; max: string }> | null;
   ink_specifications: string | null;
   tooling_specifications: string | null;
+  status: 'draft' | 'published' | 'review_needed';
   version: number;
   is_active: boolean;
   created_at: string;
@@ -36,6 +37,7 @@ export interface TechnicalSheetStep {
   description: string;
   tips: string | null;
   warnings: string | null;
+  image_url?: string | null;
 }
 
 export interface TechnicalSheetMaterial {
