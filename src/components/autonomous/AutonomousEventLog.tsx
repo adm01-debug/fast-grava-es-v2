@@ -12,7 +12,9 @@ export function AutonomousEventLog() {
     { type: 'maintenance', message: 'Ordem de serviço automática gerada para Máquina 4 (Fator de Risco > 85%).', icon: Brain },
     { type: 'logistics', message: 'Solicitação de reposição de Tinta Azul enviada ao almoxarifado.', icon: Zap },
     { type: 'quality', message: 'Alerta SPC: Processo da Máquina 1 está tendendo ao limite superior. Ajuste sugerido.', icon: AlertCircle },
-    { type: 'sync', message: 'Sincronização Bitrix24 concluída: 12 novas ordens processadas.', icon: CheckCircle2 }
+    { type: 'sync', message: 'Sincronização Bitrix24 concluída: 12 novas ordens processadas.', icon: CheckCircle2 },
+    { type: 'efficiency', message: 'OEE Global atingiu 92% - Performance máxima detectada.', icon: Target },
+    { type: 'security', message: 'Auditoria de integridade concluída: Nenhuma vulnerabilidade encontrada.', icon: ShieldCheck }
   ];
 
   useEffect(() => {

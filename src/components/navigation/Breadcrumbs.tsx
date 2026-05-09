@@ -42,7 +42,7 @@ const routeLabels: Record<string, string> = {
   'calendar': 'Calendário',
   'pending': 'Fila Pendente',
   'alerts': 'Alertas',
-  'executive': 'Executivo',
+  'executive': 'Fábrica Autônoma',
   'assistant': 'Assistente Técnico',
   'knowledge': 'Base de Conhecimento',
   'design-system': 'Design System',
