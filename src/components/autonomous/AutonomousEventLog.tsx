@@ -14,8 +14,8 @@ export function AutonomousEventLog() {
     { type: 'logistics', message: 'Solicitação de reposição de Tinta Azul enviada ao almoxarifado.', icon: Zap, color: 'text-amber-500', bg: 'bg-amber-500/10' },
     { type: 'quality', message: 'Alerta SPC: Processo da Máquina 1 está tendendo ao limite superior. Ajuste sugerido.', icon: AlertCircle, color: 'text-destructive', bg: 'bg-destructive/10' },
     { type: 'sync', message: 'Sincronização Bitrix24 concluída: 12 novas ordens processadas.', icon: CheckCircle2, color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
-    { type: 'efficiency', message: 'OEE Global atingiu 92% - Performance máxima detectada.', icon: Target, color: 'text-primary', bg: 'bg-primary/10' },
-    { type: 'orchestration', message: 'Orquestração 11/10 Ativa: Sincronia total entre físico e digital.', icon: ShieldCheck, color: 'text-blue-600', bg: 'bg-blue-600/10' }
+    { type: 'quantum', message: 'Simulação Quântica: Detectada economia de R$ 1.250 em novo cenário de lote.', icon: Target, color: 'text-primary', bg: 'bg-primary/10' },
+    { type: 'orchestration', message: 'Orquestração 12/10: Sincronia global entre Fábrica e Supply Chain.', icon: ShieldCheck, color: 'text-blue-600', bg: 'bg-blue-600/10' }
   ];
 
   useEffect(() => {
