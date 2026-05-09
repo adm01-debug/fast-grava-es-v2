@@ -23,6 +23,7 @@ import { LeaderboardWidget } from '@/components/dashboard/LeaderboardWidget';
 import { EfficiencyAlertTrendChart } from '@/components/dashboard/EfficiencyAlertTrendChart';
 import { useOEE } from '@/hooks/useOEE';
 import { OperatorGoalsWidget } from '@/components/dashboard/OperatorGoalsWidget';
+import { VoiceButton } from '@/components/voice/VoiceCommands';
 
 export default function EfficiencyDashboard() {
   const navigate = useNavigate();
