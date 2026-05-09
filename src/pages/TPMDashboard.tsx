@@ -27,6 +27,9 @@ import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 import { VoiceButton } from '@/components/voice/VoiceCommands';
+import { PredictiveHealthCard } from '@/components/tpm/PredictiveHealthCard';
+import { VirtualSensorPanel } from '@/components/tpm/VirtualSensorPanel';
+import { BrainCircuit } from 'lucide-react';
 
 export default function TPMDashboard() {
   const navigate = useNavigate();
