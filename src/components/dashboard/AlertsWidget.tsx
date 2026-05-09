@@ -24,6 +24,7 @@ export function AlertsWidget() {
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
   const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
   const { stuckJobs } = useStuckJobsDetection();
+  const { data: oeeData } = useOEE(7); // Last 7 days
 
   const alerts = useMemo(() => {
     const alertList: Alert[] = [];
