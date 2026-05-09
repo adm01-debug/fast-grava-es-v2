@@ -31,6 +31,7 @@ export default function MachinesPage() {
     completeMaintenance, 
     createSchedule 
   } = useTPM();
+  const { summary: reliabilitySummary, isLoading: isLoadingReliability } = useMTBFMTTR();
 
   const [selectedMachine, setSelectedMachine] = useState<any>(null);
   const [executionModalOpen, setExecutionModalOpen] = useState(false);
