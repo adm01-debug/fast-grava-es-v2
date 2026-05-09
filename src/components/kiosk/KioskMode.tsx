@@ -134,6 +134,14 @@ export function KioskMode({
             ) : (
               <WifiOff className="h-5 w-5 text-destructive" />
             )}
+            <Button 
+              variant={isFocusMode ? "default" : "outline"} 
+              size="icon" 
+              onClick={() => setIsFocusMode(!isFocusMode)}
+              title={isFocusMode ? "Desativar Foco" : "Ativar Modo Foco"}
+            >
+              {isFocusMode ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            </Button>
             <Button variant="outline" size="icon" onClick={onRefresh}>
               <RefreshCw className="h-4 w-4" />
             </Button>
