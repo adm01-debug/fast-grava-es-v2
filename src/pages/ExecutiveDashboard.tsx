@@ -8,6 +8,9 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Progress } from '@/components/ui/progress';
 import { useExecutiveDashboard, getDateRangePresets, DateRange } from '@/hooks/useExecutiveDashboard';
 import { exportExecutiveDashboardPDF } from '@/lib/pdfExport';
+import { exportExecutiveDashboardExcel } from '@/lib/excelExport';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { 
   XAxis, 
   YAxis, 
@@ -42,23 +45,61 @@ import {
   BrainCircuit,
   ShieldCheck,
   Sparkles,
-  ShieldAlert
+  ShieldAlert,
+  FileSpreadsheet,
+  Settings2
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { VoiceButton } from '@/components/voice/VoiceCommands';
 import { AutonomousEventLog } from '@/components/autonomous/AutonomousEventLog';
+import { 
+  Dialog, 
+  DialogContent, 
+  DialogHeader, 
+  DialogTitle, 
+  DialogTrigger,
+  DialogFooter
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 export default function ExecutiveDashboard() {
   const datePresets = getDateRangePresets();
-  const [selectedRange, setSelectedRange] = useState<DateRange>(datePresets[1]); // Este Mês
+  const [selectedRange, setSelectedRange] = useState<DateRange>(datePresets[2] || datePresets[1]); // Este Mês
+  const [machineId, setMachineId] = useState<string>('all');
+  const [techniqueId, setTechniqueId] = useState<string>('all');
+  const [globalGoal, setGlobalGoal] = useState<number>(85);
+  const [isGoalDialogOpen, setIsGoalDialogOpen] = useState(false);
+  const [tempGoal, setTempGoal] = useState<string>('85');
 
-  const { data: kpis, isLoading, error } = useExecutiveDashboard(selectedRange);
+  const { data: machines } = useQuery({
+    queryKey: ['machines-list'],
+    queryFn: async () => {
+      const { data } = await supabase.from('machines').select('id, name, code');
+      return data || [];
+    }
+  });
+
+  const { data: techniques } = useQuery({
+    queryKey: ['techniques-list'],
+    queryFn: async () => {
+      const { data } = await supabase.from('techniques').select('id, name');
+      return data || [];
+    }
+  });
+
+  const { data: kpis, isLoading, error } = useExecutiveDashboard(
+    selectedRange, 
+    { 
+      machineId: machineId === 'all' ? undefined : machineId,
+      techniqueId: techniqueId === 'all' ? undefined : techniqueId
+    }
+  );
 
   const handleExportPDF = async () => {
     if (!kpis) return;
-    
     try {
       await exportExecutiveDashboardPDF({
         title: 'Dashboard Executivo',
@@ -67,9 +108,33 @@ export default function ExecutiveDashboard() {
       });
       toast.success('Relatório PDF exportado com sucesso!');
     } catch (error) {
-      if (import.meta.env.DEV) console.error('Error exporting PDF:', error);
-      toast.error('Erro ao exportar relatório');
+      toast.error('Erro ao exportar PDF');
     }
+  };
+
+  const handleExportExcel = async () => {
+    if (!kpis) return;
+    try {
+      await exportExecutiveDashboardExcel({
+        title: 'Dashboard Executivo',
+        dateRange: selectedRange,
+        kpis,
+      });
+      toast.success('Relatório Excel exportado com sucesso!');
+    } catch (error) {
+      toast.error('Erro ao exportar Excel');
+    }
+  };
+
+  const handleSaveGoal = () => {
+    const val = parseFloat(tempGoal);
+    if (isNaN(val) || val < 0 || val > 100) {
+      toast.error('Por favor, insira um valor válido entre 0 e 100');
+      return;
+    }
+    setGlobalGoal(val);
+    setIsGoalDialogOpen(false);
+    toast.success(`Meta global atualizada para ${val}%`);
   };
 
   if (isLoading) {
@@ -112,16 +177,18 @@ export default function ExecutiveDashboard() {
       value: kpis.totalPiecesProduced.toLocaleString('pt-BR'),
       subtitle: `${kpis.totalJobsCompleted} jobs concluídos`,
       icon: Package,
-      trend: kpis.productionEfficiency > 80 ? 'up' : 'down',
+      trend: kpis.trends.production >= 0 ? 'up' : 'down',
+      trendValue: kpis.trends.production,
       color: 'text-blue-500',
       bgColor: 'bg-blue-500/10',
     },
     {
       title: 'Eficiência',
       value: `${kpis.productionEfficiency.toFixed(1)}%`,
-      subtitle: `Meta: 85%`,
+      subtitle: `Meta: ${globalGoal}%`,
       icon: Target,
-      trend: kpis.productionEfficiency >= 85 ? 'up' : 'down',
+      trend: kpis.trends.efficiency >= 0 ? 'up' : 'down',
+      trendValue: kpis.trends.efficiency,
       color: 'text-green-500',
       bgColor: 'bg-green-500/10',
     },
@@ -130,7 +197,8 @@ export default function ExecutiveDashboard() {
       value: `${kpis.qualityRate.toFixed(1)}%`,
       subtitle: `${kpis.totalPiecesLost.toLocaleString('pt-BR')} perdas`,
       icon: CheckCircle2,
-      trend: kpis.qualityRate >= 98 ? 'up' : 'down',
+      trend: kpis.trends.quality >= 0 ? 'up' : 'down',
+      trendValue: kpis.trends.quality,
       color: 'text-purple-500',
       bgColor: 'bg-purple-500/10',
     },
@@ -139,7 +207,8 @@ export default function ExecutiveDashboard() {
       value: `${kpis.machineUtilization.toFixed(1)}%`,
       subtitle: `${kpis.activeMachines} de ${kpis.totalMachines} ativas`,
       icon: Factory,
-      trend: kpis.machineUtilization >= 70 ? 'up' : 'down',
+      trend: kpis.trends.utilization >= 0 ? 'up' : 'down',
+      trendValue: kpis.trends.utilization,
       color: 'text-amber-500',
       bgColor: 'bg-amber-500/10',
     },
@@ -149,6 +218,7 @@ export default function ExecutiveDashboard() {
       subtitle: 'Status: 11/10 Ativo',
       icon: ShieldCheck,
       trend: 'up',
+      trendValue: 0.2,
       color: 'text-purple-600',
       bgColor: 'bg-purple-600/10',
     },
@@ -195,7 +265,31 @@ export default function ExecutiveDashboard() {
               }} />
             </div>
             
-            <div className="flex gap-2 flex-1 xl:flex-none">
+            <div className="flex flex-wrap gap-2 w-full xl:w-auto">
+              <Select value={machineId} onValueChange={setMachineId}>
+                <SelectTrigger className="w-[140px] h-11 rounded-xl glass-card font-bold text-[10px] uppercase tracking-wider">
+                  <SelectValue placeholder="Máquina" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todas Máquinas</SelectItem>
+                  {machines?.map(m => (
+                    <SelectItem key={m.id} value={m.id}>{m.code || m.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <Select value={techniqueId} onValueChange={setTechniqueId}>
+                <SelectTrigger className="w-[140px] h-11 rounded-xl glass-card font-bold text-[10px] uppercase tracking-wider">
+                  <SelectValue placeholder="Técnica" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todas Técnicas</SelectItem>
+                  {techniques?.map(t => (
+                    <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
               <Select 
                 value={selectedRange.label} 
                 onValueChange={(value) => {
@@ -203,7 +297,7 @@ export default function ExecutiveDashboard() {
                   if (preset) setSelectedRange(preset);
                 }}
               >
-                <SelectTrigger className="w-full xl:w-[200px] h-11 rounded-xl glass-card font-bold text-xs uppercase tracking-wider">
+                <SelectTrigger className="w-[160px] h-11 rounded-xl glass-card font-bold text-[10px] uppercase tracking-wider">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="rounded-xl border-primary/20">
@@ -215,10 +309,17 @@ export default function ExecutiveDashboard() {
                 </SelectContent>
               </Select>
 
-              <Button onClick={handleExportPDF} className="gap-2 h-11 rounded-xl gradient-primary font-black uppercase tracking-widest text-xs px-6 shadow-glow-primary hover:scale-105 active:scale-95 transition-all">
-                <FileDown className="h-4 w-4" />
-                Exportar
-              </Button>
+              <div className="flex gap-1">
+                <Button onClick={handleExportPDF} variant="outline" size="icon" className="h-11 w-11 rounded-xl border-primary/20 hover:bg-primary/10" title="Exportar PDF">
+                  <FileDown className="h-4 w-4" />
+                </Button>
+                <Button onClick={handleExportExcel} variant="outline" size="icon" className="h-11 w-11 rounded-xl border-primary/20 hover:bg-primary/10" title="Exportar Excel">
+                  <FileSpreadsheet className="h-4 w-4" />
+                </Button>
+                <Button onClick={() => setIsGoalDialogOpen(true)} variant="outline" size="icon" className="h-11 w-11 rounded-xl border-primary/20 hover:bg-primary/10" title="Configurar Metas">
+                  <Settings2 className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
           </div>
         </div>
@@ -228,7 +329,7 @@ export default function ExecutiveDashboard() {
           <div className="lg:col-span-1 h-full overflow-hidden">
              <AutonomousEventLog />
           </div>
-          <Card className="glass-card lg:col-span-1 border-primary/20 bg-gradient-to-br from-primary/5 to-transparent h-full flex flex-col">
+          <Card className="glass-card lg:col-span-1 border-primary/20 bg-gradient-to-br from-primary/5 to-transparent h-full flex flex-col cursor-pointer hover:border-primary/40 transition-all" onClick={() => toast.info('Drill-down: OEE Global')}>
             <CardHeader className="pb-0">
               <CardTitle className="text-sm font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
                 <Target className="h-4 w-4 text-primary" />
@@ -330,7 +431,7 @@ export default function ExecutiveDashboard() {
         {/* KPI Grid */}
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
           {kpiCards.map((kpi, index) => (
-            <Card key={index} className="glass-card hover:border-primary/30 transition-all cursor-default">
+            <Card key={index} className="glass-card hover:border-primary/30 transition-all cursor-pointer" onClick={() => toast.info(`Drill-down: ${kpi.title}`)}>
               <CardContent className="p-4">
                 <div className="flex items-center justify-between mb-2">
                   <div className={cn('p-2 rounded-lg', kpi.bgColor)}>
@@ -340,7 +441,7 @@ export default function ExecutiveDashboard() {
                     "text-[10px]",
                     kpi.trend === 'up' ? "text-green-500 border-green-500/20" : "text-red-500 border-red-500/20"
                   )}>
-                    {kpi.trend === 'up' ? '+ ' : '- '}{(Math.random() * 5).toFixed(1)}%
+                    {kpi.trend === 'up' ? '+ ' : ''}{kpi.trendValue?.toFixed(1)}%
                   </Badge>
                 </div>
                 <p className="text-xl font-bold">{kpi.value}</p>
@@ -353,7 +454,7 @@ export default function ExecutiveDashboard() {
         {/* Charts Row 1 */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Production Trend */}
-          <Card className="glass-card">
+          <Card className="glass-card cursor-pointer hover:border-primary/20 transition-all" onClick={() => toast.info('Drill-down: Tendência de Produção')}>
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between">
                 <div>
@@ -401,7 +502,7 @@ export default function ExecutiveDashboard() {
           </Card>
 
           {/* Efficiency Trend */}
-          <Card className="glass-card">
+          <Card className="glass-card cursor-pointer hover:border-primary/20 transition-all" onClick={() => toast.info('Drill-down: Eficiência Temporal')}>
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between">
                 <div>
@@ -541,6 +642,37 @@ export default function ExecutiveDashboard() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Goals Configuration Dialog */}
+        <Dialog open={isGoalDialogOpen} onOpenChange={setIsGoalDialogOpen}>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Target className="h-5 w-5 text-primary" />
+                Configuração de Metas Executivas
+              </DialogTitle>
+              <CardDescription>Defina as metas estratégicas para o dashboard consolidado.</CardDescription>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="goal" className="text-right">Meta OEE (%)</Label>
+                <Input
+                  id="goal"
+                  value={tempGoal}
+                  onChange={(e) => setTempGoal(e.target.value)}
+                  className="col-span-3"
+                  type="number"
+                  min="0"
+                  max="100"
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setIsGoalDialogOpen(false)}>Cancelar</Button>
+              <Button onClick={handleSaveGoal}>Salvar Alterações</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </MainLayout>
   );
