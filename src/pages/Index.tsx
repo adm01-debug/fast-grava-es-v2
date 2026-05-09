@@ -202,9 +202,13 @@ const Index = () => {
             <DateRangePicker date={dateRange} setDate={setDateRange} className="mr-1" />
             <DashboardExport />
             <ConnectionStatus />
-            <VoiceButton className="hidden md:flex no-export" />
+            <VoiceButton className="no-export" />
             <FavoritesDropdown onNavigate={(path) => navigate(path)} className="no-export" />
-            <Badge variant="outline" className="hidden md:flex gap-1.5 cursor-pointer hover:bg-primary/8 hover:border-primary/30 transition-all duration-200 no-export">
+            <Badge 
+              variant="outline" 
+              className="hidden md:flex gap-1.5 cursor-pointer hover:bg-primary/8 hover:border-primary/30 transition-all duration-200 no-export"
+              onClick={() => document.dispatchEvent(new KeyboardEvent("keydown", { key: "k", metaKey: true, bubbles: true }))}
+            >
               <Command className="h-3 w-3" />
               <span className="text-xs">⌘K</span>
             </Badge>
