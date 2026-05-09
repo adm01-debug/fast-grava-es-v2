@@ -72,6 +72,11 @@ export default function PendingQueue() {
   const [selectedJob, setSelectedJob] = useState<DbJob | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSmartSectionOpen, setIsSmartSectionOpen] = useState(false);
+  const [isAISidePanelOpen, setIsAISidePanelOpen] = useState(false);
+  const [selectedAISuggestion, setSelectedAISuggestion] = useState<{
+    type: 'setup' | 'balancing';
+    data: any;
+  } | null>(null);
   const [selectedJobs, setSelectedJobs] = useState<Set<string>>(new Set());
   const queryClient = useQueryClient();
 
