@@ -132,6 +132,109 @@ export default function WeeklyCalendar() {
     setIsModalOpen(true);
   };
 
+  const renderRow = (machine: DbMachine, index: number) => {
+    const technique = getTechniqueById(machine.technique_id);
+
+    return (
+      <div
+        key={machine.id}
+        className={cn(
+          'flex border-b border-border/20 hover:bg-muted/5 transition-colors',
+          index % 2 === 0 && 'bg-muted/3'
+        )}
+      >
+        <div className="w-24 shrink-0 p-2 border-r border-border/40 flex items-center gap-2">
+          <div
+            className="w-1.5 h-10 rounded-full shrink-0"
+            style={{ backgroundColor: technique?.color || 'hsl(var(--muted))' }}
+          />
+          <div className="min-w-0">
+            <div className="text-sm font-semibold text-foreground truncate">{machine.code}</div>
+            <div className="text-xs text-muted-foreground truncate">
+              {technique?.short_name}
+            </div>
+          </div>
+        </div>
+
+        {weekDays.map((day) => {
+          const dayKey = format(day, 'yyyy-MM-dd');
+          const dayJobs = jobsByMachineAndDay[machine.id]?.[dayKey] || [];
+
+          return (
+            <div
+              key={day.toISOString()}
+              className={cn(
+                'flex-1 min-h-[60px] p-1 border-r border-border/10 last:border-r-0',
+                isToday(day) && 'bg-primary/5'
+              )}
+            >
+              <div className="flex flex-col gap-1">
+                {dayJobs.slice(0, 3).map((job) => {
+                  const isConflict = conflictJobIds.has(job.id);
+                  return (
+                    <Tooltip key={job.id}>
+                      <TooltipTrigger asChild>
+                        <button
+                          onClick={() => handleJobClick(job)}
+                          className={cn(
+                            'w-full px-1.5 py-1 rounded text-xs font-medium truncate cursor-pointer text-left',
+                            'border transition-all duration-200 hover:scale-[1.02]',
+                            'focus:outline-none focus:ring-2 focus:ring-primary/40',
+                            statusColorsSolid[job.status as JobStatus],
+                            isConflict && 'ring-2 ring-destructive/70 animate-pulse'
+                          )}
+                        >
+                          <span className="text-white/90 inline-flex items-center gap-1">
+                            {isConflict && <AlertTriangle className="w-2.5 h-2.5 shrink-0" />}
+                            {job.order_number.replace('OS-2024-', '')}
+                          </span>
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent
+                        side="top"
+                        className="bg-card border-border/40 shadow-xl max-w-xs"
+                      >
+                        <div className="space-y-1.5">
+                          <div className="font-semibold text-foreground">
+                            {job.order_number}
+                          </div>
+                          <div className="text-sm text-muted-foreground">{job.client}</div>
+                          <div className="text-sm">{job.product}</div>
+                          <div className="flex items-center gap-2 text-xs">
+                            <span className="text-muted-foreground">
+                              {job.start_time || '00:00'} - {job.end_time || '00:00'}
+                            </span>
+                            <Badge variant="outline" className="text-xs">
+                              {statusLabels[job.status as JobStatus]}
+                            </Badge>
+                          </div>
+                          <div className="text-xs text-muted-foreground">
+                            {job.quantity.toLocaleString()} peças
+                          </div>
+                          {isConflict && (
+                            <div className="flex items-center gap-1 text-xs text-destructive font-medium pt-1 border-t border-border/40">
+                              <AlertTriangle className="w-3 h-3" />
+                              Conflito de horário
+                            </div>
+                          )}
+                        </div>
+                      </TooltipContent>
+                    </Tooltip>
+                  );
+                })}
+                {dayJobs.length > 3 && (
+                  <div className="text-[10px] text-muted-foreground text-center font-medium">
+                    +{dayJobs.length - 3} jobs
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
+
   return (
     <MainLayout>
       <JobDetailsModal job={selectedJob} open={isModalOpen} onOpenChange={setIsModalOpen} />
@@ -164,6 +267,19 @@ export default function WeeklyCalendar() {
               />
             }
           />
+
+          <CalendarToolbar
+            zoom={prefs.zoom}
+            onZoomChange={setZoom}
+            groupBy={prefs.groupBy}
+            onGroupByChange={setGroupBy}
+            overlays={prefs.overlays}
+            onToggleOverlay={toggleOverlay}
+            onExportPdf={() => {}}
+            onExportICal={() => {}}
+            onShowOnboarding={() => {}}
+          />
+
           <Card className="p-3 bg-card/50 border-border/40">
              <UtilizationHeatmap jobs={weekJobs} machines={filteredMachines} />
           </Card>
@@ -188,11 +304,13 @@ export default function WeeklyCalendar() {
           </CardHeader>
 
           <CardContent className="p-0">
-            <ScrollArea className="w-full h-[calc(100vh-300px)]">
+            <ScrollArea className="w-full h-[calc(100vh-320px)]">
               <div className="min-w-[1000px] relative">
                 <div className="flex border-b border-border/40 bg-muted/5 sticky top-0 z-10">
                   <div className="w-24 shrink-0 p-3 border-r border-border/40">
-                    <span className="text-xs font-medium text-muted-foreground uppercase">Máquina</span>
+                    <span className="text-xs font-medium text-muted-foreground uppercase">
+                      {prefs.groupBy === 'technique' ? 'Técnica' : 'Máquina'}
+                    </span>
                   </div>
                   {weekDays.map((day) => (
                     <div
@@ -220,7 +338,7 @@ export default function WeeklyCalendar() {
                   ))}
                 </div>
 
-                {/* Today vertical "now" marker spanning all rows */}
+                {/* Today vertical "now" marker */}
                 {todayIndex !== -1 && nowMinuteRatio !== null && (
                   <div
                     className="absolute top-0 bottom-0 w-px bg-destructive/50 z-[5] pointer-events-none"
@@ -231,108 +349,33 @@ export default function WeeklyCalendar() {
                   />
                 )}
 
-                {filteredMachines.map((machine, index) => {
-                  const technique = getTechniqueById(machine.technique_id);
-
-                  return (
-                    <div
-                      key={machine.id}
-                      className={cn(
-                        'flex border-b border-border/20 hover:bg-muted/5 transition-colors',
-                        index % 2 === 0 && 'bg-muted/3'
-                      )}
-                    >
-                      <div className="w-24 shrink-0 p-2 border-r border-border/40 flex items-center gap-2">
-                        <div
-                          className="w-1.5 h-10 rounded-full shrink-0"
-                          style={{ backgroundColor: technique?.color || 'hsl(var(--muted))' }}
-                        />
-                        <div className="min-w-0">
-                          <div className="text-sm font-semibold text-foreground">{machine.code}</div>
-                          <div className="text-xs text-muted-foreground truncate">
-                            {technique?.short_name}
-                          </div>
-                        </div>
-                      </div>
-
-                      {weekDays.map((day) => {
-                        const dayKey = format(day, 'yyyy-MM-dd');
-                        const dayJobs = jobsByMachineAndDay[machine.id]?.[dayKey] || [];
-
-                        return (
+                {prefs.groupBy === 'technique' && groupedMachines ? (
+                  groupedMachines.map((group) => {
+                    const isCollapsed = collapsed.has(group.technique.id);
+                    return (
+                      <Fragment key={group.technique.id}>
+                        <button
+                          onClick={() => toggleGroup(group.technique.id)}
+                          className="w-full flex items-center gap-2 px-3 py-2 bg-muted/10 border-b border-border/30 hover:bg-muted/20 transition-colors text-left"
+                        >
+                          {isCollapsed ? (
+                            <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                          ) : (
+                            <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                          )}
                           <div
-                            key={day.toISOString()}
-                            className={cn(
-                              'flex-1 min-h-[60px] p-1 border-r border-border/10 last:border-r-0',
-                              isToday(day) && 'bg-primary/5'
-                            )}
-                          >
-                            <div className="flex flex-col gap-1">
-                              {dayJobs.slice(0, 3).map((job) => {
-                                const isConflict = conflictJobIds.has(job.id);
-                                return (
-                                  <Tooltip key={job.id}>
-                                    <TooltipTrigger asChild>
-                                      <button
-                                        onClick={() => handleJobClick(job)}
-                                        className={cn(
-                                          'w-full px-1.5 py-1 rounded text-xs font-medium truncate cursor-pointer text-left',
-                                          'border transition-all duration-200 hover:scale-[1.02]',
-                                          'focus:outline-none focus:ring-2 focus:ring-primary/40',
-                                          statusColorsSolid[job.status as JobStatus],
-                                          isConflict && 'ring-2 ring-destructive/70 animate-pulse'
-                                        )}
-                                      >
-                                        <span className="text-white/90 inline-flex items-center gap-1">
-                                          {isConflict && <AlertTriangle className="w-2.5 h-2.5 shrink-0" />}
-                                          {job.order_number.replace('OS-2024-', '')}
-                                        </span>
-                                      </button>
-                                    </TooltipTrigger>
-                                    <TooltipContent
-                                      side="top"
-                                      className="bg-card border-border/40 shadow-xl max-w-xs"
-                                    >
-                                      <div className="space-y-1.5">
-                                        <div className="font-semibold text-foreground">
-                                          {job.order_number}
-                                        </div>
-                                        <div className="text-sm text-muted-foreground">{job.client}</div>
-                                        <div className="text-sm">{job.product}</div>
-                                        <div className="flex items-center gap-2 text-xs">
-                                          <span className="text-muted-foreground">
-                                            {job.start_time || '00:00'} - {job.end_time || '00:00'}
-                                          </span>
-                                          <Badge variant="outline" className="text-xs">
-                                            {statusLabels[job.status as JobStatus]}
-                                          </Badge>
-                                        </div>
-                                        <div className="text-xs text-muted-foreground">
-                                          {job.quantity.toLocaleString()} peças
-                                        </div>
-                                        {isConflict && (
-                                          <div className="flex items-center gap-1 text-xs text-destructive font-medium pt-1 border-t border-border/40">
-                                            <AlertTriangle className="w-3 h-3" />
-                                            Conflito de horário
-                                          </div>
-                                        )}
-                                      </div>
-                                    </TooltipContent>
-                                  </Tooltip>
-                                );
-                              })}
-                              {dayJobs.length > 3 && (
-                                <div className="text-xs text-muted-foreground text-center">
-                                  +{dayJobs.length - 3} mais
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  );
-                })}
+                            className="w-2 h-4 rounded-full"
+                            style={{ backgroundColor: group.technique.color }}
+                          />
+                          <span className="text-sm font-semibold">{group.technique.name}</span>
+                        </button>
+                        {!isCollapsed && group.machines.map((m, i) => renderRow(m, i))}
+                      </Fragment>
+                    );
+                  })
+                ) : (
+                  filteredMachines.map((m, i) => renderRow(m, i))
+                )}
 
                 {filteredMachines.length === 0 && (
                   <div className="p-12 text-center text-muted-foreground">
@@ -346,6 +389,7 @@ export default function WeeklyCalendar() {
 
         <CalendarLegend />
       </div>
+      <MobileFAB />
     </MainLayout>
   );
 }
