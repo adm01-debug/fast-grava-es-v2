@@ -16,6 +16,7 @@ export interface TechnicalSheet {
   is_active: boolean;
   created_at: string;
   updated_at: string;
+  view_count?: number;
   gap_specifications?: string | null;
   challenges_notes?: string | null;
   failure_scenarios?: string | null;
