@@ -77,7 +77,7 @@ export default function OEEDashboard() {
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold font-display flex items-center gap-3">
+            <h1 className="text-2xl md:text-3xl font-black font-display flex items-center gap-3">
               <Activity className="h-8 w-8 text-primary" />
               OEE Dashboard
             </h1>
