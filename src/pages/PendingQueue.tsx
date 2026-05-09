@@ -23,7 +23,11 @@ import {
   ChevronDown,
   RotateCcw,
   Sparkles,
-  Download
+  Download,
+  Play,
+  Trash2,
+  BrainCircuit,
+  Zap
 } from "lucide-react";
 import { useSchedulingData } from "@/hooks/useSchedulingData";
 import { useQueryClient } from "@tanstack/react-query";
