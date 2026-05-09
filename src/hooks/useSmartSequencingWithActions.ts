@@ -23,6 +23,9 @@ export interface SequencingSuggestion {
   colorGroups: ColorGroup[];
   bottleneckRisk: 'low' | 'medium' | 'high';
   totalMinutes: number;
+  currentChanges: number;
+  optimizedChanges: number;
+  totalQuantity: number;
 }
 
 export interface ColorGroup {
@@ -43,20 +46,17 @@ function normalizeColor(color: string | null): string {
   return color.toLowerCase().trim().replace(/\s+/g, '-');
 }
 
-function calculateSetupSavings(currentSequence: DbJob[], optimizedSequence: DbJob[], setupTime: number): number {
-  const countColorChanges = (jobs: DbJob[]): number => {
-    let changes = 0;
-    for (let i = 1; i < jobs.length; i++) {
-      if (normalizeColor(jobs[i].gravure_color) !== normalizeColor(jobs[i - 1].gravure_color)) {
-        changes++;
-      }
+function countSequenceChanges(jobs: DbJob[]): number {
+  let changes = 0;
+  for (let i = 1; i < jobs.length; i++) {
+    if (normalizeColor(jobs[i].gravure_color) !== normalizeColor(jobs[i - 1].gravure_color)) {
+      changes++;
     }
-    return changes;
-  };
+  }
+  return changes;
+}
 
-  const currentChanges = countColorChanges(currentSequence);
-  const optimizedChanges = countColorChanges(optimizedSequence);
-  
+function calculateSetupSavings(currentChanges: number, optimizedChanges: number, setupTime: number): number {
   return (currentChanges - optimizedChanges) * setupTime;
 }
 
