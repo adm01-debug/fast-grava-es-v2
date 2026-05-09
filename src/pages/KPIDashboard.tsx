@@ -662,7 +662,11 @@ export default function KPIDashboard() {
                       {kpis.productivityByMachine
                         .filter(m => m.machineName.toLowerCase().includes(searchTerm.toLowerCase()))
                         .map((machine) => (
-                        <tr key={machine.machineId} className="border-b border-border/30 hover:bg-muted/10 transition-colors">
+                        <tr 
+                          key={machine.machineId} 
+                          className="border-b border-border/30 hover:bg-muted/10 transition-colors cursor-pointer group"
+                          onClick={() => setSelectedMachine(machine)}
+                        >
                           <td className="py-4 px-4">
                             <div className="flex flex-col">
                               <span className="font-medium text-sm">{machine.machineName}</span>
