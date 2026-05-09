@@ -343,12 +343,14 @@ export function calculateCapabilityIndices(
   measurements: SPCMeasurement[],
   usl: number,
   lsl: number
-): { cp: number; cpk: number; mean: number; stdDev: number } | null {
-  if (measurements.length < 10) return null;
+): { cp: number; cpk: number; mean: number; stdDev: number; performance: string } | null {
+  if (measurements.length < 5) return null;
 
   const means = measurements.map(m => m.mean_value);
   const overallMean = means.reduce((a, b) => a + b, 0) / means.length;
-  const variance = means.reduce((sum, v) => sum + Math.pow(v - overallMean, 2), 0) / means.length;
+  
+  // Calculate Pooled Standard Deviation or sample std dev
+  const variance = means.reduce((sum, v) => sum + Math.pow(v - overallMean, 2), 0) / (means.length - 1);
   const stdDev = Math.sqrt(variance);
 
   if (stdDev === 0) return null;
@@ -358,5 +360,49 @@ export function calculateCapabilityIndices(
   const cpl = (overallMean - lsl) / (3 * stdDev);
   const cpk = Math.min(cpu, cpl);
 
-  return { cp, cpk, mean: overallMean, stdDev };
+  let performance = 'Capacidade Insuficiente';
+  if (cpk >= 1.33) performance = 'Processo Capaz (Excelente)';
+  else if (cpk >= 1.0) performance = 'Processo Marginal';
+
+  return { cp, cpk, mean: overallMean, stdDev, performance };
+}
+
+/**
+ * Detects violations of Western Electric / Run Rules
+ */
+export function detectRunRules(measurements: SPCMeasurement[], ucl: number, lcl: number, mean: number) {
+  if (measurements.length < 10) return [];
+  
+  const violations = [];
+  const points = measurements.slice(0, 10).reverse(); // Check last 10 points
+  const values = points.map(p => p.mean_value);
+  
+  // Rule 1: Point outside control limits (already handled in db trigger usually, but good to have)
+  if (values[values.length - 1] > ucl || values[values.length - 1] < lcl) {
+    violations.push({ rule: 'Fora do Limite', description: 'Ponto fora dos limites de controle (UCL/LCL)' });
+  }
+
+  // Rule 2: Seven or more points in a row on one side of the mean
+  let countSide = 0;
+  const lastSide = values[values.length - 1] > mean;
+  for (let i = values.length - 1; i >= Math.max(0, values.length - 7); i--) {
+    if ((values[i] > mean) === lastSide) countSide++;
+    else break;
+  }
+  if (countSide >= 7) {
+    violations.push({ rule: 'Tendência de Desvio', description: '7 ou mais pontos consecutivos em um lado da média' });
+  }
+
+  // Rule 3: Seven points in a row steadily increasing or decreasing
+  let countTrend = 1;
+  const lastTrend = values[values.length - 1] > values[values.length - 2];
+  for (let i = values.length - 1; i > Math.max(0, values.length - 7); i--) {
+    if ((values[i] > values[i-1]) === lastTrend) countTrend++;
+    else break;
+  }
+  if (countTrend >= 6) {
+     violations.push({ rule: 'Tendência Linear', description: '6 ou mais pontos consecutivos subindo ou descendo' });
+  }
+
+  return violations;
 }
