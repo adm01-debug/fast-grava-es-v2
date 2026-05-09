@@ -117,8 +117,8 @@ export default function TPMDashboard() {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 animate-fade-in">
           <div>
             <div className="flex items-center gap-3">
-              <h1 className="text-3xl font-display font-bold">
-                <span className="gradient-text animate-pulse-glow">TPM - Manutenção Preventiva</span>
+              <h1 className="text-3xl font-display font-black tracking-tighter">
+                <span className="gradient-text animate-pulse-glow">TPM 5.0 - Holographic Reliability 13/10</span>
               </h1>
               <FavoriteButton 
                 path="/tpm" 
