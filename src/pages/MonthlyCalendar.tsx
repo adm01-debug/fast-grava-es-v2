@@ -69,17 +69,18 @@ export default function MonthlyCalendar() {
   const filteredJobs = useMemo(() => applyFilters(jobs), [jobs, applyFilters]);
 
   const jobsByDay = useMemo(() => {
-    const acc: Record<string, number> = {};
+    const acc: Record<string, any[]> = {};
     filteredJobs.forEach((job) => {
       if (!job.scheduled_date) return;
       const k = format(new Date(job.scheduled_date), 'yyyy-MM-dd');
-      acc[k] = (acc[k] || 0) + 1;
+      if (!acc[k]) acc[k] = [];
+      acc[k].push(job);
     });
     return acc;
   }, [filteredJobs]);
 
   const maxJobsInDay = useMemo(
-    () => Math.max(1, ...Object.values(jobsByDay)),
+    () => Math.max(1, ...Object.values(jobsByDay).map(v => v.length)),
     [jobsByDay]
   );
 
