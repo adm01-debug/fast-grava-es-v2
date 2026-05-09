@@ -120,7 +120,7 @@ export function useOEE(daysBack: number = 30) {
     if (!jobs || !machines || !techniques) return null;
     
     // Validate daysBack parameter
-    const validDaysBack = Math.max(1, Math.min(365, daysBack));
+    const validDaysBack = Math.max(1, Math.min(365, effectiveDaysBack));
     
     const now = new Date();
     const startDate = startOfDay(subDays(now, validDaysBack));
