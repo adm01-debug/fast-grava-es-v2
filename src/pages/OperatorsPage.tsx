@@ -494,7 +494,7 @@ export default function OperatorsPage() {
             </DialogHeader>
 
             <Tabs defaultValue="performance" className="mt-4 flex-1 flex flex-col overflow-hidden">
-              <TabsList className="grid w-full grid-cols-2">
+              <TabsList className="grid w-full grid-cols-3">
                 <TabsTrigger value="performance" className="flex items-center gap-2">
                   <TrendingUp className="h-4 w-4" />
                   Desempenho
