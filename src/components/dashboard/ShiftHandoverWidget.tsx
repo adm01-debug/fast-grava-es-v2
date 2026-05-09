@@ -1,8 +1,8 @@
-import { useShiftHandovers, useShiftPendingTasks, SHIFT_TYPE_LABELS } from '@/hooks/useShiftHandover';
+import { useShiftHandovers, useShiftPendingTasks, SHIFT_TYPE_LABELS, ShiftHandover, ShiftPendingTask } from '@/hooks/useShiftHandover';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ArrowRightLeft, Clock, MessageSquare, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { ArrowRightLeft, Clock, MessageSquare, CheckCircle2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
@@ -11,11 +11,11 @@ import { useNavigate } from 'react-router-dom';
 
 export function ShiftHandoverWidget() {
   const navigate = useNavigate();
-  const { handovers, isLoading: loadingHandovers } = useShiftHandovers();
-  const { tasks, isLoading: loadingTasks } = useShiftPendingTasks();
+  const { data: handovers, isLoading: loadingHandovers } = useShiftHandovers({ limit: 1 });
+  const { data: tasks, isLoading: loadingTasks } = useShiftPendingTasks();
 
   const lastHandover = handovers?.[0];
-  const pendingTasks = tasks?.filter(t => t.status === 'pending').slice(0, 3) || [];
+  const pendingTasks = tasks?.filter((t: ShiftPendingTask) => t.status === 'pending').slice(0, 3) || [];
 
   if (loadingHandovers || loadingTasks) {
     return (
@@ -58,7 +58,7 @@ export function ShiftHandoverWidget() {
             <div className="flex items-center justify-between">
               <p className="text-[10px] font-bold uppercase text-muted-foreground tracking-widest">Último Turno</p>
               <Badge variant="outline" className="text-[9px] h-4 border-orange-500/30 text-orange-400">
-                {SHIFT_TYPE_LABELS[lastHandover.shift_type].split(' ')[0]}
+                {SHIFT_TYPE_LABELS[lastHandover.shift_type as keyof typeof SHIFT_TYPE_LABELS].split(' ')[0]}
               </Badge>
             </div>
             <div className="flex items-center gap-2">
@@ -99,7 +99,7 @@ export function ShiftHandoverWidget() {
           </p>
           {pendingTasks.length > 0 ? (
             <div className="space-y-1.5">
-              {pendingTasks.map(task => (
+              {pendingTasks.map((task: ShiftPendingTask) => (
                 <div key={task.id} className="flex items-center gap-2 p-1.5 rounded bg-background/40 border border-border/10">
                   <div className={cn(
                     "w-1.5 h-1.5 rounded-full shrink-0",
@@ -123,3 +123,4 @@ export function ShiftHandoverWidget() {
     </Card>
   );
 }
+
