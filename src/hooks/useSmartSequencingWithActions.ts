@@ -21,6 +21,8 @@ export interface SequencingSuggestion {
   optimizedSequence: DbJob[];
   estimatedSavings: number; // minutes saved
   colorGroups: ColorGroup[];
+  bottleneckRisk: 'low' | 'medium' | 'high';
+  totalMinutes: number;
 }
 
 export interface ColorGroup {
@@ -266,6 +268,8 @@ export function useSmartSequencingWithActions() {
       });
 
       const estimatedSavings = calculateSetupSavings(currentSequence, optimizedSequence, technique.setup_time);
+      const totalMinutes = optimizedSequence.reduce((acc, job) => acc + (job.estimated_duration || 0), 0);
+      const bottleneckRisk = totalMinutes > 480 ? 'high' : totalMinutes > 300 ? 'medium' : 'low';
 
       if (estimatedSavings > 0) {
         result.push({
@@ -278,6 +282,8 @@ export function useSmartSequencingWithActions() {
           currentSequence,
           optimizedSequence,
           estimatedSavings,
+          bottleneckRisk,
+          totalMinutes,
           colorGroups: Array.from(colorGroups.entries()).map(([color, jobs]) => ({
             color,
             jobs,

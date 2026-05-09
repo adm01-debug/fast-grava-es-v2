@@ -10,6 +10,8 @@ import { DraggableJobCard } from './DraggableJobCard';
 import { useMemo } from 'react';
 import { ChevronDown, ChevronRight, AlertTriangle, Clock, Activity } from 'lucide-react';
 import { ViewMode } from './KanbanFiltersBar';
+import { useMTBFMTTR } from '@/hooks/useMTBFMTTR';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface DroppableColumnProps {
   status: JobStatus;
@@ -53,6 +55,7 @@ export function DroppableColumn({
 }: DroppableColumnProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [thresholds, setThresholds] = useState({ bottleneckRiskMinutes: 480 });
+  const { metrics: reliabilityMetrics } = useMTBFMTTR(30);
 
   useEffect(() => {
     const stored = localStorage.getItem('alert-thresholds');
@@ -98,6 +101,14 @@ export function DroppableColumn({
   }, [jobs]);
 
   const jobIds = sortedJobs.map(job => job.id);
+  
+  const criticalMachinesInColumn = useMemo(() => {
+    const machineIds = new Set(jobs.map(j => j.machine_id).filter(Boolean));
+    return reliabilityMetrics.filter(m => 
+      machineIds.has(m.machineId) && 
+      (m.reliabilityScore === 'critical' || m.reliabilityScore === 'poor')
+    );
+  }, [jobs, reliabilityMetrics]);
 
   return (
     <div className={cn(
@@ -129,6 +140,26 @@ export function DroppableColumn({
           {effectiveWipLimit < 50 && <span className="text-[9px] opacity-70 ml-1">/{effectiveWipLimit}</span>}
         </Badge>
         {isOverWip && <AlertTriangle className="h-3.5 w-3.5 text-destructive animate-bounce" />}
+        {criticalMachinesInColumn.length > 0 && (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="flex items-center justify-center bg-red-500/10 p-1 rounded-full animate-pulse border border-red-500/20 cursor-help">
+                  <Activity className="h-3 w-3 text-red-500" />
+                </div>
+              </TooltipTrigger>
+              <TooltipContent className="bg-red-950 border-red-500 text-red-100">
+                <p className="font-bold text-[10px] mb-1">RISCO DE QUEBRA</p>
+                <p className="text-[9px]">Máquinas críticas nesta coluna:</p>
+                <ul className="list-disc list-inside text-[9px] mt-1">
+                  {criticalMachinesInColumn.map(m => (
+                    <li key={m.machineId}>{m.machineName} ({m.reliabilityScore})</li>
+                  ))}
+                </ul>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        )}
         {leadTimeLabel && (
           <div className="flex items-center gap-1 text-[10px] font-medium text-muted-foreground bg-muted/40 px-2 py-0.5 rounded-full border border-border/50 ml-1" title="Tempo total estimado para processar esta coluna">
             <Clock className="h-3 w-3 text-primary/70" />

@@ -2,24 +2,45 @@ import { useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { 
   BarChart3, Target, Zap, Clock, TrendingUp, 
-  ArrowUpRight, AlertTriangle, Sparkles, ChevronDown, ChevronUp, Activity
+  ArrowUpRight, AlertTriangle, Sparkles, ChevronDown, ChevronUp, Activity,
+  LayoutGrid
 } from 'lucide-react';
 import { useSchedulingData } from '@/hooks/useSchedulingData';
-import { useSmartSequencing } from '@/hooks/useSmartSequencing';
-import { useLoadBalancing } from '@/hooks/useLoadBalancing';
+import { useSmartSequencingWithActions } from '@/hooks/useSmartSequencingWithActions';
+import { useLoadBalancingWithActions } from '@/hooks/useLoadBalancingWithActions';
 import { useOEE } from '@/hooks/useOEE';
+import { useMTBFMTTR } from '@/hooks/useMTBFMTTR';
 import { OEETrendChart } from '@/components/oee/OEETrendChart';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 export function PlanningEfficiencyDashboard() {
   const { jobs } = useSchedulingData();
-  const { totalSavings, suggestions: sequencingSuggestions } = useSmartSequencing();
-  const { suggestions: balancingSuggestions } = useLoadBalancing();
+  const { totalSavings, suggestions: sequencingSuggestions, applyAllSequencing, isApplying: isApplyingSequencing } = useSmartSequencingWithActions();
+  const { suggestions: balancingSuggestions, byTechnique, applyAllSuggestions, isApplying: isApplyingBalancing } = useLoadBalancingWithActions();
   const { data: oeeData } = useOEE(30);
+  const { summary: reliabilitySummary } = useMTBFMTTR(30);
   const [showTrend, setShowTrend] = useState(false);
+
+  const handleBulkOptimization = async () => {
+    try {
+      if (balancingSuggestions.length > 0) {
+        await applyAllSuggestions();
+      }
+      if (sequencingSuggestions.length > 0) {
+        await applyAllSequencing();
+      }
+    } catch (error) {
+      console.error('Erro na otimização em massa:', error);
+    }
+  };
+
+  const isApplying = isApplyingSequencing || isApplyingBalancing;
+  const hasSuggestions = sequencingSuggestions.length > 0 || balancingSuggestions.length > 0;
 
   const stats = useMemo(() => {
     if (!jobs || jobs.length === 0) return null;
@@ -133,12 +154,64 @@ export function PlanningEfficiencyDashboard() {
         </CardContent>
       </Card>
 
-      {/* Throughput / Trends */}
-      <Card className="glass-card overflow-hidden group border-purple-500/20">
+      {/* Machine Reliability Risk */}
+      <Card className={cn(
+        "glass-card overflow-hidden group border-purple-500/20",
+        reliabilitySummary.criticalMachines.length > 0 && "border-red-500/30 shadow-[0_0_15px_rgba(239,68,68,0.05)]"
+      )}>
         <CardContent className="p-4">
           <div className="flex items-center justify-between mb-2">
             <div className="p-2 bg-purple-500/10 rounded-lg group-hover:bg-purple-500/20 transition-colors">
-              <BarChart3 className="h-5 w-5 text-purple-400" />
+              <Activity className="h-5 w-5 text-purple-400" />
+            </div>
+            {reliabilitySummary.criticalMachines.length > 0 && (
+              <Badge variant="destructive" className="text-[8px] px-1 py-0 h-4">RISCO ALTO</Badge>
+            )}
+          </div>
+          <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider mb-1">Confiabilidade de Ativos</p>
+          <div className="flex items-end gap-2 mb-3">
+            <h3 className="text-3xl font-bold font-display">{Math.round(reliabilitySummary.averageAvailability)}<span className="text-lg opacity-50">%</span></h3>
+            <div className="text-[10px] text-muted-foreground font-bold flex items-center mb-1 uppercase">
+              Disponibilidade
+            </div>
+          </div>
+          
+          <div className="space-y-2 mt-2">
+            <div className="flex justify-between items-center text-[10px]">
+              <span className="text-muted-foreground uppercase font-semibold">Máquinas Críticas</span>
+              <span className={cn(
+                "font-bold",
+                reliabilitySummary.criticalMachines.length > 0 ? "text-red-400" : "text-green-400"
+              )}>
+                {reliabilitySummary.criticalMachines.length}
+              </span>
+            </div>
+            <div className="flex gap-0.5 h-1">
+              {Array.from({ length: 10 }).map((_, i) => (
+                <div 
+                  key={i} 
+                  className={cn(
+                    "flex-1 rounded-full",
+                    i < (reliabilitySummary.criticalMachines.length) ? "bg-red-400" : "bg-muted"
+                  )} 
+                />
+              ))}
+            </div>
+            {reliabilitySummary.criticalMachines.length > 0 && (
+              <p className="text-[9px] text-red-400/80 leading-tight italic">
+                Atenção: {reliabilitySummary.criticalMachines[0].machineName} apresenta MTBF crítico.
+              </p>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Throughput / OEE Trends */}
+      <Card className="glass-card overflow-hidden group border-blue-500/20">
+        <CardContent className="p-4">
+          <div className="flex items-center justify-between mb-2">
+            <div className="p-2 bg-blue-500/10 rounded-lg group-hover:bg-blue-500/20 transition-colors">
+              <BarChart3 className="h-5 w-5 text-blue-400" />
             </div>
           </div>
           <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider mb-1">OEE Real (Fluxo de Produção)</p>
@@ -156,17 +229,17 @@ export function PlanningEfficiencyDashboard() {
               <span>Disponibilidade</span>
               <span>{Math.round(stats.oeeData?.overallAvailability || 0)}%</span>
             </div>
-            <Progress value={stats.oeeData?.overallAvailability || 0} className="h-0.5 bg-purple-500/10" />
+            <Progress value={stats.oeeData?.overallAvailability || 0} className="h-0.5 bg-blue-500/10" />
             <div className="flex justify-between text-[8px] text-muted-foreground uppercase font-semibold">
               <span>Desempenho</span>
               <span>{Math.round(stats.oeeData?.overallPerformance || 0)}%</span>
             </div>
-            <Progress value={stats.oeeData?.overallPerformance || 0} className="h-0.5 bg-purple-500/10" />
+            <Progress value={stats.oeeData?.overallPerformance || 0} className="h-0.5 bg-blue-500/10" />
             <div className="flex justify-between text-[8px] text-muted-foreground uppercase font-semibold">
               <span>Qualidade</span>
               <span>{Math.round(stats.oeeData?.overallQuality || 0)}%</span>
             </div>
-            <Progress value={stats.oeeData?.overallQuality || 0} className="h-0.5 bg-purple-500/10" />
+            <Progress value={stats.oeeData?.overallQuality || 0} className="h-0.5 bg-blue-500/10" />
           </div>
         </CardContent>
       </Card>
@@ -179,14 +252,68 @@ export function PlanningEfficiencyDashboard() {
             exit={{ opacity: 0, height: 0 }}
             className="md:col-span-2 lg:col-span-4 overflow-hidden"
           >
-            <div className="pt-2">
-              <OEETrendChart data={oeeData.trendData} worldClassBenchmark={oeeData.worldClassBenchmark} />
+            <div className="pt-4 grid grid-cols-1 lg:grid-cols-3 gap-4">
+              <div className="lg:col-span-2">
+                <OEETrendChart data={oeeData.trendData} worldClassBenchmark={oeeData.worldClassBenchmark} />
+              </div>
+              
+              {/* Technique Load Distribution */}
+              <Card className="glass-card border-primary/10">
+                <CardHeader className="p-4 pb-2">
+                  <div className="flex items-center gap-2">
+                    <LayoutGrid className="h-4 w-4 text-primary" />
+                    <CardTitle className="text-xs uppercase font-bold tracking-wider">Carga por Técnica</CardTitle>
+                  </div>
+                </CardHeader>
+                <CardContent className="p-4 pt-0 space-y-4">
+                  {byTechnique.map((tech) => (
+                    <div key={tech.technique.id} className="space-y-1">
+                      <div className="flex justify-between items-center text-[10px] mb-1">
+                        <span className="font-semibold truncate max-w-[150px]">{tech.technique.name}</span>
+                        <span className={cn(
+                          "font-bold",
+                          tech.averageOccupancy > 90 ? "text-red-400" : tech.averageOccupancy > 75 ? "text-amber-400" : "text-green-400"
+                        )}>
+                          {Math.round(tech.averageOccupancy)}%
+                        </span>
+                      </div>
+                      <div className="flex gap-1 h-1.5">
+                        {tech.machines.map((machine, idx) => (
+                          <TooltipProvider key={machine.machine.id}>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <div 
+                                  className={cn(
+                                    "flex-1 rounded-sm transition-all cursor-help",
+                                    machine.occupancyRate > 95 ? "bg-red-500" : 
+                                    machine.occupancyRate > 80 ? "bg-amber-500" : 
+                                    machine.occupancyRate < 20 ? "bg-blue-400/50" : "bg-primary/40"
+                                  )}
+                                />
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p className="text-[10px] font-bold">{machine.machine.name}</p>
+                                <p className="text-[10px]">{Math.round(machine.occupancyRate)}% de ocupação</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        ))}
+                      </div>
+                      {tech.isUnbalanced && (
+                        <p className="text-[8px] text-amber-400 flex items-center gap-1 mt-1">
+                          <AlertTriangle className="h-2 w-2" /> Desbalanceado (∆ {Math.round(tech.maxOccupancy - tech.minOccupancy)}%)
+                        </p>
+                      )}
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      <div className="md:col-span-2 lg:col-span-4 flex justify-center -mt-2">
+      <div className="md:col-span-2 lg:col-span-4 flex justify-between items-center -mt-2">
         <Button 
           variant="ghost" 
           size="sm" 
@@ -199,6 +326,23 @@ export function PlanningEfficiencyDashboard() {
             <>Ver Histórico e Tendências de OEE <ChevronDown className="h-3 w-3" /></>
           )}
         </Button>
+
+        {hasSuggestions && (
+          <Button 
+            size="sm" 
+            variant="outline"
+            disabled={isApplying}
+            className="text-[10px] uppercase font-bold tracking-widest gap-2 bg-primary/5 border-primary/20 hover:bg-primary/10 hover:border-primary/40 text-primary animate-in fade-in zoom-in duration-500"
+            onClick={handleBulkOptimization}
+          >
+            {isApplying ? (
+              <Activity className="h-3 w-3 animate-spin" />
+            ) : (
+              <Sparkles className="h-3 w-3" />
+            )}
+            {isApplying ? 'Otimizando...' : 'Executar Otimização em Massa'}
+          </Button>
+        )}
       </div>
     </div>
   );
