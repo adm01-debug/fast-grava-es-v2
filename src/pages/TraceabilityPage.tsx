@@ -6,7 +6,7 @@ import { format, differenceInDays } from 'date-fns';
 import {
   Package, Search, Plus, Eye, GitBranch, AlertTriangle,
   FileText, Command, QrCode, Download, CheckSquare,
-  ArrowUpDown, Calendar, Filter, X, Tag, ShieldCheck
+  ArrowUpDown, Calendar, Filter, X, Tag
 } from 'lucide-react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -16,11 +16,17 @@ import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { FavoriteButton, FavoritesDropdown } from '@/components/navigation/FavoritesManager';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import {
+  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
+} from '@/components/ui/table';
+import {
+  Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger,
+} from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from '@/components/ui/select';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Progress } from '@/components/ui/progress';
 import { useProductionLots, useTraceabilityMutations, ProductionLot } from '@/hooks/useTraceability';
@@ -115,7 +121,10 @@ export default function TraceabilityPage() {
   };
 
   const handleCreateLot = () => {
-    if (!newLot.lot_number || !newLot.product_name || newLot.quantity <= 0) return;
+    if (!newLot.lot_number || !newLot.product_name || newLot.quantity <= 0) {
+      toast.error('Preencha todos os campos obrigatórios');
+      return;
+    }
     createLot.mutate({
       ...newLot,
       job_id: newLot.job_id || undefined,
@@ -132,29 +141,16 @@ export default function TraceabilityPage() {
     });
   };
 
-  const toggleSort = (field: SortField) => {
-    if (sortField === field) {
-      setSortDir(d => d === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortField(field);
-      setSortDir('asc');
-    }
-  };
-
-  const toggleSelect = (id: string) => {
-    setSelectedIds(prev => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id); else next.add(id);
-      return next;
+  const processBulkStatusUpdate = (validLots: ProductionLot[], newStatus: string, reason?: string) => {
+    validLots.forEach(lot => {
+      updateLot.mutate({ 
+        id: lot.id, 
+        status: newStatus,
+        notes: reason ? `${lot.notes || ''}\n[Assinado]: ${reason}` : lot.notes
+      });
     });
-  };
-
-  const selectAll = () => {
-    if (selectedIds.size === filteredAndSortedLots.length) {
-      setSelectedIds(new Set());
-    } else {
-      setSelectedIds(new Set(filteredAndSortedLots.map(l => l.id)));
-    }
+    toast.success(`${validLots.length} lote(s) atualizados para ${STATUS_CONFIG[newStatus]?.label || newStatus}`);
+    setSelectedIds(new Set());
   };
 
   const handleBulkStatusChange = useCallback((newStatus: string) => {
@@ -172,18 +168,6 @@ export default function TraceabilityPage() {
       processBulkStatusUpdate(validLots, newStatus);
     }
   }, [filteredAndSortedLots, selectedIds]);
-
-  const processBulkStatusUpdate = (validLots: ProductionLot[], newStatus: string, reason?: string) => {
-    validLots.forEach(lot => {
-      updateLot.mutate({ 
-        id: lot.id, 
-        status: newStatus,
-        notes: reason ? `${lot.notes || ''}\n[Assinado]: ${reason}` : lot.notes
-      });
-    });
-    toast.success(`${validLots.length} lote(s) atualizados para ${STATUS_CONFIG[newStatus]?.label || newStatus}`);
-    setSelectedIds(new Set());
-  };
 
   const handleExportCSV = () => {
     const headers = ['Lote', 'Produto', 'Quantidade', 'Produzido', 'Status', 'Data Produção', 'Validade', 'Job'];
@@ -214,7 +198,30 @@ export default function TraceabilityPage() {
     return null;
   };
 
-  const hasActiveFilters = statusFilter !== 'all' || dateFrom || dateTo;
+  const selectAll = () => {
+    if (selectedIds.size === filteredAndSortedLots.length) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(filteredAndSortedLots.map(l => l.id)));
+    }
+  };
+
+  const toggleSelect = (id: string) => {
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  };
+
+  const toggleSort = (field: SortField) => {
+    if (sortField === field) {
+      setSortDir(d => d === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortDir('asc');
+    }
+  };
 
   return (
     <MainLayout>
@@ -224,7 +231,7 @@ export default function TraceabilityPage() {
 
       <div className="space-y-6 pb-20">
         <Breadcrumbs />
-        
+
         <ElectronicSignatureDialog 
           open={signatureModal.open}
           onOpenChange={(open) => setSignatureModal(prev => ({ ...prev, open }))}
@@ -243,92 +250,64 @@ export default function TraceabilityPage() {
             <div className="flex items-center gap-3">
               <h1 className="text-3xl font-display font-black tracking-tighter flex items-center gap-3">
                 <Package className="h-8 w-8 text-primary animate-float" />
-                Hyper-Traceability 13/10 (Blockchain IA)
+                Hyper-Traceability 13/10
               </h1>
               <FavoriteButton path="/traceability" name="Rastreabilidade" />
             </div>
-            <p className="text-muted-foreground">
-              Genealogia, lotes e movimentações de produtos
-            </p>
+            <p className="text-muted-foreground">Genealogia Forward/Backward e Monitoramento Blockchain</p>
           </div>
           <div className="flex items-center gap-2 flex-wrap">
             <VoiceButton />
             <FavoritesDropdown onNavigate={(url) => navigate(url)} />
             <Button variant="outline" size="sm" onClick={handleExportCSV}>
-              <Download className="h-4 w-4 mr-1" />
-              CSV
+              <Download className="h-4 w-4 mr-1" /> CSV
             </Button>
             <Dialog open={showCreateModal} onOpenChange={setShowCreateModal}>
               <DialogTrigger asChild>
-                <Button>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Novo Lote
+                <Button className="font-bold">
+                  <Plus className="h-4 w-4 mr-2" /> Novo Lote
                 </Button>
               </DialogTrigger>
               <DialogContent className="max-w-lg">
                 <DialogHeader>
-                  <DialogTitle>Criar Novo Lote</DialogTitle>
-                  <DialogDescription>Registre um novo lote de produção</DialogDescription>
+                  <DialogTitle>Criar Novo Lote Industrial</DialogTitle>
+                  <DialogDescription>Registre um novo lote de produção com vínculo de job.</DialogDescription>
                 </DialogHeader>
-                <div className="space-y-4">
+                <div className="space-y-4 pt-4">
                   <div className="flex gap-2">
                     <div className="flex-1 space-y-2">
                       <Label>Número do Lote *</Label>
-                      <Input
-                        value={newLot.lot_number}
-                        onChange={(e) => setNewLot(prev => ({ ...prev, lot_number: e.target.value }))}
-                        placeholder="LOT-20251220-XXXX"
-                      />
+                      <Input value={newLot.lot_number} onChange={(e) => setNewLot(prev => ({ ...prev, lot_number: e.target.value }))} placeholder="LOT-XXXX" />
                     </div>
-                    <Button type="button" variant="outline" className="mt-8"
-                      onClick={() => setNewLot(prev => ({ ...prev, lot_number: generateLotNumber() }))}>
-                      Gerar
-                    </Button>
+                    <Button variant="outline" className="mt-8" onClick={() => setNewLot(prev => ({ ...prev, lot_number: generateLotNumber() }))}>Gerar</Button>
                   </div>
                   <div className="space-y-2">
                     <Label>Nome do Produto *</Label>
-                    <Input value={newLot.product_name}
-                      onChange={(e) => setNewLot(prev => ({ ...prev, product_name: e.target.value }))}
-                      placeholder="Nome do produto" />
+                    <Input value={newLot.product_name} onChange={(e) => setNewLot(prev => ({ ...prev, product_name: e.target.value }))} />
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label>Quantidade *</Label>
-                      <Input type="number" value={newLot.quantity}
-                        onChange={(e) => setNewLot(prev => ({ ...prev, quantity: parseInt(e.target.value) || 0 }))} />
+                      <Input type="number" value={newLot.quantity} onChange={(e) => setNewLot(prev => ({ ...prev, quantity: parseInt(e.target.value) || 0 }))} />
                     </div>
                     <div className="space-y-2">
                       <Label>Data de Produção</Label>
-                      <Input type="date" value={newLot.production_date}
-                        onChange={(e) => setNewLot(prev => ({ ...prev, production_date: e.target.value }))} />
+                      <Input type="date" value={newLot.production_date} onChange={(e) => setNewLot(prev => ({ ...prev, production_date: e.target.value }))} />
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <Label>Job Relacionado (opcional)</Label>
+                    <Label>Job Relacionado</Label>
                     <Select value={newLot.job_id} onValueChange={(v) => setNewLot(prev => ({ ...prev, job_id: v }))}>
                       <SelectTrigger><SelectValue placeholder="Selecione um job" /></SelectTrigger>
                       <SelectContent>
                         <SelectItem value="">Nenhum</SelectItem>
                         {jobs?.map(job => (
-                          <SelectItem key={job.id} value={job.id}>
-                            {job.order_number} - {job.client}
-                          </SelectItem>
+                          <SelectItem key={job.id} value={job.id}>{job.order_number} - {job.client}</SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
                   </div>
-                  <div className="space-y-2">
-                    <Label>Data de Validade (opcional)</Label>
-                    <Input type="date" value={newLot.expiration_date}
-                      onChange={(e) => setNewLot(prev => ({ ...prev, expiration_date: e.target.value }))} />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Observações</Label>
-                    <Textarea value={newLot.notes}
-                      onChange={(e) => setNewLot(prev => ({ ...prev, notes: e.target.value }))}
-                      placeholder="Observações sobre o lote..." rows={2} />
-                  </div>
-                  <div className="flex justify-end gap-2">
+                  <div className="flex justify-end gap-2 pt-4">
                     <Button variant="outline" onClick={() => setShowCreateModal(false)}>Cancelar</Button>
                     <Button onClick={handleCreateLot} disabled={createLot.isPending}>Criar Lote</Button>
                   </div>
@@ -349,12 +328,8 @@ export default function TraceabilityPage() {
 
         <AnimatePresence>
           {selectedIds.size > 0 && (
-            <motion.div 
-              initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 50 }}
-              className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-card border border-primary/20 shadow-2xl rounded-full px-6 py-3 flex items-center gap-6 glass-card"
-            >
+            <motion.div initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 50 }}
+              className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-card border border-primary/20 shadow-2xl rounded-full px-6 py-3 flex items-center gap-6 glass-card">
                <div className="flex items-center gap-2 pr-6 border-r border-border">
                   <CheckSquare className="h-5 w-5 text-primary" />
                   <span className="font-bold text-sm">{selectedIds.size} selecionados</span>
@@ -373,24 +348,18 @@ export default function TraceabilityPage() {
           <CardHeader className="bg-muted/10 border-b border-border/50">
             <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
               <div>
-                <CardTitle className="flex items-center gap-2 text-xl">
-                  <FileText className="h-5 w-5 text-primary" />
-                  Orquestração de Lotes
+                <CardTitle className="text-xl flex items-center gap-2">
+                   <FileText className="h-5 w-5 text-primary" /> Orquestração de Lotes
                 </CardTitle>
-                <CardDescription>
-                  {filteredAndSortedLots.length} lotes listados
-                </CardDescription>
+                <CardDescription>{filteredAndSortedLots.length} registros auditáveis</CardDescription>
               </div>
-              <div className="flex flex-wrap items-center gap-2">
+              <div className="flex flex-wrap gap-2">
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input placeholder="Buscar lotes..." className="pl-10 w-[200px]"
-                    value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+                  <Input placeholder="Buscar lotes..." className="pl-10 w-[200px]" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
                 </div>
                 <Select value={statusFilter} onValueChange={setStatusFilter}>
-                  <SelectTrigger className="w-[130px]">
-                    <SelectValue placeholder="Status" />
-                  </SelectTrigger>
+                  <SelectTrigger className="w-[130px]"><SelectValue placeholder="Status" /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">Todos</SelectItem>
                     <SelectItem value="active">Ativos</SelectItem>
@@ -401,39 +370,42 @@ export default function TraceabilityPage() {
               </div>
             </div>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-0">
              <Table>
                <TableHeader>
-                 <TableRow>
-                   <TableHead className="w-10">
-                     <Checkbox checked={selectedIds.size === filteredAndSortedLots.length && filteredAndSortedLots.length > 0}
-                       onCheckedChange={selectAll} />
-                   </TableHead>
-                   <TableHead>Lote</TableHead>
-                   <TableHead>Produto</TableHead>
-                   <TableHead>Status</TableHead>
-                   <TableHead className="text-right">Ações</TableHead>
+                 <TableRow className="bg-muted/30">
+                   <TableHead className="w-10 pl-6"><Checkbox checked={selectedIds.size === filteredAndSortedLots.length && filteredAndSortedLots.length > 0} onCheckedChange={selectAll} /></TableHead>
+                   <SortableHead label="Lote" field="lot_number" current={sortField} dir={sortDir} onSort={toggleSort} />
+                   <SortableHead label="Produto" field="product_name" current={sortField} dir={sortDir} onSort={toggleSort} />
+                   <SortableHead label="Status" field="status" current={sortField} dir={sortDir} onSort={toggleSort} />
+                   <TableHead>Produzido</TableHead>
+                   <TableHead className="text-right pr-6">Ações</TableHead>
                  </TableRow>
                </TableHeader>
                <TableBody>
                  {filteredAndSortedLots.map((lot) => (
-                   <TableRow key={lot.id}>
+                   <TableRow key={lot.id} className={selectedIds.has(lot.id) ? 'bg-primary/5' : ''}>
+                     <TableCell className="pl-6"><Checkbox checked={selectedIds.has(lot.id)} onCheckedChange={() => toggleSelect(lot.id)} /></TableCell>
+                     <TableCell className="font-mono font-black text-[11px]">{lot.lot_number}</TableCell>
+                     <TableCell className="font-bold text-xs">{lot.product_name}</TableCell>
                      <TableCell>
-                       <Checkbox checked={selectedIds.has(lot.id)} onCheckedChange={() => toggleSelect(lot.id)} />
-                     </TableCell>
-                     <TableCell className="font-mono font-bold">{lot.lot_number}</TableCell>
-                     <TableCell>{lot.product_name}</TableCell>
-                     <TableCell>
-                       <Badge variant={STATUS_CONFIG[lot.status]?.variant || 'default'}>
+                       <Badge variant={STATUS_CONFIG[lot.status]?.variant || 'default'} className="text-[10px] uppercase font-black">
                          {STATUS_CONFIG[lot.status]?.label || lot.status}
                        </Badge>
                        {getExpirationBadge(lot)}
                      </TableCell>
-                     <TableCell className="text-right">
-                       <Button variant="ghost" size="sm" onClick={() => { setSelectedLot(lot); setShowGenealogyView(true); }}>
-                         <GitBranch className="h-4 w-4 mr-2" />
-                         Genealogia
-                       </Button>
+                     <TableCell>
+                        <div className="flex flex-col gap-1 w-24">
+                           <span className="text-[10px] font-bold">{lot.produced_quantity} / {lot.quantity}</span>
+                           <Progress value={(lot.produced_quantity / lot.quantity) * 100} className="h-1" />
+                        </div>
+                     </TableCell>
+                     <TableCell className="text-right pr-6">
+                        <div className="flex justify-end gap-1">
+                          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setSelectedLot(lot)}><Eye className="h-4 w-4" /></Button>
+                          <Button variant="ghost" size="icon" className="h-8 w-8 text-primary" onClick={() => { setSelectedLot(lot); setShowGenealogyView(true); }}><GitBranch className="h-4 w-4" /></Button>
+                          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setQrLot(lot)}><QrCode className="h-4 w-4" /></Button>
+                        </div>
                      </TableCell>
                    </TableRow>
                  ))}
@@ -443,11 +415,9 @@ export default function TraceabilityPage() {
         </Card>
       </div>
 
-      {/* Modals */}
-      {selectedLot && showGenealogyView && (
-        <LotGenealogyView lot={selectedLot} open={showGenealogyView}
-          onClose={() => { setShowGenealogyView(false); setSelectedLot(null); }} />
-      )}
+      {selectedLot && !showGenealogyView && <LotDetailsModal lot={selectedLot} open={!!selectedLot} onClose={() => setSelectedLot(null)} />}
+      {selectedLot && showGenealogyView && <LotGenealogyView lot={selectedLot} open={showGenealogyView} onClose={() => { setShowGenealogyView(false); setSelectedLot(null); }} />}
+      {qrLot && <LotQRCode lot={qrLot} open={!!qrLot} onClose={() => setQrLot(null)} />}
     </MainLayout>
   );
 }
@@ -455,10 +425,8 @@ export default function TraceabilityPage() {
 function SortableHead({ label, field, current, dir, onSort }: any) {
   return (
     <TableHead>
-      <Button variant="ghost" size="sm" className="h-auto p-0 font-medium hover:bg-transparent"
-        onClick={() => onSort(field)}>
-        {label}
-        <ArrowUpDown className={`ml-1 h-3 w-3 ${current === field ? 'text-primary' : 'text-muted-foreground/50'}`} />
+      <Button variant="ghost" size="sm" className="h-auto p-0 font-black uppercase text-[10px] tracking-widest hover:bg-transparent" onClick={() => onSort(field)}>
+        {label} <ArrowUpDown className={`ml-1 h-3 w-3 ${current === field ? 'text-primary' : 'text-muted-foreground/30'}`} />
       </Button>
     </TableHead>
   );
