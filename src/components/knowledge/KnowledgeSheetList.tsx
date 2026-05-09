@@ -5,9 +5,10 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Search, Plus, Clock, ChevronRight, FileText, Star } from 'lucide-react';
+import { Search, Plus, Clock, ChevronRight, FileText, Star, TrendingUp } from 'lucide-react';
 import { TechnicalSheet } from '@/hooks/useTechnicalSheets';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
+import { KnowledgeStatusBadge } from './KnowledgeStatusBadge';
 
 interface KnowledgeSheetListProps {
   sheets: Record<string, TechnicalSheet[]>;
@@ -170,8 +171,9 @@ export const KnowledgeSheetList = ({
                         >
                           <div className="flex items-start justify-between gap-2">
                             <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-1.5">
+                              <div className="flex items-center gap-2">
                                 <p className="font-medium text-sm truncate">{sheet.title}</p>
+                                <KnowledgeStatusBadge status={sheet.status} className="text-[9px] px-1 h-4" />
                                 <button
                                   onClick={(e) => toggleFavorite(e, sheet.id)}
                                   className="opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0"
