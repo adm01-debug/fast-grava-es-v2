@@ -219,6 +219,13 @@ export default function WeeklyCalendar() {
                               Conflito de horário
                             </div>
                           )}
+                          <div className="pt-2 border-t border-border/40 mt-2 flex justify-end">
+                            <JobQuickActions 
+                              jobId={job.id} 
+                              currentStatus={job.status as JobStatus} 
+                              onStatusChange={(id, status) => updateStatus({ jobId: id, status })}
+                            />
+                          </div>
                         </div>
                       </TooltipContent>
                     </Tooltip>
