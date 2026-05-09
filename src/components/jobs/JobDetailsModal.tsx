@@ -37,7 +37,8 @@ import { JobCostsTab } from "./JobCostsTab";
 import { JobTraceabilityTab } from "./JobTraceabilityTab";
 import { JobQualityTab } from "./JobQualityTab";
 import { JobInstructionsTab } from "./JobInstructionsTab";
-import { useState } from "react";
+import { useState, useCallback } from "react";
+import { useDataExport } from "@/hooks/useDataExport";
 
 interface JobDetailsModalProps {
   job: DbJob | null;
@@ -355,10 +356,25 @@ function JobHistoryTab({ jobId }: { jobId: string }) {
     fromDate: period.fromDate,
     toDate: period.toDate,
   });
+  const { exportAuditTrail } = useDataExport('jobs' as any);
+
+  const handleExport = useCallback(() => {
+    exportAuditTrail({
+      entityType: 'jobs',
+      entityId: jobId,
+      fromDate: period.fromDate,
+      toDate: period.toDate,
+    }, `auditoria_job_${jobId.slice(0, 8)}`);
+  }, [jobId, period, exportAuditTrail]);
 
   return (
     <div className="mt-4">
-      <HistoryPeriodFilter value={period} onChange={setPeriod} resultCount={data?.length} />
+      <HistoryPeriodFilter 
+        value={period} 
+        onChange={setPeriod} 
+        onExport={handleExport}
+        resultCount={data?.length} 
+      />
       {isLoading ? (
         <div className="space-y-3">
           <Skeleton className="h-24 w-full" />
