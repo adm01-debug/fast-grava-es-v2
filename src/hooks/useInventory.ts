@@ -135,7 +135,7 @@ export function useInventory() {
 
   const deleteMovementMutation = useMutation({
     mutationFn: async (movementId: string) => {
-      // Get movement details first for rollback logic if needed
+      // 1. Get movement details first for rollback logic
       const { data: movement, error: fetchError } = await supabase
         .from('inventory_movements')
         .select('*')
@@ -144,6 +144,29 @@ export function useInventory() {
       
       if (fetchError) throw fetchError;
 
+      // 2. Rollback stock change in inventory_items
+      const { data: item } = await supabase
+        .from('inventory_items')
+        .select('current_stock')
+        .eq('id', movement.item_id)
+        .single();
+
+      if (item) {
+        let restoredStock = item.current_stock;
+        if (movement.type === 'IN') restoredStock -= movement.quantity;
+        if (movement.type === 'OUT') restoredStock += movement.quantity;
+        // ADJUST is harder to rollback perfectly without historical snapshots, 
+        // but for IN/OUT it's straightforward.
+
+        const { error: updateError } = await supabase
+          .from('inventory_items')
+          .update({ current_stock: restoredStock })
+          .eq('id', movement.item_id);
+          
+        if (updateError) throw updateError;
+      }
+
+      // 3. Delete the movement record
       const { error: deleteError } = await supabase
         .from('inventory_movements')
         .delete()
