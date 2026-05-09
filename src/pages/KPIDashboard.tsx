@@ -66,6 +66,12 @@ export default function KPIDashboard() {
   const { goalAlerts } = useGoalAlerts({ enableNotifications: false });
   const { handleExport } = useBIExport({ periodJobsList: [] });
   const [searchTerm, setSearchTerm] = useState('');
+  const [visibleKPIs, setVisibleKPIs] = useState({
+    completion: true,
+    occupancy: true,
+    loss: true,
+    delayed: true
+  });
 
   const isLoading = isLoadingKPIs || isLoadingOperators;
 
