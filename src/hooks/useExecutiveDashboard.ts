@@ -48,8 +48,8 @@ export interface ExecutiveKPIs {
     utilization: number; // % change
   };
   
-  productionTrend: { date: string; produced: number; target: number }[];
-  efficiencyTrend: { date: string; efficiency: number }[];
+  productionTrend: { date: string; produced: number; target: number; prevProduced?: number }[];
+  efficiencyTrend: { date: string; efficiency: number; prevEfficiency?: number }[];
   techniqueDistribution: { technique: string; count: number; color: string }[];
   topOperators: { name: string; produced: number; efficiency: number }[];
   machinePerformance: { machine: string; utilization: number; oee: number }[];
