@@ -21,7 +21,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 export function PlanningEfficiencyDashboard() {
   const { jobs } = useSchedulingData();
   const { totalSavings, suggestions: sequencingSuggestions } = useSmartSequencing();
-  const { suggestions: balancingSuggestions } = useLoadBalancing();
+  const { suggestions: balancingSuggestions, byTechnique } = useLoadBalancing();
   const { data: oeeData } = useOEE(30);
   const { summary: reliabilitySummary } = useMTBFMTTR(30);
   const [showTrend, setShowTrend] = useState(false);
