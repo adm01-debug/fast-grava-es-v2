@@ -1,6 +1,7 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useEffect, useMemo, useCallback } from 'react';
+import { differenceInMinutes } from 'date-fns';
 import { DbJob, DbTechnique, DbMachine } from './useJobs';
 import { categorizeError, ErrorCodes, createAppError } from '@/lib/errorHandling';
 
@@ -255,8 +256,34 @@ export function useSchedulingData() {
     
     // OEE History and Capacity Monitoring
     getOEETrend: (days: number = 14) => {
-      // OEE trends are now derived from the useOEE hook's logic, here we keep for backward compatibility
-      return [];
+      const jobs = jobsQuery.data || [];
+      const trend = [];
+      const now = new Date();
+      
+      for (let i = days - 1; i >= 0; i--) {
+        const date = new Date(now);
+        date.setDate(now.getDate() - i);
+        const dateStr = date.toISOString().split('T')[0];
+        
+        const dayJobs = jobs.filter(j => j.status === 'finished' && j.actual_end_time?.startsWith(dateStr));
+        
+        if (dayJobs.length === 0) {
+          trend.push({ date: dateStr, oee: 0 });
+          continue;
+        }
+
+        let totalActual = 0, totalEstimated = 0;
+        for (const job of dayJobs) {
+          if (job.actual_start_time && job.actual_end_time) {
+            totalActual += Math.max(0, differenceInMinutes(new Date(job.actual_end_time), new Date(job.actual_start_time)));
+          }
+          totalEstimated += job.estimated_duration || 60;
+        }
+        
+        const oee = totalActual > 0 ? Math.min(100, (totalEstimated / totalActual) * 100) : 100;
+        trend.push({ date: dateStr, oee: Math.round(oee) });
+      }
+      return trend;
     },
     // Historic bottleneck and capacity trends
     getCapacityTrend: (days: number = 7) => {

@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Star, StarOff, GripVertical } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import {
   Popover,
   PopoverContent,
@@ -138,9 +139,10 @@ export function FavoriteButton({ path, name, icon, variant = "icon" }: FavoriteB
 
 interface FavoritesDropdownProps {
   onNavigate?: (path: string) => void;
+  className?: string;
 }
 
-export function FavoritesDropdown({ onNavigate }: FavoritesDropdownProps) {
+export function FavoritesDropdown({ onNavigate, className }: FavoritesDropdownProps) {
   const { favorites, reorderFavorites, removeFavorite } = useFavorites();
 
   if (favorites.length === 0) {
@@ -150,7 +152,7 @@ export function FavoritesDropdown({ onNavigate }: FavoritesDropdownProps) {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="ghost" size="sm" className="gap-2">
+        <Button variant="ghost" size="sm" className={cn("gap-2", className)}>
           <Star className="h-4 w-4 text-warning fill-warning" />
           <span className="hidden md:inline">Favoritos</span>
           <span className="text-xs text-muted-foreground">({favorites.length})</span>

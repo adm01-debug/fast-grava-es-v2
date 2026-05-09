@@ -1,6 +1,7 @@
 import { memo } from 'react';
 import { Settings2, RotateCcw, Check, Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,6 +18,7 @@ interface DashboardEditControlsProps {
   onToggleEditMode: () => void;
   onResetLayout: () => void;
   onToggleWidget: (widgetId: string) => void;
+  className?: string;
 }
 
 export const DashboardEditControls = memo(function DashboardEditControls({
@@ -25,9 +27,10 @@ export const DashboardEditControls = memo(function DashboardEditControls({
   onToggleEditMode,
   onResetLayout,
   onToggleWidget,
+  className,
 }: DashboardEditControlsProps) {
   return (
-    <div className="flex items-center gap-2">
+    <div className={cn("flex items-center gap-2", className)}>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="outline" size="sm" className="gap-2">

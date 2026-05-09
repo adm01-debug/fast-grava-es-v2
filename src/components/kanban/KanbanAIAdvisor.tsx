@@ -24,9 +24,23 @@ export function KanbanAIAdvisor() {
   const { alerts: bottleneckAlerts } = useBottleneckPrediction();
   
   const [showSettings, setShowSettings] = useState(false);
-  const [thresholds, setThresholds] = useState({
-    bottleneckHigh: 480, // minutes
-    bottleneckMedium: 300, // minutes
+  const [thresholds, setThresholds] = useState(() => {
+    const saved = localStorage.getItem('alert-thresholds');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        return {
+          bottleneckHigh: parsed.bottleneckHigh || 480,
+          bottleneckMedium: parsed.bottleneckRiskMinutes || 300,
+        };
+      } catch (e) {
+        console.error('Error loading thresholds', e);
+      }
+    }
+    return {
+      bottleneckHigh: 480,
+      bottleneckMedium: 300,
+    };
   });
 
   const totalInsights = sequenceSuggestions.length + balancingSuggestions.length + bottleneckAlerts.length;
@@ -145,8 +159,15 @@ export function KanbanAIAdvisor() {
           <DialogFooter>
             <Button variant="ghost" onClick={() => setShowSettings(false)}>Cancelar</Button>
             <Button onClick={() => {
+              localStorage.setItem('alert-thresholds', JSON.stringify({
+                bottleneckHigh: thresholds.bottleneckHigh,
+                bottleneckRiskMinutes: thresholds.bottleneckMedium // Sync with DroppableColumn key
+              }));
               toast.success("Configurações de alerta salvas!");
               setShowSettings(false);
+              // Trigger reload or state sync if needed, but since it's in localStorage, 
+              // other components will pick it up on next render/mount.
+              window.location.reload(); // Quick way to sync across all components
             }}>Salvar Configurações</Button>
           </DialogFooter>
         </DialogContent>

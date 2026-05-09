@@ -2,13 +2,15 @@ import { useMemo, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSchedulingData } from './useSchedulingData';
 import { useOperatorMachines } from './useOperatorMachines';
+import { DateRange } from 'react-day-picker';
+import { isWithinInterval, startOfDay, endOfDay } from 'date-fns';
 
 /**
  * Hook that provides dashboard data filtered by user role.
  * Operators see only their assigned machines and related jobs.
  * Coordinators and managers see all data.
  */
-export function useOperatorDashboardData() {
+export function useOperatorDashboardData(dateRange?: DateRange) {
   const { user, isOperator } = useAuth();
   const schedulingData = useSchedulingData();
   const { assignments, isLoading: isLoadingAssignments } = useOperatorMachines(user?.id);
@@ -27,15 +29,35 @@ export function useOperatorDashboardData() {
     return schedulingData.machines.filter(m => assignedMachineIds.includes(m.id));
   }, [isOperator, assignedMachineIds, schedulingData.machines]);
 
-  // Filter jobs based on role (jobs on assigned machines only for operators)
+  // Filter jobs based on role and date range
   const jobs = useMemo(() => {
-    if (!isOperator || !assignedMachineIds) {
-      return schedulingData.jobs;
+    let filtered = schedulingData.jobs;
+
+    // Filter by machine assignment if operator
+    if (isOperator && assignedMachineIds) {
+      filtered = filtered.filter(j => 
+        j.machine_id && assignedMachineIds.includes(j.machine_id)
+      );
     }
-    return schedulingData.jobs.filter(j => 
-      j.machine_id && assignedMachineIds.includes(j.machine_id)
-    );
-  }, [isOperator, assignedMachineIds, schedulingData.jobs]);
+
+    // Filter by date range if provided
+    if (dateRange?.from) {
+      const from = startOfDay(dateRange.from);
+      const to = dateRange.to ? endOfDay(dateRange.to) : endOfDay(dateRange.from);
+      
+      filtered = filtered.filter(j => {
+        if (!j.scheduled_date) return false;
+        try {
+          const jobDate = new Date(j.scheduled_date);
+          return isWithinInterval(jobDate, { start: from, end: to });
+        } catch {
+          return false;
+        }
+      });
+    }
+
+    return filtered;
+  }, [isOperator, assignedMachineIds, schedulingData.jobs, dateRange]);
 
   // Filter techniques to only those relevant for assigned machines
   const techniques = useMemo(() => {

@@ -1,6 +1,9 @@
-import { Suspense, lazy, useMemo, ComponentType, useState } from 'react';
+import { Suspense, lazy, useMemo, ComponentType, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { DateRangePicker } from '@/components/ui/date-range-picker';
+import { DateRange } from 'react-day-picker';
+import { startOfDay, endOfDay } from 'date-fns';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { StatsCard } from '@/components/dashboard/StatsCard';
 import { useOperatorDashboardData } from '@/hooks/useOperatorDashboardData';
@@ -34,6 +37,7 @@ import { LeaderboardWidget } from '@/components/dashboard/LeaderboardWidget';
 import { OperatorGoalsWidget } from '@/components/dashboard/OperatorGoalsWidget';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { DashboardExport } from '@/components/dashboard/DashboardExport';
 
 import { 
   Calendar, 
@@ -108,7 +112,11 @@ const COORDINATOR_ONLY_WIDGETS = ['sequencing', 'loadbalancing', 'bottleneck', '
 
 const Index = () => {
   const { t } = useTranslation();
-  const { stats, machines, isLoading, isOperator } = useOperatorDashboardData();
+  const [dateRange, setDateRange] = useState<DateRange | undefined>({
+    from: startOfDay(new Date()),
+    to: endOfDay(new Date()),
+  });
+  const { stats, machines, isLoading, isOperator } = useOperatorDashboardData(dateRange);
   const { profile } = useAuth();
   useSmartDelayAlerts(); // Run background delay monitoring
   const {
@@ -191,10 +199,12 @@ const Index = () => {
           </div>
           
           <div className="flex items-center gap-2">
+            <DateRangePicker date={dateRange} setDate={setDateRange} className="mr-1" />
+            <DashboardExport />
             <ConnectionStatus />
-            <VoiceButton className="hidden md:flex" />
-            <FavoritesDropdown onNavigate={(path) => navigate(path)} />
-            <Badge variant="outline" className="hidden md:flex gap-1.5 cursor-pointer hover:bg-primary/8 hover:border-primary/30 transition-all duration-200">
+            <VoiceButton className="hidden md:flex no-export" />
+            <FavoritesDropdown onNavigate={(path) => navigate(path)} className="no-export" />
+            <Badge variant="outline" className="hidden md:flex gap-1.5 cursor-pointer hover:bg-primary/8 hover:border-primary/30 transition-all duration-200 no-export">
               <Command className="h-3 w-3" />
               <span className="text-xs">⌘K</span>
             </Badge>
@@ -204,6 +214,7 @@ const Index = () => {
               onToggleEditMode={() => setIsEditMode(!isEditMode)}
               onResetLayout={resetLayout}
               onToggleWidget={toggleWidgetVisibility}
+              className="no-export"
             />
           </div>
         </div>
