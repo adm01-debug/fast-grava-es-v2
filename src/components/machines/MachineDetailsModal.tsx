@@ -20,6 +20,8 @@ import { HistoryPeriodFilter, type HistoryPeriodValue } from "@/components/audit
 import { MachineReliabilityTab } from "./MachineReliabilityTab";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { calculateRealOEE } from "@/lib/oeeCalculations";
+import { useSchedulingData } from "@/hooks/useSchedulingData";
 
 interface MachineDetailsModalProps {
   machine: any | null;
@@ -111,26 +113,7 @@ export function MachineDetailsModal({ machine, open, onOpenChange }: MachineDeta
               </div>
             </div>
 
-            <div className="p-4 rounded-xl bg-primary/5 border border-primary/20">
-              <h4 className="text-xs font-bold mb-3 flex items-center gap-2">
-                <Activity className="h-3.5 w-3.5" />
-                Saúde em Tempo Real (Métricas OEE)
-              </h4>
-              <div className="grid grid-cols-3 gap-4">
-                <div className="text-center">
-                  <p className="text-[9px] text-muted-foreground uppercase mb-1">Disponibilidade</p>
-                  <p className="text-lg font-bold">92%</p>
-                </div>
-                <div className="text-center">
-                  <p className="text-[9px] text-muted-foreground uppercase mb-1">Performance</p>
-                  <p className="text-lg font-bold">88%</p>
-                </div>
-                <div className="text-center">
-                  <p className="text-[9px] text-muted-foreground uppercase mb-1">Qualidade</p>
-                  <p className="text-lg font-bold">99.2%</p>
-                </div>
-              </div>
-            </div>
+            <MachineRealOEESection machineId={machine.id} />
           </TabsContent>
 
           <TabsContent value="reliability">
@@ -196,6 +179,44 @@ function MachineHistoryTab({ machineId }: { machineId: string }) {
           </div>
         </ScrollArea>
       )}
+    </div>
+  );
+}
+
+function MachineRealOEESection({ machineId }: { machineId: string }) {
+  const { jobs } = useSchedulingData();
+  const machineJobs = jobs.filter(j => j.machine_id === machineId);
+  const metrics = calculateRealOEE(machineJobs);
+
+  return (
+    <div className="p-4 rounded-xl bg-primary/5 border border-primary/20">
+      <h4 className="text-xs font-bold mb-3 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Activity className="h-3.5 w-3.5" />
+          Saúde em Tempo Real (OEE Real)
+        </div>
+        <Badge variant="outline" className="text-[10px] font-bold">
+          {metrics.oee}%
+        </Badge>
+      </h4>
+      <div className="grid grid-cols-3 gap-4">
+        <div className="text-center">
+          <p className="text-[9px] text-muted-foreground uppercase mb-1">Disponibilidade</p>
+          <p className="text-lg font-bold">{metrics.availability}%</p>
+        </div>
+        <div className="text-center">
+          <p className="text-[9px] text-muted-foreground uppercase mb-1">Performance</p>
+          <p className="text-lg font-bold">{metrics.performance}%</p>
+        </div>
+        <div className="text-center">
+          <p className="text-[9px] text-muted-foreground uppercase mb-1">Qualidade</p>
+          <p className="text-lg font-bold">{metrics.quality}%</p>
+        </div>
+      </div>
+      <div className="mt-3 pt-3 border-t border-primary/10 flex justify-between text-[10px] text-muted-foreground">
+        <span>Produção: {metrics.goodPieces} pçs</span>
+        <span>Perdas: {metrics.lostPieces} pçs</span>
+      </div>
     </div>
   );
 }
