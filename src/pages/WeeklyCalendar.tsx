@@ -12,6 +12,7 @@ import { CalendarHeader } from '@/components/calendar/CalendarHeader';
 import { UtilizationHeatmap } from '@/components/scheduling/UtilizationHeatmap';
 import { CalendarFilters } from '@/components/calendar/CalendarFilters';
 import { CalendarToolbar } from '@/components/calendar/CalendarToolbar';
+import { JobQuickActions } from '@/components/calendar/JobQuickActions';
 import { CalendarLegend } from '@/components/calendar/CalendarLegend';
 import { CalendarEmptyState } from '@/components/calendar/CalendarEmptyState';
 import { MobileFAB } from '@/components/calendar/MobileFAB';
