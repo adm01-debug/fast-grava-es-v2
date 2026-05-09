@@ -21,6 +21,8 @@ import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { MachineReliabilityTab } from '@/components/machines/MachineReliabilityTab';
 import { useMTBFMTTR } from '@/hooks/useMTBFMTTR';
+import { useDataExport } from '@/hooks/useDataExport';
+import { useCallback } from 'react';
 
 export default function MachinesPage() {
   const { machines, techniques, isLoadingMachines, getTechniqueById } = useSchedulingData();
@@ -305,10 +307,25 @@ function MachineHistoryTab({ machineId }: { machineId: string }) {
     fromDate: period.fromDate,
     toDate: period.toDate,
   });
+  const { exportAuditTrail } = useDataExport('machines' as any);
+
+  const handleExport = useCallback((format: 'csv' | 'pdf') => {
+    exportAuditTrail({
+      entityType: 'machines',
+      entityId: machineId,
+      fromDate: period.fromDate,
+      toDate: period.toDate,
+    }, `auditoria_maquina_${machineId.slice(0, 8)}`, format);
+  }, [machineId, period, exportAuditTrail]);
 
   return (
-    <div>
-      <HistoryPeriodFilter value={period} onChange={setPeriod} resultCount={data?.length} />
+    <div className="mt-4">
+      <HistoryPeriodFilter 
+        value={period} 
+        onChange={setPeriod} 
+        onExport={handleExport}
+        resultCount={data?.length} 
+      />
       {isLoading ? (
         <div className="space-y-3">
           <Skeleton className="h-24 w-full" />
