@@ -45,16 +45,24 @@ export function RealtimeIndicator() {
   };
 
   const config = statusConfig[status];
-  const Icon = config.icon;
-
+  
   return (
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-1.5">
-              <span className={cn('h-2 w-2 rounded-full', config.dotClass, config.ringClass)} />
-              <Icon className={cn('h-4 w-4', config.className)} />
+              {isSyncing ? (
+                <>
+                  <span className="h-2 w-2 rounded-full bg-primary animate-ping" />
+                  <Database className="h-4 w-4 text-primary animate-pulse" />
+                </>
+              ) : (
+                <>
+                  <span className={cn('h-2 w-2 rounded-full', config.dotClass, config.ringClass)} />
+                  <config.icon className={cn('h-4 w-4', config.className)} />
+                </>
+              )}
             </div>
             {!isConnected && status !== 'connecting' && (
               <Button
@@ -70,10 +78,15 @@ export function RealtimeIndicator() {
         </TooltipTrigger>
         <TooltipContent side="bottom" className="text-xs">
           <div className="space-y-1">
-            <p className="font-medium">{config.label}</p>
-            {lastUpdate && (
+            <p className="font-medium">{isSyncing ? 'Sincronizando alterações...' : config.label}</p>
+            {lastUpdate && !isSyncing && (
               <p className="text-muted-foreground">
                 Última atualização: {formatDistanceToNow(lastUpdate, { addSuffix: true, locale: ptBR })}
+              </p>
+            )}
+            {isSyncing && (
+              <p className="text-muted-foreground animate-pulse">
+                Processando dados em massa...
               </p>
             )}
           </div>
