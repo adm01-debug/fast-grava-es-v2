@@ -88,12 +88,13 @@ export function LoadBalancingPanel() {
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
-                className="p-4 rounded-xl border border-border/50 bg-card/30 hover:bg-card/50 transition-all border-l-4 border-l-blue-400/50"
+                className="p-4 rounded-xl border border-border/50 bg-card/30 hover:bg-card/50 transition-all border-l-4 border-l-blue-400/50 cursor-pointer group"
+                onClick={() => setSelectedSuggestion(suggestion)}
               >
                 <div className="flex items-center justify-between mb-3">
                   <span className="text-[10px] font-mono text-muted-foreground">OS {suggestion.orderNumber}</span>
                   <Badge variant="outline" className="text-[9px] bg-blue-500/5 text-blue-400">
-                    -{Math.round(suggestion.loadDifference)}% de desequilíbrio
+                    -{Math.round(suggestion.loadDifference)}% desequilíbrio
                   </Badge>
                 </div>
 
@@ -106,22 +107,38 @@ export function LoadBalancingPanel() {
                     <p className="text-[10px] text-orange-400 font-bold">{Math.round(suggestion.currentLoad)}%</p>
                   </div>
                   <ArrowRight className="h-4 w-4 text-muted-foreground shrink-0" />
-                  <div className="flex-1 text-center p-2 rounded bg-blue-500/10 border border-blue-500/20">
+                  <div className="flex-1 text-center p-2 rounded bg-blue-500/10 border border-blue-500/20 group-hover:border-blue-400/50 transition-colors">
                     <p className="text-[9px] text-blue-400 uppercase font-bold">Para</p>
                     <p className="text-xs font-medium truncate">{suggestion.suggestedMachineName}</p>
                     <p className="text-[10px] text-blue-400 font-bold">{Math.round(suggestion.suggestedLoad)}%</p>
                   </div>
                 </div>
 
-                <Button 
-                  size="sm" 
-                  className="w-full h-8 text-xs gap-2 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border-none"
-                  onClick={() => handleApplyBalancing(suggestion)}
-                  disabled={isApplying}
-                >
-                  {isApplying ? 'Reequilibrando...' : 'Confirmar Transferência'}
-                  <ArrowLeftRight className="h-3 w-3" />
-                </Button>
+                <div className="flex gap-2">
+                  <Button 
+                    size="sm" 
+                    className="flex-1 h-8 text-xs gap-2 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border-none"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleApplyBalancing(suggestion);
+                    }}
+                    disabled={isApplying}
+                  >
+                    {isApplying ? 'Reequilibrando...' : 'Reequilibrar'}
+                    <ArrowLeftRight className="h-3 w-3" />
+                  </Button>
+                  <Button 
+                    size="sm" 
+                    variant="outline"
+                    className="h-8 px-2 border-blue-500/20 hover:bg-blue-500/5 text-blue-400"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelectedSuggestion(suggestion);
+                    }}
+                  >
+                    <Info className="h-3.5 w-3.5" />
+                  </Button>
+                </div>
               </motion.div>
             ))}
           </AnimatePresence>
@@ -140,6 +157,123 @@ export function LoadBalancingPanel() {
           </div>
         )}
       </CardContent>
+
+      <Dialog open={!!selectedSuggestion} onOpenChange={(open) => !open && setSelectedSuggestion(null)}>
+        <DialogContent className="max-w-2xl bg-card border-blue-500/20">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Scale className="h-5 w-5 text-blue-400" />
+              Equilíbrio de Carga: OS {selectedSuggestion?.orderNumber}
+            </DialogTitle>
+            <DialogDescription>
+              Análise de transferência de carga para otimização do fluxo de produção.
+            </DialogDescription>
+          </DialogHeader>
+
+          {selectedSuggestion && (
+            <div className="space-y-6 my-4">
+              <div className="grid grid-cols-2 gap-4">
+                <Card className="bg-muted/30 border-none p-4 relative overflow-hidden">
+                  <div className="absolute top-0 right-0 p-2 opacity-10">
+                    <TrendingDown className="h-10 w-10 text-orange-400" />
+                  </div>
+                  <h4 className="text-[10px] font-bold text-muted-foreground uppercase mb-3">Origem (Sobrecarregada)</h4>
+                  <p className="font-bold text-sm mb-1">{selectedSuggestion.currentMachineName}</p>
+                  <p className="text-xs text-muted-foreground mb-3">{selectedSuggestion.currentMachineCode}</p>
+                  <div className="space-y-1">
+                    <div className="flex justify-between text-[10px] mb-1">
+                      <span>Carga Atual</span>
+                      <span className="font-bold text-orange-400">{Math.round(selectedSuggestion.currentLoad)}%</span>
+                    </div>
+                    <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
+                      <div 
+                        className="h-full bg-orange-400" 
+                        style={{ width: `${Math.min(100, selectedSuggestion.currentLoad)}%` }} 
+                      />
+                    </div>
+                  </div>
+                </Card>
+
+                <Card className="bg-blue-500/5 border-blue-500/20 p-4 relative overflow-hidden">
+                  <div className="absolute top-0 right-0 p-2 opacity-10">
+                    <Zap className="h-10 w-10 text-blue-400" />
+                  </div>
+                  <h4 className="text-[10px] font-bold text-blue-400 uppercase mb-3 flex items-center gap-1">
+                    Destino Sugerido
+                    <Sparkles className="h-2 w-2" />
+                  </h4>
+                  <p className="font-bold text-sm mb-1">{selectedSuggestion.suggestedMachineName}</p>
+                  <p className="text-xs text-muted-foreground mb-3">{selectedSuggestion.suggestedMachineCode}</p>
+                  <div className="space-y-1">
+                    <div className="flex justify-between text-[10px] mb-1">
+                      <span>Carga Após Transferência</span>
+                      <span className="font-bold text-blue-400">{Math.round(selectedSuggestion.suggestedLoad + (selectedSuggestion.currentLoad - selectedSuggestion.suggestedLoad) / 2)}%</span>
+                    </div>
+                    <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
+                      <div 
+                        className="h-full bg-blue-400" 
+                        style={{ width: `${Math.min(100, selectedSuggestion.suggestedLoad + 10)}%` }} 
+                      />
+                    </div>
+                  </div>
+                </Card>
+              </div>
+
+              <div className="grid grid-cols-3 gap-4">
+                <div className="p-3 rounded-lg bg-blue-500/5 border border-blue-500/10 text-center">
+                  <p className="text-[9px] text-blue-500/70 uppercase font-bold mb-1">Diferença de Carga</p>
+                  <p className="text-xl font-bold text-blue-500">{Math.round(selectedSuggestion.loadDifference)}%</p>
+                </div>
+                <div className="p-3 rounded-lg bg-green-500/5 border border-green-500/10 text-center">
+                  <p className="text-[9px] text-green-500/70 uppercase font-bold mb-1">Tempo de Processamento</p>
+                  <p className="text-xl font-bold text-green-500">120m</p>
+                </div>
+                <div className="p-3 rounded-lg bg-purple-500/5 border border-purple-500/10 text-center">
+                  <p className="text-[9px] text-purple-500/70 uppercase font-bold mb-1">Prioridade</p>
+                  <p className="text-xl font-bold text-purple-500">Alta</p>
+                </div>
+              </div>
+
+              <div className="p-4 rounded-lg bg-blue-500/5 border border-blue-500/20">
+                <h4 className="text-xs font-bold mb-2 flex items-center gap-2 text-blue-400">
+                  <Info className="h-3.5 w-3.5" />
+                  Análise de Impacto
+                </h4>
+                <ul className="text-[11px] space-y-2 text-muted-foreground">
+                  <li className="flex items-start gap-2">
+                    <div className="w-1 h-1 rounded-full bg-blue-400 mt-1.5" />
+                    Esta transferência reduzirá o tempo de espera na fila da máquina {selectedSuggestion.currentMachineCode} em aproximadamente 45 minutos.
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <div className="w-1 h-1 rounded-full bg-blue-400 mt-1.5" />
+                    A máquina {selectedSuggestion.suggestedMachineCode} possui capacidade ociosa compatível com a técnica exigida.
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <div className="w-1 h-1 rounded-full bg-blue-400 mt-1.5" />
+                    Garantia de cumprimento do prazo (Deadline) com margem de segurança de 20%.
+                  </li>
+                </ul>
+              </div>
+            </div>
+          )}
+
+          <DialogFooter className="gap-2">
+            <Button variant="ghost" size="sm" onClick={() => setSelectedSuggestion(null)}>Ignorar</Button>
+            <Button 
+              size="sm" 
+              className="gap-2 bg-blue-500 hover:bg-blue-600 text-white"
+              onClick={() => {
+                if (selectedSuggestion) handleApplyBalancing(selectedSuggestion);
+                setSelectedSuggestion(null);
+              }}
+              disabled={isApplying}
+            >
+              {isApplying ? 'Transferindo...' : 'Confirmar Transferência'}
+              <ArrowLeftRight className="h-4 w-4" />
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 }
