@@ -250,3 +250,28 @@ export const useTechnicalSheetAudit = (sheetId: string | null) => {
     ...defaultQueryOptions,
   });
 };
+
+export const useTechnicalSheetFavorites = () => {
+  return useQuery({
+    queryKey: ['technical-sheet-favorites'],
+    queryFn: async () => {
+      const { data: userData } = await supabase.auth.getUser();
+      if (!userData.user) return [];
+      
+      try {
+        const { data, error } = await supabase
+          .from('technical_sheet_favorites')
+          .select('technical_sheet_id')
+          .eq('user_id', userData.user.id);
+
+        if (error) throw error;
+        return data.map(f => f.technical_sheet_id);
+      } catch (error) {
+        if (import.meta.env.DEV) console.error('[useTechnicalSheetFavorites]', error);
+        throw error;
+      }
+    },
+    staleTime: STALE_TIMES.DYNAMIC,
+    ...defaultQueryOptions,
+  });
+};
