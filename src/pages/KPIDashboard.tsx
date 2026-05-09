@@ -325,7 +325,7 @@ export default function KPIDashboard() {
                   title="Ocupação Média" 
                   description="Percentual médio de utilização das máquinas."
                   formula="Tempo em Uso / Tempo Disponível"
-                  target="≥ 80%"
+                  target={`≥ ${kpis.targets.occupancyRate}%`}
                 >
                   <Card className="glass-card hover-scale group">
                     <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
