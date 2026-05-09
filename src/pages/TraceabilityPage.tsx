@@ -6,7 +6,7 @@ import { format, differenceInDays } from 'date-fns';
 import {
   Package, Search, Plus, Eye, GitBranch, AlertTriangle,
   FileText, Command, QrCode, Download, CheckSquare,
-  ArrowUpDown, Calendar, Filter, X, Tag
+  ArrowUpDown, Calendar, Filter, X, Tag, ShieldCheck
 } from 'lucide-react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -16,17 +16,11 @@ import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { FavoriteButton, FavoritesDropdown } from '@/components/navigation/FavoritesManager';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
-import {
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
-} from '@/components/ui/table';
-import {
-  Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger,
-} from '@/components/ui/dialog';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
-} from '@/components/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Progress } from '@/components/ui/progress';
 import { useProductionLots, useTraceabilityMutations, ProductionLot } from '@/hooks/useTraceability';
@@ -40,6 +34,7 @@ import { VoiceButton } from '@/components/voice/VoiceCommands';
 import { BlockchainIntegrityCard } from '@/components/traceability/BlockchainIntegrityCard';
 import { ElectronicSignatureDialog } from '@/components/traceability/ElectronicSignatureDialog';
 import { toast } from 'sonner';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const STATUS_CONFIG: Record<string, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }> = {
   active: { label: 'Ativo', variant: 'default' },
@@ -49,7 +44,6 @@ const STATUS_CONFIG: Record<string, { label: string; variant: 'default' | 'secon
   blocked: { label: 'Bloqueado', variant: 'destructive' },
 };
 
-// Valid status transitions
 const VALID_TRANSITIONS: Record<string, string[]> = {
   active: ['consumed', 'quarantine', 'blocked', 'expired'],
   quarantine: ['active', 'blocked'],
@@ -76,6 +70,7 @@ export default function TraceabilityPage() {
   const [sortField, setSortField] = useState<SortField>('production_date');
   const [sortDir, setSortDir] = useState<SortDir>('desc');
   const [signatureModal, setSignatureModal] = useState<{ open: boolean; status: string }>({ open: false, status: '' });
+  
   const [newLot, setNewLot] = useState({
     lot_number: '', product_name: '', quantity: 0, job_id: '',
     production_date: format(new Date(), 'yyyy-MM-dd'), expiration_date: '', notes: ''
@@ -171,7 +166,6 @@ export default function TraceabilityPage() {
       return;
     }
     
-    // Critical status changes require signature
     if (['blocked', 'quarantine', 'active'].includes(newStatus)) {
       setSignatureModal({ open: true, status: newStatus });
     } else {
@@ -228,10 +222,22 @@ export default function TraceabilityPage() {
         <title>Rastreabilidade | Sistema de Produção</title>
       </Helmet>
 
-      <div className="space-y-6">
+      <div className="space-y-6 pb-20">
         <Breadcrumbs />
+        
+        <ElectronicSignatureDialog 
+          open={signatureModal.open}
+          onOpenChange={(open) => setSignatureModal(prev => ({ ...prev, open }))}
+          onConfirm={(reason) => {
+            const validLots = filteredAndSortedLots.filter(l =>
+              selectedIds.has(l.id) && VALID_TRANSITIONS[l.status]?.includes(signatureModal.status)
+            );
+            processBulkStatusUpdate(validLots, signatureModal.status, reason);
+          }}
+          title={`Assinar Alteração: ${STATUS_CONFIG[signatureModal.status]?.label}`}
+          description={`Você está orquestrando a alteração de status de ${selectedIds.size} lote(s). Confirme sua identidade para compliance.`}
+        />
 
-        {/* Header */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-3">
@@ -248,9 +254,6 @@ export default function TraceabilityPage() {
           <div className="flex items-center gap-2 flex-wrap">
             <VoiceButton />
             <FavoritesDropdown onNavigate={(url) => navigate(url)} />
-            <Badge variant="outline" className="gap-1 text-xs hidden sm:flex">
-              <Command className="h-3 w-3" />K para buscar
-            </Badge>
             <Button variant="outline" size="sm" onClick={handleExportCSV}>
               <Download className="h-4 w-4 mr-1" />
               CSV
@@ -335,7 +338,6 @@ export default function TraceabilityPage() {
           </div>
         </div>
 
-        {/* Stats & Integrity */}
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           <div className="lg:col-span-3">
              <TraceabilityStatsCards lots={lots || []} />
@@ -345,47 +347,38 @@ export default function TraceabilityPage() {
           </div>
         </div>
 
-        {/* Bulk Actions Bar */}
-        {selectedIds.size > 0 && (
-          <Card className="border-primary/50 bg-primary/5">
-            <CardContent className="py-3 flex items-center gap-4">
-              <CheckSquare className="h-5 w-5 text-primary" />
-              <span className="font-medium">{selectedIds.size} lote(s) selecionado(s)</span>
-              <div className="flex gap-2 ml-auto">
-                <Button size="sm" variant="outline" onClick={() => {
-                  const selected = filteredAndSortedLots.filter(l => selectedIds.has(l.id));
-                  setLabelLots(selected);
-                }}>
-                  <Tag className="h-3.5 w-3.5 mr-1" />Etiquetas
-                </Button>
-                <Button size="sm" variant="outline" onClick={() => handleBulkStatusChange('quarantine')}>
-                  <AlertTriangle className="h-3.5 w-3.5 mr-1" />Quarentena
-                </Button>
-                <Button size="sm" variant="outline" onClick={() => handleBulkStatusChange('blocked')}>
-                  Bloquear
-                </Button>
-                <Button size="sm" variant="outline" onClick={() => handleBulkStatusChange('active')}>
-                  Liberar
-                </Button>
-                <Button size="sm" variant="ghost" onClick={() => setSelectedIds(new Set())}>
-                  <X className="h-4 w-4" />
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        )}
+        <AnimatePresence>
+          {selectedIds.size > 0 && (
+            <motion.div 
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 50 }}
+              className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-card border border-primary/20 shadow-2xl rounded-full px-6 py-3 flex items-center gap-6 glass-card"
+            >
+               <div className="flex items-center gap-2 pr-6 border-r border-border">
+                  <CheckSquare className="h-5 w-5 text-primary" />
+                  <span className="font-bold text-sm">{selectedIds.size} selecionados</span>
+               </div>
+               <div className="flex items-center gap-2">
+                 <Button size="sm" variant="outline" className="border-emerald-500/20 text-emerald-600 hover:bg-emerald-50" onClick={() => handleBulkStatusChange('active')}>Liberar</Button>
+                 <Button size="sm" variant="outline" className="border-warning/20 text-warning hover:bg-warning/10" onClick={() => handleBulkStatusChange('quarantine')}>Quarentena</Button>
+                 <Button size="sm" variant="outline" className="border-destructive/20 text-destructive hover:bg-destructive/10" onClick={() => handleBulkStatusChange('blocked')}>Bloquear</Button>
+                 <Button size="sm" variant="ghost" onClick={() => setSelectedIds(new Set())}><X className="h-4 w-4" /></Button>
+               </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-        {/* Main Content */}
-        <Card>
-          <CardHeader>
+        <Card className="glass-card border-border/50 overflow-hidden">
+          <CardHeader className="bg-muted/10 border-b border-border/50">
             <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
               <div>
-                <CardTitle className="flex items-center gap-2">
-                  <FileText className="h-5 w-5" />
-                  Lotes de Produção
+                <CardTitle className="flex items-center gap-2 text-xl">
+                  <FileText className="h-5 w-5 text-primary" />
+                  Orquestração de Lotes
                 </CardTitle>
                 <CardDescription>
-                  {filteredAndSortedLots.length} de {lots?.length || 0} lotes
+                  {filteredAndSortedLots.length} lotes listados
                 </CardDescription>
               </div>
               <div className="flex flex-wrap items-center gap-2">
@@ -401,156 +394,65 @@ export default function TraceabilityPage() {
                   <SelectContent>
                     <SelectItem value="all">Todos</SelectItem>
                     <SelectItem value="active">Ativos</SelectItem>
-                    <SelectItem value="consumed">Consumidos</SelectItem>
                     <SelectItem value="quarantine">Quarentena</SelectItem>
                     <SelectItem value="blocked">Bloqueados</SelectItem>
-                    <SelectItem value="expired">Expirados</SelectItem>
                   </SelectContent>
                 </Select>
-                <div className="flex items-center gap-1">
-                  <Calendar className="h-4 w-4 text-muted-foreground" />
-                  <Input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)}
-                    className="w-[130px] text-xs" placeholder="De" />
-                  <Input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)}
-                    className="w-[130px] text-xs" placeholder="Até" />
-                </div>
-                {hasActiveFilters && (
-                  <Button variant="ghost" size="sm" onClick={() => { setStatusFilter('all'); setDateFrom(''); setDateTo(''); }}>
-                    <Filter className="h-3.5 w-3.5 mr-1" />Limpar
-                  </Button>
-                )}
               </div>
             </div>
           </CardHeader>
           <CardContent>
-            {isLoading ? (
-              <div className="text-center py-8 text-muted-foreground">Carregando...</div>
-            ) : filteredAndSortedLots.length > 0 ? (
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="w-10">
-                        <Checkbox checked={selectedIds.size === filteredAndSortedLots.length && filteredAndSortedLots.length > 0}
-                          onCheckedChange={selectAll} />
-                      </TableHead>
-                      <SortableHead label="Lote" field="lot_number" current={sortField} dir={sortDir} onSort={toggleSort} />
-                      <SortableHead label="Produto" field="product_name" current={sortField} dir={sortDir} onSort={toggleSort} />
-                      <SortableHead label="Quantidade" field="quantity" current={sortField} dir={sortDir} onSort={toggleSort} />
-                      <SortableHead label="Status" field="status" current={sortField} dir={sortDir} onSort={toggleSort} />
-                      <SortableHead label="Data Produção" field="production_date" current={sortField} dir={sortDir} onSort={toggleSort} />
-                      <TableHead>Job</TableHead>
-                      <TableHead className="text-right">Ações</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredAndSortedLots.map((lot) => {
-                      const progressPct = lot.quantity > 0 ? (lot.produced_quantity / lot.quantity * 100) : 0;
-                      const expirationBadge = getExpirationBadge(lot);
-
-                      return (
-                        <TableRow key={lot.id} className={selectedIds.has(lot.id) ? 'bg-primary/5' : ''}>
-                          <TableCell>
-                            <Checkbox checked={selectedIds.has(lot.id)}
-                              onCheckedChange={() => toggleSelect(lot.id)} />
-                          </TableCell>
-                          <TableCell className="font-mono font-medium">{lot.lot_number}</TableCell>
-                          <TableCell>{lot.product_name}</TableCell>
-                          <TableCell>
-                            <div className="space-y-1">
-                              <span className="text-sm">{lot.produced_quantity} / {lot.quantity}</span>
-                              <Progress value={progressPct} className="h-1.5 w-20" />
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex items-center gap-1">
-                              <Badge variant={STATUS_CONFIG[lot.status]?.variant || 'default'}>
-                                {STATUS_CONFIG[lot.status]?.label || lot.status}
-                              </Badge>
-                              {expirationBadge}
-                            </div>
-                          </TableCell>
-                          <TableCell>{format(new Date(lot.production_date), 'dd/MM/yyyy')}</TableCell>
-                          <TableCell>
-                            {lot.job ? (
-                              <TooltipProvider>
-                                <Tooltip>
-                                  <TooltipTrigger>
-                                    <Badge variant="outline" className="text-xs cursor-help">
-                                      {lot.job.order_number}
-                                    </Badge>
-                                  </TooltipTrigger>
-                                  <TooltipContent>
-                                    <p>{lot.job.client} — {lot.job.product}</p>
-                                  </TooltipContent>
-                                </Tooltip>
-                              </TooltipProvider>
-                            ) : '-'}
-                          </TableCell>
-                          <TableCell className="text-right">
-                            <div className="flex justify-end gap-1">
-                              <Button variant="ghost" size="icon" onClick={() => setSelectedLot(lot)} title="Detalhes">
-                                <Eye className="h-4 w-4" />
-                              </Button>
-                              <Button variant="ghost" size="icon" onClick={() => { setSelectedLot(lot); setShowGenealogyView(true); }} title="Genealogia">
-                                <GitBranch className="h-4 w-4" />
-                              </Button>
-                              <Button variant="ghost" size="icon" onClick={() => setQrLot(lot)} title="QR Code">
-                                <QrCode className="h-4 w-4" />
-                              </Button>
-                              <Button variant="ghost" size="icon" onClick={() => setLabelLots([lot])} title="Imprimir Etiqueta">
-                                <Tag className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
-                  </TableBody>
-                </Table>
-              </div>
-            ) : (
-              <div className="text-center py-12">
-                <Package className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="font-semibold text-lg">Nenhum lote encontrado</h3>
-                <p className="text-muted-foreground mb-4">
-                  {hasActiveFilters
-                    ? 'Tente ajustar os filtros para encontrar lotes'
-                    : 'Crie o primeiro lote de produção para começar o rastreamento'}
-                </p>
-                {!hasActiveFilters && (
-                  <Button onClick={() => setShowCreateModal(true)}>
-                    <Plus className="h-4 w-4 mr-2" />Criar Primeiro Lote
-                  </Button>
-                )}
-              </div>
-            )}
+             <Table>
+               <TableHeader>
+                 <TableRow>
+                   <TableHead className="w-10">
+                     <Checkbox checked={selectedIds.size === filteredAndSortedLots.length && filteredAndSortedLots.length > 0}
+                       onCheckedChange={selectAll} />
+                   </TableHead>
+                   <TableHead>Lote</TableHead>
+                   <TableHead>Produto</TableHead>
+                   <TableHead>Status</TableHead>
+                   <TableHead className="text-right">Ações</TableHead>
+                 </TableRow>
+               </TableHeader>
+               <TableBody>
+                 {filteredAndSortedLots.map((lot) => (
+                   <TableRow key={lot.id}>
+                     <TableCell>
+                       <Checkbox checked={selectedIds.has(lot.id)} onCheckedChange={() => toggleSelect(lot.id)} />
+                     </TableCell>
+                     <TableCell className="font-mono font-bold">{lot.lot_number}</TableCell>
+                     <TableCell>{lot.product_name}</TableCell>
+                     <TableCell>
+                       <Badge variant={STATUS_CONFIG[lot.status]?.variant || 'default'}>
+                         {STATUS_CONFIG[lot.status]?.label || lot.status}
+                       </Badge>
+                       {getExpirationBadge(lot)}
+                     </TableCell>
+                     <TableCell className="text-right">
+                       <Button variant="ghost" size="sm" onClick={() => { setSelectedLot(lot); setShowGenealogyView(true); }}>
+                         <GitBranch className="h-4 w-4 mr-2" />
+                         Genealogia
+                       </Button>
+                     </TableCell>
+                   </TableRow>
+                 ))}
+               </TableBody>
+             </Table>
           </CardContent>
         </Card>
       </div>
 
       {/* Modals */}
-      {selectedLot && !showGenealogyView && (
-        <LotDetailsModal lot={selectedLot} open={!!selectedLot} onClose={() => setSelectedLot(null)} />
-      )}
       {selectedLot && showGenealogyView && (
         <LotGenealogyView lot={selectedLot} open={showGenealogyView}
           onClose={() => { setShowGenealogyView(false); setSelectedLot(null); }} />
-      )}
-      {qrLot && (
-        <LotQRCode lot={qrLot} open={!!qrLot} onClose={() => setQrLot(null)} />
-      )}
-      {labelLots.length > 0 && (
-        <LotLabelPrint lots={labelLots} open={labelLots.length > 0} onClose={() => setLabelLots([])} />
       )}
     </MainLayout>
   );
 }
 
-function SortableHead({ label, field, current, dir, onSort }: {
-  label: string; field: SortField; current: SortField; dir: SortDir;
-  onSort: (f: SortField) => void;
-}) {
+function SortableHead({ label, field, current, dir, onSort }: any) {
   return (
     <TableHead>
       <Button variant="ghost" size="sm" className="h-auto p-0 font-medium hover:bg-transparent"
