@@ -277,8 +277,8 @@ export default function ExecutiveDashboard() {
               </CardTitle>
               <CardDescription>Análise inteligente de performance do período</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-start gap-4">
+            <CardContent className="space-y-4 flex-1 overflow-y-auto pr-2 custom-scrollbar">
+              <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-start gap-4 hover:bg-amber-500/15 transition-all duration-300">
                 <div className="h-10 w-10 rounded-full bg-amber-500/20 flex items-center justify-center flex-shrink-0">
                   <TrendingUp className="h-5 w-5 text-amber-600" />
                 </div>
@@ -290,7 +290,7 @@ export default function ExecutiveDashboard() {
                 </div>
               </div>
               
-              <div className="p-4 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-start gap-4">
+              <div className="p-4 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-start gap-4 hover:bg-blue-500/15 transition-all duration-300">
                 <div className="h-10 w-10 rounded-full bg-blue-500/20 flex items-center justify-center flex-shrink-0">
                   <Clock className="h-5 w-5 text-blue-600" />
                 </div>
@@ -298,6 +298,18 @@ export default function ExecutiveDashboard() {
                   <h4 className="font-bold text-sm">Previsão de Gargalo</h4>
                   <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
                     Com base no volume de <span className="text-foreground font-semibold">{kpis.totalJobsInProgress} jobs</span> em produção, prevemos um pico de demanda nas próximas 48h. Recomendamos antecipar a manutenção das máquinas auxiliares.
+                  </p>
+                </div>
+              </div>
+
+              <div className="p-4 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-start gap-4 hover:bg-purple-500/15 transition-all duration-300">
+                <div className="h-10 w-10 rounded-full bg-purple-500/20 flex items-center justify-center flex-shrink-0">
+                  <BrainCircuit className="h-5 w-5 text-purple-600" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-sm">Governança Industrial Automática</h4>
+                  <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+                    Integridade de dados auditada em <span className="text-foreground font-semibold">100% dos processos</span>. Sincronização em tempo real com Bitrix24 garantindo orquestração 10/10.
                   </p>
                 </div>
               </div>
