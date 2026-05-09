@@ -33,6 +33,7 @@ interface MachineStatus {
 
 export function LiveMachineStatusPanel() {
   const { jobs, machines, techniques, isLoading, getTechniqueById } = useOperatorDashboardData();
+  const { predictions, getRiskLevel } = useMLPredictions();
 
   const machineStatuses = useMemo<MachineStatus[]>(() => {
     if (!machines || !jobs) return [];
