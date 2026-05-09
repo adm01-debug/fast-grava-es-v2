@@ -125,6 +125,7 @@ export function AnimatedRoutes() {
         <Route path="/spc" element={<ProtectedPage fallback={<KPIPageSkeleton />} allowedRoles={['coordinator', 'manager']}><SPCDashboard /></ProtectedPage>} />
         <Route path="/executive" element={<ProtectedPage fallback={<KPIPageSkeleton />} allowedRoles={['manager', 'coordinator']}><ExecutiveDashboard /></ProtectedPage>} />
         <Route path="/bi" element={<ProtectedPage fallback={<KPIPageSkeleton />} allowedRoles={['manager', 'coordinator']}><BIDashboard /></ProtectedPage>} />
+        <Route path="/report-builder" element={<ProtectedPage fallback={<KPIPageSkeleton />} allowedRoles={['manager', 'coordinator']}><ReportBuilderPage /></ProtectedPage>} />
 
         {/* ABC Costing — canonical + alias */}
         <Route path="/abc-costing" element={<ProtectedPage fallback={<KPIPageSkeleton />} allowedRoles={['coordinator', 'manager']}><ABCCostingDashboard /></ProtectedPage>} />
