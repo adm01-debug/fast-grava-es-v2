@@ -10,7 +10,7 @@ import { FavoriteButton, FavoritesDropdown } from '@/components/navigation/Favor
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { VoiceButton } from '@/components/voice/VoiceCommands';
 import { useGamification } from '@/hooks/useGamification';
-import { Trophy, Medal, Star, Target, Zap, Award, Crown, TrendingUp, Command } from 'lucide-react';
+import { Trophy, Medal, Star, Target, Zap, Award, Crown, TrendingUp, Command, Package } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
