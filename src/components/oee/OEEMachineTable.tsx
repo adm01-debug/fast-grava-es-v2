@@ -39,6 +39,8 @@ export function OEEMachineTable({ machines }: OEEMachineTableProps) {
   const [techniqueFilter, setTechniqueFilter] = useState<string>('all');
   const [sortField, setSortField] = useState<SortField>('oee');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
+  const [selectedMachineId, setSelectedMachineId] = useState<string | null>(null);
+  const [detailsOpen, setDetailsOpen] = useState(false);
 
   const techniques = [...new Set(machines.map(m => m.techniqueId))];
   const techniqueNames = machines.reduce((acc, m) => {
