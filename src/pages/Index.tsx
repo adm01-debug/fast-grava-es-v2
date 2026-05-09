@@ -214,6 +214,7 @@ const Index = () => {
               onToggleEditMode={() => setIsEditMode(!isEditMode)}
               onResetLayout={resetLayout}
               onToggleWidget={toggleWidgetVisibility}
+              className="no-export"
             />
           </div>
         </div>
