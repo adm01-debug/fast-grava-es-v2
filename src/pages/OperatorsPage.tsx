@@ -435,6 +435,17 @@ export default function OperatorsPage() {
                       <Button
                         size="icon"
                         variant="ghost"
+                        onClick={() => {
+                          setOperatorToShowDetails(operator);
+                          setDetailsModalOpen(true);
+                        }}
+                        className="h-8 w-8 text-primary"
+                      >
+                        <Eye className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        size="icon"
+                        variant="ghost"
                         onClick={() => handleOpenEdit(operator)}
                         className="h-8 w-8"
                       >
