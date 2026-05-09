@@ -52,6 +52,22 @@ export function DroppableColumn({
   selectedJobs, onSelectJob, onQuickAction,
 }: DroppableColumnProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [thresholds, setThresholds] = useState({ bottleneckRiskMinutes: 480 });
+
+  useEffect(() => {
+    const stored = localStorage.getItem('alert-thresholds');
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        if (parsed.bottleneckRiskMinutes) {
+          setThresholds({ bottleneckRiskMinutes: parsed.bottleneckRiskMinutes });
+        }
+      } catch (e) {
+        console.error('Error loading thresholds', e);
+      }
+    }
+  }, []);
+
   const { setNodeRef, isOver } = useDroppable({
     id: status,
     data: { type: 'column', status }
