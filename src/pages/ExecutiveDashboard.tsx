@@ -36,7 +36,9 @@ import {
   Clock,
   BarChart3,
   PieChart as PieChartIcon,
-  Activity
+  Activity,
+  Zap,
+  Lightbulb
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
