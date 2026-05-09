@@ -154,47 +154,117 @@ export default function KPIDashboard() {
               </DropdownMenuContent>
             </DropdownMenu>
             
-            <Button variant="outline" size="sm" className="gap-2 glass-button hidden sm:flex">
-              <Calendar className="h-4 w-4" />
-              Últimos 7 dias
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="gap-2 glass-button">
+                  <Calendar className="h-4 w-4" />
+                  {period === 'all' ? 'Todo o período' : 
+                   period === 'day' ? 'Hoje' : 
+                   period === 'week' ? 'Últimos 7 dias' : 
+                   period === 'month' ? 'Últimos 30 dias' : 'Último ano'}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => setPeriod('day')}>Hoje</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setPeriod('week')}>Últimos 7 dias</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setPeriod('month')}>Últimos 30 dias</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setPeriod('year')}>Último ano</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setPeriod('all')}>Todo o período</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="icon" className="glass-button h-9 w-9">
                   <Settings2 className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuContent align="end" className="w-64">
                 <DropdownMenuLabel>Personalizar Dashboard</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <div className="p-2 space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs">Taxa de Conclusão</span>
-                    <Switch 
-                      checked={visibleKPIs.completion} 
-                      onCheckedChange={(val) => setVisibleKPIs(prev => ({ ...prev, completion: val }))}
-                    />
+                <div className="p-3 space-y-4">
+                  <div className="space-y-2">
+                    <p className="text-[10px] uppercase font-bold text-muted-foreground">Visibilidade</p>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs">Taxa de Conclusão</span>
+                      <Switch 
+                        checked={visibleKPIs.completion} 
+                        onCheckedChange={(val) => setVisibleKPIs(prev => ({ ...prev, completion: val }))}
+                      />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs">Ocupação Média</span>
+                      <Switch 
+                        checked={visibleKPIs.occupancy} 
+                        onCheckedChange={(val) => setVisibleKPIs(prev => ({ ...prev, occupancy: val }))}
+                      />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs">Índice de Perdas</span>
+                      <Switch 
+                        checked={visibleKPIs.loss} 
+                        onCheckedChange={(val) => setVisibleKPIs(prev => ({ ...prev, loss: val }))}
+                      />
+                    </div>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs">Ocupação Média</span>
-                    <Switch 
-                      checked={visibleKPIs.occupancy} 
-                      onCheckedChange={(val) => setVisibleKPIs(prev => ({ ...prev, occupancy: val }))}
-                    />
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs">Índice de Perdas</span>
-                    <Switch 
-                      checked={visibleKPIs.loss} 
-                      onCheckedChange={(val) => setVisibleKPIs(prev => ({ ...prev, loss: val }))}
-                    />
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs">Jobs Atrasados</span>
-                    <Switch 
-                      checked={visibleKPIs.delayed} 
-                      onCheckedChange={(val) => setVisibleKPIs(prev => ({ ...prev, delayed: val }))}
-                    />
+
+                  <DropdownMenuSeparator />
+                  
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <p className="text-[10px] uppercase font-bold text-muted-foreground">Metas (Targets)</p>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="h-6 px-2 text-[10px]"
+                        onClick={() => setIsEditingTargets(!isEditingTargets)}
+                      >
+                        {isEditingTargets ? 'Fechar' : 'Editar'}
+                      </Button>
+                    </div>
+                    
+                    {isEditingTargets ? (
+                      <div className="space-y-3 pt-2">
+                        <div className="space-y-1">
+                          <label className="text-[10px]">Meta de Conclusão (%)</label>
+                          <Input 
+                            type="number" 
+                            className="h-7 text-xs" 
+                            defaultValue={kpis.targets.completionRate}
+                            onBlur={(e) => setCustomTargets(prev => ({ ...prev, completionRate: Number(e.target.value) }))}
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-[10px]">Meta de Ocupação (%)</label>
+                          <Input 
+                            type="number" 
+                            className="h-7 text-xs" 
+                            defaultValue={kpis.targets.occupancyRate}
+                            onBlur={(e) => setCustomTargets(prev => ({ ...prev, occupancyRate: Number(e.target.value) }))}
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-[10px]">Meta de Perda Máx (%)</label>
+                          <Input 
+                            type="number" 
+                            className="h-7 text-xs" 
+                            defaultValue={kpis.targets.lossRate}
+                            onBlur={(e) => setCustomTargets(prev => ({ ...prev, lossRate: Number(e.target.value) }))}
+                          />
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-2 gap-2 pt-1">
+                        <div className="bg-muted/30 p-2 rounded text-center">
+                          <p className="text-[10px] text-muted-foreground">Conclusão</p>
+                          <p className="text-xs font-bold">{kpis.targets.completionRate}%</p>
+                        </div>
+                        <div className="bg-muted/30 p-2 rounded text-center">
+                          <p className="text-[10px] text-muted-foreground">Ocupação</p>
+                          <p className="text-xs font-bold">{kpis.targets.occupancyRate}%</p>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </DropdownMenuContent>
