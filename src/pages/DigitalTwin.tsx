@@ -1,0 +1,144 @@
+import { Helmet } from 'react-helmet';
+import { MainLayout } from '@/components/layout/MainLayout';
+import { FactoryFloorMap } from '@/components/digital-twin/FactoryFloorMap';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { 
+  Cpu, 
+  Activity, 
+  Zap, 
+  TrendingUp, 
+  Settings, 
+  Play, 
+  RotateCcw,
+  Sparkles,
+  Info
+} from 'lucide-react';
+import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
+
+export default function DigitalTwin() {
+  return (
+    <MainLayout>
+      <Helmet>
+        <title>Digital Twin - Gêmeo Digital | Sistema de Produção</title>
+      </Helmet>
+      
+      <div className="p-4 sm:p-6 lg:p-8 space-y-8 animate-fade-in">
+        <Breadcrumbs />
+        
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <h1 className="text-3xl font-display font-bold flex items-center gap-3">
+              <Cpu className="h-8 w-8 text-primary" />
+              Gêmeo Digital (Factory 4.0)
+            </h1>
+            <p className="text-muted-foreground mt-1">Simulação em Tempo Real e Espelhamento de Operações</p>
+          </div>
+          <div className="flex gap-2">
+             <Button variant="outline" className="gap-2 border-primary/20 hover:bg-primary/5">
+               <RotateCcw className="h-4 w-4" />
+               Resetar Simulação
+             </Button>
+             <Button className="gap-2 shadow-glow-primary">
+               <Play className="h-4 w-4" />
+               Iniciar "What-If"
+             </Button>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          <div className="lg:col-span-3 space-y-6">
+            <FactoryFloorMap />
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+               <Card className="glass-card">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-xs font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                      <Zap className="h-4 w-4 text-yellow-500" />
+                      Consumo Energético Total
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-3xl font-black">42.5 <span className="text-sm font-bold text-muted-foreground">kW/h</span></p>
+                    <div className="mt-2 flex items-center gap-1 text-emerald-500 text-[10px] font-bold">
+                       <TrendingUp className="h-3 w-3" /> -12% vs Ontem
+                    </div>
+                  </CardContent>
+               </Card>
+
+               <Card className="glass-card">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-xs font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                      <Activity className="h-4 w-4 text-primary" />
+                      Eficiência Global (OEE)
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-3xl font-black text-primary">92.4 <span className="text-sm font-bold text-muted-foreground">%</span></p>
+                    <div className="mt-2 flex items-center gap-1 text-emerald-500 text-[10px] font-bold">
+                       <TrendingUp className="h-3 w-3" /> +2.1% Acima da Meta
+                    </div>
+                  </CardContent>
+               </Card>
+
+               <Card className="glass-card">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-xs font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                      <Settings className="h-4 w-4 text-blue-500" />
+                      Utilização da Frota
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-3xl font-black">78.0 <span className="text-sm font-bold text-muted-foreground">%</span></p>
+                    <div className="mt-2 flex items-center gap-1 text-amber-500 text-[10px] font-bold">
+                       <Info className="h-3 w-3" /> 2 Máquinas em Manutenção
+                    </div>
+                  </CardContent>
+               </Card>
+            </div>
+          </div>
+
+          <div className="space-y-6">
+            <Card className="glass-card border-primary/20 bg-primary/5">
+               <CardHeader>
+                  <CardTitle className="text-sm font-black uppercase flex items-center gap-2">
+                    <Sparkles className="h-4 w-4 text-primary" />
+                    Insight de Simulação
+                  </CardTitle>
+               </CardHeader>
+               <CardContent className="space-y-4">
+                  <div className="p-3 rounded-lg bg-background/50 border border-border/50 text-[11px] leading-relaxed">
+                     <p className="font-bold text-primary mb-1">Cenário A: Aumento de 20% na Carga</p>
+                     A IA simulou um aumento de demanda. O gargalo será a <strong>Área de Acabamento</strong> em aproximadamente 4 horas. Sugere-se redistribuir 1 operador da Serigrafia.
+                  </div>
+                  <Button variant="outline" size="sm" className="w-full text-[10px] font-bold uppercase h-8 border-primary/30">
+                     Aplicar Otimização
+                  </Button>
+               </CardContent>
+            </Card>
+
+            <Card className="glass-card">
+               <CardHeader>
+                  <CardTitle className="text-sm font-black uppercase flex items-center gap-2">
+                    Alertas de Espelhamento
+                  </CardTitle>
+               </CardHeader>
+               <CardContent className="space-y-3">
+                  {[1, 2].map(i => (
+                    <div key={i} className="flex items-center justify-between p-2 rounded-lg bg-secondary/20 border border-border/30">
+                       <div className="flex flex-col">
+                          <span className="text-[10px] font-black">MÁQUINA {i + 2}</span>
+                          <span className="text-[9px] text-muted-foreground">Variação térmica detectada</span>
+                       </div>
+                       <Badge variant="outline" className="text-[8px] h-4">SINCRO OK</Badge>
+                    </div>
+                  ))}
+               </CardContent>
+            </Card>
+          </div>
+        </div>
+      </div>
+    </MainLayout>
+  );
+}
