@@ -39,6 +39,8 @@ export const TechnicalSheetEditor = ({ sheetId, techniques, categories, material
     setup_instructions: '',
     quality_checklist: [] as Array<{ id: string; description: string; required: boolean }>,
     consumables: [] as Array<{ id: string; name: string; quantity: string; alternative?: string }>,
+    gold_standard_image_url: '',
+    failure_standard_image_url: '',
     version: '1'
   });
 
