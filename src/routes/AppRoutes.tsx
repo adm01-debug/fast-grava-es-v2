@@ -35,6 +35,7 @@ const DesignSystemPage = lazy(() => import("@/pages/DesignSystemPage"));
 const NewJobPage = lazy(() => import("@/pages/NewJobPage"));
 const MachinesPage = lazy(() => import("@/pages/MachinesPage"));
 const InventoryPage = lazy(() => import("@/pages/InventoryPage"));
+const ReportBuilderPage = lazy(() => import("@/pages/ReportBuilderPage"));
 const OperatorsPage = lazy(() => import("@/pages/OperatorsPage"));
 const OperatorProductivityPage = lazy(() => import("@/pages/OperatorProductivityPage"));
 const OEEDashboard = lazy(() => import("@/pages/OEEDashboard"));
