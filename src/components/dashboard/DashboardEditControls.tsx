@@ -18,6 +18,7 @@ interface DashboardEditControlsProps {
   onToggleEditMode: () => void;
   onResetLayout: () => void;
   onToggleWidget: (widgetId: string) => void;
+  className?: string;
 }
 
 export const DashboardEditControls = memo(function DashboardEditControls({
@@ -26,6 +27,7 @@ export const DashboardEditControls = memo(function DashboardEditControls({
   onToggleEditMode,
   onResetLayout,
   onToggleWidget,
+  className,
 }: DashboardEditControlsProps) {
   return (
     <div className="flex items-center gap-2">
