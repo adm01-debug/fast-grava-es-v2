@@ -644,36 +644,48 @@ export const TechnicalSheetViewer = ({ sheetId, onEdit, onDuplicate }: Technical
                   </div>
                   
                   <div className="space-y-4">
-                    {/* Placeholder for real logs from table we just created */}
-                    <div className="relative pl-8 pb-8 border-l last:border-l-0">
-                      <div className="absolute -left-1.5 top-0 w-3 h-3 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
-                      <div className="bg-muted/30 p-4 rounded-lg border border-border/50">
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="text-xs font-bold text-emerald-600 uppercase tracking-wider">Publicação</span>
-                          <span className="text-xs text-muted-foreground">{format(new Date(sheet.updated_at), "dd/MM/yyyy 'às' HH:mm")}</span>
+                    {isLoadingAudit ? (
+                      <div className="text-center py-4 text-xs text-muted-foreground">Carregando histórico...</div>
+                    ) : auditLogs.length > 0 ? (
+                      auditLogs.map((log: any) => (
+                        <div key={log.id} className="relative pl-8 pb-8 border-l last:border-l-0">
+                          <div className={`absolute -left-1.5 top-0 w-3 h-3 rounded-full ${
+                            log.action === 'CREATE' ? 'bg-emerald-500' : 
+                            log.action === 'DELETE' ? 'bg-rose-500' : 'bg-primary'
+                          } shadow-sm`} />
+                          <div className="bg-muted/30 p-4 rounded-lg border border-border/50">
+                            <div className="flex items-center justify-between mb-2">
+                              <span className="text-xs font-bold uppercase tracking-wider">
+                                {log.action === 'CREATE' ? 'Criação' : 
+                                 log.action === 'UPDATE' ? 'Atualização' : 
+                                 log.action === 'VERSION_BUMP' ? 'Nova Versão' : log.action}
+                              </span>
+                              <span className="text-xs text-muted-foreground">
+                                {format(new Date(log.created_at), "dd/MM/yyyy 'às' HH:mm")}
+                              </span>
+                            </div>
+                            <p className="text-sm">
+                              {log.change_summary || (log.action === 'CREATE' ? 'Ficha técnica criada.' : 'Alterações realizadas nos parâmetros.')}
+                            </p>
+                            <div className="flex items-center gap-2 mt-3">
+                              {log.profiles?.avatar_url ? (
+                                <img src={log.profiles.avatar_url} alt={log.profiles.display_name} className="h-6 w-6 rounded-full" />
+                              ) : (
+                                <div className="h-6 w-6 rounded-full bg-primary/20 flex items-center justify-center text-[10px] font-bold">
+                                  {log.profiles?.display_name?.substring(0, 2).toUpperCase() || '??'}
+                                </div>
+                              )}
+                              <span className="text-xs font-medium">{log.profiles?.display_name || 'Sistema'}</span>
+                            </div>
+                          </div>
                         </div>
-                        <p className="text-sm">Ficha técnica homologada para produção.</p>
-                        <div className="flex items-center gap-2 mt-3">
-                          <div className="h-6 w-6 rounded-full bg-primary/20 flex items-center justify-center text-[10px] font-bold">JD</div>
-                          <span className="text-xs font-medium">João Diretor (Qualidade)</span>
-                        </div>
+                      ))
+                    ) : (
+                      <div className="text-center py-8 text-muted-foreground">
+                        <History className="h-8 w-8 mx-auto mb-2 opacity-20" />
+                        <p className="text-xs">Nenhum registro de auditoria encontrado.</p>
                       </div>
-                    </div>
-
-                    <div className="relative pl-8 pb-8 border-l last:border-l-0">
-                      <div className="absolute -left-1.5 top-0 w-3 h-3 rounded-full bg-primary/50" />
-                      <div className="bg-muted/30 p-4 rounded-lg border border-border/50">
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="text-xs font-bold text-primary uppercase tracking-wider">Edição de Parâmetros</span>
-                          <span className="text-xs text-muted-foreground">01/05/2024 às 10:20</span>
-                        </div>
-                        <p className="text-sm">Alteração na temperatura de fusão de 180°C para 195°C para melhorar aderência.</p>
-                        <div className="flex items-center gap-2 mt-3">
-                          <div className="h-6 w-6 rounded-full bg-primary/20 flex items-center justify-center text-[10px] font-bold">TC</div>
-                          <span className="text-xs font-medium">Técnico Camilo</span>
-                        </div>
-                      </div>
-                    </div>
+                    )}
                   </div>
                 </div>
               </ScrollArea>
