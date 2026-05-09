@@ -789,54 +789,50 @@ export default function KPIDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {kpis.delayedJobs > 0 && (
-                    <div className="flex items-start gap-4 p-4 rounded-xl border border-primary/20 bg-primary/5">
-                      <div className="p-2 rounded-lg bg-primary/20">
-                        <AlertTriangle className="h-5 w-5 text-primary" />
+                  {kpis.anomalies.map(anomaly => (
+                    <div key={anomaly.id} className={cn(
+                      "flex items-start gap-4 p-4 rounded-xl border animate-in fade-in slide-in-from-left-4 duration-300",
+                      anomaly.severity === 'high' ? "border-primary/40 bg-primary/10" : "border-amber-500/20 bg-amber-500/5"
+                    )}>
+                      <div className={cn(
+                        "p-2 rounded-lg",
+                        anomaly.severity === 'high' ? "bg-primary/20" : "bg-amber-500/20"
+                      )}>
+                        {anomaly.type === 'loss' ? <Percent className={cn("h-5 w-5", anomaly.severity === 'high' ? "text-primary" : "text-amber-500")} /> : 
+                         anomaly.type === 'delay' ? <Clock className={cn("h-5 w-5", anomaly.severity === 'high' ? "text-primary" : "text-amber-500")} /> : 
+                         <AlertTriangle className={cn("h-5 w-5", anomaly.severity === 'high' ? "text-primary" : "text-amber-500")} />}
                       </div>
                       <div className="flex-1">
                         <div className="flex items-center justify-between">
-                          <h4 className="font-bold text-sm">Gargalo Detectado: Jobs Atrasados</h4>
-                          <span className="text-[10px] text-muted-foreground uppercase">Há 12 min</span>
+                          <h4 className="font-bold text-sm">
+                            {anomaly.type === 'loss' ? 'Perda Excessiva' : 
+                             anomaly.type === 'delay' ? 'Risco de Atraso' : 'Anomalia'}
+                          </h4>
+                          <span className="text-[10px] text-muted-foreground uppercase">Tempo real</span>
                         </div>
                         <p className="text-xs text-muted-foreground mt-1">
-                          Existem {kpis.delayedJobs} jobs com status de atraso que podem impactar a meta diária de entrega.
+                          {anomaly.message}
                         </p>
-                        <Button variant="link" size="sm" className="h-auto p-0 text-primary text-xs mt-2">
-                          Ver jobs afetados <ArrowUpRight className="h-3 w-3 ml-1" />
-                        </Button>
-                      </div>
-                    </div>
-                  )}
-
-                  {kpis.lossRate > 3 && (
-                    <div className="flex items-start gap-4 p-4 rounded-xl border border-amber-500/20 bg-amber-500/5">
-                      <div className="p-2 rounded-lg bg-amber-500/20">
-                        <TrendingDown className="h-5 w-5 text-amber-400" />
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center justify-between">
-                          <h4 className="font-bold text-sm">Aumento na Taxa de Perdas</h4>
-                          <span className="text-[10px] text-muted-foreground uppercase">Há 45 min</span>
+                        <div className="flex items-center gap-2 mt-2">
+                          <Badge variant="outline" className="text-[10px] h-5">{anomaly.entityName}</Badge>
+                          <Button variant="link" size="sm" className="h-auto p-0 text-primary text-xs">
+                            Analisar causa raiz <ArrowUpRight className="h-3 w-3 ml-1" />
+                          </Button>
                         </div>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          A taxa de perdas subiu para {kpis.lossRate.toFixed(2)}%, ultrapassando o limite crítico de 3%.
-                        </p>
                       </div>
                     </div>
-                  )}
+                  ))}
 
-                  <div className="flex items-center justify-center py-12 border-2 border-dashed border-muted/20 rounded-xl">
-                    <div className="text-center">
-                      <p className="text-sm text-muted-foreground italic">Fim do histórico de alertas recentes</p>
+                  {kpis.anomalies.length === 0 && (
+                    <div className="text-center py-12 space-y-3">
+                      <div className="h-12 w-12 rounded-full bg-green-500/10 flex items-center justify-center mx-auto">
+                        <CheckCircle2 className="h-6 w-6 text-green-500" />
+                      </div>
+                      <p className="text-sm font-medium">Nenhum desvio crítico detectado</p>
+                      <p className="text-xs text-muted-foreground">O sistema está operando dentro dos parâmetros de normalidade.</p>
                     </div>
-                  </div>
+                  )}
                 </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
-        </div>
       </div>
     </MainLayout>
   );
