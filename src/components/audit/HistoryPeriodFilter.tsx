@@ -112,15 +112,26 @@ export function HistoryPeriodFilter({ value, onChange, onExport, resultCount }: 
       </Popover>
 
       {onExport && (
-        <Button
-          size="sm"
-          variant="outline"
-          className="h-8 gap-1 ml-2 text-muted-foreground"
-          onClick={() => onExport('csv')}
-        >
-          <Download className="h-3.5 w-3.5" />
-          Exportar CSV
-        </Button>
+        <div className="flex gap-1 ml-2">
+          <Button
+            size="sm"
+            variant="outline"
+            className="h-8 gap-1 text-muted-foreground"
+            onClick={() => onExport('csv')}
+          >
+            <Download className="h-3.5 w-3.5" />
+            CSV
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            className="h-8 gap-1 text-muted-foreground"
+            onClick={() => onExport('pdf')}
+          >
+            <Download className="h-3.5 w-3.5" />
+            PDF
+          </Button>
+        </div>
       )}
 
       {typeof resultCount === 'number' && (
