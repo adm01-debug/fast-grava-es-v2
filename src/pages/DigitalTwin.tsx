@@ -16,6 +16,8 @@ import {
   Info
 } from 'lucide-react';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
+import { SupplyChainPanel } from '@/components/digital-twin/SupplyChainPanel';
+import { CostSimulationCard } from '@/components/digital-twin/CostSimulationCard';
 
 export default function DigitalTwin() {
   return (
