@@ -34,6 +34,7 @@ import { HistoryPeriodFilter, type HistoryPeriodValue } from "@/components/audit
 import { Skeleton } from "@/components/ui/skeleton";
 import { JobCostsTab } from "./JobCostsTab";
 import { JobTraceabilityTab } from "./JobTraceabilityTab";
+import { JobQualityTab } from "./JobQualityTab";
 import { useState } from "react";
 
 interface JobDetailsModalProps {
