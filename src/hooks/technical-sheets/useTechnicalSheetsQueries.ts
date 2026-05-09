@@ -222,3 +222,31 @@ export const useTechnicalSheetDetails = (sheetId: string | null) => {
     isLoading: sheetQuery.isLoading || stepsQuery.isLoading
   };
 };
+
+export const useTechnicalSheetAudit = (sheetId: string | null) => {
+  return useQuery({
+    queryKey: ['technical-sheet-audit', sheetId],
+    queryFn: async () => {
+      if (!sheetId) return [];
+      try {
+        const { data, error } = await supabase
+          .from('technical_sheet_audit')
+          .select(`
+            *,
+            profiles:user_id (display_name, avatar_url)
+          `)
+          .eq('technical_sheet_id', sheetId)
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+        return data;
+      } catch (error) {
+        if (import.meta.env.DEV) console.error('[useTechnicalSheetAudit]', error);
+        throw error;
+      }
+    },
+    enabled: !!sheetId,
+    staleTime: STALE_TIMES.DYNAMIC,
+    ...defaultQueryOptions,
+  });
+};
