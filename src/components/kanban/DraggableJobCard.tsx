@@ -206,8 +206,8 @@ export function DraggableJobCard({ job, technique, machine, onClick, viewMode = 
       )}
       
       {/* OS + qty */}
-      <div className="flex items-center justify-between text-xs text-muted-foreground">
-        <span className="font-mono">OS {job.order_number}</span>
+      <div className="flex items-center justify-between text-[10px] font-bold text-muted-foreground bg-muted/20 px-2 py-1 rounded border border-border/10">
+        <span className="font-mono text-primary/80">OS {job.order_number}</span>
         {!job.produced_quantity && <span>{job.quantity.toLocaleString()} pçs</span>}
       </div>
       
