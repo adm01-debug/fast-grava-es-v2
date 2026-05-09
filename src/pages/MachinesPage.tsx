@@ -243,7 +243,8 @@ export default function MachinesPage() {
               </Card>
             );
           })}
-          </TabsContent>
+        </div>
+      </TabsContent>
 
           <TabsContent value="heatmap">
              <FactoryHeatmap machines={machines} techniques={techniques} />
