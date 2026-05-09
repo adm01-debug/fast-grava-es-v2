@@ -82,6 +82,35 @@ export default function MachinesPage() {
     });
   };
 
+  const handleToggleBulk = async (active: boolean) => {
+    if (selectedMachines.size === 0) return;
+    
+    try {
+      const { error } = await supabase
+        .from('machines')
+        .update({ is_active: active })
+        .in('id', Array.from(selectedMachines));
+        
+      if (error) throw error;
+      
+      toast.success(`${selectedMachines.size} máquinas ${active ? 'ativadas' : 'desativadas'}`);
+      setSelectedMachines(new Set());
+      queryClient.invalidateQueries({ queryKey: ['machines'] });
+    } catch (error) {
+      console.error('Error toggling machines:', error);
+      toast.error('Erro ao atualizar máquinas');
+    }
+  };
+
+  const handleSelectMachine = (id: string) => {
+    setSelectedMachines(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
   // Group machines by technique
   const machinesByTechnique = machines.reduce((acc, machine) => {
     const techniqueId = machine.technique_id;
