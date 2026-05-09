@@ -63,9 +63,11 @@ export function MachineTPMPanel({ machineId, onStartMaintenance, onOpenCreateSch
                 <Calendar className="h-4 w-4 text-primary" />
                 Próximas Manutenções
               </div>
-              <Button variant="ghost" size="icon" className="h-6 w-6" onClick={onOpenCreateSchedule}>
-                <Plus className="h-4 w-4" />
-              </Button>
+              {onOpenCreateSchedule && (
+                <Button variant="ghost" size="icon" className="h-6 w-6" onClick={onOpenCreateSchedule}>
+                  <Plus className="h-4 w-4" />
+                </Button>
+              )}
             </CardTitle>
           </CardHeader>
           <CardContent>
