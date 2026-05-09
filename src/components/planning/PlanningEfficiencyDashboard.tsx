@@ -9,8 +9,8 @@ import {
   LayoutGrid
 } from 'lucide-react';
 import { useSchedulingData } from '@/hooks/useSchedulingData';
-import { useSmartSequencing } from '@/hooks/useSmartSequencing';
-import { useLoadBalancing } from '@/hooks/useLoadBalancing';
+import { useSmartSequencingWithActions } from '@/hooks/useSmartSequencingWithActions';
+import { useLoadBalancingWithActions } from '@/hooks/useLoadBalancingWithActions';
 import { useOEE } from '@/hooks/useOEE';
 import { useMTBFMTTR } from '@/hooks/useMTBFMTTR';
 import { OEETrendChart } from '@/components/oee/OEETrendChart';
@@ -20,11 +20,27 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 
 export function PlanningEfficiencyDashboard() {
   const { jobs } = useSchedulingData();
-  const { totalSavings, suggestions: sequencingSuggestions } = useSmartSequencing();
-  const { suggestions: balancingSuggestions, byTechnique } = useLoadBalancing();
+  const { totalSavings, suggestions: sequencingSuggestions, applyAllSequencing, isApplying: isApplyingSequencing } = useSmartSequencingWithActions();
+  const { suggestions: balancingSuggestions, byTechnique, applyAllSuggestions, isApplying: isApplyingBalancing } = useLoadBalancingWithActions();
   const { data: oeeData } = useOEE(30);
   const { summary: reliabilitySummary } = useMTBFMTTR(30);
   const [showTrend, setShowTrend] = useState(false);
+
+  const handleBulkOptimization = async () => {
+    try {
+      if (balancingSuggestions.length > 0) {
+        await applyAllSuggestions();
+      }
+      if (sequencingSuggestions.length > 0) {
+        await applyAllSequencing();
+      }
+    } catch (error) {
+      console.error('Erro na otimização em massa:', error);
+    }
+  };
+
+  const isApplying = isApplyingSequencing || isApplyingBalancing;
+  const hasSuggestions = sequencingSuggestions.length > 0 || balancingSuggestions.length > 0;
 
   const stats = useMemo(() => {
     if (!jobs || jobs.length === 0) return null;
