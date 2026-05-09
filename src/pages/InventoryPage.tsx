@@ -31,7 +31,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 export default function InventoryPage() {
-  const { items, isLoading, recordMovement } = useInventory();
+  const { items, isLoading, recordMovement, stats } = useInventory();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
 
