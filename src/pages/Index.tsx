@@ -303,6 +303,7 @@ const Index = () => {
                     <ActivityFeedWidget />
                     <DailySummaryCard />
                     <MaintenanceAlertsWidget />
+                    <EnergyWidget />
                     <SortableWidgetSection
                       widgets={sidebarWidgets}
                       section="sidebar"
