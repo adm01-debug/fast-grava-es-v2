@@ -87,9 +87,13 @@ export default function GamificationPage() {
             </Badge>
             <Tabs value={period} onValueChange={(v) => setPeriod(v as 'daily' | 'weekly' | 'monthly')}>
               <TabsList>
-                <TabsTrigger value="daily">Diário</TabsTrigger>
-                <TabsTrigger value="weekly">Semanal</TabsTrigger>
-                <TabsTrigger value="monthly">Mensal</TabsTrigger>
+                <TabsTrigger value="daily" onClick={() => setActiveTab('ranking')}>Diário</TabsTrigger>
+                <TabsTrigger value="weekly" onClick={() => setActiveTab('ranking')}>Semanal</TabsTrigger>
+                <TabsTrigger value="monthly" onClick={() => setActiveTab('ranking')}>Mensal</TabsTrigger>
+                <TabsTrigger value="rewards" onClick={() => setActiveTab('rewards')} className="bg-primary/10 text-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                  <Star className="h-4 w-4 mr-2" />
+                  Loja de Recompensas
+                </TabsTrigger>
               </TabsList>
             </Tabs>
           </div>
