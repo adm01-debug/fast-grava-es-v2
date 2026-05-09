@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { OperatorConfirmDialogs } from '@/components/operators/OperatorConfirmDialogs';
-import { Users, UserCheck, Phone, Calendar, Settings2, Search, X, UserPlus, Pencil, Clock, Trash2, UserX, Power, Command, Eye, TrendingUp } from 'lucide-react';
+import { Users, UserCheck, Phone, Calendar, Settings2, Search, X, UserPlus, Pencil, Clock, Trash2, UserX, Power, Command, Eye, TrendingUp, Trophy } from 'lucide-react';
 import { useOperators, OperatorWithProfile } from '@/hooks/useOperators';
 import { useOperatorPresence } from '@/hooks/useOperatorPresence';
 import { useOperatorMachines } from '@/hooks/useOperatorMachines';
