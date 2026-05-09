@@ -58,8 +58,10 @@ export function WarehouseMap({ items }: WarehouseMapProps) {
                     <TooltipProvider key={`${area}${level}`}>
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <div className={cn(
-                            "h-12 border rounded-md flex items-center justify-center transition-all cursor-help relative group",
+                          <div 
+                            onClick={() => handleTransfer(`${area}${level}`)}
+                            className={cn(
+                            "h-12 border rounded-md flex items-center justify-center transition-all cursor-pointer relative group active:scale-95",
                             locationItems.length > 0 ? "bg-primary/5 border-primary/20" : "bg-muted/10 border-border/30 opacity-50",
                             isLow && "bg-destructive/10 border-destructive/30"
                           )}>
