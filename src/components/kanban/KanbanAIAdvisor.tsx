@@ -24,9 +24,23 @@ export function KanbanAIAdvisor() {
   const { alerts: bottleneckAlerts } = useBottleneckPrediction();
   
   const [showSettings, setShowSettings] = useState(false);
-  const [thresholds, setThresholds] = useState({
-    bottleneckHigh: 480, // minutes
-    bottleneckMedium: 300, // minutes
+  const [thresholds, setThresholds] = useState(() => {
+    const saved = localStorage.getItem('alert-thresholds');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        return {
+          bottleneckHigh: parsed.bottleneckHigh || 480,
+          bottleneckMedium: parsed.bottleneckRiskMinutes || 300,
+        };
+      } catch (e) {
+        console.error('Error loading thresholds', e);
+      }
+    }
+    return {
+      bottleneckHigh: 480,
+      bottleneckMedium: 300,
+    };
   });
 
   const totalInsights = sequenceSuggestions.length + balancingSuggestions.length + bottleneckAlerts.length;
