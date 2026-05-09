@@ -311,9 +311,18 @@ export const TechnicalSheetViewer = ({ sheetId, onEdit, onDuplicate }: Technical
                         </CardTitle>
                       </CardHeader>
                       <CardContent className="px-4 pb-4">
-                        <div className="aspect-video bg-muted rounded flex flex-col items-center justify-center border-2 border-dashed border-emerald-500/20 group cursor-pointer hover:bg-emerald-500/5 transition-colors">
-                          <Maximize2 className="h-6 w-6 text-emerald-500/40 group-hover:scale-110 transition-transform" />
-                          <span className="text-[10px] text-emerald-600/60 mt-2 font-medium">VER REFERÊNCIA VISUAL</span>
+                        <div 
+                          className="aspect-video bg-muted rounded flex flex-col items-center justify-center border-2 border-dashed border-emerald-500/20 group cursor-pointer hover:bg-emerald-500/5 transition-colors overflow-hidden"
+                          onClick={() => sheet.gold_standard_image_url && window.open(sheet.gold_standard_image_url, '_blank')}
+                        >
+                          {sheet.gold_standard_image_url ? (
+                            <img src={sheet.gold_standard_image_url} alt="Padrão Ouro" className="w-full h-full object-cover" />
+                          ) : (
+                            <>
+                              <Maximize2 className="h-6 w-6 text-emerald-500/40 group-hover:scale-110 transition-transform" />
+                              <span className="text-[10px] text-emerald-600/60 mt-2 font-medium uppercase">Sem referência visual</span>
+                            </>
+                          )}
                         </div>
                         <p className="text-[10px] mt-2 text-muted-foreground italic text-center">Referência visual homologada para este processo</p>
                       </CardContent>
@@ -327,9 +336,18 @@ export const TechnicalSheetViewer = ({ sheetId, onEdit, onDuplicate }: Technical
                         </CardTitle>
                       </CardHeader>
                       <CardContent className="px-4 pb-4">
-                        <div className="aspect-video bg-muted rounded flex flex-col items-center justify-center border-2 border-dashed border-rose-500/20 group cursor-pointer hover:bg-rose-500/5 transition-colors">
-                          <AlertTriangle className="h-6 w-6 text-rose-500/40 group-hover:shake transition-transform" />
-                          <span className="text-[10px] text-rose-600/60 mt-2 font-medium">VER EXEMPLOS DE REJEIÇÃO</span>
+                        <div 
+                          className="aspect-video bg-muted rounded flex flex-col items-center justify-center border-2 border-dashed border-rose-500/20 group cursor-pointer hover:bg-rose-500/5 transition-colors overflow-hidden"
+                          onClick={() => sheet.failure_standard_image_url && window.open(sheet.failure_standard_image_url, '_blank')}
+                        >
+                          {sheet.failure_standard_image_url ? (
+                            <img src={sheet.failure_standard_image_url} alt="Padrão Falha" className="w-full h-full object-cover" />
+                          ) : (
+                            <>
+                              <AlertTriangle className="h-6 w-6 text-rose-500/40 group-hover:shake transition-transform" />
+                              <span className="text-[10px] text-rose-600/60 mt-2 font-medium uppercase">Sem exemplos de rejeição</span>
+                            </>
+                          )}
                         </div>
                         <p className="text-[10px] mt-2 text-muted-foreground italic text-center">Erros comuns que levam ao descarte</p>
                       </CardContent>
