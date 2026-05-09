@@ -29,7 +29,9 @@ import { JobQRCode } from "@/components/qrcode/JobQRCode";
 import { useDuplicateJob } from "@/hooks/useDuplicateJob";
 import { useEntityAuditTrail } from "@/hooks/useAuditTrail";
 import { AuditEntryCard } from "@/components/audit/AuditEntryCard";
+import { HistoryPeriodFilter, type HistoryPeriodValue } from "@/components/audit/HistoryPeriodFilter";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useState } from "react";
 
 interface JobDetailsModalProps {
   job: DbJob | null;
