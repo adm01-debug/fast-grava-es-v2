@@ -16,6 +16,8 @@ import { Badge } from '@/components/ui/badge';
 import { FavoritesDropdown, FavoriteButton } from '@/components/navigation/FavoritesManager';
 import { ActivityLog, useActivityLog } from '@/components/activity/ActivityLog';
 import { OfflineBanner, ConnectionStatus } from '@/components/offline/OfflineMode';
+import { GamificationBanner } from '@/components/dashboard/GamificationBanner';
+import { useSmartDelayAlerts } from '@/hooks/useSmartDelayAlerts';
 
 import { VoiceButton } from '@/components/voice/VoiceCommands';
 import { ActivityFeedWidget } from '@/components/dashboard/ActivityFeedWidget';
