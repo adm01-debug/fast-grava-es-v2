@@ -22,7 +22,8 @@ import {
   Settings2,
   Leaf,
   Droplets,
-  Zap
+  Zap,
+  Sparkles
 } from 'lucide-react';
 import { useOEE, WORLD_CLASS_OEE, getOEEColor } from '@/hooks/useOEE';
 import { OEEGaugeCard } from '@/components/oee/OEEGaugeCard';
