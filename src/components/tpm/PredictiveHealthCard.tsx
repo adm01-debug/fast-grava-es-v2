@@ -92,7 +92,9 @@ export function PredictiveHealthCard({ machineId }: PredictiveHealthCardProps) {
           <div className="p-2 rounded-lg bg-secondary/30 border border-border/50">
             <p className="text-[10px] text-muted-foreground uppercase">Falha Estimada</p>
             <p className="text-xs font-bold">
-              {format(new Date(displayData.predicted_failure_date), 'dd/MM/yyyy', { locale: ptBR })}
+              {displayData.predicted_failure_date 
+                ? format(new Date(displayData.predicted_failure_date), 'dd/MM/yyyy', { locale: ptBR })
+                : 'N/A'}
             </p>
           </div>
           <div className="p-2 rounded-lg bg-secondary/30 border border-border/50">
@@ -107,7 +109,7 @@ export function PredictiveHealthCard({ machineId }: PredictiveHealthCardProps) {
         <div className="pt-2 border-t border-border/50">
           <TooltipProvider>
             <div className="flex items-center gap-2 flex-wrap">
-              {Object.entries(displayData.factors).map(([key, value]) => (
+              {displayData.factors && typeof displayData.factors === 'object' && Object.entries(displayData.factors as Record<string, any>).map(([key, value]) => (
                 <Tooltip key={key}>
                   <TooltipTrigger asChild>
                     <Badge variant="secondary" className="text-[10px] bg-secondary/50 capitalize">
