@@ -38,14 +38,16 @@ import {
   PieChart as PieChartIcon,
   Activity,
   Zap,
-  Lightbulb
+  Lightbulb,
+  BrainCircuit,
+  ShieldCheck,
+  Sparkles
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { VoiceButton } from '@/components/voice/VoiceCommands';
 import { AutonomousEventLog } from '@/components/autonomous/AutonomousEventLog';
-import { BrainCircuit, ShieldCheck, Sparkles } from 'lucide-react';
 
 export default function ExecutiveDashboard() {
   const datePresets = getDateRangePresets();
@@ -158,9 +160,9 @@ export default function ExecutiveDashboard() {
                 <ShieldCheck className="h-3 w-3" /> Orquestração: 10/10
               </Badge>
             </div>
-            <p className="text-muted-foreground mt-1">Gestão de Fábrica Autônoma & Visão Consolidada de Performance</p>
+            <p className="text-muted-foreground mt-1 font-medium italic">Gestão de Fábrica Autônoma & Visão Consolidada de Performance</p>
           </div>
-
+          
           <div className="flex items-center gap-3">
             <VoiceButton onCommand={(cmd) => {
               if (cmd.startsWith('search:')) {
@@ -194,8 +196,11 @@ export default function ExecutiveDashboard() {
           </div>
         </div>
 
-        {/* North Star Metric Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Autonomous Control & North Star Metric Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          <div className="lg:col-span-1">
+             <AutonomousEventLog />
+          </div>
           <Card className="glass-card lg:col-span-1 border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
             <CardHeader className="pb-0">
               <CardTitle className="text-sm font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
