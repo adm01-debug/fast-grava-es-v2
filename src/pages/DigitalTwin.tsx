@@ -23,10 +23,11 @@ import { useEnergy } from '@/hooks/useEnergy';
 
 export default function DigitalTwin() {
   const { data: kpiData } = useKPIs('day');
-  const { totalEnergyToday } = useEnergy();
+  const { stats: energyStats } = useEnergy();
 
   const oee = kpiData?.productivityByTechnique?.[0]?.occupancyRate || 92.4;
   const machinesCount = kpiData?.totalJobs || 0;
+  const totalEnergyToday = energyStats?.totalConsumption || 0;
 
   return (
     <MainLayout>
