@@ -371,6 +371,17 @@ const Index = () => {
             </ScrollArea>
           </TabsContent>
 
+          {/* Intelligence & Insights Tab */}
+          <TabsContent value="intelligence" className="flex-1 mt-4 min-h-0">
+            <ScrollArea className="h-full">
+              <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 pr-2">
+                <PredictiveAnalyticsWidget />
+                <OEELoadTrendWidget />
+                <AlertsWidget />
+              </div>
+            </ScrollArea>
+          </TabsContent>
+
           {/* Chat Tab */}
           <TabsContent value="chat" className="flex-1 mt-4 min-h-0">
             <div className="h-full">
