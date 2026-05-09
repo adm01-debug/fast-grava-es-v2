@@ -57,15 +57,33 @@ export const AuditEntryCard = memo(function AuditEntryCard({ entry }: AuditEntry
         <ShieldCheckIcon className="h-4 w-4 text-primary/60 shrink-0" aria-hidden />
       </div>
 
-      {entry.changed_fields && entry.changed_fields.length > 0 && (
-        <div className="flex flex-wrap gap-1">
-          {entry.changed_fields.map((field) => (
-            <Badge key={field} variant="outline" className="text-xs">
-              {field}
-            </Badge>
-          ))}
+      {(entry.changed_fields && entry.changed_fields.length > 0) || entry.diff ? (
+        <div className="space-y-2">
+          {entry.changed_fields && entry.changed_fields.length > 0 && (
+            <div className="flex flex-wrap gap-1">
+              {entry.changed_fields.map((field) => (
+                <Badge key={field} variant="outline" className="text-[10px] uppercase font-bold bg-muted/30">
+                  {field}
+                </Badge>
+              ))}
+            </div>
+          )}
+          
+          {entry.diff && (
+            <div className="text-[11px] font-mono p-2 rounded bg-muted/50 border border-border/50 overflow-hidden">
+              {Object.entries(entry.diff).map(([key, val]: [string, any]) => (
+                <div key={key} className="grid grid-cols-[80px_1fr] gap-2">
+                  <span className="text-muted-foreground truncate">{key}:</span>
+                  <span className="truncate">
+                    {val.old !== undefined && <span className="text-red-400/70 line-through mr-1">{String(val.old)}</span>}
+                    <span className="text-emerald-400 font-bold">{String(val.new)}</span>
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
-      )}
+      ) : null}
 
       <div className="flex items-center gap-2 text-xs font-mono text-muted-foreground/60 border-t border-border pt-2">
         <HashIcon className="h-3 w-3" aria-hidden />
