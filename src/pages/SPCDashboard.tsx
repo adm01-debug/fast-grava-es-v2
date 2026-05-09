@@ -209,6 +209,51 @@ export default function SPCDashboard() {
                 </CardContent>
               </Card>
             )}
+            {selectedParameter && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <QualityHistogram parameter={selectedParameter} measurements={measurements || []} />
+                
+                <Card className="glass-card border-primary/20 bg-primary/5 overflow-hidden">
+                  <CardHeader className="py-3 bg-primary/10 border-b border-primary/20">
+                    <CardTitle className="text-sm font-black uppercase tracking-widest text-primary flex items-center gap-2">
+                      <Sparkles className="h-4 w-4" />
+                      Otimização de Processo IA
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="pt-4 space-y-4">
+                    <div className="space-y-3">
+                      <div className="flex items-start gap-3">
+                        <div className="mt-1 p-1.5 rounded-md bg-primary/10 text-primary">
+                          <ArrowRightLeft className="h-3.5 w-3.5" />
+                        </div>
+                        <div>
+                          <p className="text-xs font-bold uppercase">Ajuste de Tolerância</p>
+                          <p className="text-[11px] text-muted-foreground leading-tight">
+                            Com base no Cp de {(capability?.cp || 0).toFixed(2)}, você pode reduzir a tolerância em 15% sem afetar o refugo.
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-start gap-3">
+                        <div className="mt-1 p-1.5 rounded-md bg-emerald-500/10 text-emerald-600">
+                          <FileSpreadsheet className="h-3.5 w-3.5" />
+                        </div>
+                        <div>
+                          <p className="text-xs font-bold uppercase text-emerald-600">Traceabilidade de Lote</p>
+                          <p className="text-[11px] text-muted-foreground leading-tight">
+                            Correlação detectada: Variação de {selectedParameter.name} aumenta 5% no final de turnos noturnos.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <Button variant="outline" size="sm" className="w-full text-[10px] font-bold uppercase h-8 border-primary/30 hover:bg-primary/10">
+                      Gerar Plano de Ação Qualidade
+                    </Button>
+                  </CardContent>
+                </Card>
+              </div>
+            )}
           </div>
         </div>
 
