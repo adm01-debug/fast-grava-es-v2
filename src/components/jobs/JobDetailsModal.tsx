@@ -21,7 +21,8 @@ import {
   Building,
   QrCode,
   Copy,
-  History
+  History,
+  DollarSign
 } from "lucide-react";
 import { useSchedulingData } from "@/hooks/useSchedulingData";
 import { DbJob } from "@/hooks/useJobs";
