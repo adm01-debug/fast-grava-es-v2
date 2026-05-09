@@ -73,7 +73,21 @@ export function useInventory() {
     mutationFn: async (movement: Omit<InventoryMovement, 'id' | 'created_at' | 'user_id'>) => {
       const { data: { user } } = await supabase.auth.getUser();
       
-      // 1. Record movement
+      // 1. Get current stock
+      const { data: item, error: itemError } = await supabase
+        .from('inventory_items')
+        .select('current_stock, name')
+        .eq('id', movement.item_id)
+        .single();
+
+      if (itemError) throw itemError;
+
+      // Validate OUT movements
+      if (movement.type === 'OUT' && item.current_stock < movement.quantity) {
+        throw new Error(`Estoque insuficiente para ${item.name}. Disponível: ${item.current_stock}`);
+      }
+
+      // 2. Record movement
       const { data, error } = await supabase
         .from('inventory_movements')
         .insert([{ ...movement, user_id: user?.id }])
@@ -82,26 +96,18 @@ export function useInventory() {
 
       if (error) throw error;
 
-      // 2. Update actual stock in inventory_items
-      const { data: item } = await supabase
+      // 3. Update actual stock in inventory_items
+      let newStock = item.current_stock;
+      if (movement.type === 'IN') newStock += movement.quantity;
+      if (movement.type === 'OUT') newStock -= movement.quantity;
+      if (movement.type === 'ADJUST') newStock = movement.quantity;
+
+      const { error: updateError } = await supabase
         .from('inventory_items')
-        .select('current_stock')
-        .eq('id', movement.item_id)
-        .single();
-
-      if (item) {
-        let newStock = item.current_stock;
-        if (movement.type === 'IN') newStock += movement.quantity;
-        if (movement.type === 'OUT') newStock -= movement.quantity;
-        if (movement.type === 'ADJUST') newStock = movement.quantity;
-
-        const { error: updateError } = await supabase
-          .from('inventory_items')
-          .update({ current_stock: newStock })
-          .eq('id', movement.item_id!);
-          
-        if (updateError) throw updateError;
-      }
+        .update({ current_stock: newStock })
+        .eq('id', movement.item_id!);
+        
+      if (updateError) throw updateError;
 
       return data;
     },
@@ -110,14 +116,16 @@ export function useInventory() {
       queryClient.invalidateQueries({ queryKey: ['inventory-movements'] });
       toast.success('Movimentação registrada com sucesso');
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.error('Error recording movement:', error);
-      toast.error('Erro ao registrar movimentação');
+      toast.error(error.message || 'Erro ao registrar movimentação');
     },
   });
 
   const updateItemMutation = useMutation({
     mutationFn: async ({ id, ...updates }: Partial<InventoryItem> & { id: string }) => {
+      // If updating stock directly, we should probably record an ADJUST movement
+      // but if it's just metadata (name, price), it's fine.
       const { data, error } = await supabase
         .from('inventory_items')
         .update(updates)
@@ -130,7 +138,12 @@ export function useInventory() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['inventory-items'] });
+      toast.success('Item atualizado com sucesso');
     },
+    onError: (error) => {
+      console.error('Error updating item:', error);
+      toast.error('Erro ao atualizar item');
+    }
   });
 
   const deleteMovementMutation = useMutation({
