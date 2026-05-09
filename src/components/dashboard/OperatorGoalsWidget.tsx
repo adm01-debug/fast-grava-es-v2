@@ -13,9 +13,10 @@ export function OperatorGoalsWidget() {
   const { user, isOperator } = useAuth();
   const navigate = useNavigate();
   const { activeGoals, isLoading: loadingGoals } = useOperatorGoals();
-  const { data: productivity, isLoading: loadingProd } = useOperatorProductivity(user?.id);
+  const { operators, isLoading: loadingProd } = useOperatorProductivity('all');
 
   const myGoals = activeGoals.filter(g => g.operator_id === user?.id);
+  const myProductivity = operators?.find(o => o.operatorId === user?.id);
 
   if (!isOperator || myGoals.length === 0) return null;
 
@@ -35,12 +36,12 @@ export function OperatorGoalsWidget() {
 
   const goalsWithProgress = myGoals.map(goal => {
     let currentVal = 0;
-    if (productivity) {
+    if (myProductivity) {
       switch (goal.goal_type) {
-        case 'efficiency': currentVal = productivity.efficiency; break;
-        case 'jobs_completed': currentVal = productivity.jobsCompleted; break;
-        case 'pieces_produced': currentVal = productivity.totalProduced; break;
-        case 'loss_rate': currentVal = productivity.lossRate; break;
+        case 'efficiency': currentVal = myProductivity.efficiencyScore; break;
+        case 'jobs_completed': currentVal = myProductivity.totalJobsCompleted; break;
+        case 'pieces_produced': currentVal = myProductivity.totalPiecesProduced; break;
+        case 'loss_rate': currentVal = myProductivity.lossRate; break;
       }
     }
     return calculateGoalProgress(goal, currentVal);
@@ -82,7 +83,7 @@ export function OperatorGoalsWidget() {
                   {GOAL_TYPE_LABELS[goal.goal_type]}
                 </span>
               </div>
-              <span className="text-[11px] font-bold font-mono">
+              <span className="text-[11px] font-bold font-mono text-foreground">
                 {goal.current_value.toFixed(0)} / {goal.target_value.toFixed(0)}
                 {goal.goal_type === 'efficiency' || goal.goal_type === 'loss_rate' ? '%' : ''}
               </span>
@@ -90,15 +91,12 @@ export function OperatorGoalsWidget() {
             <div className="relative pt-1">
               <Progress 
                 value={goal.progress_percentage} 
-                className={cn(
-                  "h-1.5",
-                  goal.is_achieved ? "bg-success/20" : "bg-muted"
-                )}
+                className="h-1.5 bg-muted"
               />
               <div 
                 className={cn(
                   "h-1.5 rounded-full absolute top-1 left-0 transition-all duration-500",
-                  goal.is_achieved ? "bg-success" : goal.progress_percentage < 50 ? "bg-orange-500" : "bg-primary"
+                  goal.is_achieved ? "bg-success shadow-[0_0_8px_rgba(34,197,94,0.4)]" : goal.progress_percentage < 50 ? "bg-orange-500 shadow-[0_0_8px_rgba(249,115,22,0.4)]" : "bg-primary shadow-[0_0_8px_rgba(59,130,246,0.4)]"
                 )}
                 style={{ width: `${goal.progress_percentage}%` }}
               />
@@ -109,3 +107,4 @@ export function OperatorGoalsWidget() {
     </Card>
   );
 }
+
