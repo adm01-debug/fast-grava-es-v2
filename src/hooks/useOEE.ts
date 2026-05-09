@@ -360,7 +360,7 @@ export function useOEE(daysBack: number = 30) {
       performanceLosses: Math.round(performanceLosses * 10) / 10,
       qualityLosses: Math.round(qualityLosses * 10) / 10
     };
-  }, [jobs, machines, techniques, daysBack]);
+  }, [jobs, machines, techniques, effectiveDaysBack]);
   
   return { data, isLoading };
 }
