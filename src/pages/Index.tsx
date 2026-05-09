@@ -324,9 +324,11 @@ const Index = () => {
                 <ScrollArea className="flex-1">
                   <div className="space-y-4 pr-2">
                     <AutoShiftSummary />
+                    <OperatorGoalsWidget />
                     <ShiftHandoverWidget />
                     <LeaderboardWidget />
                     <ActivityFeedWidget />
+
                     <DailySummaryCard />
                     <MaintenanceAlertsWidget />
                     <EnergyWidget />
