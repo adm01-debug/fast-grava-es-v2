@@ -130,7 +130,9 @@ export default function WeeklyCalendar() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
 
-  const { jobs, techniques, machines, getTechniqueById } = useSchedulingData();
+  const { jobs, techniques, machines, getTechniqueById, refetchJobs } = useSchedulingData();
+  const { handleDragStart, handleDragEnd, activeId } = useWeeklyDragDrop({ onUpdate: refetchJobs });
+  const activeJob = useMemo(() => jobs.find(j => j.id === activeId), [jobs, activeId]);
   const { mutate: updateStatus } = useUpdateJobStatus();
   const { conflicts } = useSchedulingConflicts();
   const { prefs, setZoom, setGroupBy, toggleOverlay } = useCalendarPreferences('weekly');
