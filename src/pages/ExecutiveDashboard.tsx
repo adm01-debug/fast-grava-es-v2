@@ -154,13 +154,13 @@ export default function ExecutiveDashboard() {
           <div className="flex-1">
             <div className="flex items-center gap-3">
               <h1 className="text-2xl sm:text-3xl font-display font-bold">
-                <span className="gradient-text animate-pulse-glow">Dashboard Executivo 360</span>
+                <span className="gradient-text animate-pulse-glow">Fábrica Autônoma 360</span>
               </h1>
               <Badge variant="outline" className="gap-1 px-2 border-primary/30 bg-primary/5 text-primary animate-pulse">
-                <ShieldCheck className="h-3 w-3" /> Orquestração: 10/10
+                <ShieldCheck className="h-3 w-3" /> Ecossistema: 10/10
               </Badge>
             </div>
-            <p className="text-muted-foreground mt-1 font-medium italic">Gestão de Fábrica Autônoma & Visão Consolidada de Performance</p>
+            <p className="text-muted-foreground mt-1 font-medium italic">Orquestração Inteligente & Governança de Dados Industrial</p>
           </div>
           
           <div className="flex items-center gap-3">
