@@ -546,31 +546,6 @@ export function JobDetailsModal({ job, open, onOpenChange, onStatusChange }: Job
   );
 }
 
-          <TabsContent value="instructions">
-            <JobInstructionsTab techniqueId={job.technique_id} productCategoryId={job.product_category_id} />
-          </TabsContent>
-
-          <TabsContent value="quality">
-            <JobQualityTab jobId={job.id} techniqueId={job.technique_id} machineId={job.machine_id} />
-          </TabsContent>
-
-          <TabsContent value="costs">
-            <JobCostsTab jobId={job.id} />
-          </TabsContent>
-
-          <TabsContent value="traceability">
-            <JobTraceabilityTab jobId={job.id} />
-          </TabsContent>
-
-          <TabsContent value="history">
-            <JobHistoryTab jobId={job.id} />
-          </TabsContent>
-        </Tabs>
-      </DialogContent>
-    </Dialog>
-  );
-}
-
 function JobHistoryTab({ jobId }: { jobId: string }) {
   const [period, setPeriod] = useState<HistoryPeriodValue>({ preset: 'all' });
   const { data, isLoading, error } = useEntityAuditTrail('jobs', jobId, {
