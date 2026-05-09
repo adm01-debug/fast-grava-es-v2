@@ -11,6 +11,7 @@ export interface WidgetConfig {
 
 const DEFAULT_WIDGETS: WidgetConfig[] = [
   { id: 'occupancy', title: 'Ocupação por Técnica', section: 'main', visible: true, order: 0 },
+  { id: 'trends', title: 'Tendências de OEE e Carga', section: 'main', visible: true, order: 1 },
   { id: 'buffer', title: 'Status do Buffer', section: 'sidebar', visible: true, order: 0 },
   { id: 'conflicts', title: 'Alertas de Conflitos', section: 'sidebar', visible: true, order: 1 },
   { id: 'alerts', title: 'Alertas', section: 'sidebar', visible: true, order: 2 },

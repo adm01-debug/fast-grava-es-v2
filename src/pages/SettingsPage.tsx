@@ -33,7 +33,7 @@ function usePersistedSettings() {
 function useAlertThresholds() {
   const [thresholds, setThresholds] = useState(() => {
     const stored = localStorage.getItem('alert-thresholds');
-    return stored ? JSON.parse(stored) : { lowBuffer: 30, criticalBuffer: 10, delayedJobMinutes: 60, oeeWarning: 70, oeeCritical: 50, energyPeakKw: 100 };
+    return stored ? JSON.parse(stored) : { lowBuffer: 30, criticalBuffer: 10, delayedJobMinutes: 60, oeeWarning: 70, oeeCritical: 50, energyPeakKw: 100, bottleneckRiskMinutes: 480, estimatedLoadLimitPercentage: 90 };
   });
   useEffect(() => { localStorage.setItem('alert-thresholds', JSON.stringify(thresholds)); }, [thresholds]);
   return [thresholds, setThresholds] as const;
@@ -87,7 +87,7 @@ export default function SettingsPage() {
           <TabsContent value="general"><SettingsGeneralTab settings={settings} onSettingChange={handleSettingChange} /></TabsContent>
           <TabsContent value="security" className="space-y-4"><TwoFactorSetup /><IPAllowlist /><LoginAuditLog /></TabsContent>
           <TabsContent value="notifications"><SettingsNotificationsTab settings={settings} onSettingChange={handleSettingChange} /></TabsContent>
-          <TabsContent value="alerts"><SettingsAlertsTab thresholds={thresholds} onThresholdChange={handleThresholdChange} onSave={() => toast.success('Limites de alerta salvos!')} onReset={() => { setThresholds({ lowBuffer: 30, criticalBuffer: 10, delayedJobMinutes: 60, oeeWarning: 70, oeeCritical: 50, energyPeakKw: 100 }); toast.success('Limites restaurados para padrão'); }} /></TabsContent>
+          <TabsContent value="alerts"><SettingsAlertsTab thresholds={thresholds} onThresholdChange={handleThresholdChange} onSave={() => toast.success('Limites de alerta salvos!')} onReset={() => { setThresholds({ lowBuffer: 30, criticalBuffer: 10, delayedJobMinutes: 60, oeeWarning: 70, oeeCritical: 50, energyPeakKw: 100, bottleneckRiskMinutes: 480, estimatedLoadLimitPercentage: 90 }); toast.success('Limites restaurados para padrão'); }} /></TabsContent>
           <TabsContent value="users" className="space-y-4"><UserManagement /><PasswordResetRequests /></TabsContent>
           <TabsContent value="backup"><SettingsBackupTab onExportData={handleExportData} /></TabsContent>
           <TabsContent value="integrations"><IntegrationHub /></TabsContent>

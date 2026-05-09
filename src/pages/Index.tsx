@@ -56,6 +56,7 @@ const ConflictAlertsWidget = lazy(() => import('@/components/dashboard/ConflictA
 const SmartSequencingWidget = lazy(() => import('@/components/dashboard/SmartSequencingWidget').then(m => ({ default: m.SmartSequencingWidget })));
 const LoadBalancingWidget = lazy(() => import('@/components/dashboard/LoadBalancingWidget').then(m => ({ default: m.LoadBalancingWidget })));
 const BottleneckWidget = lazy(() => import('@/components/dashboard/BottleneckWidget').then(m => ({ default: m.BottleneckWidget })));
+const OEELoadTrendWidget = lazy(() => import('@/components/dashboard/OEELoadTrendWidget').then(m => ({ default: m.OEELoadTrendWidget })));
 
 // Widget skeleton fallback with shimmer
 function WidgetSkeleton({ className = "h-64" }: { className?: string }) {
@@ -82,6 +83,7 @@ const WIDGET_COMPONENTS: Record<string, WidgetComponentConfig> = {
   sequencing: { component: SmartSequencingWidget, skeletonHeight: 'h-48' },
   loadbalancing: { component: LoadBalancingWidget, skeletonHeight: 'h-48' },
   bottleneck: { component: BottleneckWidget, skeletonHeight: 'h-48' },
+  trends: { component: OEELoadTrendWidget, skeletonHeight: 'h-64' },
   timeline: { component: CompactTimeline, skeletonHeight: 'h-40' },
   jobs: { component: RecentJobsTable, skeletonHeight: 'h-64' },
 };

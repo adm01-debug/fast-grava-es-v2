@@ -7,6 +7,7 @@ import { AlertTriangle, Save, RotateCcw } from 'lucide-react';
 interface AlertThresholds {
   lowBuffer: number; criticalBuffer: number; delayedJobMinutes: number;
   oeeWarning: number; oeeCritical: number; energyPeakKw: number;
+  bottleneckRiskMinutes: number; estimatedLoadLimitPercentage: number;
 }
 
 interface SettingsAlertsTabProps {
@@ -24,6 +25,8 @@ export function SettingsAlertsTab({ thresholds, onThresholdChange, onSave, onRes
     { key: 'oeeWarning', label: 'OEE Warning (%)', desc: 'OEE abaixo deste valor gera warning' },
     { key: 'oeeCritical', label: 'OEE Crítico (%)', desc: 'OEE abaixo deste valor é crítico' },
     { key: 'energyPeakKw', label: 'Pico de Energia (kW)', desc: 'Alerta quando consumo ultrapassar' },
+    { key: 'bottleneckRiskMinutes', label: 'Risco de Gargalo (min)', desc: 'Carga total na coluna para considerar gargalo' },
+    { key: 'estimatedLoadLimitPercentage', label: 'Limite de Carga Máquina (%)', desc: 'Ocupação máxima recomendada por equipamento' },
   ];
 
   return (
