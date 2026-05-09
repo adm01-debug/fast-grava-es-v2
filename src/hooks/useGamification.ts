@@ -214,3 +214,10 @@ async function calculateRankingsLocally(
 
   return rankings;
 }
+
+function calculateLevelInfo(points: number) {
+  const level = Math.floor(points / 1000) + 1;
+  const xp_progress = points % 1000;
+  const xp_target = 1000;
+  return { level, xp_progress, xp_target };
+}
