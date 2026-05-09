@@ -885,6 +885,93 @@ export type Database = {
         }
         Relationships: []
       }
+      inventory_items: {
+        Row: {
+          category: string
+          created_at: string | null
+          current_stock: number
+          id: string
+          location: string | null
+          min_stock_level: number
+          name: string
+          specification: string | null
+          unit: string
+          updated_at: string | null
+        }
+        Insert: {
+          category: string
+          created_at?: string | null
+          current_stock?: number
+          id?: string
+          location?: string | null
+          min_stock_level?: number
+          name: string
+          specification?: string | null
+          unit: string
+          updated_at?: string | null
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          current_stock?: number
+          id?: string
+          location?: string | null
+          min_stock_level?: number
+          name?: string
+          specification?: string | null
+          unit?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      inventory_movements: {
+        Row: {
+          created_at: string | null
+          id: string
+          item_id: string | null
+          job_id: string | null
+          quantity: number
+          reason: string | null
+          type: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          item_id?: string | null
+          job_id?: string | null
+          quantity: number
+          reason?: string | null
+          type: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          item_id?: string | null
+          job_id?: string | null
+          quantity?: number
+          reason?: string | null
+          type?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inventory_movements_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "inventory_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "inventory_movements_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ip_allowlist: {
         Row: {
           created_at: string
@@ -3459,6 +3546,7 @@ export type Database = {
         Row: {
           created_at: string
           id: string
+          inventory_item_id: string | null
           name: string
           notes: string | null
           quantity: string | null
@@ -3468,6 +3556,7 @@ export type Database = {
         Insert: {
           created_at?: string
           id?: string
+          inventory_item_id?: string | null
           name: string
           notes?: string | null
           quantity?: string | null
@@ -3477,6 +3566,7 @@ export type Database = {
         Update: {
           created_at?: string
           id?: string
+          inventory_item_id?: string | null
           name?: string
           notes?: string | null
           quantity?: string | null
@@ -3484,6 +3574,13 @@ export type Database = {
           technical_sheet_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "technical_sheet_materials_inventory_item_id_fkey"
+            columns: ["inventory_item_id"]
+            isOneToOne: false
+            referencedRelation: "inventory_items"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "technical_sheet_materials_technical_sheet_id_fkey"
             columns: ["technical_sheet_id"]
