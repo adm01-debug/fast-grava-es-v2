@@ -188,5 +188,3 @@ export function JobInstructionsTab({ techniqueId, productCategoryId }: JobInstru
     </div>
   );
 }
-
-import { CheckCircle2 } from 'lucide-react';
