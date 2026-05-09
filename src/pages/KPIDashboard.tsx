@@ -189,7 +189,10 @@ export default function KPIDashboard() {
                         <CheckCircle2 className="h-5 w-5 sm:h-6 sm:w-6 text-green-400" />
                       </div>
                     </div>
-                    <Progress value={completionRate} className="mt-3 h-2 [&>div]:bg-green-500" />
+                    <div className="relative mt-3">
+                      <Progress value={completionRate} className="h-2 [&>div]:bg-green-500" />
+                      <div className="absolute top-[-4px] left-[95%] w-[2px] h-4 bg-foreground/20" title="Meta: 95%" />
+                    </div>
                   </CardContent>
                 </Card>
               </KPITooltip>
