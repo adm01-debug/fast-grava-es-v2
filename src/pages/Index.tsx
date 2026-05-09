@@ -275,6 +275,10 @@ const Index = () => {
               <Cpu className="h-4 w-4" />
               <span className="hidden sm:inline">Máquinas</span>
             </TabsTrigger>
+            <TabsTrigger value="intelligence" className="gap-2 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all duration-200">
+              <Brain className="h-4 w-4" />
+              <span className="hidden sm:inline">Inteligência</span>
+            </TabsTrigger>
             <TabsTrigger value="chat" className="gap-2 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all duration-200">
               <MessageCircle className="h-4 w-4" />
               <span className="hidden sm:inline">Chat</span>
