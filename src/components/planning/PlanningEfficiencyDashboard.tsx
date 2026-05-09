@@ -28,17 +28,25 @@ export function PlanningEfficiencyDashboard() {
     const totalJobs = currentJobs.length;
     if (totalJobs === 0) return null;
 
-    const optimizedJobs = totalJobs - (balancingSuggestions.length + (totalSavings > 0 ? 0 : 5));
-    const efficiencyScore = Math.max(70, Math.min(98, Math.round((optimizedJobs / totalJobs) * 100))) || 85;
-    
+    // Calculate planning efficiency based on deadline adherence and optimization potential
     const delayedCount = jobs.filter(j => j.status === 'delayed').length;
+    const finishedJobs = jobs.filter(j => j.status === 'finished');
+    const withinDeadlineCount = finishedJobs.filter(j => {
+      if (!j.scheduled_date || !j.actual_end_time) return true;
+      return new Date(j.actual_end_time) <= new Date(j.scheduled_date);
+    }).length;
+
+    const efficiencyScore = finishedJobs.length > 0 
+      ? Math.round((withinDeadlineCount / finishedJobs.length) * 100) 
+      : 85; // Default if no finished jobs
+    
     const deadlineHealth = Math.round(((totalJobs - delayedCount) / totalJobs) * 100) || 0;
 
     // Use actual OEE from real flow metrics (Availability, Performance, Quality)
     const estimatedOEE = oeeData?.overallOEE ?? 75;
 
     return { efficiencyScore, deadlineHealth, totalJobs, delayedCount, estimatedOEE, oeeData };
-  }, [jobs, balancingSuggestions, totalSavings, oeeData]);
+  }, [jobs, oeeData]);
 
   if (!stats) return null;
 
