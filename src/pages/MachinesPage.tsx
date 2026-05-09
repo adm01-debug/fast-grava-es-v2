@@ -12,6 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useEntityAuditTrail } from '@/hooks/useAuditTrail';
 import { AuditEntryCard } from '@/components/audit/AuditEntryCard';
+import { HistoryPeriodFilter, type HistoryPeriodValue } from '@/components/audit/HistoryPeriodFilter';
 import { MachineTPMPanel } from '@/components/tpm/MachineTPMPanel';
 import { useTPM } from '@/hooks/useTPM';
 import { MaintenanceExecutionModal } from '@/components/tpm/MaintenanceExecutionModal';
