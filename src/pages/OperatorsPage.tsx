@@ -467,7 +467,6 @@ export default function OperatorsPage() {
           </CardContent>
         </Card>
 
-        <OperatorAuditHistory />
 
         {/* Operator Details Modal */}
         <Dialog open={detailsModalOpen} onOpenChange={setDetailsModalOpen}>
