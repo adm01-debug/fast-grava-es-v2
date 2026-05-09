@@ -97,8 +97,15 @@ export function SmartSequencingPanel() {
                 </div>
               </div>
 
-              <h3 className="font-bold text-sm mb-1">{suggestion.machineName}</h3>
-              <p className="text-xs text-muted-foreground mb-4">{suggestion.techniqueName}</p>
+              <h3 className="font-bold text-sm mb-1 group-hover:text-primary transition-colors">{suggestion.machineName}</h3>
+              <div className="flex items-center gap-2 mb-4">
+                <p className="text-xs text-muted-foreground">{suggestion.techniqueName}</p>
+                <div className="h-1 w-1 rounded-full bg-muted-foreground/30" />
+                <div className="flex items-center gap-1">
+                   <Clock className="h-3 w-3 text-muted-foreground" />
+                   <span className="text-[10px] font-bold text-muted-foreground uppercase">{suggestion.totalMinutes}m carga</span>
+                </div>
+              </div>
 
               <div className="space-y-2 mb-4">
                 <div className="flex items-center justify-between text-[10px] text-muted-foreground uppercase tracking-widest">
