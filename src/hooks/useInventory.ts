@@ -160,23 +160,30 @@ export function useInventory() {
       // 2. Rollback stock change in inventory_items
       const { data: item } = await supabase
         .from('inventory_items')
-        .select('current_stock')
+        .select('current_stock, location')
         .eq('id', movement.item_id!)
         .single();
 
       if (item) {
-        let restoredStock = item.current_stock;
-        if (movement.type === 'IN') restoredStock -= movement.quantity;
-        if (movement.type === 'OUT') restoredStock += movement.quantity;
-        // ADJUST is harder to rollback perfectly without historical snapshots, 
-        // but for IN/OUT it's straightforward.
+        let updates: Partial<InventoryItem> = {};
+        
+        if (movement.type === 'IN') updates.current_stock = item.current_stock - movement.quantity;
+        if (movement.type === 'OUT') updates.current_stock = item.current_stock + movement.quantity;
+        if (movement.type === 'TRANSFER' && movement.from_location) {
+           // Rollback location if it's the most recent one (simple check)
+           if (item.location === movement.to_location) {
+             updates.location = movement.from_location;
+           }
+        }
 
-        const { error: updateError } = await supabase
-          .from('inventory_items')
-          .update({ current_stock: restoredStock })
-          .eq('id', movement.item_id!);
-          
-        if (updateError) throw updateError;
+        if (Object.keys(updates).length > 0) {
+          const { error: updateError } = await supabase
+            .from('inventory_items')
+            .update(updates)
+            .eq('id', movement.item_id!);
+            
+          if (updateError) throw updateError;
+        }
       }
 
       // 3. Delete the movement record
@@ -191,11 +198,11 @@ export function useInventory() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['inventory-items'] });
       queryClient.invalidateQueries({ queryKey: ['inventory-movements'] });
-      toast.success('Movimentação excluída e estoque sincronizado');
+      toast.success('Movimentação desfeita (rollback) com sucesso');
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.error('Error deleting movement:', error);
-      toast.error('Erro ao excluir movimentação');
+      toast.error(error.message || 'Erro ao desfazer movimentação');
     }
   });
 
