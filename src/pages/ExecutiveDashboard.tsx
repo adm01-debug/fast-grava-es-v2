@@ -495,9 +495,20 @@ export default function ExecutiveDashboard() {
                       dataKey="target" 
                       stroke="#94a3b8" 
                       fill="#94a3b8" 
-                      fillOpacity={0.2}
+                      fillOpacity={0.1}
                       name="Meta"
                     />
+                    {showComparison && (
+                      <Area 
+                        type="monotone" 
+                        dataKey="prevProduced" 
+                        stroke="#94a3b8" 
+                        fill="#94a3b8" 
+                        fillOpacity={0.2}
+                        strokeDasharray="5 5"
+                        name="Produzido (Período Ant.)"
+                      />
+                    )}
                     <Area 
                       type="monotone" 
                       dataKey="produced" 
