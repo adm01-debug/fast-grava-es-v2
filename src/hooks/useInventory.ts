@@ -188,6 +188,12 @@ export function useInventory() {
 
   const transferItemsMutation = useMutation({
     mutationFn: async ({ fromLocation, toLocation, itemIds }: { fromLocation: string, toLocation: string, itemIds: string[] }) => {
+      // Validate location format (e.g., A1, B4)
+      const locationRegex = /^[A-Z][0-9]+$/;
+      if (!locationRegex.test(toLocation)) {
+        throw new Error('Formato de localização inválido. Use letra maiúscula e número (ex: A1).');
+      }
+
       const { data: { user } } = await supabase.auth.getUser();
       
       const results = await Promise.all(itemIds.map(async (itemId) => {
