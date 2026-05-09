@@ -202,9 +202,9 @@ const Index = () => {
             <DateRangePicker date={dateRange} setDate={setDateRange} className="mr-1" />
             <DashboardExport />
             <ConnectionStatus />
-            <VoiceButton className="hidden md:flex" />
-            <FavoritesDropdown onNavigate={(path) => navigate(path)} />
-            <Badge variant="outline" className="hidden md:flex gap-1.5 cursor-pointer hover:bg-primary/8 hover:border-primary/30 transition-all duration-200">
+            <VoiceButton className="hidden md:flex no-export" />
+            <FavoritesDropdown onNavigate={(path) => navigate(path)} className="no-export" />
+            <Badge variant="outline" className="hidden md:flex gap-1.5 cursor-pointer hover:bg-primary/8 hover:border-primary/30 transition-all duration-200 no-export">
               <Command className="h-3 w-3" />
               <span className="text-xs">⌘K</span>
             </Badge>
