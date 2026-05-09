@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -23,10 +24,11 @@ import {
   Edit, Clock, Wrench, ListOrdered, Package, Lightbulb,
   AlertTriangle, Info, CheckCircle2, FileDown, Copy,
   QrCode, Maximize2, Zap, Droplets, MoveHorizontal, Thermometer,
-  CheckSquare
+  CheckSquare, History, ArrowLeftRight
 } from 'lucide-react';
 import { useTechnicalSheetDetails } from '@/hooks/useTechnicalSheets';
 import { KnowledgeSheetQRCode } from './KnowledgeSheetQRCode';
+import { KnowledgeStatusBadge } from './KnowledgeStatusBadge';
 import { toast } from 'sonner';
 
 interface TechnicalSheetViewerProps {
@@ -200,6 +202,7 @@ export const TechnicalSheetViewer = ({ sheetId, onEdit, onDuplicate }: Technical
               </div>
               <div className="flex items-center gap-3">
                 <CardTitle className="text-xl">{sheet.title}</CardTitle>
+                <KnowledgeStatusBadge status={sheet.status} />
                 <Badge variant="outline" className="text-[10px] font-bold">v{sheet.version || '1'}</Badge>
               <div className="flex items-center gap-2 mt-1">
                 <span className="text-[10px] text-muted-foreground uppercase font-semibold">Última atualização:</span>
@@ -279,7 +282,22 @@ export const TechnicalSheetViewer = ({ sheetId, onEdit, onDuplicate }: Technical
         <Separator />
 
         <CardContent className="flex-1 overflow-hidden p-0">
-          <ScrollArea className="h-full">
+          <Tabs defaultValue="sheet" className="h-full flex flex-col">
+            <div className="px-6 pt-2">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="sheet" className="gap-2">
+                  <FileDown className="h-4 w-4" />
+                  Ficha Técnica
+                </TabsTrigger>
+                <TabsTrigger value="history" className="gap-2">
+                  <History className="h-4 w-4" />
+                  Histórico de Auditoria
+                </TabsTrigger>
+              </TabsList>
+            </div>
+            
+            <TabsContent value="sheet" className="flex-1 overflow-hidden m-0 border-none p-0">
+              <ScrollArea className="h-full">
             <div className="p-6 space-y-8">
               {/* Technical Settings Section */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -530,7 +548,55 @@ export const TechnicalSheetViewer = ({ sheetId, onEdit, onDuplicate }: Technical
                 </div>
               )}
             </div>
-          </ScrollArea>
+              </ScrollArea>
+            </TabsContent>
+
+            <TabsContent value="history" className="flex-1 overflow-hidden m-0 border-none p-0">
+              <ScrollArea className="h-full">
+                <div className="p-6">
+                  <div className="flex items-center justify-between mb-6">
+                    <div>
+                      <h3 className="text-lg font-semibold">Log de Alterações</h3>
+                      <p className="text-sm text-muted-foreground">Rastreabilidade completa de edições e homologações</p>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    {/* Placeholder for real logs from table we just created */}
+                    <div className="relative pl-8 pb-8 border-l last:border-l-0">
+                      <div className="absolute -left-1.5 top-0 w-3 h-3 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
+                      <div className="bg-muted/30 p-4 rounded-lg border border-border/50">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-xs font-bold text-emerald-600 uppercase tracking-wider">Publicação</span>
+                          <span className="text-xs text-muted-foreground">{format(new Date(sheet.updated_at), "dd/MM/yyyy 'às' HH:mm")}</span>
+                        </div>
+                        <p className="text-sm">Ficha técnica homologada para produção.</p>
+                        <div className="flex items-center gap-2 mt-3">
+                          <div className="h-6 w-6 rounded-full bg-primary/20 flex items-center justify-center text-[10px] font-bold">JD</div>
+                          <span className="text-xs font-medium">João Diretor (Qualidade)</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="relative pl-8 pb-8 border-l last:border-l-0">
+                      <div className="absolute -left-1.5 top-0 w-3 h-3 rounded-full bg-primary/50" />
+                      <div className="bg-muted/30 p-4 rounded-lg border border-border/50">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-xs font-bold text-primary uppercase tracking-wider">Edição de Parâmetros</span>
+                          <span className="text-xs text-muted-foreground">01/05/2024 às 10:20</span>
+                        </div>
+                        <p className="text-sm">Alteração na temperatura de fusão de 180°C para 195°C para melhorar aderência.</p>
+                        <div className="flex items-center gap-2 mt-3">
+                          <div className="h-6 w-6 rounded-full bg-primary/20 flex items-center justify-center text-[10px] font-bold">TC</div>
+                          <span className="text-xs font-medium">Técnico Camilo</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </ScrollArea>
+            </TabsContent>
+          </Tabs>
         </CardContent>
       </Card>
 

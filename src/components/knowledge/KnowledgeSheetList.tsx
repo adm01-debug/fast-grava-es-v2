@@ -112,6 +112,32 @@ export const KnowledgeSheetList = ({
       </CardHeader>
       <CardContent className="flex-1 p-0 overflow-hidden">
         <ScrollArea className="h-full px-4 pb-4">
+          {!isLoading && favorites.length > 0 && (
+            <div className="mb-6">
+              <div className="flex items-center gap-2 mb-2 text-xs font-semibold text-primary uppercase tracking-wider">
+                <Star className="h-3 w-3 fill-primary" />
+                Favoritos
+              </div>
+              <div className="space-y-2">
+                {Object.values(sheets).flat().filter(s => favorites.includes(s.id)).map(sheet => (
+                  <button
+                    key={`fav-${sheet.id}`}
+                    onClick={() => onSheetClick(sheet.id)}
+                    className={`w-full text-left p-2 rounded-lg border transition-all group ${
+                      selectedSheet === sheet.id
+                        ? 'border-primary bg-primary/10'
+                        : 'border-border/20 bg-muted/5'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="font-medium text-xs truncate">{sheet.title}</p>
+                      <Star className="h-3 w-3 fill-primary text-primary" />
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
           {isLoading ? (
             <div className="space-y-3">
               {[1, 2, 3, 4].map(i => (
