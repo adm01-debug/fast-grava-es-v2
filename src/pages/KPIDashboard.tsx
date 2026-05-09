@@ -344,7 +344,7 @@ export default function KPIDashboard() {
                       </div>
                       <div className="relative mt-3">
                         <Progress value={kpis.averageOccupancy} className="h-2 [&>div]:bg-cyan-500" />
-                        <div className="absolute top-[-4px] left-[80%] w-[2px] h-4 bg-foreground/20" title="Meta: 80%" />
+                        <div className="absolute top-[-4px] w-[2px] h-4 bg-foreground/20" style={{ left: `${kpis.targets.occupancyRate}%` }} title={`Meta: ${kpis.targets.occupancyRate}%`} />
                       </div>
                     </CardContent>
                   </Card>
