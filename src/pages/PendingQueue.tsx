@@ -22,7 +22,8 @@ import {
   ChevronUp,
   ChevronDown,
   RotateCcw,
-  Sparkles
+  Sparkles,
+  Download
 } from "lucide-react";
 import { useSchedulingData } from "@/hooks/useSchedulingData";
 import { DbJob, DbTechnique, DbMachine } from "@/hooks/useJobs";
@@ -31,6 +32,7 @@ import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { SmartSequencingWidget } from "@/components/dashboard/SmartSequencingWidget";
 import { LoadBalancingWidget } from "@/components/dashboard/LoadBalancingWidget";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { useDataExport } from "@/hooks/useDataExport";
 
 type SortField = 'orderNumber' | 'client' | 'scheduledDate' | 'priority' | 'quantity';
 type SortDirection = 'asc' | 'desc';
@@ -60,6 +62,8 @@ export default function PendingQueue() {
   const [selectedJob, setSelectedJob] = useState<DbJob | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSmartSectionOpen, setIsSmartSectionOpen] = useState(false);
+
+  const { exportData, isExporting } = useDataExport('jobs');
 
   // Fetch real data from Supabase
   const { 
@@ -212,6 +216,23 @@ export default function PendingQueue() {
                 {stats.urgent} urgentes
               </Badge>
             )}
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="h-8 border-primary/20 hover:bg-primary/5"
+              onClick={() => exportData({ 
+                fileName: `pendencias_${new Date().toISOString().split('T')[0]}`,
+                filters: {
+                  status: pendingStatuses,
+                  ...(selectedTechnique !== 'all' && { technique_id: selectedTechnique }),
+                  ...(selectedPriority !== 'all' && { priority: selectedPriority })
+                }
+              })}
+              disabled={isExporting || filteredJobs.length === 0}
+            >
+              <Download className="h-4 w-4 mr-1" />
+              {isExporting ? 'Exportando...' : 'Exportar CSV'}
+            </Button>
           </div>
         </div>
 

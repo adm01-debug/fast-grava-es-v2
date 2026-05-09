@@ -7,6 +7,7 @@ import { useMemo, useState } from 'react';
 import { useSchedulingData } from '@/hooks/useSchedulingData';
 import { AlertScheduleModal } from './AlertScheduleModal';
 import { useStuckJobsDetection } from '@/hooks/useStuckJobsDetection';
+import { useOEE } from '@/hooks/useOEE';
 
 interface Alert {
   id: string;
@@ -23,6 +24,7 @@ export function AlertsWidget() {
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
   const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
   const { stuckJobs } = useStuckJobsDetection();
+  const { data: oeeData } = useOEE(7); // Last 7 days
 
   const alerts = useMemo(() => {
     const alertList: Alert[] = [];
@@ -89,9 +91,22 @@ export function AlertsWidget() {
         time: now
       });
     });
+    
+    // Low OEE Alerts
+    if (oeeData) {
+      oeeData.byMachine.filter(m => m.oee < 50 && m.totalJobs > 0).forEach(m => {
+        alertList.push({
+          id: `oee-low-${m.machineId}`,
+          type: 'delayed',
+          title: 'Eficiência Crítica (OEE)',
+          description: `Máquina ${m.machineCode} operando com ${m.oee}% de OEE`,
+          time: now
+        });
+      });
+    }
 
     return alertList.slice(0, 10);
-  }, [jobs, stuckJobs]);
+  }, [jobs, stuckJobs, oeeData]);
 
   const selectedJob = useMemo(() => selectedJobId ? jobs.find(j => j.id === selectedJobId) || null : null, [selectedJobId, jobs]);
 

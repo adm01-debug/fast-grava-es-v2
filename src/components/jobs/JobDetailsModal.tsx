@@ -22,7 +22,8 @@ import {
   QrCode,
   Copy,
   History,
-  DollarSign
+  DollarSign,
+  Activity
 } from "lucide-react";
 import { useSchedulingData } from "@/hooks/useSchedulingData";
 import { DbJob } from "@/hooks/useJobs";
@@ -34,6 +35,8 @@ import { HistoryPeriodFilter, type HistoryPeriodValue } from "@/components/audit
 import { Skeleton } from "@/components/ui/skeleton";
 import { JobCostsTab } from "./JobCostsTab";
 import { JobTraceabilityTab } from "./JobTraceabilityTab";
+import { JobQualityTab } from "./JobQualityTab";
+import { JobInstructionsTab } from "./JobInstructionsTab";
 import { useState } from "react";
 
 interface JobDetailsModalProps {
@@ -129,8 +132,16 @@ export function JobDetailsModal({ job, open, onOpenChange, onStatusChange }: Job
         </DialogHeader>
 
         <Tabs defaultValue="details" className="mt-4">
-          <TabsList className="grid w-full grid-cols-4 h-auto">
+          <TabsList className="grid w-full grid-cols-3 sm:grid-cols-6 h-auto">
             <TabsTrigger value="details" className="text-[10px] sm:text-xs">Detalhes</TabsTrigger>
+            <TabsTrigger value="instructions" className="flex items-center gap-1 text-[10px] sm:text-xs">
+              <FileText className="h-3 w-3" />
+              Instruções
+            </TabsTrigger>
+            <TabsTrigger value="quality" className="flex items-center gap-1 text-[10px] sm:text-xs">
+              <Activity className="h-3 w-3" />
+              Qualidade
+            </TabsTrigger>
             <TabsTrigger value="costs" className="flex items-center gap-1 text-[10px] sm:text-xs">
               <DollarSign className="h-3 w-3" />
               Custos
@@ -311,6 +322,14 @@ export function JobDetailsModal({ job, open, onOpenChange, onStatusChange }: Job
                 </Badge>
               )}
             </div>
+          </TabsContent>
+
+          <TabsContent value="instructions">
+            <JobInstructionsTab techniqueId={job.technique_id} productCategoryId={job.product_category_id} />
+          </TabsContent>
+
+          <TabsContent value="quality">
+            <JobQualityTab jobId={job.id} techniqueId={job.technique_id} machineId={job.machine_id} />
           </TabsContent>
 
           <TabsContent value="costs">

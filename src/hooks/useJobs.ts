@@ -33,6 +33,7 @@ export interface DbJob {
   actual_end_time: string | null;
   lost_pieces: number | null;
   priority: 'low' | 'medium' | 'high' | 'urgent';
+  product_category_id: string | null;
   created_at: string;
   updated_at: string;
 }
