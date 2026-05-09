@@ -70,11 +70,11 @@ export function StuckJobsPanel() {
                   <p className="text-xs font-mono">{Math.round(stuck.hoursInProduction)}h em prod.</p>
                 </div>
                 <Button 
-                  size="icon" 
+                  size="sm" 
                   variant="ghost" 
-                  className="h-7 w-7 text-destructive opacity-50 group-hover:opacity-100 group-hover:bg-destructive/10"
+                  className="h-8 text-[10px] font-black uppercase text-destructive opacity-50 group-hover:opacity-100 group-hover:bg-destructive/10 gap-1"
                 >
-                  <ArrowRight className="h-4 w-4" />
+                  Investigar <ArrowRight className="h-3 w-3" />
                 </Button>
               </div>
             </motion.div>
