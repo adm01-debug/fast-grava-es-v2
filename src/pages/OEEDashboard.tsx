@@ -19,7 +19,10 @@ import {
   AlertTriangle,
   CheckCircle2,
   BarChart3,
-  Settings2
+  Settings2,
+  Leaf,
+  Droplets,
+  Zap
 } from 'lucide-react';
 import { useOEE, WORLD_CLASS_OEE, getOEEColor } from '@/hooks/useOEE';
 import { OEEGaugeCard } from '@/components/oee/OEEGaugeCard';
