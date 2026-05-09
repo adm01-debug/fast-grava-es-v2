@@ -73,26 +73,46 @@ export function SmartSequencingPanel() {
                   {suggestion.machineCode}
                 </Badge>
                 <div className="flex flex-col items-end gap-1">
-                  <div className="flex items-center gap-1 text-xs font-medium text-yellow-400">
-                    <Zap className="h-3 w-3" />
-                    {suggestion.estimatedSavings} min economizados
+                  <div className="flex items-center gap-1.5">
+                    <Badge variant="outline" className={cn(
+                      "text-[9px] font-black uppercase px-1.5 h-4",
+                      suggestion.setupComplexity === 'high' ? "bg-red-500/10 text-red-500 border-red-500/20" : 
+                      suggestion.setupComplexity === 'medium' ? "bg-amber-500/10 text-amber-500 border-amber-500/20" : 
+                      "bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
+                    )}>
+                      Setup {suggestion.setupComplexity === 'high' ? 'Complexo' : suggestion.setupComplexity === 'medium' ? 'Médio' : 'Simples'}
+                    </Badge>
+                  </div>
+                  <div className="flex items-center gap-1 text-xs font-bold text-yellow-500">
+                    <Zap className="h-3 w-3 fill-yellow-500/20" />
+                    -{suggestion.estimatedSavings}m setup
                   </div>
                   <div className={cn(
-                    "text-[9px] font-bold flex items-center gap-1",
-                    suggestion.bottleneckRisk === 'high' ? "text-red-400" : suggestion.bottleneckRisk === 'medium' ? "text-orange-400" : "text-emerald-400"
+                    "text-[10px] font-black flex items-center gap-1 uppercase tracking-tighter",
+                    suggestion.bottleneckRisk === 'high' ? "text-red-500" : suggestion.bottleneckRisk === 'medium' ? "text-amber-500" : "text-emerald-500"
                   )}>
-                    <Activity className="h-2 w-2" />
-                    Risco: {suggestion.bottleneckRisk === 'high' ? 'Alto' : suggestion.bottleneckRisk === 'medium' ? 'Médio' : 'Baixo'}
+                    <Activity className="h-2.5 w-2.5" />
+                    {suggestion.bottleneckRisk === 'high' ? 'Crítico' : suggestion.bottleneckRisk === 'medium' ? 'Alerta' : 'Estável'}
                   </div>
                 </div>
               </div>
 
-              <h3 className="font-bold text-sm mb-1">{suggestion.machineName}</h3>
-              <p className="text-xs text-muted-foreground mb-4">{suggestion.techniqueName}</p>
+              <h3 className="font-bold text-sm mb-1 group-hover:text-primary transition-colors">{suggestion.machineName}</h3>
+              <div className="flex items-center gap-2 mb-4">
+                <p className="text-xs text-muted-foreground">{suggestion.techniqueName}</p>
+                <div className="h-1 w-1 rounded-full bg-muted-foreground/30" />
+                <div className="flex items-center gap-1">
+                   <Clock className="h-3 w-3 text-muted-foreground" />
+                   <span className="text-[10px] font-bold text-muted-foreground uppercase">{suggestion.totalMinutes}m carga</span>
+                </div>
+              </div>
 
-              <div className="space-y-2 mb-4">
-                <div className="flex items-center justify-between text-[10px] text-muted-foreground uppercase tracking-widest">
-                  <span>Agrupamento por Cor</span>
+              <div className="space-y-2 mb-4 bg-muted/20 p-2 rounded-lg border border-border/50">
+                <div className="flex items-center justify-between text-[9px] font-black text-muted-foreground uppercase tracking-wider">
+                  <div className="flex items-center gap-1">
+                    <LayoutPanelTop className="h-2.5 w-2.5" />
+                    Agrupamento AI
+                  </div>
                   <span>{suggestion.optimizedSequence.length} jobs</span>
                 </div>
                 <div className="flex gap-1">
@@ -155,7 +175,21 @@ export function SmartSequencingPanel() {
           </DialogHeader>
 
           {suggestionToDetail && (
-            <div className="space-y-6 my-4">
+            <div className="space-y-6 my-4 overflow-x-hidden">
+              <div className="flex items-center gap-2 p-3 rounded-lg bg-primary/5 border border-primary/20">
+                <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-black text-xs">
+                  {suggestionToDetail.aiPriorityScore}
+                </div>
+                <div>
+                  <p className="text-[10px] font-black text-primary uppercase tracking-widest leading-none">Score de Prioridade IA</p>
+                  <p className="text-[11px] text-muted-foreground mt-0.5">Baseado em criticidade de jobs e otimização de setup</p>
+                </div>
+                <div className="ml-auto flex items-center gap-1">
+                   <div className="w-1.5 h-1.5 rounded-full bg-primary animate-ping" />
+                   <span className="text-[9px] font-bold text-primary uppercase">Alta Eficiência</span>
+                </div>
+              </div>
+
               <div className="grid grid-cols-2 gap-4">
                 <Card className="bg-muted/30 border-none p-4">
                   <h4 className="text-[10px] font-bold text-muted-foreground uppercase mb-3">Status Atual</h4>
@@ -215,7 +249,10 @@ export function SmartSequencingPanel() {
                 </div>
               </div>
 
-              <div className="p-4 rounded-lg bg-primary/5 border border-primary/20">
+              <div className="p-4 rounded-lg bg-primary/5 border border-primary/20 relative overflow-hidden">
+                <div className="absolute -bottom-2 -right-2 opacity-5 rotate-12">
+                   <BrainCircuit className="h-16 w-16" />
+                </div>
                 <h4 className="text-xs font-bold mb-2 flex items-center gap-2">
                   <Info className="h-3.5 w-3.5" />
                   Recomendações IA

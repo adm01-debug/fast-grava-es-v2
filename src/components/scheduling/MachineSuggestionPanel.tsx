@@ -1,4 +1,5 @@
 import { useMachineSuggestion } from '@/hooks/useMachineSuggestion';
+import { useOEE } from '@/hooks/useOEE';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
@@ -14,6 +15,11 @@ interface MachineSuggestionPanelProps {
 
 export function MachineSuggestionPanel({ techniqueId, onSelectMachine }: MachineSuggestionPanelProps) {
   const { suggestions, bestMachine } = useMachineSuggestion(techniqueId);
+  const { data: oeeData } = useOEE(7); // Last 7 days for historical efficiency context
+
+  const machineOEE = (machineId: string) => {
+    return oeeData?.byMachine.find(m => m.machineId === machineId)?.oee || 0;
+  };
 
   if (!techniqueId) return null;
 
@@ -58,12 +64,21 @@ export function MachineSuggestionPanel({ techniqueId, onSelectMachine }: Machine
                     </div>
                   </div>
 
-                  <div className="space-y-1.5">
-                    <div className="flex items-center justify-between text-[10px] text-muted-foreground">
-                      <span>Carga Estimada</span>
-                      <span>{bestMachine.totalLoad} min</span>
+                  <div className="flex gap-2">
+                    <div className="flex-1 space-y-1.5 p-2 rounded-lg bg-background/40">
+                      <div className="flex items-center justify-between text-[9px] font-bold text-muted-foreground uppercase">
+                        <span>Carga Atual</span>
+                        <span>{bestMachine.totalLoad} min</span>
+                      </div>
+                      <Progress value={(bestMachine.totalLoad / 480) * 100} className="h-1 bg-violet-500/20" />
                     </div>
-                    <Progress value={bestMachine.score} className="h-1 bg-violet-500/20" />
+                    <div className="flex-1 space-y-1.5 p-2 rounded-lg bg-background/40">
+                      <div className="flex items-center justify-between text-[9px] font-bold text-muted-foreground uppercase">
+                        <span>OEE Histórico</span>
+                        <span>{machineOEE(bestMachine.machineId)}%</span>
+                      </div>
+                      <Progress value={machineOEE(bestMachine.machineId)} className="h-1 bg-emerald-500/20" />
+                    </div>
                   </div>
 
                   <div className="flex items-center justify-between gap-2 pt-1">

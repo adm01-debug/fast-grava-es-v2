@@ -36,6 +36,8 @@ export interface SequencingSuggestion {
   bottleneckRisk: 'low' | 'medium' | 'high';
   estimatedColumnTime?: string; // e.g., "2h 15m"
   totalMinutes: number;
+  aiPriorityScore: number;
+  setupComplexity: 'low' | 'medium' | 'high';
 }
 
 export interface ColorGroup {
@@ -154,6 +156,14 @@ export function useSmartSequencing() {
         optimizedSequence.push(...sortedGroup);
       });
 
+      // Calculate complexity and priority score
+      const colorComplexity = colorGroups.size;
+      const setupComplexity = colorComplexity > 5 ? 'high' : colorComplexity > 3 ? 'medium' : 'low';
+      
+      const urgentJobs = machineJobs.filter(j => j.priority === 'urgent').length;
+      const highPriorityJobs = machineJobs.filter(j => j.priority === 'high').length;
+      const aiPriorityScore = Math.min(100, (urgentJobs * 30) + (highPriorityJobs * 15) + (machineJobs.length * 5));
+
       const estimatedSavings = calculateSetupSavings(currentSequence, optimizedSequence, setupTime);
       
       const totalMinutes = optimizedSequence.reduce((acc, job) => acc + (job.estimated_duration || 0), 0);
@@ -163,12 +173,6 @@ export function useSmartSequencing() {
 
       // Calculate bottleneck risk based on capacity (480min = 8h shift)
       const bottleneckRisk = totalMinutes > 480 ? 'high' : totalMinutes > 300 ? 'medium' : 'low';
-      
-      // Load historical data for this machine (simulation for graph trend)
-      const historicalLoad = [
-        { period: 'Manhã', load: Math.min(100, (totalMinutes / 240) * 100) },
-        { period: 'Tarde', load: Math.min(100, (totalMinutes / 240) * 80) },
-      ];
 
       if (estimatedSavings > 0 || totalMinutes > 0) {
         result.push({
@@ -183,6 +187,8 @@ export function useSmartSequencing() {
           estimatedColumnTime,
           bottleneckRisk,
           totalMinutes,
+          aiPriorityScore,
+          setupComplexity,
           colorGroups: Array.from(colorGroups.entries()).map(([color, jobs]) => ({
             color,
             jobs,

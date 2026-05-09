@@ -26,6 +26,8 @@ export interface SequencingSuggestion {
   currentChanges: number;
   optimizedChanges: number;
   totalQuantity: number;
+  aiPriorityScore: number;
+  setupComplexity: 'low' | 'medium' | 'high';
 }
 
 export interface ColorGroup {
@@ -260,6 +262,14 @@ export function useSmartSequencingWithActions() {
         optimizedSequence.push(...sortedGroup);
       });
 
+      // Calculate complexity and priority score
+      const colorComplexity = colorGroups.size;
+      const setupComplexity = colorComplexity > 5 ? 'high' : colorComplexity > 3 ? 'medium' : 'low';
+      
+      const urgentJobsCount = machineJobs.filter(j => j.priority === 'urgent').length;
+      const highPriorityJobsCount = machineJobs.filter(j => j.priority === 'high').length;
+      const aiPriorityScore = Math.min(100, (urgentJobsCount * 30) + (highPriorityJobsCount * 15) + (machineJobs.length * 5));
+
       const currentChanges = countSequenceChanges(currentSequence);
       const optimizedChanges = countSequenceChanges(optimizedSequence);
       const estimatedSavings = calculateSetupSavings(currentChanges, optimizedChanges, technique.setup_time);
@@ -289,6 +299,8 @@ export function useSmartSequencingWithActions() {
           totalQuantity,
           bottleneckRisk,
           totalMinutes,
+          aiPriorityScore,
+          setupComplexity,
           colorGroups: Array.from(colorGroups.entries()).map(([color, jobs]) => ({
             color,
             jobs,
