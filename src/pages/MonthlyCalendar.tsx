@@ -163,52 +163,95 @@ export default function MonthlyCalendar() {
                     const selected = isSameDay(day, selectedDate);
 
                     return (
-                      <button
-                        key={k}
-                        onClick={() => handleDayClick(day)}
-                        className={cn(
-                          'aspect-square sm:aspect-[4/3] p-1.5 sm:p-2 rounded-lg text-left',
-                          'border transition-all duration-200',
-                          'hover:scale-[1.03] hover:border-primary/40 hover:shadow-md',
-                          'focus:outline-none focus:ring-2 focus:ring-primary/40',
-                          'flex flex-col justify-between',
-                          inMonth ? 'border-border/40' : 'border-border/10 opacity-40',
-                          today && 'border-primary/60 ring-1 ring-primary/40',
-                          selected && 'bg-primary/5'
-                        )}
-                        style={{
-                          background:
-                            count > 0
-                              ? `hsl(var(--primary) / ${0.06 + ratio * 0.28})`
-                              : undefined,
-                        }}
-                        aria-label={`${format(day, "dd 'de' MMMM", { locale: ptBR })}: ${count} agendamento${count !== 1 ? 's' : ''}`}
-                      >
-                        <div className="flex items-start justify-between">
-                          <span
+                      <Popover key={k}>
+                        <PopoverTrigger asChild>
+                          <button
                             className={cn(
-                              'text-xs sm:text-sm font-semibold',
-                              today ? 'text-primary' : inMonth ? 'text-foreground' : 'text-muted-foreground'
+                              'aspect-square sm:aspect-[4/3] p-1.5 sm:p-2 rounded-lg text-left',
+                              'border transition-all duration-200',
+                              'hover:scale-[1.03] hover:border-primary/40 hover:shadow-md',
+                              'focus:outline-none focus:ring-2 focus:ring-primary/40',
+                              'flex flex-col justify-between',
+                              inMonth ? 'border-border/40' : 'border-border/10 opacity-40',
+                              today && 'border-primary/60 ring-1 ring-primary/40',
+                              selected && 'bg-primary/5'
                             )}
+                            style={{
+                              background:
+                                dayJobs.length > 0
+                                  ? `hsl(var(--primary) / ${0.06 + ratio * 0.28})`
+                                  : undefined,
+                            }}
+                            aria-label={`${format(day, "dd 'de' MMMM", { locale: ptBR })}: ${dayJobs.length} agendamento${dayJobs.length !== 1 ? 's' : ''}`}
                           >
-                            {format(day, 'd')}
-                          </span>
-                          {today && <span className="w-1.5 h-1.5 rounded-full bg-destructive" />}
-                        </div>
-                        {count > 0 && (
-                          <div className="flex items-baseline gap-1">
-                            <span className="text-lg sm:text-2xl font-display font-bold text-primary leading-none">
-                              {count}
-                            </span>
-                            <span className="text-[10px] text-muted-foreground hidden sm:inline">
-                              job{count !== 1 ? 's' : ''}
-                            </span>
+                            <div className="flex items-start justify-between w-full">
+                              <span
+                                className={cn(
+                                  'text-xs sm:text-sm font-semibold',
+                                  today ? 'text-primary' : inMonth ? 'text-foreground' : 'text-muted-foreground'
+                                )}
+                              >
+                                {format(day, 'd')}
+                              </span>
+                              {today && <span className="w-1.5 h-1.5 rounded-full bg-destructive" />}
+                            </div>
+                            {dayJobs.length > 0 && (
+                              <div className="flex items-baseline gap-1">
+                                <span className="text-lg sm:text-2xl font-display font-bold text-primary leading-none">
+                                  {dayJobs.length}
+                                </span>
+                                <span className="text-[10px] text-muted-foreground hidden sm:inline">
+                                  job{dayJobs.length !== 1 ? 's' : ''}
+                                </span>
+                              </div>
+                            )}
+                          </button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-80 p-0 overflow-hidden bg-card border-border/40 shadow-2xl">
+                          <div className="bg-muted/30 p-3 border-b border-border/40 flex items-center justify-between">
+                            <div>
+                              <h3 className="text-sm font-bold">{format(day, "dd 'de' MMMM", { locale: ptBR })}</h3>
+                              <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{dayJobs.length} agendamentos</p>
+                            </div>
+                            <Button size="sm" variant="ghost" onClick={() => handleDayClick(day)} className="h-8 text-xs gap-1.5">
+                              Abrir dia <Info className="w-3.5 h-3.5" />
+                            </Button>
                           </div>
-                        )}
-                      </button>
+                          <ScrollArea className="max-h-[300px]">
+                            <div className="p-2 space-y-2">
+                              {dayJobs.map((job) => (
+                                <div key={job.id} className="p-2 rounded-md bg-muted/20 border border-border/30 hover:bg-muted/30 transition-colors cursor-pointer group">
+                                  <div className="flex items-start justify-between gap-2">
+                                    <div className="min-w-0">
+                                      <p className="text-xs font-bold text-foreground truncate group-hover:text-primary transition-colors">
+                                        {job.order_number}
+                                      </p>
+                                      <p className="text-[10px] text-muted-foreground truncate">{job.client}</p>
+                                    </div>
+                                    <Badge variant="outline" className={cn("text-[9px] h-4 px-1 shrink-0", statusColors[job.status as JobStatus])}>
+                                      {statusLabels[job.status as JobStatus]}
+                                    </Badge>
+                                  </div>
+                                  <div className="flex items-center gap-3 mt-1.5 text-[9px] text-muted-foreground">
+                                    <div className="flex items-center gap-1">
+                                      <Clock className="w-2.5 h-2.5" />
+                                      {job.start_time} - {job.end_time}
+                                    </div>
+                                    <div className="flex items-center gap-1">
+                                      <User className="w-2.5 h-2.5" />
+                                      {machines.find(m => m.id === job.machine_id)?.code || 'N/A'}
+                                    </div>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </ScrollArea>
+                        </PopoverContent>
+                      </Popover>
                     );
                   })}
                 </div>
+
                 <div className="flex items-center justify-end gap-3 mt-4 text-xs text-muted-foreground">
                   <span>Carga:</span>
                   <div className="flex items-center gap-1">
