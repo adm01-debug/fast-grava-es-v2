@@ -48,6 +48,7 @@ export const TechnicalSheetViewer = ({ sheetId, onEdit, onDuplicate }: Technical
   const { sheet, steps, sheetMaterials, tips, isLoading } = useTechnicalSheetDetails(sheetId);
   const { data: auditLogs = [], isLoading: isLoadingAudit } = useTechnicalSheetAudit(sheetId);
   const { data: favorites = [] } = useTechnicalSheetFavorites();
+  const { items: inventoryItems } = useInventory();
   const { toggleFavorite } = useTechnicalSheetMutations();
   const [checklistMode, setChecklistMode] = useState(false);
   const [completedSteps, setCompletedSteps] = useState<Set<string>>(new Set());
