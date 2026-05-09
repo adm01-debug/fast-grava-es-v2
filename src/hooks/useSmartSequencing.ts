@@ -36,6 +36,8 @@ export interface SequencingSuggestion {
   bottleneckRisk: 'low' | 'medium' | 'high';
   estimatedColumnTime?: string; // e.g., "2h 15m"
   totalMinutes: number;
+  aiPriorityScore: number;
+  setupComplexity: 'low' | 'medium' | 'high';
 }
 
 export interface ColorGroup {
