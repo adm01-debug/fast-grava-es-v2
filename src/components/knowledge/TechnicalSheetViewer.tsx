@@ -325,7 +325,42 @@ export const TechnicalSheetViewer = ({ sheetId, onEdit, onDuplicate }: Technical
                 )}
 
                 {sheet.machine_settings && Object.values(sheet.machine_settings).some(v => v) && (
-                  <div className="space-y-4">
+                      <div className="flex flex-col gap-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <Card className="bg-muted/30 border-dashed">
+                            <CardHeader className="py-3 px-4">
+                              <CardTitle className="text-sm flex items-center gap-2 text-emerald-600">
+                                <CheckCircle2 className="h-4 w-4" />
+                                Padrão de Ouro
+                              </CardTitle>
+                            </CardHeader>
+                            <CardContent className="px-4 pb-4">
+                              <div className="aspect-video bg-muted rounded flex flex-col items-center justify-center border-2 border-dashed border-emerald-500/20 group cursor-pointer hover:bg-emerald-500/5 transition-colors">
+                                <Maximize2 className="h-6 w-6 text-emerald-500/40 group-hover:scale-110 transition-transform" />
+                                <span className="text-[10px] text-emerald-600/60 mt-2 font-medium">VER REFERÊNCIA VISUAL</span>
+                              </div>
+                              <p className="text-[10px] mt-2 text-muted-foreground italic text-center">Referência visual homologada para este processo</p>
+                            </CardContent>
+                          </Card>
+
+                          <Card className="bg-muted/30 border-dashed">
+                            <CardHeader className="py-3 px-4">
+                              <CardTitle className="text-sm flex items-center gap-2 text-rose-600">
+                                <AlertTriangle className="h-4 w-4" />
+                                Padrão de Falha
+                              </CardTitle>
+                            </CardHeader>
+                            <CardContent className="px-4 pb-4">
+                              <div className="aspect-video bg-muted rounded flex flex-col items-center justify-center border-2 border-dashed border-rose-500/20 group cursor-pointer hover:bg-rose-500/5 transition-colors">
+                                <AlertTriangle className="h-6 w-6 text-rose-500/40 group-hover:shake transition-transform" />
+                                <span className="text-[10px] text-rose-600/60 mt-2 font-medium">VER EXEMPLOS DE REJEIÇÃO</span>
+                              </div>
+                              <p className="text-[10px] mt-2 text-muted-foreground italic text-center">Erros comuns que levam ao descarte</p>
+                            </CardContent>
+                          </Card>
+                        </div>
+
+                        <div className="space-y-4">
                     <h3 className="flex items-center gap-2 text-sm font-semibold text-amber-600">
                       <Zap className="h-4 w-4" />
                       Regulagem da Máquina
