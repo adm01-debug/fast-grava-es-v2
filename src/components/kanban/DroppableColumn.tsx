@@ -139,34 +139,34 @@ export function DroppableColumn({
       
       {/* Bottleneck Risk Indicator */}
       {totalEstimatedTime > 0 && (
-        <div className="flex flex-col gap-1 mb-2 px-1">
+        <div className="flex flex-col gap-1.5 mb-2 px-1">
           <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider">
             <Activity className={cn(
               "h-3 w-3",
               totalEstimatedTime > thresholds.bottleneckRiskMinutes ? "text-red-500 animate-pulse" : 
-              totalEstimatedTime > thresholds.bottleneckRiskMinutes * 0.6 ? "text-amber-500" : "text-green-500"
+              totalEstimatedTime > thresholds.bottleneckRiskMinutes * 0.7 ? "text-orange-500" : "text-emerald-500"
             )} />
             <span className={cn(
               totalEstimatedTime > thresholds.bottleneckRiskMinutes ? "text-red-500" : 
-              totalEstimatedTime > thresholds.bottleneckRiskMinutes * 0.6 ? "text-amber-500" : "text-green-500"
+              totalEstimatedTime > thresholds.bottleneckRiskMinutes * 0.7 ? "text-orange-500" : "text-emerald-500"
             )}>
-              Risco: {totalEstimatedTime > thresholds.bottleneckRiskMinutes ? "Alto" : totalEstimatedTime > thresholds.bottleneckRiskMinutes * 0.6 ? "Médio" : "Baixo"}
+              Risco de Gargalo: {totalEstimatedTime > thresholds.bottleneckRiskMinutes ? "Crítico" : totalEstimatedTime > thresholds.bottleneckRiskMinutes * 0.7 ? "Moderado" : "Baixo"}
             </span>
             <Badge 
               variant="outline" 
               className={cn(
-                "ml-auto text-[8px] h-4 px-1 leading-none",
-                totalEstimatedTime > thresholds.bottleneckRiskMinutes ? "border-red-500/50 text-red-500 bg-red-500/10" : 
-                totalEstimatedTime > thresholds.bottleneckRiskMinutes * 0.6 ? "border-amber-500/50 text-amber-500 bg-amber-500/10" : 
-                "border-green-500/50 text-green-500 bg-green-500/10"
+                "ml-auto text-[8px] h-4 px-1.5 leading-none font-bold border-2",
+                totalEstimatedTime > thresholds.bottleneckRiskMinutes ? "border-red-500 text-red-500 bg-red-500/10 animate-pulse" : 
+                totalEstimatedTime > thresholds.bottleneckRiskMinutes * 0.7 ? "border-orange-500 text-orange-500 bg-orange-500/10" : 
+                "border-emerald-500 text-emerald-500 bg-emerald-500/10"
               )}
             >
-              {totalEstimatedTime > thresholds.bottleneckRiskMinutes ? "GARGALO" : totalEstimatedTime > thresholds.bottleneckRiskMinutes * 0.6 ? "ATENÇÃO" : "ESTÁVEL"}
+              {totalEstimatedTime > thresholds.bottleneckRiskMinutes ? "GARGALO" : totalEstimatedTime > thresholds.bottleneckRiskMinutes * 0.7 ? "ATENÇÃO" : "ESTÁVEL"}
             </Badge>
           </div>
           {totalEstimatedTime > thresholds.bottleneckRiskMinutes && (
-            <div className="text-[9px] text-red-400 font-medium bg-red-500/5 border border-red-500/10 rounded px-1.5 py-0.5 mt-0.5 animate-in fade-in slide-in-from-top-1">
-              Capacidade excedida: Recomenda-se balancear carga.
+            <div className="text-[9px] text-red-400 font-bold bg-red-500/10 border border-red-500/20 rounded-md px-2 py-1 mt-0.5 animate-in fade-in slide-in-from-top-1 shadow-[0_0_15px_rgba(239,68,68,0.1)]">
+              CAPACIDADE EXCEDIDA: Recomenda-se balancear carga ou priorizar jobs críticos.
             </div>
           )}
         </div>

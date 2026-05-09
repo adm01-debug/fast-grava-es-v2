@@ -1,7 +1,7 @@
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { DbJob } from '@/hooks/useJobs';
-import { Clock, TrendingUp, AlertTriangle, BarChart3, Zap, Scale } from 'lucide-react';
+import { Clock, TrendingUp, AlertTriangle, BarChart3, Zap, Scale, Activity } from 'lucide-react';
 import { differenceInHours, differenceInDays } from 'date-fns';
 import { useSmartSequencing } from '@/hooks/useSmartSequencing';
 import { useLoadBalancing } from '@/hooks/useLoadBalancing';
@@ -13,6 +13,21 @@ interface KanbanMetricsBarProps {
 export function KanbanMetricsBar({ jobs }: KanbanMetricsBarProps) {
   const { totalSavings } = useSmartSequencing();
   const { suggestions: balancingSuggestions } = useLoadBalancing();
+  const [thresholds, setThresholds] = useState({ bottleneckRiskMinutes: 480 });
+
+  useEffect(() => {
+    const stored = localStorage.getItem('alert-thresholds');
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        if (parsed.bottleneckRiskMinutes) {
+          setThresholds({ bottleneckRiskMinutes: parsed.bottleneckRiskMinutes });
+        }
+      } catch (e) {
+        console.error('Error loading thresholds', e);
+      }
+    }
+  }, []);
 
   const metrics = useMemo(() => {
     const now = new Date();
@@ -44,11 +59,33 @@ export function KanbanMetricsBar({ jobs }: KanbanMetricsBarProps) {
       return differenceInDays(now, updated) > 3;
     }).length;
 
-    return { inProgress, delayed, totalWIP, avgLeadTimeHours, todayFinished, stuckJobs };
-  }, [jobs]);
+    // Detect bottlenecks across columns
+    const columnsWithBottleneck = ['queue', 'ready', 'scheduled', 'production'].filter(status => {
+      const columnJobs = jobs.filter(j => j.status === status);
+      const columnTime = columnJobs.reduce((acc, job) => acc + (job.estimated_duration || 0), 0);
+      return columnTime > thresholds.bottleneckRiskMinutes;
+    });
+
+    return { 
+      inProgress, 
+      delayed, 
+      totalWIP, 
+      avgLeadTimeHours, 
+      todayFinished, 
+      stuckJobs,
+      bottlenecks: columnsWithBottleneck.length
+    };
+  }, [jobs, thresholds]);
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-2">
+      <MetricChip
+        icon={Activity}
+        label="Gargalos Ativos"
+        value={metrics.bottlenecks}
+        color={metrics.bottlenecks > 0 ? "text-red-500" : "text-emerald-500"}
+        alert={metrics.bottlenecks > 0}
+      />
       <MetricChip
         icon={Zap}
         label="Setup Otimizável"
