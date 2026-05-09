@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react';
-import { ShieldCheckIcon } from 'lucide-react';
+import { ShieldCheckIcon, LayoutDashboard, History, AlertTriangle, UserCheck, Settings2 } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAuditTrail } from '@/hooks/useAuditTrail';
 import { AuditFilters } from '@/components/audit/AuditFilters';
