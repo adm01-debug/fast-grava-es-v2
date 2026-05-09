@@ -462,6 +462,30 @@ export const TechnicalSheetViewer = ({ sheetId, onEdit, onDuplicate }: Technical
                     )}
                   </div>
 
+                  {sheet.machines && (
+                    <Card className="bg-primary/5 border-primary/10 overflow-hidden">
+                      <div className="p-3 bg-primary/10 border-b border-primary/10 flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <Wrench className="h-4 w-4 text-primary" />
+                          <span className="text-xs font-bold text-primary uppercase tracking-tight">Suporte Técnico: {sheet.machines.name}</span>
+                        </div>
+                        <Button variant="link" size="sm" className="h-auto p-0 text-[10px] text-primary" onClick={() => window.open('/machines', '_self')}>
+                          Ver Máquina
+                        </Button>
+                      </div>
+                      <div className="p-3 space-y-2">
+                        <div className="flex items-center gap-2">
+                          <Info className="h-3 w-3 text-primary/60" />
+                          <span className="text-[10px] text-muted-foreground">Em caso de falha mecânica, acione a manutenção via canal de TPM ou WhatsApp corporativo.</span>
+                        </div>
+                        <div className="flex gap-2">
+                          <Badge variant="outline" className="text-[9px] bg-background">MANUAL PDF</Badge>
+                          <Badge variant="outline" className="text-[9px] bg-background">CHECKLIST TPM</Badge>
+                        </div>
+                      </div>
+                    </Card>
+                  )}
+
                   {sheet.setup_instructions && (
                     <div className="space-y-4">
                       <h3 className="flex items-center gap-2 text-sm font-semibold text-blue-600">
