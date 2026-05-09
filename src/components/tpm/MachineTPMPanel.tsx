@@ -83,9 +83,11 @@ export function MachineTPMPanel({ machineId, onStartMaintenance, onOpenCreateSch
                     </div>
                     <div className="flex items-center gap-2">
                       {getStatusBadge(schedule)}
-                      <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => onStartMaintenance(schedule.id)}>
-                        <Wrench className="h-3 w-3" />
-                      </Button>
+                      {onStartMaintenance && (
+                        <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => onStartMaintenance(schedule.id)}>
+                          <Wrench className="h-3 w-3" />
+                        </Button>
+                      )}
                     </div>
                   </div>
                 ))}
