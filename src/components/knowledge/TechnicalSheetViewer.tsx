@@ -24,9 +24,9 @@ import {
   Edit, Clock, Wrench, ListOrdered, Package, Lightbulb,
   AlertTriangle, Info, CheckCircle2, FileDown, Copy,
   QrCode, Maximize2, Zap, Droplets, MoveHorizontal, Thermometer,
-  CheckSquare, History, ArrowLeftRight
+  CheckSquare, History, ArrowLeftRight 
 } from 'lucide-react';
-import { useTechnicalSheetDetails } from '@/hooks/useTechnicalSheets';
+import { useTechnicalSheetDetails, useTechnicalSheetAudit } from '@/hooks/useTechnicalSheets';
 import { KnowledgeSheetQRCode } from './KnowledgeSheetQRCode';
 import { KnowledgeStatusBadge } from './KnowledgeStatusBadge';
 import { toast } from 'sonner';
