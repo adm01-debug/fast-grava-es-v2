@@ -14,10 +14,13 @@ import {
   isSameDay,
 } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { CalendarRange } from 'lucide-react';
+import { CalendarRange, Info, Clock, User } from 'lucide-react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Button } from '@/components/ui/button';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { CalendarHeader } from '@/components/calendar/CalendarHeader';
 import { CalendarFilters } from '@/components/calendar/CalendarFilters';
@@ -28,6 +31,8 @@ import { useSchedulingData } from '@/hooks/useSchedulingData';
 import { useCalendarFilters } from '@/hooks/useCalendarFilters';
 import { useCalendarHotkeys } from '@/hooks/useCalendarHotkeys';
 import { cn } from '@/lib/utils';
+import { statusColors, statusLabels } from '@/components/calendar/types';
+import { JobStatus } from '@/types/scheduling';
 
 const WEEKDAYS = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
 
