@@ -38,7 +38,7 @@ import { VoiceButton } from '@/components/voice/VoiceCommands';
 
 export default function OEEDashboard() {
   const [period, setPeriod] = useState<string>('30');
-  const { data, isLoading } = useOEE(parseInt(period));
+  const { data, isLoading, downloadReport } = useOEE(parseInt(period));
 
   if (isLoading) {
     return (
