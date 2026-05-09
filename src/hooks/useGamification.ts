@@ -82,10 +82,15 @@ export function useGamification(period: 'daily' | 'weekly' | 'monthly' = 'weekly
 
       const profileMap = new Map(profiles?.map(p => [p.id, p]) || []);
 
-      return rankings?.map(r => ({
-        ...r,
-        profile: profileMap.get(r.operator_id) || { full_name: `Operador ${r.position}` },
-      })) as OperatorRanking[];
+      return rankings?.map(r => {
+        const profile = profileMap.get(r.operator_id) || { full_name: `Operador ${r.position}`, avatar_url: null };
+        const levelInfo = calculateLevelInfo(r.total_points);
+        return {
+          ...r,
+          profile,
+          ...levelInfo,
+        };
+      }) as OperatorRanking[];
     },
     staleTime: 60000,
   });
