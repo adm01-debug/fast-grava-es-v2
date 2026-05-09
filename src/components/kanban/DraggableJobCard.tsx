@@ -195,13 +195,13 @@ export function DraggableJobCard({ job, technique, machine, onClick, viewMode = 
       </div>
       
       {/* Progress bar */}
-      {job.produced_quantity != null && job.quantity > 0 && (
-        <div className="mb-2">
+      {job.produced_quantity != null && job.quantity > 0 && job.status !== 'finished' && (
+        <div className="mb-2 bg-muted/40 p-1.5 rounded-md border border-border/20">
           <div className="flex items-center justify-between text-[10px] text-muted-foreground mb-1">
-            <span>{job.produced_quantity?.toLocaleString()} / {job.quantity.toLocaleString()} pçs</span>
-            <span className="font-medium">{progress}%</span>
+            <span className="font-bold">{job.produced_quantity?.toLocaleString()} / {job.quantity.toLocaleString()} pçs</span>
+            <Badge variant="outline" className="text-[9px] h-3.5 px-1 leading-none font-bold border-primary/30 text-primary">{progress}%</Badge>
           </div>
-          <Progress value={progress} className="h-1.5" />
+          <Progress value={progress} className="h-1 bg-background" />
         </div>
       )}
       
