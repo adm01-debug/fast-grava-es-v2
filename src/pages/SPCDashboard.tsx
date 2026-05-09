@@ -15,6 +15,8 @@ import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { useSPCParameters, useSPCMeasurements, useSPCAlerts, useSPCMutations, calculateCapabilityIndices, detectRunRules, SPCParameter } from '@/hooks/useSPC';
 import { SPCCreateParameterModal } from '@/components/spc/SPCCreateParameterModal';
 import { SPCControlChart } from '@/components/spc/SPCControlChart';
+import { QualityHistogram } from '@/components/spc/QualityHistogram';
+import { Sparkles, ArrowRightLeft, FileSpreadsheet } from 'lucide-react';
 
 export default function SPCDashboard() {
   const [selectedParameter, setSelectedParameter] = useState<SPCParameter | null>(null);
