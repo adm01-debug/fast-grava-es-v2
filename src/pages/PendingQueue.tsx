@@ -609,8 +609,18 @@ export default function PendingQueue() {
           </div>
           <CollapsibleContent className="animate-accordion-down">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
-              <SmartSequencingPanel />
-              <LoadBalancingPanel />
+              <SmartSequencingPanel 
+                onExplain={(suggestion) => {
+                  setSelectedAISuggestion({ type: 'setup', data: suggestion });
+                  setIsAISidePanelOpen(true);
+                }}
+              />
+              <LoadBalancingPanel 
+                onExplain={(suggestion) => {
+                  setSelectedAISuggestion({ type: 'balancing', data: suggestion });
+                  setIsAISidePanelOpen(true);
+                }}
+              />
               <Card className="glass-card">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-sm font-bold flex items-center gap-2">
