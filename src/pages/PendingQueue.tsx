@@ -558,6 +558,14 @@ export default function PendingQueue() {
                                 transform: `translateY(${virtualRow.start}px)`,
                               }}
                             >
+                              <TableCell className="w-[40px]" onClick={(e) => e.stopPropagation()}>
+                                <input 
+                                  type="checkbox" 
+                                  checked={selectedJobs.has(job.id)}
+                                  onChange={() => handleSelectJob(job.id)}
+                                  className="rounded border-border accent-primary"
+                                />
+                              </TableCell>
                               <TableCell className="font-medium text-foreground text-xs sm:text-sm w-[100px]">
                                 {job.order_number}
                               </TableCell>
