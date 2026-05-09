@@ -78,6 +78,7 @@ export default function KPIDashboard() {
   });
   
   const [isEditingTargets, setIsEditingTargets] = useState(false);
+  const [selectedMachine, setSelectedMachine] = useState<any>(null);
 
   const isLoading = isLoadingKPIs || isLoadingOperators;
 
