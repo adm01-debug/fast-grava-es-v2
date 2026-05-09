@@ -487,13 +487,14 @@ function InventoryHistoryTable() {
               </td>
             </tr>
           ))}
-          {(!movements || movements.length === 0) && (
+          {(!filteredMovements || filteredMovements.length === 0) && (
             <tr>
               <td colSpan={7} className="p-8 text-center text-muted-foreground italic">Nenhuma movimentação registrada.</td>
             </tr>
           )}
         </tbody>
       </table>
+    </div>
 
       <Dialog open={!!rollbackId} onOpenChange={(open) => !open && setRollbackId(null)}>
         <DialogContent className="sm:max-w-[350px]">
