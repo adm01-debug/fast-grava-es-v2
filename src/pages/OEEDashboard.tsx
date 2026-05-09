@@ -159,6 +159,119 @@ export default function OEEDashboard() {
           </CardContent>
         </Card>
 
+        {/* Actionable Insights & Simulator Toggle */}
+        <div className="flex flex-col lg:flex-row gap-4">
+          {/* Smart Actions */}
+          <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Card className="border-l-4 border-l-amber-500 bg-amber-50/30">
+              <CardContent className="p-4 flex gap-4">
+                <div className="h-10 w-10 rounded-full bg-amber-100 flex items-center justify-center shrink-0">
+                  <Lightbulb className="h-5 w-5 text-amber-600" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-sm">Gargalo de Performance</h3>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    A técnica <span className="font-bold">{data.byTechnique[0]?.techniqueName}</span> está com perda de velocidade de 15%. Recomendamos revisão de setup.
+                  </p>
+                  <Button variant="link" size="sm" className="p-0 h-auto text-amber-600 text-xs mt-2">
+                    Ver Detalhes <ArrowRight className="ml-1 h-3 w-3" />
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-l-4 border-l-primary bg-primary/5">
+              <CardContent className="p-4 flex gap-4">
+                <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                  <Calculator className="h-5 w-5 text-primary" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-bold text-sm">OEE Simulator</h3>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Simule o impacto de melhorias operacionais no seu OEE final.
+                  </p>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => setShowSimulator(!showSimulator)}
+                    className="h-8 text-xs mt-2 border-primary/20 hover:bg-primary/10"
+                  >
+                    {showSimulator ? "Fechar Simulador" : "Abrir Simulador"}
+                    <Play className={cn("ml-2 h-3 w-3 transition-transform", showSimulator && "rotate-90")} />
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
+        {/* Simulator Panel */}
+        {showSimulator && (
+          <Card className="border-primary/20 bg-muted/20 animate-in slide-in-from-top-4 duration-300">
+            <CardContent className="p-6">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div className="space-y-6">
+                  <div className="space-y-3">
+                    <div className="flex justify-between">
+                      <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Disponibilidade</Label>
+                      <span className="text-xs font-black">{simValues.availability}%</span>
+                    </div>
+                    <Slider 
+                      value={[simValues.availability]} 
+                      max={100} 
+                      step={1} 
+                      onValueChange={([v]) => setSimValues({...simValues, availability: v})}
+                    />
+                  </div>
+                  <div className="space-y-3">
+                    <div className="flex justify-between">
+                      <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Performance</Label>
+                      <span className="text-xs font-black">{simValues.performance}%</span>
+                    </div>
+                    <Slider 
+                      value={[simValues.performance]} 
+                      max={100} 
+                      step={1} 
+                      onValueChange={([v]) => setSimValues({...simValues, performance: v})}
+                    />
+                  </div>
+                  <div className="space-y-3">
+                    <div className="flex justify-between">
+                      <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Qualidade</Label>
+                      <span className="text-xs font-black">{simValues.quality}%</span>
+                    </div>
+                    <Slider 
+                      value={[simValues.quality]} 
+                      max={100} 
+                      step={1} 
+                      onValueChange={([v]) => setSimValues({...simValues, quality: v})}
+                    />
+                  </div>
+                </div>
+
+                <div className="lg:col-span-2 flex flex-col md:flex-row items-center justify-around gap-6 bg-background/50 rounded-2xl p-6 border border-border/50">
+                   <div className="text-center">
+                      <p className="text-xs font-bold text-muted-foreground uppercase mb-2">OEE Atual</p>
+                      <p className="text-5xl font-black text-muted-foreground/50">{data.overallOEE.toFixed(1)}%</p>
+                   </div>
+                   
+                   <ArrowRight className="h-8 w-8 text-muted-foreground/30 hidden md:block" />
+                   
+                   <div className="text-center">
+                      <p className="text-xs font-bold text-primary uppercase mb-2">OEE Projetado</p>
+                      <p className="text-6xl font-black text-primary">
+                        {((simValues.availability/100) * (simValues.performance/100) * (simValues.quality/100) * 100).toFixed(1)}%
+                      </p>
+                      <Badge className="bg-success/20 text-success border-success/30 mt-2">
+                        + {(((simValues.availability/100) * (simValues.performance/100) * (simValues.quality/100) * 100) - data.overallOEE).toFixed(1)}% de ganho
+                      </Badge>
+                   </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Main Metrics */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <KPITooltip {...KPI_DEFINITIONS.oee}>
