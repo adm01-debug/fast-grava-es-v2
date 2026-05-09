@@ -172,7 +172,7 @@ export function useMTBFMTTR(periodDays: number = 90) {
         lastFailure,
         reliabilityScore: calculateReliabilityScore(mtbf, mttr),
       };
-    }).filter(m => m.totalFailures > 0);
+    }).filter(m => m.totalFailures >= 0); // Include machines even without failures for full context
   }, [records, machines, periodDays]);
 
   const summary = useMemo((): MTBFMTTRSummary => {
