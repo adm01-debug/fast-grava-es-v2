@@ -2,29 +2,49 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useTPM } from '@/hooks/useTPM';
+import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
-import { Activity, Zap, Thermometer } from 'lucide-react';
+import { Activity, Zap, Thermometer, Box } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 export function FactoryFloorMap() {
   const { machines } = useTPM();
   const [liveData, setLiveData] = useState<Record<string, any>>({});
+  const [activeJobs, setActiveJobs] = useState<Record<string, any>>({});
 
   useEffect(() => {
+    const fetchActiveJobs = async () => {
+      const { data } = await supabase
+        .from('jobs')
+        .select('*, machines(id, name)')
+        .eq('status', 'in_progress');
+      
+      const jobsByMachine: Record<string, any> = {};
+      data?.forEach((job: any) => {
+        if (job.machine_id) {
+          jobsByMachine[job.machine_id] = job;
+        }
+      });
+      setActiveJobs(jobsByMachine);
+    };
+
+    fetchActiveJobs();
+    
     const interval = setInterval(() => {
       const newData: Record<string, any> = {};
       machines.forEach(m => {
+        const hasJob = !!activeJobs[m.id];
         newData[m.id] = {
-          load: Math.floor(Math.random() * 40) + 60, // 60-100%
-          temp: Math.floor(Math.random() * 20) + 35, // 35-55C
-          efficiency: Math.floor(Math.random() * 15) + 85, // 85-100%
-          isWorking: Math.random() > 0.2 // 80% chance of being active for simulation
+          load: hasJob ? Math.floor(Math.random() * 20) + 80 : 0, // 80-100% if job, else 0
+          temp: hasJob ? Math.floor(Math.random() * 20) + 45 : 30, // Higher temp if working
+          efficiency: hasJob ? Math.floor(Math.random() * 10) + 90 : 0,
+          isWorking: hasJob
         };
       });
       setLiveData(newData);
     }, 3000);
     return () => clearInterval(interval);
-  }, [machines]);
+  }, [machines, activeJobs]);
 
   return (
     <div className="relative w-full aspect-[2/1] bg-secondary/10 rounded-xl border border-border/50 overflow-hidden p-8 group/map">
@@ -99,16 +119,30 @@ export function FactoryFloorMap() {
                     </div>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <div className="space-y-2 p-1">
+                    <div className="space-y-2 p-1 max-w-[200px]">
                       <p className="font-bold text-xs uppercase border-b pb-1 mb-1">{machine.name}</p>
-                      <div className="flex items-center gap-4 text-[10px] font-bold">
-                        <div className="flex items-center gap-1">
-                          <Activity className="h-3 w-3 text-primary" /> {status.efficiency}% OEE
+                      {isWorking ? (
+                        <div className="space-y-2">
+                           <div className="p-1.5 rounded bg-primary/10 border border-primary/20">
+                              <p className="text-[10px] font-black text-primary uppercase">OP em Andamento</p>
+                              <p className="text-[10px] font-bold truncate">{activeJobs[machine.id]?.title || 'Sem título'}</p>
+                              <div className="flex items-center justify-between mt-1">
+                                <span className="text-[8px] text-muted-foreground">Progresso</span>
+                                <span className="text-[8px] font-black">{activeJobs[machine.id]?.progress || 0}%</span>
+                              </div>
+                           </div>
+                           <div className="flex items-center gap-4 text-[10px] font-bold">
+                            <div className="flex items-center gap-1">
+                              <Activity className="h-3 w-3 text-primary" /> {status.efficiency}% OEE
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <Thermometer className="h-3 w-3 text-amber-500" /> {status.temp}°C
+                            </div>
+                          </div>
                         </div>
-                        <div className="flex items-center gap-1">
-                          <Thermometer className="h-3 w-3 text-amber-500" /> {status.temp}°C
-                        </div>
-                      </div>
+                      ) : (
+                        <p className="text-[10px] italic text-muted-foreground">Equipamento em Standby ou Setup</p>
+                      )}
                     </div>
                   </TooltipContent>
                 </Tooltip>
