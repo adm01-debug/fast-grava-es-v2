@@ -303,9 +303,16 @@ export default function KPIDashboard() {
                         <div className="min-w-0 flex-1">
                           <p className="text-xs sm:text-sm text-muted-foreground">Taxa de Conclusão</p>
                           <p className="text-2xl sm:text-3xl font-bold">{completionRate.toFixed(1)}%</p>
-                          <p className="text-xs text-muted-foreground mt-1 truncate">
-                            {kpis.completedJobs} de {kpis.totalJobs} jobs
-                          </p>
+                          <div className="flex items-center gap-1.5 mt-0.5">
+                            <Badge variant="outline" className={cn(
+                              "h-5 px-1 text-[10px] gap-0.5 border-none bg-transparent",
+                              kpis.comparison.completionRateDiff >= 0 ? "text-green-400" : "text-primary"
+                            )}>
+                              {kpis.comparison.completionRateDiff >= 0 ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
+                              {Math.abs(kpis.comparison.completionRateDiff).toFixed(1)}%
+                            </Badge>
+                            <span className="text-[10px] text-muted-foreground truncate">vs anterior</span>
+                          </div>
                         </div>
                         <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl bg-green-500/20 flex items-center justify-center flex-shrink-0">
                           <CheckCircle2 className="h-5 w-5 sm:h-6 sm:w-6 text-green-400" />
