@@ -4,17 +4,24 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { 
   BrainCircuit, ArrowRight, Zap, AlertTriangle, 
-  CheckCircle2, Sparkles, ChevronRight, Bell, Settings
+  CheckCircle2, Sparkles, ChevronRight, Bell, Settings,
+  Clock, Info, LayoutList, Split
 } from 'lucide-react';
 import { 
   Dialog, DialogContent, DialogHeader, DialogTitle,
   DialogDescription, DialogFooter
 } from '@/components/ui/dialog';
+import { 
+  Sheet, SheetContent, SheetHeader, SheetTitle, 
+  SheetDescription, SheetFooter, SheetTrigger 
+} from '@/components/ui/sheet';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Separator } from '@/components/ui/separator';
 import { toast } from 'sonner';
-import { useSmartSequencing } from '@/hooks/useSmartSequencing';
-import { useLoadBalancing } from '@/hooks/useLoadBalancing';
+import { useSmartSequencing, SequencingSuggestion } from '@/hooks/useSmartSequencing';
+import { useLoadBalancing, LoadBalancingSuggestion } from '@/hooks/useLoadBalancing';
 import { useBottleneckPrediction } from '@/hooks/useBottleneckPrediction';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -24,6 +31,8 @@ export function KanbanAIAdvisor() {
   const { alerts: bottleneckAlerts } = useBottleneckPrediction();
   
   const [showSettings, setShowSettings] = useState(false);
+  const [selectedAdviceType, setSelectedAdviceType] = useState<'setup' | 'load' | 'bottleneck' | null>(null);
+
   const [thresholds, setThresholds] = useState(() => {
     const saved = localStorage.getItem('alert-thresholds');
     if (saved) {
@@ -90,6 +99,7 @@ export function KanbanAIAdvisor() {
             actionLabel="Otimizar Sequência"
             color="text-amber-400"
             badge={`${sequenceSuggestions.length} Máquinas`}
+            onClick={() => setSelectedAdviceType('setup')}
           />
         )}
 
@@ -101,6 +111,7 @@ export function KanbanAIAdvisor() {
             description={`${balancingSuggestions.length} jobs podem ser movidos para máquinas ociosas.`}
             actionLabel="Ver Sugestões"
             color="text-blue-400"
+            onClick={() => setSelectedAdviceType('load')}
           />
         )}
 
@@ -113,9 +124,159 @@ export function KanbanAIAdvisor() {
             actionLabel="Agir Agora"
             color="text-red-400"
             severity="critical"
+            onClick={() => setSelectedAdviceType('bottleneck')}
           />
         )}
       </div>
+
+      {/* Advice Detail Sheet */}
+      <Sheet open={selectedAdviceType !== null} onOpenChange={(open) => !open && setSelectedAdviceType(null)}>
+        <SheetContent className="sm:max-w-md md:max-w-lg bg-card/95 backdrop-blur-md border-primary/20 p-0 flex flex-col">
+          <SheetHeader className="p-6 pb-2">
+            <SheetTitle className="flex items-center gap-2 text-xl">
+              {selectedAdviceType === 'setup' && <><Zap className="h-5 w-5 text-amber-400" /> Detalhes de Sequenciamento</>}
+              {selectedAdviceType === 'load' && <><ArrowRight className="h-5 w-5 text-blue-400" /> Detalhes de Balanceamento</>}
+              {selectedAdviceType === 'bottleneck' && <><AlertTriangle className="h-5 w-5 text-red-400" /> Alertas de Gargalo</>}
+            </SheetTitle>
+            <SheetDescription>
+              {selectedAdviceType === 'setup' && "Recomendações baseadas no agrupamento de cores para reduzir o tempo de setup."}
+              {selectedAdviceType === 'load' && "Recomendações para redistribuir a carga de trabalho entre máquinas compatíveis."}
+              {selectedAdviceType === 'bottleneck' && "Identificação proativa de máquinas que excederão a capacidade produtiva hoje."}
+            </SheetDescription>
+          </SheetHeader>
+
+          <ScrollArea className="flex-1 p-6 pt-2">
+            <div className="space-y-6">
+              {selectedAdviceType === 'setup' && sequenceSuggestions.map((s, idx) => (
+                <div key={idx} className="space-y-4 p-4 rounded-lg bg-muted/30 border border-border/50">
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-1">
+                      <h4 className="font-bold text-sm flex items-center gap-2">
+                        {s.machineName}
+                        <Badge variant="outline" className="text-[10px] uppercase font-bold text-primary border-primary/20">
+                          {s.techniqueName}
+                        </Badge>
+                      </h4>
+                      <p className="text-[10px] text-muted-foreground">OS Sugeridas: {s.optimizedSequence.length} jobs</p>
+                    </div>
+                    <Badge variant="secondary" className="bg-amber-400/10 text-amber-400 border-amber-400/20 gap-1 text-[10px]">
+                      <Clock className="h-3 w-3" /> -{s.estimatedSavings}min setup
+                    </Badge>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1">
+                      <LayoutList className="h-3 w-3" /> Grupos de Setup (Cores)
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {s.colorGroups.map((g, gIdx) => (
+                        <div key={gIdx} className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-background border border-border/50">
+                          <div 
+                            className="w-2 h-2 rounded-full border border-white/20" 
+                            style={{ backgroundColor: g.color === 'sem-cor' ? '#888' : g.color }}
+                          />
+                          <span className="text-[10px] font-medium">{g.jobCount} jobs</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="p-2 rounded bg-background/50 border border-border/30">
+                    <p className="text-[10px] font-medium text-muted-foreground flex items-center gap-1 mb-1">
+                      <Info className="h-3 w-3" /> Lógica de IA:
+                    </p>
+                    <p className="text-[10px] leading-relaxed italic">
+                      "Otimizado reduzindo trocas de cilindros/telas. Agrupamento por cor minimiza o tempo de limpeza e ajuste entre ordens, mantendo a prioridade urgente em cada bloco."
+                    </p>
+                  </div>
+
+                  <Button className="w-full h-8 text-xs gap-2" variant="outline">
+                    Aplicar Sequenciamento Inteligente
+                  </Button>
+                </div>
+              ))}
+
+              {selectedAdviceType === 'load' && balancingSuggestions.map((s, idx) => (
+                <div key={idx} className="space-y-4 p-4 rounded-lg bg-muted/30 border border-border/50">
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-1">
+                      <h4 className="font-bold text-sm">OS {s.orderNumber}</h4>
+                      <p className="text-[10px] text-muted-foreground">{s.client}</p>
+                    </div>
+                    <Badge className="bg-blue-400/10 text-blue-400 border-blue-400/20 text-[10px] uppercase">
+                      Equilíbrio de Carga
+                    </Badge>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3 items-center">
+                    <div className="p-2 rounded bg-red-400/5 border border-red-400/20 text-center">
+                      <p className="text-[9px] text-muted-foreground uppercase mb-1">Origem (Sobrecarregada)</p>
+                      <p className="text-[10px] font-bold truncate">{s.currentMachineName}</p>
+                      <p className="text-[10px] text-red-400 font-mono mt-1">{Math.round(s.currentLoad)}% Ocupação</p>
+                    </div>
+                    <div className="flex justify-center relative">
+                      <ArrowRight className="h-4 w-4 text-muted-foreground absolute" />
+                    </div>
+                    <div className="p-2 rounded bg-green-400/5 border border-green-400/20 text-center">
+                      <p className="text-[9px] text-muted-foreground uppercase mb-1">Destino (Capacidade)</p>
+                      <p className="text-[10px] font-bold truncate">{s.suggestedMachineName}</p>
+                      <p className="text-[10px] text-green-400 font-mono mt-1">{Math.round(s.suggestedLoad)}% Ocupação</p>
+                    </div>
+                  </div>
+
+                  <div className="p-2 rounded bg-background/50 border border-border/30">
+                    <p className="text-[10px] font-medium text-muted-foreground flex items-center gap-1 mb-1">
+                      <Info className="h-3 w-3" /> Benefício Previsto:
+                    </p>
+                    <p className="text-[10px] leading-relaxed italic">
+                      "Redução imediata de {Math.round(s.loadDifference)}% na pressão da máquina gargalo. Garante que o fluxo de produção não pare por saturação de um único recurso."
+                    </p>
+                  </div>
+
+                  <Button className="w-full h-8 text-xs gap-2" variant="outline">
+                    Mover OS para {s.suggestedMachineName}
+                  </Button>
+                </div>
+              ))}
+
+              {selectedAdviceType === 'bottleneck' && bottleneckAlerts.map((a, idx) => (
+                <div key={idx} className="space-y-4 p-4 rounded-lg bg-red-400/5 border border-red-400/20">
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-bold text-sm text-red-400 flex items-center gap-2">
+                      <AlertTriangle className="h-4 w-4" /> Alerta de Gargalo
+                    </h4>
+                    <Badge variant="destructive" className="text-[10px] uppercase font-black px-1.5 animate-pulse">
+                      Crítico
+                    </Badge>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <p className="text-xs font-bold">{a.machineName}</p>
+                    <p className="text-[11px] leading-relaxed text-muted-foreground">
+                      {a.message}
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2 mt-4">
+                    <Button variant="outline" className="h-8 text-[10px] gap-1.5" onClick={() => setSelectedAdviceType('setup')}>
+                      <Zap className="h-3 w-3" /> Otimizar Setup
+                    </Button>
+                    <Button variant="outline" className="h-8 text-[10px] gap-1.5" onClick={() => setSelectedAdviceType('load')}>
+                      <Split className="h-3 w-3" /> Redistribuir Carga
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </ScrollArea>
+
+          <SheetFooter className="p-6 border-t border-border/50 bg-background/50">
+            <Button className="w-full font-bold gap-2" variant="secondary" onClick={() => setSelectedAdviceType(null)}>
+              Fechar Visão Analítica
+            </Button>
+          </SheetFooter>
+        </SheetContent>
+      </Sheet>
 
       <Dialog open={showSettings} onOpenChange={setShowSettings}>
         <DialogContent className="sm:max-w-md bg-card border-primary/20">
@@ -165,9 +326,7 @@ export function KanbanAIAdvisor() {
               }));
               toast.success("Configurações de alerta salvas!");
               setShowSettings(false);
-              // Trigger reload or state sync if needed, but since it's in localStorage, 
-              // other components will pick it up on next render/mount.
-              window.location.reload(); // Quick way to sync across all components
+              window.location.reload(); 
             }}>Salvar Configurações</Button>
           </DialogFooter>
         </DialogContent>
@@ -183,7 +342,8 @@ function AdviceCard({
   actionLabel, 
   color, 
   badge,
-  severity 
+  severity,
+  onClick
 }: { 
   icon: any, 
   title: string, 
@@ -191,12 +351,16 @@ function AdviceCard({
   actionLabel: string, 
   color: string,
   badge?: string,
-  severity?: 'critical' | 'warning' 
+  severity?: 'critical' | 'warning',
+  onClick?: () => void
 }) {
   return (
-    <Card className={`overflow-hidden border-l-4 ${
-      severity === 'critical' ? 'border-l-red-500 bg-red-500/5' : 'border-l-primary/50 bg-card/50'
-    } hover:bg-card/80 transition-all cursor-pointer group`}>
+    <Card 
+      className={`overflow-hidden border-l-4 ${
+        severity === 'critical' ? 'border-l-red-500 bg-red-500/5' : 'border-l-primary/50 bg-card/50'
+      } hover:bg-card/80 transition-all cursor-pointer group shadow-sm hover:shadow-md`}
+      onClick={onClick}
+    >
       <CardContent className="p-3 space-y-2">
         <div className="flex items-start justify-between">
           <div className={`p-1.5 rounded-md bg-background border border-border/50 ${color}`}>
@@ -225,3 +389,4 @@ function AdviceCard({
     </Card>
   );
 }
+
