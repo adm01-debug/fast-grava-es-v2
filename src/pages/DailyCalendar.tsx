@@ -18,6 +18,7 @@ import { CalendarOnboarding } from '@/components/calendar/CalendarOnboarding';
 import { CalendarEmptyState } from '@/components/calendar/CalendarEmptyState';
 import { MobileFAB } from '@/components/calendar/MobileFAB';
 import { OptimizationAssistant } from '@/components/calendar/OptimizationAssistant';
+import { ConflictResolutionPanel } from '@/components/calendar/ConflictResolutionPanel';
 import { PlanningEfficiencyDashboard } from '@/components/planning/PlanningEfficiencyDashboard';
 import { useSchedulingData } from '@/hooks/useSchedulingData';
 import { useCalendarFilters } from '@/hooks/useCalendarFilters';
@@ -54,7 +55,7 @@ export default function DailyCalendar() {
   const printAreaRef = useRef<HTMLDivElement>(null);
   const { isMobile } = useDevice();
 
-  const { jobs, techniques, machines, getTechniqueById } = useSchedulingData();
+  const { jobs, techniques, machines, getTechniqueById, refetchJobs } = useSchedulingData();
   const { conflicts } = useSchedulingConflicts();
   const { prefs, setZoom, setGroupBy, toggleOverlay, completeOnboarding } =
     useCalendarPreferences('daily');
@@ -224,6 +225,10 @@ export default function DailyCalendar() {
             }
           />
         </div>
+
+        {dayConflicts.length > 0 && (
+          <ConflictResolutionPanel conflicts={dayConflicts} onResolved={() => refetchJobs()} />
+        )}
 
         {dayJobs.length === 0 ? (
           <Card className="bg-card border border-border/40 rounded-xl">
