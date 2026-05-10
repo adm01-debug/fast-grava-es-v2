@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { useNavigate } from 'react-router-dom';
-import { Wrench, AlertTriangle, CheckCircle, Clock, CalendarCheck, RefreshCw, Settings, Command, Zap, BrainCircuit } from 'lucide-react';
+import { Wrench, AlertTriangle, CheckCircle, Clock, CalendarCheck, RefreshCw, Settings, Command, Zap, BrainCircuit, Activity } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -119,7 +119,7 @@ export default function TPMDashboard() {
           <div>
             <div className="flex items-center gap-3">
               <h1 className="text-3xl font-display font-black tracking-tighter">
-                <span className="gradient-text animate-pulse-glow">TPM 5.0 - Holographic Reliability 13/10</span>
+                <span className="gradient-text animate-pulse-glow">TPM 5.0 - Holographic Reliability 10/10</span>
               </h1>
               <FavoriteButton 
                 path="/tpm" 
@@ -238,17 +238,20 @@ export default function TPMDashboard() {
         </div>
 
         {/* MTBF/MTTR Widget */}
-        <MTBFMTTRWidget />
 
         {/* Main Content */}
         <Tabs defaultValue="calendar" className="space-y-6">
-          <TabsList className="glass-card p-1">
+          <TabsList className="glass-card p-1 flex-wrap h-auto">
             <TabsTrigger value="calendar" className="data-[state=active]:shadow-glow-primary data-[state=active]:bg-primary/10 transition-all duration-300">
               Calendário
             </TabsTrigger>
             <TabsTrigger value="predictive" className="data-[state=active]:shadow-glow-primary data-[state=active]:bg-primary/10 transition-all duration-300">
               <BrainCircuit className="h-4 w-4 mr-2" />
               Preditiva IA
+            </TabsTrigger>
+            <TabsTrigger value="reliability" className="data-[state=active]:shadow-glow-primary data-[state=active]:bg-primary/10 transition-all duration-300">
+              <Activity className="h-4 w-4 mr-2" />
+              Confiabilidade
             </TabsTrigger>
             <TabsTrigger value="list" className="data-[state=active]:shadow-glow-primary data-[state=active]:bg-primary/10 transition-all duration-300">
               Lista
@@ -271,6 +274,10 @@ export default function TPMDashboard() {
               Configurações
             </TabsTrigger>
           </TabsList>
+
+          <TabsContent value="reliability" className="space-y-6 animate-fade-in">
+             <MTBFMTTRWidget />
+          </TabsContent>
 
           <TabsContent value="calendar" className="space-y-6 animate-fade-in">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
