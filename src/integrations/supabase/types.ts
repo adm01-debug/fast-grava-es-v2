@@ -1065,6 +1065,7 @@ export type Database = {
           quantity: number
           rework_reason: string | null
           scheduled_date: string | null
+          sort_order: number | null
           start_time: string | null
           status: string
           technique_id: string
@@ -1093,6 +1094,7 @@ export type Database = {
           quantity: number
           rework_reason?: string | null
           scheduled_date?: string | null
+          sort_order?: number | null
           start_time?: string | null
           status?: string
           technique_id: string
@@ -1121,6 +1123,7 @@ export type Database = {
           quantity?: number
           rework_reason?: string | null
           scheduled_date?: string | null
+          sort_order?: number | null
           start_time?: string | null
           status?: string
           technique_id?: string
