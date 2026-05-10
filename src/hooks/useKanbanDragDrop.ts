@@ -84,13 +84,48 @@ export function useKanbanDragDrop({ jobs, onJobsUpdate }: UseKanbanDragDropProps
   const handleReorderWithinColumn = async (
     activeJobId: string, 
     overJobId: string, 
-    _status: JobStatus
+    status: JobStatus
   ) => {
-    // Reordering within a column is now visual only (sort by priority stays)
-    // We don't change priorities on reorder to avoid destructive behavior
-    toast.info('Cards ordenados por prioridade', {
-      description: 'Altere a prioridade do job para reposicionar permanentemente'
-    });
+    // Reordering within a column updates the sort_order in the database
+    const columnJobs = jobs
+      .filter(j => j.status === status)
+      .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+
+    const oldIndex = columnJobs.findIndex(j => j.id === activeJobId);
+    const newIndex = columnJobs.findIndex(j => j.id === overJobId);
+
+    if (oldIndex === -1 || newIndex === -1) return;
+
+    const newOrder = arrayMove(columnJobs, oldIndex, newIndex);
+
+    setIsUpdating(true);
+    try {
+      // Update sort_order for all affected jobs in the column
+      const updates = newOrder.map((job, index) => ({
+        ...job,
+        sort_order: index,
+        updated_at: new Date().toISOString(),
+      }));
+
+      const { error } = await supabase
+        .from('jobs')
+        .upsert(updates);
+
+      if (error) throw error;
+
+      toast.success('Ordem atualizada', {
+        description: 'A nova sequência foi salva com sucesso.'
+      });
+      
+      onJobsUpdate();
+    } catch (error) {
+      if (import.meta.env.DEV) console.error('Error reordering jobs:', error);
+      toast.error('Erro ao reordenar', {
+        description: 'Não foi possível salvar a nova ordem.'
+      });
+    } finally {
+      setIsUpdating(false);
+    }
   };
 
   const handleStatusChange = async (draggedJob: DbJob, targetStatus: JobStatus) => {
