@@ -102,15 +102,14 @@ export function useKanbanDragDrop({ jobs, onJobsUpdate }: UseKanbanDragDropProps
     try {
       // Update sort_order for all affected jobs in the column
       const updates = newOrder.map((job, index) => ({
-        id: job.id,
+        ...job,
         sort_order: index,
         updated_at: new Date().toISOString(),
       }));
 
-      // We use upsert for multiple updates if the table has a primary key (id)
       const { error } = await supabase
         .from('jobs')
-        .upsert(updates, { onConflict: 'id' });
+        .upsert(updates);
 
       if (error) throw error;
 
