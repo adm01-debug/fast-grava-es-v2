@@ -55,7 +55,7 @@ export default function DailyCalendar() {
   const printAreaRef = useRef<HTMLDivElement>(null);
   const { isMobile } = useDevice();
 
-  const { jobs, techniques, machines, getTechniqueById } = useSchedulingData();
+  const { jobs, techniques, machines, getTechniqueById, refetch } = useSchedulingData();
   const { conflicts } = useSchedulingConflicts();
   const { prefs, setZoom, setGroupBy, toggleOverlay, completeOnboarding } =
     useCalendarPreferences('daily');
