@@ -42,17 +42,15 @@ export interface MTBFMTTRSummary {
   criticalMachines: MachineReliabilityMetrics[];
 }
 
-function calculateReliabilityScore(mtbf: number | null, mttr: number | null): MachineReliabilityMetrics['reliabilityScore'] {
+function calculateReliabilityScore(mtbf: number | null, mttr: number | null, availability: number): MachineReliabilityMetrics['reliabilityScore'] {
   if (mtbf === null || mttr === null) return 'moderate';
   
-  // MTBF in hours, MTTR in minutes
-  // High MTBF (>500h) and low MTTR (<60min) = excellent
-  // Low MTBF (<100h) or high MTTR (>120min) = critical
-  
-  if (mtbf >= 500 && mttr <= 60) return 'excellent';
-  if (mtbf >= 300 && mttr <= 90) return 'good';
-  if (mtbf >= 150 && mttr <= 120) return 'moderate';
-  if (mtbf >= 50 || mttr <= 180) return 'poor';
+  // MTBF in hours, MTTR in minutes, Availability in %
+  // Weighted score logic for enterprise reliability 5.0
+  if (availability >= 98 && mtbf >= 500 && mttr <= 60) return 'excellent';
+  if (availability >= 95 && mtbf >= 300 && mttr <= 90) return 'good';
+  if (availability >= 90 && mtbf >= 150 && mttr <= 120) return 'moderate';
+  if (availability >= 80 && mtbf >= 50 && mttr <= 180) return 'poor';
   return 'critical';
 }
 
@@ -170,7 +168,7 @@ export function useMTBFMTTR(periodDays: number = 90) {
         totalFailures,
         totalRepairTime,
         lastFailure,
-        reliabilityScore: calculateReliabilityScore(mtbf, mttr),
+        reliabilityScore: calculateReliabilityScore(mtbf, mttr, availability),
       };
     }).filter(m => m.totalFailures >= 0); // Include machines even without failures for full context
   }, [records, machines, periodDays]);
