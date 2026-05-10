@@ -365,8 +365,12 @@ export function useKPIs(period: KPIPeriod = 'all', customTargets?: Partial<KPITa
       };
     });
 
+    const totalAttemptedPieces = totalPieces + lostPieces;
+    const globalLossRate = totalAttemptedPieces > 0 ? (lostPieces / totalAttemptedPieces) * 100 : 0;
+
     return {
-      totalJobs, completedJobs, inProgressJobs, delayedJobs, totalPieces, completedPieces, lostPieces, lossRate, averageOccupancy,
+      totalJobs, completedJobs, inProgressJobs, delayedJobs, totalPieces, completedPieces, lostPieces, 
+      lossRate: globalLossRate, averageOccupancy,
       productivityByMachine, productivityByTechnique, productivityByProduct, todayStats, performanceHistory, comparison, predictions, anomalies, targets,
       estimatedRevenue: completedPieces * 2.5, costOfLosses: lostPieces * 1.8,
     };
