@@ -226,6 +226,10 @@ export default function DailyCalendar() {
           />
         </div>
 
+        {dayConflicts.length > 0 && (
+          <ConflictResolutionPanel conflicts={dayConflicts} onResolved={() => refetchJobs()} />
+        )}
+
         {dayJobs.length === 0 ? (
           <Card className="bg-card border border-border/40 rounded-xl">
             <CardContent>
