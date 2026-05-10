@@ -38,6 +38,7 @@ export interface DbJob {
   product_category_id: string | null;
   created_at: string;
   updated_at: string;
+  sort_order: number | null;
 }
 
 export interface DbTechnique {
