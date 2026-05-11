@@ -15,9 +15,9 @@ interface MLPredictionCardProps {
 }
 
 const impactColors = {
-  high: 'text-primary bg-primary/10',
-  medium: 'text-amber-500 bg-amber-500/10',
-  low: 'text-blue-500 bg-blue-500/10',
+  high: 'text-indicator-danger bg-indicator-danger/10',
+  medium: 'text-indicator-warning bg-indicator-warning/10',
+  low: 'text-indicator-info bg-indicator-info/10',
 };
 
 export function MLPredictionCard({ 
