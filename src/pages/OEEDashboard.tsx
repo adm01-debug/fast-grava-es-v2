@@ -1,4 +1,4 @@
-import { useState, lazy, Suspense, useMemo, memo } from 'react';
+import { useState, lazy, Suspense, useMemo, memo, useCallback } from 'react';
 import { Helmet } from 'react-helmet';
 import { cn } from '@/lib/utils';
 import { Card, CardContent } from '@/components/ui/card';
@@ -58,6 +58,11 @@ const OEEDashboard = memo(function OEEDashboard() {
   const [showSimulator, setShowSimulator] = useState(false);
   const [simValues, setSimValues] = useState({ availability: 85, performance: 90, quality: 98 });
   const { data, isLoading, downloadReport } = useOEE(parseInt(period));
+  
+  const handleDownloadReport = useCallback(() => {
+    downloadReport();
+    toast.success('Relatório OEE exportado!');
+  }, [downloadReport]);
 
 
   if (isLoading) {
@@ -115,10 +120,7 @@ const OEEDashboard = memo(function OEEDashboard() {
             <Button 
               variant="outline" 
               size="sm" 
-              onClick={() => {
-                downloadReport();
-                toast.success('Relatório OEE exportado!');
-              }}
+              onClick={handleDownloadReport}
               className="hidden md:flex gap-2 border-primary/20 hover:bg-primary/5"
             >
               <FileDown className="h-4 w-4" />

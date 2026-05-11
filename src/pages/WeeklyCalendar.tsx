@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, lazy, Suspense } from 'react';
 import { format, startOfWeek, endOfWeek, addWeeks, subWeeks, addDays, isToday } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { CalendarDays, AlertTriangle, ChevronRight, ChevronDown } from 'lucide-react';
@@ -8,10 +8,10 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { JobDetailsModal } from '@/components/jobs/JobDetailsModal';
-import { CalendarHeader } from '@/components/calendar/CalendarHeader';
-import { UtilizationHeatmap } from '@/components/scheduling/UtilizationHeatmap';
-import { CalendarFilters } from '@/components/calendar/CalendarFilters';
-import { CalendarToolbar } from '@/components/calendar/CalendarToolbar';
+const CalendarHeader = lazy(() => import('@/components/calendar/CalendarHeader').then(m => ({ default: m.CalendarHeader })));
+const UtilizationHeatmap = lazy(() => import('@/components/scheduling/UtilizationHeatmap').then(m => ({ default: m.UtilizationHeatmap })));
+const CalendarFilters = lazy(() => import('@/components/calendar/CalendarFilters').then(m => ({ default: m.CalendarFilters })));
+const CalendarToolbar = lazy(() => import('@/components/calendar/CalendarToolbar').then(m => ({ default: m.CalendarToolbar })));
 import { JobQuickActions } from '@/components/calendar/JobQuickActions';
 import { CalendarLegend } from '@/components/calendar/CalendarLegend';
 import { CalendarEmptyState } from '@/components/calendar/CalendarEmptyState';
@@ -293,47 +293,53 @@ export default function WeeklyCalendar() {
         <Breadcrumbs />
 
         <div className="space-y-4">
-          <CalendarHeader
-            title="Calendário Semanal"
-            subtitle="Visualização panorâmica da semana por máquina"
-            selectedDate={selectedDate}
-            onDateChange={setSelectedDate}
-            onPrev={() => setSelectedDate(subWeeks(selectedDate, 1))}
-            onNext={() => setSelectedDate(addWeeks(selectedDate, 1))}
-            onToday={() => setSelectedDate(new Date())}
-            conflictCount={weekConflicts.length}
-            jobCount={weekJobs.length}
-            rangeLabel={`${format(weekStart, 'dd MMM', { locale: ptBR })} - ${format(weekEnd, 'dd MMM', { locale: ptBR })}`}
-            todayLabel="Esta Semana"
-            filtersSlot={
-              <CalendarFilters
-                filters={filters}
-                jobs={jobs}
-                techniques={techniques}
-                machines={machines}
-                activeCount={activeCount}
-                onToggle={toggleArrayValue}
-                onUpdate={updateFilter}
-                onClear={clearFilters}
-              />
-            }
-          />
+          <Suspense fallback={<div className="h-20 bg-muted animate-pulse rounded-lg" />}>
+            <CalendarHeader
+              title="Calendário Semanal"
+              subtitle="Visualização panorâmica da semana por máquina"
+              selectedDate={selectedDate}
+              onDateChange={setSelectedDate}
+              onPrev={() => setSelectedDate(subWeeks(selectedDate, 1))}
+              onNext={() => setSelectedDate(addWeeks(selectedDate, 1))}
+              onToday={() => setSelectedDate(new Date())}
+              conflictCount={weekConflicts.length}
+              jobCount={weekJobs.length}
+              rangeLabel={`${format(weekStart, 'dd MMM', { locale: ptBR })} - ${format(weekEnd, 'dd MMM', { locale: ptBR })}`}
+              todayLabel="Esta Semana"
+              filtersSlot={
+                <CalendarFilters
+                  filters={filters}
+                  jobs={jobs}
+                  techniques={techniques}
+                  machines={machines}
+                  activeCount={activeCount}
+                  onToggle={toggleArrayValue}
+                  onUpdate={updateFilter}
+                  onClear={clearFilters}
+                />
+              }
+            />
+          </Suspense>
 
-          <CalendarToolbar
-            zoom={prefs.zoom}
-            onZoomChange={setZoom}
-            groupBy={prefs.groupBy}
-            onGroupByChange={setGroupBy}
-            overlays={prefs.overlays}
-            onToggleOverlay={toggleOverlay}
-            onExportPdf={() => {}}
-            onExportICal={() => {}}
-            onShowOnboarding={() => {}}
-          />
+          <Suspense fallback={<div className="h-10 bg-muted animate-pulse rounded-lg" />}>
+            <CalendarToolbar
+              zoom={prefs.zoom}
+              onZoomChange={setZoom}
+              groupBy={prefs.groupBy}
+              onGroupByChange={setGroupBy}
+              overlays={prefs.overlays}
+              onToggleOverlay={toggleOverlay}
+              onExportPdf={() => {}}
+              onExportICal={() => {}}
+              onShowOnboarding={() => {}}
+            />
+          </Suspense>
 
-          <Card className="p-3 bg-card/50 border-border/40">
-             <UtilizationHeatmap jobs={weekJobs} machines={filteredMachines} />
-          </Card>
+          <Suspense fallback={<div className="h-20 bg-muted animate-pulse rounded-lg" />}>
+            <Card className="p-3 bg-card/50 border-border/40">
+               <UtilizationHeatmap jobs={weekJobs} machines={filteredMachines} />
+            </Card>
+          </Suspense>
         </div>
 
         <DndContext
