@@ -140,7 +140,7 @@ export default function OEEDashboard() {
               </div>
               <p className="text-sm text-muted-foreground leading-relaxed">
                  Sua planta está operando <span className="text-primary font-bold">12% acima</span> do benchmark do último trimestre. 
-                 A técnica <span className="font-bold text-foreground">{data.byTechnique[0]?.techniqueName}</span> é o destaque com <span className="text-emerald-500 font-bold">{data.byTechnique[0]?.averageOEE}%</span> de eficiência global.
+                 A técnica <span className="font-bold text-foreground">{data.byTechnique[0]?.techniqueName}</span> é o destaque com <span className="text-indicator-success font-bold">{data.byTechnique[0]?.averageOEE}%</span> de eficiência global.
               </p>
             </div>
             <div className="flex flex-wrap items-center justify-center gap-3 bg-background/40 p-4 rounded-2xl border border-border/50 backdrop-blur-sm">
