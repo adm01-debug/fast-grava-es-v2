@@ -355,8 +355,8 @@ export function JobDetailsModal({ job, open, onOpenChange, onStatusChange }: Job
                 {/* Client & Product */}
                 <div className="p-4 rounded-xl bg-muted/30 border border-border/50">
                   <div className="flex items-start gap-4">
-                    <div className="p-3 rounded-xl bg-cyan-500/20">
-                      <Building className="h-6 w-6 text-cyan-400" />
+                    <div className="p-3 rounded-xl bg-indicator-info/20">
+                      <Building className="h-6 w-6 text-indicator-info" />
                     </div>
                     <div className="flex-1">
                       <h3 className="text-lg font-semibold text-foreground">{job.client}</h3>
