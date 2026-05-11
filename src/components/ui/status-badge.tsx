@@ -10,7 +10,8 @@ import {
   Pause, 
   XCircle, 
   AlertTriangle,
-  RotateCcw
+  RotateCcw,
+  Archive
 } from 'lucide-react';
 
 interface StatusBadgeProps {
@@ -91,6 +92,13 @@ const statusConfig: Record<JobStatus, {
     bgClass: 'bg-status-rework',
     textClass: 'text-status-rework-foreground',
     glowClass: 'dark:shadow-[0_0_12px_hsl(280_80%_60%/0.4)]',
+  },
+  buffer: {
+    label: 'Buffer',
+    icon: Archive,
+    bgClass: 'bg-indigo-500/20 dark:bg-indigo-500/10',
+    textClass: 'text-indigo-600 dark:text-indigo-400',
+    glowClass: 'dark:shadow-[0_0_12px_hsl(240_80%_60%/0.3)]',
   },
 };
 

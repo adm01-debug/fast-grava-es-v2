@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, lazy, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   format,
@@ -22,8 +22,8 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
-import { CalendarHeader } from '@/components/calendar/CalendarHeader';
-import { CalendarFilters } from '@/components/calendar/CalendarFilters';
+const CalendarHeader = lazy(() => import('@/components/calendar/CalendarHeader').then(m => ({ default: m.CalendarHeader })));
+const CalendarFilters = lazy(() => import('@/components/calendar/CalendarFilters').then(m => ({ default: m.CalendarFilters })));
 import { CalendarLegend } from '@/components/calendar/CalendarLegend';
 import { CalendarEmptyState } from '@/components/calendar/CalendarEmptyState';
 import { MobileFAB } from '@/components/calendar/MobileFAB';
@@ -103,31 +103,33 @@ export default function MonthlyCalendar() {
       <div className="p-4 sm:p-6 space-y-4 sm:space-y-6 animate-fade-in-up calendar-print-area">
         <Breadcrumbs />
 
-        <CalendarHeader
-          title="Calendário Mensal"
-          subtitle="Visão panorâmica do mês com mapa de carga"
-          selectedDate={selectedDate}
-          onDateChange={setSelectedDate}
-          onPrev={() => setSelectedDate(subMonths(selectedDate, 1))}
-          onNext={() => setSelectedDate(addMonths(selectedDate, 1))}
-          onToday={() => setSelectedDate(new Date())}
-          conflictCount={0}
-          jobCount={monthJobCount}
-          rangeLabel={format(selectedDate, "MMMM 'de' yyyy", { locale: ptBR })}
-          todayLabel="Este Mês"
-          filtersSlot={
-            <CalendarFilters
-              filters={filters}
-              jobs={jobs}
-              techniques={techniques}
-              machines={machines}
-              activeCount={activeCount}
-              onToggle={toggleArrayValue}
-              onUpdate={updateFilter}
-              onClear={clearFilters}
-            />
-          }
-        />
+        <Suspense fallback={<div className="h-20 bg-muted animate-pulse rounded-lg" />}>
+          <CalendarHeader
+            title="Calendário Mensal"
+            subtitle="Visão panorâmica do mês com mapa de carga"
+            selectedDate={selectedDate}
+            onDateChange={setSelectedDate}
+            onPrev={() => setSelectedDate(subMonths(selectedDate, 1))}
+            onNext={() => setSelectedDate(addMonths(selectedDate, 1))}
+            onToday={() => setSelectedDate(new Date())}
+            conflictCount={0}
+            jobCount={monthJobCount}
+            rangeLabel={format(selectedDate, "MMMM 'de' yyyy", { locale: ptBR })}
+            todayLabel="Este Mês"
+            filtersSlot={
+              <CalendarFilters
+                filters={filters}
+                jobs={jobs}
+                techniques={techniques}
+                machines={machines}
+                activeCount={activeCount}
+                onToggle={toggleArrayValue}
+                onUpdate={updateFilter}
+                onClear={clearFilters}
+              />
+            }
+          />
+        </Suspense>
 
         <Card className="bg-card border border-border/40 rounded-xl overflow-hidden">
           <CardHeader className="border-b border-border/40 pb-3">

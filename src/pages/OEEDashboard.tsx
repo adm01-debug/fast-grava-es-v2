@@ -1,4 +1,4 @@
-import { useState, lazy, Suspense, useMemo } from 'react';
+import { useState, lazy, Suspense, useMemo, memo, useCallback } from 'react';
 import { Helmet } from 'react-helmet';
 import { cn } from '@/lib/utils';
 import { Card, CardContent } from '@/components/ui/card';
@@ -36,7 +36,7 @@ import {
 import { useOEE, WORLD_CLASS_OEE, getOEEColor } from '@/hooks/useOEE';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
-import { OEEGaugeCard } from '@/components/oee/OEEGaugeCard';
+const OEEGaugeCard = lazy(() => import('@/components/oee/OEEGaugeCard').then(m => ({ default: m.OEEGaugeCard })));
 import { Skeleton } from '@/components/ui/skeleton';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { KPITooltip, KPI_DEFINITIONS } from '@/components/ui/kpi-tooltip';
@@ -53,11 +53,16 @@ const OEETechniqueComparison = lazy(() => import('@/components/oee/OEETechniqueC
 const ChartSkeleton = () => <Skeleton className="h-[400px] w-full" />;
 const TableSkeleton = () => <Skeleton className="h-[500px] w-full" />;
 
-export default function OEEDashboard() {
+const OEEDashboard = memo(function OEEDashboard() {
   const [period, setPeriod] = useState<string>('30');
   const [showSimulator, setShowSimulator] = useState(false);
   const [simValues, setSimValues] = useState({ availability: 85, performance: 90, quality: 98 });
   const { data, isLoading, downloadReport } = useOEE(parseInt(period));
+  
+  const handleDownloadReport = useCallback(() => {
+    downloadReport();
+    toast.success('Relatório OEE exportado!');
+  }, [downloadReport]);
 
 
   if (isLoading) {
@@ -115,10 +120,7 @@ export default function OEEDashboard() {
             <Button 
               variant="outline" 
               size="sm" 
-              onClick={() => {
-                downloadReport();
-                toast.success('Relatório OEE exportado!');
-              }}
+              onClick={handleDownloadReport}
               className="hidden md:flex gap-2 border-primary/20 hover:bg-primary/5"
             >
               <FileDown className="h-4 w-4" />
@@ -531,4 +533,6 @@ export default function OEEDashboard() {
         </Card>
       </div>
   );
-}
+});
+
+export default OEEDashboard;

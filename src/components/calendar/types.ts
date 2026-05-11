@@ -10,6 +10,7 @@ export const statusColors: Record<JobStatus, string> = {
   cancelled: 'bg-status-cancelled/20 border-status-cancelled text-status-cancelled',
   delayed: 'bg-status-delayed/20 border-status-delayed text-status-delayed',
   rework: 'bg-status-rework/20 border-status-rework text-status-rework',
+  buffer: 'bg-indigo-500/20 border-indigo-500 text-indigo-500',
 };
 
 export const statusColorsSolid: Record<JobStatus, string> = {
@@ -22,6 +23,7 @@ export const statusColorsSolid: Record<JobStatus, string> = {
   cancelled: 'bg-status-cancelled/80 border-status-cancelled',
   delayed: 'bg-status-delayed/80 border-status-delayed',
   rework: 'bg-status-rework/80 border-status-rework',
+  buffer: 'bg-indigo-500/80 border-indigo-500',
 };
 
 export const statusLabels: Record<JobStatus, string> = {
@@ -34,6 +36,7 @@ export const statusLabels: Record<JobStatus, string> = {
   cancelled: 'Cancelado',
   delayed: 'Atrasado',
   rework: 'Retrabalho',
+  buffer: 'Buffer',
 };
 
 export const PRIORITY_LABELS: Record<string, string> = {
