@@ -1,4 +1,6 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useRef } from 'react';
+import { useVirtualizer } from '@tanstack/react-virtual';
+import { cn } from '@/lib/utils';
 import { useFuseSearch } from '@/hooks/useFuseSearch';
 import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
@@ -77,10 +79,13 @@ export default function TraceabilityPage() {
   const [sortDir, setSortDir] = useState<SortDir>('desc');
   const [signatureModal, setSignatureModal] = useState<{ open: boolean; status: string }>({ open: false, status: '' });
   
+  const parentRef = useRef<HTMLDivElement>(null);
+  
   const [newLot, setNewLot] = useState({
     lot_number: '', product_name: '', quantity: 0, job_id: '',
     production_date: format(new Date(), 'yyyy-MM-dd'), expiration_date: '', notes: ''
   });
+
 
   const { data: lots, isLoading } = useProductionLots();
   const { data: jobs } = useJobs();
@@ -113,6 +118,13 @@ export default function TraceabilityPage() {
 
     return result;
   }, [fuseSearchedLots, statusFilter, dateFrom, dateTo, sortField, sortDir]);
+  const rowVirtualizer = useVirtualizer({
+    count: filteredAndSortedLots.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 64,
+    overscan: 10,
+  });
+
 
   const generateLotNumber = () => {
     const date = format(new Date(), 'yyyyMMdd');
@@ -371,46 +383,58 @@ export default function TraceabilityPage() {
             </div>
           </CardHeader>
           <CardContent className="p-0">
-             <Table>
-               <TableHeader>
-                 <TableRow className="bg-muted/30">
-                   <TableHead className="w-10 pl-6"><Checkbox checked={selectedIds.size === filteredAndSortedLots.length && filteredAndSortedLots.length > 0} onCheckedChange={selectAll} /></TableHead>
-                   <SortableHead label="Lote" field="lot_number" current={sortField} dir={sortDir} onSort={toggleSort} />
-                   <SortableHead label="Produto" field="product_name" current={sortField} dir={sortDir} onSort={toggleSort} />
-                   <SortableHead label="Status" field="status" current={sortField} dir={sortDir} onSort={toggleSort} />
-                   <TableHead>Produzido</TableHead>
-                   <TableHead className="text-right pr-6">Ações</TableHead>
-                 </TableRow>
-               </TableHeader>
-               <TableBody>
-                 {filteredAndSortedLots.map((lot) => (
-                   <TableRow key={lot.id} className={selectedIds.has(lot.id) ? 'bg-primary/5' : ''}>
-                     <TableCell className="pl-6"><Checkbox checked={selectedIds.has(lot.id)} onCheckedChange={() => toggleSelect(lot.id)} /></TableCell>
-                     <TableCell className="font-mono font-black text-[11px]">{lot.lot_number}</TableCell>
-                     <TableCell className="font-bold text-xs">{lot.product_name}</TableCell>
-                     <TableCell>
-                       <Badge variant={STATUS_CONFIG[lot.status]?.variant || 'default'} className="text-[10px] uppercase font-black">
-                         {STATUS_CONFIG[lot.status]?.label || lot.status}
-                       </Badge>
-                       {getExpirationBadge(lot)}
-                     </TableCell>
-                     <TableCell>
-                        <div className="flex flex-col gap-1 w-24">
-                           <span className="text-[10px] font-bold">{lot.produced_quantity} / {lot.quantity}</span>
-                           <Progress value={(lot.produced_quantity / lot.quantity) * 100} className="h-1" />
-                        </div>
-                     </TableCell>
-                     <TableCell className="text-right pr-6">
-                        <div className="flex justify-end gap-1">
-                          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setSelectedLot(lot)}><Eye className="h-4 w-4" /></Button>
-                          <Button variant="ghost" size="icon" className="h-8 w-8 text-primary" onClick={() => { setSelectedLot(lot); setShowGenealogyView(true); }}><GitBranch className="h-4 w-4" /></Button>
-                          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setQrLot(lot)}><QrCode className="h-4 w-4" /></Button>
-                        </div>
-                     </TableCell>
-                   </TableRow>
-                 ))}
-               </TableBody>
-             </Table>
+            <div className="relative h-[600px] overflow-auto scrollbar-thin" ref={parentRef}>
+              <Table>
+                <TableHeader className="sticky top-0 z-20 bg-card">
+                  <TableRow className="bg-muted/30 border-b">
+                    <TableHead className="w-10 pl-6"><Checkbox checked={selectedIds.size === filteredAndSortedLots.length && filteredAndSortedLots.length > 0} onCheckedChange={selectAll} /></TableHead>
+                    <SortableHead label="Lote" field="lot_number" current={sortField} dir={sortDir} onSort={toggleSort} />
+                    <SortableHead label="Produto" field="product_name" current={sortField} dir={sortDir} onSort={toggleSort} />
+                    <SortableHead label="Status" field="status" current={sortField} dir={sortDir} onSort={toggleSort} />
+                    <TableHead>Produzido</TableHead>
+                    <TableHead className="text-right pr-6">Ações</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody style={{ height: `${rowVirtualizer.getTotalSize()}px`, position: 'relative' }}>
+                  {rowVirtualizer.getVirtualItems().map((virtualRow) => {
+                    const lot = filteredAndSortedLots[virtualRow.index];
+                    return (
+                      <TableRow 
+                        key={lot.id} 
+                        className={cn(selectedIds.has(lot.id) ? 'bg-primary/5' : '', "absolute w-full border-b")}
+                        style={{
+                          height: `${virtualRow.size}px`,
+                          transform: `translateY(${virtualRow.start}px)`,
+                        }}
+                      >
+                        <TableCell className="pl-6 w-10"><Checkbox checked={selectedIds.has(lot.id)} onCheckedChange={() => toggleSelect(lot.id)} /></TableCell>
+                        <TableCell className="font-mono font-black text-[11px]">{lot.lot_number}</TableCell>
+                        <TableCell className="font-bold text-xs">{lot.product_name}</TableCell>
+                        <TableCell>
+                          <Badge variant={STATUS_CONFIG[lot.status]?.variant || 'default'} className="text-[10px] uppercase font-black">
+                            {STATUS_CONFIG[lot.status]?.label || lot.status}
+                          </Badge>
+                          {getExpirationBadge(lot)}
+                        </TableCell>
+                        <TableCell>
+                           <div className="flex flex-col gap-1 w-24">
+                              <span className="text-[10px] font-bold">{lot.produced_quantity} / {lot.quantity}</span>
+                              <Progress value={(lot.produced_quantity / lot.quantity) * 100} className="h-1" />
+                           </div>
+                        </TableCell>
+                        <TableCell className="text-right pr-6">
+                           <div className="flex justify-end gap-1">
+                             <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setSelectedLot(lot)}><Eye className="h-4 w-4" /></Button>
+                             <Button variant="ghost" size="icon" className="h-8 w-8 text-primary" onClick={() => { setSelectedLot(lot); setShowGenealogyView(true); }}><GitBranch className="h-4 w-4" /></Button>
+                             <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setQrLot(lot)}><QrCode className="h-4 w-4" /></Button>
+                           </div>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </div>
           </CardContent>
         </Card>
       </div>

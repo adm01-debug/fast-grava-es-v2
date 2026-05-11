@@ -445,7 +445,7 @@ Buscar e substituir textos hardcoded por chaves i18n:
 | 8.1 | Skip links | 30min | ✅ DONE |
 | 8.2 | Focus visible | 30min | ✅ DONE |
 | 9.1 | Code splitting | 4h | ✅ DONE |
-| 9.2 | Virtualização | 8h | ⬜ TODO |
+| 9.2 | Virtualização (Traceability) | 8h | ✅ DONE |
 
 ---
 

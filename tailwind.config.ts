@@ -170,6 +170,10 @@ export default {
           DEFAULT: "hsl(var(--danger))",
           foreground: "hsl(var(--danger-foreground))",
         },
+        "accent-cyan": "hsl(var(--accent-cyan))",
+        "accent-purple": "hsl(var(--accent-purple))",
+        "accent-orange": "hsl(var(--accent-orange))",
+        "accent-pink": "hsl(var(--accent-pink))",
       },
       // Extended Z-Index Scale
       zIndex: {
