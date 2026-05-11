@@ -140,6 +140,7 @@ export function useKanbanDragDrop({ jobs, onJobsUpdate }: UseKanbanDragDropProps
       'paused': ['production', 'cancelled'],
       'delayed': ['production', 'cancelled'],
       'rework': ['production', 'finished', 'cancelled'],
+      'buffer': ['ready', 'scheduled', 'cancelled'],
       'finished': [], // Cannot transition from finished
       'cancelled': [], // Cannot transition from cancelled
     };
@@ -218,6 +219,7 @@ function getStatusLabel(status: JobStatus): string {
     'cancelled': 'Cancelado',
     'delayed': 'Atrasado',
     'rework': 'Retrabalho',
+    'buffer': 'Buffer',
   };
   return labels[status] || status;
 }

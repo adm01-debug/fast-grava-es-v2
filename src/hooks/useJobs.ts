@@ -28,7 +28,7 @@ export interface DbJob {
   start_time: string | null;
   end_time: string | null;
   estimated_duration: number;
-  status: 'queue' | 'ready' | 'scheduled' | 'production' | 'finished' | 'paused' | 'cancelled' | 'delayed' | 'rework';
+  status: 'queue' | 'ready' | 'scheduled' | 'production' | 'finished' | 'paused' | 'cancelled' | 'delayed' | 'rework' | 'buffer';
   gravure_color: string | null;
   notes: string | null;
   actual_start_time: string | null;

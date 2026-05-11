@@ -74,7 +74,7 @@ export function useOperatorDashboardData(dateRange?: DateRange) {
     const result = {
       total: jobs.length,
       completed: 0, inProgress: 0, delayed: 0, queue: 0,
-      ready: 0, scheduled: 0, paused: 0, rework: 0,
+      ready: 0, scheduled: 0, paused: 0, rework: 0, buffer: 0,
       todayScheduled: 0, todayCompleted: 0, todayInProgress: 0, todayDelayed: 0,
       totalPieces: 0, completedPieces: 0, lostPieces: 0,
     };
@@ -105,6 +105,7 @@ export function useOperatorDashboardData(dateRange?: DateRange) {
         case 'scheduled': result.scheduled++; break;
         case 'paused': result.paused++; break;
         case 'rework': result.rework++; break;
+        case 'buffer': result.buffer++; break;
       }
     }
     return result;
