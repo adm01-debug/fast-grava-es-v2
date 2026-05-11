@@ -118,14 +118,18 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
             (segment === 'Studio Gamma' && !j.technique_id?.includes('Laser') && !j.technique_id?.includes('UV'))
           ))
         );
-      }).map((j: any) => ({
-        id: j.id,
-        order_number: j.order_number || `OS-${j.id.slice(0, 5)}`,
-        product: j.product_name || 'Produto',
-        status: j.status,
-        quantity: j.quantity,
-        efficiency: j.produced_quantity > 0 ? (((j.produced_quantity - (j.lost_pieces || 0)) / j.produced_quantity) * 100).toFixed(1) + '%' : '--'
-      }));
+      }).map((j: any) => {
+        const total = (j.produced_quantity || j.quantity || 1) + (j.lost_pieces || 0);
+        return {
+          id: j.id,
+          order_number: j.order_number || `OS-${j.id.slice(0, 5)}`,
+          product: j.product_name || 'Produto',
+          status: j.status,
+          quantity: j.quantity,
+          lost_pieces: j.lost_pieces || 0,
+          efficiency: total > 0 ? (((total - (j.lost_pieces || 0)) / total) * 100).toFixed(1) + '%' : '--'
+        };
+      });
       setDrillDownJobs(filtered);
     } else {
       setDrillDownJobs([]);
