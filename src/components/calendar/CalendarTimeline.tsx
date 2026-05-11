@@ -1,4 +1,5 @@
-import { useMemo, useState, Fragment } from 'react';
+import { useMemo, useState, Fragment, useRef } from 'react';
+import { useVirtualizer } from '@tanstack/react-virtual';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 import { ChevronDown, ChevronRight as ChevronRightIcon, Sparkles } from 'lucide-react';
