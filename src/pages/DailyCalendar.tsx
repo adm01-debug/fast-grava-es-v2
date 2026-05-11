@@ -53,6 +53,9 @@ export default function DailyCalendar() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [viewMode, setViewMode] = useState<'timeline' | 'agenda'>('timeline');
   const [onboardingOpen, setOnboardingOpen] = useState(false);
+  const [quickJobOpen, setQuickJobOpen] = useState(false);
+  const [quickJobMachineId, setQuickJobMachineId] = useState<string>();
+  const [quickJobTime, setQuickJobTime] = useState<{ hour: number; minute: number }>();
   const printAreaRef = useRef<HTMLDivElement>(null);
   const { isMobile } = useDevice();
 
