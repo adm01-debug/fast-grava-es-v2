@@ -19,6 +19,7 @@ import { CalendarEmptyState } from '@/components/calendar/CalendarEmptyState';
 import { MobileFAB } from '@/components/calendar/MobileFAB';
 import { OptimizationAssistant } from '@/components/calendar/OptimizationAssistant';
 import { ConflictResolutionPanel } from '@/components/calendar/ConflictResolutionPanel';
+import { QuickJobDrawer } from '@/components/calendar/QuickJobDrawer';
 import { PlanningEfficiencyDashboard } from '@/components/planning/PlanningEfficiencyDashboard';
 import { useSchedulingData } from '@/hooks/useSchedulingData';
 import { useCalendarFilters } from '@/hooks/useCalendarFilters';
