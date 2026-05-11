@@ -209,14 +209,14 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
           onClick={() => handleDrillDown('PEDIDOS ATRASADOS', 'delayed')}
         />
         <FuturisticStatCard 
-          title="Receita Estimada" 
-          value={`R$ ${(biMetrics.periodCompletedPieces * 2.5).toLocaleString('pt-BR', { maximumFractionDigits: 0 })}`} 
+          title="Taxa de Perda" 
+          value={`${(biMetrics.periodLossRate || 0).toFixed(2)}%`} 
           subtitle="Projeção"
           icon={TrendingUp} 
           gradient={GRADIENTS.primary}
           glowColor="primary"
-          onExport={(format) => handleExport(format, 'Receita_Estimada')}
-          onClick={() => handleDrillDown('PROJEÇÃO DE RECEITA', 'revenue')}
+          onExport={(format) => handleExport(format, 'Taxa_Perda')}
+          onClick={() => handleDrillDown('TAXA DE PERDA', 'lost')}
         />
         <FuturisticStatCard 
           title="Balanceamento" 
