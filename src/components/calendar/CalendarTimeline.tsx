@@ -77,7 +77,6 @@ export function CalendarTimeline({
 
   // E11 — zoom recalculates header tick interval
   const tickIntervalMin = zoom;
-  const totalMinutes = (endHour - startHour) * 60;
   const ticks = useMemo(() => {
     const arr: { minute: number; label: string }[] = [];
     for (let m = 0; m <= totalMinutes; m += tickIntervalMin) {
@@ -175,7 +174,7 @@ export function CalendarTimeline({
           id={machine.id}
           className="flex-1 relative h-16 cursor-pointer"
           style={overlays.showHeatmap ? { background: getOccupancyColor(utilization) } : undefined}
-          onClick={(e: React.MouseEvent) => {
+          onClick={(e: React.MouseEvent<HTMLDivElement>) => {
             const target = e.target as HTMLElement;
             if (target.closest('button')) return;
             handleSlotClick(e, machine.id);
