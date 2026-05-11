@@ -127,12 +127,12 @@ export function MTBFMTTRWidget() {
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <div className="p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
+                <div className="p-3 rounded-lg bg-indicator-success/10 border border-indicator-success/20">
                   <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
                     <TrendingUp className="h-3.5 w-3.5" />
                     Disponibilidade
                   </div>
-                  <div className="text-xl font-bold text-emerald-400">
+                  <div className="text-xl font-bold text-indicator-success">
                     {summary.averageAvailability.toFixed(1)}%
                   </div>
                 </div>
