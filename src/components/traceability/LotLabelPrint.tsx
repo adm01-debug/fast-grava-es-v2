@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -156,6 +156,9 @@ export function LotLabelPrint({ lots, open, onClose }: LotLabelPrintProps) {
             <Tag className="h-5 w-5 text-primary" />
             Imprimir Etiquetas ({lots.length} lote{lots.length > 1 ? 's' : ''})
           </DialogTitle>
+          <DialogDescription className="sr-only">
+            Configurações e pré-visualização para impressão de etiquetas de lotes
+          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">
