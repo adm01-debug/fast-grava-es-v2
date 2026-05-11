@@ -1,13 +1,15 @@
 import { useMemo, useState, Fragment, useRef } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 import { ChevronDown, ChevronRight as ChevronRightIcon, Sparkles } from 'lucide-react';
-import { DbJob, DbMachine, DbTechnique } from '@/hooks/useJobs';
+import { DbJob, DbMachine, DbTechnique, useUpdateJobStatus } from '@/hooks/useJobs';
 import { JobBlock } from './JobBlock';
 import { CalendarGroupBy, CalendarOverlays, CalendarZoomLevel, getOccupancyColor } from './types';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+import { DndContext, closestCenter, useDroppable, DragOverlay } from '@dnd-kit/core';
+import { useDailyDragDrop } from '@/hooks/useDailyDragDrop';
+import { JobQuickActions } from './JobQuickActions';
 
 interface CalendarTimelineProps {
   machines: DbMachine[];
@@ -24,6 +26,22 @@ interface CalendarTimelineProps {
   groupBy?: CalendarGroupBy;
   overlays?: CalendarOverlays;
   utilizationByMachine?: Record<string, number>;
+  onRefresh?: () => void;
+  allJobs?: DbJob[];
+}
+
+function DroppableRow({ children, id, className, onClick, style }: any) {
+  const { setNodeRef, isOver } = useDroppable({ id });
+  return (
+    <div
+      ref={setNodeRef}
+      className={cn(className, isOver && 'bg-primary/10 ring-1 ring-inset ring-primary/30')}
+      onClick={onClick}
+      style={style}
+    >
+      {children}
+    </div>
+  );
 }
 
 export function CalendarTimeline({
@@ -41,12 +59,24 @@ export function CalendarTimeline({
   groupBy = 'machine',
   overlays = { showHeatmap: false, showActualVsPlanned: false },
   utilizationByMachine = {},
+  onRefresh,
+  allJobs = [],
 }: CalendarTimelineProps) {
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
+  const { mutate: updateStatus } = useUpdateJobStatus();
+
+  const totalMinutes = (endHour - startHour) * 60;
+  const { handleDragStart, handleDragEnd, activeId } = useDailyDragDrop({
+    onUpdate: onRefresh || (() => {}),
+    allJobs,
+    startHour,
+    totalMinutes
+  });
+
+  const activeJob = useMemo(() => allJobs.find(j => j.id === activeId), [allJobs, activeId]);
 
   // E11 — zoom recalculates header tick interval
   const tickIntervalMin = zoom;
-  const totalMinutes = (endHour - startHour) * 60;
   const ticks = useMemo(() => {
     const arr: { minute: number; label: string }[] = [];
     for (let m = 0; m <= totalMinutes; m += tickIntervalMin) {
@@ -140,10 +170,11 @@ export function CalendarTimeline({
           )}
         </div>
 
-        <div
+        <DroppableRow
+          id={machine.id}
           className="flex-1 relative h-16 cursor-pointer"
           style={overlays.showHeatmap ? { background: getOccupancyColor(utilization) } : undefined}
-          onClick={(e) => {
+          onClick={(e: React.MouseEvent<HTMLDivElement>) => {
             const target = e.target as HTMLElement;
             if (target.closest('button')) return;
             handleSlotClick(e, machine.id);
@@ -189,7 +220,7 @@ export function CalendarTimeline({
               </Fragment>
             );
           })}
-        </div>
+        </DroppableRow>
       </div>
     );
   };
@@ -239,7 +270,12 @@ export function CalendarTimeline({
   });
 
   return (
-    <div className="w-full h-[calc(100vh-320px)] border rounded-md bg-card overflow-hidden flex flex-col">
+    <DndContext
+      collisionDetection={closestCenter}
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
+    >
+      <div className="w-full h-[calc(100vh-320px)] border rounded-md bg-card overflow-hidden flex flex-col">
       {/* Fixed Header */}
       <div className="flex-none min-w-[1200px] flex border-b border-border/40 bg-muted/10 sticky top-0 z-20">
         <div className="w-28 shrink-0 p-3 border-r border-border/40 flex flex-col justify-between">
@@ -337,5 +373,30 @@ export function CalendarTimeline({
         </div>
       </div>
     </div>
+      <DragOverlay>
+        {activeJob ? (
+          <div 
+            className={cn(
+              "px-3 py-2 rounded-md border shadow-2xl bg-card min-w-[120px]",
+              "border-primary/50 ring-2 ring-primary/20 animate-pulse"
+            )}
+          >
+            <div className="text-xs font-bold text-foreground">
+              {activeJob.order_number}
+            </div>
+            <div className="text-[10px] text-muted-foreground truncate">
+              {activeJob.client}
+            </div>
+            <div className="mt-2 flex justify-end">
+              <JobQuickActions 
+                jobId={activeJob.id}
+                currentStatus={activeJob.status}
+                onStatusChange={(id, status) => updateStatus({ jobId: id, status })}
+              />
+            </div>
+          </div>
+        ) : null}
+      </DragOverlay>
+    </DndContext>
   );
 }

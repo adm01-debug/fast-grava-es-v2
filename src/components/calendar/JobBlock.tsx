@@ -1,11 +1,12 @@
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { Badge } from '@/components/ui/badge';
-import { AlertTriangle, Fingerprint } from 'lucide-react';
+import { AlertTriangle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { DbJob } from '@/hooks/useJobs';
 import { JobStatus } from '@/types/scheduling';
 import { statusColors, statusLabels } from './types';
 import { useHapticFeedback } from '@/hooks/use-haptic-feedback';
+import { useDraggable } from '@dnd-kit/core';
 
 interface JobBlockProps {
   job: DbJob;
@@ -13,36 +14,53 @@ interface JobBlockProps {
   hasConflict?: boolean;
   ghost?: boolean;
   onClick: (job: DbJob) => void;
+  draggable?: boolean;
 }
 
-export function JobBlock({ job, position, hasConflict, ghost, onClick }: JobBlockProps) {
+export function JobBlock({ job, position, hasConflict, ghost, onClick, draggable = true }: JobBlockProps) {
   const { trigger } = useHapticFeedback();
+  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
+    id: job.id,
+    disabled: !draggable,
+  });
 
-  const handleJobClick = () => {
+  const style = transform ? {
+    transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
+    zIndex: 100,
+    ...position
+  } : position;
+
+  const handleJobClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
     trigger('light');
     onClick(job);
   };
+
   return (
     <Tooltip>
       <TooltipTrigger asChild>
         <button
+          ref={setNodeRef}
+          {...listeners}
+          {...attributes}
           onClick={handleJobClick}
           aria-label={`Job ${job.order_number} — ${statusLabels[job.status as JobStatus]}`}
           className={cn(
-            'absolute top-2 rounded-md border cursor-pointer',
+            'absolute top-2 rounded-md border cursor-grab active:cursor-grabbing',
             'flex items-center justify-center overflow-hidden',
             'transition-all duration-200 hover:scale-[1.02] hover:z-10',
             'shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-primary/40',
             statusColors[job.status as JobStatus],
             ghost ? 'bottom-5 opacity-70 border-dashed' : 'bottom-2',
-            hasConflict && 'ring-2 ring-destructive/70 animate-pulse'
+            hasConflict && 'ring-2 ring-destructive/70 animate-pulse',
+            isDragging && 'opacity-50 grayscale scale-95'
           )}
-          style={position}
+          style={style}
         >
           {hasConflict && (
             <AlertTriangle className="absolute top-0.5 right-0.5 w-3 h-3 text-destructive" />
           )}
-          <div className="px-2 text-xs font-medium truncate">
+          <div className="px-2 text-xs font-medium truncate pointer-events-none">
             {job.order_number.replace('OS-2024-', '')}
           </div>
         </button>
