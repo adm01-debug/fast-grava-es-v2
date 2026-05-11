@@ -178,6 +178,13 @@ export default function DailyCalendar() {
         <Breadcrumbs />
 
         <PlanningEfficiencyDashboard />
+        
+        {dayConflicts.length > 0 && (
+          <ConflictResolutionPanel 
+            conflicts={dayConflicts} 
+            onResolved={() => refetchJobs()} 
+          />
+        )}
 
         <CalendarHeader
           title="Calendário Diário"
