@@ -1,4 +1,5 @@
 import { useState, lazy, Suspense, useMemo } from 'react';
+import { Helmet } from 'react-helmet';
 import { cn } from '@/lib/utils';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -91,6 +92,10 @@ export default function OEEDashboard() {
 
   return (
       <div className="p-6 space-y-6">
+        <Helmet>
+          <title>OEE Dashboard | Fast Gravações</title>
+          <meta name="description" content="Análise de Eficiência Global dos Equipamentos (OEE) e indicadores de performance industrial." />
+        </Helmet>
         <Breadcrumbs />
         
         {/* Header */}
@@ -434,41 +439,41 @@ export default function OEEDashboard() {
 
           <TabsContent value="sustainability" className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <Card className="bg-emerald-50/50 border-emerald-100">
+              <Card className="bg-success/5 border-success/20">
                 <CardContent className="pt-6">
                   <div className="flex flex-col items-center text-center space-y-2">
-                    <div className="p-3 bg-emerald-100 rounded-full text-emerald-600">
+                    <div className="p-3 bg-success/20 rounded-full text-success">
                       <Leaf className="h-6 w-6" />
                     </div>
-                    <h3 className="font-bold text-emerald-900">Resíduos Evitados</h3>
-                    <p className="text-3xl font-black text-emerald-600">{(data.overallQuality * 100).toFixed(0)} kg</p>
-                    <p className="text-xs text-emerald-700 font-medium">Estimativa de material salvo por alta qualidade</p>
+                    <h3 className="font-bold text-foreground">Resíduos Evitados</h3>
+                    <p className="text-3xl font-black text-success">{(data.overallQuality * 100).toFixed(0)} kg</p>
+                    <p className="text-xs text-success/80 font-medium">Estimativa de material salvo por alta qualidade</p>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="bg-blue-50/50 border-blue-100">
+              <Card className="bg-indicator-info/5 border-indicator-info/20">
                 <CardContent className="pt-6">
                   <div className="flex flex-col items-center text-center space-y-2">
-                    <div className="p-3 bg-blue-100 rounded-full text-blue-600">
+                    <div className="p-3 bg-indicator-info/20 rounded-full text-indicator-info">
                       <Droplets className="h-6 w-6" />
                     </div>
-                    <h3 className="font-bold text-blue-900">Otimização de Insumos</h3>
-                    <p className="text-3xl font-black text-blue-600">{(data.overallPerformance * 1.2).toFixed(1)}%</p>
-                    <p className="text-xs text-blue-700 font-medium">Economia de tintas/solventes por performance</p>
+                    <h3 className="font-bold text-foreground">Otimização de Insumos</h3>
+                    <p className="text-3xl font-black text-indicator-info">{(data.overallPerformance * 1.2).toFixed(1)}%</p>
+                    <p className="text-xs text-indicator-info/80 font-medium">Economia de tintas/solventes por performance</p>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="bg-amber-50/50 border-amber-100">
+              <Card className="bg-warning/5 border-warning/20">
                 <CardContent className="pt-6">
                   <div className="flex flex-col items-center text-center space-y-2">
-                    <div className="p-3 bg-amber-100 rounded-full text-amber-600">
+                    <div className="p-3 bg-warning/20 rounded-full text-warning">
                       <Zap className="h-6 w-6" />
                     </div>
-                    <h3 className="font-bold text-amber-900">Eficiência Energética</h3>
-                    <p className="text-3xl font-black text-amber-600">{(data.overallAvailability * 0.9).toFixed(1)}%</p>
-                    <p className="text-xs text-amber-700 font-medium">Redução de tempo em idle (ociosidade)</p>
+                    <h3 className="font-bold text-foreground">Eficiência Energética</h3>
+                    <p className="text-3xl font-black text-warning">{(data.overallAvailability * 0.9).toFixed(1)}%</p>
+                    <p className="text-xs text-warning/80 font-medium">Redução de tempo em idle (ociosidade)</p>
                   </div>
                 </CardContent>
               </Card>
@@ -490,11 +495,11 @@ export default function OEEDashboard() {
                     <div key={tech.techniqueId} className="space-y-2">
                       <div className="flex justify-between text-sm">
                         <span className="font-medium">{tech.techniqueName}</span>
-                        <span className="text-emerald-600 font-bold">Eco-Score: {(tech.averageOEE * 0.8 + 20).toFixed(0)}</span>
+                        <span className="text-success font-bold">Eco-Score: {(tech.averageOEE * 0.8 + 20).toFixed(0)}</span>
                       </div>
                       <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
                         <div 
-                          className="h-full bg-emerald-500 transition-all" 
+                          className="h-full bg-success transition-all"
                           style={{ width: `${tech.averageOEE}%` }}
                         />
                       </div>
@@ -514,10 +519,10 @@ export default function OEEDashboard() {
               <div className="text-sm">
                 <p className="font-medium mb-1">Benchmarks de OEE na Indústria</p>
                 <div className="grid grid-cols-2 md:grid-cols-5 gap-2 text-xs text-muted-foreground">
-                  <div><span className="text-success font-medium">≥85%</span> World Class</div>
-                  <div><span className="text-green-600 font-medium">75-84%</span> Excelente</div>
-                  <div><span className="text-yellow-500 font-medium">65-74%</span> Bom</div>
-                  <div><span className="text-orange-500 font-medium">50-64%</span> Aceitável</div>
+                  <div><span className="text-indicator-success font-medium">≥85%</span> World Class</div>
+                  <div><span className="text-success font-medium">75-84%</span> Excelente</div>
+                  <div><span className="text-indicator-warning font-medium">65-74%</span> Bom</div>
+                  <div><span className="text-priority-high font-medium">50-64%</span> Aceitável</div>
                   <div><span className="text-primary font-medium">&lt;50%</span> Crítico</div>
                 </div>
               </div>

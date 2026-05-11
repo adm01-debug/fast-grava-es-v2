@@ -1,4 +1,5 @@
 import { Suspense, lazy, useMemo, ComponentType, useState, useEffect } from 'react';
+import { Helmet } from 'react-helmet';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { DateRangePicker } from '@/components/ui/date-range-picker';
@@ -175,6 +176,10 @@ const Index = () => {
 
   return (
     <MainLayout>
+      <Helmet>
+        <title>Dashboard | Fast Gravações</title>
+        <meta name="description" content="Painel de controle principal do sistema Fast Gravações - Gestão de produção e agendamento." />
+      </Helmet>
       {/* Offline Banner */}
       <OfflineBanner />
       

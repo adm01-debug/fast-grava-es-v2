@@ -6,6 +6,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Keyboard } from "lucide-react";
@@ -190,8 +191,11 @@ export function KeyboardShortcutsProvider({ children }: { children: React.ReactN
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Keyboard className="h-5 w-5" />
-              Atalhos de Teclado
+               Atalhos de Teclado
             </DialogTitle>
+            <DialogDescription className="sr-only">
+              Lista de atalhos de teclado disponíveis para navegação e ações rápidas no sistema.
+            </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-6">
