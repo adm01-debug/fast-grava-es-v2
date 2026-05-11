@@ -1,4 +1,4 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Download, ExternalLink, FileText } from 'lucide-react';
@@ -26,6 +26,9 @@ export function DocumentViewer({ document, open, onOpenChange }: DocumentViewerP
             <FileText className="h-5 w-5 text-primary" />
             {document.title}
           </DialogTitle>
+          <DialogDescription className="sr-only">
+            Visualização do documento {document.title}
+          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">
