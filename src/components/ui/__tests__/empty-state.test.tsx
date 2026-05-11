@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render,  , fireEvent } from '@testing-library/react';
+import { screen } from '@testing-library/dom';
 import { EmptyState, EmptyStates } from '../empty-state';
 
 // Mock framer-motion to render without animations
