@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { PasswordInput } from '@/components/ui/password-input';
@@ -110,6 +110,9 @@ export function CreateOperatorModal({ open, onOpenChange }: CreateOperatorModalP
             <UserPlus className="h-5 w-5" />
             Criar Novo Operador
           </DialogTitle>
+          <DialogDescription>
+            Preencha os dados abaixo para cadastrar um novo operador no sistema.
+          </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
