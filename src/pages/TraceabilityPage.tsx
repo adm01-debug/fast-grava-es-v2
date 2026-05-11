@@ -78,9 +78,18 @@ export default function TraceabilityPage() {
   const [sortDir, setSortDir] = useState<SortDir>('desc');
   const [signatureModal, setSignatureModal] = useState<{ open: boolean; status: string }>({ open: false, status: '' });
   
+  const parentRef = useRef<HTMLDivElement>(null);
+  
   const [newLot, setNewLot] = useState({
     lot_number: '', product_name: '', quantity: 0, job_id: '',
     production_date: format(new Date(), 'yyyy-MM-dd'), expiration_date: '', notes: ''
+  });
+
+  const rowVirtualizer = useVirtualizer({
+    count: filteredAndSortedLots.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 64, // Altura estimada de cada linha
+    overscan: 10,
   });
 
   const { data: lots, isLoading } = useProductionLots();
