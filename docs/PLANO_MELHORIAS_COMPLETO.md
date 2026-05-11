@@ -422,8 +422,8 @@ Buscar e substituir textos hardcoded por chaves i18n:
 | 4.1 | Definir tokens de cor em index.css | 2h | ✅ DONE |
 | 4.2 | Registrar tokens em tailwind.config.ts | 1h | ✅ DONE |
 | 4.3 | Refatorar JobDetailsModal.tsx | 2h | ✅ DONE |
-| 4.4 | Refatorar MTBFMTTRWidget.tsx | 2h | ⬜ TODO |
-| 4.5 | Refatorar OEEDashboard.tsx | 3h | ⬜ TODO |
+| 4.4 | Refatorar MTBFMTTRWidget.tsx | 2h | ✅ DONE |
+| 4.5 | Refatorar OEEDashboard.tsx | 3h | ✅ DONE |
 
 ### Sprint 3 (Semana 3) — Limpeza
 | ID | Tarefa | Esforço | Status |
