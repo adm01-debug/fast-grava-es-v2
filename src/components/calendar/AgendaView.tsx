@@ -33,6 +33,7 @@ const statusConfig: Record<JobStatus, { label: string; color: string; bgColor: s
   cancelled: { label: 'Cancelado', color: 'text-status-cancelled', bgColor: 'bg-status-cancelled/15' },
   delayed: { label: 'Atrasado', color: 'text-status-delayed', bgColor: 'bg-status-delayed/15' },
   rework: { label: 'Retrabalho', color: 'text-status-rework', bgColor: 'bg-status-rework/15' },
+  buffer: { label: 'Buffer', color: 'text-indigo-500', bgColor: 'bg-indigo-500/15' },
 };
 
 interface JobCardProps {
