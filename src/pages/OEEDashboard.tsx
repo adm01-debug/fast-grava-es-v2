@@ -1,4 +1,5 @@
 import { useState, lazy, Suspense, useMemo } from 'react';
+import { Helmet } from 'react-helmet';
 import { cn } from '@/lib/utils';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -91,6 +92,10 @@ export default function OEEDashboard() {
 
   return (
       <div className="p-6 space-y-6">
+        <Helmet>
+          <title>OEE Dashboard | Fast Gravações</title>
+          <meta name="description" content="Análise de Eficiência Global dos Equipamentos (OEE) e indicadores de performance industrial." />
+        </Helmet>
         <Breadcrumbs />
         
         {/* Header */}
