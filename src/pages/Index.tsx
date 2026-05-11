@@ -349,17 +349,18 @@ const Index = () => {
               <div className="xl:col-span-2 flex flex-col min-h-0">
                 <ScrollArea className="flex-1">
                   <div className="space-y-4 pr-2">
-                    <AutoShiftSummary />
-                    <InventoryAlertsWidget />
-                    <OperatorGoalsWidget />
-                    <ShiftHandoverWidget />
-                    <LeaderboardWidget />
-                    <ActivityFeedWidget />
-
-                    <DailySummaryCard />
-                    <MaintenanceAlertsWidget />
-                    <EnergyWidget />
-                    <PredictiveAnalyticsWidget />
+                    <Suspense fallback={<WidgetSkeleton className="h-40" />}>
+                      <AutoShiftSummary />
+                      <InventoryAlertsWidget />
+                      <OperatorGoalsWidget />
+                      <ShiftHandoverWidget />
+                      <LeaderboardWidget />
+                      <ActivityFeedWidget />
+                      <DailySummaryCard />
+                      <MaintenanceAlertsWidget />
+                      <EnergyWidget />
+                      <PredictiveAnalyticsWidget />
+                    </Suspense>
 
                     <SortableWidgetSection
                       widgets={sidebarWidgets}
