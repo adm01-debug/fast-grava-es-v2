@@ -1,4 +1,4 @@
-import { render,  , act } from '@testing-library/react';
+import { render, act } from '@testing-library/react';
 import { screen } from '@testing-library/dom';
 import { PasskeyLoginButton } from '../PasskeyLoginButton';
 import { useWebAuthn } from '@/hooks/useWebAuthn';

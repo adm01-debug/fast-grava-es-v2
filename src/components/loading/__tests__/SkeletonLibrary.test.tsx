@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render,  , act } from '@testing-library/react';
+import { render, act } from '@testing-library/react';
 import { screen } from '@testing-library/dom';
 import {
   Shimmer,
