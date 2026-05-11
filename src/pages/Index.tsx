@@ -15,7 +15,7 @@ import { StatsCardSkeleton, ContentTransition } from '@/components/loading';
 import { DraggableWidget } from '@/components/dashboard/DraggableWidget';
 import { DashboardEditControls } from '@/components/dashboard/DashboardEditControls';
 import { SortableWidgetSection } from '@/components/dashboard/SortableWidgetSection';
-import { DailySummaryCard } from '@/components/notifications/DailySummaryCard';
+// ... DailySummaryCard lazy loaded below
 import { Badge } from '@/components/ui/badge';
 import { FavoritesDropdown, FavoriteButton } from '@/components/navigation/FavoritesManager';
 import { ActivityLog, useActivityLog } from '@/components/activity/ActivityLog';
@@ -24,18 +24,19 @@ import { GamificationBanner } from '@/components/dashboard/GamificationBanner';
 import { useSmartDelayAlerts } from '@/hooks/useSmartDelayAlerts';
 
 import { VoiceButton } from '@/components/voice/VoiceCommands';
-import { ActivityFeedWidget } from '@/components/dashboard/ActivityFeedWidget';
-import { InventoryAlertsWidget } from '@/components/dashboard/InventoryAlertsWidget';
-import { BufferPromotionStatus } from '@/components/dashboard/BufferPromotionStatus';
-import { LiveMachineStatusPanel } from '@/components/dashboard/LiveMachineStatusPanel';
-import { AutoShiftSummary } from '@/components/shift/AutoShiftSummary';
-import { QuickChat } from '@/components/chat/QuickChat';
-import { MaintenanceAlertsWidget } from '@/components/dashboard/MaintenanceAlertsWidget';
-import { EnergyWidget } from '@/components/dashboard/EnergyWidget';
-import { PredictiveAnalyticsWidget } from '@/components/dashboard/PredictiveAnalyticsWidget';
-import { ShiftHandoverWidget } from '@/components/dashboard/ShiftHandoverWidget';
-import { LeaderboardWidget } from '@/components/dashboard/LeaderboardWidget';
-import { OperatorGoalsWidget } from '@/components/dashboard/OperatorGoalsWidget';
+const ActivityFeedWidget = lazy(() => import('@/components/dashboard/ActivityFeedWidget').then(m => ({ default: m.ActivityFeedWidget })));
+const InventoryAlertsWidget = lazy(() => import('@/components/dashboard/InventoryAlertsWidget').then(m => ({ default: m.InventoryAlertsWidget })));
+const BufferPromotionStatus = lazy(() => import('@/components/dashboard/BufferPromotionStatus').then(m => ({ default: m.BufferPromotionStatus })));
+const LiveMachineStatusPanel = lazy(() => import('@/components/dashboard/LiveMachineStatusPanel').then(m => ({ default: m.LiveMachineStatusPanel })));
+const AutoShiftSummary = lazy(() => import('@/components/shift/AutoShiftSummary').then(m => ({ default: m.AutoShiftSummary })));
+const QuickChat = lazy(() => import('@/components/chat/QuickChat').then(m => ({ default: m.QuickChat })));
+const MaintenanceAlertsWidget = lazy(() => import('@/components/dashboard/MaintenanceAlertsWidget').then(m => ({ default: m.MaintenanceAlertsWidget })));
+const EnergyWidget = lazy(() => import('@/components/dashboard/EnergyWidget').then(m => ({ default: m.EnergyWidget })));
+const PredictiveAnalyticsWidget = lazy(() => import('@/components/dashboard/PredictiveAnalyticsWidget').then(m => ({ default: m.PredictiveAnalyticsWidget })));
+const ShiftHandoverWidget = lazy(() => import('@/components/dashboard/ShiftHandoverWidget').then(m => ({ default: m.ShiftHandoverWidget })));
+const LeaderboardWidget = lazy(() => import('@/components/dashboard/LeaderboardWidget').then(m => ({ default: m.LeaderboardWidget })));
+const OperatorGoalsWidget = lazy(() => import('@/components/dashboard/OperatorGoalsWidget').then(m => ({ default: m.OperatorGoalsWidget })));
+const DailySummaryCard = lazy(() => import('@/components/notifications/DailySummaryCard').then(m => ({ default: m.DailySummaryCard })));
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { DashboardExport } from '@/components/dashboard/DashboardExport';
@@ -229,7 +230,9 @@ const Index = () => {
         </div>
 
         <GamificationBanner />
-        <BufferPromotionStatus />
+        <Suspense fallback={<div className="h-10 bg-muted animate-pulse rounded-lg mb-4" />}>
+          <BufferPromotionStatus />
+        </Suspense>
 
         {/* Edit Mode Indicator */}
         {isEditMode && (
@@ -348,17 +351,18 @@ const Index = () => {
               <div className="xl:col-span-2 flex flex-col min-h-0">
                 <ScrollArea className="flex-1">
                   <div className="space-y-4 pr-2">
-                    <AutoShiftSummary />
-                    <InventoryAlertsWidget />
-                    <OperatorGoalsWidget />
-                    <ShiftHandoverWidget />
-                    <LeaderboardWidget />
-                    <ActivityFeedWidget />
-
-                    <DailySummaryCard />
-                    <MaintenanceAlertsWidget />
-                    <EnergyWidget />
-                    <PredictiveAnalyticsWidget />
+                    <Suspense fallback={<WidgetSkeleton className="h-40" />}>
+                      <AutoShiftSummary />
+                      <InventoryAlertsWidget />
+                      <OperatorGoalsWidget />
+                      <ShiftHandoverWidget />
+                      <LeaderboardWidget />
+                      <ActivityFeedWidget />
+                      <DailySummaryCard />
+                      <MaintenanceAlertsWidget />
+                      <EnergyWidget />
+                      <PredictiveAnalyticsWidget />
+                    </Suspense>
 
                     <SortableWidgetSection
                       widgets={sidebarWidgets}
@@ -440,7 +444,9 @@ const Index = () => {
           {/* Chat Tab */}
           <TabsContent value="chat" className="flex-1 mt-4 min-h-0">
             <div className="h-full">
-              <QuickChat />
+              <Suspense fallback={<div className="h-full bg-muted animate-pulse rounded-lg" />}>
+                <QuickChat />
+              </Suspense>
             </div>
           </TabsContent>
 

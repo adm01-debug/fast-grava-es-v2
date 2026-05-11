@@ -19,6 +19,7 @@ import { CalendarEmptyState } from '@/components/calendar/CalendarEmptyState';
 import { MobileFAB } from '@/components/calendar/MobileFAB';
 import { OptimizationAssistant } from '@/components/calendar/OptimizationAssistant';
 import { ConflictResolutionPanel } from '@/components/calendar/ConflictResolutionPanel';
+import { QuickJobDrawer } from '@/components/calendar/QuickJobDrawer';
 import { PlanningEfficiencyDashboard } from '@/components/planning/PlanningEfficiencyDashboard';
 import { useSchedulingData } from '@/hooks/useSchedulingData';
 import { useCalendarFilters } from '@/hooks/useCalendarFilters';
@@ -52,6 +53,9 @@ export default function DailyCalendar() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [viewMode, setViewMode] = useState<'timeline' | 'agenda'>('timeline');
   const [onboardingOpen, setOnboardingOpen] = useState(false);
+  const [quickJobOpen, setQuickJobOpen] = useState(false);
+  const [quickJobMachineId, setQuickJobMachineId] = useState<string>();
+  const [quickJobTime, setQuickJobTime] = useState<{ hour: number; minute: number }>();
   const printAreaRef = useRef<HTMLDivElement>(null);
   const { isMobile } = useDevice();
 
@@ -169,9 +173,25 @@ export default function DailyCalendar() {
     completeOnboarding();
   };
 
+  const handleSlotClick = (machineId: string, hour: number, minute: number) => {
+    setQuickJobMachineId(machineId);
+    setQuickJobTime({ hour, minute });
+    setQuickJobOpen(true);
+  };
+
   return (
     <MainLayout>
       <JobDetailsModal job={selectedJob} open={isModalOpen} onOpenChange={setIsModalOpen} />
+      <QuickJobDrawer
+        open={quickJobOpen}
+        onOpenChange={setQuickJobOpen}
+        selectedDate={selectedDate}
+        selectedMachineId={quickJobMachineId}
+        selectedTime={quickJobTime}
+        machines={machines}
+        techniques={techniques}
+        onSuccess={refetchJobs}
+      />
       <CalendarOnboarding open={onboardingOpen} onClose={handleOnboardingClose} />
 
       <div ref={printAreaRef} className="p-4 sm:p-6 space-y-4 sm:space-y-6 animate-fade-in-up calendar-print-area">
@@ -294,6 +314,7 @@ export default function DailyCalendar() {
                 currentTimePosition={currentTimePosition}
                 getTechniqueById={getTechniqueById as (id: string) => ReturnType<typeof getTechniqueById>}
                 onJobClick={handleJobClick}
+                onSlotClick={handleSlotClick}
                 zoom={prefs.zoom}
                 groupBy={prefs.groupBy}
                 overlays={prefs.overlays}

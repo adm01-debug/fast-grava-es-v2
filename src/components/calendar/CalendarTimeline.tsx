@@ -1,4 +1,5 @@
-import { useMemo, useState, Fragment } from 'react';
+import { useMemo, useState, Fragment, useRef } from 'react';
+import { useVirtualizer } from '@tanstack/react-virtual';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 import { ChevronDown, ChevronRight as ChevronRightIcon, Sparkles } from 'lucide-react';
@@ -202,83 +203,139 @@ export function CalendarTimeline({
     });
   };
 
+  // Flattened data for virtualization
+  const flattenedRows = useMemo(() => {
+    if (groupBy !== 'technique') {
+      return machines.map(m => ({ type: 'machine' as const, data: m }));
+    }
+    
+    const rows: ({ type: 'technique', data: DbTechnique, totalJobs: number, machineCount: number } | { type: 'machine', data: DbMachine })[] = [];
+    groupedMachines?.forEach(group => {
+      const totalJobs = group.machines.reduce(
+        (sum, m) => sum + (jobsByMachine[m.id]?.length || 0),
+        0
+      );
+      rows.push({ 
+        type: 'technique', 
+        data: group.technique, 
+        totalJobs, 
+        machineCount: group.machines.length 
+      });
+      if (!collapsed.has(group.technique.id)) {
+        group.machines.forEach(m => {
+          rows.push({ type: 'machine', data: m });
+        });
+      }
+    });
+    return rows;
+  }, [machines, groupBy, groupedMachines, collapsed, jobsByMachine]);
+
+  const parentRef = useRef<HTMLDivElement>(null);
+  const rowVirtualizer = useVirtualizer({
+    count: flattenedRows.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: (index) => flattenedRows[index].type === 'technique' ? 40 : 64,
+    overscan: 10,
+  });
+
   return (
-    <ScrollArea className="w-full">
-      <div className="min-w-[1200px]">
-        <div className="flex border-b border-border/40 bg-muted/5 sticky top-0 z-10">
-          <div className="w-28 shrink-0 p-3 border-r border-border/40 flex flex-col justify-between">
-            <span className="text-xs font-medium text-muted-foreground uppercase">
-              {groupBy === 'technique' ? 'Técnica' : 'Máquina'}
-            </span>
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="h-6 w-6 mt-1 text-primary hover:bg-primary/10"
-              title="Otimizar Agenda (IA)"
-              onClick={() => {
-                toast.success("Otimização inteligente iniciada...", {
-                  icon: <Sparkles className="h-4 w-4 text-primary" />,
-                  description: "A IA está recalculando a melhor sequência para hoje."
-                });
-              }}
-            >
-              <Sparkles className="h-3.5 w-3.5" />
-            </Button>
-          </div>
-          <div className="flex-1 flex">
-            {ticks.slice(0, -1).map((t) => (
-              <div
-                key={t.minute}
-                className="flex-1 text-center py-3 border-r border-border/20 last:border-r-0"
-              >
-                <span className="text-xs font-medium text-muted-foreground">{t.label}</span>
-              </div>
-            ))}
-          </div>
+    <div className="w-full h-[calc(100vh-320px)] border rounded-md bg-card overflow-hidden flex flex-col">
+      {/* Fixed Header */}
+      <div className="flex-none min-w-[1200px] flex border-b border-border/40 bg-muted/10 sticky top-0 z-20">
+        <div className="w-28 shrink-0 p-3 border-r border-border/40 flex flex-col justify-between">
+          <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+            {groupBy === 'technique' ? 'Técnica' : 'Máquina'}
+          </span>
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="h-6 w-6 mt-1 text-primary hover:bg-primary/10"
+            title="Otimizar Agenda (IA)"
+            onClick={() => {
+              toast.success("Otimização inteligente iniciada...", {
+                icon: <Sparkles className="h-4 w-4 text-primary" />,
+                description: "A IA está recalculando a melhor sequência para hoje."
+              });
+            }}
+          >
+            <Sparkles className="h-3.5 w-3.5" />
+          </Button>
         </div>
-
-        {groupBy === 'technique' && groupedMachines ? (
-          groupedMachines.map((group) => {
-            const isCollapsed = collapsed.has(group.technique.id);
-            const totalJobs = group.machines.reduce(
-              (sum, m) => sum + (jobsByMachine[m.id]?.length || 0),
-              0
-            );
-            return (
-              <Fragment key={group.technique.id}>
-                <button
-                  onClick={() => toggleGroup(group.technique.id)}
-                  className="w-full flex items-center gap-2 px-3 py-2 bg-muted/10 border-b border-border/30 hover:bg-muted/20 transition-colors text-left"
-                  aria-expanded={!isCollapsed}
-                >
-                  {isCollapsed ? (
-                    <ChevronRightIcon className="w-4 h-4 text-muted-foreground" />
-                  ) : (
-                    <ChevronDown className="w-4 h-4 text-muted-foreground" />
-                  )}
-                  <div
-                    className="w-2 h-4 rounded-full"
-                    style={{ backgroundColor: group.technique.color }}
-                  />
-                  <span className="text-sm font-semibold">{group.technique.name}</span>
-                  <span className="text-xs text-muted-foreground ml-auto">
-                    {group.machines.length} máquina{group.machines.length !== 1 ? 's' : ''} · {totalJobs} job{totalJobs !== 1 ? 's' : ''}
-                  </span>
-                </button>
-                {!isCollapsed && group.machines.map((m, i) => renderRow(m, i))}
-              </Fragment>
-            );
-          })
-        ) : (
-          machines.map((m, i) => renderRow(m, i))
-        )}
-
-        {machines.length === 0 && (
-          <div className="p-12 text-center text-muted-foreground">
-            Nenhuma máquina encontrada para os filtros selecionados.
-          </div>
-        )}
+        <div className="flex-1 flex overflow-hidden">
+          {ticks.slice(0, -1).map((t) => (
+            <div
+              key={t.minute}
+              className="flex-1 text-center py-3 border-r border-border/20 last:border-r-0"
+            >
+              <span className="text-[11px] font-semibold text-muted-foreground">{t.label}</span>
+            </div>
+          ))}
+        </div>
       </div>
-    </ScrollArea>
+
+      {/* Virtualized Rows Container */}
+      <div 
+        ref={parentRef}
+        className="flex-1 overflow-auto scrollbar-thin scrollbar-thumb-border"
+      >
+        <div 
+          className="min-w-[1200px] relative"
+          style={{ height: `${rowVirtualizer.getTotalSize()}px` }}
+        >
+          {rowVirtualizer.getVirtualItems().map((virtualRow) => {
+            const row = flattenedRows[virtualRow.index];
+            
+            return (
+              <div
+                key={virtualRow.key}
+                className="absolute top-0 left-0 w-full"
+                style={{
+                  height: `${virtualRow.size}px`,
+                  transform: `translateY(${virtualRow.start}px)`,
+                }}
+              >
+                {row.type === 'technique' ? (
+                  <button
+                    onClick={() => toggleGroup(row.data.id)}
+                    className="w-full h-full flex items-center gap-2 px-3 py-2 bg-muted/20 border-b border-border/30 hover:bg-muted/30 transition-colors text-left group"
+                    aria-expanded={!collapsed.has(row.data.id)}
+                  >
+                    {collapsed.has(row.data.id) ? (
+                      <ChevronRightIcon className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                    ) : (
+                      <ChevronDown className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                    )}
+                    <div
+                      className="w-2 h-4 rounded-full shadow-sm"
+                      style={{ backgroundColor: row.data.color }}
+                    />
+                    <span className="text-sm font-bold text-foreground tracking-tight">{row.data.name}</span>
+                    <div className="flex items-center gap-3 ml-auto">
+                      <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-background/50 border border-border/40 text-muted-foreground">
+                        {row.machineCount} {row.machineCount === 1 ? 'máquina' : 'máquinas'}
+                      </span>
+                      <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-primary/10 border border-primary/20 text-primary">
+                        {row.totalJobs} {row.totalJobs === 1 ? 'job' : 'jobs'}
+                      </span>
+                    </div>
+                  </button>
+                ) : (
+                  renderRow(row.data, virtualRow.index)
+                )}
+              </div>
+            );
+          })}
+
+          {flattenedRows.length === 0 && (
+            <div className="p-12 text-center text-muted-foreground flex flex-col items-center gap-2">
+              <div className="w-12 h-12 rounded-full bg-muted/20 flex items-center justify-center">
+                <ChevronRightIcon className="w-6 h-6 opacity-20" />
+              </div>
+              <p className="text-sm">Nenhuma máquina encontrada para os filtros selecionados.</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
   );
 }

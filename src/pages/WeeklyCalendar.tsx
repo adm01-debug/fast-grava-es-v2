@@ -131,7 +131,7 @@ export default function WeeklyCalendar() {
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
 
   const { jobs, techniques, machines, getTechniqueById, refetchJobs } = useSchedulingData();
-  const { handleDragStart, handleDragEnd, activeId } = useWeeklyDragDrop({ onUpdate: refetchJobs });
+  const { handleDragStart, handleDragEnd, activeId } = useWeeklyDragDrop({ onUpdate: refetchJobs, allJobs: jobs });
   const activeJob = useMemo(() => jobs.find(j => j.id === activeId), [jobs, activeId]);
   const { mutate: updateStatus } = useUpdateJobStatus();
   const { conflicts } = useSchedulingConflicts();
