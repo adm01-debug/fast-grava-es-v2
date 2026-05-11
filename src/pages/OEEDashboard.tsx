@@ -490,11 +490,11 @@ export default function OEEDashboard() {
                     <div key={tech.techniqueId} className="space-y-2">
                       <div className="flex justify-between text-sm">
                         <span className="font-medium">{tech.techniqueName}</span>
-                        <span className="text-emerald-600 font-bold">Eco-Score: {(tech.averageOEE * 0.8 + 20).toFixed(0)}</span>
+                        <span className="text-success font-bold">Eco-Score: {(tech.averageOEE * 0.8 + 20).toFixed(0)}</span>
                       </div>
                       <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
                         <div 
-                          className="h-full bg-emerald-500 transition-all" 
+                          className="h-full bg-success transition-all"
                           style={{ width: `${tech.averageOEE}%` }}
                         />
                       </div>
