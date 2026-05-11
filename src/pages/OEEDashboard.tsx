@@ -364,8 +364,8 @@ export default function OEEDashboard() {
           <Card>
             <CardContent className="pt-4">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-blue-500/10">
-                  <BarChart3 className="h-5 w-5 text-blue-500" />
+                <div className="p-2 rounded-lg bg-indicator-info/10">
+                  <BarChart3 className="h-5 w-5 text-indicator-info" />
                 </div>
                 <div>
                   <p className="text-2xl font-bold">{data.byTechnique.length}</p>
