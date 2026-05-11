@@ -6,11 +6,11 @@ import { Activity, Clock, AlertTriangle, TrendingUp, Wrench, Timer } from 'lucid
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 const reliabilityColors: Record<MachineReliabilityMetrics['reliabilityScore'], string> = {
-  excellent: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
-  good: 'bg-green-500/20 text-green-400 border-green-500/30',
-  moderate: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
-  poor: 'bg-orange-500/20 text-orange-400 border-orange-500/30',
-  critical: 'bg-primary/20 text-primary border-primary/30',
+  excellent: 'bg-indicator-success/20 text-indicator-success border-indicator-success/30',
+  good: 'bg-indicator-success/20 text-indicator-success border-indicator-success/30',
+  moderate: 'bg-indicator-warning/20 text-indicator-warning border-indicator-warning/30',
+  poor: 'bg-priority-high/20 text-priority-high border-priority-high/30',
+  critical: 'bg-indicator-danger/20 text-indicator-danger border-indicator-danger/30',
 };
 
 const reliabilityLabels: Record<MachineReliabilityMetrics['reliabilityScore'], string> = {
