@@ -412,16 +412,16 @@ Buscar e substituir textos hardcoded por chaves i18n:
 ### Sprint 1 (Semana 1) — CRÍTICO
 | ID | Tarefa | Esforço | Status |
 |----|--------|---------|--------|
-| 1.1 | Corrigir imports testing-library | 4h | ⬜ TODO |
-| 2 | Adicionar forwardRef ao JobQRCode | 30min | ⬜ TODO |
-| 3 | Adicionar DialogDescription nos modais | 2h | ⬜ TODO |
+| 1.1 | Corrigir imports testing-library | 4h | ✅ DONE |
+| 2 | Adicionar forwardRef ao JobQRCode | 30min | ✅ DONE |
+| 3 | Adicionar DialogDescription nos modais | 2h | ✅ DONE |
 
 ### Sprint 2 (Semana 2) — Design System
 | ID | Tarefa | Esforço | Status |
 |----|--------|---------|--------|
-| 4.1 | Definir tokens de cor em index.css | 2h | ⬜ TODO |
-| 4.2 | Registrar tokens em tailwind.config.ts | 1h | ⬜ TODO |
-| 4.3 | Refatorar JobDetailsModal.tsx | 2h | ⬜ TODO |
+| 4.1 | Definir tokens de cor em index.css | 2h | ✅ DONE |
+| 4.2 | Registrar tokens em tailwind.config.ts | 1h | ✅ DONE |
+| 4.3 | Refatorar JobDetailsModal.tsx | 2h | ✅ DONE |
 | 4.4 | Refatorar MTBFMTTRWidget.tsx | 2h | ⬜ TODO |
 | 4.5 | Refatorar OEEDashboard.tsx | 3h | ⬜ TODO |
 
