@@ -73,10 +73,10 @@ interface JobDetailsModalProps {
 }
 
 const priorityColors = {
-  urgent: 'bg-red-500/20 text-red-400 border-red-500/30',
-  high: 'bg-orange-500/20 text-orange-400 border-orange-500/30',
-  medium: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
-  low: 'bg-green-500/20 text-green-400 border-green-500/30'
+  urgent: 'bg-priority-urgent/20 text-priority-urgent border-priority-urgent/30',
+  high: 'bg-priority-high/20 text-priority-high border-priority-high/30',
+  medium: 'bg-priority-medium/20 text-priority-medium border-priority-medium/30',
+  low: 'bg-priority-low/20 text-priority-low border-priority-low/30'
 };
 
 const priorityLabels = {
@@ -355,8 +355,8 @@ export function JobDetailsModal({ job, open, onOpenChange, onStatusChange }: Job
                 {/* Client & Product */}
                 <div className="p-4 rounded-xl bg-muted/30 border border-border/50">
                   <div className="flex items-start gap-4">
-                    <div className="p-3 rounded-xl bg-cyan-500/20">
-                      <Building className="h-6 w-6 text-cyan-400" />
+                    <div className="p-3 rounded-xl bg-indicator-info/20">
+                      <Building className="h-6 w-6 text-indicator-info" />
                     </div>
                     <div className="flex-1">
                       <h3 className="text-lg font-semibold text-foreground">{job.client}</h3>
@@ -372,19 +372,19 @@ export function JobDetailsModal({ job, open, onOpenChange, onStatusChange }: Job
                       icon={Package} 
                       label="Quantidade" 
                       value={`${job.quantity.toLocaleString()} peças`}
-                      color="bg-green-500/20"
+                      color="bg-indicator-success/20"
                     />
                     <InfoRow 
                       icon={Palette} 
-                      label="Cor da Gravura" 
+                      label="Cor da Gravação" 
                       value={job.gravure_color || 'Não definida'}
-                      color="bg-purple-500/20"
+                      color="bg-accent-purple/20"
                     />
                     <InfoRow 
                       icon={Clock} 
                       label="Duração Estimada" 
                       value={`${job.estimated_duration} minutos`}
-                      color="bg-orange-500/20"
+                      color="bg-priority-high/20"
                     />
                   </div>
 
@@ -393,19 +393,19 @@ export function JobDetailsModal({ job, open, onOpenChange, onStatusChange }: Job
                       icon={Calendar} 
                       label="Data Agendada" 
                       value={job.scheduled_date ? new Date(job.scheduled_date).toLocaleDateString('pt-BR') : 'Não agendada'}
-                      color="bg-cyan-500/20"
+                      color="bg-indicator-info/20"
                     />
                     <InfoRow 
                       icon={Clock} 
                       label="Horário" 
                       value={job.start_time && job.end_time ? `${job.start_time} - ${job.end_time}` : 'Não definido'}
-                      color="bg-yellow-500/20"
+                      color="bg-indicator-warning/20"
                     />
                     <InfoRow 
                       icon={User} 
                       label="Máquina" 
                       value={machine ? `${machine.code} - ${machine.name}` : 'Não atribuída'}
-                      color="bg-pink-500/20"
+                      color="bg-accent-pink/20"
                     />
                   </div>
                 </div>

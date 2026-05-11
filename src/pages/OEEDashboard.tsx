@@ -140,7 +140,7 @@ export default function OEEDashboard() {
               </div>
               <p className="text-sm text-muted-foreground leading-relaxed">
                  Sua planta está operando <span className="text-primary font-bold">12% acima</span> do benchmark do último trimestre. 
-                 A técnica <span className="font-bold text-foreground">{data.byTechnique[0]?.techniqueName}</span> é o destaque com <span className="text-emerald-500 font-bold">{data.byTechnique[0]?.averageOEE}%</span> de eficiência global.
+                 A técnica <span className="font-bold text-foreground">{data.byTechnique[0]?.techniqueName}</span> é o destaque com <span className="text-indicator-success font-bold">{data.byTechnique[0]?.averageOEE}%</span> de eficiência global.
               </p>
             </div>
             <div className="flex flex-wrap items-center justify-center gap-3 bg-background/40 p-4 rounded-2xl border border-border/50 backdrop-blur-sm">
@@ -149,11 +149,11 @@ export default function OEEDashboard() {
                  <p className="text-[10px] font-bold text-muted-foreground uppercase">Disponib.</p>
               </div>
               <div className="text-center px-4 border-r border-border/50">
-                 <p className="text-2xl font-black text-blue-500">{data.overallPerformance.toFixed(0)}%</p>
+                 <p className="text-2xl font-black text-indicator-info">{data.overallPerformance.toFixed(0)}%</p>
                  <p className="text-[10px] font-bold text-muted-foreground uppercase">Perform.</p>
               </div>
               <div className="text-center px-4">
-                 <p className="text-2xl font-black text-purple-500">{data.overallQuality.toFixed(0)}%</p>
+                 <p className="text-2xl font-black text-accent-purple">{data.overallQuality.toFixed(0)}%</p>
                  <p className="text-[10px] font-bold text-muted-foreground uppercase">Qualidade</p>
               </div>
             </div>
@@ -164,17 +164,17 @@ export default function OEEDashboard() {
         <div className="flex flex-col lg:flex-row gap-4">
           {/* Smart Actions */}
           <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Card className="border-l-4 border-l-amber-500 bg-amber-50/30">
+            <Card className="border-l-4 border-l-indicator-warning bg-indicator-warning/10">
               <CardContent className="p-4 flex gap-4">
-                <div className="h-10 w-10 rounded-full bg-amber-100 flex items-center justify-center shrink-0">
-                  <Lightbulb className="h-5 w-5 text-amber-600" />
+                <div className="h-10 w-10 rounded-full bg-indicator-warning/20 flex items-center justify-center shrink-0">
+                  <Lightbulb className="h-5 w-5 text-indicator-warning" />
                 </div>
                 <div>
                   <h3 className="font-bold text-sm">Gargalo de Performance</h3>
                   <p className="text-xs text-muted-foreground mt-1">
                     A técnica <span className="font-bold">{data.byTechnique[0]?.techniqueName}</span> está com perda de velocidade de 15%. Recomendamos revisão de setup.
                   </p>
-                  <Button variant="link" size="sm" className="p-0 h-auto text-amber-600 text-xs mt-2">
+                  <Button variant="link" size="sm" className="p-0 h-auto text-indicator-warning text-xs mt-2">
                     Ver Detalhes <ArrowRight className="ml-1 h-3 w-3" />
                   </Button>
                 </div>
@@ -364,8 +364,8 @@ export default function OEEDashboard() {
           <Card>
             <CardContent className="pt-4">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-blue-500/10">
-                  <BarChart3 className="h-5 w-5 text-blue-500" />
+                <div className="p-2 rounded-lg bg-indicator-info/10">
+                  <BarChart3 className="h-5 w-5 text-indicator-info" />
                 </div>
                 <div>
                   <p className="text-2xl font-bold">{data.byTechnique.length}</p>

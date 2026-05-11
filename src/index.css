@@ -81,6 +81,27 @@
     --warning-foreground: 45 100% 15%;
     --info: 206 100% 50%;
     --info-foreground: 0 0% 100%;
+    --danger: 0 72% 51%;
+    --danger-foreground: 0 0% 100%;
+
+    /* ===== INDICATORS ===== */
+    --indicator-success: 160 84% 39%;
+    --indicator-warning: 38 92% 50%;
+    --indicator-danger: 0 72% 51%;
+    --indicator-info: 206 100% 50%;
+    --indicator-neutral: 220 14% 50%;
+    
+    /* ===== PRIORITIES ===== */
+    --priority-urgent: 0 72% 51%;
+    --priority-high: 24 95% 53%;
+    --priority-medium: 38 92% 50%;
+    --priority-low: 160 84% 39%;
+
+    /* ===== ACCENTS ===== */
+    --accent-cyan: 192 91% 36%;
+    --accent-purple: 262 83% 58%;
+    --accent-orange: 24 95% 53%;
+    --accent-pink: 330 81% 60%;
 
     /* ===== SEMANTIC SURFACES ===== */
     --surface-success: 160 84% 95%;
@@ -201,6 +222,27 @@
     /* ===== MUTED ===== */
     --muted: 220 10% 13%;
     --muted-foreground: 220 8% 50%;
+    --danger: 0 72% 51%;
+    --danger-foreground: 0 0% 100%;
+
+    /* ===== INDICATORS (Dark) ===== */
+    --indicator-success: 160 84% 45%;
+    --indicator-warning: 38 92% 55%;
+    --indicator-danger: 0 72% 55%;
+    --indicator-info: 206 100% 60%;
+    --indicator-neutral: 220 10% 40%;
+    
+    /* ===== PRIORITIES (Dark) ===== */
+    --priority-urgent: 0 72% 55%;
+    --priority-high: 24 95% 58%;
+    --priority-medium: 38 92% 55%;
+    --priority-low: 160 84% 45%;
+
+    /* ===== ACCENTS (Dark) ===== */
+    --accent-cyan: 192 91% 45%;
+    --accent-purple: 262 83% 65%;
+    --accent-orange: 24 95% 58%;
+    --accent-pink: 330 81% 65%;
 
     /* ===== ACCENT ===== */
     --accent: 262 60% 18%;

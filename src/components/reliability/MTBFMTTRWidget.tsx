@@ -6,11 +6,11 @@ import { Activity, Clock, AlertTriangle, TrendingUp, Wrench, Timer } from 'lucid
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 const reliabilityColors: Record<MachineReliabilityMetrics['reliabilityScore'], string> = {
-  excellent: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
-  good: 'bg-green-500/20 text-green-400 border-green-500/30',
-  moderate: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
-  poor: 'bg-orange-500/20 text-orange-400 border-orange-500/30',
-  critical: 'bg-primary/20 text-primary border-primary/30',
+  excellent: 'bg-indicator-success/20 text-indicator-success border-indicator-success/30',
+  good: 'bg-indicator-success/20 text-indicator-success border-indicator-success/30',
+  moderate: 'bg-indicator-warning/20 text-indicator-warning border-indicator-warning/30',
+  poor: 'bg-priority-high/20 text-priority-high border-priority-high/30',
+  critical: 'bg-indicator-danger/20 text-indicator-danger border-indicator-danger/30',
 };
 
 const reliabilityLabels: Record<MachineReliabilityMetrics['reliabilityScore'], string> = {
@@ -107,12 +107,12 @@ export function MTBFMTTRWidget() {
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <div className="p-3 rounded-lg bg-orange-500/10 border border-orange-500/20">
+                <div className="p-3 rounded-lg bg-indicator-warning/10 border border-indicator-warning/20">
                   <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
                     <Wrench className="h-3.5 w-3.5" />
                     MTTR Médio
                   </div>
-                  <div className="text-xl font-bold text-orange-400">
+                  <div className="text-xl font-bold text-indicator-warning">
                     {formatMinutes(summary.averageMTTR)}
                   </div>
                 </div>
@@ -127,12 +127,12 @@ export function MTBFMTTRWidget() {
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <div className="p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
+                <div className="p-3 rounded-lg bg-indicator-success/10 border border-indicator-success/20">
                   <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
                     <TrendingUp className="h-3.5 w-3.5" />
                     Disponibilidade
                   </div>
-                  <div className="text-xl font-bold text-emerald-400">
+                  <div className="text-xl font-bold text-indicator-success">
                     {summary.averageAvailability.toFixed(1)}%
                   </div>
                 </div>
@@ -167,7 +167,7 @@ export function MTBFMTTRWidget() {
         {machinesWithIssues.length > 0 && (
           <div className="space-y-2">
             <h4 className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-              <AlertTriangle className="h-4 w-4 text-orange-400" />
+              <AlertTriangle className="h-4 w-4 text-indicator-warning" />
               Máquinas com Baixa Confiabilidade
             </h4>
             <div className="space-y-2">
@@ -223,11 +223,11 @@ export function MTBFMTTRWidget() {
                     <div className="flex items-center gap-2">
                       <div 
                         className={`w-2 h-2 rounded-full ${
-                          machine.reliabilityScore === 'excellent' ? 'bg-emerald-500' :
-                          machine.reliabilityScore === 'good' ? 'bg-green-500' :
-                          machine.reliabilityScore === 'moderate' ? 'bg-yellow-500' :
-                          machine.reliabilityScore === 'poor' ? 'bg-orange-500' :
-                          'bg-primary'
+                          machine.reliabilityScore === 'excellent' ? 'bg-indicator-success' :
+                          machine.reliabilityScore === 'good' ? 'bg-indicator-success' :
+                          machine.reliabilityScore === 'moderate' ? 'bg-indicator-warning' :
+                          machine.reliabilityScore === 'poor' ? 'bg-priority-high' :
+                          'bg-indicator-danger'
                         }`}
                       />
                       <span className="font-mono text-xs">{machine.machineCode}</span>

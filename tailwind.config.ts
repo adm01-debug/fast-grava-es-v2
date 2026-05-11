@@ -153,6 +153,23 @@ export default {
           DEFAULT: "hsl(var(--rank-bronze))",
           foreground: "hsl(var(--rank-bronze-foreground))",
         },
+        indicator: {
+          success: "hsl(var(--indicator-success))",
+          warning: "hsl(var(--indicator-warning))",
+          danger: "hsl(var(--indicator-danger))",
+          info: "hsl(var(--indicator-info))",
+          neutral: "hsl(var(--indicator-neutral))",
+        },
+        priority: {
+          urgent: "hsl(var(--priority-urgent))",
+          high: "hsl(var(--priority-high))",
+          medium: "hsl(var(--priority-medium))",
+          low: "hsl(var(--priority-low))",
+        },
+        danger: {
+          DEFAULT: "hsl(var(--danger))",
+          foreground: "hsl(var(--danger-foreground))",
+        },
       },
       // Extended Z-Index Scale
       zIndex: {
