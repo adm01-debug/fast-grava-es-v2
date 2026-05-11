@@ -118,6 +118,13 @@ export default function TraceabilityPage() {
 
     return result;
   }, [fuseSearchedLots, statusFilter, dateFrom, dateTo, sortField, sortDir]);
+  const rowVirtualizer = useVirtualizer({
+    count: filteredAndSortedLots.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 64,
+    overscan: 10,
+  });
+
 
   const generateLotNumber = () => {
     const date = format(new Date(), 'yyyyMMdd');
