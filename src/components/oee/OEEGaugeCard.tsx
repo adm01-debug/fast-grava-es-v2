@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, memo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { TrendingUp, TrendingDown } from 'lucide-react';
@@ -13,7 +13,7 @@ interface OEEGaugeCardProps {
   trend?: number;
 }
 
-export function OEEGaugeCard({ 
+export const OEEGaugeCard = memo(function OEEGaugeCard({ 
   title, 
   value, 
   icon, 
@@ -22,6 +22,7 @@ export function OEEGaugeCard({
   size = 'md',
   trend
 }: OEEGaugeCardProps) {
+
   const gaugeData = useMemo(() => {
     const percentage = Math.min(100, Math.max(0, value));
     const rotation = (percentage / 100) * 180;
@@ -136,4 +137,4 @@ export function OEEGaugeCard({
       />
     </Card>
   );
-}
+});
