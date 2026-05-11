@@ -30,6 +30,7 @@ import { BIAIInsights } from './BIAIInsights';
 import { CHART_COLORS, GRADIENTS } from '@/constants/biConstants';
 
 interface FuturisticBIProps {
+  isLoading?: boolean;
   biMetrics: {
     toDoJobs: number;
     periodLossRate: number;
@@ -53,7 +54,7 @@ interface FuturisticBIProps {
   };
 }
 
-export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
+export function FuturisticBI({ biMetrics, kpis, oeeData, isLoading }: FuturisticBIProps) {
   const navigate = useNavigate();
   const { operators } = useOperatorProductivity(30);
   const { stats: tpmStats } = useTPM();
@@ -174,8 +175,13 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
     return { score: Math.max(0, 100 - deviation), status, color, deviation };
   }, [studioData]);
 
-  if (!biMetrics.periodJobsList || biMetrics.periodJobsList.length === 0) {
-    return <div className="py-12"><BIEmptyState /></div>;
+  if (isLoading || !biMetrics.periodJobsList || biMetrics.periodJobsList.length === 0) {
+    return (
+      <div className="py-12 space-y-8">
+        <BILoadingSkeleton />
+        <BIEmptyState />
+      </div>
+    );
   }
 
   return (
