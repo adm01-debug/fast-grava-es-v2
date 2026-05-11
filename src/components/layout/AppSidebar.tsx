@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { motion } from 'framer-motion';
 import { useLocation, Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ChevronLeft, ChevronRight, Printer, Plus, LogOut } from 'lucide-react';
@@ -47,7 +48,15 @@ export function AppSidebar() {
   }, [role]);
 
   const filteredAdminNavItems = isCoordinator ? adminNavItems : [];
-  const isActive = useCallback((href: string) => href === '/' ? location.pathname === '/' : location.pathname.startsWith(href), [location.pathname]);
+  const isActive = useCallback((href: string) => {
+    if (href === '/') return location.pathname === '/';
+    return location.pathname.startsWith(href);
+  }, [location.pathname]);
+
+  const activeGroup = useMemo(() => {
+    return navGroups.find(g => g.items.some(i => isActive(i.href)));
+  }, [isActive]);
+
   const handleNewJobPrefetch = useCallback(() => { prefetchRoute('/new-job'); }, []);
 
   const { ref: swipeRef } = useSwipeGesture<HTMLDivElement>({ onSwipeRight: () => { if (isMobile && !mobileOpen) setMobileOpen(true); }, onSwipeLeft: () => { if (isMobile && mobileOpen) setMobileOpen(false); }, threshold: 50, disabled: !isMobile });
@@ -96,8 +105,32 @@ export function AppSidebar() {
           </div>
         )}
 
-        <nav className="flex-1 overflow-y-auto scrollbar-thin p-2 space-y-1" id="main-navigation">
-          {filteredNavGroups.map(group => <NavGroupComponent key={group.id} group={group} collapsed={collapsed} isMobile={isMobile} isActive={isActive} alertCount={alertCount} openGroups={openGroups} toggleGroup={toggleGroup} />)}
+        <nav className="flex-1 overflow-y-auto scrollbar-thin p-2 space-y-1 relative" id="main-navigation">
+          {filteredNavGroups.map(group => {
+            const isGroupActive = activeGroup?.id === group.id;
+            return (
+              <div key={group.id} className="relative py-0.5">
+                {isGroupActive && !collapsed && (
+                  <motion.div
+                    layoutId="active-group-indicator"
+                    className="absolute -left-2 top-0.5 bottom-0.5 w-1.5 gradient-primary rounded-r-full z-10 shadow-[0_0_10px_hsl(var(--primary)/0.4)]"
+                    initial={{ opacity: 0, x: -5 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.3, type: "spring", stiffness: 300, damping: 20 }}
+                  />
+                )}
+                <NavGroupComponent 
+                  group={group} 
+                  collapsed={collapsed} 
+                  isMobile={isMobile} 
+                  isActive={isActive} 
+                  alertCount={alertCount} 
+                  openGroups={openGroups} 
+                  toggleGroup={toggleGroup} 
+                />
+              </div>
+            );
+          })}
           {filteredAdminNavItems.length > 0 && (
             <>
               <div className="my-4 border-t border-sidebar-border/50" />

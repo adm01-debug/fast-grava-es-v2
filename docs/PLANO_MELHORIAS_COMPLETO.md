@@ -435,9 +435,9 @@ Buscar e substituir textos hardcoded por chaves i18n:
 | ID | Tarefa | Esforço | Status |
 |----|--------|---------|--------|
 | 7.1 | Card glassmorphism variant | 1h | ⬜ TODO |
-| 7.2 | Sidebar hover effects | 2h | ⬜ TODO |
-| 7.3 | Table zebra striping | 30min | ⬜ TODO |
-| 7.4 | Button feedback | 1h | ⬜ TODO |
+| 7.2 | Sidebar hover effects | 2h | ✅ DONE |
+| 7.3 | Table zebra striping | 30min | ✅ DONE |
+| 7.4 | Button feedback | 1h | ✅ DONE |
 
 ### Sprint 5+ (Contínuo) — Performance & A11y
 | ID | Tarefa | Esforço | Status |
