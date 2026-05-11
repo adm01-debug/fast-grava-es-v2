@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef, useEffect } from 'react';
+import { useState, useMemo, useRef, useEffect, lazy, Suspense } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { format, isToday, addDays, subDays } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -7,10 +7,10 @@ import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { JobDetailsModal } from '@/components/jobs/JobDetailsModal';
-import { AgendaView } from '@/components/calendar/AgendaView';
-import { CalendarHeader } from '@/components/calendar/CalendarHeader';
+const AgendaView = lazy(() => import('@/components/calendar/AgendaView').then(m => ({ default: m.AgendaView })));
+const CalendarHeader = lazy(() => import('@/components/calendar/CalendarHeader').then(m => ({ default: m.CalendarHeader })));
 import { CalendarFilters } from '@/components/calendar/CalendarFilters';
-import { CalendarTimeline } from '@/components/calendar/CalendarTimeline';
+const CalendarTimeline = lazy(() => import('@/components/calendar/CalendarTimeline').then(m => ({ default: m.CalendarTimeline })));
 import { CalendarLegend } from '@/components/calendar/CalendarLegend';
 import { DensityMinimap } from '@/components/calendar/DensityMinimap';
 import { CalendarToolbar } from '@/components/calendar/CalendarToolbar';
@@ -206,32 +206,34 @@ export default function DailyCalendar() {
           />
         )}
 
-        <CalendarHeader
-          title="Calendário Diário"
-          subtitle="Visualização completa da agenda por máquina"
-          selectedDate={selectedDate}
-          onDateChange={setSelectedDate}
-          onPrev={() => setSelectedDate(subDays(selectedDate, 1))}
-          onNext={() => setSelectedDate(addDays(selectedDate, 1))}
-          onToday={() => setSelectedDate(new Date())}
-          viewMode={viewMode}
-          onViewModeChange={setViewMode}
-          showViewToggle={!isMobile}
-          conflictCount={dayConflicts.length}
-          jobCount={dayJobs.length}
-          filtersSlot={
-            <CalendarFilters
-              filters={filters}
-              jobs={jobs}
-              techniques={techniques}
-              machines={machines}
-              activeCount={activeCount}
-              onToggle={toggleArrayValue}
-              onUpdate={updateFilter}
-              onClear={clearFilters}
-            />
-          }
-        />
+        <Suspense fallback={<div className="h-20 bg-muted animate-pulse rounded-lg" />}>
+          <CalendarHeader
+            title="Calendário Diário"
+            subtitle="Visualização completa da agenda por máquina"
+            selectedDate={selectedDate}
+            onDateChange={setSelectedDate}
+            onPrev={() => setSelectedDate(subDays(selectedDate, 1))}
+            onNext={() => setSelectedDate(addDays(selectedDate, 1))}
+            onToday={() => setSelectedDate(new Date())}
+            viewMode={viewMode}
+            onViewModeChange={setViewMode}
+            showViewToggle={!isMobile}
+            conflictCount={dayConflicts.length}
+            jobCount={dayJobs.length}
+            filtersSlot={
+              <CalendarFilters
+                filters={filters}
+                jobs={jobs}
+                techniques={techniques}
+                machines={machines}
+                activeCount={activeCount}
+                onToggle={toggleArrayValue}
+                onUpdate={updateFilter}
+                onClear={clearFilters}
+              />
+            }
+          />
+        </Suspense>
 
         <div className="hidden sm:flex print:hidden">
           <CalendarToolbar
@@ -277,13 +279,15 @@ export default function DailyCalendar() {
               </div>
             </CardHeader>
             <CardContent className="p-3 sm:p-4">
-              <AgendaView
-                jobs={dayJobs}
-                machines={filteredMachines}
-                techniques={techniques}
-                selectedDate={selectedDate}
-                onJobClick={handleJobClick}
-              />
+              <Suspense fallback={<div className="h-80 bg-muted animate-pulse rounded-lg" />}>
+                <AgendaView
+                  jobs={dayJobs}
+                  machines={filteredMachines}
+                  techniques={techniques}
+                  selectedDate={selectedDate}
+                  onJobClick={handleJobClick}
+                />
+              </Suspense>
             </CardContent>
           </Card>
         ) : (
@@ -304,22 +308,24 @@ export default function DailyCalendar() {
               <div aria-live="polite" className="sr-only">
                 {dayJobs.length} agendamentos · {dayConflicts.length} conflitos
               </div>
-              <CalendarTimeline
-                machines={filteredMachines}
-                techniques={techniques}
-                jobsByMachine={jobsByMachine}
-                conflictJobIds={conflictJobIds}
-                startHour={START_HOUR}
-                endHour={END_HOUR}
-                currentTimePosition={currentTimePosition}
-                getTechniqueById={getTechniqueById as (id: string) => ReturnType<typeof getTechniqueById>}
-                onJobClick={handleJobClick}
-                onSlotClick={handleSlotClick}
-                zoom={prefs.zoom}
-                groupBy={prefs.groupBy}
-                overlays={prefs.overlays}
-                utilizationByMachine={utilizationByMachine}
-              />
+              <Suspense fallback={<div className="h-80 bg-muted animate-pulse rounded-lg" />}>
+                <CalendarTimeline
+                  machines={filteredMachines}
+                  techniques={techniques}
+                  jobsByMachine={jobsByMachine}
+                  conflictJobIds={conflictJobIds}
+                  startHour={START_HOUR}
+                  endHour={END_HOUR}
+                  currentTimePosition={currentTimePosition}
+                  getTechniqueById={getTechniqueById as (id: string) => ReturnType<typeof getTechniqueById>}
+                  onJobClick={handleJobClick}
+                  onSlotClick={handleSlotClick}
+                  zoom={prefs.zoom}
+                  groupBy={prefs.groupBy}
+                  overlays={prefs.overlays}
+                  utilizationByMachine={utilizationByMachine}
+                />
+              </Suspense>
             </CardContent>
           </Card>
         )}
