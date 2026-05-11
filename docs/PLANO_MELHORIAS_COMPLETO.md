@@ -428,8 +428,8 @@ Buscar e substituir textos hardcoded por chaves i18n:
 ### Sprint 3 (Semana 3) — Limpeza
 | ID | Tarefa | Esforço | Status |
 |----|--------|---------|--------|
-| 5 | Remover testes .test.ts duplicados | 2h | ⬜ TODO |
-| 6 | Consolidar stories duplicadas | 1h | ⬜ TODO |
+| 5 | Remover testes .test.ts duplicados | 2h | ✅ DONE |
+| 6 | Consolidar stories duplicadas | 1h | ✅ DONE |
 
 ### Sprint 4 (Semana 4) — UX
 | ID | Tarefa | Esforço | Status |
