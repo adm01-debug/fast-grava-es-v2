@@ -86,12 +86,6 @@ export default function TraceabilityPage() {
     production_date: format(new Date(), 'yyyy-MM-dd'), expiration_date: '', notes: ''
   });
 
-  const rowVirtualizer = useVirtualizer({
-    count: filteredAndSortedLots.length,
-    getScrollElement: () => parentRef.current,
-    estimateSize: () => 64, // Altura estimada de cada linha
-    overscan: 10,
-  });
 
   const { data: lots, isLoading } = useProductionLots();
   const { data: jobs } = useJobs();
