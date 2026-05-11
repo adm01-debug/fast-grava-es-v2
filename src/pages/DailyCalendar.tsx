@@ -177,7 +177,18 @@ export default function DailyCalendar() {
       <div ref={printAreaRef} className="p-4 sm:p-6 space-y-4 sm:space-y-6 animate-fade-in-up calendar-print-area">
         <Breadcrumbs />
 
-        <PlanningEfficiencyDashboard />
+        <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
+          <div className="xl:col-span-3 space-y-6">
+            <PlanningEfficiencyDashboard />
+            
+            {dayConflicts.length > 0 && (
+              <ConflictResolutionPanel 
+                conflicts={dayConflicts} 
+                onResolved={() => refetchJobs()} 
+              />
+            )}
+          </div>
+        </div>
 
         <CalendarHeader
           title="Calendário Diário"
