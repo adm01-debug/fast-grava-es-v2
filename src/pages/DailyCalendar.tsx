@@ -173,9 +173,25 @@ export default function DailyCalendar() {
     completeOnboarding();
   };
 
+  const handleSlotClick = (machineId: string, hour: number, minute: number) => {
+    setQuickJobMachineId(machineId);
+    setQuickJobTime({ hour, minute });
+    setQuickJobOpen(true);
+  };
+
   return (
     <MainLayout>
       <JobDetailsModal job={selectedJob} open={isModalOpen} onOpenChange={setIsModalOpen} />
+      <QuickJobDrawer
+        open={quickJobOpen}
+        onOpenChange={setQuickJobOpen}
+        selectedDate={selectedDate}
+        selectedMachineId={quickJobMachineId}
+        selectedTime={quickJobTime}
+        machines={machines}
+        techniques={techniques}
+        onSuccess={refetchJobs}
+      />
       <CalendarOnboarding open={onboardingOpen} onClose={handleOnboardingClose} />
 
       <div ref={printAreaRef} className="p-4 sm:p-6 space-y-4 sm:space-y-6 animate-fade-in-up calendar-print-area">
