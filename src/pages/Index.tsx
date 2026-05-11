@@ -15,7 +15,7 @@ import { StatsCardSkeleton, ContentTransition } from '@/components/loading';
 import { DraggableWidget } from '@/components/dashboard/DraggableWidget';
 import { DashboardEditControls } from '@/components/dashboard/DashboardEditControls';
 import { SortableWidgetSection } from '@/components/dashboard/SortableWidgetSection';
-import { DailySummaryCard } from '@/components/notifications/DailySummaryCard';
+// ... DailySummaryCard lazy loaded below
 import { Badge } from '@/components/ui/badge';
 import { FavoritesDropdown, FavoriteButton } from '@/components/navigation/FavoritesManager';
 import { ActivityLog, useActivityLog } from '@/components/activity/ActivityLog';
