@@ -17,12 +17,15 @@ interface OEELossesChartProps {
   overallOEE: number;
 }
 
-export function OEELossesChart({ 
+import { memo } from 'react';
+
+export const OEELossesChart = memo(function OEELossesChart({ 
   availabilityLosses, 
   performanceLosses, 
   qualityLosses,
   overallOEE
 }: OEELossesChartProps) {
+
   const data = [
     {
       name: 'OEE Atual',
@@ -123,4 +126,4 @@ export function OEELossesChart({
       </CardContent>
     </Card>
   );
-}
+});

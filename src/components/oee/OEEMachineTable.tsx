@@ -34,7 +34,10 @@ interface OEEMachineTableProps {
 type SortField = 'oee' | 'availability' | 'performance' | 'quality' | 'machineName';
 type SortDirection = 'asc' | 'desc';
 
-export function OEEMachineTable({ machines }: OEEMachineTableProps) {
+import { memo } from 'react';
+
+export const OEEMachineTable = memo(function OEEMachineTable({ machines }: OEEMachineTableProps) {
+
   const [search, setSearch] = useState('');
   const [techniqueFilter, setTechniqueFilter] = useState<string>('all');
   const [sortField, setSortField] = useState<SortField>('oee');
@@ -300,4 +303,4 @@ export function OEEMachineTable({ machines }: OEEMachineTableProps) {
       </Dialog>
     </Card>
   );
-}
+});

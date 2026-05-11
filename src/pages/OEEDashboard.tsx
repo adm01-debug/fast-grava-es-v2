@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, lazy, Suspense, useMemo } from 'react';
 import { cn } from '@/lib/utils';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -36,10 +36,6 @@ import { useOEE, WORLD_CLASS_OEE, getOEEColor } from '@/hooks/useOEE';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { OEEGaugeCard } from '@/components/oee/OEEGaugeCard';
-import { OEEMachineTable } from '@/components/oee/OEEMachineTable';
-import { OEETrendChart } from '@/components/oee/OEETrendChart';
-import { OEELossesChart } from '@/components/oee/OEELossesChart';
-import { OEETechniqueComparison } from '@/components/oee/OEETechniqueComparison';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { KPITooltip, KPI_DEFINITIONS } from '@/components/ui/kpi-tooltip';
@@ -47,11 +43,21 @@ import { VoiceButton } from '@/components/voice/VoiceCommands';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 
+// Lazy load heavy dashboard components
+const OEEMachineTable = lazy(() => import('@/components/oee/OEEMachineTable').then(m => ({ default: m.OEEMachineTable })));
+const OEETrendChart = lazy(() => import('@/components/oee/OEETrendChart').then(m => ({ default: m.OEETrendChart })));
+const OEELossesChart = lazy(() => import('@/components/oee/OEELossesChart').then(m => ({ default: m.OEELossesChart })));
+const OEETechniqueComparison = lazy(() => import('@/components/oee/OEETechniqueComparison').then(m => ({ default: m.OEETechniqueComparison })));
+
+const ChartSkeleton = () => <Skeleton className="h-[400px] w-full" />;
+const TableSkeleton = () => <Skeleton className="h-[500px] w-full" />;
+
 export default function OEEDashboard() {
   const [period, setPeriod] = useState<string>('30');
   const [showSimulator, setShowSimulator] = useState(false);
   const [simValues, setSimValues] = useState({ availability: 85, performance: 90, quality: 98 });
   const { data, isLoading, downloadReport } = useOEE(parseInt(period));
+
 
   if (isLoading) {
     return (
@@ -390,32 +396,41 @@ export default function OEEDashboard() {
           </TabsList>
           
           <TabsContent value="trend">
-            <OEETrendChart 
-              data={data.trendData} 
-              worldClassBenchmark={data.worldClassBenchmark} 
-              comparison={data.comparison}
-            />
+            <Suspense fallback={<ChartSkeleton />}>
+              <OEETrendChart 
+                data={data.trendData} 
+                worldClassBenchmark={data.worldClassBenchmark} 
+                comparison={data.comparison}
+              />
+            </Suspense>
           </TabsContent>
           
           <TabsContent value="losses">
-            <OEELossesChart
-              availabilityLosses={data.availabilityLosses}
-              performanceLosses={data.performanceLosses}
-              qualityLosses={data.qualityLosses}
-              overallOEE={data.overallOEE}
-            />
+            <Suspense fallback={<ChartSkeleton />}>
+              <OEELossesChart
+                availabilityLosses={data.availabilityLosses}
+                performanceLosses={data.performanceLosses}
+                qualityLosses={data.qualityLosses}
+                overallOEE={data.overallOEE}
+              />
+            </Suspense>
           </TabsContent>
           
           <TabsContent value="techniques">
-            <OEETechniqueComparison 
-              techniques={data.byTechnique}
-              worldClassBenchmark={data.worldClassBenchmark}
-            />
+            <Suspense fallback={<ChartSkeleton />}>
+              <OEETechniqueComparison 
+                techniques={data.byTechnique}
+                worldClassBenchmark={data.worldClassBenchmark}
+              />
+            </Suspense>
           </TabsContent>
           
           <TabsContent value="machines">
-            <OEEMachineTable machines={data.byMachine} />
+            <Suspense fallback={<TableSkeleton />}>
+              <OEEMachineTable machines={data.byMachine} />
+            </Suspense>
           </TabsContent>
+
 
           <TabsContent value="sustainability" className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

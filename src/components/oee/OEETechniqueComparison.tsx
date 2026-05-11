@@ -19,7 +19,10 @@ interface OEETechniqueComparisonProps {
   worldClassBenchmark: number;
 }
 
-export function OEETechniqueComparison({ techniques, worldClassBenchmark }: OEETechniqueComparisonProps) {
+import { memo } from 'react';
+
+export const OEETechniqueComparison = memo(function OEETechniqueComparison({ techniques, worldClassBenchmark }: OEETechniqueComparisonProps) {
+
   const chartData = techniques.map(t => ({
     name: t.techniqueName.length > 12 ? t.techniqueName.substring(0, 12) + '...' : t.techniqueName,
     fullName: t.techniqueName,
@@ -138,4 +141,4 @@ export function OEETechniqueComparison({ techniques, worldClassBenchmark }: OEET
       </CardContent>
     </Card>
   );
-}
+});

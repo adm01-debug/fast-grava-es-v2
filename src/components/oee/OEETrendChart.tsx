@@ -40,7 +40,10 @@ interface OEETrendChartProps {
   };
 }
 
-export function OEETrendChart({ data, worldClassBenchmark, comparison }: OEETrendChartProps) {
+import { memo } from 'react';
+
+export const OEETrendChart = memo(function OEETrendChart({ data, worldClassBenchmark, comparison }: OEETrendChartProps) {
+
   const chartData = useMemo(() => {
     // Show data points based on the comparison requirement
     // If we have comparison data, we show the full trend to visualize the periods
@@ -189,4 +192,4 @@ export function OEETrendChart({ data, worldClassBenchmark, comparison }: OEETren
       </CardContent>
     </Card>
   );
-}
+});
