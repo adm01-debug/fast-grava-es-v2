@@ -36,7 +36,7 @@ export const NavButton = memo(forwardRef<HTMLDivElement, NavButtonProps>(functio
           isActive && [
             'bg-sidebar-accent/80 text-primary font-bold border-l-4 border-primary shadow-sm',
             'shadow-[inset_0_0_20px_hsl(var(--primary)/0.05),0_0_15px_hsl(var(--primary)/0.1)]',
-            'hover:pl-3',
+            'hover:pl-4',
           ],
           !isActive && 'border-l-4 border-transparent',
           collapsed && !isMobile && 'justify-center px-0 hover:pl-0'
