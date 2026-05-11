@@ -324,6 +324,8 @@ export default function DailyCalendar() {
                   groupBy={prefs.groupBy}
                   overlays={prefs.overlays}
                   utilizationByMachine={utilizationByMachine}
+                  onRefresh={refetchJobs}
+                  allJobs={jobs}
                 />
               </Suspense>
             </CardContent>
