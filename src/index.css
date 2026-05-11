@@ -1383,6 +1383,7 @@
 }
 
 *:focus-visible {
-  outline: 2px solid hsl(var(--ring)) !important;
+  outline: 2px solid hsl(var(--primary)) !important;
   outline-offset: 2px !important;
+  box-shadow: 0 0 0 4px hsl(var(--primary) / 0.2) !important;
 }
