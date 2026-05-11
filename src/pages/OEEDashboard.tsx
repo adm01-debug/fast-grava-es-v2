@@ -149,11 +149,11 @@ export default function OEEDashboard() {
                  <p className="text-[10px] font-bold text-muted-foreground uppercase">Disponib.</p>
               </div>
               <div className="text-center px-4 border-r border-border/50">
-                 <p className="text-2xl font-black text-blue-500">{data.overallPerformance.toFixed(0)}%</p>
+                 <p className="text-2xl font-black text-indicator-info">{data.overallPerformance.toFixed(0)}%</p>
                  <p className="text-[10px] font-bold text-muted-foreground uppercase">Perform.</p>
               </div>
               <div className="text-center px-4">
-                 <p className="text-2xl font-black text-purple-500">{data.overallQuality.toFixed(0)}%</p>
+                 <p className="text-2xl font-black text-accent-purple">{data.overallQuality.toFixed(0)}%</p>
                  <p className="text-[10px] font-bold text-muted-foreground uppercase">Qualidade</p>
               </div>
             </div>
