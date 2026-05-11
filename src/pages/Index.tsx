@@ -444,7 +444,9 @@ const Index = () => {
           {/* Chat Tab */}
           <TabsContent value="chat" className="flex-1 mt-4 min-h-0">
             <div className="h-full">
-              <QuickChat />
+              <Suspense fallback={<div className="h-full bg-muted animate-pulse rounded-lg" />}>
+                <QuickChat />
+              </Suspense>
             </div>
           </TabsContent>
 
