@@ -52,11 +52,11 @@ export function MachineReliabilityTab({ machineId }: MachineReliabilityTabProps)
 
   const getScoreColor = (score: string) => {
     switch (score) {
-      case 'excellent': return 'text-success bg-success/10';
-      case 'good': return 'text-blue-500 bg-blue-500/10';
-      case 'moderate': return 'text-yellow-500 bg-yellow-500/10';
-      case 'poor': return 'text-orange-500 bg-orange-500/10';
-      case 'critical': return 'text-destructive bg-destructive/10';
+      case 'excellent': return 'text-indicator-success bg-indicator-success/10';
+      case 'good': return 'text-indicator-info bg-indicator-info/10';
+      case 'moderate': return 'text-indicator-warning bg-indicator-warning/10';
+      case 'poor': return 'text-priority-high bg-priority-high/10';
+      case 'critical': return 'text-indicator-danger bg-indicator-danger/10';
       default: return 'text-muted-foreground bg-muted';
     }
   };
@@ -95,7 +95,7 @@ export function MachineReliabilityTab({ machineId }: MachineReliabilityTabProps)
         <Card className="bg-secondary/20 border-none shadow-none">
           <CardContent className="pt-6">
             <div className="flex flex-col items-center text-center space-y-2">
-              <div className="p-2 rounded-full bg-blue-500/10 text-blue-500">
+              <div className="p-2 rounded-full bg-indicator-info/10 text-indicator-info">
                 <Clock className="h-5 w-5" />
               </div>
               <div className="space-y-0.5">
@@ -110,7 +110,7 @@ export function MachineReliabilityTab({ machineId }: MachineReliabilityTabProps)
         <Card className="bg-secondary/20 border-none shadow-none">
           <CardContent className="pt-6">
             <div className="flex flex-col items-center text-center space-y-2">
-              <div className="p-2 rounded-full bg-red-500/10 text-red-500">
+              <div className="p-2 rounded-full bg-indicator-danger/10 text-indicator-danger">
                 <TrendingUp className="h-5 w-5" />
               </div>
               <div className="space-y-0.5">
@@ -152,14 +152,14 @@ export function MachineReliabilityTab({ machineId }: MachineReliabilityTabProps)
           <div className="space-y-3">
             <div className="flex items-center justify-between p-3 rounded-lg bg-secondary/30 border border-border/30">
               <div className="flex items-center gap-3">
-                <AlertTriangle className="h-4 w-4 text-yellow-500" />
+                <AlertTriangle className="h-4 w-4 text-indicator-warning" />
                 <span className="text-sm">Total de Falhas</span>
               </div>
               <span className="font-bold">{machineMetrics.totalFailures}</span>
             </div>
             <div className="flex items-center justify-between p-3 rounded-lg bg-secondary/30 border border-border/30">
               <div className="flex items-center gap-3">
-                <Clock className="h-4 w-4 text-blue-500" />
+                <Clock className="h-4 w-4 text-indicator-info" />
                 <span className="text-sm">Tempo Total em Reparo</span>
               </div>
               <span className="font-bold">{machineMetrics.totalRepairTime} min</span>
