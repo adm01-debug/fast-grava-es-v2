@@ -1,4 +1,4 @@
-import { useMemo, useState, useCallback, useEffect } from 'react';
+import { useMemo, useState, useCallback, useEffect, lazy, Suspense } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { 
@@ -26,7 +26,8 @@ import { FuturisticStatCard } from './FuturisticStatCard';
 import { useBIExport } from '@/hooks/useBIExport';
 import { BITooltip } from './BITooltip';
 import { BIEmptyState } from './BIEmptyState';
-import { BIAIInsights } from './BIAIInsights';
+import { BILoadingSkeleton } from './BILoadingSkeleton';
+const BIAIInsights = lazy(() => import('./BIAIInsights').then(m => ({ default: m.BIAIInsights })));
 import { CHART_COLORS, GRADIENTS } from '@/constants/biConstants';
 
 interface FuturisticBIProps {
@@ -395,7 +396,9 @@ export function FuturisticBI({ biMetrics, kpis, oeeData, isLoading }: Futuristic
         </Card>
       </div>
 
-      <BIAIInsights biMetrics={biMetrics} oeeData={oeeData} />
+      <Suspense fallback={<BILoadingSkeleton />}>
+        <BIAIInsights biMetrics={biMetrics} oeeData={oeeData} />
+      </Suspense>
       <DrillDownDialog open={drillDownOpen} onOpenChange={setDrillDownOpen} title={drillDownTitle} jobs={drillDownJobs} onExport={(format) => handleExport(format, `DrillDown_${drillDownTitle}`)} />
     </motion.div>
   );
