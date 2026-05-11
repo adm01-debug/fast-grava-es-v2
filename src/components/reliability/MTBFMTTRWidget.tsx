@@ -167,7 +167,7 @@ export function MTBFMTTRWidget() {
         {machinesWithIssues.length > 0 && (
           <div className="space-y-2">
             <h4 className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-              <AlertTriangle className="h-4 w-4 text-orange-400" />
+              <AlertTriangle className="h-4 w-4 text-indicator-warning" />
               Máquinas com Baixa Confiabilidade
             </h4>
             <div className="space-y-2">
