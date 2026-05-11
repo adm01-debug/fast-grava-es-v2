@@ -52,7 +52,7 @@ export const NavGroupComponent = memo(function NavGroupComponent({
           "w-full justify-between gap-3 h-10 px-3 transition-all duration-300 group/btn",
           "hover:bg-sidebar-muted/50 hover:text-sidebar-foreground hover:pl-4",
           "text-sidebar-foreground/70",
-          hasActiveItem && "text-sidebar-foreground font-medium bg-sidebar-accent/30"
+          hasActiveItem && "text-sidebar-foreground font-medium bg-sidebar-accent/40 shadow-sm"
         )}
         aria-expanded={isOpen}
         aria-controls={`nav-group-${group.id}`}

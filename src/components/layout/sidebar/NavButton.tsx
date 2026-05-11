@@ -34,7 +34,7 @@ export const NavButton = memo(forwardRef<HTMLDivElement, NavButtonProps>(functio
           'w-full justify-start gap-3 h-11 px-3 relative transition-all duration-300 group/nav',
           'hover:bg-primary/8 hover:text-sidebar-foreground hover:pl-4',
           isActive && [
-            'bg-primary/12 text-primary font-bold border-l-4 border-primary',
+            'bg-sidebar-accent/40 text-primary font-bold border-l-4 border-primary shadow-sm',
             'shadow-[inset_0_0_20px_hsl(var(--primary)/0.05),0_0_15px_hsl(var(--primary)/0.1)]',
             'hover:pl-3',
           ],
