@@ -1,8 +1,0 @@
-src/__tests__/telemetry
-src/components/auth/__tests__/PasskeyLoginButton
-src/components/bi/__tests__/BIStatCard
-src/components/bi/__tests__/FuturisticBI
-src/components/loading/__tests__/SkeletonLibrary
-src/components/ui/__tests__/empty-state
-src/components/ui/__tests__/status-badge
-src/test/__tests__/auth-page-design
