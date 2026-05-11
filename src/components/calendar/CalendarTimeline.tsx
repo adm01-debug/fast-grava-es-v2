@@ -373,6 +373,7 @@ export function CalendarTimeline({
           )}
         </div>
       </div>
+    </div>
       <DragOverlay>
         {activeJob ? (
           <div 
