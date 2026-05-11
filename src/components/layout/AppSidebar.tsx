@@ -109,11 +109,11 @@ export function AppSidebar() {
           {filteredNavGroups.map(group => {
             const isGroupActive = activeGroup?.id === group.id;
             return (
-              <div key={group.id} className="relative">
+              <div key={group.id} className="relative py-0.5">
                 {isGroupActive && !collapsed && (
                   <motion.div
                     layoutId="active-group-indicator"
-                    className="absolute -left-2 top-2 bottom-2 w-1.5 gradient-primary rounded-r-full z-10 shadow-[0_0_10px_hsl(var(--primary)/0.4)]"
+                    className="absolute -left-2 top-0.5 bottom-0.5 w-1.5 gradient-primary rounded-r-full z-10 shadow-[0_0_10px_hsl(var(--primary)/0.4)]"
                     initial={{ opacity: 0, x: -5 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.3, type: "spring", stiffness: 300, damping: 20 }}
