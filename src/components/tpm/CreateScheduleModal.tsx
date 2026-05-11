@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Plus } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -86,6 +86,9 @@ export function CreateScheduleModal({
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle className="font-display">Nova Manutenção Programada</DialogTitle>
+          <DialogDescription>
+            Configure os detalhes para o agendamento de uma nova manutenção preventiva.
+          </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
