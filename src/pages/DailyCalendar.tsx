@@ -314,6 +314,7 @@ export default function DailyCalendar() {
                 currentTimePosition={currentTimePosition}
                 getTechniqueById={getTechniqueById as (id: string) => ReturnType<typeof getTechniqueById>}
                 onJobClick={handleJobClick}
+                onSlotClick={handleSlotClick}
                 zoom={prefs.zoom}
                 groupBy={prefs.groupBy}
                 overlays={prefs.overlays}
