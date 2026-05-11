@@ -39,17 +39,17 @@ import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 
 const statusColumns: { status: JobStatus; label: string; icon: React.ElementType; color: string; wipLimit?: number }[] = [
-  { status: 'queue', label: 'Na Fila', icon: Clock, color: 'text-blue-400', wipLimit: 25 },
-  { status: 'ready', label: 'No Jeito', icon: Package, color: 'text-amber-400', wipLimit: 12 },
-  { status: 'scheduled', label: 'Agendado', icon: Calendar, color: 'text-purple-400', wipLimit: 15 },
-  { status: 'production', label: 'Em Produção', icon: Play, color: 'text-cyan-400', wipLimit: 10 },
-  { status: 'finished', label: 'Finalizado', icon: CheckCircle2, color: 'text-green-400', wipLimit: 100 },
+  { status: 'queue', label: 'Na Fila', icon: Clock, color: 'text-indicator-info', wipLimit: 25 },
+  { status: 'ready', label: 'No Jeito', icon: Package, color: 'text-indicator-warning', wipLimit: 12 },
+  { status: 'scheduled', label: 'Agendado', icon: Calendar, color: 'text-accent-purple', wipLimit: 15 },
+  { status: 'production', label: 'Em Produção', icon: Play, color: 'text-accent-cyan', wipLimit: 10 },
+  { status: 'finished', label: 'Finalizado', icon: CheckCircle2, color: 'text-indicator-success', wipLimit: 100 },
 ];
 
 const exceptionStatuses: { status: JobStatus; label: string; icon: React.ElementType; color: string; wipLimit?: number }[] = [
-  { status: 'paused', label: 'Pausado', icon: Pause, color: 'text-orange-400', wipLimit: 8 },
-  { status: 'delayed', label: 'Atrasado', icon: AlertTriangle, color: 'text-red-400', wipLimit: 8 },
-  { status: 'rework', label: 'Retrabalho', icon: RotateCcw, color: 'text-pink-400', wipLimit: 5 },
+  { status: 'paused', label: 'Pausado', icon: Pause, color: 'text-indicator-warning', wipLimit: 8 },
+  { status: 'delayed', label: 'Atrasado', icon: AlertTriangle, color: 'text-indicator-danger', wipLimit: 8 },
+  { status: 'rework', label: 'Retrabalho', icon: RotateCcw, color: 'text-accent-pink', wipLimit: 5 },
 ];
 
 const quickActionMap: Record<string, { status: JobStatus; label: string }> = {
@@ -399,16 +399,16 @@ export default function KanbanBoard() {
             <div className="flex flex-wrap items-center gap-3 p-3 rounded-lg bg-primary/5 border border-primary/20 sticky top-2 z-30 backdrop-blur-md shadow-lg animate-in slide-in-from-top-4 duration-300">
               <Badge variant="secondary" className="font-bold">{selectedJobs.size} selecionados</Badge>
               <div className="h-4 w-px bg-border/50 mx-1 hidden sm:block" />
-              <Button size="sm" variant="outline" className="h-7 text-[10px] uppercase font-bold tracking-wider gap-1 border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10" onClick={() => handleBulkAction('move', 'production')}>
+              <Button size="sm" variant="outline" className="h-7 text-[10px] uppercase font-bold tracking-wider gap-1 border-indicator-info/30 text-indicator-info hover:bg-indicator-info/10" onClick={() => handleBulkAction('move', 'production')}>
                 <Play className="h-3 w-3" /> Iniciar Produção
               </Button>
-              <Button size="sm" variant="outline" className="h-7 text-[10px] uppercase font-bold tracking-wider gap-1 border-green-500/30 text-green-400 hover:bg-green-500/10" onClick={() => handleBulkAction('move', 'finished')}>
+              <Button size="sm" variant="outline" className="h-7 text-[10px] uppercase font-bold tracking-wider gap-1 border-indicator-success/30 text-indicator-success hover:bg-indicator-success/10" onClick={() => handleBulkAction('move', 'finished')}>
                 <CheckCircle2 className="h-3 w-3" /> Finalizar
               </Button>
-              <Button size="sm" variant="outline" className="h-7 text-[10px] uppercase font-bold tracking-wider gap-1 border-pink-500/30 text-pink-400 hover:bg-pink-500/10" onClick={() => handleBulkAction('rework')}>
+              <Button size="sm" variant="outline" className="h-7 text-[10px] uppercase font-bold tracking-wider gap-1 border-accent-pink/30 text-accent-pink hover:bg-accent-pink/10" onClick={() => handleBulkAction('rework')}>
                 <RotateCcw className="h-3 w-3" /> Retrabalho
               </Button>
-              <Button size="sm" variant="outline" className="h-7 text-[10px] uppercase font-bold tracking-wider gap-1 border-red-500/30 text-red-400 hover:bg-red-500/10" onClick={() => {
+              <Button size="sm" variant="outline" className="h-7 text-[10px] uppercase font-bold tracking-wider gap-1 border-indicator-danger/30 text-indicator-danger hover:bg-indicator-danger/10" onClick={() => {
                 if (window.confirm('Excluir permanentemente estes jobs?')) handleBulkAction('delete');
               }}>
                 <Trash2 className="h-3 w-3" /> Excluir

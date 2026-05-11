@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -90,6 +90,9 @@ export function MachineAssignmentModal({ operator, open, onOpenChange }: Machine
             <Cpu className="h-5 w-5" />
             Atribuir Máquinas - {operator?.full_name || 'Operador'}
           </DialogTitle>
+          <DialogDescription>
+            Selecione as máquinas que este operador está autorizado a operar.
+          </DialogDescription>
         </DialogHeader>
 
         {isLoading ? (

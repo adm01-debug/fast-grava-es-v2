@@ -17,6 +17,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -146,6 +147,9 @@ export default function HandoverDetailsModal({ handover, onClose }: Props) {
                 {STATUS_LABELS[handover.status]?.label}
               </Badge>
             </DialogTitle>
+            <DialogDescription>
+              Visualize e gerencie os detalhes da passagem de turno, checklist e pendências.
+            </DialogDescription>
           </div>
         </DialogHeader>
 
