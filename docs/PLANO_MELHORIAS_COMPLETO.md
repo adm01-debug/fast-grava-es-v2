@@ -442,9 +442,9 @@ Buscar e substituir textos hardcoded por chaves i18n:
 ### Sprint 5+ (Contínuo) — Performance & A11y
 | ID | Tarefa | Esforço | Status |
 |----|--------|---------|--------|
-| 8.1 | Skip links | 30min | ⬜ TODO |
-| 8.2 | Focus visible | 30min | ⬜ TODO |
-| 9.1 | Code splitting | 4h | ⬜ TODO |
+| 8.1 | Skip links | 30min | ✅ DONE |
+| 8.2 | Focus visible | 30min | ✅ DONE |
+| 9.1 | Code splitting | 4h | ✅ DONE |
 | 9.2 | Virtualização | 8h | ⬜ TODO |
 
 ---
