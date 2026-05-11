@@ -100,7 +100,7 @@ export const JobQRCode = forwardRef<HTMLDivElement, JobQRCodeProps>(({
   };
 
   return (
-    <Card className="w-fit">
+    <Card ref={ref} className="w-fit">
       <CardHeader className="pb-2">
         <CardTitle className="text-sm font-medium">QR Code</CardTitle>
       </CardHeader>
@@ -130,4 +130,6 @@ export const JobQRCode = forwardRef<HTMLDivElement, JobQRCodeProps>(({
       </CardContent>
     </Card>
   );
-};
+});
+
+JobQRCode.displayName = "JobQRCode";
