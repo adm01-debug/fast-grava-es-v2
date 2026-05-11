@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -226,6 +226,9 @@ export function ProductionRegistrationModal({
             <CheckCircle2 className="h-5 w-5 text-green-500" />
             Registro de Produção
           </DialogTitle>
+          <DialogDescription>
+            Informe a quantidade produzida, refugos e observações para finalizar este trabalho.
+          </DialogDescription>
         </DialogHeader>
 
         <ScrollArea className="max-h-[70vh] pr-4">
