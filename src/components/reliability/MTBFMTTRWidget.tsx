@@ -223,11 +223,11 @@ export function MTBFMTTRWidget() {
                     <div className="flex items-center gap-2">
                       <div 
                         className={`w-2 h-2 rounded-full ${
-                          machine.reliabilityScore === 'excellent' ? 'bg-emerald-500' :
-                          machine.reliabilityScore === 'good' ? 'bg-green-500' :
-                          machine.reliabilityScore === 'moderate' ? 'bg-yellow-500' :
-                          machine.reliabilityScore === 'poor' ? 'bg-orange-500' :
-                          'bg-primary'
+                          machine.reliabilityScore === 'excellent' ? 'bg-indicator-success' :
+                          machine.reliabilityScore === 'good' ? 'bg-indicator-success' :
+                          machine.reliabilityScore === 'moderate' ? 'bg-indicator-warning' :
+                          machine.reliabilityScore === 'poor' ? 'bg-priority-high' :
+                          'bg-indicator-danger'
                         }`}
                       />
                       <span className="font-mono text-xs">{machine.machineCode}</span>
