@@ -23,8 +23,8 @@ export function useBIExport(biMetrics: ExportData) {
         let dataToExport: any[] = [];
         let filename = `BI_Export_${type}_${format(new Date(), 'yyyyMMdd')}`;
 
-        if (type.includes('Perdas')) {
-          dataToExport = extraData?.jobsWithLosses || [];
+        if (type.includes('Taxa_Perda') || type.includes('Perdas')) {
+          dataToExport = extraData?.jobsWithLosses || (biMetrics.periodJobsList || []).filter((j: any) => (j.lost_pieces || 0) > 0);
         } else if (type.includes('Atrasos')) {
           dataToExport = extraData?.delayedJobsList || [];
         } else if (type.includes('Pedidos_A_Fazer')) {
@@ -68,8 +68,9 @@ export function useBIExport(biMetrics: ExportData) {
       } else {
         toast.info(`Gerando PDF para ${type}...`);
         
-        if (type.includes('Perdas')) {
-          await exportLossesReport(extraData?.jobsWithLosses || [], dateRange);
+        if (type.includes('Taxa_Perda') || type.includes('Perdas')) {
+          const losses = extraData?.jobsWithLosses || (biMetrics.periodJobsList || []).filter((j: any) => (j.lost_pieces || 0) > 0);
+          await exportLossesReport(losses, dateRange);
         } else if (type.includes('Atrasos')) {
           await exportDelaysReport(extraData?.delayedJobsList || [], dateRange);
         } else {

@@ -1,4 +1,4 @@
-import { useMemo, useState, useCallback, useEffect } from 'react';
+import { useMemo, useState, useCallback, useEffect, lazy, Suspense } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { 
@@ -26,10 +26,12 @@ import { FuturisticStatCard } from './FuturisticStatCard';
 import { useBIExport } from '@/hooks/useBIExport';
 import { BITooltip } from './BITooltip';
 import { BIEmptyState } from './BIEmptyState';
-import { BIAIInsights } from './BIAIInsights';
+import { BILoadingSkeleton } from './BILoadingSkeleton';
+const BIAIInsights = lazy(() => import('./BIAIInsights').then(m => ({ default: m.BIAIInsights })));
 import { CHART_COLORS, GRADIENTS } from '@/constants/biConstants';
 
 interface FuturisticBIProps {
+  isLoading?: boolean;
   biMetrics: {
     toDoJobs: number;
     periodLossRate: number;
@@ -53,7 +55,7 @@ interface FuturisticBIProps {
   };
 }
 
-export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
+export function FuturisticBI({ biMetrics, kpis, oeeData, isLoading }: FuturisticBIProps) {
   const navigate = useNavigate();
   const { operators } = useOperatorProductivity(30);
   const { stats: tpmStats } = useTPM();
@@ -118,14 +120,18 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
             (segment === 'Studio Gamma' && !j.technique_id?.includes('Laser') && !j.technique_id?.includes('UV'))
           ))
         );
-      }).map((j: any) => ({
-        id: j.id,
-        order_number: j.order_number || `OS-${j.id.slice(0, 5)}`,
-        product: j.product_name || 'Produto',
-        status: j.status,
-        quantity: j.quantity,
-        efficiency: j.produced_quantity > 0 ? (((j.produced_quantity - (j.lost_pieces || 0)) / j.produced_quantity) * 100).toFixed(1) + '%' : '--'
-      }));
+      }).map((j: any) => {
+        const total = (j.produced_quantity || j.quantity || 1) + (j.lost_pieces || 0);
+        return {
+          id: j.id,
+          order_number: j.order_number || `OS-${j.id.slice(0, 5)}`,
+          product: j.product_name || 'Produto',
+          status: j.status,
+          quantity: j.quantity,
+          lost_pieces: j.lost_pieces || 0,
+          efficiency: total > 0 ? (((total - (j.lost_pieces || 0)) / total) * 100).toFixed(1) + '%' : '--'
+        };
+      });
       setDrillDownJobs(filtered);
     } else {
       setDrillDownJobs([]);
@@ -170,8 +176,13 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
     return { score: Math.max(0, 100 - deviation), status, color, deviation };
   }, [studioData]);
 
-  if (!biMetrics.periodJobsList || biMetrics.periodJobsList.length === 0) {
-    return <div className="py-12"><BIEmptyState /></div>;
+  if (isLoading || !biMetrics.periodJobsList || biMetrics.periodJobsList.length === 0) {
+    return (
+      <div className="py-12 space-y-8">
+        <BILoadingSkeleton />
+        <BIEmptyState />
+      </div>
+    );
   }
 
   return (
@@ -385,7 +396,9 @@ export function FuturisticBI({ biMetrics, kpis, oeeData }: FuturisticBIProps) {
         </Card>
       </div>
 
-      <BIAIInsights biMetrics={biMetrics} oeeData={oeeData} />
+      <Suspense fallback={<BILoadingSkeleton />}>
+        <BIAIInsights biMetrics={biMetrics} oeeData={oeeData} />
+      </Suspense>
       <DrillDownDialog open={drillDownOpen} onOpenChange={setDrillDownOpen} title={drillDownTitle} jobs={drillDownJobs} onExport={(format) => handleExport(format, `DrillDown_${drillDownTitle}`)} />
     </motion.div>
   );

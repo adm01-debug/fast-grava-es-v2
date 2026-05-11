@@ -167,7 +167,10 @@ export default function BIDashboard() {
     const periodCompletedJobs = periodJobs.filter(j => j.status === 'finished').length;
     const periodCompletedPieces = periodJobs.filter(j => j.status === 'finished').reduce((sum, j) => sum + (j.produced_quantity ?? j.quantity ?? 0), 0);
     const periodLostPieces = periodJobs.reduce((sum, j) => sum + (j.lost_pieces ?? 0), 0);
-    const periodLossRate = (periodCompletedPieces + periodLostPieces) > 0 ? (periodLostPieces / (periodCompletedPieces + periodLostPieces)) * 100 : 0;
+    
+    // Updated calculation for real-time accuracy: Total Attempted = Produced + Lost
+    const totalAttempted = periodCompletedPieces + periodLostPieces;
+    const periodLossRate = totalAttempted > 0 ? (periodLostPieces / totalAttempted) * 100 : 0;
 
     return {
       statusDistribution, dailyTrend, techniquePerformance,
@@ -365,7 +368,7 @@ export default function BIDashboard() {
         ) : (
           <>
             {viewMode === 'futuristic' ? (
-              <FuturisticBI biMetrics={biMetrics} kpis={kpis} oeeData={oeeData} />
+              <FuturisticBI biMetrics={biMetrics} kpis={kpis} oeeData={oeeData} isLoading={isLoading} />
             ) : (
               <BINormalView 
                 biMetrics={biMetrics} 
