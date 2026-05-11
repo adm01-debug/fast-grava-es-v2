@@ -372,19 +372,19 @@ export function JobDetailsModal({ job, open, onOpenChange, onStatusChange }: Job
                       icon={Package} 
                       label="Quantidade" 
                       value={`${job.quantity.toLocaleString()} peças`}
-                      color="bg-green-500/20"
+                      color="bg-indicator-success/20"
                     />
                     <InfoRow 
                       icon={Palette} 
-                      label="Cor da Gravura" 
+                      label="Cor da Gravação" 
                       value={job.gravure_color || 'Não definida'}
-                      color="bg-purple-500/20"
+                      color="bg-accent-purple/20"
                     />
                     <InfoRow 
                       icon={Clock} 
                       label="Duração Estimada" 
                       value={`${job.estimated_duration} minutos`}
-                      color="bg-orange-500/20"
+                      color="bg-priority-high/20"
                     />
                   </div>
 
@@ -393,19 +393,19 @@ export function JobDetailsModal({ job, open, onOpenChange, onStatusChange }: Job
                       icon={Calendar} 
                       label="Data Agendada" 
                       value={job.scheduled_date ? new Date(job.scheduled_date).toLocaleDateString('pt-BR') : 'Não agendada'}
-                      color="bg-cyan-500/20"
+                      color="bg-indicator-info/20"
                     />
                     <InfoRow 
                       icon={Clock} 
                       label="Horário" 
                       value={job.start_time && job.end_time ? `${job.start_time} - ${job.end_time}` : 'Não definido'}
-                      color="bg-yellow-500/20"
+                      color="bg-indicator-warning/20"
                     />
                     <InfoRow 
                       icon={User} 
                       label="Máquina" 
                       value={machine ? `${machine.code} - ${machine.name}` : 'Não atribuída'}
-                      color="bg-pink-500/20"
+                      color="bg-accent-pink/20"
                     />
                   </div>
                 </div>
