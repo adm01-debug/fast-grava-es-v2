@@ -164,17 +164,17 @@ export default function OEEDashboard() {
         <div className="flex flex-col lg:flex-row gap-4">
           {/* Smart Actions */}
           <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Card className="border-l-4 border-l-amber-500 bg-amber-50/30">
+            <Card className="border-l-4 border-l-indicator-warning bg-indicator-warning/10">
               <CardContent className="p-4 flex gap-4">
-                <div className="h-10 w-10 rounded-full bg-amber-100 flex items-center justify-center shrink-0">
-                  <Lightbulb className="h-5 w-5 text-amber-600" />
+                <div className="h-10 w-10 rounded-full bg-indicator-warning/20 flex items-center justify-center shrink-0">
+                  <Lightbulb className="h-5 w-5 text-indicator-warning" />
                 </div>
                 <div>
                   <h3 className="font-bold text-sm">Gargalo de Performance</h3>
                   <p className="text-xs text-muted-foreground mt-1">
                     A técnica <span className="font-bold">{data.byTechnique[0]?.techniqueName}</span> está com perda de velocidade de 15%. Recomendamos revisão de setup.
                   </p>
-                  <Button variant="link" size="sm" className="p-0 h-auto text-amber-600 text-xs mt-2">
+                  <Button variant="link" size="sm" className="p-0 h-auto text-indicator-warning text-xs mt-2">
                     Ver Detalhes <ArrowRight className="ml-1 h-3 w-3" />
                   </Button>
                 </div>
