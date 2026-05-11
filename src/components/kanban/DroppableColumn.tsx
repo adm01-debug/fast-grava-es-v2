@@ -46,6 +46,7 @@ const statusOrder: Record<JobStatus, number> = {
   'production': 6,
   'finished': 7,
   'cancelled': 8,
+  'buffer': 9,
 };
 
 const WIP_LIMITS: Record<string, number> = {
