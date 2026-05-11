@@ -50,7 +50,7 @@ export const NavGroupComponent = memo(function NavGroupComponent({
         onClick={() => toggleGroup(group.id)}
         className={cn(
           "w-full justify-between gap-3 h-10 px-3 transition-all duration-300",
-          "hover:bg-sidebar-muted/50 hover:text-sidebar-foreground hover:translate-x-1",
+          "hover:bg-sidebar-muted/50 hover:text-sidebar-foreground hover:pl-4",
           "text-sidebar-foreground/70",
           hasActiveItem && "text-sidebar-foreground font-medium"
         )}
