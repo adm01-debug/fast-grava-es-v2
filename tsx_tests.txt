@@ -1,8 +1,0 @@
-src/__tests__/telemetry.test.tsx
-src/components/auth/__tests__/PasskeyLoginButton.test.tsx
-src/components/bi/__tests__/BIStatCard.test.tsx
-src/components/bi/__tests__/FuturisticBI.test.tsx
-src/components/loading/__tests__/SkeletonLibrary.test.tsx
-src/components/ui/__tests__/empty-state.test.tsx
-src/components/ui/__tests__/status-badge.test.tsx
-src/test/__tests__/auth-page-design.test.tsx
