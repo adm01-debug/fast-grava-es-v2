@@ -107,12 +107,12 @@ export function MTBFMTTRWidget() {
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <div className="p-3 rounded-lg bg-orange-500/10 border border-orange-500/20">
+                <div className="p-3 rounded-lg bg-indicator-warning/10 border border-indicator-warning/20">
                   <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
                     <Wrench className="h-3.5 w-3.5" />
                     MTTR Médio
                   </div>
-                  <div className="text-xl font-bold text-orange-400">
+                  <div className="text-xl font-bold text-indicator-warning">
                     {formatMinutes(summary.averageMTTR)}
                   </div>
                 </div>
