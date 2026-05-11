@@ -230,7 +230,9 @@ const Index = () => {
         </div>
 
         <GamificationBanner />
-        <BufferPromotionStatus />
+        <Suspense fallback={<div className="h-10 bg-muted animate-pulse rounded-lg mb-4" />}>
+          <BufferPromotionStatus />
+        </Suspense>
 
         {/* Edit Mode Indicator */}
         {isEditMode && (
