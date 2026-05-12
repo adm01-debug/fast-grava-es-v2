@@ -155,7 +155,7 @@ export function JobTraceabilityTab({ jobId }: JobTraceabilityTabProps) {
                 ) : !history || history.length === 0 ? (
                   <p className="text-xs text-muted-foreground text-center py-4">Nenhum histórico de status registrado.</p>
                 ) : (
-                  history.map((item, idx) => (
+                  (history as any[]).map((item, idx) => (
                     <div key={item.id} className="flex gap-4 items-start relative pb-4 last:pb-0">
                       {idx < history.length - 1 && (
                         <div className="absolute left-[7px] top-4 bottom-0 w-[0.5px] bg-border/50" />
@@ -175,7 +175,7 @@ export function JobTraceabilityTab({ jobId }: JobTraceabilityTabProps) {
                         <div className="flex items-center gap-3 text-[10px] text-muted-foreground">
                           <span className="flex items-center gap-1">
                             <Clock className="h-3 w-3" />
-                            {format(new Date(item.created_at), "dd/MM/yyyy HH:mm", { locale: ptBR })}
+                            {item.created_at ? format(new Date(item.created_at), "dd/MM/yyyy HH:mm", { locale: ptBR }) : '--/--'}
                           </span>
                           <span className="flex items-center gap-1">
                             <User className="h-3 w-3" />
