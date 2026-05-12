@@ -35,7 +35,7 @@ export default function AuditTrailPage() {
             </div>
             <div>
               <h1 className="text-3xl font-display font-black tracking-tighter flex items-center gap-2">
-                Trilha de Auditoria
+                <span className="gradient-text animate-pulse-glow">Hyper-Audit Traceability 10/10</span>
                 <Badge variant="outline" className="text-[10px] font-black uppercase tracking-widest bg-emerald-500/10 text-emerald-500 border-emerald-500/20">
                   <Lock className="h-2 w-2 mr-1" /> Imutável
                 </Badge>
