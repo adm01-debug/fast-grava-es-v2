@@ -175,7 +175,16 @@ export function useKanbanDragDrop({ jobs, onJobsUpdate }: UseKanbanDragDropProps
 
     // 2. Validate status transitions
     const validTransitions: Record<string, JobStatus[]> = {
-...
+      'queue': ['ready', 'cancelled'],
+      'ready': ['queue', 'scheduled', 'cancelled'],
+      'scheduled': ['ready', 'production', 'cancelled'],
+      'production': ['paused', 'finished', 'delayed', 'rework'],
+      'paused': ['production', 'cancelled'],
+      'delayed': ['production', 'cancelled'],
+      'rework': ['production', 'finished', 'cancelled'],
+      'buffer': ['ready', 'scheduled', 'cancelled'],
+      'finished': [],
+      'cancelled': [],
     };
     
     const allowedTransitions = validTransitions[currentStatus] || [];
