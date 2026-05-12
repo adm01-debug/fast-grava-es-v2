@@ -131,59 +131,39 @@ export default function AuditTrailPage() {
               </Card>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-sm font-bold flex items-center gap-2">
-                    <Settings2 className="h-4 w-4" />
-                    Alterações por Módulo
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {['jobs', 'machines', 'technical_sheets', 'maintenance'].map(module => {
-                      const count = data?.filter(e => e.entity_type === module).length || 0;
-                      const percentage = data?.length ? (count / data.length) * 100 : 0;
-                      return (
-                        <div key={module} className="space-y-1">
-                          <div className="flex justify-between text-xs font-medium uppercase tracking-tight">
-                            <span>{module}</span>
-                            <span>{count} eventos</span>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-2 space-y-6">
+                <Card className="glass-card">
+                  <CardHeader>
+                    <CardTitle className="text-sm font-bold flex items-center gap-2">
+                      <Settings2 className="h-4 w-4" />
+                      Alterações por Módulo
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      {['jobs', 'machines', 'technical_sheets', 'maintenance'].map(module => {
+                        const count = data?.filter(e => e.entity_type === module).length || 0;
+                        const percentage = data?.length ? (count / data.length) * 100 : 0;
+                        return (
+                          <div key={module} className="space-y-1">
+                            <div className="flex justify-between text-xs font-medium uppercase tracking-tight">
+                              <span>{module}</span>
+                              <span>{count} eventos</span>
+                            </div>
+                            <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
+                              <div className="h-full bg-primary" style={{ width: `${percentage}%` }} />
+                            </div>
                           </div>
-                          <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
-                            <div className="h-full bg-primary" style={{ width: `${percentage}%` }} />
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-sm font-bold flex items-center gap-2">
-                    <AlertTriangle className="h-4 w-4 text-amber-500" />
-                    Riscos Detectados
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <div className="p-3 rounded-lg bg-amber-50 border border-amber-100 flex items-start gap-3">
-                    <AlertTriangle className="h-4 w-4 text-amber-600 mt-0.5" />
-                    <div>
-                      <p className="text-xs font-bold text-amber-900 uppercase">Acesso fora de horário</p>
-                      <p className="text-xs text-amber-700">Detectado logon administrativo às 02:45 AM em Technical Sheets.</p>
+                        );
+                      })}
                     </div>
-                  </div>
-                  <div className="p-3 rounded-lg bg-blue-50 border border-blue-100 flex items-start gap-3">
-                    <ShieldCheckIcon className="h-4 w-4 text-blue-600 mt-0.5" />
-                    <div>
-                      <p className="text-xs font-bold text-blue-900 uppercase">Integridade Validada</p>
-                      <p className="text-xs text-blue-700">Todos os 48 registros da última hora foram assinados com sucesso.</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+              </div>
+              <div className="lg:col-span-1">
+                <AuditAIAdvisor />
+              </div>
             </div>
           </TabsContent>
         </Tabs>
