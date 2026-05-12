@@ -3809,6 +3809,41 @@ export type Database = {
           },
         ]
       }
+      technical_sheet_versions: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          data: Json
+          id: string
+          sheet_id: string
+          version_number: number
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          data: Json
+          id?: string
+          sheet_id: string
+          version_number: number
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          data?: Json
+          id?: string
+          sheet_id?: string
+          version_number?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "technical_sheet_versions_sheet_id_fkey"
+            columns: ["sheet_id"]
+            isOneToOne: false
+            referencedRelation: "technical_sheets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       technical_sheets: {
         Row: {
           challenges_notes: string | null
