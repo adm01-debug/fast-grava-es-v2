@@ -191,6 +191,16 @@ export function TechniqueManagement() {
                   <Badge variant="outline" className="font-mono">{tech.short_name}</Badge>
                 </TableCell>
                 <TableCell>
+                  <div className="flex flex-col gap-1">
+                    <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground uppercase font-bold">
+                      <Printer className="h-3 w-3" /> {getMachinesByTechnique(tech.id).length} Máquinas
+                    </div>
+                    <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground uppercase font-bold">
+                      <Activity className="h-3 w-3" /> {getJobsByTechnique(tech.id).filter(j => j.status !== 'finished').length} Jobs Ativos
+                    </div>
+                  </div>
+                </TableCell>
+                <TableCell>
                   <div className="flex items-center gap-1.5 text-muted-foreground font-medium">
                     <Clock className="h-3 w-3" /> {tech.setup_time} min
                   </div>
