@@ -228,7 +228,7 @@ export default function OperatorHistoryPage() {
                           {entry.jobOrderNumber}
                         </Badge>
                         <span className="text-xs text-muted-foreground truncate">
-                          {entry.jobProduct}
+                          {entry.jobProduct} • <span className="font-bold text-primary/80">{entry.operatorName}</span>
                         </span>
                       </div>
 
