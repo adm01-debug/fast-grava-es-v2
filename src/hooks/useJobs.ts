@@ -36,6 +36,7 @@ export interface DbJob {
   lost_pieces: number | null;
   priority: 'low' | 'medium' | 'high' | 'urgent';
   product_category_id: string | null;
+  operator_id: string | null;
   created_at: string;
   updated_at: string;
   sort_order: number | null;
