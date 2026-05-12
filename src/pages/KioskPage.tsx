@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { KioskMode } from "@/components/kiosk/KioskMode";
 import { useSchedulingData } from "@/hooks/useSchedulingData";
@@ -7,7 +7,10 @@ import { notifyStatusChange } from "@/hooks/useNotifications";
 import { useAuth } from "@/contexts/AuthContext";
 import { ProductionRegistrationModal } from "@/components/operator/ProductionRegistrationModal";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, RefreshCw, AlertCircle } from "lucide-react";
+import { toast } from "sonner";
+import { motion, AnimatePresence } from "framer-motion";
+import { Badge } from "@/components/ui/badge";
 
 export default function KioskPage() {
   const navigate = useNavigate();
@@ -19,20 +22,62 @@ export default function KioskPage() {
   const [productionJobId, setProductionJobId] = useState<string | null>(null);
   const [isProductionModalOpen, setIsProductionModalOpen] = useState(false);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [lastSync, setLastSync] = useState(new Date());
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [errorCount, setErrorCount] = useState(0);
 
-  // Track online status
+  // Track online status and auto-sync
   useEffect(() => {
-    const handleOnline = () => setIsOnline(true);
-    const handleOffline = () => setIsOnline(false);
+    const handleOnline = () => {
+      setIsOnline(true);
+      toast.success("Conexão restabelecida", {
+        description: "Sincronizando dados pendentes...",
+        duration: 3000,
+      });
+      handleRefresh();
+    };
+    
+    const handleOffline = () => {
+      setIsOnline(false);
+      toast.warning("Modo Offline Ativado", {
+        description: "As operações serão salvas localmente e sincronizadas quando houver conexão.",
+        duration: 5000,
+      });
+    };
     
     window.addEventListener("online", handleOnline);
     window.addEventListener("offline", handleOffline);
     
+    // Auto-refresh every 2 minutes when online
+    const autoRefresh = setInterval(() => {
+      if (navigator.onLine) handleRefresh();
+    }, 120000);
+    
     return () => {
       window.removeEventListener("online", handleOnline);
       window.removeEventListener("offline", handleOffline);
+      clearInterval(autoRefresh);
     };
   }, []);
+
+  const handleRefresh = async () => {
+    if (isSyncing) return;
+    setIsSyncing(true);
+    try {
+      await refetchAll();
+      setLastSync(new Date());
+      setErrorCount(0);
+    } catch (err) {
+      setErrorCount(prev => prev + 1);
+      if (errorCount > 2) {
+        toast.error("Erro na sincronização", {
+          description: "Verifique sua conexão de rede.",
+        });
+      }
+    } finally {
+      setIsSyncing(false);
+    }
+  };
 
   // Filter jobs for kiosk display
   const kioskJobs = useMemo(() => {
@@ -96,9 +141,6 @@ export default function KioskPage() {
     setIsProductionModalOpen(true);
   };
 
-  const handleRefresh = async () => {
-    await refetchAll();
-  };
 
   const productionJob = productionJobId 
     ? jobs?.find(j => j.id === productionJobId) 
@@ -133,6 +175,37 @@ export default function KioskPage() {
         </Button>
       </div>
       
+      {/* UI Overlays for Excellence */}
+      <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2 items-end pointer-events-none">
+        <AnimatePresence>
+          {!isOnline && (
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 20 }}
+            >
+              <Badge variant="destructive" className="gap-2 px-3 py-1.5 shadow-lg border-2 border-white/20">
+                <AlertCircle className="h-4 w-4" />
+                SISTEMA OFFLINE
+              </Badge>
+            </motion.div>
+          )}
+          
+          {isSyncing && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+            >
+              <div className="bg-primary/90 text-white px-3 py-1.5 rounded-full shadow-lg flex items-center gap-2 text-xs font-black">
+                <RefreshCw className="h-3 w-3 animate-spin" />
+                SINCRONIZANDO...
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
       <KioskMode
         jobs={kioskJobs}
         machineName={selectedMachine?.name || "Todas as Máquinas"}

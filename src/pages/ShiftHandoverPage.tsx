@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { 
@@ -121,17 +121,17 @@ export default function ShiftHandoverPage() {
   }, [queryClient]);
 
   // Stats
-  const stats = {
+  const stats = useMemo(() => ({
     openHandovers: handovers?.filter(h => h.status === 'open' || h.status === 'pending_acceptance').length || 0,
     pendingTasks: pendingTasks?.filter(t => t.status === 'pending').length || 0,
     criticalTasks: pendingTasks?.filter(t => t.priority === 'critical' && t.status !== 'completed').length || 0,
     recentOccurrences: occurrences?.filter(o => !o.resolved_at).length || 0
-  };
+  }), [handovers, pendingTasks, occurrences]);
 
   const currentShift = getCurrentShiftType();
 
   return (
-    <div className="container mx-auto p-4 md:p-6 space-y-6">
+    <div className="container mx-auto p-4 md:p-6 lg:p-8 space-y-6 animate-fade-in-up">
       <Breadcrumbs />
       
       {/* Header */}
@@ -149,12 +149,28 @@ export default function ShiftHandoverPage() {
           <Button variant="outline" size="icon" onClick={() => refetch()}>
             <RefreshCw className="h-4 w-4" />
           </Button>
-          <Button onClick={() => setShowCreateModal(true)}>
+          <Button onClick={() => setShowCreateModal(true)} className="shadow-glow-primary active:scale-95 transition-all">
             <Plus className="h-4 w-4 mr-2" />
             Nova Passagem
           </Button>
         </div>
       </div>
+
+      {/* Real-time Status Banner */}
+      <Card className="bg-primary/5 border-primary/20 overflow-hidden relative group">
+        <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+          <RefreshCw className="h-16 w-16 text-primary animate-spin-slow" />
+        </div>
+        <CardContent className="py-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
+            <span className="text-xs font-black uppercase tracking-tighter">Sincronização em tempo real ativa</span>
+          </div>
+          <p className="text-[10px] text-muted-foreground font-medium italic">
+            Última atualização: {format(new Date(), "HH:mm:ss")}
+          </p>
+        </CardContent>
+      </Card>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
