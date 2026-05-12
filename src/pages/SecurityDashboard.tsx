@@ -203,10 +203,19 @@ export default function SecurityDashboard() {
         </TabsList>
 
         <TabsContent value="overview">
-          <div className="grid gap-6 md:grid-cols-3">
-            <CyberResilienceScore />
-            <SecurityOverviewCard />
-            <SecurityAlertsPanel />
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            <div className="lg:col-span-3">
+              <div className="grid gap-6 md:grid-cols-2">
+                <CyberResilienceScore />
+                <SecurityOverviewCard />
+                <div className="md:col-span-2">
+                  <SecurityAlertsPanel />
+                </div>
+              </div>
+            </div>
+            <div className="lg:col-span-1">
+              <AICyberAdvisor />
+            </div>
           </div>
         </TabsContent>
 
