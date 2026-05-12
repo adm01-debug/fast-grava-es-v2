@@ -22,19 +22,31 @@ export default function AuditTrailPage() {
   }, []);
 
   return (
-    <>
-      <div className="container mx-auto p-4 sm:p-6 space-y-6 max-w-6xl">
-        <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <ShieldCheckIcon className="h-7 w-7 text-primary" aria-hidden />
+    <MainLayout>
+      <div className="p-4 sm:p-6 lg:p-8 space-y-8 animate-fade-in">
+        <Breadcrumbs />
+        
+        <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 pb-2 border-b border-border/40">
+          <div className="flex items-center gap-4">
+            <div className="p-3 rounded-2xl bg-primary/10 border border-primary/20 shadow-glow-primary">
+              <ShieldCheckIcon className="h-7 w-7 text-primary" aria-hidden />
+            </div>
             <div>
-              <h1 className="text-2xl font-semibold tracking-tight">Trilha de Auditoria</h1>
-              <p className="text-sm text-muted-foreground">
-                Registro imutável append-only com cadeia de hash SHA-256 (21 CFR Part 11)
+              <h1 className="text-3xl font-display font-black tracking-tighter flex items-center gap-2">
+                Trilha de Auditoria
+                <Badge variant="outline" className="text-[10px] font-black uppercase tracking-widest bg-emerald-500/10 text-emerald-500 border-emerald-500/20">
+                  <Lock className="h-2 w-2 mr-1" /> Imutável
+                </Badge>
+              </h1>
+              <p className="text-sm text-muted-foreground font-medium">
+                Governança Industrial: Cadeia de hash SHA-256 (21 CFR Part 11)
               </p>
             </div>
           </div>
-          <AuditChainStatus />
+          <div className="flex items-center gap-3">
+            <AuditChainStatus />
+            <Fingerprint className="h-5 w-5 text-muted-foreground/30" />
+          </div>
         </header>
 
         <Tabs defaultValue="log" className="space-y-6">
