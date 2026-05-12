@@ -46,24 +46,27 @@ export function useNotifications(options?: { limit?: number; unreadOnly?: boolea
         }
 
         // Transform push_notifications to Notification format
-        return data.map(n => ({
-          id: n.id,
-          title: n.title,
-          message: n.body,
-          type: (n.metadata?.severity === 'critical' ? 'urgent' : 
-                 n.metadata?.severity === 'warning' ? 'warning' : 
-                 n.metadata?.severity === 'success' ? 'success' : 'info') as any,
-          category: n.metadata?.type || null,
-          source_system: n.metadata?.source || 'push',
-          is_read: n.status === 'read',
-          read_at: n.status === 'read' ? n.updated_at : null,
-          action_url: n.metadata?.route || null,
-          action_label: n.metadata?.action_label || null,
-          priority: n.metadata?.priority || 1,
-          group_count: 1,
-          is_grouped: false,
-          created_at: n.created_at,
-        }));
+        return data.map(n => {
+          const metadata = (n.data as any) || {};
+          return {
+            id: n.id,
+            title: n.title,
+            message: n.body,
+            type: (metadata.severity === 'critical' ? 'urgent' : 
+                   metadata.severity === 'warning' ? 'warning' : 
+                   metadata.severity === 'success' ? 'success' : 'info') as any,
+            category: metadata.type || null,
+            source_system: metadata.source || 'push',
+            is_read: n.status === 'read',
+            read_at: n.status === 'read' ? n.created_at : null,
+            action_url: metadata.route || null,
+            action_label: metadata.action_label || null,
+            priority: metadata.priority || 1,
+            group_count: 1,
+            is_grouped: false,
+            created_at: n.created_at,
+          };
+        });
       } catch {
         return EMPTY_NOTIFICATIONS;
       }
