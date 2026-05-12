@@ -19,6 +19,8 @@ import { format, startOfMonth, endOfMonth, subMonths } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { toast } from 'sonner';
 import { EnergyChartTabs } from '@/components/energy/EnergyChartTabs';
+import { AIEnergyAdvisor } from '@/components/energy/AIEnergyAdvisor';
+
 
 export default function EnergyDashboard() {
   const navigate = useNavigate();
