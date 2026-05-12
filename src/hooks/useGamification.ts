@@ -183,6 +183,22 @@ export function useGamification(period: 'daily' | 'weekly' | 'monthly' = 'weekly
     staleTime: 30000,
   });
 
+  // Fetch redemptions history
+  const redemptionsQuery = useQuery({
+    queryKey: ['reward-redemptions', user?.id],
+    enabled: !!user,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('reward_redemptions')
+        .select('*, reward:gamification_rewards(*)')
+        .eq('user_id', user!.id)
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      return data;
+    },
+    staleTime: 60000,
+  });
+
   // Redemption mutation
   const redeemReward = useMutation({
     mutationFn: async (reward: Reward) => {
