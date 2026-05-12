@@ -22,6 +22,9 @@ export default function KioskPage() {
   const [productionJobId, setProductionJobId] = useState<string | null>(null);
   const [isProductionModalOpen, setIsProductionModalOpen] = useState(false);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [lastSync, setLastSync] = useState(new Date());
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [errorCount, setErrorCount] = useState(0);
 
   // Track online status
   useEffect(() => {
