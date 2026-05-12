@@ -141,9 +141,6 @@ export default function KioskPage() {
     setIsProductionModalOpen(true);
   };
 
-  const handleRefresh = async () => {
-    await refetchAll();
-  };
 
   const productionJob = productionJobId 
     ? jobs?.find(j => j.id === productionJobId) 
