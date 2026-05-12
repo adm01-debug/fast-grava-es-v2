@@ -186,6 +186,7 @@ export default function AuditTrailPage() {
           </TabsContent>
         </Tabs>
       </div>
-    </>
+      </div>
+    </MainLayout>
   );
 }
