@@ -31,7 +31,8 @@ import {
   Pencil,
   Trash2,
   Save,
-  X
+  X,
+  Camera
 } from "lucide-react";
 import { useSchedulingData } from "@/hooks/useSchedulingData";
 import { DbJob, useUpdateJob, useDeleteJob } from "@/hooks/useJobs";
