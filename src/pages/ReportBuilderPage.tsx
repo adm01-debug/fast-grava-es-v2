@@ -298,13 +298,36 @@ export default function ReportBuilderPage() {
             </Card>
 
 
+            <Card className="glass-card">
+               <CardHeader className="pb-3 border-b border-border/50 bg-muted/20">
+                 <CardTitle className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
+                   <Zap className="h-3 w-3 text-primary" />
+                   Templates Oficiais
+                 </CardTitle>
+               </CardHeader>
+               <CardContent className="pt-4 space-y-2">
+                  <button className="w-full text-left p-2 rounded-lg hover:bg-muted/50 transition-colors group">
+                    <p className="text-xs font-bold group-hover:text-primary transition-colors">Performance Semanal</p>
+                    <p className="text-[9px] text-muted-foreground uppercase font-medium">Jobs + Status + Perdas</p>
+                  </button>
+                  <button className="w-full text-left p-2 rounded-lg hover:bg-muted/50 transition-colors group">
+                    <p className="text-xs font-bold group-hover:text-primary transition-colors">Auditoria de Inventário</p>
+                    <p className="text-[9px] text-muted-foreground uppercase font-medium">Estoque + Localização</p>
+                  </button>
+                  <button className="w-full text-left p-2 rounded-lg hover:bg-muted/50 transition-colors group">
+                    <p className="text-xs font-bold group-hover:text-primary transition-colors">SLA de Manutenção</p>
+                    <p className="text-[9px] text-muted-foreground uppercase font-medium">Ativos + Tempo de Reparo</p>
+                  </button>
+               </CardContent>
+            </Card>
+
             <Card className="glass-card border-amber-500/20 bg-amber-500/5">
                <CardHeader className="pb-3">
                  <CardTitle className="text-[10px] font-black uppercase tracking-widest text-amber-600">Formato de Saída</CardTitle>
                </CardHeader>
                <CardContent>
                   <Select value={formatType} onValueChange={(v: any) => setFormatType(v)}>
-                    <SelectTrigger className="bg-background/50 border-amber-500/20 text-amber-900 font-bold">
+                    <SelectTrigger className="bg-background/50 border-amber-500/20 text-amber-900 font-bold h-9">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -315,6 +338,7 @@ export default function ReportBuilderPage() {
                   </Select>
                </CardContent>
             </Card>
+
           </div>
 
           {/* Step 2: Configuration */}
