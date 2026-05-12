@@ -97,6 +97,15 @@ export function ProductionRegistrationModal({
   const [photos, setPhotos] = useState<string[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  
+  // Checklist de Qualidade (Hyper-Excellence)
+  const [qualityChecks, setQualityChecks] = useState({
+    color: false,
+    burrs: false,
+    packaging: false,
+    dimensions: false
+  });
+
   const fileInputRef = useRef<HTMLInputElement>(null);
   const queryClient = useQueryClient();
 
@@ -107,6 +116,12 @@ export function ProductionRegistrationModal({
       setLostPieces(job.lost_pieces || 0);
       setNotes(job.notes || '');
       setPhotos([]);
+      setQualityChecks({
+        color: false,
+        burrs: false,
+        packaging: false,
+        dimensions: false
+      });
     }
     onOpenChange(open);
   };
