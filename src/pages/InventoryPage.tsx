@@ -54,6 +54,10 @@ export default function InventoryPage() {
   const { hasPermission } = useRBAC();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
+  const [isBatchQRModalOpen, setIsBatchQRModalOpen] = useState(false);
+  const [isAIPredictionModalOpen, setIsAIPredictionModalOpen] = useState(false);
+
 
   const filteredItems = items.filter(item => {
     const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
