@@ -199,7 +199,7 @@ export default function InventoryPage() {
                   item={item} 
                   onMovement={recordMovement}
                   isSelected={selectedItems.has(item.id)}
-                  onSelect={(id, checked) => {
+                  onSelect={(id: string, checked: boolean) => {
                     const next = new Set(selectedItems);
                     if (checked) next.add(id);
                     else next.delete(id);
@@ -209,7 +209,6 @@ export default function InventoryPage() {
               ))}
             </div>
           </TabsContent>
-
 
           <TabsContent value="wms" className="space-y-6 animate-fade-in">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -249,15 +248,38 @@ export default function InventoryPage() {
           </TabsContent>
         </Tabs>
       </div>
+
+      <BatchQRLabelModal 
+        open={isBatchQRModalOpen}
+        onOpenChange={setIsBatchQRModalOpen}
+        items={items.filter(i => selectedItems.has(i.id))}
+      />
+
+      <AIPredictionValidationModal
+        open={isAIPredictionModalOpen}
+        onOpenChange={setIsAIPredictionModalOpen}
+        items={items}
+      />
     </MainLayout>
   );
 }
 
-function InventoryCard({ item, onMovement }: { item: InventoryItem, onMovement: any }) {
+function InventoryCard({ 
+  item, 
+  onMovement, 
+  isSelected, 
+  onSelect 
+}: { 
+  item: InventoryItem, 
+  onMovement: any,
+  isSelected: boolean,
+  onSelect: (id: string, checked: boolean) => void
+}) {
   const isLowStock = item.current_stock <= item.min_stock_level;
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isQRModalOpen, setIsQRModalOpen] = useState(false);
   const [movementType, setMovementType] = useState<'IN' | 'OUT'>('IN');
+
   const [quantity, setQuantity] = useState('1');
 
   const handleRecord = async () => {
