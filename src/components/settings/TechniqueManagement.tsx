@@ -172,6 +172,7 @@ export function TechniqueManagement() {
             <TableRow>
               <TableHead>Técnica</TableHead>
               <TableHead>Sigla</TableHead>
+              <TableHead>Ativos</TableHead>
               <TableHead>Setup</TableHead>
               <TableHead>Limites OEE</TableHead>
               <TableHead className="text-right">Ações</TableHead>
