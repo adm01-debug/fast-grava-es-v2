@@ -24,6 +24,7 @@ import { cn } from '@/lib/utils';
 import { useDevice } from '@/hooks/use-device';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAlertCount } from '@/hooks/useAlertCount';
+import { useNotifications } from '@/hooks/useNotifications';
 import { useHapticFeedback } from '@/hooks/use-haptic-feedback';
 import { useScrollDirection } from '@/hooks/use-scroll-direction';
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from '@/components/ui/sheet';
@@ -169,11 +170,15 @@ const MobileNavButton = memo(function MobileNavButton({
 function MoreMenuContent({ 
   items, 
   currentPath, 
+  alertCount,
+  notificationCount,
   onNavigate,
   onClose 
 }: { 
   items: NavItem[];
   currentPath: string;
+  alertCount: number;
+  notificationCount: number;
   onNavigate: (href: string) => void;
   onClose: () => void;
 }) {
@@ -214,6 +219,10 @@ function MoreMenuContent({
               ? currentPath === '/' 
               : currentPath.startsWith(item.href);
             
+            let badge = undefined;
+            if (item.id === 'alerts') badge = alertCount;
+            if (item.id === 'notifications') badge = notificationCount;
+            
             return (
               <motion.button
                 key={item.id}
@@ -232,10 +241,15 @@ function MoreMenuContent({
                 )}
               >
                 <div className={cn(
-                  'w-10 h-10 rounded-lg flex items-center justify-center transition-colors',
+                  'w-10 h-10 rounded-lg flex items-center justify-center transition-colors relative',
                   isActive ? 'bg-primary/20' : 'bg-muted'
                 )}>
                   <Icon className="h-5 w-5" />
+                  {badge !== undefined && badge > 0 && (
+                    <span className="absolute -top-1 -right-1 min-w-[16px] h-[16px] px-1 flex items-center justify-center text-[9px] font-bold rounded-full bg-destructive text-destructive-foreground shadow-sm">
+                      {badge > 99 ? '99+' : badge}
+                    </span>
+                  )}
                 </div>
                 <span className="flex-1 text-left font-medium">{item.label}</span>
                 <ChevronRight className={cn(
@@ -258,6 +272,7 @@ export function MobileNavigation() {
   const { isMobile, prefersReducedMotion } = useDevice();
   const { role } = useAuth();
   const alertCount = useAlertCount();
+  const { unreadCount: notificationCount } = useNotifications();
   const [sheetOpen, setSheetOpen] = useState(false);
   const { trigger } = useHapticFeedback();
   const { isVisible } = useScrollDirection({ threshold: 20 });
@@ -326,16 +341,22 @@ export function MobileNavigation() {
       aria-label="Navegação principal mobile"
     >
       <div className="flex items-stretch justify-around max-w-md mx-auto">
-        {primaryItems.map((item) => (
-          <MobileNavButton
-            key={item.id}
-            item={item}
-            isActive={isActive(item.href)}
-            badge={item.id === 'alerts' ? alertCount : undefined}
-            onClick={() => handleNavigate(item.href)}
-            onHaptic={() => trigger('light')}
-          />
-        ))}
+        {primaryItems.map((item) => {
+          let badge = undefined;
+          if (item.id === 'alerts') badge = alertCount;
+          if (item.id === 'notifications') badge = notificationCount;
+          
+          return (
+            <MobileNavButton
+              key={item.id}
+              item={item}
+              isActive={isActive(item.href)}
+              badge={badge}
+              onClick={() => handleNavigate(item.href)}
+              onHaptic={() => trigger('light')}
+            />
+          );
+        })}
         
         {/* More Menu Button */}
         <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
@@ -375,6 +396,8 @@ export function MobileNavigation() {
             <MoreMenuContent 
               items={moreItems}
               currentPath={location.pathname}
+              alertCount={alertCount}
+              notificationCount={notificationCount}
               onNavigate={handleNavigate}
               onClose={() => setSheetOpen(false)}
             />

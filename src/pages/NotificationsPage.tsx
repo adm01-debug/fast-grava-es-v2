@@ -8,12 +8,13 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Bell, Wrench, Brain, Calendar, Search, Filter, RefreshCw, Wifi, WifiOff } from 'lucide-react';
+import { Bell, Wrench, Brain, Calendar, Search, Filter, RefreshCw, Wifi, WifiOff, Trash2, CheckCircle2 } from 'lucide-react';
 import { format, subDays } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useDailySummaryNotifications } from '@/hooks/useDailySummaryNotifications';
 import { usePushNotifications } from '@/hooks/usePushNotifications';
 import { useNotificationSounds } from '@/hooks/useNotificationSounds';
+import { useNotifications } from '@/hooks/useNotifications';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
@@ -55,6 +56,7 @@ const NotificationsPage = () => {
   const { permission, requestPermission } = usePushNotifications();
   const { manualRefresh, isLoading: isSummaryLoading } = useDailySummaryNotifications();
   const { playSound, isEnabled: isSoundEnabled } = useNotificationSounds();
+  const { markAllAsRead } = useNotifications();
 
   const handleNewNotification = useCallback((type: 'maintenance' | 'prediction' | 'summary') => {
     setNewNotificationsCount(prev => prev + 1);
@@ -126,9 +128,12 @@ const NotificationsPage = () => {
               {newNotificationsCount > 0 && <Badge variant="destructive" className="animate-pulse">{newNotificationsCount} nova{newNotificationsCount > 1 ? 's' : ''}</Badge>}
             </div>
           </div>
-          <div className="flex gap-2">
-            {permission !== 'granted' && <Button variant="outline" onClick={requestPermission} className="gap-2"><Bell className="h-4 w-4" />Ativar Push</Button>}
-            <Button variant="outline" onClick={() => { setNewNotificationsCount(0); handleRefreshAll(); }} disabled={isLoading || isSummaryLoading} className="gap-2">
+          <div className="flex flex-wrap gap-2">
+            <Button variant="outline" size="sm" onClick={() => markAllAsRead()} className="gap-2">
+              <CheckCircle2 className="h-4 w-4" /> Marcar lidas
+            </Button>
+            {permission !== 'granted' && <Button variant="outline" size="sm" onClick={requestPermission} className="gap-2"><Bell className="h-4 w-4" />Ativar Push</Button>}
+            <Button variant="outline" size="sm" onClick={() => { setNewNotificationsCount(0); handleRefreshAll(); }} disabled={isLoading || isSummaryLoading} className="gap-2">
               <RefreshCw className={cn("h-4 w-4", (isLoading || isSummaryLoading) && "animate-spin")} />Atualizar
             </Button>
           </div>

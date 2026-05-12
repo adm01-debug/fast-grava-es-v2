@@ -46,22 +46,27 @@ export function useNotifications(options?: { limit?: number; unreadOnly?: boolea
         }
 
         // Transform push_notifications to Notification format
-        return data.map(n => ({
-          id: n.id,
-          title: n.title,
-          message: n.body,
-          type: 'info' as const,
-          category: null,
-          source_system: 'push',
-          is_read: n.status === 'read',
-          read_at: null,
-          action_url: null,
-          action_label: null,
-          priority: 1,
-          group_count: 1,
-          is_grouped: false,
-          created_at: n.created_at,
-        }));
+        return data.map(n => {
+          const metadata = (n.data as any) || {};
+          return {
+            id: `push-${n.id}`,
+            title: n.title,
+            message: n.body,
+            type: (metadata.severity === 'critical' ? 'urgent' : 
+                   metadata.severity === 'warning' ? 'warning' : 
+                   metadata.severity === 'success' ? 'success' : 'info') as any,
+            category: metadata.type || null,
+            source_system: metadata.source || 'push',
+            is_read: n.status === 'read',
+            read_at: n.status === 'read' ? n.created_at : null,
+            action_url: metadata.route || null,
+            action_label: metadata.action_label || null,
+            priority: metadata.priority || 1,
+            group_count: 1,
+            is_grouped: false,
+            created_at: n.created_at,
+          };
+        });
       } catch {
         return EMPTY_NOTIFICATIONS;
       }
@@ -157,8 +162,8 @@ export function useNotifications(options?: { limit?: number; unreadOnly?: boolea
 }
 
 // Helper function for status change notifications
-export function notifyStatusChange(jobId: string, oldStatus: string, newStatus: string) {
-  if (import.meta.env.DEV) console.log(`Job ${jobId} status changed from ${oldStatus} to ${newStatus}`);
-  // This would typically trigger a toast or notification
-  // Using a simple console.log for now as the full notification system is available via useNotifications hook
+export function notifyStatusChange(clientName: string, oldStatus: string, newStatus: string) {
+  if (import.meta.env.DEV) console.log(`Job for ${clientName} status changed from ${oldStatus} to ${newStatus}`);
+  // The system uses Postgres listeners in InAppNotificationWatcher and NotificationIntegrator
+  // to trigger UI updates and push notifications automatically.
 }

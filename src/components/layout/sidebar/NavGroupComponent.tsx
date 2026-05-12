@@ -19,21 +19,28 @@ interface NavGroupComponentProps {
   isMobile: boolean;
   isActive: (href: string) => boolean;
   alertCount: number;
+  notificationCount: number;
   openGroups: string[];
   toggleGroup: (id: string) => void;
 }
 
 export const NavGroupComponent = memo(function NavGroupComponent({
-  group, collapsed, isMobile, isActive, alertCount, openGroups, toggleGroup,
+  group, collapsed, isMobile, isActive, alertCount, notificationCount, openGroups, toggleGroup,
 }: NavGroupComponentProps) {
   const Icon = group.icon;
   const isOpen = openGroups.includes(group.id);
   const hasActiveItem = group.items.some(item => isActive(item.href));
 
-  const itemsWithBadge = group.items.map(item => ({
-    ...item,
-    badge: item.href === '/alerts' && alertCount > 0 ? alertCount : undefined
-  }));
+  const itemsWithBadge = group.items.map(item => {
+    let badgeCount: number | undefined = undefined;
+    if (item.href === '/alerts') badgeCount = alertCount;
+    if (item.href === '/notifications') badgeCount = notificationCount;
+    
+    return {
+      ...item,
+      badge: (badgeCount !== undefined && badgeCount > 0) ? badgeCount : undefined
+    };
+  });
 
   if (collapsed && !isMobile) {
     return <>{itemsWithBadge.map(item => <NavButton key={item.href} item={item} collapsed={collapsed} isMobile={isMobile} isActive={isActive(item.href)} />)}</>;
