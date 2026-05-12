@@ -5,7 +5,7 @@ import { ptBR } from 'date-fns/locale';
 import { SPCParameter, SPCMeasurement } from '@/hooks/useSPC';
 
 export const exportSPCReport = async (parameter: SPCParameter, measurements: SPCMeasurement[], capability: any) => {
-  const doc = jsPDF();
+  const doc = new jsPDF();
   const now = new Date();
   
   // Header
