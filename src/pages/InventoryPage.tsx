@@ -55,7 +55,7 @@ import { Slider } from '@/components/ui/slider';
 
 
 export default function InventoryPage() {
-  const { items, isLoading, recordMovement, stats, transferItems, deleteMovement } = useInventory();
+  const { items, isLoading, recordMovement, stats, transferItems, deleteMovement, calculateAI, isCalculatingAI } = useInventory();
   const { data: movements } = useInventoryMovements();
   const { hasPermission } = useRBAC();
   const [searchTerm, setSearchTerm] = useState('');
