@@ -126,11 +126,14 @@ export default function MachineComparisonPage() {
       <div className="space-y-6">
         <Breadcrumbs />
 
-        <div className="flex items-center gap-3">
-          <ArrowLeftRight className="h-6 w-6 text-primary" />
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-display font-bold gradient-text">Comparativo de Máquinas</h1>
-            <p className="text-muted-foreground">Selecione até 4 máquinas para comparar lado a lado</p>
+            <div className="flex items-center gap-3">
+              <h1 className="text-3xl font-display font-black tracking-tighter">
+                <span className="gradient-text animate-pulse-glow">Benchmarking Industrial 10/10</span>
+              </h1>
+            </div>
+            <p className="text-muted-foreground">Comparativo analítico de performance e eficiência entre ativos</p>
           </div>
         </div>
 
