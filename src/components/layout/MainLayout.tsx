@@ -1,6 +1,7 @@
 import { ReactNode, lazy, Suspense } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { Bell } from 'lucide-react';
 import { AppSidebar } from './AppSidebar';
 import { ThemeToggle } from './ThemeToggle';
 import { OfflineStatusBanner } from '../offline/OfflineStatusBanner';
@@ -9,6 +10,9 @@ import { NetworkStatusIndicator } from '@/hooks/useNetworkStatus';
 import { SessionProvider } from '@/hooks/useSessionTimeout';
 import { SectionErrorBoundary } from '../ui/section-error-boundary';
 import { usePageTitle } from '@/hooks/usePageTitle';
+import { useNotifications } from '@/hooks/useNotifications';
+import { Badge } from '../ui/badge';
+import { Button } from '../ui/button';
 
 // Lazy-load non-critical layout components
 const AssistantButton = lazy(() => import('../assistant/AssistantButton').then(m => ({ default: m.AssistantButton })));
@@ -34,6 +38,7 @@ const EmptyFallback = null;
 export function MainLayout({ children }: MainLayoutProps) {
   const { isMobile, prefersReducedMotion } = useDevice();
   const location = useLocation();
+  const { unreadCount } = useNotifications();
 
   // Dynamic page title for SEO
   usePageTitle();
@@ -76,6 +81,18 @@ export function MainLayout({ children }: MainLayoutProps) {
               <OfflineReadyIndicator />
             </Suspense>
             <ThemeToggle />
+            
+            <Link to="/notifications">
+              <Button variant="ghost" size="icon" className="relative h-9 w-9">
+                <Bell className="h-5 w-5" />
+                {unreadCount > 0 && (
+                  <Badge variant="destructive" className="absolute -top-1 -right-1 h-4 min-w-[16px] px-1 rounded-full flex items-center justify-center text-[10px] font-bold border-2 border-background">
+                    {unreadCount > 99 ? '99+' : unreadCount}
+                  </Badge>
+                )}
+              </Button>
+            </Link>
+
             <SectionErrorBoundary section="Realtime" compact>
               <Suspense fallback={EmptyFallback}>
                 <RealtimeIndicator />
@@ -92,6 +109,17 @@ export function MainLayout({ children }: MainLayoutProps) {
               <OfflineReadyIndicator />
             </Suspense>
             <ThemeToggle />
+            
+            <Link to="/notifications">
+              <Button variant="ghost" size="icon" className="relative h-8 w-8">
+                <Bell className="h-4.5 w-4.5" />
+                {unreadCount > 0 && (
+                  <Badge variant="destructive" className="absolute -top-0.5 -right-0.5 h-3.5 min-w-[14px] px-0.5 rounded-full flex items-center justify-center text-[8px] font-black border border-background">
+                    {unreadCount > 9 ? '9+' : unreadCount}
+                  </Badge>
+                )}
+              </Button>
+            </Link>
           </div>
           
           {/* Content with proper padding and safe-area insets */}
