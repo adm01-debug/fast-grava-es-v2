@@ -538,8 +538,12 @@ export default function OperatorsPage() {
 
       <TabsContent value="matrix" className="outline-none animate-fade-in">
         <SkillsMatrix />
-          </TabsContent>
-        </Tabs>
+      </TabsContent>
+
+      <TabsContent value="ranking" className="outline-none animate-fade-in">
+        <OperatorLeaderboard />
+      </TabsContent>
+    </Tabs>
 
         {/* Operator QR Badge Dialog */}
         <Dialog open={!!operatorForQR} onOpenChange={() => setOperatorForQR(null)}>
