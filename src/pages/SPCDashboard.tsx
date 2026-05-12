@@ -280,7 +280,12 @@ export default function SPCDashboard() {
                       </div>
                     </div>
                     
-                    <Button variant="outline" size="sm" className="w-full text-[10px] font-bold uppercase h-8 border-primary/30 hover:bg-primary/10">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="w-full text-[10px] font-bold uppercase h-8 border-primary/30 hover:bg-primary/10"
+                      onClick={handleGenerateAIPlan}
+                    >
                       Gerar Plano de Ação Qualidade
                     </Button>
                   </CardContent>
