@@ -32,31 +32,28 @@ export default function GamificationPage() {
   const navigate = useNavigate();
   const [period, setPeriod] = useState<'daily' | 'weekly' | 'monthly'>('weekly');
   const [activeTab, setActiveTab] = useState<'ranking' | 'rewards'>('ranking');
-  const { rankings, achievements, isLoading, periodStart, periodEnd } = useGamification(period);
-  const [balance, setBalance] = useState(3500); // Mock user balance
-  const [redeemingId, setRedeemingId] = useState<number | null>(null);
+  const { 
+    rankings, 
+    achievements, 
+    rewards, 
+    balance, 
+    isLoading, 
+    periodStart, 
+    periodEnd,
+    redeemReward
+  } = useGamification(period);
 
   const handleRedeem = (reward: any) => {
-    if (balance >= reward.cost) {
-      setRedeemingId(reward.id);
-      setTimeout(() => {
-        setBalance(prev => prev - reward.cost);
-        setRedeemingId(null);
-        toast.success(`Sucesso! Você resgatou: ${reward.name}`, {
-          description: `Seu novo saldo é ${balance - reward.cost} PTS.`,
-          icon: <Sparkles className="h-4 w-4 text-primary" />,
-        });
-      }, 1500);
+    if (balance >= reward.cost_points) {
+      redeemReward.mutate(reward);
+    } else {
+      toast.error('Saldo de pontos insuficiente');
     }
   };
 
-  const rewards = [
-    { id: 1, name: 'Folga de Meio Período', cost: 2500, icon: Clock, color: 'bg-blue-500/10 text-blue-600', description: 'Ganhe 4 horas de folga remunerada.' },
-    { id: 2, name: 'Vale Presente R$ 50', cost: 1500, icon: Package, color: 'bg-green-500/10 text-green-600', description: 'Cartão presente para uso em parceiros.' },
-    { id: 3, name: 'Prioridade de Turno', cost: 3000, icon: Zap, color: 'bg-amber-500/10 text-amber-600', description: 'Escolha seu turno preferencial por 1 semana.' },
-    { id: 4, name: 'Café com a Diretoria', cost: 1000, icon: Star, color: 'bg-purple-500/10 text-purple-600', description: 'Apresente suas ideias diretamente aos diretores.' },
-    { id: 5, name: 'Bônus de Produtividade', cost: 5000, icon: TrendingUp, color: 'bg-rose-500/10 text-rose-600', description: 'Bônus em dinheiro no próximo fechamento.' },
-  ];
+  const getRewardIcon = (iconName: string) => {
+    return achievementIcons[iconName] || Trophy;
+  };
 
   if (isLoading) {
     return (
@@ -130,42 +127,45 @@ export default function GamificationPage() {
         {/* Main Content Area */}
         {activeTab === 'rewards' ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {rewards.map((reward) => (
-              <Card key={reward.id} className="glass-card group hover:border-primary/50 transition-all overflow-hidden border-2 border-transparent">
-                <CardHeader className={cn("pb-2", reward.color)}>
-                  <div className="flex justify-between items-start">
-                    <div className="p-2 rounded-lg bg-white/20">
-                      <reward.icon className="h-6 w-6" />
+            {rewards.map((reward) => {
+              const Icon = getRewardIcon(reward.icon);
+              return (
+                <Card key={reward.id} className="glass-card group hover:border-primary/50 transition-all overflow-hidden border-2 border-transparent">
+                  <CardHeader className={cn("pb-2", reward.color_class)}>
+                    <div className="flex justify-between items-start">
+                      <div className="p-2 rounded-lg bg-white/20">
+                        <Icon className="h-6 w-6" />
+                      </div>
+                      <Badge variant="secondary" className="bg-white/30 text-current border-none font-bold">
+                        {reward.cost_points} PTS
+                      </Badge>
                     </div>
-                    <Badge variant="secondary" className="bg-white/30 text-current border-none font-bold">
-                      {reward.cost} PTS
-                    </Badge>
-                  </div>
-                  <CardTitle className="mt-4 text-xl">{reward.name}</CardTitle>
-                </CardHeader>
-                <CardContent className="pt-4">
-                  <p className="text-sm text-muted-foreground mb-6 h-10 line-clamp-2">
-                    {reward.description}
-                  </p>
-                  <Button 
-                    className={cn(
-                      "w-full transition-all duration-500",
-                      redeemingId === reward.id ? "bg-emerald-500 hover:bg-emerald-600" : "group-hover:scale-[1.02]"
-                    )} 
-                    disabled={balance < reward.cost || redeemingId !== null}
-                    onClick={() => handleRedeem(reward)}
-                  >
-                    {redeemingId === reward.id ? (
-                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                    ) : null}
-                    {redeemingId === reward.id ? 'Processando...' : 'Resgatar Recompensa'}
-                  </Button>
-                  <p className="text-[10px] text-center text-muted-foreground mt-3 uppercase font-bold tracking-tighter">
-                    {balance < reward.cost ? 'Saldo insuficiente para resgate' : 'Disponível para resgate'}
-                  </p>
-                </CardContent>
-              </Card>
-            ))}
+                    <CardTitle className="mt-4 text-xl">{reward.name}</CardTitle>
+                  </CardHeader>
+                  <CardContent className="pt-4">
+                    <p className="text-sm text-muted-foreground mb-6 h-10 line-clamp-2">
+                      {reward.description}
+                    </p>
+                    <Button 
+                      className={cn(
+                        "w-full transition-all duration-500",
+                        redeemReward.isPending && redeemReward.variables?.id === reward.id ? "bg-emerald-500 hover:bg-emerald-600" : "group-hover:scale-[1.02]"
+                      )} 
+                      disabled={balance < reward.cost_points || redeemReward.isPending}
+                      onClick={() => handleRedeem(reward)}
+                    >
+                      {redeemReward.isPending && redeemReward.variables?.id === reward.id ? (
+                        <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                      ) : null}
+                      {redeemReward.isPending && redeemReward.variables?.id === reward.id ? 'Processando...' : 'Resgatar Recompensa'}
+                    </Button>
+                    <p className="text-[10px] text-center text-muted-foreground mt-3 uppercase font-bold tracking-tighter">
+                      {balance < reward.cost_points ? 'Saldo insuficiente para resgate' : 'Disponível para resgate'}
+                    </p>
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
         ) : (
           <>
