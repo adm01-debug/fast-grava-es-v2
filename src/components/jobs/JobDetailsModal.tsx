@@ -52,6 +52,7 @@ import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { toast } from "sonner";
+import { ProductionPhotos } from "@/components/production/ProductionPhotos";
 
 const jobEditSchema = z.object({
   order_number: z.string().min(1, 'Número da OS é obrigatório'),
