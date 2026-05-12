@@ -13,6 +13,8 @@ export function FactoryFloorMap() {
   const { machines } = useTPM();
   const [liveData, setLiveData] = useState<Record<string, any>>({});
   const [activeJobs, setActiveJobs] = useState<Record<string, any>>({});
+  const [heatmapType, setHeatmapType] = useState<'none' | 'load' | 'temp'>('none');
+  const [selectedMachine, setSelectedMachine] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchActiveJobs = async () => {
