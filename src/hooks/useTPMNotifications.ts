@@ -58,6 +58,7 @@ export const useTPMNotifications = () => {
       (alert.alert_type === 'upcoming' && prefs.upcomingMaintenance) ||
       (alert.alert_type === 'due' && prefs.dueMaintenance) ||
       (alert.alert_type === 'overdue' && prefs.overdueMaintenance) ||
+      (alert.alert_type === 'predictive' && prefs.criticalAlerts) ||
       (alert.alert_type === 'critical' && prefs.criticalAlerts);
 
     if (!shouldNotify) return null;
@@ -71,24 +72,26 @@ export const useTPMNotifications = () => {
       playAlertSound();
     }
 
-    const iconMap = {
+    const iconMap: Record<string, string> = {
       upcoming: '📅',
       due: '⚠️',
       overdue: '🔴',
       critical: '🚨',
+      predictive: '🧠',
     };
 
-    const titleMap = {
+    const titleMap: Record<string, string> = {
       upcoming: 'Manutenção Próxima',
       due: 'Manutenção Vencendo',
       overdue: 'Manutenção Atrasada',
       critical: 'ALERTA CRÍTICO',
+      predictive: 'PREDIÇÃO IA: RISCO DE FALHA',
     };
 
     const machineName = alert.machine?.name || 'Máquina desconhecida';
 
     return sendNotification({
-      title: `${iconMap[alert.alert_type]} ${titleMap[alert.alert_type]}`,
+      title: `${iconMap[alert.alert_type as string]} ${titleMap[alert.alert_type as string]}`,
       body: `${machineName}: ${alert.message}`,
       tag: `tpm-alert-${alert.id}`,
       requireInteraction: alert.alert_type === 'critical' || alert.alert_type === 'overdue',

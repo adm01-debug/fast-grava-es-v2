@@ -5102,6 +5102,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      calculate_audit_hash: {
+        Args: { rec: Database["public"]["Tables"]["audit_log"]["Row"] }
+        Returns: string
+      }
       check_tpm_schedules_notifications: { Args: never; Returns: undefined }
       compute_audit_hash: {
         Args: {
@@ -5136,15 +5140,25 @@ export type Database = {
         Args: { p_type: string }
         Returns: undefined
       }
-      verify_audit_chain: {
-        Args: { _limit?: number }
-        Returns: {
-          broken: number
-          first_broken_id: string
-          total_records: number
-          verified: number
-        }[]
-      }
+      verify_audit_chain:
+        | {
+            Args: never
+            Returns: {
+              broken_count: number
+              is_integral: boolean
+              total_records: number
+              verified_count: number
+            }[]
+          }
+        | {
+            Args: { _limit?: number }
+            Returns: {
+              broken: number
+              first_broken_id: string
+              total_records: number
+              verified: number
+            }[]
+          }
     }
     Enums: {
       app_role: "coordinator" | "operator" | "manager" | "admin"
