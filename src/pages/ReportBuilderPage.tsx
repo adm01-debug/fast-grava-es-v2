@@ -21,7 +21,9 @@ import {
   Share2,
   FileCheck,
   Zap,
-  Info
+  Info,
+  Mail,
+  ListRestart
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
