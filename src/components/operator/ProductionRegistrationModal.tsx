@@ -186,15 +186,17 @@ export function ProductionRegistrationModal({
     setIsSaving(true);
 
     try {
+      // Append checklist to notes for traceability
+      const checklistStr = `[Protocolo Qualidade: ${qualityChecks.color ? 'COR OK, ' : 'COR PENDENTE, '}${qualityChecks.burrs ? 'REBARBA OK, ' : 'REBARBA PENDENTE, '}${qualityChecks.dimensions ? 'DIMENSÕES OK, ' : 'DIMENSÕES PENDENTE, '}${qualityChecks.packaging ? 'EMBALAGEM OK' : 'EMBALAGEM PENDENTE'}]`;
+      const finalNotes = notes ? `${notes}\n\n${checklistStr}` : checklistStr;
+
       // Montar payload com todos os campos desejados
       const rawPayload = {
         actual_end_time: new Date().toISOString(),
         lost_pieces: lostPieces,
-        notes: notes || null,
+        notes: finalNotes,
         produced_quantity: producedQuantity,
         production_photos: photos.length > 0 ? photos : null,
-        // Campos que NÃO devem ser atualizados por operadores (serão filtrados)
-        status: 'finished', // Será removido pelo sanitizer
       };
 
       // SANITIZAR: garantir que apenas campos permitidos sejam enviados
