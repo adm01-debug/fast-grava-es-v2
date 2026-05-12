@@ -175,23 +175,27 @@ export function TechniqueManagement() {
           </TableHeader>
           <TableBody>
             {techniques?.map((tech) => (
-              <TableRow key={tech.id}>
+              <TableRow key={tech.id} className="group">
                 <TableCell className="font-medium">
                   <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: tech.color }} />
+                    <div className="w-3 h-3 rounded-full ring-2 ring-background shadow-sm" style={{ backgroundColor: tech.color }} />
                     {tech.name}
                   </div>
                 </TableCell>
                 <TableCell>
-                  <Badge variant="outline">{tech.short_name}</Badge>
+                  <Badge variant="outline" className="font-mono">{tech.short_name}</Badge>
                 </TableCell>
                 <TableCell>
-                  <div className="flex items-center gap-1 text-muted-foreground">
+                  <div className="flex items-center gap-1.5 text-muted-foreground font-medium">
                     <Clock className="h-3 w-3" /> {tech.setup_time} min
                   </div>
                 </TableCell>
                 <TableCell>
-                  <Badge className="bg-success/20 text-success hover:bg-success/30 border-none">Ativa</Badge>
+                  <div className="flex items-center gap-1">
+                    <Badge className="bg-destructive/10 text-destructive border-none text-[10px] h-5 px-1.5">&lt;{tech.low_threshold || 30}%</Badge>
+                    <Badge className="bg-warning/10 text-warning border-none text-[10px] h-5 px-1.5">&lt;{tech.medium_threshold || 70}%</Badge>
+                    <Badge className="bg-success/10 text-success border-none text-[10px] h-5 px-1.5">&gt;{tech.high_threshold || 90}%</Badge>
+                  </div>
                 </TableCell>
                 <TableCell className="text-right">
                   <div className="flex justify-end gap-2">
