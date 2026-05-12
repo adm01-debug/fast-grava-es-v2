@@ -28,6 +28,7 @@ import { BITooltip } from './BITooltip';
 import { BIEmptyState } from './BIEmptyState';
 import { BILoadingSkeleton } from './BILoadingSkeleton';
 const BIAIInsights = lazy(() => import('./BIAIInsights').then(m => ({ default: m.BIAIInsights })));
+import { BIPredictiveROI } from './BIPredictiveROI';
 import { CHART_COLORS, GRADIENTS } from '@/constants/biConstants';
 
 import { BIJob, BIMetrics, BIProps } from '@/types/bi';
