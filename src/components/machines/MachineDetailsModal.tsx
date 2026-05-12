@@ -119,10 +119,23 @@ export function MachineDetailsModal({ machine, open, onOpenChange }: MachineDeta
               </div>
             </div>
 
-            <MachineRealOEESection machineId={machine.id} />
           </TabsContent>
 
-function MachineHistoryTab({ machineId }: { machineId: string }) {
+          <TabsContent value="reliability">
+            <div className="mt-4">
+              <MachineReliabilityTab machineId={machine.id} />
+            </div>
+          </TabsContent>
+
+          <TabsContent value="history">
+            <MachineHistoryTab machineId={machine.id} />
+          </TabsContent>
+        </Tabs>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
   const [period, setPeriod] = useState<HistoryPeriodValue>({ preset: 'all' });
   const { data, isLoading, error } = useEntityAuditTrail('machines', machineId, {
     fromDate: period.fromDate,
