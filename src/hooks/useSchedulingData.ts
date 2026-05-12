@@ -32,6 +32,20 @@ const ERROR_CONTEXT = {
 export function useSchedulingData() {
   const queryClient = useQueryClient();
 
+  // Fetch operator profiles
+  const profilesQuery = useQuery({
+    queryKey: ['operator-profiles'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, full_name, avatar_url');
+      
+      if (error) throw error;
+      return data;
+    },
+    staleTime: STATIC_DATA_STALE_TIME,
+  });
+
   // Fetch techniques with longer stale time (they change infrequently)
   const techniquesQuery = useQuery({
     queryKey: ['techniques'],
