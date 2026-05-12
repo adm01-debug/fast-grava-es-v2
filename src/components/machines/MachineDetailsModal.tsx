@@ -19,7 +19,6 @@ import { AuditEntryCard } from "@/components/audit/AuditEntryCard";
 import { HistoryPeriodFilter, type HistoryPeriodValue } from "@/components/audit/HistoryPeriodFilter";
 import { MachineReliabilityTab } from "./MachineReliabilityTab";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
 import { calculateRealOEE } from "@/lib/oeeCalculations";
 import { useSchedulingData } from "@/hooks/useSchedulingData";
 
@@ -30,7 +29,11 @@ interface MachineDetailsModalProps {
 }
 
 export function MachineDetailsModal({ machine, open, onOpenChange }: MachineDetailsModalProps) {
+  const { getTechniqueById } = useSchedulingData();
+  
   if (!machine) return null;
+  
+  const technique = machine.technique_id ? getTechniqueById(machine.technique_id) : null;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -42,8 +45,8 @@ export function MachineDetailsModal({ machine, open, onOpenChange }: MachineDeta
               {machine.code} - {machine.name}
             </DialogTitle>
             <div className="flex items-center gap-2">
-              <Badge variant="outline" className={machine.status === 'active' ? 'text-green-400 border-green-500/30' : 'text-red-400 border-red-500/30'}>
-                {machine.status === 'active' ? 'Operacional' : 'Manutenção'}
+              <Badge variant="outline" className={machine.is_active ? 'text-green-400 border-green-500/30' : 'text-red-400 border-red-500/30'}>
+                {machine.is_active ? 'Operacional' : 'Inativa'}
               </Badge>
             </div>
           </div>
@@ -77,7 +80,7 @@ export function MachineDetailsModal({ machine, open, onOpenChange }: MachineDeta
                     <span className="text-xs text-muted-foreground flex items-center gap-1.5">
                       <Zap className="h-3 w-3" /> Setup Médio
                     </span>
-                    <span className="text-sm font-medium">15 min</span>
+                    <span className="text-sm font-medium">{technique?.setup_time || 15} min</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-xs text-muted-foreground flex items-center gap-1.5">
@@ -89,7 +92,7 @@ export function MachineDetailsModal({ machine, open, onOpenChange }: MachineDeta
                     <span className="text-xs text-muted-foreground flex items-center gap-1.5">
                       <Gauge className="h-3 w-3" /> Carga Atual
                     </span>
-                    <span className="text-sm font-medium">65%</span>
+                    <span className="text-sm font-medium">Auto</span>
                   </div>
                 </div>
               </div>
@@ -102,12 +105,14 @@ export function MachineDetailsModal({ machine, open, onOpenChange }: MachineDeta
                     <span className="text-sm font-medium">Indústria X</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-xs text-muted-foreground">Ano</span>
-                    <span className="text-sm font-medium">2022</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs text-muted-foreground">Técnica Principal</span>
-                    <span className="text-sm font-medium">Serigrafia</span>
+                    <span className="text-xs text-muted-foreground text-ellipsis overflow-hidden whitespace-nowrap mr-1">Técnica Principal</span>
+                    <div className="flex items-center gap-2">
+                      <div 
+                        className="w-2 h-2 rounded-full" 
+                        style={{ backgroundColor: technique?.color || '#888' }} 
+                      />
+                      <span className="text-sm font-medium">{technique?.name || 'Não vinculada'}</span>
+                    </div>
                   </div>
                 </div>
               </div>
