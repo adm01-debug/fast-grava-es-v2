@@ -470,11 +470,6 @@ function InventoryHistoryTable() {
     });
   };
 
-  const handleRollback = async (m: any) => {
-    setRollbackId(m.id);
-  };
-
-
   const confirmRollback = async () => {
     if (!rollbackId) return;
     try {
@@ -489,11 +484,11 @@ function InventoryHistoryTable() {
 
   return (
     <div className="space-y-4">
-      <div className="p-4 border-b border-border/50 flex flex-col sm:flex-row gap-4 items-end">
+      <div className="p-4 border-b border-border/50 flex flex-col sm:flex-row gap-4 items-end bg-muted/20">
         <div className="space-y-1 flex-1">
-          <Label className="text-[10px] uppercase font-bold text-muted-foreground">Período</Label>
+          <Label className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest">Período</Label>
           <Select value={dateFilter} onValueChange={(v: any) => setDateFilter(v)}>
-            <SelectTrigger>
+            <SelectTrigger className="bg-background">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -505,9 +500,9 @@ function InventoryHistoryTable() {
           </Select>
         </div>
         <div className="space-y-1 flex-1">
-          <Label className="text-[10px] uppercase font-bold text-muted-foreground">Operação</Label>
+          <Label className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest">Operação</Label>
           <Select value={typeFilter} onValueChange={setTypeFilter}>
-            <SelectTrigger>
+            <SelectTrigger className="bg-background">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -519,6 +514,90 @@ function InventoryHistoryTable() {
             </SelectContent>
           </Select>
         </div>
+        <Button variant="outline" size="sm" className="gap-2 h-10 px-4 font-bold border-emerald-500/20 text-emerald-600 hover:bg-emerald-50" onClick={handleExportCSV}>
+          <FileDown className="h-4 w-4" /> Exportar CSV
+        </Button>
+      </div>
+
+      <div className="overflow-x-auto">
+        <table className="w-full text-xs">
+          <thead>
+            <tr className="bg-muted/30 border-b border-border/50">
+              <th className="text-left p-4 font-black uppercase tracking-tighter text-muted-foreground">Data/Hora</th>
+              <th className="text-left p-4 font-black uppercase tracking-tighter text-muted-foreground">Item</th>
+              <th className="text-left p-4 font-black uppercase tracking-tighter text-muted-foreground">Operação</th>
+              <th className="text-center p-4 font-black uppercase tracking-tighter text-muted-foreground">Qtd</th>
+              <th className="text-left p-4 font-black uppercase tracking-tighter text-muted-foreground">Motivo/Local</th>
+              <th className="text-left p-4 font-black uppercase tracking-tighter text-muted-foreground">Usuário</th>
+              <th className="text-right p-4 font-black uppercase tracking-tighter text-muted-foreground">Ações</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-border/30">
+            {filteredMovements.map((m: any) => (
+              <tr key={m.id} className="hover:bg-muted/10 transition-colors group">
+                <td className="p-4 font-mono text-muted-foreground">
+                  {format(parseISO(m.created_at), 'dd/MM/yy HH:mm')}
+                </td>
+                <td className="p-4 font-bold text-foreground">
+                  {m.inventory_items?.name}
+                </td>
+                <td className="p-4">
+                  <Badge variant="outline" className={cn(
+                    "text-[9px] font-black uppercase tracking-tighter",
+                    m.type === 'IN' ? "text-emerald-500 border-emerald-500/20 bg-emerald-500/5" :
+                    m.type === 'OUT' ? "text-red-500 border-red-500/20 bg-red-500/5" :
+                    m.type === 'TRANSFER' ? "text-blue-500 border-blue-500/20 bg-blue-500/5" :
+                    "text-amber-500 border-amber-500/20 bg-amber-500/5"
+                  )}>
+                    {m.type}
+                  </Badge>
+                </td>
+                <td className="p-4 text-center font-black">
+                  {m.quantity}
+                </td>
+                <td className="p-4 text-muted-foreground max-w-[200px] truncate">
+                  {m.type === 'TRANSFER' ? `${m.from_location} → ${m.to_location}` : (m.reason || '-')}
+                </td>
+                <td className="p-4 font-medium italic">
+                  {m.profiles?.display_name || 'Sistema'}
+                </td>
+                <td className="p-4 text-right">
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="h-8 w-8 text-muted-foreground hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                    onClick={() => setRollbackId(m.id)}
+                  >
+                    <History className="h-4 w-4" />
+                  </Button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <Dialog open={!!rollbackId} onOpenChange={(o) => !o && setRollbackId(null)}>
+        <DialogContent className="sm:max-w-[400px]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-red-500">
+              <AlertTriangle className="h-5 w-5" />
+              Confirmar Rollback
+            </DialogTitle>
+            <DialogDescription>
+              Esta ação irá desfazer a movimentação selecionada e reajustar o saldo do estoque automaticamente. Deseja continuar?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button variant="ghost" onClick={() => setRollbackId(null)}>Cancelar</Button>
+            <Button variant="destructive" onClick={confirmRollback}>Sim, Desfazer</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
+
         <Button variant="outline" className="gap-2" onClick={handleExportCSV} disabled={filteredMovements.length === 0}>
           <Filter className="h-4 w-4" /> Exportar CSV
         </Button>
