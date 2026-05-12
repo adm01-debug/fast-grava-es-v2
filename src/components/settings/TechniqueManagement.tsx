@@ -105,29 +105,52 @@ export function TechniqueManagement() {
                 </DialogDescription>
               </DialogHeader>
               <div className="grid gap-4 py-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="name">Nome Completo</Label>
-                  <Input id="name" name="name" defaultValue={editingTechnique?.name} placeholder="Ex: Serigrafia Têxtil" required />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="short_name">Nome Curto (Sigla)</Label>
-                  <Input id="short_name" name="short_name" defaultValue={editingTechnique?.short_name} placeholder="Ex: SERI" required />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="color">Cor Identificadora (Hex)</Label>
-                  <div className="flex gap-2">
-                    <Input id="color" name="color" type="color" className="w-12 p-1 h-10" defaultValue={editingTechnique?.color || '#3b82f6'} required />
-                    <Input name="color_text" defaultValue={editingTechnique?.color || '#3b82f6'} className="flex-1" onChange={(e) => {
-                      const colorInput = document.getElementById('color') as HTMLInputElement;
-                      if (colorInput) colorInput.value = e.target.value;
-                    }} />
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="grid gap-2">
+                    <Label htmlFor="name">Nome Completo</Label>
+                    <Input id="name" name="name" defaultValue={editingTechnique?.name} placeholder="Ex: Serigrafia Têxtil" required />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="short_name">Nome Curto (Sigla)</Label>
+                    <Input id="short_name" name="short_name" defaultValue={editingTechnique?.short_name} placeholder="Ex: SERI" required />
                   </div>
                 </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="setup_time" className="flex items-center gap-2">
-                    <Clock className="h-4 w-4" /> Setup Padrão (Minutos)
-                  </Label>
-                  <Input id="setup_time" name="setup_time" type="number" defaultValue={editingTechnique?.setup_time || 10} required />
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="grid gap-2">
+                    <Label htmlFor="color">Cor Identificadora</Label>
+                    <div className="flex gap-2">
+                      <Input id="color" name="color" type="color" className="w-12 p-1 h-10 cursor-pointer" defaultValue={editingTechnique?.color || '#3b82f6'} required />
+                      <Input name="color_text" defaultValue={editingTechnique?.color || '#3b82f6'} className="flex-1 font-mono uppercase" onChange={(e) => {
+                        const colorInput = document.getElementById('color') as HTMLInputElement;
+                        if (colorInput) colorInput.value = e.target.value;
+                      }} />
+                    </div>
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="setup_time" className="flex items-center gap-2">
+                      <Clock className="h-4 w-4" /> Setup Padrão (Minutos)
+                    </Label>
+                    <Input id="setup_time" name="setup_time" type="number" defaultValue={editingTechnique?.setup_time || 10} required />
+                  </div>
+                </div>
+
+                <div className="pt-2 border-t border-border mt-2">
+                  <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground">Limites de OEE (%)</Label>
+                  <div className="grid grid-cols-3 gap-3 mt-2">
+                    <div className="grid gap-1.5">
+                      <Label htmlFor="low_threshold" className="text-[10px]">Crítico (&lt;)</Label>
+                      <Input id="low_threshold" name="low_threshold" type="number" defaultValue={editingTechnique?.low_threshold || 30} className="h-8" />
+                    </div>
+                    <div className="grid gap-1.5">
+                      <Label htmlFor="medium_threshold" className="text-[10px]">Alerta (&lt;)</Label>
+                      <Input id="medium_threshold" name="medium_threshold" type="number" defaultValue={editingTechnique?.medium_threshold || 70} className="h-8" />
+                    </div>
+                    <div className="grid gap-1.5">
+                      <Label htmlFor="high_threshold" className="text-[10px]">Excelente (&gt;)</Label>
+                      <Input id="high_threshold" name="high_threshold" type="number" defaultValue={editingTechnique?.high_threshold || 90} className="h-8" />
+                    </div>
+                  </div>
                 </div>
               </div>
               <DialogFooter>
