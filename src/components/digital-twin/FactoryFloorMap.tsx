@@ -51,7 +51,33 @@ export function FactoryFloorMap() {
   }, [machines, activeJobs]);
 
   return (
-    <div className="relative w-full aspect-[2/1] bg-secondary/10 rounded-xl border border-border/50 overflow-hidden p-8 group/map">
+    <div className="space-y-4">
+      <div className="flex items-center justify-between bg-black/40 border border-border/40 p-3 rounded-xl backdrop-blur-xl">
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-primary/10 border border-primary/20">
+            <Layers className="h-4 w-4 text-primary" />
+            <span className="text-[10px] font-black uppercase tracking-widest">Modos de Visualização</span>
+          </div>
+          <div className="flex items-center gap-6">
+            <div className="flex items-center gap-2">
+              <Switch id="heatmap-load" checked={heatmapType === 'load'} onCheckedChange={(val) => setHeatmapType(val ? 'load' : 'none')} />
+              <Label htmlFor="heatmap-load" className="text-[9px] font-bold uppercase cursor-pointer">Carga Nominal</Label>
+            </div>
+            <div className="flex items-center gap-2">
+              <Switch id="heatmap-temp" checked={heatmapType === 'temp'} onCheckedChange={(val) => setHeatmapType(val ? 'temp' : 'none')} />
+              <Label htmlFor="heatmap-temp" className="text-[9px] font-bold uppercase cursor-pointer">Stress Térmico</Label>
+            </div>
+          </div>
+        </div>
+        <div className="flex items-center gap-3">
+          <Badge variant="outline" className="gap-2 bg-emerald-500/10 text-emerald-500 border-emerald-500/20 text-[9px] font-bold">
+            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            MOTOR DE SINCRO V2.4 ATIVO
+          </Badge>
+        </div>
+      </div>
+
+      <div className="relative w-full aspect-[2/1] bg-secondary/10 rounded-xl border border-border/50 overflow-hidden p-8 group/map">
       {/* Factory Grid Background */}
       <div className="absolute inset-0 opacity-10 pointer-events-none" 
            style={{ backgroundImage: 'radial-gradient(circle, hsl(var(--primary)) 1px, transparent 1px)', backgroundSize: '30px 30px' }} />
