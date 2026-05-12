@@ -1,0 +1,194 @@
+import { useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { toast } from 'sonner';
+import { Edit2, Plus, Trash2, Hammer, Clock, Zap } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+
+export function TechniqueManagement() {
+  const queryClient = useQueryClient();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [editingTechnique, setEditingTechnique] = useState<any>(null);
+
+  const { data: techniques, isLoading } = useQuery({
+    queryKey: ['techniques-admin'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('techniques')
+        .select('*')
+        .order('name');
+      if (error) throw error;
+      return data;
+    }
+  });
+
+  const saveMutation = useMutation({
+    mutationFn: async (technique: any) => {
+      const { data, error } = await supabase
+        .from('techniques')
+        .upsert(technique)
+        .select();
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['techniques-admin'] });
+      setIsDialogOpen(false);
+      setEditingTechnique(null);
+      toast.success('Técnica salva com sucesso');
+    },
+    onError: (error: any) => {
+      toast.error(`Erro ao salvar técnica: ${error.message}`);
+    }
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from('techniques').delete().eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['techniques-admin'] });
+      toast.success('Técnica excluída');
+    },
+    onError: (error: any) => {
+      toast.error(`Erro ao excluir técnica: ${error.message}`);
+    }
+  });
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const techniqueData = {
+      id: editingTechnique?.id || (formData.get('name') as string).toLowerCase().replace(/\s+/g, '-'),
+      name: formData.get('name'),
+      short_name: formData.get('short_name'),
+      color: formData.get('color'),
+      setup_time: parseInt(formData.get('setup_time') as string),
+    };
+    saveMutation.mutate(techniqueData);
+  };
+
+  if (isLoading) return <div>Carregando técnicas...</div>;
+
+  return (
+    <Card className="glass-card">
+      <CardHeader className="flex flex-row items-center justify-between">
+        <div>
+          <CardTitle className="flex items-center gap-2">
+            <Hammer className="h-5 w-5 text-primary" />
+            Técnicas de Gravação
+          </CardTitle>
+          <CardDescription>Gerencie as técnicas de produção e seus parâmetros de setup</CardDescription>
+        </div>
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogTrigger asChild>
+            <Button className="gap-2" onClick={() => setEditingTechnique(null)}>
+              <Plus className="h-4 w-4" /> Nova Técnica
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[425px]">
+            <form onSubmit={handleSubmit}>
+              <DialogHeader>
+                <DialogTitle>{editingTechnique ? 'Editar Técnica' : 'Nova Técnica'}</DialogTitle>
+                <DialogDescription>
+                  Configure os detalhes da técnica de gravação.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="name">Nome Completo</Label>
+                  <Input id="name" name="name" defaultValue={editingTechnique?.name} placeholder="Ex: Serigrafia Têxtil" required />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="short_name">Nome Curto (Sigla)</Label>
+                  <Input id="short_name" name="short_name" defaultValue={editingTechnique?.short_name} placeholder="Ex: SERI" required />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="color">Cor Identificadora (Hex)</Label>
+                  <div className="flex gap-2">
+                    <Input id="color" name="color" type="color" className="w-12 p-1 h-10" defaultValue={editingTechnique?.color || '#3b82f6'} required />
+                    <Input name="color_text" defaultValue={editingTechnique?.color || '#3b82f6'} className="flex-1" onChange={(e) => {
+                      const colorInput = document.getElementById('color') as HTMLInputElement;
+                      if (colorInput) colorInput.value = e.target.value;
+                    }} />
+                  </div>
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="setup_time" className="flex items-center gap-2">
+                    <Clock className="h-4 w-4" /> Setup Padrão (Minutos)
+                  </Label>
+                  <Input id="setup_time" name="setup_time" type="number" defaultValue={editingTechnique?.setup_time || 10} required />
+                </div>
+              </div>
+              <DialogFooter>
+                <Button type="submit" disabled={saveMutation.isPending}>
+                  {saveMutation.isPending ? 'Salvando...' : 'Salvar Técnica'}
+                </Button>
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </Dialog>
+      </CardHeader>
+      <CardContent>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Técnica</TableHead>
+              <TableHead>Sigla</TableHead>
+              <TableHead>Setup</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead className="text-right">Ações</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {techniques?.map((tech) => (
+              <TableRow key={tech.id}>
+                <TableCell className="font-medium">
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: tech.color }} />
+                    {tech.name}
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <Badge variant="outline">{tech.short_name}</Badge>
+                </TableCell>
+                <TableCell>
+                  <div className="flex items-center gap-1 text-muted-foreground">
+                    <Clock className="h-3 w-3" /> {tech.setup_time} min
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <Badge className="bg-success/20 text-success hover:bg-success/30 border-none">Ativa</Badge>
+                </TableCell>
+                <TableCell className="text-right">
+                  <div className="flex justify-end gap-2">
+                    <Button variant="ghost" size="icon" onClick={() => {
+                      setEditingTechnique(tech);
+                      setIsDialogOpen(true);
+                    }}>
+                      <Edit2 className="h-4 w-4" />
+                    </Button>
+                    <Button variant="ghost" size="icon" className="text-destructive" onClick={() => {
+                      if (confirm('Tem certeza que deseja excluir esta técnica? Isso pode afetar jobs e máquinas vinculados.')) {
+                        deleteMutation.mutate(tech.id);
+                      }
+                    }}>
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </CardContent>
+    </Card>
+  );
+}
