@@ -49,7 +49,7 @@ export function useNotifications(options?: { limit?: number; unreadOnly?: boolea
         return data.map(n => {
           const metadata = (n.data as any) || {};
           return {
-            id: n.id,
+            id: `push-${n.id}`,
             title: n.title,
             message: n.body,
             type: (metadata.severity === 'critical' ? 'urgent' : 
