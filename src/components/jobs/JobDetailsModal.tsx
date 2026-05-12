@@ -534,6 +534,15 @@ export function JobDetailsModal({ job, open, onOpenChange, onStatusChange }: Job
           <TabsContent value="quality">
             <JobQualityTab jobId={job.id} techniqueId={job.technique_id} machineId={job.machine_id} />
           </TabsContent>
+          
+          <TabsContent value="photos" className="mt-4">
+            <ScrollArea className="h-[450px] pr-4">
+              <ProductionPhotos 
+                photos={job.production_photos} 
+                jobId={job.id} 
+              />
+            </ScrollArea>
+          </TabsContent>
 
           <TabsContent value="costs">
             <JobCostsTab jobId={job.id} />
