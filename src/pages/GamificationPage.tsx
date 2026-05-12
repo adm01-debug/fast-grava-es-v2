@@ -31,7 +31,7 @@ const achievementIcons: Record<string, React.ElementType> = {
 export default function GamificationPage() {
   const navigate = useNavigate();
   const [period, setPeriod] = useState<'daily' | 'weekly' | 'monthly'>('weekly');
-  const [activeTab, setActiveTab] = useState<'ranking' | 'rewards'>('ranking');
+  const [activeTab, setActiveTab] = useState<'ranking' | 'rewards' | 'history'>('ranking');
   const { 
     rankings, 
     achievements, 
@@ -40,7 +40,8 @@ export default function GamificationPage() {
     isLoading, 
     periodStart, 
     periodEnd,
-    redeemReward
+    redeemReward,
+    redemptionsQuery // Need to add this to useGamification hook or fetch here
   } = useGamification(period);
 
   const handleRedeem = (reward: any) => {
