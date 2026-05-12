@@ -79,6 +79,8 @@ export default function KPIDashboard() {
   
   const { data: kpis, isLoading: isLoadingKPIs } = useKPIs(period, customTargets);
   const { operators, isLoading: isLoadingOperators } = useOperatorProductivity('all');
+  const { jobs, isLoading: isLoadingJobs } = useSchedulingData();
+
   const { goalAlerts } = useGoalAlerts({ enableNotifications: false });
   const { handleExport } = useBIExport({ periodJobsList: [] });
   const [searchTerm, setSearchTerm] = useState('');
