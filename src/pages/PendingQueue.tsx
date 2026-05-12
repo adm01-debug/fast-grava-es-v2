@@ -203,13 +203,20 @@ export default function PendingQueue() {
   };
 
   // Stats
-  const stats = useMemo(() => ({
-    total: filteredJobs.length,
-    urgent: filteredJobs.filter(j => j.priority === 'urgent').length,
-    delayed: filteredJobs.filter(j => j.status === 'delayed').length,
-    rework: filteredJobs.filter(j => j.status === 'rework').length,
-    optimizationPotential: seqSuggestions.reduce((acc, s) => acc + s.estimatedSavings, 0),
-  }), [filteredJobs, seqSuggestions]);
+  const stats = useMemo(() => {
+    const now = new Date();
+    const stuckThreshold = subHours(now, 4);
+    
+    return {
+      total: filteredJobs.length,
+      urgent: filteredJobs.filter(j => j.priority === 'urgent').length,
+      delayed: filteredJobs.filter(j => j.status === 'delayed').length,
+      rework: filteredJobs.filter(j => j.status === 'rework').length,
+      stuck: filteredJobs.filter(j => j.status === 'ready' && isAfter(stuckThreshold, new Date(j.updated_at))).length,
+      optimizationPotential: seqSuggestions.reduce((acc, s) => acc + s.estimatedSavings, 0),
+    };
+  }, [filteredJobs, seqSuggestions]);
+
 
   // Virtualization
   const tableContainerRef = useRef<HTMLDivElement>(null);
