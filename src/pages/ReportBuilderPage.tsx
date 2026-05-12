@@ -280,6 +280,8 @@ export default function ReportBuilderPage() {
                     onClick={() => {
                       setSelectedTable(table.id);
                       setSelectedColumns(TABLE_COLUMNS[table.id]);
+                      if (table.id === 'jobs') setSelectedStatus('finished');
+                      else setSelectedStatus('all');
                     }}
                     className={`w-full flex items-center gap-3 p-3 rounded-xl border transition-all text-left group ${
                       selectedTable === table.id 
@@ -296,6 +298,7 @@ export default function ReportBuilderPage() {
                 ))}
               </CardContent>
             </Card>
+
 
 
             <Card className="glass-card">
