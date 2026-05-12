@@ -91,7 +91,7 @@ export const useTPMNotifications = () => {
     const machineName = alert.machine?.name || 'Máquina desconhecida';
 
     return sendNotification({
-      title: `${iconMap[alert.alert_type]} ${titleMap[alert.alert_type]}`,
+      title: `${iconMap[alert.alert_type as string]} ${titleMap[alert.alert_type as string]}`,
       body: `${machineName}: ${alert.message}`,
       tag: `tpm-alert-${alert.id}`,
       requireInteraction: alert.alert_type === 'critical' || alert.alert_type === 'overdue',
