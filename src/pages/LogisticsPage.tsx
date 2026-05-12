@@ -42,6 +42,7 @@ import { RotateCcw } from 'lucide-react';
 export default function LogisticsPage() {
   const { shipments } = useLogistics();
   const [searchTerm, setSearchTerm] = useState('');
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   const isLoading = shipments.isLoading;
 
