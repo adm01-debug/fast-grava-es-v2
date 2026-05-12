@@ -1092,6 +1092,7 @@ export type Database = {
           lost_pieces: number | null
           machine_id: string | null
           notes: string | null
+          operator_id: string | null
           order_number: string
           priority: string
           produced_quantity: number | null
@@ -1121,6 +1122,7 @@ export type Database = {
           lost_pieces?: number | null
           machine_id?: string | null
           notes?: string | null
+          operator_id?: string | null
           order_number: string
           priority?: string
           produced_quantity?: number | null
@@ -1150,6 +1152,7 @@ export type Database = {
           lost_pieces?: number | null
           machine_id?: string | null
           notes?: string | null
+          operator_id?: string | null
           order_number?: string
           priority?: string
           produced_quantity?: number | null
