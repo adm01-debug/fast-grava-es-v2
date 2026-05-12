@@ -4298,7 +4298,7 @@ export type Database = {
           short_name: string
         }
         Insert: {
-          color: string
+          color?: string
           created_at?: string
           high_threshold?: number | null
           id: string
