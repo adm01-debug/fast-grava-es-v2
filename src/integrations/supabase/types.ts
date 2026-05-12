@@ -1102,6 +1102,8 @@ export type Database = {
           quantity: number
           rework_reason: string | null
           scheduled_date: string | null
+          shipment_id: string | null
+          shipping_status: string | null
           sort_order: number | null
           start_time: string | null
           status: string
@@ -1132,6 +1134,8 @@ export type Database = {
           quantity: number
           rework_reason?: string | null
           scheduled_date?: string | null
+          shipment_id?: string | null
+          shipping_status?: string | null
           sort_order?: number | null
           start_time?: string | null
           status?: string
@@ -1162,6 +1166,8 @@ export type Database = {
           quantity?: number
           rework_reason?: string | null
           scheduled_date?: string | null
+          shipment_id?: string | null
+          shipping_status?: string | null
           sort_order?: number | null
           start_time?: string | null
           status?: string
@@ -1181,6 +1187,13 @@ export type Database = {
             columns: ["product_category_id"]
             isOneToOne: false
             referencedRelation: "product_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "jobs_shipment_id_fkey"
+            columns: ["shipment_id"]
+            isOneToOne: false
+            referencedRelation: "shipments"
             referencedColumns: ["id"]
           },
           {
@@ -3228,6 +3241,93 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      shipments: {
+        Row: {
+          actual_delivery: string | null
+          created_at: string
+          destination: string | null
+          estimated_delivery: string | null
+          id: string
+          job_id: string | null
+          notes: string | null
+          origin: string | null
+          provider_id: string | null
+          status: string
+          tracking_code: string | null
+          updated_at: string
+        }
+        Insert: {
+          actual_delivery?: string | null
+          created_at?: string
+          destination?: string | null
+          estimated_delivery?: string | null
+          id?: string
+          job_id?: string | null
+          notes?: string | null
+          origin?: string | null
+          provider_id?: string | null
+          status?: string
+          tracking_code?: string | null
+          updated_at?: string
+        }
+        Update: {
+          actual_delivery?: string | null
+          created_at?: string
+          destination?: string | null
+          estimated_delivery?: string | null
+          id?: string
+          job_id?: string | null
+          notes?: string | null
+          origin?: string | null
+          provider_id?: string | null
+          status?: string
+          tracking_code?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shipments_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shipments_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "shipping_providers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      shipping_providers: {
+        Row: {
+          contact_info: string | null
+          created_at: string
+          id: string
+          is_active: boolean | null
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          contact_info?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          contact_info?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       spc_alerts: {
         Row: {
