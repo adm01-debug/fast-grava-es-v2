@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -15,7 +16,7 @@ import { toast } from 'sonner';
 import { Trophy, Medal, Star, Target, Zap, Award, Crown, TrendingUp, Command, Package, Clock, Sparkles, Loader2, History } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+import { ptBR, enUS, es } from 'date-fns/locale';
 
 const medalColors = ['#FFD700', '#C0C0C0', '#CD7F32'];
 const achievementIcons: Record<string, React.ElementType> = {
@@ -29,9 +30,13 @@ const achievementIcons: Record<string, React.ElementType> = {
 };
 
 export default function GamificationPage() {
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [period, setPeriod] = useState<'daily' | 'weekly' | 'monthly'>('weekly');
   const [activeTab, setActiveTab] = useState<'ranking' | 'rewards' | 'history'>('ranking');
+  
+  const dateLocale = i18n.language === 'en-US' ? enUS : i18n.language === 'es-ES' ? es : ptBR;
+
   const { 
     rankings, 
     achievements, 
@@ -41,14 +46,14 @@ export default function GamificationPage() {
     periodStart, 
     periodEnd,
     redeemReward,
-    redemptionsQuery // Need to add this to useGamification hook or fetch here
+    redemptionsQuery
   } = useGamification(period);
 
   const handleRedeem = (reward: any) => {
     if (balance >= reward.cost_points) {
       redeemReward.mutate(reward);
     } else {
-      toast.error('Saldo de pontos insuficiente');
+      toast.error(t('gamification.insufficientBalance'));
     }
   };
 
@@ -83,15 +88,15 @@ export default function GamificationPage() {
           <div>
             <div className="flex items-center gap-3">
               <h1 className="text-2xl sm:text-3xl font-display font-bold">
-                <span className="gradient-text">Ranking de Operadores</span>
+                <span className="gradient-text">{t('gamification.ranking')}</span>
               </h1>
               <FavoriteButton 
                 path="/gamification" 
-                name="Gamificação" 
+                name={t('gamification.ranking')} 
               />
             </div>
             <p className="text-muted-foreground">
-              {format(periodStart, "dd 'de' MMMM", { locale: ptBR })} - {format(periodEnd, "dd 'de' MMMM", { locale: ptBR })}
+              {format(periodStart, "dd 'de' MMMM", { locale: dateLocale })} - {format(periodEnd, "dd 'de' MMMM", { locale: dateLocale })}
             </p>
           </div>
           
@@ -100,7 +105,7 @@ export default function GamificationPage() {
               <Zap className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <p className="text-[10px] font-black uppercase tracking-widest text-primary/70">Seu Saldo</p>
+              <p className="text-[10px] font-black uppercase tracking-widest text-primary/70">{t('gamification.balance')}</p>
               <p className="text-xl font-black text-primary">{balance.toLocaleString()} PTS</p>
             </div>
           </div>
@@ -120,16 +125,16 @@ export default function GamificationPage() {
               }
             }}>
               <TabsList className="bg-muted/50 p-1 rounded-xl">
-                <TabsTrigger value="daily">Hoje</TabsTrigger>
-                <TabsTrigger value="weekly">Semanal</TabsTrigger>
-                <TabsTrigger value="monthly">Mensal</TabsTrigger>
+                <TabsTrigger value="daily">{t('common.today')}</TabsTrigger>
+                <TabsTrigger value="weekly">{t('common.week')}</TabsTrigger>
+                <TabsTrigger value="monthly">{t('common.month')}</TabsTrigger>
                 <TabsTrigger value="rewards" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                   <Star className="h-4 w-4 mr-2" />
-                  Loja
+                  {t('gamification.shop')}
                 </TabsTrigger>
                 <TabsTrigger value="history" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                   <History className="h-4 w-4 mr-2" />
-                  Resgates
+                  {t('gamification.history')}
                 </TabsTrigger>
               </TabsList>
             </Tabs>
@@ -174,13 +179,13 @@ export default function GamificationPage() {
                       ) : (
                         <Zap className="h-4 w-4 mr-2" />
                       )}
-                      {redeemReward.isPending && redeemReward.variables?.id === reward.id ? 'Processando...' : 'Resgatar Agora'}
+                      {redeemReward.isPending && redeemReward.variables?.id === reward.id ? t('gamification.redeeming') : t('gamification.redeem')}
                     </Button>
                     <div className="mt-4 flex items-center justify-between text-[10px] font-black uppercase tracking-widest">
                       <span className={balance < reward.cost_points ? 'text-destructive' : 'text-emerald-500'}>
-                        {balance < reward.cost_points ? 'Faltam ' + (reward.cost_points - balance).toLocaleString() + ' pts' : 'Saldo Suficiente'}
+                        {balance < reward.cost_points ? t('gamification.pointsNeeded', { points: (reward.cost_points - balance).toLocaleString() }) : t('gamification.sufficientBalance')}
                       </span>
-                      <span className="text-muted-foreground">Estoque: {reward.stock || '∞'}</span>
+                      <span className="text-muted-foreground">{reward.stock ? t('gamification.stock', { stock: reward.stock }) : t('gamification.infiniteStock')}</span>
                     </div>
                   </CardContent>
                 </Card>
@@ -194,7 +199,7 @@ export default function GamificationPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <History className="h-5 w-5 text-primary" />
-                Histórico de Resgates
+                {t('gamification.history')}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -209,9 +214,9 @@ export default function GamificationPage() {
                         })()}
                       </div>
                       <div>
-                        <p className="font-bold">{redemption.reward?.name || 'Recompensa Excluída'}</p>
+                        <p className="font-bold">{redemption.reward?.name || '---'}</p>
                         <p className="text-xs text-muted-foreground">
-                          {format(new Date(redemption.created_at), "dd 'de' MMMM 'às' HH:mm", { locale: ptBR })}
+                          {format(new Date(redemption.created_at), "dd 'de' MMMM 'às' HH:mm", { locale: dateLocale })}
                         </p>
                       </div>
                     </div>
@@ -222,8 +227,8 @@ export default function GamificationPage() {
                         redemption.status === 'approved' ? 'bg-green-500/10 text-green-500 border-green-500/20' :
                         'bg-red-500/10 text-red-500 border-red-500/20'
                       )}>
-                        {redemption.status === 'pending' ? 'Pendente' : 
-                         redemption.status === 'approved' ? 'Aprovado' : 'Cancelado'}
+                        {redemption.status === 'pending' ? t('maintenance.pending') : 
+                         redemption.status === 'approved' ? t('common.confirm') : t('jobs.statuses.cancelled')}
                       </Badge>
                       <p className="text-xs font-bold mt-1">-{redemption.points_spent} PTS</p>
                     </div>
@@ -232,7 +237,7 @@ export default function GamificationPage() {
                 {(!redemptionsQuery.data || redemptionsQuery.data.length === 0) && (
                   <div className="text-center py-20">
                     <History className="h-12 w-12 mx-auto mb-4 opacity-20" />
-                    <p className="text-muted-foreground">Nenhum resgate realizado ainda.</p>
+                    <p className="text-muted-foreground">{t('gamification.noRedemptions')}</p>
                   </div>
                 )}
               </div>
@@ -344,7 +349,7 @@ export default function GamificationPage() {
                         <div className="flex items-center gap-2">
                           <p className="font-bold text-base truncate">{r.profile?.full_name}</p>
                           <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20 text-[10px] font-black h-5">
-                            NÍVEL {r.level}
+                            {t('gamification.level', { level: r.level })}
                           </Badge>
                         </div>
                         <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">
@@ -355,7 +360,7 @@ export default function GamificationPage() {
                       </div>
 
                       <div className="text-right hidden sm:block">
-                        <p className="text-[10px] font-bold text-muted-foreground uppercase mb-1">XP PROGRESS</p>
+                        <p className="text-[10px] font-bold text-muted-foreground uppercase mb-1">{t('gamification.xpProgress')}</p>
                         <div className="w-32">
                           <Progress value={(r.xp_progress! / r.xp_target!) * 100} className="h-1.5 bg-muted/50" />
                           <p className="text-[9px] text-muted-foreground mt-1">
@@ -370,7 +375,7 @@ export default function GamificationPage() {
                 {rankings.length === 0 && (
                   <div className="text-center py-8 text-muted-foreground">
                     <Trophy className="h-12 w-12 mx-auto mb-2 opacity-30" />
-                    <p>Nenhum dado de ranking para este período</p>
+                    <p>{t('gamification.noRanking')}</p>
                   </div>
                 )}
               </div>
@@ -382,7 +387,7 @@ export default function GamificationPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Star className="h-5 w-5 text-amber-500" />
-                Conquistas Recentes
+                {t('gamification.recentAchievements')}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -408,7 +413,7 @@ export default function GamificationPage() {
                 {achievements.length === 0 && (
                   <div className="text-center py-8 text-muted-foreground">
                     <Award className="h-12 w-12 mx-auto mb-2 opacity-30" />
-                    <p>Nenhuma conquista ainda</p>
+                    <p>{t('gamification.noAchievements')}</p>
                   </div>
                 )}
               </div>

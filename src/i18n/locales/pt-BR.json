@@ -267,5 +267,73 @@
     "url": "URL inválida",
     "passwordUppercase": "Deve conter pelo menos uma letra maiúscula",
     "passwordNumber": "Deve conter pelo menos um número"
+  },
+  "logistics": {
+    "title": "Gestão de Logística",
+    "description": "Acompanhe e gerencie todos os envios e fretes.",
+    "newShipment": "Novo Envio",
+    "editShipment": "Editar Envio",
+    "shipmentDetails": "Detalhes do Envio",
+    "trackingCode": "Código de Rastreio",
+    "provider": "Transportadora",
+    "destination": "Destino",
+    "estimatedDelivery": "Previsão de Entrega",
+    "actualDelivery": "Data de Entrega",
+    "status": {
+      "pending": "Pendente",
+      "in_transit": "Em Trânsito",
+      "delivered": "Entregue",
+      "returned": "Devolvido",
+      "cancelled": "Cancelado"
+    },
+    "copyLink": "Copiar Link de Rastreio",
+    "markAsDelivered": "Marcar como Entregue",
+    "cancelShipment": "Cancelar Envio",
+    "noShipments": "Nenhum envio encontrado",
+    "viewPublicPortal": "Ver Portal Público",
+    "shipmentCreated": "Envio criado com sucesso",
+    "shipmentUpdated": "Envio atualizado com sucesso"
+  },
+  "tracking": {
+    "title": "Rastreie seu Pedido",
+    "portalName": "Portal Oficial de Rastreamento",
+    "description": "Informe o número da OS ou código de rastreio para verificar o status em tempo real.",
+    "placeholder": "Ex: OS-123456",
+    "trackButton": "Rastrear",
+    "trackingButton": "Buscando...",
+    "orderNotFound": "Nenhum pedido encontrado com este código.",
+    "errorFetching": "Erro ao buscar pedido. Tente novamente.",
+    "orderNumber": "Pedido OS",
+    "client": "Cliente",
+    "product": "Produto",
+    "deliveryForecast": "Previsão de Entrega",
+    "shippingStatus": "Status de Envio",
+    "productionEvidence": "Evidências de Produção",
+    "supportMessage": "Alguma dúvida sobre seu pedido? Entre em contato com seu consultor comercial mencionando a OS {{order}}.",
+    "steps": {
+      "received": "Recebido",
+      "production": "Produção",
+      "finished": "Finalizado"
+    }
+  },
+  "gamification": {
+    "ranking": "Ranking de Operadores",
+    "shop": "Loja de Recompensas",
+    "history": "Histórico de Resgates",
+    "balance": "Seu Saldo",
+    "level": "NÍVEL {{level}}",
+    "xpProgress": "PROGRESSO XP",
+    "redeem": "Resgatar Agora",
+    "redeeming": "Processando...",
+    "insufficientBalance": "Saldo de pontos insuficiente",
+    "pointsNeeded": "Faltam {{points}} pts",
+    "sufficientBalance": "Saldo Suficiente",
+    "stock": "Estoque: {{stock}}",
+    "infiniteStock": "Estoque: ∞",
+    "noRanking": "Nenhum dado de ranking para este período",
+    "noAchievements": "Nenhuma conquista ainda",
+    "noRedemptions": "Nenhum resgate realizado ainda",
+    "redemptionSuccess": "Resgate solicitado com sucesso! Aguardando aprovação.",
+    "recentAchievements": "Conquistas Recentes"
   }
 }

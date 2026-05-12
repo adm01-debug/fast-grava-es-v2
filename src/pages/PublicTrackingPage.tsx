@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -19,16 +20,19 @@ import {
   Hash
 } from 'lucide-react';
 import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+import { ptBR, enUS, es } from 'date-fns/locale';
 import { ProductionPhotos } from '@/components/production/ProductionPhotos';
 import { Skeleton } from '@/components/ui/skeleton';
 
 export default function PublicTrackingPage() {
+  const { t, i18n } = useTranslation();
   const [searchParams] = useSearchParams();
   const [query, setQuery] = useState(searchParams.get('q') || '');
   const [job, setJob] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const dateLocale = i18n.language === 'en-US' ? enUS : i18n.language === 'es-ES' ? es : ptBR;
 
   const handleSearch = async (e?: React.FormEvent) => {
     e?.preventDefault();
@@ -57,12 +61,12 @@ export default function PublicTrackingPage() {
       if (supabaseError) throw supabaseError;
       
       if (!data) {
-        setError('Nenhum pedido encontrado com este código.');
+        setError(t('tracking.orderNotFound'));
       } else {
         setJob(data);
       }
     } catch (err: any) {
-      setError('Erro ao buscar pedido. Tente novamente.');
+      setError(t('tracking.errorFetching'));
       console.error(err);
     } finally {
       setLoading(false);
@@ -78,23 +82,23 @@ export default function PublicTrackingPage() {
 
   const getStatusInfo = (status: string) => {
     const maps: Record<string, { label: string, color: string, icon: any }> = {
-      queue: { label: 'Na Fila', color: 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20', icon: Clock },
-      ready: { label: 'Pronto para Produção', color: 'bg-blue-500/10 text-blue-500 border-blue-500/20', icon: Package },
-      scheduled: { label: 'Agendado', color: 'bg-blue-500/10 text-blue-500 border-blue-500/20', icon: Calendar },
-      production: { label: 'Em Produção', color: 'bg-orange-500/10 text-orange-500 border-orange-500/20', icon: Truck },
-      paused: { label: 'Pausado', color: 'bg-gray-500/10 text-gray-500 border-gray-500/20', icon: AlertTriangle },
-      finished: { label: 'Produção Concluída', color: 'bg-green-500/10 text-green-500 border-green-500/20', icon: CheckCircle2 },
-      rework: { label: 'Em Retrabalho', color: 'bg-purple-500/10 text-purple-500 border-purple-500/20', icon: AlertTriangle },
+      queue: { label: t('jobs.statuses.queue'), color: 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20', icon: Clock },
+      ready: { label: t('jobs.statuses.ready'), color: 'bg-blue-500/10 text-blue-500 border-blue-500/20', icon: Package },
+      scheduled: { label: t('jobs.statuses.scheduled'), color: 'bg-blue-500/10 text-blue-500 border-blue-500/20', icon: Calendar },
+      production: { label: t('jobs.statuses.production'), color: 'bg-orange-500/10 text-orange-500 border-orange-500/20', icon: Truck },
+      paused: { label: t('jobs.statuses.paused'), color: 'bg-gray-500/10 text-gray-500 border-gray-500/20', icon: AlertTriangle },
+      finished: { label: t('jobs.statuses.finished'), color: 'bg-green-500/10 text-green-500 border-green-500/20', icon: CheckCircle2 },
+      rework: { label: 'Rework', color: 'bg-purple-500/10 text-purple-500 border-purple-500/20', icon: AlertTriangle },
     };
     return maps[status] || maps.queue;
   };
 
   const shippingStatusMap: Record<string, string> = {
-    pending: 'Aguardando Coleta',
-    in_transit: 'Em Trânsito',
-    delivered: 'Entregue',
-    returned: 'Devolvido',
-    cancelled: 'Cancelado'
+    pending: t('logistics.status.pending'),
+    in_transit: t('logistics.status.in_transit'),
+    delivered: t('logistics.status.delivered'),
+    returned: t('logistics.status.returned'),
+    cancelled: t('logistics.status.cancelled')
   };
 
   return (
@@ -104,13 +108,13 @@ export default function PublicTrackingPage() {
         <div className="text-center mb-12 animate-fade-in">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-black uppercase tracking-widest mb-4">
             <ShieldCheck className="h-3 w-3" />
-            Portal Oficial de Rastreamento
+            {t('tracking.portalName')}
           </div>
           <h1 className="text-4xl sm:text-5xl font-display font-black tracking-tighter mb-4">
-            Rastreie seu <span className="gradient-text">Pedido</span>
+            {t('tracking.title')}
           </h1>
           <p className="text-muted-foreground max-w-md mx-auto">
-            Informe o número da OS ou código de rastreio para verificar o status em tempo real.
+            {t('tracking.description')}
           </p>
         </div>
 
@@ -122,14 +126,14 @@ export default function PublicTrackingPage() {
               <div className="flex-1 relative">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                 <Input 
-                  placeholder="Ex: OS-123456" 
+                  placeholder={t('tracking.placeholder')} 
                   className="w-full bg-transparent border-none shadow-none focus-visible:ring-0 pl-12 h-12 text-lg font-medium"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                 />
               </div>
               <Button type="submit" className="h-12 px-8 rounded-xl gradient-primary font-bold shadow-lg shadow-primary/20" disabled={loading}>
-                {loading ? 'Buscando...' : 'Rastrear'}
+                {loading ? t('tracking.trackingButton') : t('tracking.trackButton')}
               </Button>
             </div>
           </div>
@@ -147,7 +151,7 @@ export default function PublicTrackingPage() {
           <div className="max-w-md mx-auto text-center p-8 bg-destructive/10 border-2 border-destructive/20 rounded-2xl animate-fade-in">
             <AlertTriangle className="h-12 w-12 text-destructive mx-auto mb-4" />
             <p className="text-destructive font-bold">{error}</p>
-            <p className="text-sm text-destructive/70 mt-2">Verifique o código e tente novamente.</p>
+            <p className="text-sm text-destructive/70 mt-2">{t('common.error')}</p>
           </div>
         )}
 
@@ -162,7 +166,7 @@ export default function PublicTrackingPage() {
                       <Hash className="h-6 w-6 text-primary" />
                     </div>
                     <div>
-                      <p className="text-[10px] font-black uppercase tracking-widest text-primary/70">Pedido OS</p>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-primary/70">{t('tracking.orderNumber')}</p>
                       <h2 className="text-2xl font-black tracking-tight">{job.order_number}</h2>
                     </div>
                   </div>
@@ -185,9 +189,9 @@ export default function PublicTrackingPage() {
                   )} />
                   
                   {[
-                    { key: 'received', icon: Clock, label: 'Recebido' },
-                    { key: 'production', icon: Truck, label: 'Produção' },
-                    { key: 'finished', icon: CheckCircle2, label: 'Finalizado' }
+                    { key: 'received', icon: Clock, label: t('tracking.steps.received') },
+                    { key: 'production', icon: Truck, label: t('tracking.steps.production') },
+                    { key: 'finished', icon: CheckCircle2, label: t('tracking.steps.finished') }
                   ].map((step, index) => {
                     const isCompleted = (step.key === 'received') || 
                                        (step.key === 'production' && ['production', 'finished'].includes(job.status)) ||
@@ -212,14 +216,14 @@ export default function PublicTrackingPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <div className="space-y-4">
                     <div className="space-y-1">
-                      <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Cliente</p>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{t('tracking.client')}</p>
                       <div className="flex items-center gap-2 text-lg font-bold">
                         <Building className="h-5 w-5 text-primary/70" />
                         {job.client}
                       </div>
                     </div>
                     <div className="space-y-1">
-                      <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Produto</p>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{t('tracking.product')}</p>
                       <div className="flex items-center gap-2 text-lg font-bold">
                         <Package className="h-5 w-5 text-primary/70" />
                         {job.product}
@@ -229,18 +233,18 @@ export default function PublicTrackingPage() {
                   
                   <div className="space-y-4">
                     <div className="space-y-1">
-                      <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Previsão de Entrega</p>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{t('tracking.deliveryForecast')}</p>
                       <div className="flex items-center gap-2 text-lg font-bold">
                         <Calendar className="h-5 w-5 text-primary/70" />
-                        {job.scheduled_date ? format(new Date(job.scheduled_date), "dd 'de' MMMM", { locale: ptBR }) : 'A definir'}
+                        {job.scheduled_date ? format(new Date(job.scheduled_date), "dd 'de' MMMM", { locale: dateLocale }) : t('common.none')}
                       </div>
                     </div>
                     {job.shipment && (
                       <div className="space-y-1">
-                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Envio ({job.shipment.provider?.name})</p>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{t('tracking.shippingStatus')} ({job.shipment.provider?.name})</p>
                         <div className="flex items-center gap-2 text-lg font-bold">
                           <Truck className="h-5 w-5 text-primary/70" />
-                          {shippingStatusMap[job.shipment.status] || 'Pendente'}
+                          {shippingStatusMap[job.shipment.status] || t('logistics.status.pending')}
                         </div>
                       </div>
                     )}
@@ -253,7 +257,7 @@ export default function PublicTrackingPage() {
                     <ProductionPhotos 
                       photos={job.production_photos} 
                       className="border-none bg-transparent p-0"
-                      emptyMessage="Fotos do processo ainda não disponíveis."
+                      emptyMessage={t('tracking.productionEvidence') + ' ' + t('common.none')}
                     />
                   </div>
                 )}
@@ -263,8 +267,7 @@ export default function PublicTrackingPage() {
             {/* Support Message */}
             <div className="text-center p-6 rounded-2xl bg-muted/30 border border-border/50">
               <p className="text-sm text-muted-foreground">
-                Alguma dúvida sobre seu pedido? Entre em contato com seu consultor comercial 
-                mencionando a OS <strong>{job.order_number}</strong>.
+                {t('tracking.supportMessage', { order: job.order_number })}
               </p>
             </div>
           </div>

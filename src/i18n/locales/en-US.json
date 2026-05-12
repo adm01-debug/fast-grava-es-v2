@@ -267,5 +267,73 @@
     "url": "Invalid URL",
     "passwordUppercase": "Must contain at least one uppercase letter",
     "passwordNumber": "Must contain at least one number"
+  },
+  "logistics": {
+    "title": "Logistics Management",
+    "description": "Track and manage all shipments and freight.",
+    "newShipment": "New Shipment",
+    "editShipment": "Edit Shipment",
+    "shipmentDetails": "Shipment Details",
+    "trackingCode": "Tracking Code",
+    "provider": "Carrier",
+    "destination": "Destination",
+    "estimatedDelivery": "Estimated Delivery",
+    "actualDelivery": "Delivery Date",
+    "status": {
+      "pending": "Pending",
+      "in_transit": "In Transit",
+      "delivered": "Delivered",
+      "returned": "Returned",
+      "cancelled": "Cancelled"
+    },
+    "copyLink": "Copy Tracking Link",
+    "markAsDelivered": "Mark as Delivered",
+    "cancelShipment": "Cancel Shipment",
+    "noShipments": "No shipments found",
+    "viewPublicPortal": "View Public Portal",
+    "shipmentCreated": "Shipment created successfully",
+    "shipmentUpdated": "Shipment updated successfully"
+  },
+  "tracking": {
+    "title": "Track your Order",
+    "portalName": "Official Tracking Portal",
+    "description": "Enter the OS number or tracking code to check the status in real time.",
+    "placeholder": "Ex: OS-123456",
+    "trackButton": "Track",
+    "trackingButton": "Searching...",
+    "orderNotFound": "No order found with this code.",
+    "errorFetching": "Error fetching order. Try again.",
+    "orderNumber": "Order OS",
+    "client": "Client",
+    "product": "Product",
+    "deliveryForecast": "Delivery Forecast",
+    "shippingStatus": "Shipping Status",
+    "productionEvidence": "Production Evidence",
+    "supportMessage": "Any questions about your order? Contact your commercial consultant mentioning OS {{order}}.",
+    "steps": {
+      "received": "Received",
+      "production": "Production",
+      "finished": "Finished"
+    }
+  },
+  "gamification": {
+    "ranking": "Operator Ranking",
+    "shop": "Reward Shop",
+    "history": "Redemption History",
+    "balance": "Your Balance",
+    "level": "LEVEL {{level}}",
+    "xpProgress": "XP PROGRESS",
+    "redeem": "Redeem Now",
+    "redeeming": "Processing...",
+    "insufficientBalance": "Insufficient points balance",
+    "pointsNeeded": "{{points}} pts needed",
+    "sufficientBalance": "Sufficient Balance",
+    "stock": "Stock: {{stock}}",
+    "infiniteStock": "Stock: ∞",
+    "noRanking": "No ranking data for this period",
+    "noAchievements": "No achievements yet",
+    "noRedemptions": "No redemptions made yet",
+    "redemptionSuccess": "Redemption requested successfully! Awaiting approval.",
+    "recentAchievements": "Recent Achievements"
   }
 }
