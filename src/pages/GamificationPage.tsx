@@ -137,49 +137,107 @@ export default function GamificationPage() {
         </div>
 
         {/* Main Content Area */}
-        {activeTab === 'rewards' ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {activeTab === 'rewards' && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in-up">
             {rewards.map((reward) => {
               const Icon = getRewardIcon(reward.icon);
               return (
-                <Card key={reward.id} className="glass-card group hover:border-primary/50 transition-all overflow-hidden border-2 border-transparent">
+                <Card key={reward.id} className="glass-card group hover:border-primary/50 transition-all overflow-hidden border-2 border-transparent relative">
+                  <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                    <Icon className="h-24 w-24" />
+                  </div>
                   <CardHeader className={cn("pb-2", reward.color_class)}>
                     <div className="flex justify-between items-start">
-                      <div className="p-2 rounded-lg bg-white/20">
-                        <Icon className="h-6 w-6" />
+                      <div className="p-3 rounded-2xl bg-white/20 backdrop-blur-md shadow-lg">
+                        <Icon className="h-6 w-6 text-white" />
                       </div>
-                      <Badge variant="secondary" className="bg-white/30 text-current border-none font-bold">
-                        {reward.cost_points} PTS
+                      <Badge variant="secondary" className="bg-white/30 text-white border-none font-black px-3 py-1 text-xs">
+                        {reward.cost_points.toLocaleString()} PTS
                       </Badge>
                     </div>
-                    <CardTitle className="mt-4 text-xl">{reward.name}</CardTitle>
+                    <CardTitle className="mt-6 text-xl font-black text-white">{reward.name}</CardTitle>
                   </CardHeader>
-                  <CardContent className="pt-4">
-                    <p className="text-sm text-muted-foreground mb-6 h-10 line-clamp-2">
+                  <CardContent className="pt-6">
+                    <p className="text-sm text-muted-foreground mb-8 h-12 line-clamp-2 leading-relaxed">
                       {reward.description}
                     </p>
                     <Button 
                       className={cn(
-                        "w-full transition-all duration-500",
-                        redeemReward.isPending && redeemReward.variables?.id === reward.id ? "bg-emerald-500 hover:bg-emerald-600" : "group-hover:scale-[1.02]"
+                        "w-full h-12 rounded-xl font-bold transition-all duration-300",
+                        balance >= reward.cost_points ? "gradient-primary shadow-lg shadow-primary/20" : "bg-muted"
                       )} 
                       disabled={balance < reward.cost_points || redeemReward.isPending}
                       onClick={() => handleRedeem(reward)}
                     >
                       {redeemReward.isPending && redeemReward.variables?.id === reward.id ? (
-                        <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                      ) : null}
-                      {redeemReward.isPending && redeemReward.variables?.id === reward.id ? 'Processando...' : 'Resgatar Recompensa'}
+                        <Loader2 className="h-5 w-5 animate-spin mr-2" />
+                      ) : (
+                        <Zap className="h-4 w-4 mr-2" />
+                      )}
+                      {redeemReward.isPending && redeemReward.variables?.id === reward.id ? 'Processando...' : 'Resgatar Agora'}
                     </Button>
-                    <p className="text-[10px] text-center text-muted-foreground mt-3 uppercase font-bold tracking-tighter">
-                      {balance < reward.cost_points ? 'Saldo insuficiente para resgate' : 'Disponível para resgate'}
-                    </p>
+                    <div className="mt-4 flex items-center justify-between text-[10px] font-black uppercase tracking-widest">
+                      <span className={balance < reward.cost_points ? 'text-destructive' : 'text-emerald-500'}>
+                        {balance < reward.cost_points ? 'Faltam ' + (reward.cost_points - balance).toLocaleString() + ' pts' : 'Saldo Suficiente'}
+                      </span>
+                      <span className="text-muted-foreground">Estoque: {reward.stock || '∞'}</span>
+                    </div>
                   </CardContent>
                 </Card>
               );
             })}
           </div>
-        ) : (
+        )}
+
+        {activeTab === 'history' && (
+          <Card className="glass-card animate-fade-in-up">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <History className="h-5 w-5 text-primary" />
+                Histórico de Resgates
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {redemptionsQuery.data?.map((redemption: any) => (
+                  <div key={redemption.id} className="flex items-center justify-between p-4 rounded-xl bg-muted/30 border border-border/50 group hover:bg-muted/50 transition-all">
+                    <div className="flex items-center gap-4">
+                      <div className={cn("p-2 rounded-lg bg-primary/10", redemption.reward?.color_class)}>
+                        {getRewardIcon(redemption.reward?.icon)({ className: "h-5 w-5" })}
+                      </div>
+                      <div>
+                        <p className="font-bold">{redemption.reward?.name || 'Recompensa Excluída'}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {format(new Date(redemption.created_at), "dd 'de' MMMM 'às' HH:mm", { locale: ptBR })}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <Badge className={cn(
+                        "font-black text-[10px] uppercase",
+                        redemption.status === 'pending' ? 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20' :
+                        redemption.status === 'approved' ? 'bg-green-500/10 text-green-500 border-green-500/20' :
+                        'bg-red-500/10 text-red-500 border-red-500/20'
+                      )}>
+                        {redemption.status === 'pending' ? 'Pendente' : 
+                         redemption.status === 'approved' ? 'Aprovado' : 'Cancelado'}
+                      </Badge>
+                      <p className="text-xs font-bold mt-1">-{redemption.points_spent} PTS</p>
+                    </div>
+                  </div>
+                ))}
+                {(!redemptionsQuery.data || redemptionsQuery.data.length === 0) && (
+                  <div className="text-center py-20">
+                    <History className="h-12 w-12 mx-auto mb-4 opacity-20" />
+                    <p className="text-muted-foreground">Nenhum resgate realizado ainda.</p>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {activeTab === 'ranking' && (
           <>
             {/* Podium */}
         <Card className="glass-card overflow-hidden">
