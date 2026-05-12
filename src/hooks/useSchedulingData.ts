@@ -162,6 +162,11 @@ export function useSchedulingData() {
   }, [machinesQuery.data]);
 
   // Helper functions using O(1) Map lookups
+  const getOperatorById = useCallback((id: string | null) => {
+    if (!id) return undefined;
+    return (profilesQuery.data || []).find(p => p.id === id);
+  }, [profilesQuery.data]);
+
   const getTechniqueById = useCallback((id: string): DbTechnique | undefined => {
     return techniquesMap.get(id);
   }, [techniquesMap]);
@@ -252,6 +257,7 @@ export function useSchedulingData() {
     error: jobsQuery.error || techniquesQuery.error || machinesQuery.error,
     
     // Helper functions
+    getOperatorById,
     getTechniqueById,
     getMachineById,
     getMachinesByTechnique,
