@@ -197,6 +197,6 @@ export default function ABCCostingDashboard() {
           </TabsContent>
         </Tabs>
       </div>
-    </>
+    </MainLayout>
   );
 }
