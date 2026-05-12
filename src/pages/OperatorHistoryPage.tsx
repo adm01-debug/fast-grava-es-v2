@@ -68,10 +68,11 @@ export default function OperatorHistoryPage() {
 
       // Job finished
       if (job.actual_end_time && isAfter(new Date(job.actual_end_time), cutoff)) {
+        const operator = getOperatorById(job.operator_id);
         entries.push({
           id: `finish-${job.id}`,
           timestamp: job.actual_end_time,
-          operatorName: 'Operador',
+          operatorName: operator?.full_name || 'Operador',
           action: 'Finalizou produção',
           jobOrderNumber: job.order_number,
           jobProduct: job.product,
