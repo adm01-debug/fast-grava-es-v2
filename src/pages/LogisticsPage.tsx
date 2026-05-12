@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -12,6 +13,7 @@ import {
   Clock, 
   CheckCircle2, 
   AlertTriangle,
+  ArrowRight,
   ExternalLink,
   Filter,
   MoreVertical,
@@ -19,7 +21,7 @@ import {
 } from 'lucide-react';
 import { useLogistics, DbShipment } from '@/hooks/useLogistics';
 import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+import { ptBR, enUS, es } from 'date-fns/locale';
 import { Skeleton } from '@/components/ui/skeleton';
 import { 
   DropdownMenu,
@@ -32,15 +34,19 @@ import { EditShipmentModal } from '@/components/logistics/EditShipmentModal';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 
-const statusMap = {
-  pending: { label: 'Pendente', color: 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20', icon: Clock },
-  in_transit: { label: 'Em Trânsito', color: 'bg-blue-500/10 text-blue-500 border-blue-500/20', icon: Truck },
-  delivered: { label: 'Entregue', color: 'bg-green-500/10 text-green-500 border-green-500/20', icon: CheckCircle2 },
-  returned: { label: 'Devolvido', color: 'bg-purple-500/10 text-purple-500 border-purple-500/20', icon: RotateCcw },
-  cancelled: { label: 'Cancelado', color: 'bg-red-500/10 text-red-500 border-red-500/20', icon: AlertTriangle },
-};
+const getStatusConfig = (t: any) => ({
+  pending: { label: t('logistics.status.pending'), color: 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20', icon: Clock },
+  in_transit: { label: t('logistics.status.in_transit'), color: 'bg-blue-500/10 text-blue-500 border-blue-500/20', icon: Truck },
+  delivered: { label: t('logistics.status.delivered'), color: 'bg-green-500/10 text-green-500 border-green-500/20', icon: CheckCircle2 },
+  returned: { label: t('logistics.status.returned'), color: 'bg-purple-500/10 text-purple-500 border-purple-500/20', icon: RotateCcw },
+  cancelled: { label: t('logistics.status.cancelled'), color: 'bg-red-500/10 text-red-500 border-red-500/20', icon: AlertTriangle },
+});
 
 export default function LogisticsPage() {
+  const { t, i18n } = useTranslation();
+  const statusMap = getStatusConfig(t);
+  const dateLocale = i18n.language === 'en-US' ? enUS : i18n.language === 'es-ES' ? es : ptBR;
+
   const { shipments, updateShipment } = useLogistics();
   const [searchTerm, setSearchTerm] = useState('');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -57,7 +63,7 @@ export default function LogisticsPage() {
   const handleCopyLink = (orderNumber: string) => {
     const link = `${window.location.origin}/track?q=${orderNumber}`;
     navigator.clipboard.writeText(link);
-    toast.success('Link de rastreio copiado!');
+    toast.success(t('logistics.copyLink') + '!');
   };
 
   const handleStatusUpdate = (id: string, status: DbShipment['status']) => {
@@ -71,18 +77,18 @@ export default function LogisticsPage() {
           <div>
             <h1 className="text-2xl sm:text-3xl font-display font-bold flex items-center gap-2">
               <Truck className="h-8 w-8 text-primary" />
-              Gestão de Logística
+              {t('logistics.title')}
             </h1>
-            <p className="text-muted-foreground mt-1">Acompanhe e gerencie todos os envios e fretes.</p>
+            <p className="text-muted-foreground mt-1">{t('logistics.description')}</p>
           </div>
           <div className="flex items-center gap-3">
             <Button variant="outline" onClick={() => window.open('/track', '_blank')}>
               <ExternalLink className="h-4 w-4 mr-2" />
-              Ver Portal Público
+              {t('logistics.viewPublicPortal')}
             </Button>
             <Button className="gradient-primary" onClick={() => setIsCreateModalOpen(true)}>
               <Plus className="h-4 w-4 mr-2" />
-              Novo Envio
+              {t('logistics.newShipment')}
             </Button>
           </div>
         </div>
@@ -100,7 +106,7 @@ export default function LogisticsPage() {
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs font-black uppercase tracking-widest text-muted-foreground">Em Trânsito</p>
+                  <p className="text-xs font-black uppercase tracking-widest text-muted-foreground">{t('logistics.status.in_transit')}</p>
                   <p className="text-2xl font-black mt-1">
                     {shipments.data?.filter(s => s.status === 'in_transit').length || 0}
                   </p>
@@ -115,7 +121,7 @@ export default function LogisticsPage() {
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs font-black uppercase tracking-widest text-muted-foreground">Pendentes</p>
+                  <p className="text-xs font-black uppercase tracking-widest text-muted-foreground">{t('logistics.status.pending')}</p>
                   <p className="text-2xl font-black mt-1">
                     {shipments.data?.filter(s => s.status === 'pending').length || 0}
                   </p>
@@ -130,7 +136,7 @@ export default function LogisticsPage() {
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs font-black uppercase tracking-widest text-muted-foreground">Entregues</p>
+                  <p className="text-xs font-black uppercase tracking-widest text-muted-foreground">{t('logistics.status.delivered')}</p>
                   <p className="text-2xl font-black mt-1">
                     {shipments.data?.filter(s => s.status === 'delivered').length || 0}
                   </p>
@@ -164,7 +170,7 @@ export default function LogisticsPage() {
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input 
-                placeholder="Buscar por OS, Cliente ou Rastreio..." 
+                placeholder={t('common.search') + "..."} 
                 className="pl-10 bg-background"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -185,7 +191,7 @@ export default function LogisticsPage() {
           ) : filteredShipments?.length === 0 ? (
             <div className="text-center py-20 bg-muted/10 rounded-2xl border-2 border-dashed">
               <Truck className="h-12 w-12 mx-auto mb-4 opacity-20" />
-              <p className="text-muted-foreground">Nenhum envio encontrado.</p>
+              <p className="text-muted-foreground">{t('logistics.noShipments')}</p>
             </div>
           ) : (
             filteredShipments?.map((shipment) => {
@@ -225,13 +231,13 @@ export default function LogisticsPage() {
                     {/* Logistics Detail Column */}
                     <div className="flex flex-col md:flex-row md:items-center gap-4 md:gap-8">
                       <div className="text-right">
-                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Transportadora</p>
-                        <p className="font-bold text-sm">{shipment.provider?.name || 'Não definida'}</p>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{t('logistics.provider')}</p>
+                        <p className="font-bold text-sm">{shipment.provider?.name || t('common.none')}</p>
                       </div>
                       <div className="text-right">
-                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Previsão</p>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{t('logistics.estimatedDelivery')}</p>
                         <p className="font-bold text-sm">
-                          {shipment.estimated_delivery ? format(new Date(shipment.estimated_delivery), 'dd/MM/yy', { locale: ptBR }) : '---'}
+                          {shipment.estimated_delivery ? format(new Date(shipment.estimated_delivery), 'dd/MM/yy', { locale: dateLocale }) : '---'}
                         </p>
                       </div>
                       <div className="flex items-center gap-2">
@@ -251,16 +257,16 @@ export default function LogisticsPage() {
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
                             <DropdownMenuItem onClick={() => setEditingShipment(shipment)}>
-                              Editar Detalhes
+                              {t('logistics.editShipment')}
                             </DropdownMenuItem>
                             <DropdownMenuItem onClick={() => handleCopyLink(shipment.job?.order_number)}>
-                              Copiar Link de Rastreio
+                              {t('logistics.copyLink')}
                             </DropdownMenuItem>
                             <DropdownMenuItem onClick={() => handleStatusUpdate(shipment.id, 'delivered')}>
-                              Marcar como Entregue
+                              {t('logistics.markAsDelivered')}
                             </DropdownMenuItem>
                             <DropdownMenuItem className="text-destructive" onClick={() => handleStatusUpdate(shipment.id, 'cancelled')}>
-                              Cancelar Envio
+                              {t('logistics.cancelShipment')}
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
