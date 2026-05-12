@@ -1077,6 +1077,41 @@ export type Database = {
         }
         Relationships: []
       }
+      job_status_history: {
+        Row: {
+          changed_by: string | null
+          created_at: string | null
+          id: string
+          job_id: string
+          new_status: string
+          previous_status: string | null
+        }
+        Insert: {
+          changed_by?: string | null
+          created_at?: string | null
+          id?: string
+          job_id: string
+          new_status: string
+          previous_status?: string | null
+        }
+        Update: {
+          changed_by?: string | null
+          created_at?: string | null
+          id?: string
+          job_id?: string
+          new_status?: string
+          previous_status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "job_status_history_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       jobs: {
         Row: {
           actual_end_time: string | null
@@ -1444,6 +1479,57 @@ export type Database = {
             columns: ["lot_id"]
             isOneToOne: false
             referencedRelation: "production_lots"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      machine_downtime: {
+        Row: {
+          created_at: string | null
+          downtime_type: string
+          end_time: string | null
+          id: string
+          job_id: string | null
+          machine_id: string
+          operator_id: string | null
+          reason: string | null
+          start_time: string
+        }
+        Insert: {
+          created_at?: string | null
+          downtime_type: string
+          end_time?: string | null
+          id?: string
+          job_id?: string | null
+          machine_id: string
+          operator_id?: string | null
+          reason?: string | null
+          start_time?: string
+        }
+        Update: {
+          created_at?: string | null
+          downtime_type?: string
+          end_time?: string | null
+          id?: string
+          job_id?: string | null
+          machine_id?: string
+          operator_id?: string | null
+          reason?: string | null
+          start_time?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "machine_downtime_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "machine_downtime_machine_id_fkey"
+            columns: ["machine_id"]
+            isOneToOne: false
+            referencedRelation: "machines"
             referencedColumns: ["id"]
           },
         ]
@@ -2498,6 +2584,41 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      production_losses: {
+        Row: {
+          created_at: string | null
+          id: string
+          job_id: string
+          notes: string | null
+          operator_id: string | null
+          quantity: number
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          job_id: string
+          notes?: string | null
+          operator_id?: string | null
+          quantity?: number
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          job_id?: string
+          notes?: string | null
+          operator_id?: string | null
+          quantity?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "production_losses_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       production_lots: {
         Row: {
