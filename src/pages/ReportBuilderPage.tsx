@@ -257,8 +257,11 @@ export default function ReportBuilderPage() {
         });
         
         doc.save(`relatorio_${selectedTable}_${format(new Date(), 'yyyy-MM-dd')}.pdf`);
-      } else {
-        toast.success('Excel exportado com sucesso (simulado)');
+      } else if (formatType === 'excel') {
+        const worksheet = XLSX.utils.json_to_sheet(data);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Relatório");
+        XLSX.writeFile(workbook, `relatorio_${selectedTable}_${format(new Date(), 'yyyy-MM-dd')}.xlsx`);
       }
       
       toast.success(`${data.length} registros exportados!`);
