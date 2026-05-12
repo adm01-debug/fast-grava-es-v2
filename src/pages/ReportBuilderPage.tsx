@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { 
   FileText, 
@@ -14,19 +14,31 @@ import {
   LayoutDashboard,
   FileDown,
   Clock,
-  Search
+  Search,
+  Calendar,
+  Save,
+  Trash2,
+  Share2,
+  FileCheck,
+  Zap,
+  Info
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { format } from 'date-fns';
+import { format, subDays, startOfDay, endOfDay } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
+import { DatePickerWithRange } from '@/components/ui/date-range-picker';
+import { DateRange } from 'react-day-picker';
+import { cn } from '@/lib/utils';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+
 
 const REPORT_TABLES = [
   { id: 'jobs', name: 'Jobs e Produção', icon: FileText },
