@@ -1,7 +1,7 @@
-import { useState, useMemo, useRef } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { useFuseSearch } from "@/hooks/useFuseSearch";
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -28,7 +28,12 @@ import {
   Trash2,
   BrainCircuit,
   Zap,
-  TrendingDown
+  TrendingDown,
+  LayoutGrid,
+  List,
+  History,
+  Info,
+  ExternalLink
 } from "lucide-react";
 import { useSchedulingData } from "@/hooks/useSchedulingData";
 import { useQueryClient } from "@tanstack/react-query";
@@ -46,6 +51,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useDataExport } from "@/hooks/useDataExport";
 import { useSmartSequencingWithActions } from "@/hooks/useSmartSequencingWithActions";
 import { useLoadBalancingWithActions } from "@/hooks/useLoadBalancingWithActions";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { formatDistanceToNow, isAfter, subHours } from "date-fns";
+import { ptBR } from "date-fns/locale";
+
 
 type SortField = 'orderNumber' | 'client' | 'scheduledDate' | 'priority' | 'quantity';
 type SortDirection = 'asc' | 'desc';
@@ -76,11 +85,15 @@ export default function PendingQueue() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSmartSectionOpen, setIsSmartSectionOpen] = useState(false);
   const [isAISidePanelOpen, setIsAISidePanelOpen] = useState(false);
+  const [viewMode, setViewMode] = useState<'table' | 'grid'>(() => {
+    return window.innerWidth < 1024 ? 'grid' : 'table';
+  });
   const [selectedAISuggestion, setSelectedAISuggestion] = useState<{
     type: 'setup' | 'balancing';
     data: any;
   } | null>(null);
   const [selectedJobs, setSelectedJobs] = useState<Set<string>>(new Set());
+
   const queryClient = useQueryClient();
 
   const { exportData, isExporting } = useDataExport('jobs');
