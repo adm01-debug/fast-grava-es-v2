@@ -22,6 +22,7 @@ export function CreateShipmentModal({ open, onOpenChange }: CreateShipmentModalP
   const [selectedProviderId, setSelectedProviderId] = useState<string>('');
   const [trackingCode, setTrackingCode] = useState('');
   const [destination, setDestination] = useState('');
+  const [freightCost, setFreightCost] = useState('0');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,6 +31,7 @@ export function CreateShipmentModal({ open, onOpenChange }: CreateShipmentModalP
       provider_id: selectedProviderId || null,
       tracking_code: trackingCode,
       destination: destination,
+      freight_cost: parseFloat(freightCost) || 0,
       status: 'pending'
     }, {
       onSuccess: () => onOpenChange(false)
@@ -103,6 +105,18 @@ export function CreateShipmentModal({ open, onOpenChange }: CreateShipmentModalP
               id="dest" 
               value={destination} 
               onChange={(e) => setDestination(e.target.value)} 
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="freight">{t('logistics.freightCost')}</Label>
+            <Input 
+              id="freight" 
+              type="number"
+              step="0.01"
+              value={freightCost} 
+              onChange={(e) => setFreightCost(e.target.value)} 
+              placeholder="0.00"
             />
           </div>
 

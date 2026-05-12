@@ -3369,46 +3369,99 @@ export type Database = {
           },
         ]
       }
+      shipment_costs: {
+        Row: {
+          amount: number
+          cost_type: string
+          created_at: string
+          currency: string
+          description: string | null
+          id: string
+          shipment_id: string
+          updated_at: string
+        }
+        Insert: {
+          amount?: number
+          cost_type: string
+          created_at?: string
+          currency?: string
+          description?: string | null
+          id?: string
+          shipment_id: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          cost_type?: string
+          created_at?: string
+          currency?: string
+          description?: string | null
+          id?: string
+          shipment_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shipment_costs_shipment_id_fkey"
+            columns: ["shipment_id"]
+            isOneToOne: false
+            referencedRelation: "shipments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       shipments: {
         Row: {
           actual_delivery: string | null
+          cost_currency: string | null
           created_at: string
           destination: string | null
           estimated_delivery: string | null
+          freight_cost: number | null
           id: string
+          insurance_cost: number | null
           job_id: string | null
           notes: string | null
           origin: string | null
           provider_id: string | null
           status: string
+          tax_cost: number | null
           tracking_code: string | null
           updated_at: string
         }
         Insert: {
           actual_delivery?: string | null
+          cost_currency?: string | null
           created_at?: string
           destination?: string | null
           estimated_delivery?: string | null
+          freight_cost?: number | null
           id?: string
+          insurance_cost?: number | null
           job_id?: string | null
           notes?: string | null
           origin?: string | null
           provider_id?: string | null
           status?: string
+          tax_cost?: number | null
           tracking_code?: string | null
           updated_at?: string
         }
         Update: {
           actual_delivery?: string | null
+          cost_currency?: string | null
           created_at?: string
           destination?: string | null
           estimated_delivery?: string | null
+          freight_cost?: number | null
           id?: string
+          insurance_cost?: number | null
           job_id?: string | null
           notes?: string | null
           origin?: string | null
           provider_id?: string | null
           status?: string
+          tax_cost?: number | null
           tracking_code?: string | null
           updated_at?: string
         }

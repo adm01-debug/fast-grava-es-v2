@@ -21,6 +21,10 @@ export interface DbShipment {
   estimated_delivery: string | null;
   actual_delivery: string | null;
   notes: string | null;
+  freight_cost: number | null;
+  insurance_cost: number | null;
+  tax_cost: number | null;
+  cost_currency: string | null;
   created_at: string;
   updated_at: string;
   provider?: DbShippingProvider;

@@ -279,6 +279,7 @@
     "destination": "Destino",
     "estimatedDelivery": "Previsão de Entrega",
     "actualDelivery": "Data de Entrega",
+    "freightCost": "Custo de Frete",
     "status": {
       "pending": "Pendente",
       "in_transit": "Em Trânsito",
