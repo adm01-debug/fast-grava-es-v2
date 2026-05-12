@@ -56,7 +56,7 @@ export interface BIMetrics {
   toDoJobs: number;
   activeMachines: number;
   activeTechniques: number;
-  productionTrend?: 'up' | 'down' | 'neutral';
+  productionTrend?: string;
   trendPercentage?: string;
 }
 
