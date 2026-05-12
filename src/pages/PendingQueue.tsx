@@ -1,7 +1,7 @@
-import { useState, useMemo, useRef } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { useFuseSearch } from "@/hooks/useFuseSearch";
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -28,7 +28,12 @@ import {
   Trash2,
   BrainCircuit,
   Zap,
-  TrendingDown
+  TrendingDown,
+  LayoutGrid,
+  List,
+  History,
+  Info,
+  ExternalLink
 } from "lucide-react";
 import { useSchedulingData } from "@/hooks/useSchedulingData";
 import { useQueryClient } from "@tanstack/react-query";
@@ -46,6 +51,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useDataExport } from "@/hooks/useDataExport";
 import { useSmartSequencingWithActions } from "@/hooks/useSmartSequencingWithActions";
 import { useLoadBalancingWithActions } from "@/hooks/useLoadBalancingWithActions";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { formatDistanceToNow, isAfter, subHours } from "date-fns";
+import { ptBR } from "date-fns/locale";
+
 
 type SortField = 'orderNumber' | 'client' | 'scheduledDate' | 'priority' | 'quantity';
 type SortDirection = 'asc' | 'desc';
@@ -76,11 +85,15 @@ export default function PendingQueue() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSmartSectionOpen, setIsSmartSectionOpen] = useState(false);
   const [isAISidePanelOpen, setIsAISidePanelOpen] = useState(false);
+  const [viewMode, setViewMode] = useState<'table' | 'grid'>(() => {
+    return window.innerWidth < 1024 ? 'grid' : 'table';
+  });
   const [selectedAISuggestion, setSelectedAISuggestion] = useState<{
     type: 'setup' | 'balancing';
     data: any;
   } | null>(null);
   const [selectedJobs, setSelectedJobs] = useState<Set<string>>(new Set());
+
   const queryClient = useQueryClient();
 
   const { exportData, isExporting } = useDataExport('jobs');
@@ -190,13 +203,20 @@ export default function PendingQueue() {
   };
 
   // Stats
-  const stats = useMemo(() => ({
-    total: filteredJobs.length,
-    urgent: filteredJobs.filter(j => j.priority === 'urgent').length,
-    delayed: filteredJobs.filter(j => j.status === 'delayed').length,
-    rework: filteredJobs.filter(j => j.status === 'rework').length,
-    optimizationPotential: seqSuggestions.reduce((acc, s) => acc + s.estimatedSavings, 0),
-  }), [filteredJobs, seqSuggestions]);
+  const stats = useMemo(() => {
+    const now = new Date();
+    const stuckThreshold = subHours(now, 4);
+    
+    return {
+      total: filteredJobs.length,
+      urgent: filteredJobs.filter(j => j.priority === 'urgent').length,
+      delayed: filteredJobs.filter(j => j.status === 'delayed').length,
+      rework: filteredJobs.filter(j => j.status === 'rework').length,
+      stuck: filteredJobs.filter(j => j.status === 'ready' && isAfter(stuckThreshold, new Date(j.updated_at))).length,
+      optimizationPotential: seqSuggestions.reduce((acc, s) => acc + s.estimatedSavings, 0),
+    };
+  }, [filteredJobs, seqSuggestions]);
+
 
   // Virtualization
   const tableContainerRef = useRef<HTMLDivElement>(null);
@@ -220,6 +240,14 @@ export default function PendingQueue() {
       return next;
     });
   };
+
+  const checkIfStuck = (job: DbJob) => {
+    if (job.status !== 'ready') return false;
+    const now = new Date();
+    const stuckThreshold = subHours(now, 4);
+    return isAfter(stuckThreshold, new Date(job.updated_at));
+  };
+
 
   const handleSelectAll = () => {
     if (selectedJobs.size === filteredJobs.length) {
@@ -455,7 +483,7 @@ export default function PendingQueue() {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-3 sm:gap-4">
           <Card className="bg-card/50 backdrop-blur-sm border-border/50">
             <CardContent className="p-3 sm:p-4 flex items-center gap-2 sm:gap-3">
               <div className="p-2 sm:p-3 rounded-xl bg-cyan-500/20">
@@ -489,6 +517,17 @@ export default function PendingQueue() {
               </div>
             </CardContent>
           </Card>
+          <Card className={`bg-card/50 backdrop-blur-sm border-border/50 ${stats.stuck > 0 ? 'ring-1 ring-amber-500/50' : ''}`}>
+            <CardContent className="p-3 sm:p-4 flex items-center gap-2 sm:gap-3">
+              <div className={`p-2 sm:p-3 rounded-xl ${stats.stuck > 0 ? 'bg-amber-500/20' : 'bg-muted'}`}>
+                <History className={`h-4 w-4 sm:h-5 sm:w-5 ${stats.stuck > 0 ? 'text-amber-400' : 'text-muted-foreground'}`} />
+              </div>
+              <div>
+                <p className="text-lg sm:text-2xl font-bold text-foreground">{stats.stuck}</p>
+                <p className="text-xs sm:text-sm text-muted-foreground">Estagnados</p>
+              </div>
+            </CardContent>
+          </Card>
           <Card className="bg-card/50 backdrop-blur-sm border-border/50">
             <CardContent className="p-3 sm:p-4 flex items-center gap-2 sm:gap-3">
               <div className="p-2 sm:p-3 rounded-xl bg-violet-500/20">
@@ -500,27 +539,38 @@ export default function PendingQueue() {
               </div>
             </CardContent>
           </Card>
-          <Card className="bg-card/50 backdrop-blur-sm border-border/50">
-            <CardContent className="p-3 sm:p-4 flex items-center gap-2 sm:gap-3">
-              <div className="p-2 sm:p-3 rounded-xl bg-purple-500/20">
-                <RotateCcw className="h-4 w-4 sm:h-5 sm:w-5 text-purple-400" />
-              </div>
-              <div>
-                <p className="text-lg sm:text-2xl font-bold text-foreground">{stats.rework}</p>
-                <p className="text-xs sm:text-sm text-muted-foreground">Retrabalho</p>
-              </div>
-            </CardContent>
-          </Card>
         </div>
+
 
         {/* Filters */}
         <Card className="bg-card/50 backdrop-blur-sm border-border/50">
-          <CardHeader className="pb-3 sm:pb-4 px-3 sm:px-6">
+          <CardHeader className="pb-3 sm:pb-4 px-3 sm:px-6 flex flex-row items-center justify-between">
             <CardTitle className="text-base sm:text-lg flex items-center gap-2">
               <Filter className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
               Filtros
             </CardTitle>
+            <div className="flex items-center gap-1 bg-muted/30 p-1 rounded-lg">
+              <Button 
+                variant={viewMode === 'table' ? 'secondary' : 'ghost'} 
+                size="sm" 
+                className="h-7 px-2"
+                onClick={() => setViewMode('table')}
+              >
+                <List className="h-4 w-4 mr-1" />
+                <span className="hidden sm:inline">Tabela</span>
+              </Button>
+              <Button 
+                variant={viewMode === 'grid' ? 'secondary' : 'ghost'} 
+                size="sm" 
+                className="h-7 px-2"
+                onClick={() => setViewMode('grid')}
+              >
+                <LayoutGrid className="h-4 w-4 mr-1" />
+                <span className="hidden sm:inline">Cards</span>
+              </Button>
+            </div>
           </CardHeader>
+
           <CardContent className="px-3 sm:px-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
               <div className="relative">
@@ -661,196 +711,160 @@ export default function PendingQueue() {
           </div>
         )}
 
-        {/* Virtualized Table */}
-        <Card className="bg-card/50 backdrop-blur-sm border-border/50">
+        {/* Main View Area */}
+        <Card className="bg-card/50 backdrop-blur-sm border-border/50 overflow-hidden">
           <CardContent className="p-0">
-            <div className="overflow-x-auto">
-              {/* Fixed Header */}
-              <Table>
-                <TableHeader>
-                  <TableRow className="border-border/50 hover:bg-transparent">
-                    <TableHead className="w-[40px]">
-                      <input 
-                        type="checkbox" 
-                        checked={selectedJobs.size === filteredJobs.length && filteredJobs.length > 0}
-                        onChange={handleSelectAll}
-                        className="rounded border-border accent-primary"
-                      />
-                    </TableHead>
-                    <TableHead 
-                      className="cursor-pointer hover:text-foreground transition-colors w-[100px]"
-                      onClick={() => handleSort('orderNumber')}
-                    >
-                      <div className="flex items-center gap-2">
-                        OS <SortIcon field="orderNumber" />
-                      </div>
-                    </TableHead>
-                    <TableHead 
-                      className="cursor-pointer hover:text-foreground transition-colors"
-                      onClick={() => handleSort('client')}
-                    >
-                      <div className="flex items-center gap-2">
-                        Cliente <SortIcon field="client" />
-                      </div>
-                    </TableHead>
-                    <TableHead className="hidden md:table-cell">Produto</TableHead>
-                    <TableHead 
-                      className="cursor-pointer hover:text-foreground transition-colors hidden sm:table-cell"
-                      onClick={() => handleSort('quantity')}
-                    >
-                      <div className="flex items-center gap-2">
-                        Qtd <SortIcon field="quantity" />
-                      </div>
-                    </TableHead>
-                    <TableHead className="hidden lg:table-cell">Técnica</TableHead>
-                    <TableHead className="hidden xl:table-cell">Máquina</TableHead>
-                    <TableHead 
-                      className="cursor-pointer hover:text-foreground transition-colors hidden sm:table-cell"
-                      onClick={() => handleSort('scheduledDate')}
-                    >
-                      <div className="flex items-center gap-2">
-                        Data <SortIcon field="scheduledDate" />
-                      </div>
-                    </TableHead>
-                    <TableHead 
-                      className="cursor-pointer hover:text-foreground transition-colors"
-                      onClick={() => handleSort('priority')}
-                    >
-                      <div className="flex items-center gap-2">
-                        <span className="hidden sm:inline">Prioridade</span>
-                        <span className="sm:hidden">Prio</span>
-                        <SortIcon field="priority" />
-                      </div>
-                    </TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="hidden lg:table-cell">Insight IA</TableHead>
-                  </TableRow>
-                </TableHeader>
-              </Table>
+            {viewMode === 'table' ? (
+              <div className="overflow-x-auto">
+                {/* Fixed Header */}
+                <Table>
+                  <TableHeader>
+                    <TableRow className="border-border/50 hover:bg-transparent">
+                      <TableHead className="w-[40px]">
+                        <input 
+                          type="checkbox" 
+                          checked={selectedJobs.size === filteredJobs.length && filteredJobs.length > 0}
+                          onChange={handleSelectAll}
+                          className="rounded border-border accent-primary"
+                        />
+                      </TableHead>
+                      <TableHead className="cursor-pointer hover:text-foreground transition-colors w-[100px]" onClick={() => handleSort('orderNumber')}>
+                        <div className="flex items-center gap-2">OS <SortIcon field="orderNumber" /></div>
+                      </TableHead>
+                      <TableHead className="cursor-pointer hover:text-foreground transition-colors" onClick={() => handleSort('client')}>
+                        <div className="flex items-center gap-2">Cliente <SortIcon field="client" /></div>
+                      </TableHead>
+                      <TableHead className="hidden md:table-cell">Produto</TableHead>
+                      <TableHead className="cursor-pointer hover:text-foreground transition-colors hidden sm:table-cell" onClick={() => handleSort('quantity')}>
+                        <div className="flex items-center gap-2">Qtd <SortIcon field="quantity" /></div>
+                      </TableHead>
+                      <TableHead className="hidden lg:table-cell">Técnica</TableHead>
+                      <TableHead className="hidden xl:table-cell">Máquina</TableHead>
+                      <TableHead className="cursor-pointer hover:text-foreground transition-colors hidden sm:table-cell" onClick={() => handleSort('scheduledDate')}>
+                        <div className="flex items-center gap-2">Data <SortIcon field="scheduledDate" /></div>
+                      </TableHead>
+                      <TableHead className="cursor-pointer hover:text-foreground transition-colors" onClick={() => handleSort('priority')}>
+                        <div className="flex items-center gap-2">
+                          <span className="hidden sm:inline">Prioridade</span>
+                          <span className="sm:hidden">Prio</span>
+                          <SortIcon field="priority" />
+                        </div>
+                      </TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead className="hidden lg:table-cell">Insight IA</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                </Table>
 
-              {/* Virtualized Body */}
-              {filteredJobs.length === 0 ? (
-                <div className="text-center py-8 text-muted-foreground">
-                  Nenhum job pendente encontrado.
-                </div>
-              ) : (
-                <div
-                  ref={tableContainerRef}
-                  className="max-h-[600px] overflow-auto"
-                >
-                  <div
-                    style={{
-                      height: `${rowVirtualizer.getTotalSize()}px`,
-                      width: "100%",
-                      position: "relative",
-                    }}
-                  >
-                    <Table>
-                      <TableBody>
-                        {rowVirtualizer.getVirtualItems().map((virtualRow) => {
-                          const job = filteredJobs[virtualRow.index];
-                          const technique = getTechniqueById(job.technique_id);
-                          const machine = job.machine_id ? getMachineById(job.machine_id) : null;
-
-                          return (
-                            <TableRow
-                              key={job.id}
-                              data-index={virtualRow.index}
-                              ref={rowVirtualizer.measureElement}
-                              className="border-border/50 hover:bg-muted/30 transition-colors cursor-pointer"
-                              onClick={() => handleJobClick(job)}
-                              style={{
-                                position: "absolute",
-                                top: 0,
-                                left: 0,
-                                width: "100%",
-                                height: `${virtualRow.size}px`,
-                                transform: `translateY(${virtualRow.start}px)`,
-                              }}
-                            >
-                              <TableCell className="w-[40px]" onClick={(e) => e.stopPropagation()}>
-                                <input 
-                                  type="checkbox" 
-                                  checked={selectedJobs.has(job.id)}
-                                  onChange={() => handleSelectJob(job.id)}
-                                  className="rounded border-border accent-primary"
-                                />
-                              </TableCell>
-                              <TableCell className="font-medium text-foreground text-xs sm:text-sm w-[100px]">
-                                {job.order_number}
-                              </TableCell>
-                              <TableCell className="text-foreground text-xs sm:text-sm max-w-[120px] truncate">
-                                {job.client}
-                              </TableCell>
-                              <TableCell className="text-muted-foreground max-w-[150px] truncate hidden md:table-cell text-xs sm:text-sm">
-                                {job.product}
-                              </TableCell>
-                              <TableCell className="text-foreground hidden sm:table-cell text-xs sm:text-sm">
-                                {job.quantity.toLocaleString()}
-                              </TableCell>
-                              <TableCell className="hidden lg:table-cell">
-                                <Badge 
-                                  variant="outline" 
-                                  className="text-xs"
-                                  style={{ 
-                                    backgroundColor: `${technique?.color}20`,
-                                    borderColor: `${technique?.color}50`,
-                                    color: technique?.color 
-                                  }}
-                                >
-                                  {technique?.short_name || technique?.name}
-                                </Badge>
-                              </TableCell>
-                              <TableCell className="text-muted-foreground hidden xl:table-cell text-xs sm:text-sm">
-                                {machine?.code || (
-                                  <Badge variant="outline" className="text-red-400 bg-red-400/5 border-red-400/10 text-[10px] animate-pulse">
-                                    NÃO ATRIBUÍDA
-                                  </Badge>
-                                )}
-                              </TableCell>
-                              <TableCell className="text-foreground hidden sm:table-cell text-xs sm:text-sm">
-                                <div className="flex items-center gap-1">
-                                  <Calendar className="h-3 w-3 text-muted-foreground" />
-                                  {job.scheduled_date ? new Date(job.scheduled_date).toLocaleDateString('pt-BR') : '-'}
-                                </div>
-                              </TableCell>
-                              <TableCell>
-                                <Badge className={`${priorityColors[job.priority]} border text-xs`}>
-                                  <span className="hidden sm:inline">{priorityLabels[job.priority]}</span>
-                                  <span className="sm:hidden">{job.priority.charAt(0).toUpperCase()}</span>
-                                </Badge>
-                              </TableCell>
-                              <TableCell>
-                                <StatusBadge status={job.status} />
-                              </TableCell>
-                              <TableCell className="hidden lg:table-cell">
-                                <div className="flex flex-wrap gap-1">
-                                  {jobsInOptimizedSequence.has(job.id) && (
-                                    <Badge variant="outline" className="bg-amber-500/10 text-amber-500 border-amber-500/20 text-[10px] gap-1 px-1.5 h-5">
-                                      <Zap className="h-2.5 w-2.5" /> Otimizar Setup
-                                    </Badge>
-                                  )}
-                                  {jobsWithBalancingSuggestion.has(job.id) && (
-                                    <Badge variant="outline" className="bg-blue-500/10 text-blue-500 border-blue-500/20 text-[10px] gap-1 px-1.5 h-5">
-                                      <BrainCircuit className="h-2.5 w-2.5" /> Reequilibrar: {jobsWithBalancingSuggestion.get(job.id)}
-                                    </Badge>
-                                  )}
-                                </div>
-                              </TableCell>
-                            </TableRow>
-                          );
-                        })}
-                      </TableBody>
-                    </Table>
+                {/* Virtualized Body */}
+                {filteredJobs.length === 0 ? (
+                  <div className="text-center py-12 text-muted-foreground flex flex-col items-center gap-2">
+                    <Package className="h-10 w-10 opacity-20" />
+                    <p>Nenhum job pendente encontrado.</p>
                   </div>
-                </div>
-              )}
-            </div>
-            
-            {/* Info */}
-            {filteredJobs.length > 0 && (
-              <div className="px-4 py-3 border-t border-border/30 text-xs text-muted-foreground">
-                {filteredJobs.length} jobs pendentes
+                ) : (
+                  <div ref={tableContainerRef} className="max-h-[600px] overflow-auto scrollbar-thin scrollbar-thumb-primary/20">
+                    <div style={{ height: `${rowVirtualizer.getTotalSize()}px`, width: "100%", position: "relative" }}>
+                      <Table>
+                        <TableBody>
+                          {rowVirtualizer.getVirtualItems().map((virtualRow) => {
+                            const job = filteredJobs[virtualRow.index];
+                            const technique = getTechniqueById(job.technique_id);
+                            const machine = job.machine_id ? getMachineById(job.machine_id) : null;
+                            const isStuck = checkIfStuck(job);
+
+                            return (
+                              <TableRow
+                                key={job.id}
+                                data-index={virtualRow.index}
+                                ref={rowVirtualizer.measureElement}
+                                className={`border-border/50 hover:bg-muted/30 transition-colors cursor-pointer ${isStuck ? 'bg-amber-500/5' : ''}`}
+                                onClick={() => handleJobClick(job)}
+                                style={{ position: "absolute", top: 0, left: 0, width: "100%", height: `${virtualRow.size}px`, transform: `translateY(${virtualRow.start}px)` }}
+                              >
+                                <TableCell className="w-[40px]" onClick={(e) => e.stopPropagation()}>
+                                  <input type="checkbox" checked={selectedJobs.has(job.id)} onChange={() => handleSelectJob(job.id)} className="rounded border-border accent-primary" />
+                                </TableCell>
+                                <TableCell className="font-medium text-foreground text-xs sm:text-sm w-[100px] flex items-center gap-1.5">
+                                  {job.order_number}
+                                  {isStuck && <AlertTriangle className="h-3 w-3 text-amber-500 animate-pulse" />}
+                                </TableCell>
+                                <TableCell className="text-foreground text-xs sm:text-sm max-w-[120px] truncate">{job.client}</TableCell>
+                                <TableCell className="text-muted-foreground max-w-[150px] truncate hidden md:table-cell text-xs sm:text-sm">{job.product}</TableCell>
+                                <TableCell className="text-foreground hidden sm:table-cell text-xs sm:text-sm">{job.quantity.toLocaleString()}</TableCell>
+                                <TableCell className="hidden lg:table-cell">
+                                  <Badge variant="outline" className="text-[10px] px-1.5 h-5" style={{ backgroundColor: `${technique?.color}20`, borderColor: `${technique?.color}50`, color: technique?.color }}>{technique?.short_name || technique?.name}</Badge>
+                                </TableCell>
+                                <TableCell className="text-muted-foreground hidden xl:table-cell text-xs sm:text-sm">{machine?.code || <Badge variant="outline" className="text-red-400 bg-red-400/5 border-red-400/10 text-[10px] animate-pulse">NÃO ATRIBUÍDA</Badge>}</TableCell>
+                                <TableCell className="text-foreground hidden sm:table-cell text-xs sm:text-sm">
+                                  <div className="flex items-center gap-1"><Calendar className="h-3 w-3 text-muted-foreground" /> {job.scheduled_date ? new Date(job.scheduled_date).toLocaleDateString('pt-BR') : '-'}</div>
+                                </TableCell>
+                                <TableCell>
+                                  <Badge className={`${priorityColors[job.priority]} border text-[10px] px-1.5 h-5`}>
+                                    <span className="hidden sm:inline">{priorityLabels[job.priority]}</span>
+                                    <span className="sm:hidden">{job.priority.charAt(0).toUpperCase()}</span>
+                                  </Badge>
+                                </TableCell>
+                                <TableCell><StatusBadge status={job.status} /></TableCell>
+                                <TableCell className="hidden lg:table-cell">
+                                  <div className="flex flex-wrap gap-1">
+                                    {jobsInOptimizedSequence.has(job.id) && <Badge variant="outline" className="bg-amber-500/10 text-amber-500 border-amber-500/20 text-[10px] gap-1 px-1.5 h-5"><Zap className="h-2.5 w-2.5" /> Setup</Badge>}
+                                    {jobsWithBalancingSuggestion.has(job.id) && <Badge variant="outline" className="bg-blue-500/10 text-blue-500 border-blue-500/20 text-[10px] gap-1 px-1.5 h-5"><BrainCircuit className="h-2.5 w-2.5" /> Equilíbrio</Badge>}
+                                  </div>
+                                </TableCell>
+                              </TableRow>
+                            );
+                          })}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="p-4 sm:p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 max-h-[700px] overflow-y-auto scrollbar-thin scrollbar-thumb-primary/20">
+                <AnimatePresence>
+                  {filteredJobs.length === 0 ? (
+                    <div className="col-span-full text-center py-20 text-muted-foreground flex flex-col items-center gap-2">
+                      <Package className="h-12 w-12 opacity-20" />
+                      <p>Nenhum job pendente encontrado.</p>
+                    </div>
+                  ) : (
+                    filteredJobs.map((job, index) => {
+                      const technique = getTechniqueById(job.technique_id);
+                      const isStuck = checkIfStuck(job);
+                      const isSelected = selectedJobs.has(job.id);
+                      return (
+                        <motion.div key={job.id} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} transition={{ duration: 0.2, delay: index * 0.02 }}>
+                          <Card className={`group relative overflow-hidden transition-all duration-300 hover:shadow-lg cursor-pointer ${isSelected ? 'ring-2 ring-primary border-primary' : 'bg-card/40 border-border/50 hover:border-primary/50'} ${isStuck ? 'border-amber-500/50 shadow-amber-500/5' : ''}`} onClick={() => handleJobClick(job)}>
+                            {isStuck && <div className="absolute top-0 right-0 p-1 bg-amber-500 text-white rounded-bl-lg shadow-sm z-10"><AlertTriangle className="h-3 w-3 animate-pulse" /></div>}
+                            <CardHeader className="p-4 pb-2">
+                              <div className="flex justify-between items-start gap-2">
+                                <div className="flex flex-col"><span className="text-xs text-muted-foreground font-mono">OS {job.order_number}</span><CardTitle className="text-sm font-bold line-clamp-1 mt-0.5">{job.client}</CardTitle></div>
+                                <input type="checkbox" checked={isSelected} onChange={(e) => { e.stopPropagation(); handleSelectJob(job.id); }} className="rounded border-border accent-primary h-4 w-4" />
+                              </div>
+                            </CardHeader>
+                            <CardContent className="p-4 pt-2 space-y-3">
+                              <p className="text-xs text-muted-foreground line-clamp-2 min-h-[2rem]">{job.product || 'Sem descrição do produto'}</p>
+                              <div className="flex flex-wrap gap-2">
+                                <Badge variant="outline" className="text-[10px] px-1.5 h-5 font-bold" style={{ backgroundColor: `${technique?.color}15`, borderColor: `${technique?.color}30`, color: technique?.color }}>{technique?.name || 'Técnica Indefinida'}</Badge>
+                                <Badge className={`${priorityColors[job.priority]} border text-[10px] px-1.5 h-5`}>{priorityLabels[job.priority]}</Badge>
+                              </div>
+                              <div className="grid grid-cols-2 gap-2 pt-1 border-t border-border/30">
+                                <div className="flex flex-col gap-0.5"><span className="text-[10px] text-muted-foreground uppercase">Quantidade</span><span className="text-xs font-medium">{job.quantity.toLocaleString()} un</span></div>
+                                <div className="flex flex-col gap-0.5"><span className="text-[10px] text-muted-foreground uppercase">Entrega</span><span className="text-xs font-medium flex items-center gap-1"><Calendar className="h-2.5 w-2.5 text-muted-foreground" /> {job.scheduled_date ? new Date(job.scheduled_date).toLocaleDateString('pt-BR') : '-'}</span></div>
+                              </div>
+                            </CardContent>
+                            <CardFooter className="p-4 pt-0 flex justify-between items-center gap-2">
+                              <StatusBadge status={job.status} />
+                              {isStuck && <span className="text-[10px] text-amber-500 font-medium">Estagnado</span>}
+                            </CardFooter>
+                          </Card>
+                        </motion.div>
+                      );
+                    })
+                  )}
+                </AnimatePresence>
               </div>
             )}
           </CardContent>
