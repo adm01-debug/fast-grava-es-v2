@@ -102,10 +102,11 @@ export default function OperatorHistoryPage() {
 
       // Job paused
       if (job.status === 'paused' && isAfter(new Date(job.updated_at), cutoff)) {
+        const operator = getOperatorById(job.operator_id);
         entries.push({
           id: `pause-${job.id}`,
           timestamp: job.updated_at,
-          operatorName: 'Operador',
+          operatorName: operator?.full_name || 'Operador',
           action: 'Pausou produção',
           jobOrderNumber: job.order_number,
           jobProduct: job.product,
