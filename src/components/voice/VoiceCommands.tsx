@@ -174,6 +174,22 @@ export const VoiceButton = forwardRef<HTMLDivElement, {
       description: 'Consultar jobs ativos',
     },
     {
+      pattern: /(?:ativar mapa de carga|ver carga)/i,
+      action: () => {
+        setLastCommand('Ativando visão de carga nominal no mapa.');
+        onCommand?.('heatmap:load');
+      },
+      description: 'Ativar mapa de carga',
+    },
+    {
+      pattern: /(?:ativar mapa térmico|ver temperatura)/i,
+      action: () => {
+        setLastCommand('Ativando visão de stress térmico no mapa.');
+        onCommand?.('heatmap:temp');
+      },
+      description: 'Ativar mapa térmico',
+    },
+    {
       pattern: /(?:ajuda|help|comandos)/i,
       action: () => {
         setShowFeedback(true);
