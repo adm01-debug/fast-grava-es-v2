@@ -489,6 +489,25 @@ export default function OperatorsPage() {
                             <Button
                               size="icon"
                               variant="ghost"
+                              onClick={() => {
+                                setOperatorForSkills(operator);
+                                setIsSkillsModalOpen(true);
+                              }}
+                              className="h-8 w-8 text-primary hover:bg-primary/10"
+                            >
+                              <ShieldCheck className="h-4 w-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>Competências Técnicas</TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              size="icon"
+                              variant="ghost"
                               onClick={() => handleOpenEdit(operator)}
                               className="h-8 w-8"
                             >
@@ -707,6 +726,12 @@ export default function OperatorsPage() {
           operator={editOperator}
           open={isEditModalOpen}
           onOpenChange={setIsEditModalOpen}
+        />
+
+        <OperatorSkillsModal
+          operator={operatorForSkills}
+          open={isSkillsModalOpen}
+          onOpenChange={setIsSkillsModalOpen}
         />
 
         <OperatorConfirmDialogs
