@@ -75,15 +75,34 @@ export default function ReportBuilderPage() {
   const [selectedColumns, setSelectedColumns] = useState<string[]>(TABLE_COLUMNS.jobs);
   const [formatType, setFormatType] = useState<'csv' | 'pdf' | 'excel'>('csv');
   const [isGenerating, setIsGenerating] = useState(false);
+  const [dateRange, setDateRange] = useState<DateRange | undefined>({
+    from: subDays(new Date(), 30),
+    to: new Date()
+  });
+  const [selectedStatus, setSelectedStatus] = useState<string>('all');
+  const queryClient = useQueryClient();
 
   const { data: reportData, isLoading } = useQuery({
-    queryKey: ['report-preview', selectedTable, selectedColumns],
+    queryKey: ['report-preview', selectedTable, selectedColumns, dateRange, selectedStatus],
     queryFn: async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from(selectedTable as any)
         .select(selectedColumns.join(','))
         .limit(10);
       
+      const filterField = TABLE_FILTER_FIELDS[selectedTable];
+      if (dateRange?.from && filterField) {
+        query = query.gte(filterField, startOfDay(dateRange.from).toISOString());
+      }
+      if (dateRange?.to && filterField) {
+        query = query.lte(filterField, endOfDay(dateRange.to).toISOString());
+      }
+      
+      if (selectedStatus !== 'all' && STATUS_OPTIONS[selectedTable]) {
+        query = query.eq('status', selectedStatus);
+      }
+
+      const { data, error } = await query;
       if (error) throw error;
       return data;
     }
@@ -98,9 +117,23 @@ export default function ReportBuilderPage() {
   const handleExport = async () => {
     setIsGenerating(true);
     try {
-      const { data, error } = await supabase
+      let query = supabase
         .from(selectedTable as any)
         .select(selectedColumns.join(','));
+      
+      const filterField = TABLE_FILTER_FIELDS[selectedTable];
+      if (dateRange?.from && filterField) {
+        query = query.gte(filterField, startOfDay(dateRange.from).toISOString());
+      }
+      if (dateRange?.to && filterField) {
+        query = query.lte(filterField, endOfDay(dateRange.to).toISOString());
+      }
+      
+      if (selectedStatus !== 'all' && STATUS_OPTIONS[selectedTable]) {
+        query = query.eq('status', selectedStatus);
+      }
+
+      const { data, error } = await query;
       
       if (error) throw error;
       if (!data || data.length === 0) {
@@ -127,18 +160,32 @@ export default function ReportBuilderPage() {
         const { default: jsPDF } = await import('jspdf');
         const { default: autoTable } = await import('jspdf-autotable');
         const doc = new jsPDF();
-        doc.setFontSize(16);
-        doc.text(`Relatório de ${selectedTable.toUpperCase()}`, 14, 15);
+        doc.setFontSize(18);
+        doc.setTextColor(14, 165, 233); // Primary color
+        doc.text(`RELATÓRIO INDUSTRIAL: ${selectedTable.toUpperCase()}`, 14, 15);
         doc.setFontSize(10);
+        doc.setTextColor(100);
         doc.text(`Gerado em: ${format(new Date(), 'dd/MM/yyyy HH:mm', { locale: ptBR })}`, 14, 22);
         
-        const tableBody = data.map(row => selectedColumns.map(col => String(row[col as keyof typeof row] || '')));
+        if (dateRange?.from) {
+          doc.text(`Período: ${format(dateRange.from, 'dd/MM/yyyy')} a ${dateRange.to ? format(dateRange.to, 'dd/MM/yyyy') : '---'}`, 14, 27);
+        }
+        
+        const tableBody = data.map(row => selectedColumns.map(col => {
+           const val = row[col as keyof typeof row];
+           if (col.includes('created_at') || col.includes('time')) {
+             try { return format(parseISO(String(val)), 'dd/MM/yy HH:mm'); } catch { return String(val || '-'); }
+           }
+           return String(val || '-');
+        }));
         
         autoTable(doc, {
-          startY: 30,
-          head: [selectedColumns.map(c => c.toUpperCase())],
+          startY: 35,
+          head: [selectedColumns.map(c => c.replace(/_/g, ' ').toUpperCase())],
           body: tableBody,
-          styles: { fontSize: 8 },
+          styles: { fontSize: 7, cellPadding: 2 },
+          headStyles: { fillColor: [14, 165, 233] },
+          alternateRowStyles: { fillColor: [245, 245, 245] },
         });
         
         doc.save(`relatorio_${selectedTable}_${format(new Date(), 'yyyy-MM-dd')}.pdf`);
@@ -148,11 +195,13 @@ export default function ReportBuilderPage() {
       
       toast.success(`${data.length} registros exportados!`);
     } catch (error) {
+      console.error('Export error:', error);
       toast.error('Erro ao gerar relatório');
     } finally {
       setIsGenerating(false);
     }
   };
+
 
   return (
     <MainLayout>
