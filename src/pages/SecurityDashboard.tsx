@@ -66,26 +66,26 @@ export default function SecurityDashboard() {
   const trustedDevices = devices?.filter(d => d.is_trusted).length || 0;
 
   return (
-    <div className="container mx-auto py-6 space-y-6">
-      <Breadcrumbs />
-      
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <div className="flex items-center gap-3">
-            <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
-              <Shield className="h-8 w-8" />
-              Painel de Segurança Unificado
-            </h1>
-            <FavoriteButton 
-              path="/security" 
-              name="Segurança" 
-            />
+    <MainLayout>
+      <div className="container mx-auto py-6 space-y-6">
+        <Breadcrumbs />
+        
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="flex items-center gap-3">
+              <h1 className="text-3xl font-display font-black tracking-tighter">
+                <span className="gradient-text animate-pulse-glow">Cyber Resilience 10/10</span>
+              </h1>
+              <FavoriteButton 
+                path="/security" 
+                name="Segurança" 
+              />
+            </div>
+            <p className="text-muted-foreground mt-1">
+              Zero Trust Architecture e Orquestração de Defesa Ativa IA
+            </p>
           </div>
-          <p className="text-muted-foreground">
-            Visão completa de todas as configurações de segurança do sistema
-          </p>
-        </div>
         <div className="flex items-center gap-2">
           <VoiceButton />
           <FavoritesDropdown onNavigate={(url) => navigate(url)} />
