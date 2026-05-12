@@ -307,8 +307,16 @@ function InventoryCard({
       "glass-card hover:border-primary/30 transition-all overflow-hidden hover:shadow-glow-primary group",
       isLowStock && "border-red-500/30"
     )}>
-      <CardHeader className="pb-3 border-b border-border/50 bg-muted/20">
-        <div className="flex justify-between items-start">
+      <CardHeader className="pb-3 border-b border-border/50 bg-muted/20 relative">
+        <div className="absolute top-3 left-3 z-10" onClick={(e) => e.stopPropagation()}>
+          <Checkbox 
+            checked={isSelected} 
+            onCheckedChange={(checked) => onSelect(item.id, !!checked)} 
+            className="h-4 w-4 bg-background data-[state=checked]:bg-primary"
+          />
+        </div>
+        <div className="flex justify-between items-start pl-7">
+
           <Badge variant="outline" className="text-[9px] uppercase font-black border-primary/20">
             {item.category}
           </Badge>
