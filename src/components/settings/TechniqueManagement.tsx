@@ -221,7 +221,13 @@ export function TechniqueManagement() {
                       <Edit2 className="h-4 w-4" />
                     </Button>
                     <Button variant="ghost" size="icon" className="text-destructive" onClick={() => {
-                      if (confirm('Tem certeza que deseja excluir esta técnica? Isso pode afetar jobs e máquinas vinculados.')) {
+                      const machineCount = getMachinesByTechnique(tech.id).length;
+                      const jobCount = getJobsByTechnique(tech.id).length;
+                      let msg = 'Tem certeza que deseja excluir esta técnica?';
+                      if (machineCount > 0 || jobCount > 0) {
+                        msg = `Atenção: Esta técnica possui ${machineCount} máquinas e ${jobCount} jobs vinculados. A exclusão pode causar inconsistências. Continuar?`;
+                      }
+                      if (confirm(msg)) {
                         deleteMutation.mutate(tech.id);
                       }
                     }}>
