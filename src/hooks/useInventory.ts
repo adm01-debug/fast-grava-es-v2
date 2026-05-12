@@ -76,7 +76,6 @@ export function useInventory() {
   const createMovementMutation = useMutation({
     mutationFn: async (movement: Omit<InventoryMovement, 'id' | 'created_at' | 'user_id'>) => {
       const { data: { user } } = await supabase.auth.getUser();
-      // DB Trigger handles stock update
       const { data, error } = await supabase
         .from('inventory_movements')
         .insert([{ ...movement, user_id: user?.id }])
@@ -97,7 +96,6 @@ export function useInventory() {
 
   const deleteMovementMutation = useMutation({
     mutationFn: async (movementId: string) => {
-      // DB Trigger handles rollback
       const { error } = await supabase
         .from('inventory_movements')
         .delete()
@@ -112,11 +110,35 @@ export function useInventory() {
     },
   });
 
+  const transferItemsMutation = useMutation({
+    mutationFn: async ({ fromLocation, toLocation, itemIds }: { fromLocation: string, toLocation: string, itemIds: string[] }) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      const results = await Promise.all(itemIds.map(async (itemId) => {
+        const { error: updateError } = await supabase.from('inventory_items').update({ location: toLocation }).eq('id', itemId);
+        if (updateError) throw updateError;
+        await supabase.from('inventory_movements').insert([{
+          item_id: itemId, user_id: user?.id, type: 'TRANSFER', quantity: 0, 
+          from_location: fromLocation, to_location: toLocation,
+          reason: `Transferência de ${fromLocation} para ${toLocation}`
+        }]);
+        return itemId;
+      }));
+      return results;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['inventory-items'] });
+      queryClient.invalidateQueries({ queryKey: ['inventory-movements'] });
+      toast.success('Transferência concluída');
+    }
+  });
+
   return {
     items: itemsQuery.data || [],
     isLoading: itemsQuery.isLoading,
     recordMovement: createMovementMutation.mutateAsync,
     deleteMovement: deleteMovementMutation.mutateAsync,
+    transferItems: transferItemsMutation.mutateAsync,
+    isTransferring: transferItemsMutation.isPending,
     calculateAI: calculateAIIntelligence.mutate,
     isCalculatingAI: calculateAIIntelligence.isPending,
     stats,
