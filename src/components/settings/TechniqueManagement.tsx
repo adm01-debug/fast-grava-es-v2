@@ -71,6 +71,9 @@ export function TechniqueManagement() {
       short_name: formData.get('short_name'),
       color: formData.get('color'),
       setup_time: parseInt(formData.get('setup_time') as string),
+      low_threshold: parseInt(formData.get('low_threshold') as string) || 30,
+      medium_threshold: parseInt(formData.get('medium_threshold') as string) || 70,
+      high_threshold: parseInt(formData.get('high_threshold') as string) || 90,
     };
     saveMutation.mutate(techniqueData);
   };
