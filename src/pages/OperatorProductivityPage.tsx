@@ -23,6 +23,8 @@ import { EvolutionChart } from '@/components/operators/EvolutionChart';
 import { EfficiencyChart } from '@/components/operators/EfficiencyChart';
 import { ProductionRadarChart } from '@/components/operators/ProductionRadarChart';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
+import { AIWorkforceAdvisor } from '@/components/operators/AIWorkforceAdvisor';
+
 
 export default function OperatorProductivityPage() {
   const [period, setPeriod] = useState<ProductivityPeriod>(30);
