@@ -240,7 +240,8 @@ export function useSchedulingData() {
     jobs: jobsQuery.data || [],
     techniques: techniquesQuery.data || [],
     machines: machinesQuery.data || [],
-    
+    profiles: profilesQuery.data || [],
+
     // Loading states
     isLoading: jobsQuery.isLoading || techniquesQuery.isLoading || machinesQuery.isLoading,
     isLoadingJobs: jobsQuery.isLoading,
