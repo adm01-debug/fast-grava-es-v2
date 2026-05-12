@@ -14,6 +14,7 @@ interface JobTraceabilityTabProps {
 
 export function JobTraceabilityTab({ jobId }: JobTraceabilityTabProps) {
   const { data: allLots, isLoading: isLoadingLots } = useProductionLots();
+  const { history, isLoading: isLoadingHistory } = useJobStatusHistory(jobId);
   
   const jobLot = allLots?.find(l => l.job_id === jobId);
   
