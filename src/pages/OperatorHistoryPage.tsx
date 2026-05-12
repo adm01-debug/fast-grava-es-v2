@@ -52,10 +52,11 @@ export default function OperatorHistoryPage() {
 
       // Job started
       if (job.actual_start_time && isAfter(new Date(job.actual_start_time), cutoff)) {
+        const operator = getOperatorById(job.operator_id);
         entries.push({
           id: `start-${job.id}`,
           timestamp: job.actual_start_time,
-          operatorName: 'Operador',
+          operatorName: operator?.full_name || 'Operador',
           action: 'Iniciou produção',
           jobOrderNumber: job.order_number,
           jobProduct: job.product,
