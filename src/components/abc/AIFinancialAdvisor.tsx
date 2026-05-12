@@ -17,8 +17,8 @@ export function AIFinancialAdvisor() {
       const bestTech = [...techniqueSummaries].sort((a, b) => b.total_cost - a.total_cost)[0];
       list.push({
         type: 'profit',
-        title: `Carga Financeira: ${bestTech.name}`,
-        description: `A técnica ${bestTech.name} representa o maior volume de custos alocados (${((bestTech.total_cost / totalAllocatedCost) * 100).toFixed(1)}%). Sugerimos análise de margem de contribuição.`,
+        title: `Carga Financeira: ${bestTech.technique_name}`,
+        description: `A técnica ${bestTech.technique_name} representa o maior volume de custos alocados (${((bestTech.total_cost / totalAllocatedCost) * 100).toFixed(1)}%). Sugerimos análise de margem de contribuição.`,
         icon: <TrendingUp className="h-4 w-4 text-emerald-500" />
       });
     }
@@ -64,7 +64,7 @@ export function AIFinancialAdvisor() {
     }
 
     return list;
-  }, [costPools, totalBudget, totalAllocatedCost, averageUnitCost, techniqueSummaries]);
+  }, [costPools, totalBudget, totalAllocatedCost, averageUnitCost, getTechniqueCostSummary]);
 
   return (
     <Card className="glass-card border-primary/20 bg-primary/5 overflow-hidden">
