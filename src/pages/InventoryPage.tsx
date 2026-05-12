@@ -79,10 +79,14 @@ export default function InventoryPage() {
             </h1>
             <p className="text-muted-foreground mt-1">Inventory Intelligence & Controle de Insumos</p>
           </div>
-          <div className="flex gap-2">
-             <Button variant="outline" className="gap-2">
+          <div className="flex flex-wrap gap-2">
+             <Button variant="outline" className="gap-2 border-primary/20 hover:bg-primary/5" onClick={() => setIsAIPredictionModalOpen(true)}>
+               <BrainCircuit className="h-4 w-4 text-primary" />
+               Acurácia IA
+             </Button>
+             <Button variant="outline" className="gap-2" disabled={selectedItems.size === 0} onClick={() => setIsBatchQRModalOpen(true)}>
                <QrCode className="h-4 w-4" />
-               Escanear QR
+               Etiquetas em Lote ({selectedItems.size})
              </Button>
              <Button className="gap-2">
                <Plus className="h-4 w-4" />
@@ -90,6 +94,7 @@ export default function InventoryPage() {
              </Button>
           </div>
         </div>
+
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <Card className="glass-card hover:shadow-glow-primary transition-all duration-300">
