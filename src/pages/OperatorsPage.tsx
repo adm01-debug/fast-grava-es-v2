@@ -474,8 +474,12 @@ export default function OperatorsPage() {
                 ))}
               </div>
             )}
-          </CardContent>
-        </Card>
+          </TabsContent>
+
+          <TabsContent value="matrix" className="outline-none animate-fade-in">
+            <SkillsMatrix />
+          </TabsContent>
+        </Tabs>
 
 
         {/* Operator Details Modal */}
