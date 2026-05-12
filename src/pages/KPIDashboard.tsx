@@ -417,7 +417,10 @@ export default function KPIDashboard() {
 
               {visibleKPIs.loss && (
                 <KPITooltip {...KPI_DEFINITIONS.lossRate}>
-                  <Card className="glass-card hover-scale group">
+                  <Card 
+                    className="glass-card hover-scale group cursor-pointer"
+                    onClick={() => handleDrillDown('TAXA DE PERDA', 'lost')}
+                  >
                     <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
                       <Button variant="ghost" size="icon" className="h-6 w-6"><Settings2 className="h-3 w-3" /></Button>
                     </div>
@@ -457,6 +460,7 @@ export default function KPIDashboard() {
                   </Card>
                 </KPITooltip>
               )}
+
 
               {visibleKPIs.delayed && (
                 <Card className="glass-card hover-scale">
