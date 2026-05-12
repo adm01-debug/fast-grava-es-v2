@@ -10,7 +10,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { OperatorConfirmDialogs } from '@/components/operators/OperatorConfirmDialogs';
-import { Users, UserCheck, Phone, Calendar, Settings2, Search, X, UserPlus, Pencil, Clock, Trash2, UserX, Power, Command, Eye, TrendingUp, Trophy } from 'lucide-react';
+import { Users, UserCheck, Phone, Calendar, Settings2, Search, X, UserPlus, Pencil, Clock, Trash2, UserX, Power, Command, Eye, TrendingUp, Trophy, QrCode as QrCodeIcon, Printer } from 'lucide-react';
+import { QRCodeSVG } from 'qrcode.react';
 import { useOperators, OperatorWithProfile } from '@/hooks/useOperators';
 import { useOperatorPresence } from '@/hooks/useOperatorPresence';
 import { useOperatorMachines } from '@/hooks/useOperatorMachines';
@@ -53,6 +54,7 @@ export default function OperatorsPage() {
   const [operatorToToggle, setOperatorToToggle] = useState<OperatorWithProfile | null>(null);
   const [operatorToShowDetails, setOperatorToShowDetails] = useState<OperatorWithProfile | null>(null);
   const [detailsModalOpen, setDetailsModalOpen] = useState(false);
+  const [operatorForQR, setOperatorForQR] = useState<OperatorWithProfile | null>(null);
 
   const activeOperators = operators.filter(op => op.is_active);
   const inactiveOperators = operators.filter(op => !op.is_active);
@@ -480,8 +482,51 @@ export default function OperatorsPage() {
 
       <TabsContent value="matrix" className="outline-none animate-fade-in">
         <SkillsMatrix />
-      </TabsContent>
-    </Tabs>
+          </TabsContent>
+        </Tabs>
+
+        {/* Operator QR Badge Dialog */}
+        <Dialog open={!!operatorForQR} onOpenChange={() => setOperatorForQR(null)}>
+          <DialogContent className="sm:max-w-xs text-center p-6">
+            <DialogHeader>
+              <DialogTitle className="text-center font-display font-black uppercase tracking-tighter">Crachá Digital</DialogTitle>
+              <DialogDescription className="text-center">FAST GRAVAÇÕES - Identificação Industrial</DialogDescription>
+            </DialogHeader>
+            <div className="flex flex-col items-center gap-6 py-6 bg-gradient-to-b from-primary/5 to-transparent rounded-2xl border border-primary/10">
+              <Avatar className="h-20 w-20 ring-4 ring-background shadow-lg">
+                <AvatarImage src={operatorForQR?.avatar_url || undefined} />
+                <AvatarFallback className="bg-primary text-primary-foreground text-xl font-bold">
+                  {operatorForQR?.full_name?.substring(0, 2).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+              
+              <div className="p-4 bg-white rounded-2xl border-2 border-black shadow-xl">
+                <QRCodeSVG 
+                  value={JSON.stringify({ 
+                    id: operatorForQR?.user_id, 
+                    name: operatorForQR?.full_name, 
+                    type: 'operator_badge' 
+                  })} 
+                  size={160}
+                  level="H"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <p className="text-lg font-black uppercase leading-tight">{operatorForQR?.full_name}</p>
+                <p className="text-[10px] text-muted-foreground uppercase font-black tracking-[0.2em]">{operatorForQR?.role || 'OPERADOR INDUSTRIAL'}</p>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 gap-2 pt-2">
+              <Button className="gap-2 w-full font-bold" onClick={() => window.print()}>
+                <Printer className="h-4 w-4" /> Imprimir Crachá
+              </Button>
+              <Button variant="ghost" className="text-xs text-muted-foreground" onClick={() => setOperatorForQR(null)}>
+                Fechar
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
 
 
         {/* Operator Details Modal */}
