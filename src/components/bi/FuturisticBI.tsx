@@ -153,10 +153,17 @@ export function FuturisticBI({ biMetrics, kpis, oeeData, isLoading }: BIProps) {
     return { score: Math.max(0, 100 - deviation), status, color, deviation };
   }, [studioData]);
 
-  if (isLoading || !biMetrics.periodJobsList || biMetrics.periodJobsList.length === 0) {
+  if (isLoading) {
     return (
       <div className="py-12 space-y-8">
         <BILoadingSkeleton />
+      </div>
+    );
+  }
+
+  if (!biMetrics.periodJobsList || biMetrics.periodJobsList.length === 0) {
+    return (
+      <div className="py-12 space-y-8">
         <BIEmptyState />
       </div>
     );
