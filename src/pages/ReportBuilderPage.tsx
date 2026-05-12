@@ -34,7 +34,7 @@ import { toast } from 'sonner';
 import { format, subDays, startOfDay, endOfDay } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
-import { DatePickerWithRange } from '@/components/ui/date-range-picker';
+import { DateRangePicker } from '@/components/ui/date-range-picker';
 import { DateRange } from 'react-day-picker';
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
