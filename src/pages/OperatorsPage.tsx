@@ -196,13 +196,20 @@ export default function OperatorsPage() {
           </Card>
         </div>
 
-        <Card className="glass-card">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Users className="h-5 w-5" />
-              Lista de Operadores
-            </CardTitle>
-          </CardHeader>
+        <Tabs defaultValue="list" className="space-y-6">
+          <TabsList className="glass-card p-1">
+            <TabsTrigger value="list">Lista de Operadores</TabsTrigger>
+            <TabsTrigger value="matrix">Matrix de Polivalência</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="list" className="space-y-6 outline-none">
+            <Card className="glass-card">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Users className="h-5 w-5" />
+                  Orquestração de Equipe
+                </CardTitle>
+              </CardHeader>
           <CardContent className="space-y-4">
             {/* Search and Filters */}
             <div className="flex flex-col sm:flex-row gap-3">
