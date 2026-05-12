@@ -147,11 +147,21 @@ export default function GamificationPage() {
                   <p className="text-sm text-muted-foreground mb-6 h-10 line-clamp-2">
                     {reward.description}
                   </p>
-                  <Button className="w-full group-hover:scale-[1.02] transition-transform" disabled={true}>
-                    Resgatar Recompensa
+                  <Button 
+                    className={cn(
+                      "w-full transition-all duration-500",
+                      redeemingId === reward.id ? "bg-emerald-500 hover:bg-emerald-600" : "group-hover:scale-[1.02]"
+                    )} 
+                    disabled={balance < reward.cost || redeemingId !== null}
+                    onClick={() => handleRedeem(reward)}
+                  >
+                    {redeemingId === reward.id ? (
+                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                    ) : null}
+                    {redeemingId === reward.id ? 'Processando...' : 'Resgatar Recompensa'}
                   </Button>
                   <p className="text-[10px] text-center text-muted-foreground mt-3 uppercase font-bold tracking-tighter">
-                    Saldo insuficiente para resgate
+                    {balance < reward.cost ? 'Saldo insuficiente para resgate' : 'Disponível para resgate'}
                   </p>
                 </CardContent>
               </Card>
