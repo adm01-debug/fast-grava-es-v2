@@ -63,11 +63,13 @@ export default function LogisticsPage() {
             </h1>
             <p className="text-muted-foreground mt-1">Acompanhe e gerencie todos os envios e fretes.</p>
           </div>
-          <Button className="gradient-primary">
+          <Button className="gradient-primary" onClick={() => setIsCreateModalOpen(true)}>
             <Plus className="h-4 w-4 mr-2" />
             Novo Envio
           </Button>
         </div>
+
+        <CreateShipmentModal open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen} />
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
