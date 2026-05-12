@@ -111,14 +111,25 @@ export default function GamificationPage() {
             <Badge variant="outline" className="gap-1 text-xs hidden sm:flex">
               <Command className="h-3 w-3" />K para buscar
             </Badge>
-            <Tabs value={period} onValueChange={(v) => setPeriod(v as 'daily' | 'weekly' | 'monthly')}>
-              <TabsList>
-                <TabsTrigger value="daily" onClick={() => setActiveTab('ranking')}>Diário</TabsTrigger>
-                <TabsTrigger value="weekly" onClick={() => setActiveTab('ranking')}>Semanal</TabsTrigger>
-                <TabsTrigger value="monthly" onClick={() => setActiveTab('ranking')}>Mensal</TabsTrigger>
-                <TabsTrigger value="rewards" onClick={() => setActiveTab('rewards')} className="bg-primary/10 text-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+            <Tabs value={activeTab === 'ranking' ? period : activeTab} onValueChange={(v) => {
+              if (['daily', 'weekly', 'monthly'].includes(v)) {
+                setPeriod(v as any);
+                setActiveTab('ranking');
+              } else {
+                setActiveTab(v as any);
+              }
+            }}>
+              <TabsList className="bg-muted/50 p-1 rounded-xl">
+                <TabsTrigger value="daily">Hoje</TabsTrigger>
+                <TabsTrigger value="weekly">Semanal</TabsTrigger>
+                <TabsTrigger value="monthly">Mensal</TabsTrigger>
+                <TabsTrigger value="rewards" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                   <Star className="h-4 w-4 mr-2" />
-                  Loja de Recompensas
+                  Loja
+                </TabsTrigger>
+                <TabsTrigger value="history" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                  <History className="h-4 w-4 mr-2" />
+                  Resgates
                 </TabsTrigger>
               </TabsList>
             </Tabs>
