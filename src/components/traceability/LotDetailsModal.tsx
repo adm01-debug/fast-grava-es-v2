@@ -64,10 +64,11 @@ export default function LotDetailsModal({ lot, open, onClose }: LotDetailsModalP
         {inspections && inspections.length > 0 && <QualityDashboardCards inspections={inspections} />}
 
         <Tabs defaultValue="components">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="components"><Layers className="h-3.5 w-3.5 mr-1" />Componentes ({components?.length || 0})</TabsTrigger>
             <TabsTrigger value="movements"><ArrowRightLeft className="h-3.5 w-3.5 mr-1" />Movimentações ({movements?.length || 0})</TabsTrigger>
             <TabsTrigger value="inspections"><ClipboardCheck className="h-3.5 w-3.5 mr-1" />Inspeções ({inspections?.length || 0})</TabsTrigger>
+            <TabsTrigger value="photos">Evidências</TabsTrigger>
           </TabsList>
           <TabsContent value="components"><LotComponentsTab lot={lot} components={components} /></TabsContent>
           <TabsContent value="movements"><LotMovementsTab lot={lot} movements={movements} /></TabsContent>
