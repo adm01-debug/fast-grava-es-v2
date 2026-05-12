@@ -57,6 +57,8 @@ export default function OperatorsPage() {
   const [operatorToShowDetails, setOperatorToShowDetails] = useState<OperatorWithProfile | null>(null);
   const [detailsModalOpen, setDetailsModalOpen] = useState(false);
   const [operatorForQR, setOperatorForQR] = useState<OperatorWithProfile | null>(null);
+  const [operatorForSkills, setOperatorForSkills] = useState<OperatorWithProfile | null>(null);
+  const [isSkillsModalOpen, setIsSkillsModalOpen] = useState(false);
 
   const activeOperators = operators.filter(op => op.is_active);
   const inactiveOperators = operators.filter(op => !op.is_active);
