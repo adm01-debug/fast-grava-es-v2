@@ -59,9 +59,12 @@ export default function EnergyDashboard() {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
             <div className="flex items-center gap-3">
-              <h1 className="text-2xl sm:text-3xl font-display font-bold"><span className="gradient-text">Monitoramento de Energia</span></h1>
+              <h1 className="text-3xl font-display font-black tracking-tighter">
+                <span className="gradient-text animate-pulse-glow">Sustainable Intelligence 10/10</span>
+              </h1>
               <FavoriteButton path="/energy" name="Energia" />
             </div>
+            <p className="text-muted-foreground mt-1">Gestão energética avançada e monitoramento de pegada de carbono</p>
             <p className="text-muted-foreground">{format(dateRange.start, "MMMM 'de' yyyy", { locale: ptBR })}</p>
           </div>
           <div className="flex items-center gap-2">
