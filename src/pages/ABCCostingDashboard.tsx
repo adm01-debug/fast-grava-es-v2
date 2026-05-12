@@ -10,6 +10,9 @@ import { ABCCostBreakdownChart } from '@/components/abc/ABCCostBreakdownChart';
 import { ABCJobCostsTable } from '@/components/abc/ABCJobCostsTable';
 import { ABCActivityRatesCard } from '@/components/abc/ABCActivityRatesCard';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
+import { AIFinancialAdvisor } from '@/components/abc/AIFinancialAdvisor';
+import { MainLayout } from '@/components/layout/MainLayout';
+
 
 export default function ABCCostingDashboard() {
   const {
