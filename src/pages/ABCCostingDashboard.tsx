@@ -10,6 +10,9 @@ import { ABCCostBreakdownChart } from '@/components/abc/ABCCostBreakdownChart';
 import { ABCJobCostsTable } from '@/components/abc/ABCJobCostsTable';
 import { ABCActivityRatesCard } from '@/components/abc/ABCActivityRatesCard';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
+import { AIFinancialAdvisor } from '@/components/abc/AIFinancialAdvisor';
+import { MainLayout } from '@/components/layout/MainLayout';
+
 
 export default function ABCCostingDashboard() {
   const {
@@ -54,20 +57,24 @@ export default function ABCCostingDashboard() {
   }
 
   return (
-    <>
+    <MainLayout>
       <Helmet>
-        <title>Custeio ABC | Sistema de Gravação</title>
+        <title>Financial Intelligence | Sistema de Gravação</title>
       </Helmet>
-
+ 
       <div className="space-y-6">
         <Breadcrumbs />
         
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-display font-black tracking-tighter">Custeio ABC</h1>
+            <div className="flex items-center gap-3">
+              <h1 className="text-3xl font-display font-black tracking-tighter">
+                <span className="gradient-text animate-pulse-glow">Financial Intelligence 10/10</span>
+              </h1>
+            </div>
             <p className="text-muted-foreground">
-              Activity-Based Costing - Custos por atividade e produto
+              Activity-Based Costing (ABC) e Gestão Estratégica de Lucratividade
             </p>
           </div>
         </div>
@@ -152,9 +159,16 @@ export default function ABCCostingDashboard() {
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <ABCTechniqueChart data={techniqueSummaries} />
-              <ABCCostBreakdownChart costPools={costPools} jobCosts={jobCosts} />
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-2 space-y-6">
+                <div className="grid grid-cols-1 gap-6">
+                  <ABCTechniqueChart data={techniqueSummaries} />
+                  <ABCCostBreakdownChart costPools={costPools} jobCosts={jobCosts} />
+                </div>
+              </div>
+              <div className="lg:col-span-1">
+                <AIFinancialAdvisor />
+              </div>
             </div>
 
             <ABCCostPoolsCard 
@@ -190,6 +204,6 @@ export default function ABCCostingDashboard() {
           </TabsContent>
         </Tabs>
       </div>
-    </>
+    </MainLayout>
   );
 }

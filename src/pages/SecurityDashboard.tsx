@@ -40,6 +40,9 @@ import { useUserDevices } from '@/hooks/useUserDevices';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { VoiceButton } from '@/components/voice/VoiceCommands';
 import { CyberResilienceScore } from '@/components/security/CyberResilienceScore';
+import { AICyberAdvisor } from '@/components/security/AICyberAdvisor';
+import { MainLayout } from '@/components/layout/MainLayout';
+
 
 export default function SecurityDashboard() {
   const navigate = useNavigate();
@@ -63,26 +66,26 @@ export default function SecurityDashboard() {
   const trustedDevices = devices?.filter(d => d.is_trusted).length || 0;
 
   return (
-    <div className="container mx-auto py-6 space-y-6">
-      <Breadcrumbs />
-      
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <div className="flex items-center gap-3">
-            <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
-              <Shield className="h-8 w-8" />
-              Painel de Segurança Unificado
-            </h1>
-            <FavoriteButton 
-              path="/security" 
-              name="Segurança" 
-            />
+    <MainLayout>
+      <div className="container mx-auto py-6 space-y-6">
+        <Breadcrumbs />
+        
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="flex items-center gap-3">
+              <h1 className="text-3xl font-display font-black tracking-tighter">
+                <span className="gradient-text animate-pulse-glow">Cyber Resilience 10/10</span>
+              </h1>
+              <FavoriteButton 
+                path="/security" 
+                name="Segurança" 
+              />
+            </div>
+            <p className="text-muted-foreground mt-1">
+              Zero Trust Architecture e Orquestração de Defesa Ativa IA
+            </p>
           </div>
-          <p className="text-muted-foreground">
-            Visão completa de todas as configurações de segurança do sistema
-          </p>
-        </div>
         <div className="flex items-center gap-2">
           <VoiceButton />
           <FavoritesDropdown onNavigate={(url) => navigate(url)} />
@@ -200,10 +203,19 @@ export default function SecurityDashboard() {
         </TabsList>
 
         <TabsContent value="overview">
-          <div className="grid gap-6 md:grid-cols-3">
-            <CyberResilienceScore />
-            <SecurityOverviewCard />
-            <SecurityAlertsPanel />
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            <div className="lg:col-span-3">
+              <div className="grid gap-6 md:grid-cols-2">
+                <CyberResilienceScore />
+                <SecurityOverviewCard />
+                <div className="md:col-span-2">
+                  <SecurityAlertsPanel />
+                </div>
+              </div>
+            </div>
+            <div className="lg:col-span-1">
+              <AICyberAdvisor />
+            </div>
           </div>
         </TabsContent>
 
@@ -255,6 +267,7 @@ export default function SecurityDashboard() {
           <LoginAuditLog />
         </TabsContent>
       </Tabs>
-    </div>
+      </div>
+    </MainLayout>
   );
 }

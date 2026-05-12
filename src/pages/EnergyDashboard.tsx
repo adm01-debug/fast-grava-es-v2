@@ -19,6 +19,8 @@ import { format, startOfMonth, endOfMonth, subMonths } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { toast } from 'sonner';
 import { EnergyChartTabs } from '@/components/energy/EnergyChartTabs';
+import { AIEnergyAdvisor } from '@/components/energy/AIEnergyAdvisor';
+
 
 export default function EnergyDashboard() {
   const navigate = useNavigate();
@@ -57,9 +59,12 @@ export default function EnergyDashboard() {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
             <div className="flex items-center gap-3">
-              <h1 className="text-2xl sm:text-3xl font-display font-bold"><span className="gradient-text">Monitoramento de Energia</span></h1>
+              <h1 className="text-3xl font-display font-black tracking-tighter">
+                <span className="gradient-text animate-pulse-glow">Sustainable Intelligence 10/10</span>
+              </h1>
               <FavoriteButton path="/energy" name="Energia" />
             </div>
+            <p className="text-muted-foreground mt-1">Gestão energética avançada e monitoramento de pegada de carbono</p>
             <p className="text-muted-foreground">{format(dateRange.start, "MMMM 'de' yyyy", { locale: ptBR })}</p>
           </div>
           <div className="flex items-center gap-2">
@@ -98,7 +103,14 @@ export default function EnergyDashboard() {
           <Card className="glass-card"><CardContent className="pt-6"><div className="flex items-center justify-between"><div><p className="text-sm text-muted-foreground">Fator de Potência</p><p className="text-2xl font-bold">{stats.avgPowerFactor.toFixed(2)}</p><Badge variant={stats.avgPowerFactor >= 0.92 ? 'default' : 'destructive'} className="mt-1">{stats.avgPowerFactor >= 0.92 ? 'Adequado' : 'Baixo'}</Badge></div><div className="w-12 h-12 rounded-xl bg-cyan-500/10 flex items-center justify-center"><Gauge className="h-6 w-6 text-cyan-500" /></div></div></CardContent></Card>
         </div>
 
-        <EnergyChartTabs stats={stats} alerts={alerts} onResolveAlert={(id) => resolveAlert.mutate(id)} isResolving={resolveAlert.isPending} />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2">
+            <EnergyChartTabs stats={stats} alerts={alerts} onResolveAlert={(id) => resolveAlert.mutate(id)} isResolving={resolveAlert.isPending} />
+          </div>
+          <div className="lg:col-span-1">
+            <AIEnergyAdvisor />
+          </div>
+        </div>
 
         {/* Recent Readings */}
         <Card className="glass-card">

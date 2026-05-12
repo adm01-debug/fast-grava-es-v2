@@ -28,7 +28,7 @@ import { OperatorPerformanceTab } from '@/components/operators/OperatorPerforman
 import { OperatorGoalsTab } from '@/components/operators/OperatorGoalsTab';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { SkillsMatrix } from '@/components/operators/SkillsMatrix';
 
 const formatLastSeen = (date: Date | undefined) => {
   if (!date) return null;
@@ -115,10 +115,12 @@ export default function OperatorsPage() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-3">
-              <h1 className="text-2xl font-display font-bold gradient-text">Operadores</h1>
+              <h1 className="text-3xl font-display font-black tracking-tighter">
+                <span className="gradient-text animate-pulse-glow">Workforce Excellence 10/10</span>
+              </h1>
               <FavoriteButton path="/operators" name="Operadores" />
             </div>
-            <p className="text-muted-foreground">Gerencie os operadores e suas permissões de máquinas</p>
+            <p className="text-muted-foreground">Orquestração de capital humano e competências técnicas</p>
           </div>
           
           <div className="flex items-center gap-3">
@@ -194,13 +196,20 @@ export default function OperatorsPage() {
           </Card>
         </div>
 
-        <Card className="glass-card">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Users className="h-5 w-5" />
-              Lista de Operadores
-            </CardTitle>
-          </CardHeader>
+        <Tabs defaultValue="list" className="space-y-6">
+          <TabsList className="glass-card p-1">
+            <TabsTrigger value="list">Lista de Operadores</TabsTrigger>
+            <TabsTrigger value="matrix">Matrix de Polivalência</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="list" className="space-y-6 outline-none">
+            <Card className="glass-card">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Users className="h-5 w-5" />
+                  Orquestração de Equipe
+                </CardTitle>
+              </CardHeader>
           <CardContent className="space-y-4">
             {/* Search and Filters */}
             <div className="flex flex-col sm:flex-row gap-3">
@@ -467,6 +476,12 @@ export default function OperatorsPage() {
             )}
           </CardContent>
         </Card>
+      </TabsContent>
+
+      <TabsContent value="matrix" className="outline-none animate-fade-in">
+        <SkillsMatrix />
+      </TabsContent>
+    </Tabs>
 
 
         {/* Operator Details Modal */}

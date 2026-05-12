@@ -23,6 +23,8 @@ import { EvolutionChart } from '@/components/operators/EvolutionChart';
 import { EfficiencyChart } from '@/components/operators/EfficiencyChart';
 import { ProductionRadarChart } from '@/components/operators/ProductionRadarChart';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
+import { AIWorkforceAdvisor } from '@/components/operators/AIWorkforceAdvisor';
+
 
 export default function OperatorProductivityPage() {
   const [period, setPeriod] = useState<ProductivityPeriod>(30);
@@ -85,8 +87,12 @@ export default function OperatorProductivityPage() {
         <Breadcrumbs />
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold font-display flex items-center gap-3"><Users className="h-8 w-8 text-primary" />Produtividade por Operador</h1>
-            <p className="text-muted-foreground mt-1">Métricas individuais de desempenho e eficiência</p>
+            <div className="flex items-center gap-3">
+              <h1 className="text-3xl font-display font-black tracking-tighter">
+                <span className="gradient-text animate-pulse-glow">Workforce Performance 10/10</span>
+              </h1>
+            </div>
+            <p className="text-muted-foreground mt-1">Métricas avançadas de capital humano e inteligência operacional</p>
           </div>
           <div className="flex items-center gap-3">
             <Button variant="outline" size="sm" onClick={handleExportReport} disabled={isExporting}><Download className="h-4 w-4 mr-2" />{isExporting ? 'Exportando...' : 'Exportar PDF'}</Button>
@@ -118,12 +124,19 @@ export default function OperatorProductivityPage() {
           <OperatorProductivityStatCard title="Taxa de Perda Média" value={`${overallStats.averageLossRate.toFixed(1)}%`} subtitle="Índice de refugo geral" icon={AlertTriangle} trend={overallStats.averageLossRate <= 5 ? 'up' : 'down'} />
         </div>
 
-        {activeGoals.length > 0 && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <GoalsSummary allGoals={activeGoals} allMetrics={operators} />
-            <GoalAlertsWidget maxVisible={3} />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 space-y-6">
+            {activeGoals.length > 0 && (
+              <div className="grid grid-cols-1 gap-4">
+                <GoalsSummary allGoals={activeGoals} allMetrics={operators} />
+                <GoalAlertsWidget maxVisible={3} />
+              </div>
+            )}
           </div>
-        )}
+          <div className="lg:col-span-1">
+            <AIWorkforceAdvisor />
+          </div>
+        </div>
 
         {overallStats.topPerformer && overallStats.topPerformer.totalJobsCompleted > 0 && (
           <Card className="bg-gradient-to-r from-primary/10 via-primary/5 to-transparent border-primary/20">
