@@ -286,48 +286,98 @@ const OEEDashboard = memo(function OEEDashboard() {
           </Card>
         )}
 
-        {/* Main Metrics */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <KPITooltip {...KPI_DEFINITIONS.oee}>
-            <OEEGaugeCard
-              title="OEE Geral"
-              value={data.overallOEE}
-              icon={<Target className="h-4 w-4" />}
-              description="Eficiência geral de todas as máquinas"
-              benchmark={WORLD_CLASS_OEE}
-              trend={data.comparison ? data.comparison.currentOEE - data.comparison.previousOEE : undefined}
-            />
-          </KPITooltip>
-          <KPITooltip {...KPI_DEFINITIONS.availability}>
-            <OEEGaugeCard
-              title="Disponibilidade"
-              value={data.overallAvailability}
-              icon={<Clock className="h-4 w-4" />}
-              description="Tempo operando vs. tempo planejado"
-              benchmark={90}
-              trend={data.comparison ? data.comparison.currentAvailability - data.comparison.previousAvailability : undefined}
-            />
-          </KPITooltip>
-          <KPITooltip {...KPI_DEFINITIONS.performance}>
-            <OEEGaugeCard
-              title="Performance"
-              value={data.overallPerformance}
-              icon={<Gauge className="h-4 w-4" />}
-              description="Velocidade real vs. velocidade ideal"
-              benchmark={95}
-              trend={data.comparison ? data.comparison.currentPerformance - data.comparison.previousPerformance : undefined}
-            />
-          </KPITooltip>
-          <KPITooltip {...KPI_DEFINITIONS.quality}>
-            <OEEGaugeCard
-              title="Qualidade"
-              value={data.overallQuality}
-              icon={<CheckCircle2 className="h-4 w-4" />}
-              description="Peças boas vs. total produzido"
-              benchmark={99}
-              trend={data.comparison ? data.comparison.currentQuality - data.comparison.previousQuality : undefined}
-            />
-          </KPITooltip>
+        {/* Main Metrics with OEE Formula Drill-down */}
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-bold flex items-center gap-2">
+              <Calculator className="h-5 w-5 text-primary" />
+              Drill-down de Performance (Fórmula OEE)
+            </h2>
+            <Badge variant="outline" className="text-[10px] font-bold">REAL-TIME CALCULATION</Badge>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <KPITooltip {...KPI_DEFINITIONS.oee}>
+              <OEEGaugeCard
+                title="OEE Geral"
+                value={data.overallOEE}
+                icon={<Target className="h-4 w-4" />}
+                description="Eficiência geral de todas as máquinas"
+                benchmark={WORLD_CLASS_OEE}
+                trend={data.comparison ? data.comparison.currentOEE - data.comparison.previousOEE : undefined}
+                className="border-primary/40 shadow-glow-primary/10"
+              />
+            </KPITooltip>
+
+            <KPITooltip {...KPI_DEFINITIONS.availability}>
+              <OEEGaugeCard
+                title="Disponibilidade"
+                value={data.overallAvailability}
+                icon={<Clock className="h-4 w-4" />}
+                description="Tempo operando / Tempo planejado"
+                benchmark={90}
+                trend={data.comparison ? data.comparison.currentAvailability - data.comparison.previousAvailability : undefined}
+              />
+            </KPITooltip>
+
+            <KPITooltip {...KPI_DEFINITIONS.performance}>
+              <OEEGaugeCard
+                title="Performance"
+                value={data.overallPerformance}
+                icon={<Gauge className="h-4 w-4" />}
+                description="Produção Real / Produção Estimada"
+                benchmark={95}
+                trend={data.comparison ? data.comparison.currentPerformance - data.comparison.previousPerformance : undefined}
+              />
+            </KPITooltip>
+
+            <KPITooltip {...KPI_DEFINITIONS.quality}>
+              <OEEGaugeCard
+                title="Qualidade"
+                value={data.overallQuality}
+                icon={<CheckCircle2 className="h-4 w-4" />}
+                description="Peças Boas / Total Produzido"
+                benchmark={99}
+                trend={data.comparison ? data.comparison.currentQuality - data.comparison.previousQuality : undefined}
+              />
+            </KPITooltip>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <Card className="bg-muted/20 border-dashed border-border/50">
+              <CardContent className="p-3 text-[10px] space-y-1">
+                <p className="font-bold uppercase text-muted-foreground">Cálculo de Disponibilidade</p>
+                <div className="flex justify-between items-center bg-background/50 p-2 rounded">
+                  <span className="font-mono">{data.byMachine.reduce((s, m) => s + m.actualOperatingMinutes, 0)} min</span>
+                  <span className="text-muted-foreground">/</span>
+                  <span className="font-mono">{data.byMachine.reduce((s, m) => s + m.plannedProductionMinutes, 0)} min</span>
+                  <span className="text-primary font-bold">= {data.overallAvailability.toFixed(1)}%</span>
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="bg-muted/20 border-dashed border-border/50">
+              <CardContent className="p-3 text-[10px] space-y-1">
+                <p className="font-bold uppercase text-muted-foreground">Cálculo de Performance</p>
+                <div className="flex justify-between items-center bg-background/50 p-2 rounded">
+                  <span className="font-mono">{data.byMachine.reduce((s, m) => s + m.idealCycleMinutes, 0)} min (Est.)</span>
+                  <span className="text-muted-foreground">/</span>
+                  <span className="font-mono">{data.byMachine.reduce((s, m) => s + m.actualOperatingMinutes, 0)} min (Real)</span>
+                  <span className="text-indicator-info font-bold">= {data.overallPerformance.toFixed(1)}%</span>
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="bg-muted/20 border-dashed border-border/50">
+              <CardContent className="p-3 text-[10px] space-y-1">
+                <p className="font-bold uppercase text-muted-foreground">Cálculo de Qualidade</p>
+                <div className="flex justify-between items-center bg-background/50 p-2 rounded">
+                  <span className="font-mono">{data.byMachine.reduce((s, m) => s + m.goodPieces, 0)} pcs (Boas)</span>
+                  <span className="text-muted-foreground">/</span>
+                  <span className="font-mono">{data.byMachine.reduce((s, m) => s + m.totalPiecesProduced, 0)} pcs (Total)</span>
+                  <span className="text-accent-purple font-bold">= {data.overallQuality.toFixed(1)}%</span>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </div>
 
         {/* Quick Stats */}

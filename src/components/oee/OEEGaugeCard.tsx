@@ -11,6 +11,7 @@ interface OEEGaugeCardProps {
   benchmark?: number;
   size?: 'sm' | 'md' | 'lg';
   trend?: number;
+  className?: string;
 }
 
 export const OEEGaugeCard = memo(function OEEGaugeCard({ 
@@ -20,7 +21,8 @@ export const OEEGaugeCard = memo(function OEEGaugeCard({
   description,
   benchmark = 85,
   size = 'md',
-  trend
+  trend,
+  className
 }: OEEGaugeCardProps) {
 
   const gaugeData = useMemo(() => {
@@ -48,7 +50,7 @@ export const OEEGaugeCard = memo(function OEEGaugeCard({
   const progress = (gaugeData.percentage / 100) * circumference;
 
   return (
-    <Card className="relative overflow-hidden">
+    <Card className={cn("relative overflow-hidden", className)}>
       <CardHeader className="pb-2">
         <CardTitle className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
           {icon}
