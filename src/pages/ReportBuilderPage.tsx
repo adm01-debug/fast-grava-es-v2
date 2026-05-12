@@ -421,11 +421,96 @@ export default function ReportBuilderPage() {
                </CardContent>
             </Card>
 
-            <Card className="glass-card border-amber-500/20 bg-amber-500/5">
-               <CardHeader className="pb-3">
-                 <CardTitle className="text-[10px] font-black uppercase tracking-widest text-amber-600">Formato de Saída</CardTitle>
-               </CardHeader>
-               <CardContent>
+             <Card className="glass-card border-primary/20 bg-primary/5">
+                <CardHeader className="pb-3 border-b border-border/50">
+                  <CardTitle className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
+                    <Save className="h-3 w-3 text-primary" />
+                    Salvar Configuração
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="pt-4 space-y-3">
+                   <div className="space-y-1.5">
+                     <Label className="text-[9px] font-bold uppercase text-muted-foreground">Nome do Template</Label>
+                     <Input 
+                       placeholder="Ex: Produtividade Mensal" 
+                       className="h-8 text-xs font-bold"
+                       value={templateName}
+                       onChange={(e) => setTemplateName(e.target.value)}
+                     />
+                   </div>
+                   <Button 
+                     className="w-full h-8 text-[10px] uppercase font-black" 
+                     onClick={() => saveTemplateMutation.mutate()}
+                     disabled={!templateName || saveTemplateMutation.isPending}
+                   >
+                     {saveTemplateMutation.isPending ? <Clock className="h-3 w-3 animate-spin mr-2" /> : <Save className="h-3 w-3 mr-2" />}
+                     Salvar Template
+                   </Button>
+                </CardContent>
+             </Card>
+
+             {savedTemplates && savedTemplates.length > 0 && (
+               <Card className="glass-card">
+                 <CardHeader className="pb-3 border-b border-border/50 bg-muted/20">
+                   <CardTitle className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
+                     <ListRestart className="h-3 w-3 text-primary" />
+                     Meus Templates
+                   </CardTitle>
+                 </CardHeader>
+                 <CardContent className="pt-4 space-y-2 max-h-[200px] overflow-y-auto">
+                    {savedTemplates.map((template: any) => (
+                      <button 
+                        key={template.id}
+                        onClick={() => {
+                          setSelectedTable(template.table_name);
+                          setSelectedColumns(template.columns);
+                          setFormatType(template.format_type as any);
+                          if (template.filters?.status) setSelectedStatus(template.filters.status);
+                          toast.success(`Template "${template.name}" aplicado`);
+                        }}
+                        className="w-full text-left p-2 rounded-lg hover:bg-muted/50 transition-colors group flex items-center justify-between"
+                      >
+                        <div>
+                          <p className="text-xs font-bold group-hover:text-primary transition-colors">{template.name}</p>
+                          <p className="text-[9px] text-muted-foreground uppercase font-medium">{template.table_name}</p>
+                        </div>
+                        <ChevronRight className="h-3 w-3 text-muted-foreground/30 group-hover:text-primary transition-transform group-hover:translate-x-0.5" />
+                      </button>
+                    ))}
+                 </CardContent>
+               </Card>
+             )}
+
+             <Card className="glass-card border-indigo-500/20 bg-indigo-500/5">
+                <CardHeader className="pb-3 border-b border-indigo-500/10">
+                  <CardTitle className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2 text-indigo-600">
+                    <Mail className="h-3 w-3" />
+                    Agendamento (SLA)
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="pt-4 space-y-3">
+                   <p className="text-[10px] text-muted-foreground">Configure o envio automático deste relatório para seu e-mail.</p>
+                   <Select disabled>
+                     <SelectTrigger className="h-8 text-xs font-bold bg-background/50 border-indigo-500/20">
+                       <SelectValue placeholder="Escolha a frequência" />
+                     </SelectTrigger>
+                     <SelectContent>
+                       <SelectItem value="daily">Diário (08:00)</SelectItem>
+                       <SelectItem value="weekly">Semanal (Segunda)</SelectItem>
+                       <SelectItem value="monthly">Mensal (Dia 01)</SelectItem>
+                     </SelectContent>
+                   </Select>
+                   <Button variant="outline" className="w-full h-8 text-[10px] uppercase font-black border-indigo-500/20 text-indigo-600" disabled>
+                     Ativar Automação
+                   </Button>
+                </CardContent>
+             </Card>
+
+             <Card className="glass-card border-amber-500/20 bg-amber-500/5">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-[10px] font-black uppercase tracking-widest text-amber-600">Formato de Saída</CardTitle>
+                </CardHeader>
+                <CardContent>
                   <Select value={formatType} onValueChange={(v: any) => setFormatType(v)}>
                     <SelectTrigger className="bg-background/50 border-amber-500/20 text-amber-900 font-bold h-9">
                       <SelectValue />
@@ -436,8 +521,8 @@ export default function ReportBuilderPage() {
                       <SelectItem value="excel">Excel (.xlsx)</SelectItem>
                     </SelectContent>
                   </Select>
-               </CardContent>
-            </Card>
+                </CardContent>
+             </Card>
           </div>
 
           {/* Step 2: Configuration */}
