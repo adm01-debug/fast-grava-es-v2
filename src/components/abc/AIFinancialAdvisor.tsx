@@ -6,10 +6,11 @@ import { useABCCosts } from '@/hooks/useABCCosts';
 import { useMemo } from 'react';
 
 export function AIFinancialAdvisor() {
-  const { costPools, totalBudget, totalAllocatedCost, averageUnitCost, techniqueSummaries = [] } = useABCCosts();
+  const { costPools, totalBudget, totalAllocatedCost, averageUnitCost, getTechniqueCostSummary } = useABCCosts();
 
   const insights = useMemo(() => {
     const list = [];
+    const techniqueSummaries = getTechniqueCostSummary();
 
     // Profit Insight
     if (techniqueSummaries.length > 0) {
