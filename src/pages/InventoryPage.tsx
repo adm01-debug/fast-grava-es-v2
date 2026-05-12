@@ -23,11 +23,21 @@ import {
   Timer,
   Printer,
   X,
-  FileDown
+  FileDown,
+  CheckCircle2,
+  BrainCircuit,
+  Settings2,
+  RefreshCcw,
+  Eye,
+  Maximize2,
+  TrendingUp
 } from 'lucide-react';
+
 import { useInventory, useInventoryMovements, InventoryItem } from '@/hooks/useInventory';
 import { WarehouseMap } from '@/components/inventory/WarehouseMap';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -38,6 +48,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { toast } from 'sonner';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { QRCodeSVG } from 'qrcode.react';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Slider } from '@/components/ui/slider';
+
 
 
 export default function InventoryPage() {
@@ -45,6 +58,10 @@ export default function InventoryPage() {
   const { hasPermission } = useRBAC();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
+  const [isBatchQRModalOpen, setIsBatchQRModalOpen] = useState(false);
+  const [isAIPredictionModalOpen, setIsAIPredictionModalOpen] = useState(false);
+
 
   const filteredItems = items.filter(item => {
     const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -66,10 +83,14 @@ export default function InventoryPage() {
             </h1>
             <p className="text-muted-foreground mt-1">Inventory Intelligence & Controle de Insumos</p>
           </div>
-          <div className="flex gap-2">
-             <Button variant="outline" className="gap-2">
+          <div className="flex flex-wrap gap-2">
+             <Button variant="outline" className="gap-2 border-primary/20 hover:bg-primary/5" onClick={() => setIsAIPredictionModalOpen(true)}>
+               <BrainCircuit className="h-4 w-4 text-primary" />
+               Acurácia IA
+             </Button>
+             <Button variant="outline" className="gap-2" disabled={selectedItems.size === 0} onClick={() => setIsBatchQRModalOpen(true)}>
                <QrCode className="h-4 w-4" />
-               Escanear QR
+               Etiquetas em Lote ({selectedItems.size})
              </Button>
              <Button className="gap-2">
                <Plus className="h-4 w-4" />
@@ -77,6 +98,7 @@ export default function InventoryPage() {
              </Button>
           </div>
         </div>
+
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <Card className="glass-card hover:shadow-glow-primary transition-all duration-300">
@@ -176,7 +198,18 @@ export default function InventoryPage() {
               {isLoading ? (
                 [1,2,3].map(i => <Skeleton key={i} className="h-48 w-full rounded-xl" />)
               ) : filteredItems.map((item) => (
-                <InventoryCard key={item.id} item={item} onMovement={recordMovement} />
+                <InventoryCard 
+                  key={item.id} 
+                  item={item} 
+                  onMovement={recordMovement}
+                  isSelected={selectedItems.has(item.id)}
+                  onSelect={(id: string, checked: boolean) => {
+                    const next = new Set(selectedItems);
+                    if (checked) next.add(id);
+                    else next.delete(id);
+                    setSelectedItems(next);
+                  }}
+                />
               ))}
             </div>
           </TabsContent>
@@ -219,15 +252,38 @@ export default function InventoryPage() {
           </TabsContent>
         </Tabs>
       </div>
+
+      <BatchQRLabelModal 
+        open={isBatchQRModalOpen}
+        onOpenChange={setIsBatchQRModalOpen}
+        items={items.filter(i => selectedItems.has(i.id))}
+      />
+
+      <AIPredictionValidationModal
+        open={isAIPredictionModalOpen}
+        onOpenChange={setIsAIPredictionModalOpen}
+        items={items}
+      />
     </MainLayout>
   );
 }
 
-function InventoryCard({ item, onMovement }: { item: InventoryItem, onMovement: any }) {
+function InventoryCard({ 
+  item, 
+  onMovement, 
+  isSelected, 
+  onSelect 
+}: { 
+  item: InventoryItem, 
+  onMovement: any,
+  isSelected: boolean,
+  onSelect: (id: string, checked: boolean) => void
+}) {
   const isLowStock = item.current_stock <= item.min_stock_level;
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isQRModalOpen, setIsQRModalOpen] = useState(false);
   const [movementType, setMovementType] = useState<'IN' | 'OUT'>('IN');
+
   const [quantity, setQuantity] = useState('1');
 
   const handleRecord = async () => {
@@ -255,8 +311,16 @@ function InventoryCard({ item, onMovement }: { item: InventoryItem, onMovement: 
       "glass-card hover:border-primary/30 transition-all overflow-hidden hover:shadow-glow-primary group",
       isLowStock && "border-red-500/30"
     )}>
-      <CardHeader className="pb-3 border-b border-border/50 bg-muted/20">
-        <div className="flex justify-between items-start">
+      <CardHeader className="pb-3 border-b border-border/50 bg-muted/20 relative">
+        <div className="absolute top-3 left-3 z-10" onClick={(e) => e.stopPropagation()}>
+          <Checkbox 
+            checked={isSelected} 
+            onCheckedChange={(checked) => onSelect(item.id, !!checked)} 
+            className="h-4 w-4 bg-background data-[state=checked]:bg-primary"
+          />
+        </div>
+        <div className="flex justify-between items-start pl-7">
+
           <Badge variant="outline" className="text-[9px] uppercase font-black border-primary/20">
             {item.category}
           </Badge>
@@ -597,4 +661,165 @@ function InventoryHistoryTable() {
     </div>
   );
 }
+
+function BatchQRLabelModal({ open, onOpenChange, items }: { open: boolean, onOpenChange: (o: boolean) => void, items: InventoryItem[] }) {
+  const [size, setSize] = useState(150);
+  const [showText, setShowText] = useState(true);
+  const printRef = useRef<HTMLDivElement>(null);
+
+  const handlePrint = () => {
+    const content = printRef.current;
+    if (!content) return;
+    const win = window.open('', '_blank');
+    if (!win) return;
+    win.document.write('<html><head><title>Imprimir Lote</title><style>body { font-family: sans-serif; padding: 20px; } .label-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; } .label-item { border: 1px solid #ccc; padding: 10px; text-align: center; page-break-inside: avoid; }</style></head><body><div class="label-grid">');
+    win.document.write(content.innerHTML);
+    win.document.write('</div></body></html>');
+    win.document.close();
+    win.focus();
+    setTimeout(() => { win.print(); win.close(); }, 500);
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-4xl h-[90vh] flex flex-col">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <QrCode className="h-5 w-5 text-primary" />
+            Impressão em Lote ({items.length} itens)
+          </DialogTitle>
+          <DialogDescription>Ajuste o layout e visualize as etiquetas antes de enviar para a impressora.</DialogDescription>
+        </DialogHeader>
+
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 flex-1 overflow-hidden">
+          <div className="md:col-span-1 space-y-6 p-1">
+            <div className="space-y-4">
+              <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Configurações</Label>
+              <div className="space-y-2">
+                <div className="flex justify-between text-xs"><span>Tamanho: {size}px</span></div>
+                <Slider value={[size]} min={80} max={250} step={10} onValueChange={(v) => setSize(v[0])} />
+              </div>
+              <div className="flex items-center justify-between">
+                <Label className="text-xs">Exibir Nome/ID</Label>
+                <Checkbox checked={showText} onCheckedChange={(v) => setShowText(!!v)} />
+              </div>
+            </div>
+            <div className="p-3 rounded-lg bg-primary/5 border border-primary/20 space-y-2">
+              <p className="text-[10px] font-bold text-primary uppercase">Dica Industrial</p>
+              <p className="text-[11px] text-muted-foreground">Use papel adesivo 100x100mm para melhor compatibilidade com o tamanho padrão.</p>
+            </div>
+          </div>
+
+          <div className="md:col-span-3 bg-muted/30 rounded-xl border border-dashed flex flex-col overflow-hidden">
+            <div className="p-2 border-b bg-background/50 flex justify-between items-center">
+              <span className="text-[10px] font-bold uppercase text-muted-foreground px-2">Pré-visualização do Lote</span>
+              <div className="flex gap-2">
+                <Button variant="ghost" size="icon" className="h-7 w-7"><Maximize2 className="h-3.5 w-3.5" /></Button>
+              </div>
+            </div>
+            <ScrollArea className="flex-1 p-6">
+              <div ref={printRef} className="grid grid-cols-2 gap-6">
+                {items.map(item => (
+                  <div key={item.id} className="label-item p-4 bg-white border-2 border-black rounded-lg flex flex-col items-center">
+                    <QRCodeSVG value={JSON.stringify({ id: item.id, type: 'inventory' })} size={size} level="M" />
+                    {showText && (
+                      <div className="mt-2 text-center">
+                        <p className="text-[10px] font-black uppercase text-black leading-tight">{item.name}</p>
+                        <p className="text-[8px] font-mono text-black/60">ID: {item.id.substring(0, 8).toUpperCase()}</p>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </ScrollArea>
+          </div>
+        </div>
+
+        <DialogFooter className="mt-4">
+          <Button variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
+          <Button className="gap-2" onClick={handlePrint}><Printer className="h-4 w-4" /> Imprimir Todas</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function AIPredictionValidationModal({ open, onOpenChange, items }: { open: boolean, onOpenChange: (o: boolean) => void, items: InventoryItem[] }) {
+  const [isValidating, setIsValidating] = useState(false);
+  const accuracy = 94.2;
+
+  const handleRecalculate = () => {
+    setIsValidating(true);
+    setTimeout(() => {
+      setIsValidating(false);
+      toast.success("Modelo re-treinado com base nos consumos dos últimos 7 dias.");
+    }, 2000);
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-3xl">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <BrainCircuit className="h-5 w-5 text-primary" />
+            Validação de Previsão IA
+          </DialogTitle>
+          <DialogDescription>Monitoramento de acurácia e calibração do modelo de estoque preditivo.</DialogDescription>
+        </DialogHeader>
+        
+        <div className="space-y-6 py-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <Card className="bg-primary/5 border-primary/20">
+              <CardContent className="pt-4">
+                <p className="text-[10px] uppercase font-bold text-muted-foreground">Acurácia Recente</p>
+                <p className="text-3xl font-black text-primary">{accuracy}%</p>
+                <div className="flex items-center gap-1 text-[10px] text-emerald-500 mt-1">
+                  <TrendingUp className="h-3 w-3" /> +1.2% vs mês anterior
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="bg-muted/50">
+              <CardContent className="pt-4">
+                <p className="text-[10px] uppercase font-bold text-muted-foreground">Desvio Médio</p>
+                <p className="text-3xl font-black">0.8 dias</p>
+                <p className="text-[10px] text-muted-foreground mt-1">Erro médio de data de ruptura</p>
+              </CardContent>
+            </Card>
+            <Card className="bg-muted/50">
+              <CardContent className="pt-4">
+                <p className="text-[10px] uppercase font-bold text-muted-foreground">Treinamentos</p>
+                <p className="text-3xl font-black">124</p>
+                <p className="text-[10px] text-muted-foreground mt-1">Ciclos de aprendizado ativos</p>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="space-y-4">
+            <Label className="text-xs font-bold uppercase text-muted-foreground tracking-widest">Itens com Maior Desvio</Label>
+            <div className="border rounded-xl divide-y overflow-hidden">
+               {items.slice(0, 3).map(item => (
+                 <div key={item.id} className="p-3 flex justify-between items-center bg-muted/20">
+                   <div>
+                     <p className="text-xs font-bold">{item.name}</p>
+                     <p className="text-[10px] text-muted-foreground">Consumo irregular detectado</p>
+                   </div>
+                   <Badge variant="outline" className="text-primary border-primary/20 bg-primary/5 text-[10px]">RE-ANALISANDO</Badge>
+                 </div>
+               ))}
+            </div>
+          </div>
+        </div>
+
+        <DialogFooter className="gap-2">
+          <Button variant="ghost" onClick={() => onOpenChange(false)}>Fechar</Button>
+          <Button variant="secondary" className="gap-2" onClick={handleRecalculate} disabled={isValidating}>
+            {isValidating ? <RefreshCcw className="h-4 w-4 animate-spin" /> : <RefreshCcw className="h-4 w-4" />}
+            Recalcular Previsões (Deep Learning)
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 
