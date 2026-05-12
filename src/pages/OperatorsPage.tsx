@@ -30,6 +30,8 @@ import { OperatorGoalsTab } from '@/components/operators/OperatorGoalsTab';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { SkillsMatrix } from '@/components/operators/SkillsMatrix';
+import { OperatorSkillsModal } from '@/components/operators/OperatorSkillsModal';
+import { ShieldCheck } from 'lucide-react';
 
 const formatLastSeen = (date: Date | undefined) => {
   if (!date) return null;
