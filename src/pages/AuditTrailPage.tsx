@@ -9,6 +9,8 @@ import { AuditFilters } from '@/components/audit/AuditFilters';
 import { AuditEntryCard } from '@/components/audit/AuditEntryCard';
 import { AuditChainStatus } from '@/components/audit/AuditChainStatus';
 import { MainLayout } from '@/components/layout/MainLayout';
+import { AuditAIAdvisor } from '@/components/audit/AuditAIAdvisor';
+
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import type { AuditFilters as AuditFiltersType } from '@/lib/schemas/auditLog';
 import { motion } from 'framer-motion';
