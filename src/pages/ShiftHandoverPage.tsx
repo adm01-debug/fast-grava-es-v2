@@ -149,12 +149,28 @@ export default function ShiftHandoverPage() {
           <Button variant="outline" size="icon" onClick={() => refetch()}>
             <RefreshCw className="h-4 w-4" />
           </Button>
-          <Button onClick={() => setShowCreateModal(true)}>
+          <Button onClick={() => setShowCreateModal(true)} className="shadow-glow-primary active:scale-95 transition-all">
             <Plus className="h-4 w-4 mr-2" />
             Nova Passagem
           </Button>
         </div>
       </div>
+
+      {/* Real-time Status Banner */}
+      <Card className="bg-primary/5 border-primary/20 overflow-hidden relative group">
+        <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+          <RefreshCw className="h-16 w-16 text-primary animate-spin-slow" />
+        </div>
+        <CardContent className="py-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
+            <span className="text-xs font-black uppercase tracking-tighter">Sincronização em tempo real ativa</span>
+          </div>
+          <p className="text-[10px] text-muted-foreground font-medium italic">
+            Última atualização: {format(new Date(), "HH:mm:ss")}
+          </p>
+        </CardContent>
+      </Card>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
