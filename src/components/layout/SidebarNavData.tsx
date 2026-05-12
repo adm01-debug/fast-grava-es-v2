@@ -46,6 +46,7 @@ export const navGroups: NavGroup[] = [
     { icon: ArrowRightLeft, label: 'Comparativo Máquinas', href: '/machines/compare' },
     { icon: BatteryCharging, label: 'Energia', href: '/energy' },
     { icon: Package, label: 'Rastreabilidade', href: '/traceability' },
+    { icon: Truck, label: 'Logística', href: '/logistics' },
   ]},
   { id: 'team', icon: Users, label: 'Equipe', items: [
     { icon: Users, label: 'Operadores', href: '/operators' },
