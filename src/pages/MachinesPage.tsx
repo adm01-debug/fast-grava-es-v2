@@ -34,6 +34,9 @@ import { useQueryClient } from '@tanstack/react-query';
 import { Input } from '@/components/ui/input';
 import { MachineCard } from '@/components/machines/MachineCard';
 import { MachineBulkActions } from '@/components/machines/MachineBulkActions';
+import { useOEE } from '@/hooks/useOEE';
+import { QrCode as QrCodeIcon, Download, Trash2, Power } from 'lucide-react';
+import { QRCodeSVG } from 'qrcode.react';
 
 export default function MachinesPage() {
   const { machines, techniques, isLoadingMachines, getTechniqueById } = useSchedulingData();
@@ -48,8 +51,10 @@ export default function MachinesPage() {
   } = useTPM();
   const { summary: reliabilitySummary, isLoading: isLoadingReliability } = useMTBFMTTR();
   const { exportData } = useDataExport('machines');
+  const { data: oeeData } = useOEE(30);
 
   const [selectedMachine, setSelectedMachine] = useState<any>(null);
+  const [machineForQR, setMachineForQR] = useState<any>(null);
   const [executionModalOpen, setExecutionModalOpen] = useState(false);
   const [createScheduleModalOpen, setCreateScheduleModalOpen] = useState(false);
   const [selectedSchedule, setSelectedSchedule] = useState<any>(null);
@@ -330,23 +335,44 @@ export default function MachinesPage() {
                         </CardHeader>
                         <CardContent className="pt-6">
                           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                            {techMachines.map((machine, idx) => (
-                              <MachineCard 
-                                key={machine.id}
-                                machine={machine}
-                                isSelected={selectedMachines.has(machine.id)}
-                                onSelect={(id) => {
-                                  setSelectedMachines(prev => {
-                                    const next = new Set(prev);
-                                    if (next.has(id)) next.delete(id);
-                                    else next.add(id);
-                                    return next;
-                                  });
-                                }}
-                                onOpenSettings={setSelectedMachine}
-                                index={idx}
-                              />
-                            ))}
+                            {techMachines.map((machine, idx) => {
+                              const machineMetrics = oeeData?.byMachine.find(m => m.machineId === machine.id);
+                              return (
+                                <div key={machine.id} className="relative group">
+                                  <MachineCard 
+                                    machine={machine}
+                                    isSelected={selectedMachines.has(machine.id)}
+                                    onSelect={(id) => {
+                                      setSelectedMachines(prev => {
+                                        const next = new Set(prev);
+                                        if (next.has(id)) next.delete(id);
+                                        else next.add(id);
+                                        return next;
+                                      });
+                                    }}
+                                    onOpenSettings={setSelectedMachine}
+                                    index={idx}
+                                    metrics={machineMetrics ? {
+                                      oee: machineMetrics.oee,
+                                      availability: machineMetrics.availability,
+                                      performance: machineMetrics.performance,
+                                      quality: machineMetrics.quality
+                                    } : undefined}
+                                  />
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="absolute top-2 right-12 h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity rounded-full bg-background/50 hover:bg-primary/10 hover:text-primary z-10"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setMachineForQR(machine);
+                                    }}
+                                  >
+                                    <QrCodeIcon className="h-3.5 w-3.5" />
+                                  </Button>
+                                </div>
+                              );
+                            })}
                           </div>
                         </CardContent>
                       </Card>
@@ -361,6 +387,40 @@ export default function MachinesPage() {
              <FactoryHeatmap machines={machines} techniques={techniques} />
           </TabsContent>
         </Tabs>
+
+        {/* Machine QR Code Dialog */}
+        <Dialog open={!!machineForQR} onOpenChange={() => setMachineForQR(null)}>
+          <DialogContent className="sm:max-w-xs text-center">
+            <DialogHeader>
+              <DialogTitle className="text-center">TAG de Máquina</DialogTitle>
+              <DialogDescription className="text-center">Escaneie para acesso mobile</DialogDescription>
+            </DialogHeader>
+            <div className="flex flex-col items-center gap-4 py-4">
+              <div className="p-4 bg-white rounded-xl border-2 border-black">
+                <QRCodeSVG 
+                  value={JSON.stringify({ id: machineForQR?.id, code: machineForQR?.code, type: 'machine' })} 
+                  size={200}
+                  level="H"
+                />
+              </div>
+              <div className="space-y-1">
+                <p className="text-xl font-black">{machineForQR?.code}</p>
+                <p className="text-xs text-muted-foreground uppercase font-bold">{machineForQR?.name}</p>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <Button variant="outline" className="gap-2" onClick={() => window.print()}>
+                <Printer className="h-4 w-4" /> Imprimir
+              </Button>
+              <Button className="gap-2" onClick={() => {
+                toast.success("QR Code enviado para o terminal móvel.");
+                setMachineForQR(null);
+              }}>
+                <Zap className="h-4 w-4" /> Enviar
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
 
         {/* Machine Profile / TPM Dialog */}
         <Dialog open={!!selectedMachine} onOpenChange={() => setSelectedMachine(null)}>

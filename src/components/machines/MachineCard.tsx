@@ -10,9 +10,15 @@ interface MachineCardProps {
   onSelect: (id: string) => void;
   onOpenSettings: (machine: any) => void;
   index: number;
+  metrics?: {
+    oee: number;
+    availability: number;
+    performance: number;
+    quality: number;
+  };
 }
 
-export function MachineCard({ machine, isSelected, onSelect, onOpenSettings, index }: MachineCardProps) {
+export function MachineCard({ machine, isSelected, onSelect, onOpenSettings, index, metrics }: MachineCardProps) {
   return (
     <motion.div 
       initial={{ opacity: 0, y: 10 }}
@@ -53,13 +59,13 @@ export function MachineCard({ machine, isSelected, onSelect, onOpenSettings, ind
           </p>
           
           <div className="flex items-center gap-3 mt-2">
-            <div className="flex items-center gap-1 text-[10px] text-muted-foreground font-medium uppercase tracking-wider">
-              <Activity className="h-3 w-3 text-blue-500" />
-              <span>OEE 85%</span>
+            <div className="flex items-center gap-1 text-[10px] text-muted-foreground font-bold uppercase tracking-wider">
+              <Activity className={cn("h-3 w-3", (metrics?.oee || 0) < 65 ? "text-destructive" : "text-primary")} />
+              <span>OEE {metrics?.oee ? `${metrics.oee}%` : '--'}</span>
             </div>
-            <div className="flex items-center gap-1 text-[10px] text-muted-foreground font-medium uppercase tracking-wider">
-              <Zap className="h-3 w-3 text-amber-500" />
-              <span>78% Carga</span>
+            <div className="flex items-center gap-1 text-[10px] text-muted-foreground font-bold uppercase tracking-wider">
+              <Zap className={cn("h-3 w-3", (metrics?.availability || 0) < 80 ? "text-amber-500" : "text-success")} />
+              <span>{metrics?.availability ? `${metrics.availability}%` : '--'} Disponib.</span>
             </div>
           </div>
         </div>
