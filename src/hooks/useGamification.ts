@@ -228,6 +228,7 @@ export function useGamification(period: 'daily' | 'weekly' | 'monthly' = 'weekly
     calculateRankings: () => calculateRankingsMutation.mutate(period),
     isCalculating: calculateRankingsMutation.isPending,
     redeemReward,
+    redemptionsQuery
   };
 }
 
