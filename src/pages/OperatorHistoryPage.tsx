@@ -37,7 +37,7 @@ interface ActionEntry {
 }
 
 export default function OperatorHistoryPage() {
-  const { jobs, machines } = useSchedulingData();
+  const { jobs, machines, getOperatorById } = useSchedulingData();
   const [periodDays, setPeriodDays] = useState('7');
   const [selectedOperator, setSelectedOperator] = useState<string>('all');
 
