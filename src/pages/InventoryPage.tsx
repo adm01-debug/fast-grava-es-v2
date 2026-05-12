@@ -802,7 +802,7 @@ function AIPredictionValidationModal({ open, onOpenChange, items, movements }: {
           <Card className="glass-card">
             <CardHeader className="pb-3 border-b border-border/50 bg-muted/20">
                <CardTitle className="text-sm font-black uppercase tracking-widest flex items-center gap-2">
-                 <RefreshCcw className={cn("h-4 w-4 text-primary", isValidating && "animate-spin")} />
+                 <RefreshCcw className={cn("h-4 w-4 text-primary", isCalculatingAI && "animate-spin")} />
                  Calibração do Modelo Preditor
                </CardTitle>
             </CardHeader>
@@ -812,8 +812,8 @@ function AIPredictionValidationModal({ open, onOpenChange, items, movements }: {
                     <p className="text-sm font-bold">Base de Dados Histórica</p>
                     <p className="text-xs text-muted-foreground">{movements.length} movimentações auditadas para treinamento.</p>
                   </div>
-                  <Button onClick={handleRecalculate} disabled={isValidating} className="gap-2">
-                    {isValidating ? "Processando..." : "Recalcular Acurácia"}
+                  <Button onClick={handleRecalculate} disabled={isCalculatingAI} className="gap-2">
+                    {isCalculatingAI ? "Processando..." : "Recalcular Acurácia"}
                   </Button>
                </div>
                
