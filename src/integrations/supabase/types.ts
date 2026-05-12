@@ -2760,6 +2760,45 @@ export type Database = {
         }
         Relationships: []
       }
+      report_templates: {
+        Row: {
+          columns: string[]
+          created_at: string
+          filters: Json | null
+          format_type: string | null
+          id: string
+          is_public: boolean | null
+          name: string
+          table_name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          columns: string[]
+          created_at?: string
+          filters?: Json | null
+          format_type?: string | null
+          id?: string
+          is_public?: boolean | null
+          name: string
+          table_name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          columns?: string[]
+          created_at?: string
+          filters?: Json | null
+          format_type?: string | null
+          id?: string
+          is_public?: boolean | null
+          name?: string
+          table_name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       reward_redemptions: {
         Row: {
           created_at: string | null
