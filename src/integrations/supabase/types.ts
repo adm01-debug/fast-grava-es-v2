@@ -950,6 +950,8 @@ export type Database = {
           category: string
           created_at: string | null
           current_stock: number
+          daily_usage_avg: number | null
+          days_of_supply: number | null
           id: string
           location: string | null
           min_stock_level: number
@@ -963,6 +965,8 @@ export type Database = {
           category: string
           created_at?: string | null
           current_stock?: number
+          daily_usage_avg?: number | null
+          days_of_supply?: number | null
           id?: string
           location?: string | null
           min_stock_level?: number
@@ -976,6 +980,8 @@ export type Database = {
           category?: string
           created_at?: string | null
           current_stock?: number
+          daily_usage_avg?: number | null
+          days_of_supply?: number | null
           id?: string
           location?: string | null
           min_stock_level?: number

@@ -5,6 +5,7 @@ import { DbJob } from '@/hooks/useJobs';
 import { JobStatus } from '@/types/scheduling';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface UseKanbanDragDropProps {
   jobs: DbJob[];
@@ -131,7 +132,48 @@ export function useKanbanDragDrop({ jobs, onJobsUpdate }: UseKanbanDragDropProps
   const handleStatusChange = async (draggedJob: DbJob, targetStatus: JobStatus) => {
     const currentStatus = draggedJob.status as JobStatus;
     
-    // Validate status transitions
+    // 1. Check for stock availability before moving to 'ready' or 'production'
+    if (['ready', 'production'].includes(targetStatus)) {
+      try {
+        // Fetch technical sheet materials for this technique
+        const { data: sheets } = await supabase
+          .from('technical_sheets')
+          .select('id')
+          .eq('technique_id', draggedJob.technique_id)
+          .eq('status', 'published')
+          .order('version', { ascending: false })
+          .limit(1);
+
+        if (sheets && sheets.length > 0) {
+          const { data: materials } = await supabase
+            .from('technical_sheet_materials')
+            .select('name, quantity')
+            .eq('technical_sheet_id', sheets[0].id);
+
+          if (materials && materials.length > 0) {
+            const { data: inventoryItems } = await supabase
+              .from('inventory_items')
+              .select('name, current_stock');
+
+            const outOfStock = materials.filter(mat => {
+              const invItem = inventoryItems?.find(i => i.name.toLowerCase().includes(mat.name.toLowerCase()));
+              return !invItem || invItem.current_stock <= 0;
+            });
+
+            if (outOfStock.length > 0) {
+              toast.error('Estoque insuficiente', {
+                description: `Não é possível mover para "${getStatusLabel(targetStatus)}" pois faltam os materiais: ${outOfStock.map(m => m.name).join(', ')}`
+              });
+              return;
+            }
+          }
+        }
+      } catch (err) {
+        console.error('Inventory check failed during drag-drop:', err);
+      }
+    }
+
+    // 2. Validate status transitions
     const validTransitions: Record<string, JobStatus[]> = {
       'queue': ['ready', 'cancelled'],
       'ready': ['queue', 'scheduled', 'cancelled'],
@@ -141,8 +183,8 @@ export function useKanbanDragDrop({ jobs, onJobsUpdate }: UseKanbanDragDropProps
       'delayed': ['production', 'cancelled'],
       'rework': ['production', 'finished', 'cancelled'],
       'buffer': ['ready', 'scheduled', 'cancelled'],
-      'finished': [], // Cannot transition from finished
-      'cancelled': [], // Cannot transition from cancelled
+      'finished': [],
+      'cancelled': [],
     };
     
     const allowedTransitions = validTransitions[currentStatus] || [];

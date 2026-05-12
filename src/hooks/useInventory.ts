@@ -49,20 +49,21 @@ export function useInventory() {
 
       if (error) throw error;
       
-      // Add simulated prediction logic for 10/10 excellence
-      return (data as any[]).map(item => {
-        // Mocking usage based on stock level and randomness for UI demo
-        // In real app, we'd query inventory_movements 'OUT' type
-        const mockDailyUsage = Math.max(0.1, (item.min_stock_level / 7) * (0.8 + Math.random() * 0.4));
-        const daysRemaining = Math.floor(item.current_stock / mockDailyUsage);
-        
-        return {
-          ...item,
-          daily_usage_avg: mockDailyUsage,
-          days_of_supply: daysRemaining
-        };
-      }) as InventoryItem[];
+      return data as InventoryItem[];
+    },
+  });
 
+  const calculateAIIntelligence = useMutation({
+    mutationFn: async () => {
+      const { data, error } = await supabase.functions.invoke('calculate-inventory-intelligence');
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['inventory-items'] });
+      toast.success('IA Recalibrada', {
+        description: 'Previsões de estoque atualizadas com base nos consumos recentes.'
+      });
     },
   });
 
@@ -297,6 +298,8 @@ export function useInventory() {
     updateItem: updateItemMutation.mutateAsync,
     transferItems: transferItemsMutation.mutateAsync,
     deleteMovement: deleteMovementMutation.mutateAsync,
+    calculateAI: calculateAIIntelligence.mutate,
+    isCalculatingAI: calculateAIIntelligence.isPending,
     isTransferring: transferItemsMutation.isPending,
     stats,
   };
