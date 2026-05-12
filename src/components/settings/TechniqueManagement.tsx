@@ -8,8 +8,9 @@ import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { toast } from 'sonner';
-import { Edit2, Plus, Trash2, Hammer, Clock, Zap } from 'lucide-react';
+import { Edit2, Plus, Trash2, Hammer, Clock, Zap, Printer, Activity } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { useSchedulingData } from '@/hooks/useSchedulingData';
 
 export function TechniqueManagement() {
   const queryClient = useQueryClient();
