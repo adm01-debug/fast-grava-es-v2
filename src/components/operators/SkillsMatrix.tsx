@@ -9,24 +9,23 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 
 export function SkillsMatrix() {
   const { data: operators = [] } = useOperators();
-  const { techniques } = useSchedulingData();
+  const { techniques, machines } = useSchedulingData();
   const { assignments = [] } = useOperatorMachines();
 
   const getSkillLevel = (operatorId: string, techniqueId: string) => {
-    const assignment = assignments.find(
-      (a) => a.operator_id === operatorId && a.machine?.technique_id === techniqueId
+    // Find all machines for this technique
+    const techniqueMachines = machines.filter(m => m.technique_id === techniqueId).map(m => m.id);
+    
+    // Find assignments for this operator in this technique's machines
+    const techAssignments = assignments.filter(
+      (a) => a.operator_id === operatorId && techniqueMachines.includes(a.machine_id)
     );
-    if (!assignment) return null;
     
-    // Simulating skill levels based on some logic (could be extended later)
-    // For now, if assigned, they have at least 'basic'
-    // We can use the number of machines assigned in that technique as a proxy for seniority
-    const machinesInTech = assignments.filter(
-      (a) => a.operator_id === operatorId && a.machine?.technique_id === techniqueId
-    ).length;
+    if (techAssignments.length === 0) return null;
     
-    if (machinesInTech >= 3) return 'expert';
-    if (machinesInTech >= 2) return 'advanced';
+    const count = techAssignments.length;
+    if (count >= 3) return 'expert';
+    if (count >= 2) return 'advanced';
     return 'basic';
   };
 
