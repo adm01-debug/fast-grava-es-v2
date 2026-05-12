@@ -4,7 +4,7 @@ import {
   Home, Plus, BarChart3, Gauge, Coins, Wrench, Brain, Code2, UserCircle,
   Zap, Bot, QrCode, RefreshCw, BookOpen, Palette, Download, Bell,
   ArrowRightLeft, Package, Activity, FileDown, Trophy, BatteryCharging,
-  FileText, Cog, TrendingUp, Cpu, ShieldCheck
+  FileText, Cog, TrendingUp, Cpu, ShieldCheck, Truck
 } from 'lucide-react';
 
 export interface NavItem {
