@@ -34,20 +34,24 @@ const mockBiMetrics = {
   periodCompletedJobs: 80,
   periodCompletedPieces: 1200,
   periodLostPieces: 18,
+  periodJobs: 100,
+  activeMachines: 5,
+  activeTechniques: 3,
+  techniquePerformance: [],
   periodJobsList: [
     { id: 'job-1', order_number: 'OS-1001', status: 'completed', quantity: 100, produced_quantity: 100, lost_pieces: 2 },
     { id: 'job-2', order_number: 'OS-1002', status: 'delayed', quantity: 50, produced_quantity: 40, lost_pieces: 0, delay_time: '2h' },
   ],
   dailyTrend: [
-    { date: '2024-05-01', produced: 100, lost: 2 },
-    { date: '2024-05-02', produced: 120, lost: 1 },
+    { date: '2024-05-01', fullDate: '01/05', produced: 100, lost: 2, jobs: 1, efficiency: 98 },
+    { date: '2024-05-02', fullDate: '02/05', produced: 120, lost: 1, jobs: 1, efficiency: 99 },
   ],
   statusDistribution: [
     { name: 'Completed', value: 80, color: '#10b981' },
     { name: 'Delayed', value: 20, color: '#ef4444' },
   ],
   machineUtilization: [
-    { machine: 'Laser 1', technique: 'Laser Cutting', totalJobs: 15, utilization: 85 },
+    { id: 'm1', name: 'Laser 1', technique: 'Laser Cutting', totalJobs: 15, completedJobs: 12, utilization: 85 },
   ],
 };
 

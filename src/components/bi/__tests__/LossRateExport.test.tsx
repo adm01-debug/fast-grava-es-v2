@@ -33,11 +33,15 @@ const mockBiMetrics = {
   periodCompletedJobs: 50,
   periodCompletedPieces: 950,
   periodLostPieces: 50,
+  periodJobs: 60,
+  activeMachines: 4,
+  activeTechniques: 2,
+  techniquePerformance: [],
   periodJobsList: [
     { id: '1', order_number: 'OS-1', status: 'finished', quantity: 100, produced_quantity: 100, lost_pieces: 5, product_name: 'Test P1' },
     { id: '2', order_number: 'OS-2', status: 'production', quantity: 100, produced_quantity: 50, lost_pieces: 0, product_name: 'Test P2' },
   ],
-  dailyTrend: [{ date: '01/01', produced: 100, lost: 5 }],
+  dailyTrend: [{ date: '01/01', fullDate: '01/01', produced: 100, lost: 5, jobs: 1, efficiency: 95 }],
   statusDistribution: [{ name: 'Finalizados', value: 1, color: '#fff' }],
   machineUtilization: [],
 };
