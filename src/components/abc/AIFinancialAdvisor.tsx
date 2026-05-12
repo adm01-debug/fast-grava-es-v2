@@ -1,35 +1,70 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { BrainCircuit, TrendingUp, DollarSign, Wallet, LineChart, PieChart } from 'lucide-react';
+import { BrainCircuit, TrendingUp, DollarSign, Wallet, LineChart, PieChart, AlertCircle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { motion } from 'framer-motion';
+import { useABCCosts } from '@/hooks/useABCCosts';
+import { useMemo } from 'react';
 
 export function AIFinancialAdvisor() {
-  const insights = [
-    {
-      type: 'profit',
-      title: 'Margem em Alta: Sublimação',
-      description: 'A margem bruta em sublimação subiu 4.2% devido à otimização do consumo de tinta e redução de setups.',
-      icon: <TrendingUp className="h-4 w-4 text-emerald-500" />
-    },
-    {
-      type: 'cost',
-      title: 'Alerta de Custo: Energia',
-      description: 'Custo de energia por peça na CNC-03 está 15% acima da média. Sugerimos revisão do horário de operação ou manutenção preventiva.',
-      icon: <Wallet className="h-4 w-4 text-amber-500" />
-    },
-    {
-      type: 'opportunity',
-      title: 'Oportunidade de Precificação',
-      description: 'O custo real de Gravação Laser reduziu. Há espaço para redução de 5% no preço para ganhar competitividade sem perder margem alvo.',
-      icon: <DollarSign className="h-4 w-4 text-blue-500" />
-    },
-    {
-      type: 'forecast',
-      title: 'Previsão de Fluxo',
-      description: 'Estimamos redução de 8% nos custos indiretos para o próximo mês com a nova política de buffer automático de jobs.',
-      icon: <LineChart className="h-4 w-4 text-purple-500" />
+  const { costPools, totalBudget, totalAllocatedCost, averageUnitCost, getTechniqueCostSummary } = useABCCosts();
+
+  const insights = useMemo(() => {
+    const list = [];
+    const techniqueSummaries = getTechniqueCostSummary();
+
+    // Profit Insight
+    if (techniqueSummaries.length > 0) {
+      const bestTech = [...techniqueSummaries].sort((a, b) => b.total_cost - a.total_cost)[0];
+      list.push({
+        type: 'profit',
+        title: `Carga Financeira: ${bestTech.technique_name}`,
+        description: `A técnica ${bestTech.technique_name} representa o maior volume de custos alocados (${((bestTech.total_cost / totalAllocatedCost) * 100).toFixed(1)}%). Sugerimos análise de margem de contribuição.`,
+        icon: <TrendingUp className="h-4 w-4 text-emerald-500" />
+      });
     }
-  ];
+
+    // Cost Insight
+    if (costPools.length > 0) {
+      const energyPool = costPools.find(p => p.name.toLowerCase().includes('energia'));
+      if (energyPool) {
+        list.push({
+          type: 'cost',
+          title: 'Gestão de Utilidades',
+          description: `O pool de ${energyPool.name} está em ${((energyPool.monthly_budget / totalBudget) * 100).toFixed(1)}% do orçamento total. IA sugere monitoramento de pico de demanda.`,
+          icon: <Wallet className="h-4 w-4 text-amber-500" />
+        });
+      }
+    }
+
+    // Opportunity Insight
+    if (averageUnitCost > 0) {
+      list.push({
+        type: 'opportunity',
+        title: 'Oportunidade de Escala',
+        description: `Custo unitário médio fixado em R$ ${averageUnitCost.toFixed(2)}. Redução de 10% no tempo de setup pode baixar o custo unitário em aproximadamente 3.5%.`,
+        icon: <DollarSign className="h-4 w-4 text-blue-500" />
+      });
+    }
+
+    // Forecast Insight
+    list.push({
+      type: 'forecast',
+      title: 'Eficiência de Alocação',
+      description: `Taxa de ocupação financeira em ${((totalAllocatedCost / totalBudget) * 100).toFixed(1)}%. Espaço otimizado para novos contratos de alta complexidade.`,
+      icon: <LineChart className="h-4 w-4 text-purple-500" />
+    });
+
+    if (list.length === 0) {
+      list.push({
+        type: 'info',
+        title: 'Aguardando Dados ABC',
+        description: 'Configure os Pools de Custo e Atividades para gerar insights financeiros dinâmicos.',
+        icon: <AlertCircle className="h-4 w-4 text-muted-foreground" />
+      });
+    }
+
+    return list;
+  }, [costPools, totalBudget, totalAllocatedCost, averageUnitCost, getTechniqueCostSummary]);
 
   return (
     <Card className="glass-card border-primary/20 bg-primary/5 overflow-hidden">
@@ -67,7 +102,7 @@ export function AIFinancialAdvisor() {
           <div className="p-3 rounded-xl bg-gradient-to-r from-primary/20 via-primary/10 to-transparent flex items-center justify-between">
             <div className="flex items-center gap-2">
               <PieChart className="h-4 w-4 text-primary" />
-              <span className="text-xs font-bold uppercase tracking-tighter">Retorno Estimado: R$ 12.450,00/mês</span>
+              <span className="text-xs font-bold uppercase tracking-tighter">Budget Utilization: {((totalAllocatedCost / totalBudget) * 100).toFixed(1)}%</span>
             </div>
           </div>
         </div>
