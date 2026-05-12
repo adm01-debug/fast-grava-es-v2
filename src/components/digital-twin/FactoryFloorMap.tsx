@@ -4,8 +4,10 @@ import { Badge } from '@/components/ui/badge';
 import { useTPM } from '@/hooks/useTPM';
 import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
-import { Activity, Zap, Thermometer, Box } from 'lucide-react';
+import { Activity, Zap, Thermometer, Box, Layers, MousePointer2 } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 
 export function FactoryFloorMap() {
   const { machines } = useTPM();
