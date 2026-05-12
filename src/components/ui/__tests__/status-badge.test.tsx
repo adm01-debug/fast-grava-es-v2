@@ -16,6 +16,7 @@ describe('StatusBadge Component', () => {
     { status: 'cancelled', label: 'Cancelado' },
     { status: 'delayed', label: 'Atrasado' },
     { status: 'rework', label: 'Retrabalho' },
+    { status: 'buffer', label: 'Buffer' },
   ];
 
   statuses.forEach(({ status, label }) => {
