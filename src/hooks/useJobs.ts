@@ -216,10 +216,12 @@ export function useUpdateJobStatus() {
   return useMutation({
     mutationFn: async ({ jobId, status }: { jobId: string; status: DbJob['status'] }) => {
       try {
+        const { data: { user } } = await supabase.auth.getUser();
         const updateData: Partial<DbJob> = { status };
         
         if (status === 'production') {
           updateData.actual_start_time = new Date().toISOString();
+          if (user) updateData.operator_id = user.id;
         } else if (status === 'finished') {
           updateData.actual_end_time = new Date().toISOString();
         }
