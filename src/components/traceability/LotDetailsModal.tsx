@@ -13,6 +13,8 @@ import { LotComponentsTab } from './LotComponentsTab';
 import { LotMovementsTab } from './LotMovementsTab';
 import { LotInspectionsTab } from './LotInspectionsTab';
 import { toast } from 'sonner';
+import { ProductionPhotos } from '@/components/production/ProductionPhotos';
+import { useJobs } from '@/hooks/useJobs';
 
 interface LotDetailsModalProps {
   lot: ProductionLot;
