@@ -65,7 +65,7 @@ export function useSchedulingData() {
         const { data, error } = await supabase
           .from('machines')
           .select('*')
-          .eq('is_active', true)
+          // .eq('is_active', true) // Removido para permitir ver todas as máquinas e seu status de técnica
           .order('code');
         
         if (error) {
