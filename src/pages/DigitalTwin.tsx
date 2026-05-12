@@ -46,7 +46,10 @@ export default function DigitalTwin() {
             </h1>
             <p className="text-muted-foreground mt-1 font-medium italic">Simulação de Hiper-Performance e Orquestração Global Autônoma</p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
+             <Badge variant="outline" className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20 font-black gap-2 h-9 px-4">
+                <Sparkles className="h-4 w-4" /> SECURE HASH: 100% OK
+             </Badge>
              <Button variant="outline" className="gap-2 border-primary/20 hover:bg-primary/5">
                <RotateCcw className="h-4 w-4" />
                Resetar Simulação

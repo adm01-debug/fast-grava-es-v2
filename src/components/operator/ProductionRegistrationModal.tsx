@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Checkbox } from '@/components/ui/checkbox';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { DbJob } from '@/hooks/useJobs';
@@ -97,6 +98,15 @@ export function ProductionRegistrationModal({
   const [photos, setPhotos] = useState<string[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  
+  // Checklist de Qualidade (Hyper-Excellence)
+  const [qualityChecks, setQualityChecks] = useState({
+    color: false,
+    burrs: false,
+    packaging: false,
+    dimensions: false
+  });
+
   const fileInputRef = useRef<HTMLInputElement>(null);
   const queryClient = useQueryClient();
 
@@ -107,6 +117,12 @@ export function ProductionRegistrationModal({
       setLostPieces(job.lost_pieces || 0);
       setNotes(job.notes || '');
       setPhotos([]);
+      setQualityChecks({
+        color: false,
+        burrs: false,
+        packaging: false,
+        dimensions: false
+      });
     }
     onOpenChange(open);
   };
@@ -170,15 +186,17 @@ export function ProductionRegistrationModal({
     setIsSaving(true);
 
     try {
+      // Append checklist to notes for traceability
+      const checklistStr = `[Protocolo Qualidade: ${qualityChecks.color ? 'COR OK, ' : 'COR PENDENTE, '}${qualityChecks.burrs ? 'REBARBA OK, ' : 'REBARBA PENDENTE, '}${qualityChecks.dimensions ? 'DIMENSÕES OK, ' : 'DIMENSÕES PENDENTE, '}${qualityChecks.packaging ? 'EMBALAGEM OK' : 'EMBALAGEM PENDENTE'}]`;
+      const finalNotes = notes ? `${notes}\n\n${checklistStr}` : checklistStr;
+
       // Montar payload com todos os campos desejados
       const rawPayload = {
         actual_end_time: new Date().toISOString(),
         lost_pieces: lostPieces,
-        notes: notes || null,
+        notes: finalNotes,
         produced_quantity: producedQuantity,
         production_photos: photos.length > 0 ? photos : null,
-        // Campos que NÃO devem ser atualizados por operadores (serão filtrados)
-        status: 'finished', // Será removido pelo sanitizer
       };
 
       // SANITIZAR: garantir que apenas campos permitidos sejam enviados
@@ -282,6 +300,56 @@ export function ProductionRegistrationModal({
               <p className="text-xs text-muted-foreground">
                 Índice de perda: <span className={isHighLoss ? 'text-destructive font-medium' : ''}>{lossPercentage}%</span>
               </p>
+            </div>
+
+            {/* Quality Checklist (Hyper-Excellence) */}
+            <div className="space-y-4 p-4 rounded-xl bg-primary/5 border border-primary/20 shadow-inner">
+              <Label className="text-xs font-black uppercase tracking-widest text-primary flex items-center gap-2">
+                <CheckCircle2 className="h-4 w-4" />
+                Protocolo de Qualidade 5.0
+              </Label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="flex items-center space-x-2">
+                  <Checkbox 
+                    id="check-color" 
+                    checked={qualityChecks.color} 
+                    onCheckedChange={(checked) => setQualityChecks(prev => ({ ...prev, color: !!checked }))}
+                  />
+                  <label htmlFor="check-color" className="text-xs font-bold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                    Conformidade de Cor
+                  </label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox 
+                    id="check-burrs" 
+                    checked={qualityChecks.burrs} 
+                    onCheckedChange={(checked) => setQualityChecks(prev => ({ ...prev, burrs: !!checked }))}
+                  />
+                  <label htmlFor="check-burrs" className="text-xs font-bold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                    Ausência de Rebarbas
+                  </label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox 
+                    id="check-dimensions" 
+                    checked={qualityChecks.dimensions} 
+                    onCheckedChange={(checked) => setQualityChecks(prev => ({ ...prev, dimensions: !!checked }))}
+                  />
+                  <label htmlFor="check-dimensions" className="text-xs font-bold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                    Dimensões Conferidas
+                  </label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox 
+                    id="check-packaging" 
+                    checked={qualityChecks.packaging} 
+                    onCheckedChange={(checked) => setQualityChecks(prev => ({ ...prev, packaging: !!checked }))}
+                  />
+                  <label htmlFor="check-packaging" className="text-xs font-bold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                    Embalagem Padrão
+                  </label>
+                </div>
+              </div>
             </div>
 
             {/* Notes */}
