@@ -96,6 +96,16 @@ export default function GamificationPage() {
               {format(periodStart, "dd 'de' MMMM", { locale: ptBR })} - {format(periodEnd, "dd 'de' MMMM", { locale: ptBR })}
             </p>
           </div>
+          
+          <div className="flex items-center gap-4 p-3 bg-primary/5 border border-primary/20 rounded-2xl animate-pulse-glow">
+            <div className="p-2 rounded-lg bg-primary/20">
+              <Zap className="h-5 w-5 text-primary" />
+            </div>
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-widest text-primary/70">Seu Saldo</p>
+              <p className="text-xl font-black text-primary">{balance.toLocaleString()} PTS</p>
+            </div>
+          </div>
 
           <div className="flex items-center gap-3">
             <VoiceButton />
