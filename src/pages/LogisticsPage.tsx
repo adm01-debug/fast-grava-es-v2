@@ -350,7 +350,7 @@ export default function LogisticsPage() {
                             <p className="font-black text-emerald-500">
                               {(s.freight_cost || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                             </p>
-                            {s.insurance_cost > 0 && <p className="text-[10px] text-muted-foreground">Seguro: {s.insurance_cost.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</p>}
+                            {s.insurance_cost !== null && s.insurance_cost > 0 && <p className="text-[10px] text-muted-foreground">Seguro: {s.insurance_cost.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</p>}
                           </div>
                         </div>
                       ))}
