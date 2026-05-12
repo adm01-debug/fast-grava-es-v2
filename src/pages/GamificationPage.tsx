@@ -203,7 +203,10 @@ export default function GamificationPage() {
                   <div key={redemption.id} className="flex items-center justify-between p-4 rounded-xl bg-muted/30 border border-border/50 group hover:bg-muted/50 transition-all">
                     <div className="flex items-center gap-4">
                       <div className={cn("p-2 rounded-lg bg-primary/10", redemption.reward?.color_class)}>
-                        {getRewardIcon(redemption.reward?.icon)({ className: "h-5 w-5" })}
+                        {(() => {
+                          const Icon = getRewardIcon(redemption.reward?.icon);
+                          return <Icon className="h-5 w-5" />;
+                        })()}
                       </div>
                       <div>
                         <p className="font-bold">{redemption.reward?.name || 'Recompensa Excluída'}</p>
