@@ -33,13 +33,13 @@ export const NavGroupComponent = memo(function NavGroupComponent({
   const { unreadCount: notificationCount } = useNotifications();
 
   const itemsWithBadge = group.items.map(item => {
-    let badgeCount = undefined;
+    let badgeCount: number | undefined = undefined;
     if (item.href === '/alerts') badgeCount = alertCount;
     if (item.href === '/notifications') badgeCount = notificationCount;
     
     return {
       ...item,
-      badge: badgeCount > 0 ? badgeCount : undefined
+      badge: (badgeCount !== undefined && badgeCount > 0) ? badgeCount : undefined
     };
   });
 

@@ -170,11 +170,15 @@ const MobileNavButton = memo(function MobileNavButton({
 function MoreMenuContent({ 
   items, 
   currentPath, 
+  alertCount,
+  notificationCount,
   onNavigate,
   onClose 
 }: { 
   items: NavItem[];
   currentPath: string;
+  alertCount: number;
+  notificationCount: number;
   onNavigate: (href: string) => void;
   onClose: () => void;
 }) {
@@ -392,6 +396,8 @@ export function MobileNavigation() {
             <MoreMenuContent 
               items={moreItems}
               currentPath={location.pathname}
+              alertCount={alertCount}
+              notificationCount={notificationCount}
               onNavigate={handleNavigate}
               onClose={() => setSheetOpen(false)}
             />
