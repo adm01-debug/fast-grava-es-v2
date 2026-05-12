@@ -1,8 +1,9 @@
 import { useProductionLots, useLotComponents, useLotMovements } from '@/hooks/useTraceability';
+import { useJobStatusHistory } from '@/hooks/useJobStatusHistory';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Package, Truck, Layers, Info, History } from 'lucide-react';
+import { Package, Truck, Layers, Info, History, Clock, User } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
