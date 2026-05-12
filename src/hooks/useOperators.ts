@@ -69,7 +69,7 @@ export function useOperators() {
   });
 
   const removeOperatorMutation = useMutation({
-    mutationFn: async ({ operatorId, operatorName }: { operatorId: string; operatorName: string | null }) => {
+    mutationFn: async ({ operatorId, operatorName, reason }: { operatorId: string; operatorName: string | null; reason?: string }) => {
       // Get current user info for audit
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('User not authenticated');
@@ -107,6 +107,7 @@ export function useOperators() {
           action: 'removed',
           performed_by: user.id,
           performed_by_name: performerProfile?.full_name || null,
+          reason: reason || null,
         });
 
       if (auditError) {
@@ -134,7 +135,7 @@ export function useOperators() {
   });
 
   const toggleActiveMutation = useMutation({
-    mutationFn: async ({ operatorId, operatorName, isActive }: { operatorId: string; operatorName: string | null; isActive: boolean }) => {
+    mutationFn: async ({ operatorId, operatorName, isActive, reason }: { operatorId: string; operatorName: string | null; isActive: boolean; reason?: string }) => {
       // Get current user info for audit
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('User not authenticated');
@@ -163,6 +164,7 @@ export function useOperators() {
           action: isActive ? 'activated' : 'deactivated',
           performed_by: user.id,
           performed_by_name: performerProfile?.full_name || null,
+          reason: reason || null,
         });
 
       if (auditError) {
