@@ -105,7 +105,7 @@ export interface MaintenanceAlert {
   id: string;
   schedule_id: string;
   machine_id: string;
-  alert_type: 'upcoming' | 'due' | 'overdue' | 'critical';
+  alert_type: 'upcoming' | 'due' | 'overdue' | 'critical' | 'predictive';
   message: string;
   is_read: boolean;
   is_resolved: boolean;
