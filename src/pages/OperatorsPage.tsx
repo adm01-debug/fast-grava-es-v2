@@ -31,7 +31,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { SkillsMatrix } from '@/components/operators/SkillsMatrix';
 import { OperatorSkillsModal } from '@/components/operators/OperatorSkillsModal';
-import { ShieldCheck } from 'lucide-react';
+import { ShieldCheck, Trophy as TrophyIcon } from 'lucide-react';
+import { OperatorLeaderboard } from '@/components/operators/OperatorLeaderboard';
 
 const formatLastSeen = (date: Date | undefined) => {
   if (!date) return null;
