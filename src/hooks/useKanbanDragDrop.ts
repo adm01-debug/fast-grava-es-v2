@@ -2,23 +2,14 @@ import { useState, useCallback } from 'react';
 import { DragEndEvent, DragOverEvent, DragStartEvent } from '@dnd-kit/core';
 import { arrayMove } from '@dnd-kit/sortable';
 import { DbJob } from '@/hooks/useJobs';
-import { JobStatus } from '@/types/scheduling';
+import { JobStatus, assertTransition } from '@/lib/jobStateMachine';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { useQueryClient } from '@tanstack/react-query';
 
 interface UseKanbanDragDropProps {
   jobs: DbJob[];
   onJobsUpdate: () => void;
 }
-
-// Priority order for sorting (higher = more priority)
-const priorityOrder: Record<string, number> = {
-  'urgent': 4,
-  'high': 3,
-  'medium': 2,
-  'low': 1,
-};
 
 export function useKanbanDragDrop({ jobs, onJobsUpdate }: UseKanbanDragDropProps) {
   const [activeJob, setActiveJob] = useState<DbJob | null>(null);
@@ -32,15 +23,11 @@ export function useKanbanDragDrop({ jobs, onJobsUpdate }: UseKanbanDragDropProps
     }
   }, [jobs]);
 
-  const handleDragOver = useCallback((_event: DragOverEvent) => {
-    // Visual feedback is handled by DroppableColumn component
-  }, []);
+  const handleDragOver = useCallback((_event: DragOverEvent) => {}, []);
 
   const handleDragEnd = useCallback(async (event: DragEndEvent) => {
     const { active, over } = event;
-    
     setActiveJob(null);
-    
     if (!over) return;
     
     const activeJobId = active.id as string;
@@ -50,13 +37,10 @@ export function useKanbanDragDrop({ jobs, onJobsUpdate }: UseKanbanDragDropProps
     const draggedJob = jobs.find(job => job.id === activeJobId);
     if (!draggedJob) return;
     
-    // Check if dropping on a column or another job
     const isColumn = overData?.type === 'column';
     const isJob = overData?.type === 'job';
     
-    // Determine target status
     let targetStatus: JobStatus | null = null;
-    
     if (isColumn) {
       targetStatus = overData.status as JobStatus;
     } else if (isJob) {
@@ -67,27 +51,19 @@ export function useKanbanDragDrop({ jobs, onJobsUpdate }: UseKanbanDragDropProps
     }
     
     if (!targetStatus) return;
-    
     const currentStatus = draggedJob.status as JobStatus;
     
-    // Same status - reorder within column
     if (currentStatus === targetStatus && isJob && activeJobId !== overId) {
       await handleReorderWithinColumn(activeJobId, overId, targetStatus);
       return;
     }
     
-    // Different status - change status
     if (currentStatus !== targetStatus) {
       await handleStatusChange(draggedJob, targetStatus);
     }
   }, [jobs, onJobsUpdate]);
 
-  const handleReorderWithinColumn = async (
-    activeJobId: string, 
-    overJobId: string, 
-    status: JobStatus
-  ) => {
-    // Reordering within a column updates the sort_order in the database
+  const handleReorderWithinColumn = async (activeJobId: string, overJobId: string, status: JobStatus) => {
     const columnJobs = jobs
       .filter(j => j.status === status)
       .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
@@ -96,12 +72,10 @@ export function useKanbanDragDrop({ jobs, onJobsUpdate }: UseKanbanDragDropProps
     const newIndex = columnJobs.findIndex(j => j.id === overJobId);
 
     if (oldIndex === -1 || newIndex === -1) return;
-
     const newOrder = arrayMove(columnJobs, oldIndex, newIndex);
 
     setIsUpdating(true);
     try {
-      // Update sort_order for all affected jobs in the column
       const updates = newOrder.map((job, index) => ({
         id: job.id,
         sort_order: index,
@@ -110,20 +84,13 @@ export function useKanbanDragDrop({ jobs, onJobsUpdate }: UseKanbanDragDropProps
 
       const { error } = await supabase
         .from('jobs')
-        .upsert(updates, { onConflict: 'id' });
+        .upsert(updates as any, { onConflict: 'id' });
 
       if (error) throw error;
-
-      toast.success('Ordem atualizada', {
-        description: 'A nova sequência foi salva com sucesso.'
-      });
-      
+      toast.success('Ordem atualizada');
       onJobsUpdate();
     } catch (error) {
-      if (import.meta.env.DEV) console.error('Error reordering jobs:', error);
-      toast.error('Erro ao reordenar', {
-        description: 'Não foi possível salvar a nova ordem.'
-      });
+      toast.error('Erro ao reordenar');
     } finally {
       setIsUpdating(false);
     }
@@ -132,48 +99,6 @@ export function useKanbanDragDrop({ jobs, onJobsUpdate }: UseKanbanDragDropProps
   const handleStatusChange = async (draggedJob: DbJob, targetStatus: JobStatus) => {
     const currentStatus = draggedJob.status as JobStatus;
     
-    // 1. Check for stock availability before moving to 'ready' or 'production'
-    if (['ready', 'production'].includes(targetStatus)) {
-      try {
-        // Fetch technical sheet materials for this technique
-        const { data: sheets } = await supabase
-          .from('technical_sheets')
-          .select('id')
-          .eq('technique_id', draggedJob.technique_id)
-          .eq('status', 'published')
-          .order('version', { ascending: false })
-          .limit(1);
-
-        if (sheets && sheets.length > 0) {
-          const { data: materials } = await supabase
-            .from('technical_sheet_materials')
-            .select('name, quantity')
-            .eq('technical_sheet_id', sheets[0].id);
-
-          if (materials && materials.length > 0) {
-            const { data: inventoryItems } = await supabase
-              .from('inventory_items')
-              .select('name, current_stock');
-
-            const outOfStock = materials.filter(mat => {
-              const invItem = inventoryItems?.find(i => i.name.toLowerCase().includes(mat.name.toLowerCase()));
-              return !invItem || invItem.current_stock <= 0;
-            });
-
-            if (outOfStock.length > 0) {
-              toast.error('Estoque insuficiente', {
-                description: `Não é possível mover para "${getStatusLabel(targetStatus)}" pois faltam os materiais: ${outOfStock.map(m => m.name).join(', ')}`
-              });
-              return;
-            }
-          }
-        }
-      } catch (err) {
-        console.error('Inventory check failed during drag-drop:', err);
-      }
-    }
-
-    // 2. Validate status transitions using central state machine
     try {
       assertTransition(currentStatus, targetStatus);
     } catch (err) {
@@ -182,21 +107,17 @@ export function useKanbanDragDrop({ jobs, onJobsUpdate }: UseKanbanDragDropProps
       });
       return;
     }
-
-    setIsUpdating(true);
     
+    setIsUpdating(true);
     try {
-      const updateData: Record<string, string | null> = {
+      const updateData: Record<string, any> = {
         status: targetStatus,
         updated_at: new Date().toISOString(),
       };
       
-      // Set actual_start_time when moving to production
       if (targetStatus === 'production' && !draggedJob.actual_start_time) {
         updateData.actual_start_time = new Date().toISOString();
       }
-      
-      // Set actual_end_time when moving to finished
       if (targetStatus === 'finished' && !draggedJob.actual_end_time) {
         updateData.actual_end_time = new Date().toISOString();
       }
@@ -207,33 +128,20 @@ export function useKanbanDragDrop({ jobs, onJobsUpdate }: UseKanbanDragDropProps
         .eq('id', draggedJob.id);
       
       if (error) throw error;
-      
-      toast.success('Status atualizado', {
-        description: `Job movido para "${getStatusLabel(targetStatus)}"`
-      });
-      
+      toast.success(`Job movido para "${getStatusLabel(targetStatus)}"`);
       onJobsUpdate();
     } catch (error) {
-      if (import.meta.env.DEV) console.error('Error updating job status:', error);
-      toast.error('Erro ao atualizar status', {
-        description: 'Não foi possível mover o job. Tente novamente.'
-      });
+      toast.error('Erro ao atualizar status');
     } finally {
       setIsUpdating(false);
     }
   };
 
-  const handleDragCancel = useCallback(() => {
-    setActiveJob(null);
-  }, []);
+  const handleDragCancel = useCallback(() => setActiveJob(null), []);
 
   return {
-    activeJob,
-    isUpdating,
-    handleDragStart,
-    handleDragOver,
-    handleDragEnd,
-    handleDragCancel,
+    activeJob, isUpdating,
+    handleDragStart, handleDragOver, handleDragEnd, handleDragCancel,
   };
 }
 
