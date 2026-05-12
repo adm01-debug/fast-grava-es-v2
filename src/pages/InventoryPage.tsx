@@ -23,7 +23,13 @@ import {
   Timer,
   Printer,
   X,
-  FileDown
+  FileDown,
+  CheckCircle2,
+  BrainCircuit,
+  Settings2,
+  RefreshCcw,
+  Eye,
+  Maximize2
 } from 'lucide-react';
 import { useInventory, useInventoryMovements, InventoryItem } from '@/hooks/useInventory';
 import { WarehouseMap } from '@/components/inventory/WarehouseMap';
@@ -38,6 +44,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { toast } from 'sonner';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { QRCodeSVG } from 'qrcode.react';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Slider } from '@/components/ui/slider';
+
 
 
 export default function InventoryPage() {
