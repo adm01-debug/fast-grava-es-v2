@@ -124,12 +124,19 @@ export default function OperatorProductivityPage() {
           <OperatorProductivityStatCard title="Taxa de Perda Média" value={`${overallStats.averageLossRate.toFixed(1)}%`} subtitle="Índice de refugo geral" icon={AlertTriangle} trend={overallStats.averageLossRate <= 5 ? 'up' : 'down'} />
         </div>
 
-        {activeGoals.length > 0 && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <GoalsSummary allGoals={activeGoals} allMetrics={operators} />
-            <GoalAlertsWidget maxVisible={3} />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 space-y-6">
+            {activeGoals.length > 0 && (
+              <div className="grid grid-cols-1 gap-4">
+                <GoalsSummary allGoals={activeGoals} allMetrics={operators} />
+                <GoalAlertsWidget maxVisible={3} />
+              </div>
+            )}
           </div>
-        )}
+          <div className="lg:col-span-1">
+            <AIWorkforceAdvisor />
+          </div>
+        </div>
 
         {overallStats.topPerformer && overallStats.topPerformer.totalJobsCompleted > 0 && (
           <Card className="bg-gradient-to-r from-primary/10 via-primary/5 to-transparent border-primary/20">
