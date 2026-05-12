@@ -154,6 +154,7 @@ export function AnimatedRoutes() {
 
         {/* Quality & Traceability */}
         <Route path="/traceability" element={<ProtectedPage fallback={<ListPageSkeleton />} allowedRoles={['coordinator', 'manager']}><TraceabilityPage /></ProtectedPage>} />
+        <Route path="/logistics" element={<ProtectedPage fallback={<ListPageSkeleton />} allowedRoles={['coordinator', 'manager']}><LogisticsPage /></ProtectedPage>} />
 
         {/* Knowledge & Documents */}
         <Route path="/assistant" element={<ProtectedPage fallback={<DashboardPageSkeleton />}><TechnicalAssistantPage /></ProtectedPage>} />
