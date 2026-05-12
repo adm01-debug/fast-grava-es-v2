@@ -1,30 +1,40 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
-export interface OperatorAuditEntry {
+export interface OperatorAudit {
   id: string;
   operator_id: string;
-  operator_name: string | null;
-  action: 'activated' | 'deactivated' | 'removed';
-  performed_by: string;
-  performed_by_name: string | null;
+  previous_data: any;
+  new_data: any;
+  changed_by: string | null;
   reason: string | null;
   created_at: string;
+  changed_by_profile?: {
+    full_name: string;
+  };
 }
 
-export function useOperatorAudit() {
-  return useQuery({
-    queryKey: ['operator-status-audit'],
+export function useOperatorAudit(operatorId?: string) {
+  const { data: auditLogs, isLoading } = useQuery({
+    queryKey: ['operator-status-audit', operatorId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from('operator_status_audit')
-        .select('*')
-        .order('created_at', { ascending: false });
-
+        .select('*, changed_by_profile:profiles!operator_status_audit_changed_by_fkey(full_name)');
+      
+      if (operatorId) {
+        query = query.eq('operator_id', operatorId);
+      }
+      
+      const { data, error } = await query.order('created_at', { ascending: false });
+      
       if (error) throw error;
-
-      return (data || []) as unknown as OperatorAuditEntry[];
+      return data as OperatorAudit[];
     },
-    staleTime: 1000 * 60, // 1 minute
   });
+
+  return {
+    auditLogs,
+    isLoading,
+  };
 }
