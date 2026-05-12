@@ -22,7 +22,7 @@ import { OfflineSyncIndicator } from '@/components/offline/OfflineSyncIndicator'
 import { SwipeActions } from '@/components/mobile/SwipeActions';
 import { EmptyState } from '@/components/ui/empty-state';
 import { SoundFeedback } from '@/lib/soundFeedback';
-import { User, Play, Pause, Package, Maximize, Eye, EyeOff, Timer, ArrowRightLeft } from 'lucide-react';
+import { User, Play, Pause, Package, Maximize, Eye, EyeOff, Timer, ArrowRightLeft, Gauge } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { VoiceButton } from '@/components/voice/VoiceCommands';
