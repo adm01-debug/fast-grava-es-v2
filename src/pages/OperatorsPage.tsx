@@ -30,6 +30,9 @@ import { OperatorGoalsTab } from '@/components/operators/OperatorGoalsTab';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { SkillsMatrix } from '@/components/operators/SkillsMatrix';
+import { OperatorSkillsModal } from '@/components/operators/OperatorSkillsModal';
+import { ShieldCheck, Trophy as TrophyIcon } from 'lucide-react';
+import { OperatorLeaderboard } from '@/components/operators/OperatorLeaderboard';
 
 const formatLastSeen = (date: Date | undefined) => {
   if (!date) return null;
@@ -55,6 +58,8 @@ export default function OperatorsPage() {
   const [operatorToShowDetails, setOperatorToShowDetails] = useState<OperatorWithProfile | null>(null);
   const [detailsModalOpen, setDetailsModalOpen] = useState(false);
   const [operatorForQR, setOperatorForQR] = useState<OperatorWithProfile | null>(null);
+  const [operatorForSkills, setOperatorForSkills] = useState<OperatorWithProfile | null>(null);
+  const [isSkillsModalOpen, setIsSkillsModalOpen] = useState(false);
 
   const activeOperators = operators.filter(op => op.is_active);
   const inactiveOperators = operators.filter(op => !op.is_active);
@@ -202,6 +207,7 @@ export default function OperatorsPage() {
           <TabsList className="glass-card p-1">
             <TabsTrigger value="list">Lista de Operadores</TabsTrigger>
             <TabsTrigger value="matrix">Matrix de Polivalência</TabsTrigger>
+            <TabsTrigger value="ranking">Ranking Global</TabsTrigger>
           </TabsList>
 
           <TabsContent value="list" className="space-y-6 outline-none">
@@ -485,6 +491,25 @@ export default function OperatorsPage() {
                             <Button
                               size="icon"
                               variant="ghost"
+                              onClick={() => {
+                                setOperatorForSkills(operator);
+                                setIsSkillsModalOpen(true);
+                              }}
+                              className="h-8 w-8 text-primary hover:bg-primary/10"
+                            >
+                              <ShieldCheck className="h-4 w-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>Competências Técnicas</TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              size="icon"
+                              variant="ghost"
                               onClick={() => handleOpenEdit(operator)}
                               className="h-8 w-8"
                             >
@@ -513,8 +538,12 @@ export default function OperatorsPage() {
 
       <TabsContent value="matrix" className="outline-none animate-fade-in">
         <SkillsMatrix />
-          </TabsContent>
-        </Tabs>
+      </TabsContent>
+
+      <TabsContent value="ranking" className="outline-none animate-fade-in">
+        <OperatorLeaderboard />
+      </TabsContent>
+    </Tabs>
 
         {/* Operator QR Badge Dialog */}
         <Dialog open={!!operatorForQR} onOpenChange={() => setOperatorForQR(null)}>
@@ -705,6 +734,12 @@ export default function OperatorsPage() {
           onOpenChange={setIsEditModalOpen}
         />
 
+        <OperatorSkillsModal
+          operator={operatorForSkills}
+          open={isSkillsModalOpen}
+          onOpenChange={setIsSkillsModalOpen}
+        />
+
         <OperatorConfirmDialogs
           operatorToRemove={operatorToRemove}
           operatorToToggle={operatorToToggle}
@@ -712,15 +747,24 @@ export default function OperatorsPage() {
           isToggling={isToggling}
           onRemoveClose={() => setOperatorToRemove(null)}
           onToggleClose={() => setOperatorToToggle(null)}
-          onRemoveConfirm={() => {
+          onRemoveConfirm={(reason) => {
             if (operatorToRemove) {
-              removeOperator({ operatorId: operatorToRemove.user_id, operatorName: operatorToRemove.full_name });
+              removeOperator({ 
+                operatorId: operatorToRemove.user_id, 
+                operatorName: operatorToRemove.full_name,
+                reason 
+              });
               setOperatorToRemove(null);
             }
           }}
-          onToggleConfirm={() => {
+          onToggleConfirm={(reason) => {
             if (operatorToToggle) {
-              toggleActive({ operatorId: operatorToToggle.user_id, operatorName: operatorToToggle.full_name, isActive: !operatorToToggle.is_active });
+              toggleActive({ 
+                operatorId: operatorToToggle.user_id, 
+                operatorName: operatorToToggle.full_name, 
+                isActive: !operatorToToggle.is_active,
+                reason
+              });
               setOperatorToToggle(null);
             }
           }}

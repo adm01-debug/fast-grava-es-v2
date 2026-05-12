@@ -1092,6 +1092,7 @@ export type Database = {
           lost_pieces: number | null
           machine_id: string | null
           notes: string | null
+          operator_id: string | null
           order_number: string
           priority: string
           produced_quantity: number | null
@@ -1121,6 +1122,7 @@ export type Database = {
           lost_pieces?: number | null
           machine_id?: string | null
           notes?: string | null
+          operator_id?: string | null
           order_number: string
           priority?: string
           produced_quantity?: number | null
@@ -1150,6 +1152,7 @@ export type Database = {
           lost_pieces?: number | null
           machine_id?: string | null
           notes?: string | null
+          operator_id?: string | null
           order_number?: string
           priority?: string
           produced_quantity?: number | null
@@ -2229,6 +2232,39 @@ export type Database = {
           ranking_type?: string
           total_points?: number
           total_produced?: number
+        }
+        Relationships: []
+      }
+      operator_skills: {
+        Row: {
+          certified_at: string | null
+          created_at: string | null
+          expires_at: string | null
+          id: string
+          operator_id: string
+          skill_level: Database["public"]["Enums"]["skill_level"]
+          technique_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          certified_at?: string | null
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          operator_id: string
+          skill_level?: Database["public"]["Enums"]["skill_level"]
+          technique_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          certified_at?: string | null
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          operator_id?: string
+          skill_level?: Database["public"]["Enums"]["skill_level"]
+          technique_id?: string
+          updated_at?: string | null
         }
         Relationships: []
       }
@@ -4882,6 +4918,7 @@ export type Database = {
     Enums: {
       app_role: "coordinator" | "operator" | "manager"
       sheet_status: "draft" | "published" | "review_needed"
+      skill_level: "basic" | "advanced" | "expert"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -5011,6 +5048,7 @@ export const Constants = {
     Enums: {
       app_role: ["coordinator", "operator", "manager"],
       sheet_status: ["draft", "published", "review_needed"],
+      skill_level: ["basic", "advanced", "expert"],
     },
   },
 } as const

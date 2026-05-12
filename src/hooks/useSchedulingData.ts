@@ -32,6 +32,20 @@ const ERROR_CONTEXT = {
 export function useSchedulingData() {
   const queryClient = useQueryClient();
 
+  // Fetch operator profiles
+  const profilesQuery = useQuery({
+    queryKey: ['operator-profiles'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, full_name, avatar_url');
+      
+      if (error) throw error;
+      return data;
+    },
+    staleTime: STATIC_DATA_STALE_TIME,
+  });
+
   // Fetch techniques with longer stale time (they change infrequently)
   const techniquesQuery = useQuery({
     queryKey: ['techniques'],
@@ -148,6 +162,11 @@ export function useSchedulingData() {
   }, [machinesQuery.data]);
 
   // Helper functions using O(1) Map lookups
+  const getOperatorById = useCallback((id: string | null) => {
+    if (!id) return undefined;
+    return (profilesQuery.data || []).find(p => p.id === id);
+  }, [profilesQuery.data]);
+
   const getTechniqueById = useCallback((id: string): DbTechnique | undefined => {
     return techniquesMap.get(id);
   }, [techniquesMap]);
@@ -226,7 +245,8 @@ export function useSchedulingData() {
     jobs: jobsQuery.data || [],
     techniques: techniquesQuery.data || [],
     machines: machinesQuery.data || [],
-    
+    profiles: profilesQuery.data || [],
+
     // Loading states
     isLoading: jobsQuery.isLoading || techniquesQuery.isLoading || machinesQuery.isLoading,
     isLoadingJobs: jobsQuery.isLoading,
@@ -237,6 +257,7 @@ export function useSchedulingData() {
     error: jobsQuery.error || techniquesQuery.error || machinesQuery.error,
     
     // Helper functions
+    getOperatorById,
     getTechniqueById,
     getMachineById,
     getMachinesByTechnique,

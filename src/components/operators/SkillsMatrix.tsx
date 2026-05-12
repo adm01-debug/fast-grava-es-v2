@@ -1,6 +1,7 @@
 import { useOperators } from '@/hooks/useOperators';
 import { useSchedulingData } from '@/hooks/useSchedulingData';
 import { useOperatorMachines } from '@/hooks/useOperatorMachines';
+import { useOperatorSkills, type SkillLevel } from '@/hooks/useOperatorSkills';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -11,12 +12,15 @@ export function SkillsMatrix() {
   const { data: operators = [] } = useOperators();
   const { techniques, machines } = useSchedulingData();
   const { assignments = [] } = useOperatorMachines();
+  const { skills = [] } = useOperatorSkills();
 
-  const getSkillLevel = (operatorId: string, techniqueId: string) => {
-    // Find all machines for this technique
+  const getSkillLevel = (operatorId: string, techniqueId: string): SkillLevel | null => {
+    // 1. Check direct skill certification first
+    const directSkill = skills.find(s => s.operator_id === operatorId && s.technique_id === techniqueId);
+    if (directSkill) return directSkill.skill_level;
+
+    // 2. Fallback to machine assignment logic (Legacy/Auto-detection)
     const techniqueMachines = machines.filter(m => m.technique_id === techniqueId).map(m => m.id);
-    
-    // Find assignments for this operator in this technique's machines
     const techAssignments = assignments.filter(
       (a) => a.operator_id === operatorId && techniqueMachines.includes(a.machine_id)
     );
@@ -29,12 +33,12 @@ export function SkillsMatrix() {
     return 'basic';
   };
 
-  const getLevelBadge = (level: string | null) => {
+  const getLevelBadge = (level: SkillLevel | null) => {
     switch (level) {
       case 'expert':
-        return <Badge className="bg-emerald-500 hover:bg-emerald-600 border-none"><Star className="h-3 w-3 mr-1" /> Expert</Badge>;
+        return <Badge className="bg-emerald-500 hover:bg-emerald-600 border-none shadow-glow-success"><Star className="h-3 w-3 mr-1" /> Expert</Badge>;
       case 'advanced':
-        return <Badge className="bg-blue-500 hover:bg-blue-600 border-none"><Award className="h-3 w-3 mr-1" /> Senior</Badge>;
+        return <Badge className="bg-blue-500 hover:bg-blue-600 border-none shadow-glow-primary"><Award className="h-3 w-3 mr-1" /> Sênior</Badge>;
       case 'basic':
         return <Badge variant="secondary" className="bg-slate-500/20 text-slate-400 border-none">Júnior</Badge>;
       default:

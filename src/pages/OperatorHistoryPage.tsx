@@ -37,7 +37,7 @@ interface ActionEntry {
 }
 
 export default function OperatorHistoryPage() {
-  const { jobs, machines } = useSchedulingData();
+  const { jobs, machines, getOperatorById } = useSchedulingData();
   const [periodDays, setPeriodDays] = useState('7');
   const [selectedOperator, setSelectedOperator] = useState<string>('all');
 
@@ -52,10 +52,11 @@ export default function OperatorHistoryPage() {
 
       // Job started
       if (job.actual_start_time && isAfter(new Date(job.actual_start_time), cutoff)) {
+        const operator = getOperatorById(job.operator_id);
         entries.push({
           id: `start-${job.id}`,
           timestamp: job.actual_start_time,
-          operatorName: 'Operador',
+          operatorName: operator?.full_name || 'Operador',
           action: 'Iniciou produção',
           jobOrderNumber: job.order_number,
           jobProduct: job.product,
@@ -67,10 +68,11 @@ export default function OperatorHistoryPage() {
 
       // Job finished
       if (job.actual_end_time && isAfter(new Date(job.actual_end_time), cutoff)) {
+        const operator = getOperatorById(job.operator_id);
         entries.push({
           id: `finish-${job.id}`,
           timestamp: job.actual_end_time,
-          operatorName: 'Operador',
+          operatorName: operator?.full_name || 'Operador',
           action: 'Finalizou produção',
           jobOrderNumber: job.order_number,
           jobProduct: job.product,
@@ -100,10 +102,11 @@ export default function OperatorHistoryPage() {
 
       // Job paused
       if (job.status === 'paused' && isAfter(new Date(job.updated_at), cutoff)) {
+        const operator = getOperatorById(job.operator_id);
         entries.push({
           id: `pause-${job.id}`,
           timestamp: job.updated_at,
-          operatorName: 'Operador',
+          operatorName: operator?.full_name || 'Operador',
           action: 'Pausou produção',
           jobOrderNumber: job.order_number,
           jobProduct: job.product,
@@ -225,7 +228,7 @@ export default function OperatorHistoryPage() {
                           {entry.jobOrderNumber}
                         </Badge>
                         <span className="text-xs text-muted-foreground truncate">
-                          {entry.jobProduct}
+                          {entry.jobProduct} • <span className="font-bold text-primary/80">{entry.operatorName}</span>
                         </span>
                       </div>
 
