@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { KioskMode } from "@/components/kiosk/KioskMode";
 import { useSchedulingData } from "@/hooks/useSchedulingData";
@@ -7,7 +7,10 @@ import { notifyStatusChange } from "@/hooks/useNotifications";
 import { useAuth } from "@/contexts/AuthContext";
 import { ProductionRegistrationModal } from "@/components/operator/ProductionRegistrationModal";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, RefreshCw, AlertCircle } from "lucide-react";
+import { toast } from "sonner";
+import { motion, AnimatePresence } from "framer-motion";
+import { Badge } from "@/components/ui/badge";
 
 export default function KioskPage() {
   const navigate = useNavigate();
