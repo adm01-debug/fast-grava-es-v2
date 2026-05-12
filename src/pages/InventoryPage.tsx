@@ -1,8 +1,8 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef } from 'react';
 import { useRBAC, PermissionGate } from '@/hooks/useRBAC';
-import { subDays, isAfter, parseISO } from 'date-fns';
+import { subDays, isAfter, parseISO, addDays } from 'date-fns';
 import { MainLayout } from '@/components/layout/MainLayout';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,7 +19,11 @@ import {
   Map,
   Boxes,
   QrCode,
-  TrendingDown
+  TrendingDown,
+  Timer,
+  Printer,
+  X,
+  FileDown
 } from 'lucide-react';
 import { useInventory, useInventoryMovements, InventoryItem } from '@/hooks/useInventory';
 import { WarehouseMap } from '@/components/inventory/WarehouseMap';
@@ -32,6 +36,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { QRCodeSVG } from 'qrcode.react';
+
 
 export default function InventoryPage() {
   const { items, isLoading, recordMovement, stats, transferItems, deleteMovement } = useInventory();
@@ -219,6 +226,7 @@ export default function InventoryPage() {
 function InventoryCard({ item, onMovement }: { item: InventoryItem, onMovement: any }) {
   const isLowStock = item.current_stock <= item.min_stock_level;
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isQRModalOpen, setIsQRModalOpen] = useState(false);
   const [movementType, setMovementType] = useState<'IN' | 'OUT'>('IN');
   const [quantity, setQuantity] = useState('1');
 
@@ -236,6 +244,11 @@ function InventoryCard({ item, onMovement }: { item: InventoryItem, onMovement: 
     });
     setIsModalOpen(false);
   };
+
+  const depletionDate = useMemo(() => {
+    if (!item.days_of_supply) return null;
+    return addDays(new Date(), item.days_of_supply);
+  }, [item.days_of_supply]);
 
   return (
     <Card className={cn(
@@ -258,7 +271,12 @@ function InventoryCard({ item, onMovement }: { item: InventoryItem, onMovement: 
             )}
           </div>
         </div>
-        <CardTitle className="text-lg font-bold mt-2 group-hover:text-primary transition-colors">{item.name}</CardTitle>
+        <div className="flex justify-between items-center mt-2">
+          <CardTitle className="text-lg font-bold group-hover:text-primary transition-colors">{item.name}</CardTitle>
+          <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-primary" onClick={() => setIsQRModalOpen(true)}>
+            <QrCode className="h-4 w-4" />
+          </Button>
+        </div>
         <p className="text-xs text-muted-foreground line-clamp-1">{item.specification || 'Sem especificação'}</p>
       </CardHeader>
       <CardContent className="pt-4 space-y-4">
@@ -270,8 +288,28 @@ function InventoryCard({ item, onMovement }: { item: InventoryItem, onMovement: 
             </p>
           </div>
           <div className="text-right">
-            <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest">Mínimo</p>
-            <p className="text-sm font-bold text-muted-foreground">{item.min_stock_level} {item.unit}</p>
+            <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest">Previsão AI</p>
+            {item.days_of_supply !== undefined ? (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className={cn(
+                      "flex items-center gap-1 text-xs font-bold",
+                      item.days_of_supply < 7 ? "text-primary" : "text-emerald-500"
+                    )}>
+                      <Timer className="h-3 w-3" />
+                      {item.days_of_supply} dias
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p className="text-[10px]">Esgotamento previsto para:</p>
+                    <p className="font-bold">{depletionDate ? format(depletionDate, "dd 'de' MMMM", { locale: ptBR }) : '---'}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            ) : (
+              <p className="text-xs font-bold text-muted-foreground">Calculando...</p>
+            )}
           </div>
         </div>
 
@@ -325,9 +363,79 @@ function InventoryCard({ item, onMovement }: { item: InventoryItem, onMovement: 
           </PermissionGate>
         </div>
       </CardContent>
+
+      <QRLabelModal 
+        open={isQRModalOpen} 
+        onOpenChange={setIsQRModalOpen} 
+        item={item} 
+      />
     </Card>
   );
 }
+
+function QRLabelModal({ open, onOpenChange, item }: { open: boolean, onOpenChange: (o: boolean) => void, item: InventoryItem }) {
+  const printRef = useRef<HTMLDivElement>(null);
+
+  const handlePrint = () => {
+    const printContent = printRef.current;
+    if (!printContent) return;
+
+    const win = window.open('', '_blank');
+    if (!win) return;
+
+    win.document.write('<html><head><title>Imprimir Etiqueta</title>');
+    win.document.write('<style>body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; } .label { border: 2px solid #000; padding: 20px; text-align: center; width: 300px; }</style>');
+    win.document.write('</head><body>');
+    win.document.write('<div class="label">');
+    win.document.write(printContent.innerHTML);
+    win.document.write('</div>');
+    win.document.write('</body></html>');
+    win.document.close();
+    win.focus();
+    setTimeout(() => {
+      win.print();
+      win.close();
+    }, 500);
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[400px]">
+        <DialogHeader>
+          <DialogTitle>Gerar Etiqueta QR</DialogTitle>
+          <DialogDescription>
+            Etiqueta oficial para identificação de materiais e rastreabilidade via scanner.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="flex flex-col items-center justify-center p-8 space-y-4">
+          <div ref={printRef} className="p-6 bg-white rounded-xl border-2 border-black flex flex-col items-center">
+            <p className="text-[10px] font-black uppercase tracking-tighter mb-2 text-black">Propriedade: INDÚSTRIA 4.0</p>
+            <QRCodeSVG 
+              value={JSON.stringify({ id: item.id, type: 'inventory', name: item.name })}
+              size={180}
+              level="H"
+              includeMargin={true}
+            />
+            <div className="mt-4 text-center">
+              <p className="text-lg font-black text-black leading-none uppercase">{item.name}</p>
+              <p className="text-[10px] text-black/60 font-bold mt-1">ID: {item.id.substring(0, 8).toUpperCase()}</p>
+              <p className="text-[9px] font-black bg-black text-white px-2 py-0.5 rounded mt-2 inline-block">
+                LOC: {item.location || 'N/A'}
+              </p>
+            </div>
+          </div>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" className="w-full gap-2" onClick={handlePrint}>
+            <Printer className="h-4 w-4" />
+            Imprimir Etiqueta
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 
 function InventoryHistoryTable() {
   const [dateFilter, setDateFilter] = useState<'all' | '24h' | '7d' | '30d'>('all');
@@ -362,11 +470,6 @@ function InventoryHistoryTable() {
     });
   };
 
-  const handleRollback = async (m: any) => {
-    setRollbackId(m.id);
-  };
-
-
   const confirmRollback = async () => {
     if (!rollbackId) return;
     try {
@@ -381,11 +484,11 @@ function InventoryHistoryTable() {
 
   return (
     <div className="space-y-4">
-      <div className="p-4 border-b border-border/50 flex flex-col sm:flex-row gap-4 items-end">
+      <div className="p-4 border-b border-border/50 flex flex-col sm:flex-row gap-4 items-end bg-muted/20">
         <div className="space-y-1 flex-1">
-          <Label className="text-[10px] uppercase font-bold text-muted-foreground">Período</Label>
+          <Label className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest">Período</Label>
           <Select value={dateFilter} onValueChange={(v: any) => setDateFilter(v)}>
-            <SelectTrigger>
+            <SelectTrigger className="bg-background">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -397,9 +500,9 @@ function InventoryHistoryTable() {
           </Select>
         </div>
         <div className="space-y-1 flex-1">
-          <Label className="text-[10px] uppercase font-bold text-muted-foreground">Operação</Label>
+          <Label className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest">Operação</Label>
           <Select value={typeFilter} onValueChange={setTypeFilter}>
-            <SelectTrigger>
+            <SelectTrigger className="bg-background">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -411,109 +514,87 @@ function InventoryHistoryTable() {
             </SelectContent>
           </Select>
         </div>
-        <Button variant="outline" className="gap-2" onClick={handleExportCSV} disabled={filteredMovements.length === 0}>
-          <Filter className="h-4 w-4" /> Exportar CSV
+        <Button variant="outline" size="sm" className="gap-2 h-10 px-4 font-bold border-emerald-500/20 text-emerald-600 hover:bg-emerald-50" onClick={handleExportCSV}>
+          <FileDown className="h-4 w-4" /> Exportar CSV
         </Button>
       </div>
 
       <div className="overflow-x-auto">
-        <table className="w-full text-sm">
+        <table className="w-full text-xs">
           <thead>
             <tr className="bg-muted/30 border-b border-border/50">
-              <th className="text-left p-4 font-bold text-[10px] uppercase tracking-widest text-muted-foreground">Data/Hora</th>
-              <th className="text-left p-4 font-bold text-[10px] uppercase tracking-widest text-muted-foreground">Item</th>
-              <th className="text-left p-4 font-bold text-[10px] uppercase tracking-widest text-muted-foreground">Tipo</th>
-              <th className="text-right p-4 font-bold text-[10px] uppercase tracking-widest text-muted-foreground">Qtd</th>
-              <th className="text-left p-4 font-bold text-[10px] uppercase tracking-widest text-muted-foreground">Usuário</th>
-              <th className="text-left p-4 font-bold text-[10px] uppercase tracking-widest text-muted-foreground">Origem/Destino</th>
-              <th className="text-center p-4 font-bold text-[10px] uppercase tracking-widest text-muted-foreground">Ações</th>
+              <th className="text-left p-4 font-black uppercase tracking-tighter text-muted-foreground">Data/Hora</th>
+              <th className="text-left p-4 font-black uppercase tracking-tighter text-muted-foreground">Item</th>
+              <th className="text-left p-4 font-black uppercase tracking-tighter text-muted-foreground">Operação</th>
+              <th className="text-center p-4 font-black uppercase tracking-tighter text-muted-foreground">Qtd</th>
+              <th className="text-left p-4 font-black uppercase tracking-tighter text-muted-foreground">Motivo/Local</th>
+              <th className="text-left p-4 font-black uppercase tracking-tighter text-muted-foreground">Usuário</th>
+              <th className="text-right p-4 font-black uppercase tracking-tighter text-muted-foreground">Ações</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border/30">
             {filteredMovements.map((m: any) => (
-
-            <tr key={m.id} className="hover:bg-muted/10 transition-colors group">
-              <td className="p-4 text-xs font-medium">
-                {format(new Date(m.created_at || ''), "dd/MM/yy HH:mm", { locale: ptBR })}
-              </td>
-              <td className="p-4 font-bold">
-                {m.inventory_items?.name}
-              </td>
-              <td className="p-4">
-                <Badge 
-                  variant="outline" 
-                  className={cn(
-                    "text-[9px] font-black uppercase",
-                    m.type === 'IN' ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" : 
-                    m.type === 'OUT' ? "bg-red-500/10 text-red-500 border-red-500/20" : 
-                    m.type === 'TRANSFER' ? "bg-blue-500/10 text-blue-500 border-blue-500/20" :
-                    "bg-amber-500/10 text-amber-500 border-amber-500/20"
-                  )}
-                >
-                  {m.type === 'IN' ? 'Entrada' : m.type === 'OUT' ? 'Saída' : m.type === 'TRANSFER' ? 'Transf.' : 'Ajuste'}
-                </Badge>
-              </td>
-              <td className={cn(
-                "p-4 text-right font-black",
-                m.type === 'IN' ? "text-emerald-500" : m.type === 'OUT' ? "text-red-500" : "text-blue-500"
-              )}>
-                {m.type === 'IN' ? '+' : m.type === 'OUT' ? '-' : ''}{m.quantity || (m.type === 'TRANSFER' ? '→' : '')}
-              </td>
-              <td className="p-4 text-xs text-muted-foreground">
-                {m.profiles?.display_name || 'Sistema'}
-              </td>
-              <td className="p-4 text-xs text-muted-foreground">
-                <div className="flex flex-col">
-                  <span className="italic">{m.reason || '-'}</span>
-                  {m.type === 'TRANSFER' && (
-                    <span className="text-[10px] font-bold text-primary mt-1">
-                      {m.from_location} → {m.to_location}
-                    </span>
-                  )}
-                </div>
-              </td>
-              <td className="p-4 text-center">
-                {m.type !== 'ADJUST' && (
+              <tr key={m.id} className="hover:bg-muted/10 transition-colors group">
+                <td className="p-4 font-mono text-muted-foreground">
+                  {format(parseISO(m.created_at), 'dd/MM/yy HH:mm')}
+                </td>
+                <td className="p-4 font-bold text-foreground">
+                  {m.inventory_items?.name}
+                </td>
+                <td className="p-4">
+                  <Badge variant="outline" className={cn(
+                    "text-[9px] font-black uppercase tracking-tighter",
+                    m.type === 'IN' ? "text-emerald-500 border-emerald-500/20 bg-emerald-500/5" :
+                    m.type === 'OUT' ? "text-red-500 border-red-500/20 bg-red-500/5" :
+                    m.type === 'TRANSFER' ? "text-blue-500 border-blue-500/20 bg-blue-500/5" :
+                    "text-amber-500 border-amber-500/20 bg-amber-500/5"
+                  )}>
+                    {m.type}
+                  </Badge>
+                </td>
+                <td className="p-4 text-center font-black">
+                  {m.quantity}
+                </td>
+                <td className="p-4 text-muted-foreground max-w-[200px] truncate">
+                  {m.type === 'TRANSFER' ? `${m.from_location} → ${m.to_location}` : (m.reason || '-')}
+                </td>
+                <td className="p-4 font-medium italic">
+                  {m.profiles?.display_name || 'Sistema'}
+                </td>
+                <td className="p-4 text-right">
                   <Button 
                     variant="ghost" 
                     size="icon" 
-                    className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-red-500"
-                    onClick={() => handleRollback(m)}
-                    title="Desfazer Movimentação"
+                    className="h-8 w-8 text-muted-foreground hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                    onClick={() => setRollbackId(m.id)}
                   >
-                    <TrendingDown className="h-4 w-4 rotate-180" />
+                    <History className="h-4 w-4" />
                   </Button>
-                )}
-              </td>
-            </tr>
-          ))}
-          {(!filteredMovements || filteredMovements.length === 0) && (
-            <tr>
-              <td colSpan={7} className="p-8 text-center text-muted-foreground italic">Nenhuma movimentação registrada.</td>
-            </tr>
-          )}
-        </tbody>
-      </table>
-    </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
-      <Dialog open={!!rollbackId} onOpenChange={(open) => !open && setRollbackId(null)}>
-        <DialogContent className="sm:max-w-[350px]">
+      <Dialog open={!!rollbackId} onOpenChange={(o) => !o && setRollbackId(null)}>
+        <DialogContent className="sm:max-w-[400px]">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <History className="h-5 w-5 text-red-500" />
-              Desfazer Movimentação
+            <DialogTitle className="flex items-center gap-2 text-red-500">
+              <AlertTriangle className="h-5 w-5" />
+              Confirmar Rollback
             </DialogTitle>
             <DialogDescription>
-              Tem certeza que deseja remover este registro e reverter o impacto no sistema? 
-              O saldo do estoque será ajustado automaticamente para refletir a reversão desta operação.
+              Esta ação irá desfazer a movimentação selecionada e reajustar o saldo do estoque automaticamente. Deseja continuar?
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter className="flex gap-2">
-            <Button variant="outline" className="flex-1" onClick={() => setRollbackId(null)}>Cancelar</Button>
-            <Button variant="destructive" className="flex-1" onClick={confirmRollback}>Confirmar Rollback</Button>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button variant="ghost" onClick={() => setRollbackId(null)}>Cancelar</Button>
+            <Button variant="destructive" onClick={confirmRollback}>Sim, Desfazer</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>
   );
 }
+
