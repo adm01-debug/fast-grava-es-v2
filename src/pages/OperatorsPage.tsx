@@ -741,15 +741,24 @@ export default function OperatorsPage() {
           isToggling={isToggling}
           onRemoveClose={() => setOperatorToRemove(null)}
           onToggleClose={() => setOperatorToToggle(null)}
-          onRemoveConfirm={() => {
+          onRemoveConfirm={(reason) => {
             if (operatorToRemove) {
-              removeOperator({ operatorId: operatorToRemove.user_id, operatorName: operatorToRemove.full_name });
+              removeOperator({ 
+                operatorId: operatorToRemove.user_id, 
+                operatorName: operatorToRemove.full_name,
+                reason 
+              });
               setOperatorToRemove(null);
             }
           }}
-          onToggleConfirm={() => {
+          onToggleConfirm={(reason) => {
             if (operatorToToggle) {
-              toggleActive({ operatorId: operatorToToggle.user_id, operatorName: operatorToToggle.full_name, isActive: !operatorToToggle.is_active });
+              toggleActive({ 
+                operatorId: operatorToToggle.user_id, 
+                operatorName: operatorToToggle.full_name, 
+                isActive: !operatorToToggle.is_active,
+                reason
+              });
               setOperatorToToggle(null);
             }
           }}
