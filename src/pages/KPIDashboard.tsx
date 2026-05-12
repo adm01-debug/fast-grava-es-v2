@@ -68,6 +68,9 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { BrainCircuit, Sparkles, Zap } from 'lucide-react';
+import { DrillDownDialog } from '@/components/bi/drilldown/DrillDownDialog';
+import { useSchedulingData } from '@/hooks/useSchedulingData';
+
 
 export default function KPIDashboard() {
   const [activeTab, setActiveTab] = useState('overview');
