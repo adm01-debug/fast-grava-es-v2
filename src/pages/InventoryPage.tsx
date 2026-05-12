@@ -29,8 +29,10 @@ import {
   Settings2,
   RefreshCcw,
   Eye,
-  Maximize2
+  Maximize2,
+  TrendingUp
 } from 'lucide-react';
+
 import { useInventory, useInventoryMovements, InventoryItem } from '@/hooks/useInventory';
 import { WarehouseMap } from '@/components/inventory/WarehouseMap';
 import { Skeleton } from '@/components/ui/skeleton';
