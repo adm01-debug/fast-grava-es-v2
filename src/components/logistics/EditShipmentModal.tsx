@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useLogistics, DbShipment } from '@/hooks/useLogistics';
-import { Truck, AlertCircle, CheckCircle2, Clock } from 'lucide-react';
+import { Truck } from 'lucide-react';
 
 interface EditShipmentModalProps {
   shipment: DbShipment | null;
@@ -14,6 +15,7 @@ interface EditShipmentModalProps {
 }
 
 export function EditShipmentModal({ shipment, open, onOpenChange }: EditShipmentModalProps) {
+  const { t } = useTranslation();
   const { providers, updateShipment } = useLogistics();
   const [selectedProviderId, setSelectedProviderId] = useState<string>('');
   const [trackingCode, setTrackingCode] = useState('');
@@ -56,16 +58,18 @@ export function EditShipmentModal({ shipment, open, onOpenChange }: EditShipment
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Truck className="h-5 w-5 text-primary" />
-            Editar Envio
+            {t('logistics.editShipment')}
           </DialogTitle>
           <DialogDescription>
-            Atualize as informações de transporte e rastreio para este pedido.
+            {t('logistics.description')}
           </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4 pt-4">
           <div className="p-3 bg-muted/30 rounded-lg border border-border/50 mb-4">
-            <p className="text-xs font-black uppercase tracking-widest text-muted-foreground mb-1">Pedido Relacionado</p>
+            <p className="text-xs font-black uppercase tracking-widest text-muted-foreground mb-1">
+              {t('jobs.orderNumber')}
+            </p>
             <p className="font-bold text-sm">
               OS {shipment?.job?.order_number} - {shipment?.job?.client}
             </p>
@@ -73,23 +77,23 @@ export function EditShipmentModal({ shipment, open, onOpenChange }: EditShipment
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label>Status do Envio</Label>
+              <Label>{t('common.status')}</Label>
               <Select value={status} onValueChange={(v: any) => setStatus(v)}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="pending">Pendente</SelectItem>
-                  <SelectItem value="in_transit">Em Trânsito</SelectItem>
-                  <SelectItem value="delivered">Entregue</SelectItem>
-                  <SelectItem value="returned">Devolvido</SelectItem>
-                  <SelectItem value="cancelled">Cancelado</SelectItem>
+                  <SelectItem value="pending">{t('logistics.status.pending')}</SelectItem>
+                  <SelectItem value="in_transit">{t('logistics.status.in_transit')}</SelectItem>
+                  <SelectItem value="delivered">{t('logistics.status.delivered')}</SelectItem>
+                  <SelectItem value="returned">{t('logistics.status.returned')}</SelectItem>
+                  <SelectItem value="cancelled">{t('logistics.status.cancelled')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div className="space-y-2">
-              <Label>Transportadora</Label>
+              <Label>{t('logistics.provider')}</Label>
               <Select value={selectedProviderId} onValueChange={setSelectedProviderId}>
                 <SelectTrigger>
                   <SelectValue />
@@ -106,7 +110,7 @@ export function EditShipmentModal({ shipment, open, onOpenChange }: EditShipment
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="tracking-edit">Código de Rastreio</Label>
+            <Label htmlFor="tracking-edit">{t('logistics.trackingCode')}</Label>
             <Input 
               id="tracking-edit" 
               value={trackingCode} 
@@ -116,7 +120,7 @@ export function EditShipmentModal({ shipment, open, onOpenChange }: EditShipment
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="dest-edit">Destino / Endereço</Label>
+            <Label htmlFor="dest-edit">{t('logistics.destination')}</Label>
             <Input 
               id="dest-edit" 
               value={destination} 
@@ -125,7 +129,7 @@ export function EditShipmentModal({ shipment, open, onOpenChange }: EditShipment
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="delivery-date">Previsão de Entrega</Label>
+            <Label htmlFor="delivery-date">{t('logistics.estimatedDelivery')}</Label>
             <Input 
               id="delivery-date" 
               type="date"
@@ -136,10 +140,10 @@ export function EditShipmentModal({ shipment, open, onOpenChange }: EditShipment
 
           <div className="flex gap-3 pt-4 border-t border-border mt-6">
             <Button type="button" variant="outline" className="flex-1" onClick={() => onOpenChange(false)}>
-              Cancelar
+              {t('common.cancel')}
             </Button>
             <Button type="submit" className="flex-1 gradient-primary" disabled={updateShipment.isPending}>
-              {updateShipment.isPending ? 'Salvando...' : 'Salvar Alterações'}
+              {updateShipment.isPending ? t('common.loading') : t('common.save')}
             </Button>
           </div>
         </form>
