@@ -35,6 +35,13 @@ export default function LotDetailsModal({ lot, open, onClose }: LotDetailsModalP
   const { data: movements } = useLotMovements(lot.id);
   const { data: inspections } = useLotInspections(lot.id);
   const { updateLot } = useTraceabilityMutations();
+  const { data: jobs } = useJobs();
+
+  const job = jobs?.find(j => j.id === lot.job_id);
+  const allPhotos = [
+    ...(job?.production_photos || []),
+    ...(inspections?.flatMap(i => i.photos || []) || [])
+  ];
 
   const progressPct = lot.quantity > 0 ? (lot.produced_quantity / lot.quantity * 100) : 0;
   const statusConfig = STATUS_OPTIONS[lot.status];
