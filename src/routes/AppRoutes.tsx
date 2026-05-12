@@ -64,6 +64,8 @@ const OperatorHistoryPage = lazy(() => import("@/pages/OperatorHistoryPage"));
 const AdminTelemetriaPage = lazy(() => import("@/pages/AdminTelemetriaPage"));
 const AuditTrailPage = lazy(() => import("@/pages/AuditTrailPage"));
 const DigitalTwin = lazy(() => import("@/pages/DigitalTwin"));
+const LogisticsPage = lazy(() => import("@/pages/LogisticsPage"));
+const PublicTrackingPage = lazy(() => import("@/pages/PublicTrackingPage"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 
 // Helper para rotas protegidas com Suspense
@@ -105,6 +107,7 @@ export function AnimatedRoutes() {
         <Route path="/reset-password" element={<PublicPage fallback={<AuthPageSkeleton />}><ResetPasswordPage /></PublicPage>} />
         <Route path="/design-system" element={<PublicPage fallback={<DashboardPageSkeleton />}><DesignSystemPage /></PublicPage>} />
         <Route path="/install" element={<PublicPage fallback={<DashboardPageSkeleton />}><InstallAppPage /></PublicPage>} />
+        <Route path="/track" element={<PublicPage fallback={<DashboardPageSkeleton />}><PublicTrackingPage /></PublicPage>} />
 
         {/* Dashboard */}
         <Route path="/" element={<ProtectedPage fallback={<DashboardPageSkeleton />} allowedRoles={['coordinator', 'manager']}><Index /></ProtectedPage>} />
@@ -153,6 +156,7 @@ export function AnimatedRoutes() {
 
         {/* Quality & Traceability */}
         <Route path="/traceability" element={<ProtectedPage fallback={<ListPageSkeleton />} allowedRoles={['coordinator', 'manager']}><TraceabilityPage /></ProtectedPage>} />
+        <Route path="/logistics" element={<ProtectedPage fallback={<ListPageSkeleton />} allowedRoles={['coordinator', 'manager']}><LogisticsPage /></ProtectedPage>} />
 
         {/* Knowledge & Documents */}
         <Route path="/assistant" element={<ProtectedPage fallback={<DashboardPageSkeleton />}><TechnicalAssistantPage /></ProtectedPage>} />

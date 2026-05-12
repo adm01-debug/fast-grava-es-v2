@@ -13,6 +13,8 @@ import { LotComponentsTab } from './LotComponentsTab';
 import { LotMovementsTab } from './LotMovementsTab';
 import { LotInspectionsTab } from './LotInspectionsTab';
 import { toast } from 'sonner';
+import { ProductionPhotos } from '@/components/production/ProductionPhotos';
+import { useJobs } from '@/hooks/useJobs';
 
 interface LotDetailsModalProps {
   lot: ProductionLot;
@@ -33,6 +35,13 @@ export default function LotDetailsModal({ lot, open, onClose }: LotDetailsModalP
   const { data: movements } = useLotMovements(lot.id);
   const { data: inspections } = useLotInspections(lot.id);
   const { updateLot } = useTraceabilityMutations();
+  const { data: jobs } = useJobs();
+
+  const job = jobs?.find(j => j.id === lot.job_id);
+  const allPhotos = [
+    ...(job?.production_photos || []),
+    ...(inspections?.flatMap(i => i.photos || []) || [])
+  ];
 
   const progressPct = lot.quantity > 0 ? (lot.produced_quantity / lot.quantity * 100) : 0;
   const statusConfig = STATUS_OPTIONS[lot.status];
@@ -62,14 +71,20 @@ export default function LotDetailsModal({ lot, open, onClose }: LotDetailsModalP
         {inspections && inspections.length > 0 && <QualityDashboardCards inspections={inspections} />}
 
         <Tabs defaultValue="components">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="components"><Layers className="h-3.5 w-3.5 mr-1" />Componentes ({components?.length || 0})</TabsTrigger>
             <TabsTrigger value="movements"><ArrowRightLeft className="h-3.5 w-3.5 mr-1" />Movimentações ({movements?.length || 0})</TabsTrigger>
             <TabsTrigger value="inspections"><ClipboardCheck className="h-3.5 w-3.5 mr-1" />Inspeções ({inspections?.length || 0})</TabsTrigger>
+            <TabsTrigger value="photos">Evidências</TabsTrigger>
           </TabsList>
           <TabsContent value="components"><LotComponentsTab lot={lot} components={components} /></TabsContent>
           <TabsContent value="movements"><LotMovementsTab lot={lot} movements={movements} /></TabsContent>
           <TabsContent value="inspections"><LotInspectionsTab lot={lot} inspections={inspections} /></TabsContent>
+          <TabsContent value="photos">
+            <div className="p-4">
+              <ProductionPhotos photos={allPhotos} jobId={lot.job_id || undefined} />
+            </div>
+          </TabsContent>
         </Tabs>
       </DialogContent>
     </Dialog>

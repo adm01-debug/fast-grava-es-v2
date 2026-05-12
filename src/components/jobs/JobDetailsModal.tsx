@@ -31,7 +31,8 @@ import {
   Pencil,
   Trash2,
   Save,
-  X
+  X,
+  Camera
 } from "lucide-react";
 import { useSchedulingData } from "@/hooks/useSchedulingData";
 import { DbJob, useUpdateJob, useDeleteJob } from "@/hooks/useJobs";
@@ -52,6 +53,7 @@ import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { toast } from "sonner";
+import { ProductionPhotos } from "@/components/production/ProductionPhotos";
 
 const jobEditSchema = z.object({
   order_number: z.string().min(1, 'Número da OS é obrigatório'),
@@ -242,7 +244,7 @@ export function JobDetailsModal({ job, open, onOpenChange, onStatusChange }: Job
         </DialogHeader>
 
         <Tabs defaultValue="details" className="mt-4">
-          <TabsList className="grid w-full grid-cols-3 sm:grid-cols-6 h-auto">
+          <TabsList className="grid w-full grid-cols-4 sm:grid-cols-7 h-auto">
             <TabsTrigger value="details" className="text-[10px] sm:text-xs">Detalhes</TabsTrigger>
             <TabsTrigger value="instructions" className="flex items-center gap-1 text-[10px] sm:text-xs">
               <FileText className="h-3 w-3" />
@@ -251,6 +253,10 @@ export function JobDetailsModal({ job, open, onOpenChange, onStatusChange }: Job
             <TabsTrigger value="quality" className="flex items-center gap-1 text-[10px] sm:text-xs">
               <Activity className="h-3 w-3" />
               Qualidade
+            </TabsTrigger>
+            <TabsTrigger value="photos" className="flex items-center gap-1 text-[10px] sm:text-xs">
+              <Camera className="h-3 w-3" />
+              Fotos
             </TabsTrigger>
             <TabsTrigger value="costs" className="flex items-center gap-1 text-[10px] sm:text-xs">
               <DollarSign className="h-3 w-3" />
@@ -527,6 +533,15 @@ export function JobDetailsModal({ job, open, onOpenChange, onStatusChange }: Job
 
           <TabsContent value="quality">
             <JobQualityTab jobId={job.id} techniqueId={job.technique_id} machineId={job.machine_id} />
+          </TabsContent>
+          
+          <TabsContent value="photos" className="mt-4">
+            <ScrollArea className="h-[450px] pr-4">
+              <ProductionPhotos 
+                photos={job.production_photos} 
+                jobId={job.id} 
+              />
+            </ScrollArea>
           </TabsContent>
 
           <TabsContent value="costs">
