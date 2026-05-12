@@ -1,12 +1,13 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useLogistics, DbShippingProvider } from '@/hooks/useLogistics';
+import { useLogistics } from '@/hooks/useLogistics';
 import { useJobs } from '@/hooks/useJobs';
-import { Truck, Package, Search } from 'lucide-react';
+import { Truck } from 'lucide-react';
 
 interface CreateShipmentModalProps {
   open: boolean;
@@ -14,6 +15,7 @@ interface CreateShipmentModalProps {
 }
 
 export function CreateShipmentModal({ open, onOpenChange }: CreateShipmentModalProps) {
+  const { t } = useTranslation();
   const { providers, createShipment } = useLogistics();
   const { data: jobs } = useJobs();
   const [selectedJobId, setSelectedJobId] = useState<string>('');
@@ -42,19 +44,19 @@ export function CreateShipmentModal({ open, onOpenChange }: CreateShipmentModalP
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Truck className="h-5 w-5 text-primary" />
-            Novo Envio / Frete
+            {t('logistics.newShipment')}
           </DialogTitle>
           <DialogDescription>
-            Vincule um job finalizado a uma transportadora para iniciar o trâmite logístico.
+            {t('logistics.description')}
           </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-6 pt-4">
           <div className="space-y-2">
-            <Label>Job / Ordem de Produção</Label>
+            <Label>{t('jobs.title')}</Label>
             <Select value={selectedJobId} onValueChange={setSelectedJobId}>
               <SelectTrigger>
-                <SelectValue placeholder="Selecione um job finalizado" />
+                <SelectValue placeholder={t('common.search')} />
               </SelectTrigger>
               <SelectContent>
                 {availableJobs?.map(job => (
@@ -63,17 +65,17 @@ export function CreateShipmentModal({ open, onOpenChange }: CreateShipmentModalP
                   </SelectItem>
                 ))}
                 {availableJobs?.length === 0 && (
-                  <SelectItem value="none" disabled>Nenhum job finalizado disponível</SelectItem>
+                  <SelectItem value="none" disabled>{t('common.none')}</SelectItem>
                 )}
               </SelectContent>
             </Select>
           </div>
 
           <div className="space-y-2">
-            <Label>Transportadora / Método</Label>
+            <Label>{t('logistics.provider')}</Label>
             <Select value={selectedProviderId} onValueChange={setSelectedProviderId}>
               <SelectTrigger>
-                <SelectValue placeholder="Selecione o provedor" />
+                <SelectValue placeholder={t('common.search')} />
               </SelectTrigger>
               <SelectContent>
                 {providers.data?.map(provider => (
@@ -86,7 +88,7 @@ export function CreateShipmentModal({ open, onOpenChange }: CreateShipmentModalP
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="tracking">Código de Rastreio (Opcional)</Label>
+            <Label htmlFor="tracking">{t('logistics.trackingCode')} ({t('common.optional')})</Label>
             <Input 
               id="tracking" 
               value={trackingCode} 
@@ -96,21 +98,20 @@ export function CreateShipmentModal({ open, onOpenChange }: CreateShipmentModalP
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="dest">Destino / Endereço</Label>
+            <Label htmlFor="dest">{t('logistics.destination')}</Label>
             <Input 
               id="dest" 
               value={destination} 
               onChange={(e) => setDestination(e.target.value)} 
-              placeholder="Cidade, Estado ou Endereço Completo"
             />
           </div>
 
           <div className="flex gap-3 pt-2">
             <Button type="button" variant="outline" className="flex-1" onClick={() => onOpenChange(false)}>
-              Cancelar
+              {t('common.cancel')}
             </Button>
             <Button type="submit" className="flex-1 gradient-primary" disabled={createShipment.isPending}>
-              {createShipment.isPending ? 'Criando...' : 'Criar Envio'}
+              {createShipment.isPending ? t('common.loading') : t('logistics.newShipment')}
             </Button>
           </div>
         </form>
