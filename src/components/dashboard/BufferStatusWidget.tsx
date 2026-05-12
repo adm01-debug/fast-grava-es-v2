@@ -114,9 +114,9 @@ BufferRow.displayName = 'BufferRow';
 function BufferStatusWidgetComponent() {
   const { bufferByTechnique, isLoading } = useBufferStatus();
   const { triggerPromotion, promoteForTechnique, isPromoting } = useAutoBufferPromotion({ 
-    enabled: true, 
     showToasts: true 
   });
+
 
   const { criticalCount, warningCount, healthyCount, hasUnhealthyTechniques } = useMemo(() => ({
     criticalCount: bufferByTechnique.filter(b => b.isCritical).length,

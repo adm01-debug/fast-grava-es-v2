@@ -47,8 +47,9 @@ export function useAutoBufferPromotion(options?: { showToasts?: boolean }) {
   });
 
   const triggerPromotion = useCallback(async () => {
-    return promotionMutation.mutateAsync();
+    return promotionMutation.mutateAsync(undefined);
   }, [promotionMutation]);
+
 
   const promoteForTechnique = useCallback(async (techniqueId: string) => {
     return promotionMutation.mutateAsync(techniqueId);
