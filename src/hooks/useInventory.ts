@@ -18,7 +18,10 @@ export interface InventoryItem {
   price_per_unit: number;
   created_at: string;
   updated_at: string;
+  daily_usage_avg?: number; // Estimated pieces/units per day
+  days_of_supply?: number; // Days until stock runs out
 }
+
 
 export interface InventoryMovement {
   id: string;
