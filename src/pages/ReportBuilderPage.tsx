@@ -229,6 +229,44 @@ export default function ReportBuilderPage() {
           {/* Step 1: Source Selection */}
           <div className="lg:col-span-1 space-y-6">
             <Card className="glass-card">
+              <CardHeader className="pb-3 border-b border-border/50 bg-muted/20">
+                 <CardTitle className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
+                   <Filter className="h-3 w-3 text-primary" />
+                   Filtros Inteligentes
+                 </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-4 space-y-4">
+                <div className="space-y-1.5">
+                  <Label className="text-[10px] font-bold uppercase text-muted-foreground">Período de Dados</Label>
+                  <DateRangePicker date={dateRange} setDate={setDateRange} />
+                </div>
+                
+                {STATUS_OPTIONS[selectedTable] && (
+                  <div className="space-y-1.5">
+                    <Label className="text-[10px] font-bold uppercase text-muted-foreground">Filtrar por Status</Label>
+                    <Select value={selectedStatus} onValueChange={setSelectedStatus}>
+                      <SelectTrigger className="h-8 text-xs font-bold bg-background">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">Todos os Status</SelectItem>
+                        {STATUS_OPTIONS[selectedTable].map(s => (
+                          <SelectItem key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+
+                <div className="pt-2">
+                  <Button variant="ghost" size="sm" className="w-full h-7 text-[9px] uppercase font-bold text-muted-foreground hover:text-primary" onClick={() => { setDateRange({ from: subDays(new Date(), 30), to: new Date() }); setSelectedStatus('all'); }}>
+                    Resetar Filtros
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="glass-card">
               <CardHeader className="pb-3">
                  <CardTitle className="text-sm font-black uppercase tracking-widest flex items-center gap-2">
                    <span className="w-5 h-5 rounded-full bg-primary/20 text-primary flex items-center justify-center text-[10px]">1</span>
@@ -258,6 +296,7 @@ export default function ReportBuilderPage() {
                 ))}
               </CardContent>
             </Card>
+
 
             <Card className="glass-card border-amber-500/20 bg-amber-500/5">
                <CardHeader className="pb-3">
