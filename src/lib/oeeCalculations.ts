@@ -34,7 +34,7 @@ export function calculateRealOEE(jobs: DbJob[]) {
         totalActualMinutes += sanitizeNumber(differenceInMinutes(end, start));
       } catch {}
     }
-    totalEstimatedMinutes += sanitizeNumber(job.estimated_duration, 60);
+    totalEstimatedMinutes += sanitizeNumber(job.estimated_duration || 60);
     const producedQty = sanitizeNumber(job.produced_quantity ?? job.quantity);
     totalProducedPieces += producedQty;
     totalLostPieces += sanitizeNumber(job.lost_pieces);

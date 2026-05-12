@@ -179,9 +179,7 @@ export function useGoalAlerts(config: Partial<GoalAlertConfig> = {}) {
   useEffect(() => {
     const timeout = setTimeout(() => {
       hasInitialized.current = true;
-      if (settings.checkOnMount) {
-        showNotifications();
-      }
+      showNotifications();
     }, 3000);
 
     return () => clearTimeout(timeout);

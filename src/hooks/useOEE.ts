@@ -179,8 +179,8 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30) {
         }
         
         // Estimated time (ideal cycle time)
-        totalEstimatedMinutes += sanitizeNumber(job.estimated_duration, 60);
-        
+        totalEstimatedMinutes += sanitizeNumber(job.estimated_duration || 60);
+
         // Quality metrics - use produced_quantity if available, otherwise use quantity
         const producedQty = sanitizeNumber(job.produced_quantity ?? job.quantity);
         totalProducedPieces += producedQty;
@@ -334,7 +334,7 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30) {
             dayActual += differenceInMinutes(parseISO(job.actual_end_time!), parseISO(job.actual_start_time!));
           } catch {}
         }
-        dayEstimated += sanitizeNumber(job.estimated_duration, 60);
+        dayEstimated += sanitizeNumber(job.estimated_duration || 60);
         dayProduced += sanitizeNumber(job.produced_quantity ?? job.quantity);
         dayLost += sanitizeNumber(job.lost_pieces);
       }
