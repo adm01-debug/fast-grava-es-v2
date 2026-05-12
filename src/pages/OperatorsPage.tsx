@@ -444,25 +444,56 @@ export default function OperatorsPage() {
                           <TooltipContent>Remover operador</TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        onClick={() => {
-                          setOperatorToShowDetails(operator);
-                          setDetailsModalOpen(true);
-                        }}
-                        className="h-8 w-8 text-primary"
-                      >
-                        <Eye className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        onClick={() => handleOpenEdit(operator)}
-                        className="h-8 w-8"
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </Button>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              onClick={() => setOperatorForQR(operator)}
+                              className="h-8 w-8 text-muted-foreground hover:text-primary hover:bg-primary/10"
+                            >
+                              <QrCodeIcon className="h-4 w-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>Crachá Digital (QR)</TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              onClick={() => {
+                                setOperatorToShowDetails(operator);
+                                setDetailsModalOpen(true);
+                              }}
+                              className="h-8 w-8 text-primary"
+                            >
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>Visualizar Perfil</TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              onClick={() => handleOpenEdit(operator)}
+                              className="h-8 w-8"
+                            >
+                              <Pencil className="h-4 w-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>Editar Operador</TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                       <Button
                         size="sm"
                         variant="outline"
