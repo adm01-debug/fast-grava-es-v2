@@ -160,15 +160,24 @@ export default function ReportBuilderPage() {
         const { default: jsPDF } = await import('jspdf');
         const { default: autoTable } = await import('jspdf-autotable');
         const doc = new jsPDF();
+        
+        // Custom Header
+        doc.setFillColor(14, 165, 233);
+        doc.rect(0, 0, 210, 40, 'F');
+        doc.setFontSize(22);
+        doc.setTextColor(255, 255, 255);
+        doc.text('FAST GRAVAÇÕES - RELATÓRIO OFICIAL', 105, 20, { align: 'center' });
+        doc.setFontSize(10);
+        doc.text(`MÓDULO: ${selectedTable.replace(/_/g, ' ').toUpperCase()}`, 105, 30, { align: 'center' });
+
         doc.setFontSize(18);
         doc.setTextColor(14, 165, 233); // Primary color
-        doc.text(`RELATÓRIO INDUSTRIAL: ${selectedTable.toUpperCase()}`, 14, 15);
         doc.setFontSize(10);
         doc.setTextColor(100);
-        doc.text(`Gerado em: ${format(new Date(), 'dd/MM/yyyy HH:mm', { locale: ptBR })}`, 14, 22);
+        doc.text(`Gerado em: ${format(new Date(), 'dd/MM/yyyy HH:mm', { locale: ptBR })}`, 14, 48);
         
         if (dateRange?.from) {
-          doc.text(`Período: ${format(dateRange.from, 'dd/MM/yyyy')} a ${dateRange.to ? format(dateRange.to, 'dd/MM/yyyy') : '---'}`, 14, 27);
+          doc.text(`Período: ${format(dateRange.from, 'dd/MM/yyyy')} a ${dateRange.to ? format(dateRange.to, 'dd/MM/yyyy') : '---'}`, 14, 53);
         }
         
         const tableBody = data.map(row => selectedColumns.map(col => {
@@ -180,12 +189,20 @@ export default function ReportBuilderPage() {
         }));
         
         autoTable(doc, {
-          startY: 35,
+          startY: 60,
           head: [selectedColumns.map(c => c.replace(/_/g, ' ').toUpperCase())],
           body: tableBody,
           styles: { fontSize: 7, cellPadding: 2 },
           headStyles: { fillColor: [14, 165, 233] },
           alternateRowStyles: { fillColor: [245, 245, 245] },
+          margin: { bottom: 20 },
+          didDrawPage: (data) => {
+            // Footer
+            const pageCount = doc.getNumberOfPages();
+            doc.setFontSize(8);
+            doc.setTextColor(150);
+            doc.text(`Página ${data.pageNumber} de ${pageCount} - Fast Gravações Industrial Intelligence`, 105, 285, { align: 'center' });
+          }
         });
         
         doc.save(`relatorio_${selectedTable}_${format(new Date(), 'yyyy-MM-dd')}.pdf`);
@@ -299,8 +316,6 @@ export default function ReportBuilderPage() {
               </CardContent>
             </Card>
 
-
-
             <Card className="glass-card">
                <CardHeader className="pb-3 border-b border-border/50 bg-muted/20">
                  <CardTitle className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
@@ -309,15 +324,43 @@ export default function ReportBuilderPage() {
                  </CardTitle>
                </CardHeader>
                <CardContent className="pt-4 space-y-2">
-                  <button className="w-full text-left p-2 rounded-lg hover:bg-muted/50 transition-colors group">
+                  <button 
+                    onClick={() => {
+                      setSelectedTable('jobs');
+                      setSelectedColumns(['order_number', 'client', 'product', 'status', 'quantity', 'lost_pieces', 'created_at']);
+                      setSelectedStatus('finished');
+                      setDateRange({ from: subDays(new Date(), 7), to: new Date() });
+                      setFormatType('pdf');
+                      toast.success('Template "Performance Semanal" aplicado');
+                    }}
+                    className="w-full text-left p-2 rounded-lg hover:bg-muted/50 transition-colors group"
+                  >
                     <p className="text-xs font-bold group-hover:text-primary transition-colors">Performance Semanal</p>
                     <p className="text-[9px] text-muted-foreground uppercase font-medium">Jobs + Status + Perdas</p>
                   </button>
-                  <button className="w-full text-left p-2 rounded-lg hover:bg-muted/50 transition-colors group">
+                  <button 
+                    onClick={() => {
+                      setSelectedTable('inventory_items');
+                      setSelectedColumns(['name', 'category', 'current_stock', 'unit', 'location']);
+                      setSelectedStatus('all');
+                      setFormatType('pdf');
+                      toast.success('Template "Auditoria de Inventário" aplicado');
+                    }}
+                    className="w-full text-left p-2 rounded-lg hover:bg-muted/50 transition-colors group"
+                  >
                     <p className="text-xs font-bold group-hover:text-primary transition-colors">Auditoria de Inventário</p>
                     <p className="text-[9px] text-muted-foreground uppercase font-medium">Estoque + Localização</p>
                   </button>
-                  <button className="w-full text-left p-2 rounded-lg hover:bg-muted/50 transition-colors group">
+                  <button 
+                    onClick={() => {
+                      setSelectedTable('maintenance_records');
+                      setSelectedColumns(['machine_id', 'status', 'start_time', 'end_time']);
+                      setSelectedStatus('completed');
+                      setFormatType('pdf');
+                      toast.success('Template "SLA de Manutenção" aplicado');
+                    }}
+                    className="w-full text-left p-2 rounded-lg hover:bg-muted/50 transition-colors group"
+                  >
                     <p className="text-xs font-bold group-hover:text-primary transition-colors">SLA de Manutenção</p>
                     <p className="text-[9px] text-muted-foreground uppercase font-medium">Ativos + Tempo de Reparo</p>
                   </button>
@@ -341,7 +384,6 @@ export default function ReportBuilderPage() {
                   </Select>
                </CardContent>
             </Card>
-
           </div>
 
           {/* Step 2: Configuration */}
