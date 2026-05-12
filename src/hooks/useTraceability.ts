@@ -296,6 +296,7 @@ export function useTraceabilityMutations() {
       sample_size?: number;
       defects_found?: number;
       notes?: string;
+      photos?: string[];
     }) => {
       const { error } = await supabase
         .from('lot_quality_inspections')
