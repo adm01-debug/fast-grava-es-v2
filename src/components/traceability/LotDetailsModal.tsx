@@ -80,6 +80,11 @@ export default function LotDetailsModal({ lot, open, onClose }: LotDetailsModalP
           <TabsContent value="components"><LotComponentsTab lot={lot} components={components} /></TabsContent>
           <TabsContent value="movements"><LotMovementsTab lot={lot} movements={movements} /></TabsContent>
           <TabsContent value="inspections"><LotInspectionsTab lot={lot} inspections={inspections} /></TabsContent>
+          <TabsContent value="photos">
+            <div className="p-4">
+              <ProductionPhotos photos={allPhotos} jobId={lot.job_id || undefined} />
+            </div>
+          </TabsContent>
         </Tabs>
       </DialogContent>
     </Dialog>
