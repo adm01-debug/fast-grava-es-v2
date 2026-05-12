@@ -296,7 +296,7 @@ export default function KanbanBoard() {
 
   const renderColumns = (jobsForColumns: DbJob[], getJobsByStatusFn: (s: JobStatus) => DbJob[]) => (
     <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-thin">
-      {statusColumns.map((column) => (
+      {[...statusColumns, ...exceptionStatuses].map((column) => (
         <DroppableColumn 
           key={column.status} 
           {...column}
