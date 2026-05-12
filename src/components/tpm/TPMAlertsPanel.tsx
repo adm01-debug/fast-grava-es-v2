@@ -17,6 +17,7 @@ const alertTypeConfig: Record<string, { icon: React.ElementType; color: string; 
   overdue: { icon: Clock, color: 'text-amber-500 bg-amber-500/10', label: 'Atrasado' },
   due: { icon: Wrench, color: 'text-blue-500 bg-blue-500/10', label: 'Vence Hoje' },
   upcoming: { icon: Clock, color: 'text-emerald-500 bg-emerald-500/10', label: 'Próximo' },
+  predictive: { icon: BrainCircuit, color: 'text-accent-purple bg-accent-purple/10', label: 'IA Preditiva' },
 };
 
 export function TPMAlertsPanel({ alerts, onResolve, onStartMaintenance }: TPMAlertsPanelProps) {
