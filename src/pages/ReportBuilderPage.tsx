@@ -85,6 +85,8 @@ export default function ReportBuilderPage() {
     to: new Date()
   });
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
+  const [templateName, setTemplateName] = useState('');
+  const [isSavingTemplate, setIsSavingTemplate] = useState(false);
   const queryClient = useQueryClient();
 
   const { data: reportData, isLoading } = useQuery({
@@ -110,6 +112,50 @@ export default function ReportBuilderPage() {
       const { data, error } = await query;
       if (error) throw error;
       return data;
+    }
+  });
+
+  const { data: savedTemplates } = useQuery({
+    queryKey: ['saved-report-templates'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('report_templates')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      return data;
+    }
+  });
+
+  const saveTemplateMutation = useMutation({
+    mutationFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('User not authenticated');
+
+      const { data, error } = await supabase
+        .from('report_templates')
+        .insert({
+          name: templateName,
+          table_name: selectedTable,
+          columns: selectedColumns,
+          format_type: formatType,
+          user_id: user.id,
+          filters: { status: selectedStatus, dateRange }
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      toast.success('Template salvo com sucesso!');
+      setTemplateName('');
+      queryClient.invalidateQueries({ queryKey: ['saved-report-templates'] });
+    },
+    onError: (error) => {
+      toast.error('Erro ao salvar template: ' + error.message);
     }
   });
 
