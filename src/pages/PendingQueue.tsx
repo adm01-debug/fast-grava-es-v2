@@ -241,6 +241,14 @@ export default function PendingQueue() {
     });
   };
 
+  const checkIfStuck = (job: DbJob) => {
+    if (job.status !== 'ready') return false;
+    const now = new Date();
+    const stuckThreshold = subHours(now, 4);
+    return isAfter(stuckThreshold, new Date(job.updated_at));
+  };
+
+
   const handleSelectAll = () => {
     if (selectedJobs.size === filteredJobs.length) {
       setSelectedJobs(new Set());
