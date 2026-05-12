@@ -11,6 +11,7 @@ import { PasswordResetRequests } from '@/components/settings/PasswordResetReques
 import { TwoFactorSetup } from '@/components/settings/TwoFactorSetup';
 import { IPAllowlist } from '@/components/settings/IPAllowlist';
 import { LoginAuditLog } from '@/components/settings/LoginAuditLog';
+import { TechniqueManagement } from '@/components/settings/TechniqueManagement';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import IntegrationHub from '@/components/integrations/IntegrationHub';
 import { SettingsGeneralTab } from '@/components/settings/SettingsGeneralTab';
@@ -86,8 +87,9 @@ export default function SettingsPage() {
           <p className="text-muted-foreground">Gerencie todas as configurações do sistema</p>
         </div>
         <Tabs defaultValue="general" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-7">
+          <TabsList className="grid w-full grid-cols-8">
             <TabsTrigger value="general">Geral</TabsTrigger>
+            <TabsTrigger value="techniques">Técnicas</TabsTrigger>
             <TabsTrigger value="security">Segurança</TabsTrigger>
             <TabsTrigger value="notifications">Notificações</TabsTrigger>
             <TabsTrigger value="alerts">Alertas</TabsTrigger>
@@ -96,6 +98,7 @@ export default function SettingsPage() {
             <TabsTrigger value="integrations">Integrações</TabsTrigger>
           </TabsList>
           <TabsContent value="general"><SettingsGeneralTab settings={settings} onSettingChange={handleSettingChange} /></TabsContent>
+          <TabsContent value="techniques"><TechniqueManagement /></TabsContent>
           <TabsContent value="security" className="space-y-4"><TwoFactorSetup /><IPAllowlist /><LoginAuditLog /></TabsContent>
           <TabsContent value="notifications"><SettingsNotificationsTab settings={settings} onSettingChange={handleSettingChange} /></TabsContent>
           <TabsContent value="alerts"><SettingsAlertsTab thresholds={thresholds} entityThresholds={entityThresholds} onThresholdChange={handleThresholdChange} onEntityThresholdChange={handleEntityThresholdChange} onSave={() => toast.success('Limites de alerta salvos!')} onReset={() => { setThresholds({ lowBuffer: 30, criticalBuffer: 10, delayedJobMinutes: 60, oeeWarning: 70, oeeCritical: 50, energyPeakKw: 100, bottleneckRiskMinutes: 480, estimatedLoadLimitPercentage: 90 }); setEntityThresholds({}); toast.success('Limites restaurados para padrão'); }} /></TabsContent>
