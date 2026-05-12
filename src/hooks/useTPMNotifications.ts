@@ -58,6 +58,7 @@ export const useTPMNotifications = () => {
       (alert.alert_type === 'upcoming' && prefs.upcomingMaintenance) ||
       (alert.alert_type === 'due' && prefs.dueMaintenance) ||
       (alert.alert_type === 'overdue' && prefs.overdueMaintenance) ||
+      (alert.alert_type === 'predictive' && prefs.criticalAlerts) ||
       (alert.alert_type === 'critical' && prefs.criticalAlerts);
 
     if (!shouldNotify) return null;
