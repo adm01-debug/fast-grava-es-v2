@@ -14,14 +14,8 @@ interface UseRealtimeConnectionReturn {
 export function useRealtimeConnection(): UseRealtimeConnectionReturn {
   const [status, setStatus] = useState<ConnectionStatus>('connecting');
   const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
-  const [channel, setChannel] = useState<RealtimeChannel | null>(null);
 
   const setupChannel = useCallback(() => {
-    // Clean up existing channel
-    if (channel) {
-      supabase.removeChannel(channel);
-    }
-
     setStatus('connecting');
 
     const newChannel = supabase
@@ -47,8 +41,6 @@ export function useRealtimeConnection(): UseRealtimeConnectionReturn {
         }
       });
 
-    setChannel(newChannel);
-
     return newChannel;
   }, []);
 
@@ -58,10 +50,10 @@ export function useRealtimeConnection(): UseRealtimeConnectionReturn {
     return () => {
       supabase.removeChannel(ch);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [setupChannel]);
 
   const reconnect = useCallback(() => {
+    setStatus('connecting');
     setupChannel();
   }, [setupChannel]);
 
