@@ -258,6 +258,7 @@ export default function SecurityDashboard() {
           <LoginAuditLog />
         </TabsContent>
       </Tabs>
-    </div>
+      </div>
+    </MainLayout>
   );
 }
