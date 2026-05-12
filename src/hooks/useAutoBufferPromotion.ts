@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
+import { useQueryClient, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -14,14 +14,16 @@ export function useAutoBufferPromotion(options?: { showToasts?: boolean }) {
   const { showToasts = true } = options || {};
   const queryClient = useQueryClient();
 
-  const triggerPromotion = useCallback(async () => {
-    try {
+  const promotionMutation = useMutation({
+    mutationFn: async (techniqueId?: string) => {
       const { data, error } = await supabase.functions.invoke('auto-promote-jobs', {
-        body: {}
+        body: { techniqueId }
       });
 
       if (error) throw error;
-
+      return data;
+    },
+    onSuccess: (data) => {
       if (data?.promoted?.length > 0) {
         queryClient.invalidateQueries({ queryKey: ['jobs'] });
         if (showToasts) {
@@ -30,19 +32,32 @@ export function useAutoBufferPromotion(options?: { showToasts?: boolean }) {
             description: 'O buffer de produção foi reabastecido pelo servidor.',
           });
         }
+      } else if (showToasts && data?.success) {
+        toast.info('Buffer já está saudável', {
+          description: 'Nenhum job precisou ser promovido neste momento.'
+        });
       }
-      return data;
-    } catch (error) {
+    },
+    onError: (error) => {
       console.error('Failed to trigger auto-promotion:', error);
       if (showToasts) {
         toast.error('Falha ao acionar promoção automática');
       }
-      return null;
     }
-  }, [queryClient, showToasts]);
+  });
+
+  const triggerPromotion = useCallback(async () => {
+    return promotionMutation.mutateAsync();
+  }, [promotionMutation]);
+
+  const promoteForTechnique = useCallback(async (techniqueId: string) => {
+    return promotionMutation.mutateAsync(techniqueId);
+  }, [promotionMutation]);
 
   return {
     triggerPromotion,
+    promoteForTechnique,
+    isPromoting: promotionMutation.isPending,
     bufferTarget: 3,
   };
 }
