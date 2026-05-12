@@ -12,7 +12,7 @@ import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { VoiceButton } from '@/components/voice/VoiceCommands';
 import { useGamification } from '@/hooks/useGamification';
 import { toast } from 'sonner';
-import { Trophy, Medal, Star, Target, Zap, Award, Crown, TrendingUp, Command, Package, Clock, Sparkles, Loader2 } from 'lucide-react';
+import { Trophy, Medal, Star, Target, Zap, Award, Crown, TrendingUp, Command, Package, Clock, Sparkles, Loader2, History } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
