@@ -26,19 +26,58 @@ export default function KioskPage() {
   const [isSyncing, setIsSyncing] = useState(false);
   const [errorCount, setErrorCount] = useState(0);
 
-  // Track online status
+  // Track online status and auto-sync
   useEffect(() => {
-    const handleOnline = () => setIsOnline(true);
-    const handleOffline = () => setIsOnline(false);
+    const handleOnline = () => {
+      setIsOnline(true);
+      toast.success("Conexão restabelecida", {
+        description: "Sincronizando dados pendentes...",
+        duration: 3000,
+      });
+      handleRefresh();
+    };
+    
+    const handleOffline = () => {
+      setIsOnline(false);
+      toast.warning("Modo Offline Ativado", {
+        description: "As operações serão salvas localmente e sincronizadas quando houver conexão.",
+        duration: 5000,
+      });
+    };
     
     window.addEventListener("online", handleOnline);
     window.addEventListener("offline", handleOffline);
     
+    // Auto-refresh every 2 minutes when online
+    const autoRefresh = setInterval(() => {
+      if (navigator.onLine) handleRefresh();
+    }, 120000);
+    
     return () => {
       window.removeEventListener("online", handleOnline);
       window.removeEventListener("offline", handleOffline);
+      clearInterval(autoRefresh);
     };
   }, []);
+
+  const handleRefresh = async () => {
+    if (isSyncing) return;
+    setIsSyncing(true);
+    try {
+      await refetchAll();
+      setLastSync(new Date());
+      setErrorCount(0);
+    } catch (err) {
+      setErrorCount(prev => prev + 1);
+      if (errorCount > 2) {
+        toast.error("Erro na sincronização", {
+          description: "Verifique sua conexão de rede.",
+        });
+      }
+    } finally {
+      setIsSyncing(false);
+    }
+  };
 
   // Filter jobs for kiosk display
   const kioskJobs = useMemo(() => {
