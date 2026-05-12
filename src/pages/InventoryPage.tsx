@@ -1,8 +1,8 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef } from 'react';
 import { useRBAC, PermissionGate } from '@/hooks/useRBAC';
-import { subDays, isAfter, parseISO } from 'date-fns';
+import { subDays, isAfter, parseISO, addDays } from 'date-fns';
 import { MainLayout } from '@/components/layout/MainLayout';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,7 +19,11 @@ import {
   Map,
   Boxes,
   QrCode,
-  TrendingDown
+  TrendingDown,
+  Timer,
+  Printer,
+  X,
+  FileDown
 } from 'lucide-react';
 import { useInventory, useInventoryMovements, InventoryItem } from '@/hooks/useInventory';
 import { WarehouseMap } from '@/components/inventory/WarehouseMap';
@@ -32,6 +36,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { QRCodeSVG } from 'qrcode.react';
+
 
 export default function InventoryPage() {
   const { items, isLoading, recordMovement, stats, transferItems, deleteMovement } = useInventory();
