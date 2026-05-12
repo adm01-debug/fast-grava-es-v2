@@ -22,7 +22,7 @@ import { useOperatorAudit } from '@/hooks/useOperatorAudit';
 import { format, subDays, isAfter } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
-const actionConfig = {
+const actionConfig: Record<string, any> = {
   activated: {
     label: 'Ativado',
     icon: UserCheck,
