@@ -159,6 +159,7 @@ export default function KanbanBoard() {
       updated_at: new Date().toISOString(),
     };
 
+    const job = jobs.find(j => j.id === jobId);
     if (!job) return;
 
     try {
