@@ -41,6 +41,8 @@ export interface DbJob {
   updated_at: string;
   sort_order: number | null;
   production_photos: string[] | null;
+  shipment_id: string | null;
+  shipping_status: string | null;
 }
 
 export interface DbTechnique {
