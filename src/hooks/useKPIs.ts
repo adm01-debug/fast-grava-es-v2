@@ -7,7 +7,7 @@ function isValidJob(job: DbJob): boolean {
   return (
     typeof job.id === 'string' && job.id.length > 0 &&
     typeof job.quantity === 'number' && job.quantity >= 0 &&
-    typeof job.estimated_duration === 'number' && job.estimated_duration >= 0 &&
+    (typeof job.estimated_duration === 'number' || job.estimated_duration === null) &&
     typeof job.status === 'string'
   );
 }
@@ -202,22 +202,25 @@ export function useKPIs(period: KPIPeriod = 'all', customTargets?: Partial<KPITa
       const lostPcs = jobList.reduce((sum, j) => sum + sanitizeNumber(j.lost_pieces), 0);
       const prodPcs = jobList.reduce((sum, j) => sum + sanitizeNumber(j.produced_quantity ?? j.quantity), 0);
       const lRate = (prodPcs + lostPcs) > 0 ? (lostPcs / (prodPcs + lostPcs)) * 100 : 0;
-      return { total, completed, rate, totalPcs, lostPcs, lossRate: lRate };
+
+      // Real occupancy calculation for comparison
+      const techJobs = jobList.filter(j => ['production', 'scheduled'].includes(j.status));
+      const busyMachines = new Set(techJobs.map(j => j.machine_id).filter(Boolean)).size;
+      const occRate = machines.length > 0 ? (busyMachines / machines.length) * 100 : 0;
+
+      return { total, completed, rate, totalPcs, lostPcs, lossRate: lRate, occupancyRate: occRate };
     };
 
     const validJobsAll = jobs.filter(isValidJob);
     const validJobs = validJobsAll.filter(currentPeriodFilter);
     const prevJobs = validJobsAll.filter(previousPeriodFilter);
-    
-    const validMachines = machines.filter(isValidMachine);
-    const validTechniques = techniques.filter(isValidTechnique);
 
     const currentStats = calculateStats(validJobs);
     const prevStats = calculateStats(prevJobs);
 
     const comparison: KPIComparison = {
       completionRateDiff: currentStats.rate - prevStats.rate,
-      occupancyDiff: 0, 
+      occupancyDiff: currentStats.occupancyRate - prevStats.occupancyRate,
       lossRateDiff: currentStats.lossRate - prevStats.lossRate,
       volumeDiff: prevStats.totalPcs > 0 ? ((currentStats.totalPcs - prevStats.totalPcs) / prevStats.totalPcs) * 100 : 0
     };
@@ -287,7 +290,7 @@ export function useKPIs(period: KPIPeriod = 'all', customTargets?: Partial<KPITa
       ? productivityByTechnique.reduce((sum, t) => sum + t.occupancyRate, 0) / productivityByTechnique.length
       : 0;
       
-    comparison.occupancyDiff = (Math.random() - 0.5) * 10;
+    // Removido random para manter integridade
 
     const products = Array.from(new Set(validJobs.map(j => j.product).filter(Boolean)));
     const productivityByProduct = products.map(productName => {
@@ -356,7 +359,7 @@ export function useKPIs(period: KPIPeriod = 'all', customTargets?: Partial<KPITa
     const performanceHistory = Array.from({ length: historyDays }, (_, i) => {
       const date = new Date();
       date.setDate(date.getDate() - (historyDays - 1 - i));
-      const variance = 0.8 + (Math.random() * 0.4);
+      const variance = 1.0; // Mantendo estável se não houver dados históricos suficientes
       return {
         date: date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
         efficiency: Math.min(100, averageOccupancy * variance),
