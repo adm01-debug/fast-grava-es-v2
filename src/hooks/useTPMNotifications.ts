@@ -72,18 +72,20 @@ export const useTPMNotifications = () => {
       playAlertSound();
     }
 
-    const iconMap = {
+    const iconMap: Record<string, string> = {
       upcoming: '📅',
       due: '⚠️',
       overdue: '🔴',
       critical: '🚨',
+      predictive: '🧠',
     };
 
-    const titleMap = {
+    const titleMap: Record<string, string> = {
       upcoming: 'Manutenção Próxima',
       due: 'Manutenção Vencendo',
       overdue: 'Manutenção Atrasada',
       critical: 'ALERTA CRÍTICO',
+      predictive: 'PREDIÇÃO IA: RISCO DE FALHA',
     };
 
     const machineName = alert.machine?.name || 'Máquina desconhecida';
