@@ -552,12 +552,38 @@ function MachineHistoryTab({ machineId }: { machineId: string }) {
 }
 
 function FactoryHeatmap({ machines, techniques }: { machines: any[]; techniques: any[] }) {
+  const { jobs } = useSchedulingData();
+
   const getHeatColor = (machine: any) => {
     if (!machine.is_active) return 'bg-slate-200 dark:bg-slate-800 opacity-40';
-    const heatValue = Math.random(); 
-    if (heatValue > 0.8) return 'bg-orange-500 shadow-[0_0_15px_rgba(249,115,22,0.5)]';
-    if (heatValue > 0.5) return 'bg-amber-400 shadow-[0_0_10px_rgba(251,191,36,0.3)]';
+    
+    // Count jobs in production for this machine
+    const productionJobs = jobs.filter(j => j.machine_id === machine.id && j.status === 'production').length;
+    
+    if (productionJobs > 0) return 'bg-orange-500 shadow-[0_0_15px_rgba(249,115,22,0.5)]';
+    
+    // Check if machine is scheduled for today
+    const today = new Date().toISOString().split('T')[0];
+    const scheduledToday = jobs.filter(j => j.machine_id === machine.id && j.scheduled_date === today).length;
+    
+    if (scheduledToday > 0) return 'bg-amber-400 shadow-[0_0_10px_rgba(251,191,36,0.3)]';
+    
     return 'bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.2)]';
+  };
+
+  const getMachineStats = (machine: any) => {
+    const machineJobs = jobs.filter(j => j.machine_id === machine.id);
+    const productionCount = machineJobs.filter(j => j.status === 'production').length;
+    const today = new Date().toISOString().split('T')[0];
+    const todayCount = machineJobs.filter(j => j.scheduled_date === today).length;
+    const completedCount = machineJobs.filter(j => j.status === 'finished').length;
+
+    return {
+      productionCount,
+      todayCount,
+      completedCount,
+      occupancy: machineJobs.length > 0 ? Math.min(100, (todayCount / 5) * 100) : 0
+    };
   };
 
   return (
@@ -601,11 +627,24 @@ function FactoryHeatmap({ machines, techniques }: { machines: any[]; techniques:
                          <span className="text-[8px] font-mono font-bold text-white/80">{machine.code}</span>
                        </motion.div>
                      </TooltipTrigger>
-                     <TooltipContent>
-                        <p className="font-bold">{machine.code}</p>
-                        <p className="text-xs">{machine.name}</p>
-                        <p className="text-[10px] uppercase mt-1 opacity-70">Ocupação: {Math.round(Math.random() * 100)}%</p>
-                     </TooltipContent>
+                      <TooltipContent>
+                         <p className="font-bold">{machine.code}</p>
+                         <p className="text-xs">{machine.name}</p>
+                         <div className="mt-2 space-y-1 pt-1 border-t border-border/50">
+                            <p className="text-[10px] uppercase font-bold flex justify-between gap-4">
+                               <span>Em Produção:</span> 
+                               <span className="text-primary">{getMachineStats(machine).productionCount}</span>
+                            </p>
+                            <p className="text-[10px] uppercase font-bold flex justify-between gap-4">
+                               <span>Agendados Hoje:</span> 
+                               <span>{getMachineStats(machine).todayCount}</span>
+                            </p>
+                            <p className="text-[10px] uppercase font-bold flex justify-between gap-4">
+                               <span>Ocupação:</span> 
+                               <span className="text-amber-500">{Math.round(getMachineStats(machine).occupancy)}%</span>
+                            </p>
+                         </div>
+                      </TooltipContent>
                    </Tooltip>
                  </TooltipProvider>
                ))}

@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, startOfDay, endOfDay } from 'date-fns';
 import { toast } from 'sonner';
+import { useAuth } from '@/contexts/AuthContext';
 
 export interface Achievement {
   id: string;
@@ -34,7 +35,18 @@ export interface OperatorRanking {
   xp_target?: number;
 }
 
+export interface Reward {
+  id: string;
+  name: string;
+  description: string;
+  cost_points: number;
+  icon: string;
+  color_class: string;
+  stock: number;
+}
+
 export function useGamification(period: 'daily' | 'weekly' | 'monthly' = 'weekly') {
+  const { user } = useAuth();
   const queryClient = useQueryClient();
   const now = new Date();
   
@@ -132,14 +144,74 @@ export function useGamification(period: 'daily' | 'weekly' | 'monthly' = 'weekly
     },
   });
 
+  // Fetch rewards store
+  const rewardsQuery = useQuery({
+    queryKey: ['gamification-rewards'],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('gamification_rewards').select('*').eq('is_active', true);
+      if (error) throw error;
+      return data as Reward[];
+    },
+    staleTime: 300000,
+  });
+
+  // Calculate user balance
+  const balanceQuery = useQuery({
+    queryKey: ['user-points-balance', user?.id],
+    enabled: !!user,
+    queryFn: async () => {
+      // Points from monthly rankings (as a proxy for total coins earned)
+      const { data: rankings } = await supabase
+        .from('operator_rankings')
+        .select('total_points')
+        .eq('operator_id', user!.id)
+        .eq('ranking_type', 'monthly');
+      
+      const earned = (rankings || []).reduce((sum, r) => sum + r.total_points, 0);
+
+      // Deduct redemptions
+      const { data: redemptions } = await supabase
+        .from('reward_redemptions')
+        .select('points_spent')
+        .eq('user_id', user!.id)
+        .neq('status', 'cancelled');
+      
+      const spent = (redemptions || []).reduce((sum, r) => sum + r.points_spent, 0);
+
+      return Math.max(0, earned - spent + 3500); // Base mock balance for demo
+    },
+    staleTime: 30000,
+  });
+
+  // Redemption mutation
+  const redeemReward = useMutation({
+    mutationFn: async (reward: Reward) => {
+      const { error } = await supabase.from('reward_redemptions').insert({
+        user_id: user!.id,
+        reward_id: reward.id,
+        points_spent: reward.cost_points,
+        status: 'pending'
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['user-points-balance'] });
+      toast.success('Resgate solicitado com sucesso! Aguardando aprovação.');
+    },
+    onError: (err: any) => toast.error(`Erro no resgate: ${err.message}`),
+  });
+
   return {
     rankings: rankingsQuery.data || [],
     achievements: achievementsQuery.data || [],
-    isLoading: rankingsQuery.isLoading || achievementsQuery.isLoading,
+    rewards: rewardsQuery.data || [],
+    balance: balanceQuery.data || 0,
+    isLoading: rankingsQuery.isLoading || achievementsQuery.isLoading || rewardsQuery.isLoading,
     periodStart,
     periodEnd,
     calculateRankings: () => calculateRankingsMutation.mutate(period),
     isCalculating: calculateRankingsMutation.isPending,
+    redeemReward,
   };
 }
 
