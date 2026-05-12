@@ -56,6 +56,20 @@ const TABLE_COLUMNS: Record<string, string[]> = {
   maintenance_records: ['id', 'machine_id', 'status', 'maintenance_type_id', 'start_time', 'end_time'],
 };
 
+const TABLE_FILTER_FIELDS: Record<string, string> = {
+  jobs: 'created_at',
+  machines: 'created_at',
+  profiles: 'created_at',
+  inventory_items: 'created_at',
+  maintenance_records: 'start_time',
+};
+
+const STATUS_OPTIONS: Record<string, string[]> = {
+  jobs: ['finished', 'production', 'scheduled', 'queue', 'delayed'],
+  maintenance_records: ['pending', 'in_progress', 'completed', 'cancelled'],
+};
+
+
 export default function ReportBuilderPage() {
   const [selectedTable, setSelectedTable] = useState<string>('jobs');
   const [selectedColumns, setSelectedColumns] = useState<string[]>(TABLE_COLUMNS.jobs);
