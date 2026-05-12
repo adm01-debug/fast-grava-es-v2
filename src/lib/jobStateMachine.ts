@@ -11,15 +11,19 @@ export type JobStatus =
   | 'paused'
   | 'delayed'
   | 'finished'
-  | 'cancelled';
+  | 'cancelled'
+  | 'rework'
+  | 'buffer';
 
 const TRANSITIONS: Record<JobStatus, JobStatus[]> = {
   queue: ['scheduled', 'ready', 'cancelled'],
   scheduled: ['ready', 'production', 'queue', 'cancelled'],
-  ready: ['production', 'scheduled', 'cancelled'],
-  production: ['paused', 'delayed', 'finished', 'cancelled'],
+  ready: ['production', 'scheduled', 'queue', 'cancelled'],
+  production: ['paused', 'delayed', 'finished', 'rework', 'cancelled'],
   paused: ['production', 'cancelled'],
   delayed: ['production', 'cancelled'],
+  rework: ['production', 'finished', 'cancelled'],
+  buffer: ['ready', 'scheduled', 'cancelled'],
   finished: [], // terminal
   cancelled: ['queue'], // allow re-queue
 };

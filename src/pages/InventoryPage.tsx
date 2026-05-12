@@ -65,12 +65,14 @@ export default function InventoryPage() {
   const [isAIPredictionModalOpen, setIsAIPredictionModalOpen] = useState(false);
 
 
-  const filteredItems = items.filter(item => {
-    const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                         item.specification?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === 'all' || item.category === selectedCategory;
-    return matchesSearch && matchesCategory;
-  });
+  const filteredItems = useMemo(() => {
+    return items.filter(item => {
+      const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                           item.specification?.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesCategory = selectedCategory === 'all' || item.category === selectedCategory;
+      return matchesSearch && matchesCategory;
+    });
+  }, [items, searchTerm, selectedCategory]);
 
   const lowStockItems = items.filter(item => item.current_stock <= item.min_stock_level);
 

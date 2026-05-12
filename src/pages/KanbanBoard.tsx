@@ -32,7 +32,7 @@ import {
 } from 'lucide-react';
 import { useSchedulingData } from '@/hooks/useSchedulingData';
 import { DbJob } from '@/hooks/useJobs';
-import { JobStatus } from '@/types/scheduling';
+import { JobStatus, assertTransition } from '@/lib/jobStateMachine';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -160,10 +160,21 @@ export default function KanbanBoard() {
     };
 
     const job = jobs.find(j => j.id === jobId);
-    if (mapping.status === 'production' && job && !job.actual_start_time) {
+    if (!job) return;
+
+    try {
+      assertTransition(job.status as JobStatus, mapping.status);
+    } catch (err) {
+      toast.error('Transição não permitida', {
+        description: err instanceof Error ? err.message : 'Estado inválido'
+      });
+      return;
+    }
+
+    if (mapping.status === 'production' && !job.actual_start_time) {
       updateData.actual_start_time = new Date().toISOString();
     }
-    if (mapping.status === 'finished' && job && !job.actual_end_time) {
+    if (mapping.status === 'finished' && !job.actual_end_time) {
       updateData.actual_end_time = new Date().toISOString();
     }
 
@@ -285,7 +296,7 @@ export default function KanbanBoard() {
 
   const renderColumns = (jobsForColumns: DbJob[], getJobsByStatusFn: (s: JobStatus) => DbJob[]) => (
     <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-thin">
-      {statusColumns.map((column) => (
+      {[...statusColumns, ...exceptionStatuses].map((column) => (
         <DroppableColumn 
           key={column.status} 
           {...column}
