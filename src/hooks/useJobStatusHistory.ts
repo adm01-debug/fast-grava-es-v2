@@ -19,12 +19,18 @@ export function useJobStatusHistory(jobId: string) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('job_status_history')
-        .select('*, changed_by_profile:profiles!job_status_history_changed_by_fkey(full_name)')
+        .select('*, changed_by_profile:profiles(full_name)')
         .eq('job_id', jobId)
         .order('created_at', { ascending: false });
       
       if (error) throw error;
-      return data;
+      
+      return (data || []).map(item => ({
+        ...item,
+        changed_by_profile: Array.isArray(item.changed_by_profile) 
+          ? item.changed_by_profile[0] 
+          : item.changed_by_profile
+      })) as JobStatusHistory[];
     },
     enabled: !!jobId,
   });
