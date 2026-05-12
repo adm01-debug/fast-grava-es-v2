@@ -99,7 +99,35 @@ export default function KPIDashboard() {
   const [selectedMachine, setSelectedMachine] = useState<any>(null);
 
 
-  const isLoading = isLoadingKPIs || isLoadingOperators;
+  const isLoading = isLoadingKPIs || isLoadingOperators || isLoadingJobs;
+
+  const handleDrillDown = (title: string, segment: 'lost' | 'finished' | 'delayed' | 'production' | 'queue') => {
+    setDrillDownTitle(title);
+    if (jobs) {
+      const filtered = jobs.filter((j: any) => {
+        if (segment === 'lost') return (j.lost_pieces || 0) > 0;
+        if (segment === 'finished') return j.status === 'finished';
+        if (segment === 'delayed') return j.status === 'delayed';
+        if (segment === 'production') return j.status === 'production';
+        if (segment === 'queue') return j.status === 'scheduled' || j.status === 'queue';
+        return true;
+      }).map((j: any) => {
+        const total = (j.produced_quantity || j.quantity || 1) + (j.lost_pieces || 0);
+        return {
+          id: j.id,
+          order_number: j.order_number || `OS-${j.id.slice(0, 5)}`,
+          product: j.product_name || 'Produto',
+          status: j.status,
+          quantity: j.quantity,
+          lost_pieces: j.lost_pieces || 0,
+          efficiency: total > 0 ? (((total - (j.lost_pieces || 0)) / total) * 100).toFixed(1) + '%' : '--'
+        };
+      });
+      setDrillDownJobs(filtered);
+      setDrillDownOpen(true);
+    }
+  };
+
 
   if (isLoading) {
     return (
