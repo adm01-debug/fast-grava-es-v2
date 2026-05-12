@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Slider } from '@/components/ui/slider';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -27,6 +28,7 @@ const LABEL_CONFIGS: Record<LabelSize, { w: number; h: number; qrSize: number; n
 export function LotLabelPrint({ lots, open, onClose }: LotLabelPrintProps) {
   const [labelSize, setLabelSize] = useState<LabelSize>('10x15');
   const [copies, setCopies] = useState(1);
+  const [zoom, setZoom] = useState(0.7);
 
   const config = LABEL_CONFIGS[labelSize];
 
@@ -163,7 +165,7 @@ export function LotLabelPrint({ lots, open, onClose }: LotLabelPrintProps) {
 
         <div className="space-y-4">
           {/* Settings */}
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-3 gap-3">
             <div className="space-y-1.5">
               <Label className="text-xs">Tamanho da Etiqueta</Label>
               <Select value={labelSize} onValueChange={(v) => setLabelSize(v as LabelSize)}>
@@ -187,45 +189,63 @@ export function LotLabelPrint({ lots, open, onClose }: LotLabelPrintProps) {
                 onChange={(e) => setCopies(Math.max(1, parseInt(e.target.value) || 1))}
               />
             </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs">Zoom Visualizador</Label>
+              <div className="flex items-center gap-2 pt-1">
+                <Slider 
+                  value={[zoom]} 
+                  min={0.3} 
+                  max={1.5} 
+                  step={0.1} 
+                  onValueChange={([v]) => setZoom(v)}
+                  className="w-full"
+                />
+                <span className="text-[10px] font-bold w-8">{Math.round(zoom * 100)}%</span>
+              </div>
+            </div>
           </div>
 
           {/* Preview */}
-          <div className="border border-border rounded-lg p-4 bg-background flex items-center justify-center">
+          <div className="border border-border rounded-lg p-6 bg-muted/20 flex flex-col items-center justify-center min-h-[300px] overflow-auto">
+            <Label className="text-[10px] uppercase font-bold text-muted-foreground mb-4">Pré-visualização em Tempo Real</Label>
             {lots.length > 0 ? (
-              <div
-                style={{
-                  width: config.w * 0.7,
-                  height: config.h * 0.7,
-                  border: '1px dashed hsl(var(--border))',
-                  borderRadius: 6,
-                  display: 'flex',
-                  flexDirection: config.w > config.h ? 'row' : 'column',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  padding: config.w > config.h ? '6px 12px' : '12px',
-                  gap: config.w > config.h ? 12 : 8,
-                  fontFamily: "'Courier New', monospace",
-                }}
-              >
-                <QRCodeSVG
-                  id={`label-qr-preview-${lots[0].id}`}
-                  value={generateQrValue(lots[0])}
-                  size={config.qrSize * 0.7}
-                  level="H"
-                  includeMargin
-                />
-                <div style={{ textAlign: config.w > config.h ? 'left' : 'center', flex: 1, minWidth: 0, overflow: 'hidden' }}>
-                  <div className="font-bold text-sm truncate">{lots[0].lot_number}</div>
-                  <div className="text-xs text-muted-foreground truncate">{lots[0].product_name}</div>
-                  <div className="text-[10px] text-muted-foreground">Qtd: {lots[0].quantity} un</div>
-                  <div className="text-[10px] text-muted-foreground">
-                    {format(new Date(lots[0].production_date), 'dd/MM/yyyy')}
-                  </div>
-                  {lots[0].expiration_date && (
-                    <div className="text-[10px] text-destructive font-bold">
-                      Val: {format(new Date(lots[0].expiration_date), 'dd/MM/yyyy')}
+              <div className="p-4 bg-background shadow-2xl rounded-lg border border-primary/20">
+                <div
+                  style={{
+                    width: config.w * zoom,
+                    height: config.h * zoom,
+                    border: '1px dashed hsl(var(--border))',
+                    borderRadius: 6,
+                    display: 'flex',
+                    flexDirection: config.w > config.h ? 'row' : 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: (config.w > config.h ? 6 : 12) * zoom,
+                    gap: (config.w > config.h ? 12 : 8) * zoom,
+                    fontFamily: "'Courier New', monospace",
+                    transition: 'all 0.2s ease-out',
+                  }}
+                >
+                  <QRCodeSVG
+                    id={`label-qr-preview-${lots[0].id}`}
+                    value={generateQrValue(lots[0])}
+                    size={config.qrSize * zoom}
+                    level="H"
+                    includeMargin
+                  />
+                  <div style={{ textAlign: config.w > config.h ? 'left' : 'center', flex: 1, minWidth: 0, overflow: 'hidden' }}>
+                    <div style={{ fontSize: `${14 * zoom}px` }} className="font-bold truncate">{lots[0].lot_number}</div>
+                    <div style={{ fontSize: `${12 * zoom}px` }} className="text-muted-foreground truncate">{lots[0].product_name}</div>
+                    <div style={{ fontSize: `${10 * zoom}px` }} className="text-muted-foreground font-medium">Qtd: {lots[0].quantity} un</div>
+                    <div style={{ fontSize: `${10 * zoom}px` }} className="text-muted-foreground">
+                      {format(new Date(lots[0].production_date), 'dd/MM/yyyy')}
                     </div>
-                  )}
+                    {lots[0].expiration_date && (
+                      <div style={{ fontSize: `${10 * zoom}px` }} className="text-destructive font-bold">
+                        Val: {format(new Date(lots[0].expiration_date), 'dd/MM/yyyy')}
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             ) : (

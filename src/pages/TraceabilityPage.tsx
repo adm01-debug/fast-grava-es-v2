@@ -274,6 +274,15 @@ export default function TraceabilityPage() {
             <Button variant="outline" size="sm" onClick={handleExportCSV}>
               <Download className="h-4 w-4 mr-1" /> CSV
             </Button>
+            <Button variant="outline" size="sm" onClick={() => {
+              if (selectedIds.size === 0) {
+                toast.error('Selecione pelo menos um lote');
+                return;
+              }
+              setLabelLots(filteredAndSortedLots.filter(l => selectedIds.has(l.id)));
+            }}>
+              <Tag className="h-4 w-4 mr-1" /> QR Lote
+            </Button>
             <Dialog open={showCreateModal} onOpenChange={setShowCreateModal}>
               <DialogTrigger asChild>
                 <Button className="font-bold">
