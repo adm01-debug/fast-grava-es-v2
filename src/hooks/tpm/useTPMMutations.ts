@@ -362,11 +362,11 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
     },
   });
 
-  // Generate alerts for due maintenance (parallel execution)
   const checkAndGenerateAlerts = useMutation({
     mutationFn: async () => {
       const now = new Date();
 
+      // 1. Static checks (due dates)
       const alertsToCreate = schedules
         .filter(schedule => {
           const existingAlert = alerts.find(
@@ -407,6 +407,36 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
         })
         .filter((alert): alert is NonNullable<typeof alert> => alert !== null);
 
+      // 2. Predictive AI Check (Edge Function)
+      try {
+        console.log('Invoking ML predictive engine...');
+        const { data: mlResult, error: mlError } = await supabase.functions.invoke('ml-predictions', {
+          body: { action: 'batch_analyze' }
+        });
+
+        if (!mlError && mlResult?.predictions) {
+          mlResult.predictions.forEach((p: any) => {
+            if (p.prediction?.risk_score > 75) {
+              // High risk detected by AI, find the primary schedule for this machine
+              const machineSchedule = schedules.find(s => s.machine_id === p.machine.id && s.is_active);
+              if (machineSchedule) {
+                const existingAlert = alerts.find(a => a.schedule_id === machineSchedule.id && a.alert_type === 'predictive' && !a.is_resolved);
+                if (!existingAlert) {
+                  alertsToCreate.push({
+                    schedule_id: machineSchedule.id,
+                    machine_id: p.machine.id,
+                    alert_type: 'predictive',
+                    message: `IA PREDIZ FALHA (Risco: ${p.prediction.risk_score}%): ${p.prediction.recommendations?.[0] || 'Inspeção urgente necessária'}`,
+                  });
+                }
+              }
+            }
+          });
+        }
+      } catch (err) {
+        console.warn('ML predictions skipped:', err);
+      }
+
       const results = await Promise.all(
         alertsToCreate.map(async (alertData) => {
           const { error } = await supabase.from('maintenance_alerts').insert(alertData);
@@ -418,8 +448,11 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
     },
     onSuccess: (count) => {
       queryClient.invalidateQueries({ queryKey: ['maintenance-alerts'] });
+      queryClient.invalidateQueries({ queryKey: ['machine-predictions'] });
       if (count > 0) {
-        toast.info(`${count} alertas de manutenção gerados`);
+        toast.info(`${count} alertas de manutenção (Estáticos + IA) gerados`);
+      } else {
+        toast.success('Diagnóstico concluído: Nenhum novo risco detectado.');
       }
     },
   });
