@@ -40,6 +40,7 @@ export interface DbJob {
   created_at: string;
   updated_at: string;
   sort_order: number | null;
+  production_photos: string[] | null;
 }
 
 export interface DbTechnique {
