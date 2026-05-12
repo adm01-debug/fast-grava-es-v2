@@ -820,5 +820,4 @@ function AIPredictionValidationModal({ open, onOpenChange, items }: { open: bool
   );
 }
 
-import { ScrollArea } from "@/components/ui/scroll-area";
 
