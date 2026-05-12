@@ -30,32 +30,9 @@ import { BILoadingSkeleton } from './BILoadingSkeleton';
 const BIAIInsights = lazy(() => import('./BIAIInsights').then(m => ({ default: m.BIAIInsights })));
 import { CHART_COLORS, GRADIENTS } from '@/constants/biConstants';
 
-interface FuturisticBIProps {
-  isLoading?: boolean;
-  biMetrics: {
-    toDoJobs: number;
-    periodLossRate: number;
-    periodJobsList: any[];
-    dailyTrend: any[];
-    statusDistribution: any[];
-    machineUtilization: any[];
-    periodCompletedJobs: number;
-    periodCompletedPieces: number;
-    periodLostPieces: number;
-  };
-  kpis: {
-    inProgressJobs: number;
-    delayedJobs: number;
-  };
-  oeeData: {
-    overallAvailability: number;
-    overallOEE: number;
-    overallPerformance: number;
-    overallQuality: number;
-  };
-}
+import { BIJob, BIMetrics, BIProps } from '@/types/bi';
 
-export function FuturisticBI({ biMetrics, kpis, oeeData, isLoading }: FuturisticBIProps) {
+export function FuturisticBI({ biMetrics, kpis, oeeData, isLoading }: BIProps) {
   const navigate = useNavigate();
   const { operators } = useOperatorProductivity(30);
   const { stats: tpmStats } = useTPM();
