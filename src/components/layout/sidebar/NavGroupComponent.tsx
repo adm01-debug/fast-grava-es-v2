@@ -4,6 +4,7 @@ import { ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { NavButton, NavItem } from './NavButton';
+import { useNotifications } from '@/hooks/useNotifications';
 
 export interface NavGroup {
   id: string;
@@ -29,11 +30,18 @@ export const NavGroupComponent = memo(function NavGroupComponent({
   const Icon = group.icon;
   const isOpen = openGroups.includes(group.id);
   const hasActiveItem = group.items.some(item => isActive(item.href));
+  const { unreadCount: notificationCount } = useNotifications();
 
-  const itemsWithBadge = group.items.map(item => ({
-    ...item,
-    badge: item.href === '/alerts' && alertCount > 0 ? alertCount : undefined
-  }));
+  const itemsWithBadge = group.items.map(item => {
+    let badgeCount = undefined;
+    if (item.href === '/alerts') badgeCount = alertCount;
+    if (item.href === '/notifications') badgeCount = notificationCount;
+    
+    return {
+      ...item,
+      badge: badgeCount > 0 ? badgeCount : undefined
+    };
+  });
 
   if (collapsed && !isMobile) {
     return <>{itemsWithBadge.map(item => <NavButton key={item.href} item={item} collapsed={collapsed} isMobile={isMobile} isActive={isActive(item.href)} />)}</>;
