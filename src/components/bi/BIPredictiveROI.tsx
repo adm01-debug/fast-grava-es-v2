@@ -108,4 +108,4 @@ export function BIPredictiveROI({ biMetrics }: BIPredictiveROIProps) {
   );
 }
 
-import { BrainCircuit } from 'lucide-react';
+
