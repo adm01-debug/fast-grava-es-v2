@@ -19,7 +19,6 @@ import { AuditEntryCard } from "@/components/audit/AuditEntryCard";
 import { HistoryPeriodFilter, type HistoryPeriodValue } from "@/components/audit/HistoryPeriodFilter";
 import { MachineReliabilityTab } from "./MachineReliabilityTab";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
 import { calculateRealOEE } from "@/lib/oeeCalculations";
 import { useSchedulingData } from "@/hooks/useSchedulingData";
 
@@ -119,6 +118,7 @@ export function MachineDetailsModal({ machine, open, onOpenChange }: MachineDeta
               </div>
             </div>
 
+            <MachineRealOEESection machineId={machine.id} />
           </TabsContent>
 
           <TabsContent value="reliability">
@@ -136,6 +136,7 @@ export function MachineDetailsModal({ machine, open, onOpenChange }: MachineDeta
   );
 }
 
+function MachineHistoryTab({ machineId }: { machineId: string }) {
   const [period, setPeriod] = useState<HistoryPeriodValue>({ preset: 'all' });
   const { data, isLoading, error } = useEntityAuditTrail('machines', machineId, {
     fromDate: period.fromDate,
