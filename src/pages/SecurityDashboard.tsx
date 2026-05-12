@@ -40,6 +40,9 @@ import { useUserDevices } from '@/hooks/useUserDevices';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { VoiceButton } from '@/components/voice/VoiceCommands';
 import { CyberResilienceScore } from '@/components/security/CyberResilienceScore';
+import { AICyberAdvisor } from '@/components/security/AICyberAdvisor';
+import { MainLayout } from '@/components/layout/MainLayout';
+
 
 export default function SecurityDashboard() {
   const navigate = useNavigate();
