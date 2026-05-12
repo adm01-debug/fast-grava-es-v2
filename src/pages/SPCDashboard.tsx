@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { Helmet } from 'react-helmet';
 import { format } from 'date-fns';
-import { Activity, Plus, AlertTriangle, CheckCircle, TrendingUp, Target, Settings, Zap, History, LayoutPanelTop, BrainCircuit } from 'lucide-react';
+import { Activity, Plus, AlertTriangle, CheckCircle, TrendingUp, Target, Settings, Zap, History, LayoutPanelTop, BrainCircuit, Sparkles, ArrowRightLeft, FileSpreadsheet } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -16,7 +16,8 @@ import { useSPCParameters, useSPCMeasurements, useSPCAlerts, useSPCMutations, ca
 import { SPCCreateParameterModal } from '@/components/spc/SPCCreateParameterModal';
 import { SPCControlChart } from '@/components/spc/SPCControlChart';
 import { QualityHistogram } from '@/components/spc/QualityHistogram';
-import { Sparkles, ArrowRightLeft, FileSpreadsheet } from 'lucide-react';
+import { exportSPCReport } from '@/lib/spcExport';
+import { toast } from 'sonner';
 
 export default function SPCDashboard() {
   const [selectedParameter, setSelectedParameter] = useState<SPCParameter | null>(null);
