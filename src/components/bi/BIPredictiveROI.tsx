@@ -1,8 +1,7 @@
 import { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { TrendingUp, Sparkles, DollarSign, Target, ArrowRight } from 'lucide-react';
+import { TrendingUp, Sparkles, DollarSign, Target, ArrowRight, BrainCircuit } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { BIMetrics } from '@/types/bi';
 
