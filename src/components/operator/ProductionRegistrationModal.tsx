@@ -302,6 +302,56 @@ export function ProductionRegistrationModal({
               </p>
             </div>
 
+            {/* Quality Checklist (Hyper-Excellence) */}
+            <div className="space-y-4 p-4 rounded-xl bg-primary/5 border border-primary/20 shadow-inner">
+              <Label className="text-xs font-black uppercase tracking-widest text-primary flex items-center gap-2">
+                <CheckCircle2 className="h-4 w-4" />
+                Protocolo de Qualidade 5.0
+              </Label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="flex items-center space-x-2">
+                  <Checkbox 
+                    id="check-color" 
+                    checked={qualityChecks.color} 
+                    onCheckedChange={(checked) => setQualityChecks(prev => ({ ...prev, color: !!checked }))}
+                  />
+                  <label htmlFor="check-color" className="text-xs font-bold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                    Conformidade de Cor
+                  </label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox 
+                    id="check-burrs" 
+                    checked={qualityChecks.burrs} 
+                    onCheckedChange={(checked) => setQualityChecks(prev => ({ ...prev, burrs: !!checked }))}
+                  />
+                  <label htmlFor="check-burrs" className="text-xs font-bold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                    Ausência de Rebarbas
+                  </label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox 
+                    id="check-dimensions" 
+                    checked={qualityChecks.dimensions} 
+                    onCheckedChange={(checked) => setQualityChecks(prev => ({ ...prev, dimensions: !!checked }))}
+                  />
+                  <label htmlFor="check-dimensions" className="text-xs font-bold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                    Dimensões Conferidas
+                  </label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox 
+                    id="check-packaging" 
+                    checked={qualityChecks.packaging} 
+                    onCheckedChange={(checked) => setQualityChecks(prev => ({ ...prev, packaging: !!checked }))}
+                  />
+                  <label htmlFor="check-packaging" className="text-xs font-bold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                    Embalagem Padrão
+                  </label>
+                </div>
+              </div>
+            </div>
+
             {/* Notes */}
             <div className="space-y-2">
               <Label htmlFor="notes">Observações</Label>
