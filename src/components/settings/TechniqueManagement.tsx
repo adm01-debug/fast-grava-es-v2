@@ -16,8 +16,9 @@ export function TechniqueManagement() {
   const queryClient = useQueryClient();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingTechnique, setEditingTechnique] = useState<any>(null);
+  const { getMachinesByTechnique, getJobsByTechnique, isLoading: isLoadingData } = useSchedulingData();
 
-  const { data: techniques, isLoading } = useQuery({
+  const { data: techniques, isLoading: isLoadingTech } = useQuery({
     queryKey: ['techniques-admin'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -28,6 +29,8 @@ export function TechniqueManagement() {
       return data;
     }
   });
+
+  const isLoading = isLoadingTech || isLoadingData;
 
   const saveMutation = useMutation({
     mutationFn: async (technique: any) => {
