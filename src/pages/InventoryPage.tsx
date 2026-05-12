@@ -194,10 +194,22 @@ export default function InventoryPage() {
               {isLoading ? (
                 [1,2,3].map(i => <Skeleton key={i} className="h-48 w-full rounded-xl" />)
               ) : filteredItems.map((item) => (
-                <InventoryCard key={item.id} item={item} onMovement={recordMovement} />
+                <InventoryCard 
+                  key={item.id} 
+                  item={item} 
+                  onMovement={recordMovement}
+                  isSelected={selectedItems.has(item.id)}
+                  onSelect={(id, checked) => {
+                    const next = new Set(selectedItems);
+                    if (checked) next.add(id);
+                    else next.delete(id);
+                    setSelectedItems(next);
+                  }}
+                />
               ))}
             </div>
           </TabsContent>
+
 
           <TabsContent value="wms" className="space-y-6 animate-fade-in">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
