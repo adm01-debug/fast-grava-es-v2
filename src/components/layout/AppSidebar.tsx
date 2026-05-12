@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { useDevice } from '@/hooks/use-device';
 import { useAlertCount } from '@/hooks/useAlertCount';
+import { useNotifications } from '@/hooks/useNotifications';
 import { useSwipeGesture } from '@/hooks/use-swipe-gesture';
 import { useFocusTrap } from '@/hooks/use-focus-trap';
 import { LanguageSwitcher } from './LanguageSwitcher';
@@ -26,6 +27,7 @@ export function AppSidebar() {
   const { profile, role, signOut, isCoordinator } = useAuth();
   const { isMobile } = useDevice();
   const alertCount = useAlertCount();
+  const { unreadCount: notificationCount } = useNotifications();
 
   const toggleGroup = useCallback((groupId: string) => {
     setOpenGroups(prev => prev.includes(groupId) ? prev.filter(id => id !== groupId) : [...prev, groupId]);
@@ -125,6 +127,7 @@ export function AppSidebar() {
                   isMobile={isMobile} 
                   isActive={isActive} 
                   alertCount={alertCount} 
+                  notificationCount={notificationCount}
                   openGroups={openGroups} 
                   toggleGroup={toggleGroup} 
                 />
