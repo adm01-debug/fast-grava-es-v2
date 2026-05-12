@@ -214,11 +214,11 @@ export const TechnicalSheetViewer = ({ sheetId, onEdit, onDuplicate }: Technical
   const progress = steps.length > 0 ? Math.round((completedSteps.size / steps.length) * 100) : 0;
 
   return (
-    <div className="flex flex-col lg:flex-row gap-4 h-full">
-      <Card className="glass-card border-border/50 flex-1 flex flex-col">
-        <CardHeader className="pb-4">
+    <div className="flex flex-col lg:flex-row gap-4 h-full overflow-hidden">
+      <Card className="glass-card border-border/50 flex-1 flex flex-col overflow-hidden">
+        <CardHeader className="pb-4 shrink-0">
           <div className="flex items-start justify-between">
-            <div className="flex-1">
+            <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-2 flex-wrap">
                 {sheet.techniques && (
                   <Badge
@@ -236,7 +236,7 @@ export const TechnicalSheetViewer = ({ sheetId, onEdit, onDuplicate }: Technical
                 )}
               </div>
               <div className="flex items-center gap-3">
-                <CardTitle className="text-xl">{sheet.title}</CardTitle>
+                <CardTitle className="text-xl truncate">{sheet.title}</CardTitle>
                 <KnowledgeStatusBadge status={sheet.status} />
                 <Badge variant="outline" className="text-[10px] font-bold">v{sheet.version || '1'}</Badge>
               </div>
@@ -251,7 +251,7 @@ export const TechnicalSheetViewer = ({ sheetId, onEdit, onDuplicate }: Technical
                 </div>
               </div>
               {sheet.description && (
-                <p className="text-sm text-muted-foreground mt-2">{sheet.description}</p>
+                <p className="text-sm text-muted-foreground mt-2 line-clamp-2">{sheet.description}</p>
               )}
             </div>
             <div className="flex gap-1.5 flex-shrink-0">
