@@ -22,6 +22,7 @@ export function EditShipmentModal({ shipment, open, onOpenChange }: EditShipment
   const [destination, setDestination] = useState('');
   const [status, setStatus] = useState<DbShipment['status']>('pending');
   const [estimatedDelivery, setEstimatedDelivery] = useState('');
+  const [freightCost, setFreightCost] = useState('0');
 
   useEffect(() => {
     if (shipment) {
@@ -30,6 +31,7 @@ export function EditShipmentModal({ shipment, open, onOpenChange }: EditShipment
       setDestination(shipment.destination || '');
       setStatus(shipment.status);
       setEstimatedDelivery(shipment.estimated_delivery ? shipment.estimated_delivery.split('T')[0] : '');
+      setFreightCost(shipment.freight_cost?.toString() || '0');
     }
   }, [shipment]);
 
@@ -44,6 +46,7 @@ export function EditShipmentModal({ shipment, open, onOpenChange }: EditShipment
         tracking_code: trackingCode,
         destination: destination,
         status: status,
+        freight_cost: parseFloat(freightCost) || 0,
         estimated_delivery: estimatedDelivery ? new Date(estimatedDelivery).toISOString() : null,
         actual_delivery: status === 'delivered' ? new Date().toISOString() : shipment.actual_delivery
       }
@@ -135,6 +138,17 @@ export function EditShipmentModal({ shipment, open, onOpenChange }: EditShipment
               type="date"
               value={estimatedDelivery} 
               onChange={(e) => setEstimatedDelivery(e.target.value)} 
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="freight-edit">{t('logistics.freightCost')}</Label>
+            <Input 
+              id="freight-edit" 
+              type="number"
+              step="0.01"
+              value={freightCost} 
+              onChange={(e) => setFreightCost(e.target.value)} 
             />
           </div>
 
