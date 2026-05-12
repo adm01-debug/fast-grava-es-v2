@@ -298,6 +298,8 @@ export function useInventory() {
     updateItem: updateItemMutation.mutateAsync,
     transferItems: transferItemsMutation.mutateAsync,
     deleteMovement: deleteMovementMutation.mutateAsync,
+    calculateAI: calculateAIIntelligence.mutate,
+    isCalculatingAI: calculateAIIntelligence.isPending,
     isTransferring: transferItemsMutation.isPending,
     stats,
   };
