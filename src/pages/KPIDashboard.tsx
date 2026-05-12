@@ -1054,6 +1054,14 @@ export default function KPIDashboard() {
       </DialogContent>
     </Dialog>
 
+    <DrillDownDialog 
+      open={drillDownOpen} 
+      onOpenChange={setDrillDownOpen} 
+      title={drillDownTitle} 
+      jobs={drillDownJobs} 
+      onExport={(format) => handleExport(format, drillDownTitle.replace(/\s+/g, '_'), kpis)}
+    />
     </MainLayout>
   );
 }
+
