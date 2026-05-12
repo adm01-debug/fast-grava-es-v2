@@ -8,15 +8,17 @@ import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { toast } from 'sonner';
-import { Edit2, Plus, Trash2, Hammer, Clock, Zap } from 'lucide-react';
+import { Edit2, Plus, Trash2, Hammer, Clock, Zap, Printer, Activity } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { useSchedulingData } from '@/hooks/useSchedulingData';
 
 export function TechniqueManagement() {
   const queryClient = useQueryClient();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingTechnique, setEditingTechnique] = useState<any>(null);
+  const { getMachinesByTechnique, getJobsByTechnique, isLoading: isLoadingData } = useSchedulingData();
 
-  const { data: techniques, isLoading } = useQuery({
+  const { data: techniques, isLoading: isLoadingTech } = useQuery({
     queryKey: ['techniques-admin'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -27,6 +29,8 @@ export function TechniqueManagement() {
       return data;
     }
   });
+
+  const isLoading = isLoadingTech || isLoadingData;
 
   const saveMutation = useMutation({
     mutationFn: async (technique: any) => {
@@ -71,6 +75,9 @@ export function TechniqueManagement() {
       short_name: formData.get('short_name'),
       color: formData.get('color'),
       setup_time: parseInt(formData.get('setup_time') as string),
+      low_threshold: parseInt(formData.get('low_threshold') as string) || 30,
+      medium_threshold: parseInt(formData.get('medium_threshold') as string) || 70,
+      high_threshold: parseInt(formData.get('high_threshold') as string) || 90,
     };
     saveMutation.mutate(techniqueData);
   };
@@ -102,29 +109,52 @@ export function TechniqueManagement() {
                 </DialogDescription>
               </DialogHeader>
               <div className="grid gap-4 py-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="name">Nome Completo</Label>
-                  <Input id="name" name="name" defaultValue={editingTechnique?.name} placeholder="Ex: Serigrafia Têxtil" required />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="short_name">Nome Curto (Sigla)</Label>
-                  <Input id="short_name" name="short_name" defaultValue={editingTechnique?.short_name} placeholder="Ex: SERI" required />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="color">Cor Identificadora (Hex)</Label>
-                  <div className="flex gap-2">
-                    <Input id="color" name="color" type="color" className="w-12 p-1 h-10" defaultValue={editingTechnique?.color || '#3b82f6'} required />
-                    <Input name="color_text" defaultValue={editingTechnique?.color || '#3b82f6'} className="flex-1" onChange={(e) => {
-                      const colorInput = document.getElementById('color') as HTMLInputElement;
-                      if (colorInput) colorInput.value = e.target.value;
-                    }} />
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="grid gap-2">
+                    <Label htmlFor="name">Nome Completo</Label>
+                    <Input id="name" name="name" defaultValue={editingTechnique?.name} placeholder="Ex: Serigrafia Têxtil" required />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="short_name">Nome Curto (Sigla)</Label>
+                    <Input id="short_name" name="short_name" defaultValue={editingTechnique?.short_name} placeholder="Ex: SERI" required />
                   </div>
                 </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="setup_time" className="flex items-center gap-2">
-                    <Clock className="h-4 w-4" /> Setup Padrão (Minutos)
-                  </Label>
-                  <Input id="setup_time" name="setup_time" type="number" defaultValue={editingTechnique?.setup_time || 10} required />
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="grid gap-2">
+                    <Label htmlFor="color">Cor Identificadora</Label>
+                    <div className="flex gap-2">
+                      <Input id="color" name="color" type="color" className="w-12 p-1 h-10 cursor-pointer" defaultValue={editingTechnique?.color || '#3b82f6'} required />
+                      <Input name="color_text" defaultValue={editingTechnique?.color || '#3b82f6'} className="flex-1 font-mono uppercase" onChange={(e) => {
+                        const colorInput = document.getElementById('color') as HTMLInputElement;
+                        if (colorInput) colorInput.value = e.target.value;
+                      }} />
+                    </div>
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="setup_time" className="flex items-center gap-2">
+                      <Clock className="h-4 w-4" /> Setup Padrão (Minutos)
+                    </Label>
+                    <Input id="setup_time" name="setup_time" type="number" defaultValue={editingTechnique?.setup_time || 10} required />
+                  </div>
+                </div>
+
+                <div className="pt-2 border-t border-border mt-2">
+                  <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground">Limites de OEE (%)</Label>
+                  <div className="grid grid-cols-3 gap-3 mt-2">
+                    <div className="grid gap-1.5">
+                      <Label htmlFor="low_threshold" className="text-[10px]">Crítico (&lt;)</Label>
+                      <Input id="low_threshold" name="low_threshold" type="number" defaultValue={editingTechnique?.low_threshold || 30} className="h-8" />
+                    </div>
+                    <div className="grid gap-1.5">
+                      <Label htmlFor="medium_threshold" className="text-[10px]">Alerta (&lt;)</Label>
+                      <Input id="medium_threshold" name="medium_threshold" type="number" defaultValue={editingTechnique?.medium_threshold || 70} className="h-8" />
+                    </div>
+                    <div className="grid gap-1.5">
+                      <Label htmlFor="high_threshold" className="text-[10px]">Excelente (&gt;)</Label>
+                      <Input id="high_threshold" name="high_threshold" type="number" defaultValue={editingTechnique?.high_threshold || 90} className="h-8" />
+                    </div>
+                  </div>
                 </div>
               </div>
               <DialogFooter>
@@ -142,30 +172,45 @@ export function TechniqueManagement() {
             <TableRow>
               <TableHead>Técnica</TableHead>
               <TableHead>Sigla</TableHead>
+              <TableHead>Ativos</TableHead>
               <TableHead>Setup</TableHead>
-              <TableHead>Status</TableHead>
+              <TableHead>Limites OEE</TableHead>
               <TableHead className="text-right">Ações</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {techniques?.map((tech) => (
-              <TableRow key={tech.id}>
+              <TableRow key={tech.id} className="group">
                 <TableCell className="font-medium">
                   <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: tech.color }} />
+                    <div className="w-3 h-3 rounded-full ring-2 ring-background shadow-sm" style={{ backgroundColor: tech.color }} />
                     {tech.name}
                   </div>
                 </TableCell>
                 <TableCell>
-                  <Badge variant="outline">{tech.short_name}</Badge>
+                  <Badge variant="outline" className="font-mono">{tech.short_name}</Badge>
                 </TableCell>
                 <TableCell>
-                  <div className="flex items-center gap-1 text-muted-foreground">
+                  <div className="flex flex-col gap-1">
+                    <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground uppercase font-bold">
+                      <Printer className="h-3 w-3" /> {getMachinesByTechnique(tech.id).length} Máquinas
+                    </div>
+                    <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground uppercase font-bold">
+                      <Activity className="h-3 w-3" /> {getJobsByTechnique(tech.id).filter(j => j.status !== 'finished').length} Jobs Ativos
+                    </div>
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <div className="flex items-center gap-1.5 text-muted-foreground font-medium">
                     <Clock className="h-3 w-3" /> {tech.setup_time} min
                   </div>
                 </TableCell>
                 <TableCell>
-                  <Badge className="bg-success/20 text-success hover:bg-success/30 border-none">Ativa</Badge>
+                  <div className="flex items-center gap-1">
+                    <Badge className="bg-destructive/10 text-destructive border-none text-[10px] h-5 px-1.5">&lt;{tech.low_threshold || 30}%</Badge>
+                    <Badge className="bg-warning/10 text-warning border-none text-[10px] h-5 px-1.5">&lt;{tech.medium_threshold || 70}%</Badge>
+                    <Badge className="bg-success/10 text-success border-none text-[10px] h-5 px-1.5">&gt;{tech.high_threshold || 90}%</Badge>
+                  </div>
                 </TableCell>
                 <TableCell className="text-right">
                   <div className="flex justify-end gap-2">
@@ -176,7 +221,13 @@ export function TechniqueManagement() {
                       <Edit2 className="h-4 w-4" />
                     </Button>
                     <Button variant="ghost" size="icon" className="text-destructive" onClick={() => {
-                      if (confirm('Tem certeza que deseja excluir esta técnica? Isso pode afetar jobs e máquinas vinculados.')) {
+                      const machineCount = getMachinesByTechnique(tech.id).length;
+                      const jobCount = getJobsByTechnique(tech.id).length;
+                      let msg = 'Tem certeza que deseja excluir esta técnica?';
+                      if (machineCount > 0 || jobCount > 0) {
+                        msg = `Atenção: Esta técnica possui ${machineCount} máquinas e ${jobCount} jobs vinculados. A exclusão pode causar inconsistências. Continuar?`;
+                      }
+                      if (confirm(msg)) {
                         deleteMutation.mutate(tech.id);
                       }
                     }}>
