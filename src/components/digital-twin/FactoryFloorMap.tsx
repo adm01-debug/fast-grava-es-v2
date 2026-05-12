@@ -117,11 +117,20 @@ export function FactoryFloorMap() {
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <div className={cn(
-                      "w-full h-full rounded-lg border-2 flex flex-col items-center justify-center p-4 transition-all duration-500 cursor-pointer",
-                      isWorking ? "bg-primary/5 border-primary/40 shadow-glow-primary" : "bg-muted/20 border-border/30 grayscale opacity-70",
-                      status.load > 90 && isWorking && "border-amber-500/50 bg-amber-500/5 shadow-[0_0_15px_rgba(245,158,11,0.3)]"
-                    )}>
+                    <div 
+                      onClick={() => setSelectedMachine(selectedMachine === machine.id ? null : machine.id)}
+                      className={cn(
+                        "w-full h-full rounded-lg border-2 flex flex-col items-center justify-center p-4 transition-all duration-500 cursor-pointer relative overflow-hidden",
+                        isWorking ? "bg-primary/5 border-primary/40 shadow-glow-primary" : "bg-muted/20 border-border/30 grayscale opacity-70",
+                        heatmapType === 'load' && isWorking && status.load > 90 ? "bg-amber-500/20 border-amber-500/60 shadow-[0_0_20px_rgba(245,158,11,0.4)] scale-[1.02]" :
+                        heatmapType === 'temp' && isWorking && status.temp > 60 ? "bg-rose-500/20 border-rose-500/60 shadow-[0_0_20px_rgba(244,63,94,0.4)] scale-[1.02]" :
+                        selectedMachine === machine.id ? "border-primary ring-2 ring-primary ring-offset-2 ring-offset-background scale-[1.05] z-50 bg-primary/10" : ""
+                      )}>
+                      {selectedMachine === machine.id && (
+                        <div className="absolute top-1 right-1">
+                          <MousePointer2 className="h-3 w-3 text-primary animate-bounce" />
+                        </div>
+                      )}
                       <Zap className={cn(
                         "h-8 w-8 mb-2 transition-transform",
                         isWorking ? "text-primary animate-pulse" : "text-muted-foreground"
