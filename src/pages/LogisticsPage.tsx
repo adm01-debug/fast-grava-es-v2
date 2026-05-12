@@ -27,6 +27,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger 
 } from '@/components/ui/dropdown-menu';
+import { CreateShipmentModal } from '@/components/logistics/CreateShipmentModal';
 
 const statusMap = {
   pending: { label: 'Pendente', color: 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20', icon: Clock },
