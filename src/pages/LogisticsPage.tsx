@@ -12,12 +12,12 @@ import {
   Clock, 
   CheckCircle2, 
   AlertTriangle,
-  ArrowRight,
   ExternalLink,
   Filter,
-  MoreVertical
+  MoreVertical,
+  RotateCcw
 } from 'lucide-react';
-import { useLogistics } from '@/hooks/useLogistics';
+import { useLogistics, DbShipment } from '@/hooks/useLogistics';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -29,7 +29,8 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { CreateShipmentModal } from '@/components/logistics/CreateShipmentModal';
 import { EditShipmentModal } from '@/components/logistics/EditShipmentModal';
-import { useLogistics, DbShipment } from '@/hooks/useLogistics';
+import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
 
 const statusMap = {
   pending: { label: 'Pendente', color: 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20', icon: Clock },
@@ -39,12 +40,11 @@ const statusMap = {
   cancelled: { label: 'Cancelado', color: 'bg-red-500/10 text-red-500 border-red-500/20', icon: AlertTriangle },
 };
 
-import { RotateCcw } from 'lucide-react';
-
 export default function LogisticsPage() {
-  const { shipments } = useLogistics();
+  const { shipments, updateShipment } = useLogistics();
   const [searchTerm, setSearchTerm] = useState('');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [editingShipment, setEditingShipment] = useState<DbShipment | null>(null);
 
   const isLoading = shipments.isLoading;
 
@@ -53,6 +53,16 @@ export default function LogisticsPage() {
     s.job?.order_number?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     s.job?.client?.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const handleCopyLink = (orderNumber: string) => {
+    const link = `${window.location.origin}/track?q=${orderNumber}`;
+    navigator.clipboard.writeText(link);
+    toast.success('Link de rastreio copiado!');
+  };
+
+  const handleStatusUpdate = (id: string, status: DbShipment['status']) => {
+    updateShipment.mutate({ id, data: { status } });
+  };
 
   return (
     <MainLayout>
@@ -65,13 +75,24 @@ export default function LogisticsPage() {
             </h1>
             <p className="text-muted-foreground mt-1">Acompanhe e gerencie todos os envios e fretes.</p>
           </div>
-          <Button className="gradient-primary" onClick={() => setIsCreateModalOpen(true)}>
-            <Plus className="h-4 w-4 mr-2" />
-            Novo Envio
-          </Button>
+          <div className="flex items-center gap-3">
+            <Button variant="outline" onClick={() => window.open('/track', '_blank')}>
+              <ExternalLink className="h-4 w-4 mr-2" />
+              Ver Portal Público
+            </Button>
+            <Button className="gradient-primary" onClick={() => setIsCreateModalOpen(true)}>
+              <Plus className="h-4 w-4 mr-2" />
+              Novo Envio
+            </Button>
+          </div>
         </div>
 
         <CreateShipmentModal open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen} />
+        <EditShipmentModal 
+          shipment={editingShipment} 
+          open={!!editingShipment} 
+          onOpenChange={(open) => !open && setEditingShipment(null)} 
+        />
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -109,8 +130,10 @@ export default function LogisticsPage() {
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs font-black uppercase tracking-widest text-muted-foreground">Entregues (Hoje)</p>
-                  <p className="text-2xl font-black mt-1">0</p>
+                  <p className="text-xs font-black uppercase tracking-widest text-muted-foreground">Entregues</p>
+                  <p className="text-2xl font-black mt-1">
+                    {shipments.data?.filter(s => s.status === 'delivered').length || 0}
+                  </p>
                 </div>
                 <div className="p-2 bg-green-500/20 rounded-lg">
                   <CheckCircle2 className="h-5 w-5 text-green-500" />
@@ -123,7 +146,9 @@ export default function LogisticsPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-xs font-black uppercase tracking-widest text-muted-foreground">Alertas</p>
-                  <p className="text-2xl font-black mt-1">0</p>
+                  <p className="text-2xl font-black mt-1">
+                    {shipments.data?.filter(s => s.status === 'returned' || s.status === 'cancelled').length || 0}
+                  </p>
                 </div>
                 <div className="p-2 bg-red-500/20 rounded-lg">
                   <AlertTriangle className="h-5 w-5 text-red-500" />
@@ -164,18 +189,19 @@ export default function LogisticsPage() {
             </div>
           ) : (
             filteredShipments?.map((shipment) => {
-              const StatusIcon = statusMap[shipment.status].icon;
+              const config = statusMap[shipment.status] || statusMap.pending;
+              const StatusIcon = config.icon;
               return (
                 <Card key={shipment.id} className="glass-card hover:border-primary/30 transition-all group overflow-hidden">
                   <div className="flex flex-col md:flex-row md:items-center p-4 gap-4">
                     {/* Status Column */}
                     <div className="flex items-center gap-4 md:w-48 shrink-0">
-                      <div className={cn("p-2 rounded-xl", statusMap[shipment.status].color)}>
+                      <div className={cn("p-2 rounded-xl", config.color)}>
                         <StatusIcon className="h-6 w-6" />
                       </div>
                       <div>
-                        <Badge variant="outline" className={cn("font-bold text-[10px] uppercase", statusMap[shipment.status].color)}>
-                          {statusMap[shipment.status].label}
+                        <Badge variant="outline" className={cn("font-bold text-[10px] uppercase", config.color)}>
+                          {config.label}
                         </Badge>
                         <p className="text-[10px] text-muted-foreground mt-1 font-bold">
                           {shipment.tracking_code || 'S/ RASTREIO'}
@@ -209,7 +235,12 @@ export default function LogisticsPage() {
                         </p>
                       </div>
                       <div className="flex items-center gap-2">
-                        <Button variant="ghost" size="icon" className="group-hover:text-primary">
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          className="group-hover:text-primary"
+                          onClick={() => window.open(`/track?q=${shipment.job?.order_number}`, '_blank')}
+                        >
                           <ExternalLink className="h-4 w-4" />
                         </Button>
                         <DropdownMenu>
@@ -219,15 +250,24 @@ export default function LogisticsPage() {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                            <DropdownMenuItem>Editar Envio</DropdownMenuItem>
-                            <DropdownMenuItem>Copiar Link de Rastreio</DropdownMenuItem>
-                            <DropdownMenuItem className="text-destructive">Cancelar Envio</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => setEditingShipment(shipment)}>
+                              Editar Detalhes
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleCopyLink(shipment.job?.order_number)}>
+                              Copiar Link de Rastreio
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleStatusUpdate(shipment.id, 'delivered')}>
+                              Marcar como Entregue
+                            </DropdownMenuItem>
+                            <DropdownMenuItem className="text-destructive" onClick={() => handleStatusUpdate(shipment.id, 'cancelled')}>
+                              Cancelar Envio
+                            </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </div>
                     </div>
                   </div>
-                  {/* Progress bar mock */}
+                  {/* Progress bar */}
                   <div className="h-1 bg-muted">
                     <div 
                       className={cn(
@@ -245,8 +285,4 @@ export default function LogisticsPage() {
       </div>
     </MainLayout>
   );
-}
-
-function cn(...inputs: any[]) {
-  return inputs.filter(Boolean).join(' ');
 }
