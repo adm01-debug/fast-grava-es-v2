@@ -139,6 +139,58 @@ export function JobTraceabilityTab({ jobId }: JobTraceabilityTabProps) {
         </section>
       </div>
 
+      {/* Job Status Audit Trail */}
+      <section className="space-y-3 pt-2">
+        <h4 className="text-sm font-semibold flex items-center gap-2">
+          <History className="h-4 w-4 text-primary" />
+          Rastreabilidade de Fluxo (Status Audit)
+        </h4>
+        <Card className="glass-card bg-muted/10 border-none shadow-none">
+          <CardContent className="p-4">
+            <ScrollArea className="h-[200px] pr-4">
+              <div className="space-y-4">
+                {isLoadingHistory ? (
+                  <Skeleton className="h-10 w-full" />
+                ) : !history || history.length === 0 ? (
+                  <p className="text-xs text-muted-foreground text-center py-4">Nenhum histórico de status registrado.</p>
+                ) : (
+                  history.map((item, idx) => (
+                    <div key={item.id} className="flex gap-4 items-start relative pb-4 last:pb-0">
+                      {idx < history.length - 1 && (
+                        <div className="absolute left-[7px] top-4 bottom-0 w-[0.5px] bg-border/50" />
+                      )}
+                      <div className="w-4 h-4 rounded-full bg-primary/20 border-2 border-primary shrink-0 z-10 mt-1" />
+                      <div className="flex-1 space-y-1">
+                        <div className="flex items-center gap-2">
+                          <Badge variant="outline" className="text-[10px] font-bold uppercase py-0 px-1.5 h-auto">
+                            {item.new_status}
+                          </Badge>
+                          {item.previous_status && (
+                            <span className="text-[10px] text-muted-foreground">
+                              anterior: {item.previous_status}
+                            </span>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-3 text-[10px] text-muted-foreground">
+                          <span className="flex items-center gap-1">
+                            <Clock className="h-3 w-3" />
+                            {format(new Date(item.created_at), "dd/MM/yyyy HH:mm", { locale: ptBR })}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <User className="h-3 w-3" />
+                            {item.changed_by_profile?.full_name || 'Usuário'}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </ScrollArea>
+          </CardContent>
+        </Card>
+      </section>
+
       <div className="p-4 rounded-xl bg-muted/20 border border-border/30 space-y-2">
         <div className="flex items-center gap-2 mb-1">
           <Info className="h-4 w-4 text-primary" />
