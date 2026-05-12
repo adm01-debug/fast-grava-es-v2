@@ -103,14 +103,14 @@ export function useKanbanDragDrop({ jobs, onJobsUpdate }: UseKanbanDragDropProps
     try {
       // Update sort_order for all affected jobs in the column
       const updates = newOrder.map((job, index) => ({
-        ...job,
+        id: job.id,
         sort_order: index,
         updated_at: new Date().toISOString(),
       }));
 
       const { error } = await supabase
         .from('jobs')
-        .upsert(updates);
+        .upsert(updates, { onConflict: 'id' });
 
       if (error) throw error;
 
@@ -173,29 +173,16 @@ export function useKanbanDragDrop({ jobs, onJobsUpdate }: UseKanbanDragDropProps
       }
     }
 
-    // 2. Validate status transitions
-    const validTransitions: Record<string, JobStatus[]> = {
-      'queue': ['ready', 'cancelled'],
-      'ready': ['queue', 'scheduled', 'cancelled'],
-      'scheduled': ['ready', 'production', 'cancelled'],
-      'production': ['paused', 'finished', 'delayed', 'rework'],
-      'paused': ['production', 'cancelled'],
-      'delayed': ['production', 'cancelled'],
-      'rework': ['production', 'finished', 'cancelled'],
-      'buffer': ['ready', 'scheduled', 'cancelled'],
-      'finished': [],
-      'cancelled': [],
-    };
-    
-    const allowedTransitions = validTransitions[currentStatus] || [];
-    
-    if (!allowedTransitions.includes(targetStatus)) {
-      toast.error('Transição de status não permitida', {
-        description: `Não é possível mover de "${getStatusLabel(currentStatus)}" para "${getStatusLabel(targetStatus)}"`
+    // 2. Validate status transitions using central state machine
+    try {
+      assertTransition(currentStatus, targetStatus);
+    } catch (err) {
+      toast.error('Transição não permitida', {
+        description: err instanceof Error ? err.message : 'Estado inválido'
       });
       return;
     }
-    
+
     setIsUpdating(true);
     
     try {
