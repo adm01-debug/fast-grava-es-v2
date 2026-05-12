@@ -160,14 +160,13 @@ export function useGamification(period: 'daily' | 'weekly' | 'monthly' = 'weekly
     queryKey: ['user-points-balance', user?.id],
     enabled: !!user,
     queryFn: async () => {
-      // Points from monthly rankings (as a proxy for total coins earned)
-      const { data: rankings } = await supabase
-        .from('operator_rankings')
-        .select('total_points')
-        .eq('operator_id', user!.id)
-        .eq('ranking_type', 'monthly');
+      // Points from achievements (the source of truth for earned points)
+      const { data: achievements } = await supabase
+        .from('operator_achievements')
+        .select('points')
+        .eq('operator_id', user!.id);
       
-      const earned = (rankings || []).reduce((sum, r) => sum + r.total_points, 0);
+      const earned = (achievements || []).reduce((sum, a) => sum + a.points, 0);
 
       // Deduct redemptions
       const { data: redemptions } = await supabase
@@ -178,7 +177,7 @@ export function useGamification(period: 'daily' | 'weekly' | 'monthly' = 'weekly
       
       const spent = (redemptions || []).reduce((sum, r) => sum + r.points_spent, 0);
 
-      return Math.max(0, earned - spent + 3500); // Base mock balance for demo
+      return Math.max(0, earned - spent);
     },
     staleTime: 30000,
   });
