@@ -121,12 +121,12 @@ export default function ShiftHandoverPage() {
   }, [queryClient]);
 
   // Stats
-  const stats = {
+  const stats = useMemo(() => ({
     openHandovers: handovers?.filter(h => h.status === 'open' || h.status === 'pending_acceptance').length || 0,
     pendingTasks: pendingTasks?.filter(t => t.status === 'pending').length || 0,
     criticalTasks: pendingTasks?.filter(t => t.priority === 'critical' && t.status !== 'completed').length || 0,
     recentOccurrences: occurrences?.filter(o => !o.resolved_at).length || 0
-  };
+  }), [handovers, pendingTasks, occurrences]);
 
   const currentShift = getCurrentShiftType();
 
