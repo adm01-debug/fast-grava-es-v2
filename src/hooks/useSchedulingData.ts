@@ -105,6 +105,7 @@ export function useSchedulingData() {
         const { data, error } = await supabase
           .from('jobs')
           .select('*')
+          .or('status.neq.finished,created_at.gt.' + new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString())
           .order('created_at', { ascending: false });
         
         if (error) {
@@ -287,7 +288,7 @@ export function useSchedulingData() {
         date.setDate(now.getDate() - i);
         const dateStr = date.toISOString().split('T')[0];
         
-        const dayJobs = jobs.filter(j => j.status === 'finished' && j.actual_end_time?.startsWith(dateStr));
+        const dayJobs = jobs.filter(j => j.status === 'finished' && j.actual_end_time && j.actual_end_time.substring(0, 10) === dateStr);
         
         if (dayJobs.length === 0) {
           trend.push({ date: dateStr, oee: 0 });

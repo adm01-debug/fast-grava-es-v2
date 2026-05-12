@@ -36,6 +36,7 @@ type AllowedField = typeof ALLOWED_OPERATOR_FIELDS[number];
 
 // Tipo para o payload sanitizado
 interface SanitizedPayload {
+  status?: string;
   produced_quantity?: number;
   lost_pieces?: number;
   actual_start_time?: string;
@@ -49,6 +50,7 @@ interface SanitizedPayload {
  * Isso é uma camada adicional de segurança além do RLS no banco de dados.
  */
 function sanitizeOperatorPayload(data: {
+  status?: string;
   produced_quantity?: number;
   lost_pieces?: number;
   actual_start_time?: string;
@@ -59,6 +61,9 @@ function sanitizeOperatorPayload(data: {
 }): SanitizedPayload {
   const sanitized: SanitizedPayload = {};
   
+  if (data.status !== undefined) {
+    sanitized.status = data.status;
+  }
   if (data.produced_quantity !== undefined) {
     sanitized.produced_quantity = data.produced_quantity;
   }
@@ -192,6 +197,7 @@ export function ProductionRegistrationModal({
 
       // Montar payload com todos os campos desejados
       const rawPayload = {
+        status: 'finished',
         actual_end_time: new Date().toISOString(),
         lost_pieces: lostPieces,
         notes: finalNotes,

@@ -69,8 +69,9 @@ export function TechniqueManagement() {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
+    const nameValue = formData.get('name') as string;
     const techniqueData = {
-      id: editingTechnique?.id || (formData.get('name') as string).toLowerCase().replace(/\s+/g, '-'),
+      id: editingTechnique?.id || (nameValue ? nameValue.toLowerCase().replace(/\s+/g, '-') : crypto.randomUUID()),
       name: formData.get('name'),
       short_name: formData.get('short_name'),
       color: formData.get('color'),

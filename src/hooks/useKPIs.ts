@@ -7,7 +7,7 @@ function isValidJob(job: DbJob): boolean {
   return (
     typeof job.id === 'string' && job.id.length > 0 &&
     typeof job.quantity === 'number' && job.quantity >= 0 &&
-    typeof job.estimated_duration === 'number' && job.estimated_duration >= 0 &&
+    (typeof job.estimated_duration === 'number' || job.estimated_duration === null) &&
     typeof job.status === 'string'
   );
 }
@@ -198,17 +198,23 @@ export function useKPIs(period: KPIPeriod = 'all', customTargets?: Partial<KPITa
       const total = jobList.length;
       const completed = jobList.filter(j => j.status === 'finished').length;
       const rate = total > 0 ? (completed / total) * 100 : 0;
-      const totalPcs = jobList.reduce((sum, j) => sum + sanitizeNumber(j.quantity), 0);
-      const lostPcs = jobList.reduce((sum, j) => sum + sanitizeNumber(j.lost_pieces), 0);
-      const prodPcs = jobList.reduce((sum, j) => sum + sanitizeNumber(j.produced_quantity ?? j.quantity), 0);
+      const totalPcs = jobList.reduce((sum: number, j: DbJob) => sum + sanitizeNumber(j.quantity), 0);
+      const lostPcs = jobList.reduce((sum: number, j: DbJob) => sum + sanitizeNumber(j.lost_pieces), 0);
+      const prodPcs = jobList.reduce((sum: number, j: DbJob) => sum + sanitizeNumber(j.produced_quantity ?? j.quantity), 0);
       const lRate = (prodPcs + lostPcs) > 0 ? (lostPcs / (prodPcs + lostPcs)) * 100 : 0;
-      return { total, completed, rate, totalPcs, lostPcs, lossRate: lRate };
+
+      // Real occupancy calculation for comparison
+      const techJobs = jobList.filter(j => ['production', 'scheduled'].includes(j.status));
+      const busyMachines = new Set(techJobs.map(j => j.machine_id).filter(Boolean)).size;
+      const occRate = machines.length > 0 ? (busyMachines / machines.length) * 100 : 0;
+
+      return { total, completed, rate, totalPcs, lostPcs, lossRate: lRate, occupancyRate: occRate };
     };
 
     const validJobsAll = jobs.filter(isValidJob);
     const validJobs = validJobsAll.filter(currentPeriodFilter);
     const prevJobs = validJobsAll.filter(previousPeriodFilter);
-    
+
     const validMachines = machines.filter(isValidMachine);
     const validTechniques = techniques.filter(isValidTechnique);
 
@@ -217,7 +223,7 @@ export function useKPIs(period: KPIPeriod = 'all', customTargets?: Partial<KPITa
 
     const comparison: KPIComparison = {
       completionRateDiff: currentStats.rate - prevStats.rate,
-      occupancyDiff: 0, 
+      occupancyDiff: currentStats.occupancyRate - prevStats.occupancyRate,
       lossRateDiff: currentStats.lossRate - prevStats.lossRate,
       volumeDiff: prevStats.totalPcs > 0 ? ((currentStats.totalPcs - prevStats.totalPcs) / prevStats.totalPcs) * 100 : 0
     };
@@ -242,11 +248,11 @@ export function useKPIs(period: KPIPeriod = 'all', customTargets?: Partial<KPITa
       delayed: todayJobs.filter(j => j.status === 'delayed').length,
     };
 
-    const productivityByMachine = validMachines.map(machine => {
+    const productivityByMachine = validMachines.map((machine: DbMachine) => {
       const machineJobs = validJobs.filter(j => j.machine_id === machine.id);
       const completed = machineJobs.filter(j => j.status === 'finished');
-      const totalPcs = machineJobs.reduce((sum, j) => sum + sanitizeNumber(j.quantity), 0);
-      const lostPcs = machineJobs.reduce((sum, j) => sum + sanitizeNumber(j.lost_pieces), 0);
+      const totalPcs = machineJobs.reduce((sum: number, j: DbJob) => sum + sanitizeNumber(j.quantity), 0);
+      const lostPcs = machineJobs.reduce((sum: number, j: DbJob) => sum + sanitizeNumber(j.lost_pieces), 0);
       const machineTotalAttempted = totalPcs + lostPcs;
       return {
         machineId: machine.id,
@@ -258,17 +264,17 @@ export function useKPIs(period: KPIPeriod = 'all', customTargets?: Partial<KPITa
         lostPieces: lostPcs,
         lossRate: machineTotalAttempted > 0 ? (lostPcs / machineTotalAttempted) * 100 : 0,
         avgDuration: machineJobs.length > 0 
-          ? machineJobs.reduce((sum, j) => sum + sanitizeNumber(j.estimated_duration), 0) / machineJobs.length 
+          ? machineJobs.reduce((sum: number, j: DbJob) => sum + sanitizeNumber(j.estimated_duration), 0) / machineJobs.length 
           : 0,
       };
-    }).filter(m => m.jobCount > 0);
+    }).filter((m: any) => m.jobCount > 0);
 
-    const productivityByTechnique = validTechniques.map(technique => {
+    const productivityByTechnique = validTechniques.map((technique: DbTechnique) => {
       const techJobs = validJobs.filter(j => j.technique_id === technique.id);
       const completed = techJobs.filter(j => j.status === 'finished');
-      const totalPcs = techJobs.reduce((sum, j) => sum + sanitizeNumber(j.quantity), 0);
-      const lostPcs = techJobs.reduce((sum, j) => sum + sanitizeNumber(j.lost_pieces), 0);
-      const techMachines = validMachines.filter(m => m.technique_id === technique.id);
+      const totalPcs = techJobs.reduce((sum: number, j: DbJob) => sum + sanitizeNumber(j.quantity), 0);
+      const lostPcs = techJobs.reduce((sum: number, j: DbJob) => sum + sanitizeNumber(j.lost_pieces), 0);
+      const techMachines = validMachines.filter((m: DbMachine) => m.technique_id === technique.id);
       const busyMachines = new Set(techJobs.filter(j => ['production', 'scheduled'].includes(j.status)).map(j => j.machine_id).filter(Boolean)).size;
       return {
         techniqueId: technique.id,
@@ -278,30 +284,30 @@ export function useKPIs(period: KPIPeriod = 'all', customTargets?: Partial<KPITa
         completedJobs: completed.length,
         totalPieces: totalPcs,
         lostPieces: lostPcs,
-        avgDuration: techJobs.length > 0 ? techJobs.reduce((sum, j) => sum + sanitizeNumber(j.estimated_duration), 0) / techJobs.length : 0,
+        avgDuration: techJobs.length > 0 ? techJobs.reduce((sum: number, j: DbJob) => sum + sanitizeNumber(j.estimated_duration), 0) / techJobs.length : 0,
         occupancyRate: techMachines.length > 0 ? (busyMachines / techMachines.length) * 100 : 0,
       };
-    }).filter(t => t.jobCount > 0);
+    }).filter((t: any) => t.jobCount > 0);
 
     const averageOccupancy = productivityByTechnique.length > 0
-      ? productivityByTechnique.reduce((sum, t) => sum + t.occupancyRate, 0) / productivityByTechnique.length
+      ? productivityByTechnique.reduce((sum: number, t: any) => sum + t.occupancyRate, 0) / productivityByTechnique.length
       : 0;
-      
-    comparison.occupancyDiff = (Math.random() - 0.5) * 10;
 
-    const products = Array.from(new Set(validJobs.map(j => j.product).filter(Boolean)));
-    const productivityByProduct = products.map(productName => {
+    // Removido random para manter integridade
+
+    const products = Array.from(new Set(validJobs.map((j: DbJob) => j.product).filter(Boolean)));
+    const productivityByProduct = products.map((productName: string | null) => {
       const productJobs = validJobs.filter(j => j.product === productName);
-      const totalPcs = productJobs.reduce((sum, j) => sum + sanitizeNumber(j.quantity), 0);
-      const lostPcs = productJobs.reduce((sum, j) => sum + sanitizeNumber(j.lost_pieces), 0);
+      const totalPcs = productJobs.reduce((sum: number, j: DbJob) => sum + sanitizeNumber(j.quantity), 0);
+      const lostPcs = productJobs.reduce((sum: number, j: DbJob) => sum + sanitizeNumber(j.lost_pieces), 0);
       return {
         productName: productName!,
         jobCount: productJobs.length,
         totalPieces: totalPcs,
         lossRate: (totalPcs + lostPcs) > 0 ? (lostPcs / (totalPcs + lostPcs)) * 100 : 0,
-        avgDuration: productJobs.length > 0 ? productJobs.reduce((sum, j) => sum + sanitizeNumber(j.estimated_duration), 0) / productJobs.length : 0,
+        avgDuration: productJobs.length > 0 ? productJobs.reduce((sum: number, j: DbJob) => sum + sanitizeNumber(j.estimated_duration), 0) / productJobs.length : 0,
       };
-    }).sort((a, b) => b.totalPieces - a.totalPieces);
+    }).sort((a: any, b: any) => b.totalPieces - a.totalPieces);
 
     const predictions: KPIPrediction[] = Array.from({ length: 7 }, (_, i) => {
       const date = new Date();
@@ -315,7 +321,7 @@ export function useKPIs(period: KPIPeriod = 'all', customTargets?: Partial<KPITa
     });
 
     const anomalies: KPIAnomaly[] = [];
-    productivityByMachine.forEach(m => {
+    productivityByMachine.forEach((m: any) => {
       if (m.lossRate > targets.lossRate * 2.5) {
         anomalies.push({
           id: `loss-m-${m.machineId}`,
@@ -356,7 +362,7 @@ export function useKPIs(period: KPIPeriod = 'all', customTargets?: Partial<KPITa
     const performanceHistory = Array.from({ length: historyDays }, (_, i) => {
       const date = new Date();
       date.setDate(date.getDate() - (historyDays - 1 - i));
-      const variance = 0.8 + (Math.random() * 0.4);
+      const variance = 1.0; // Mantendo estável se não houver dados históricos suficientes
       return {
         date: date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
         efficiency: Math.min(100, averageOccupancy * variance),
