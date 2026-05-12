@@ -33,7 +33,8 @@ import {
   List,
   History,
   Info,
-  ExternalLink
+  ExternalLink,
+  Settings2
 } from "lucide-react";
 import { useSchedulingData } from "@/hooks/useSchedulingData";
 import { useQueryClient } from "@tanstack/react-query";
@@ -51,12 +52,13 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useDataExport } from "@/hooks/useDataExport";
 import { useSmartSequencingWithActions } from "@/hooks/useSmartSequencingWithActions";
 import { useLoadBalancingWithActions } from "@/hooks/useLoadBalancingWithActions";
+import { useAutoBufferPromotion } from "@/hooks/useAutoBufferPromotion";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { formatDistanceToNow, isAfter, subHours } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
 
-type SortField = 'orderNumber' | 'client' | 'scheduledDate' | 'priority' | 'quantity';
+type SortField = 'orderNumber' | 'client' | 'scheduledDate' | 'priority' | 'quantity' | 'created_at';
 type SortDirection = 'asc' | 'desc';
 
 const priorityOrder = { urgent: 0, high: 1, medium: 2, low: 3 };
@@ -95,6 +97,7 @@ export default function PendingQueue() {
   const [selectedJobs, setSelectedJobs] = useState<Set<string>>(new Set());
 
   const queryClient = useQueryClient();
+  const { triggerPromotion, isPromoting, bufferTarget } = useAutoBufferPromotion();
 
   const { exportData, isExporting } = useDataExport('jobs');
   const { suggestions: seqSuggestions } = useSmartSequencingWithActions();
@@ -166,16 +169,19 @@ export default function PendingQueue() {
             comparison = dateA - dateB;
             break;
           case 'priority':
-            comparison = priorityOrder[a.priority] - priorityOrder[b.priority];
+            comparison = priorityOrder[a.priority as keyof typeof priorityOrder] - priorityOrder[b.priority as keyof typeof priorityOrder];
             break;
           case 'quantity':
             comparison = a.quantity - b.quantity;
+            break;
+          case 'created_at':
+            comparison = new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
             break;
         }
 
         return sortDirection === 'asc' ? comparison : -comparison;
       });
-  }, [jobs, searchTerm, selectedTechnique, selectedStatus, selectedPriority, sortField, sortDirection]);
+  }, [fuseSearchedJobs, selectedTechnique, selectedStatus, selectedPriority, sortField, sortDirection]);
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
@@ -446,15 +452,15 @@ export default function PendingQueue() {
         </Sheet>
         
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div>
-            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground">Lista de Pendências</h1>
-            <p className="text-muted-foreground mt-1 text-sm sm:text-base">Backlog e jobs aguardando produção</p>
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground">Fila de Produção</h1>
+            <p className="text-muted-foreground mt-1 text-sm sm:text-base">Gestão de backlog e buffer automático (Target: {bufferTarget} jobs/técnica)</p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
             <Badge variant="outline" className="bg-muted/50 text-foreground border-border">
               <Package className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1" />
-              {stats.total} pendentes
+              {stats.total} jobs na fila
             </Badge>
             {stats.urgent > 0 && (
               <Badge className="bg-red-500/20 text-red-400 border-red-500/30">
@@ -462,23 +468,46 @@ export default function PendingQueue() {
                 {stats.urgent} urgentes
               </Badge>
             )}
-            <Button 
-              variant="outline" 
-              size="sm" 
-              className="h-8 border-primary/20 hover:bg-primary/5"
-              onClick={() => exportData({ 
-                fileName: `pendencias_${new Date().toISOString().split('T')[0]}`,
-                filters: {
-                  status: pendingStatuses,
-                  ...(selectedTechnique !== 'all' && { technique_id: selectedTechnique }),
-                  ...(selectedPriority !== 'all' && { priority: selectedPriority })
-                }
-              })}
-              disabled={isExporting || filteredJobs.length === 0}
-            >
-              <Download className="h-4 w-4 mr-1" />
-              {isExporting ? 'Exportando...' : 'Exportar CSV'}
-            </Button>
+            
+            <div className="flex items-center gap-2 ml-auto sm:ml-0">
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => triggerPromotion()}
+                      disabled={isPromoting}
+                      className={`h-8 border-violet-500/30 text-violet-400 hover:bg-violet-500/10 ${isPromoting ? 'animate-pulse' : ''}`}
+                    >
+                      <Zap className={`h-4 w-4 mr-1 ${isPromoting ? 'animate-spin' : ''}`} />
+                      {isPromoting ? 'Promovendo...' : 'Buffer Force'}
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Acionar promoção automática manual do Buffer agora</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="h-8 border-primary/20 hover:bg-primary/5"
+                onClick={() => exportData({ 
+                  fileName: `fila_producao_${new Date().toISOString().split('T')[0]}`,
+                  filters: {
+                    status: pendingStatuses,
+                    ...(selectedTechnique !== 'all' && { technique_id: selectedTechnique }),
+                    ...(selectedPriority !== 'all' && { priority: selectedPriority })
+                  }
+                })}
+                disabled={isExporting || filteredJobs.length === 0}
+              >
+                <Download className="h-4 w-4 mr-1" />
+                {isExporting ? 'Exportando...' : 'Exportar CSV'}
+              </Button>
+            </div>
           </div>
         </div>
 
@@ -740,6 +769,9 @@ export default function PendingQueue() {
                       </TableHead>
                       <TableHead className="hidden lg:table-cell">Técnica</TableHead>
                       <TableHead className="hidden xl:table-cell">Máquina</TableHead>
+                      <TableHead className="cursor-pointer hover:text-foreground transition-colors hidden sm:table-cell" onClick={() => handleSort('created_at')}>
+                        <div className="flex items-center gap-2">Criação <SortIcon field="created_at" /></div>
+                      </TableHead>
                       <TableHead className="cursor-pointer hover:text-foreground transition-colors hidden sm:table-cell" onClick={() => handleSort('scheduledDate')}>
                         <div className="flex items-center gap-2">Data <SortIcon field="scheduledDate" /></div>
                       </TableHead>
@@ -796,6 +828,9 @@ export default function PendingQueue() {
                                   <Badge variant="outline" className="text-[10px] px-1.5 h-5" style={{ backgroundColor: `${technique?.color}20`, borderColor: `${technique?.color}50`, color: technique?.color }}>{technique?.short_name || technique?.name}</Badge>
                                 </TableCell>
                                 <TableCell className="text-muted-foreground hidden xl:table-cell text-xs sm:text-sm">{machine?.code || <Badge variant="outline" className="text-red-400 bg-red-400/5 border-red-400/10 text-[10px] animate-pulse">NÃO ATRIBUÍDA</Badge>}</TableCell>
+                                <TableCell className="text-muted-foreground hidden sm:table-cell text-xs sm:text-sm">
+                                  {formatDistanceToNow(new Date(job.created_at), { addSuffix: true, locale: ptBR })}
+                                </TableCell>
                                 <TableCell className="text-foreground hidden sm:table-cell text-xs sm:text-sm">
                                   <div className="flex items-center gap-1"><Calendar className="h-3 w-3 text-muted-foreground" /> {job.scheduled_date ? new Date(job.scheduled_date).toLocaleDateString('pt-BR') : '-'}</div>
                                 </TableCell>
