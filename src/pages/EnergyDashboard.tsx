@@ -14,7 +14,7 @@ import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { useEnergy } from '@/hooks/useEnergy';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { BatteryCharging, Zap, TrendingUp, TrendingDown, AlertTriangle, DollarSign, Gauge, Plus, CheckCircle, Command } from 'lucide-react';
+import { BatteryCharging, Zap, TrendingUp, TrendingDown, AlertTriangle, DollarSign, Gauge, Plus, CheckCircle, Command, Leaf, Factory } from 'lucide-react';
 import { format, startOfMonth, endOfMonth, subMonths } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { toast } from 'sonner';
