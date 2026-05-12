@@ -19,11 +19,7 @@ export const JobQRCode = forwardRef<HTMLDivElement, JobQRCodeProps>(({
   client,
   size = 150 
 }, ref) => {
-  const qrValue = JSON.stringify({
-    type: "job",
-    id: jobId,
-    order: orderNumber
-  });
+  const qrValue = `${window.location.origin}/track?q=${orderNumber}`;
 
   const handleDownload = () => {
     const svg = document.getElementById(`qr-${jobId}`);
