@@ -159,11 +159,21 @@ export default function KanbanBoard() {
       updated_at: new Date().toISOString(),
     };
 
-    const job = jobs.find(j => j.id === jobId);
-    if (mapping.status === 'production' && job && !job.actual_start_time) {
+    if (!job) return;
+
+    try {
+      assertTransition(job.status as JobStatus, mapping.status);
+    } catch (err) {
+      toast.error('Transição não permitida', {
+        description: err instanceof Error ? err.message : 'Estado inválido'
+      });
+      return;
+    }
+
+    if (mapping.status === 'production' && !job.actual_start_time) {
       updateData.actual_start_time = new Date().toISOString();
     }
-    if (mapping.status === 'finished' && job && !job.actual_end_time) {
+    if (mapping.status === 'finished' && !job.actual_end_time) {
       updateData.actual_end_time = new Date().toISOString();
     }
 
