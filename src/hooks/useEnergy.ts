@@ -53,6 +53,8 @@ export interface EnergyStats {
   consumptionByMachine: { machineId: string; machineName: string; consumption: number; cost: number }[];
   dailyConsumption: { date: string; consumption: number; cost: number }[];
   hourlyPattern: { hour: number; avgConsumption: number }[];
+  carbonFootprintKg: number;
+  energyScore: number;
 }
 
 export function useEnergy(dateRange?: { start: Date; end: Date }) {
@@ -199,6 +201,16 @@ export function useEnergy(dateRange?: { start: Date; end: Date }) {
       };
     });
 
+    // Carbon Footprint Calculation (Based on Brazilian Energy Mix average: 0.088 kg CO2 / kWh)
+    const carbonFootprintKg = totalConsumption * 0.088;
+
+    // Energy Score Logic (0-100)
+    // Factors: Power Factor (40%), Peak Demand vs Avg (30%), Consumption vs Prev (30%)
+    const powerFactorBonus = avgPowerFactor >= 0.92 ? 40 : (avgPowerFactor / 0.92) * 40;
+    const peakDemandPenalty = peakDemand > avgDailyConsumption * 5 ? 0 : 30; // Simplified
+    const trendBonus = costTrend <= 0 ? 30 : Math.max(0, 30 - costTrend);
+    const energyScore = Math.min(100, Math.round(powerFactorBonus + peakDemandPenalty + trendBonus));
+
     return {
       totalConsumption,
       totalCost,
@@ -209,6 +221,8 @@ export function useEnergy(dateRange?: { start: Date; end: Date }) {
       consumptionByMachine,
       dailyConsumption,
       hourlyPattern,
+      carbonFootprintKg,
+      energyScore,
     };
   })();
 
