@@ -6,8 +6,9 @@ import { useUpdateJobStatus } from "@/hooks/useJobs";
 import { notifyStatusChange } from "@/hooks/useNotifications";
 import { useAuth } from "@/contexts/AuthContext";
 import { ProductionRegistrationModal } from "@/components/operator/ProductionRegistrationModal";
+import { useOfflineSync } from "@/hooks/useOfflineSync";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, RefreshCw, AlertCircle } from "lucide-react";
+import { ArrowLeft, RefreshCw, AlertCircle, CloudOff } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
@@ -61,21 +62,13 @@ export default function KioskPage() {
   }, []);
 
   const handleRefresh = async () => {
-    if (isSyncing) return;
-    setIsSyncing(true);
+    if (isSyncing || !isOnline) return;
     try {
       await refetchAll();
-      setLastSync(new Date());
+      await cacheData();
       setErrorCount(0);
     } catch (err) {
       setErrorCount(prev => prev + 1);
-      if (errorCount > 2) {
-        toast.error("Erro na sincronização", {
-          description: "Verifique sua conexão de rede.",
-        });
-      }
-    } finally {
-      setIsSyncing(false);
     }
   };
 
@@ -117,7 +110,10 @@ export default function KioskPage() {
     if (!job) return;
     
     try {
-      await updateStatus.mutateAsync({ jobId, status: "production" });
+      await updateJobOffline(jobId, { 
+        status: "production",
+        actual_start_time: new Date().toISOString() 
+      });
       notifyStatusChange(job.client, job.status, "production");
     } catch (error) {
       if (import.meta.env.DEV) console.error("Error starting production:", error);
@@ -129,7 +125,7 @@ export default function KioskPage() {
     if (!job) return;
     
     try {
-      await updateStatus.mutateAsync({ jobId, status: "paused" });
+      await updateJobOffline(jobId, { status: "paused" });
       notifyStatusChange(job.client, job.status, "paused");
     } catch (error) {
       if (import.meta.env.DEV) console.error("Error pausing production:", error);
@@ -184,9 +180,9 @@ export default function KioskPage() {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 20 }}
             >
-              <Badge variant="destructive" className="gap-2 px-3 py-1.5 shadow-lg border-2 border-white/20">
-                <AlertCircle className="h-4 w-4" />
-                SISTEMA OFFLINE
+              <Badge variant="destructive" className="gap-2 px-3 py-1.5 shadow-lg border-2 border-white/20 animate-pulse">
+                <CloudOff className="h-4 w-4" />
+                MODO RESILIÊNCIA ATIVO (OFFLINE)
               </Badge>
             </motion.div>
           )}

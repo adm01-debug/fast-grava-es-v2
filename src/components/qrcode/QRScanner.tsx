@@ -16,6 +16,7 @@ import {
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { useOfflineSync } from "@/hooks/useOfflineSync";
 
 interface ScannedJob {
   id: string;
@@ -30,10 +31,8 @@ interface ScannedJob {
 
 export const QRScanner = () => {
   const { user } = useAuth();
+  const { isOnline, recordQRScanOffline, updateJobOffline, getCachedJobs } = useOfflineSync();
   const [isScanning, setIsScanning] = useState(false);
-  const [scannedJob, setScannedJob] = useState<ScannedJob | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [actionLoading, setActionLoading] = useState(false);
   const scannerRef = useRef<Html5Qrcode | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -43,14 +42,7 @@ export const QRScanner = () => {
     
     try {
       const deviceInfo = navigator.userAgent;
-      await supabase
-        .from("qr_scan_history")
-        .insert({
-          job_id: jobId,
-          operator_id: user.id,
-          action,
-          device_info: deviceInfo
-        });
+      await recordQRScanOffline(jobId, user.id, action, deviceInfo);
     } catch (error) {
       if (import.meta.env.DEV) console.error("Error recording scan:", error);
     }
@@ -114,13 +106,19 @@ export const QRScanner = () => {
       await stopScanner();
       setIsLoading(true);
 
-      const { data: job, error } = await supabase
-        .from("jobs")
-        .select("*")
-        .eq("id", data.id)
-        .maybeSingle();
-
-      if (error) throw error;
+      let job;
+      if (isOnline) {
+        const { data, error } = await supabase
+          .from("jobs")
+          .select("*")
+          .eq("id", data.id)
+          .maybeSingle();
+        if (error) throw error;
+        job = data;
+      } else {
+        const cached = getCachedJobs() as ScannedJob[];
+        job = cached.find(j => j.id === data.id);
+      }
       
       if (!job) {
         toast.error("Job não encontrado");
@@ -144,13 +142,10 @@ export const QRScanner = () => {
     
     setActionLoading(true);
     try {
-      const { error } = await supabase
-        .from("jobs")
-        .update({
-          status: "in_production",
-          actual_start_time: new Date().toISOString()
-        })
-        .eq("id", scannedJob.id);
+      const { error } = await updateJobOffline(scannedJob.id, {
+        status: "production",
+        actual_start_time: new Date().toISOString()
+      });
 
       if (error) throw error;
 
@@ -170,10 +165,7 @@ export const QRScanner = () => {
     
     setActionLoading(true);
     try {
-      const { error } = await supabase
-        .from("jobs")
-        .update({ status: "paused" })
-        .eq("id", scannedJob.id);
+      const { error } = await updateJobOffline(scannedJob.id, { status: "paused" });
 
       if (error) throw error;
 
@@ -193,15 +185,12 @@ export const QRScanner = () => {
     
     setActionLoading(true);
     try {
-      const { error } = await supabase
-        .from("jobs")
-        .update({ status: "in_production" })
-        .eq("id", scannedJob.id);
+      const { error } = await updateJobOffline(scannedJob.id, { status: "production" });
 
       if (error) throw error;
 
       await recordScan(scannedJob.id, 'resume');
-      setScannedJob({ ...scannedJob, status: "in_production" });
+      setScannedJob({ ...scannedJob, status: "production" });
       toast.success("Produção retomada!");
     } catch (error) {
       if (import.meta.env.DEV) console.error("Error resuming production:", error);
@@ -216,18 +205,15 @@ export const QRScanner = () => {
     
     setActionLoading(true);
     try {
-      const { error } = await supabase
-        .from("jobs")
-        .update({
-          status: "completed",
-          actual_end_time: new Date().toISOString()
-        })
-        .eq("id", scannedJob.id);
+      const { error } = await updateJobOffline(scannedJob.id, {
+        status: "finished",
+        actual_end_time: new Date().toISOString()
+      });
 
       if (error) throw error;
 
       await recordScan(scannedJob.id, 'finish');
-      setScannedJob({ ...scannedJob, status: "completed" });
+      setScannedJob({ ...scannedJob, status: "finished" });
       toast.success("Produção finalizada!");
     } catch (error) {
       if (import.meta.env.DEV) console.error("Error finishing production:", error);
@@ -246,9 +232,9 @@ export const QRScanner = () => {
     const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
       queue: { label: "Na Fila", variant: "secondary" },
       scheduled: { label: "Agendado", variant: "outline" },
-      in_production: { label: "Em Produção", variant: "default" },
+      production: { label: "Em Produção", variant: "default" },
       paused: { label: "Pausado", variant: "destructive" },
-      completed: { label: "Finalizado", variant: "secondary" },
+      finished: { label: "Finalizado", variant: "secondary" },
     };
     
     const config = statusConfig[status] || { label: status, variant: "secondary" as const };
@@ -335,7 +321,7 @@ export const QRScanner = () => {
                   )}
                   Iniciar Produção
                 </Button>
-              ) : scannedJob.status === "in_production" ? (
+              ) : scannedJob.status === "production" ? (
                 <>
                   <Button 
                     onClick={handlePauseProduction}
@@ -376,7 +362,7 @@ export const QRScanner = () => {
                     Retomar Produção
                   </Button>
                 </>
-              ) : scannedJob.status === "completed" ? (
+              ) : scannedJob.status === "finished" ? (
                 <div className="col-span-2 flex items-center justify-center gap-2 py-3 text-green-500">
                   <CheckCircle2 className="h-5 w-5" />
                   <span className="font-medium">Produção Finalizada</span>
