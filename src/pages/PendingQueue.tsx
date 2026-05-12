@@ -475,7 +475,7 @@ export default function PendingQueue() {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-3 sm:gap-4">
           <Card className="bg-card/50 backdrop-blur-sm border-border/50">
             <CardContent className="p-3 sm:p-4 flex items-center gap-2 sm:gap-3">
               <div className="p-2 sm:p-3 rounded-xl bg-cyan-500/20">
@@ -509,6 +509,17 @@ export default function PendingQueue() {
               </div>
             </CardContent>
           </Card>
+          <Card className={`bg-card/50 backdrop-blur-sm border-border/50 ${stats.stuck > 0 ? 'ring-1 ring-amber-500/50' : ''}`}>
+            <CardContent className="p-3 sm:p-4 flex items-center gap-2 sm:gap-3">
+              <div className={`p-2 sm:p-3 rounded-xl ${stats.stuck > 0 ? 'bg-amber-500/20' : 'bg-muted'}`}>
+                <History className={`h-4 w-4 sm:h-5 sm:w-5 ${stats.stuck > 0 ? 'text-amber-400' : 'text-muted-foreground'}`} />
+              </div>
+              <div>
+                <p className="text-lg sm:text-2xl font-bold text-foreground">{stats.stuck}</p>
+                <p className="text-xs sm:text-sm text-muted-foreground">Estagnados</p>
+              </div>
+            </CardContent>
+          </Card>
           <Card className="bg-card/50 backdrop-blur-sm border-border/50">
             <CardContent className="p-3 sm:p-4 flex items-center gap-2 sm:gap-3">
               <div className="p-2 sm:p-3 rounded-xl bg-violet-500/20">
@@ -520,27 +531,38 @@ export default function PendingQueue() {
               </div>
             </CardContent>
           </Card>
-          <Card className="bg-card/50 backdrop-blur-sm border-border/50">
-            <CardContent className="p-3 sm:p-4 flex items-center gap-2 sm:gap-3">
-              <div className="p-2 sm:p-3 rounded-xl bg-purple-500/20">
-                <RotateCcw className="h-4 w-4 sm:h-5 sm:w-5 text-purple-400" />
-              </div>
-              <div>
-                <p className="text-lg sm:text-2xl font-bold text-foreground">{stats.rework}</p>
-                <p className="text-xs sm:text-sm text-muted-foreground">Retrabalho</p>
-              </div>
-            </CardContent>
-          </Card>
         </div>
+
 
         {/* Filters */}
         <Card className="bg-card/50 backdrop-blur-sm border-border/50">
-          <CardHeader className="pb-3 sm:pb-4 px-3 sm:px-6">
+          <CardHeader className="pb-3 sm:pb-4 px-3 sm:px-6 flex flex-row items-center justify-between">
             <CardTitle className="text-base sm:text-lg flex items-center gap-2">
               <Filter className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
               Filtros
             </CardTitle>
+            <div className="flex items-center gap-1 bg-muted/30 p-1 rounded-lg">
+              <Button 
+                variant={viewMode === 'table' ? 'secondary' : 'ghost'} 
+                size="sm" 
+                className="h-7 px-2"
+                onClick={() => setViewMode('table')}
+              >
+                <List className="h-4 w-4 mr-1" />
+                <span className="hidden sm:inline">Tabela</span>
+              </Button>
+              <Button 
+                variant={viewMode === 'grid' ? 'secondary' : 'ghost'} 
+                size="sm" 
+                className="h-7 px-2"
+                onClick={() => setViewMode('grid')}
+              >
+                <LayoutGrid className="h-4 w-4 mr-1" />
+                <span className="hidden sm:inline">Cards</span>
+              </Button>
+            </div>
           </CardHeader>
+
           <CardContent className="px-3 sm:px-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
               <div className="relative">
