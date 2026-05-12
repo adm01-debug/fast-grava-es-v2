@@ -1,4 +1,7 @@
+import { useState, useEffect } from 'react';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
 import { OperatorWithProfile } from '@/hooks/useOperators';
 
 interface OperatorConfirmDialogsProps {
@@ -8,8 +11,8 @@ interface OperatorConfirmDialogsProps {
   isToggling: boolean;
   onRemoveClose: () => void;
   onToggleClose: () => void;
-  onRemoveConfirm: () => void;
-  onToggleConfirm: () => void;
+  onRemoveConfirm: (reason?: string) => void;
+  onToggleConfirm: (reason?: string) => void;
 }
 
 export function OperatorConfirmDialogs({
