@@ -32,6 +32,22 @@ export default function GamificationPage() {
   const [period, setPeriod] = useState<'daily' | 'weekly' | 'monthly'>('weekly');
   const [activeTab, setActiveTab] = useState<'ranking' | 'rewards'>('ranking');
   const { rankings, achievements, isLoading, periodStart, periodEnd } = useGamification(period);
+  const [balance, setBalance] = useState(3500); // Mock user balance
+  const [redeemingId, setRedeemingId] = useState<number | null>(null);
+
+  const handleRedeem = (reward: any) => {
+    if (balance >= reward.cost) {
+      setRedeemingId(reward.id);
+      setTimeout(() => {
+        setBalance(prev => prev - reward.cost);
+        setRedeemingId(null);
+        toast.success(`Sucesso! Você resgatou: ${reward.name}`, {
+          description: `Seu novo saldo é ${balance - reward.cost} PTS.`,
+          icon: <Sparkles className="h-4 w-4 text-primary" />,
+        });
+      }, 1500);
+    }
+  };
 
   const rewards = [
     { id: 1, name: 'Folga de Meio Período', cost: 2500, icon: Clock, color: 'bg-blue-500/10 text-blue-600', description: 'Ganhe 4 horas de folga remunerada.' },
