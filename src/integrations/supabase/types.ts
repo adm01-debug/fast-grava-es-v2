@@ -2760,6 +2760,45 @@ export type Database = {
         }
         Relationships: []
       }
+      report_templates: {
+        Row: {
+          columns: string[]
+          created_at: string
+          filters: Json | null
+          format_type: string | null
+          id: string
+          is_public: boolean | null
+          name: string
+          table_name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          columns: string[]
+          created_at?: string
+          filters?: Json | null
+          format_type?: string | null
+          id?: string
+          is_public?: boolean | null
+          name: string
+          table_name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          columns?: string[]
+          created_at?: string
+          filters?: Json | null
+          format_type?: string | null
+          id?: string
+          is_public?: boolean | null
+          name?: string
+          table_name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       reward_redemptions: {
         Row: {
           created_at: string | null
@@ -3764,6 +3803,41 @@ export type Database = {
           {
             foreignKeyName: "technical_sheet_tips_technical_sheet_id_fkey"
             columns: ["technical_sheet_id"]
+            isOneToOne: false
+            referencedRelation: "technical_sheets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      technical_sheet_versions: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          data: Json
+          id: string
+          sheet_id: string
+          version_number: number
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          data: Json
+          id?: string
+          sheet_id: string
+          version_number: number
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          data?: Json
+          id?: string
+          sheet_id?: string
+          version_number?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "technical_sheet_versions_sheet_id_fkey"
+            columns: ["sheet_id"]
             isOneToOne: false
             referencedRelation: "technical_sheets"
             referencedColumns: ["id"]
