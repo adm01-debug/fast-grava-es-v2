@@ -68,6 +68,9 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { BrainCircuit, Sparkles, Zap } from 'lucide-react';
+import { DrillDownDialog } from '@/components/bi/drilldown/DrillDownDialog';
+import { useSchedulingData } from '@/hooks/useSchedulingData';
+
 
 export default function KPIDashboard() {
   const [activeTab, setActiveTab] = useState('overview');
@@ -76,9 +79,15 @@ export default function KPIDashboard() {
   
   const { data: kpis, isLoading: isLoadingKPIs } = useKPIs(period, customTargets);
   const { operators, isLoading: isLoadingOperators } = useOperatorProductivity('all');
+  const { jobs, isLoading: isLoadingJobs } = useSchedulingData();
+
   const { goalAlerts } = useGoalAlerts({ enableNotifications: false });
   const { handleExport } = useBIExport({ periodJobsList: [] });
   const [searchTerm, setSearchTerm] = useState('');
+  const [drillDownOpen, setDrillDownOpen] = useState(false);
+  const [drillDownTitle, setDrillDownTitle] = useState('');
+  const [drillDownJobs, setDrillDownJobs] = useState<any[]>([]);
+  
   const [visibleKPIs, setVisibleKPIs] = useState({
     completion: true,
     occupancy: true,
@@ -89,7 +98,36 @@ export default function KPIDashboard() {
   const [isEditingTargets, setIsEditingTargets] = useState(false);
   const [selectedMachine, setSelectedMachine] = useState<any>(null);
 
-  const isLoading = isLoadingKPIs || isLoadingOperators;
+
+  const isLoading = isLoadingKPIs || isLoadingOperators || isLoadingJobs;
+
+  const handleDrillDown = (title: string, segment: 'lost' | 'finished' | 'delayed' | 'production' | 'queue') => {
+    setDrillDownTitle(title);
+    if (jobs) {
+      const filtered = jobs.filter((j: any) => {
+        if (segment === 'lost') return (j.lost_pieces || 0) > 0;
+        if (segment === 'finished') return j.status === 'finished';
+        if (segment === 'delayed') return j.status === 'delayed';
+        if (segment === 'production') return j.status === 'production';
+        if (segment === 'queue') return j.status === 'scheduled' || j.status === 'queue';
+        return true;
+      }).map((j: any) => {
+        const total = (j.produced_quantity || j.quantity || 1) + (j.lost_pieces || 0);
+        return {
+          id: j.id,
+          order_number: j.order_number || `OS-${j.id.slice(0, 5)}`,
+          product: j.product_name || 'Produto',
+          status: j.status,
+          quantity: j.quantity,
+          lost_pieces: j.lost_pieces || 0,
+          efficiency: total > 0 ? (((total - (j.lost_pieces || 0)) / total) * 100).toFixed(1) + '%' : '--'
+        };
+      });
+      setDrillDownJobs(filtered);
+      setDrillDownOpen(true);
+    }
+  };
+
 
   if (isLoading) {
     return (
@@ -379,7 +417,10 @@ export default function KPIDashboard() {
 
               {visibleKPIs.loss && (
                 <KPITooltip {...KPI_DEFINITIONS.lossRate}>
-                  <Card className="glass-card hover-scale group">
+                  <Card 
+                    className="glass-card hover-scale group cursor-pointer"
+                    onClick={() => handleDrillDown('TAXA DE PERDA', 'lost')}
+                  >
                     <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
                       <Button variant="ghost" size="icon" className="h-6 w-6"><Settings2 className="h-3 w-3" /></Button>
                     </div>
@@ -419,6 +460,7 @@ export default function KPIDashboard() {
                   </Card>
                 </KPITooltip>
               )}
+
 
               {visibleKPIs.delayed && (
                 <Card className="glass-card hover-scale">
@@ -1012,6 +1054,14 @@ export default function KPIDashboard() {
       </DialogContent>
     </Dialog>
 
+    <DrillDownDialog 
+      open={drillDownOpen} 
+      onOpenChange={setDrillDownOpen} 
+      title={drillDownTitle} 
+      jobs={drillDownJobs} 
+      onExport={(format) => handleExport(format, drillDownTitle.replace(/\s+/g, '_'), kpis)}
+    />
     </MainLayout>
   );
 }
+
