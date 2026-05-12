@@ -36,6 +36,7 @@ type AllowedField = typeof ALLOWED_OPERATOR_FIELDS[number];
 
 // Tipo para o payload sanitizado
 interface SanitizedPayload {
+  status?: string;
   produced_quantity?: number;
   lost_pieces?: number;
   actual_start_time?: string;
