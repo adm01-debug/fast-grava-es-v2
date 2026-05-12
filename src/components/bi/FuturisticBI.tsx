@@ -28,6 +28,7 @@ import { BITooltip } from './BITooltip';
 import { BIEmptyState } from './BIEmptyState';
 import { BILoadingSkeleton } from './BILoadingSkeleton';
 const BIAIInsights = lazy(() => import('./BIAIInsights').then(m => ({ default: m.BIAIInsights })));
+import { BIPredictiveROI } from './BIPredictiveROI';
 import { CHART_COLORS, GRADIENTS } from '@/constants/biConstants';
 
 import { BIJob, BIMetrics, BIProps } from '@/types/bi';
@@ -348,12 +349,18 @@ export function FuturisticBI({ biMetrics, kpis, oeeData, isLoading }: BIProps) {
         </Card>
       </div>
 
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2">
+          <LossesTable 
+            jobs={jobsWithLosses} 
+            onExport={handleExport} 
+            onShowDetails={(job) => handleDrillDown(`PERDAS DETALHADAS: ${job.order_number || job.id}`, 'lost')}
+          />
+        </div>
+        <BIPredictiveROI biMetrics={biMetrics} />
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <LossesTable 
-          jobs={jobsWithLosses} 
-          onExport={handleExport} 
-          onShowDetails={(job) => handleDrillDown(`PERDAS DETALHADAS: ${job.order_number || job.id}`, 'lost')}
-        />
         <Card className="bg-black/40 border-primary/20 backdrop-blur-xl">
           <CardHeader>
             <CardTitle className="flex items-center gap-3">

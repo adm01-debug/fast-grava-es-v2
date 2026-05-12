@@ -1,14 +1,17 @@
 import { useEffect, useState } from 'react';
-import { ShieldCheckIcon, LayoutDashboard, History, AlertTriangle, UserCheck, Settings2 } from 'lucide-react';
+import { ShieldCheckIcon, LayoutDashboard, History, AlertTriangle, UserCheck, Settings2, Fingerprint, Lock, ShieldAlert } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAuditTrail } from '@/hooks/useAuditTrail';
 import { AuditFilters } from '@/components/audit/AuditFilters';
 import { AuditEntryCard } from '@/components/audit/AuditEntryCard';
 import { AuditChainStatus } from '@/components/audit/AuditChainStatus';
+import { MainLayout } from '@/components/layout/MainLayout';
+import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import type { AuditFilters as AuditFiltersType } from '@/lib/schemas/auditLog';
+import { motion } from 'framer-motion';
 
 export default function AuditTrailPage() {
   const [filters, setFilters] = useState<AuditFiltersType>({ limit: 100 });
@@ -19,19 +22,31 @@ export default function AuditTrailPage() {
   }, []);
 
   return (
-    <>
-      <div className="container mx-auto p-4 sm:p-6 space-y-6 max-w-6xl">
-        <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <ShieldCheckIcon className="h-7 w-7 text-primary" aria-hidden />
+    <MainLayout>
+      <div className="p-4 sm:p-6 lg:p-8 space-y-8 animate-fade-in">
+        <Breadcrumbs />
+        
+        <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 pb-2 border-b border-border/40">
+          <div className="flex items-center gap-4">
+            <div className="p-3 rounded-2xl bg-primary/10 border border-primary/20 shadow-glow-primary">
+              <ShieldCheckIcon className="h-7 w-7 text-primary" aria-hidden />
+            </div>
             <div>
-              <h1 className="text-2xl font-semibold tracking-tight">Trilha de Auditoria</h1>
-              <p className="text-sm text-muted-foreground">
-                Registro imutável append-only com cadeia de hash SHA-256 (21 CFR Part 11)
+              <h1 className="text-3xl font-display font-black tracking-tighter flex items-center gap-2">
+                Trilha de Auditoria
+                <Badge variant="outline" className="text-[10px] font-black uppercase tracking-widest bg-emerald-500/10 text-emerald-500 border-emerald-500/20">
+                  <Lock className="h-2 w-2 mr-1" /> Imutável
+                </Badge>
+              </h1>
+              <p className="text-sm text-muted-foreground font-medium">
+                Governança Industrial: Cadeia de hash SHA-256 (21 CFR Part 11)
               </p>
             </div>
           </div>
-          <AuditChainStatus />
+          <div className="flex items-center gap-3">
+            <AuditChainStatus />
+            <Fingerprint className="h-5 w-5 text-muted-foreground/30" />
+          </div>
         </header>
 
         <Tabs defaultValue="log" className="space-y-6">
@@ -171,6 +186,6 @@ export default function AuditTrailPage() {
           </TabsContent>
         </Tabs>
       </div>
-    </>
+    </MainLayout>
   );
 }

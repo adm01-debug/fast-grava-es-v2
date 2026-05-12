@@ -11,7 +11,8 @@ import { FavoriteButton, FavoritesDropdown } from '@/components/navigation/Favor
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { VoiceButton } from '@/components/voice/VoiceCommands';
 import { useGamification } from '@/hooks/useGamification';
-import { Trophy, Medal, Star, Target, Zap, Award, Crown, TrendingUp, Command, Package, Clock } from 'lucide-react';
+import { toast } from 'sonner';
+import { Trophy, Medal, Star, Target, Zap, Award, Crown, TrendingUp, Command, Package, Clock, Sparkles, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -32,6 +33,22 @@ export default function GamificationPage() {
   const [period, setPeriod] = useState<'daily' | 'weekly' | 'monthly'>('weekly');
   const [activeTab, setActiveTab] = useState<'ranking' | 'rewards'>('ranking');
   const { rankings, achievements, isLoading, periodStart, periodEnd } = useGamification(period);
+  const [balance, setBalance] = useState(3500); // Mock user balance
+  const [redeemingId, setRedeemingId] = useState<number | null>(null);
+
+  const handleRedeem = (reward: any) => {
+    if (balance >= reward.cost) {
+      setRedeemingId(reward.id);
+      setTimeout(() => {
+        setBalance(prev => prev - reward.cost);
+        setRedeemingId(null);
+        toast.success(`Sucesso! Você resgatou: ${reward.name}`, {
+          description: `Seu novo saldo é ${balance - reward.cost} PTS.`,
+          icon: <Sparkles className="h-4 w-4 text-primary" />,
+        });
+      }, 1500);
+    }
+  };
 
   const rewards = [
     { id: 1, name: 'Folga de Meio Período', cost: 2500, icon: Clock, color: 'bg-blue-500/10 text-blue-600', description: 'Ganhe 4 horas de folga remunerada.' },
@@ -79,6 +96,16 @@ export default function GamificationPage() {
               {format(periodStart, "dd 'de' MMMM", { locale: ptBR })} - {format(periodEnd, "dd 'de' MMMM", { locale: ptBR })}
             </p>
           </div>
+          
+          <div className="flex items-center gap-4 p-3 bg-primary/5 border border-primary/20 rounded-2xl animate-pulse-glow">
+            <div className="p-2 rounded-lg bg-primary/20">
+              <Zap className="h-5 w-5 text-primary" />
+            </div>
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-widest text-primary/70">Seu Saldo</p>
+              <p className="text-xl font-black text-primary">{balance.toLocaleString()} PTS</p>
+            </div>
+          </div>
 
           <div className="flex items-center gap-3">
             <VoiceButton />
@@ -120,11 +147,21 @@ export default function GamificationPage() {
                   <p className="text-sm text-muted-foreground mb-6 h-10 line-clamp-2">
                     {reward.description}
                   </p>
-                  <Button className="w-full group-hover:scale-[1.02] transition-transform" disabled={true}>
-                    Resgatar Recompensa
+                  <Button 
+                    className={cn(
+                      "w-full transition-all duration-500",
+                      redeemingId === reward.id ? "bg-emerald-500 hover:bg-emerald-600" : "group-hover:scale-[1.02]"
+                    )} 
+                    disabled={balance < reward.cost || redeemingId !== null}
+                    onClick={() => handleRedeem(reward)}
+                  >
+                    {redeemingId === reward.id ? (
+                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                    ) : null}
+                    {redeemingId === reward.id ? 'Processando...' : 'Resgatar Recompensa'}
                   </Button>
                   <p className="text-[10px] text-center text-muted-foreground mt-3 uppercase font-bold tracking-tighter">
-                    Saldo insuficiente para resgate
+                    {balance < reward.cost ? 'Saldo insuficiente para resgate' : 'Disponível para resgate'}
                   </p>
                 </CardContent>
               </Card>
