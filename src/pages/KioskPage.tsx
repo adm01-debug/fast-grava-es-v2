@@ -175,6 +175,37 @@ export default function KioskPage() {
         </Button>
       </div>
       
+      {/* UI Overlays for Excellence */}
+      <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2 items-end pointer-events-none">
+        <AnimatePresence>
+          {!isOnline && (
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 20 }}
+            >
+              <Badge variant="destructive" className="gap-2 px-3 py-1.5 shadow-lg border-2 border-white/20">
+                <AlertCircle className="h-4 w-4" />
+                SISTEMA OFFLINE
+              </Badge>
+            </motion.div>
+          )}
+          
+          {isSyncing && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+            >
+              <div className="bg-primary/90 text-white px-3 py-1.5 rounded-full shadow-lg flex items-center gap-2 text-xs font-black">
+                <RefreshCw className="h-3 w-3 animate-spin" />
+                SINCRONIZANDO...
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
       <KioskMode
         jobs={kioskJobs}
         machineName={selectedMachine?.name || "Todas as Máquinas"}
