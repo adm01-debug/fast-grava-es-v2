@@ -290,24 +290,24 @@ export function useKPIs(period: KPIPeriod = 'all', customTargets?: Partial<KPITa
     }).filter((t: any) => t.jobCount > 0);
 
     const averageOccupancy = productivityByTechnique.length > 0
-      ? productivityByTechnique.reduce((sum, t) => sum + t.occupancyRate, 0) / productivityByTechnique.length
+      ? productivityByTechnique.reduce((sum: number, t: any) => sum + t.occupancyRate, 0) / productivityByTechnique.length
       : 0;
-      
+
     // Removido random para manter integridade
 
-    const products = Array.from(new Set(validJobs.map(j => j.product).filter(Boolean)));
-    const productivityByProduct = products.map(productName => {
+    const products = Array.from(new Set(validJobs.map((j: DbJob) => j.product).filter(Boolean)));
+    const productivityByProduct = products.map((productName: string | null) => {
       const productJobs = validJobs.filter(j => j.product === productName);
-      const totalPcs = productJobs.reduce((sum, j) => sum + sanitizeNumber(j.quantity), 0);
-      const lostPcs = productJobs.reduce((sum, j) => sum + sanitizeNumber(j.lost_pieces), 0);
+      const totalPcs = productJobs.reduce((sum: number, j: DbJob) => sum + sanitizeNumber(j.quantity), 0);
+      const lostPcs = productJobs.reduce((sum: number, j: DbJob) => sum + sanitizeNumber(j.lost_pieces), 0);
       return {
         productName: productName!,
         jobCount: productJobs.length,
         totalPieces: totalPcs,
         lossRate: (totalPcs + lostPcs) > 0 ? (lostPcs / (totalPcs + lostPcs)) * 100 : 0,
-        avgDuration: productJobs.length > 0 ? productJobs.reduce((sum, j) => sum + sanitizeNumber(j.estimated_duration), 0) / productJobs.length : 0,
+        avgDuration: productJobs.length > 0 ? productJobs.reduce((sum: number, j: DbJob) => sum + sanitizeNumber(j.estimated_duration), 0) / productJobs.length : 0,
       };
-    }).sort((a, b) => b.totalPieces - a.totalPieces);
+    }).sort((a: any, b: any) => b.totalPieces - a.totalPieces);
 
     const predictions: KPIPrediction[] = Array.from({ length: 7 }, (_, i) => {
       const date = new Date();
@@ -321,7 +321,7 @@ export function useKPIs(period: KPIPeriod = 'all', customTargets?: Partial<KPITa
     });
 
     const anomalies: KPIAnomaly[] = [];
-    productivityByMachine.forEach(m => {
+    productivityByMachine.forEach((m: any) => {
       if (m.lossRate > targets.lossRate * 2.5) {
         anomalies.push({
           id: `loss-m-${m.machineId}`,
