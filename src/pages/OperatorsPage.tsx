@@ -207,6 +207,7 @@ export default function OperatorsPage() {
           <TabsList className="glass-card p-1">
             <TabsTrigger value="list">Lista de Operadores</TabsTrigger>
             <TabsTrigger value="matrix">Matrix de Polivalência</TabsTrigger>
+            <TabsTrigger value="ranking">Ranking Global</TabsTrigger>
           </TabsList>
 
           <TabsContent value="list" className="space-y-6 outline-none">
