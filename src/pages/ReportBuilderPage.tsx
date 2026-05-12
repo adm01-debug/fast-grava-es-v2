@@ -134,7 +134,7 @@ export default function ReportBuilderPage() {
       if (!user) throw new Error('User not authenticated');
 
       const { data, error } = await supabase
-        .from('report_templates')
+        .from('report_templates' as any)
         .insert({
           name: templateName,
           table_name: selectedTable,
@@ -142,7 +142,7 @@ export default function ReportBuilderPage() {
           format_type: formatType,
           user_id: user.id,
           filters: { status: selectedStatus, dateRange }
-        })
+        } as any)
         .select()
         .single();
 
