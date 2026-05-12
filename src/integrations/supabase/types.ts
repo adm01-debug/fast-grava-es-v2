@@ -5005,6 +5005,10 @@ export type Database = {
         Returns: undefined
       }
       process_tpm_notifications_cron: { Args: never; Returns: undefined }
+      refresh_operator_rankings: {
+        Args: { p_type: string }
+        Returns: undefined
+      }
       verify_audit_chain: {
         Args: { _limit?: number }
         Returns: {
