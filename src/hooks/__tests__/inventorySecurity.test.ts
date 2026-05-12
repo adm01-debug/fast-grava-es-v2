@@ -34,6 +34,19 @@ vi.mock('@tanstack/react-query', async (importOriginal) => {
   };
 });
 
+const createWrapper = () => {
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: false,
+      },
+    },
+  });
+  return ({ children }: { children: React.ReactNode }) => (
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  );
+};
+
 describe('useInventory Logic & Security', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -49,7 +62,7 @@ describe('useInventory Logic & Security', () => {
       }),
     });
 
-    const { result } = renderHook(() => useInventory());
+    const { result } = renderHook(() => useInventory(), { wrapper: createWrapper() });
 
     // Try to transfer from A1 to A2, but item is at B1
     await expect(result.current.transferItems({
@@ -80,7 +93,7 @@ describe('useInventory Logic & Security', () => {
       };
     });
 
-    const { result } = renderHook(() => useInventory());
+    const { result } = renderHook(() => useInventory(), { wrapper: createWrapper() });
 
     // Try to take out 10, but only 5 available
     await expect(result.current.recordMovement({
