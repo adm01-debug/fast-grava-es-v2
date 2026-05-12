@@ -39,8 +39,10 @@ const statusMap = {
 import { RotateCcw } from 'lucide-react';
 
 export default function LogisticsPage() {
-  const { shipments, isLoading } = useLogistics();
+  const { shipments } = useLogistics();
   const [searchTerm, setSearchTerm] = useState('');
+
+  const isLoading = shipments.isLoading;
 
   const filteredShipments = shipments.data?.filter(s => 
     s.tracking_code?.toLowerCase().includes(searchTerm.toLowerCase()) ||
