@@ -79,6 +79,10 @@ export default function KPIDashboard() {
   const { goalAlerts } = useGoalAlerts({ enableNotifications: false });
   const { handleExport } = useBIExport({ periodJobsList: [] });
   const [searchTerm, setSearchTerm] = useState('');
+  const [drillDownOpen, setDrillDownOpen] = useState(false);
+  const [drillDownTitle, setDrillDownTitle] = useState('');
+  const [drillDownJobs, setDrillDownJobs] = useState<any[]>([]);
+  
   const [visibleKPIs, setVisibleKPIs] = useState({
     completion: true,
     occupancy: true,
@@ -88,6 +92,7 @@ export default function KPIDashboard() {
   
   const [isEditingTargets, setIsEditingTargets] = useState(false);
   const [selectedMachine, setSelectedMachine] = useState<any>(null);
+
 
   const isLoading = isLoadingKPIs || isLoadingOperators;
 
