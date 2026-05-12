@@ -777,6 +777,42 @@ export type Database = {
         }
         Relationships: []
       }
+      gamification_rewards: {
+        Row: {
+          color_class: string | null
+          cost_points: number
+          created_at: string | null
+          description: string | null
+          icon: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          stock: number | null
+        }
+        Insert: {
+          color_class?: string | null
+          cost_points: number
+          created_at?: string | null
+          description?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          stock?: number | null
+        }
+        Update: {
+          color_class?: string | null
+          cost_points?: number
+          created_at?: string | null
+          description?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          stock?: number | null
+        }
+        Relationships: []
+      }
       gamification_settings: {
         Row: {
           created_at: string
@@ -2723,6 +2759,41 @@ export type Database = {
           window_seconds?: number
         }
         Relationships: []
+      }
+      reward_redemptions: {
+        Row: {
+          created_at: string | null
+          id: string
+          points_spent: number
+          reward_id: string
+          status: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          points_spent: number
+          reward_id: string
+          status?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          points_spent?: number
+          reward_id?: string
+          status?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reward_redemptions_reward_id_fkey"
+            columns: ["reward_id"]
+            isOneToOne: false
+            referencedRelation: "gamification_rewards"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       role_permissions: {
         Row: {
