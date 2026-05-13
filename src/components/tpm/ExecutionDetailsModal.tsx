@@ -15,6 +15,8 @@ import { toast } from 'sonner';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 import { supabase } from '@/integrations/supabase/client';
+import { AdjustmentParameters } from './ExecutionAdjustmentParameters';
+import { ExecutionSupplies } from './ExecutionSupplies';
 
 interface ExecutionDetailsModalProps {
   isOpen: boolean;
