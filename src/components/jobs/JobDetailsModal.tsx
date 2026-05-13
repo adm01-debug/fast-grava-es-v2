@@ -47,6 +47,8 @@ import { JobCostsTab } from "./JobCostsTab";
 import { JobTraceabilityTab } from "./JobTraceabilityTab";
 import { JobQualityTab } from "./JobQualityTab";
 import { JobInstructionsTab } from "./JobInstructionsTab";
+import { JobInfoGrid } from "./JobInfoGrid";
+import { JobQuickActions } from "./JobQuickActions";
 import { useState, useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useDataExport } from "@/hooks/useDataExport";
