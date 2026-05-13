@@ -375,49 +375,7 @@ export function JobDetailsModal({ job, open, onOpenChange, onStatusChange }: Job
                 </div>
 
                 {/* Details Grid */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-1 p-4 rounded-xl bg-muted/20 border border-border/30">
-                    <InfoRow
-                      icon={Package}
-                      label={t('jobs.quantity')}
-                      value={`${job.quantity.toLocaleString()} ${t('common.pieces')}`}
-                      color="bg-indicator-success/20"
-                    />
-                    <InfoRow
-                      icon={Palette}
-                      label={t('jobs.gravureColor')}
-                      value={job.gravure_color || t('common.notDefined')}
-                      color="bg-accent-purple/20"
-                    />
-                    <InfoRow
-                      icon={Clock}
-                      label={t('jobs.estimatedDuration')}
-                      value={`${job.estimated_duration} ${t('common.minutes')}`}
-                      color="bg-priority-high/20"
-                    />
-                  </div>
-
-                  <div className="space-y-1 p-4 rounded-xl bg-muted/20 border border-border/30">
-                    <InfoRow
-                      icon={Calendar}
-                      label={t('jobs.scheduledDate')}
-                      value={job.scheduled_date ? new Date(job.scheduled_date).toLocaleDateString('pt-BR') : t('common.notScheduled')}
-                      color="bg-indicator-info/20"
-                    />
-                    <InfoRow
-                      icon={Clock}
-                      label={t('common.time')}
-                      value={job.start_time && job.end_time ? `${job.start_time} - ${job.end_time}` : t('common.notDefined')}
-                      color="bg-indicator-warning/20"
-                    />
-                    <InfoRow
-                      icon={User}
-                      label={t('jobs.machine')}
-                      value={machine ? `${machine.code} - ${machine.name}` : t('common.notAssigned')}
-                      color="bg-accent-pink/20"
-                    />
-                  </div>
-                </div>
+                <JobInfoGrid job={job} machine={machine} />
 
                 {/* Technique & Machine */}
                 <div className="flex gap-4">
@@ -468,64 +426,7 @@ export function JobDetailsModal({ job, open, onOpenChange, onStatusChange }: Job
                 <Separator className="bg-border/50" />
 
                 {/* Quick Actions */}
-                <div className="flex flex-wrap gap-2">
-                  {(job.status === 'queue' || job.status === 'ready' || job.status === 'scheduled') && (
-                    <Button
-                      onClick={() => handleAction('start')}
-                      className="bg-indicator-success/20 text-indicator-success hover:bg-indicator-success/30 border border-indicator-success/30"
-                    >
-                      <Play className="h-4 w-4 mr-2" />
-                      Iniciar Produção
-                    </Button>
-                  )}
-
-                   {job.status === 'production' && (
-                    <>
-                      <Button
-                        onClick={() => handleAction('pause')}
-                        className="bg-indicator-warning/20 text-indicator-warning hover:bg-indicator-warning/30 border border-indicator-warning/30"
-                      >
-                        <Pause className="h-4 w-4 mr-2" />
-                        Pausar
-                      </Button>
-                      <Button
-                        onClick={() => handleAction('finish')}
-                        className="bg-indicator-success/20 text-indicator-success hover:bg-indicator-success/30 border border-indicator-success/30"
-                      >
-                        <CheckCircle className="h-4 w-4 mr-2" />
-                        Finalizar
-                      </Button>
-                    </>
-                  )}
-
-                   {job.status === 'paused' && (
-                    <Button
-                      onClick={() => handleAction('start')}
-                      className="bg-indicator-success/20 text-indicator-success hover:bg-indicator-success/30 border border-indicator-success/30"
-                    >
-                      <Play className="h-4 w-4 mr-2" />
-                      Retomar
-                    </Button>
-                  )}
-
-                   {job.status !== 'rework' && job.status !== 'finished' && job.status !== 'cancelled' && (
-                    <Button
-                      onClick={() => handleAction('rework')}
-                      variant="outline"
-                      className="border-accent-purple/30 text-accent-purple hover:bg-accent-purple/20"
-                    >
-                      <RotateCcw className="h-4 w-4 mr-2" />
-                      Marcar Retrabalho
-                    </Button>
-                  )}
-
-                   {job.status === 'delayed' && (
-                    <Badge className="bg-indicator-danger/20 text-indicator-danger border border-indicator-danger/30 px-3 py-2">
-                      <AlertTriangle className="h-4 w-4 mr-2" />
-                      Job Atrasado
-                    </Badge>
-                  )}
-                </div>
+                <JobQuickActions job={job} handleAction={handleAction} />
               </>
             )}
           </TabsContent>
