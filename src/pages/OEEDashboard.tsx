@@ -306,6 +306,7 @@ const OEEDashboard = memo(function OEEDashboard() {
                 benchmark={WORLD_CLASS_OEE}
                 trend={data.comparison ? data.comparison.currentOEE - data.comparison.previousOEE : undefined}
                 className="border-primary/40 shadow-glow-primary/10"
+                variant="glass"
               />
             </KPITooltip>
 
@@ -317,6 +318,7 @@ const OEEDashboard = memo(function OEEDashboard() {
                 description="Tempo operando / Tempo planejado"
                 benchmark={90}
                 trend={data.comparison ? data.comparison.currentAvailability - data.comparison.previousAvailability : undefined}
+                variant="glass"
               />
             </KPITooltip>
 
@@ -328,6 +330,7 @@ const OEEDashboard = memo(function OEEDashboard() {
                 description="Produção Real / Produção Estimada"
                 benchmark={95}
                 trend={data.comparison ? data.comparison.currentPerformance - data.comparison.previousPerformance : undefined}
+                variant="glass"
               />
             </KPITooltip>
 
@@ -339,6 +342,7 @@ const OEEDashboard = memo(function OEEDashboard() {
                 description="Peças Boas / Total Produzido"
                 benchmark={99}
                 trend={data.comparison ? data.comparison.currentQuality - data.comparison.previousQuality : undefined}
+                variant="glass"
               />
             </KPITooltip>
           </div>

@@ -65,7 +65,7 @@ export const NavGroupComponent = memo(function NavGroupComponent({
         aria-controls={`nav-group-${group.id}`}
       >
         <div className="flex items-center gap-3">
-          <Icon className={cn("h-4 w-4 shrink-0 transition-transform duration-300 group-hover/btn:scale-110", hasActiveItem && "text-primary drop-shadow-[0_0_8px_hsl(var(--primary)/0.5)]")} />
+          <Icon className={cn("h-4 w-4 shrink-0 transition-transform duration-300 group-hover/btn:scale-125 group-hover/btn:rotate-3", hasActiveItem && "text-primary drop-shadow-[0_0_8px_hsl(var(--primary)/0.5)]")} />
           <span className="text-sm">{group.label}</span>
         </div>
         <motion.div animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.2 }}>

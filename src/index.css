@@ -194,6 +194,9 @@
     --shadow-2xs: 0 1px 1px 0 hsl(20 25% 12% / 0.03);
 
     --spacing: 0.25rem;
+    
+    /* ===== FOCUS VISIBLE ===== */
+    --ring-offset: 2px;
   }
 
   .dark {
@@ -435,6 +438,11 @@
     @apply border-border;
     /* Disable tap highlight on touch devices */
     -webkit-tap-highlight-color: transparent;
+  }
+
+  *:focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: var(--ring-offset);
   }
 
   html {
