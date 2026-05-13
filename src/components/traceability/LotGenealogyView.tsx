@@ -30,7 +30,7 @@ export default function LotGenealogyView({ lot, open, onClose }: LotGenealogyVie
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[95vh] overflow-y-auto border-primary/20 shadow-2xl bg-background/95 backdrop-blur-xl">
+      <DialogContent className="max-w-4xl max-h-[95vh] overflow-y-auto border-primary/20 shadow-2xl bg-background/95 backdrop-blur-xl" aria-describedby="lot-genealogy-description">
         <DialogHeader className="border-b border-border/50 pb-4">
           <DialogTitle className="flex items-center gap-3 text-2xl font-black tracking-tighter">
             <div className="p-2 rounded-lg bg-primary/10">
@@ -38,7 +38,7 @@ export default function LotGenealogyView({ lot, open, onClose }: LotGenealogyVie
             </div>
             Genealogia Hyper-Traceability
           </DialogTitle>
-          <DialogDescription className="font-bold uppercase text-[10px] tracking-widest text-muted-foreground">
+          <DialogDescription id="lot-genealogy-description" className="font-bold uppercase text-[10px] tracking-widest text-muted-foreground">
             Mapeamento 360° de componentes e produtos derivados (Audit Ready)
           </DialogDescription>
         </DialogHeader>
