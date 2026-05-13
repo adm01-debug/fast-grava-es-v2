@@ -446,6 +446,7 @@ Buscar e substituir textos hardcoded por chaves i18n:
 | 8.2 | Focus visible | 30min | ✅ DONE |
 | 9.1 | Code splitting | 4h | ✅ DONE |
 | 9.2 | Virtualização (Traceability) | 8h | ✅ DONE |
+| 8.3 | ARIA Labels & A11y Audit | 2h | ✅ DONE |
 
 ---
 
