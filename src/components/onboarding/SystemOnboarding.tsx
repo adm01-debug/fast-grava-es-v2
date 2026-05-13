@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Joyride, Step, CallbackProps, STATUS } from 'react-joyride';
+import { Joyride, Step, STATUS } from 'react-joyride';
 import { useTranslation } from 'react-i18next';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { useAuth } from '@/contexts/AuthContext';
@@ -14,7 +14,6 @@ export const SystemOnboarding = () => {
 
   useEffect(() => {
     if (user && !hasCompletedOnboarding) {
-      // Delay to ensure components are rendered
       const timer = setTimeout(() => {
         setRun(true);
       }, 2000);
@@ -28,10 +27,6 @@ export const SystemOnboarding = () => {
       placement: 'center',
       title: t('onboarding.welcome.title', { defaultValue: 'Bem-vindo ao Fast Gravações!' }),
       content: t('onboarding.welcome.content', { defaultValue: 'Vamos fazer um tour rápido para você conhecer as principais funcionalidades da sua nova Fábrica Autônoma.' }),
-      disableBeacon: true,
-      floaterProps: {
-        disableAnimation: true,
-      },
     },
     {
       target: '#navigation',
@@ -59,9 +54,9 @@ export const SystemOnboarding = () => {
     },
   ];
 
-  const handleJoyrideCallback = (data: CallbackProps) => {
+  const handleJoyrideCallback = (data: any) => {
     const { status } = data;
-    if ([STATUS.FINISHED, STATUS.SKIPPED].includes(status as any)) {
+    if ([STATUS.FINISHED, STATUS.SKIPPED].includes(status)) {
       setHasCompletedOnboarding(true);
       setRun(false);
     }
@@ -76,13 +71,6 @@ export const SystemOnboarding = () => {
       showSkipButton
       callback={handleJoyrideCallback}
       styles={{
-        options: {
-          primaryColor: 'hsl(var(--primary))',
-          backgroundColor: theme === 'dark' ? '#1f2937' : '#fff',
-          textColor: theme === 'dark' ? '#f3f4f6' : '#1f2937',
-          arrowColor: theme === 'dark' ? '#1f2937' : '#fff',
-          zIndex: 10000,
-        },
         tooltipContainer: {
           textAlign: 'left',
           borderRadius: '12px',
@@ -90,9 +78,14 @@ export const SystemOnboarding = () => {
         buttonNext: {
           borderRadius: '8px',
           fontWeight: 'bold',
+          backgroundColor: 'hsl(var(--primary))',
         },
         buttonBack: {
           fontWeight: 'bold',
+          color: 'hsl(var(--muted-foreground))',
+        },
+        buttonSkip: {
+          color: 'hsl(var(--muted-foreground))',
         }
       }}
       locale={{
