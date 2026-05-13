@@ -352,57 +352,10 @@ export const TechnicalSheetViewer = ({ sheetId, onEdit, onDuplicate }: Technical
               <ScrollArea className="h-full">
                 <div className="p-6 space-y-8">
                   {/* Visual Reference Section (Etapa 3) */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <Card className="bg-muted/30 border-dashed">
-                      <CardHeader className="py-3 px-4">
-                        <CardTitle className="text-sm flex items-center gap-2 text-emerald-600">
-                          <CheckCircle2 className="h-4 w-4" />
-                          Padrão de Ouro
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent className="px-4 pb-4">
-                        <div 
-                          className="aspect-video bg-muted rounded flex flex-col items-center justify-center border-2 border-dashed border-emerald-500/20 group cursor-pointer hover:bg-emerald-500/5 transition-colors overflow-hidden"
-                          onClick={() => sheet.gold_standard_image_url && window.open(sheet.gold_standard_image_url, '_blank')}
-                        >
-                          {sheet.gold_standard_image_url ? (
-                            <img src={sheet.gold_standard_image_url} alt="Padrão Ouro" className="w-full h-full object-cover" />
-                          ) : (
-                            <>
-                              <Maximize2 className="h-6 w-6 text-emerald-500/40 group-hover:scale-110 transition-transform" />
-                              <span className="text-[10px] text-emerald-600/60 mt-2 font-medium uppercase">Sem referência visual</span>
-                            </>
-                          )}
-                        </div>
-                        <p className="text-[10px] mt-2 text-muted-foreground italic text-center">Referência visual homologada para este processo</p>
-                      </CardContent>
-                    </Card>
-
-                    <Card className="bg-muted/30 border-dashed">
-                      <CardHeader className="py-3 px-4">
-                        <CardTitle className="text-sm flex items-center gap-2 text-rose-600">
-                          <AlertTriangle className="h-4 w-4" />
-                          Padrão de Falha
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent className="px-4 pb-4">
-                        <div 
-                          className="aspect-video bg-muted rounded flex flex-col items-center justify-center border-2 border-dashed border-rose-500/20 group cursor-pointer hover:bg-rose-500/5 transition-colors overflow-hidden"
-                          onClick={() => sheet.failure_standard_image_url && window.open(sheet.failure_standard_image_url, '_blank')}
-                        >
-                          {sheet.failure_standard_image_url ? (
-                            <img src={sheet.failure_standard_image_url} alt="Padrão Falha" className="w-full h-full object-cover" />
-                          ) : (
-                            <>
-                              <AlertTriangle className="h-6 w-6 text-rose-500/40 group-hover:shake transition-transform" />
-                              <span className="text-[10px] text-rose-600/60 mt-2 font-medium uppercase">Sem exemplos de rejeição</span>
-                            </>
-                          )}
-                        </div>
-                        <p className="text-[10px] mt-2 text-muted-foreground italic text-center">Erros comuns que levam ao descarte</p>
-                      </CardContent>
-                    </Card>
-                  </div>
+                  <VisualReference 
+                    goldStandardUrl={sheet.gold_standard_image_url} 
+                    failureStandardUrl={sheet.failure_standard_image_url} 
+                  />
 
                   {/* Technical Settings Section */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
