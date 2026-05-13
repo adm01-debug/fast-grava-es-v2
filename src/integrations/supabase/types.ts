@@ -3010,6 +3010,39 @@ export type Database = {
           },
         ]
       }
+      rls_test_results: {
+        Row: {
+          created_at: string | null
+          error_message: string | null
+          id: string
+          operation: string
+          passed: boolean
+          role: string
+          table_name: string
+          test_name: string
+        }
+        Insert: {
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          operation: string
+          passed: boolean
+          role: string
+          table_name: string
+          test_name: string
+        }
+        Update: {
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          operation?: string
+          passed?: boolean
+          role?: string
+          table_name?: string
+          test_name?: string
+        }
+        Relationships: []
+      }
       role_permissions: {
         Row: {
           action: string
