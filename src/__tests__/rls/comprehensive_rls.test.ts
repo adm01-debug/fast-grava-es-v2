@@ -40,10 +40,13 @@ describe('Segurança RLS - Proteção Universal de Dados', () => {
     it(`deve bloquear acesso anônimo na tabela ${table}`, async () => {
       const { data, error } = await supabase.from(table as any).select('*').limit(1);
       
-      if (data) {
-        expect(data.length).toBe(0);
-      } else if (error) {
-        expect(error.code).toMatch(/PGRST/);
+      // Se não houver erro, data deve estar vazio (RLS bloqueia linhas)
+      // Se houver erro, deve ser de permissão ou autenticação
+      if (error) {
+        // Códigos 42501 (insufficient_privilege) ou PGRSTxxx (PostgREST errors)
+        expect(['42501', 'PGRST116', 'PGRST301']).toContain(error.code || '');
+      } else {
+        expect(data?.length).toBe(0);
       }
     });
   });
