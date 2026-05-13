@@ -280,7 +280,7 @@
       "description": "Overall Equipment Effectiveness - Eficiência Global dos Equipamentos",
       "loadingError": "Não foi possível carregar os dados de OEE.",
       "consolidated": "OEE Consolidado",
-      "aiPerformanceInsight": "Sua planta está operando {{val}} acima do benchmark. A técnica {{tech}} é o destaque com {{avg}}% de eficiência.",
+      "aiPerformanceInsight": "Sua planta está operando <span class='text-primary font-bold'>{{val}} acima</span> do benchmark do último trimestre. A técnica <span class='font-bold text-foreground'>{{tech}}</span> é o destaque com <span class='text-indicator-success font-bold'>{{avg}}%</span> de eficiência global.",
       "availability": "Disponibilidade",
       "availabilityShort": "Disponib.",
       "performanceBottleneck": "Gargalo de Performance",

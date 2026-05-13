@@ -153,14 +153,14 @@ const OEEDashboard = memo(function OEEDashboard() {
                  <Badge className="bg-primary/20 text-primary border-primary/30 animate-pulse uppercase text-[10px] font-black">AI Insight</Badge>
                  <h2 className="text-xl font-bold tracking-tight">{t('oee.consolidated', 'OEE Consolidado')}: {data.overallOEE.toFixed(1)}%</h2>
               </div>
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                 {t('oee.aiPerformanceInsight', { 
+              <p className="text-sm text-muted-foreground leading-relaxed" dangerouslySetInnerHTML={{ 
+                 __html: t('oee.aiPerformanceInsight', { 
                    val: '12%', 
                    tech: data.byTechnique[0]?.techniqueName, 
                    avg: data.byTechnique[0]?.averageOEE,
-                   defaultValue: 'Sua planta está operando {{val}} acima do benchmark. A técnica {{tech}} é o destaque com {{avg}}% de eficiência.'
-                 })}
-              </p>
+                   defaultValue: 'Sua planta está operando {{val}} acima do benchmark.'
+                 }) 
+              }} />
             </div>
             <div className="flex flex-wrap items-center justify-center gap-3 bg-background/40 p-4 rounded-2xl border border-border/50 backdrop-blur-sm">
               <div className="text-center px-4 border-r border-border/50">

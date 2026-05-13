@@ -280,7 +280,7 @@
       "description": "Overall Equipment Effectiveness",
       "loadingError": "Unable to load OEE data.",
       "consolidated": "Consolidated OEE",
-      "aiPerformanceInsight": "Your plant is operating {{val}} above the benchmark. The {{tech}} technique is the highlight with {{avg}}% overall efficiency.",
+      "aiPerformanceInsight": "Your plant is operating <span class='text-primary font-bold'>{{val}} above</span> the benchmark of the last quarter. The <span class='font-bold text-foreground'>{{tech}}</span> technique is the highlight with <span class='text-indicator-success font-bold'>{{avg}}%</span> overall efficiency.",
       "availability": "Availability",
       "availabilityShort": "Avail.",
       "performanceBottleneck": "Performance Bottleneck",
