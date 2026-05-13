@@ -1,0 +1,68 @@
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { useCallback } from 'react';
+import { toast } from 'sonner';
+
+export interface BusinessConfig {
+  key: string;
+  value: any;
+  description: string | null;
+  updated_at: string | null;
+  updated_by: string | null;
+}
+
+export function useBusinessConfig() {
+  const queryClient = useQueryClient();
+
+  const configQuery = useQuery({
+    queryKey: ['business-config'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('business_config')
+        .select('*');
+      
+      if (error) throw error;
+      
+      // Transform to Map for easier access
+      const configMap = new Map<string, any>();
+      data?.forEach(item => configMap.set(item.key, item.value));
+      return { raw: data as BusinessConfig[], map: configMap };
+    },
+    staleTime: 10 * 60 * 1000, // 10 minutes
+  });
+
+  const updateConfigMutation = useMutation({
+    mutationFn: async ({ key, value }: { key: string, value: any }) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      const { data, error } = await supabase
+        .from('business_config')
+        .update({ value, updated_by: user?.id, updated_at: new Date().toISOString() })
+        .eq('key', key)
+        .select()
+        .single();
+      
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['business-config'] });
+      toast.success('Configuração atualizada com sucesso');
+    },
+    onError: (error: any) => {
+      toast.error('Erro ao atualizar configuração: ' + (error.message || 'Erro desconhecido'));
+    }
+  });
+
+  const getConfig = useCallback((key: string, defaultValue: any) => {
+    if (!configQuery.data) return defaultValue;
+    return configQuery.data.map.get(key) ?? defaultValue;
+  }, [configQuery.data]);
+
+  return {
+    configs: configQuery.data?.raw || [],
+    isLoading: configQuery.isLoading,
+    getConfig,
+    updateConfig: updateConfigMutation.mutateAsync,
+    isUpdating: updateConfigMutation.isPending
+  };
+}
