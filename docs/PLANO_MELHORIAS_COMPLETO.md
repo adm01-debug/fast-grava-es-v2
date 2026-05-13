@@ -434,7 +434,7 @@ Buscar e substituir textos hardcoded por chaves i18n:
 ### Sprint 4 (Semana 4) — UX
 | ID | Tarefa | Esforço | Status |
 |----|--------|---------|--------|
-| 7.1 | Card glassmorphism variant | 1h | ⬜ TODO |
+| 7.1 | Card glassmorphism variant | 1h | ✅ DONE |
 | 7.2 | Sidebar hover effects | 2h | ✅ DONE |
 | 7.3 | Table zebra striping | 30min | ✅ DONE |
 | 7.4 | Button feedback | 1h | ✅ DONE |
@@ -446,6 +446,9 @@ Buscar e substituir textos hardcoded por chaves i18n:
 | 8.2 | Focus visible | 30min | ✅ DONE |
 | 9.1 | Code splitting | 4h | ✅ DONE |
 | 9.2 | Virtualização (Traceability) | 8h | ✅ DONE |
+| 8.3 | ARIA Labels & A11y Audit | 2h | ✅ DONE |
+| 9.3 | Memoização de Componentes | 4h | ✅ DONE |
+| 15 | SEO & Meta Tags | 1h | ✅ DONE |
 
 ---
 

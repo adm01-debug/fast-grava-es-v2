@@ -48,7 +48,14 @@ export function OccupancyChart() {
                 <span className="font-medium truncate max-w-[60%]">{machine.name}</span>
                 <span className="text-muted-foreground">{machine.occupancy}%</span>
               </div>
-              <div className="h-2 rounded-full bg-muted overflow-hidden">
+              <div 
+                className="h-2 rounded-full bg-muted overflow-hidden"
+                role="progressbar"
+                aria-valuenow={machine.occupancy}
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-label={`Ocupação da máquina ${machine.name}: ${machine.occupancy}%`}
+              >
                 <div
                   className={cn(
                     "h-full rounded-full transition-all",
