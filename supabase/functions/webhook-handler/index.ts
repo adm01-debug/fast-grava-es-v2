@@ -1,9 +1,10 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { hmac } from "https://deno.land/x/hmac@v2.0.1/mod.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-webhook-signature",
 };
 
 serve(async (req) => {
@@ -15,8 +16,29 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
     );
 
-    const payload = await req.json();
+    const signature = req.headers.get("x-webhook-signature");
+    const bodyText = await req.text();
+    const payload = JSON.parse(bodyText);
     const { source, event, data } = payload;
+
+    // HMAC verification for security
+    const secret = Deno.env.get(`WEBHOOK_SECRET_${source.toUpperCase()}`);
+    if (secret) {
+      const expectedSignature = hmac("sha256", secret, bodyText, "utf8", "hex");
+      if (signature !== expectedSignature) {
+        console.error(`Invalid signature for source: ${source}`);
+        return new Response(JSON.stringify({ error: "Invalid signature" }), {
+          status: 401,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+    } else if (Deno.env.get("ENFORCE_WEBHOOK_SIGNATURES") === "true") {
+       console.error(`Missing secret for source: ${source}`);
+       return new Response(JSON.stringify({ error: "Security enforcement active: missing secret" }), {
+          status: 401,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+    }
 
     // Log webhook
     await supabase.from("webhook_logs").insert({
