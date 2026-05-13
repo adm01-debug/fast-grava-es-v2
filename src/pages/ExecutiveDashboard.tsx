@@ -441,27 +441,7 @@ export default function ExecutiveDashboard() {
         </div>
 
         {/* KPI Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-          {kpiCards.map((kpi, index) => (
-            <Card key={index} className="glass-card hover:border-primary/30 transition-all cursor-pointer" onClick={() => toast.info(`Drill-down: ${kpi.title}`)}>
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <div className={cn('p-2 rounded-lg', kpi.bgColor)}>
-                    <kpi.icon className={cn('h-4 w-4', kpi.color)} />
-                  </div>
-                  <Badge variant="outline" className={cn(
-                    "text-[10px]",
-                    kpi.trend === 'up' ? "text-green-500 border-green-500/20" : "text-red-500 border-red-500/20"
-                  )}>
-                    {kpi.trend === 'up' ? '+ ' : ''}{kpi.trendValue?.toFixed(1)}%
-                  </Badge>
-                </div>
-                <p className="text-xl font-bold">{kpi.value}</p>
-                <p className="text-[10px] font-bold text-muted-foreground uppercase">{kpi.title}</p>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+        <ExecutiveKPICardsGrid kpiCards={kpiCards as any} />
 
         {/* Charts Row 1 */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
