@@ -8,7 +8,9 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment: production
+    environment:
+      name: production
+      url: https://promobrindes.com.br # URL de exemplo para o ambiente de produção
     
     steps:
       - uses: actions/checkout@v4
