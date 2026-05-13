@@ -3,11 +3,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { 
-  OperatorGoal, 
-  GoalWithProgress, 
-  calculateGoalProgress, 
-  GOAL_TYPE_LABELS 
+import {
+  OperatorGoal,
+  GoalWithProgress,
+  calculateGoalProgress,
+  GOAL_TYPE_LABELS
 } from '@/hooks/useOperatorGoals';
 import { OperatorProductivityMetrics } from '@/hooks/useOperatorProductivity';
 import { Target, Trophy, TrendingUp, TrendingDown, Minus, CheckCircle2, Package, AlertTriangle, Gauge } from 'lucide-react';
@@ -59,8 +59,8 @@ function GoalProgressItem({ goal, compact }: { goal: GoalWithProgress; compact?:
           <div className="flex items-center gap-2">
             <GoalTypeIcon type={goal.goal_type} />
             <div className="flex-1 min-w-0">
-              <Progress 
-                value={goal.progress_percentage} 
+              <Progress
+                value={goal.progress_percentage}
                 className={`h-2 ${goal.is_achieved ? 'bg-success/20' : ''}`}
               />
             </div>
@@ -97,12 +97,12 @@ function GoalProgressItem({ goal, compact }: { goal: GoalWithProgress; compact?:
           </Badge>
         )}
       </div>
-      
-      <Progress 
-        value={goal.progress_percentage} 
+
+      <Progress
+        value={goal.progress_percentage}
         className={`h-2 ${goal.is_achieved ? 'bg-success/20' : ''}`}
       />
-      
+
       <div className="flex items-center justify-between text-xs text-muted-foreground">
         <span>
           Atual: <span className={`font-medium ${getProgressTextColor()}`}>
@@ -121,7 +121,7 @@ export function OperatorGoalsCard({ goals, metrics, compact }: OperatorGoalsCard
   const goalsWithProgress = useMemo((): GoalWithProgress[] => {
     return goals.map(goal => {
       let currentValue: number;
-      
+
       switch (goal.goal_type) {
         case 'efficiency':
           currentValue = metrics.efficiencyScore;
@@ -258,7 +258,7 @@ export function GoalsSummary({ allGoals, allMetrics }: GoalsSummaryProps) {
               </div>
             </div>
           </div>
-          <Badge 
+          <Badge
             variant={summary.achievementRate >= 70 ? 'default' : 'secondary'}
             className={summary.achievementRate >= 70 ? 'bg-success' : ''}
           >

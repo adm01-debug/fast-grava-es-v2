@@ -2,12 +2,12 @@ import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { 
+import {
   Dialog, DialogContent, DialogHeader, DialogTitle,
   DialogDescription, DialogFooter
 } from '@/components/ui/dialog';
-import { 
-  Scale, ArrowRight, TrendingDown, AlertCircle, 
+import {
+  Scale, ArrowRight, TrendingDown, AlertCircle,
   CheckCircle2, Info, ArrowLeftRight, Sparkles, Clock, Zap
 } from 'lucide-react';
 import { useLoadBalancing, LoadBalancingSuggestion } from '@/hooks/useLoadBalancing';
@@ -33,7 +33,7 @@ export function LoadBalancingPanel({ onExplain }: LoadBalancingPanelProps) {
     try {
       const { error } = await supabase
         .from('jobs')
-        .update({ 
+        .update({
           machine_id: suggestion.suggestedMachineId,
           updated_at: new Date().toISOString()
         })
@@ -45,10 +45,10 @@ export function LoadBalancingPanel({ onExplain }: LoadBalancingPanelProps) {
         description: `Movido de ${suggestion.currentMachineName} para ${suggestion.suggestedMachineName}.`,
         icon: <ArrowLeftRight className="h-4 w-4 text-primary" />
       });
-      
+
       queryClient.invalidateQueries({ queryKey: ['jobs'] });
     } catch (error) {
-      
+
       toast.error('Erro ao reequilibrar carga');
     } finally {
       setIsApplying(false);
@@ -104,7 +104,7 @@ export function LoadBalancingPanel({ onExplain }: LoadBalancingPanelProps) {
                 </div>
 
                 <h3 className="font-bold text-sm mb-1 truncate">{suggestion.client}</h3>
-                
+
                 <div className="flex items-center gap-2 mb-4 mt-3">
                   <div className="flex-1 text-center p-2 rounded bg-muted/30">
                     <p className="text-[9px] text-muted-foreground uppercase">De</p>
@@ -120,8 +120,8 @@ export function LoadBalancingPanel({ onExplain }: LoadBalancingPanelProps) {
                 </div>
 
                 <div className="flex gap-2">
-                  <Button 
-                    size="sm" 
+                  <Button
+                    size="sm"
                     className="flex-1 h-8 text-xs gap-2 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border-none"
                     onClick={(e) => {
                       e.stopPropagation();
@@ -132,8 +132,8 @@ export function LoadBalancingPanel({ onExplain }: LoadBalancingPanelProps) {
                     {isApplying ? 'Reequilibrando...' : 'Reequilibrar'}
                     <ArrowLeftRight className="h-3 w-3" />
                   </Button>
-                  <Button 
-                    size="sm" 
+                  <Button
+                    size="sm"
                     variant="outline"
                     className="h-8 px-2 border-blue-500/20 hover:bg-blue-500/5 text-blue-400"
                     onClick={(e) => {
@@ -152,12 +152,12 @@ export function LoadBalancingPanel({ onExplain }: LoadBalancingPanelProps) {
             ))}
           </AnimatePresence>
         </div>
-        
+
         {suggestions.length > 3 && (
           <div className="mt-4 flex justify-center">
-            <Button 
-              variant="ghost" 
-              size="sm" 
+            <Button
+              variant="ghost"
+              size="sm"
               className="text-xs text-muted-foreground hover:text-primary"
               onClick={() => setShowAll(!showAll)}
             >
@@ -195,9 +195,9 @@ export function LoadBalancingPanel({ onExplain }: LoadBalancingPanelProps) {
                       <span className="font-bold text-orange-400">{Math.round(selectedSuggestion.currentLoad)}%</span>
                     </div>
                     <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
-                      <div 
-                        className="h-full bg-orange-400" 
-                        style={{ width: `${Math.min(100, selectedSuggestion.currentLoad)}%` }} 
+                      <div
+                        className="h-full bg-orange-400"
+                        style={{ width: `${Math.min(100, selectedSuggestion.currentLoad)}%` }}
                       />
                     </div>
                   </div>
@@ -219,9 +219,9 @@ export function LoadBalancingPanel({ onExplain }: LoadBalancingPanelProps) {
                       <span className="font-bold text-blue-400">{Math.round(selectedSuggestion.suggestedLoad + (selectedSuggestion.currentLoad - selectedSuggestion.suggestedLoad) / 2)}%</span>
                     </div>
                     <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
-                      <div 
-                        className="h-full bg-blue-400" 
-                        style={{ width: `${Math.min(100, selectedSuggestion.suggestedLoad + 10)}%` }} 
+                      <div
+                        className="h-full bg-blue-400"
+                        style={{ width: `${Math.min(100, selectedSuggestion.suggestedLoad + 10)}%` }}
                       />
                     </div>
                   </div>
@@ -268,8 +268,8 @@ export function LoadBalancingPanel({ onExplain }: LoadBalancingPanelProps) {
 
           <DialogFooter className="gap-2">
             <Button variant="ghost" size="sm" onClick={() => setSelectedSuggestion(null)}>Ignorar</Button>
-            <Button 
-              size="sm" 
+            <Button
+              size="sm"
               className="gap-2 bg-blue-500 hover:bg-blue-600 text-white"
               onClick={() => {
                 if (selectedSuggestion) handleApplyBalancing(selectedSuggestion);

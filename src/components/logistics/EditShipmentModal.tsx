@@ -114,41 +114,41 @@ export function EditShipmentModal({ shipment, open, onOpenChange }: EditShipment
 
           <div className="space-y-2">
             <Label htmlFor="tracking-edit">{t('logistics.trackingCode')}</Label>
-            <Input 
-              id="tracking-edit" 
-              value={trackingCode} 
-              onChange={(e) => setTrackingCode(e.target.value)} 
+            <Input
+              id="tracking-edit"
+              value={trackingCode}
+              onChange={(e) => setTrackingCode(e.target.value)}
               placeholder="Ex: LOG-123456"
             />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="dest-edit">{t('logistics.destination')}</Label>
-            <Input 
-              id="dest-edit" 
-              value={destination} 
-              onChange={(e) => setDestination(e.target.value)} 
+            <Input
+              id="dest-edit"
+              value={destination}
+              onChange={(e) => setDestination(e.target.value)}
             />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="delivery-date">{t('logistics.estimatedDelivery')}</Label>
-            <Input 
-              id="delivery-date" 
+            <Input
+              id="delivery-date"
               type="date"
-              value={estimatedDelivery} 
-              onChange={(e) => setEstimatedDelivery(e.target.value)} 
+              value={estimatedDelivery}
+              onChange={(e) => setEstimatedDelivery(e.target.value)}
             />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="freight-edit">{t('logistics.freightCost')}</Label>
-            <Input 
-              id="freight-edit" 
+            <Input
+              id="freight-edit"
               type="number"
               step="0.01"
-              value={freightCost} 
-              onChange={(e) => setFreightCost(e.target.value)} 
+              value={freightCost}
+              onChange={(e) => setFreightCost(e.target.value)}
             />
           </div>
 

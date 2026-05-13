@@ -46,14 +46,14 @@ export const SortableWidgetSection = memo(function SortableWidgetSection({
 
   const handleDragEnd = useCallback((event: DragEndEvent) => {
     const { active, over } = event;
-    
+
     if (over && active.id !== over.id) {
       onReorder(section, active.id as string, over.id as string);
     }
   }, [section, onReorder]);
 
-  const strategy = direction === 'horizontal' 
-    ? horizontalListSortingStrategy 
+  const strategy = direction === 'horizontal'
+    ? horizontalListSortingStrategy
     : verticalListSortingStrategy;
 
   return (

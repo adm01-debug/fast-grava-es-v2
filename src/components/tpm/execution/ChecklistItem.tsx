@@ -16,14 +16,14 @@ export function ChecklistItem({ item, response, onUpdate, onFileUpload, isUpload
   return (
     <div className="p-4 rounded-lg bg-secondary/20 border border-border/50 space-y-3">
       <div className="flex items-start gap-3">
-        <Checkbox 
+        <Checkbox
           id={`item-${item.id}`}
           checked={response?.is_checked}
           onCheckedChange={(checked) => onUpdate({ is_checked: !!checked })}
           className="mt-1"
         />
         <div className="flex-1">
-          <Label 
+          <Label
             htmlFor={`item-${item.id}`}
             className="font-medium cursor-pointer"
           >
@@ -37,7 +37,7 @@ export function ChecklistItem({ item, response, onUpdate, onFileUpload, isUpload
         {item.requires_measurement && (
           <div className="flex items-center gap-2">
             <Label className="text-xs whitespace-nowrap">Medição ({item.measurement_unit}):</Label>
-            <Input 
+            <Input
               type="number"
               size={1}
               className="h-8 w-24"
@@ -60,9 +60,9 @@ export function ChecklistItem({ item, response, onUpdate, onFileUpload, isUpload
               </Badge>
             ) : (
               <div className="relative">
-                <Input 
-                  type="file" 
-                  className="hidden" 
+                <Input
+                  type="file"
+                  className="hidden"
                   id={`photo-${item.id}`}
                   accept="image/*"
                   onChange={(e) => {
@@ -71,7 +71,7 @@ export function ChecklistItem({ item, response, onUpdate, onFileUpload, isUpload
                   }}
                   disabled={isUploading}
                 />
-                <Label 
+                <Label
                   htmlFor={`photo-${item.id}`}
                   className="inline-flex items-center justify-center rounded-md text-sm font-medium border border-input bg-background hover:bg-accent hover:text-accent-foreground h-8 px-3 cursor-pointer gap-1"
                 >

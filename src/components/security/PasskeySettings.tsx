@@ -71,7 +71,7 @@ export function PasskeySettings() {
           <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>
-              Seu navegador não suporta WebAuthn/Passkeys. 
+              Seu navegador não suporta WebAuthn/Passkeys.
               Tente usar um navegador mais recente como Chrome, Safari ou Firefox.
             </AlertDescription>
           </Alert>
@@ -98,7 +98,7 @@ export function PasskeySettings() {
           <div className="flex-1">
             <p className="font-medium">Autenticador de Plataforma</p>
             <p className="text-sm text-muted-foreground">
-              {hasPlatformAuth 
+              {hasPlatformAuth
                 ? 'Seu dispositivo suporta login biométrico (Face ID, Touch ID, Windows Hello)'
                 : 'Seu dispositivo não possui autenticador biométrico integrado'
               }
@@ -124,7 +124,7 @@ export function PasskeySettings() {
                 <DialogHeader>
                   <DialogTitle>Registrar Nova Passkey</DialogTitle>
                   <DialogDescription>
-                    Adicione um nome para identificar este dispositivo. 
+                    Adicione um nome para identificar este dispositivo.
                     Você será solicitado a usar sua biometria ou chave de segurança.
                   </DialogDescription>
                 </DialogHeader>
@@ -190,9 +190,9 @@ export function PasskeySettings() {
         <Alert>
           <Fingerprint className="h-4 w-4" />
           <AlertDescription>
-            <strong>O que são Passkeys?</strong> São credenciais seguras armazenadas no seu dispositivo 
-            que permitem login usando biometria (impressão digital, reconhecimento facial) ou uma chave 
-            de segurança física. Elas são mais seguras que senhas tradicionais e não podem ser roubadas 
+            <strong>O que são Passkeys?</strong> São credenciais seguras armazenadas no seu dispositivo
+            que permitem login usando biometria (impressão digital, reconhecimento facial) ou uma chave
+            de segurança física. Elas são mais seguras que senhas tradicionais e não podem ser roubadas
             por phishing.
           </AlertDescription>
         </Alert>

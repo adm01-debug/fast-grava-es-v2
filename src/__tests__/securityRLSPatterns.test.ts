@@ -283,7 +283,7 @@ describe('Security Event Severity', () => {
     const criticalEvents = ['brute_force_detected', 'account_compromised', 'data_breach'];
     const highEvents = ['multiple_failed_logins', 'suspicious_ip', 'unauthorized_access'];
     const mediumEvents = ['password_reset', 'role_change', 'mfa_disabled'];
-    
+
     if (criticalEvents.includes(eventType)) return 'critical';
     if (highEvents.includes(eventType)) return 'high';
     if (mediumEvents.includes(eventType)) return 'medium';

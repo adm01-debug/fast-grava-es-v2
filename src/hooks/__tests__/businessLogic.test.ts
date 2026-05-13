@@ -468,7 +468,7 @@ describe('Scheduling Conflict Detection', () => {
 // ===== PRIORITY ORDERING =====
 describe('Priority Ordering', () => {
   const priorityOrder: Record<string, number> = { urgent: 0, high: 1, medium: 2, low: 3 };
-  
+
   function sortByPriority(priorities: string[]): string[] {
     return [...priorities].sort((a, b) => (priorityOrder[a] ?? 2) - (priorityOrder[b] ?? 2));
   }

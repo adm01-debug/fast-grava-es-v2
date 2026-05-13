@@ -4,12 +4,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { MaintenanceSchedule } from '@/hooks/useTPM';
-import { 
-  format, 
-  startOfMonth, 
-  endOfMonth, 
-  eachDayOfInterval, 
-  isSameDay, 
+import {
+  format,
+  startOfMonth,
+  endOfMonth,
+  eachDayOfInterval,
+  isSameDay,
   isSameMonth,
   addMonths,
   subMonths,
@@ -76,8 +76,8 @@ export function TPMCalendar({ schedules, onSelectSchedule }: TPMCalendarProps) {
         <div className="grid grid-cols-7 gap-1">
           {/* Week day headers */}
           {weekDays.map((day) => (
-            <div 
-              key={day} 
+            <div
+              key={day}
               className="text-center text-xs font-medium text-muted-foreground py-2"
             >
               {day}
@@ -111,17 +111,17 @@ export function TPMCalendar({ schedules, onSelectSchedule }: TPMCalendarProps) {
                       onClick={() => onSelectSchedule(schedule)}
                       className="w-full text-left"
                     >
-                      <Badge 
-                        variant="secondary" 
+                      <Badge
+                        variant="secondary"
                         className="w-full justify-start truncate text-[10px] px-1 py-0 h-5"
-                        style={{ 
+                        style={{
                           backgroundColor: schedule.maintenance_type?.color + '20',
                           borderColor: schedule.maintenance_type?.color,
                           color: schedule.maintenance_type?.color,
                         }}
                       >
-                        {schedule.name.length > 12 
-                          ? schedule.name.substring(0, 12) + '...' 
+                        {schedule.name.length > 12
+                          ? schedule.name.substring(0, 12) + '...'
                           : schedule.name
                         }
                       </Badge>

@@ -32,14 +32,14 @@ export function NotificationCenter() {
         <Tabs defaultValue="notifications" className="w-full">
           <div className="flex items-center justify-between px-4 py-2 border-b bg-muted/30">
             <TabsList className="bg-transparent h-8 p-0 gap-4">
-              <TabsTrigger 
-                value="notifications" 
+              <TabsTrigger
+                value="notifications"
                 className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none h-8 px-0 text-xs font-bold uppercase tracking-wider"
               >
                 Notificações
               </TabsTrigger>
-              <TabsTrigger 
-                value="insights" 
+              <TabsTrigger
+                value="insights"
                 className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none h-8 px-0 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5"
               >
                 <Sparkles className="h-3 w-3 text-amber-500" />
@@ -65,8 +65,8 @@ export function NotificationCenter() {
               ) : (
                 <div className="divide-y border-b">
                   {notifications.map((n) => (
-                    <div 
-                      key={n.id} 
+                    <div
+                      key={n.id}
                       className={cn(
                         "p-4 hover:bg-accent/40 cursor-pointer transition-colors relative group",
                         !n.is_read && "bg-primary/[0.03]"

@@ -13,11 +13,11 @@ import { exportExecutiveDashboardPDF } from '@/lib/pdfExport';
 import { exportExecutiveDashboardExcel } from '@/lib/excelExport';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
+import {
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
   ResponsiveContainer,
   LineChart,
   Line,
@@ -27,9 +27,9 @@ import {
   AreaChart,
   Area
 } from 'recharts';
-import { 
-  FileDown, 
-  TrendingUp, 
+import {
+  FileDown,
+  TrendingUp,
   TrendingDown,
   Factory,
   Package,
@@ -57,11 +57,11 @@ import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { VoiceButton } from '@/components/voice/VoiceCommands';
 import { AutonomousEventLog } from '@/components/autonomous/AutonomousEventLog';
 import { ExecutiveKPICardsGrid } from '@/components/bi/executive/ExecutiveKPICards';
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogHeader, 
-  DialogTitle, 
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
   DialogTrigger,
   DialogFooter
 } from '@/components/ui/dialog';
@@ -95,8 +95,8 @@ export default function ExecutiveDashboard() {
   });
 
   const { data: kpis, isLoading, error } = useExecutiveDashboard(
-    selectedRange, 
-    { 
+    selectedRange,
+    {
       machineId: machineId === 'all' ? undefined : machineId,
       techniqueId: techniqueId === 'all' ? undefined : techniqueId
     }
@@ -238,7 +238,7 @@ export default function ExecutiveDashboard() {
           <meta property="og:description" content="Monitoramento autônomo e orquestrado da performance industrial." />
         </Helmet>
         <Breadcrumbs className="mb-0" />
-        
+
         {/* Header Section */}
         <div className="flex flex-col xl:flex-row justify-between items-start xl:items-end gap-6 pb-2 border-b border-border/40">
           <div className="space-y-1.5 flex-1">
@@ -265,7 +265,7 @@ export default function ExecutiveDashboard() {
               Orquestração Inteligente & Governança de Dados Industrial de Alta Performance
             </p>
           </div>
-          
+
           <div className="flex flex-wrap items-center gap-3 w-full xl:w-auto">
             <div className="flex-1 xl:flex-none">
               <VoiceButton onCommand={(cmd) => {
@@ -274,7 +274,7 @@ export default function ExecutiveDashboard() {
                 }
               }} />
             </div>
-            
+
             <div className="flex flex-wrap gap-2 w-full xl:w-auto">
               <Select value={machineId} onValueChange={setMachineId}>
                 <SelectTrigger className="w-[140px] h-11 rounded-xl glass-card font-bold text-[10px] uppercase tracking-wider">
@@ -300,8 +300,8 @@ export default function ExecutiveDashboard() {
                 </SelectContent>
               </Select>
 
-              <Select 
-                value={selectedRange.label} 
+              <Select
+                value={selectedRange.label}
                 onValueChange={(value) => {
                   const preset = datePresets.find(p => p.label === value);
                   if (preset) setSelectedRange(preset);
@@ -320,9 +320,9 @@ export default function ExecutiveDashboard() {
               </Select>
 
               <div className="flex items-center gap-2 px-3 h-11 rounded-xl glass-card border border-primary/10">
-                <Switch 
-                  id="comparison-mode" 
-                  checked={showComparison} 
+                <Switch
+                  id="comparison-mode"
+                  checked={showComparison}
                   onCheckedChange={setShowComparison}
                 />
                 <Label htmlFor="comparison-mode" className="text-[10px] font-bold uppercase cursor-pointer whitespace-nowrap">Comparar</Label>
@@ -419,7 +419,7 @@ export default function ExecutiveDashboard() {
                   </p>
                 </div>
               </div>
-              
+
               <div className="p-4 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-start gap-4 hover:bg-blue-500/15 transition-all duration-300">
                 <div className="h-10 w-10 rounded-full bg-blue-500/20 flex items-center justify-center flex-shrink-0">
                   <Clock className="h-5 w-5 text-blue-600" />
@@ -472,36 +472,36 @@ export default function ExecutiveDashboard() {
                     <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
                     <XAxis dataKey="date" tick={{ fontSize: 11 }} />
                     <YAxis tick={{ fontSize: 11 }} />
-                    <Tooltip 
-                      contentStyle={{ 
-                        backgroundColor: 'hsl(var(--card))', 
-                        border: '1px solid hsl(var(--border))' 
-                      }} 
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: 'hsl(var(--card))',
+                        border: '1px solid hsl(var(--border))'
+                      }}
                     />
-                    <Area 
-                      type="monotone" 
-                      dataKey="target" 
-                      stroke="#94a3b8" 
-                      fill="#94a3b8" 
+                    <Area
+                      type="monotone"
+                      dataKey="target"
+                      stroke="#94a3b8"
+                      fill="#94a3b8"
                       fillOpacity={0.1}
                       name="Meta"
                     />
                     {showComparison && (
-                      <Area 
-                        type="monotone" 
-                        dataKey="prevProduced" 
-                        stroke="#94a3b8" 
-                        fill="#94a3b8" 
+                      <Area
+                        type="monotone"
+                        dataKey="prevProduced"
+                        stroke="#94a3b8"
+                        fill="#94a3b8"
                         fillOpacity={0.2}
                         strokeDasharray="5 5"
                         name="Produzido (Período Ant.)"
                       />
                     )}
-                    <Area 
-                      type="monotone" 
-                      dataKey="produced" 
-                      stroke="#3b82f6" 
-                      fill="#3b82f6" 
+                    <Area
+                      type="monotone"
+                      dataKey="produced"
+                      stroke="#3b82f6"
+                      fill="#3b82f6"
                       fillOpacity={0.4}
                       name="Produzido"
                     />
@@ -531,31 +531,31 @@ export default function ExecutiveDashboard() {
                     <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
                     <XAxis dataKey="date" tick={{ fontSize: 11 }} />
                     <YAxis domain={[0, 100]} tick={{ fontSize: 11 }} />
-                    <Tooltip 
+                    <Tooltip
                       formatter={(value: number, name: string) => [
-                        `${value.toFixed(1)}%`, 
+                        `${value.toFixed(1)}%`,
                         name === 'prevEfficiency' ? 'Eficiência (Ant.)' : 'Eficiência'
                       ]}
-                      contentStyle={{ 
-                        backgroundColor: 'hsl(var(--card))', 
-                        border: '1px solid hsl(var(--border))' 
-                      }} 
+                      contentStyle={{
+                        backgroundColor: 'hsl(var(--card))',
+                        border: '1px solid hsl(var(--border))'
+                      }}
                     />
                     {showComparison && (
-                      <Line 
-                        type="monotone" 
-                        dataKey="prevEfficiency" 
-                        stroke="#94a3b8" 
+                      <Line
+                        type="monotone"
+                        dataKey="prevEfficiency"
+                        stroke="#94a3b8"
                         strokeWidth={2}
                         strokeDasharray="5 5"
                         dot={false}
                         name="prevEfficiency"
                       />
                     )}
-                    <Line 
-                      type="monotone" 
-                      dataKey="efficiency" 
-                      stroke="#22c55e" 
+                    <Line
+                      type="monotone"
+                      dataKey="efficiency"
+                      stroke="#22c55e"
                       strokeWidth={2}
                       dot={{ fill: '#22c55e', r: 3 }}
                       name="efficiency"
@@ -590,7 +590,7 @@ export default function ExecutiveDashboard() {
                       paddingAngle={2}
                       dataKey="count"
                       nameKey="technique"
-                      label={({ technique, percent }) => 
+                      label={({ technique, percent }) =>
                         `${technique} ${(percent * 100).toFixed(0)}%`
                       }
                       labelLine={false}
@@ -661,8 +661,8 @@ export default function ExecutiveDashboard() {
             <CardContent>
               <div className="space-y-3">
                 {kpis.machinePerformance.slice(0, 5).map((m, index) => (
-                  <div 
-                    key={index} 
+                  <div
+                    key={index}
                     className="space-y-1 cursor-pointer hover:bg-primary/5 p-1 rounded-lg transition-colors"
                     onClick={() => {
                       const machine = machines?.find(mac => (mac.code || mac.name) === m.machine);

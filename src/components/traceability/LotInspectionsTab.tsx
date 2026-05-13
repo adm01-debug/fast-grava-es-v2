@@ -26,12 +26,12 @@ interface LotInspectionsTabProps {
 
 export function LotInspectionsTab({ lot, inspections }: LotInspectionsTabProps) {
   const [showAdd, setShowAdd] = useState(false);
-  const [newInspection, setNewInspection] = useState({ 
-    inspection_type: '', 
-    result: 'approved', 
-    inspector_name: '', 
-    sample_size: 0, 
-    defects_found: 0, 
+  const [newInspection, setNewInspection] = useState({
+    inspection_type: '',
+    result: 'approved',
+    inspector_name: '',
+    sample_size: 0,
+    defects_found: 0,
     notes: '',
     photos: [] as string[]
   });
@@ -68,9 +68,9 @@ export function LotInspectionsTab({ lot, inspections }: LotInspectionsTabProps) 
         uploadedUrls.push(publicUrl);
       }
 
-      setNewInspection(prev => ({ 
-        ...prev, 
-        photos: [...prev.photos, ...uploadedUrls] 
+      setNewInspection(prev => ({
+        ...prev,
+        photos: [...prev.photos, ...uploadedUrls]
       }));
       toast.success(`${uploadedUrls.length} foto(s) enviada(s)`);
     } catch (error) {
@@ -92,27 +92,27 @@ export function LotInspectionsTab({ lot, inspections }: LotInspectionsTabProps) 
 
   const handleAdd = () => {
     addInspection.mutate({
-      lot_id: lot.id, 
-      inspection_type: newInspection.inspection_type, 
+      lot_id: lot.id,
+      inspection_type: newInspection.inspection_type,
       result: newInspection.result,
-      inspector_name: newInspection.inspector_name || undefined, 
+      inspector_name: newInspection.inspector_name || undefined,
       sample_size: newInspection.sample_size || undefined,
-      defects_found: newInspection.defects_found || undefined, 
+      defects_found: newInspection.defects_found || undefined,
       notes: newInspection.notes || undefined,
       photos: newInspection.photos.length > 0 ? newInspection.photos : undefined
-    }, { 
-      onSuccess: () => { 
-        setShowAdd(false); 
-        setNewInspection({ 
-          inspection_type: '', 
-          result: 'approved', 
-          inspector_name: '', 
-          sample_size: 0, 
-          defects_found: 0, 
+    }, {
+      onSuccess: () => {
+        setShowAdd(false);
+        setNewInspection({
+          inspection_type: '',
+          result: 'approved',
+          inspector_name: '',
+          sample_size: 0,
+          defects_found: 0,
           notes: '',
           photos: []
-        }); 
-      } 
+        });
+      }
     });
   };
 
@@ -137,7 +137,7 @@ export function LotInspectionsTab({ lot, inspections }: LotInspectionsTabProps) 
               <div className="space-y-2"><Label>Defeitos</Label><Input type="number" value={newInspection.defects_found} onChange={(e) => setNewInspection(p => ({ ...p, defects_found: parseInt(e.target.value) || 0 }))} /></div>
             </div>
             <div className="space-y-2"><Label>Notas</Label><Textarea value={newInspection.notes} onChange={(e) => setNewInspection(p => ({ ...p, notes: e.target.value }))} rows={2} /></div>
-            
+
             {/* Photos Upload Area */}
             <div className="space-y-3 pt-2">
               <Label className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">
@@ -211,7 +211,7 @@ export function LotInspectionsTab({ lot, inspections }: LotInspectionsTabProps) 
                     {insp.defects_found > 0 && <span className="text-destructive font-bold">⚠ {insp.defects_found} defeitos</span>}
                   </div>
                   {insp.notes && <p className="text-sm text-muted-foreground mt-2 bg-muted/30 p-2 rounded italic border-l-2 border-primary/20">{insp.notes}</p>}
-                  
+
                   {/* Inspection Photos Gallery */}
                   {insp.photos && insp.photos.length > 0 && (
                     <div className="flex flex-wrap gap-2 mt-3">
@@ -219,10 +219,10 @@ export function LotInspectionsTab({ lot, inspections }: LotInspectionsTabProps) 
                         <Dialog key={idx}>
                           <DialogTrigger asChild>
                             <div className="relative cursor-zoom-in group">
-                              <img 
-                                src={photo} 
-                                alt="Evidência" 
-                                className="h-16 w-16 object-cover rounded-md border border-border/50 transition-transform group-hover:scale-105" 
+                              <img
+                                src={photo}
+                                alt="Evidência"
+                                className="h-16 w-16 object-cover rounded-md border border-border/50 transition-transform group-hover:scale-105"
                               />
                               <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 flex items-center justify-center rounded-md transition-opacity">
                                 <ImageIcon className="h-4 w-4 text-white" />

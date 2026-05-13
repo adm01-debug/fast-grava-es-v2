@@ -4,11 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
-import { 
-  Bot, 
-  Send, 
-  User, 
-  Loader2, 
+import {
+  Bot,
+  Send,
+  User,
+  Loader2,
   Sparkles,
   Zap,
   Printer,
@@ -102,7 +102,7 @@ export const TechnicalAssistant = ({ isOpen, onClose }: TechnicalAssistantProps)
             setMessages(prev => {
               const last = prev[prev.length - 1];
               if (last?.role === "assistant") {
-                return prev.map((m, i) => 
+                return prev.map((m, i) =>
                   i === prev.length - 1 ? { ...m, content: assistantContent } : m
                 );
               }
@@ -130,7 +130,6 @@ export const TechnicalAssistant = ({ isOpen, onClose }: TechnicalAssistantProps)
     try {
       await streamChat(updatedMessages);
     } catch (error) {
-      if (import.meta.env.DEV) 
       toast.error(error instanceof Error ? error.message : "Erro ao processar mensagem");
       // Remove the failed assistant message if any
       setMessages(prev => {
@@ -186,7 +185,7 @@ export const TechnicalAssistant = ({ isOpen, onClose }: TechnicalAssistantProps)
                     Como posso ajudar?
                   </h3>
                   <p className="text-sm text-muted-foreground max-w-md mx-auto">
-                    Sou especialista em técnicas de gravação e personalização. 
+                    Sou especialista em técnicas de gravação e personalização.
                     Pergunte sobre Fiber Laser, Serigrafia, Sublimação, DTF, Tampografia e muito mais!
                   </p>
                 </div>
@@ -259,8 +258,8 @@ export const TechnicalAssistant = ({ isOpen, onClose }: TechnicalAssistantProps)
                 className="min-h-[44px] max-h-32 resize-none"
                 disabled={isLoading}
               />
-              <Button 
-                onClick={() => sendMessage()} 
+              <Button
+                onClick={() => sendMessage()}
                 disabled={isLoading || !input.trim()}
                 className="shrink-0"
               >

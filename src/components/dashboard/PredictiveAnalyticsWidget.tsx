@@ -54,9 +54,9 @@ export function PredictiveAnalyticsWidget() {
             {highRiskPredictions.map((prediction) => {
               const risk = getRiskLevel(prediction.risk_score);
               const health = 100 - prediction.risk_score;
-              
+
               return (
-                <div 
+                <div
                   key={prediction.id}
                   className="p-2 rounded-lg bg-secondary/30 border border-border/20 space-y-2 group cursor-pointer hover:bg-secondary/50 transition-all"
                 >
@@ -69,13 +69,13 @@ export function PredictiveAnalyticsWidget() {
                         {getPredictionTypeLabel(prediction.prediction_type)}
                       </span>
                     </div>
-                    <Badge className={cn("text-[9px] h-4 px-1", 
+                    <Badge className={cn("text-[9px] h-4 px-1",
                       risk.color === 'destructive' ? "bg-red-500/20 text-red-400 border-red-500/30" : "bg-warning/20 text-warning-foreground border-warning/30"
                     )}>
                       {risk.label}
                     </Badge>
                   </div>
-                  
+
                   <div className="space-y-1">
                     <div className="flex justify-between text-[9px] text-muted-foreground uppercase font-bold tracking-tighter">
                       <span>Saúde Estimada</span>
@@ -90,7 +90,7 @@ export function PredictiveAnalyticsWidget() {
                 </div>
               );
             })}
-            
+
             {predictions.length > 3 && (
               <Button variant="ghost" size="sm" className="w-full h-6 text-[10px] text-muted-foreground hover:text-primary">
                 Ver todas as {predictions.length} previsões <ChevronRight className="h-3 w-3 ml-1" />

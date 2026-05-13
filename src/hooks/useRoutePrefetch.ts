@@ -68,7 +68,7 @@ export function useRoutePrefetch() {
   // Prefetch de rotas relacionadas à rota atual
   useEffect(() => {
     const relatedModules = RELATED_ROUTES[location.pathname];
-    
+
     if (!relatedModules) return;
 
     if ("requestIdleCallback" in window) {

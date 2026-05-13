@@ -7,7 +7,7 @@ import { supabase } from '@/integrations/supabase/client';
 /**
  * Proactively detects jobs that are approaching or exceeding their estimated duration
  * and alerts coordinators BEFORE the job becomes officially delayed.
- * 
+ *
  * Checks every 2 minutes for:
  * - Jobs in production exceeding 80% of estimated time (warning)
  * - Jobs in production exceeding 100% of estimated time (critical - auto-marks as delayed)

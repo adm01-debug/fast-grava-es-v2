@@ -35,7 +35,7 @@ export function ContentTransition({
     if (isLoading) {
       loadStartRef.current = Date.now();
       setShowContent(false);
-      
+
       // Show skeleton after small delay to prevent flash
       const timer = setTimeout(() => setShowSkeleton(true), fadeDelay);
       return () => clearTimeout(timer);
@@ -66,7 +66,7 @@ export function ContentTransition({
             {skeleton}
           </motion.div>
         )}
-        
+
         {showContent && !isLoading && (
           <motion.div
             key="content"
@@ -234,7 +234,7 @@ export function LoadingOverlay({
   return (
     <div className={cn('relative', className)}>
       {children}
-      
+
       <AnimatePresence>
         {isLoading && (
           <motion.div

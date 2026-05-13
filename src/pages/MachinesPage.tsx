@@ -5,9 +5,9 @@ import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/comp
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { 
-  Printer, CheckCircle2, XCircle, Settings, History, 
-  Activity, AlertTriangle, Map as MapIcon, Zap, Search, FileDown 
+import {
+  Printer, CheckCircle2, XCircle, Settings, History,
+  Activity, AlertTriangle, Map as MapIcon, Zap, Search, FileDown
 } from 'lucide-react';
 import { useSchedulingData } from '@/hooks/useSchedulingData';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -42,12 +42,12 @@ export default function MachinesPage() {
   const { machines, techniques, isLoadingMachines, getTechniqueById } = useSchedulingData();
   const queryClient = useQueryClient();
   const { user, profile } = useAuth();
-  const { 
-    schedules, 
+  const {
+    schedules,
     maintenanceTypes,
-    startMaintenance, 
-    completeMaintenance, 
-    createSchedule 
+    startMaintenance,
+    completeMaintenance,
+    createSchedule
   } = useTPM();
   const { summary: reliabilitySummary, isLoading: isLoadingReliability } = useMTBFMTTR();
   const { exportData } = useDataExport('machines');
@@ -59,7 +59,7 @@ export default function MachinesPage() {
   const [createScheduleModalOpen, setCreateScheduleModalOpen] = useState(false);
   const [selectedSchedule, setSelectedSchedule] = useState<any>(null);
   const [currentRecordId, setCurrentRecordId] = useState<string | null>(null);
-  
+
   const [selectedMachines, setSelectedMachines] = useState<Set<string>>(new Set());
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
@@ -87,7 +87,7 @@ export default function MachinesPage() {
 
   const handleCompleteMaintenance = (data: unknown) => {
     if (!currentRecordId) return;
-    
+
     completeMaintenance.mutate({
       record_id: currentRecordId,
       ...data
@@ -102,29 +102,29 @@ export default function MachinesPage() {
 
   const handleToggleBulk = async (active: boolean) => {
     if (selectedMachines.size === 0) return;
-    
+
     try {
       const { error } = await supabase
         .from('machines')
         .update({ is_active: active })
         .in('id', Array.from(selectedMachines));
-        
+
       if (error) throw error;
-      
+
       toast.success(`${selectedMachines.size} máquinas ${active ? 'ativadas' : 'desativadas'}`);
       setSelectedMachines(new Set());
       queryClient.invalidateQueries({ queryKey: ['machines'] });
     } catch (error) {
-      
+
       toast.error('Erro ao atualizar máquinas');
     }
   };
 
   const filteredMachines = useMemo(() => {
     return machines.filter(m => {
-      const matchesSearch = m.code.toLowerCase().includes(searchTerm.toLowerCase()) || 
+      const matchesSearch = m.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            m.name.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesStatus = statusFilter === 'all' || 
+      const matchesStatus = statusFilter === 'all' ||
                            (statusFilter === 'active' && m.is_active) ||
                            (statusFilter === 'inactive' && !m.is_active);
       return matchesSearch && matchesStatus;
@@ -161,8 +161,8 @@ export default function MachinesPage() {
     <MainLayout>
       <div className="space-y-6 pb-20">
         <Breadcrumbs />
-        
-        <MachineBulkActions 
+
+        <MachineBulkActions
           selectedCount={selectedMachines.size}
           onToggle={handleToggleBulk}
           onCancel={() => setSelectedMachines(new Set())}
@@ -197,7 +197,7 @@ export default function MachinesPage() {
               </div>
             </CardContent>
           </Card>
-          
+
           <Card className="glass-card">
             <CardContent className="pt-6">
               <div className="flex items-center gap-4">
@@ -261,15 +261,15 @@ export default function MachinesPage() {
             <div className="flex items-center gap-2 flex-1 md:max-w-md">
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input 
-                  placeholder="Filtrar por código ou nome..." 
+                <Input
+                  placeholder="Filtrar por código ou nome..."
                   className="pl-9 bg-muted/30 border-none"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </div>
-              <Button 
-                variant={statusFilter === 'all' ? 'outline' : 'secondary'} 
+              <Button
+                variant={statusFilter === 'all' ? 'outline' : 'secondary'}
                 size="sm"
                 onClick={() => setStatusFilter(prev => prev === 'all' ? 'active' : prev === 'active' ? 'inactive' : 'all')}
               >
@@ -281,7 +281,7 @@ export default function MachinesPage() {
           <TabsContent value="list" className="space-y-6 outline-none">
             <AnimatePresence mode="popLayout">
               {Object.entries(machinesByTechnique).length === 0 ? (
-                <motion.div 
+                <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   className="py-20 text-center"
@@ -304,7 +304,7 @@ export default function MachinesPage() {
                         <CardHeader className="pb-3 bg-muted/10 border-b border-border/50">
                           <div className="flex items-center justify-between">
                             <CardTitle className="flex items-center gap-3 text-base">
-                              <div 
+                              <div
                                 className="w-2 h-2 rounded-full ring-4 ring-background"
                                 style={{ backgroundColor: technique?.color || '#888' }}
                               />
@@ -313,9 +313,9 @@ export default function MachinesPage() {
                                 {techMachines.length}
                               </Badge>
                             </CardTitle>
-                            <Button 
-                              variant="ghost" 
-                              size="sm" 
+                            <Button
+                              variant="ghost"
+                              size="sm"
                               className="text-[10px] uppercase font-bold tracking-tighter"
                               onClick={() => {
                                 const allSelected = techMachines.every(m => selectedMachines.has(m.id));
@@ -339,7 +339,7 @@ export default function MachinesPage() {
                               const machineMetrics = oeeData?.byMachine.find(m => m.machineId === machine.id);
                               return (
                                 <div key={machine.id} className="relative group">
-                                  <MachineCard 
+                                  <MachineCard
                                     machine={machine}
                                     isSelected={selectedMachines.has(machine.id)}
                                     onSelect={(id) => {
@@ -397,8 +397,8 @@ export default function MachinesPage() {
             </DialogHeader>
             <div className="flex flex-col items-center gap-4 py-4">
               <div className="p-4 bg-white rounded-xl border-2 border-black">
-                <QRCodeSVG 
-                  value={JSON.stringify({ id: machineForQR?.id, code: machineForQR?.code, type: 'machine' })} 
+                <QRCodeSVG
+                  value={JSON.stringify({ id: machineForQR?.id, code: machineForQR?.code, type: 'machine' })}
                   size={200}
                   level="H"
                 />
@@ -440,7 +440,7 @@ export default function MachinesPage() {
                 </div>
               </div>
             </DialogHeader>
-            
+
             {selectedMachine && (
               <Tabs defaultValue="tpm" className="flex-1 flex flex-col overflow-hidden">
                 <div className="px-6 border-b border-border/50">
@@ -453,8 +453,8 @@ export default function MachinesPage() {
 
                 <div className="flex-1 overflow-auto min-h-0 p-6">
                   <TabsContent value="tpm" className="mt-0 outline-none">
-                    <MachineTPMPanel 
-                      machineId={selectedMachine.id} 
+                    <MachineTPMPanel
+                      machineId={selectedMachine.id}
                       onStartMaintenance={handleStartMaintenance}
                       onOpenCreateSchedule={() => setCreateScheduleModalOpen(true)}
                     />
@@ -518,11 +518,11 @@ function MachineHistoryTab({ machineId }: { machineId: string }) {
 
   return (
     <div className="space-y-6">
-      <HistoryPeriodFilter 
-        value={period} 
-        onChange={setPeriod} 
+      <HistoryPeriodFilter
+        value={period}
+        onChange={setPeriod}
         onExport={handleExport}
-        resultCount={data?.length} 
+        resultCount={data?.length}
       />
       {isLoading ? (
         <div className="space-y-3">
@@ -556,18 +556,18 @@ function FactoryHeatmap({ machines, techniques }: { machines: unknown[]; techniq
 
   const getHeatColor = (machine: unknown) => {
     if (!machine.is_active) return 'bg-slate-200 dark:bg-slate-800 opacity-40';
-    
+
     // Count jobs in production for this machine
     const productionJobs = jobs.filter(j => j.machine_id === machine.id && j.status === 'production').length;
-    
+
     if (productionJobs > 0) return 'bg-orange-500 shadow-[0_0_15px_rgba(249,115,22,0.5)]';
-    
+
     // Check if machine is scheduled for today
     const today = new Date().toISOString().split('T')[0];
     const scheduledToday = jobs.filter(j => j.machine_id === machine.id && j.scheduled_date === today).length;
-    
+
     if (scheduledToday > 0) return 'bg-amber-400 shadow-[0_0_10px_rgba(251,191,36,0.3)]';
-    
+
     return 'bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.2)]';
   };
 
@@ -609,13 +609,13 @@ function FactoryHeatmap({ machines, techniques }: { machines: unknown[]; techniq
           <div className="min-w-[800px] relative aspect-[21/9] bg-muted/20 rounded-2xl border-4 border-dashed border-border/40 p-12 overflow-hidden">
              {/* Grid background */}
              <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle, currentColor 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
-             
+
              <div className="relative z-10 grid grid-cols-8 gap-4 h-full">
                {machines.slice(0, 48).map((machine, i) => (
                  <TooltipProvider key={machine.id}>
                    <Tooltip>
                      <TooltipTrigger asChild>
-                       <motion.div 
+                       <motion.div
                          initial={{ scale: 0 }}
                          animate={{ scale: 1 }}
                          transition={{ delay: i * 0.01 }}
@@ -632,15 +632,15 @@ function FactoryHeatmap({ machines, techniques }: { machines: unknown[]; techniq
                          <p className="text-xs">{machine.name}</p>
                          <div className="mt-2 space-y-1 pt-1 border-t border-border/50">
                             <p className="text-[10px] uppercase font-bold flex justify-between gap-4">
-                               <span>Em Produção:</span> 
+                               <span>Em Produção:</span>
                                <span className="text-primary">{getMachineStats(machine).productionCount}</span>
                             </p>
                             <p className="text-[10px] uppercase font-bold flex justify-between gap-4">
-                               <span>Agendados Hoje:</span> 
+                               <span>Agendados Hoje:</span>
                                <span>{getMachineStats(machine).todayCount}</span>
                             </p>
                             <p className="text-[10px] uppercase font-bold flex justify-between gap-4">
-                               <span>Ocupação:</span> 
+                               <span>Ocupação:</span>
                                <span className="text-amber-500">{Math.round(getMachineStats(machine).occupancy)}%</span>
                             </p>
                          </div>

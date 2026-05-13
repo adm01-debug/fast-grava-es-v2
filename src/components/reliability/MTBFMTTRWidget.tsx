@@ -64,7 +64,7 @@ export function MTBFMTTRWidget() {
     );
   }
 
-  const machinesWithIssues = metrics.filter(m => 
+  const machinesWithIssues = metrics.filter(m =>
     m.reliabilityScore === 'critical' || m.reliabilityScore === 'poor'
   );
 
@@ -172,7 +172,7 @@ export function MTBFMTTRWidget() {
             </h4>
             <div className="space-y-2">
               {machinesWithIssues.slice(0, 5).map(machine => (
-                <div 
+                <div
                   key={machine.machineId}
                   className="flex items-center justify-between p-2 rounded-lg bg-muted/50 border border-border/50"
                 >
@@ -216,12 +216,12 @@ export function MTBFMTTRWidget() {
               {metrics
                 .sort((a, b) => (a.mtbf || Infinity) - (b.mtbf || Infinity))
                 .map(machine => (
-                  <div 
+                  <div
                     key={machine.machineId}
                     className="flex items-center justify-between p-2 rounded bg-muted/30 text-sm"
                   >
                     <div className="flex items-center gap-2">
-                      <div 
+                      <div
                         className={`w-2 h-2 rounded-full ${
                           machine.reliabilityScore === 'excellent' ? 'bg-indicator-success' :
                           machine.reliabilityScore === 'good' ? 'bg-indicator-success' :

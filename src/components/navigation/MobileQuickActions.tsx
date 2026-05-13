@@ -34,7 +34,7 @@ const managerActions: QuickAction[] = [
 
 /**
  * MobileQuickActions - Floating Action Button with quick actions
- * 
+ *
  * Provides quick access to common actions based on user role.
  * Expands to show action menu when tapped.
  */
@@ -45,10 +45,10 @@ export function MobileQuickActions() {
   const { role } = useAuth();
   const { trigger } = useHapticFeedback();
 
-  const actions = role === 'operator' 
-    ? operatorActions 
-    : role === 'manager' 
-      ? managerActions 
+  const actions = role === 'operator'
+    ? operatorActions
+    : role === 'manager'
+      ? managerActions
       : coordinatorActions;
 
   const toggleOpen = useCallback(() => {
@@ -91,15 +91,15 @@ export function MobileQuickActions() {
                   <motion.button
                     key={action.id}
                     initial={{ opacity: 0, scale: 0.5, y: 20 }}
-                    animate={{ 
-                      opacity: 1, 
-                      scale: 1, 
+                    animate={{
+                      opacity: 1,
+                      scale: 1,
                       y: 0,
                       transition: { delay: index * 0.05 }
                     }}
-                    exit={{ 
-                      opacity: 0, 
-                      scale: 0.5, 
+                    exit={{
+                      opacity: 0,
+                      scale: 0.5,
                       y: 20,
                       transition: { delay: (actions.length - index - 1) * 0.03 }
                     }}

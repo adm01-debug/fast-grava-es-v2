@@ -24,14 +24,14 @@ export class AuthErrorBoundary extends Component<Props, State> {
   }
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    
+
     this.logErrorToSupabase(error, errorInfo);
   }
 
   private async logErrorToSupabase(error: Error, errorInfo: ErrorInfo) {
     try {
       const { data: { session } } = await supabase.auth.getSession();
-      
+
       await supabase.from('error_logs').insert({
         message: error.message,
         stack: error.stack,
@@ -45,7 +45,7 @@ export class AuthErrorBoundary extends Component<Props, State> {
         }
       });
     } catch (e) {
-      
+
     }
   }
 
@@ -66,20 +66,20 @@ export class AuthErrorBoundary extends Component<Props, State> {
                 Ocorreu um erro inesperado na tela de autenticação. Nossa equipe já foi notificada e estamos trabalhando para corrigir.
               </AlertDescription>
             </Alert>
-            
+
             <div className="bg-card border rounded-lg p-6 shadow-sm space-y-4 text-center">
               <p className="text-sm text-muted-foreground italic">
                 "{this.state.error?.message || "Erro de renderização desconhecido"}"
               </p>
-              
-              <Button 
-                onClick={this.handleReset} 
+
+              <Button
+                onClick={this.handleReset}
                 className="w-full flex items-center justify-center gap-2"
               >
                 <RefreshCw className="h-4 w-4" />
                 Tentar novamente
               </Button>
-              
+
               <p className="text-xs text-muted-foreground pt-2">
                 Se o problema persistir, por favor limpe o cache do seu navegador ou entre em contato com o suporte.
               </p>

@@ -2,8 +2,8 @@ import { memo, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { 
-  TrendingUp, 
+import {
+  TrendingUp,
   AlertTriangle,
   AlertCircle,
   Info,
@@ -52,12 +52,12 @@ const AlertCard = memo(function AlertCard({ alert }: AlertCardProps) {
           <Icon className={`h-5 w-5 ${config.text} mt-0.5`} />
           <div>
             <div className="flex items-center gap-2">
-              <Badge 
-                variant="outline" 
-                style={{ 
+              <Badge
+                variant="outline"
+                style={{
                   backgroundColor: `${alert.techniqueColor}20`,
                   borderColor: `${alert.techniqueColor}50`,
-                  color: alert.techniqueColor 
+                  color: alert.techniqueColor
                 }}
               >
                 {alert.techniqueName}
@@ -96,7 +96,7 @@ const AlertCard = memo(function AlertCard({ alert }: AlertCardProps) {
           <span className={config.text}>{Math.round(alert.currentCapacity)}%</span>
         </div>
         <div className="h-2 bg-background/50 rounded-full overflow-hidden">
-          <div 
+          <div
             className={`h-full transition-all ${
               alert.currentCapacity >= 90 ? 'bg-primary' :
               alert.currentCapacity >= 75 ? 'bg-primary/70' :
@@ -105,7 +105,7 @@ const AlertCard = memo(function AlertCard({ alert }: AlertCardProps) {
             style={{ width: `${Math.min(100, alert.currentCapacity)}%` }}
           />
         </div>
-        
+
         {alert.projectedCapacity > alert.currentCapacity && (
           <>
             <div className="flex items-center justify-between text-xs">
@@ -113,7 +113,7 @@ const AlertCard = memo(function AlertCard({ alert }: AlertCardProps) {
               <span className="text-orange-400">{Math.round(alert.projectedCapacity)}%</span>
             </div>
             <div className="h-2 bg-background/50 rounded-full overflow-hidden">
-              <div 
+              <div
                 className="h-full bg-orange-500/50 transition-all"
                 style={{ width: `${Math.min(100, alert.projectedCapacity)}%` }}
               />

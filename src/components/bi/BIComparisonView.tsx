@@ -1,11 +1,11 @@
 import { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { 
+import {
   BarChart3, PieChart, Printer,
   ArrowUp, ArrowDown, Minus
 } from 'lucide-react';
-import { 
+import {
   BarChart, Bar, PieChart as RechartsPieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from 'recharts';
@@ -26,9 +26,9 @@ interface ComparisonViewProps {
   ComparisonKPICard: React.ComponentType<any>;
 }
 
-export function BIComparisonView({ 
-  biMetrics, biMetrics2, getPeriodLabel, periodFilter2, customRange2, 
-  getComparisonDelta, ComparisonKPICard 
+export function BIComparisonView({
+  biMetrics, biMetrics2, getPeriodLabel, periodFilter2, customRange2,
+  getComparisonDelta, ComparisonKPICard
 }: ComparisonViewProps) {
   return (
     <>
@@ -92,7 +92,7 @@ export function BIComparisonView({
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={280}>
-              <BarChart 
+              <BarChart
                 data={biMetrics.techniquePerformance.slice(0, 6).map((t1: unknown) => {
                   const t2 = biMetrics2?.techniquePerformance.find((t: unknown) => t.id === t1.id);
                   return { name: t1.name, 'Período 1': t1.produced, 'Período 2': t2?.produced ?? 0 };

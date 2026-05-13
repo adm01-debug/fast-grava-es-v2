@@ -133,7 +133,7 @@ export function useEnergy(dateRange?: { start: Date; end: Date }) {
   // Calculate stats
   const stats: EnergyStats = (() => {
     const consumption = consumptionQuery.data || [];
-    
+
     const totalConsumption = consumption.reduce((sum, c) => sum + Number(c.consumption_kwh), 0);
     const totalCost = consumption.reduce((sum, c) => sum + Number(c.total_cost), 0);
     const peakDemand = Math.max(...consumption.map(c => Number(c.peak_demand_kw) || 0), 0);
@@ -155,10 +155,10 @@ export function useEnergy(dateRange?: { start: Date; end: Date }) {
     const byMachine = new Map<string, { name: string; consumption: number; cost: number }>();
     consumption.forEach(c => {
       if (c.machine_id) {
-        const existing = byMachine.get(c.machine_id) || { 
-          name: c.machine?.name || 'Desconhecida', 
-          consumption: 0, 
-          cost: 0 
+        const existing = byMachine.get(c.machine_id) || {
+          name: c.machine?.name || 'Desconhecida',
+          consumption: 0,
+          cost: 0
         };
         existing.consumption += Number(c.consumption_kwh);
         existing.cost += Number(c.total_cost);

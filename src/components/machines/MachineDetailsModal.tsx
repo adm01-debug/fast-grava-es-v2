@@ -2,10 +2,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
-import { 
-  Settings, 
-  Activity, 
-  History, 
+import {
+  Settings,
+  Activity,
+  History,
   ShieldAlert,
   Zap,
   Info,
@@ -30,9 +30,9 @@ interface MachineDetailsModalProps {
 
 export function MachineDetailsModal({ machine, open, onOpenChange }: MachineDetailsModalProps) {
   const { getTechniqueById } = useSchedulingData();
-  
+
   if (!machine) return null;
-  
+
   const technique = machine.technique_id ? getTechniqueById(machine.technique_id) : null;
 
   return (
@@ -96,7 +96,7 @@ export function MachineDetailsModal({ machine, open, onOpenChange }: MachineDeta
                   </div>
                 </div>
               </div>
-              
+
               <div className="p-4 rounded-xl bg-muted/20 border border-border/30">
                 <p className="text-[10px] text-muted-foreground uppercase font-bold mb-2">Especificações</p>
                 <div className="space-y-3">
@@ -107,9 +107,9 @@ export function MachineDetailsModal({ machine, open, onOpenChange }: MachineDeta
                   <div className="flex justify-between items-center">
                     <span className="text-xs text-muted-foreground text-ellipsis overflow-hidden whitespace-nowrap mr-1">Técnica Principal</span>
                     <div className="flex items-center gap-2">
-                      <div 
-                        className="w-2 h-2 rounded-full" 
-                        style={{ backgroundColor: technique?.color || '#888' }} 
+                      <div
+                        className="w-2 h-2 rounded-full"
+                        style={{ backgroundColor: technique?.color || '#888' }}
                       />
                       <span className="text-sm font-medium">{technique?.name || 'Não vinculada'}</span>
                     </div>
@@ -155,11 +155,11 @@ function MachineHistoryTab({ machineId }: { machineId: string }) {
 
   return (
     <div className="mt-4">
-      <HistoryPeriodFilter 
-        value={period} 
-        onChange={setPeriod} 
+      <HistoryPeriodFilter
+        value={period}
+        onChange={setPeriod}
         onExport={handleExport}
-        resultCount={data?.length} 
+        resultCount={data?.length}
       />
       {isLoading ? (
         <div className="space-y-3">

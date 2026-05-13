@@ -2,14 +2,14 @@ import { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
-import { 
-  LineChart, 
-  Line, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  Legend, 
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
   ResponsiveContainer,
   ReferenceLine
 } from 'recharts';
@@ -57,7 +57,7 @@ export const OEETrendChart = memo(function OEETrendChart({ data, worldClassBench
   const availabilityDiff = comparison ? comparison.currentAvailability - comparison.previousAvailability : 0;
   const performanceDiff = comparison ? comparison.currentPerformance - comparison.previousPerformance : 0;
   const qualityDiff = comparison ? comparison.currentQuality - comparison.previousQuality : 0;
-  
+
   const isPositive = oeeDiff > 0;
   const isNegative = oeeDiff < 0;
 
@@ -70,25 +70,25 @@ export const OEETrendChart = memo(function OEETrendChart({ data, worldClassBench
             <div className="flex flex-wrap gap-2">
               <Badge variant="outline" className={cn(
                 "flex items-center gap-1 px-2 py-1",
-                oeeDiff > 0 ? "text-emerald-500 border-emerald-500/30 bg-emerald-500/10" : 
-                oeeDiff < 0 ? "text-red-500 border-red-500/30 bg-red-500/10" : 
+                oeeDiff > 0 ? "text-emerald-500 border-emerald-500/30 bg-emerald-500/10" :
+                oeeDiff < 0 ? "text-red-500 border-red-500/30 bg-red-500/10" :
                 "text-muted-foreground border-border bg-muted/20"
               )}>
-                {oeeDiff > 0 ? <TrendingUp className="h-3 w-3" /> : 
-                 oeeDiff < 0 ? <TrendingDown className="h-3 w-3" /> : 
+                {oeeDiff > 0 ? <TrendingUp className="h-3 w-3" /> :
+                 oeeDiff < 0 ? <TrendingDown className="h-3 w-3" /> :
                  <Minus className="h-3 w-3" />}
                 <span className="text-xs font-bold">
                   OEE: {oeeDiff > 0 ? '+' : ''}{oeeDiff.toFixed(1)}%
                 </span>
               </Badge>
-              
+
               <Badge variant="outline" className={cn(
                 "flex items-center gap-1 px-2 py-1 text-[10px]",
                 availabilityDiff >= 0 ? "text-emerald-500/80" : "text-red-500/80"
               )}>
                 Disponibilidade: {availabilityDiff > 0 ? '+' : ''}{availabilityDiff.toFixed(1)}%
               </Badge>
-              
+
               <Badge variant="outline" className={cn(
                 "flex items-center gap-1 px-2 py-1 text-[10px]",
                 performanceDiff >= 0 ? "text-emerald-500/80" : "text-red-500/80"
@@ -104,12 +104,12 @@ export const OEETrendChart = memo(function OEETrendChart({ data, worldClassBench
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={chartData} margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-              <XAxis 
-                dataKey="dateLabel" 
+              <XAxis
+                dataKey="dateLabel"
                 tick={{ fontSize: 12 }}
                 className="text-muted-foreground"
               />
-              <YAxis 
+              <YAxis
                 domain={[0, 100]}
                 tick={{ fontSize: 12 }}
                 tickFormatter={v => `${v}%`}
@@ -132,7 +132,7 @@ export const OEETrendChart = memo(function OEETrendChart({ data, worldClassBench
                 }}
                 labelFormatter={(label) => `Data: ${label}`}
               />
-              <Legend 
+              <Legend
                 formatter={(value) => {
                   const labels: Record<string, string> = {
                     oee: 'OEE',
@@ -143,20 +143,20 @@ export const OEETrendChart = memo(function OEETrendChart({ data, worldClassBench
                   return labels[value] || value;
                 }}
               />
-              
+
               {/* World-class benchmark line */}
-              <ReferenceLine 
-                y={worldClassBenchmark} 
+              <ReferenceLine
+                y={worldClassBenchmark}
                 stroke="hsl(var(--primary))"
                 strokeDasharray="5 5"
-                label={{ 
-                  value: 'World Class', 
+                label={{
+                  value: 'World Class',
                   position: 'right',
                   fontSize: 10,
                   fill: 'hsl(var(--primary))'
                 }}
               />
-              
+
               <Line
                 type="monotone"
                 dataKey="oee"

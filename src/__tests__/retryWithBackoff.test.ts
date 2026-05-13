@@ -13,7 +13,7 @@ describe('retryWithBackoff', () => {
     const fn = vi.fn()
       .mockRejectedValueOnce(new Error('fail'))
       .mockResolvedValue('ok');
-    
+
     const result = await retryWithBackoff(fn, { maxRetries: 3, baseDelay: 10, jitter: false });
     expect(result).toBe('ok');
     expect(fn).toHaveBeenCalledTimes(2);
@@ -21,7 +21,7 @@ describe('retryWithBackoff', () => {
 
   it('throws after max retries', async () => {
     const fn = vi.fn().mockRejectedValue(new Error('always fails'));
-    
+
     await expect(
       retryWithBackoff(fn, { maxRetries: 2, baseDelay: 10, jitter: false })
     ).rejects.toThrow('always fails');
@@ -30,7 +30,7 @@ describe('retryWithBackoff', () => {
 
   it('stops retrying when isRetryable returns false', async () => {
     const fn = vi.fn().mockRejectedValue(new Error('permanent'));
-    
+
     await expect(
       retryWithBackoff(fn, {
         maxRetries: 5,
@@ -46,7 +46,7 @@ describe('retryWithBackoff', () => {
     const fn = vi.fn()
       .mockRejectedValueOnce(new Error('temp'))
       .mockResolvedValue('ok');
-    
+
     await retryWithBackoff(fn, { maxRetries: 3, baseDelay: 10, onRetry, jitter: false });
     expect(onRetry).toHaveBeenCalledTimes(1);
     expect(onRetry).toHaveBeenCalledWith(1, expect.any(Number), expect.any(Error));

@@ -35,7 +35,7 @@ export const NavGroupComponent = memo(function NavGroupComponent({
     let badgeCount: number | undefined = undefined;
     if (item.href === '/alerts') badgeCount = alertCount;
     if (item.href === '/notifications') badgeCount = notificationCount;
-    
+
     return {
       ...item,
       badge: (badgeCount !== undefined && badgeCount > 0) ? badgeCount : undefined

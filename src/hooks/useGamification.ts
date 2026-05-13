@@ -49,10 +49,10 @@ export function useGamification(period: 'daily' | 'weekly' | 'monthly' = 'weekly
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const now = new Date();
-  
+
   let periodStart: Date;
   let periodEnd: Date;
-  
+
   if (period === 'daily') {
     periodStart = startOfDay(now);
     periodEnd = endOfDay(now);
@@ -81,7 +81,7 @@ export function useGamification(period: 'daily' | 'weekly' | 'monthly' = 'weekly
 
       // Get profiles for operator names
       const operatorIds = rankings?.map(r => r.operator_id) || [];
-      
+
       if (operatorIds.length === 0) {
         // No persisted rankings, calculate on the fly
         return await calculateRankingsLocally(periodStart, periodEnd, period);
@@ -116,7 +116,7 @@ export function useGamification(period: 'daily' | 'weekly' | 'monthly' = 'weekly
         .select('*')
         .order('achieved_at', { ascending: false })
         .limit(50);
-      
+
       if (error) throw error;
       return data as Achievement[];
     },
@@ -139,7 +139,6 @@ export function useGamification(period: 'daily' | 'weekly' | 'monthly' = 'weekly
       queryClient.invalidateQueries({ queryKey: ['operator-achievements'] });
     },
     onError: (error) => {
-      if (import.meta.env.DEV) 
       toast.error('Erro ao calcular rankings');
     },
   });
@@ -165,7 +164,7 @@ export function useGamification(period: 'daily' | 'weekly' | 'monthly' = 'weekly
         .from('operator_achievements')
         .select('points')
         .eq('operator_id', user!.id);
-      
+
       const earned = (achievements || []).reduce((sum, a) => sum + a.points, 0);
 
       // Deduct redemptions
@@ -174,7 +173,7 @@ export function useGamification(period: 'daily' | 'weekly' | 'monthly' = 'weekly
         .select('points_spent')
         .eq('user_id', user!.id)
         .neq('status', 'cancelled');
-      
+
       const spent = (redemptions || []).reduce((sum, r) => sum + r.points_spent, 0);
 
       return Math.max(0, earned - spent);
@@ -233,8 +232,8 @@ export function useGamification(period: 'daily' | 'weekly' | 'monthly' = 'weekly
 
 // Local calculation fallback when no persisted rankings exist
 async function calculateRankingsLocally(
-  periodStart: Date, 
-  periodEnd: Date, 
+  periodStart: Date,
+  periodEnd: Date,
   period: string
 ): Promise<OperatorRanking[]> {
   const { data: jobs } = await supabase
@@ -278,12 +277,12 @@ async function calculateRankingsLocally(
   const rankings: OperatorRanking[] = Object.entries(operatorStats)
     .map(([id, stats]) => {
       const efficiency = stats.quantity > 0 ? (stats.produced / stats.quantity) * 100 : 0;
-      const quality = (stats.produced + stats.lost) > 0 
-        ? (stats.produced / (stats.produced + stats.lost)) * 100 
+      const quality = (stats.produced + stats.lost) > 0
+        ? (stats.produced / (stats.produced + stats.lost)) * 100
         : 100;
-      
+
       const points = Math.round(stats.produced + efficiency * 10 + quality * 5 + stats.jobs * 2);
-      
+
       return {
         id: crypto.randomUUID(),
         operator_id: id,

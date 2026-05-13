@@ -5,14 +5,14 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { 
-  FileText, 
-  Image, 
-  File, 
-  Upload, 
-  Search, 
-  CheckCircle, 
-  XCircle, 
+import {
+  FileText,
+  Image,
+  File,
+  Upload,
+  Search,
+  CheckCircle,
+  XCircle,
   AlertCircle,
   Eye,
   Download,
@@ -36,7 +36,7 @@ export function DocumentsList({ technicalSheetId, compact = false }: DocumentsLi
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [showUpload, setShowUpload] = useState(false);
   const [selectedDocument, setSelectedDocument] = useState<TechnicalDocument | null>(null);
-  
+
   const { documents, isLoading, deleteDocument } = useDocuments(technicalSheetId);
   const { role } = useAuth();
 
@@ -112,9 +112,9 @@ export function DocumentsList({ technicalSheetId, compact = false }: DocumentsLi
           </div>
         )}
 
-        <DocumentUploadModal 
-          open={showUpload} 
-          onOpenChange={setShowUpload} 
+        <DocumentUploadModal
+          open={showUpload}
+          onOpenChange={setShowUpload}
           technicalSheetId={technicalSheetId}
         />
         <DocumentViewer
@@ -192,7 +192,7 @@ export function DocumentsList({ technicalSheetId, compact = false }: DocumentsLi
                   className="flex items-center gap-4 p-4 rounded-lg border hover:bg-muted/20 transition-colors group"
                 >
                   {getFileIcon(doc.file_type)}
-                  
+
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                       <p className="font-medium truncate">{doc.title}</p>
@@ -215,8 +215,8 @@ export function DocumentsList({ technicalSheetId, compact = false }: DocumentsLi
                   </div>
 
                   <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Button 
-                      variant="ghost" 
+                    <Button
+                      variant="ghost"
                       size="icon"
                       onClick={() => setSelectedDocument(doc)}
                     >
@@ -228,8 +228,8 @@ export function DocumentsList({ technicalSheetId, compact = false }: DocumentsLi
                       </a>
                     </Button>
                     {canManage && (
-                      <Button 
-                        variant="ghost" 
+                      <Button
+                        variant="ghost"
                         size="icon"
                         onClick={() => deleteDocument.mutate(doc.id)}
                       >
@@ -244,8 +244,8 @@ export function DocumentsList({ technicalSheetId, compact = false }: DocumentsLi
         )}
       </CardContent>
 
-      <DocumentUploadModal 
-        open={showUpload} 
+      <DocumentUploadModal
+        open={showUpload}
         onOpenChange={setShowUpload}
         technicalSheetId={technicalSheetId}
       />

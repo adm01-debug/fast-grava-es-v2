@@ -159,7 +159,7 @@ export function useLotGenealogy(lotId: string | null) {
     queryKey: ['lot-genealogy', lotId],
     queryFn: async () => {
       if (!lotId) return { parents: [], children: [] };
-      
+
       // Get components (parents)
       const { data: components, error: compError } = await supabase
         .from('lot_components')
@@ -168,9 +168,9 @@ export function useLotGenealogy(lotId: string | null) {
           component_lot:production_lots!lot_components_component_lot_id_fkey(*)
         `)
         .eq('lot_id', lotId);
-      
+
       if (compError) throw compError;
-      
+
       // Get where this lot is used as component (children)
       const { data: usedIn, error: usedError } = await supabase
         .from('lot_components')
@@ -179,9 +179,9 @@ export function useLotGenealogy(lotId: string | null) {
           lot:production_lots!lot_components_lot_id_fkey(*)
         `)
         .eq('component_lot_id', lotId);
-      
+
       if (usedError) throw usedError;
-      
+
       return {
         parents: components || [],
         children: usedIn || []

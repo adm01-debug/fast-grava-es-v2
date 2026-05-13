@@ -37,15 +37,15 @@ interface QuickJobDrawerProps {
   onSuccess: () => void;
 }
 
-export function QuickJobDrawer({ 
-  open, 
-  onOpenChange, 
-  selectedDate, 
-  selectedMachineId, 
+export function QuickJobDrawer({
+  open,
+  onOpenChange,
+  selectedDate,
+  selectedMachineId,
   selectedTime,
   machines,
   techniques,
-  onSuccess 
+  onSuccess
 }: QuickJobDrawerProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -79,7 +79,7 @@ export function QuickJobDrawer({
       if (selectedTime) {
         const startStr = `${selectedTime.hour.toString().padStart(2, '0')}:${selectedTime.minute.toString().padStart(2, '0')}`;
         setValue('start_time', startStr);
-        
+
         // Default 1 hour duration
         const startTime = parse(startStr, 'HH:mm', new Date());
         const endTime = addMinutes(startTime, 60);
@@ -120,7 +120,7 @@ export function QuickJobDrawer({
       onSuccess();
       onOpenChange(false);
     } catch (error) {
-      
+
       toast.error('Erro ao agendar job');
     } finally {
       setIsSubmitting(false);

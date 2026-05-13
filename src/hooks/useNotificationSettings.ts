@@ -25,15 +25,15 @@ export function useNotificationSettings() {
     queryKey: ['user-notification-settings', user?.id],
     queryFn: async () => {
       if (!user) return null;
-      
+
       const { data, error } = await supabase
         .from('user_notification_settings')
         .select('*')
         .eq('user_id', user.id)
         .maybeSingle();
-      
+
       if (error) throw error;
-      
+
       // If no settings exist, create default ones
       if (!data) {
         const { data: newData, error: insertError } = await supabase
@@ -41,11 +41,11 @@ export function useNotificationSettings() {
           .insert({ user_id: user.id })
           .select()
           .single();
-        
+
         if (insertError) throw insertError;
         return newData as UserNotificationSettings;
       }
-      
+
       return data as UserNotificationSettings;
     },
     enabled: !!user,
@@ -54,14 +54,14 @@ export function useNotificationSettings() {
   const updateSettings = useMutation({
     mutationFn: async (updates: Partial<UserNotificationSettings>) => {
       if (!user) throw new Error('User not authenticated');
-      
+
       const { data, error } = await supabase
         .from('user_notification_settings')
         .update(updates)
         .eq('user_id', user.id)
         .select()
         .single();
-      
+
       if (error) throw error;
       return data;
     },
@@ -70,7 +70,7 @@ export function useNotificationSettings() {
       toast.success('Configurações atualizadas');
     },
     onError: (error) => {
-      
+
       toast.error('Erro ao atualizar configurações');
     }
   });

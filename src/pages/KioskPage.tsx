@@ -18,7 +18,7 @@ export default function KioskPage() {
   const { profile } = useAuth();
   const { jobs, refetchAll, isLoading, getTechniqueById, getMachineById } = useSchedulingData();
   const { isOnline, isSyncing, updateJobOffline, cacheData } = useOfflineSync();
-  
+
   const [selectedMachineId, setSelectedMachineId] = useState<string | null>(null);
   const [productionJobId, setProductionJobId] = useState<string | null>(null);
   const [isProductionModalOpen, setIsProductionModalOpen] = useState(false);

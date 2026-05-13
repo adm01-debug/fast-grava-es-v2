@@ -114,7 +114,7 @@ export function useDataExport(tableName: TableName) {
     setIsExporting(true);
     try {
       let query = supabase.from('audit_log').select('*').order('created_at', { ascending: false });
-      
+
       if (filters.entityType) query = query.eq('entity_type', filters.entityType);
       if (filters.entityId) query = query.eq('entity_id', filters.entityId);
       if (filters.fromDate) query = query.gte('created_at', filters.fromDate);
@@ -128,11 +128,11 @@ export function useDataExport(tableName: TableName) {
       }
 
       const formattedFileName = fileName ?? `audit_export_${format(new Date(), 'yyyy-MM-dd')}`;
-      
+
       if (formatType === 'pdf') {
         const { default: jsPDF } = await import('jspdf');
         const { default: autoTable } = await import('jspdf-autotable');
-        
+
         const doc = new jsPDF();
         doc.setFontSize(16);
         doc.text(`Relatório de Auditoria - ${filters.entityType || 'Geral'}`, 14, 15);
@@ -162,7 +162,7 @@ export function useDataExport(tableName: TableName) {
         const csv = convertToCSV(data as Record<string, unknown>[]);
         downloadFile(csv, `${formattedFileName}.csv`, 'text/csv');
       }
-      
+
       toast.success(`${data.length} registros de auditoria exportados`);
     } catch (error) {
       toast.error('Erro na exportação de auditoria');

@@ -32,7 +32,6 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
       toast.success('Manutenção agendada com sucesso');
     },
     onError: (error) => {
-      if (import.meta.env.DEV) 
       showErrorToast(error, 'Erro ao agendar manutenção', TPM_ERROR_CONTEXT.schedules);
     },
   });
@@ -49,7 +48,7 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
         .select('*')
         .eq('id', data.schedule_id)
         .maybeSingle();
-      
+
       if (scheduleError || !scheduleData) {
         throw new Error('Agendamento não encontrado');
       }
@@ -74,7 +73,6 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
       toast.success('Manutenção iniciada');
     },
     onError: (error) => {
-      if (import.meta.env.DEV) 
       showErrorToast(error, 'Erro ao iniciar manutenção', TPM_ERROR_CONTEXT.records);
     },
   });
@@ -128,7 +126,7 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
         .select('*')
         .eq('id', data.record_id)
         .maybeSingle();
-      
+
       if (recordFetchError || !recordData) {
         throw new Error('Registro não encontrado');
       }
@@ -152,7 +150,7 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
           failure_risk_detected: data.failure_risk_detected || false,
         })
         .eq('id', data.record_id);
-      
+
       if (recordError) throw recordError;
 
       // Register specific execution alerts if provided
@@ -189,7 +187,7 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
           const val = parseFloat(value.replace(/[^0-9.]/g, ''));
           const min = range.min ? parseFloat(range.min.replace(/[^0-9.]/g, '')) : -Infinity;
           const max = range.max ? parseFloat(range.max.replace(/[^0-9.]/g, '')) : Infinity;
-          
+
           if (!isNaN(val)) {
             if (val < min || val > max) {
               alertsToInsert.push({
@@ -223,7 +221,7 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
         const { error: respError } = await supabase
           .from('maintenance_item_responses')
           .insert(responsesToInsert);
-        
+
         if (respError) throw respError;
       }
 
@@ -241,7 +239,7 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
         const { error: partsError } = await supabase
           .from('tpm_execution_parts')
           .insert(partsToInsert);
-        
+
         if (partsError) throw partsError;
       }
 
@@ -253,7 +251,6 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
       toast.success('Execução concluída e enviada para revisão');
     },
     onError: (error) => {
-      if (import.meta.env.DEV) 
       showErrorToast(error, 'Erro ao concluir manutenção', TPM_ERROR_CONTEXT.records);
     },
   });
@@ -282,7 +279,7 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
         .select('*, schedule:maintenance_schedules(*)')
         .eq('id', data.record_id)
         .maybeSingle();
-      
+
       if (recordFetchError || !recordData) {
         throw new Error('Registro não encontrado');
       }
@@ -300,7 +297,7 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
           next_scheduled_date_after_approval: nextDue,
         })
         .eq('id', data.record_id);
-      
+
       if (recordError) throw recordError;
 
       // Update the schedule
@@ -312,7 +309,7 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
             next_due_at: nextDue,
           })
           .eq('id', scheduleData.id);
-        
+
         if (scheduleError) throw scheduleError;
       }
 
@@ -330,7 +327,6 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
       toast.success('Manutenção aprovada e próximo agendamento atualizado');
     },
     onError: (error) => {
-      if (import.meta.env.DEV) 
       showErrorToast(error, 'Erro ao aprovar manutenção', TPM_ERROR_CONTEXT.records);
     },
   });
@@ -350,7 +346,7 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
           correction_deadline: data.deadline,
         })
         .eq('id', data.record_id);
-      
+
       if (error) throw error;
     },
     onSuccess: () => {
@@ -409,7 +405,7 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
 
       // 2. Predictive AI Check (Edge Function)
       try {
-        
+
         const { data: mlResult, error: mlError } = await supabase.functions.invoke('ml-predictions', {
           body: { action: 'batch_analyze' }
         });
@@ -434,7 +430,7 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
           });
         }
       } catch (err) {
-        
+
       }
 
       const results = await Promise.all(

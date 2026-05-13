@@ -65,8 +65,8 @@ export function KioskMode({
   const [isFocusMode, setIsFocusMode] = React.useState(false);
   const [currentTime, setCurrentTime] = React.useState(new Date());
 
-  const activeJob = React.useMemo(() => 
-    jobs.find(j => j.status === "production"), 
+  const activeJob = React.useMemo(() =>
+    jobs.find(j => j.status === "production"),
     [jobs]
   );
 
@@ -134,9 +134,9 @@ export function KioskMode({
             ) : (
               <WifiOff className="h-5 w-5 text-destructive" />
             )}
-            <Button 
-              variant={isFocusMode ? "default" : "outline"} 
-              size="icon" 
+            <Button
+              variant={isFocusMode ? "default" : "outline"}
+              size="icon"
               onClick={() => setIsFocusMode(!isFocusMode)}
               title={isFocusMode ? "Desativar Foco" : "Ativar Modo Foco"}
             >
@@ -207,14 +207,14 @@ export function KioskMode({
                   </div>
 
                   <div className="flex gap-4 pt-4">
-                    <Button 
-                      variant="outline" 
+                    <Button
+                      variant="outline"
                       className="flex-1 h-20 text-2xl font-bold rounded-2xl"
                       onClick={() => onPauseProduction(activeJob.id)}
                     >
                       <Pause className="h-8 w-8 mr-3" /> Pausar
                     </Button>
-                    <Button 
+                    <Button
                       className="flex-1 h-20 text-2xl font-bold rounded-2xl bg-primary hover:bg-primary/90"
                       onClick={() => onCompleteProduction(activeJob.id)}
                     >
@@ -243,8 +243,8 @@ export function KioskMode({
           {jobs.map((job) => {
             const status = statusConfig[job.status];
             const priority = priorityConfig[job.priority || "normal"];
-            const progress = job.produced && job.quantity 
-              ? Math.round((job.produced / job.quantity) * 100) 
+            const progress = job.produced && job.quantity
+              ? Math.round((job.produced / job.quantity) * 100)
               : 0;
 
             return (
@@ -276,8 +276,8 @@ export function KioskMode({
                     {/* Technique */}
                     {job.technique && (
                       <div className="mb-3">
-                        <Badge 
-                          variant="outline" 
+                        <Badge
+                          variant="outline"
                           style={{ borderColor: job.techniqueColor, color: job.techniqueColor }}
                         >
                           {job.technique}
@@ -322,8 +322,8 @@ export function KioskMode({
                     {/* Actions */}
                     <div className="flex gap-2">
                       {job.status === "ready" && (
-                        <Button 
-                          className="flex-1" 
+                        <Button
+                          className="flex-1"
                           onClick={() => onStartProduction(job.id)}
                         >
                           <Play className="h-4 w-4 mr-2" />
@@ -332,15 +332,15 @@ export function KioskMode({
                       )}
                       {job.status === "production" && (
                         <>
-                          <Button 
-                            variant="outline" 
+                          <Button
+                            variant="outline"
                             className="flex-1"
                             onClick={() => onPauseProduction(job.id)}
                           >
                             <Pause className="h-4 w-4 mr-2" />
                             Pausar
                           </Button>
-                          <Button 
+                          <Button
                             className="flex-1"
                             onClick={() => onCompleteProduction(job.id)}
                           >
@@ -350,7 +350,7 @@ export function KioskMode({
                         </>
                       )}
                       {job.status === "paused" && (
-                        <Button 
+                        <Button
                           className="flex-1"
                           onClick={() => onStartProduction(job.id)}
                         >

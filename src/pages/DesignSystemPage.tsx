@@ -63,18 +63,18 @@ export default function DesignSystemPage() {
     <MainLayout>
       <div className="p-6 space-y-8 max-w-7xl mx-auto">
         <Breadcrumbs />
-        
+
         {/* Floating Reduced Motion Indicator */}
         {isReducedMotionActive && (
           <div className="fixed bottom-4 left-4 z-50 flex items-center gap-2 px-3 py-2 rounded-full bg-warning/90 text-warning-foreground shadow-lg border border-warning/50 backdrop-blur-sm">
             <Pause className="h-4 w-4" />
             <span className="text-xs font-medium">
-              {systemPrefersReducedMotion && !reducedMotion 
-                ? 'Reduced Motion (Sistema)' 
+              {systemPrefersReducedMotion && !reducedMotion
+                ? 'Reduced Motion (Sistema)'
                 : 'Reduced Motion (Simulado)'}
             </span>
             {reducedMotion && (
-              <button 
+              <button
                 onClick={() => setReducedMotion(false)}
                 className="ml-1 p-0.5 rounded-full hover:bg-warning-foreground/20 transition-colors"
                 title="Desativar simulação"
@@ -93,7 +93,7 @@ export default function DesignSystemPage() {
               Biblioteca completa de componentes, variantes e animações do sistema.
             </p>
           </div>
-          
+
           <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50 border border-border">
             <div className="flex items-center gap-2">
               <Activity className={`h-4 w-4 ${isReducedMotionActive ? 'text-muted-foreground' : 'text-primary animate-pulse'}`} />
@@ -101,7 +101,7 @@ export default function DesignSystemPage() {
                 Simular Reduced Motion
               </Label>
             </div>
-            <Switch 
+            <Switch
               id="reduced-motion-toggle"
               checked={reducedMotion}
               onCheckedChange={setReducedMotion}

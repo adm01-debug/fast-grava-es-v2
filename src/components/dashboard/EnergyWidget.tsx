@@ -3,14 +3,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Zap, TrendingUp, TrendingDown, DollarSign } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
-import { 
-  AreaChart, 
-  Area, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  ResponsiveContainer 
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer
 } from 'recharts';
 
 export function EnergyWidget() {
@@ -75,21 +75,21 @@ export function EnergyWidget() {
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
-              <XAxis 
-                dataKey="date" 
-                hide 
+              <XAxis
+                dataKey="date"
+                hide
               />
               <YAxis hide />
-              <Tooltip 
+              <Tooltip
                 contentStyle={{ backgroundColor: '#1f2937', border: 'none', borderRadius: '8px', fontSize: '10px' }}
                 formatter={(value: number) => [`${value} kWh`, 'Consumo']}
               />
-              <Area 
-                type="monotone" 
-                dataKey="consumption" 
-                stroke="#eab308" 
-                fillOpacity={1} 
-                fill="url(#colorEnergy)" 
+              <Area
+                type="monotone"
+                dataKey="consumption"
+                stroke="#eab308"
+                fillOpacity={1}
+                fill="url(#colorEnergy)"
                 strokeWidth={2}
               />
             </AreaChart>

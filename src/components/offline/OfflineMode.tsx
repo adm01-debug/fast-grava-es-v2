@@ -105,9 +105,9 @@ export function OfflineProvider({ children }: { children: ReactNode }) {
         successfulIds.push(action.id);
       } catch (error) {
         // Increment retry count
-        setPendingActions(prev => 
-          prev.map(a => 
-            a.id === action.id 
+        setPendingActions(prev =>
+          prev.map(a =>
+            a.id === action.id
               ? { ...a, retries: a.retries + 1 }
               : a
           )
@@ -174,7 +174,7 @@ export function OfflineBanner() {
           </div>
         </motion.div>
       )}
-      
+
       {isOnline && pendingActions.length > 0 && (
         <motion.div
           initial={{ height: 0, opacity: 0 }}
@@ -189,8 +189,8 @@ export function OfflineBanner() {
                 {pendingActions.length} ações pendentes para sincronizar
               </span>
             </div>
-            <Button 
-              size="sm" 
+            <Button
+              size="sm"
               variant="ghost"
               onClick={syncNow}
               disabled={isSyncing}
@@ -221,7 +221,7 @@ export function ConnectionStatus({ showLabel = false }: { showLabel?: boolean })
         ) : (
           <WifiOff className="h-4 w-4 text-warning" />
         )}
-        
+
         {isSyncing && (
           <motion.div
             className="absolute inset-0 rounded-full border-2 border-primary border-t-transparent"
@@ -229,14 +229,14 @@ export function ConnectionStatus({ showLabel = false }: { showLabel?: boolean })
             transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
           />
         )}
-        
+
         {pendingActions.length > 0 && (
           <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-warning text-[10px] font-bold flex items-center justify-center text-warning-foreground">
             {pendingActions.length}
           </span>
         )}
       </div>
-      
+
       {showLabel && (
         <span className={cn(
           'text-sm',
@@ -274,7 +274,7 @@ export function SyncStatus() {
           {pendingActions.length} pendentes
         </span>
       </div>
-      
+
       {isOnline && (
         <Button
           size="sm"
@@ -292,11 +292,11 @@ export function SyncStatus() {
 }
 
 // Offline Wrapper - Handles offline data access
-export function OfflineWrapper({ 
-  children, 
+export function OfflineWrapper({
+  children,
   fallback,
   requireOnline = false,
-}: { 
+}: {
   children: ReactNode;
   fallback?: ReactNode;
   requireOnline?: boolean;

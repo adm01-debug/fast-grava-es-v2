@@ -44,7 +44,7 @@ export function TPMNotificationSettings() {
     const newTypes = currentTypes.includes(type)
       ? currentTypes.filter(t => t !== type)
       : [...currentTypes, type];
-    
+
     updateSettings.mutate({ notification_types: newTypes });
   };
 
@@ -54,7 +54,7 @@ export function TPMNotificationSettings() {
     const newFilters = currentFilters.includes(machineId)
       ? currentFilters.filter(id => id !== machineId)
       : [...currentFilters, machineId];
-    
+
     updateSettings.mutate({ machine_filters: newFilters });
   };
 
@@ -65,14 +65,14 @@ export function TPMNotificationSettings() {
     }
     setIsSendingTest(true);
     const result = await sendTestNotification(testMachineId, testChannel, force);
-    
+
     if (result && result.needsValidation) {
       setValidationData(result);
       setShowValidation(true);
     } else if (result && result.success) {
       setShowValidation(false);
     }
-    
+
     setIsSendingTest(false);
   };
 
@@ -112,7 +112,7 @@ export function TPMNotificationSettings() {
               {/* Channels */}
               <div className="space-y-4">
                 <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Canais de Notificação</h3>
-                
+
                 <div className="flex items-center justify-between p-4 rounded-lg border border-border/50 bg-secondary/10">
                   <div className="flex items-center gap-3">
                     <Mail className="h-5 w-5 text-blue-500" />
@@ -121,8 +121,8 @@ export function TPMNotificationSettings() {
                       <p className="text-xs text-muted-foreground">Alertas detalhados na sua caixa de entrada</p>
                     </div>
                   </div>
-                  <Switch 
-                    checked={settings?.email_enabled} 
+                  <Switch
+                    checked={settings?.email_enabled}
                     onCheckedChange={(checked) => updateSettings.mutate({ email_enabled: checked })}
                   />
                 </div>
@@ -135,8 +135,8 @@ export function TPMNotificationSettings() {
                       <p className="text-xs text-muted-foreground">Notificações em tempo real na tela</p>
                     </div>
                   </div>
-                  <Switch 
-                    checked={settings?.push_enabled} 
+                  <Switch
+                    checked={settings?.push_enabled}
                     onCheckedChange={(checked) => {
                       if (checked && permission !== 'granted') {
                         requestPermission();
@@ -155,15 +155,15 @@ export function TPMNotificationSettings() {
                         <p className="text-xs text-muted-foreground">Alertas críticos via WhatsApp Business</p>
                       </div>
                     </div>
-                    <Switch 
-                      checked={settings?.whatsapp_enabled} 
+                    <Switch
+                      checked={settings?.whatsapp_enabled}
                       onCheckedChange={(checked) => updateSettings.mutate({ whatsapp_enabled: checked })}
                     />
                   </div>
                   {settings?.whatsapp_enabled && (
                     <div className="flex gap-2 animate-in fade-in slide-in-from-top-2">
-                      <Input 
-                        placeholder="+55 11 99999-9999" 
+                      <Input
+                        placeholder="+55 11 99999-9999"
                         value={whatsappNumber}
                         onChange={(e) => setWhatsappNumber(e.target.value)}
                       />
@@ -198,9 +198,9 @@ export function TPMNotificationSettings() {
                     </SelectContent>
                   </Select>
                 </div>
-                <Button 
-                  className="w-full" 
-                  variant="outline" 
+                <Button
+                  className="w-full"
+                  variant="outline"
                   onClick={() => handleSendTest(false)}
                   disabled={isSendingTest}
                 >
@@ -239,30 +239,30 @@ export function TPMNotificationSettings() {
                   </div>
                   <div className="flex items-center gap-6">
                     <div className="flex items-center gap-2">
-                      <Switch 
-                        checked={settings?.event_configs?.[event.id]?.email} 
+                      <Switch
+                        checked={settings?.event_configs?.[event.id]?.email}
                         onCheckedChange={(checked) => {
                           const currentConfigs = settings?.event_configs || {};
-                          updateSettings.mutate({ 
-                            event_configs: { 
-                              ...currentConfigs, 
-                              [event.id]: { ...currentConfigs[event.id], email: checked } 
-                            } 
+                          updateSettings.mutate({
+                            event_configs: {
+                              ...currentConfigs,
+                              [event.id]: { ...currentConfigs[event.id], email: checked }
+                            }
                           });
                         }}
                       />
                       <Label className="text-xs">E-mail</Label>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Switch 
-                        checked={settings?.event_configs?.[event.id]?.in_app} 
+                      <Switch
+                        checked={settings?.event_configs?.[event.id]?.in_app}
                         onCheckedChange={(checked) => {
                           const currentConfigs = settings?.event_configs || {};
-                          updateSettings.mutate({ 
-                            event_configs: { 
-                              ...currentConfigs, 
-                              [event.id]: { ...currentConfigs[event.id], in_app: checked } 
-                            } 
+                          updateSettings.mutate({
+                            event_configs: {
+                              ...currentConfigs,
+                              [event.id]: { ...currentConfigs[event.id], in_app: checked }
+                            }
                           });
                         }}
                       />
@@ -289,7 +289,7 @@ export function TPMNotificationSettings() {
                       { id: 'overdue', label: 'Atrasadas', icon: <AlertTriangle className="h-4 w-4 text-orange-400" /> },
                       { id: 'critical', label: 'Críticas', icon: <AlertCircle className="h-4 w-4 text-destructive" /> },
                     ].map(type => (
-                      <div 
+                      <div
                         key={type.id}
                         onClick={() => handleToggleType(type.id)}
                         className={cn(
@@ -311,10 +311,10 @@ export function TPMNotificationSettings() {
                     <h3 className="text-sm font-semibold text-muted-foreground">Filtro por Máquina</h3>
                     <Badge variant="outline">{settings?.machine_filters.length === 0 ? 'Todas' : `${settings?.machine_filters.length} Selecionadas`}</Badge>
                   </div>
-                  
+
                   <div className="flex flex-wrap gap-2">
                     {machines.map(machine => (
-                      <Badge 
+                      <Badge
                         key={machine.id}
                         variant={settings?.machine_filters.includes(machine.id) ? "default" : "outline"}
                         className="cursor-pointer"
@@ -379,7 +379,7 @@ export function TPMNotificationSettings() {
             Confirme os detalhes do teste antes de realizar o envio real.
           </DialogDescription>
         </DialogHeader>
-        
+
         {validationData && (
           <div className="space-y-4 py-4">
             <div className="p-3 bg-secondary/20 rounded-lg border border-border/50 space-y-2">
@@ -414,8 +414,8 @@ export function TPMNotificationSettings() {
 
         <DialogFooter>
           <Button variant="ghost" onClick={() => setShowValidation(false)}>Cancelar</Button>
-          <Button 
-            onClick={() => handleSendTest(true)} 
+          <Button
+            onClick={() => handleSendTest(true)}
             disabled={isSendingTest}
           >
             {isSendingTest ? 'Enviando...' : 'Confirmar Envio Real'}

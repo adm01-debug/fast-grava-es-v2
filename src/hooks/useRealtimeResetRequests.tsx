@@ -12,7 +12,6 @@ export function useRealtimeResetRequests() {
     if (!isCoordinator && !isManager) return;
     if (!user) return;
 
-    if (import.meta.env.DEV) 
 
     const channel = supabase
       .channel('password-reset-notifications')
@@ -24,8 +23,7 @@ export function useRealtimeResetRequests() {
           table: 'password_reset_requests',
         },
         (payload) => {
-          if (import.meta.env.DEV) 
-          
+
           const newRequest = payload.new as {
             user_email: string;
             requested_by_name: string | null;
@@ -50,11 +48,9 @@ export function useRealtimeResetRequests() {
         }
       )
       .subscribe((status) => {
-        if (import.meta.env.DEV) 
       });
 
     return () => {
-      if (import.meta.env.DEV) 
       supabase.removeChannel(channel);
     };
   }, [isCoordinator, isManager, user]);

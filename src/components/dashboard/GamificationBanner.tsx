@@ -9,7 +9,7 @@ import { Progress } from '@/components/ui/progress';
 export function GamificationBanner() {
   const { user, isOperator } = useAuth();
   const { rankings, isLoading } = useGamification('weekly');
-  
+
   const userRanking = useMemo(() => {
     if (!user || !rankings.length) return null;
     return rankings.find(r => r.operator_id === user.id);
@@ -36,7 +36,7 @@ export function GamificationBanner() {
                 {userRanking.position}
               </Badge>
             </div>
-            
+
             <div>
               <h3 className="font-bold text-sm flex items-center gap-2">
                 Nível {level} - Especialista

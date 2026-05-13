@@ -10,10 +10,10 @@ export interface JobQuickActionsProps {
   isExpanded?: boolean;
 }
 
-export const JobQuickActions = memo(function JobQuickActions({ 
-  jobId, 
-  currentStatus, 
-  onStatusChange 
+export const JobQuickActions = memo(function JobQuickActions({
+  jobId,
+  currentStatus,
+  onStatusChange
 }: JobQuickActionsProps) {
   const actions: Array<{ status: JobStatus; icon: typeof Play; label: string }> = [
     { status: 'production', icon: Play, label: 'Iniciar' },

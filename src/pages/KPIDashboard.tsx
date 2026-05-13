@@ -9,13 +9,13 @@ import { useKPIs, formatDuration, KPIPeriod, KPITargets } from '@/hooks/useKPIs'
 import { useOperatorProductivity } from '@/hooks/useOperatorProductivity';
 import { useGoalAlerts } from '@/hooks/useGoalAlerts';
 import { useBIExport } from '@/hooks/useBIExport';
-import { 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip as RechartsTooltip, 
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip as RechartsTooltip,
   ResponsiveContainer,
   PieChart,
   Pie,
@@ -24,8 +24,8 @@ import {
   AreaChart,
   Area
 } from 'recharts';
-import { 
-  TrendingUp, 
+import {
+  TrendingUp,
   TrendingDown,
   Package,
   AlertTriangle,
@@ -52,7 +52,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { 
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -76,7 +76,7 @@ export default function KPIDashboard() {
   const [activeTab, setActiveTab] = useState('overview');
   const [period, setPeriod] = useState<KPIPeriod>('all');
   const [customTargets, setCustomTargets] = useState<Partial<KPITargets>>({});
-  
+
   const { data: kpis, isLoading: isLoadingKPIs } = useKPIs(period, customTargets);
   const { operators, isLoading: isLoadingOperators } = useOperatorProductivity('all');
   const { jobs, isLoading: isLoadingJobs } = useSchedulingData();
@@ -87,14 +87,14 @@ export default function KPIDashboard() {
   const [drillDownOpen, setDrillDownOpen] = useState(false);
   const [drillDownTitle, setDrillDownTitle] = useState('');
   const [drillDownJobs, setDrillDownJobs] = useState<any[]>([]);
-  
+
   const [visibleKPIs, setVisibleKPIs] = useState({
     completion: true,
     occupancy: true,
     loss: true,
     delayed: true
   });
-  
+
   const [isEditingTargets, setIsEditingTargets] = useState(false);
   const [selectedMachine, setSelectedMachine] = useState<any>(null);
 
@@ -156,8 +156,8 @@ export default function KPIDashboard() {
     );
   }
 
-  const completionRate = kpis.totalJobs > 0 
-    ? (kpis.completedJobs / kpis.totalJobs) * 100 
+  const completionRate = kpis.totalJobs > 0
+    ? (kpis.completedJobs / kpis.totalJobs) * 100
     : 0;
 
   const statusData = [
@@ -171,7 +171,7 @@ export default function KPIDashboard() {
     <MainLayout>
       <div className="p-4 sm:p-6 lg:p-8 space-y-4 sm:space-y-6 animate-fade-in-up">
         <Breadcrumbs />
-        
+
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
@@ -201,14 +201,14 @@ export default function KPIDashboard() {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            
+
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="sm" className="gap-2 glass-button">
                   <Calendar className="h-4 w-4" />
-                  {period === 'all' ? 'Todo o período' : 
-                   period === 'day' ? 'Hoje' : 
-                   period === 'week' ? 'Últimos 7 dias' : 
+                  {period === 'all' ? 'Todo o período' :
+                   period === 'day' ? 'Hoje' :
+                   period === 'week' ? 'Últimos 7 dias' :
                    period === 'month' ? 'Últimos 30 dias' : 'Último ano'}
                 </Button>
               </DropdownMenuTrigger>
@@ -235,67 +235,67 @@ export default function KPIDashboard() {
                     <p className="text-[10px] uppercase font-bold text-muted-foreground">Visibilidade</p>
                     <div className="flex items-center justify-between">
                       <span className="text-xs">Taxa de Conclusão</span>
-                      <Switch 
-                        checked={visibleKPIs.completion} 
+                      <Switch
+                        checked={visibleKPIs.completion}
                         onCheckedChange={(val) => setVisibleKPIs(prev => ({ ...prev, completion: val }))}
                       />
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-xs">Ocupação Média</span>
-                      <Switch 
-                        checked={visibleKPIs.occupancy} 
+                      <Switch
+                        checked={visibleKPIs.occupancy}
                         onCheckedChange={(val) => setVisibleKPIs(prev => ({ ...prev, occupancy: val }))}
                       />
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-xs">Índice de Perdas</span>
-                      <Switch 
-                        checked={visibleKPIs.loss} 
+                      <Switch
+                        checked={visibleKPIs.loss}
                         onCheckedChange={(val) => setVisibleKPIs(prev => ({ ...prev, loss: val }))}
                       />
                     </div>
                   </div>
 
                   <DropdownMenuSeparator />
-                  
+
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
                       <p className="text-[10px] uppercase font-bold text-muted-foreground">Metas (Targets)</p>
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
+                      <Button
+                        variant="ghost"
+                        size="sm"
                         className="h-6 px-2 text-[10px]"
                         onClick={() => setIsEditingTargets(!isEditingTargets)}
                       >
                         {isEditingTargets ? 'Fechar' : 'Editar'}
                       </Button>
                     </div>
-                    
+
                     {isEditingTargets ? (
                       <div className="space-y-3 pt-2">
                         <div className="space-y-1">
                           <label className="text-[10px]">Meta de Conclusão (%)</label>
-                          <Input 
-                            type="number" 
-                            className="h-7 text-xs" 
+                          <Input
+                            type="number"
+                            className="h-7 text-xs"
                             defaultValue={kpis.targets.completionRate}
                             onBlur={(e) => setCustomTargets(prev => ({ ...prev, completionRate: Number(e.target.value) }))}
                           />
                         </div>
                         <div className="space-y-1">
                           <label className="text-[10px]">Meta de Ocupação (%)</label>
-                          <Input 
-                            type="number" 
-                            className="h-7 text-xs" 
+                          <Input
+                            type="number"
+                            className="h-7 text-xs"
                             defaultValue={kpis.targets.occupancyRate}
                             onBlur={(e) => setCustomTargets(prev => ({ ...prev, occupancyRate: Number(e.target.value) }))}
                           />
                         </div>
                         <div className="space-y-1">
                           <label className="text-[10px]">Meta de Perda Máx (%)</label>
-                          <Input 
-                            type="number" 
-                            className="h-7 text-xs" 
+                          <Input
+                            type="number"
+                            className="h-7 text-xs"
                             defaultValue={kpis.targets.lossRate}
                             onBlur={(e) => setCustomTargets(prev => ({ ...prev, lossRate: Number(e.target.value) }))}
                           />
@@ -336,8 +336,8 @@ export default function KPIDashboard() {
             {/* Main Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
               {visibleKPIs.completion && (
-                <KPITooltip 
-                  title="Taxa de Conclusão" 
+                <KPITooltip
+                  title="Taxa de Conclusão"
                   description="Percentual de jobs finalizados em relação ao total."
                   formula="Jobs Concluídos / Total de Jobs"
                   target={`≥ ${kpis.targets.completionRate}%`}
@@ -376,8 +376,8 @@ export default function KPIDashboard() {
               )}
 
               {visibleKPIs.occupancy && (
-                <KPITooltip 
-                  title="Ocupação Média" 
+                <KPITooltip
+                  title="Ocupação Média"
                   description="Percentual médio de utilização das máquinas."
                   formula="Tempo em Uso / Tempo Disponível"
                   target={`≥ ${kpis.targets.occupancyRate}%`}
@@ -417,7 +417,7 @@ export default function KPIDashboard() {
 
               {visibleKPIs.loss && (
                 <KPITooltip {...KPI_DEFINITIONS.lossRate}>
-                  <Card 
+                  <Card
                     className="glass-card hover-scale group cursor-pointer"
                     onClick={() => handleDrillDown('TAXA DE PERDA', 'lost')}
                   >
@@ -519,24 +519,24 @@ export default function KPIDashboard() {
                       <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
                       <XAxis dataKey="date" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
                       <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
-                      <RechartsTooltip 
-                        contentStyle={{ 
-                          backgroundColor: 'hsl(var(--card))', 
+                      <RechartsTooltip
+                        contentStyle={{
+                          backgroundColor: 'hsl(var(--card))',
                           border: '1px solid hsl(var(--border))',
                           borderRadius: '8px'
-                        }} 
+                        }}
                       />
                       <Area type="monotone" dataKey="efficiency" stroke="#10B981" fillOpacity={1} fill="url(#colorEff)" name="Eficiência (%)" />
                       <Area type="monotone" dataKey="productivity" stroke="#06B6D4" fillOpacity={1} fill="url(#colorProd)" name="Produtividade (peças)" />
                       {/* Target line for efficiency */}
                       <Bar dataKey="none" /> {/* Spacer */}
-                      <Area 
-                        type="step" 
-                        dataKey={() => 85} 
-                        stroke="#94a3b8" 
-                        strokeDasharray="5 5" 
-                        fill="none" 
-                        name="Meta Eficiência (85%)" 
+                      <Area
+                        type="step"
+                        dataKey={() => 85}
+                        stroke="#94a3b8"
+                        strokeDasharray="5 5"
+                        fill="none"
+                        name="Meta Eficiência (85%)"
                       />
                     </AreaChart>
                   </ResponsiveContainer>
@@ -569,12 +569,12 @@ export default function KPIDashboard() {
                           <Cell key={`cell-${index}`} fill={entry.color} />
                         ))}
                       </Pie>
-                      <RechartsTooltip 
-                        contentStyle={{ 
-                          backgroundColor: 'hsl(var(--card))', 
+                      <RechartsTooltip
+                        contentStyle={{
+                          backgroundColor: 'hsl(var(--card))',
                           border: '1px solid hsl(var(--border))',
                           borderRadius: '8px'
-                        }} 
+                        }}
                       />
                       <Legend verticalAlign="bottom" height={36}/>
                     </PieChart>
@@ -637,8 +637,8 @@ export default function KPIDashboard() {
                         <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
                         <XAxis dataKey="date" fontSize={10} axisLine={false} tickLine={false} />
                         <YAxis fontSize={10} axisLine={false} tickLine={false} />
-                        <RechartsTooltip 
-                          contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px' }} 
+                        <RechartsTooltip
+                          contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px' }}
                         />
                         <Bar dataKey="estimatedVolume" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} name="Volume Estimado" />
                       </BarChart>
@@ -651,7 +651,7 @@ export default function KPIDashboard() {
                         <span className="text-xs font-bold uppercase tracking-wider">Insight da Semana</span>
                       </div>
                       <p className="text-xs text-muted-foreground leading-relaxed">
-                        Projeção indica um aumento de {Math.abs(kpis.comparison.volumeDiff).toFixed(1)}% na demanda. 
+                        Projeção indica um aumento de {Math.abs(kpis.comparison.volumeDiff).toFixed(1)}% na demanda.
                         Recomendado revisar manutenção preventiva para evitar gargalos em {kpis.predictions[2].date}.
                       </p>
                     </div>
@@ -708,9 +708,9 @@ export default function KPIDashboard() {
                     </div>
                     <div className="relative w-64">
                       <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                      <Input 
-                        placeholder="Filtrar máquinas..." 
-                        className="pl-8 h-9" 
+                      <Input
+                        placeholder="Filtrar máquinas..."
+                        className="pl-8 h-9"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                       />
@@ -734,8 +734,8 @@ export default function KPIDashboard() {
                         {kpis.productivityByMachine
                           .filter(m => m.machineName.toLowerCase().includes(searchTerm.toLowerCase()))
                           .map((machine) => (
-                          <tr 
-                            key={machine.machineId} 
+                          <tr
+                            key={machine.machineId}
                             className="border-b border-border/30 hover:bg-muted/10 transition-colors cursor-pointer group"
                             onClick={() => setSelectedMachine(machine)}
                           >
@@ -885,11 +885,11 @@ export default function KPIDashboard() {
                       <div className="relative h-24 w-24">
                         <svg className="h-24 w-24 transform -rotate-90">
                           <circle cx="48" cy="48" r="40" stroke="currentColor" strokeWidth="8" fill="transparent" className="text-muted/20" />
-                          <circle 
-                            cx="48" cy="48" r="40" stroke="currentColor" strokeWidth="8" fill="transparent" 
-                            strokeDasharray={251.2} 
-                            strokeDashoffset={251.2 * (1 - (100 - kpis.lossRate) / 100)} 
-                            className="text-green-500" 
+                          <circle
+                            cx="48" cy="48" r="40" stroke="currentColor" strokeWidth="8" fill="transparent"
+                            strokeDasharray={251.2}
+                            strokeDashoffset={251.2 * (1 - (100 - kpis.lossRate) / 100)}
+                            className="text-green-500"
                           />
                         </svg>
                         <div className="absolute inset-0 flex items-center justify-center flex-col">
@@ -958,14 +958,14 @@ export default function KPIDashboard() {
                         "p-2 rounded-lg",
                         anomaly.severity === 'high' ? "bg-primary/20" : "bg-amber-500/20"
                       )}>
-                        {anomaly.type === 'loss' ? <Percent className={cn("h-5 w-5", anomaly.severity === 'high' ? "text-primary" : "text-amber-500")} /> : 
-                         anomaly.type === 'delay' ? <Clock className={cn("h-5 w-5", anomaly.severity === 'high' ? "text-primary" : "text-amber-500")} /> : 
+                        {anomaly.type === 'loss' ? <Percent className={cn("h-5 w-5", anomaly.severity === 'high' ? "text-primary" : "text-amber-500")} /> :
+                         anomaly.type === 'delay' ? <Clock className={cn("h-5 w-5", anomaly.severity === 'high' ? "text-primary" : "text-amber-500")} /> :
                          <AlertTriangle className={cn("h-5 w-5", anomaly.severity === 'high' ? "text-primary" : "text-amber-500")} />}
                       </div>
                       <div className="flex-1">
                         <div className="flex items-center justify-between">
                           <h4 className="font-bold text-sm">
-                            {anomaly.type === 'loss' ? 'Perda Excessiva' : 
+                            {anomaly.type === 'loss' ? 'Perda Excessiva' :
                              anomaly.type === 'delay' ? 'Risco de Atraso' : 'Anomalia'}
                           </h4>
                           <span className="text-[10px] text-muted-foreground uppercase">Tempo real</span>
@@ -1014,7 +1014,7 @@ export default function KPIDashboard() {
             </div>
           </div>
         </DialogHeader>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-4">
           <div className="p-4 rounded-xl bg-muted/20 border border-border/30">
             <p className="text-xs text-muted-foreground uppercase mb-1">Total de Peças</p>
@@ -1054,11 +1054,11 @@ export default function KPIDashboard() {
       </DialogContent>
     </Dialog>
 
-    <DrillDownDialog 
-      open={drillDownOpen} 
-      onOpenChange={setDrillDownOpen} 
-      title={drillDownTitle} 
-      jobs={drillDownJobs} 
+    <DrillDownDialog
+      open={drillDownOpen}
+      onOpenChange={setDrillDownOpen}
+      title={drillDownTitle}
+      jobs={drillDownJobs}
       onExport={(format) => handleExport(format, drillDownTitle.replace(/\s+/g, '_'), kpis)}
     />
     </MainLayout>

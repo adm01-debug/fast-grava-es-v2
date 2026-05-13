@@ -66,11 +66,11 @@ interface CardSkeletonProps {
   className?: string;
 }
 
-export const CardSkeleton = memo(function CardSkeleton({ 
-  hasHeader = true, 
+export const CardSkeleton = memo(function CardSkeleton({
+  hasHeader = true,
   headerWidth = "w-40",
   contentHeight = "h-48",
-  className 
+  className
 }: CardSkeletonProps) {
   return (
     <Card className={cn("glass-card", className)}>
@@ -165,10 +165,10 @@ interface KanbanSkeletonProps {
   className?: string;
 }
 
-export const KanbanSkeleton = memo(function KanbanSkeleton({ 
-  columns = 5, 
+export const KanbanSkeleton = memo(function KanbanSkeleton({
+  columns = 5,
   cardsPerColumn = 3,
-  className 
+  className
 }: KanbanSkeletonProps) {
   return (
     <div className={cn("flex gap-4 overflow-x-auto pb-4", className)}>
@@ -241,10 +241,10 @@ export const ChartSkeleton = memo(function ChartSkeleton({ type = 'bar', classNa
         {type === 'bar' && (
           <div className="h-64 flex items-end gap-2 pt-4">
             {Array.from({ length: 8 }).map((_, i) => (
-              <Skeleton 
-                key={i} 
-                className="flex-1 rounded-t-md" 
-                style={{ height: `${Math.random() * 60 + 30}%` }} 
+              <Skeleton
+                key={i}
+                className="flex-1 rounded-t-md"
+                style={{ height: `${Math.random() * 60 + 30}%` }}
               />
             ))}
           </div>
@@ -282,7 +282,7 @@ export const WidgetGridSkeleton = memo(function WidgetGridSkeleton({ layout = 'd
       </div>
     );
   }
-  
+
   if (layout === 'efficiency') {
     return (
       <div className={cn("grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6", className)}>
@@ -294,7 +294,7 @@ export const WidgetGridSkeleton = memo(function WidgetGridSkeleton({ layout = 'd
       </div>
     );
   }
-  
+
   if (layout === 'kpi') {
     return (
       <div className={cn("space-y-6", className)}>
@@ -310,7 +310,7 @@ export const WidgetGridSkeleton = memo(function WidgetGridSkeleton({ layout = 'd
       </div>
     );
   }
-  
+
   return null;
 });
 

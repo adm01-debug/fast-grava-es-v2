@@ -22,7 +22,7 @@ export function SupplyList({ supplies, onUpdate }: SupplyListProps) {
           <div key={id} className="p-3 bg-background rounded border border-border/50 space-y-2">
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-2">
-                <Checkbox 
+                <Checkbox
                   id={`supply-${id}`}
                   checked={data.is_checked}
                   onCheckedChange={(checked) => onUpdate(id, { is_checked: !!checked })}
@@ -34,7 +34,7 @@ export function SupplyList({ supplies, onUpdate }: SupplyListProps) {
               <div className="flex items-center gap-3">
                 <div className="flex items-center gap-2">
                   <Label className="text-[10px] text-muted-foreground">Qtd:</Label>
-                  <Input 
+                  <Input
                     className="h-7 w-16 text-xs"
                     value={data.quantity}
                     onChange={(e) => onUpdate(id, { quantity: e.target.value })}
@@ -43,7 +43,7 @@ export function SupplyList({ supplies, onUpdate }: SupplyListProps) {
               </div>
             </div>
             <div className="flex items-center gap-2 pl-6">
-              <Checkbox 
+              <Checkbox
                 id={`alt-${id}`}
                 checked={data.alternative_used}
                 onCheckedChange={(checked) => onUpdate(id, { alternative_used: !!checked })}

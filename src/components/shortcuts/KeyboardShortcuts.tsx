@@ -50,15 +50,15 @@ export function KeyboardShortcutsProvider({ children }: { children: React.ReactN
       { keys: ["g", "o"], description: "Ir para Operadores", action: () => navigate("/operators"), category: "navigation" },
       { keys: ["g", "m"], description: "Ir para Máquinas", action: () => navigate("/machines"), category: "navigation" },
       { keys: ["g", "s"], description: "Ir para Configurações", action: () => navigate("/settings"), category: "navigation" },
-      
+
       // Actions
       { keys: ["n"], description: "Nova Ordem", action: () => navigate("/new-job"), category: "actions" },
       { keys: ["s"], description: "Abrir Scanner", action: () => navigate("/scanner"), category: "actions" },
-      
+
       // View
       { keys: ["t"], description: "Alternar Tema", action: () => setTheme(theme === "dark" ? "light" : "dark"), category: "view" },
       { keys: ["Escape"], description: "Fechar Modal/Dialog", action: () => {}, category: "view" },
-      
+
       // Help
       { keys: ["?"], description: "Mostrar Atalhos", action: () => setIsHelpOpen(true), category: "help" },
     ],

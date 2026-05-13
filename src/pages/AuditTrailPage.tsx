@@ -27,7 +27,7 @@ export default function AuditTrailPage() {
     <MainLayout>
       <div className="p-4 sm:p-6 lg:p-8 space-y-8 animate-fade-in">
         <Breadcrumbs />
-        
+
         <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 pb-2 border-b border-border/40">
           <div className="flex items-center gap-4">
             <div className="p-3 rounded-2xl bg-primary/10 border border-primary/20 shadow-glow-primary">

@@ -35,7 +35,7 @@ export function useOperatorDashboardData(dateRange?: DateRange) {
 
     // Filter by machine assignment if operator
     if (isOperator && assignedMachineIds) {
-      filtered = filtered.filter(j => 
+      filtered = filtered.filter(j =>
         j.machine_id && assignedMachineIds.includes(j.machine_id)
       );
     }
@@ -44,7 +44,7 @@ export function useOperatorDashboardData(dateRange?: DateRange) {
     if (dateRange?.from) {
       const from = startOfDay(dateRange.from);
       const to = dateRange.to ? endOfDay(dateRange.to) : endOfDay(dateRange.from);
-      
+
       filtered = filtered.filter(j => {
         if (!j.scheduled_date) return false;
         try {

@@ -30,7 +30,7 @@ export function CreateGoalModal({ open, onOpenChange, defaultOperatorId }: Creat
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.operator_id) {
       return;
     }
@@ -134,8 +134,8 @@ export function CreateGoalModal({ open, onOpenChange, defaultOperatorId }: Creat
             <Label>Tipo de Meta</Label>
             <Select
               value={formData.goal_type}
-              onValueChange={(value: GoalType) => setFormData(prev => ({ 
-                ...prev, 
+              onValueChange={(value: GoalType) => setFormData(prev => ({
+                ...prev,
                 goal_type: value,
                 target_value: getDefaultValue(value),
               }))}

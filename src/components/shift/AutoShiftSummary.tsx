@@ -6,8 +6,8 @@ import { useOperatorDashboardData } from '@/hooks/useOperatorDashboardData';
 import { useSchedulingData } from '@/hooks/useSchedulingData';
 import { exportShiftReportPDF } from '@/lib/shiftReportPdf';
 import { toast } from 'sonner';
-import { 
-  FileText, CheckCircle2, AlertTriangle, Clock, 
+import {
+  FileText, CheckCircle2, AlertTriangle, Clock,
   TrendingUp, Printer, FileDown
 } from 'lucide-react';
 import { format } from 'date-fns';

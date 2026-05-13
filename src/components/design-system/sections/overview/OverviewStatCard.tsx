@@ -68,7 +68,6 @@ const playConfettiSound = () => {
       sparkle.stop(now + i * 0.05 + 0.2);
     }
   } catch {
-    if (import.meta.env.DEV) 
   }
 };
 

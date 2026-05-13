@@ -65,21 +65,21 @@ function calculateSetupSavings(currentChanges: number, optimizedChanges: number,
 function generateTimeSlots(startHour: number, jobs: DbJob[]): { jobId: string; startTime: string; endTime: string }[] {
   const slots: { jobId: string; startTime: string; endTime: string }[] = [];
   let currentMinutes = startHour * 60;
-  
+
   for (const job of jobs) {
     const startHours = Math.floor(currentMinutes / 60);
     const startMins = currentMinutes % 60;
     const startTime = `${String(startHours).padStart(2, '0')}:${String(startMins).padStart(2, '0')}`;
-    
+
     currentMinutes += job.estimated_duration;
-    
+
     const endHours = Math.floor(currentMinutes / 60);
     const endMins = currentMinutes % 60;
     const endTime = `${String(endHours).padStart(2, '0')}:${String(endMins).padStart(2, '0')}`;
-    
+
     slots.push({ jobId: job.id, startTime, endTime });
   }
-  
+
   return slots;
 }
 
@@ -94,23 +94,23 @@ export function useSmartSequencingWithActions() {
     mutationFn: async (suggestion: SequencingSuggestion): Promise<ApplySequencingResult> => {
       try {
         const timeSlots = generateTimeSlots(7, suggestion.optimizedSequence); // Start at 07:00
-        
+
         // Execute all updates in parallel
         const results = await Promise.all(
           timeSlots.map(async (slot) => {
             const { error } = await supabase
               .from('jobs')
-              .update({ 
+              .update({
                 start_time: slot.startTime,
-                end_time: slot.endTime 
+                end_time: slot.endTime
               })
               .eq('id', slot.jobId);
-            
+
             if (error) throw error;
             return slot;
           })
         );
-        
+
         return {
           machineId: suggestion.machineId,
           machineName: suggestion.machineName,
@@ -119,7 +119,6 @@ export function useSmartSequencingWithActions() {
         };
       } catch (error) {
         const appError = createAppError(error, SEQUENCING_ERROR_CONTEXT.applySequencing);
-        if (import.meta.env.DEV) 
         throw error;
       }
     },
@@ -142,22 +141,22 @@ export function useSmartSequencingWithActions() {
         suggestions.map(async (suggestion): Promise<ApplySequencingResult | null> => {
           try {
             const timeSlots = generateTimeSlots(7, suggestion.optimizedSequence);
-            
+
             // Execute all slot updates in parallel for this suggestion
             await Promise.all(
               timeSlots.map(async (slot) => {
                 const { error } = await supabase
                   .from('jobs')
-                  .update({ 
+                  .update({
                     start_time: slot.startTime,
-                    end_time: slot.endTime 
+                    end_time: slot.endTime
                   })
                   .eq('id', slot.jobId);
-                
+
                 if (error) throw error;
               })
             );
-            
+
             return {
               machineId: suggestion.machineId,
               machineName: suggestion.machineName,
@@ -166,18 +165,17 @@ export function useSmartSequencingWithActions() {
             };
           } catch (error) {
             const appError = createAppError(error, SEQUENCING_ERROR_CONTEXT.applyAllSequencing);
-            if (import.meta.env.DEV) 
             return null;
           }
         })
       );
-      
+
       // Filter out failed results
       return results.filter((r): r is ApplySequencingResult => r !== null);
     },
     onSuccess: (results) => {
       queryClient.invalidateQueries({ queryKey: ['jobs'] });
-      
+
       if (results.length > 0) {
         const totalJobs = results.reduce((sum, r) => sum + r.appliedJobs, 0);
         const totalSavings = results.reduce((sum, r) => sum + r.estimatedSavings, 0);
@@ -198,28 +196,27 @@ export function useSmartSequencingWithActions() {
 
     const result: SequencingSuggestion[] = [];
     const today = new Date();
-    
+
     if (!today || isNaN(today.getTime())) {
-      if (import.meta.env.DEV) 
       return [];
     }
-    
+
     today.setHours(0, 0, 0, 0);
     const tomorrow = new Date(today);
     tomorrow.setDate(tomorrow.getDate() + 1);
     let suggestionId = 0;
 
     const jobsByMachine = new Map<string, DbJob[]>();
-    
+
     jobs.forEach(job => {
       if (!job.machine_id || !job.scheduled_date) return;
       if (!['scheduled', 'ready', 'queue'].includes(job.status)) return;
-      
+
       const jobDate = new Date(job.scheduled_date);
       if (isNaN(jobDate.getTime())) return;
-      
+
       jobDate.setHours(0, 0, 0, 0);
-      
+
       if (jobDate < today || jobDate > tomorrow) return;
 
       const existing = jobsByMachine.get(job.machine_id) || [];
@@ -236,7 +233,7 @@ export function useSmartSequencingWithActions() {
       const technique = techniques.find(t => t.id === machine.technique_id);
       if (!technique) return;
 
-      const currentSequence = [...machineJobs].sort((a, b) => 
+      const currentSequence = [...machineJobs].sort((a, b) =>
         (a.start_time || '').localeCompare(b.start_time || '')
       );
 
@@ -265,7 +262,7 @@ export function useSmartSequencingWithActions() {
       // Calculate complexity and priority score
       const colorComplexity = colorGroups.size;
       const setupComplexity = colorComplexity > 5 ? 'high' : colorComplexity > 3 ? 'medium' : 'low';
-      
+
       const urgentJobsCount = machineJobs.filter(j => j.priority === 'urgent').length;
       const highPriorityJobsCount = machineJobs.filter(j => j.priority === 'high').length;
       const aiPriorityScore = Math.min(100, (urgentJobsCount * 30) + (highPriorityJobsCount * 15) + (machineJobs.length * 5));
@@ -275,12 +272,12 @@ export function useSmartSequencingWithActions() {
       const estimatedSavings = calculateSetupSavings(currentChanges, optimizedChanges, technique.setup_time);
       const totalMinutes = optimizedSequence.reduce((acc, job) => acc + (job.estimated_duration || 0), 0);
       const totalQuantity = optimizedSequence.reduce((acc, job) => acc + (job.quantity || 0), 0);
-      
+
       // Use dynamic thresholds from technique
       const lowT = technique.low_threshold || 300;
       const medT = technique.medium_threshold || 480;
       const highT = technique.high_threshold || 600;
-      
+
       const bottleneckRisk = totalMinutes > medT ? 'high' : totalMinutes > lowT ? 'medium' : 'low';
 
       if (estimatedSavings > 0) {

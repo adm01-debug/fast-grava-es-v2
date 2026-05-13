@@ -40,7 +40,7 @@ export function useNotifications(options?: { limit?: number; unreadOnly?: boolea
           .eq('user_id', user.id)
           .order('created_at', { ascending: false })
           .limit(limit);
-        
+
         if (!data || data.length === 0) {
           return EMPTY_NOTIFICATIONS;
         }
@@ -52,8 +52,8 @@ export function useNotifications(options?: { limit?: number; unreadOnly?: boolea
             id: `push-${n.id}`,
             title: n.title,
             message: n.body,
-            type: (metadata.severity === 'critical' ? 'urgent' : 
-                   metadata.severity === 'warning' ? 'warning' : 
+            type: (metadata.severity === 'critical' ? 'urgent' :
+                   metadata.severity === 'warning' ? 'warning' :
                    metadata.severity === 'success' ? 'success' : 'info') as any,
             category: metadata.type || null,
             source_system: metadata.source || 'push',
@@ -85,7 +85,7 @@ export function useNotifications(options?: { limit?: number; unreadOnly?: boolea
           .select('*', { count: 'exact', head: true })
           .eq('user_id', user.id)
           .neq('status', 'read');
-        
+
         return count || 0;
       } catch (error) {
         return 0;
@@ -134,11 +134,11 @@ export function useNotifications(options?: { limit?: number; unreadOnly?: boolea
 
   useEffect(() => {
     let channel: ReturnType<typeof supabase.channel> | null = null;
-    
+
     const setupRealtime = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
-      
+
       channel = supabase.channel('notifications-realtime').on('postgres_changes', {
         event: 'INSERT', schema: 'public', table: 'push_notifications', filter: `user_id=eq.${user.id}`,
       }, (payload) => {
@@ -148,7 +148,7 @@ export function useNotifications(options?: { limit?: number; unreadOnly?: boolea
       }).subscribe();
     };
     setupRealtime();
-    
+
     return () => {
       if (channel) supabase.removeChannel(channel);
     };
@@ -163,7 +163,6 @@ export function useNotifications(options?: { limit?: number; unreadOnly?: boolea
 
 // Helper function for status change notifications
 export function notifyStatusChange(clientName: string, oldStatus: string, newStatus: string) {
-  if (import.meta.env.DEV) 
   // The system uses Postgres listeners in InAppNotificationWatcher and NotificationIntegrator
   // to trigger UI updates and push notifications automatically.
 }

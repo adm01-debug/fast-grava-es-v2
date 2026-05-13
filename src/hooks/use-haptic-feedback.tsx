@@ -74,7 +74,7 @@ export function useHapticButton(pattern: HapticPattern = 'light') {
 // Higher-order component style hook for any interactive element
 export function useHapticInteraction<T extends HTMLElement>(pattern: HapticPattern = 'light') {
   const { trigger } = useHapticFeedback();
-  
+
   const ref = React.useRef<T>(null);
 
   React.useEffect(() => {

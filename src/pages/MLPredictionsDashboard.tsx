@@ -23,7 +23,7 @@ export default function MLPredictionsDashboard() {
     getRiskLevel,
     getPredictionTypeLabel,
   } = useMLPredictions();
-  
+
   // Initialize ML prediction notifications listener
   useMLPredictionNotifications();
 
@@ -51,7 +51,7 @@ export default function MLPredictionsDashboard() {
 
       <div className="space-y-6">
         <Breadcrumbs />
-        
+
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
@@ -74,7 +74,7 @@ export default function MLPredictionsDashboard() {
                 <MLNotificationSettings />
               </SheetContent>
             </Sheet>
-            <Button 
+            <Button
               onClick={() => generatePredictions.mutate(undefined)}
               disabled={generatePredictions.isPending}
               className="gap-2"

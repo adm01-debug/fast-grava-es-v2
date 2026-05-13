@@ -16,7 +16,7 @@ export async function exportExecutiveDashboardPDF(options: PDFExportOptions): Pr
   const { default: jsPDF } = await import('jspdf');
   const { default: autoTable } = await import('jspdf-autotable');
   const { title, subtitle, dateRange, kpis, companyName = 'Fast Gravações' } = options;
-  
+
   const doc = new jsPDF({
     orientation: 'portrait',
     unit: 'mm',
@@ -31,16 +31,16 @@ export async function exportExecutiveDashboardPDF(options: PDFExportOptions): Pr
   // Header
   doc.setFillColor(15, 23, 42); // Dark blue
   doc.rect(0, 0, pageWidth, 40, 'F');
-  
+
   doc.setTextColor(255, 255, 255);
   doc.setFontSize(24);
   doc.setFont('helvetica', 'bold');
   doc.text(companyName, margin, 20);
-  
+
   doc.setFontSize(14);
   doc.setFont('helvetica', 'normal');
   doc.text(title, margin, 30);
-  
+
   // Date range
   doc.setFontSize(10);
   const dateText = `Período: ${format(dateRange.start, 'dd/MM/yyyy', { locale: ptBR })} - ${format(dateRange.end, 'dd/MM/yyyy', { locale: ptBR })}`;
@@ -53,7 +53,7 @@ export async function exportExecutiveDashboardPDF(options: PDFExportOptions): Pr
 
   // Section: Production KPIs
   yPosition = addSection(doc, 'Indicadores de Produção', yPosition, margin);
-  
+
   const productionData = [
     ['Jobs Concluídos', kpis.totalJobsCompleted.toString()],
     ['Jobs em Andamento', kpis.totalJobsInProgress.toString()],
@@ -77,7 +77,7 @@ export async function exportExecutiveDashboardPDF(options: PDFExportOptions): Pr
 
   // Section: Machine KPIs
   yPosition = addSection(doc, 'Indicadores de Máquinas', yPosition, margin);
-  
+
   const machineData = [
     ['Total de Máquinas', kpis.totalMachines.toString()],
     ['Máquinas Ativas', kpis.activeMachines.toString()],
@@ -98,7 +98,7 @@ export async function exportExecutiveDashboardPDF(options: PDFExportOptions): Pr
 
   // Section: Quality KPIs
   yPosition = addSection(doc, 'Indicadores de Qualidade', yPosition, margin);
-  
+
   const qualityData = [
     ['Taxa de Qualidade', `${kpis.qualityRate.toFixed(1)}%`],
     ['Taxa de Defeitos', `${kpis.defectRate.toFixed(2)}%`],
@@ -124,7 +124,7 @@ export async function exportExecutiveDashboardPDF(options: PDFExportOptions): Pr
 
   // Section: Maintenance KPIs
   yPosition = addSection(doc, 'Indicadores de Manutenção', yPosition, margin);
-  
+
   const maintenanceData = [
     ['Manutenções Concluídas', kpis.maintenanceCompleted.toString()],
     ['Manutenções Pendentes', kpis.maintenancePending.toString()],
@@ -151,7 +151,7 @@ export async function exportExecutiveDashboardPDF(options: PDFExportOptions): Pr
     }
 
     yPosition = addSection(doc, 'Top Operadores', yPosition, margin);
-    
+
     const operatorData = kpis.topOperators.map((op, i) => [
       `${i + 1}º`,
       op.name,
@@ -180,7 +180,7 @@ export async function exportExecutiveDashboardPDF(options: PDFExportOptions): Pr
     }
 
     yPosition = addSection(doc, 'Distribuição por Técnica', yPosition, margin);
-    
+
     const techniqueData = kpis.techniqueDistribution.map(t => [
       t.technique,
       t.count.toString(),
@@ -207,7 +207,7 @@ export async function exportExecutiveDashboardPDF(options: PDFExportOptions): Pr
     }
 
     yPosition = addSection(doc, 'Performance das Máquinas', yPosition, margin);
-    
+
     const performanceData = kpis.machinePerformance.map(m => [
       m.machine,
       `${m.utilization.toFixed(1)}%`,
@@ -249,10 +249,10 @@ function addSection(doc: InstanceType<typeof import('jspdf').default>, title: st
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(30, 41, 59);
   doc.text(title, margin, yPosition);
-  
+
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(0, 0, 0);
-  
+
   return yPosition + 8;
 }
 
@@ -276,7 +276,7 @@ export async function exportProductionReport(
   // Header
   doc.setFillColor(15, 23, 42);
   doc.rect(0, 0, pageWidth, 30, 'F');
-  
+
   doc.setTextColor(255, 255, 255);
   doc.setFontSize(18);
   doc.setFont('helvetica', 'bold');
@@ -288,7 +288,7 @@ export async function exportProductionReport(
 
   // Jobs table
   doc.setTextColor(0, 0, 0);
-  
+
   const jobsData = jobs.map(job => [
     job.order_number,
     job.client,
@@ -331,7 +331,7 @@ export async function exportLossesReport(
 ): Promise<void> {
   const { default: jsPDF } = await import('jspdf');
   const { default: autoTable } = await import('jspdf-autotable');
-  
+
   const doc = new jsPDF({
     orientation: 'portrait',
     unit: 'mm',
@@ -344,7 +344,7 @@ export async function exportLossesReport(
   // Header
   doc.setFillColor(239, 68, 68); // Red for losses
   doc.rect(0, 0, pageWidth, 30, 'F');
-  
+
   doc.setTextColor(255, 255, 255);
   doc.setFontSize(18);
   doc.setFont('helvetica', 'bold');
@@ -356,7 +356,7 @@ export async function exportLossesReport(
 
   // Losses table
   doc.setTextColor(0, 0, 0);
-  
+
   const lossesData = jobs.map(job => [
     job.order_number || job.id.slice(0, 8),
     job.product_name || 'Produto',
@@ -386,7 +386,7 @@ export async function exportDelaysReport(
 ): Promise<void> {
   const { default: jsPDF } = await import('jspdf');
   const { default: autoTable } = await import('jspdf-autotable');
-  
+
   const doc = new jsPDF({
     orientation: 'portrait',
     unit: 'mm',
@@ -399,7 +399,7 @@ export async function exportDelaysReport(
   // Header
   doc.setFillColor(245, 158, 11); // Amber for delays
   doc.rect(0, 0, pageWidth, 30, 'F');
-  
+
   doc.setTextColor(255, 255, 255);
   doc.setFontSize(18);
   doc.setFont('helvetica', 'bold');
@@ -411,7 +411,7 @@ export async function exportDelaysReport(
 
   // Delays table
   doc.setTextColor(0, 0, 0);
-  
+
   const delaysData = jobs.map(job => [
     job.order_number || job.id.slice(0, 8),
     job.product_name || 'Produto',

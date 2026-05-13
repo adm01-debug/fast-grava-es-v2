@@ -56,8 +56,8 @@ export function TPMAlertsPanel({ alerts, onResolve, onStartMaintenance }: TPMAle
           const Icon = config.icon;
 
           return (
-            <div 
-              key={alert.id} 
+            <div
+              key={alert.id}
               className={`p-4 rounded-lg border border-border/50 ${
                 alert.alert_type === 'critical' ? 'bg-primary/5 border-primary/30' : 'bg-card/50'
               }`}
@@ -68,16 +68,16 @@ export function TPMAlertsPanel({ alerts, onResolve, onStartMaintenance }: TPMAle
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
-                    <Badge 
+                    <Badge
                       variant={alert.alert_type === 'critical' ? 'destructive' : 'secondary'}
                       className="text-xs"
                     >
                       {config.label}
                     </Badge>
                     <span className="text-xs text-muted-foreground">
-                      {formatDistanceToNow(new Date(alert.created_at), { 
-                        addSuffix: true, 
-                        locale: ptBR 
+                      {formatDistanceToNow(new Date(alert.created_at), {
+                        addSuffix: true,
+                        locale: ptBR
                       })}
                     </span>
                   </div>
@@ -90,16 +90,16 @@ export function TPMAlertsPanel({ alerts, onResolve, onStartMaintenance }: TPMAle
                 </div>
               </div>
               <div className="flex gap-2 mt-3 ml-11">
-                <Button 
-                  size="sm" 
+                <Button
+                  size="sm"
                   variant="default"
                   onClick={() => onStartMaintenance(alert.schedule_id)}
                 >
                   <Wrench className="h-3 w-3 mr-1" />
                   Iniciar
                 </Button>
-                <Button 
-                  size="sm" 
+                <Button
+                  size="sm"
                   variant="outline"
                   onClick={() => onResolve(alert.id)}
                 >

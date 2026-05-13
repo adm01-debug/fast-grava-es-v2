@@ -55,7 +55,7 @@ export function ExecutionDetailsModal({ isOpen, onClose, recordId }: ExecutionDe
   const validationErrors = useMemo(() => {
     if (!record) return [];
     const errors: string[] = [];
-    
+
     record.responses?.forEach((r: unknown) => {
       if (!r.is_checked && r.item?.is_critical) {
         errors.push(`Item Crítico Incompleto: ${r.item.description}`);
@@ -77,7 +77,7 @@ export function ExecutionDetailsModal({ isOpen, onClose, recordId }: ExecutionDe
 
   const handleApprove = async () => {
     if (!recordId || !user) return;
-    
+
     if (validationErrors.length > 0) {
       toast.error("Não é possível aprovar", {
         description: `Existem ${validationErrors.length} pendências que precisam ser corrigidas.`
@@ -120,11 +120,11 @@ export function ExecutionDetailsModal({ isOpen, onClose, recordId }: ExecutionDe
     try {
       const zip = new JSZip();
       const folder = zip.folder(`execucao_${record.id.substring(0, 8)}`);
-      
+
       // Photos
       const photosFolder = folder?.folder("fotos");
       const photoResponses = record.responses.filter((r: unknown) => r.photo_url);
-      
+
       for (let i = 0; i < photoResponses.length; i++) {
         const resp = photoResponses[i];
         try {
@@ -170,7 +170,7 @@ export function ExecutionDetailsModal({ isOpen, onClose, recordId }: ExecutionDe
       link.click();
       toast.success("PDF gerado com sucesso via servidor");
     } catch (e) {
-      
+
       toast.error("Erro ao gerar PDF profissional. Usando impressão padrão...");
       window.print();
     } finally {
@@ -180,7 +180,7 @@ export function ExecutionDetailsModal({ isOpen, onClose, recordId }: ExecutionDe
 
   const handleExportCSV = () => {
     if (!record) return;
-    
+
     const rows = [
       ['Campo', 'Valor'],
       ['ID', record.id],
@@ -334,7 +334,7 @@ export function ExecutionDetailsModal({ isOpen, onClose, recordId }: ExecutionDe
                     <p className="text-xs">Emissão: {format(new Date(), 'dd/MM/yyyy HH:mm')}</p>
                   </div>
                 </div>
-                
+
                 <div className="grid grid-cols-2 gap-4 text-left border p-4 rounded-lg mb-4">
                   <div>
                     <p className="text-[10px] text-muted-foreground uppercase font-bold">Operador/Técnico</p>
@@ -420,9 +420,9 @@ export function ExecutionDetailsModal({ isOpen, onClose, recordId }: ExecutionDe
                     <Package className="h-5 w-5 text-primary" />
                     Insumos e Consumíveis (OS)
                   </h3>
-                  <ExecutionSupplies 
-                    suppliesUsed={record.supplies_used} 
-                    technicalSheet={record.technical_sheet} 
+                  <ExecutionSupplies
+                    suppliesUsed={record.supplies_used}
+                    technicalSheet={record.technical_sheet}
                   />
                 </div>
               )}
@@ -472,9 +472,9 @@ export function ExecutionDetailsModal({ isOpen, onClose, recordId }: ExecutionDe
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {record.quality_responses.map((resp: unknown) => {
                       const sheet = record.technical_sheet_id ? record.technical_sheet : null;
-                      const crit = record.adjustment_parameters?.quality_checklist?.find((c: unknown) => c.id === resp.id) || 
+                      const crit = record.adjustment_parameters?.quality_checklist?.find((c: unknown) => c.id === resp.id) ||
                                    (record.technical_sheet?.quality_checklist?.find((c: unknown) => c.id === resp.id));
-                      
+
                       return (
                         <div key={resp.id} className={`p-3 rounded-lg border ${resp.confirmed ? 'bg-emerald-500/5 border-emerald-500/10' : 'bg-rose-500/5 border-rose-500/10'}`}>
                           <div className="flex items-center gap-3">
@@ -562,7 +562,7 @@ export function ExecutionDetailsModal({ isOpen, onClose, recordId }: ExecutionDe
                   <div className="hidden print:block mt-6 border p-4 rounded-lg">
                     <h4 className="text-xs font-bold uppercase mb-2">Observações e Notas Técnicas</h4>
                     <p className="text-sm min-h-[60px]">{record.notes || 'Sem observações adicionais.'}</p>
-                    
+
                     <div className="grid grid-cols-2 gap-8 mt-12">
                       <div className="border-t pt-2 text-center">
                         <p className="text-[10px] uppercase">Assinatura do Técnico</p>
@@ -650,7 +650,7 @@ export function ExecutionDetailsModal({ isOpen, onClose, recordId }: ExecutionDe
                     <div className="flex flex-col items-center md:items-end gap-3">
                       {isRequestingCorrection ? (
                         <div className="w-full max-w-sm space-y-3 animate-in fade-in zoom-in-95">
-                          <Textarea 
+                          <Textarea
                             placeholder="Descreva o que precisa ser corrigido..."
                             value={correctionNotes}
                             onChange={(e) => setCorrectionNotes(e.target.value)}
@@ -666,8 +666,8 @@ export function ExecutionDetailsModal({ isOpen, onClose, recordId }: ExecutionDe
                           <Button variant="outline" onClick={() => setIsRequestingCorrection(true)} className="text-destructive hover:bg-destructive/5 gap-2">
                             <AlertTriangle className="h-4 w-4" /> Solicitar Correção
                           </Button>
-                          <Button 
-                            onClick={handleApprove} 
+                          <Button
+                            onClick={handleApprove}
                             disabled={validationErrors.length > 0}
                             className="bg-emerald-600 hover:bg-emerald-700 gap-2 shadow-glow-success"
                           >
@@ -686,9 +686,9 @@ export function ExecutionDetailsModal({ isOpen, onClose, recordId }: ExecutionDe
             </div>
           )}
         </ScrollArea>
-        
+
         <Separator />
-        
+
         <DialogFooter className="p-4 bg-muted/30">
           <Button variant="outline" onClick={onClose}>Fechar</Button>
         </DialogFooter>

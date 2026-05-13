@@ -288,7 +288,7 @@ export function ShadowsSection() {
             <div className="border-t border-border" />
             <p className="text-xs font-mono text-muted-foreground">.border-t .border-border</p>
           </div>
-          
+
           <div className="space-y-2">
             <p className="text-sm font-medium">Com margem (divide-y)</p>
             <div className="divide-y divide-border">

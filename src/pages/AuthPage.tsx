@@ -25,7 +25,7 @@ export default function AuthPage() {
   const { t } = useTranslation();
   const { signIn, signUp, user } = useAuth();
   const { theme, setTheme } = useTheme();
-  
+
   const loginSchema = z.object({ email: z.string().email(t('auth.invalidEmail')), password: z.string().min(6, t('auth.passwordMinLength', { min: 6 })) });
   const signupSchema = z.object({ fullName: z.string().min(2, t('validation.minLength', { min: 2 })), email: z.string().email(t('auth.invalidEmail')), password: z.string().min(6, t('auth.passwordMinLength', { min: 6 })), confirmPassword: z.string() }).refine(data => data.password === data.confirmPassword, { message: t('auth.passwordMismatch'), path: ['confirmPassword'] });
 

@@ -11,10 +11,10 @@ vi.mock('@/hooks/useWebAuthn', () => ({
 
 describe('PasskeyLoginButton', () => {
   const mockAuthenticateWithPasskey = vi.fn();
-  
+
   beforeEach(() => {
     vi.clearAllMocks();
-    
+
     // Default mock implementation
     (useWebAuthn as any).mockReturnValue({
       isSupported: true,
@@ -62,11 +62,11 @@ describe('PasskeyLoginButton', () => {
   it('calls authenticateWithPasskey when clicked', async () => {
     mockAuthenticateWithPasskey.mockResolvedValue({ success: true, userId: 'user-123' });
     const onSuccess = vi.fn();
-    
+
     await act(async () => {
       render(<PasskeyLoginButton onSuccess={onSuccess} />);
     });
-    
+
     const button = screen.getByRole('button');
     await act(async () => {
       button.click();
@@ -85,7 +85,7 @@ describe('PasskeyLoginButton', () => {
     (global.PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable as any).mockReturnValue(promise);
 
     const { unmount } = render(<PasskeyLoginButton />);
-    
+
     // Unmount before promise resolves
     unmount();
 

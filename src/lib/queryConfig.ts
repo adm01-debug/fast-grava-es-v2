@@ -43,43 +43,43 @@ export function shouldRetry(error: unknown): boolean {
   // Don't retry on 4xx errors (client errors) except 408 (timeout) and 429 (rate limit)
   if (error instanceof Error) {
     const message = error.message.toLowerCase();
-    
+
     // Network errors - always retry
     if (message.includes('network') || message.includes('fetch')) {
       return true;
     }
-    
+
     // Timeout errors - retry
     if (message.includes('timeout') || message.includes('408')) {
       return true;
     }
-    
+
     // Rate limit - retry with backoff
     if (message.includes('rate limit') || message.includes('429') || message.includes('too many')) {
       return true;
     }
-    
+
     // Server errors (5xx) - retry
     if (message.includes('500') || message.includes('502') || message.includes('503') || message.includes('504')) {
       return true;
     }
-    
+
     // Auth errors - don't retry
     if (message.includes('401') || message.includes('403') || message.includes('unauthorized') || message.includes('forbidden')) {
       return false;
     }
-    
+
     // Not found - don't retry
     if (message.includes('404') || message.includes('not found')) {
       return false;
     }
-    
+
     // Validation errors - don't retry
     if (message.includes('400') || message.includes('422') || message.includes('validation')) {
       return false;
     }
   }
-  
+
   // Default: retry up to max retries
   return true;
 }
@@ -147,10 +147,10 @@ export const MAX_PAGE_SIZE = 200;
 export function calculateRange(page: number, pageSize: number): { from: number; to: number } {
   const validPage = Math.max(1, page);
   const validPageSize = Math.min(Math.max(1, pageSize), MAX_PAGE_SIZE);
-  
+
   const from = (validPage - 1) * validPageSize;
   const to = from + validPageSize - 1;
-  
+
   return { from, to };
 }
 
@@ -164,7 +164,7 @@ export function createPaginatedResult<T>(
   pageSize: number
 ): PaginatedResult<T> {
   const totalPages = Math.ceil(totalCount / pageSize);
-  
+
   return {
     data,
     totalCount,

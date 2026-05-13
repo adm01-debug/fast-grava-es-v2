@@ -68,14 +68,14 @@ export function OptimizationAssistant({ utilizationByMachine, machineCount }: Op
                   <div className="flex justify-between text-xs font-medium">
                     <span className="text-muted-foreground">Ocupação Média do Dia</span>
                     <span className={cn(
-                      averageUtilization > 0.8 ? "text-orange-400" : 
+                      averageUtilization > 0.8 ? "text-orange-400" :
                       averageUtilization > 0.5 ? "text-green-400" : "text-blue-400"
                     )}>
                       {Math.round(averageUtilization * 100)}%
                     </span>
                   </div>
                   <div className="h-2 w-full bg-muted/30 rounded-full overflow-hidden">
-                    <motion.div 
+                    <motion.div
                       initial={{ width: 0 }}
                       animate={{ width: `${averageUtilization * 100}%` }}
                       className={cn(
@@ -113,7 +113,7 @@ export function OptimizationAssistant({ utilizationByMachine, machineCount }: Op
                     SUGESTÃO DE IA
                   </div>
                   <p className="text-[11px] text-muted-foreground leading-relaxed">
-                    {lowUtilization.length > 0 
+                    {lowUtilization.length > 0
                       ? "Distribua 15% da carga dos gargalos para as máquinas ociosas para equilibrar o fluxo."
                       : "Sequencie jobs por cor para reduzir o tempo de setup em 25 minutos estimados hoje."}
                   </p>

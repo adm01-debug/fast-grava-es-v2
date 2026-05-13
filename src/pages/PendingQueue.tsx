@@ -11,11 +11,11 @@ import { StatusBadge } from "@/components/ui/status-badge";
 import { JobDetailsModal } from "@/components/jobs/JobDetailsModal";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MainLayout } from "@/components/layout/MainLayout";
-import { 
-  Search, 
-  Filter, 
-  Clock, 
-  AlertTriangle, 
+import {
+  Search,
+  Filter,
+  Clock,
+  AlertTriangle,
   Calendar,
   Package,
   ArrowUpDown,
@@ -123,9 +123,9 @@ export default function PendingQueue() {
   }, [balancingSuggestions]);
 
   // Fetch real data from Supabase
-  const { 
-    jobs, 
-    techniques, 
+  const {
+    jobs,
+    techniques,
     isLoading: isLoadingJobs,
     isLoadingTechniques,
     getTechniqueById,
@@ -157,7 +157,7 @@ export default function PendingQueue() {
       })
       .sort((a, b) => {
         let comparison = 0;
-        
+
         switch (sortField) {
           case 'orderNumber':
             comparison = a.order_number.localeCompare(b.order_number);
@@ -205,8 +205,8 @@ export default function PendingQueue() {
 
   const SortIcon = ({ field }: { field: SortField }) => {
     if (sortField !== field) return <ArrowUpDown className="h-4 w-4 opacity-50" />;
-    return sortDirection === 'asc' 
-      ? <ChevronUp className="h-4 w-4" /> 
+    return sortDirection === 'asc'
+      ? <ChevronUp className="h-4 w-4" />
       : <ChevronDown className="h-4 w-4" />;
   };
 
@@ -214,7 +214,7 @@ export default function PendingQueue() {
   const stats = useMemo(() => {
     const now = new Date();
     const stuckThreshold = subHours(now, 4);
-    
+
     return {
       total: filteredJobs.length,
       urgent: filteredJobs.filter(j => j.priority === 'urgent').length,
@@ -274,23 +274,23 @@ export default function PendingQueue() {
         if (error) throw error;
         toast.success(`${selectedJobs.size} jobs excluídos`);
       } else {
-        const updateData: Record<string, any> = { 
+        const updateData: Record<string, any> = {
           status: action,
           updated_at: new Date().toISOString()
         };
         if (action === 'production') {
           updateData.actual_start_time = new Date().toISOString();
         }
-        
+
         const { error } = await supabase.from('jobs').update(updateData).in('id', Array.from(selectedJobs));
         if (error) throw error;
         toast.success(`${selectedJobs.size} jobs movidos para "${action === 'production' ? 'Em Produção' : 'No Jeito'}"`);
       }
-      
+
       setSelectedJobs(new Set());
       queryClient.invalidateQueries({ queryKey: ['jobs'] });
     } catch (error) {
-      
+
       toast.error('Erro ao processar ação em massa');
     }
   };
@@ -313,26 +313,26 @@ export default function PendingQueue() {
 
   return (
     <MainLayout>
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
         className="min-h-screen bg-background p-4 sm:p-6 space-y-4 sm:space-y-6"
       >
         <Breadcrumbs />
-        
-        <JobDetailsModal 
-          job={selectedJob} 
-          open={isModalOpen} 
-          onOpenChange={setIsModalOpen} 
+
+        <JobDetailsModal
+          job={selectedJob}
+          open={isModalOpen}
+          onOpenChange={setIsModalOpen}
         />
 
-        <AISuggestionDetails 
-          isOpen={isAISidePanelOpen} 
-          onOpenChange={setIsAISidePanelOpen} 
-          suggestion={selectedAISuggestion} 
+        <AISuggestionDetails
+          isOpen={isAISidePanelOpen}
+          onOpenChange={setIsAISidePanelOpen}
+          suggestion={selectedAISuggestion}
         />
-        
+
         {/* Header */}
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div>
@@ -350,13 +350,13 @@ export default function PendingQueue() {
                 {stats.urgent} urgentes
               </Badge>
             )}
-            
+
             <div className="flex items-center gap-2 ml-auto sm:ml-0">
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Button 
-                      variant="outline" 
+                    <Button
+                      variant="outline"
                       size="sm"
                       onClick={() => triggerPromotion()}
                       disabled={isPromoting}
@@ -372,11 +372,11 @@ export default function PendingQueue() {
                 </Tooltip>
               </TooltipProvider>
 
-              <Button 
-                variant="outline" 
-                size="sm" 
+              <Button
+                variant="outline"
+                size="sm"
                 className="h-8 border-primary/20 hover:bg-primary/5"
-                onClick={() => exportData({ 
+                onClick={() => exportData({
                   fileName: `fila_producao_${new Date().toISOString().split('T')[0]}`,
                   filters: {
                     status: pendingStatuses,
@@ -405,18 +405,18 @@ export default function PendingQueue() {
               Filtros
             </CardTitle>
             <div className="flex items-center gap-1 bg-muted/30 p-1 rounded-lg">
-              <Button 
-                variant={viewMode === 'table' ? 'secondary' : 'ghost'} 
-                size="sm" 
+              <Button
+                variant={viewMode === 'table' ? 'secondary' : 'ghost'}
+                size="sm"
                 className="h-7 px-2"
                 onClick={() => setViewMode('table')}
               >
                 <List className="h-4 w-4 mr-1" />
                 <span className="hidden sm:inline">Tabela</span>
               </Button>
-              <Button 
-                variant={viewMode === 'grid' ? 'secondary' : 'ghost'} 
-                size="sm" 
+              <Button
+                variant={viewMode === 'grid' ? 'secondary' : 'ghost'}
+                size="sm"
                 className="h-7 px-2"
                 onClick={() => setViewMode('grid')}
               >
@@ -479,8 +479,8 @@ export default function PendingQueue() {
                 </SelectContent>
               </Select>
 
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 onClick={resetFilters}
                 className="border-border/50 hover:bg-muted/50"
               >
@@ -514,13 +514,13 @@ export default function PendingQueue() {
           </div>
           <CollapsibleContent className="animate-accordion-down">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
-              <SmartSequencingPanel 
+              <SmartSequencingPanel
                 onExplain={(suggestion: unknown) => {
                   setSelectedAISuggestion({ type: 'setup', data: suggestion });
                   setIsAISidePanelOpen(true);
                 }}
               />
-              <LoadBalancingPanel 
+              <LoadBalancingPanel
                 onExplain={(suggestion: unknown) => {
                   setSelectedAISuggestion({ type: 'balancing', data: suggestion });
                   setIsAISidePanelOpen(true);
@@ -576,8 +576,8 @@ export default function PendingQueue() {
                   <TableHeader>
                     <TableRow className="border-border/50 hover:bg-transparent">
                       <TableHead className="w-[40px]">
-                        <input 
-                          type="checkbox" 
+                        <input
+                          type="checkbox"
                           checked={selectedJobs.size === filteredJobs.length && filteredJobs.length > 0}
                           onChange={handleSelectAll}
                           className="rounded border-border accent-primary"

@@ -28,7 +28,7 @@ export function AuditTrailDrawer({
     fromDate: period.fromDate,
     toDate: period.toDate,
   });
-  
+
   const { exportAuditTrail } = useDataExport(entityType as any);
 
   const handleExport = useCallback(() => {
@@ -55,11 +55,11 @@ export function AuditTrailDrawer({
         </SheetHeader>
 
         <div className="px-6 py-2">
-          <HistoryPeriodFilter 
-            value={period} 
-            onChange={setPeriod} 
+          <HistoryPeriodFilter
+            value={period}
+            onChange={setPeriod}
             onExport={handleExport}
-            resultCount={data?.length} 
+            resultCount={data?.length}
           />
         </div>
 

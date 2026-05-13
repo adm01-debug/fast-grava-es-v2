@@ -43,8 +43,8 @@ export function InventoryAlertsWidget() {
             </div>
           ))}
         </div>
-        <Button 
-          variant="ghost" 
+        <Button
+          variant="ghost"
           className="w-full h-9 text-[10px] uppercase font-bold text-muted-foreground hover:text-primary rounded-none border-t border-border/30"
           onClick={() => navigate('/inventory')}
         >

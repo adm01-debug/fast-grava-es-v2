@@ -58,31 +58,31 @@ export function SPCControlChart({ selectedParameter, chartData, capability, onCa
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" className="stroke-muted opacity-30" vertical={false} />
-                  <XAxis 
-                    dataKey="sample" 
-                    fontSize={10} 
-                    fontFamily="monospace" 
-                    tickLine={false} 
-                    axisLine={false} 
-                    tick={{ fill: 'hsl(var(--muted-foreground))' }}
-                  />
-                  <YAxis 
-                    fontSize={10} 
-                    fontFamily="monospace" 
-                    domain={['auto', 'auto']} 
-                    tickLine={false} 
+                  <XAxis
+                    dataKey="sample"
+                    fontSize={10}
+                    fontFamily="monospace"
+                    tickLine={false}
                     axisLine={false}
                     tick={{ fill: 'hsl(var(--muted-foreground))' }}
                   />
-                  <Tooltip 
-                    contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '12px' }} 
+                  <YAxis
+                    fontSize={10}
+                    fontFamily="monospace"
+                    domain={['auto', 'auto']}
+                    tickLine={false}
+                    axisLine={false}
+                    tick={{ fill: 'hsl(var(--muted-foreground))' }}
+                  />
+                  <Tooltip
+                    contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '12px' }}
                     itemStyle={{ fontSize: '11px', fontWeight: 'bold' }}
                   />
-                  
+
                   {/* Spec Limits (USL/LSL) - High Visibility */}
                   <ReferenceLine y={selectedParameter.upper_spec_limit} stroke="#ef4444" strokeWidth={1} label={{ value: 'USL', position: 'insideTopRight', fontSize: 9, fontWeight: 'bold', fill: '#ef4444' }} />
                   <ReferenceLine y={selectedParameter.lower_spec_limit} stroke="#ef4444" strokeWidth={1} label={{ value: 'LSL', position: 'insideBottomRight', fontSize: 9, fontWeight: 'bold', fill: '#ef4444' }} />
-                  
+
                   {/* Control Limits (UCL/LCL) - Derived from data */}
                   {selectedParameter.upper_control_limit && (
                     <ReferenceLine y={selectedParameter.upper_control_limit} stroke="#f59e0b" strokeDasharray="4 4" strokeWidth={1} label={{ value: 'UCL', position: 'right', fontSize: 9, fill: '#f59e0b' }} />
@@ -90,24 +90,24 @@ export function SPCControlChart({ selectedParameter, chartData, capability, onCa
                   {selectedParameter.lower_control_limit && (
                     <ReferenceLine y={selectedParameter.lower_control_limit} stroke="#f59e0b" strokeDasharray="4 4" strokeWidth={1} label={{ value: 'LCL', position: 'right', fontSize: 9, fill: '#f59e0b' }} />
                   )}
-                  
+
                   <ReferenceLine y={selectedParameter.target_value} stroke="hsl(var(--primary))" strokeOpacity={0.3} strokeWidth={2} label={{ value: 'Target', position: 'insideLeft', fontSize: 9, fill: 'hsl(var(--primary))', opacity: 0.5 }} />
-                  
+
                   <Line
-                    type="monotone" 
-                    dataKey="mean" 
-                    stroke="hsl(var(--primary))" 
+                    type="monotone"
+                    dataKey="mean"
+                    stroke="hsl(var(--primary))"
                     strokeWidth={3}
                     animationDuration={1000}
                     dot={(props: { cx: number; cy: number; payload: { inControl: boolean } }) => {
                       const { cx, cy, payload } = props;
                       return (
-                        <circle 
-                          cx={cx} cy={cy} r={5} 
-                          fill={payload.inControl ? 'hsl(var(--primary))' : '#ef4444'} 
-                          stroke="white" 
+                        <circle
+                          cx={cx} cy={cy} r={5}
+                          fill={payload.inControl ? 'hsl(var(--primary))' : '#ef4444'}
+                          stroke="white"
                           strokeWidth={2}
-                          className="drop-shadow-sm" 
+                          className="drop-shadow-sm"
                         />
                       );
                     }}
@@ -154,8 +154,8 @@ export function SPCControlChart({ selectedParameter, chartData, capability, onCa
                    </div>
                    <Badge variant="outline" className={cn(
                      "text-[10px] font-black uppercase tracking-tight",
-                     capability.cpk >= 1.33 ? "text-emerald-500 border-emerald-500/20 bg-emerald-500/5" : 
-                     capability.cpk >= 1 ? "text-amber-500 border-amber-500/20 bg-amber-500/5" : 
+                     capability.cpk >= 1.33 ? "text-emerald-500 border-emerald-500/20 bg-emerald-500/5" :
+                     capability.cpk >= 1 ? "text-amber-500 border-amber-500/20 bg-amber-500/5" :
                      "text-red-500 border-red-500/20 bg-red-500/5"
                    )}>
                      {capability.performance}

@@ -37,7 +37,6 @@ export function TwoFactorSetup() {
       if (error) throw error;
       setMfaFactors(data?.totp || []);
     } catch (error) {
-      if (import.meta.env.DEV) 
     } finally {
       setIsLoading(false);
     }
@@ -62,7 +61,6 @@ export function TwoFactorSetup() {
         setShowEnrollDialog(true);
       }
     } catch (error) {
-      if (import.meta.env.DEV) 
       const message = error instanceof Error ? error.message : 'Erro ao configurar 2FA';
       toast.error(message);
     } finally {
@@ -105,7 +103,6 @@ export function TwoFactorSetup() {
       setVerifyCode('');
       fetchMfaFactors();
     } catch (error) {
-      if (import.meta.env.DEV) 
       const message = error instanceof Error ? error.message : 'Código inválido';
       toast.error(message);
     } finally {
@@ -156,7 +153,6 @@ export function TwoFactorSetup() {
       setDisableCode('');
       fetchMfaFactors();
     } catch (error) {
-      if (import.meta.env.DEV) 
       const message = error instanceof Error ? error.message : 'Código inválido';
       toast.error(message);
     } finally {
@@ -215,16 +211,16 @@ export function TwoFactorSetup() {
                 {is2FAEnabled ? 'Ativado' : 'Desativado'}
               </Badge>
               {is2FAEnabled ? (
-                <Button 
-                  variant="destructive" 
+                <Button
+                  variant="destructive"
                   size="sm"
                   onClick={() => setShowDisableDialog(true)}
                 >
                   Desativar
                 </Button>
               ) : (
-                <Button 
-                  variant="default" 
+                <Button
+                  variant="default"
                   size="sm"
                   onClick={handleStartEnroll}
                   disabled={isEnrolling}

@@ -15,7 +15,7 @@ export function useABCData() {
         .select('*')
         .eq('is_active', true)
         .order('name');
-      
+
       if (error) {
         if (import.meta.env.DEV) {
           logger.error('[useABCCosts] activities fetch failed: ' + categorizeError(error), error, 'ABC');
@@ -37,7 +37,7 @@ export function useABCData() {
         .select('*')
         .eq('is_active', true)
         .order('name');
-      
+
       if (error) {
         if (import.meta.env.DEV) {
           logger.error('[useABCCosts] pools fetch failed: ' + categorizeError(error), error, 'ABC');
@@ -58,7 +58,7 @@ export function useABCData() {
         .from('abc_activity_rates')
         .select('*')
         .order('period_start', { ascending: false });
-      
+
       if (error) {
         if (import.meta.env.DEV) {
           logger.error('[useABCCosts] rates fetch failed: ' + categorizeError(error), error, 'ABC');
@@ -79,7 +79,7 @@ export function useABCData() {
         .from('abc_job_costs')
         .select('*')
         .order('calculated_at', { ascending: false });
-      
+
       if (error) {
         if (import.meta.env.DEV) {
           logger.error('[useABCCosts] jobCosts fetch failed: ' + categorizeError(error), error, 'ABC');
@@ -102,7 +102,7 @@ export function useABCData() {
         .in('status', ['finished', 'production'])
         .order('updated_at', { ascending: false })
         .limit(200);
-      
+
       if (error) {
         if (import.meta.env.DEV) {
           logger.error('[useABCCosts] jobs fetch failed: ' + categorizeError(error), error, 'ABC');
@@ -122,7 +122,7 @@ export function useABCData() {
       const { data, error } = await supabase
         .from('techniques')
         .select('*');
-      
+
       if (error) {
         if (import.meta.env.DEV) {
           logger.error('[useABCCosts] techniques fetch failed: ' + categorizeError(error), error, 'ABC');

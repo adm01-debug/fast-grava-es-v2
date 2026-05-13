@@ -32,7 +32,7 @@ interface ResponsiveTableProps<T> {
 
 /**
  * ResponsiveTable - Renders a table on desktop and cards on mobile.
- * 
+ *
  * Usage:
  * ```tsx
  * <ResponsiveTable

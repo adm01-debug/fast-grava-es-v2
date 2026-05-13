@@ -48,7 +48,7 @@ export function QRLabelModal({ open, onOpenChange, item }: QRLabelModalProps) {
         <div className="flex flex-col items-center justify-center p-8 space-y-4">
           <div ref={printRef} className="p-6 bg-white rounded-xl border-2 border-black flex flex-col items-center">
             <p className="text-[10px] font-black uppercase tracking-tighter mb-2 text-black">Propriedade: INDÚSTRIA 4.0</p>
-            <QRCodeSVG 
+            <QRCodeSVG
               value={JSON.stringify({ id: item.id, type: 'inventory', name: item.name })}
               size={180}
               level="H"

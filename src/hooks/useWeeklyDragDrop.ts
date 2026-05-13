@@ -28,12 +28,12 @@ export function useWeeklyDragDrop({ onUpdate, allJobs }: UseWeeklyDragDropProps)
 
     const parts = overId.split('|');
     if (parts.length < 2) return;
-    
+
     const machineId = parts[0];
     const date = parts[1];
-    
+
     const job = allJobs.find(j => j.id === jobId);
-    
+
     if (!job) return;
 
     // Check if anything actually changed
@@ -41,22 +41,22 @@ export function useWeeklyDragDrop({ onUpdate, allJobs }: UseWeeklyDragDropProps)
 
     try {
       // Find next available slot for this job on the target machine and date
-      const existingJobsOnDest = allJobs.filter(j => 
-        j.machine_id === machineId && 
-        j.scheduled_date === date && 
+      const existingJobsOnDest = allJobs.filter(j =>
+        j.machine_id === machineId &&
+        j.scheduled_date === date &&
         j.id !== jobId &&
         j.status !== 'cancelled'
       );
-      
+
       const duration = job.estimated_duration || 60;
       const nextSlot = findNextAvailableSlot(existingJobsOnDest, duration);
-      
+
       const updateData: unknown = {
         machine_id: machineId,
         scheduled_date: date,
         updated_at: new Date().toISOString(),
       };
-      
+
       if (nextSlot) {
         updateData.start_time = nextSlot.start;
         updateData.end_time = nextSlot.end;
@@ -85,7 +85,7 @@ export function useWeeklyDragDrop({ onUpdate, allJobs }: UseWeeklyDragDropProps)
       toast.success('Agendamento movido com sucesso');
       onUpdate();
     } catch (err) {
-      
+
       toast.error('Erro ao mover agendamento');
     }
   };

@@ -23,11 +23,11 @@ const popularPages = [
 // Try to find similar pages based on path
 function findSimilarPages(pathname: string) {
   const pathParts = pathname.toLowerCase().split('/').filter(Boolean);
-  
+
   return popularPages.filter(page => {
     const pageParts = page.href.toLowerCase().split('/').filter(Boolean);
-    return pathParts.some(part => 
-      pageParts.some(pagePart => 
+    return pathParts.some(part =>
+      pageParts.some(pagePart =>
         pagePart.includes(part) || part.includes(pagePart)
       )
     ) || page.name.toLowerCase().includes(pathParts.join(''));
@@ -38,9 +38,9 @@ const NotFound = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
-  
+
   const similarPages = useMemo(() => findSimilarPages(location.pathname), [location.pathname]);
-  
+
   // Apply Fuse.js fuzzy search for pages
   const fuseFilteredPages = useFuseSearch(popularPages, searchQuery, {
     keys: ['name', 'description'],
@@ -54,7 +54,7 @@ const NotFound = () => {
 
   useEffect(() => {
     if (import.meta.env.DEV) {
-      
+
     }
     // Update document title
     document.title = 'Página não encontrada | Fast Gravações';
@@ -78,21 +78,21 @@ const NotFound = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Mobile Header */}
-      <MobileHeader 
-        title="Página não encontrada" 
+      <MobileHeader
+        title="Página não encontrada"
         showBack={true}
         showHome={false}
       />
       <MobileHeaderSpacer />
-      
+
       <div className="flex min-h-[calc(100vh-56px)] items-center justify-center p-4">
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="text-center space-y-8 max-w-lg w-full"
         >
           {/* 404 Illustration */}
-          <motion.div 
+          <motion.div
             initial={{ scale: 0.8 }}
             animate={{ scale: 1 }}
             transition={{ type: 'spring', damping: 15 }}
@@ -102,7 +102,7 @@ const NotFound = () => {
               404
             </div>
             <div className="absolute inset-0 flex items-center justify-center">
-              <motion.div 
+              <motion.div
                 animate={{ y: [0, -5, 0] }}
                 transition={{ duration: 2, repeat: Infinity }}
                 className="w-20 h-20 md:w-24 md:h-24 rounded-2xl bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center shadow-lg"
@@ -186,7 +186,7 @@ const NotFound = () => {
                 );
               })}
             </div>
-            
+
             {filteredPages.length === 0 && searchQuery && (
               <p className="text-sm text-muted-foreground py-4">
                 Nenhuma página encontrada para "{searchQuery}"
@@ -196,8 +196,8 @@ const NotFound = () => {
 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-3 justify-center pt-4">
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={handleBack}
               className="gap-2"
             >

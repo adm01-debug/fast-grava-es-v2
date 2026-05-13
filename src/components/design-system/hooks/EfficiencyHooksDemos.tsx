@@ -26,11 +26,11 @@ export const UseLoadBalancingDemo = () => {
       title="useLoadBalancingWithActions"
       description="Análise e redistribuição de carga entre máquinas"
       icon={Activity}
-      code={`const { 
-  suggestions, 
+      code={`const {
+  suggestions,
   applySuggestion,
   applyAllSuggestions,
-  isApplying 
+  isApplying
 } = useLoadBalancingWithActions();
 
 // Aplicar sugestão
@@ -38,8 +38,8 @@ await applySuggestion(suggestion);`}
     >
       <div className="space-y-3">
         {suggestions.map((s, i) => (
-          <div 
-            key={i} 
+          <div
+            key={i}
             className={`flex items-center justify-between p-3 rounded-lg border transition-all ${
               applied.includes(s.job) ? "bg-success/10 border-success/30" : "bg-background"
             }`}
@@ -53,8 +53,8 @@ await applySuggestion(suggestion);`}
                 -{s.loadDiff}% carga
               </Badge>
             </div>
-            <Button 
-              size="sm" 
+            <Button
+              size="sm"
               variant={applied.includes(s.job) ? "ghost" : "outline"}
               onClick={() => apply(s.job)}
               disabled={applying === s.job || applied.includes(s.job)}

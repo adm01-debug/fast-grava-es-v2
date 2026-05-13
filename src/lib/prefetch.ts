@@ -29,13 +29,13 @@ const prefetchedRoutes = new Set<string>();
 export function prefetchRoute(path: string): void {
   // Normalize path (remove trailing slashes, handle params)
   const normalizedPath = path.split('?')[0].replace(/\/$/, '') || '/';
-  
+
   // Find matching route module
   const moduleLoader = routeModules[normalizedPath];
-  
+
   if (moduleLoader && !prefetchedRoutes.has(normalizedPath)) {
     prefetchedRoutes.add(normalizedPath);
-    
+
     // Use requestIdleCallback for non-critical prefetching
     if ('requestIdleCallback' in window) {
       window.requestIdleCallback(() => {

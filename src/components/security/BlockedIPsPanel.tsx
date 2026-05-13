@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { 
-  useBlockedIPs, 
-  useBlockedIPsHistory, 
-  useBlockIP, 
-  useUnblockIP 
+import {
+  useBlockedIPs,
+  useBlockedIPsHistory,
+  useBlockIP,
+  useUnblockIP
 } from '@/hooks/useRateLimitLogs';
 import { useRealtimeBlockedIPs } from '@/hooks/useSecurityEvents';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -14,15 +14,15 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogDescription, 
-  DialogFooter, 
-  DialogHeader, 
-  DialogTitle 
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle
 } from '@/components/ui/dialog';
-import { 
+import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -34,12 +34,12 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
-import { 
-  Shield, 
-  ShieldOff, 
-  Plus, 
-  Loader2, 
-  Unlock, 
+import {
+  Shield,
+  ShieldOff,
+  Plus,
+  Loader2,
+  Unlock,
   Clock,
   AlertTriangle,
   History
@@ -53,7 +53,7 @@ export function BlockedIPsPanel() {
   const { newBlocks } = useRealtimeBlockedIPs();
   const blockIP = useBlockIP();
   const unblockIP = useUnblockIP();
-  
+
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [ipToUnblock, setIpToUnblock] = useState<string | null>(null);
   const [newIP, setNewIP] = useState('');
@@ -64,8 +64,8 @@ export function BlockedIPsPanel() {
   const handleBlock = async () => {
     if (!newIP.trim() || !reason.trim()) return;
 
-    const expiresAt = isPermanent 
-      ? undefined 
+    const expiresAt = isPermanent
+      ? undefined
       : new Date(Date.now() + parseInt(expiresHours) * 60 * 60 * 1000).toISOString();
 
     await blockIP.mutateAsync({
@@ -211,7 +211,7 @@ export function BlockedIPsPanel() {
                         {format(new Date(ip.blocked_at), "dd/MM/yy HH:mm", { locale: ptBR })}
                       </TableCell>
                       <TableCell>
-                        {ip.unblocked_at 
+                        {ip.unblocked_at
                           ? format(new Date(ip.unblocked_at), "dd/MM/yy HH:mm", { locale: ptBR })
                           : '-'
                         }
@@ -295,7 +295,7 @@ export function BlockedIPsPanel() {
             <Button variant="outline" onClick={() => setShowAddDialog(false)}>
               Cancelar
             </Button>
-            <Button 
+            <Button
               onClick={handleBlock}
               disabled={!newIP.trim() || !reason.trim() || blockIP.isPending}
             >

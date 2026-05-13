@@ -1,18 +1,18 @@
 import { useState } from 'react';
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogHeader, 
-  DialogTitle, 
-  DialogTrigger 
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { 
-  Camera, 
-  ChevronLeft, 
-  ChevronRight, 
-  Maximize2, 
+import {
+  Camera,
+  ChevronLeft,
+  ChevronRight,
+  Maximize2,
   Image as ImageIcon,
   Clock,
   User
@@ -28,11 +28,11 @@ interface ProductionPhotosProps {
   emptyMessage?: string;
 }
 
-export function ProductionPhotos({ 
-  photos, 
-  jobId, 
+export function ProductionPhotos({
+  photos,
+  jobId,
   className,
-  emptyMessage = "Nenhuma foto registrada para este job." 
+  emptyMessage = "Nenhuma foto registrada para este job."
 }: ProductionPhotosProps) {
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState<number | null>(null);
 
@@ -72,13 +72,13 @@ export function ProductionPhotos({
         {photos.map((photo, index) => (
           <Dialog key={index}>
             <DialogTrigger asChild>
-              <div 
+              <div
                 className="group relative aspect-square rounded-xl overflow-hidden border border-border bg-muted cursor-pointer hover:ring-2 hover:ring-primary/50 transition-all shadow-sm"
                 onClick={() => setSelectedPhotoIndex(index)}
               >
-                <img 
-                  src={photo} 
-                  alt={`Produção ${index + 1}`} 
+                <img
+                  src={photo}
+                  alt={`Produção ${index + 1}`}
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                   loading="lazy"
                 />
@@ -89,25 +89,25 @@ export function ProductionPhotos({
             </DialogTrigger>
             <DialogContent className="max-w-4xl w-[95vw] h-[85vh] p-0 overflow-hidden bg-black/95 border-none">
               <div className="relative w-full h-full flex items-center justify-center">
-                <img 
-                  src={photos[selectedPhotoIndex ?? index]} 
-                  alt="Foto em tela cheia" 
+                <img
+                  src={photos[selectedPhotoIndex ?? index]}
+                  alt="Foto em tela cheia"
                   className="max-w-full max-h-full object-contain"
                 />
-                
+
                 {photos.length > 1 && (
                   <>
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
+                    <Button
+                      variant="ghost"
+                      size="icon"
                       className="absolute left-4 top-1/2 -translate-y-1/2 h-12 w-12 rounded-full bg-white/10 hover:bg-white/20 text-white border-none"
                       onClick={handlePrev}
                     >
                       <ChevronLeft className="h-8 w-8" />
                     </Button>
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
+                    <Button
+                      variant="ghost"
+                      size="icon"
                       className="absolute right-4 top-1/2 -translate-y-1/2 h-12 w-12 rounded-full bg-white/10 hover:bg-white/20 text-white border-none"
                       onClick={handleNext}
                     >

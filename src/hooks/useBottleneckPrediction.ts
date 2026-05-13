@@ -50,7 +50,7 @@ export interface TechniqueCapacity {
 const DAILY_CAPACITY_MINUTES = 11 * 60; // 07:00 - 18:00
 let CRITICAL_THRESHOLD = 90;
 let WARNING_THRESHOLD = 75;
-const DAYS_AHEAD = 14; 
+const DAYS_AHEAD = 14;
 
 export function setBottleneckThresholds(warning: number, critical: number) {
   WARNING_THRESHOLD = warning;
@@ -69,7 +69,7 @@ export function useBottleneckPrediction() {
 
     // Validate input data
     const validJobs = jobs.filter(isValidJob);
-    const validMachines = machines.filter(m => 
+    const validMachines = machines.filter(m =>
       typeof m.id === 'string' && typeof m.technique_id === 'string'
     );
     const validTechniques = techniques.filter(t =>
@@ -77,12 +77,11 @@ export function useBottleneckPrediction() {
     );
 
     if (validJobs.length === 0 && jobs.length > 0) {
-      if (import.meta.env.DEV) 
     }
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    
+
     const alerts: BottleneckAlert[] = [];
     const capacityByDate: TechniqueCapacity[] = [];
 
@@ -90,21 +89,21 @@ export function useBottleneckPrediction() {
     for (let dayOffset = 0; dayOffset < DAYS_AHEAD; dayOffset++) {
       const targetDate = addDays(today, dayOffset);
       const dateStr = format(targetDate, 'yyyy-MM-dd');
-      const dateLabel = dayOffset === 0 ? 'Hoje' : 
-                        dayOffset === 1 ? 'Amanhã' : 
+      const dateLabel = dayOffset === 0 ? 'Hoje' :
+                        dayOffset === 1 ? 'Amanhã' :
                         format(targetDate, 'dd/MM');
 
       // Analyze each technique
       validTechniques.forEach(technique => {
         const techniqueMachines = validMachines.filter(m => m.technique_id === technique.id);
         const machineCount = techniqueMachines.length;
-        
+
         if (machineCount === 0) return;
 
         const totalCapacityMinutes = machineCount * DAILY_CAPACITY_MINUTES;
 
         // Get scheduled jobs for this technique and date
-        const scheduledJobs = validJobs.filter(job => 
+        const scheduledJobs = validJobs.filter(job =>
           job.technique_id === technique.id &&
           job.scheduled_date === dateStr &&
           !['finished', 'cancelled'].includes(job.status)
@@ -115,18 +114,18 @@ export function useBottleneckPrediction() {
         const pendingJobs = validJobs.filter(job => {
           if (job.technique_id !== technique.id) return false;
           if (['finished', 'cancelled', 'paused'].includes(job.status)) return false;
-          
+
           // For today, include production jobs without scheduled_date
           if (dayOffset === 0 && job.status === 'production' && !job.scheduled_date) {
             return true;
           }
-          
+
           return ['queue', 'ready'].includes(job.status) && !job.scheduled_date;
         });
 
         const usedMinutes = scheduledJobs.reduce((acc, job) => acc + sanitizeNumber(job.estimated_duration), 0);
         const pendingMinutes = pendingJobs.reduce((acc, job) => acc + sanitizeNumber(job.estimated_duration), 0);
-        
+
         const occupancyRate = (usedMinutes / totalCapacityMinutes) * 100;
         const projectedOccupancy = ((usedMinutes + pendingMinutes) / totalCapacityMinutes) * 100;
 

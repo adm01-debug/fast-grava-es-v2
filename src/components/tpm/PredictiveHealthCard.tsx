@@ -92,7 +92,7 @@ export function PredictiveHealthCard({ machineId }: PredictiveHealthCardProps) {
           <div className="p-2 rounded-lg bg-secondary/30 border border-border/50">
             <p className="text-[10px] text-muted-foreground uppercase">Falha Estimada</p>
             <p className="text-xs font-bold">
-              {displayData.predicted_failure_date 
+              {displayData.predicted_failure_date
                 ? format(new Date(displayData.predicted_failure_date), 'dd/MM/yyyy', { locale: ptBR })
                 : 'N/A'}
             </p>

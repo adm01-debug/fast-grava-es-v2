@@ -257,7 +257,7 @@ describe('Geo Blocking Logic', () => {
     blockUnknown: boolean
   ): boolean {
     const rule = rules.find(r => r.countryCode === countryCode);
-    
+
     if (mode === 'blocklist') {
       if (!rule) return blockUnknown;
       return rule.isBlocked;
@@ -313,33 +313,33 @@ describe('Permission Matrix Completeness', () => {
     'view_kpis': ['coordinator', 'manager'],
     'view_executive': ['coordinator', 'manager'],
     'view_bi': ['coordinator', 'manager'],
-    
+
     // Production
     'create_job': ['coordinator', 'manager'],
     'edit_job': ['coordinator', 'manager'],
     'delete_job': ['coordinator'],
     'register_production': ['operator', 'coordinator'],
     'view_kanban': ['coordinator', 'operator', 'manager'],
-    
+
     // Operators
     'manage_operators': ['coordinator'],
     'view_operators': ['coordinator', 'manager'],
     'create_operator': ['coordinator'],
-    
+
     // Maintenance
     'manage_maintenance': ['coordinator'],
     'view_maintenance': ['coordinator', 'operator', 'manager'],
-    
+
     // Security
     'view_security': ['coordinator', 'manager'],
     'manage_security': ['coordinator'],
     'manage_blocked_ips': ['coordinator'],
     'view_audit_log': ['coordinator', 'manager'],
-    
+
     // Documents
     'manage_documents': ['coordinator', 'manager'],
     'view_documents': ['coordinator', 'operator', 'manager'],
-    
+
     // Settings
     'manage_settings': ['coordinator'],
     'manage_users': ['coordinator'],
@@ -355,7 +355,7 @@ describe('Permission Matrix Completeness', () => {
     const coordinatorPerms = Object.entries(permissionMatrix).filter(([_, roles]) => roles.includes('coordinator')).length;
     const operatorPerms = Object.entries(permissionMatrix).filter(([_, roles]) => roles.includes('operator')).length;
     const managerPerms = Object.entries(permissionMatrix).filter(([_, roles]) => roles.includes('manager')).length;
-    
+
     expect(coordinatorPerms).toBeGreaterThanOrEqual(managerPerms);
     expect(coordinatorPerms).toBeGreaterThan(operatorPerms);
   });

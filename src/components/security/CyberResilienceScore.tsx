@@ -20,14 +20,14 @@ export function CyberResilienceScore() {
         <div className="relative w-40 h-40">
            <svg className="w-full h-full" viewBox="0 0 100 100">
              <circle className="text-muted/20 stroke-current" strokeWidth="6" fill="transparent" r="42" cx="50" cy="50" />
-             <motion.circle 
-               className="text-primary stroke-current" 
-               strokeWidth="6" 
-               strokeLinecap="round" 
-               fill="transparent" 
-               r="42" 
-               cx="50" 
-               cy="50" 
+             <motion.circle
+               className="text-primary stroke-current"
+               strokeWidth="6"
+               strokeLinecap="round"
+               fill="transparent"
+               r="42"
+               cx="50"
+               cy="50"
                initial={{ strokeDasharray: "0, 264" }}
                animate={{ strokeDasharray: "258, 264" }} // 98%
                transition={{ duration: 2, ease: "easeOut" }}

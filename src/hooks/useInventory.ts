@@ -18,7 +18,7 @@ export interface InventoryItem {
   price_per_unit: number;
   created_at: string;
   updated_at: string;
-  daily_usage_avg?: number; 
+  daily_usage_avg?: number;
   days_of_supply?: number;
 }
 
@@ -117,7 +117,7 @@ export function useInventory() {
         const { error: updateError } = await supabase.from('inventory_items').update({ location: toLocation }).eq('id', itemId);
         if (updateError) throw updateError;
         await supabase.from('inventory_movements').insert([{
-          item_id: itemId, user_id: user?.id, type: 'TRANSFER', quantity: 0, 
+          item_id: itemId, user_id: user?.id, type: 'TRANSFER', quantity: 0,
           from_location: fromLocation, to_location: toLocation,
           reason: `Transferência de ${fromLocation} para ${toLocation}`
         }]);

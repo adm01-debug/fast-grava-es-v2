@@ -41,9 +41,9 @@ export function ShiftHandoverWidget() {
             </div>
             <span className="gradient-text">Passagem de Turno</span>
           </div>
-          <Button 
-            variant="ghost" 
-            size="sm" 
+          <Button
+            variant="ghost"
+            size="sm"
             className="h-6 text-[10px] uppercase font-bold"
             onClick={() => navigate('/shift-handover')}
           >

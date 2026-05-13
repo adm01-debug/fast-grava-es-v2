@@ -27,9 +27,9 @@ export function AlertRiskPanel({ alerts, onEvidenceUpload, isUploading }: AlertR
                 <p className="text-xs text-muted-foreground">Range Recomendado: {alert.expected_range}</p>
               </div>
               <div className="flex flex-col gap-2">
-                <Input 
-                  type="file" 
-                  className="hidden" 
+                <Input
+                  type="file"
+                  className="hidden"
                   id={`alert-evidence-${idx}`}
                   accept="image/*"
                   onChange={(e) => {
@@ -38,7 +38,7 @@ export function AlertRiskPanel({ alerts, onEvidenceUpload, isUploading }: AlertR
                   }}
                   disabled={isUploading}
                 />
-                <Label 
+                <Label
                   htmlFor={`alert-evidence-${idx}`}
                   className="inline-flex items-center justify-center rounded-md text-xs font-medium border-2 border-destructive bg-background hover:bg-destructive/10 h-8 px-3 cursor-pointer gap-2"
                 >
@@ -46,7 +46,7 @@ export function AlertRiskPanel({ alerts, onEvidenceUpload, isUploading }: AlertR
                 </Label>
               </div>
             </div>
-            
+
             {alert.evidence_urls.length > 0 && (
               <div className="flex flex-wrap gap-2 pt-2 border-t border-destructive/10">
                 {alert.evidence_urls.map((url: string, pIdx: number) => (

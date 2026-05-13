@@ -14,7 +14,7 @@ const QRScannerPage = () => {
     <MainLayout>
       <div className="container mx-auto p-4 sm:p-6 max-w-2xl">
         <Breadcrumbs className="mb-4" />
-        
+
         <div className="mb-4 sm:mb-6 text-center">
           <h1 className="text-xl sm:text-2xl font-bold text-foreground mb-1 sm:mb-2">
             Scanner de Produção
@@ -23,7 +23,7 @@ const QRScannerPage = () => {
             Escaneie o QR Code do job para iniciar, pausar ou finalizar a produção
           </p>
         </div>
-        
+
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-3 mb-4">
             <TabsTrigger value="scanner" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3">
@@ -39,15 +39,15 @@ const QRScannerPage = () => {
               <span className="hidden xs:inline sm:inline">Stats</span>
             </TabsTrigger>
           </TabsList>
-          
+
           <TabsContent value="scanner" className="mt-0">
             <QRScanner />
           </TabsContent>
-          
+
           <TabsContent value="history" className="mt-0">
             <ScanHistory limit={100} />
           </TabsContent>
-          
+
           <TabsContent value="stats" className="mt-0">
             <ScanStatsChart />
           </TabsContent>

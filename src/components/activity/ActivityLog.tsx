@@ -23,12 +23,12 @@ import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 
-type ActivityType = 
-  | "create" 
-  | "update" 
-  | "delete" 
-  | "view" 
-  | "login" 
+type ActivityType =
+  | "create"
+  | "update"
+  | "delete"
+  | "view"
+  | "login"
   | "logout"
   | "settings"
   | "error"

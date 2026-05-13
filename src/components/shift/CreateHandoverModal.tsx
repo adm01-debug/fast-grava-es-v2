@@ -95,7 +95,7 @@ export default function CreateHandoverModal({ open, onOpenChange, machines }: Pr
       general_notes: data.general_notes,
       checklist_items: checklistItems
     });
-    
+
     onOpenChange(false);
     form.reset();
     setChecklistItems(DEFAULT_CHECKLIST);
@@ -171,7 +171,7 @@ export default function CreateHandoverModal({ open, onOpenChange, machines }: Pr
                 <FormItem>
                   <FormLabel>Observações gerais</FormLabel>
                   <FormControl>
-                    <Textarea 
+                    <Textarea
                       placeholder="Adicione observações importantes para a passagem..."
                       rows={3}
                       {...field}
@@ -202,7 +202,7 @@ export default function CreateHandoverModal({ open, onOpenChange, machines }: Pr
 
               <div className="border rounded-lg p-4 space-y-2 max-h-[200px] overflow-y-auto">
                 {checklistItems.map((item, index) => (
-                  <div 
+                  <div
                     key={index}
                     className="flex items-center gap-2 p-2 bg-muted/50 rounded-md group"
                   >

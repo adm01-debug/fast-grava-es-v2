@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { format } from 'date-fns';
-import { 
-  CheckCircle2, 
-  Circle, 
-  Clock, 
-  User, 
-  Settings, 
+import {
+  CheckCircle2,
+  Circle,
+  Clock,
+  User,
+  Settings,
   MessageSquare,
   AlertTriangle,
   ListTodo,
@@ -140,8 +140,8 @@ export default function HandoverDetailsModal({ handover, onClose }: Props) {
           <div className="flex items-center justify-between">
             <DialogTitle className="flex items-center gap-2">
               Passagem de Turno - {SHIFT_LABELS[handover.shift_type]}
-              <Badge 
-                variant="outline" 
+              <Badge
+                variant="outline"
                 className={STATUS_LABELS[handover.status]?.color}
               >
                 {STATUS_LABELS[handover.status]?.label}
@@ -218,7 +218,7 @@ export default function HandoverDetailsModal({ handover, onClose }: Props) {
             <TabsContent value="checklist" className="mt-0 space-y-2">
               {checklist && checklist.length > 0 ? (
                 checklist.map((item) => (
-                  <div 
+                  <div
                     key={item.id}
                     className={`flex items-start gap-3 p-3 rounded-lg border ${
                       item.is_checked ? 'bg-muted/50' : ''
@@ -265,8 +265,8 @@ export default function HandoverDetailsModal({ handover, onClose }: Props) {
                       if (e.key === 'Enter') handleAddTask();
                     }}
                   />
-                  <Select 
-                    value={newTaskPriority} 
+                  <Select
+                    value={newTaskPriority}
                     onValueChange={(v) => setNewTaskPriority(v as typeof newTaskPriority)}
                   >
                     <SelectTrigger className="w-[120px]">
@@ -288,7 +288,7 @@ export default function HandoverDetailsModal({ handover, onClose }: Props) {
               <div className="space-y-2">
                 {pendingTasks && pendingTasks.length > 0 ? (
                   pendingTasks.map((task) => (
-                    <div 
+                    <div
                       key={task.id}
                       className="flex items-start gap-3 p-3 rounded-lg border"
                     >
@@ -325,7 +325,7 @@ export default function HandoverDetailsModal({ handover, onClose }: Props) {
             <TabsContent value="occurrences" className="mt-0 space-y-2">
               {occurrences && occurrences.length > 0 ? (
                 occurrences.map((occ) => (
-                  <div 
+                  <div
                     key={occ.id}
                     className={`p-3 rounded-lg border ${
                       occ.severity === 'critical' ? 'border-destructive bg-destructive/5' :
@@ -338,7 +338,7 @@ export default function HandoverDetailsModal({ handover, onClose }: Props) {
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
                           <p className="font-medium">{occ.title}</p>
-                          <Badge 
+                          <Badge
                             variant={occ.severity === 'critical' ? 'destructive' : 'outline'}
                             className="text-xs"
                           >
@@ -377,7 +377,7 @@ export default function HandoverDetailsModal({ handover, onClose }: Props) {
                 disabled={!canEdit}
               />
               {canEdit && (
-                <Button 
+                <Button
                   onClick={handleUpdateNotes}
                   disabled={updateHandover.isPending}
                 >
@@ -395,7 +395,7 @@ export default function HandoverDetailsModal({ handover, onClose }: Props) {
             Fechar
           </Button>
           {canComplete && (
-            <Button 
+            <Button
               onClick={() => completeHandover.mutate(handover.id)}
               disabled={completeHandover.isPending}
             >
@@ -403,7 +403,7 @@ export default function HandoverDetailsModal({ handover, onClose }: Props) {
             </Button>
           )}
           {canAccept && (
-            <Button 
+            <Button
               onClick={() => acceptHandover.mutate(handover.id)}
               disabled={acceptHandover.isPending}
             >

@@ -4,11 +4,11 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { 
-  FileText, 
-  Settings, 
-  Layers, 
-  Lightbulb, 
+import {
+  FileText,
+  Settings,
+  Layers,
+  Lightbulb,
   AlertTriangle,
   ChevronRight,
   BookOpen,
@@ -32,14 +32,14 @@ export function JobInstructionsTab({ techniqueId, productCategoryId }: JobInstru
   const [selectedSheetId, setSelectedSheetId] = useState<string | null>(null);
 
   // Filter sheets relevant to this job
-  const relevantSheets = sheets?.filter((s: TechnicalSheet) => 
-    s.is_active && 
+  const relevantSheets = sheets?.filter((s: TechnicalSheet) =>
+    s.is_active &&
     (s.technique_id === techniqueId) &&
     (!productCategoryId || !s.product_category_id || s.product_category_id === productCategoryId)
   ) || [];
 
   const selectedSheet = relevantSheets.find((s: TechnicalSheet) => s.id === selectedSheetId) || relevantSheets[0];
-  
+
   const { documents, isLoading: isLoadingDocs } = useDocuments(selectedSheet?.id);
 
   if (isLoadingSheets || (selectedSheet && isLoadingDocs)) {
@@ -68,7 +68,7 @@ export function JobInstructionsTab({ techniqueId, productCategoryId }: JobInstru
           <h4 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground px-1">Documentos Disponíveis</h4>
           <div className="flex flex-wrap gap-2">
             {relevantSheets.map(sheet => (
-              <Badge 
+              <Badge
                 key={sheet.id}
                 variant={selectedSheetId === sheet.id ? "default" : "outline"}
                 className="cursor-pointer py-1 px-3"
@@ -104,7 +104,7 @@ export function JobInstructionsTab({ techniqueId, productCategoryId }: JobInstru
                 ) : (
                   <p className="text-[10px] italic text-muted-foreground">Instruções de setup não especificadas.</p>
                 )}
-                
+
                 {selectedSheet.machine_settings && Object.keys(selectedSheet.machine_settings).length > 0 && (
                   <div className="mt-4 grid grid-cols-2 gap-2">
                     {Object.entries(selectedSheet.machine_settings).map(([key, value]) => (
@@ -198,9 +198,9 @@ export function JobInstructionsTab({ techniqueId, productCategoryId }: JobInstru
                         <p className="text-[10px] text-muted-foreground uppercase">{doc.file_type.split('/')[1] || 'PDF'} • {(doc.file_size / 1024 / 1024).toFixed(1)} MB</p>
                       </div>
                     </div>
-                    <Button 
-                      size="icon" 
-                      variant="ghost" 
+                    <Button
+                      size="icon"
+                      variant="ghost"
                       className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
                       onClick={() => window.open(doc.file_url, '_blank')}
                     >

@@ -89,20 +89,20 @@ export function ButtonsSection() {
                     <Button variant="gradient" disabled>Disabled</Button>
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <CodeBlock 
+                    <CodeBlock
                       code={`.gradient-primary { /* Normal state */ }
 .gradient-primary-hover { /* Hover: lighter tones */ }
 .gradient-primary-active { /* Active: darker tones */ }
-.gradient-primary-disabled { /* Disabled: desaturated */ }`} 
-                      label="Classes CSS de Estado" 
+.gradient-primary-disabled { /* Disabled: desaturated */ }`}
+                      label="Classes CSS de Estado"
                     />
-                    <CodeBlock 
+                    <CodeBlock
                       code={`// Aplicado automaticamente no Button
 variant="gradient" // Usa transições automáticas
-                      
+
 // Para uso manual em outros elementos:
-className="gradient-primary-subtle"`} 
-                      label="Uso" 
+className="gradient-primary-subtle"`}
+                      label="Uso"
                     />
                   </div>
                 </div>
@@ -136,7 +136,7 @@ className="gradient-primary-subtle"`}
                 {/* Icon Sizes */}
                 <div className="space-y-4">
                   <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Tamanhos de Ícone</h4>
-                  
+
                   {/* Visual Examples */}
                   <div className="flex flex-wrap items-end gap-4">
                     <div className="flex flex-col items-center gap-2">
@@ -175,20 +175,20 @@ className="gradient-primary-subtle"`}
                   <div className="space-y-3 mt-4">
                     <h5 className="text-xs font-medium text-muted-foreground">Código de Uso</h5>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-                      <CodeBlock 
-                        code={'<Button size="icon-xs">\n  <Star className="h-3 w-3" />\n</Button>'} 
+                      <CodeBlock
+                        code={'<Button size="icon-xs">\n  <Star className="h-3 w-3" />\n</Button>'}
                         label="Icon XS (24px)"
                       />
-                      <CodeBlock 
-                        code={'<Button size="icon-sm">\n  <Plus />\n</Button>'} 
+                      <CodeBlock
+                        code={'<Button size="icon-sm">\n  <Plus />\n</Button>'}
                         label="Icon Small (32px)"
                       />
-                      <CodeBlock 
-                        code={'<Button size="icon">\n  <Plus />\n</Button>'} 
+                      <CodeBlock
+                        code={'<Button size="icon">\n  <Plus />\n</Button>'}
                         label="Icon Default (40px)"
                       />
-                      <CodeBlock 
-                        code={'<Button size="icon-lg">\n  <Plus />\n</Button>'} 
+                      <CodeBlock
+                        code={'<Button size="icon-lg">\n  <Plus />\n</Button>'}
                         label="Icon Large (48px)"
                       />
                     </div>
@@ -205,22 +205,22 @@ className="gradient-primary-subtle"`}
                     <Button variant="outline"><Target className="h-4 w-4" /> Meta</Button>
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <CodeBlock 
-                      code={'<Button variant="gradient">\n  <Trophy className="h-4 w-4" />\n  Conquista\n</Button>'} 
+                    <CodeBlock
+                      code={'<Button variant="gradient">\n  <Trophy className="h-4 w-4" />\n  Conquista\n</Button>'}
                       label="Ícone à esquerda"
                     />
-                    <CodeBlock 
-                      code={'<Button variant="gradient-success">\n  <Check className="h-4 w-4" />\n  Confirmar\n</Button>'} 
+                    <CodeBlock
+                      code={'<Button variant="gradient-success">\n  <Check className="h-4 w-4" />\n  Confirmar\n</Button>'}
                       label="Success com ícone"
                     />
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <CodeBlock 
-                      code={'<Button variant="destructive">\n  <X className="h-4 w-4" />\n  Cancelar\n</Button>'} 
+                    <CodeBlock
+                      code={'<Button variant="destructive">\n  <X className="h-4 w-4" />\n  Cancelar\n</Button>'}
                       label="Destructive com ícone"
                     />
-                    <CodeBlock 
-                      code={'<Button variant="outline">\n  <Target className="h-4 w-4" />\n  Meta\n</Button>'} 
+                    <CodeBlock
+                      code={'<Button variant="outline">\n  <Target className="h-4 w-4" />\n  Meta\n</Button>'}
                       label="Outline com ícone"
                     />
                   </div>

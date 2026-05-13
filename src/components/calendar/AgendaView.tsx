@@ -58,7 +58,7 @@ const JobCard = memo(function JobCard({ job, machine, technique, onClick, onStat
   }, [onStatusChange]);
 
   const cardContent = (
-    <Card 
+    <Card
       onClick={onClick}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -74,12 +74,12 @@ const JobCard = memo(function JobCard({ job, machine, technique, onClick, onStat
         isDelayed && "border-l-status-delayed",
         !isCurrentlyProducing && !isDelayed && "border-l-border/50"
       )}
-      style={{ 
-        borderLeftColor: isCurrentlyProducing 
-          ? undefined 
-          : isDelayed 
-            ? undefined 
-            : technique?.color 
+      style={{
+        borderLeftColor: isCurrentlyProducing
+          ? undefined
+          : isDelayed
+            ? undefined
+            : technique?.color
       }}
     >
       <CardContent className="p-4 space-y-3">
@@ -96,7 +96,7 @@ const JobCard = memo(function JobCard({ job, machine, technique, onClick, onStat
             </div>
             <p className="text-sm text-muted-foreground truncate">{job.client}</p>
           </div>
-          
+
           <div className="flex items-center gap-2">
             {/* Quick Actions - visible on hover (desktop) or always (mobile) */}
             <AnimatePresence>
@@ -117,8 +117,8 @@ const JobCard = memo(function JobCard({ job, machine, technique, onClick, onStat
               )}
             </AnimatePresence>
 
-            <Badge 
-              variant="outline" 
+            <Badge
+              variant="outline"
               className={cn("shrink-0 text-xs", status.color, status.bgColor)}
             >
               {status.label}
@@ -155,7 +155,7 @@ const JobCard = memo(function JobCard({ job, machine, technique, onClick, onStat
 
           {/* Technique */}
           <div className="flex items-center gap-1.5">
-            <div 
+            <div
               className="w-2.5 h-2.5 rounded-full shrink-0"
               style={{ backgroundColor: technique?.color }}
               aria-hidden="true"
@@ -197,10 +197,10 @@ const JobCard = memo(function JobCard({ job, machine, technique, onClick, onStat
   );
 });
 
-export const AgendaView = memo(function AgendaView({ 
-  jobs, 
-  machines, 
-  techniques, 
+export const AgendaView = memo(function AgendaView({
+  jobs,
+  machines,
+  techniques,
   selectedDate,
   onJobClick,
   onStatusChange
@@ -219,7 +219,7 @@ export const AgendaView = memo(function AgendaView({
     const morning: DbJob[] = [];
     const afternoon: DbJob[] = [];
     const evening: DbJob[] = [];
-    
+
     sortedJobs.forEach(job => {
       const hour = parseInt(job.start_time?.split(':')[0] || '12', 10);
       if (hour < 12) {
@@ -234,10 +234,10 @@ export const AgendaView = memo(function AgendaView({
     return { morning, afternoon, evening };
   }, [sortedJobs]);
 
-  const getMachine = (machineId: string | null) => 
+  const getMachine = (machineId: string | null) =>
     machines.find(m => m.id === machineId);
 
-  const getTechnique = (techniqueId: string) => 
+  const getTechnique = (techniqueId: string) =>
     techniques.find(t => t.id === techniqueId);
 
   const renderSection = (title: string, sectionJobs: DbJob[], startIndex: number) => {

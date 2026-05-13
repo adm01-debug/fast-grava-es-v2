@@ -59,11 +59,11 @@ export const saveMLNotificationPreferences = (prefs: Partial<MLNotificationPrefe
 };
 
 export const useMLPredictionNotifications = () => {
-  const { 
-    permission, 
-    isSupported, 
-    requestPermission, 
-    sendNotification 
+  const {
+    permission,
+    isSupported,
+    requestPermission,
+    sendNotification
   } = usePushNotifications();
   const { playAlertSound } = useNotificationSounds();
   const notifiedPredictionsRef = useRef<Set<string>>(new Set());
@@ -72,15 +72,15 @@ export const useMLPredictionNotifications = () => {
   const sendPredictionNotification = useCallback((prediction: MachinePrediction) => {
     const prefs = getPreferences();
     const riskScore = prediction.risk_score;
-    
+
     // Check if this risk level is enabled
-    const shouldNotifyByRisk = 
+    const shouldNotifyByRisk =
       (riskScore >= 80 && prefs.criticalRisk) ||
       (riskScore >= 60 && riskScore < 80 && prefs.highRisk) ||
       (riskScore >= 40 && riskScore < 60 && prefs.mediumRisk);
 
     // Check if this prediction type is enabled
-    const shouldNotifyByType = 
+    const shouldNotifyByType =
       (prediction.prediction_type === 'failure_risk' && prefs.failurePredictions) ||
       (prediction.prediction_type === 'maintenance_needed' && prefs.maintenanceNeeded) ||
       (prediction.prediction_type === 'performance_degradation');
@@ -139,7 +139,7 @@ export const useMLPredictionNotifications = () => {
       playAlertSound();
     }
 
-    const dateInfo = predictedDate 
+    const dateInfo = predictedDate
       ? ` - Previsão: ${new Date(predictedDate).toLocaleDateString('pt-BR')}`
       : '';
 
@@ -161,8 +161,8 @@ export const useMLPredictionNotifications = () => {
       playAlertSound();
     }
 
-    const typeLabel = predictionType === 'failure_risk' 
-      ? 'Risco de Falha' 
+    const typeLabel = predictionType === 'failure_risk'
+      ? 'Risco de Falha'
       : predictionType === 'maintenance_needed'
       ? 'Manutenção Necessária'
       : 'Degradação de Performance';
@@ -204,10 +204,10 @@ export const useMLPredictionNotifications = () => {
         },
         async (payload) => {
           const newPrediction = payload.new as PredictionPayload;
-          
+
           // Only notify for active predictions with significant risk
           if (!newPrediction.is_active || newPrediction.risk_score < 40) return;
-          
+
           // Fetch machine info
           const { data: machine } = await supabase
             .from('machines')
@@ -216,7 +216,7 @@ export const useMLPredictionNotifications = () => {
             .single();
 
           // Parse factors from JSON
-          const parsedFactors: PredictionFactor[] = Array.isArray(newPrediction.factors) 
+          const parsedFactors: PredictionFactor[] = Array.isArray(newPrediction.factors)
             ? (newPrediction.factors as unknown as PredictionFactor[])
             : [];
 

@@ -2,18 +2,18 @@ import { useMemo, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { 
-  BrainCircuit, ArrowRight, Zap, AlertTriangle, 
+import {
+  BrainCircuit, ArrowRight, Zap, AlertTriangle,
   CheckCircle2, Sparkles, ChevronRight, Bell, Settings,
   Clock, Info, LayoutList, Split
 } from 'lucide-react';
-import { 
+import {
   Dialog, DialogContent, DialogHeader, DialogTitle,
   DialogDescription, DialogFooter
 } from '@/components/ui/dialog';
-import { 
-  Sheet, SheetContent, SheetHeader, SheetTitle, 
-  SheetDescription, SheetFooter, SheetTrigger 
+import {
+  Sheet, SheetContent, SheetHeader, SheetTitle,
+  SheetDescription, SheetFooter, SheetTrigger
 } from '@/components/ui/sheet';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -29,7 +29,7 @@ export function KanbanAIAdvisor() {
   const { suggestions: sequenceSuggestions, totalSavings } = useSmartSequencing();
   const { suggestions: balancingSuggestions } = useLoadBalancing();
   const { alerts: bottleneckAlerts } = useBottleneckPrediction();
-  
+
   const [showSettings, setShowSettings] = useState(false);
   const [selectedAdviceType, setSelectedAdviceType] = useState<'setup' | 'load' | 'bottleneck' | null>(null);
 
@@ -43,7 +43,7 @@ export function KanbanAIAdvisor() {
           bottleneckMedium: parsed.bottleneckRiskMinutes || 300,
         };
       } catch (e) {
-        
+
       }
     }
     return {
@@ -57,7 +57,7 @@ export function KanbanAIAdvisor() {
   if (totalInsights === 0) return null;
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       className="space-y-3"
@@ -75,9 +75,9 @@ export function KanbanAIAdvisor() {
           </h2>
         </div>
         <div className="flex items-center gap-2">
-          <Button 
-            variant="ghost" 
-            size="icon" 
+          <Button
+            variant="ghost"
+            size="icon"
             className="h-8 w-8 text-muted-foreground hover:text-primary"
             onClick={() => setShowSettings(true)}
           >
@@ -163,7 +163,7 @@ export function KanbanAIAdvisor() {
                       <Clock className="h-3 w-3" /> -{s.estimatedSavings}min setup
                     </Badge>
                   </div>
-                  
+
                   <div className="space-y-2">
                     <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1">
                       <LayoutList className="h-3 w-3" /> Grupos de Setup (Cores)
@@ -171,8 +171,8 @@ export function KanbanAIAdvisor() {
                     <div className="flex flex-wrap gap-2">
                       {s.colorGroups.map((g, gIdx) => (
                         <div key={gIdx} className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-background border border-border/50">
-                          <div 
-                            className="w-2 h-2 rounded-full border border-white/20" 
+                          <div
+                            className="w-2 h-2 rounded-full border border-white/20"
                             style={{ backgroundColor: g.color === 'sem-cor' ? '#888' : g.color }}
                           />
                           <span className="text-[10px] font-medium">{g.jobCount} jobs</span>
@@ -249,7 +249,7 @@ export function KanbanAIAdvisor() {
                       Crítico
                     </Badge>
                   </div>
-                  
+
                   <div className="space-y-2">
                     <p className="text-xs font-bold">{a.techniqueName}</p>
                     <p className="text-[11px] leading-relaxed text-muted-foreground">
@@ -293,10 +293,10 @@ export function KanbanAIAdvisor() {
             <div className="space-y-2">
               <Label htmlFor="high">Risco Alto (Gargalo Crítico)</Label>
               <div className="flex items-center gap-2">
-                <Input 
-                  id="high" 
-                  type="number" 
-                  value={thresholds.bottleneckHigh} 
+                <Input
+                  id="high"
+                  type="number"
+                  value={thresholds.bottleneckHigh}
                   onChange={(e) => setThresholds(prev => ({ ...prev, bottleneckHigh: parseInt(e.target.value) }))}
                 />
                 <span className="text-xs text-muted-foreground font-mono w-16">minutos</span>
@@ -306,10 +306,10 @@ export function KanbanAIAdvisor() {
             <div className="space-y-2">
               <Label htmlFor="medium">Risco Médio (Atenção)</Label>
               <div className="flex items-center gap-2">
-                <Input 
-                  id="medium" 
-                  type="number" 
-                  value={thresholds.bottleneckMedium} 
+                <Input
+                  id="medium"
+                  type="number"
+                  value={thresholds.bottleneckMedium}
                   onChange={(e) => setThresholds(prev => ({ ...prev, bottleneckMedium: parseInt(e.target.value) }))}
                 />
                 <span className="text-xs text-muted-foreground font-mono w-16">minutos</span>
@@ -326,7 +326,7 @@ export function KanbanAIAdvisor() {
               }));
               toast.success("Configurações de alerta salvas!");
               setShowSettings(false);
-              window.location.reload(); 
+              window.location.reload();
             }}>Salvar Configurações</Button>
           </DialogFooter>
         </DialogContent>
@@ -335,27 +335,27 @@ export function KanbanAIAdvisor() {
   );
 }
 
-function AdviceCard({ 
-  icon: Icon, 
-  title, 
-  description, 
-  actionLabel, 
-  color, 
+function AdviceCard({
+  icon: Icon,
+  title,
+  description,
+  actionLabel,
+  color,
   badge,
   severity,
   onClick
-}: { 
-  icon: unknown, 
-  title: string, 
-  description: string, 
-  actionLabel: string, 
+}: {
+  icon: unknown,
+  title: string,
+  description: string,
+  actionLabel: string,
   color: string,
   badge?: string,
   severity?: 'critical' | 'warning',
   onClick?: () => void
 }) {
   return (
-    <Card 
+    <Card
       className={`overflow-hidden border-l-4 ${
         severity === 'critical' ? 'border-l-red-500 bg-red-500/5' : 'border-l-primary/50 bg-card/50'
       } hover:bg-card/80 transition-all cursor-pointer group shadow-sm hover:shadow-md`}

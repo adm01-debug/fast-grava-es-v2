@@ -21,7 +21,7 @@ interface MobileHeaderProps {
 
 /**
  * MobileHeader - Header reutilizável para páginas mobile
- * 
+ *
  * Use para páginas que não usam MainLayout ou precisam de navegação adicional.
  * Fornece botão voltar, título e ações personalizadas.
  */

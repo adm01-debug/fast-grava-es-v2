@@ -69,8 +69,8 @@ export function LeaderboardWidget() {
         ) : topRankings.length > 0 ? (
           <div className="space-y-1">
             {topRankings.map((rank: OperatorRanking) => (
-              <div 
-                key={rank.id} 
+              <div
+                key={rank.id}
                 className={cn(
                   "flex items-center gap-2 p-2 rounded-lg border border-transparent transition-all",
                   rank.position === 1 ? "bg-yellow-500/5 border-yellow-500/10" : "hover:bg-secondary/20"
@@ -79,7 +79,7 @@ export function LeaderboardWidget() {
                 <div className="flex items-center justify-center w-6 h-6 shrink-0">
                   {getMedalIcon(rank.position)}
                 </div>
-                
+
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between">
                     <p className={cn(
@@ -93,7 +93,7 @@ export function LeaderboardWidget() {
                       <p className="text-[10px] font-mono font-bold">{rank.total_points}</p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center gap-3 mt-0.5">
                     <div className="flex items-center gap-1">
                       <span className="text-[8px] text-muted-foreground uppercase font-medium">OEE</span>

@@ -32,7 +32,7 @@ export default function EfficiencyDashboard() {
   const { alerts, capacityByDate, isLoading: bottleneckLoading, criticalCount } = useBottleneckPrediction();
   const { alerts: allAlertHistory, resolvedAlerts, isLoading: historyLoading } = useEfficiencyAlertHistory();
   const { data: oeeData } = useOEE(30);
-  
+
   const overallOEE = oeeData?.overallOEE || 0;
 
   const totalSetupSaved = totalSavings;
@@ -56,8 +56,8 @@ export default function EfficiencyDashboard() {
           </div>
           <div className="flex items-center gap-2 flex-wrap">
             <FavoritesDropdown onNavigate={(url) => navigate(url)} />
-            <Badge 
-              variant="outline" 
+            <Badge
+              variant="outline"
               className="gap-1 text-xs hidden sm:flex cursor-pointer hover:bg-accent"
               onClick={() => document.dispatchEvent(new KeyboardEvent("keydown", { key: "k", metaKey: true, bubbles: true }))}
             >

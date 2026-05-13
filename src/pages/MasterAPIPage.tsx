@@ -4,15 +4,15 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { 
-  Code2, 
-  Terminal, 
-  Copy, 
-  Key, 
-  Activity, 
-  Server, 
-  Zap, 
-  ShieldCheck, 
+import {
+  Code2,
+  Terminal,
+  Copy,
+  Key,
+  Activity,
+  Server,
+  Zap,
+  ShieldCheck,
   Globe,
   Database,
   Lock,
@@ -167,7 +167,7 @@ export default function MasterAPIPage() {
                               <div className="flex items-center gap-3">
                                  <Badge className={cn(
                                    "font-black text-[10px] w-16 flex justify-center",
-                                   ep.method === 'GET' ? "bg-emerald-500" : 
+                                   ep.method === 'GET' ? "bg-emerald-500" :
                                    ep.method === 'POST' ? "bg-blue-500" : "bg-amber-500"
                                  )}>
                                     {ep.method}
@@ -220,7 +220,7 @@ const data = await response.json();
                 </CardContent>
              </Card>
           </TabsContent>
-          
+
           <TabsContent value="logs">
              <div className="flex flex-col items-center justify-center py-24 text-muted-foreground italic border-2 border-dashed rounded-3xl">
                 <Activity className="h-12 w-12 opacity-20 mb-4" />

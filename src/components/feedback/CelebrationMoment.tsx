@@ -1,10 +1,10 @@
 import { useEffect, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Trophy, 
-  Star, 
-  Zap, 
-  CheckCircle2, 
+import {
+  Trophy,
+  Star,
+  Zap,
+  CheckCircle2,
   Sparkles,
   PartyPopper,
   Medal,
@@ -13,11 +13,11 @@ import {
 import { cn } from '@/lib/utils';
 import { useHapticFeedback } from '@/hooks/use-haptic-feedback';
 
-type CelebrationType = 
-  | 'job-completed' 
-  | 'goal-achieved' 
-  | 'streak' 
-  | 'level-up' 
+type CelebrationType =
+  | 'job-completed'
+  | 'goal-achieved'
+  | 'streak'
+  | 'level-up'
   | 'first-time'
   | 'milestone';
 
@@ -93,14 +93,14 @@ function Particle({ delay, color }: { delay: number; color: string }) {
   return (
     <motion.div
       initial={{ opacity: 1, x: 0, y: 0, scale: 0, rotate: 0 }}
-      animate={{ 
+      animate={{
         opacity: [1, 1, 0],
         x: randomX,
         y: randomY,
         scale: [0, randomScale, 0],
         rotate: randomRotation,
       }}
-      transition={{ 
+      transition={{
         duration: 1.2,
         delay,
         ease: 'easeOut',
@@ -128,7 +128,7 @@ export function CelebrationMoment({
   useEffect(() => {
     if (isVisible) {
       trigger('success');
-      
+
       const timer = setTimeout(() => {
         onComplete?.();
       }, duration);
@@ -159,7 +159,7 @@ export function CelebrationMoment({
             initial={{ scale: 0.5, opacity: 0, y: 20 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.8, opacity: 0, y: -20 }}
-            transition={{ 
+            transition={{
               type: 'spring',
               stiffness: 300,
               damping: 20,
@@ -169,9 +169,9 @@ export function CelebrationMoment({
             {/* Particles */}
             <div className="absolute inset-0 flex items-center justify-center">
               {Array.from({ length: config.particleCount }).map((_, i) => (
-                <Particle 
-                  key={i} 
-                  delay={i * 0.02} 
+                <Particle
+                  key={i}
+                  delay={i * 0.02}
                   color={i % 2 === 0 ? 'bg-primary' : 'bg-accent'}
                 />
               ))}
@@ -181,7 +181,7 @@ export function CelebrationMoment({
             <motion.div
               initial={{ scale: 0, rotate: -180 }}
               animate={{ scale: 1, rotate: 0 }}
-              transition={{ 
+              transition={{
                 type: 'spring',
                 stiffness: 200,
                 damping: 15,
@@ -242,7 +242,7 @@ export function useCelebration() {
   } | null>(null);
 
   const celebrate = useCallback((
-    type: CelebrationType, 
+    type: CelebrationType,
     options?: { title?: string; subtitle?: string }
   ) => {
     setCelebration({ type, ...options });
@@ -282,11 +282,11 @@ export function MiniCelebration({ isVisible, className }: MiniCelebrationProps) 
           className={cn('inline-flex', className)}
         >
           <motion.div
-            animate={{ 
+            animate={{
               scale: [1, 1.2, 1],
               rotate: [0, 10, -10, 0],
             }}
-            transition={{ 
+            transition={{
               duration: 0.5,
               repeat: 2,
               repeatType: 'loop',

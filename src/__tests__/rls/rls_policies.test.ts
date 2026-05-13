@@ -14,7 +14,7 @@ describe('Row Level Security (RLS) Policy Logic', () => {
       .from('jobs')
       .select('*')
       .limit(1);
-    
+
     // We expect an error or empty data if not authenticated in test environment
     // This confirms RLS is ACTIVE (deny by default)
     expect(error || data?.length === 0).toBeTruthy();
@@ -25,7 +25,7 @@ describe('Row Level Security (RLS) Policy Logic', () => {
       .from('audit_log' as any)
       .select('*')
       .limit(1);
-      
+
     expect(error || data?.length === 0).toBeTruthy();
   });
 });

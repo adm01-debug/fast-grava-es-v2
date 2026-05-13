@@ -87,11 +87,11 @@ describe('FuturisticBI', () => {
 
   it('shows drill-down dialog when clicking on a stat card', async () => {
     renderComponent();
-    
+
     // Find the Atrasos Críticos card by its title
     const delayedCard = screen.getByText('Atrasos Críticos');
     fireEvent.click(delayedCard);
-    
+
     // Check if dialog opens
     await waitFor(() => {
       expect(screen.getByText(/PEDIDOS ATRASADOS/i)).toBeInTheDocument();
@@ -100,12 +100,12 @@ describe('FuturisticBI', () => {
 
   it('triggers export when clicking export buttons', async () => {
     renderComponent();
-    
+
     // Find the export button in the OEE card
     const exportButtons = screen.getAllByRole('button');
     // The first few buttons are for export in the stat cards
     fireEvent.click(exportButtons[0]); // This might open a popover or trigger export depending on implementation
-    
+
     // Since handleExport uses toast.info, we can check for that or just ensure the function is called
     // (Testing toast is usually done via mocking toast)
   });

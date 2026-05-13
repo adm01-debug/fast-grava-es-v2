@@ -26,10 +26,10 @@ interface CreateScheduleModalProps {
   onOpenChange?: (open: boolean) => void;
 }
 
-export function CreateScheduleModal({ 
-  machines, 
-  maintenanceTypes, 
-  onSubmit, 
+export function CreateScheduleModal({
+  machines,
+  maintenanceTypes,
+  onSubmit,
   isSubmitting,
   initialMachineId,
   isOpen: propsOpen,
@@ -93,8 +93,8 @@ export function CreateScheduleModal({
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label>Máquina *</Label>
-            <Select 
-              value={formData.machine_id} 
+            <Select
+              value={formData.machine_id}
               onValueChange={(v) => setFormData(prev => ({ ...prev, machine_id: v }))}
             >
               <SelectTrigger>
@@ -112,12 +112,12 @@ export function CreateScheduleModal({
 
           <div className="space-y-2">
             <Label>Tipo de Manutenção *</Label>
-            <Select 
-              value={formData.maintenance_type_id} 
+            <Select
+              value={formData.maintenance_type_id}
               onValueChange={(v) => {
                 const type = maintenanceTypes.find(t => t.id === v);
-                setFormData(prev => ({ 
-                  ...prev, 
+                setFormData(prev => ({
+                  ...prev,
                   maintenance_type_id: v,
                   interval_days: type?.default_interval_days || 30,
                 }));
@@ -130,9 +130,9 @@ export function CreateScheduleModal({
                 {maintenanceTypes.map(type => (
                   <SelectItem key={type.id} value={type.id}>
                     <div className="flex items-center gap-2">
-                      <div 
-                        className="w-3 h-3 rounded-full" 
-                        style={{ backgroundColor: type.color }} 
+                      <div
+                        className="w-3 h-3 rounded-full"
+                        style={{ backgroundColor: type.color }}
                       />
                       {type.name}
                     </div>
@@ -197,8 +197,8 @@ export function CreateScheduleModal({
             <Button type="button" variant="outline" onClick={() => setOpen(false)}>
               Cancelar
             </Button>
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               disabled={isSubmitting || !formData.machine_id || !formData.maintenance_type_id || !formData.name}
             >
               {isSubmitting ? 'Salvando...' : 'Agendar'}

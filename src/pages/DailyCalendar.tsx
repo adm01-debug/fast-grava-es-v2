@@ -198,11 +198,11 @@ export default function DailyCalendar() {
         <Breadcrumbs />
 
         <PlanningEfficiencyDashboard />
-        
+
         {dayConflicts.length > 0 && (
-          <ConflictResolutionPanel 
-            conflicts={dayConflicts} 
-            onResolved={() => refetchJobs()} 
+          <ConflictResolutionPanel
+            conflicts={dayConflicts}
+            onResolved={() => refetchJobs()}
           />
         )}
 
@@ -247,8 +247,8 @@ export default function DailyCalendar() {
             onExportICal={handleExportICal}
             onShowOnboarding={() => setOnboardingOpen(true)}
             extraSlot={
-              <OptimizationAssistant 
-                utilizationByMachine={utilizationByMachine} 
+              <OptimizationAssistant
+                utilizationByMachine={utilizationByMachine}
                 machineCount={filteredMachines.length}
               />
             }

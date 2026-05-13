@@ -42,7 +42,7 @@ export function ProductionTimer({ job, compact = false }: ProductionTimerProps) 
     const m = Math.floor((abs % 3600) / 60);
     const s = abs % 60;
     const sign = totalSeconds < 0 ? '-' : '';
-    return h > 0 
+    return h > 0
       ? `${sign}${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
       : `${sign}${m}:${String(s).padStart(2, '0')}`;
   };
@@ -120,7 +120,7 @@ export function ProductionTimer({ job, compact = false }: ProductionTimerProps) 
         <div className="flex justify-between text-xs text-muted-foreground mt-2">
           <span>{Math.round(timerData.progress)}% concluído</span>
           <span className={cn(timerData.remainingSeconds < 0 && 'text-destructive font-medium')}>
-            {timerData.remainingSeconds > 0 
+            {timerData.remainingSeconds > 0
               ? `${formatTime(timerData.remainingSeconds)} restantes`
               : `${formatTime(Math.abs(timerData.remainingSeconds))} excedido`
             }

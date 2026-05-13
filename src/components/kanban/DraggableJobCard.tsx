@@ -41,7 +41,7 @@ function getDeadlineInfo(job: DbJob): { label: string; isOverdue: boolean; color
   const scheduled = new Date(job.scheduled_date);
   const now = new Date();
   const diffDays = differenceInDays(scheduled, now);
-  
+
   if (diffDays < 0) return { label: `${Math.abs(diffDays)}d atrasado`, isOverdue: true, color: 'text-red-400 bg-red-400/10' };
   if (diffDays === 0) return { label: 'Hoje', isOverdue: false, color: 'text-orange-400 bg-orange-400/10' };
   if (diffDays <= 2) return { label: `${diffDays}d restante`, isOverdue: false, color: 'text-yellow-400 bg-yellow-400/10' };
@@ -59,7 +59,7 @@ export function DraggableJobCard({ job, technique, machine, onClick, viewMode = 
     transition,
     isDragging,
     isSorting,
-  } = useSortable({ 
+  } = useSortable({
     id: job.id,
     data: { type: 'job', job }
   });
@@ -73,8 +73,8 @@ export function DraggableJobCard({ job, technique, machine, onClick, viewMode = 
   const PriorityIcon = priority.icon;
   const aging = getAgingIndicator(job.updated_at);
   const deadline = getDeadlineInfo(job);
-  const progress = job.produced_quantity && job.quantity 
-    ? Math.min(100, Math.round((job.produced_quantity / job.quantity) * 100)) 
+  const progress = job.produced_quantity && job.quantity
+    ? Math.min(100, Math.round((job.produced_quantity / job.quantity) * 100))
     : 0;
 
   // Compact view
@@ -89,7 +89,7 @@ export function DraggableJobCard({ job, technique, machine, onClick, viewMode = 
           isDragging && "opacity-50 shadow-xl scale-105 z-50 ring-2 ring-primary",
           isSelected && "ring-2 ring-primary bg-primary/5"
         )}
-        style={{ 
+        style={{
           ...(style as React.CSSProperties),
           borderLeftColor: technique?.color || 'transparent',
         }}
@@ -157,7 +157,7 @@ export function DraggableJobCard({ job, technique, machine, onClick, viewMode = 
               className="h-3.5 w-3.5 rounded border-border accent-primary"
             />
           )}
-          <div 
+          <div
             {...attributes}
             {...listeners}
             className="flex items-center gap-1 cursor-grab active:cursor-grabbing"
@@ -175,10 +175,10 @@ export function DraggableJobCard({ job, technique, machine, onClick, viewMode = 
             <span className={`text-[10px] ${aging.color}`}>{aging.label}</span>
           </div>
         </div>
-        <Badge 
-          variant="outline" 
+        <Badge
+          variant="outline"
           className="text-[10px] font-black tracking-tighter shrink-0 border-2"
-          style={{ 
+          style={{
             borderColor: technique?.color,
             color: technique?.color,
             backgroundColor: `${technique?.color}10`
@@ -187,13 +187,13 @@ export function DraggableJobCard({ job, technique, machine, onClick, viewMode = 
           {technique?.name || 'N/A'}
         </Badge>
       </div>
-      
+
       {/* Client + Product */}
       <div className="flex-1 min-w-0">
         <p className="font-bold text-sm text-foreground truncate mb-0.5 group-hover:text-primary transition-colors">{job.client}</p>
         <p className="text-[11px] leading-tight text-muted-foreground line-clamp-2 mb-2 h-8">{job.product}</p>
       </div>
-      
+
       {/* Progress bar */}
       {job.produced_quantity != null && job.quantity > 0 && job.status !== 'finished' && (
         <div className="mb-2 bg-muted/40 p-1.5 rounded-md border border-border/20">
@@ -204,13 +204,13 @@ export function DraggableJobCard({ job, technique, machine, onClick, viewMode = 
           <Progress value={progress} className="h-1 bg-background" />
         </div>
       )}
-      
+
       {/* OS + qty */}
       <div className="flex items-center justify-between text-[10px] font-bold text-muted-foreground bg-muted/20 px-2 py-1 rounded border border-border/10">
         <span className="font-mono text-primary/80">OS {job.order_number}</span>
         {!job.produced_quantity && <span>{job.quantity.toLocaleString()} pçs</span>}
       </div>
-      
+
       {/* Date + machine */}
       {(job.scheduled_date || machine) && (
         <div className="mt-2 pt-2 border-t border-border/30 flex items-center gap-2 text-xs text-muted-foreground flex-wrap">
@@ -247,9 +247,9 @@ export function DraggableJobCard({ job, technique, machine, onClick, viewMode = 
       {onQuickAction && (
         <div className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-0.5">
           {job.status === 'scheduled' && (
-            <Button 
-              size="icon" variant="ghost" 
-              className="h-6 w-6" 
+            <Button
+              size="icon" variant="ghost"
+              className="h-6 w-6"
               title="Iniciar produção"
               onClick={(e) => { e.stopPropagation(); onQuickAction(job.id, 'start'); }}
             >
@@ -258,17 +258,17 @@ export function DraggableJobCard({ job, technique, machine, onClick, viewMode = 
           )}
           {job.status === 'production' && (
             <>
-              <Button 
-                size="icon" variant="ghost" 
-                className="h-6 w-6" 
+              <Button
+                size="icon" variant="ghost"
+                className="h-6 w-6"
                 title="Pausar"
                 onClick={(e) => { e.stopPropagation(); onQuickAction(job.id, 'pause'); }}
               >
                 <Pause className="h-3 w-3 text-orange-400" />
               </Button>
-              <Button 
-                size="icon" variant="ghost" 
-                className="h-6 w-6" 
+              <Button
+                size="icon" variant="ghost"
+                className="h-6 w-6"
                 title="Finalizar"
                 onClick={(e) => { e.stopPropagation(); onQuickAction(job.id, 'finish'); }}
               >
@@ -277,9 +277,9 @@ export function DraggableJobCard({ job, technique, machine, onClick, viewMode = 
             </>
           )}
           {job.status === 'paused' && (
-            <Button 
-              size="icon" variant="ghost" 
-              className="h-6 w-6" 
+            <Button
+              size="icon" variant="ghost"
+              className="h-6 w-6"
               title="Retomar"
               onClick={(e) => { e.stopPropagation(); onQuickAction(job.id, 'resume'); }}
             >

@@ -7,12 +7,12 @@ import { SPCParameter, SPCMeasurement } from '@/hooks/useSPC';
 export const exportSPCReport = async (parameter: SPCParameter, measurements: SPCMeasurement[], capability: unknown) => {
   const doc = new jsPDF();
   const now = new Date();
-  
+
   // Header
   doc.setFontSize(22);
   doc.setTextColor(0, 51, 102);
   doc.text('Relatório de Controle Estatístico (SPC)', 14, 20);
-  
+
   doc.setFontSize(10);
   doc.setTextColor(100);
   doc.text(`Gerado em: ${format(now, "dd/MM/yyyy HH:mm", { locale: ptBR })}`, 14, 28);
@@ -22,7 +22,7 @@ export const exportSPCReport = async (parameter: SPCParameter, measurements: SPC
   doc.setFontSize(14);
   doc.setTextColor(0);
   doc.text('1. Detalhes do Parâmetro', 14, 42);
-  
+
   autoTable(doc, {
     startY: 46,
     head: [['Propriedade', 'Valor']],
@@ -45,7 +45,7 @@ export const exportSPCReport = async (parameter: SPCParameter, measurements: SPC
   if (capability) {
     const finalY = (doc as any).lastAutoTable.finalY || 100;
     doc.text('2. Índices de Capabilidade (Cp/Cpk)', 14, finalY + 15);
-    
+
     autoTable(doc, {
       startY: finalY + 20,
       head: [['Índice', 'Valor', 'Avaliação']],
@@ -63,7 +63,7 @@ export const exportSPCReport = async (parameter: SPCParameter, measurements: SPC
   // Measurements Table
   doc.addPage();
   doc.text('3. Histórico de Medições (Últimas 50)', 14, 20);
-  
+
   autoTable(doc, {
     startY: 26,
     head: [['Amostra', 'Data', 'Valores', 'Média', 'Amplitude', 'Status']],

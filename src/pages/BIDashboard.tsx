@@ -23,9 +23,9 @@ import {
   BarChart3, PieChart, LineChart, ArrowUp, ArrowDown, Minus,
   Gauge, Activity, ArrowRight, Package, Layout
 } from 'lucide-react';
-import { 
+import {
   AreaChart, Area, BarChart, Bar, PieChart as RechartsPieChart, Pie, Cell,
-  LineChart as RechartsLineChart, Line, XAxis, YAxis, CartesianGrid, 
+  LineChart as RechartsLineChart, Line, XAxis, YAxis, CartesianGrid,
   Tooltip, ResponsiveContainer, Legend
 } from 'recharts';
 import { format, subDays, startOfDay, endOfDay, isWithinInterval, parseISO, differenceInDays } from 'date-fns';
@@ -96,7 +96,7 @@ export default function BIDashboard() {
     if (machineFilter !== 'all') {
       periodJobs = periodJobs.filter(j => j.machine_id === machineFilter);
     }
-    
+
     if (collaboratorFilter !== 'all') {
       // Find machines assigned to this collaborator
       const assignedMachineIds = assignments
@@ -167,7 +167,7 @@ export default function BIDashboard() {
     const periodCompletedJobs = periodJobs.filter(j => j.status === 'finished').length;
     const periodCompletedPieces = periodJobs.filter(j => j.status === 'finished').reduce((sum, j) => sum + (j.produced_quantity ?? j.quantity ?? 0), 0);
     const periodLostPieces = periodJobs.reduce((sum, j) => sum + (j.lost_pieces ?? 0), 0);
-    
+
     // Updated calculation for real-time accuracy: Total Attempted = Produced + Lost
     const totalAttempted = periodCompletedPieces + periodLostPieces;
     const periodLossRate = totalAttempted > 0 ? (periodLostPieces / totalAttempted) * 100 : 0;
@@ -263,7 +263,7 @@ export default function BIDashboard() {
       title: "Exportação iniciada",
       description: `O arquivo ${format.toUpperCase()} está sendo gerado e o download começará em instantes.`,
     });
-    
+
     // Simulating export logic
     setTimeout(() => {
       toast({
@@ -280,17 +280,17 @@ export default function BIDashboard() {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <BIHeader comparisonMode={comparisonMode} setComparisonMode={setComparisonMode} onNavigate={(path) => navigate(path)} />
           <div className="flex items-center gap-2 bg-muted/50 p-1 rounded-lg">
-            <Button 
-              variant={viewMode === 'classic' ? 'secondary' : 'ghost'} 
-              size="sm" 
+            <Button
+              variant={viewMode === 'classic' ? 'secondary' : 'ghost'}
+              size="sm"
               onClick={() => setViewMode('classic')}
               className="gap-2"
             >
               <Layout className="h-4 w-4" /> Clássico
             </Button>
-            <Button 
-              variant={viewMode === 'futuristic' ? 'secondary' : 'ghost'} 
-              size="sm" 
+            <Button
+              variant={viewMode === 'futuristic' ? 'secondary' : 'ghost'}
+              size="sm"
               onClick={() => setViewMode('futuristic')}
               className="gap-2"
             >
@@ -370,22 +370,22 @@ export default function BIDashboard() {
             {viewMode === 'futuristic' ? (
               <FuturisticBI biMetrics={biMetrics} kpis={kpis} oeeData={oeeData} isLoading={isLoading} />
             ) : (
-              <BINormalView 
-                biMetrics={biMetrics} 
-                kpis={kpis} 
-                oeeData={oeeData} 
+              <BINormalView
+                biMetrics={biMetrics}
+                kpis={kpis}
+                oeeData={oeeData}
                 getPeriodLabel={getPeriodLabel}
                 onDrillDown={(title, segment) => {
                   setDrillDownTitle(title);
-                  
+
                   if (biMetrics.periodJobsList) {
                     const filtered = biMetrics.periodJobsList.filter((j: unknown) => {
                       if (segment === 'all') return true;
                       const s = segment.toLowerCase();
-                      
+
                       return (
-                        j.status === s || 
-                        j.machine_id === segment || 
+                        j.status === s ||
+                        j.machine_id === segment ||
                         j.technique_id === segment ||
                         (s === 'lost' && (j.lost_pieces || 0) > 0) ||
                         (s === 'delayed' && j.status === 'delayed') ||
@@ -410,11 +410,11 @@ export default function BIDashboard() {
             )}
           </>
         )}
-        <DrillDownDialog 
-          open={drillDownOpen} 
-          onOpenChange={setDrillDownOpen} 
-          title={drillDownTitle} 
-          jobs={drillDownJobs} 
+        <DrillDownDialog
+          open={drillDownOpen}
+          onOpenChange={setDrillDownOpen}
+          title={drillDownTitle}
+          jobs={drillDownJobs}
           onExport={handleExport}
         />
       </div>

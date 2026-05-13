@@ -158,13 +158,13 @@ export function BIPeriodFilters({
               </Select>
             </div>
           </div>
-          
+
           {/* Global Search Filter */}
           <div className="pt-4 border-t border-border/50">
             <div className="relative group max-w-md">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
-              <Input 
-                placeholder="Filtrar visão geral por OS ou Produto..." 
+              <Input
+                placeholder="Filtrar visão geral por OS ou Produto..."
                 className="pl-10 bg-background/50 border-primary/20 focus:border-primary/50 transition-all h-9 text-xs"
               />
             </div>

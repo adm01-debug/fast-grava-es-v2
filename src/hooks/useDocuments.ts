@@ -79,7 +79,7 @@ export const useDocuments = (technicalSheetId?: string) => {
       technicalSheetId?: string;
     }) => {
       const { data: userData } = await supabase.auth.getUser();
-      
+
       // Upload file to storage
       const fileExt = file.name.split('.').pop();
       const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
@@ -123,10 +123,10 @@ export const useDocuments = (technicalSheetId?: string) => {
       toast({ title: 'Documento enviado com sucesso!' });
     },
     onError: (error: Error) => {
-      toast({ 
-        title: 'Erro ao enviar documento', 
-        description: error.message, 
-        variant: 'destructive' 
+      toast({
+        title: 'Erro ao enviar documento',
+        description: error.message,
+        variant: 'destructive'
       });
     },
   });
@@ -210,10 +210,10 @@ export const useDocuments = (technicalSheetId?: string) => {
       toast({ title: 'Nova versão criada!' });
     },
     onError: (error: Error) => {
-      toast({ 
-        title: 'Erro ao criar versão', 
-        description: error.message, 
-        variant: 'destructive' 
+      toast({
+        title: 'Erro ao criar versão',
+        description: error.message,
+        variant: 'destructive'
       });
     },
   });

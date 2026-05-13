@@ -21,17 +21,17 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { 
+import {
   Edit, Clock, Wrench, ListOrdered, Package, Lightbulb,
   AlertTriangle, Info, CheckCircle2, FileDown, Copy, Star, TrendingUp,
   QrCode, Maximize2, Zap, Droplets, MoveHorizontal, Thermometer,
-  CheckSquare, History, ArrowLeftRight 
+  CheckSquare, History, ArrowLeftRight
 } from 'lucide-react';
-import { 
-  useTechnicalSheetDetails, 
-  useTechnicalSheetAudit, 
+import {
+  useTechnicalSheetDetails,
+  useTechnicalSheetAudit,
   useTechnicalSheetFavorites,
-  useTechnicalSheetMutations 
+  useTechnicalSheetMutations
 } from '@/hooks/useTechnicalSheets';
 import { useInventory } from '@/hooks/useInventory';
 import { KnowledgeSheetQRCode } from './KnowledgeSheetQRCode';
@@ -60,7 +60,6 @@ export const TechnicalSheetViewer = ({ sheetId, onEdit, onDuplicate }: Technical
     if (sheetId) {
       supabase.rpc('increment_sheet_view_count', { sheet_id: sheetId })
         .then(({ error }) => {
-          if (error) 
         });
     }
   }, [sheetId]);
@@ -257,9 +256,9 @@ export const TechnicalSheetViewer = ({ sheetId, onEdit, onDuplicate }: Technical
               )}
             </div>
             <div className="flex gap-1.5 flex-shrink-0">
-              <Button 
-                variant="ghost" 
-                size="icon" 
+              <Button
+                variant="ghost"
+                size="icon"
                 onClick={() => toggleFavorite.mutate({ sheetId, isFavorite: favorites.includes(sheetId) })}
                 className={favorites.includes(sheetId) ? "text-amber-500 fill-amber-500" : "text-muted-foreground"}
                 title={favorites.includes(sheetId) ? "Remover dos favoritos" : "Adicionar aos favoritos"}
@@ -347,14 +346,14 @@ export const TechnicalSheetViewer = ({ sheetId, onEdit, onDuplicate }: Technical
                 </TabsTrigger>
               </TabsList>
             </div>
-            
+
             <TabsContent value="sheet" className="flex-1 overflow-hidden m-0 border-none p-0">
               <ScrollArea className="h-full">
                 <div className="p-6 space-y-8">
                   {/* Visual Reference Section (Etapa 3) */}
-                  <VisualReference 
-                    goldStandardUrl={sheet.gold_standard_image_url || undefined} 
-                    failureStandardUrl={sheet.failure_standard_image_url || undefined} 
+                  <VisualReference
+                    goldStandardUrl={sheet.gold_standard_image_url || undefined}
+                    failureStandardUrl={sheet.failure_standard_image_url || undefined}
                   />
 
                   {/* Technical Settings Section */}
@@ -398,7 +397,7 @@ export const TechnicalSheetViewer = ({ sheetId, onEdit, onDuplicate }: Technical
                             };
                             const value = (sheet.machine_settings as any)?.[param];
                             const range = (sheet.settings_ranges as any)?.[param];
-                            
+
                             if (!value && (!range || (!range.min && !range.max))) return null;
 
                             return (
@@ -482,7 +481,7 @@ export const TechnicalSheetViewer = ({ sheetId, onEdit, onDuplicate }: Technical
                           <Info className="h-4 w-4" />
                           Produção e Qualidade
                         </h3>
-                        
+
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           {sheet.gap_specifications && (
                             <div className="p-3 rounded-lg bg-blue-500/5 border border-blue-500/10">
@@ -522,7 +521,7 @@ export const TechnicalSheetViewer = ({ sheetId, onEdit, onDuplicate }: Technical
                   <Separator />
 
                   {/* Input Calculator Section (Etapa 4) */}
-                  <MaterialCalculator 
+                  <MaterialCalculator
                     productionQuantity={productionQuantity}
                     setProductionQuantity={setProductionQuantity}
                     sheetMaterials={sheetMaterials}
@@ -625,7 +624,7 @@ export const TechnicalSheetViewer = ({ sheetId, onEdit, onDuplicate }: Technical
                       <p className="text-sm text-muted-foreground">Rastreabilidade completa de edições e homologações</p>
                     </div>
                   </div>
-                  
+
                   <div className="space-y-4">
                     {isLoadingAudit ? (
                       <div className="text-center py-4 text-xs text-muted-foreground">Carregando histórico...</div>
@@ -633,14 +632,14 @@ export const TechnicalSheetViewer = ({ sheetId, onEdit, onDuplicate }: Technical
                       auditLogs.map((log: unknown) => (
                         <div key={log.id} className="relative pl-8 pb-8 border-l last:border-l-0">
                           <div className={`absolute -left-1.5 top-0 w-3 h-3 rounded-full ${
-                            log.action === 'CREATE' ? 'bg-emerald-500' : 
+                            log.action === 'CREATE' ? 'bg-emerald-500' :
                             log.action === 'DELETE' ? 'bg-rose-500' : 'bg-primary'
                           } shadow-sm`} />
                           <div className="bg-muted/30 p-4 rounded-lg border border-border/50">
                             <div className="flex items-center justify-between mb-2">
                               <span className="text-xs font-bold uppercase tracking-wider">
-                                {log.action === 'CREATE' ? 'Criação' : 
-                                 log.action === 'UPDATE' ? 'Atualização' : 
+                                {log.action === 'CREATE' ? 'Criação' :
+                                 log.action === 'UPDATE' ? 'Atualização' :
                                  log.action === 'VERSION_BUMP' ? 'Nova Versão' : log.action}
                               </span>
                               <span className="text-xs text-muted-foreground">

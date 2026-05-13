@@ -21,7 +21,7 @@ export function BITooltip({ active, payload, label, prefix = '', showPercentage 
         <div className="space-y-2.5">
           {payload.map((entry, index) => {
             const percentage = total > 0 ? ((entry.value / total) * 100).toFixed(1) : null;
-            
+
             return (
               <div key={index} className="flex flex-col gap-0.5">
                 <div className="flex items-center justify-between gap-4">
@@ -36,9 +36,9 @@ export function BITooltip({ active, payload, label, prefix = '', showPercentage 
                 {percentage && (
                   <div className="flex items-center gap-1.5 ml-4">
                     <div className="flex-1 h-1 bg-white/5 rounded-full overflow-hidden">
-                      <div 
-                        className="h-full bg-primary/40 rounded-full" 
-                        style={{ width: `${percentage}%`, backgroundColor: entry.color + '40' }} 
+                      <div
+                        className="h-full bg-primary/40 rounded-full"
+                        style={{ width: `${percentage}%`, backgroundColor: entry.color + '40' }}
                       />
                     </div>
                     <span className="text-[9px] text-muted-foreground font-mono">{percentage}%</span>

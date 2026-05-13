@@ -47,11 +47,11 @@ export default function TPMDashboard() {
     checkAndGenerateAlerts,
     resolveAlert,
   } = useTPM();
-  
+
   const [executionModalOpen, setExecutionModalOpen] = useState(false);
   const [selectedSchedule, setSelectedSchedule] = useState<any>(null);
   const [currentRecordId, setCurrentRecordId] = useState<string | null>(null);
-  
+
   // Initialize TPM notifications listener
   useTPMNotifications();
 
@@ -78,7 +78,7 @@ export default function TPMDashboard() {
 
   const handleCompleteMaintenance = (data: unknown) => {
     if (!currentRecordId) return;
-    
+
     completeMaintenance.mutate({
       record_id: currentRecordId,
       ...data
@@ -113,7 +113,7 @@ export default function TPMDashboard() {
 
       <div className="p-4 sm:p-6 lg:p-8 space-y-6 lg:space-y-8">
         <Breadcrumbs />
-        
+
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 animate-fade-in">
           <div>
@@ -121,9 +121,9 @@ export default function TPMDashboard() {
               <h1 className="text-3xl font-display font-black tracking-tighter">
                 <span className="gradient-text animate-pulse-glow">TPM 5.0 - Holographic Reliability 10/10</span>
               </h1>
-              <FavoriteButton 
-                path="/tpm" 
-                name="TPM" 
+              <FavoriteButton
+                path="/tpm"
+                name="TPM"
               />
             </div>
             <p className="text-muted-foreground">
@@ -146,8 +146,8 @@ export default function TPMDashboard() {
                 <TPMNotificationSettings />
               </SheetContent>
             </Sheet>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={() => checkAndGenerateAlerts.mutate()}
               disabled={checkAndGenerateAlerts.isPending}
               className="hover:shadow-glow-primary hover:border-primary/50 transition-all duration-300"
@@ -282,9 +282,9 @@ export default function TPMDashboard() {
           <TabsContent value="calendar" className="space-y-6 animate-fade-in">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <div className="lg:col-span-2">
-                <TPMCalendar 
-                  schedules={schedules} 
-                  onSelectSchedule={(schedule) => handleStartMaintenance(schedule.id)} 
+                <TPMCalendar
+                  schedules={schedules}
+                  onSelectSchedule={(schedule) => handleStartMaintenance(schedule.id)}
                 />
               </div>
               <div className="space-y-6">

@@ -72,7 +72,7 @@ export function Breadcrumbs({ className }: { className?: string }) {
   pathnames.forEach((segment, index) => {
     currentPath += `/${segment}`;
     const isLast = index === pathnames.length - 1;
-    
+
     breadcrumbs.push({
       label: routeLabels[segment] || segment.charAt(0).toUpperCase() + segment.slice(1).replace(/-/g, ' '),
       href: isLast ? undefined : currentPath,
@@ -88,8 +88,8 @@ export function Breadcrumbs({ className }: { className?: string }) {
   };
 
   return (
-    <nav 
-      aria-label="Breadcrumb" 
+    <nav
+      aria-label="Breadcrumb"
       className={cn("flex items-center gap-2 text-sm text-muted-foreground mb-4", className)}
     >
       <Button
@@ -112,8 +112,8 @@ export function Breadcrumbs({ className }: { className?: string }) {
               <Home className="h-3.5 w-3.5 mr-0.5" />
             )}
             {item.href ? (
-              <Link 
-                to={item.href} 
+              <Link
+                to={item.href}
                 className="hover:text-foreground transition-colors hover:underline underline-offset-4"
               >
                 {item.label}

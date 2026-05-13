@@ -41,10 +41,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { DashboardExport } from '@/components/dashboard/DashboardExport';
 
-import { 
-  Calendar, 
-  CheckCircle2, 
-  AlertTriangle, 
+import {
+  Calendar,
+  CheckCircle2,
+  AlertTriangle,
   Printer,
   User,
   Command,
@@ -183,7 +183,7 @@ const Index = () => {
       </Helmet>
       {/* Offline Banner */}
       <OfflineBanner />
-      
+
       <div className="h-full flex flex-col py-3 lg:py-4">
         {/* Compact Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5 px-1 shrink-0">
@@ -203,15 +203,15 @@ const Index = () => {
               </Badge>
             )}
           </div>
-          
+
           <div className="flex items-center gap-2">
             <DateRangePicker date={dateRange} setDate={setDateRange} className="mr-1" />
             <DashboardExport />
             <ConnectionStatus />
             <VoiceButton className="no-export" />
             <FavoritesDropdown onNavigate={(path) => navigate(path)} className="no-export" />
-            <Badge 
-              variant="outline" 
+            <Badge
+              variant="outline"
               className="hidden md:flex gap-1.5 cursor-pointer hover:bg-primary/8 hover:border-primary/30 transition-all duration-200 no-export"
               onClick={() => document.dispatchEvent(new KeyboardEvent("keydown", { key: "k", metaKey: true, bubbles: true }))}
             >
@@ -392,11 +392,11 @@ const Index = () => {
                   >
                     {efficiencyWidgets.map(widget => renderWidget(widget.id))}
                   </SortableWidgetSection>
-                  
+
                   {/* Activity Log */}
                   {activityEntries.length > 0 && (
                     <div className="mt-6">
-                      <ActivityLog 
+                      <ActivityLog
                         entries={activityEntries}
                         title="Atividade Recente"
                         maxHeight="300px"
@@ -469,7 +469,7 @@ const Index = () => {
           </TabsContent>
         </Tabs>
       </div>
-      
+
     </MainLayout>
   );
 };

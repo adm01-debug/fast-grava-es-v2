@@ -9,14 +9,14 @@ import { ptBR } from 'date-fns/locale';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 export const Bitrix24SyncPanel = () => {
-  const { 
-    isLoading, 
-    lastSync, 
-    oauthStatus, 
-    testConnection, 
-    pullFromBitrix, 
+  const {
+    isLoading,
+    lastSync,
+    oauthStatus,
+    testConnection,
+    pullFromBitrix,
     checkOAuthStatus,
-    clearTokens 
+    clearTokens
   } = useBitrix24Sync();
   const [connectionStatus, setConnectionStatus] = useState<'unknown' | 'connected' | 'error'>('unknown');
 
@@ -52,7 +52,7 @@ export const Bitrix24SyncPanel = () => {
         </Badge>
       );
     }
-    
+
     switch (connectionStatus) {
       case 'connected':
         return (
@@ -79,7 +79,7 @@ export const Bitrix24SyncPanel = () => {
 
   const getTokenStatusBadge = () => {
     if (!oauthStatus) return null;
-    
+
     switch (oauthStatus.tokenStatus) {
       case 'valid':
         return (

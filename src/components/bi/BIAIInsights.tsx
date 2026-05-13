@@ -43,10 +43,10 @@ export function BIAIInsights({ biMetrics, oeeData }: BIAIInsightsProps) {
 
   const insights = useMemo(() => {
     const list = [];
-    
+
     // Predicative Calculation: Velocity & Capacity
-    const avgPiecesPerHour = 52; 
-    const totalRemainingPieces = biMetrics.toDoJobs * 85; 
+    const avgPiecesPerHour = 52;
+    const totalRemainingPieces = biMetrics.toDoJobs * 85;
     const hoursToClear = totalRemainingPieces / avgPiecesPerHour;
     const daysToClear = (hoursToClear / 7.5).toFixed(1);
 
@@ -108,7 +108,7 @@ export function BIAIInsights({ biMetrics, oeeData }: BIAIInsightsProps) {
     <Card className="bg-black/60 border-primary/20 backdrop-blur-2xl overflow-hidden relative group h-full shadow-2xl">
       <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-transparent pointer-events-none opacity-50" />
       <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 blur-[100px] pointer-events-none" />
-      
+
       <CardHeader className="relative z-10 border-b border-white/5 bg-white/5 py-4">
         <CardTitle className="flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -131,7 +131,7 @@ export function BIAIInsights({ biMetrics, oeeData }: BIAIInsightsProps) {
       <CardContent className="p-0 relative z-10">
         <div className="divide-y divide-white/5">
           {insights.map((insight, index) => (
-            <motion.div 
+            <motion.div
               key={index}
               initial={{ x: -30, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
@@ -172,7 +172,7 @@ export function BIAIInsights({ biMetrics, oeeData }: BIAIInsightsProps) {
                   <p className="text-xs text-muted-foreground leading-relaxed font-medium">
                     {insight.description}
                   </p>
-                  
+
                   <AnimatePresence>
                     {expandedInsight === index && (
                       <motion.div
@@ -188,7 +188,7 @@ export function BIAIInsights({ biMetrics, oeeData }: BIAIInsightsProps) {
                               "{insight.details}"
                             </p>
                           </div>
-                          
+
                           {insight.remedy && (
                             <div className="bg-gradient-to-r from-primary/10 to-transparent border border-primary/20 p-3 rounded-xl shadow-inner group/remedy">
                               <p className="text-[10px] text-primary font-bold uppercase mb-2 flex items-center gap-2">
@@ -199,7 +199,7 @@ export function BIAIInsights({ biMetrics, oeeData }: BIAIInsightsProps) {
                               </p>
                             </div>
                           )}
-                          
+
                           <Button size="sm" variant="outline" className="h-8 text-[10px] w-full border-primary/20 hover:bg-primary/20 hover:border-primary/40 group/btn transition-all">
                             <span>{insight.action}</span>
                             <ArrowUpRight className="ml-2 h-3 w-3 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
@@ -213,7 +213,7 @@ export function BIAIInsights({ biMetrics, oeeData }: BIAIInsightsProps) {
             </motion.div>
           ))}
         </div>
-        
+
         <div className="p-5 bg-gradient-to-t from-primary/10 via-primary/5 to-transparent border-t border-primary/20">
           <div className="flex flex-col gap-5">
             <div className="flex items-center justify-between">
@@ -228,10 +228,10 @@ export function BIAIInsights({ biMetrics, oeeData }: BIAIInsightsProps) {
                 </div>
               </div>
               {!simulationResult && (
-                <Button 
-                  onClick={runSimulation} 
+                <Button
+                  onClick={runSimulation}
                   disabled={isSimulating}
-                  size="sm" 
+                  size="sm"
                   className="h-8 text-[10px] gap-2 bg-primary/20 hover:bg-primary/30 border border-primary/30 text-primary transition-all duration-500 shadow-[0_0_15px_rgba(14,165,233,0.1)]"
                 >
                   {isSimulating ? <RefreshCcw className="h-3 w-3 animate-spin" /> : <Activity className="h-3 w-3" />}
@@ -247,7 +247,7 @@ export function BIAIInsights({ biMetrics, oeeData }: BIAIInsightsProps) {
                   <span className="font-bold">SYNCING...</span>
                 </div>
                 <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden p-[1px]">
-                  <motion.div 
+                  <motion.div
                     initial={{ width: "0%" }}
                     animate={{ width: "100%" }}
                     transition={{ duration: 2, ease: "easeInOut" }}
@@ -258,7 +258,7 @@ export function BIAIInsights({ biMetrics, oeeData }: BIAIInsightsProps) {
             )}
 
             {simulationResult && !isSimulating && (
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 className="grid grid-cols-2 gap-4 p-4 bg-black/60 border border-primary/30 rounded-2xl relative overflow-hidden group/result shadow-2xl"
@@ -268,7 +268,7 @@ export function BIAIInsights({ biMetrics, oeeData }: BIAIInsightsProps) {
                     <RefreshCcw className="h-3 w-3" />
                   </Button>
                 </div>
-                
+
                 <div className="space-y-2">
                   <div className="flex items-center gap-2 text-[9px] text-primary/70 font-bold uppercase">
                     <Target className="h-3.5 w-3.5" /> Potencial OEE
@@ -276,7 +276,7 @@ export function BIAIInsights({ biMetrics, oeeData }: BIAIInsightsProps) {
                   <div className="flex items-baseline gap-2">
                     <span className="text-2xl font-black text-white tracking-tighter">{simulationResult.oee.toFixed(1)}%</span>
                     <div className="flex items-center text-[10px] text-emerald-400 font-bold bg-emerald-500/10 px-1.5 py-0.5 rounded-md">
-                      <TrendingUp className="h-2.5 w-2.5 mr-1" /> 
+                      <TrendingUp className="h-2.5 w-2.5 mr-1" />
                       +{(simulationResult.oee - oeeData.overallOEE).toFixed(1)}%
                     </div>
                   </div>
@@ -291,12 +291,12 @@ export function BIAIInsights({ biMetrics, oeeData }: BIAIInsightsProps) {
                       R$ {simulationResult.revenue.toLocaleString('pt-BR', { maximumFractionDigits: 0 })}
                     </span>
                     <div className="flex items-center text-[10px] text-emerald-400 font-bold bg-emerald-500/10 px-1.5 py-0.5 rounded-md">
-                      <TrendingUp className="h-2.5 w-2.5 mr-1" /> 
+                      <TrendingUp className="h-2.5 w-2.5 mr-1" />
                       +28%
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="col-span-2 mt-2 pt-3 border-t border-white/5 flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Info className="h-3 w-3 text-muted-foreground" />
@@ -308,7 +308,7 @@ export function BIAIInsights({ biMetrics, oeeData }: BIAIInsightsProps) {
                 </div>
               </motion.div>
             )}
-            
+
             <div className="flex items-center justify-between gap-2 text-[9px] text-white/30 font-mono uppercase tracking-[0.2em] pt-2 border-t border-white/5">
               <div className="flex items-center gap-2">
                 <div className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse" />

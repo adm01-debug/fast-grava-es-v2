@@ -23,7 +23,7 @@ export function useOperatorSkills(operatorId?: string) {
       if (operatorId) {
         query = query.eq('operator_id', operatorId);
       }
-      
+
       const { data, error } = await query;
       if (error) throw error;
       return data as OperatorSkill[];

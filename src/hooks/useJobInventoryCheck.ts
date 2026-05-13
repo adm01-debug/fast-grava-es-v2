@@ -9,7 +9,7 @@ export function useJobInventoryCheck(techniqueId?: string) {
     queryKey: ['sheet-materials-check', techniqueId],
     queryFn: async () => {
       if (!techniqueId) return [];
-      
+
       // Get the most recent/published technical sheet for this technique
       const { data: sheets } = await supabase
         .from('technical_sheets')

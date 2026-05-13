@@ -253,14 +253,14 @@ describe('MTBF/MTTR Calculations', () => {
   function calculateMTBFMTTR(periodHours: number, failures: Array<{ downtimeMinutes: number }>) {
     const totalFailures = failures.length;
     const totalRepairTime = failures.reduce((sum, f) => sum + f.downtimeMinutes, 0);
-    
+
     const operatingHours = periodHours - (totalRepairTime / 60);
     const mtbf = totalFailures > 0 ? operatingHours / totalFailures : null;
     const mttr = totalFailures > 0 ? totalRepairTime / totalFailures : null;
-    
+
     const availabilityRaw = ((periodHours - (totalRepairTime / 60)) / periodHours) * 100;
     const availability = Math.max(0, Math.min(100, availabilityRaw));
-    
+
     return { mtbf, mttr, availability, totalFailures, totalRepairTime };
   }
 
@@ -428,7 +428,7 @@ describe('SPC Western Electric Rules', () => {
   it('Rule 4: detects 8 points on one side', () => {
     const above = [51, 52, 53, 51, 52, 53, 51, 52]; // all > 50
     expect(rule4(above, 50)).toBe(true);
-    
+
     const mixed = [51, 49, 53, 51, 52, 53, 51, 52]; // one below
     expect(rule4(mixed, 50)).toBe(false);
   });

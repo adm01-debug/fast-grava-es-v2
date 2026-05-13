@@ -23,16 +23,16 @@ export function TPMReports() {
 
   const getFilteredRecords = () => {
     let filtered = [...records];
-    
+
     // Filter by machine
     if (selectedMachineId !== 'all') {
       filtered = filtered.filter(r => r.machine_id === selectedMachineId);
     }
-    
+
     // Filter by period
     const startDate = subDays(new Date(), parseInt(period));
     filtered = filtered.filter(r => new Date(r.started_at) >= startDate);
-    
+
     return filtered;
   };
 
@@ -42,11 +42,11 @@ export function TPMReports() {
       const filteredRecords = getFilteredRecords();
       const doc = new jsPDF();
       const machineName = selectedMachineId === 'all' ? 'Todas as Máquinas' : machines.find(m => m.id === selectedMachineId)?.name;
-      
+
       // Title
       doc.setFontSize(18);
       doc.text('Relatório de Manutenção TPM', 14, 22);
-      
+
       doc.setFontSize(11);
       doc.setTextColor(100);
       doc.text(`Máquina: ${machineName}`, 14, 30);
@@ -101,7 +101,7 @@ export function TPMReports() {
       doc.save(`relatorio-tpm-${format(new Date(), 'yyyy-MM-dd')}.pdf`);
       toast.success('Relatório PDF gerado com sucesso');
     } catch (error) {
-      
+
       toast.error('Erro ao gerar PDF');
     } finally {
       setIsGenerating(false);
@@ -112,7 +112,7 @@ export function TPMReports() {
     setIsGenerating(true);
     try {
       const filteredRecords = getFilteredRecords();
-      
+
       // Performance metrics sheet
       let performanceData = [];
       if (selectedMachineId !== 'all') {
@@ -150,20 +150,20 @@ export function TPMReports() {
       }));
 
       const workbook = XLSX.utils.book_new();
-      
+
       const performanceWs = XLSX.utils.json_to_sheet(performanceData);
       XLSX.utils.book_append_sheet(workbook, performanceWs, 'Métricas de Performance');
-      
+
       const historyWs = XLSX.utils.json_to_sheet(historyData);
       XLSX.utils.book_append_sheet(workbook, historyWs, 'Histórico de Atividades');
-      
+
       const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
       const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
       saveAs(blob, `relatorio-tpm-${format(new Date(), 'yyyy-MM-dd')}.xlsx`);
-      
+
       toast.success('Relatório Excel gerado com sucesso');
     } catch (error) {
-      
+
       toast.error('Erro ao gerar Excel');
     } finally {
       setIsGenerating(false);
@@ -176,7 +176,7 @@ export function TPMReports() {
       const filteredRecords = getFilteredRecords();
       const zip = new JSZip();
       const photosFolder = zip.folder("evidencias_fotograficas");
-      
+
       // 1. Add CSV Data
       const headers = ['Data', 'Máquina', 'Tipo', 'Técnico', 'Status', 'Downtime', 'Custo', 'Notas'];
       const rows = filteredRecords.map(r => [
@@ -189,13 +189,13 @@ export function TPMReports() {
         r.total_cost,
         r.notes || ''
       ]);
-      
+
       const csvContent = [headers, ...rows].map(e => e.join(',')).join('\n');
       zip.file("relatorio_execucoes.csv", csvContent);
 
       // 2. Fetch and add photos
       const recordsWithPhotos = filteredRecords.filter(r => r.photos && r.photos.length > 0);
-      
+
       toast.info(`Processando ${recordsWithPhotos.length} registros com fotos...`);
 
       for (const record of recordsWithPhotos) {
@@ -206,7 +206,7 @@ export function TPMReports() {
             const blob = await response.blob();
             recordFolder?.file(`evidencia_${i + 1}.jpg`, blob);
           } catch (err) {
-            
+
           }
         }
       }
@@ -215,7 +215,7 @@ export function TPMReports() {
       saveAs(content, `tpm_completo_${format(new Date(), 'yyyy-MM-dd')}.zip`);
       toast.success('Arquivo ZIP gerado com sucesso!');
     } catch (error) {
-      
+
       toast.error('Erro ao gerar arquivo ZIP');
     } finally {
       setIsGenerating(false);
@@ -270,25 +270,25 @@ export function TPMReports() {
           </div>
 
           <div className="flex items-end gap-2">
-            <Button 
-              variant="outline" 
-              className="flex-1 gap-2" 
+            <Button
+              variant="outline"
+              className="flex-1 gap-2"
               onClick={generatePDF}
               disabled={isGenerating || records.length === 0}
             >
               <FileDown className="h-4 w-4" /> PDF
             </Button>
-            <Button 
-              variant="outline" 
-              className="flex-1 gap-2" 
+            <Button
+              variant="outline"
+              className="flex-1 gap-2"
               onClick={generateExcel}
               disabled={isGenerating || records.length === 0}
             >
               <TableIcon className="h-4 w-4" /> Excel
             </Button>
-            <Button 
-              variant="outline" 
-              className="flex-1 gap-2" 
+            <Button
+              variant="outline"
+              className="flex-1 gap-2"
               onClick={generateZIP}
               disabled={isGenerating || records.length === 0}
             >
@@ -302,7 +302,7 @@ export function TPMReports() {
             <div className="space-y-1">
               <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">MTBF</p>
               <p className="text-lg font-bold text-primary">
-                {selectedMachineId === 'all' 
+                {selectedMachineId === 'all'
                   ? (summary.averageMTBF ? summary.averageMTBF.toFixed(1) + 'h' : 'N/A')
                   : (metrics.find(m => m.machineId === selectedMachineId)?.mtbf?.toFixed(1) + 'h' || 'N/A')
                 }
@@ -311,7 +311,7 @@ export function TPMReports() {
             <div className="space-y-1">
               <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">MTTR</p>
               <p className="text-lg font-bold text-orange-400">
-                {selectedMachineId === 'all' 
+                {selectedMachineId === 'all'
                   ? (summary.averageMTTR ? summary.averageMTTR.toFixed(1) + 'min' : 'N/A')
                   : (metrics.find(m => m.machineId === selectedMachineId)?.mttr?.toFixed(1) + 'min' || 'N/A')
                 }
@@ -320,7 +320,7 @@ export function TPMReports() {
             <div className="space-y-1">
               <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">Disponibilidade</p>
               <p className="text-lg font-bold text-emerald-400">
-                {selectedMachineId === 'all' 
+                {selectedMachineId === 'all'
                   ? summary.averageAvailability.toFixed(1) + '%'
                   : (metrics.find(m => m.machineId === selectedMachineId)?.availability.toFixed(1) + '%' || '100%')
                 }
@@ -329,7 +329,7 @@ export function TPMReports() {
             <div className="space-y-1">
               <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">Total Falhas</p>
               <p className="text-lg font-bold text-primary">
-                {selectedMachineId === 'all' 
+                {selectedMachineId === 'all'
                   ? summary.totalFailures
                   : (metrics.find(m => m.machineId === selectedMachineId)?.totalFailures || 0)
                 }

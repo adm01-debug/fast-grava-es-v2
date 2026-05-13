@@ -12,12 +12,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { 
-  Activity, 
-  Clock, 
-  Gauge, 
-  Target, 
-  TrendingUp, 
+import {
+  Activity,
+  Clock,
+  Gauge,
+  Target,
+  TrendingUp,
   Award,
   AlertTriangle,
   CheckCircle2,
@@ -60,7 +60,7 @@ const OEEDashboard = memo(function OEEDashboard() {
   const [showSimulator, setShowSimulator] = useState(false);
   const [simValues, setSimValues] = useState({ availability: 85, performance: 90, quality: 98 });
   const { data, isLoading, downloadReport } = useOEE(parseInt(period));
-  
+
   const handleDownloadReport = useCallback(() => {
     downloadReport();
     toast.success(t('common.reportExported', 'Relatório OEE exportado!'));
@@ -104,7 +104,7 @@ const OEEDashboard = memo(function OEEDashboard() {
           <meta name="description" content="Análise de Eficiência Global dos Equipamentos (OEE) e indicadores de performance industrial." />
         </Helmet>
         <Breadcrumbs />
-        
+
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
@@ -116,12 +116,12 @@ const OEEDashboard = memo(function OEEDashboard() {
               {t('oee.description', 'Overall Equipment Effectiveness - Eficiência Global dos Equipamentos')}
             </p>
           </div>
-          
+
           <div className="flex items-center gap-2">
             <VoiceButton />
-            <Button 
-              variant="outline" 
-              size="sm" 
+            <Button
+              variant="outline"
+              size="sm"
               onClick={handleDownloadReport}
               className="hidden md:flex gap-2 border-primary/20 hover:bg-primary/5"
             >
@@ -153,13 +153,13 @@ const OEEDashboard = memo(function OEEDashboard() {
                  <Badge className="bg-primary/20 text-primary border-primary/30 animate-pulse uppercase text-[10px] font-black">AI Insight</Badge>
                  <h2 className="text-xl font-bold tracking-tight">{t('oee.consolidated', 'OEE Consolidado')}: {data.overallOEE.toFixed(1)}%</h2>
               </div>
-              <p className="text-sm text-muted-foreground leading-relaxed" dangerouslySetInnerHTML={{ 
-                 __html: t('oee.aiPerformanceInsight', { 
-                   val: '12%', 
-                   tech: data.byTechnique[0]?.techniqueName, 
+              <p className="text-sm text-muted-foreground leading-relaxed" dangerouslySetInnerHTML={{
+                 __html: t('oee.aiPerformanceInsight', {
+                   val: '12%',
+                   tech: data.byTechnique[0]?.techniqueName,
                    avg: data.byTechnique[0]?.averageOEE,
                    defaultValue: 'Sua planta está operando {{val}} acima do benchmark.'
-                 }) 
+                 })
               }} />
             </div>
             <div className="flex flex-wrap items-center justify-center gap-3 bg-background/40 p-4 rounded-2xl border border-border/50 backdrop-blur-sm">
@@ -210,9 +210,9 @@ const OEEDashboard = memo(function OEEDashboard() {
                   <p className="text-xs text-muted-foreground mt-1">
                     {t('oee.simulatorDescription', 'Simule o impacto de melhorias operacionais no seu OEE final.')}
                   </p>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
+                  <Button
+                    variant="outline"
+                    size="sm"
                     onClick={() => setShowSimulator(!showSimulator)}
                     className="h-8 text-xs mt-2 border-primary/20 hover:bg-primary/10"
                   >
@@ -236,10 +236,10 @@ const OEEDashboard = memo(function OEEDashboard() {
                       <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{t('oee.availability', 'Disponibilidade')}</Label>
                       <span className="text-xs font-black">{simValues.availability}%</span>
                     </div>
-                    <Slider 
-                      value={[simValues.availability]} 
-                      max={100} 
-                      step={1} 
+                    <Slider
+                      value={[simValues.availability]}
+                      max={100}
+                      step={1}
                       onValueChange={([v]) => setSimValues({...simValues, availability: v})}
                     />
                   </div>
@@ -248,10 +248,10 @@ const OEEDashboard = memo(function OEEDashboard() {
                       <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{t('common.performance', 'Performance')}</Label>
                       <span className="text-xs font-black">{simValues.performance}%</span>
                     </div>
-                    <Slider 
-                      value={[simValues.performance]} 
-                      max={100} 
-                      step={1} 
+                    <Slider
+                      value={[simValues.performance]}
+                      max={100}
+                      step={1}
                       onValueChange={([v]) => setSimValues({...simValues, performance: v})}
                     />
                   </div>
@@ -260,10 +260,10 @@ const OEEDashboard = memo(function OEEDashboard() {
                       <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{t('common.quality', 'Qualidade')}</Label>
                       <span className="text-xs font-black">{simValues.quality}%</span>
                     </div>
-                    <Slider 
-                      value={[simValues.quality]} 
-                      max={100} 
-                      step={1} 
+                    <Slider
+                      value={[simValues.quality]}
+                      max={100}
+                      step={1}
                       onValueChange={([v]) => setSimValues({...simValues, quality: v})}
                     />
                   </div>
@@ -274,9 +274,9 @@ const OEEDashboard = memo(function OEEDashboard() {
                       <p className="text-xs font-bold text-muted-foreground uppercase mb-2">{t('oee.currentOEE', 'OEE Atual')}</p>
                       <p className="text-5xl font-black text-muted-foreground/50">{data.overallOEE.toFixed(1)}%</p>
                    </div>
-                   
+
                    <ArrowRight className="h-8 w-8 text-muted-foreground/30 hidden md:block" />
-                   
+
                    <div className="text-center">
                       <p className="text-xs font-bold text-primary uppercase mb-2">{t('oee.projectedOEE', 'OEE Projetado')}</p>
                       <p className="text-6xl font-black text-primary">
@@ -301,7 +301,7 @@ const OEEDashboard = memo(function OEEDashboard() {
             </h2>
             <Badge variant="outline" className="text-[10px] font-bold">REAL-TIME CALCULATION</Badge>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <KPITooltip {...KPI_DEFINITIONS.oee}>
               <OEEGaugeCard
@@ -352,7 +352,7 @@ const OEEDashboard = memo(function OEEDashboard() {
               />
             </KPITooltip>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Card className="bg-muted/20 border-dashed border-border/50">
               <CardContent className="p-3 text-[10px] space-y-1">
@@ -405,7 +405,7 @@ const OEEDashboard = memo(function OEEDashboard() {
               </div>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardContent className="pt-4">
               <div className="flex items-center gap-3">
@@ -419,7 +419,7 @@ const OEEDashboard = memo(function OEEDashboard() {
               </div>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardContent className="pt-4">
               <div className="flex items-center gap-3">
@@ -433,7 +433,7 @@ const OEEDashboard = memo(function OEEDashboard() {
               </div>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardContent className="pt-4">
               <div className="flex items-center gap-3">
@@ -461,17 +461,17 @@ const OEEDashboard = memo(function OEEDashboard() {
               Sustentabilidade
             </TabsTrigger>
           </TabsList>
-          
+
           <TabsContent value="trend">
             <Suspense fallback={<ChartSkeleton />}>
-              <OEETrendChart 
-                data={data.trendData} 
-                worldClassBenchmark={data.worldClassBenchmark} 
+              <OEETrendChart
+                data={data.trendData}
+                worldClassBenchmark={data.worldClassBenchmark}
                 comparison={data.comparison}
               />
             </Suspense>
           </TabsContent>
-          
+
           <TabsContent value="losses">
             <Suspense fallback={<ChartSkeleton />}>
               <OEELossesChart
@@ -482,16 +482,16 @@ const OEEDashboard = memo(function OEEDashboard() {
               />
             </Suspense>
           </TabsContent>
-          
+
           <TabsContent value="techniques">
             <Suspense fallback={<ChartSkeleton />}>
-              <OEETechniqueComparison 
+              <OEETechniqueComparison
                 techniques={data.byTechnique}
                 worldClassBenchmark={data.worldClassBenchmark}
               />
             </Suspense>
           </TabsContent>
-          
+
           <TabsContent value="machines">
             <Suspense fallback={<TableSkeleton />}>
               <OEEMachineTable machines={data.byMachine} />
@@ -560,7 +560,7 @@ const OEEDashboard = memo(function OEEDashboard() {
                         <span className="text-success font-bold">Eco-Score: {(tech.averageOEE * 0.8 + 20).toFixed(0)}</span>
                       </div>
                       <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
-                        <div 
+                        <div
                           className="h-full bg-success transition-all"
                           style={{ width: `${tech.averageOEE}%` }}
                         />

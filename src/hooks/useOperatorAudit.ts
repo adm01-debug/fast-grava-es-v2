@@ -17,13 +17,13 @@ export function useOperatorAudit(operatorId?: string) {
     queryKey: ['operator-status-audit', operatorId],
     queryFn: async () => {
       let query = supabase.from('operator_status_audit').select('*');
-      
+
       if (operatorId) {
         query = query.eq('operator_id', operatorId);
       }
-      
+
       const { data, error } = await query.order('created_at', { ascending: false });
-      
+
       if (error) throw error;
       return data as OperatorAudit[];
     },

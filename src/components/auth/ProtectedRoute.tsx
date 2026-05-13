@@ -12,15 +12,15 @@ export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) 
   const { user, role, isLoading } = useAuth();
   const location = useLocation();
 
-  console.log('[ProtectedRoute] Rendering path:', location.pathname, { 
-    hasUser: !!user, 
-    role, 
-    isLoading, 
-    allowedRoles 
+  console.log('[ProtectedRoute] Rendering path:', location.pathname, {
+    hasUser: !!user,
+    role,
+    isLoading,
+    allowedRoles
   });
 
   if (isLoading) {
-    
+
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center space-y-4">
@@ -32,14 +32,14 @@ export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) 
   }
 
   if (!user) {
-    
+
     return <Navigate to="/auth" state={{ from: location }} replace />;
   }
 
   // Wait for role to load before checking permissions
   // role is fetched async after auth, so it may be null briefly
   if (allowedRoles && role === null) {
-    
+
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center space-y-4">
@@ -51,7 +51,7 @@ export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) 
   }
 
   if (allowedRoles && role && !allowedRoles.includes(role)) {
-    
+
     // Redirect to appropriate page based on role
     if (role === 'operator') {
       return <Navigate to="/operator" replace />;
@@ -59,6 +59,6 @@ export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) 
     return <Navigate to="/" replace />;
   }
 
-  
+
   return <>{children}</>;
 }

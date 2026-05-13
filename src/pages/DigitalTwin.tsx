@@ -4,13 +4,13 @@ import { FactoryFloorMap } from '@/components/digital-twin/FactoryFloorMap';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { 
-  Cpu, 
-  Activity, 
-  Zap, 
-  TrendingUp, 
-  Settings, 
-  Play, 
+import {
+  Cpu,
+  Activity,
+  Zap,
+  TrendingUp,
+  Settings,
+  Play,
   RotateCcw,
   Sparkles,
   Info
@@ -34,10 +34,10 @@ export default function DigitalTwin() {
       <Helmet>
         <title>Digital Twin - Gêmeo Digital | Sistema de Produção</title>
       </Helmet>
-      
+
       <div className="p-4 sm:p-6 lg:p-8 space-y-8 animate-fade-in">
         <Breadcrumbs />
-        
+
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
             <h1 className="text-3xl font-display font-black tracking-tighter flex items-center gap-3">
@@ -64,7 +64,7 @@ export default function DigitalTwin() {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           <div className="lg:col-span-3 space-y-6">
             <FactoryFloorMap />
-            
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                <Card className="glass-card">
                   <CardHeader className="pb-2">
@@ -116,7 +116,7 @@ export default function DigitalTwin() {
           <div className="space-y-6">
             <SupplyChainPanel />
             <CostSimulationCard />
-            
+
             <Card className="glass-card border-primary/20 bg-primary/5 relative overflow-hidden group">
                <CardHeader>
                   <CardTitle className="text-sm font-black uppercase flex items-center gap-2">

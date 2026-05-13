@@ -21,10 +21,10 @@ export function exportInventoryMovementsToCSV(movements: unknown[]) {
       const date = new Date(m.created_at).toLocaleString('pt-BR');
       const itemName = m.inventory_items?.name || 'N/A';
       const userName = m.profiles?.display_name || 'N/A';
-      const type = m.type === 'IN' ? 'Entrada' : 
-                   m.type === 'OUT' ? 'Saída' : 
+      const type = m.type === 'IN' ? 'Entrada' :
+                   m.type === 'OUT' ? 'Saída' :
                    m.type === 'TRANSFER' ? 'Transferência' : 'Ajuste';
-      
+
       return [
         m.id,
         `"${date}"`,
@@ -42,7 +42,7 @@ export function exportInventoryMovementsToCSV(movements: unknown[]) {
   const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
   const link = document.createElement('a');
   const url = URL.createObjectURL(blob);
-  
+
   link.setAttribute('href', url);
   link.setAttribute('download', `historico_movimentacoes_${new Date().toISOString().split('T')[0]}.csv`);
   link.style.visibility = 'hidden';

@@ -36,7 +36,6 @@ export const useTechnicalSheets = () => {
         return data as unknown as TechnicalSheet[];
       } catch (error) {
         const appError = createAppError(error, SHEETS_ERROR_CONTEXT.sheets);
-        if (import.meta.env.DEV) 
         throw error;
       }
     },
@@ -74,7 +73,6 @@ export const useTechnicalSheets = () => {
         return data as ProductCategory[];
       } catch (error) {
         const appError = createAppError(error, SHEETS_ERROR_CONTEXT.categories);
-        if (import.meta.env.DEV) 
         throw error;
       }
     },
@@ -95,7 +93,6 @@ export const useTechnicalSheets = () => {
         return data as Material[];
       } catch (error) {
         const appError = createAppError(error, SHEETS_ERROR_CONTEXT.materials);
-        if (import.meta.env.DEV) 
         throw error;
       }
     },
@@ -135,7 +132,6 @@ export const useTechnicalSheetDetails = (sheetId: string | null) => {
         return data as unknown as TechnicalSheet;
       } catch (error) {
         const appError = createAppError(error, SHEETS_ERROR_CONTEXT.sheetDetails);
-        if (import.meta.env.DEV) 
         throw error;
       }
     },
@@ -159,7 +155,6 @@ export const useTechnicalSheetDetails = (sheetId: string | null) => {
         return data as TechnicalSheetStep[];
       } catch (error) {
         const appError = createAppError(error, SHEETS_ERROR_CONTEXT.steps);
-        if (import.meta.env.DEV) 
         throw error;
       }
     },
@@ -182,7 +177,6 @@ export const useTechnicalSheetDetails = (sheetId: string | null) => {
         return data as TechnicalSheetMaterial[];
       } catch (error) {
         const appError = createAppError(error, { entity: 'technical_sheet_materials', operation: 'fetch' });
-        if (import.meta.env.DEV) 
         throw error;
       }
     },
@@ -205,7 +199,6 @@ export const useTechnicalSheetDetails = (sheetId: string | null) => {
         return data as TechnicalSheetTip[];
       } catch (error) {
         const appError = createAppError(error, SHEETS_ERROR_CONTEXT.tips);
-        if (import.meta.env.DEV) 
         throw error;
       }
     },
@@ -241,7 +234,6 @@ export const useTechnicalSheetAudit = (sheetId: string | null) => {
         if (error) throw error;
         return data;
       } catch (error) {
-        if (import.meta.env.DEV) 
         throw error;
       }
     },
@@ -257,7 +249,7 @@ export const useTechnicalSheetFavorites = () => {
     queryFn: async () => {
       const { data: userData } = await supabase.auth.getUser();
       if (!userData.user) return [];
-      
+
       try {
         const { data, error } = await supabase
           .from('technical_sheet_favorites')
@@ -267,7 +259,6 @@ export const useTechnicalSheetFavorites = () => {
         if (error) throw error;
         return data.map(f => f.technical_sheet_id);
       } catch (error) {
-        if (import.meta.env.DEV) 
         throw error;
       }
     },

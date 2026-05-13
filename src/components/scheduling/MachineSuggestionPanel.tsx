@@ -87,9 +87,9 @@ export function MachineSuggestionPanel({ techniqueId, onSelectMachine }: Machine
                       {bestMachine.reason}
                     </div>
                     {onSelectMachine && (
-                      <Button 
-                        size="sm" 
-                        variant="ghost" 
+                      <Button
+                        size="sm"
+                        variant="ghost"
                         className="h-7 text-[10px] uppercase font-bold hover:bg-violet-500/20 hover:text-violet-300 gap-1"
                         onClick={() => onSelectMachine(bestMachine.machineId)}
                       >
@@ -106,7 +106,7 @@ export function MachineSuggestionPanel({ techniqueId, onSelectMachine }: Machine
                 <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest px-1">Alternativas</p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   {suggestions.slice(1, 3).map((s) => (
-                    <div 
+                    <div
                       key={s.machineId}
                       className="p-2 rounded-lg bg-secondary/30 border border-border/50 hover:bg-secondary/50 transition-colors cursor-pointer group"
                       onClick={() => onSelectMachine?.(s.machineId)}

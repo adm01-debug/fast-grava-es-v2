@@ -19,11 +19,11 @@ const defaultConfig: EfficiencyNotificationConfig = {
 
 export function useEfficiencyNotifications(config: Partial<EfficiencyNotificationConfig> = {}) {
   const settings = { ...defaultConfig, ...config };
-  
+
   const { alerts: bottleneckAlerts, criticalCount, warningCount } = useBottleneckPrediction();
   const { suggestions: loadBalancingSuggestions } = useLoadBalancing();
   const { activeAlerts, recordAlert, resolveAlert } = useEfficiencyAlertHistory();
-  
+
   // Track previous state to detect changes
   const prevBottleneckCount = useRef<number>(0);
   const prevLoadBalancingCount = useRef<number>(0);
@@ -35,16 +35,16 @@ export function useEfficiencyNotifications(config: Partial<EfficiencyNotificatio
   const autoResolveAlerts = useCallback(() => {
     if (!hasInitialized.current) return;
 
-    const currentBottleneckKeys = new Set(bottleneckAlerts.map(a => 
+    const currentBottleneckKeys = new Set(bottleneckAlerts.map(a =>
       `${a.techniqueId}-${a.date.toISOString().split('T')[0]}`
     ));
-    const currentSuggestionKeys = new Set(loadBalancingSuggestions.map(s => 
+    const currentSuggestionKeys = new Set(loadBalancingSuggestions.map(s =>
       `${s.jobId}-${s.currentMachineId}-${s.suggestedMachineId}`
     ));
 
     activeAlerts.forEach(alert => {
       const metadata = alert.metadata as Record<string, unknown> | null;
-      
+
       if (alert.alert_type === 'bottleneck') {
         // Extract date from metadata (could be ISO string or Date object)
         let dateStr = '';
@@ -79,12 +79,12 @@ export function useEfficiencyNotifications(config: Partial<EfficiencyNotificatio
 
   const checkBottleneckAlerts = useCallback(() => {
     if (!settings.enableBottleneckAlerts) return;
-    
+
     const currentCount = (criticalCount ?? 0) + (warningCount ?? 0);
-    const currentIds = new Set(bottleneckAlerts.map(a => 
+    const currentIds = new Set(bottleneckAlerts.map(a =>
       `${a.techniqueId}-${a.date.toISOString().split('T')[0]}`
     ));
-    
+
     // Find new alerts that weren't in the previous set
     if (hasInitialized.current) {
       bottleneckAlerts.forEach(alert => {
@@ -108,12 +108,12 @@ export function useEfficiencyNotifications(config: Partial<EfficiencyNotificatio
           });
         }
       });
-      
+
       // Show toast notifications for new alerts
       if (currentCount > prevBottleneckCount.current) {
         const newAlerts = currentCount - prevBottleneckCount.current;
         const criticalAlerts = bottleneckAlerts.filter(a => a.severity === 'critical');
-        
+
         if (criticalAlerts.length > 0) {
           toast.error(`${newAlerts} novo(s) alerta(s) de gargalo`, {
             description: criticalAlerts[0]?.message || 'Técnica próxima da saturação',
@@ -135,17 +135,17 @@ export function useEfficiencyNotifications(config: Partial<EfficiencyNotificatio
         }
       }
     }
-    
+
     prevBottleneckCount.current = currentCount;
     prevBottleneckIds.current = currentIds;
   }, [bottleneckAlerts, criticalCount, warningCount, settings.enableBottleneckAlerts, recordAlert]);
 
   const checkLoadBalancingAlerts = useCallback(() => {
     if (!settings.enableLoadBalancingAlerts) return;
-    
+
     const currentCount = loadBalancingSuggestions.length;
     const currentIds = new Set(loadBalancingSuggestions.map(s => `${s.jobId}-${s.currentMachineId}-${s.suggestedMachineId}`));
-    
+
     // Find new suggestions that weren't in the previous set
     if (hasInitialized.current) {
       loadBalancingSuggestions.forEach(suggestion => {
@@ -169,15 +169,15 @@ export function useEfficiencyNotifications(config: Partial<EfficiencyNotificatio
           });
         }
       });
-      
+
       // Show toast notifications for new suggestions
       if (currentCount > prevLoadBalancingCount.current) {
         const newSuggestions = currentCount - prevLoadBalancingCount.current;
         const topSuggestion = loadBalancingSuggestions[0];
-        
+
         toast.info(`${newSuggestions} nova(s) sugestão(ões) de balanceamento`, {
-          description: topSuggestion 
-            ? `Redistribuir de ${topSuggestion.currentMachineName} para ${topSuggestion.suggestedMachineName}` 
+          description: topSuggestion
+            ? `Redistribuir de ${topSuggestion.currentMachineName} para ${topSuggestion.suggestedMachineName}`
             : 'Carga desbalanceada detectada',
           action: {
             label: 'Ver Sugestões',
@@ -187,7 +187,7 @@ export function useEfficiencyNotifications(config: Partial<EfficiencyNotificatio
         });
       }
     }
-    
+
     prevLoadBalancingCount.current = currentCount;
     prevSuggestionIds.current = currentIds;
   }, [loadBalancingSuggestions, settings.enableLoadBalancingAlerts, recordAlert]);
@@ -199,18 +199,18 @@ export function useEfficiencyNotifications(config: Partial<EfficiencyNotificatio
     prevLoadBalancingCount.current = loadBalancingSuggestions.length;
     prevBottleneckIds.current = new Set(bottleneckAlerts.map(a => `${a.techniqueId}-${a.date.toISOString().split('T')[0]}`));
     prevSuggestionIds.current = new Set(loadBalancingSuggestions.map(s => `${s.jobId}-${s.currentMachineId}-${s.suggestedMachineId}`));
-    
+
     const initTimeout = setTimeout(() => {
       hasInitialized.current = true;
     }, 3000);
-    
+
     return () => clearTimeout(initTimeout);
   }, []); // Only run once on mount
 
   // Periodic checks for changes and auto-resolution
   useEffect(() => {
     if (!hasInitialized.current) return;
-    
+
     checkBottleneckAlerts();
     checkLoadBalancingAlerts();
     autoResolveAlerts();

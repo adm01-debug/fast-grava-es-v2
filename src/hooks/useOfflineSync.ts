@@ -39,7 +39,6 @@ export function useOfflineSync() {
         setPendingActions(JSON.parse(stored));
       }
     } catch (error) {
-      if (import.meta.env.DEV) 
     }
   }, []);
 
@@ -55,7 +54,6 @@ export function useOfflineSync() {
         }
       }
     } catch (error) {
-      if (import.meta.env.DEV) 
     }
   }, []);
 
@@ -64,7 +62,6 @@ export function useOfflineSync() {
     try {
       localStorage.setItem(STORAGE_KEYS.PENDING_ACTIONS, JSON.stringify(pendingActions));
     } catch (error) {
-      if (import.meta.env.DEV) 
     }
   }, [pendingActions]);
 
@@ -122,10 +119,8 @@ export function useOfflineSync() {
       setCachedData(newCachedData);
       setLastSyncedAt(new Date());
       localStorage.setItem(STORAGE_KEYS.CACHED_DATA, JSON.stringify(newCachedData));
-      
-      if (import.meta.env.DEV) 
+
     } catch (error) {
-      if (import.meta.env.DEV) 
     }
   }, [isOnline]);
 
@@ -210,13 +205,11 @@ export function useOfflineSync() {
         }
 
         default:
-          if (import.meta.env.DEV) 
           return false;
       }
 
       return true;
     } catch (error) {
-      if (import.meta.env.DEV) 
       return false;
     }
   };
@@ -232,7 +225,7 @@ export function useOfflineSync() {
 
     for (const action of pendingActions) {
       const success = await processPendingAction(action);
-      
+
       if (success) {
         successCount++;
       } else {
@@ -243,7 +236,6 @@ export function useOfflineSync() {
           });
         } else {
           failCount++;
-          if (import.meta.env.DEV) 
         }
       }
     }

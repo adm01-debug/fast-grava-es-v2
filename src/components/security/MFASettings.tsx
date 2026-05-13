@@ -3,15 +3,15 @@ import { useMFA } from '@/hooks/useMFA';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { 
-  AlertDialog, 
-  AlertDialogAction, 
-  AlertDialogCancel, 
-  AlertDialogContent, 
-  AlertDialogDescription, 
-  AlertDialogFooter, 
-  AlertDialogHeader, 
-  AlertDialogTitle 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle
 } from '@/components/ui/alert-dialog';
 import { Shield, ShieldCheck, ShieldOff, Loader2, Trash2, Key } from 'lucide-react';
 import { format } from 'date-fns';
@@ -25,7 +25,7 @@ export function MFASettings() {
 
   const handleRemove = async () => {
     if (!factorToRemove) return;
-    
+
     setIsRemoving(true);
     const success = await unenroll(factorToRemove);
     if (success) {
@@ -65,7 +65,7 @@ export function MFASettings() {
               <div>
                 <CardTitle>Autenticação de Dois Fatores</CardTitle>
                 <CardDescription>
-                  {isMFAEnabled 
+                  {isMFAEnabled
                     ? 'Sua conta está protegida com 2FA'
                     : 'Adicione uma camada extra de segurança'
                   }
@@ -91,7 +91,7 @@ export function MFASettings() {
           <CardContent>
             <div className="space-y-3">
               {verifiedFactors.map((factor) => (
-                <div 
+                <div
                   key={factor.id}
                   className="flex items-center justify-between p-4 border rounded-lg"
                 >
@@ -128,8 +128,8 @@ export function MFASettings() {
       {isMFAEnabled && (
         <Card>
           <CardContent className="pt-6">
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               className="w-full"
               onClick={refreshFactors}
             >
@@ -146,7 +146,7 @@ export function MFASettings() {
           <AlertDialogHeader>
             <AlertDialogTitle>Remover Autenticador?</AlertDialogTitle>
             <AlertDialogDescription>
-              Isso irá desativar a autenticação de dois fatores para este dispositivo. 
+              Isso irá desativar a autenticação de dois fatores para este dispositivo.
               Sua conta ficará menos segura.
             </AlertDialogDescription>
           </AlertDialogHeader>

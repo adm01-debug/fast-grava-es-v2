@@ -1,7 +1,7 @@
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useFuseSearch } from '@/hooks/useFuseSearch';
 import { useNavigate } from 'react-router-dom';
-import { 
+import {
   DndContext, DragOverlay, closestCorners,
   KeyboardSensor, PointerSensor, useSensor, useSensors,
 } from '@dnd-kit/core';
@@ -25,7 +25,7 @@ import { CapacityHealthPanel } from '@/components/scheduling/CapacityHealthPanel
 import { useKanbanDragDrop } from '@/hooks/useKanbanDragDrop';
 import { FavoriteButton, FavoritesDropdown } from '@/components/navigation/FavoritesManager';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
-import { 
+import {
   Clock, Package, Calendar, Play, CheckCircle2,
   AlertTriangle, RotateCcw, Pause, Command, Trash2, ArrowRight,
   Sparkles
@@ -62,7 +62,7 @@ const quickActionMap: Record<string, { status: JobStatus; label: string }> = {
 export default function KanbanBoard() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  
+
   // Filters (initialized from localStorage)
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTechnique, setSelectedTechnique] = useState(() => localStorage.getItem('kanban-filter-technique') || 'all');
@@ -79,15 +79,15 @@ export default function KanbanBoard() {
     localStorage.setItem('kanban-view-mode', viewMode);
     localStorage.setItem('kanban-swimlanes-mode', swimlanesMode);
   }, [selectedTechnique, selectedPriority, selectedMachine, viewMode, swimlanesMode]);
-  
+
   // Selection
   const [selectedJobs, setSelectedJobs] = useState<Set<string>>(new Set());
-  
+
   // Modal
   const [selectedJob, setSelectedJob] = useState<DbJob | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const { 
+  const {
     jobs, techniques, machines,
     isLoading: isLoadingJobs, isLoadingTechniques,
     getTechniqueById, getMachineById
@@ -97,7 +97,7 @@ export default function KanbanBoard() {
     queryClient.invalidateQueries({ queryKey: ['jobs'] });
   }, [queryClient]);
 
-  const { activeJob, isUpdating, handleDragStart, handleDragOver, handleDragEnd, handleDragCancel } = 
+  const { activeJob, isUpdating, handleDragStart, handleDragOver, handleDragEnd, handleDragCancel } =
     useKanbanDragDrop({ jobs, onJobsUpdate: handleJobsUpdate });
 
   const sensors = useSensors(
@@ -187,9 +187,9 @@ export default function KanbanBoard() {
           label: 'Desfazer',
           onClick: async () => {
             if (job) {
-              await supabase.from('jobs').update({ 
-                status: job.status, 
-                updated_at: new Date().toISOString() 
+              await supabase.from('jobs').update({
+                status: job.status,
+                updated_at: new Date().toISOString()
               }).eq('id', jobId);
               handleJobsUpdate();
             }
@@ -203,11 +203,11 @@ export default function KanbanBoard() {
   // Bulk actions
   const handleBulkAction = useCallback(async (action: 'delete' | 'move' | 'rework' | 'pause', targetStatus?: JobStatus) => {
     if (selectedJobs.size === 0) return;
-    
+
     if (action === 'move' && targetStatus) {
-      const updateData: Record<string, any> = { 
-        status: targetStatus, 
-        updated_at: new Date().toISOString() 
+      const updateData: Record<string, any> = {
+        status: targetStatus,
+        updated_at: new Date().toISOString()
       };
 
       // Add timestamps if needed
@@ -243,38 +243,38 @@ export default function KanbanBoard() {
   // Swimlane grouping
   const swimlaneGroups = useMemo(() => {
     if (swimlanesMode === 'none') return null;
-    
+
     if (swimlanesMode === 'technique') {
       const groups = new Map<string, { label: string; color: string; jobs: DbJob[] }>();
       techniques.forEach(t => groups.set(t.id, { label: t.name, color: t.color, jobs: [] }));
       groups.set('unknown', { label: 'Sem técnica', color: '#888', jobs: [] });
-      
+
       filteredJobs.forEach(job => {
         const group = groups.get(job.technique_id) || groups.get('unknown')!;
         group.jobs.push(job);
       });
-      
+
       return Array.from(groups.entries())
         .filter(([_, g]) => g.jobs.length > 0)
         .map(([id, g]) => ({ id, ...g }));
     }
-    
+
     if (swimlanesMode === 'machine') {
       const groups = new Map<string, { label: string; color: string; jobs: DbJob[] }>();
       (machines || []).forEach(m => groups.set(m.id, { label: m.name, color: '#888', jobs: [] }));
       groups.set('unassigned', { label: 'Sem máquina', color: '#888', jobs: [] });
-      
+
       filteredJobs.forEach(job => {
         const key = job.machine_id || 'unassigned';
         const group = groups.get(key) || groups.get('unassigned')!;
         group.jobs.push(job);
       });
-      
+
       return Array.from(groups.entries())
         .filter(([_, g]) => g.jobs.length > 0)
         .map(([id, g]) => ({ id, ...g }));
     }
-    
+
     return null;
   }, [swimlanesMode, filteredJobs, techniques, machines]);
 
@@ -297,8 +297,8 @@ export default function KanbanBoard() {
   const renderColumns = (jobsForColumns: DbJob[], getJobsByStatusFn: (s: JobStatus) => DbJob[]) => (
     <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-thin">
       {[...statusColumns, ...exceptionStatuses].map((column) => (
-        <DroppableColumn 
-          key={column.status} 
+        <DroppableColumn
+          key={column.status}
           {...column}
           jobs={getJobsByStatusFn(column.status)}
           getTechniqueById={getTechniqueById}
@@ -316,7 +316,7 @@ export default function KanbanBoard() {
   return (
     <MainLayout>
       <JobDetailsModal job={selectedJob} open={isModalOpen} onOpenChange={setIsModalOpen} />
-      
+
       <DndContext
         sensors={sensors}
         collisionDetection={closestCorners}
@@ -327,7 +327,7 @@ export default function KanbanBoard() {
       >
         <div className="p-4 sm:p-6 lg:p-8 space-y-4 animate-fade-in-up">
           <Breadcrumbs />
-          
+
           {/* Header */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
@@ -348,16 +348,16 @@ export default function KanbanBoard() {
               </Badge>
             </div>
           </div>
-          
+
           {/* Planning Efficiency Dashboard */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
             <PlanningEfficiencyDashboard />
           </motion.div>
-          
+
           <CapacityHealthPanel />
 
           {/* Smart Panels */}
@@ -448,7 +448,7 @@ export default function KanbanBoard() {
                       {statusColumns.map((column) => {
                         const columnJobs = group.jobs.filter(j => j.status === column.status);
                         return (
-                          <DroppableColumn 
+                          <DroppableColumn
                             key={`${group.id}-${column.status}`}
                             {...column}
                             jobs={columnJobs}
@@ -502,8 +502,8 @@ export default function KanbanBoard() {
               <CardContent className="px-4 sm:px-6 pb-6">
                 <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-thin">
                   {exceptionStatuses.map((column) => (
-                    <DroppableColumn 
-                      key={column.status} 
+                    <DroppableColumn
+                      key={column.status}
                       {...column}
                       jobs={getJobsByStatus(column.status)}
                       getTechniqueById={getTechniqueById}

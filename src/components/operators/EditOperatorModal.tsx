@@ -60,7 +60,7 @@ export function EditOperatorModal({ operator, open, onOpenChange }: EditOperator
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm() || !operator) {
       return;
     }
@@ -89,7 +89,7 @@ export function EditOperatorModal({ operator, open, onOpenChange }: EditOperator
       onOpenChange(false);
     } catch (error: unknown) {
       if (import.meta.env.DEV) {
-        
+
       }
       const errorMessage = error instanceof Error ? error.message : 'Erro ao atualizar operador';
       toast.error(errorMessage);

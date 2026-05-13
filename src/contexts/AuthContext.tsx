@@ -15,15 +15,13 @@ async function checkLockout(email: string, ipAddress?: string): Promise<{
     const { data, error } = await supabase.functions.invoke('check-login-lockout', {
       body: { email, ip_address: ipAddress, action: 'check' }
     });
-    
+
     if (error) {
-      if (import.meta.env.DEV) 
       return { locked: false };
     }
-    
+
     return data;
   } catch (err) {
-    if (import.meta.env.DEV) 
     return { locked: false };
   }
 }
@@ -36,21 +34,19 @@ async function recordLoginAttempt(email: string, success: boolean, ipAddress?: s
 }> {
   try {
     const { data, error } = await supabase.functions.invoke('check-login-lockout', {
-      body: { 
-        email, 
-        ip_address: ipAddress, 
-        action: success ? 'record_success' : 'record_failure' 
+      body: {
+        email,
+        ip_address: ipAddress,
+        action: success ? 'record_success' : 'record_failure'
       }
     });
-    
+
     if (error) {
-      if (import.meta.env.DEV) 
       return {};
     }
-    
+
     return data;
   } catch (err) {
-    if (import.meta.env.DEV) 
     return {};
   }
 }
@@ -100,51 +96,50 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const { checkDevice } = useDeviceDetection();
 
   const fetchUserData = async (userId: string) => {
-    
+
     try {
       // Fetch profile
-      
+
       const { data: profileData, error: profileError } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', userId)
         .maybeSingle();
 
-      if (profileError) 
       if (profileData) {
-        
+
         setProfile(profileData as Profile);
       } else {
-        
+
       }
 
       // Fetch role using RPC
-      
+
       const { data: roleData, error: roleError } = await supabase
         .rpc('get_user_role', { _user_id: userId });
 
       if (roleError) {
-        
+
       }
-      
+
       if (roleData) {
-        
+
         setRole(roleData as AppRole);
       } else {
-        
+
       }
     } catch (error) {
-      
+
     }
   };
 
   useEffect(() => {
-    
-    
+
+
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
-        
+
         setSession(session);
         setUser(session?.user ?? null);
 
@@ -157,26 +152,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setProfile(null);
           setRole(null);
         }
-        
+
         setIsLoading(false);
       }
     );
 
     // THEN check for existing session
     supabase.auth.getSession().then(({ data: { session }, error }) => {
-      
+
       setSession(session);
       setUser(session?.user ?? null);
 
       if (session?.user) {
         fetchUserData(session.user.id);
       }
-      
+
       setIsLoading(false);
     });
 
     return () => {
-      
+
       subscription.unsubscribe();
     };
   }, []);
@@ -184,11 +179,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signIn = async (email: string, password: string) => {
     // Get client IP for lockout tracking
     const ipAddress = await getClientIP();
-    
+
     // Check if account is locked
     const lockoutStatus = await checkLockout(email, ipAddress);
     if (lockoutStatus.locked) {
-      const lockoutError = new Error(lockoutStatus.message || 'Conta temporariamente bloqueada') as Error & { 
+      const lockoutError = new Error(lockoutStatus.message || 'Conta temporariamente bloqueada') as Error & {
         isLockout: boolean;
         remainingMinutes: number;
       };
@@ -196,16 +191,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       lockoutError.remainingMinutes = lockoutStatus.remaining_minutes || 0;
       return { error: lockoutError };
     }
-    
+
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
-    
+
     // Record login attempt result
     if (error) {
       const result = await recordLoginAttempt(email, false, ipAddress);
-      
+
       // If account is now locked, return specific error
       if (result.locked) {
         const lockoutError = new Error(result.message || `Conta bloqueada por ${result.lockout_minutes} minuto(s)`) as Error & {
@@ -216,7 +211,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         lockoutError.lockoutMinutes = result.lockout_minutes || 0;
         return { error: lockoutError };
       }
-      
+
       // Show remaining attempts warning
       if (result.attempts_remaining !== undefined && result.attempts_remaining <= 2) {
         toast.warning(`Atenção: ${result.attempts_remaining} tentativa(s) restante(s)`, {
@@ -224,13 +219,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           duration: 5000,
         });
       }
-      
+
       return { error };
     }
-    
+
     // Login successful - reset lockout
     await recordLoginAttempt(email, true, ipAddress);
-    
+
     // Se login bem-sucedido, verificar dispositivo
     if (data.user) {
       try {
@@ -239,13 +234,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           .select('full_name')
           .eq('id', data.user.id)
           .maybeSingle();
-        
+
         const result = await checkDevice(
-          data.user.id, 
+          data.user.id,
           data.user.email || email,
           profileData?.full_name || undefined
         );
-        
+
         if (result.isNewDevice) {
           toast.info('Novo dispositivo detectado', {
             description: 'Um email de alerta foi enviado para sua caixa de entrada.',
@@ -253,16 +248,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           });
         }
       } catch (deviceError) {
-        if (import.meta.env.DEV) 
       }
     }
-    
+
     return { error: null };
   };
 
   const signUp = async (email: string, password: string, fullName: string) => {
     const redirectUrl = `${window.location.origin}/`;
-    
+
     const { error } = await supabase.auth.signUp({
       email,
       password,

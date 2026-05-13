@@ -118,7 +118,7 @@ export function OnboardingTour({ isOpen, onClose, onComplete }: OnboardingTourPr
               >
                 <X className="h-4 w-4" />
               </Button>
-              
+
               <div className="flex items-center gap-3 mb-2">
                 <motion.div
                   initial={{ rotate: -10, scale: 0.8 }}
@@ -135,7 +135,7 @@ export function OnboardingTour({ isOpen, onClose, onComplete }: OnboardingTourPr
                   <CardTitle className="text-lg">{step.title}</CardTitle>
                 </div>
               </div>
-              
+
               <Progress value={progress} className="h-1" />
             </CardHeader>
 
@@ -160,7 +160,7 @@ export function OnboardingTour({ isOpen, onClose, onComplete }: OnboardingTourPr
               >
                 Pular Tour
               </Button>
-              
+
               <div className="flex gap-2">
                 {currentStep > 0 && (
                   <Button variant="outline" size="sm" onClick={handlePrev}>
@@ -168,7 +168,7 @@ export function OnboardingTour({ isOpen, onClose, onComplete }: OnboardingTourPr
                     Anterior
                   </Button>
                 )}
-                
+
                 <Button size="sm" onClick={handleNext}>
                   {currentStep < steps.length - 1 ? (
                     <>
@@ -217,7 +217,7 @@ export function useOnboarding() {
   React.useEffect(() => {
     const completed = localStorage.getItem("onboarding_completed");
     const skipped = localStorage.getItem("onboarding_skipped");
-    
+
     if (!completed && !skipped) {
       // Delay to allow page to load
       const timer = setTimeout(() => setShowTour(true), 1000);

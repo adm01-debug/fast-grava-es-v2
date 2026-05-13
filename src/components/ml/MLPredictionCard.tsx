@@ -20,8 +20,8 @@ const impactColors = {
   low: 'text-indicator-info bg-indicator-info/10',
 };
 
-export function MLPredictionCard({ 
-  prediction, 
+export function MLPredictionCard({
+  prediction,
   onAcknowledge,
   getRiskLevel,
   getPredictionTypeLabel,
@@ -44,7 +44,7 @@ export function MLPredictionCard({
               {getPredictionTypeLabel(prediction.prediction_type)}
             </p>
           </div>
-          <Badge 
+          <Badge
             variant={riskLevel.color as "default" | "secondary" | "destructive" | "outline"}
             className={`${isHighRisk ? 'animate-pulse' : ''}`}
           >
@@ -59,8 +59,8 @@ export function MLPredictionCard({
             <span className="text-muted-foreground">Risco de Falha</span>
             <span className="font-bold text-lg">{Math.round(prediction.risk_score)}%</span>
           </div>
-          <Progress 
-            value={Number(prediction.risk_score)} 
+          <Progress
+            value={Number(prediction.risk_score)}
             className={`h-3 ${isHighRisk ? '[&>div]:bg-primary' : ''}`}
           />
         </div>
@@ -92,8 +92,8 @@ export function MLPredictionCard({
             <span className="text-sm font-medium">Fatores de Risco:</span>
             <div className="space-y-1">
               {prediction.factors.slice(0, 3).map((factor: PredictionFactor, idx: number) => (
-                <div 
-                  key={idx} 
+                <div
+                  key={idx}
                   className={`flex items-center gap-2 p-2 rounded-md ${impactColors[factor.impact]}`}
                 >
                   <TrendingUp className="h-3 w-3" />
@@ -126,8 +126,8 @@ export function MLPredictionCard({
             {formatDistanceToNow(new Date(prediction.created_at), { addSuffix: true, locale: ptBR })}
           </span>
           {!prediction.acknowledged_at && Number(prediction.risk_score) >= 50 && (
-            <Button 
-              size="sm" 
+            <Button
+              size="sm"
               variant="outline"
               onClick={() => onAcknowledge(prediction.id)}
             >

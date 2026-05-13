@@ -44,7 +44,6 @@ class OfflineStorageManager {
       const request = indexedDB.open(DB_NAME, DB_VERSION);
 
       request.onerror = () => {
-        if (import.meta.env.DEV) 
         reject(request.error);
       };
 
@@ -240,9 +239,9 @@ class OfflineStorageManager {
   async updateJobLocally(jobId: string, updates: Record<string, unknown>): Promise<void> {
     const job = await this.get<Record<string, unknown>>('jobs', jobId);
     if (job) {
-      await this.put('jobs', { 
-        ...job, 
-        ...updates, 
+      await this.put('jobs', {
+        ...job,
+        ...updates,
         _locallyModified: true,
         _modifiedAt: new Date().toISOString()
       });
@@ -277,7 +276,6 @@ export async function registerBackgroundSync(): Promise<boolean> {
         return true;
       }
     } catch (error) {
-      if (import.meta.env.DEV) 
       return false;
     }
   }
@@ -288,7 +286,6 @@ export async function registerBackgroundSync(): Promise<boolean> {
 export async function requestPersistentStorage(): Promise<boolean> {
   if ('storage' in navigator && 'persist' in navigator.storage) {
     const persistent = await navigator.storage.persist();
-    if (import.meta.env.DEV) 
     return persistent;
   }
   return false;

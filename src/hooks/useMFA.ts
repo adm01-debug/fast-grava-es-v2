@@ -57,12 +57,11 @@ export function useMFA(): UseMFAReturn {
     try {
       setIsLoading(true);
       const { data, error } = await supabase.auth.mfa.listFactors();
-      
+
       if (error) throw error;
-      
+
       setFactors(data.totp || []);
     } catch (error) {
-      if (import.meta.env.DEV) 
       toast.error('Erro ao carregar configurações MFA');
     } finally {
       setIsLoading(false);
@@ -85,7 +84,6 @@ export function useMFA(): UseMFAReturn {
 
       setEnrollmentData(data);
     } catch (error) {
-      if (import.meta.env.DEV) 
       const message = error instanceof Error ? error.message : 'Erro ao iniciar configuração MFA';
       toast.error(message);
       setIsEnrolling(false);
@@ -123,7 +121,6 @@ export function useMFA(): UseMFAReturn {
       await refreshFactors();
       return true;
     } catch (error) {
-      if (import.meta.env.DEV) 
       const message = error instanceof Error ? error.message : 'Código inválido';
       toast.error(message);
       return false;
@@ -149,7 +146,6 @@ export function useMFA(): UseMFAReturn {
       await refreshFactors();
       return true;
     } catch (error) {
-      if (import.meta.env.DEV) 
       const message = error instanceof Error ? error.message : 'Erro ao desativar MFA';
       toast.error(message);
       return false;
@@ -166,7 +162,6 @@ export function useMFA(): UseMFAReturn {
 
       return data.id;
     } catch (error) {
-      if (import.meta.env.DEV) 
       const message = error instanceof Error ? error.message : 'Erro ao criar desafio MFA';
       toast.error(message);
       return null;
@@ -190,7 +185,6 @@ export function useMFA(): UseMFAReturn {
 
       return true;
     } catch (error) {
-      if (import.meta.env.DEV) 
       const message = error instanceof Error ? error.message : 'Código inválido';
       toast.error(message);
       return false;

@@ -121,15 +121,15 @@ export function AppSidebar() {
                     transition={{ duration: 0.3, type: "spring", stiffness: 300, damping: 20 }}
                   />
                 )}
-                <NavGroupComponent 
-                  group={group} 
-                  collapsed={collapsed} 
-                  isMobile={isMobile} 
-                  isActive={isActive} 
-                  alertCount={alertCount} 
+                <NavGroupComponent
+                  group={group}
+                  collapsed={collapsed}
+                  isMobile={isMobile}
+                  isActive={isActive}
+                  alertCount={alertCount}
                   notificationCount={notificationCount}
-                  openGroups={openGroups} 
-                  toggleGroup={toggleGroup} 
+                  openGroups={openGroups}
+                  toggleGroup={toggleGroup}
                 />
               </div>
             );

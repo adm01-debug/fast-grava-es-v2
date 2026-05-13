@@ -38,7 +38,7 @@ export function OperatorCardDetailed({ operator, goals = [], onAddGoal }: Operat
               {operator.operatorName.slice(0, 2).toUpperCase()}
             </AvatarFallback>
           </Avatar>
-          
+
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
               <h3 className="font-semibold truncate">{operator.operatorName}</h3>
@@ -46,7 +46,7 @@ export function OperatorCardDetailed({ operator, goals = [], onAddGoal }: Operat
                 {operator.isActive ? 'Ativo' : 'Inativo'}
               </Badge>
             </div>
-            
+
             <div className="flex items-center gap-2 text-sm text-muted-foreground mb-3">
               <span>{operator.assignedMachines} máquina(s)</span>
               {operator.machineNames.length > 0 && (

@@ -89,19 +89,19 @@ export interface RBACResult {
   hasPermission: (permission: string) => boolean;
   hasAnyPermission: (permissions: string[]) => boolean;
   hasAllPermissions: (permissions: string[]) => boolean;
-  
+
   // Route access
   canAccessRoute: (path: string) => boolean;
-  
+
   // Role checks
   role: AppRole | null;
   isCoordinator: boolean;
   isManager: boolean;
   isOperator: boolean;
-  
+
   // All permissions for current role
   permissions: string[];
-  
+
   // Loading state
   isLoading: boolean;
 }
@@ -111,15 +111,15 @@ export function useRBAC(): RBACResult {
 
   const permissions = useMemo(() => {
     if (isLoading) {
-      
+
       return [];
     }
     if (!role) {
-      
+
       return [];
     }
     const perms = ROLE_PERMISSIONS[role] || [];
-    
+
     return perms;
   }, [role, isLoading]);
 
@@ -147,11 +147,11 @@ export function useRBAC(): RBACResult {
   const canAccessRoute = useMemo(() => {
     return (path: string): boolean => {
       if (!role) return false;
-      
+
       // Find matching route
       const requiredPermissions = ROUTE_PERMISSIONS[path];
       if (!requiredPermissions) return true; // No restrictions defined
-      
+
       return requiredPermissions.some(p => permissions.includes(p));
     };
   }, [role, permissions]);

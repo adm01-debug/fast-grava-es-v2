@@ -40,7 +40,7 @@ export function DashboardExport() {
       link.click();
       toast.success('Dashboard exportado como imagem');
     } catch (error) {
-      
+
       toast.error('Erro ao exportar dashboard');
     } finally {
       setIsExporting(false);
@@ -75,7 +75,7 @@ export function DashboardExport() {
       pdf.save(`dashboard-fastgravacoes-${new Date().toISOString().split('T')[0]}.pdf`);
       toast.success('Dashboard exportado como PDF');
     } catch (error) {
-      
+
       toast.error('Erro ao exportar dashboard');
     } finally {
       setIsExporting(false);
@@ -85,9 +85,9 @@ export function DashboardExport() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button 
-          variant="outline" 
-          size="sm" 
+        <Button
+          variant="outline"
+          size="sm"
           className="h-8 gap-2 border-primary/20 bg-primary/5 hover:bg-primary/10 no-export"
           disabled={isExporting}
         >

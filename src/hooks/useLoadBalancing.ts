@@ -80,7 +80,6 @@ export function useLoadBalancing(targetDate?: Date) {
     );
 
     if (validJobs.length === 0 && jobs.length > 0) {
-      if (import.meta.env.DEV) 
     }
 
     const date = targetDate || new Date();
@@ -156,13 +155,13 @@ export function useLoadBalancing(targetDate?: Date) {
 
         overloaded.forEach(overMachine => {
           // Get movable jobs (not in production, not urgent priority)
-          const movableJobs = overMachine.jobs.filter(j => 
-            !['production', 'finished'].includes(j.status) && 
+          const movableJobs = overMachine.jobs.filter(j =>
+            !['production', 'finished'].includes(j.status) &&
             j.priority !== 'urgent'
           );
 
           movableJobs.forEach(job => {
-            const bestTarget = underloaded.find(m => 
+            const bestTarget = underloaded.find(m =>
               m.availableMinutes >= job.estimated_duration
             );
 
@@ -186,7 +185,7 @@ export function useLoadBalancing(targetDate?: Date) {
 
       // Sort suggestions by load difference (most impactful first)
       const sortedSuggestions = suggestions.sort((a, b) => b.loadDifference - a.loadDifference);
-      
+
       techniqueMap.set(technique.id, {
         technique,
         machines: techniqueMachines.sort((a, b) => b.occupancyRate - a.occupancyRate),

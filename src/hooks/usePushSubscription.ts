@@ -37,7 +37,7 @@ export function usePushSubscription() {
     // Check if push notifications are supported
     const supported = 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
     setIsSupported(supported);
-    
+
     if (supported && user) {
       checkSubscription();
     }
@@ -53,7 +53,6 @@ export function usePushSubscription() {
       setIsSubscribed(subscribed);
       return subscribed;
     } catch (error) {
-      if (import.meta.env.DEV) 
       return false;
     }
   }, [isSupported]);
@@ -82,10 +81,10 @@ export function usePushSubscription() {
 
       // Get service worker registration
       const registration = await navigator.serviceWorker.ready;
-      
+
       // Check for existing subscription
       let subscription = await registration.pushManager.getSubscription();
-      
+
       // Create new subscription if none exists
       if (!subscription) {
         const applicationServerKey = urlBase64ToUint8Array(vapidPublicKey);
@@ -112,7 +111,6 @@ export function usePushSubscription() {
       });
 
       if (error) {
-        if (import.meta.env.DEV) 
         toast.error('Erro ao salvar subscription');
         return false;
       }
@@ -121,7 +119,6 @@ export function usePushSubscription() {
       toast.success('Push notifications ativadas com sucesso!');
       return true;
     } catch (error) {
-      if (import.meta.env.DEV) 
       toast.error('Erro ao ativar push notifications');
       return false;
     } finally {
@@ -149,7 +146,6 @@ export function usePushSubscription() {
           .eq('endpoint', subscription.endpoint);
 
         if (error) {
-          if (import.meta.env.DEV) 
         }
       }
 
@@ -157,7 +153,6 @@ export function usePushSubscription() {
       toast.success('Push notifications desativadas');
       return true;
     } catch (error) {
-      if (import.meta.env.DEV) 
       toast.error('Erro ao desativar push notifications');
       return false;
     } finally {
@@ -179,7 +174,6 @@ export function usePushSubscription() {
       });
 
       if (error) {
-        if (import.meta.env.DEV) 
         toast.error('Erro ao enviar notificação de teste');
         return;
       }
@@ -190,7 +184,6 @@ export function usePushSubscription() {
         toast.success('Notificação de teste enviada!');
       }
     } catch (error) {
-      if (import.meta.env.DEV) 
       toast.error('Erro ao enviar notificação');
     }
   }, [user]);
@@ -208,13 +201,11 @@ export function usePushSubscription() {
       });
 
       if (error) {
-        if (import.meta.env.DEV) 
         return false;
       }
 
       return true;
     } catch (error) {
-      if (import.meta.env.DEV) 
       return false;
     }
   }, []);

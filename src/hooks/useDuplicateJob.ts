@@ -44,7 +44,6 @@ export function useDuplicateJob() {
 
       return data;
     } catch (error) {
-      if (import.meta.env.DEV) 
       toast.error('Erro ao duplicar job');
       return null;
     }

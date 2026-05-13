@@ -11,7 +11,7 @@ interface QualityHistogramProps {
 export function QualityHistogram({ parameter, measurements }: QualityHistogramProps) {
   const data = useMemo(() => {
     if (!measurements || measurements.length === 0) return [];
-    
+
     // Flatten all individual measurements from samples if available, or use mean values
     const values = measurements.flatMap(m => m.values || [m.mean_value]);
     const min = Math.min(...values, parameter.lower_spec_limit);
@@ -19,7 +19,7 @@ export function QualityHistogram({ parameter, measurements }: QualityHistogramPr
     const range = max - min;
     const binCount = 10;
     const binSize = range / binCount;
-    
+
     const bins = Array.from({ length: binCount }, (_, i) => ({
       binStart: min + i * binSize,
       binEnd: min + (i + 1) * binSize,
@@ -46,7 +46,7 @@ export function QualityHistogram({ parameter, measurements }: QualityHistogramPr
             <BarChart data={data}>
               <XAxis dataKey="label" fontSize={10} />
               <YAxis fontSize={10} hide />
-              <Tooltip 
+              <Tooltip
                 contentStyle={{ backgroundColor: 'hsl(var(--background))', borderColor: 'hsl(var(--border))', fontSize: '10px' }}
                 cursor={{ fill: 'hsl(var(--primary)/0.1)' }}
               />

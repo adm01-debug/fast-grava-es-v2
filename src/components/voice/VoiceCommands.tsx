@@ -45,7 +45,7 @@ export function useVoiceCommands({
         const current = event.resultIndex;
         const result = event.results[current];
         const transcriptText = result[0].transcript.toLowerCase();
-        
+
         setTranscript(transcriptText);
         onTranscript?.(transcriptText);
 
@@ -62,7 +62,6 @@ export function useVoiceCommands({
       };
 
       recognitionRef.current.onerror = (event: unknown) => {
-        if (import.meta.env.DEV) 
         setIsListening(false);
         toast({
           title: 'Erro no reconhecimento de voz',
@@ -239,7 +238,7 @@ export const VoiceButton = forwardRef<HTMLDivElement, {
         ) : (
           <MicOff className="h-4 w-4" />
         )}
-        
+
         {isListening && (
           <motion.div
             className="absolute inset-0 rounded-md border-2 border-primary"
@@ -275,13 +274,13 @@ export const VoiceButton = forwardRef<HTMLDivElement, {
                 <X className="h-4 w-4 text-muted-foreground" />
               </button>
             </div>
-            
+
             {transcript && (
               <p className="text-sm text-muted-foreground italic mb-2">
                 "{transcript}"
               </p>
             )}
-            
+
             {lastCommand && (
               <p className="text-sm text-chart-2">
                 {lastCommand}
@@ -338,7 +337,7 @@ export function VoiceFeedbackButton({ text }: { text: string }) {
     } else {
       speak(text);
       setIsSpeaking(true);
-      
+
       // Reset after speaking
       const duration = (text.length / 10) * 1000;
       setTimeout(() => setIsSpeaking(false), duration);

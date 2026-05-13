@@ -77,8 +77,8 @@ export function MLNotificationSettings() {
             <div>
               <p className="font-medium">Status das Notificações</p>
               <p className="text-sm text-muted-foreground">
-                {permission === 'granted' 
-                  ? 'Notificações ativadas' 
+                {permission === 'granted'
+                  ? 'Notificações ativadas'
                   : permission === 'denied'
                   ? 'Bloqueadas no navegador'
                   : 'Não configuradas'}
@@ -100,7 +100,7 @@ export function MLNotificationSettings() {
         {/* Risk Level Settings */}
         <div className="space-y-4">
           <h4 className="font-medium text-sm text-muted-foreground">Por Nível de Risco</h4>
-          
+
           <NotificationToggle
             icon={<AlertCircle className="h-5 w-5 text-destructive" />}
             label="Risco Crítico (80%+)"
@@ -134,7 +134,7 @@ export function MLNotificationSettings() {
         {/* Prediction Type Settings */}
         <div className="space-y-4 pt-4 border-t border-border">
           <h4 className="font-medium text-sm text-muted-foreground">Por Tipo de Predição</h4>
-          
+
           <NotificationToggle
             icon={<AlertCircle className="h-5 w-5 text-destructive" />}
             label="Risco de Falha"
@@ -211,7 +211,7 @@ function NotificationToggle({
           <div className="flex items-center gap-2">
             <p className="font-medium">{label}</p>
             {priority && (
-              <Badge 
+              <Badge
                 variant={priority === 'Crítica' ? 'destructive' : 'secondary'}
                 className="text-xs"
               >

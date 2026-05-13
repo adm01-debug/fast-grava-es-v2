@@ -36,10 +36,10 @@ export function TPMNotificationQueue() {
     mutationFn: async (id: string) => {
       const { error } = await supabase
         .from('tpm_notification_queue')
-        .update({ 
-          status: 'pending', 
-          retry_count: 0, 
-          next_retry_at: new Date().toISOString() 
+        .update({
+          status: 'pending',
+          retry_count: 0,
+          next_retry_at: new Date().toISOString()
         })
         .eq('id', id);
       if (error) throw error;
@@ -50,7 +50,7 @@ export function TPMNotificationQueue() {
     }
   });
 
-  const filteredQueue = queue?.filter(item => 
+  const filteredQueue = queue?.filter(item =>
     item.machine?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     item.machine?.code?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     item.channel.toLowerCase().includes(searchTerm.toLowerCase())
@@ -170,9 +170,9 @@ export function TPMNotificationQueue() {
                   </TableCell>
                   <TableCell>
                     {item.status === 'failed' && (
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
+                      <Button
+                        variant="ghost"
+                        size="icon"
                         className="h-8 w-8 text-primary"
                         onClick={() => retryMutation.mutate(item.id)}
                         title="Tentar novamente"

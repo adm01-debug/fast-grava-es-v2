@@ -226,22 +226,22 @@ export function ChangelogSection() {
 
         <div className="space-y-6">
           {versions.map((version, versionIndex) => (
-            <Card 
-              key={version.version} 
+            <Card
+              key={version.version}
               variant={version.isLatest ? 'premium' : 'elevated'}
               className={`relative ml-0 md:ml-14 animate-fade-in ${version.isLatest ? 'ring-2 ring-primary/50' : ''}`}
               style={{ animationDelay: `${versionIndex * 100}ms` }}
             >
               {/* Timeline dot */}
               <div className={`absolute -left-[3.25rem] top-6 hidden md:flex h-4 w-4 rounded-full border-2 ${
-                version.isLatest 
-                  ? 'bg-primary border-primary animate-pulse' 
+                version.isLatest
+                  ? 'bg-primary border-primary animate-pulse'
                   : 'bg-background border-muted-foreground/30'
               }`} />
 
               <CardHeader className="pb-4">
                 <div className="flex flex-wrap items-center gap-3">
-                  <Badge 
+                  <Badge
                     className={`text-sm font-bold ${getVersionBadgeStyle(version.type)}`}
                     style={{ animationDelay: `${versionIndex * 100 + 50}ms` }}
                   >
@@ -267,8 +267,8 @@ export function ChangelogSection() {
                   <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Destaques</span>
                   <ul className="grid grid-cols-1 md:grid-cols-2 gap-2">
                     {version.highlights.map((highlight, hIndex) => (
-                      <li 
-                        key={hIndex} 
+                      <li
+                        key={hIndex}
                         className="flex items-start gap-2 text-sm animate-fade-in"
                         style={{ animationDelay: `${versionIndex * 100 + hIndex * 50 + 100}ms` }}
                       >
@@ -285,13 +285,13 @@ export function ChangelogSection() {
                   <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Alterações</span>
                   <div className="grid gap-2">
                     {version.changes.map((change, cIndex) => (
-                      <div 
-                        key={cIndex} 
+                      <div
+                        key={cIndex}
                         className="flex items-start gap-3 p-2 rounded-lg bg-muted/20 hover:bg-muted/40 transition-colors animate-fade-in"
                         style={{ animationDelay: `${versionIndex * 100 + cIndex * 30 + 200}ms` }}
                       >
-                        <Badge 
-                          variant="outline" 
+                        <Badge
+                          variant="outline"
                           className={`text-xs shrink-0 ${getTypeStyles(change.type)}`}
                         >
                           {getTypeLabel(change.type)}
@@ -348,7 +348,7 @@ export function ChangelogSection() {
           <CardDescription>Seguimos o padrão Semantic Versioning (SemVer)</CardDescription>
         </CardHeader>
         <CardContent>
-          <CodeBlock 
+          <CodeBlock
             label="Formato de Versão"
             code={`MAJOR.MINOR.PATCH
 

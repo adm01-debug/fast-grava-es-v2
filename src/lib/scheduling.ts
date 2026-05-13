@@ -18,19 +18,19 @@ export function findNextAvailableSlot(
   const sortedJobs = existingJobs
     .filter(job => job.start_time && job.end_time)
     .sort((a, b) => (a.start_time || '').localeCompare(b.start_time || ''));
-  
+
   const referenceDate = new Date();
   let currentStart = workDayStart;
-  
+
   for (const job of sortedJobs) {
     if (job.start_time! > currentStart) {
       // Check if duration fits before this job
       const gapStart = parse(currentStart, 'HH:mm', referenceDate);
       const gapEnd = parse(job.start_time!, 'HH:mm', referenceDate);
-      
+
       if (isValid(gapStart) && isValid(gapEnd)) {
         const gapMinutes = (gapEnd.getTime() - gapStart.getTime()) / (1000 * 60);
-        
+
         if (gapMinutes >= durationMinutes) {
           return {
             start: currentStart,
@@ -44,14 +44,14 @@ export function findNextAvailableSlot(
       currentStart = job.end_time!;
     }
   }
-  
+
   // Check after the last job
   const dayEnd = parse(workDayEnd, 'HH:mm', referenceDate);
   const finalStart = parse(currentStart, 'HH:mm', referenceDate);
-  
+
   if (isValid(dayEnd) && isValid(finalStart)) {
     const remainingMinutes = (dayEnd.getTime() - finalStart.getTime()) / (1000 * 60);
-    
+
     if (remainingMinutes >= durationMinutes) {
       return {
         start: currentStart,
@@ -59,6 +59,6 @@ export function findNextAvailableSlot(
       };
     }
   }
-  
+
   return null;
 }

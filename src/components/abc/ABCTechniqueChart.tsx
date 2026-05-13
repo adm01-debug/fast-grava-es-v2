@@ -20,8 +20,8 @@ export function ABCTechniqueChart({ data }: ABCTechniqueChartProps) {
     .sort((a, b) => b.avg_unit_cost - a.avg_unit_cost)
     .slice(0, 10)
     .map((item, index) => ({
-      name: item.technique_name.length > 15 
-        ? item.technique_name.substring(0, 15) + '...' 
+      name: item.technique_name.length > 15
+        ? item.technique_name.substring(0, 15) + '...'
         : item.technique_name,
       fullName: item.technique_name,
       custo_unitario: item.avg_unit_cost,
@@ -44,14 +44,14 @@ export function ABCTechniqueChart({ data }: ABCTechniqueChartProps) {
           <ResponsiveContainer width="100%" height={350}>
             <BarChart data={chartData} layout="vertical" margin={{ left: 20, right: 20 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
-              <XAxis 
-                type="number" 
+              <XAxis
+                type="number"
                 tickFormatter={(value) => `R$ ${value.toFixed(2)}`}
                 tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
               />
-              <YAxis 
-                type="category" 
-                dataKey="name" 
+              <YAxis
+                type="category"
+                dataKey="name"
                 width={120}
                 tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }}
               />

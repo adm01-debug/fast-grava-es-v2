@@ -4,13 +4,13 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Clock, Wrench, Activity, AlertTriangle, CheckCircle2, TrendingUp } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
-import { 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip as RechartsTooltip, 
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip as RechartsTooltip,
   ResponsiveContainer,
   Cell
 } from 'recharts';
@@ -21,7 +21,7 @@ interface MachineReliabilityTabProps {
 
 export function MachineReliabilityTab({ machineId }: MachineReliabilityTabProps) {
   const { metrics, isLoading } = useMTBFMTTR(90); // Last 90 days
-  
+
   const machineMetrics = metrics.find(m => m.machineId === machineId);
 
   if (isLoading) {
@@ -184,7 +184,7 @@ export function MachineReliabilityTab({ machineId }: MachineReliabilityTabProps)
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.1)" />
               <XAxis dataKey="name" fontSize={10} axisLine={false} tickLine={false} />
               <YAxis fontSize={10} axisLine={false} tickLine={false} />
-              <RechartsTooltip 
+              <RechartsTooltip
                 contentStyle={{ backgroundColor: '#1f2937', border: 'none', borderRadius: '8px', fontSize: '12px' }}
                 cursor={{ fill: 'rgba(255,255,255,0.05)' }}
               />

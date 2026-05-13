@@ -68,7 +68,7 @@ export default function OperatorsPage() {
   const activeOperators = operators.filter(op => op.is_active);
   const inactiveOperators = operators.filter(op => !op.is_active);
 
-  
+
 
   const getAssignedMachineIds = (operatorId: string) => {
     return (assignments || []).filter(a => a.operator_id === operatorId).map(a => a.machine_id);
@@ -88,14 +88,14 @@ export default function OperatorsPage() {
   const filteredOperators = useMemo(() => {
     return fuseSearchedOperators.filter((operator) => {
       // Filter by assigned machine
-      const machineMatch = machineFilter === 'all' || 
+      const machineMatch = machineFilter === 'all' ||
         getAssignedMachineIds(operator.user_id).includes(machineFilter);
-      
+
       // Filter by active status
       const statusMatch = statusFilter === 'all' ||
         (statusFilter === 'active' && operator.is_active) ||
         (statusFilter === 'inactive' && !operator.is_active);
-      
+
       return machineMatch && statusMatch;
     });
   }, [fuseSearchedOperators, machineFilter, statusFilter, assignments, isOnline]);
@@ -126,7 +126,7 @@ export default function OperatorsPage() {
           <meta name="description" content="Gestão de competências, produtividade e ranking global de operadores da fábrica." />
         </Helmet>
         <Breadcrumbs />
-        
+
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-3">
@@ -137,17 +137,17 @@ export default function OperatorsPage() {
             </div>
             <p className="text-muted-foreground">Orquestração de capital humano e competências técnicas</p>
           </div>
-          
+
           <div className="flex items-center gap-3">
             {/* Favorites Dropdown */}
             <FavoritesDropdown onNavigate={(path) => navigate(path)} />
-            
+
             {/* Command Palette Hint */}
             <Badge variant="outline" className="hidden md:flex gap-1.5 cursor-pointer hover:bg-muted transition-colors">
               <Command className="h-3 w-3" />
               <span className="text-xs">⌘K</span>
             </Badge>
-            
+
             <Button onClick={() => setIsCreateModalOpen(true)}>
               <UserPlus className="h-4 w-4 mr-2" />
               Novo Operador
@@ -155,11 +155,11 @@ export default function OperatorsPage() {
           </div>
         </div>
 
-        <OperatorsStats 
-          total={operators.length} 
-          active={activeOperators.length} 
-          inactive={inactiveOperators.length} 
-          isLoading={isLoading} 
+        <OperatorsStats
+          total={operators.length}
+          active={activeOperators.length}
+          inactive={inactiveOperators.length}
+          isLoading={isLoading}
         />
 
         <Tabs defaultValue="list" className="space-y-6">
@@ -282,15 +282,15 @@ export default function OperatorsPage() {
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <span 
+                            <span
                               className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-background cursor-default ${
                                 isOnline(operator.user_id) ? 'bg-success' : 'bg-muted-foreground/50'
                               }`}
                             />
                           </TooltipTrigger>
                           <TooltipContent>
-                            {isOnline(operator.user_id) 
-                              ? 'Online agora' 
+                            {isOnline(operator.user_id)
+                              ? 'Online agora'
                               : getLastSeen(operator.user_id)
                                 ? `Visto ${formatLastSeen(getLastSeen(operator.user_id))}`
                                 : 'Offline'
@@ -299,7 +299,7 @@ export default function OperatorsPage() {
                         </Tooltip>
                       </TooltipProvider>
                     </div>
-                    
+
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
                         <p className="font-medium truncate">
@@ -381,8 +381,8 @@ export default function OperatorsPage() {
                               variant="ghost"
                               onClick={() => setOperatorToToggle(operator)}
                               className={`h-8 w-8 ${
-                                operator.is_active 
-                                  ? 'text-muted-foreground hover:text-warning hover:bg-warning/10' 
+                                operator.is_active
+                                  ? 'text-muted-foreground hover:text-warning hover:bg-warning/10'
                                   : 'text-success hover:text-success hover:bg-success/10'
                               }`}
                             >
@@ -518,14 +518,14 @@ export default function OperatorsPage() {
                   {operatorForQR?.full_name?.substring(0, 2).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
-              
+
               <div className="p-4 bg-white rounded-2xl border-2 border-black shadow-xl">
-                <QRCodeSVG 
-                  value={JSON.stringify({ 
-                    id: operatorForQR?.user_id, 
-                    name: operatorForQR?.full_name, 
-                    type: 'operator_badge' 
-                  })} 
+                <QRCodeSVG
+                  value={JSON.stringify({
+                    id: operatorForQR?.user_id,
+                    name: operatorForQR?.full_name,
+                    type: 'operator_badge'
+                  })}
                   size={160}
                   level="H"
                 />
@@ -630,9 +630,9 @@ export default function OperatorsPage() {
                         </p>
                       )}
                     </div>
-                    <Button 
-                      variant="outline" 
-                      className="w-full mt-2" 
+                    <Button
+                      variant="outline"
+                      className="w-full mt-2"
                       onClick={() => {
                         setDetailsModalOpen(false);
                         handleOpenAssignment(operatorToShowDetails!);
@@ -708,19 +708,19 @@ export default function OperatorsPage() {
           onToggleClose={() => setOperatorToToggle(null)}
           onRemoveConfirm={(reason) => {
             if (operatorToRemove) {
-              removeOperator({ 
-                operatorId: operatorToRemove.user_id, 
+              removeOperator({
+                operatorId: operatorToRemove.user_id,
                 operatorName: operatorToRemove.full_name,
-                reason 
+                reason
               });
               setOperatorToRemove(null);
             }
           }}
           onToggleConfirm={(reason) => {
             if (operatorToToggle) {
-              toggleActive({ 
-                operatorId: operatorToToggle.user_id, 
-                operatorName: operatorToToggle.full_name, 
+              toggleActive({
+                operatorId: operatorToToggle.user_id,
+                operatorName: operatorToToggle.full_name,
                 isActive: !operatorToToggle.is_active,
                 reason
               });

@@ -37,9 +37,9 @@ export function useAutoTheme() {
 
     const checkAndApplyTheme = () => {
       const hour = new Date().getHours();
-      const shouldBeDark = 
+      const shouldBeDark =
         hour >= config.darkStartHour || hour < config.darkEndHour;
-      
+
       const targetTheme = shouldBeDark ? 'dark' : 'light';
       if (theme !== targetTheme) {
         setTheme(targetTheme);

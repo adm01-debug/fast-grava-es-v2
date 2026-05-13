@@ -34,16 +34,16 @@ export default function GamificationPage() {
   const navigate = useNavigate();
   const [period, setPeriod] = useState<'daily' | 'weekly' | 'monthly'>('weekly');
   const [activeTab, setActiveTab] = useState<'ranking' | 'rewards' | 'history'>('ranking');
-  
+
   const dateLocale = i18n.language === 'en-US' ? enUS : i18n.language === 'es-ES' ? es : ptBR;
 
-  const { 
-    rankings, 
-    achievements, 
-    rewards, 
-    balance, 
-    isLoading, 
-    periodStart, 
+  const {
+    rankings,
+    achievements,
+    rewards,
+    balance,
+    isLoading,
+    periodStart,
     periodEnd,
     redeemReward,
     redemptionsQuery
@@ -82,7 +82,7 @@ export default function GamificationPage() {
     <MainLayout>
       <div className="p-4 sm:p-6 lg:p-8 space-y-6 animate-fade-in-up">
         <Breadcrumbs />
-        
+
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
@@ -90,16 +90,16 @@ export default function GamificationPage() {
               <h1 className="text-2xl sm:text-3xl font-display font-bold">
                 <span className="gradient-text">{t('gamification.ranking')}</span>
               </h1>
-              <FavoriteButton 
-                path="/gamification" 
-                name={t('gamification.ranking')} 
+              <FavoriteButton
+                path="/gamification"
+                name={t('gamification.ranking')}
               />
             </div>
             <p className="text-muted-foreground">
               {format(periodStart, "dd 'de' MMMM", { locale: dateLocale })} - {format(periodEnd, "dd 'de' MMMM", { locale: dateLocale })}
             </p>
           </div>
-          
+
           <div className="flex items-center gap-4 p-3 bg-primary/5 border border-primary/20 rounded-2xl animate-pulse-glow">
             <div className="p-2 rounded-lg bg-primary/20">
               <Zap className="h-5 w-5 text-primary" />
@@ -166,11 +166,11 @@ export default function GamificationPage() {
                     <p className="text-sm text-muted-foreground mb-8 h-12 line-clamp-2 leading-relaxed">
                       {reward.description}
                     </p>
-                    <Button 
+                    <Button
                       className={cn(
                         "w-full h-12 rounded-xl font-bold transition-all duration-300",
                         balance >= reward.cost_points ? "gradient-primary shadow-lg shadow-primary/20" : "bg-muted"
-                      )} 
+                      )}
                       disabled={balance < reward.cost_points || redeemReward.isPending}
                       onClick={() => handleRedeem(reward)}
                     >
@@ -227,7 +227,7 @@ export default function GamificationPage() {
                         redemption.status === 'approved' ? 'bg-green-500/10 text-green-500 border-green-500/20' :
                         'bg-red-500/10 text-red-500 border-red-500/20'
                       )}>
-                        {redemption.status === 'pending' ? t('maintenance.pending') : 
+                        {redemption.status === 'pending' ? t('maintenance.pending') :
                          redemption.status === 'approved' ? t('common.confirm') : t('jobs.statuses.cancelled')}
                       </Badge>
                       <p className="text-xs font-bold mt-1">-{redemption.points_spent} PTS</p>
@@ -327,8 +327,8 @@ export default function GamificationPage() {
             <CardContent>
               <div className="space-y-3">
                 {rankings.map((r, index) => (
-                  <div 
-                    key={r.id} 
+                  <div
+                    key={r.id}
                     className={cn(
                       "flex flex-col sm:flex-row items-center gap-4 p-4 rounded-xl transition-all border group",
                       index < 3 ? "bg-primary/5 border-primary/20 shadow-sm" : "hover:bg-muted/30 border-transparent"
@@ -344,7 +344,7 @@ export default function GamificationPage() {
                       )}>
                         {r.position}
                       </div>
-                      
+
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
                           <p className="font-bold text-base truncate">{r.profile?.full_name}</p>

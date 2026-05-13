@@ -199,9 +199,9 @@ export default function OperatorProductivityPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
             {filteredOperators.map((operator, index) => (
               <div key={operator.operatorId} className="animate-fade-in cursor-pointer" style={{ animationDelay: `${index * 50}ms` }} onClick={() => setSelectedOperator(operator)}>
-                <OperatorProductivityCard 
-                  operator={operator} 
-                  goals={getGoalsByOperator(operator.operatorId)} 
+                <OperatorProductivityCard
+                  operator={operator}
+                  goals={getGoalsByOperator(operator.operatorId)}
                   onAddGoal={() => { setGoalOperatorId(operator.operatorId); setShowCreateGoalModal(true); }}
                   teamAverage={overallStats.averageEfficiency}
                 />

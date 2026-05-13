@@ -1,14 +1,14 @@
 import { JobStatus } from '@/types/scheduling';
 import { cn } from '@/lib/utils';
 import { useEffect, useRef, useState } from 'react';
-import { 
-  Clock, 
-  ThumbsUp, 
-  Calendar, 
-  Play, 
-  CircleCheckBig, 
-  Pause, 
-  XCircle, 
+import {
+  Clock,
+  ThumbsUp,
+  Calendar,
+  Play,
+  CircleCheckBig,
+  Pause,
+  XCircle,
   AlertTriangle,
   RotateCcw,
   Archive
@@ -22,72 +22,72 @@ interface StatusBadgeProps {
   className?: string;
 }
 
-const statusConfig: Record<JobStatus, { 
-  label: string; 
+const statusConfig: Record<JobStatus, {
+  label: string;
   icon: React.ElementType;
   bgClass: string;
   textClass: string;
   glowClass?: string;
   animationClass?: string;
 }> = {
-  queue: { 
-    label: 'Na Fila', 
+  queue: {
+    label: 'Na Fila',
     icon: Clock,
     bgClass: 'bg-muted dark:bg-muted/50',
     textClass: 'text-muted-foreground',
   },
-  ready: { 
-    label: 'No Jeito', 
+  ready: {
+    label: 'No Jeito',
     icon: ThumbsUp,
     bgClass: 'bg-status-ready',
     textClass: 'text-status-ready-foreground',
     glowClass: 'dark:shadow-[0_0_12px_hsl(45_100%_55%/0.4)]',
     animationClass: 'animate-pulse-soft',
   },
-  scheduled: { 
-    label: 'Agendado', 
+  scheduled: {
+    label: 'Agendado',
     icon: Calendar,
     bgClass: 'bg-status-scheduled',
     textClass: 'text-status-scheduled-foreground',
     glowClass: 'dark:shadow-[0_0_12px_hsl(210_100%_60%/0.4)]',
   },
-  production: { 
-    label: 'Em Produção', 
+  production: {
+    label: 'Em Produção',
     icon: Play,
     bgClass: 'bg-status-production',
     textClass: 'text-status-production-foreground',
     glowClass: 'dark:shadow-[0_0_16px_hsl(280_80%_60%/0.5)]',
     animationClass: 'streak-fire',
   },
-  finished: { 
-    label: 'Finalizado', 
+  finished: {
+    label: 'Finalizado',
     icon: CircleCheckBig,
     bgClass: 'bg-status-finished',
     textClass: 'text-status-finished-foreground',
     glowClass: 'dark:shadow-[0_0_12px_hsl(142_70%_50%/0.4)]',
   },
-  paused: { 
-    label: 'Pausado', 
+  paused: {
+    label: 'Pausado',
     icon: Pause,
     bgClass: 'bg-status-paused',
     textClass: 'text-status-paused-foreground',
   },
-  cancelled: { 
-    label: 'Cancelado', 
+  cancelled: {
+    label: 'Cancelado',
     icon: XCircle,
     bgClass: 'bg-status-cancelled',
     textClass: 'text-status-cancelled-foreground',
   },
-  delayed: { 
-    label: 'Atrasado', 
+  delayed: {
+    label: 'Atrasado',
     icon: AlertTriangle,
     bgClass: 'bg-status-delayed',
     textClass: 'text-status-delayed-foreground',
     glowClass: 'dark:shadow-[0_0_16px_hsl(24_95%_55%/0.5)]',
     animationClass: 'streak-fire',
   },
-  rework: { 
-    label: 'Retrabalho', 
+  rework: {
+    label: 'Retrabalho',
     icon: RotateCcw,
     bgClass: 'bg-status-rework',
     textClass: 'text-status-rework-foreground',

@@ -19,7 +19,7 @@ export function useOrphanedDataDetection() {
   const { data: jobsData } = useJobs();
   const { data: techniquesData } = useTechniques();
   const { data: machinesData } = useMachines();
-  
+
   // Ensure we have arrays even if data is undefined
   const jobs = jobsData || [];
   const techniques = techniquesData || [];
@@ -27,9 +27,9 @@ export function useOrphanedDataDetection() {
 
   const analysis = useMemo(() => {
     if (!jobsData || !techniquesData || !machinesData) {
-      return { 
-        orphanedTechniques: [], 
-        issues: [], 
+      return {
+        orphanedTechniques: [],
+        issues: [],
         isLoading: true,
         errorCount: 0,
         warningCount: 0,
@@ -43,7 +43,7 @@ export function useOrphanedDataDetection() {
     techniques.forEach(technique => {
       const techniqueMachines = machines.filter(m => m.technique_id === technique.id);
       const techniqueJobs = jobs.filter(j => j.technique_id === technique.id);
-      const activeJobs = techniqueJobs.filter(j => 
+      const activeJobs = techniqueJobs.filter(j =>
         !['finished', 'cancelled'].includes(j.status)
       );
 
@@ -67,7 +67,7 @@ export function useOrphanedDataDetection() {
     });
 
     // Check for jobs in production without assigned machine
-    const productionWithoutMachine = jobs.filter(j => 
+    const productionWithoutMachine = jobs.filter(j =>
       j.status === 'production' && !j.machine_id
     );
 

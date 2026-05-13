@@ -72,7 +72,7 @@ export function useFocusTrap<T extends HTMLElement = HTMLElement>(
           e.preventDefault();
           lastElement.focus();
         }
-      } 
+      }
       // Tab: move focus forwards
       else {
         if (document.activeElement === lastElement) {

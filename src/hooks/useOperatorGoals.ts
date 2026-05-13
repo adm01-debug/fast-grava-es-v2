@@ -73,12 +73,10 @@ export function useOperatorGoals() {
           .order('period_start', { ascending: false });
 
         if (error) {
-          if (import.meta.env.DEV) 
           throw error;
         }
         return (data || []) as OperatorGoal[];
       } catch (err) {
-        if (import.meta.env.DEV) 
         throw err;
       }
     },
@@ -132,7 +130,6 @@ export function useOperatorGoals() {
       toast.success('Meta criada com sucesso');
     },
     onError: (error) => {
-      if (import.meta.env.DEV) 
       showErrorToast(error, 'Erro ao criar meta', GOALS_ERROR_CONTEXT.create);
     },
   });
@@ -155,7 +152,6 @@ export function useOperatorGoals() {
       toast.success('Meta atualizada com sucesso');
     },
     onError: (error) => {
-      if (import.meta.env.DEV) 
       showErrorToast(error, 'Erro ao atualizar meta', GOALS_ERROR_CONTEXT.update);
     },
   });
@@ -175,7 +171,6 @@ export function useOperatorGoals() {
       toast.success('Meta removida com sucesso');
     },
     onError: (error) => {
-      if (import.meta.env.DEV) 
       showErrorToast(error, 'Erro ao remover meta', GOALS_ERROR_CONTEXT.delete);
     },
   });
@@ -247,7 +242,7 @@ export function calculateGoalProgress(
     is_achieved = currentValue <= goal.target_value;
   } else {
     // For other metrics, higher is better
-    progress_percentage = goal.target_value > 0 
+    progress_percentage = goal.target_value > 0
       ? Math.min(100, (currentValue / goal.target_value) * 100)
       : 0;
     is_achieved = currentValue >= goal.target_value;

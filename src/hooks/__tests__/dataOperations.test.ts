@@ -288,7 +288,7 @@ describe('Network State Patterns', () => {
   it('connection types have proper hierarchy', () => {
     const types = ['slow-2g', '2g', '3g', '4g'];
     const slowTypes = ['slow-2g', '2g'];
-    
+
     slowTypes.forEach(type => {
       expect(types.indexOf(type)).toBeLessThan(2);
     });
@@ -304,7 +304,7 @@ describe('Network State Patterns', () => {
       saveData: false,
       wasOffline: false,
     };
-    
+
     expect(defaultState.isOnline).toBe(true);
     expect(defaultState.isSlowConnection).toBe(false);
     expect(defaultState.saveData).toBe(false);

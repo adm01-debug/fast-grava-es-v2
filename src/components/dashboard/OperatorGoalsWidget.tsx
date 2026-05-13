@@ -57,9 +57,9 @@ export function OperatorGoalsWidget() {
             </div>
             <span className="gradient-text">Minhas Metas</span>
           </div>
-          <Button 
-            variant="ghost" 
-            size="sm" 
+          <Button
+            variant="ghost"
+            size="sm"
             className="h-6 text-[10px] uppercase font-bold"
             onClick={() => navigate('/operator-productivity')}
           >
@@ -89,11 +89,11 @@ export function OperatorGoalsWidget() {
               </span>
             </div>
             <div className="relative pt-1">
-              <Progress 
-                value={goal.progress_percentage} 
+              <Progress
+                value={goal.progress_percentage}
                 className="h-1.5 bg-muted"
               />
-              <div 
+              <div
                 className={cn(
                   "h-1.5 rounded-full absolute top-1 left-0 transition-all duration-500",
                   goal.is_achieved ? "bg-success shadow-[0_0_8px_rgba(34,197,94,0.4)]" : goal.progress_percentage < 50 ? "bg-orange-500 shadow-[0_0_8px_rgba(249,115,22,0.4)]" : "bg-primary shadow-[0_0_8px_rgba(59,130,246,0.4)]"

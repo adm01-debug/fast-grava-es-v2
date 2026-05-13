@@ -57,12 +57,12 @@ export function MLRiskDistributionChart({ predictions }: MLRiskDistributionChart
         <ResponsiveContainer width="100%" height={250}>
           <BarChart data={riskRanges} margin={{ top: 10, right: 10, left: 0, bottom: 20 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
-            <XAxis 
-              dataKey="label" 
+            <XAxis
+              dataKey="label"
               tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }}
               axisLine={{ stroke: 'hsl(var(--border))' }}
             />
-            <YAxis 
+            <YAxis
               tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }}
               axisLine={{ stroke: 'hsl(var(--border))' }}
             />
@@ -86,8 +86,8 @@ export function MLRiskDistributionChart({ predictions }: MLRiskDistributionChart
         <div className="flex flex-wrap justify-center gap-4 mt-4">
           {riskRanges.map((range) => (
             <div key={range.range} className="flex items-center gap-2">
-              <div 
-                className="w-3 h-3 rounded-full" 
+              <div
+                className="w-3 h-3 rounded-full"
                 style={{ backgroundColor: range.color }}
               />
               <span className="text-xs text-muted-foreground">

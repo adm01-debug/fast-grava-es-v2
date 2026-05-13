@@ -16,7 +16,7 @@ interface ProductDesignProviderProps {
 
 /**
  * ProductDesignProvider - Wraps the app with all Product Design improvements
- * 
+ *
  * Features included:
  * - Onboarding Tour (first-time user experience)
  * - Command Palette (Cmd+K for quick navigation)

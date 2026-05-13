@@ -8,14 +8,14 @@ import { useKPIs } from '@/hooks/useKPIs';
 export function CostSimulationCard() {
   const { data, isLoading } = useKPIs('day');
   const [scenario, setScenario] = useState<'current' | 'optimized'>('current');
-  
+
   const currentCost = data?.costOfLosses || 0;
   const currentRevenue = data?.estimatedRevenue || 0;
-  
+
   // Simulation: IA optimization reduces losses by 35% and increases revenue by 10%
   const optimizedCost = currentCost * 0.65;
   const optimizedRevenue = currentRevenue * 1.1;
-  
+
   const activeCost = scenario === 'current' ? currentCost : optimizedCost;
   const activeRevenue = scenario === 'current' ? currentRevenue : optimizedRevenue;
   const margin = activeRevenue > 0 ? ((activeRevenue - activeCost) / activeRevenue) * 100 : 0;
@@ -38,7 +38,7 @@ export function CostSimulationCard() {
               <span className="font-bold text-muted-foreground uppercase">Revenue (Estimado)</span>
               <span className="font-black text-foreground">R$ {activeRevenue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
            </div>
-           
+
            <div className="flex justify-between items-center text-xs">
               <span className={`font-bold uppercase ${scenario === 'optimized' ? 'text-emerald-600' : 'text-muted-foreground'}`}>
                 Custo de Perda {scenario === 'optimized' && '(IA)'}
@@ -48,7 +48,7 @@ export function CostSimulationCard() {
               </span>
            </div>
            <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
-              <motion.div 
+              <motion.div
                 className={`h-full ${scenario === 'optimized' ? 'bg-emerald-500' : 'bg-primary'}`}
                 initial={false}
                 animate={{ width: `${(activeCost / (activeRevenue || 1)) * 100}%` }}
@@ -72,7 +72,7 @@ export function CostSimulationCard() {
            </div>
         </div>
 
-        <Button 
+        <Button
           variant={scenario === 'current' ? "outline" : "default"}
           onClick={() => setScenario(prev => prev === 'current' ? 'optimized' : 'current')}
           className="w-full h-9 text-[10px] font-black uppercase tracking-widest border-primary/30"

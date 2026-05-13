@@ -44,7 +44,7 @@ export default function NewJobPage() {
   const { techniques, getMachinesByTechnique, refetchJobs } = useSchedulingData();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [date, setDate] = useState<Date>();
-  
+
   const { control, handleSubmit, watch, setValue, formState: { errors } } = useForm<JobFormValues>({
     resolver: zodResolver(jobSchema),
     defaultValues: {
@@ -67,7 +67,7 @@ export default function NewJobPage() {
 
   const onSubmit = async (data: JobFormValues) => {
     setIsSubmitting(true);
-    
+
     try {
       const selectedTechnique = techniques.find(t => t.id === data.technique_id);
       const estimatedDuration = calculateEstimatedTime({
@@ -98,7 +98,6 @@ export default function NewJobPage() {
       refetchJobs();
       navigate('/');
     } catch (error) {
-      if (import.meta.env.DEV) 
       toast.error('Erro ao criar job');
     } finally {
       setIsSubmitting(false);
@@ -109,7 +108,7 @@ export default function NewJobPage() {
     <MainLayout>
       <div className="space-y-6 max-w-3xl mx-auto">
         <Breadcrumbs />
-        
+
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
             <ArrowLeft className="h-5 w-5" />
@@ -219,8 +218,8 @@ export default function NewJobPage() {
                   </div>
                 </div>
 
-                <MachineSuggestionPanel 
-                  techniqueId={techniqueId} 
+                <MachineSuggestionPanel
+                  techniqueId={techniqueId}
                   onSelectMachine={(id) => setValue('machine_id', id)}
                 />
               </div>

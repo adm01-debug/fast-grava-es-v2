@@ -13,18 +13,18 @@ export function ShiftSummaryCard({ jobs }: ShiftSummaryCardProps) {
   const summary = useMemo(() => {
     const today = new Date().toISOString().split('T')[0];
     const todayJobs = jobs.filter(j => j.scheduled_date === today);
-    
+
     const completed = todayJobs.filter(j => j.status === 'finished').length;
     const inProgress = todayJobs.filter(j => j.status === 'production').length;
     const total = todayJobs.length;
     const progress = total > 0 ? Math.round((completed / total) * 100) : 0;
-    
+
     const piecesProduced = todayJobs
       .filter(j => j.status === 'finished')
       .reduce((sum, j) => sum + (j.produced_quantity || j.quantity), 0);
-    
+
     const totalPieces = todayJobs.reduce((sum, j) => sum + j.quantity, 0);
-    
+
     const losses = todayJobs.reduce((sum, j) => sum + (j.lost_pieces || 0), 0);
     const lossRate = piecesProduced > 0 ? (losses / (piecesProduced + losses)) * 100 : 0;
 

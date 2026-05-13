@@ -3,8 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { 
-  BarChart3, Target, Zap, Clock, TrendingUp, 
+import {
+  BarChart3, Target, Zap, Clock, TrendingUp,
   ArrowUpRight, AlertTriangle, Sparkles, ChevronDown, ChevronUp, Activity,
   LayoutGrid, BrainCircuit, History
 } from 'lucide-react';
@@ -35,7 +35,7 @@ export function PlanningEfficiencyDashboard() {
         await applyAllSequencing();
       }
     } catch (error) {
-      
+
     }
   };
 
@@ -57,17 +57,17 @@ export function PlanningEfficiencyDashboard() {
       return new Date(j.actual_end_time) <= new Date(j.scheduled_date);
     }).length;
 
-    const efficiencyScore = finishedJobs.length > 0 
-      ? Math.round((withinDeadlineCount / finishedJobs.length) * 100) 
+    const efficiencyScore = finishedJobs.length > 0
+      ? Math.round((withinDeadlineCount / finishedJobs.length) * 100)
       : 85; // Default if no finished jobs
-    
+
     const deadlineHealth = Math.round(((totalJobs - delayedCount) / totalJobs) * 100) || 0;
 
     // Use actual OEE from real flow metrics (Availability, Performance, Quality)
     const estimatedOEE = oeeData?.overallOEE ?? 75;
-    
+
     // Calculate bottleneck risk
-    const hasHighBottleneck = (sequencingSuggestions?.some(s => s.bottleneckRisk === 'high')) || 
+    const hasHighBottleneck = (sequencingSuggestions?.some(s => s.bottleneckRisk === 'high')) ||
                              (balancingSuggestions?.some(s => s.currentLoad > 90));
 
     return { efficiencyScore, deadlineHealth, totalJobs, delayedCount, estimatedOEE, oeeData, hasHighBottleneck };
@@ -178,7 +178,7 @@ export function PlanningEfficiencyDashboard() {
               Disponibilidade
             </div>
           </div>
-          
+
           <div className="space-y-2 mt-2">
             <div className="flex justify-between items-center text-[10px]">
               <span className="text-muted-foreground uppercase font-semibold">Máquinas Críticas</span>
@@ -191,12 +191,12 @@ export function PlanningEfficiencyDashboard() {
             </div>
             <div className="flex gap-0.5 h-1">
               {Array.from({ length: 10 }).map((_, i) => (
-                <div 
-                  key={i} 
+                <div
+                  key={i}
                   className={cn(
                     "flex-1 rounded-full",
                     i < (reliabilitySummary.criticalMachines.length) ? "bg-red-400" : "bg-muted"
-                  )} 
+                  )}
                 />
               ))}
             </div>
@@ -246,10 +246,10 @@ export function PlanningEfficiencyDashboard() {
           </div>
         </CardContent>
       </Card>
-      
+
       <AnimatePresence>
         {showTrend && oeeData && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
@@ -257,13 +257,13 @@ export function PlanningEfficiencyDashboard() {
           >
             <div className="pt-4 grid grid-cols-1 lg:grid-cols-3 gap-4">
               <div className="lg:col-span-2">
-                <OEETrendChart 
-                  data={oeeData.trendData} 
-                  worldClassBenchmark={oeeData.worldClassBenchmark} 
+                <OEETrendChart
+                  data={oeeData.trendData}
+                  worldClassBenchmark={oeeData.worldClassBenchmark}
                   comparison={oeeData.comparison}
                 />
               </div>
-              
+
               {/* Technique Load Distribution */}
               <Card className="glass-card border-primary/10">
                 <CardHeader className="p-4 pb-2">
@@ -289,11 +289,11 @@ export function PlanningEfficiencyDashboard() {
                           <TooltipProvider key={machine.machine.id}>
                             <Tooltip>
                               <TooltipTrigger asChild>
-                                <div 
+                                <div
                                   className={cn(
                                     "flex-1 rounded-sm transition-all cursor-help",
-                                    machine.occupancyRate > 95 ? "bg-red-500" : 
-                                    machine.occupancyRate > 80 ? "bg-amber-500" : 
+                                    machine.occupancyRate > 95 ? "bg-red-500" :
+                                    machine.occupancyRate > 80 ? "bg-amber-500" :
                                     machine.occupancyRate < 20 ? "bg-blue-400/50" : "bg-primary/40"
                                   )}
                                 />
@@ -321,9 +321,9 @@ export function PlanningEfficiencyDashboard() {
       </AnimatePresence>
 
       <div className="md:col-span-2 lg:col-span-4 flex justify-between items-center -mt-2">
-        <Button 
-          variant="ghost" 
-          size="sm" 
+        <Button
+          variant="ghost"
+          size="sm"
           className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground hover:text-primary gap-2"
           onClick={() => setShowTrend(!showTrend)}
         >
@@ -335,8 +335,8 @@ export function PlanningEfficiencyDashboard() {
         </Button>
 
         {hasSuggestions && (
-          <Button 
-            size="sm" 
+          <Button
+            size="sm"
             variant="outline"
             disabled={isApplying}
             className="text-[10px] uppercase font-bold tracking-widest gap-2 bg-primary/5 border-primary/20 hover:bg-primary/10 hover:border-primary/40 text-primary animate-in fade-in zoom-in duration-500"

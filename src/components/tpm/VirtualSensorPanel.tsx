@@ -39,8 +39,8 @@ export function VirtualSensorPanel({ machineId }: VirtualSensorPanelProps) {
       });
 
       setData(prev => {
-        const newData = [...prev.slice(1), { 
-          time: prev[prev.length - 1].time + 1, 
+        const newData = [...prev.slice(1), {
+          time: prev[prev.length - 1].time + 1,
           vibration: newVibration,
           temperature: newTemp
         }];
@@ -102,24 +102,24 @@ export function VirtualSensorPanel({ machineId }: VirtualSensorPanelProps) {
                   <stop offset="95%" stopColor="#f59e0b" stopOpacity={0}/>
                 </linearGradient>
               </defs>
-              <Tooltip 
+              <Tooltip
                 contentStyle={{ backgroundColor: 'hsl(var(--background))', borderColor: 'hsl(var(--border))', fontSize: '10px' }}
                 labelStyle={{ display: 'none' }}
               />
-              <Area 
-                type="monotone" 
-                dataKey="vibration" 
-                stroke="#3b82f6" 
-                fillOpacity={1} 
-                fill="url(#colorVib)" 
+              <Area
+                type="monotone"
+                dataKey="vibration"
+                stroke="#3b82f6"
+                fillOpacity={1}
+                fill="url(#colorVib)"
                 isAnimationActive={false}
               />
-              <Area 
-                type="monotone" 
-                dataKey="temperature" 
-                stroke="#f59e0b" 
-                fillOpacity={1} 
-                fill="url(#colorTemp)" 
+              <Area
+                type="monotone"
+                dataKey="temperature"
+                stroke="#f59e0b"
+                fillOpacity={1}
+                fill="url(#colorTemp)"
                 isAnimationActive={false}
               />
             </AreaChart>

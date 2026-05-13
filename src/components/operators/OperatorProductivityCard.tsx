@@ -44,7 +44,7 @@ export function OperatorProductivityCard({ operator, goals = [], onAddGoal, team
               {operator.operatorName.slice(0, 2).toUpperCase()}
             </AvatarFallback>
           </Avatar>
-          
+
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
               <h3 className="font-semibold truncate">{operator.operatorName}</h3>
@@ -52,7 +52,7 @@ export function OperatorProductivityCard({ operator, goals = [], onAddGoal, team
                 {operator.isActive ? 'Ativo' : 'Inativo'}
               </Badge>
             </div>
-            
+
             <div className="flex items-center gap-2 text-sm text-muted-foreground mb-3">
               <span>{operator.assignedMachines} máquina(s)</span>
               {operator.machineNames.length > 0 && (
@@ -82,7 +82,7 @@ export function OperatorProductivityCard({ operator, goals = [], onAddGoal, team
                 {/* Ghost PB Indicator */}
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <div 
+                    <div
                       className="absolute top-0 w-0.5 h-4 -top-1 bg-amber-500/40 border-l border-amber-500 transition-all duration-500"
                       style={{ left: `${Math.min(99, personalBest)}%` }}
                     />
@@ -91,12 +91,12 @@ export function OperatorProductivityCard({ operator, goals = [], onAddGoal, team
                     <p className="text-[10px] font-bold">Personal Best (Recorde): {personalBest.toFixed(1)}%</p>
                   </TooltipContent>
                 </Tooltip>
-                
+
                 {/* Team Average Indicator */}
                 {teamAverage && (
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <div 
+                      <div
                         className="absolute top-0 w-0.5 h-4 -top-1 bg-blue-500/40 border-l border-blue-500 transition-all duration-500"
                         style={{ left: `${Math.min(99, teamAverage)}%` }}
                       />
@@ -109,7 +109,7 @@ export function OperatorProductivityCard({ operator, goals = [], onAddGoal, team
               </div>
               <div className="flex justify-between mt-2">
                 <span className="text-[9px] text-muted-foreground uppercase flex items-center gap-1">
-                  <div className="w-1.5 h-1.5 rounded-full bg-blue-500" /> vs Time: 
+                  <div className="w-1.5 h-1.5 rounded-full bg-blue-500" /> vs Time:
                   <span className={isAboveTeam ? "text-success font-bold" : "text-destructive font-bold"}>
                     {isAboveTeam ? '+' : ''}{(operator.efficiencyScore - (teamAverage || 0)).toFixed(1)}%
                   </span>

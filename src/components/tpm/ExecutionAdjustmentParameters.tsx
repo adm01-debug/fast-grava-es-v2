@@ -32,18 +32,18 @@ export function AdjustmentParameters({ adjustmentParameters }: AdjustmentParamet
         const value = adjustmentParameters[key];
         const range = adjustmentParameters.ranges?.[key];
         const recommended = adjustmentParameters.recommended?.[key];
-        
+
         if (!value) return null;
 
         const outOfRange = isOutOfRange(value, range);
         const differsFromRecommended = recommended && value !== recommended;
 
         return (
-          <div 
-            key={key} 
+          <div
+            key={key}
             className={`p-3 rounded-lg border ${
-              outOfRange ? 'bg-destructive/5 border-destructive/20' : 
-              differsFromRecommended ? 'bg-amber-500/10 border-amber-500/30' : 
+              outOfRange ? 'bg-destructive/5 border-destructive/20' :
+              differsFromRecommended ? 'bg-amber-500/10 border-amber-500/30' :
               'bg-secondary/20 border-border/50'
             }`}
           >

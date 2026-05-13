@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react';
 import { AppRole } from '@/contexts/AuthContext';
 
 // Permission types
-export type Permission = 
+export type Permission =
   | 'jobs.view' | 'jobs.create' | 'jobs.edit' | 'jobs.delete'
   | 'production.view' | 'production.register' | 'production.edit'
   | 'operators.view' | 'operators.create' | 'operators.edit' | 'operators.delete'
@@ -82,7 +82,7 @@ export function useRolePermissions() {
         const hasIt = rolePerms.includes(permission);
         return {
           ...prev,
-          [role]: hasIt 
+          [role]: hasIt
             ? rolePerms.filter(p => p !== permission)
             : [...rolePerms, permission],
         };

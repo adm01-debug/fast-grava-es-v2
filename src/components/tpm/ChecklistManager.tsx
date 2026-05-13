@@ -33,8 +33,8 @@ export function ChecklistManager() {
   }, [machines]);
 
   const currentChecklist = useMemo(() => {
-    return checklists.find(c => 
-      c.maintenance_type_id === selectedTypeId && 
+    return checklists.find(c =>
+      c.maintenance_type_id === selectedTypeId &&
       (c.technique_id === selectedTechniqueId || (!c.technique_id && !selectedTechniqueId))
     );
   }, [checklists, selectedTypeId, selectedTechniqueId]);
@@ -76,13 +76,13 @@ export function ChecklistManager() {
       return;
     }
     setIsSaving(true);
-    
+
     try {
       const type = maintenanceTypes.find(t => t.id === selectedTypeId);
       const newVersion = (currentChecklist?.version || 0) + 1;
-      
+
       let checklistId = currentChecklist?.id;
-      
+
       if (!checklistId) {
         const { data, error } = await supabase
           .from('maintenance_checklists')
@@ -95,7 +95,7 @@ export function ChecklistManager() {
           })
           .select()
           .single();
-        
+
         if (error) throw error;
         checklistId = data.id;
       } else {
@@ -107,7 +107,7 @@ export function ChecklistManager() {
             updated_at: new Date().toISOString()
           })
           .eq('id', checklistId);
-        
+
         if (updateError) throw updateError;
 
         // Clean up old items
@@ -115,7 +115,7 @@ export function ChecklistManager() {
           .from('maintenance_checklist_items')
           .delete()
           .eq('checklist_id', checklistId);
-        
+
         if (deleteError) throw deleteError;
       }
 
@@ -135,14 +135,14 @@ export function ChecklistManager() {
         const { error: insertError } = await supabase
           .from('maintenance_checklist_items')
           .insert(itemsToInsert);
-        
+
         if (insertError) throw insertError;
       }
 
       toast.success(`Checklist ${currentChecklist ? 'atualizado' : 'criado'} para versão ${newVersion}`);
       queryClient.invalidateQueries({ queryKey: ['maintenance-checklists'] });
     } catch (error) {
-      
+
       toast.error('Erro ao salvar checklist');
     } finally {
       setIsSaving(false);
@@ -156,7 +156,7 @@ export function ChecklistManager() {
         .from('maintenance_checklists')
         .update({ is_active: !currentChecklist.is_active })
         .eq('id', currentChecklist.id);
-      
+
       if (error) throw error;
       toast.success(`Checklist ${currentChecklist.is_active ? 'desativado' : 'ativado'}`);
       queryClient.invalidateQueries({ queryKey: ['maintenance-checklists'] });
@@ -183,9 +183,9 @@ export function ChecklistManager() {
               <Badge variant={currentChecklist.is_active ? "success" : "secondary"}>
                 v{currentChecklist.version || 1}
               </Badge>
-              <Button 
-                variant="outline" 
-                size="sm" 
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={handleToggleActive}
                 className={currentChecklist.is_active ? "text-destructive" : "text-emerald-600"}
               >
@@ -263,7 +263,7 @@ export function ChecklistManager() {
 
                     <div className="flex flex-wrap gap-4 pt-2">
                       <div className="flex items-center space-x-2 bg-secondary/30 p-2 rounded-md border border-border/50">
-                        <Checkbox 
+                        <Checkbox
                           id={`critical-${index}`}
                           checked={item.is_critical}
                           onCheckedChange={(checked) => updateItem(index, { is_critical: !!checked })}
@@ -272,9 +272,9 @@ export function ChecklistManager() {
                           <AlertTriangle className="h-3 w-3" /> Item Crítico
                         </Label>
                       </div>
-                      
+
                       <div className="flex items-center space-x-2 bg-secondary/30 p-2 rounded-md border border-border/50">
-                        <Checkbox 
+                        <Checkbox
                           id={`photo-${index}`}
                           checked={item.requires_photo}
                           onCheckedChange={(checked) => updateItem(index, { requires_photo: !!checked })}
@@ -285,7 +285,7 @@ export function ChecklistManager() {
                       </div>
 
                       <div className="flex items-center space-x-2 bg-secondary/30 p-2 rounded-md border border-border/50">
-                        <Checkbox 
+                        <Checkbox
                           id={`measure-${index}`}
                           checked={item.requires_measurement}
                           onCheckedChange={(checked) => updateItem(index, { requires_measurement: !!checked })}
@@ -300,27 +300,27 @@ export function ChecklistManager() {
                       <div className="grid grid-cols-3 gap-3 pt-2 animate-in fade-in duration-200">
                         <div className="space-y-1">
                           <Label className="text-xs">Unidade</Label>
-                          <Input 
-                            placeholder="ex: bar, °C" 
-                            value={item.measurement_unit || ''} 
+                          <Input
+                            placeholder="ex: bar, °C"
+                            value={item.measurement_unit || ''}
                             onChange={(e) => updateItem(index, { measurement_unit: e.target.value })}
                           />
                         </div>
                         <div className="space-y-1">
                           <Label className="text-xs">Min</Label>
-                          <Input 
-                            type="number" 
-                            placeholder="Min" 
-                            value={item.min_value || ''} 
+                          <Input
+                            type="number"
+                            placeholder="Min"
+                            value={item.min_value || ''}
                             onChange={(e) => updateItem(index, { min_value: parseFloat(e.target.value) })}
                           />
                         </div>
                         <div className="space-y-1">
                           <Label className="text-xs">Max</Label>
-                          <Input 
-                            type="number" 
-                            placeholder="Max" 
-                            value={item.max_value || ''} 
+                          <Input
+                            type="number"
+                            placeholder="Max"
+                            value={item.max_value || ''}
                             onChange={(e) => updateItem(index, { max_value: parseFloat(e.target.value) })}
                           />
                         </div>

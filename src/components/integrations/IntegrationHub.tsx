@@ -3,14 +3,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
-import { 
-  Plug, 
-  RefreshCw, 
-  Settings, 
-  CheckCircle2, 
-  XCircle, 
+import {
+  Plug,
+  RefreshCw,
+  Settings,
+  CheckCircle2,
+  XCircle,
   AlertTriangle,
-  ExternalLink 
+  ExternalLink
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Bitrix24SyncPanel } from "./Bitrix24SyncPanel";
@@ -79,7 +79,7 @@ export default function IntegrationHub() {
       <div className="grid gap-4 md:grid-cols-2">
         {integrations.map((integration) => {
           const status = statusConfig[integration.status];
-          
+
           return (
             <Card key={integration.id}>
               <CardHeader className="pb-2">
@@ -109,8 +109,8 @@ export default function IntegrationHub() {
                   </div>
                   <div className="flex items-center gap-2">
                     {integration.id === "bitrix24" && (
-                      <Button 
-                        variant="outline" 
+                      <Button
+                        variant="outline"
                         size="sm"
                         onClick={() => setShowBitrix24(true)}
                       >

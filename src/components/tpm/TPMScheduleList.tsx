@@ -68,9 +68,9 @@ export function TPMScheduleList({ schedules, onStartMaintenance }: TPMScheduleLi
                       </span>
                     </TableCell>
                     <TableCell>
-                      <Badge 
+                      <Badge
                         variant="outline"
-                        style={{ 
+                        style={{
                           borderColor: schedule.maintenance_type?.color,
                           color: schedule.maintenance_type?.color,
                         }}

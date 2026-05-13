@@ -18,7 +18,7 @@ export function useMachineStatusHub() {
       const { data: activeJobs } = await supabase.from('jobs').select('id, machine_id, status').eq('status', 'production');
 
       const newStatuses: Record<string, MachineStatus> = {};
-      
+
       machines?.forEach(m => {
         const job = activeJobs?.find(j => j.machine_id === m.id);
         newStatuses[m.id] = {

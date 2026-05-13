@@ -22,7 +22,7 @@ async function fetchAuditEntries(filters: AuditFilters): Promise<AuditLogEntry[]
   if (filters.entityId) query = query.eq('entity_id', filters.entityId);
   if (filters.actorId) query = query.eq('actor_id', filters.actorId);
   if (filters.action) query = query.eq('action', filters.action);
-  
+
   if (filters.fromDate) {
     const fromDate = new Date(filters.fromDate);
     query = query.gte('created_at', fromDate.toISOString());

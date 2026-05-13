@@ -36,7 +36,6 @@ export function useUserDevices() {
         .order('last_seen_at', { ascending: false });
 
       if (error) {
-        if (import.meta.env.DEV) 
         throw error;
       }
 

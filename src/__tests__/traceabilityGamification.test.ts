@@ -96,7 +96,7 @@ describe('Lot Genealogy Tree', () => {
 
   function buildGenealogy(lots: LotNode[]) {
     const lotMap = new Map(lots.map(l => [l.id, l]));
-    
+
     function getAncestors(id: string, visited = new Set<string>()): string[] {
       if (visited.has(id)) return []; // prevent cycles
       visited.add(id);
@@ -417,13 +417,13 @@ describe('Movement Type Validation', () => {
 describe('Lot Expiration Checking', () => {
   function checkExpiration(expirationDate: string | null, now: Date): { isExpired: boolean; daysLeft: number | null; urgency: string } {
     if (!expirationDate) return { isExpired: false, daysLeft: null, urgency: 'none' };
-    
+
     const exp = new Date(expirationDate);
     if (isNaN(exp.getTime())) return { isExpired: false, daysLeft: null, urgency: 'none' };
-    
+
     const diffMs = exp.getTime() - now.getTime();
     const daysLeft = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
-    
+
     if (daysLeft <= 0) return { isExpired: true, daysLeft: 0, urgency: 'expired' };
     if (daysLeft <= 7) return { isExpired: false, daysLeft, urgency: 'critical' };
     if (daysLeft <= 30) return { isExpired: false, daysLeft, urgency: 'warning' };

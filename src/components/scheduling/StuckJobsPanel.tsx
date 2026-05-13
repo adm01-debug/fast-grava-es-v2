@@ -17,12 +17,12 @@ export function StuckJobsPanel() {
 
   return (
     <Card className="glass-card border-destructive/20 bg-destructive/5">
-      <JobDetailsModal 
-        job={selectedJob} 
-        open={isModalOpen} 
-        onOpenChange={setIsModalOpen} 
+      <JobDetailsModal
+        job={selectedJob}
+        open={isModalOpen}
+        onOpenChange={setIsModalOpen}
       />
-      
+
       <CardHeader className="pb-3 pt-4 px-4">
         <CardTitle className="text-sm font-display flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -63,15 +63,15 @@ export function StuckJobsPanel() {
                   <p className="text-[10px] text-muted-foreground truncate">{stuck.job.client}</p>
                 </div>
               </div>
-              
+
               <div className="flex items-center gap-2">
                 <div className="hidden sm:block text-right pr-2 border-r border-border/50">
                   <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest">Tempo</p>
                   <p className="text-xs font-mono">{Math.round(stuck.hoursInProduction)}h em prod.</p>
                 </div>
-                <Button 
-                  size="sm" 
-                  variant="ghost" 
+                <Button
+                  size="sm"
+                  variant="ghost"
                   className="h-8 text-[10px] font-black uppercase text-destructive opacity-50 group-hover:opacity-100 group-hover:bg-destructive/10 gap-1"
                 >
                   Investigar <ArrowRight className="h-3 w-3" />
@@ -79,7 +79,7 @@ export function StuckJobsPanel() {
               </div>
             </motion.div>
           ))}
-          
+
           {stuckJobs.length > 3 && (
             <p className="text-[10px] text-center text-muted-foreground pt-1">
               + {stuckJobs.length - 3} jobs adicionais com alerta de atraso

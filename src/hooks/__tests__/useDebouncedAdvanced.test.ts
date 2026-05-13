@@ -9,10 +9,10 @@ describe('useDebouncedCallback', () => {
   it('delays callback execution', () => {
     const callback = vi.fn();
     const { result } = renderHook(() => useDebouncedCallback(callback, 300));
-    
+
     act(() => { result.current.debouncedCallback('test'); });
     expect(callback).not.toHaveBeenCalled();
-    
+
     act(() => { vi.advanceTimersByTime(300); });
     expect(callback).toHaveBeenCalledWith('test');
   });
@@ -20,10 +20,10 @@ describe('useDebouncedCallback', () => {
   it('cancels pending callback', () => {
     const callback = vi.fn();
     const { result } = renderHook(() => useDebouncedCallback(callback, 300));
-    
+
     act(() => { result.current.debouncedCallback('test'); });
     act(() => { result.current.cancel(); });
-    
+
     act(() => { vi.advanceTimersByTime(300); });
     expect(callback).not.toHaveBeenCalled();
   });
@@ -31,22 +31,22 @@ describe('useDebouncedCallback', () => {
   it('flushes pending callback immediately', () => {
     const callback = vi.fn();
     const { result } = renderHook(() => useDebouncedCallback(callback, 300));
-    
+
     act(() => { result.current.debouncedCallback('test'); });
     act(() => { result.current.flush(); });
-    
+
     expect(callback).toHaveBeenCalledWith('test');
   });
 
   it('reports isPending correctly', () => {
     const callback = vi.fn();
     const { result } = renderHook(() => useDebouncedCallback(callback, 300));
-    
+
     expect(result.current.isPending).toBe(false);
-    
+
     act(() => { result.current.debouncedCallback('test'); });
     expect(result.current.isPending).toBe(true);
-    
+
     act(() => { vi.advanceTimersByTime(300); });
     expect(result.current.isPending).toBe(false);
   });
@@ -54,13 +54,13 @@ describe('useDebouncedCallback', () => {
   it('debounces rapid calls', () => {
     const callback = vi.fn();
     const { result } = renderHook(() => useDebouncedCallback(callback, 300));
-    
+
     act(() => {
       result.current.debouncedCallback('a');
       result.current.debouncedCallback('b');
       result.current.debouncedCallback('c');
     });
-    
+
     act(() => { vi.advanceTimersByTime(300); });
     expect(callback).toHaveBeenCalledTimes(1);
     expect(callback).toHaveBeenCalledWith('c');
@@ -80,9 +80,9 @@ describe('useDebouncedState', () => {
 
   it('updates immediate value instantly', () => {
     const { result } = renderHook(() => useDebouncedState('', 300));
-    
+
     act(() => { result.current[1]('new'); });
-    
+
     const [debounced, , immediate] = result.current;
     expect(immediate).toBe('new');
     expect(debounced).toBe(''); // still debouncing
@@ -90,10 +90,10 @@ describe('useDebouncedState', () => {
 
   it('updates debounced value after delay', () => {
     const { result } = renderHook(() => useDebouncedState('', 300));
-    
+
     act(() => { result.current[1]('new'); });
     act(() => { vi.advanceTimersByTime(300); });
-    
+
     expect(result.current[0]).toBe('new');
   });
 });

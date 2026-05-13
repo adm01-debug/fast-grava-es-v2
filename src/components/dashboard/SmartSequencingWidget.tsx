@@ -3,10 +3,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
-import { 
-  Layers, 
-  Clock, 
-  Palette, 
+import {
+  Layers,
+  Clock,
+  Palette,
   ArrowRight,
   Sparkles,
   CheckCircle2,
@@ -36,7 +36,7 @@ const SequencingCard = memo(function SequencingCard({ suggestion, onApply, isApp
           -{suggestion.estimatedSavings} min
         </Badge>
       </div>
-      
+
       <div className="space-y-2">
         <p className="text-xs text-muted-foreground flex items-center gap-1">
           <Palette className="h-3 w-3" />
@@ -44,9 +44,9 @@ const SequencingCard = memo(function SequencingCard({ suggestion, onApply, isApp
         </p>
         <div className="flex flex-wrap gap-1.5">
           {suggestion.colorGroups.map((group, idx) => (
-            <Badge 
-              key={idx} 
-              variant="outline" 
+            <Badge
+              key={idx}
+              variant="outline"
               className="text-xs bg-background/50"
             >
               {group.color} ({group.jobCount})
@@ -136,8 +136,8 @@ function SmartSequencingWidgetComponent() {
           <ScrollArea className="h-[280px] pr-2">
             <div className="space-y-3">
               {suggestions.slice(0, 5).map((suggestion) => (
-                <SequencingCard 
-                  key={suggestion.id} 
+                <SequencingCard
+                  key={suggestion.id}
                   suggestion={suggestion}
                   onApply={() => applySequencing(suggestion)}
                   isApplying={isApplying}

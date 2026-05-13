@@ -33,10 +33,10 @@ const defaultConfig: GoalAlertConfig = {
 
 export function useGoalAlerts(config: Partial<GoalAlertConfig> = {}) {
   const settings = { ...defaultConfig, ...config };
-  
+
   const { activeGoals, isLoading: isLoadingGoals } = useOperatorGoals();
   const { operators, isLoading: isLoadingOperators } = useOperatorProductivity(30);
-  
+
   const hasNotified = useRef<Set<string>>(new Set());
   const hasInitialized = useRef(false);
 
@@ -62,7 +62,7 @@ export function useGoalAlerts(config: Partial<GoalAlertConfig> = {}) {
       }
 
       const progress = calculateGoalProgress(goal, currentValue);
-      
+
       // Skip already achieved goals
       if (progress.is_achieved) return;
 
@@ -119,10 +119,10 @@ export function useGoalAlerts(config: Partial<GoalAlertConfig> = {}) {
 
     goalAlerts.forEach(alert => {
       const alertKey = `${alert.goalId}-${alert.riskLevel}`;
-      
+
       if (!hasNotified.current.has(alertKey)) {
         hasNotified.current.add(alertKey);
-        
+
         if (alert.riskLevel === 'critical') {
           toast.error('Meta em risco crítico!', {
             description: alert.message,

@@ -47,35 +47,33 @@ export function useQuickFavorites() {
   const queryClient = useQueryClient();
   const [hasMigrated, setHasMigrated] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
-  
+
   // Fetch favorites from database
   const { data: dbFavorites, isLoading, isFetched } = useQuery({
     queryKey: ['user-favorites', user?.id],
     queryFn: async () => {
       if (!user?.id) return DEFAULT_FAVORITES;
-      
+
       try {
         const { data, error } = await supabase
           .from('user_favorites')
           .select('favorites')
           .eq('user_id', user.id)
           .maybeSingle();
-        
+
         if (error) {
           const appError = createAppError(error, FAVORITES_ERROR_CONTEXT.fetch);
-          if (import.meta.env.DEV) 
           return DEFAULT_FAVORITES;
         }
-        
+
         // Return default favorites if no data or null
         if (!data?.favorites) {
           return DEFAULT_FAVORITES;
         }
-        
+
         return data.favorites as unknown as QuickFavorite[];
       } catch (error) {
         const appError = createAppError(error, FAVORITES_ERROR_CONTEXT.fetch);
-        if (import.meta.env.DEV) 
         return DEFAULT_FAVORITES;
       }
     },
@@ -86,22 +84,21 @@ export function useQuickFavorites() {
   // Migrate from localStorage to database on first access
   useEffect(() => {
     if (!user?.id || !isFetched || hasMigrated) return;
-    
+
     // Only migrate if favorites are still default (no custom saved)
-    const isDefaultFavorites = dbFavorites && 
+    const isDefaultFavorites = dbFavorites &&
       dbFavorites.length === DEFAULT_FAVORITES.length &&
       dbFavorites.every((f, i) => f.id === DEFAULT_FAVORITES[i]?.id);
-    
+
     if (isDefaultFavorites) {
       const storageKey = `quick-favorites-${user.id}`;
       const localStorageFavorites = localStorage.getItem(storageKey);
-      
+
       if (localStorageFavorites) {
         try {
           const parsed = JSON.parse(localStorageFavorites) as QuickFavorite[];
           if (Array.isArray(parsed) && parsed.length > 0) {
-            if (import.meta.env.DEV) 
-            
+
             // Save to database
             supabase
               .from('user_favorites')
@@ -111,14 +108,12 @@ export function useQuickFavorites() {
               }], { onConflict: 'user_id' })
               .then(({ error }) => {
                 if (error) {
-                  if (import.meta.env.DEV) 
                   toast({
                     title: 'Erro na migração',
                     description: 'Não foi possível migrar seus favoritos para a nuvem.',
                     variant: 'destructive',
                   });
                 } else {
-                  if (import.meta.env.DEV) 
                   // Update query cache
                   queryClient.setQueryData(['user-favorites', user.id], parsed);
                   // Clean up localStorage
@@ -131,11 +126,10 @@ export function useQuickFavorites() {
               });
           }
         } catch (e) {
-          if (import.meta.env.DEV) 
         }
       }
     }
-    
+
     setHasMigrated(true);
   }, [user?.id, isFetched, dbFavorites, hasMigrated, queryClient]);
 
@@ -154,7 +148,6 @@ export function useQuickFavorites() {
           filter: `user_id=eq.${user.id}`,
         },
         (payload) => {
-          if (import.meta.env.DEV) 
           if (payload.new && 'favorites' in payload.new) {
             queryClient.setQueryData(
               ['user-favorites', user.id],
@@ -181,21 +174,21 @@ export function useQuickFavorites() {
   const saveMutation = useMutation({
     mutationFn: async (newFavorites: QuickFavorite[]) => {
       if (!user?.id) throw new Error('User not authenticated');
-      
+
       // Check if record exists
       const { data: existing } = await supabase
         .from('user_favorites')
         .select('id')
         .eq('user_id', user.id)
         .maybeSingle();
-      
+
       if (existing) {
         // Update existing record
         const { error } = await supabase
           .from('user_favorites')
           .update({ favorites: JSON.parse(JSON.stringify(newFavorites)) })
           .eq('user_id', user.id);
-        
+
         if (error) throw error;
       } else {
         // Insert new record
@@ -205,10 +198,10 @@ export function useQuickFavorites() {
             user_id: user.id,
             favorites: JSON.parse(JSON.stringify(newFavorites)),
           }]);
-        
+
         if (error) throw error;
       }
-      
+
       return newFavorites;
     },
     onSuccess: (newFavorites) => {
@@ -220,7 +213,7 @@ export function useQuickFavorites() {
     const currentFavorites = dbFavorites || DEFAULT_FAVORITES;
     if (currentFavorites.some(f => f.id === shortcut.id)) return;
     if (currentFavorites.length >= MAX_FAVORITES) return;
-    
+
     const newFavorites = [...currentFavorites, shortcut];
     saveMutation.mutate(newFavorites);
   }, [dbFavorites, saveMutation]);

@@ -64,7 +64,7 @@ function calculateSetupSavings(currentSequence: DbJob[], optimizedSequence: DbJo
 
   const currentChanges = countColorChanges(currentSequence);
   const optimizedChanges = countColorChanges(optimizedSequence);
-  
+
   return (currentChanges - optimizedChanges) * setupTime;
 }
 
@@ -84,7 +84,6 @@ export function useSmartSequencing() {
     );
 
     if (validJobs.length === 0 && jobs.length > 0) {
-      if (import.meta.env.DEV) 
     }
 
     const result: SequencingSuggestion[] = [];
@@ -95,16 +94,16 @@ export function useSmartSequencing() {
 
     // Group scheduled jobs by machine for today and tomorrow
     const jobsByMachine = new Map<string, DbJob[]>();
-    
+
     validJobs.forEach(job => {
       if (!job.machine_id || !job.scheduled_date) return;
       if (!['scheduled', 'ready', 'queue'].includes(job.status)) return;
-      
+
       try {
         const jobDate = new Date(job.scheduled_date);
         if (!isFinite(jobDate.getTime())) return; // Invalid date
         jobDate.setHours(0, 0, 0, 0);
-        
+
         if (jobDate < today || jobDate > tomorrow) return;
 
         const existing = jobsByMachine.get(job.machine_id) || [];
@@ -128,7 +127,7 @@ export function useSmartSequencing() {
       const setupTime = sanitizeNumber(technique.setup_time, 10);
 
       // Current sequence (by start time)
-      const currentSequence = [...machineJobs].sort((a, b) => 
+      const currentSequence = [...machineJobs].sort((a, b) =>
         (a.start_time || '').localeCompare(b.start_time || '')
       );
 
@@ -159,13 +158,13 @@ export function useSmartSequencing() {
       // Calculate complexity and priority score
       const colorComplexity = colorGroups.size;
       const setupComplexity = colorComplexity > 5 ? 'high' : colorComplexity > 3 ? 'medium' : 'low';
-      
+
       const urgentJobs = machineJobs.filter(j => j.priority === 'urgent').length;
       const highPriorityJobs = machineJobs.filter(j => j.priority === 'high').length;
       const aiPriorityScore = Math.min(100, (urgentJobs * 30) + (highPriorityJobs * 15) + (machineJobs.length * 5));
 
       const estimatedSavings = calculateSetupSavings(currentSequence, optimizedSequence, setupTime);
-      
+
       const totalMinutes = optimizedSequence.reduce((acc, job) => acc + (job.estimated_duration || 0), 0);
       const hours = Math.floor(totalMinutes / 60);
       const mins = totalMinutes % 60;

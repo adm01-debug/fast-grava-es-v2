@@ -11,11 +11,11 @@ import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { DbJob } from '@/hooks/useJobs';
 import { toast } from 'sonner';
-import { 
-  Camera, 
-  Upload, 
-  X, 
-  CheckCircle2, 
+import {
+  Camera,
+  Upload,
+  X,
+  CheckCircle2,
   AlertTriangle,
   Package,
   Trash2,
@@ -60,7 +60,7 @@ function sanitizeOperatorPayload(data: {
   [key: string]: unknown;
 }): SanitizedPayload {
   const sanitized: SanitizedPayload = {};
-  
+
   if (data.status !== undefined) {
     sanitized.status = data.status;
   }
@@ -82,7 +82,7 @@ function sanitizeOperatorPayload(data: {
   if (data.notes !== undefined) {
     sanitized.notes = data.notes;
   }
-  
+
   return sanitized;
 }
 
@@ -92,10 +92,10 @@ interface ProductionRegistrationModalProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export function ProductionRegistrationModal({ 
-  job, 
-  open, 
-  onOpenChange 
+export function ProductionRegistrationModal({
+  job,
+  open,
+  onOpenChange
 }: ProductionRegistrationModalProps) {
   const [producedQuantity, setProducedQuantity] = useState<number>(0);
   const [lostPieces, setLostPieces] = useState<number>(0);
@@ -103,7 +103,7 @@ export function ProductionRegistrationModal({
   const [photos, setPhotos] = useState<string[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  
+
   // Checklist de Qualidade (Hyper-Excellence)
   const [qualityChecks, setQualityChecks] = useState({
     color: false,
@@ -150,7 +150,6 @@ export function ProductionRegistrationModal({
           .upload(fileName, file);
 
         if (uploadError) {
-          if (import.meta.env.DEV) 
           toast.error(`Erro ao enviar foto: ${file.name}`);
           continue;
         }
@@ -165,7 +164,6 @@ export function ProductionRegistrationModal({
       setPhotos(prev => [...prev, ...uploadedUrls]);
       toast.success(`${uploadedUrls.length} foto(s) enviada(s)`);
     } catch (error) {
-      if (import.meta.env.DEV) 
       toast.error('Erro ao enviar fotos');
     } finally {
       setIsUploading(false);
@@ -210,8 +208,8 @@ export function ProductionRegistrationModal({
 
       // Log em desenvolvimento para debugging
       if (import.meta.env.DEV) {
-        
-        
+
+
       }
 
       const { error } = await supabase
@@ -228,9 +226,9 @@ export function ProductionRegistrationModal({
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Erro desconhecido';
       toast.error(`Erro ao salvar registro de produção: ${message}`);
-      
+
       if (import.meta.env.DEV) {
-        
+
       }
     } finally {
       setIsSaving(false);
@@ -316,9 +314,9 @@ export function ProductionRegistrationModal({
               </Label>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="flex items-center space-x-2">
-                  <Checkbox 
-                    id="check-color" 
-                    checked={qualityChecks.color} 
+                  <Checkbox
+                    id="check-color"
+                    checked={qualityChecks.color}
                     onCheckedChange={(checked) => setQualityChecks(prev => ({ ...prev, color: !!checked }))}
                   />
                   <label htmlFor="check-color" className="text-xs font-bold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
@@ -326,9 +324,9 @@ export function ProductionRegistrationModal({
                   </label>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Checkbox 
-                    id="check-burrs" 
-                    checked={qualityChecks.burrs} 
+                  <Checkbox
+                    id="check-burrs"
+                    checked={qualityChecks.burrs}
                     onCheckedChange={(checked) => setQualityChecks(prev => ({ ...prev, burrs: !!checked }))}
                   />
                   <label htmlFor="check-burrs" className="text-xs font-bold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
@@ -336,9 +334,9 @@ export function ProductionRegistrationModal({
                   </label>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Checkbox 
-                    id="check-dimensions" 
-                    checked={qualityChecks.dimensions} 
+                  <Checkbox
+                    id="check-dimensions"
+                    checked={qualityChecks.dimensions}
                     onCheckedChange={(checked) => setQualityChecks(prev => ({ ...prev, dimensions: !!checked }))}
                   />
                   <label htmlFor="check-dimensions" className="text-xs font-bold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
@@ -346,9 +344,9 @@ export function ProductionRegistrationModal({
                   </label>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Checkbox 
-                    id="check-packaging" 
-                    checked={qualityChecks.packaging} 
+                  <Checkbox
+                    id="check-packaging"
+                    checked={qualityChecks.packaging}
                     onCheckedChange={(checked) => setQualityChecks(prev => ({ ...prev, packaging: !!checked }))}
                   />
                   <label htmlFor="check-packaging" className="text-xs font-bold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">

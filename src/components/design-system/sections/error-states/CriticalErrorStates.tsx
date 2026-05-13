@@ -40,13 +40,13 @@ export function CriticalErrorStates() {
         <div className="space-y-3 pt-4 border-t border-border">
           <h5 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Exemplos de Código</h5>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <CodeBlock code={`<div className="border rounded-xl p-6 
+            <CodeBlock code={`<div className="border rounded-xl p-6
   bg-gradient-to-br from-warning/10">
   <Clock className="h-8 w-8 text-warning" />
   <h3>Sessão Expirada</h3>
   <Button variant="gradient">Fazer Login</Button>
 </div>`} label="Sessão Expirada" />
-            <CodeBlock code={`<div className="border rounded-xl p-6 
+            <CodeBlock code={`<div className="border rounded-xl p-6
   bg-gradient-to-br from-destructive/10">
   <WifiOff className="animate-pulse" />
   <h3>Conexão Perdida</h3>

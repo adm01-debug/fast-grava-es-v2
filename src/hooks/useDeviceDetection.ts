@@ -21,9 +21,9 @@ const generateFingerprint = (): string => {
     navigator.hardwareConcurrency || 'unknown',
     navigator.platform || 'unknown',
   ];
-  
+
   const str = components.join('|');
-  
+
   // Simple hash function
   let hash = 0;
   for (let i = 0; i < str.length; i++) {
@@ -31,43 +31,43 @@ const generateFingerprint = (): string => {
     hash = ((hash << 5) - hash) + char;
     hash = hash & hash;
   }
-  
+
   return Math.abs(hash).toString(36);
 };
 
 // Detecta o navegador
 const detectBrowser = (): string => {
   const ua = navigator.userAgent;
-  
+
   if (ua.includes('Firefox')) return 'Firefox';
   if (ua.includes('Edg')) return 'Edge';
   if (ua.includes('Chrome')) return 'Chrome';
   if (ua.includes('Safari')) return 'Safari';
   if (ua.includes('Opera') || ua.includes('OPR')) return 'Opera';
-  
+
   return 'Outro';
 };
 
 // Detecta o sistema operacional
 const detectOS = (): string => {
   const ua = navigator.userAgent;
-  
+
   if (ua.includes('Windows')) return 'Windows';
   if (ua.includes('Mac OS')) return 'macOS';
   if (ua.includes('Linux')) return 'Linux';
   if (ua.includes('Android')) return 'Android';
   if (ua.includes('iPhone') || ua.includes('iPad')) return 'iOS';
-  
+
   return 'Outro';
 };
 
 // Detecta o tipo de dispositivo
 const detectDeviceType = (): 'desktop' | 'mobile' | 'tablet' => {
   const ua = navigator.userAgent;
-  
+
   if (/iPad|tablet/i.test(ua)) return 'tablet';
   if (/iPhone|Android.*Mobile|webOS|BlackBerry/i.test(ua)) return 'mobile';
-  
+
   return 'desktop';
 };
 
@@ -89,7 +89,6 @@ const getClientIP = async (): Promise<string> => {
     const data = await response.json();
     return data.ip || '0.0.0.0';
   } catch {
-    if (import.meta.env.DEV) 
     return '0.0.0.0';
   }
 };
@@ -100,7 +99,6 @@ export const useDeviceDetection = () => {
       const deviceInfo = getDeviceInfo();
       const ipAddress = await getClientIP();
 
-      if (import.meta.env.DEV) 
 
       const response = await supabase.functions.invoke('new-device-alert', {
         body: {
@@ -117,17 +115,15 @@ export const useDeviceDetection = () => {
       });
 
       if (response.error) {
-        if (import.meta.env.DEV) 
         return { isNewDevice: false, error: response.error };
       }
 
-      return { 
+      return {
         isNewDevice: response.data?.is_new_device || false,
         deviceId: response.data?.device_id,
-        error: null 
+        error: null
       };
     } catch (error) {
-      if (import.meta.env.DEV) 
       return { isNewDevice: false, error };
     }
   }, []);

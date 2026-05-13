@@ -61,9 +61,8 @@ export function useMLPredictions() {
           .select('*, machines(id, name, code)')
           .eq('is_active', true)
           .order('risk_score', { ascending: false });
-        
+
         if (error) {
-          if (import.meta.env.DEV) 
           throw error;
         }
         return data.map((p: Record<string, unknown>) => ({
@@ -73,7 +72,6 @@ export function useMLPredictions() {
           recommendations: Array.isArray(p.recommendations) ? p.recommendations : [],
         })) as MachinePrediction[];
       } catch (err) {
-        if (import.meta.env.DEV) 
         throw err;
       }
     },
@@ -91,14 +89,12 @@ export function useMLPredictions() {
         .select('*')
         .order('created_at', { ascending: false })
         .limit(200);
-      
+
       if (error) {
-        if (import.meta.env.DEV) 
         throw error;
       }
       return data as PredictionHistory[];
       } catch (err) {
-        if (import.meta.env.DEV) 
         throw err;
       }
     },
@@ -117,12 +113,10 @@ export function useMLPredictions() {
           .eq('is_active', true)
           .order('name');
         if (error) {
-          if (import.meta.env.DEV) 
           throw error;
         }
         return data;
       } catch (err) {
-        if (import.meta.env.DEV) 
         throw err;
       }
     },
@@ -136,10 +130,10 @@ export function useMLPredictions() {
       const { data, error } = await supabase.functions.invoke('ml-predictions', {
         body: { action: 'predict', machine_id: machineId },
       });
-      
+
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
-      
+
       return data;
     },
     onSuccess: (data) => {
@@ -166,7 +160,7 @@ export function useMLPredictions() {
           acknowledged_at: new Date().toISOString(),
         })
         .eq('id', predictionId);
-      
+
       if (error) throw error;
     },
     onSuccess: () => {
@@ -181,7 +175,7 @@ export function useMLPredictions() {
     highRisk: predictions.filter(p => p.risk_score >= 70).length,
     mediumRisk: predictions.filter(p => p.risk_score >= 40 && p.risk_score < 70).length,
     lowRisk: predictions.filter(p => p.risk_score < 40).length,
-    avgRiskScore: predictions.length > 0 
+    avgRiskScore: predictions.length > 0
       ? Math.round(predictions.reduce((sum, p) => sum + Number(p.risk_score), 0) / predictions.length)
       : 0,
     avgConfidence: predictions.length > 0

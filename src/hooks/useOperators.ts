@@ -63,7 +63,6 @@ export function useOperators() {
         }) as OperatorWithProfile[];
       } catch (error) {
         const appError = createAppError(error, OPERATORS_ERROR_CONTEXT.fetch);
-        if (import.meta.env.DEV) 
         throw error;
       }
     },
@@ -115,7 +114,6 @@ export function useOperators() {
       if (auditError) {
         // Log audit failure but don't fail the whole operation
         const appError = createAppError(auditError, { entity: 'operator_status_audit', operation: 'insert' });
-        if (import.meta.env.DEV) 
       }
 
       return operatorId;
@@ -130,7 +128,6 @@ export function useOperators() {
     },
     onError: (error) => {
       const appError = createAppError(error, OPERATORS_ERROR_CONTEXT.remove);
-      if (import.meta.env.DEV) 
       showErrorToast(error, 'Erro ao remover operador');
     },
   });
@@ -171,7 +168,6 @@ export function useOperators() {
       if (auditError) {
         // Log audit failure but don't fail the whole operation
         const appError = createAppError(auditError, { entity: 'operator_status_audit', operation: 'insert' });
-        if (import.meta.env.DEV) 
       }
 
       return { operatorId, isActive };
@@ -180,14 +176,13 @@ export function useOperators() {
       queryClient.invalidateQueries({ queryKey: ['operators'] });
       queryClient.invalidateQueries({ queryKey: ['operator-status-audit'] });
       toast.success(data.isActive ? t('operators.operatorActivated', 'Operador ativado') : t('operators.operatorDeactivated', 'Operador desativado'), {
-        description: data.isActive 
+        description: data.isActive
           ? t('operators.operatorActivatedDesc', 'O operador foi reativado e pode acessar o sistema.')
           : t('operators.operatorDeactivatedDesc', 'O operador foi desativado temporariamente.'),
       });
     },
     onError: (error) => {
       const appError = createAppError(error, OPERATORS_ERROR_CONTEXT.toggleActive);
-      if (import.meta.env.DEV) 
       showErrorToast(error, 'Erro ao alterar status do operador');
     },
   });

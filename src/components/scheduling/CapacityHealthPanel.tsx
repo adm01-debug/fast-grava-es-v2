@@ -36,8 +36,8 @@ export function CapacityHealthPanel() {
             >
               <div className="flex items-center justify-between">
                 <p className="text-xs font-bold truncate pr-2">{cap.techniqueName}</p>
-                <Badge 
-                  variant="outline" 
+                <Badge
+                  variant="outline"
                   className={cn(
                     "h-5 text-[9px] uppercase tracking-tighter px-1",
                     cap.status === 'critical' ? "text-destructive border-destructive/40 bg-destructive/10" :
@@ -65,12 +65,12 @@ export function CapacityHealthPanel() {
                       <p className="text-[10px] font-mono text-foreground">{cap.activeJobs} jobs ativos</p>
                    </div>
                 </div>
-                <Progress 
-                  value={cap.occupancyPercent} 
+                <Progress
+                  value={cap.occupancyPercent}
                   className={cn(
                     "h-1.5",
                     cap.status === 'critical' ? "bg-destructive/20" : cap.status === 'warning' ? "bg-amber-500/20" : "bg-success/20"
-                  )} 
+                  )}
                 />
               </div>
 

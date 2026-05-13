@@ -26,17 +26,17 @@ export function DelaysAnalysis({ delayedJobs, rootCauses, onExport }: DelaysAnal
           <span className="font-display tracking-wider uppercase">{t('bi.delaysAndCauses', 'Atrasos & Causa Raiz')}</span>
         </CardTitle>
         <div className="flex items-center gap-2">
-          <Button 
-            variant="ghost" 
-            size="icon" 
+          <Button
+            variant="ghost"
+            size="icon"
             className="h-8 w-8 text-muted-foreground hover:text-primary"
             onClick={() => onExport('csv', 'Analise_Atrasos')}
           >
             <FileSpreadsheet className="h-4 w-4" />
           </Button>
-          <Button 
-            variant="ghost" 
-            size="icon" 
+          <Button
+            variant="ghost"
+            size="icon"
             className="h-8 w-8 text-muted-foreground hover:text-primary"
             onClick={() => onExport('pdf', 'Analise_Atrasos')}
           >
@@ -96,11 +96,11 @@ export function DelaysAnalysis({ delayedJobs, rootCauses, onExport }: DelaysAnal
                     <span className="text-primary">{cause.value}%</span>
                   </div>
                   <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden relative">
-                    <motion.div 
+                    <motion.div
                       initial={{ width: 0 }}
                       animate={{ width: `${cause.value}%` }}
                       transition={{ duration: 1, ease: "easeOut" }}
-                      className="h-full relative" 
+                      className="h-full relative"
                       style={{ backgroundColor: cause.color }}
                     >
                       <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer" />
@@ -109,8 +109,8 @@ export function DelaysAnalysis({ delayedJobs, rootCauses, onExport }: DelaysAnal
                   <div className="mt-2 opacity-0 group-hover/cause:opacity-100 transition-opacity flex items-center gap-2">
                     <span className="text-[9px] text-muted-foreground uppercase">Ação Recomendada:</span>
                     <span className="text-[9px] text-primary font-bold uppercase">
-                      {cause.label.includes('Máquina') ? 'Manutenção Preventiva' : 
-                       cause.label.includes('Material') ? 'Revisão de Lote' : 
+                      {cause.label.includes('Máquina') ? 'Manutenção Preventiva' :
+                       cause.label.includes('Material') ? 'Revisão de Lote' :
                        'Ajuste de Fluxo'}
                     </span>
                   </div>

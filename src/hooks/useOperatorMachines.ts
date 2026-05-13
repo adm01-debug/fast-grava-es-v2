@@ -28,7 +28,7 @@ export function useOperatorMachines(operatorId?: string) {
         const query = supabase
           .from('operator_machines')
           .select('*');
-        
+
         if (operatorId) {
           query.eq('operator_id', operatorId);
         }
@@ -38,7 +38,6 @@ export function useOperatorMachines(operatorId?: string) {
         return data as OperatorMachine[];
       } catch (error) {
         const appError = createAppError(error, OPERATOR_MACHINES_CONTEXT.fetch);
-        if (import.meta.env.DEV) 
         throw error;
       }
     },
@@ -71,7 +70,7 @@ export function useOperatorMachines(operatorId?: string) {
     mutationFn: async ({ operatorId, machineId }: { operatorId: string; machineId: string }) => {
       try {
         const { data: { user } } = await supabase.auth.getUser();
-        
+
         const { error } = await supabase
           .from('operator_machines')
           .insert({
@@ -83,7 +82,6 @@ export function useOperatorMachines(operatorId?: string) {
         if (error) throw error;
       } catch (error) {
         const appError = createAppError(error, OPERATOR_MACHINES_CONTEXT.assign);
-        if (import.meta.env.DEV) 
         throw error;
       }
     },
@@ -108,7 +106,6 @@ export function useOperatorMachines(operatorId?: string) {
         if (error) throw error;
       } catch (error) {
         const appError = createAppError(error, OPERATOR_MACHINES_CONTEXT.unassign);
-        if (import.meta.env.DEV) 
         throw error;
       }
     },

@@ -3,12 +3,12 @@ import { Html5Qrcode, Html5QrcodeSupportedFormats } from "html5-qrcode";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { 
-  Camera, 
-  CameraOff, 
-  Play, 
-  Pause, 
-  CheckCircle2, 
+import {
+  Camera,
+  CameraOff,
+  Play,
+  Pause,
+  CheckCircle2,
   Loader2,
   QrCode
 } from "lucide-react";
@@ -44,7 +44,6 @@ export const QRScanner = () => {
       const deviceInfo = navigator.userAgent;
       await recordQRScanOffline(jobId, user.id, action, deviceInfo);
     } catch (error) {
-      if (import.meta.env.DEV) 
     }
   };
 
@@ -82,7 +81,6 @@ export const QRScanner = () => {
       }
       setIsScanning(false);
     } catch (error) {
-      if (import.meta.env.DEV) 
     }
   };
 
@@ -105,7 +103,7 @@ export const QRScanner = () => {
         const cached = getCachedJobs() as ScannedJob[];
         job = cached.find(j => j.id === data.id);
       }
-      
+
       if (!job) {
         toast.error("Job não encontrado");
         setIsLoading(false);
@@ -126,8 +124,8 @@ export const QRScanner = () => {
     if (!scannedJob) return;
     setActionLoading(true);
     try {
-      await updateJobOffline(scannedJob.id, { 
-        status, 
+      await updateJobOffline(scannedJob.id, {
+        status,
         ...(status === "production" ? { actual_start_time: new Date().toISOString() } : {}),
         ...(status === "finished" ? { actual_end_time: new Date().toISOString() } : {})
       });

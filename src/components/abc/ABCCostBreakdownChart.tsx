@@ -21,7 +21,7 @@ export function ABCCostBreakdownChart({ costPools, jobCosts }: ABCCostBreakdownC
   const data = costPools.map((pool, index) => {
     const poolCosts = jobCosts.filter(jc => jc.cost_pool_id === pool.id);
     const totalCost = poolCosts.reduce((sum, c) => sum + Number(c.total_cost), 0);
-    
+
     return {
       name: pool.name,
       value: totalCost,
@@ -101,7 +101,7 @@ export function ABCCostBreakdownChart({ costPools, jobCosts }: ABCCostBreakdownC
                     'Custo'
                   ]}
                 />
-                <Legend 
+                <Legend
                   formatter={(value) => <span className="text-sm">{value}</span>}
                 />
               </PieChart>

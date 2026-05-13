@@ -7,12 +7,12 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useGoalAlerts, GoalAlert } from '@/hooks/useGoalAlerts';
 import { GOAL_TYPE_LABELS, GoalType } from '@/hooks/useOperatorGoals';
-import { 
-  AlertTriangle, 
-  Target, 
-  Clock, 
-  ChevronDown, 
-  ChevronUp, 
+import {
+  AlertTriangle,
+  Target,
+  Clock,
+  ChevronDown,
+  ChevronUp,
   Bell,
   Gauge,
   CheckCircle2,
@@ -40,41 +40,41 @@ function AlertItem({ alert }: { alert: GoalAlert }) {
 
   return (
     <div className={`p-3 rounded-lg border ${
-      alert.riskLevel === 'critical' 
-        ? 'bg-destructive/10 border-destructive/30' 
+      alert.riskLevel === 'critical'
+        ? 'bg-destructive/10 border-destructive/30'
         : 'bg-warning/10 border-warning/30'
     }`}>
       <div className="flex items-start gap-3">
         <div className={`p-2 rounded-full ${
-          alert.riskLevel === 'critical' 
-            ? 'bg-destructive/20 text-destructive' 
+          alert.riskLevel === 'critical'
+            ? 'bg-destructive/20 text-destructive'
             : 'bg-warning/20 text-warning'
         }`}>
           <GoalTypeIcon type={alert.goalType} />
         </div>
-        
+
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between mb-1">
             <span className="font-medium truncate">{alert.operatorName}</span>
-            <Badge 
+            <Badge
               variant={alert.riskLevel === 'critical' ? 'destructive' : 'outline'}
               className={alert.riskLevel === 'warning' ? 'border-warning text-warning' : ''}
             >
               {alert.riskLevel === 'critical' ? 'Crítico' : 'Alerta'}
             </Badge>
           </div>
-          
+
           <p className="text-sm text-muted-foreground mb-2">
             {GOAL_TYPE_LABELS[alert.goalType]}
           </p>
-          
+
           <div className="space-y-1">
             <div className="flex items-center justify-between text-xs">
               <span>Progresso</span>
               <span className="font-medium">{alert.progressPercentage.toFixed(0)}%</span>
             </div>
-            <Progress 
-              value={alert.progressPercentage} 
+            <Progress
+              value={alert.progressPercentage}
               className={`h-1.5 ${
                 alert.riskLevel === 'critical' ? 'bg-destructive/20' : 'bg-warning/20'
               }`}
@@ -88,12 +88,12 @@ function AlertItem({ alert }: { alert: GoalAlert }) {
               </span>
             </div>
           </div>
-          
+
           <div className="flex items-center gap-1 mt-2 text-xs text-muted-foreground">
             <Clock className="h-3 w-3" />
             <span>
-              {alert.daysRemaining === 0 
-                ? 'Prazo esgotado!' 
+              {alert.daysRemaining === 0
+                ? 'Prazo esgotado!'
                 : `${alert.daysRemaining} dia(s) restante(s)`}
             </span>
           </div>
@@ -210,11 +210,11 @@ export function GoalAlertsWidget({ maxVisible = 5, compact = false }: GoalAlerts
             ))}
           </div>
         </ScrollArea>
-        
+
         {hasMore && (
-          <Button 
-            variant="ghost" 
-            size="sm" 
+          <Button
+            variant="ghost"
+            size="sm"
             className="w-full"
             onClick={() => setExpanded(!expanded)}
           >

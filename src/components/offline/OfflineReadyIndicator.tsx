@@ -2,9 +2,9 @@ import { useState, useEffect } from 'react';
 import { useOfflineSync } from '@/hooks/useOfflineSync';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { 
-  Wifi, 
-  WifiOff, 
+import {
+  Wifi,
+  WifiOff,
   RefreshCw,
   Check,
   AlertCircle,
@@ -25,10 +25,10 @@ interface OfflineReadyIndicatorProps {
 }
 
 export function OfflineReadyIndicator({ className }: OfflineReadyIndicatorProps) {
-  const { 
-    isOnline, 
-    isSyncing, 
-    pendingActionsCount, 
+  const {
+    isOnline,
+    isSyncing,
+    pendingActionsCount,
     lastSyncedAt,
     forceSync,
     cacheData,
@@ -40,7 +40,7 @@ export function OfflineReadyIndicator({ className }: OfflineReadyIndicatorProps)
     machines: number;
     techniques: number;
   }>({ jobs: 0, machines: 0, techniques: 0 });
-  
+
   const [isCaching, setIsCaching] = useState(false);
   const [isStorageReady, setIsStorageReady] = useState(false);
 
@@ -49,23 +49,22 @@ export function OfflineReadyIndicator({ className }: OfflineReadyIndicatorProps)
       try {
         await offlineStorage.init();
         setIsStorageReady(true);
-        
+
         const [jobs, machines, techniques] = await Promise.all([
           offlineStorage.getAll('jobs'),
           offlineStorage.getAll('machines'),
           offlineStorage.getAll('techniques'),
         ]);
-        
+
         setCachedCounts({
           jobs: jobs.length,
           machines: machines.length,
           techniques: techniques.length,
         });
       } catch (error) {
-        if (import.meta.env.DEV) 
       }
     };
-    
+
     loadCounts();
   }, [lastSyncedAt]);
 
@@ -107,16 +106,16 @@ export function OfflineReadyIndicator({ className }: OfflineReadyIndicatorProps)
           ) : (
             <WifiOff className="w-4 h-4 text-destructive" />
           )}
-          
+
           {pendingActionsCount > 0 && (
-            <Badge 
-              variant="secondary" 
+            <Badge
+              variant="secondary"
               className="h-5 px-1.5 text-xs bg-amber-500/20 text-amber-500"
             >
               {pendingActionsCount}
             </Badge>
           )}
-          
+
           {!isOnline && hasCache && (
             <Badge variant="outline" className="h-5 px-1.5 text-xs border-green-500/50 text-green-500">
               <Check className="w-3 h-3" />
@@ -124,7 +123,7 @@ export function OfflineReadyIndicator({ className }: OfflineReadyIndicatorProps)
           )}
         </Button>
       </PopoverTrigger>
-      
+
       <PopoverContent className="w-80" align="end">
         <div className="space-y-4">
           {/* Status Header */}
@@ -154,7 +153,7 @@ export function OfflineReadyIndicator({ className }: OfflineReadyIndicatorProps)
                 )}
               </div>
             </div>
-            
+
             {isSyncing && (
               <RefreshCw className="w-4 h-4 text-primary animate-spin" />
             )}
@@ -203,7 +202,7 @@ export function OfflineReadyIndicator({ className }: OfflineReadyIndicatorProps)
               <Download className={cn('w-4 h-4', isCaching && 'animate-bounce')} />
               {isCaching ? 'Baixando...' : 'Atualizar cache'}
             </Button>
-            
+
             {pendingActionsCount > 0 && isOnline && (
               <Button
                 size="sm"

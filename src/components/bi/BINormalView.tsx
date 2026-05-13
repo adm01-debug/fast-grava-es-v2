@@ -1,11 +1,11 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { 
-  TrendingUp, Activity, AlertTriangle, Gauge, Package, Target, 
+import {
+  TrendingUp, Activity, AlertTriangle, Gauge, Package, Target,
   CheckCircle, Clock, BarChart3, PieChart, LineChart, Printer, Download, ArrowUp, ArrowDown, Minus
 } from 'lucide-react';
-import { 
+import {
   AreaChart, Area, BarChart, Bar, PieChart as RechartsPieChart, Pie, Cell,
   LineChart as RechartsLineChart, Line,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
@@ -47,10 +47,10 @@ function StatCard({ title, value, subtitle, icon: Icon, trend, trendValue, varia
   const trendColor = trend === 'up' ? 'text-success' : trend === 'down' ? 'text-primary' : 'text-muted-foreground';
 
   return (
-    <Card 
+    <Card
       onClick={onClick}
       className={cn(
-        variantStyles[variant], 
+        variantStyles[variant],
         "card-interactive group transition-all duration-300 hover:shadow-lg hover:-translate-y-1",
         onClick && "cursor-pointer"
       )}
@@ -135,7 +135,7 @@ export function BINormalView({ biMetrics, kpis, oeeData, getPeriodLabel, onDrill
             </div>
           </CardContent>
         </Card>
-        <Card 
+        <Card
           onClick={() => onDrillDown('PEDIDOS EM PRODUÇÃO', 'production')}
           className="card-interactive bg-gradient-to-br from-success/10 via-success/5 to-transparent border-success/20 group hover:shadow-glow-success cursor-pointer"
         >
@@ -151,7 +151,7 @@ export function BINormalView({ biMetrics, kpis, oeeData, getPeriodLabel, onDrill
             </div>
           </CardContent>
         </Card>
-        <Card 
+        <Card
           onClick={() => onDrillDown('PEDIDOS ATRASADOS', 'delayed')}
           className="card-interactive bg-gradient-to-br from-warning/10 via-warning/5 to-transparent border-warning/20 group hover:shadow-[0_0_20px_hsl(var(--warning)/0.3)] cursor-pointer"
         >
@@ -183,7 +183,7 @@ export function BINormalView({ biMetrics, kpis, oeeData, getPeriodLabel, onDrill
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={280}>
-              <AreaChart 
+              <AreaChart
                 data={biMetrics.dailyTrend}
                 onClick={(data: unknown) => {
                   if (data && data.activeLabel) {
@@ -218,15 +218,15 @@ export function BINormalView({ biMetrics, kpis, oeeData, getPeriodLabel, onDrill
           <CardContent>
             <ResponsiveContainer width="100%" height={280}>
               <RechartsPieChart>
-                <Pie 
-                  data={biMetrics.statusDistribution} 
-                  cx="50%" 
-                  cy="50%" 
-                  innerRadius={60} 
-                  outerRadius={100} 
-                  paddingAngle={2} 
-                  dataKey="value" 
-                  label={({ name, percent }: unknown) => `${name} (${(percent * 100).toFixed(0)}%)`} 
+                <Pie
+                  data={biMetrics.statusDistribution}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={60}
+                  outerRadius={100}
+                  paddingAngle={2}
+                  dataKey="value"
+                  label={({ name, percent }: unknown) => `${name} (${(percent * 100).toFixed(0)}%)`}
                   labelLine={false}
                   onClick={(data: unknown) => onDrillDown(`PEDIDOS: ${data.name}`, data.name)}
                 >
@@ -259,18 +259,18 @@ export function BINormalView({ biMetrics, kpis, oeeData, getPeriodLabel, onDrill
                 <XAxis type="number" tick={{ fill: 'hsl(var(--muted-foreground))' }} />
                 <YAxis dataKey="name" type="category" width={80} tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }} />
                 <Tooltip contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '12px' }} />
-                <Bar 
-                  dataKey="produced" 
-                  fill={CHART_COLORS.success} 
-                  name="Produzidas" 
-                  radius={[0, 6, 6, 0]} 
+                <Bar
+                  dataKey="produced"
+                  fill={CHART_COLORS.success}
+                  name="Produzidas"
+                  radius={[0, 6, 6, 0]}
                   onClick={(data: unknown) => onDrillDown(`TÉCNICA: ${data.name}`, data.id)}
                 />
-                <Bar 
-                  dataKey="lost" 
-                  fill={CHART_COLORS.danger} 
-                  name="Perdidas" 
-                  radius={[0, 6, 6, 0]} 
+                <Bar
+                  dataKey="lost"
+                  fill={CHART_COLORS.danger}
+                  name="Perdidas"
+                  radius={[0, 6, 6, 0]}
                   onClick={(data: unknown) => onDrillDown(`PERDAS EM ${data.name}`, data.id)}
                 />
               </BarChart>
@@ -339,7 +339,7 @@ export function BINormalView({ biMetrics, kpis, oeeData, getPeriodLabel, onDrill
                     <td className="py-3 px-4 text-right">
                       <div className="flex items-center justify-end gap-2">
                         <div className="w-24 h-2.5 bg-muted rounded-full overflow-hidden">
-                          <div className="h-full rounded-full transition-all duration-500" style={{ 
+                          <div className="h-full rounded-full transition-all duration-500" style={{
                             width: `${machine.utilization}%`,
                             background: machine.utilization >= 80 ? 'linear-gradient(90deg, hsl(var(--success)), hsl(var(--success) / 0.8))' : machine.utilization >= 50 ? 'linear-gradient(90deg, hsl(var(--warning)), hsl(var(--warning) / 0.8))' : 'linear-gradient(90deg, hsl(var(--destructive)), hsl(var(--destructive) / 0.8))'
                           }} />

@@ -2,10 +2,10 @@ import { memo, useMemo, useState, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Home, 
-  Calendar, 
-  LayoutGrid, 
+import {
+  Home,
+  Calendar,
+  LayoutGrid,
   AlertTriangle,
   User,
   Menu,
@@ -94,20 +94,20 @@ interface MobileNavButtonProps {
   onHaptic: () => void;
 }
 
-const MobileNavButton = memo(function MobileNavButton({ 
-  item, 
-  isActive, 
+const MobileNavButton = memo(function MobileNavButton({
+  item,
+  isActive,
   badge,
   onClick,
   onHaptic,
 }: MobileNavButtonProps) {
   const Icon = item.icon;
-  
+
   const handleClick = useCallback(() => {
     onHaptic();
     onClick();
   }, [onHaptic, onClick]);
-  
+
   return (
     <motion.button
       onClick={handleClick}
@@ -127,7 +127,7 @@ const MobileNavButton = memo(function MobileNavButton({
       {/* Active indicator pill with animation */}
       <AnimatePresence>
         {isActive && (
-          <motion.span 
+          <motion.span
             initial={{ scaleX: 0, opacity: 0 }}
             animate={{ scaleX: 1, opacity: 1 }}
             exit={{ scaleX: 0, opacity: 0 }}
@@ -137,8 +137,8 @@ const MobileNavButton = memo(function MobileNavButton({
           />
         )}
       </AnimatePresence>
-      
-      <motion.div 
+
+      <motion.div
         className="relative mt-1"
         animate={{ scale: isActive ? 1.1 : 1 }}
         transition={{ duration: 0.2 }}
@@ -146,7 +146,7 @@ const MobileNavButton = memo(function MobileNavButton({
         <Icon className="h-6 w-6" />
         <AnimatePresence>
           {badge !== undefined && badge > 0 && (
-            <motion.span 
+            <motion.span
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               exit={{ scale: 0 }}
@@ -167,14 +167,14 @@ const MobileNavButton = memo(function MobileNavButton({
   );
 });
 
-function MoreMenuContent({ 
-  items, 
-  currentPath, 
+function MoreMenuContent({
+  items,
+  currentPath,
   alertCount,
   notificationCount,
   onNavigate,
-  onClose 
-}: { 
+  onClose
+}: {
   items: NavItem[];
   currentPath: string;
   alertCount: number;
@@ -183,19 +183,19 @@ function MoreMenuContent({
   onClose: () => void;
 }) {
   const { trigger } = useHapticFeedback();
-  
+
   const handleNavigate = useCallback((href: string) => {
     trigger('light');
     onNavigate(href);
   }, [trigger, onNavigate]);
-  
+
   return (
     <div className="flex flex-col h-full">
       {/* Drag handle indicator */}
       <div className="flex justify-center pt-3 pb-1">
         <div className="w-10 h-1 rounded-full bg-muted-foreground/30" aria-hidden="true" />
       </div>
-      
+
       {/* Header with close button */}
       <div className="flex items-center justify-between px-4 py-2 border-b border-border">
         <h3 className="text-base font-semibold text-foreground">
@@ -210,19 +210,19 @@ function MoreMenuContent({
           <X className="h-5 w-5 text-muted-foreground" />
         </motion.button>
       </div>
-      
+
       <ScrollArea className="flex-1">
         <div className="p-3 space-y-1">
           {items.map((item, index) => {
             const Icon = item.icon;
-            const isActive = item.href === '/' 
-              ? currentPath === '/' 
+            const isActive = item.href === '/'
+              ? currentPath === '/'
               : currentPath.startsWith(item.href);
-            
+
             let badge = undefined;
             if (item.id === 'alerts') badge = alertCount;
             if (item.id === 'notifications') badge = notificationCount;
-            
+
             return (
               <motion.button
                 key={item.id}
@@ -323,13 +323,13 @@ export function MobileNavigation() {
   return (
     <motion.nav
       initial={false}
-      animate={{ 
+      animate={{
         y: isVisible || sheetOpen ? 0 : 100,
         opacity: isVisible || sheetOpen ? 1 : 0
       }}
-      transition={{ 
-        duration: prefersReducedMotion ? 0 : 0.2, 
-        ease: 'easeOut' 
+      transition={{
+        duration: prefersReducedMotion ? 0 : 0.2,
+        ease: 'easeOut'
       }}
       className={cn(
         'fixed bottom-0 left-0 right-0 z-50',
@@ -345,7 +345,7 @@ export function MobileNavigation() {
           let badge = undefined;
           if (item.id === 'alerts') badge = alertCount;
           if (item.id === 'notifications') badge = notificationCount;
-          
+
           return (
             <MobileNavButton
               key={item.id}
@@ -357,7 +357,7 @@ export function MobileNavigation() {
             />
           );
         })}
-        
+
         {/* More Menu Button */}
         <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
           <SheetTrigger asChild>
@@ -374,7 +374,7 @@ export function MobileNavigation() {
                   : 'text-muted-foreground'
               )}
             >
-              <motion.div 
+              <motion.div
                 className="relative mt-1"
                 animate={{ rotate: sheetOpen ? 90 : 0 }}
                 transition={{ duration: 0.2 }}
@@ -393,7 +393,7 @@ export function MobileNavigation() {
             <SheetHeader className="sr-only">
               <SheetTitle>Menu de navegação</SheetTitle>
             </SheetHeader>
-            <MoreMenuContent 
+            <MoreMenuContent
               items={moreItems}
               currentPath={location.pathname}
               alertCount={alertCount}

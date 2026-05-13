@@ -13,7 +13,7 @@ import { z } from 'zod';
 export default function ResetPasswordPage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  
+
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -39,19 +39,19 @@ export default function ResetPasswordPage() {
     // Check if we have a valid recovery session
     const checkSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      
+
       // Check URL for recovery token (hash fragment)
       const hashParams = new URLSearchParams(window.location.hash.substring(1));
       const accessToken = hashParams.get('access_token');
       const type = hashParams.get('type');
-      
+
       if (type === 'recovery' && accessToken) {
         // Set the session from the recovery token
         const { error } = await supabase.auth.setSession({
           access_token: accessToken,
           refresh_token: hashParams.get('refresh_token') || '',
         });
-        
+
         if (!error) {
           setIsValidSession(true);
         } else {
@@ -65,7 +65,7 @@ export default function ResetPasswordPage() {
         toast.error(t('auth.invalidResetLink', 'Link de redefinição inválido ou expirado'));
         setTimeout(() => navigate('/auth'), 2000);
       }
-      
+
       setIsCheckingSession(false);
     };
 
@@ -103,7 +103,7 @@ export default function ResetPasswordPage() {
 
     setIsSuccess(true);
     toast.success(t('auth.passwordUpdated', 'Senha atualizada com sucesso!'));
-    
+
     // Sign out and redirect to login
     await supabase.auth.signOut();
     setTimeout(() => navigate('/auth'), 2000);
