@@ -55,7 +55,32 @@ export default function AuthPage() {
     if (rememberMe) localStorage.setItem('rememberedEmail', loginEmail); else localStorage.removeItem('rememberedEmail');
     setIsLoading(true);
     const { error } = await signIn(loginEmail, loginPassword);
-    if (error) { const le = error as Error & { isLockout?: boolean; remainingMinutes?: number; lockoutMinutes?: number }; if (le.isLockout) { toast.error('Conta Bloqueada', { description: `Muitas tentativas falhas. Tente novamente em ${le.remainingMinutes || le.lockoutMinutes || 0} minuto(s).`, duration: 10000 }); } else { toast.error(t('auth.loginError')); } setIsLoading(false); return; }
+    if (error) { 
+      const le = error as Error & { isLockout?: boolean; remainingMinutes?: number; lockoutMinutes?: number }; 
+      if (le.isLockout) { 
+        toast.error('Conta Bloqueada', { description: `Muitas tentativas falhas. Tente novamente em ${le.remainingMinutes || le.lockoutMinutes || 0} minuto(s).`, duration: 10000 }); 
+      } else { 
+        toast.error(t('auth.loginError')); 
+      } 
+      setIsLoading(false); 
+      return; 
+    }
+
+    // Check if MFA is required
+    try {
+      const { data: factors, error: factorsError } = await supabase.auth.mfa.listFactors();
+      if (factorsError) throw factorsError;
+
+      const totpFactor = factors.totp.find(f => f.status === 'verified');
+      if (totpFactor) {
+        setMfaFactorId(totpFactor.id);
+        setIsLoading(false);
+        return;
+      }
+    } catch (mfaErr) {
+      // If error listing factors, assume session is valid and proceed
+    }
+
     toast.success(t('auth.loginSuccess')); navigate('/');
   };
 
