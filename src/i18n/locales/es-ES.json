@@ -11,6 +11,7 @@
     "duplicate": "Duplicar",
     "add": "Añadir",
     "saving": "Guardando...",
+    "chat": "Chat",
     "search": "Buscar",
     "filter": "Filtrar",
     "clear": "Limpiar",
@@ -60,6 +61,12 @@
     "finish": "Finalizar",
     "skip": "Omitir"
   },
+  "intelligence": {
+    "title": "Inteligencia"
+  },
+  "team": {
+    "title": "Equipo"
+  },
   "auth": {
     "login": "Iniciar sesión",
     "loginWithGoogle": "Iniciar sesión con Google",
@@ -103,7 +110,9 @@
     "weeklyOverview": "Resumen Semanal",
     "recentJobs": "Trabajos Recientes",
     "topOperators": "Mejores Operadores",
-    "machineStatus": "Estado de las Máquinas"
+    "machineStatus": "Estado de las Máquinas",
+    "overview": "Resumen",
+    "timeline": "Línea de Tiempo"
   },
   "jobs": {
     "title": "Trabajos",

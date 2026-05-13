@@ -293,37 +293,37 @@ const Index = () => {
           <TabsList className="w-full justify-start glass p-1 h-auto shrink-0 rounded-xl gap-1">
             <TabsTrigger value="overview" className="gap-2 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all duration-200">
               <LayoutDashboard className="h-4 w-4" />
-              <span className="hidden sm:inline">Visão Geral</span>
+              <span className="hidden sm:inline">{t('dashboard.overview', 'Visão Geral')}</span>
             </TabsTrigger>
             {!isOperator && (
               <TabsTrigger value="efficiency" className="gap-2 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all duration-200">
                 <TrendingUp className="h-4 w-4" />
-                <span className="hidden sm:inline">Eficiência</span>
+                <span className="hidden sm:inline">{t('dashboard.efficiency', 'Eficiência')}</span>
               </TabsTrigger>
             )}
             <TabsTrigger value="timeline" className="gap-2 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all duration-200">
               <Clock className="h-4 w-4" />
-              <span className="hidden sm:inline">Timeline</span>
+              <span className="hidden sm:inline">{t('dashboard.timeline', 'Timeline')}</span>
             </TabsTrigger>
             <TabsTrigger value="machines" className="gap-2 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all duration-200">
               <Cpu className="h-4 w-4" />
-              <span className="hidden sm:inline">Máquinas</span>
+              <span className="hidden sm:inline">{t('machines.title', 'Máquinas')}</span>
             </TabsTrigger>
             <TabsTrigger value="intelligence" className="gap-2 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all duration-200">
               <Brain className="h-4 w-4" />
-              <span className="hidden sm:inline">Inteligência</span>
+              <span className="hidden sm:inline">{t('intelligence.title', 'Inteligência')}</span>
             </TabsTrigger>
             <TabsTrigger value="team" className="gap-2 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all duration-200">
               <Users className="h-4 w-4" />
-              <span className="hidden sm:inline">Equipe</span>
+              <span className="hidden sm:inline">{t('team.title', 'Equipe')}</span>
             </TabsTrigger>
             <TabsTrigger value="chat" className="gap-2 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all duration-200">
               <MessageCircle className="h-4 w-4" />
-              <span className="hidden sm:inline">Chat</span>
+              <span className="hidden sm:inline">{t('common.chat', 'Chat')}</span>
             </TabsTrigger>
             <TabsTrigger value="jobs" className="gap-2 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all duration-200">
               <Table2 className="h-4 w-4" />
-              <span className="hidden sm:inline">Jobs</span>
+              <span className="hidden sm:inline">{t('jobs.title', 'Jobs')}</span>
             </TabsTrigger>
           </TabsList>
 

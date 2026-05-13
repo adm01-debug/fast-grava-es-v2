@@ -11,6 +11,7 @@
     "duplicate": "Duplicate",
     "add": "Add",
     "saving": "Saving...",
+    "chat": "Chat",
     "search": "Search",
     "filter": "Filter",
     "clear": "Clear",
@@ -60,6 +61,12 @@
     "finish": "Finish",
     "skip": "Skip"
   },
+  "intelligence": {
+    "title": "Intelligence"
+  },
+  "team": {
+    "title": "Team"
+  },
   "auth": {
     "login": "Login",
     "loginWithGoogle": "Login with Google",
@@ -103,7 +110,9 @@
     "weeklyOverview": "Weekly Overview",
     "recentJobs": "Recent Jobs",
     "topOperators": "Top Operators",
-    "machineStatus": "Machine Status"
+    "machineStatus": "Machine Status",
+    "overview": "Overview",
+    "timeline": "Timeline"
   },
   "jobs": {
     "title": "Jobs",
