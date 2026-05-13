@@ -67,10 +67,10 @@ export const SystemOnboarding = () => {
       run={run}
       steps={steps}
       continuous
-      callback={handleJoyrideCallback}
+      onEvent={handleJoyrideCallback}
       options={{
         showProgress: true,
-        showSkipButton: true, // If it still works in the runtime despite type errors
+        showSkipButton: true,
         primaryColor: 'hsl(var(--primary))',
       } as any}
       styles={{
