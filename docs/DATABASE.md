@@ -41,3 +41,10 @@ jobs ──┬── machines
 
 ## RLS Policies
 Todas tabelas têm RLS ativo.
+
+## Manutenibilidade
+- **Versioning**: Tabelas críticas utilizam coluna `version` para optimistic locking.
+- **Audit**: Ativado via triggers integrados com a tabela `audit_logs`.
+- **Timezones**: Todas colunas de data/hora utilizam `TIMESTAMPTZ`.
+- **Integridade**: Restrições em nível de banco (triggers) garantem state machines válidas.
+

@@ -1,5 +1,5 @@
-export { JobsService } from './jobsService';
-export { MachinesService } from './machinesService';
+export { jobsService as JobsService } from './jobsService';
+export { machinesService as MachinesService } from './machinesService';
 export { OperatorsService } from './operatorsService';
 export { MaintenanceService } from './maintenanceService';
 export { NotificationsService } from './notificationsService';

@@ -20,6 +20,10 @@ Descreva brevemente as mudanças feitas neste PR.
 - [ ] Minhas mudanças não geram warnings
 - [ ] Adicionei testes que provam que minha correção/feature funciona
 - [ ] Testes novos e existentes passam localmente
+- [ ] RLS foi verificado para novas tabelas/mudanças de esquema
+- [ ] ADR foi criado ou atualizado se houve decisão arquitetural
+- [ ] Nenhuma secret ou chave foi exposta
+
 
 ## Screenshots (se aplicável)
 

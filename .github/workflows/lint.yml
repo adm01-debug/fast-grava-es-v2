@@ -23,7 +23,7 @@ jobs:
         run: npm ci
       
       - name: Run ESLint
-        run: npm run lint -- --format stylish
+        run: npm run lint -- --max-warnings=0 --format stylish
       
       - name: Run ESLint with annotations
         uses: reviewdog/action-eslint@v1

@@ -34,6 +34,14 @@ src/
 ├── schemas/       # Schemas Zod
 ├── types/         # Tipos TypeScript
 └── i18n/          # Internacionalização
+
+## Padrões Arquiteturais
+- **ADRs (Architecture Decision Records)**: Decisões críticas documentadas em `docs/adr/`.
+- **Limite de LOC**: Componentes e páginas devem ser mantidos abaixo de 400 linhas para garantir testabilidade.
+- **Naming Convention**: Suffix `Icon` para ícones do Lucide, hooks com prefixo `use`.
+- **Migrations**: Devem conter blocos `DO $$` para idempotência e, quando possível, instruções de rollback.
+- **RLS**: Row Level Security obrigatório em 100% das tabelas em `public`.
+
 ```
 
 ## Fluxo de Dados

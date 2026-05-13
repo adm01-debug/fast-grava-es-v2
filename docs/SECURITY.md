@@ -33,3 +33,7 @@ Email: security@fastgrava.com
 - [x] Secrets em env vars
 - [x] CORS configurado
 - [ ] WAF configurado
+- [x] MFA TOTP implementado
+- [x] Detecção de brute-force ativada (lockout)
+- [x] Validação de assinatura de webhook (HMAC)
+
