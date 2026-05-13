@@ -1,4 +1,5 @@
 import { useMemo, memo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { TrendingUp, TrendingDown } from 'lucide-react';
@@ -26,6 +27,7 @@ export const OEEGaugeCard = memo(function OEEGaugeCard({
    className,
    variant = 'default'
  }: OEEGaugeCardProps) {
+  const { t } = useTranslation();
 
   const gaugeData = useMemo(() => {
     const percentage = Math.min(100, Math.max(0, value));
@@ -117,7 +119,7 @@ export const OEEGaugeCard = memo(function OEEGaugeCard({
             trend > 0 ? "bg-success/10 text-success" : trend < 0 ? "bg-destructive/10 text-destructive" : "bg-muted text-muted-foreground"
           )}>
             {trend > 0 ? <TrendingUp className="h-3 w-3" /> : trend < 0 ? <TrendingDown className="h-3 w-3" /> : null}
-            {trend > 0 ? "+" : ""}{trend.toFixed(1)}% MoM
+            {trend > 0 ? "+" : ""}{trend.toFixed(1)}% {t('common.mom', 'MoM')}
           </div>
         )}
 
