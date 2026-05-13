@@ -55,6 +55,7 @@ import { cn } from '@/lib/utils';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { VoiceButton } from '@/components/voice/VoiceCommands';
 import { AutonomousEventLog } from '@/components/autonomous/AutonomousEventLog';
+import { ExecutiveKPICardsGrid } from '@/components/bi/executive/ExecutiveKPICards';
 import { 
   Dialog, 
   DialogContent, 
