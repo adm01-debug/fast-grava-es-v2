@@ -100,6 +100,7 @@ export function JobDetailsModal({ job, open, onOpenChange, onStatusChange }: Job
 
   const { control, handleSubmit, reset, formState: { isSubmitting, errors } } = useForm<JobEditValues>({
     resolver: zodResolver(jobEditSchema),
+    mode: "onBlur"
   });
 
   useEffect(() => {
