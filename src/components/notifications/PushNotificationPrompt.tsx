@@ -17,19 +17,19 @@ interface PushNotificationPromptProps {
  * Prompt flutuante para solicitar permissão de Push Notifications
  * Aparece automaticamente após delay se o usuário ainda não aceitou
  */
-export function PushNotificationPrompt({ 
-  delay = 10000, 
-  showOnce = true 
+export function PushNotificationPrompt({
+  delay = 10000,
+  showOnce = true
 }: PushNotificationPromptProps) {
   const { user } = useAuth();
-  const { 
-    isSupported, 
-    isSubscribed, 
-    permission, 
+  const {
+    isSupported,
+    isSubscribed,
+    permission,
     isLoading,
-    requestPermission 
+    requestPermission
   } = usePushNotifications();
-  
+
   const [isVisible, setIsVisible] = useState(false);
   const [isDismissed, setIsDismissed] = useState(false);
 
@@ -41,8 +41,8 @@ export function PushNotificationPrompt({
     // - Usuário não logado
     // - Já dispensado nesta sessão
     if (
-      !isSupported || 
-      isSubscribed || 
+      !isSupported ||
+      isSubscribed ||
       permission === "denied" ||
       !user ||
       isDismissed
@@ -91,7 +91,7 @@ export function PushNotificationPrompt({
                 <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
                   <Bell className="w-5 h-5 text-primary" />
                 </div>
-                
+
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between gap-2">
                     <h4 className="font-semibold text-foreground">
@@ -106,11 +106,11 @@ export function PushNotificationPrompt({
                       <X className="w-4 h-4" />
                     </Button>
                   </div>
-                  
+
                   <p className="text-sm text-muted-foreground mt-1">
                     Receba alertas de manutenção, produção e eficiência em tempo real.
                   </p>
-                  
+
                   <div className="flex items-center gap-2 mt-3">
                     <Button
                       size="sm"
@@ -148,13 +148,13 @@ export function PushNotificationPrompt({
  * Pode ser usado em settings ou header
  */
 export function PushNotificationToggle() {
-  const { 
-    isSupported, 
-    isSubscribed, 
-    permission, 
+  const {
+    isSupported,
+    isSubscribed,
+    permission,
     isLoading,
     requestPermission,
-    unsubscribe 
+    unsubscribe
   } = usePushNotifications();
 
   if (!isSupported) {

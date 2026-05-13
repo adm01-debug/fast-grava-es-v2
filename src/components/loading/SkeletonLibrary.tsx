@@ -50,12 +50,12 @@ export function TableRowSkeleton({ columns = 5 }: { columns?: number }) {
 }
 
 // Table skeleton
-export function TableSkeleton({ 
-  rows = 5, 
+export function TableSkeleton({
+  rows = 5,
   columns = 5,
   className,
-}: { 
-  rows?: number; 
+}: {
+  rows?: number;
   columns?: number;
   className?: string;
 }) {
@@ -82,7 +82,7 @@ export function TableSkeleton({
 }
 
 // Card skeleton
-export function CardSkeleton({ 
+export function CardSkeleton({
   hasHeader = true,
   hasFooter = false,
   lines = 3,
@@ -105,10 +105,10 @@ export function CardSkeleton({
       )}
       <CardContent className={cn(!hasHeader && 'pt-6', 'space-y-3')}>
         {children || Array.from({ length: lines }).map((_, i) => (
-          <Skeleton 
-            key={i} 
-            className="h-4" 
-            style={{ width: `${100 - i * 15}%` }} 
+          <Skeleton
+            key={i}
+            className="h-4"
+            style={{ width: `${100 - i * 15}%` }}
           />
         ))}
       </CardContent>
@@ -123,10 +123,10 @@ export function CardSkeleton({
 }
 
 // Chart skeleton
-export function ChartSkeleton({ 
+export function ChartSkeleton({
   type = 'bar',
   className,
-}: { 
+}: {
   type?: 'bar' | 'line' | 'pie';
   className?: string;
 }) {
@@ -145,7 +145,7 @@ export function ChartSkeleton({
       </div>
     );
   }
-  
+
   return (
     <div className={cn('p-4 space-y-4', className)}>
       {/* Y axis labels */}
@@ -158,10 +158,10 @@ export function ChartSkeleton({
         {/* Bars */}
         <div className="flex-1 flex items-end gap-1.5 h-32">
           {[65, 80, 45, 90, 55, 70, 40].map((h, i) => (
-            <Skeleton 
-              key={i} 
-              className="flex-1 rounded-t-md" 
-              style={{ height: `${h}%` }} 
+            <Skeleton
+              key={i}
+              className="flex-1 rounded-t-md"
+              style={{ height: `${h}%` }}
             />
           ))}
         </div>
@@ -177,10 +177,10 @@ export function ChartSkeleton({
 }
 
 // Form skeleton
-export function FormSkeleton({ 
+export function FormSkeleton({
   fields = 4,
   className,
-}: { 
+}: {
   fields?: number;
   className?: string;
 }) {
@@ -201,12 +201,12 @@ export function FormSkeleton({
 }
 
 // List skeleton
-export function ListSkeleton({ 
+export function ListSkeleton({
   items = 5,
   hasAvatar = false,
   hasAction = false,
   className,
-}: { 
+}: {
   items?: number;
   hasAvatar?: boolean;
   hasAction?: boolean;
@@ -229,11 +229,11 @@ export function ListSkeleton({
 }
 
 // Kanban skeleton
-export function KanbanSkeleton({ 
+export function KanbanSkeleton({
   columns = 4,
   cardsPerColumn = 3,
   className,
-}: { 
+}: {
   columns?: number;
   cardsPerColumn?: number;
   className?: string;
@@ -278,14 +278,14 @@ export function DashboardSkeleton({ className }: { className?: string }) {
         </div>
         <Skeleton className="h-10 w-32" />
       </div>
-      
+
       {/* Stats cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
         {Array.from({ length: 4 }).map((_, i) => (
           <StatsCardSkeleton key={i} />
         ))}
       </div>
-      
+
       {/* Main content */}
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         <div className="xl:col-span-2">
@@ -333,12 +333,12 @@ export function ProgressiveSkeleton({
     } else {
       const elapsed = Date.now() - loadStartRef.current;
       const remaining = Math.max(0, minLoadTime - elapsed);
-      
+
       const timer = setTimeout(() => {
         setShowSkeleton(false);
         setShowContent(true);
       }, remaining);
-      
+
       return () => clearTimeout(timer);
     }
   }, [isLoading, delay, minLoadTime]);

@@ -2,12 +2,12 @@ import { useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { 
+import {
   Dialog, DialogContent, DialogHeader, DialogTitle,
   DialogDescription, DialogFooter
 } from '@/components/ui/dialog';
-import { 
-  BrainCircuit, ArrowRight, Zap, AlertTriangle, 
+import {
+  BrainCircuit, ArrowRight, Zap, AlertTriangle,
   CheckCircle2, Sparkles, ChevronRight, LayoutPanelTop,
   Search, Filter, Clock, TrendingDown, TrendingUp, Info, Activity
 } from 'lucide-react';
@@ -71,7 +71,7 @@ export function SmartSequencingPanel({ onExplain }: SmartSequencingPanelProps) {
               <div className="absolute top-0 right-0 p-2 opacity-10 group-hover:opacity-20 transition-opacity">
                 <LayoutPanelTop className="h-12 w-12" />
               </div>
-              
+
               <div className="flex items-center justify-between mb-3">
                 <Badge variant="outline" className="text-[10px] font-mono border-primary/30 text-primary">
                   {suggestion.machineCode}
@@ -80,8 +80,8 @@ export function SmartSequencingPanel({ onExplain }: SmartSequencingPanelProps) {
                   <div className="flex items-center gap-1.5">
                     <Badge variant="outline" className={cn(
                       "text-[9px] font-black uppercase px-1.5 h-4",
-                      suggestion.setupComplexity === 'high' ? "bg-red-500/10 text-red-500 border-red-500/20" : 
-                      suggestion.setupComplexity === 'medium' ? "bg-amber-500/10 text-amber-500 border-amber-500/20" : 
+                      suggestion.setupComplexity === 'high' ? "bg-red-500/10 text-red-500 border-red-500/20" :
+                      suggestion.setupComplexity === 'medium' ? "bg-amber-500/10 text-amber-500 border-amber-500/20" :
                       "bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
                     )}>
                       Setup {suggestion.setupComplexity === 'high' ? 'Complexo' : suggestion.setupComplexity === 'medium' ? 'Médio' : 'Simples'}
@@ -121,12 +121,12 @@ export function SmartSequencingPanel({ onExplain }: SmartSequencingPanelProps) {
                 </div>
                 <div className="flex gap-1">
                   {suggestion.colorGroups.map((group, idx) => (
-                    <div 
+                    <div
                       key={idx}
                       className="h-2 flex-1 rounded-full bg-muted overflow-hidden relative"
                       title={`${group.jobCount} jobs - ${group.color}`}
                     >
-                      <div 
+                      <div
                         className="absolute inset-0 opacity-80"
                         style={{ backgroundColor: group.color === 'sem-cor' || !group.color ? '#444' : group.color }}
                       />
@@ -136,8 +136,8 @@ export function SmartSequencingPanel({ onExplain }: SmartSequencingPanelProps) {
               </div>
 
               <div className="flex gap-2">
-                <Button 
-                  size="sm" 
+                <Button
+                  size="sm"
                   className="flex-1 h-8 text-xs gap-2 bg-primary/10 hover:bg-primary/20 text-primary border-none"
                   onClick={(e) => {
                     e.stopPropagation();
@@ -148,8 +148,8 @@ export function SmartSequencingPanel({ onExplain }: SmartSequencingPanelProps) {
                   {isApplying ? 'Aplicando...' : 'Aplicar IA'}
                   <ArrowRight className="h-3 w-3" />
                 </Button>
-                <Button 
-                  size="sm" 
+                <Button
+                  size="sm"
                   variant="outline"
                   className="h-8 px-2 border-primary/20 hover:bg-primary/5 text-primary"
                   onClick={(e) => {
@@ -293,8 +293,8 @@ export function SmartSequencingPanel({ onExplain }: SmartSequencingPanelProps) {
 
           <DialogFooter className="gap-2">
             <Button variant="ghost" size="sm" onClick={() => setSuggestionToDetail(null)}>Fechar</Button>
-            <Button 
-              size="sm" 
+            <Button
+              size="sm"
               className="gap-2 bg-primary hover:bg-primary/90"
               onClick={() => {
                 if (suggestionToDetail) applySequencing(suggestionToDetail);

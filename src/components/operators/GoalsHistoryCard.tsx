@@ -6,19 +6,19 @@ import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { 
-  OperatorGoal, 
-  calculateGoalProgress, 
+import {
+  OperatorGoal,
+  calculateGoalProgress,
   GOAL_TYPE_LABELS,
-  GoalType 
+  GoalType
 } from '@/hooks/useOperatorGoals';
 import { OperatorProductivityMetrics } from '@/hooks/useOperatorProductivity';
-import { 
-  History, 
-  Trophy, 
-  Target, 
-  TrendingUp, 
-  TrendingDown, 
+import {
+  History,
+  Trophy,
+  Target,
+  TrendingUp,
+  TrendingDown,
   Minus,
   Calendar,
   ChevronDown,
@@ -76,7 +76,7 @@ export function GoalsHistoryCard({ goals, operators }: GoalsHistoryCardProps) {
     filteredGoals.forEach(goal => {
       const start = parseISO(goal.period_start);
       const periodKey = format(start, 'yyyy-MM');
-      
+
       if (!groups[periodKey]) {
         groups[periodKey] = [];
       }
@@ -88,7 +88,7 @@ export function GoalsHistoryCard({ goals, operators }: GoalsHistoryCardProps) {
         const firstGoal = periodGoals[0];
         const startDate = parseISO(firstGoal.period_start);
         const endDate = parseISO(firstGoal.period_end);
-        
+
         // Calculate achievements for this period
         let achievedCount = 0;
         let totalProgress = 0;
@@ -125,7 +125,7 @@ export function GoalsHistoryCard({ goals, operators }: GoalsHistoryCardProps) {
   }, [filteredGoals, operators]);
 
   // Separate current and past periods
-  const currentPeriod = periodGroups.find(p => 
+  const currentPeriod = periodGroups.find(p =>
     !isBefore(now, p.startDate) && !isAfter(now, p.endDate)
   );
   const pastPeriods = periodGroups.filter(p => isBefore(p.endDate, now));
@@ -235,7 +235,7 @@ export function GoalsHistoryCard({ goals, operators }: GoalsHistoryCardProps) {
               <div className="space-y-2">
                 <h4 className="text-sm font-medium text-muted-foreground">Períodos Anteriores</h4>
                 {pastPeriods.map(period => (
-                  <div 
+                  <div
                     key={period.periodKey}
                     className="border rounded-lg overflow-hidden"
                   >
@@ -268,7 +268,7 @@ export function GoalsHistoryCard({ goals, operators }: GoalsHistoryCardProps) {
                         )}
                       </div>
                     </button>
-                    
+
                     {expandedPeriod === period.periodKey && (
                       <div className="p-3 pt-0 space-y-2 border-t">
                         {period.goals.map(goal => {
@@ -283,9 +283,9 @@ export function GoalsHistoryCard({ goals, operators }: GoalsHistoryCardProps) {
                             }
                           }
                           const progress = calculateGoalProgress(goal, currentValue);
-                          
+
                           return (
-                            <div 
+                            <div
                               key={goal.id}
                               className="flex items-center justify-between p-2 rounded-md bg-muted/30"
                             >
@@ -355,7 +355,7 @@ export function GoalsHistoryCard({ goals, operators }: GoalsHistoryCardProps) {
                           name === 'achieved' ? 'Atingidas' : 'Não atingidas'
                         ]}
                       />
-                      <Legend 
+                      <Legend
                         formatter={(value) => value === 'achieved' ? 'Atingidas' : 'Não atingidas'}
                       />
                       <Bar dataKey="achieved" stackId="a" fill="hsl(var(--success))" radius={[0, 0, 0, 0]} />
@@ -370,15 +370,15 @@ export function GoalsHistoryCard({ goals, operators }: GoalsHistoryCardProps) {
                     {comparisonData.slice(-2).map((period, index, arr) => {
                       const isLatest = index === arr.length - 1;
                       const previousPeriod = index > 0 ? arr[index - 1] : null;
-                      const rateChange = previousPeriod 
-                        ? period.rate - previousPeriod.rate 
+                      const rateChange = previousPeriod
+                        ? period.rate - previousPeriod.rate
                         : 0;
-                      const progressChange = previousPeriod 
-                        ? period.progress - previousPeriod.progress 
+                      const progressChange = previousPeriod
+                        ? period.progress - previousPeriod.progress
                         : 0;
 
                       return (
-                        <div 
+                        <div
                           key={period.period}
                           className={`p-4 rounded-lg border ${
                             isLatest ? 'border-primary/50 bg-primary/5' : 'bg-muted/30'
@@ -388,7 +388,7 @@ export function GoalsHistoryCard({ goals, operators }: GoalsHistoryCardProps) {
                             <span className="font-medium">{period.period}</span>
                             {isLatest && <Badge variant="default">Mais recente</Badge>}
                           </div>
-                          
+
                           <div className="space-y-2">
                             <div className="flex items-center justify-between text-sm">
                               <span className="text-muted-foreground">Taxa de sucesso</span>
@@ -408,7 +408,7 @@ export function GoalsHistoryCard({ goals, operators }: GoalsHistoryCardProps) {
                                 )}
                               </div>
                             </div>
-                            
+
                             <div className="flex items-center justify-between text-sm">
                               <span className="text-muted-foreground">Progresso médio</span>
                               <div className="flex items-center gap-1">
@@ -427,7 +427,7 @@ export function GoalsHistoryCard({ goals, operators }: GoalsHistoryCardProps) {
                                 )}
                               </div>
                             </div>
-                            
+
                             <div className="flex items-center justify-between text-sm">
                               <span className="text-muted-foreground">Metas</span>
                               <span className="font-medium">

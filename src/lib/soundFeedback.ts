@@ -5,7 +5,7 @@ const audioContext = typeof window !== 'undefined' ? new (window.AudioContext ||
 
 function playTone(frequency: number, duration: number, type: OscillatorType = 'sine', volume = 0.15) {
   if (!audioContext) return;
-  
+
   try {
     // Resume context if suspended (browser autoplay policy)
     if (audioContext.state === 'suspended') {
@@ -14,16 +14,16 @@ function playTone(frequency: number, duration: number, type: OscillatorType = 's
 
     const oscillator = audioContext.createOscillator();
     const gainNode = audioContext.createGain();
-    
+
     oscillator.connect(gainNode);
     gainNode.connect(audioContext.destination);
-    
+
     oscillator.type = type;
     oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
-    
+
     gainNode.gain.setValueAtTime(volume, audioContext.currentTime);
     gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + duration);
-    
+
     oscillator.start(audioContext.currentTime);
     oscillator.stop(audioContext.currentTime + duration);
   } catch {

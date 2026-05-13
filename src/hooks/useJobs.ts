@@ -79,12 +79,11 @@ export function useTechniques() {
           .from('techniques')
           .select('*')
           .order('name');
-        
+
         if (error) throw error;
         return data as DbTechnique[];
       } catch (error) {
         const appError = createAppError(error, JOBS_ERROR_CONTEXT.hooks.techniques);
-        if (import.meta.env.DEV) console.error('[useTechniques]', appError);
         throw error;
       }
     },
@@ -128,12 +127,11 @@ export function useMachines() {
           .select('*')
           .eq('is_active', true)
           .order('code');
-        
+
         if (error) throw error;
         return data as DbMachine[];
       } catch (error) {
         const appError = createAppError(error, JOBS_ERROR_CONTEXT.hooks.machines);
-        if (import.meta.env.DEV) console.error('[useMachines]', appError);
         throw error;
       }
     },
@@ -176,12 +174,11 @@ export function useJobs() {
           .from('jobs')
           .select('*')
           .order('created_at', { ascending: false });
-        
+
         if (error) throw error;
         return data as DbJob[];
       } catch (error) {
         const appError = createAppError(error, JOBS_ERROR_CONTEXT.hooks.jobs);
-        if (import.meta.env.DEV) console.error('[useJobs]', appError);
         throw error;
       }
     },
@@ -221,7 +218,7 @@ export function useUpdateJobStatus() {
       try {
         const { data: { user } } = await supabase.auth.getUser();
         const updateData: Partial<DbJob> = { status };
-        
+
         if (status === 'production') {
           updateData.actual_start_time = new Date().toISOString();
           if (user) updateData.operator_id = user.id;
@@ -233,7 +230,7 @@ export function useUpdateJobStatus() {
           .from('jobs')
           .update(updateData)
           .eq('id', jobId);
-        
+
         if (error) throw error;
 
         // Push status update to Bitrix24 (fire and forget)
@@ -250,11 +247,9 @@ export function useUpdateJobStatus() {
             }).catch(() => { /* fire and forget */ });
           }
         } catch (e) {
-          if (import.meta.env.DEV) console.error('[useUpdateJobStatus] Bitrix24 sync error:', e);
         }
       } catch (error) {
         const appError = createAppError(error, JOBS_ERROR_CONTEXT.hooks.updateStatus);
-        if (import.meta.env.DEV) console.error('[useUpdateJobStatus]', appError);
         throw error;
       }
     },
@@ -275,11 +270,10 @@ export function useUpdateJob() {
           .from('jobs')
           .update(data)
           .eq('id', jobId);
-        
+
         if (error) throw error;
       } catch (error) {
         const appError = createAppError(error, JOBS_ERROR_CONTEXT.hooks.updateJob);
-        if (import.meta.env.DEV) console.error('[useUpdateJob]', appError);
         throw error;
       }
     },
@@ -301,11 +295,10 @@ export function useDeleteJob() {
           .from('jobs')
           .delete()
           .eq('id', jobId);
-        
+
         if (error) throw error;
       } catch (error) {
         const appError = createAppError(error, JOBS_ERROR_CONTEXT.hooks.deleteJob);
-        if (import.meta.env.DEV) console.error('[useDeleteJob]', appError);
         throw error;
       }
     },
@@ -336,10 +329,10 @@ export function useBufferStatus() {
 
   const bufferByTechnique: BufferTechniqueStatus[] = techniques.map(technique => {
     const techniqueJobs = jobs.filter(job => job.technique_id === technique.id);
-    
+
     const readyJobs = techniqueJobs.filter(job => job.status === 'ready');
     const queueJobs = techniqueJobs.filter(job => job.status === 'queue');
-    const activeJobs = techniqueJobs.filter(job => 
+    const activeJobs = techniqueJobs.filter(job =>
       ['production', 'scheduled', 'delayed', 'paused', 'rework'].includes(job.status)
     );
 

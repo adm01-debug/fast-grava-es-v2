@@ -42,7 +42,7 @@ export function useLogistics() {
         .select('*')
         .eq('is_active', true)
         .order('name');
-      
+
       if (error) throw error;
       return data as DbShippingProvider[];
     }
@@ -55,7 +55,7 @@ export function useLogistics() {
         .from('shipments')
         .select('*, provider:shipping_providers(*), job:jobs(order_number, client, product)')
         .order('created_at', { ascending: false });
-      
+
       if (error) throw error;
       return data as DbShipment[];
     }
@@ -68,16 +68,16 @@ export function useLogistics() {
         .insert(data)
         .select()
         .single();
-      
+
       if (error) throw error;
 
       // Update job status if linked
       if (data.job_id) {
         await supabase
           .from('jobs')
-          .update({ 
+          .update({
             shipment_id: shipment.id,
-            shipping_status: data.status 
+            shipping_status: data.status
           })
           .eq('id', data.job_id);
       }
@@ -100,7 +100,7 @@ export function useLogistics() {
         .from('shipments')
         .update(data)
         .eq('id', id);
-      
+
       if (error) throw error;
 
       // Sync with job if status changed

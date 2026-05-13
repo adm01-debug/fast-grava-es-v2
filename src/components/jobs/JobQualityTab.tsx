@@ -7,11 +7,11 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { 
-  CheckCircle2, 
-  AlertTriangle, 
-  Activity, 
-  Plus, 
+import {
+  CheckCircle2,
+  AlertTriangle,
+  Activity,
+  Plus,
   ChevronRight,
   TrendingUp,
   History,
@@ -35,8 +35,8 @@ export function JobQualityTab({ jobId, techniqueId, machineId }: JobQualityTabPr
   const [notes, setNotes] = useState('');
 
   // Filter parameters relevant to this job
-  const parameters = allParameters?.filter(p => 
-    p.is_active && 
+  const parameters = allParameters?.filter(p =>
+    p.is_active &&
     (p.technique_id === techniqueId || !p.technique_id) &&
     (p.machine_id === machineId || !p.machine_id)
   ) || [];
@@ -48,7 +48,7 @@ export function JobQualityTab({ jobId, techniqueId, machineId }: JobQualityTabPr
     if (!selectedParamId || !newValues) return;
 
     const values = newValues.split(',').map(v => parseFloat(v.trim())).filter(v => !isNaN(v));
-    
+
     if (values.length === 0) return;
 
     addMeasurement.mutate({
@@ -92,13 +92,13 @@ export function JobQualityTab({ jobId, techniqueId, machineId }: JobQualityTabPr
           </h4>
           <div className="space-y-2">
             {parameters.map(param => (
-              <div 
+              <div
                 key={param.id}
                 onClick={() => setSelectedParamId(param.id)}
                 className={cn(
                   "p-3 rounded-lg border transition-all cursor-pointer flex items-center justify-between",
-                  selectedParamId === param.id 
-                    ? "bg-primary/10 border-primary shadow-sm" 
+                  selectedParamId === param.id
+                    ? "bg-primary/10 border-primary shadow-sm"
                     : "bg-secondary/30 border-border/50 hover:bg-secondary/50"
                 )}
               >
@@ -125,7 +125,7 @@ export function JobQualityTab({ jobId, techniqueId, machineId }: JobQualityTabPr
                 <>
                   <div className="space-y-2">
                     <Label htmlFor="values" className="text-xs">Valores (separados por vírgula)</Label>
-                    <Input 
+                    <Input
                       id="values"
                       placeholder={`Ex: 10.5, 10.2, 10.8 (Tam. Amostra: ${selectedParam?.sample_size})`}
                       value={newValues}
@@ -135,7 +135,7 @@ export function JobQualityTab({ jobId, techniqueId, machineId }: JobQualityTabPr
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="notes" className="text-xs">Observações</Label>
-                    <Input 
+                    <Input
                       id="notes"
                       placeholder="Alguma anomalia observada?"
                       value={notes}
@@ -143,7 +143,7 @@ export function JobQualityTab({ jobId, techniqueId, machineId }: JobQualityTabPr
                       className="bg-background"
                     />
                   </div>
-                  <Button 
+                  <Button
                     className="w-full h-8 text-xs font-bold uppercase tracking-wider"
                     onClick={handleAddMeasurement}
                     disabled={!newValues || addMeasurement.isPending}
@@ -175,7 +175,7 @@ export function JobQualityTab({ jobId, techniqueId, machineId }: JobQualityTabPr
               </div>
             )}
           </div>
-          
+
           <ScrollArea className="h-[250px] pr-4">
             {loadingMeasurements ? (
               <div className="space-y-2"><Skeleton className="h-10 w-full" /><Skeleton className="h-10 w-full" /></div>

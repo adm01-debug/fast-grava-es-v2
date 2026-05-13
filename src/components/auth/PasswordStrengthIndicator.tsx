@@ -39,7 +39,6 @@ async function checkPasswordBreach(password: string): Promise<{ breached: boolea
     });
 
     if (!response.ok) {
-      if (import.meta.env.DEV) console.warn('HIBP API request failed:', response.status);
       return { breached: false, count: 0 };
     }
 
@@ -56,7 +55,6 @@ async function checkPasswordBreach(password: string): Promise<{ breached: boolea
 
     return { breached: false, count: 0 };
   } catch (error) {
-    if (import.meta.env.DEV) console.warn('Error checking password breach:', error);
     return { breached: false, count: 0 };
   }
 }
@@ -227,7 +225,7 @@ export function PasswordStrengthIndicator({
             <>
               <ShieldAlert className="h-4 w-4 flex-shrink-0" />
               <span>
-                <strong>Atenção:</strong> Esta senha apareceu em {formatBreachCount(breachStatus.count)} vazamentos de dados. 
+                <strong>Atenção:</strong> Esta senha apareceu em {formatBreachCount(breachStatus.count)} vazamentos de dados.
                 Escolha outra senha.
               </span>
             </>

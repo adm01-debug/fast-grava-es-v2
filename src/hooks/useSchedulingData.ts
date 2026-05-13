@@ -25,7 +25,7 @@ const ERROR_CONTEXT = {
 /**
  * Combined hook that fetches all scheduling data in a single place
  * and provides derived data and helper functions.
- * 
+ *
  * This reduces duplicate subscriptions and provides a centralized data layer.
  * Includes automatic retry on connection failures and specific error handling.
  */
@@ -39,7 +39,7 @@ export function useSchedulingData() {
       const { data, error } = await supabase
         .from('profiles')
         .select('id, full_name, avatar_url');
-      
+
       if (error) throw error;
       return data;
     },
@@ -55,15 +55,13 @@ export function useSchedulingData() {
           .from('techniques')
           .select('*')
           .order('name');
-        
+
         if (error) {
           const appError = createAppError(error, ERROR_CONTEXT.techniques);
-          if (import.meta.env.DEV) console.error('[useSchedulingData] Techniques fetch failed:', appError);
           throw error;
         }
         return data as DbTechnique[];
       } catch (err) {
-        if (import.meta.env.DEV) console.error('[useSchedulingData] Techniques error:', categorizeError(err), err);
         throw err;
       }
     },
@@ -81,15 +79,13 @@ export function useSchedulingData() {
           .select('*')
           // .eq('is_active', true) // Removido para permitir ver todas as máquinas e seu status de técnica
           .order('code');
-        
+
         if (error) {
           const appError = createAppError(error, ERROR_CONTEXT.machines);
-          if (import.meta.env.DEV) console.error('[useSchedulingData] Machines fetch failed:', appError);
           throw error;
         }
         return data as DbMachine[];
       } catch (err) {
-        if (import.meta.env.DEV) console.error('[useSchedulingData] Machines error:', categorizeError(err), err);
         throw err;
       }
     },
@@ -107,15 +103,13 @@ export function useSchedulingData() {
           .select('*')
           .or('status.neq.finished,created_at.gt.' + new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString())
           .order('created_at', { ascending: false });
-        
+
         if (error) {
           const appError = createAppError(error, ERROR_CONTEXT.jobs);
-          if (import.meta.env.DEV) console.error('[useSchedulingData] Jobs fetch failed:', appError);
           throw error;
         }
         return data as DbJob[];
       } catch (err) {
-        if (import.meta.env.DEV) console.error('[useSchedulingData] Jobs error:', categorizeError(err), err);
         throw err;
       }
     },
@@ -197,7 +191,7 @@ export function useSchedulingData() {
   const stats = useMemo(() => {
     const jobs = jobsQuery.data || [];
     const today = new Date().toISOString().split('T')[0];
-    
+
     const result = {
       total: jobs.length,
       completed: 0, inProgress: 0, delayed: 0, queue: 0,
@@ -209,7 +203,7 @@ export function useSchedulingData() {
     for (let i = 0; i < jobs.length; i++) {
       const j = jobs[i];
       const isToday = j.scheduled_date === today;
-      
+
       result.totalPieces += j.quantity;
       result.lostPieces += j.lost_pieces || 0;
 
@@ -253,10 +247,10 @@ export function useSchedulingData() {
     isLoadingJobs: jobsQuery.isLoading,
     isLoadingTechniques: techniquesQuery.isLoading,
     isLoadingMachines: machinesQuery.isLoading,
-    
+
     // Error states
     error: jobsQuery.error || techniquesQuery.error || machinesQuery.error,
-    
+
     // Helper functions
     getOperatorById,
     getTechniqueById,
@@ -265,10 +259,10 @@ export function useSchedulingData() {
     getJobsByStatus,
     getJobsByMachine,
     getJobsByTechnique,
-    
+
     // Derived stats
     stats,
-    
+
     // Refetch functions
     refetchJobs: jobsQuery.refetch,
     refetchAll: () => {
@@ -276,20 +270,20 @@ export function useSchedulingData() {
       techniquesQuery.refetch();
       machinesQuery.refetch();
     },
-    
+
     // OEE History and Capacity Monitoring
     getOEETrend: (days: number = 14) => {
       const jobs = jobsQuery.data || [];
       const trend = [];
       const now = new Date();
-      
+
       for (let i = days - 1; i >= 0; i--) {
         const date = new Date(now);
         date.setDate(now.getDate() - i);
         const dateStr = date.toISOString().split('T')[0];
-        
+
         const dayJobs = jobs.filter(j => j.status === 'finished' && j.actual_end_time && j.actual_end_time.substring(0, 10) === dateStr);
-        
+
         if (dayJobs.length === 0) {
           trend.push({ date: dateStr, oee: 0 });
           continue;
@@ -302,7 +296,7 @@ export function useSchedulingData() {
           }
           totalEstimated += job.estimated_duration || 60;
         }
-        
+
         const oee = totalActual > 0 ? Math.min(100, (totalEstimated / totalActual) * 100) : 100;
         trend.push({ date: dateStr, oee: Math.round(oee) });
       }
@@ -316,10 +310,10 @@ export function useSchedulingData() {
         const date = new Date();
         date.setDate(date.getDate() - i);
         const dateStr = date.toISOString().split('T')[0];
-        
+
         const dayJobs = jobs.filter(j => j.scheduled_date === dateStr);
         const load = dayJobs.reduce((sum, j) => sum + (j.estimated_duration || 0), 0);
-        
+
         trend.push({
           date: dateStr,
           load,

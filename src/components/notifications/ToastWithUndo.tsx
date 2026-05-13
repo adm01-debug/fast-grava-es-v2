@@ -101,7 +101,7 @@ function ToastItem({
   const [isPaused, setIsPaused] = React.useState(false);
   const [copied, setCopied] = React.useState(false);
   const config = typeConfig[type];
-  
+
   // Swipe to dismiss
   const x = useMotionValue(0);
   const opacity = useTransform(x, [-100, 0, 100], [0, 1, 0]);
@@ -159,7 +159,7 @@ function ToastItem({
       className={`relative overflow-hidden rounded-xl border shadow-lg backdrop-blur-sm cursor-grab active:cursor-grabbing ${config.className}`}
     >
       <div className="flex items-start gap-3 p-4">
-        <motion.div 
+        <motion.div
           className="flex-shrink-0 mt-0.5"
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
@@ -167,9 +167,9 @@ function ToastItem({
         >
           {config.icon}
         </motion.div>
-        
+
         <div className="flex-1 min-w-0">
-          <motion.p 
+          <motion.p
             className="font-medium text-sm text-foreground"
             initial={{ opacity: 0, x: -10 }}
             animate={{ opacity: 1, x: 0 }}
@@ -178,7 +178,7 @@ function ToastItem({
             {title}
           </motion.p>
           {description && (
-            <motion.p 
+            <motion.p
               className="text-sm text-muted-foreground mt-1"
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
@@ -187,7 +187,7 @@ function ToastItem({
               {description}
             </motion.p>
           )}
-          
+
           {/* Actions Row */}
           <div className="flex items-center gap-2 mt-2 flex-wrap">
             {onUndo && (
@@ -201,7 +201,7 @@ function ToastItem({
                 {undoLabel}
               </Button>
             )}
-            
+
             {action && (
               <Button
                 variant="ghost"
@@ -365,7 +365,6 @@ export function showToast(
   if (window.__toastManager) {
     return window.__toastManager.addToast(options);
   }
-  if (import.meta.env.DEV) console.warn("Toast container not mounted");
   return null;
 }
 
@@ -409,7 +408,7 @@ export const toast = {
     }
   ): Promise<T> => {
     const id = showToast({ title: messages.loading, type: "loading" });
-    
+
     try {
       const result = await promise;
       window.__toastManager?.updateToast(id!, {

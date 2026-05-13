@@ -8,13 +8,13 @@ interface BIEmptyStateProps {
   onReset?: () => void;
 }
 
-export function BIEmptyState({ 
-  title = "Nenhum dado encontrado", 
+export function BIEmptyState({
+  title = "Nenhum dado encontrado",
   description = "Tente ajustar seus filtros ou mudar o período selecionado para visualizar as métricas.",
-  onReset 
+  onReset
 }: BIEmptyStateProps) {
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       className="flex flex-col items-center justify-center p-12 text-center bg-black/20 border border-white/5 rounded-3xl backdrop-blur-sm"
@@ -25,15 +25,15 @@ export function BIEmptyState({
           <FileSearch className="h-12 w-12 text-primary/60" />
         </div>
       </div>
-      
+
       <h3 className="text-xl font-display font-bold text-white mb-2 uppercase tracking-tight">{title}</h3>
       <p className="text-muted-foreground max-w-xs mb-8">
         {description}
       </p>
-      
+
       {onReset && (
-        <Button 
-          variant="outline" 
+        <Button
+          variant="outline"
           onClick={onReset}
           className="group border-primary/30 hover:border-primary/60 text-primary gap-2"
         >

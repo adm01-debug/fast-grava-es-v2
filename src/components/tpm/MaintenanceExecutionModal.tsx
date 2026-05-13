@@ -72,14 +72,14 @@ export function MaintenanceExecutionModal({
     evidence_urls: string[];
     is_critical_risk: boolean;
   }>>([]);
-  
+
   const [suppliesUsed, setSuppliesUsed] = useState<Record<string, {
     quantity: string;
     alternative_used: boolean;
     name: string;
     is_checked: boolean;
   }>>({});
-  
+
   const [notes, setNotes] = useState('');
   const [totalCost, setTotalCost] = useState(0);
   const [downtime, setDowntime] = useState(0);
@@ -96,16 +96,16 @@ export function MaintenanceExecutionModal({
   const checklist = useMemo(() => {
     if (!schedule) return null;
     // Tenta encontrar checklist específico para a técnica/tipo da máquina
-    const techChecklist = checklists.find(c => 
-      c.maintenance_type_id === schedule.maintenance_type_id && 
+    const techChecklist = checklists.find(c =>
+      c.maintenance_type_id === schedule.maintenance_type_id &&
       c.technique_id === schedule.machine?.technique_id &&
       c.is_active
     );
     if (techChecklist) return techChecklist;
 
     // Fallback para checklist global do tipo de manutenção
-    return checklists.find(c => 
-      c.maintenance_type_id === schedule.maintenance_type_id && 
+    return checklists.find(c =>
+      c.maintenance_type_id === schedule.maintenance_type_id &&
       !c.technique_id &&
       c.is_active
     );
@@ -142,7 +142,7 @@ export function MaintenanceExecutionModal({
   // Real-time parameter validation
   useEffect(() => {
     if (!selectedSheetId) return;
-    
+
     const sheet = technicalSheets.find(s => s.id === selectedSheetId);
     if (!sheet) return;
 
@@ -153,14 +153,14 @@ export function MaintenanceExecutionModal({
       if (!range || (!range.min && !range.max)) return;
       const val = parseFloat(value.replace(/[^0-9.]/g, ''));
       if (isNaN(val) && value !== '') return;
-      
+
       const min = range.min ? parseFloat(range.min.replace(/[^0-9.]/g, '')) : -Infinity;
       const max = range.max ? parseFloat(range.max.replace(/[^0-9.]/g, '')) : Infinity;
-      
+
       if (!isNaN(val) && (val < min || val > max)) {
         // Find existing alert to preserve evidence_urls
         const existingAlert = activeAlerts.find(a => a.parameter_name === name);
-        
+
         newAlerts.push({
           alert_type: 'out_of_range',
           parameter_name: name,
@@ -263,10 +263,10 @@ export function MaintenanceExecutionModal({
       const newAlerts = [...activeAlerts];
       newAlerts[alertIndex].evidence_urls = [...newAlerts[alertIndex].evidence_urls, publicUrl];
       setActiveAlerts(newAlerts);
-      
+
       toast.success('Evidência anexada com sucesso');
     } catch (error) {
-      console.error('Error uploading evidence:', error);
+
       toast.error('Erro ao enviar evidência');
     } finally {
       setIsUploading(false);
@@ -281,10 +281,10 @@ export function MaintenanceExecutionModal({
     }
 
     if (checklist?.items) {
-      const missingCritical = checklist.items.filter(item => 
+      const missingCritical = checklist.items.filter(item =>
         item.is_critical && !responses[item.id]?.is_checked
       );
-      
+
       if (missingCritical.length > 0) {
         toast.error(`Existem itens críticos não marcados: ${missingCritical.map(i => i.description).join(', ')}`);
         return;
@@ -295,7 +295,7 @@ export function MaintenanceExecutionModal({
     if (selectedSheetId) {
       const sheet = technicalSheets.find(s => s.id === selectedSheetId);
       if (sheet?.quality_checklist && sheet.quality_checklist.length > 0) {
-        const missingQuality = sheet.quality_checklist.filter(item => 
+        const missingQuality = sheet.quality_checklist.filter(item =>
           item.required && (!qualityResponses[item.id] || !qualityResponses[item.id].approved)
         );
 
@@ -309,7 +309,7 @@ export function MaintenanceExecutionModal({
     // Validação de riscos críticos (Alertas de parâmetros)
     const criticalAlerts = activeAlerts.filter(a => a.is_critical_risk);
     const criticalWithoutEvidence = criticalAlerts.filter(a => a.evidence_urls.length === 0);
-    
+
     if (criticalWithoutEvidence.length > 0) {
       toast.error(`Atenção: Existem riscos críticos (parâmetros fora do range) que exigem o anexo de evidências (fotos) antes de prosseguir.`, {
         description: `Parâmetros: ${criticalWithoutEvidence.map(a => a.parameter_name).join(', ')}`
@@ -421,8 +421,8 @@ export function MaintenanceExecutionModal({
               <div className="space-y-4">
                 <div className="space-y-2">
                   <Label>Vincular Ficha Técnica (Obrigatório) *</Label>
-                  <Select 
-                    value={selectedSheetId || ""} 
+                  <Select
+                    value={selectedSheetId || ""}
                     onValueChange={(value) => setSelectedSheetId(value || null)}
                   >
                     <SelectTrigger className={!selectedSheetId ? "border-destructive/50" : ""}>
@@ -475,9 +475,9 @@ export function MaintenanceExecutionModal({
                           </div>
                           <div className="flex flex-col items-end gap-2">
                             <div className="relative">
-                              <Input 
-                                type="file" 
-                                className="hidden" 
+                              <Input
+                                type="file"
+                                className="hidden"
                                 id={`evidence-${idx}`}
                                 accept="image/*"
                                 onChange={(e) => {
@@ -486,7 +486,7 @@ export function MaintenanceExecutionModal({
                                 }}
                                 disabled={isUploading}
                               />
-                              <Label 
+                              <Label
                                 htmlFor={`evidence-${idx}`}
                                 className="inline-flex items-center justify-center rounded-md text-[10px] font-medium border border-destructive/20 bg-background hover:bg-destructive/5 h-7 px-2 cursor-pointer gap-1 text-destructive"
                               >
@@ -537,12 +537,12 @@ export function MaintenanceExecutionModal({
                       {technicalSheets.find(s => s.id === selectedSheetId)?.quality_checklist?.map((item) => (
                         <div key={item.id} className="space-y-2 p-3 rounded-lg bg-emerald-500/5 border border-emerald-500/10">
                           <div className="flex items-center gap-3">
-                            <Checkbox 
+                            <Checkbox
                               id={`quality-${item.id}`}
                               checked={qualityResponses[item.id]?.approved || false}
-                              onCheckedChange={(checked) => setQualityResponses(prev => ({ 
-                                ...prev, 
-                                [item.id]: { ...prev[item.id], approved: !!checked } 
+                              onCheckedChange={(checked) => setQualityResponses(prev => ({
+                                ...prev,
+                                [item.id]: { ...prev[item.id], approved: !!checked }
                               }))}
                             />
                             <Label htmlFor={`quality-${item.id}`} className="text-sm cursor-pointer flex-1">
@@ -552,7 +552,7 @@ export function MaintenanceExecutionModal({
                           </div>
                           {!qualityResponses[item.id]?.approved && (
                             <div className="pl-7">
-                              <Input 
+                              <Input
                                 placeholder="Justificativa da reprovação/pendência..."
                                 className="h-8 text-xs bg-background"
                                 value={qualityResponses[item.id]?.justification || ""}
@@ -579,25 +579,25 @@ export function MaintenanceExecutionModal({
                   <Label className="flex items-center gap-2">
                     <Clock className="h-4 w-4" /> Tempo de Máquina Parada (min)
                   </Label>
-                  <Input 
-                    type="number" 
-                    value={downtime} 
+                  <Input
+                    type="number"
+                    value={downtime}
                     onChange={(e) => setDowntime(parseInt(e.target.value) || 0)}
                   />
                 </div>
                 <div className="space-y-2">
                   <Label>Custo Total (Opcional)</Label>
-                  <Input 
-                    type="number" 
+                  <Input
+                    type="number"
                     placeholder="R$ 0,00"
-                    value={totalCost} 
+                    value={totalCost}
                     onChange={(e) => setTotalCost(parseFloat(e.target.value) || 0)}
                   />
                 </div>
               </div>
               <div className="space-y-2">
                 <Label>Observações Adicionais</Label>
-                <Textarea 
+                <Textarea
                   placeholder="Relate problemas encontrados, peças trocadas, etc."
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
@@ -620,9 +620,9 @@ export function MaintenanceExecutionModal({
                   Assinatura Digital
                 </h3>
                 <div className="p-4 border border-dashed rounded-lg bg-muted/20 text-center">
-                  <Input 
-                    placeholder="Assine aqui (Nome Completo)" 
-                    value={signature} 
+                  <Input
+                    placeholder="Assine aqui (Nome Completo)"
+                    value={signature}
                     onChange={(e) => setSignature(e.target.value)}
                     className="max-w-md mx-auto text-center font-serif italic text-lg"
                   />

@@ -52,7 +52,7 @@ export function EditorBasicInfo({ formData, setFormData, techniques, categories,
   return (
     <div className="space-y-4">
       <h3 className="text-sm font-semibold">Informações Básicas</h3>
-      
+
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label>Técnica *</Label>
@@ -122,27 +122,27 @@ export function EditorBasicInfo({ formData, setFormData, techniques, categories,
       </div>
 
       <Separator className="my-6" />
-      
+
       <div className="space-y-4">
         <h3 className="text-sm font-semibold flex items-center gap-2">
           Configurações Técnicas e Regulagem
         </h3>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label>Especificação de Tinta / Solventes</Label>
-            <Input 
-              value={formData.ink_specifications} 
-              onChange={(e) => setFormData({...formData, ink_specifications: e.target.value})} 
-              placeholder="Ex: Tinta Vinílica Branca + 10% Retardador" 
+            <Input
+              value={formData.ink_specifications}
+              onChange={(e) => setFormData({...formData, ink_specifications: e.target.value})}
+              placeholder="Ex: Tinta Vinílica Branca + 10% Retardador"
             />
           </div>
           <div className="space-y-2">
             <Label>Ferramental (Rodo, Lâmina, etc.)</Label>
-            <Input 
-              value={formData.tooling_specifications} 
-              onChange={(e) => setFormData({...formData, tooling_specifications: e.target.value})} 
-              placeholder="Ex: Rodo Poliuretano 70 shores" 
+            <Input
+              value={formData.tooling_specifications}
+              onChange={(e) => setFormData({...formData, tooling_specifications: e.target.value})}
+              placeholder="Ex: Rodo Poliuretano 70 shores"
             />
           </div>
         </div>
@@ -151,26 +151,26 @@ export function EditorBasicInfo({ formData, setFormData, techniques, categories,
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
             <div className="space-y-2">
               <Label>Passadas (Rodo)</Label>
-              <Input 
-                value={formData.squeegee_passes} 
-                onChange={(e) => setFormData({...formData, squeegee_passes: e.target.value})} 
-                placeholder="Valor" 
+              <Input
+                value={formData.squeegee_passes}
+                onChange={(e) => setFormData({...formData, squeegee_passes: e.target.value})}
+                placeholder="Valor"
               />
             </div>
             <div className="space-y-2">
               <Label className="text-xs text-muted-foreground">Mínimo</Label>
-              <Input 
-                value={formData.squeegee_passes_min} 
-                onChange={(e) => setFormData({...formData, squeegee_passes_min: e.target.value})} 
-                placeholder="Mín" 
+              <Input
+                value={formData.squeegee_passes_min}
+                onChange={(e) => setFormData({...formData, squeegee_passes_min: e.target.value})}
+                placeholder="Mín"
               />
             </div>
             <div className="space-y-2">
               <Label className="text-xs text-muted-foreground">Máximo</Label>
-              <Input 
-                value={formData.squeegee_passes_max} 
-                onChange={(e) => setFormData({...formData, squeegee_passes_max: e.target.value})} 
-                placeholder="Máx" 
+              <Input
+                value={formData.squeegee_passes_max}
+                onChange={(e) => setFormData({...formData, squeegee_passes_max: e.target.value})}
+                placeholder="Máx"
               />
             </div>
           </div>
@@ -178,26 +178,26 @@ export function EditorBasicInfo({ formData, setFormData, techniques, categories,
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
             <div className="space-y-2">
               <Label>Pressão</Label>
-              <Input 
-                value={formData.pressure} 
-                onChange={(e) => setFormData({...formData, pressure: e.target.value})} 
-                placeholder="Valor" 
+              <Input
+                value={formData.pressure}
+                onChange={(e) => setFormData({...formData, pressure: e.target.value})}
+                placeholder="Valor"
               />
             </div>
             <div className="space-y-2">
               <Label className="text-xs text-muted-foreground">Mínimo</Label>
-              <Input 
-                value={formData.pressure_min} 
-                onChange={(e) => setFormData({...formData, pressure_min: e.target.value})} 
-                placeholder="Mín" 
+              <Input
+                value={formData.pressure_min}
+                onChange={(e) => setFormData({...formData, pressure_min: e.target.value})}
+                placeholder="Mín"
               />
             </div>
             <div className="space-y-2">
               <Label className="text-xs text-muted-foreground">Máximo</Label>
-              <Input 
-                value={formData.pressure_max} 
-                onChange={(e) => setFormData({...formData, pressure_max: e.target.value})} 
-                placeholder="Máx" 
+              <Input
+                value={formData.pressure_max}
+                onChange={(e) => setFormData({...formData, pressure_max: e.target.value})}
+                placeholder="Máx"
               />
             </div>
           </div>
@@ -205,26 +205,26 @@ export function EditorBasicInfo({ formData, setFormData, techniques, categories,
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
             <div className="space-y-2">
               <Label>Velocidade</Label>
-              <Input 
-                value={formData.speed} 
-                onChange={(e) => setFormData({...formData, speed: e.target.value})} 
-                placeholder="Valor" 
+              <Input
+                value={formData.speed}
+                onChange={(e) => setFormData({...formData, speed: e.target.value})}
+                placeholder="Valor"
               />
             </div>
             <div className="space-y-2">
               <Label className="text-xs text-muted-foreground">Mínimo</Label>
-              <Input 
-                value={formData.speed_min} 
-                onChange={(e) => setFormData({...formData, speed_min: e.target.value})} 
-                placeholder="Mín" 
+              <Input
+                value={formData.speed_min}
+                onChange={(e) => setFormData({...formData, speed_min: e.target.value})}
+                placeholder="Mín"
               />
             </div>
             <div className="space-y-2">
               <Label className="text-xs text-muted-foreground">Máximo</Label>
-              <Input 
-                value={formData.speed_max} 
-                onChange={(e) => setFormData({...formData, speed_max: e.target.value})} 
-                placeholder="Máx" 
+              <Input
+                value={formData.speed_max}
+                onChange={(e) => setFormData({...formData, speed_max: e.target.value})}
+                placeholder="Máx"
               />
             </div>
           </div>
@@ -232,26 +232,26 @@ export function EditorBasicInfo({ formData, setFormData, techniques, categories,
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
             <div className="space-y-2">
               <Label>Temperatura</Label>
-              <Input 
-                value={formData.temperature} 
-                onChange={(e) => setFormData({...formData, temperature: e.target.value})} 
-                placeholder="Valor" 
+              <Input
+                value={formData.temperature}
+                onChange={(e) => setFormData({...formData, temperature: e.target.value})}
+                placeholder="Valor"
               />
             </div>
             <div className="space-y-2">
               <Label className="text-xs text-muted-foreground">Mínimo</Label>
-              <Input 
-                value={formData.temperature_min} 
-                onChange={(e) => setFormData({...formData, temperature_min: e.target.value})} 
-                placeholder="Mín" 
+              <Input
+                value={formData.temperature_min}
+                onChange={(e) => setFormData({...formData, temperature_min: e.target.value})}
+                placeholder="Mín"
               />
             </div>
             <div className="space-y-2">
               <Label className="text-xs text-muted-foreground">Máximo</Label>
-              <Input 
-                value={formData.temperature_max} 
-                onChange={(e) => setFormData({...formData, temperature_max: e.target.value})} 
-                placeholder="Máx" 
+              <Input
+                value={formData.temperature_max}
+                onChange={(e) => setFormData({...formData, temperature_max: e.target.value})}
+                placeholder="Máx"
               />
           </div>
         </div>
@@ -265,10 +265,10 @@ export function EditorBasicInfo({ formData, setFormData, techniques, categories,
           </h3>
           <div className="space-y-2">
             <Label>Guia de Configuração da Máquina</Label>
-            <Textarea 
-              value={formData.setup_instructions} 
-              onChange={(e) => setFormData({...formData, setup_instructions: e.target.value})} 
-              placeholder="Descreva o setup da máquina, ferramenta/matriz e passos de preparação..." 
+            <Textarea
+              value={formData.setup_instructions}
+              onChange={(e) => setFormData({...formData, setup_instructions: e.target.value})}
+              placeholder="Descreva o setup da máquina, ferramenta/matriz e passos de preparação..."
               rows={3}
             />
           </div>
@@ -282,10 +282,10 @@ export function EditorBasicInfo({ formData, setFormData, techniques, categories,
               <CheckSquare className="h-4 w-4 text-emerald-500" />
               Checklist de Qualidade
             </h3>
-            <Button 
-              type="button" 
-              variant="outline" 
-              size="sm" 
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
               onClick={() => {
                 const newItem = { id: crypto.randomUUID(), description: '', required: true };
                 setFormData({...formData, quality_checklist: [...formData.quality_checklist, newItem]});
@@ -295,7 +295,7 @@ export function EditorBasicInfo({ formData, setFormData, techniques, categories,
               <Plus className="h-3 w-3" /> Adicionar Critério
             </Button>
           </div>
-          
+
           <div className="space-y-2">
             {formData.quality_checklist.length === 0 && (
               <p className="text-xs text-muted-foreground italic p-4 border border-dashed rounded-lg text-center">
@@ -305,7 +305,7 @@ export function EditorBasicInfo({ formData, setFormData, techniques, categories,
             {formData.quality_checklist.map((item, index) => (
               <div key={item.id} className="flex items-start gap-3 p-3 bg-secondary/10 rounded-lg border border-border/50">
                 <div className="flex-1 space-y-2">
-                  <Input 
+                  <Input
                     value={item.description}
                     onChange={(e) => {
                       const newList = [...formData.quality_checklist];
@@ -316,8 +316,8 @@ export function EditorBasicInfo({ formData, setFormData, techniques, categories,
                     className="h-8"
                   />
                   <div className="flex items-center gap-2">
-                    <Checkbox 
-                      id={`req-${item.id}`} 
+                    <Checkbox
+                      id={`req-${item.id}`}
                       checked={item.required}
                       onCheckedChange={(checked) => {
                         const newList = [...formData.quality_checklist];
@@ -328,10 +328,10 @@ export function EditorBasicInfo({ formData, setFormData, techniques, categories,
                     <Label htmlFor={`req-${item.id}`} className="text-xs cursor-pointer">Obrigatório para aprovação</Label>
                   </div>
                 </div>
-                <Button 
-                  type="button" 
-                  variant="ghost" 
-                  size="icon" 
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
                   className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
                   onClick={() => {
                     const newList = formData.quality_checklist.filter((_, i) => i !== index);
@@ -353,10 +353,10 @@ export function EditorBasicInfo({ formData, setFormData, techniques, categories,
               <Package className="h-4 w-4 text-primary" />
               Insumos e Consumíveis
             </h3>
-            <Button 
-              type="button" 
-              variant="outline" 
-              size="sm" 
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
               onClick={() => {
                 const newItem = { id: crypto.randomUUID(), name: '', quantity: '', alternative: '' };
                 setFormData({...formData, consumables: [...formData.consumables, newItem]});
@@ -366,7 +366,7 @@ export function EditorBasicInfo({ formData, setFormData, techniques, categories,
               <Plus className="h-3 w-3" /> Adicionar Insumo
             </Button>
           </div>
-          
+
           <div className="space-y-2">
             {formData.consumables.length === 0 && (
               <p className="text-xs text-muted-foreground italic p-4 border border-dashed rounded-lg text-center">
@@ -378,7 +378,7 @@ export function EditorBasicInfo({ formData, setFormData, techniques, categories,
                 <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-2">
                   <div className="space-y-1">
                     <Label className="text-[10px] uppercase">Nome</Label>
-                    <Input 
+                    <Input
                       value={item.name}
                       onChange={(e) => {
                         const newList = [...formData.consumables];
@@ -391,7 +391,7 @@ export function EditorBasicInfo({ formData, setFormData, techniques, categories,
                   </div>
                   <div className="space-y-1">
                     <Label className="text-[10px] uppercase">Quantidade Sugerida</Label>
-                    <Input 
+                    <Input
                       value={item.quantity}
                       onChange={(e) => {
                         const newList = [...formData.consumables];
@@ -404,7 +404,7 @@ export function EditorBasicInfo({ formData, setFormData, techniques, categories,
                   </div>
                   <div className="space-y-1">
                     <Label className="text-[10px] uppercase">Alternativa Compatível</Label>
-                    <Input 
+                    <Input
                       value={item.alternative}
                       onChange={(e) => {
                         const newList = [...formData.consumables];
@@ -416,10 +416,10 @@ export function EditorBasicInfo({ formData, setFormData, techniques, categories,
                     />
                   </div>
                 </div>
-                <Button 
-                  type="button" 
-                  variant="ghost" 
-                  size="icon" 
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
                   className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10 self-end"
                   onClick={() => {
                     const newList = formData.consumables.filter((_, i) => i !== index);
@@ -443,19 +443,19 @@ export function EditorBasicInfo({ formData, setFormData, techniques, categories,
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label>URL da Imagem - Padrão de Ouro</Label>
-              <Input 
-                value={formData.gold_standard_image_url} 
-                onChange={(e) => setFormData({...formData, gold_standard_image_url: e.target.value})} 
-                placeholder="https://exemplo.com/imagem-ouro.jpg" 
+              <Input
+                value={formData.gold_standard_image_url}
+                onChange={(e) => setFormData({...formData, gold_standard_image_url: e.target.value})}
+                placeholder="https://exemplo.com/imagem-ouro.jpg"
               />
               <p className="text-[10px] text-muted-foreground">URL da imagem que representa o resultado perfeito.</p>
             </div>
             <div className="space-y-2">
               <Label>URL da Imagem - Padrão de Falha</Label>
-              <Input 
-                value={formData.failure_standard_image_url} 
-                onChange={(e) => setFormData({...formData, failure_standard_image_url: e.target.value})} 
-                placeholder="https://exemplo.com/imagem-falha.jpg" 
+              <Input
+                value={formData.failure_standard_image_url}
+                onChange={(e) => setFormData({...formData, failure_standard_image_url: e.target.value})}
+                placeholder="https://exemplo.com/imagem-falha.jpg"
               />
               <p className="text-[10px] text-muted-foreground">URL da imagem que representa erros a serem evitados.</p>
             </div>
@@ -469,42 +469,42 @@ export function EditorBasicInfo({ formData, setFormData, techniques, categories,
             <AlertTriangle className="h-4 w-4 text-amber-500" />
             Orientações de Produção e Qualidade
           </h3>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label>GAP / Distanciamento</Label>
-              <Input 
-                value={formData.gap_specifications} 
-                onChange={(e) => setFormData({...formData, gap_specifications: e.target.value})} 
-                placeholder="Ex: GAP de 3mm entre tela e substrato" 
+              <Input
+                value={formData.gap_specifications}
+                onChange={(e) => setFormData({...formData, gap_specifications: e.target.value})}
+                placeholder="Ex: GAP de 3mm entre tela e substrato"
               />
             </div>
             <div className="space-y-2">
               <Label>Requisitos de Qualidade (Resumo)</Label>
-              <Input 
-                value={formData.quality_requirements} 
-                onChange={(e) => setFormData({...formData, quality_requirements: e.target.value})} 
-                placeholder="Ex: Sem rebarbas, brilho uniforme" 
+              <Input
+                value={formData.quality_requirements}
+                onChange={(e) => setFormData({...formData, quality_requirements: e.target.value})}
+                placeholder="Ex: Sem rebarbas, brilho uniforme"
               />
             </div>
           </div>
 
           <div className="space-y-2">
             <Label>Desafios e Pontos de Atenção</Label>
-            <Textarea 
-              value={formData.challenges_notes} 
-              onChange={(e) => setFormData({...formData, challenges_notes: e.target.value})} 
-              placeholder="Descreva os principais desafios técnicos deste trabalho..." 
+            <Textarea
+              value={formData.challenges_notes}
+              onChange={(e) => setFormData({...formData, challenges_notes: e.target.value})}
+              placeholder="Descreva os principais desafios técnicos deste trabalho..."
               rows={2}
             />
           </div>
 
           <div className="space-y-2">
             <Label className="text-rose-600">Cenários de Falha (O que evitar)</Label>
-            <Textarea 
-              value={formData.failure_scenarios} 
-              onChange={(e) => setFormData({...formData, failure_scenarios: e.target.value})} 
-              placeholder="Descreva situações que levam à perda de peças..." 
+            <Textarea
+              value={formData.failure_scenarios}
+              onChange={(e) => setFormData({...formData, failure_scenarios: e.target.value})}
+              placeholder="Descreva situações que levam à perda de peças..."
               rows={2}
             />
           </div>

@@ -115,11 +115,11 @@ export function useSPCAlerts(onlyActive = true) {
         .from('spc_alerts')
         .select(`*, parameter:spc_control_parameters(name, product_name)`)
         .order('created_at', { ascending: false });
-      
+
       if (onlyActive) {
         query = query.is('resolved_at', null);
       }
-      
+
       const { data, error } = await query.limit(100);
       if (error) throw error;
       return data as SPCAlert[];
@@ -348,7 +348,7 @@ export function calculateCapabilityIndices(
 
   const means = measurements.map(m => m.mean_value);
   const overallMean = means.reduce((a, b) => a + b, 0) / means.length;
-  
+
   // Calculate Pooled Standard Deviation or sample std dev
   const variance = means.reduce((sum, v) => sum + Math.pow(v - overallMean, 2), 0) / (means.length - 1);
   const stdDev = Math.sqrt(variance);
@@ -372,11 +372,11 @@ export function calculateCapabilityIndices(
  */
 export function detectRunRules(measurements: SPCMeasurement[], ucl: number, lcl: number, mean: number) {
   if (measurements.length < 10) return [];
-  
+
   const violations = [];
   const points = measurements.slice(0, 10).reverse(); // Check last 10 points
   const values = points.map(p => p.mean_value);
-  
+
   // Rule 1: Point outside control limits (already handled in db trigger usually, but good to have)
   if (values[values.length - 1] > ucl || values[values.length - 1] < lcl) {
     violations.push({ rule: 'Fora do Limite', description: 'Ponto fora dos limites de controle (UCL/LCL)' });

@@ -30,13 +30,13 @@ export const useSchedulingConflicts = () => {
     if (!jobs || !machines) return [];
 
     const detectedConflicts: SchedulingConflict[] = [];
-    
+
     // Filter only scheduled jobs (not finished, cancelled, etc.)
     const activeStatuses = ['scheduled', 'ready', 'production'];
-    const activeJobs = jobs.filter(job => 
-      activeStatuses.includes(job.status) && 
-      job.scheduled_date && 
-      job.start_time && 
+    const activeJobs = jobs.filter(job =>
+      activeStatuses.includes(job.status) &&
+      job.scheduled_date &&
+      job.start_time &&
       job.end_time &&
       job.machine_id
     );
@@ -45,7 +45,7 @@ export const useSchedulingConflicts = () => {
     // Use a separator that won't appear in UUIDs or dates
     const KEY_SEPARATOR = '|||';
     const jobsByMachineAndDate = new Map<string, typeof activeJobs>();
-    
+
     activeJobs.forEach(job => {
       const key = `${job.machine_id}${KEY_SEPARATOR}${job.scheduled_date}`;
       const existing = jobsByMachineAndDate.get(key) || [];
@@ -60,9 +60,9 @@ export const useSchedulingConflicts = () => {
       // Safely split using our separator
       const parts = key.split(KEY_SEPARATOR);
       if (parts.length !== 2) return;
-      
+
       const [machineId, dateStr] = parts;
-      
+
       const machine = machines.find(m => m.id === machineId);
       if (!machine) return;
 
@@ -116,7 +116,6 @@ export const useSchedulingConflicts = () => {
               }
             }
           } catch (e) {
-            if (import.meta.env.DEV) console.error('Error parsing times for conflict detection:', e);
           }
         }
       }
@@ -124,7 +123,7 @@ export const useSchedulingConflicts = () => {
       if (conflictingJobs.length > 0) {
         // Check if any job is in production - that's more severe
         const hasProductionConflict = conflictingJobs.some(j => j.status === 'production');
-        
+
         detectedConflicts.push({
           id: `conflict-${machineId}-${dateStr}`,
           machineId: machineId,

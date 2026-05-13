@@ -5,12 +5,12 @@ import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { 
-  Shield, 
-  Users, 
-  Settings, 
-  Factory, 
-  FileText, 
+import {
+  Shield,
+  Users,
+  Settings,
+  Factory,
+  FileText,
   Cog,
   Lock,
   Loader2,
@@ -18,27 +18,27 @@ import {
   CheckCircle2,
   XCircle
 } from 'lucide-react';
-import { 
-  useRolePermissions, 
-  AVAILABLE_PERMISSIONS, 
-  RESOURCE_LABELS 
+import {
+  useRolePermissions,
+  AVAILABLE_PERMISSIONS,
+  RESOURCE_LABELS
 } from '@/hooks/useRolePermissions';
 import { useAuth, AppRole } from '@/contexts/AuthContext';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 const ROLE_CONFIG: Record<AppRole, { label: string; color: string; icon: React.ReactNode }> = {
-  coordinator: { 
-    label: 'Coordenador', 
+  coordinator: {
+    label: 'Coordenador',
     color: 'bg-purple-500/10 text-purple-500 border-purple-500/20',
     icon: <Shield className="h-4 w-4" />
   },
-  manager: { 
-    label: 'Gerente', 
+  manager: {
+    label: 'Gerente',
     color: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
     icon: <Users className="h-4 w-4" />
   },
-  operator: { 
-    label: 'Operador', 
+  operator: {
+    label: 'Operador',
     color: 'bg-green-500/10 text-green-500 border-green-500/20',
     icon: <Factory className="h-4 w-4" />
   },
@@ -57,15 +57,15 @@ const RESOURCE_ICONS: Record<string, React.ReactNode> = {
 
 export function PermissionManager() {
   const { isCoordinator } = useAuth();
-  const { 
-    permissions, 
-    isLoading, 
-    isSaving, 
-    fetchPermissions, 
-    togglePermission, 
-    hasPermission 
+  const {
+    permissions,
+    isLoading,
+    isSaving,
+    fetchPermissions,
+    togglePermission,
+    hasPermission
   } = useRolePermissions();
-  
+
   const [selectedRole, setSelectedRole] = useState<AppRole>('coordinator');
   const [togglingPerm, setTogglingPerm] = useState<string | null>(null);
 
@@ -81,7 +81,7 @@ export function PermissionManager() {
 
   const handleToggle = async (permission: string) => {
     if (!isCoordinator) return;
-    
+
     setTogglingPerm(permission);
     const perm = permission as import('@/hooks/useRolePermissions').Permission;
     await togglePermission(selectedRole, perm);
@@ -168,9 +168,9 @@ export function PermissionManager() {
                       {perms.map((perm) => {
                         const isGranted = hasPermission(role, perm.permission);
                         const isToggling = togglingPerm === perm.permission;
-                        
+
                         return (
-                          <div 
+                          <div
                             key={perm.permission}
                             className="flex items-center justify-between px-4 py-3 hover:bg-muted/20 transition-colors"
                           >
@@ -200,7 +200,7 @@ export function PermissionManager() {
                                   </div>
                                 </TooltipTrigger>
                                 <TooltipContent>
-                                  {isCoordinator 
+                                  {isCoordinator
                                     ? `Clique para ${isGranted ? 'revogar' : 'conceder'} permissão`
                                     : 'Apenas coordenadores podem alterar permissões'
                                   }

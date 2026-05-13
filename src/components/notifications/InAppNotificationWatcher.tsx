@@ -31,7 +31,7 @@ export function InAppNotificationWatcher() {
       }, (payload) => {
         const newJob = payload.new as Record<string, unknown>;
         const oldJob = payload.old as Record<string, unknown>;
-        
+
         if (oldJob.status === newJob.status) return;
         const key = `job-${newJob.id}-${newJob.status}`;
         if (notifiedRef.current.has(key)) return;

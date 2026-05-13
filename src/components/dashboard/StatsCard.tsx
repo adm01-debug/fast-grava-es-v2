@@ -56,12 +56,12 @@ const variantStyles = {
   },
 };
 
-function StatsCardComponent({ 
-  title, 
-  value, 
-  subtitle, 
-  icon: Icon, 
-  trend, 
+function StatsCardComponent({
+  title,
+  value,
+  subtitle,
+  icon: Icon,
+  trend,
   variant = 'primary',
   className,
   compact = false

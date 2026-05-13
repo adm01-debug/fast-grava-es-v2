@@ -36,14 +36,14 @@ export function AlertsWidget() {
     const entityThresholdsStored = localStorage.getItem('entity-thresholds');
     let thresholds = { bottleneckRiskMinutes: 480 };
     let entityThresholds: Record<string, number> = {};
-    
+
     if (storedThresholds) {
       try {
         const parsed = JSON.parse(storedThresholds);
         if (parsed.bottleneckRiskMinutes) thresholds.bottleneckRiskMinutes = parsed.bottleneckRiskMinutes;
       } catch (e) {}
     }
-    
+
     if (entityThresholdsStored) {
       try {
         entityThresholds = JSON.parse(entityThresholdsStored);
@@ -105,7 +105,7 @@ export function AlertsWidget() {
         });
       }
     });
-    
+
     // Stuck Jobs Alerts
     stuckJobs.forEach(stuck => {
       alertList.push({
@@ -116,7 +116,7 @@ export function AlertsWidget() {
         time: now
       });
     });
-    
+
     // Low OEE Alerts
     if (oeeData) {
       oeeData.byMachine.filter(m => m.oee < 50 && m.totalJobs > 0).forEach(m => {

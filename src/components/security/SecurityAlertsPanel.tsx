@@ -5,12 +5,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { 
-  Bell, 
-  AlertTriangle, 
-  Smartphone, 
-  Shield, 
-  CheckCircle2, 
+import {
+  Bell,
+  AlertTriangle,
+  Smartphone,
+  Shield,
+  CheckCircle2,
   Clock,
   Loader2,
   BellOff
@@ -48,7 +48,6 @@ export function SecurityAlertsPanel() {
         .limit(20);
 
       if (error) {
-        if (import.meta.env.DEV) console.error('Error fetching alerts:', error);
         throw error;
       }
 
@@ -60,9 +59,9 @@ export function SecurityAlertsPanel() {
   const acknowledgeAlert = async (alertId: string) => {
     const { error } = await supabase
       .from('new_device_alerts')
-      .update({ 
-        acknowledged: true, 
-        acknowledged_at: new Date().toISOString() 
+      .update({
+        acknowledged: true,
+        acknowledged_at: new Date().toISOString()
       })
       .eq('id', alertId);
 
@@ -114,8 +113,8 @@ export function SecurityAlertsPanel() {
           <ScrollArea className="h-[400px] pr-4">
             <div className="space-y-3">
               {alerts.map((alert) => (
-                <AlertCard 
-                  key={alert.id} 
+                <AlertCard
+                  key={alert.id}
                   alert={alert}
                   onAcknowledge={() => acknowledgeAlert(alert.id)}
                 />
@@ -128,10 +127,10 @@ export function SecurityAlertsPanel() {
   );
 }
 
-function AlertCard({ 
-  alert, 
-  onAcknowledge 
-}: { 
+function AlertCard({
+  alert,
+  onAcknowledge
+}: {
   alert: NewDeviceAlert;
   onAcknowledge: () => void;
 }) {
@@ -164,7 +163,7 @@ function AlertCard({
               <Badge variant="destructive" className="text-xs">Novo</Badge>
             )}
           </div>
-          
+
           <p className="text-sm text-muted-foreground mt-1">
             Um login foi realizado a partir de um dispositivo não reconhecido.
           </p>
@@ -189,9 +188,9 @@ function AlertCard({
 
           {alert.acknowledged && alert.acknowledged_at && (
             <p className="text-xs text-green-600 mt-2">
-              Reconhecido {formatDistanceToNow(new Date(alert.acknowledged_at), { 
-                addSuffix: true, 
-                locale: ptBR 
+              Reconhecido {formatDistanceToNow(new Date(alert.acknowledged_at), {
+                addSuffix: true,
+                locale: ptBR
               })}
             </p>
           )}

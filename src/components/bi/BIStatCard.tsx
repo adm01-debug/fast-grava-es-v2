@@ -24,7 +24,7 @@ export function BIStatCard({ title, value, subtitle, icon: Icon, trend, trendVal
   const trendColor = trend === 'up' ? 'text-success' : trend === 'down' ? 'text-primary' : 'text-muted-foreground';
 
   return (
-    <Card 
+    <Card
       onClick={onClick}
       className={cn(
         variantStyles[variant],

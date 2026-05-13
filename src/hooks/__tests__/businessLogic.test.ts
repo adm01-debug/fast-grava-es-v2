@@ -28,7 +28,7 @@ function isValidTechnique(technique: any): boolean {
   );
 }
 
-function sanitizeNumber(value: unknown, fallback = 0): number {
+function sanitizeNumber(value: any, fallback = 0): number {
   if (typeof value !== 'number' || !Number.isFinite(value)) return fallback;
   return Math.max(0, value);
 }
@@ -468,7 +468,7 @@ describe('Scheduling Conflict Detection', () => {
 // ===== PRIORITY ORDERING =====
 describe('Priority Ordering', () => {
   const priorityOrder: Record<string, number> = { urgent: 0, high: 1, medium: 2, low: 3 };
-  
+
   function sortByPriority(priorities: string[]): string[] {
     return [...priorities].sort((a, b) => (priorityOrder[a] ?? 2) - (priorityOrder[b] ?? 2));
   }

@@ -7,7 +7,7 @@ interface ExecutionSuppliesProps {
 
 export function ExecutionSupplies({ suppliesUsed, technicalSheet }: ExecutionSuppliesProps) {
   const hasSupplies = (technicalSheet?.consumables && technicalSheet.consumables.length > 0) || (suppliesUsed && suppliesUsed.length > 0);
-  
+
   if (!hasSupplies) return null;
 
   return (

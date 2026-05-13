@@ -62,26 +62,26 @@ export function DateRangePicker({
             locale={ptBR}
           />
           <div className="p-3 border-t border-border flex flex-wrap gap-2">
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="text-[10px] h-7" 
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-[10px] h-7"
               onClick={() => setDate({ from: new Date(), to: new Date() })}
             >
               Hoje
             </Button>
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="text-[10px] h-7" 
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-[10px] h-7"
               onClick={() => setDate({ from: subDays(new Date(), 7), to: new Date() })}
             >
               7 dias
             </Button>
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="text-[10px] h-7" 
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-[10px] h-7"
               onClick={() => setDate({ from: subDays(new Date(), 30), to: new Date() })}
             >
               30 dias

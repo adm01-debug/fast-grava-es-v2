@@ -1,10 +1,10 @@
 import { useOfflineSync } from '@/hooks/useOfflineSync';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { 
-  WifiOff, 
-  RefreshCw, 
-  CloudOff, 
+import {
+  WifiOff,
+  RefreshCw,
+  CloudOff,
   Cloud,
   AlertCircle,
   CheckCircle2,
@@ -22,14 +22,14 @@ interface OfflineStatusBannerProps {
   className?: string;
 }
 
-export function OfflineStatusBanner({ 
+export function OfflineStatusBanner({
   showWhenOnline = false,
-  className 
+  className
 }: OfflineStatusBannerProps) {
-  const { 
-    isOnline, 
-    isSyncing, 
-    pendingActionsCount, 
+  const {
+    isOnline,
+    isSyncing,
+    pendingActionsCount,
     lastSyncedAt,
     forceSync,
     cacheData,
@@ -46,7 +46,6 @@ export function OfflineStatusBanner({
         const info = await offlineStorage.getStorageInfo();
         setStorageInfo(info);
       } catch (error) {
-        if (import.meta.env.DEV) console.error('Failed to load storage info:', error);
       }
     };
     loadStorageInfo();
@@ -77,8 +76,8 @@ export function OfflineStatusBanner({
   return (
     <div className={cn(
       'rounded-lg border p-4 space-y-3',
-      isOnline 
-        ? 'bg-card border-border' 
+      isOnline
+        ? 'bg-card border-border'
         : 'bg-amber-500/5 border-amber-500/30',
       className
     )}>
@@ -99,7 +98,7 @@ export function OfflineStatusBanner({
               <CloudOff className="w-5 h-5 text-amber-500" />
             )}
           </div>
-          
+
           <div>
             <div className="flex items-center gap-2">
               <h3 className={cn(
@@ -112,7 +111,7 @@ export function OfflineStatusBanner({
                 <WifiOff className="w-4 h-4 text-amber-500" />
               )}
             </div>
-            
+
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               {pendingActionsCount > 0 ? (
                 <span className="flex items-center gap-1 text-amber-500">
@@ -125,14 +124,14 @@ export function OfflineStatusBanner({
                   Sincronizado
                 </span>
               )}
-              
+
               {lastSyncedAt && (
                 <>
                   <span>•</span>
                   <span>
-                    Última sync: {formatDistanceToNow(lastSyncedAt, { 
-                      addSuffix: true, 
-                      locale: ptBR 
+                    Última sync: {formatDistanceToNow(lastSyncedAt, {
+                      addSuffix: true,
+                      locale: ptBR
                     })}
                   </span>
                 </>
@@ -154,7 +153,7 @@ export function OfflineStatusBanner({
               {isCaching ? 'Baixando...' : 'Baixar dados'}
             </Button>
           )}
-          
+
           {isOnline && pendingActionsCount > 0 && (
             <Button
               size="sm"
@@ -181,8 +180,8 @@ export function OfflineStatusBanner({
               {formatBytes(storageInfo.usage)} / {formatBytes(storageInfo.quota)}
             </span>
           </div>
-          <Progress 
-            value={storageInfo.percentUsed} 
+          <Progress
+            value={storageInfo.percentUsed}
             className="h-1.5"
           />
         </div>
@@ -192,7 +191,7 @@ export function OfflineStatusBanner({
       {!isOnline && (
         <div className="pt-2 border-t border-amber-500/20">
           <p className="text-sm text-muted-foreground">
-            💡 <strong>Dica:</strong> Você pode continuar trabalhando normalmente. 
+            💡 <strong>Dica:</strong> Você pode continuar trabalhando normalmente.
             Todas as alterações serão sincronizadas automaticamente quando a conexão for restaurada.
           </p>
         </div>

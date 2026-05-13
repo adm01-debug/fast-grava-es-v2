@@ -167,14 +167,14 @@ export function useAddCountryRule() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ 
-      countryCode, 
-      countryName, 
+    mutationFn: async ({
+      countryCode,
+      countryName,
       isAllowed,
-      reason 
-    }: { 
-      countryCode: string; 
-      countryName: string; 
+      reason
+    }: {
+      countryCode: string;
+      countryName: string;
       isAllowed: boolean;
       reason?: string;
     }) => {
@@ -240,7 +240,7 @@ export function useToggleCountryRule() {
     mutationFn: async ({ ruleId, isAllowed }: { ruleId: string; isAllowed: boolean }) => {
       const { error } = await supabase
         .from('geo_blocking_rules')
-        .update({ 
+        .update({
           is_blocked: !isAllowed,
           block_type: isAllowed ? 'allow' : 'block'
         })

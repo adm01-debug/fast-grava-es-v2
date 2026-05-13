@@ -5,6 +5,6 @@ export function EfficiencyNotificationProvider({ children }: { children: React.R
   // Initialize both notification systems
   useNotifications();
   useEfficiencyNotifications();
-  
+
   return <>{children}</>;
 }

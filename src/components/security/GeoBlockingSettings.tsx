@@ -11,26 +11,26 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  Globe, 
-  Plus, 
-  Trash2, 
-  Shield, 
-  ShieldCheck, 
+import {
+  Globe,
+  Plus,
+  Trash2,
+  Shield,
+  ShieldCheck,
   ShieldX,
   AlertTriangle,
   History,
   Settings,
   MapPin
 } from 'lucide-react';
-import { 
-  useGeoBlockingSettings, 
-  useGeoBlockingRules, 
+import {
+  useGeoBlockingSettings,
+  useGeoBlockingRules,
   useGeoBlockingLogs,
   useUpdateGeoSettings,
   useAddCountryRule,
   useRemoveCountryRule,
-  COMMON_COUNTRIES 
+  COMMON_COUNTRIES
 } from '@/hooks/useGeoBlocking';
 import { useAuth } from '@/contexts/AuthContext';
 import { format } from 'date-fns';
@@ -51,7 +51,7 @@ export function GeoBlockingSettings() {
 
   // Países permitidos (no modo allowlist, is_blocked=false significa permitido)
   const allowedCountries = rules?.filter(r => !r.is_blocked || r.block_type === 'allow') || [];
-  
+
   // Países disponíveis para adicionar
   const availableCountries = COMMON_COUNTRIES.filter(
     c => !rules?.some(r => r.country_code === c.code)
@@ -236,7 +236,7 @@ export function GeoBlockingSettings() {
                   <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>
                     Cancelar
                   </Button>
-                  <Button 
+                  <Button
                     onClick={handleAddCountry}
                     disabled={!selectedCountry || addCountry.isPending}
                   >
@@ -252,7 +252,7 @@ export function GeoBlockingSettings() {
             <Alert>
               <AlertTriangle className="h-4 w-4" />
               <AlertDescription>
-                Nenhum país adicionado à lista de permitidos. 
+                Nenhum país adicionado à lista de permitidos.
                 {settings?.is_enabled && ' Se o bloqueio estiver ativo, nenhum acesso será permitido.'}
               </AlertDescription>
             </Alert>
@@ -262,7 +262,7 @@ export function GeoBlockingSettings() {
                 <Alert className="mb-4 border-green-500/50 bg-green-500/10">
                   <ShieldCheck className="h-4 w-4 text-green-500" />
                   <AlertDescription className="text-green-700 dark:text-green-300">
-                    <strong>Whitelist ativa:</strong> Apenas os {allowedCountries.length} país(es) 
+                    <strong>Whitelist ativa:</strong> Apenas os {allowedCountries.length} país(es)
                     listado(s) abaixo têm permissão de acesso.
                   </AlertDescription>
                 </Alert>
@@ -358,7 +358,7 @@ export function GeoBlockingSettings() {
                         )}
                       </TableCell>
                       <TableCell>
-                        <Badge 
+                        <Badge
                           variant={log.action === 'blocked' ? 'destructive' : 'default'}
                         >
                           {log.action === 'blocked' ? 'Bloqueado' : log.action}

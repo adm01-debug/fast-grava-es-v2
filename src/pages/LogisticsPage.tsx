@@ -6,13 +6,13 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  Truck, 
-  Package, 
-  Search, 
-  Plus, 
-  Clock, 
-  CheckCircle2, 
+import {
+  Truck,
+  Package,
+  Search,
+  Plus,
+  Clock,
+  CheckCircle2,
   AlertTriangle,
   ArrowRight,
   ExternalLink,
@@ -31,11 +31,11 @@ import { useLogistics, DbShipment } from '@/hooks/useLogistics';
 import { format } from 'date-fns';
 import { ptBR, enUS, es } from 'date-fns/locale';
 import { Skeleton } from '@/components/ui/skeleton';
-import { 
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger 
+  DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
 import { CreateShipmentModal } from '@/components/logistics/CreateShipmentModal';
 import { EditShipmentModal } from '@/components/logistics/EditShipmentModal';
@@ -64,7 +64,7 @@ export default function LogisticsPage() {
 
   const isLoading = shipments.isLoading;
 
-  const filteredShipments = shipments.data?.filter(s => 
+  const filteredShipments = shipments.data?.filter(s =>
     s.tracking_code?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     s.job?.order_number?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     s.job?.client?.toLowerCase().includes(searchTerm.toLowerCase())
@@ -88,7 +88,7 @@ export default function LogisticsPage() {
     <MainLayout>
       <div className="p-4 sm:p-6 lg:p-8 space-y-6 animate-fade-in">
         <Breadcrumbs />
-        
+
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
             <h1 className="text-2xl sm:text-3xl font-display font-bold flex items-center gap-2">
@@ -110,10 +110,10 @@ export default function LogisticsPage() {
         </div>
 
         <CreateShipmentModal open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen} />
-        <EditShipmentModal 
-          shipment={editingShipment} 
-          open={!!editingShipment} 
-          onOpenChange={(open) => !open && setEditingShipment(null)} 
+        <EditShipmentModal
+          shipment={editingShipment}
+          open={!!editingShipment}
+          onOpenChange={(open) => !open && setEditingShipment(null)}
         />
 
         {/* Stats Cards */}
@@ -133,7 +133,7 @@ export default function LogisticsPage() {
               </div>
             </CardContent>
           </Card>
-          
+
           <Card className="glass-card hover-lift">
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
@@ -205,8 +205,8 @@ export default function LogisticsPage() {
               <CardContent className="p-4 flex flex-col md:flex-row gap-4">
                 <div className="relative flex-1">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input 
-                    placeholder="Buscar por OS, cliente ou rastreio..." 
+                  <Input
+                    placeholder="Buscar por OS, cliente ou rastreio..."
                     className="pl-10 bg-background"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
@@ -279,9 +279,9 @@ export default function LogisticsPage() {
                             </p>
                           </div>
                           <div className="flex items-center gap-2">
-                            <Button 
-                              variant="ghost" 
-                              size="icon" 
+                            <Button
+                              variant="ghost"
+                              size="icon"
                               className="group-hover:text-primary"
                               onClick={() => window.open(`/track?q=${shipment.job?.order_number}`, '_blank')}
                             >
@@ -313,12 +313,12 @@ export default function LogisticsPage() {
                       </div>
                       {/* Progress bar */}
                       <div className="h-1 bg-muted">
-                        <div 
+                        <div
                           className={cn(
                             "h-full transition-all duration-1000",
-                            shipment.status === 'delivered' ? 'w-full bg-green-500' : 
+                            shipment.status === 'delivered' ? 'w-full bg-green-500' :
                             shipment.status === 'in_transit' ? 'w-1/2 bg-blue-500' : 'w-5 bg-yellow-500'
-                          )} 
+                          )}
                         />
                       </div>
                     </Card>

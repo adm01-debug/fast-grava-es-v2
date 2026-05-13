@@ -60,7 +60,7 @@ export function OperatorLeaderboard() {
         ) : (
           <div className="space-y-3">
             {rankings.map((ranking, index) => (
-              <div 
+              <div
                 key={ranking.operatorId}
                 className={cn(
                   "flex items-center gap-4 p-4 rounded-xl border border-border/50 transition-all animate-fade-in",

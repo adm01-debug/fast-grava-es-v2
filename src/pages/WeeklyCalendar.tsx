@@ -91,9 +91,9 @@ function DraggableJob({ job, isConflict, onClick, statusColorsSolid, statusLabel
               </div>
             )}
             <div className="pt-2 border-t border-border/40 mt-2 flex justify-end">
-              <JobQuickActions 
-                jobId={job.id} 
-                currentStatus={job.status as JobStatus} 
+              <JobQuickActions
+                jobId={job.id}
+                currentStatus={job.status as JobStatus}
                 onStatusChange={(id, status) => updateStatus({ jobId: id, status })}
               />
             </div>
@@ -136,7 +136,7 @@ export default function WeeklyCalendar() {
   const { mutate: updateStatus } = useUpdateJobStatus();
   const { conflicts } = useSchedulingConflicts();
   const { prefs, setZoom, setGroupBy, toggleOverlay } = useCalendarPreferences('weekly');
-  
+
   useCalendarHotkeys({ selectedDate, onDateChange: setSelectedDate, scope: 'weekly' });
   const {
     filters,

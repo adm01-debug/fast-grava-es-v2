@@ -29,7 +29,7 @@ export function TPMNotificationLogs() {
     }
   });
 
-  const filteredLogs = logs?.filter(log => 
+  const filteredLogs = logs?.filter(log =>
     log.machine?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     log.machine?.code?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     log.severity.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -127,8 +127,8 @@ export function TPMNotificationLogs() {
                   </TableCell>
                   <TableCell>
                     <Badge variant={
-                      log.severity === 'critical' || log.severity === 'critical_approved' ? 'destructive' : 
-                      log.severity === 'overdue' || log.severity === 'correction' ? 'secondary' : 
+                      log.severity === 'critical' || log.severity === 'critical_approved' ? 'destructive' :
+                      log.severity === 'overdue' || log.severity === 'correction' ? 'secondary' :
                       log.severity === 'due' ? 'outline' : 'secondary'
                     } className="capitalize">
                       {log.severity.replace('_', ' ')}

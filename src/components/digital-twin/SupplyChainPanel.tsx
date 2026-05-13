@@ -15,7 +15,7 @@ export function SupplyChainPanel() {
         .select('*')
         .order('current_stock', { ascending: true })
         .limit(3);
-      
+
       setItems(data || []);
       setIsLoading(false);
     };

@@ -91,31 +91,31 @@ export function CreateShipmentModal({ open, onOpenChange }: CreateShipmentModalP
 
           <div className="space-y-2">
             <Label htmlFor="tracking">{t('logistics.trackingCode')} ({t('common.optional')})</Label>
-            <Input 
-              id="tracking" 
-              value={trackingCode} 
-              onChange={(e) => setTrackingCode(e.target.value)} 
+            <Input
+              id="tracking"
+              value={trackingCode}
+              onChange={(e) => setTrackingCode(e.target.value)}
               placeholder="Ex: LOG-123456"
             />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="dest">{t('logistics.destination')}</Label>
-            <Input 
-              id="dest" 
-              value={destination} 
-              onChange={(e) => setDestination(e.target.value)} 
+            <Input
+              id="dest"
+              value={destination}
+              onChange={(e) => setDestination(e.target.value)}
             />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="freight">{t('logistics.freightCost')}</Label>
-            <Input 
-              id="freight" 
+            <Input
+              id="freight"
               type="number"
               step="0.01"
-              value={freightCost} 
-              onChange={(e) => setFreightCost(e.target.value)} 
+              value={freightCost}
+              onChange={(e) => setFreightCost(e.target.value)}
               placeholder="0.00"
             />
           </div>

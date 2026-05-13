@@ -97,12 +97,12 @@ export function WarehouseMap({ items }: WarehouseMapProps) {
                 {levels.map(level => {
                   const locationItems = getItemsAt(area, level);
                   const isLow = locationItems.some(item => item.current_stock <= item.min_stock_level);
-                  
+
                   return (
                     <TooltipProvider key={`${area}${level}`}>
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <div 
+                          <div
                             onClick={() => handleTransferInit(`${area}${level}`)}
                             className={cn(
                             "h-12 border rounded-md flex items-center justify-center transition-all cursor-pointer relative group active:scale-95",
@@ -184,9 +184,9 @@ export function WarehouseMap({ items }: WarehouseMapProps) {
               <Label className="text-[11px] uppercase font-black text-muted-foreground">Nova Localização (Ex: A2, B4)</Label>
               <div className="relative">
                 <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-primary/50" />
-                <Input 
-                  placeholder="Ex: A2" 
-                  value={newLocation} 
+                <Input
+                  placeholder="Ex: A2"
+                  value={newLocation}
                   onChange={(e) => setNewLocation(e.target.value.toUpperCase())}
                   maxLength={2}
                   className="pl-10 font-black tracking-widest text-lg"
@@ -196,8 +196,8 @@ export function WarehouseMap({ items }: WarehouseMapProps) {
             </div>
           </div>
           <DialogFooter>
-            <Button 
-              className="w-full gap-2 font-black uppercase text-xs h-11" 
+            <Button
+              className="w-full gap-2 font-black uppercase text-xs h-11"
               onClick={handleTransferExecute}
               disabled={isApiProcessing || !newLocation}
             >

@@ -71,7 +71,7 @@ export function ABCCostPoolsCard({ costPools, totalAllocated, onUpdateBudget }: 
         <div className="space-y-3">
           {costPools.map((pool) => {
             const percentage = totalBudget > 0 ? (Number(pool.monthly_budget) / totalBudget) * 100 : 0;
-            
+
             return (
               <div key={pool.id} className="p-3 rounded-lg border border-border/50 bg-card/50">
                 <div className="flex items-center justify-between mb-2">
@@ -82,7 +82,7 @@ export function ABCCostPoolsCard({ costPools, totalAllocated, onUpdateBudget }: 
                       {poolTypeLabels[pool.pool_type] || pool.pool_type}
                     </span>
                   </div>
-                  
+
                   {editingId === pool.id ? (
                     <div className="flex items-center gap-2">
                       <Input
@@ -106,7 +106,7 @@ export function ABCCostPoolsCard({ costPools, totalAllocated, onUpdateBudget }: 
                     </div>
                   )}
                 </div>
-                
+
                 <Progress value={percentage} className="h-2" />
                 <p className="text-xs text-muted-foreground mt-1">
                   {percentage.toFixed(1)}% do orçamento total

@@ -70,11 +70,11 @@ export function useDashboardLayout() {
             });
             setWidgets(merged);
           } catch (e) {
-            console.error("Error parsing local layout", e);
+
           }
         }
       } catch (err) {
-        console.error("Error loading layout:", err);
+
       }
     };
 
@@ -93,15 +93,15 @@ export function useDashboardLayout() {
     try {
       const { error } = await supabase
         .from('dashboard_layouts')
-        .upsert({ 
-          user_id: user.id, 
+        .upsert({
+          user_id: user.id,
           layout: newWidgets as any,
           updated_at: new Date().toISOString()
         } as any, { onConflict: 'user_id' });
 
       if (error) throw error;
     } catch (error) {
-      console.error("Error saving layout to DB:", error);
+
       toast.error("Erro ao salvar layout na nuvem. Mantido localmente.");
     } finally {
       setTimeout(() => setIsSaving(false), 500);
@@ -132,7 +132,7 @@ export function useDashboardLayout() {
 
   // Toggle widget visibility
   const toggleWidgetVisibility = useCallback((widgetId: string) => {
-    const newWidgets = widgets.map(w => 
+    const newWidgets = widgets.map(w =>
       w.id === widgetId ? { ...w, visible: !w.visible } : w
     );
     saveLayout(newWidgets);

@@ -136,14 +136,14 @@ export function useBlockIP() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ 
-      ipAddress, 
-      reason, 
+    mutationFn: async ({
+      ipAddress,
+      reason,
       isPermanent = false,
-      expiresAt 
-    }: { 
-      ipAddress: string; 
-      reason: string; 
+      expiresAt
+    }: {
+      ipAddress: string;
+      reason: string;
       isPermanent?: boolean;
       expiresAt?: string;
     }) => {
@@ -177,7 +177,7 @@ export function useUnblockIP() {
   return useMutation({
     mutationFn: async (id: string) => {
       const { data: { user } } = await supabase.auth.getUser();
-      
+
       const { error } = await supabase
         .from('blocked_ips')
         .update({
@@ -202,9 +202,9 @@ export function useUpdateRateLimitSetting() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ 
-      id, 
-      ...updates 
+    mutationFn: async ({
+      id,
+      ...updates
     }: Partial<RateLimitSetting> & { id: string }) => {
       const { error } = await supabase
         .from('rate_limit_settings')
@@ -232,7 +232,7 @@ export function useCreateRateLimitSetting() {
   return useMutation({
     mutationFn: async (setting: Omit<RateLimitSetting, 'id' | 'created_at' | 'updated_at' | 'created_by'>) => {
       const { data: { user } } = await supabase.auth.getUser();
-      
+
       const { data, error } = await supabase
         .from('rate_limit_settings')
         .insert({

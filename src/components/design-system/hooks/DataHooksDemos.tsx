@@ -17,11 +17,11 @@ export const UseSchedulingDataDemo = () => {
     setTimeout(() => {
       setState({
         isLoading: false,
-        data: { 
-          jobs: Math.floor(Math.random() * 50) + 30, 
-          pending: Math.floor(Math.random() * 15) + 5, 
-          inProgress: Math.floor(Math.random() * 10) + 3, 
-          completed: Math.floor(Math.random() * 30) + 15 
+        data: {
+          jobs: Math.floor(Math.random() * 50) + 30,
+          pending: Math.floor(Math.random() * 15) + 5,
+          inProgress: Math.floor(Math.random() * 10) + 3,
+          completed: Math.floor(Math.random() * 30) + 15
         },
       });
     }, 1000);

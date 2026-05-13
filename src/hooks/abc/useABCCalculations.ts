@@ -20,7 +20,7 @@ export function useABCCalculations({ costPools, jobCosts, jobs, techniques }: Us
 
     const costs = jobCosts.filter(jc => jc.job_id === jobId);
     const totalCost = costs.reduce((sum, c) => sum + Number(c.total_cost), 0);
-    
+
     const costByPool = costPools.map(pool => {
       const poolCosts = costs.filter(c => c.cost_pool_id === pool.id);
       const amount = poolCosts.reduce((sum, c) => sum + Number(c.total_cost), 0);
@@ -51,7 +51,7 @@ export function useABCCalculations({ costPools, jobCosts, jobs, techniques }: Us
       const techniqueJobs = jobs.filter(j => j.technique_id === technique.id);
       const techniqueJobIds = techniqueJobs.map(j => j.id);
       const techniqueCosts = jobCosts.filter(jc => techniqueJobIds.includes(jc.job_id));
-      
+
       const totalCost = techniqueCosts.reduce((sum, c) => sum + Number(c.total_cost), 0);
       const totalQuantity = techniqueJobs.reduce((sum, j) => sum + (j.produced_quantity ?? j.quantity ?? 0), 0);
 

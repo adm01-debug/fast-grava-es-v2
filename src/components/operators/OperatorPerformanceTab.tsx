@@ -1,15 +1,15 @@
 import { useOperatorEvolution } from '@/hooks/useOperatorEvolution';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { 
-  LineChart, 
-  Line, 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
+import {
+  LineChart,
+  Line,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
   ResponsiveContainer,
   Legend,
   AreaChart,
@@ -23,7 +23,7 @@ interface OperatorPerformanceTabProps {
 
 export function OperatorPerformanceTab({ operatorId }: OperatorPerformanceTabProps) {
   const { evolutionData, isLoading } = useOperatorEvolution(30);
-  
+
   const operatorData = evolutionData.find(d => d.operatorId === operatorId);
 
   if (isLoading) {
@@ -117,24 +117,24 @@ export function OperatorPerformanceTab({ operatorId }: OperatorPerformanceTabPro
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
-                <XAxis 
-                  dataKey="dateLabel" 
-                  fontSize={10} 
-                  axisLine={false} 
+                <XAxis
+                  dataKey="dateLabel"
+                  fontSize={10}
+                  axisLine={false}
                   tickLine={false}
                   interval={Math.floor(operatorData.dailyData.length / 7)}
                 />
                 <YAxis fontSize={10} axisLine={false} tickLine={false} domain={[0, 100]} />
-                <Tooltip 
+                <Tooltip
                   contentStyle={{ backgroundColor: '#1f2937', border: 'none', borderRadius: '8px', fontSize: '12px' }}
                 />
-                <Area 
-                  type="monotone" 
-                  dataKey="efficiencyScore" 
+                <Area
+                  type="monotone"
+                  dataKey="efficiencyScore"
                   name="Eficiência (%)"
-                  stroke="#3b82f6" 
-                  fillOpacity={1} 
-                  fill="url(#colorEff)" 
+                  stroke="#3b82f6"
+                  fillOpacity={1}
+                  fill="url(#colorEff)"
                 />
               </AreaChart>
             </ResponsiveContainer>
@@ -156,7 +156,7 @@ export function OperatorPerformanceTab({ operatorId }: OperatorPerformanceTabPro
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
                   <XAxis dataKey="dateLabel" fontSize={10} axisLine={false} tickLine={false} interval={7} />
                   <YAxis fontSize={10} axisLine={false} tickLine={false} />
-                  <Tooltip 
+                  <Tooltip
                     contentStyle={{ backgroundColor: '#1f2937', border: 'none', borderRadius: '8px', fontSize: '12px' }}
                   />
                   <Bar dataKey="piecesProduced" name="Produzidas" fill="#10b981" stackId="a" radius={[0, 0, 0, 0]} />
@@ -181,14 +181,14 @@ export function OperatorPerformanceTab({ operatorId }: OperatorPerformanceTabPro
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
                   <XAxis dataKey="dateLabel" fontSize={10} axisLine={false} tickLine={false} interval={7} />
                   <YAxis fontSize={10} axisLine={false} tickLine={false} />
-                  <Tooltip 
+                  <Tooltip
                     contentStyle={{ backgroundColor: '#1f2937', border: 'none', borderRadius: '8px', fontSize: '12px' }}
                   />
-                  <Line 
-                    type="monotone" 
-                    dataKey="lossRate" 
+                  <Line
+                    type="monotone"
+                    dataKey="lossRate"
                     name="Taxa de Perda (%)"
-                    stroke="#ef4444" 
+                    stroke="#ef4444"
                     strokeWidth={2}
                     dot={false}
                   />

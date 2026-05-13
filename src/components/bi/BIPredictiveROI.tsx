@@ -14,14 +14,14 @@ export function BIPredictiveROI({ biMetrics }: BIPredictiveROIProps) {
     const totalLost = biMetrics.periodLostPieces || 0;
     const avgPieceValue = 15.5; // Custom business logic value
     const currentLossCost = totalLost * avgPieceValue;
-    
+
     // Target reduction: 50% reduction in losses
     const potentialSaving = currentLossCost * 0.5;
-    
+
     // OEE improvement projection
     const currentOEE = 100 - biMetrics.periodLossRate;
     const targetOEE = Math.min(98, currentOEE + 2);
-    
+
     return {
       currentLossCost,
       potentialSaving,
@@ -34,7 +34,7 @@ export function BIPredictiveROI({ biMetrics }: BIPredictiveROIProps) {
   return (
     <Card className="bg-black/40 border-primary/20 backdrop-blur-xl group hover:border-primary/40 transition-all duration-500 overflow-hidden relative h-full">
       <div className="absolute -top-12 -right-12 w-48 h-48 bg-primary/5 rounded-full blur-3xl group-hover:bg-primary/10 transition-all" />
-      
+
       <CardHeader className="pb-2">
         <CardTitle className="flex items-center gap-3">
           <div className="p-2 rounded-lg bg-primary/10 text-primary">
@@ -46,7 +46,7 @@ export function BIPredictiveROI({ biMetrics }: BIPredictiveROIProps) {
           </div>
         </CardTitle>
       </CardHeader>
-      
+
       <CardContent className="space-y-6 pt-4">
         <div className="grid grid-cols-2 gap-4">
           <div className="p-3 rounded-xl bg-white/5 border border-white/10">
@@ -77,7 +77,7 @@ export function BIPredictiveROI({ biMetrics }: BIPredictiveROIProps) {
               </div>
             </div>
             <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
-              <motion.div 
+              <motion.div
                 className="h-full bg-gradient-to-r from-primary to-emerald-500 shadow-[0_0_10px_rgba(14,165,233,0.5)]"
                 initial={{ width: 0 }}
                 animate={{ width: `${calculations.targetOEE}%` }}

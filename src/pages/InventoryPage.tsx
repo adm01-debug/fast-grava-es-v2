@@ -7,12 +7,12 @@ import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/componen
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { 
-  Package, 
-  Plus, 
-  ArrowUpRight, 
-  ArrowDownRight, 
-  History, 
+import {
+  Package,
+  Plus,
+  ArrowUpRight,
+  ArrowDownRight,
+  History,
   AlertTriangle,
   Search,
   Filter,
@@ -72,7 +72,7 @@ export default function InventoryPage() {
 
   const filteredItems = useMemo(() => {
     return items.filter(item => {
-      const matchesSearch = item.name.toLowerCase().includes(debouncedSearch.toLowerCase()) || 
+      const matchesSearch = item.name.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
                            item.specification?.toLowerCase().includes(debouncedSearch.toLowerCase());
       const matchesCategory = selectedCategory === 'all' || item.category === selectedCategory;
       return matchesSearch && matchesCategory;
@@ -136,9 +136,9 @@ export default function InventoryPage() {
             <div className="flex flex-col sm:flex-row gap-4">
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input 
-                  placeholder="Buscar material por nome, especificação ou localização..." 
-                  className="pl-10" 
+                <Input
+                  placeholder="Buscar material por nome, especificação ou localização..."
+                  className="pl-10"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
@@ -162,9 +162,9 @@ export default function InventoryPage() {
               {isLoading ? (
                 [1,2,3].map(i => <Skeleton key={i} className="h-48 w-full rounded-xl" />)
               ) : filteredItems.map((item) => (
-                <InventoryCard 
-                  key={item.id} 
-                  item={item} 
+                <InventoryCard
+                  key={item.id}
+                  item={item}
                   onMovement={recordMovement}
                   isSelected={selectedItems.has(item.id)}
                   onSelect={(id: string, checked: boolean) => {
@@ -217,7 +217,7 @@ export default function InventoryPage() {
         </Tabs>
       </div>
 
-      <BatchQRLabelModal 
+      <BatchQRLabelModal
         open={isBatchQRModalOpen}
         onOpenChange={setIsBatchQRModalOpen}
         items={items.filter(i => selectedItems.has(i.id))}
@@ -233,13 +233,13 @@ export default function InventoryPage() {
   );
 }
 
-function InventoryCard({ 
-  item, 
-  onMovement, 
-  isSelected, 
-  onSelect 
-}: { 
-  item: InventoryItem, 
+function InventoryCard({
+  item,
+  onMovement,
+  isSelected,
+  onSelect
+}: {
+  item: InventoryItem,
   onMovement: any,
   isSelected: boolean,
   onSelect: (id: string, checked: boolean) => void
@@ -278,9 +278,9 @@ function InventoryCard({
     )}>
       <CardHeader className="pb-3 border-b border-border/50 bg-muted/20 relative">
         <div className="absolute top-3 left-3 z-10" onClick={(e) => e.stopPropagation()}>
-          <Checkbox 
-            checked={isSelected} 
-            onCheckedChange={(checked) => onSelect(item.id, !!checked)} 
+          <Checkbox
+            checked={isSelected}
+            onCheckedChange={(checked) => onSelect(item.id, !!checked)}
             className="h-4 w-4 bg-background data-[state=checked]:bg-primary"
           />
         </div>
@@ -343,11 +343,11 @@ function InventoryCard({
         </div>
 
         <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
-          <div 
+          <div
             className={cn(
               "h-full transition-all",
               isLowStock ? "bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]" : "bg-primary shadow-glow-primary"
-            )} 
+            )}
             style={{ width: `${Math.min(100, (item.current_stock / (item.min_stock_level * 3)) * 100)}%` }}
           />
         </div>
@@ -393,10 +393,10 @@ function InventoryCard({
         </div>
       </CardContent>
 
-      <QRLabelModal 
-        open={isQRModalOpen} 
-        onOpenChange={setIsQRModalOpen} 
-        item={item} 
+      <QRLabelModal
+        open={isQRModalOpen}
+        onOpenChange={setIsQRModalOpen}
+        item={item}
       />
     </Card>
   );
@@ -530,9 +530,9 @@ function InventoryHistoryTable() {
                   {m.profiles?.display_name || 'Sistema'}
                 </td>
                 <td className="p-4 text-right">
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
+                  <Button
+                    variant="ghost"
+                    size="icon"
                     className="h-8 w-8 text-muted-foreground hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
                     onClick={() => setRollbackId(m.id)}
                   >
@@ -672,7 +672,7 @@ function AIPredictionValidationModal({ open, onOpenChange, items, movements }: {
           </DialogTitle>
           <DialogDescription>Monitoramento de acurácia e calibração do modelo de estoque preditivo.</DialogDescription>
         </DialogHeader>
-        
+
         <div className="space-y-6 py-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Card className="bg-primary/5 border-primary/20">
@@ -717,7 +717,7 @@ function AIPredictionValidationModal({ open, onOpenChange, items, movements }: {
                     {isCalculatingAI ? "Processando..." : "Recalcular Acurácia"}
                   </Button>
                </div>
-               
+
                <div className="space-y-2">
                   <div className="flex justify-between text-[10px] font-bold uppercase text-muted-foreground">
                     <span>Acurácia de Predição</span>

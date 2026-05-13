@@ -214,7 +214,7 @@ describe('SkeletonLibrary', () => {
           <div>Content</div>
         </ProgressiveSkeleton>
       );
-      
+
       act(() => { vi.advanceTimersByTime(10); });
       expect(queryByText('Loading...')).toBeInTheDocument();
       vi.useRealTimers();
@@ -227,7 +227,7 @@ describe('SkeletonLibrary', () => {
           <div>Content</div>
         </ProgressiveSkeleton>
       );
-      
+
       act(() => { vi.advanceTimersByTime(10); });
       expect(queryByText('Content')).toBeInTheDocument();
       vi.useRealTimers();

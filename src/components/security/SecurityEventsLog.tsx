@@ -4,39 +4,39 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { 
-  Shield, 
-  Loader2, 
-  AlertTriangle, 
-  AlertCircle, 
-  Info, 
-  XCircle 
+import {
+  Shield,
+  Loader2,
+  AlertTriangle,
+  AlertCircle,
+  Info,
+  XCircle
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
-const severityConfig: Record<string, { 
-  icon: typeof AlertTriangle; 
+const severityConfig: Record<string, {
+  icon: typeof AlertTriangle;
   variant: 'default' | 'secondary' | 'destructive' | 'outline';
   className: string;
 }> = {
-  info: { 
-    icon: Info, 
+  info: {
+    icon: Info,
     variant: 'secondary',
     className: 'text-blue-500'
   },
-  warning: { 
-    icon: AlertTriangle, 
+  warning: {
+    icon: AlertTriangle,
     variant: 'outline',
     className: 'text-amber-500'
   },
-  error: { 
-    icon: AlertCircle, 
+  error: {
+    icon: AlertCircle,
     variant: 'destructive',
     className: 'text-red-500'
   },
-  critical: { 
-    icon: XCircle, 
+  critical: {
+    icon: XCircle,
     variant: 'destructive',
     className: 'text-red-700'
   },
@@ -105,7 +105,7 @@ export function SecurityEventsLog() {
                 {allEvents.map((event) => {
                   const config = severityConfig[event.severity] || severityConfig.info;
                   const Icon = config.icon;
-                  
+
                   return (
                     <TableRow key={event.id}>
                       <TableCell>
@@ -123,8 +123,8 @@ export function SecurityEventsLog() {
                         {event.ip_address || '-'}
                       </TableCell>
                       <TableCell className="max-w-[200px] truncate text-sm text-muted-foreground">
-                        {event.details?.message || 
-                         event.details?.reason || 
+                        {event.details?.message ||
+                         event.details?.reason ||
                          JSON.stringify(event.details).slice(0, 50)}
                       </TableCell>
                       <TableCell className="text-sm text-muted-foreground">

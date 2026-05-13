@@ -52,9 +52,9 @@ export default function SPCDashboard() {
   const runRuleViolations = useMemo(() => {
     if (!measurements || !selectedParameter || !selectedParameter.upper_control_limit || !selectedParameter.lower_control_limit) return [];
     return detectRunRules(
-      measurements, 
-      selectedParameter.upper_control_limit, 
-      selectedParameter.lower_control_limit, 
+      measurements,
+      selectedParameter.upper_control_limit,
+      selectedParameter.lower_control_limit,
       selectedParameter.target_value
     );
   }, [measurements, selectedParameter]);
@@ -94,16 +94,16 @@ export default function SPCDashboard() {
       await exportSPCReport(selectedParameter, measurements, capability);
       toast.success('Relatório SPC gerado com sucesso!');
     } catch (err) {
-      console.error('Export failed:', err);
+
       toast.error('Erro ao gerar relatório PDF.');
     }
   };
 
   const handleGenerateAIPlan = () => {
     if (!selectedParameter || !capability) return;
-    
+
     const context = `Parâmetro: ${selectedParameter.name}, Cp: ${capability.cp.toFixed(2)}, Cpk: ${capability.cpk.toFixed(2)}, Estabilidade: ${capability.performance}. Detectamos as seguintes violações: ${runRuleViolations.map(v => v.rule).join(', ')}.`;
-    
+
     toast.info('IA Analisando dados...', {
       description: 'Consultando o Assistente Técnico para gerar plano de ação.'
     });
@@ -151,7 +151,7 @@ export default function SPCDashboard() {
               <p className="text-xs text-muted-foreground uppercase font-bold tracking-widest">Itens Monitorados</p>
             </CardContent>
           </Card>
-          
+
           <Card className="glass-card border-green-500/20 bg-green-500/5">
             <CardContent className="pt-6">
               <div className="flex items-center justify-between mb-2">
@@ -205,13 +205,13 @@ export default function SPCDashboard() {
             </CardContent>
           </Card>
           <div className="lg:col-span-2 space-y-6">
-            <SPCControlChart 
-              selectedParameter={selectedParameter} 
-              chartData={chartData} 
-              capability={capability} 
-              onCalculateLimits={() => selectedParameter && calculateControlLimits.mutate(selectedParameter.id)} 
-              onShowMeasurement={() => setShowMeasurementModal(true)} 
-              isCalculating={calculateControlLimits.isPending} 
+            <SPCControlChart
+              selectedParameter={selectedParameter}
+              chartData={chartData}
+              capability={capability}
+              onCalculateLimits={() => selectedParameter && calculateControlLimits.mutate(selectedParameter.id)}
+              onShowMeasurement={() => setShowMeasurementModal(true)}
+              isCalculating={calculateControlLimits.isPending}
             />
 
             {selectedParameter && runRuleViolations.length > 0 && (
@@ -245,7 +245,7 @@ export default function SPCDashboard() {
             {selectedParameter && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <QualityHistogram parameter={selectedParameter} measurements={measurements || []} />
-                
+
                 <Card className="glass-card border-primary/20 bg-primary/5 overflow-hidden">
                   <CardHeader className="py-3 bg-primary/10 border-b border-primary/20">
                     <CardTitle className="text-sm font-black uppercase tracking-widest text-primary flex items-center gap-2">
@@ -279,10 +279,10 @@ export default function SPCDashboard() {
                         </div>
                       </div>
                     </div>
-                    
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
+
+                    <Button
+                      variant="outline"
+                      size="sm"
                       className="w-full text-[10px] font-bold uppercase h-8 border-primary/30 hover:bg-primary/10"
                       onClick={handleGenerateAIPlan}
                     >

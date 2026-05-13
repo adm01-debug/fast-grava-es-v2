@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 export function AutonomousEventLog() {
   const [logs, setLogs] = useState<any[]>([]);
-  
+
   const events = [
     { type: 'optimization', message: 'Re-otimizando cronograma: Detectado atraso de 15m na Máquina 2.', icon: RefreshCw, color: 'text-blue-500', bg: 'bg-blue-500/10' },
     { type: 'maintenance', message: 'Ordem de serviço automática gerada para Máquina 4 (Fator de Risco > 85%).', icon: Brain, color: 'text-purple-500', bg: 'bg-purple-500/10' },
@@ -21,10 +21,10 @@ export function AutonomousEventLog() {
   useEffect(() => {
     // Add initial logs with staggered timestamps
     const now = new Date();
-    setLogs(events.slice(0, 4).map((e, i) => ({ 
-      ...e, 
-      id: i, 
-      time: new Date(now.getTime() - i * 120000) 
+    setLogs(events.slice(0, 4).map((e, i) => ({
+      ...e,
+      id: i,
+      time: new Date(now.getTime() - i * 120000)
     })));
 
     const interval = setInterval(() => {
@@ -58,8 +58,8 @@ export function AutonomousEventLog() {
         <div className="divide-y divide-primary/10">
           <AnimatePresence initial={false}>
             {logs.map((log) => (
-              <motion.div 
-                key={log.id} 
+              <motion.div
+                key={log.id}
                 initial={{ opacity: 0, x: -20, height: 0 }}
                 animate={{ opacity: 1, x: 0, height: 'auto' }}
                 exit={{ opacity: 0, scale: 0.95, height: 0 }}
@@ -86,7 +86,7 @@ export function AutonomousEventLog() {
                     {log.message}
                   </p>
                 </div>
-                
+
                 {/* Decorative hover elements */}
                 <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-primary transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300" />
               </motion.div>
@@ -105,7 +105,7 @@ export function AutonomousEventLog() {
            </span>
          </div>
          <div className="h-1 w-full bg-primary/10 rounded-full overflow-hidden">
-            <motion.div 
+            <motion.div
               className="h-full bg-primary"
               animate={{ width: ["20%", "60%", "45%", "90%", "30%"] }}
               transition={{ duration: 10, repeat: Infinity, ease: "linear" }}

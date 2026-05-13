@@ -176,27 +176,27 @@ export function TypographySection() {
                     <h6 className="text-base font-medium">Heading 6 - Label</h6>
                     <p className="text-xs text-muted-foreground">text-base font-medium</p>
                   </div>
-                  
+
                   {/* Code Examples for Headings */}
                   <div className="space-y-3 pt-4 border-t border-border">
                     <h5 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Exemplos de Código</h5>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      <CodeBlock 
-                        code={'<h1 className="text-4xl font-bold tracking-tight">\n  Título Principal\n</h1>'} 
+                      <CodeBlock
+                        code={'<h1 className="text-4xl font-bold tracking-tight">\n  Título Principal\n</h1>'}
                         label="Heading 1"
                       />
-                      <CodeBlock 
-                        code={'<h2 className="text-3xl font-semibold tracking-tight">\n  Título de Seção\n</h2>'} 
+                      <CodeBlock
+                        code={'<h2 className="text-3xl font-semibold tracking-tight">\n  Título de Seção\n</h2>'}
                         label="Heading 2"
                       />
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      <CodeBlock 
-                        code={'<h3 className="text-2xl font-semibold">\n  Subseção\n</h3>'} 
+                      <CodeBlock
+                        code={'<h3 className="text-2xl font-semibold">\n  Subseção\n</h3>'}
                         label="Heading 3"
                       />
-                      <CodeBlock 
-                        code={'<h4 className="text-xl font-medium">\n  Card Title\n</h4>'} 
+                      <CodeBlock
+                        code={'<h4 className="text-xl font-medium">\n  Card Title\n</h4>'}
                         label="Heading 4"
                       />
                     </div>
@@ -242,7 +242,7 @@ export function TypographySection() {
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="space-y-4">
                     <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Efeitos Especiais</h4>
                     <div className="space-y-3">
@@ -300,22 +300,22 @@ export function TypographySection() {
                       </pre>
                     </div>
                   </div>
-                  
+
                   {/* Code Examples */}
                   <div className="space-y-3 pt-4 border-t border-border">
                     <h5 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Exemplos de Código</h5>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      <CodeBlock 
-                        code={'<code className="px-1.5 py-0.5 rounded bg-muted text-primary text-sm font-mono">\n  .classe-exemplo\n</code>'} 
+                      <CodeBlock
+                        code={'<code className="px-1.5 py-0.5 rounded bg-muted text-primary text-sm font-mono">\n  .classe-exemplo\n</code>'}
                         label="Inline Code"
                       />
-                      <CodeBlock 
-                        code={'<pre className="p-4 rounded-lg bg-card border text-sm font-mono overflow-x-auto">\n  {codeString}\n</pre>'} 
+                      <CodeBlock
+                        code={'<pre className="p-4 rounded-lg bg-card border text-sm font-mono overflow-x-auto">\n  {codeString}\n</pre>'}
                         label="Code Block"
                       />
                     </div>
-                    <CodeBlock 
-                      code={'<p className="text-2xl font-bold gradient-text">\n  Texto com Gradiente\n</p>'} 
+                    <CodeBlock
+                      code={'<p className="text-2xl font-bold gradient-text">\n  Texto com Gradiente\n</p>'}
                       label="Gradient Text"
                     />
                   </div>

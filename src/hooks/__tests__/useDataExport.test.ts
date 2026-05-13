@@ -41,7 +41,7 @@ describe('useDataExport', () => {
     // 1. Success
     const mockData = [{ id: '1', name: 'Job 1' }];
     const mockOrder = vi.fn().mockResolvedValue({ data: mockData, error: null });
-    
+
     (supabase.from as any).mockReturnValue({
       select: vi.fn().mockReturnThis(),
       order: mockOrder,
@@ -76,7 +76,7 @@ describe('useDataExport', () => {
     });
 
     expect(toast.error).toHaveBeenCalledWith(expect.stringContaining('Connection failed'));
-    
+
     createSpy.mockRestore();
     appendSpy.mockRestore();
     removeSpy.mockRestore();

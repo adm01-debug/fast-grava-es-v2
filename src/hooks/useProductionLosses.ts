@@ -21,7 +21,7 @@ export function useProductionLosses(jobId?: string) {
       if (jobId) {
         query = query.eq('job_id', jobId);
       }
-      
+
       const { data, error } = await query.order('created_at', { ascending: false });
       if (error) throw error;
       return data;
@@ -35,13 +35,13 @@ export function useProductionLosses(jobId?: string) {
         .insert(data)
         .select()
         .single();
-      
+
       if (error) throw error;
 
       // Update total lost_pieces on the job
       const { data: job } = await supabase.from('jobs').select('lost_pieces').eq('id', data.job_id).single();
       const currentLosses = job?.lost_pieces || 0;
-      
+
       await supabase
         .from('jobs')
         .update({ lost_pieces: currentLosses + data.quantity })

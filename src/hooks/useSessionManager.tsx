@@ -30,10 +30,9 @@ export function useSessionManager() {
 
     try {
       const { data, error } = await supabase.auth.refreshSession();
-      
+
       if (error) {
-        if (import.meta.env.DEV) console.error('Session refresh error:', error);
-        
+
         // If refresh fails and session is inactive, sign out
         if (!isSessionActive()) {
           await signOut();
@@ -45,7 +44,6 @@ export function useSessionManager() {
         await signOut();
       }
     } catch (error) {
-      if (import.meta.env.DEV) console.error('Session refresh error:', error);
     }
   }, [user, isSessionActive, signOut]);
 
@@ -54,7 +52,7 @@ export function useSessionManager() {
     if (!user) return;
 
     const events = ['mousedown', 'keydown', 'scroll', 'touchstart'];
-    
+
     events.forEach(event => {
       window.addEventListener(event, updateActivity, { passive: true });
     });
@@ -97,7 +95,7 @@ export function useSessionManager() {
       if (document.visibilityState === 'visible') {
         // When tab becomes visible, check if session needs refresh
         const { data: { session } } = await supabase.auth.getSession();
-        
+
         if (!session) {
           await signOut();
           return;
@@ -109,7 +107,7 @@ export function useSessionManager() {
           const expiryDate = new Date(expiresAt * 1000);
           const now = new Date();
           const diffHours = (expiryDate.getTime() - now.getTime()) / (1000 * 60 * 60);
-          
+
           if (diffHours < 1) {
             await refreshSession();
           }

@@ -44,7 +44,7 @@ export function AdjustmentParameters({
             <Label className="flex items-center gap-1 text-xs">
               {Icon && <Icon className="h-3 w-3" />} {labels[param]}
             </Label>
-            <Input 
+            <Input
               placeholder={recommended || "Valor"}
               value={(adjustmentParams as any)[param]}
               onChange={(e) => setAdjustmentParams((prev: any) => ({ ...prev, [param]: e.target.value }))}

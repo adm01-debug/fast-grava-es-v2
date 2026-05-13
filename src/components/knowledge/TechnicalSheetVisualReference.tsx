@@ -17,7 +17,7 @@ export function VisualReference({ goldStandardUrl, failureStandardUrl }: VisualR
           </CardTitle>
         </CardHeader>
         <CardContent className="px-4 pb-4">
-          <div 
+          <div
             className="aspect-video bg-muted rounded flex flex-col items-center justify-center border-2 border-dashed border-emerald-500/20 group cursor-pointer hover:bg-emerald-500/5 transition-colors overflow-hidden"
             onClick={() => goldStandardUrl && window.open(goldStandardUrl, '_blank')}
           >
@@ -42,7 +42,7 @@ export function VisualReference({ goldStandardUrl, failureStandardUrl }: VisualR
           </CardTitle>
         </CardHeader>
         <CardContent className="px-4 pb-4">
-          <div 
+          <div
             className="aspect-video bg-muted rounded flex flex-col items-center justify-center border-2 border-dashed border-rose-500/20 group cursor-pointer hover:bg-rose-500/5 transition-colors overflow-hidden"
             onClick={() => failureStandardUrl && window.open(failureStandardUrl, '_blank')}
           >

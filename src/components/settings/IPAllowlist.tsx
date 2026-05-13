@@ -289,7 +289,7 @@ export function IPAllowlist() {
                     <TableCell>
                       <Switch
                         checked={entry.is_active}
-                        onCheckedChange={(checked) => 
+                        onCheckedChange={(checked) =>
                           toggleIPMutation.mutate({ id: entry.id, isActive: checked })
                         }
                       />

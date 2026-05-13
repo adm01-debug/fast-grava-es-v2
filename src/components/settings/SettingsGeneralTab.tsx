@@ -101,7 +101,7 @@ export function SettingsGeneralTab({ settings, onSettingChange }: SettingsGenera
             />
           </div>
 
-          <Button 
+          <Button
             className="w-full bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20"
             onClick={saveThresholds}
           >

@@ -34,7 +34,7 @@ export class SectionErrorBoundary extends Component<Props, State> {
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
     if (import.meta.env.DEV) {
-      console.error(`[SectionErrorBoundary:${this.props.section ?? 'unknown'}]`, error, errorInfo);
+
     }
   }
 

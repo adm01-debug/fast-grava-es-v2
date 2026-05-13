@@ -82,7 +82,6 @@ export function QuickChat({ channel = 'general', compact = false }: QuickChatPro
       });
       setNewMessage('');
     } catch (err) {
-      if (import.meta.env.DEV) console.error('Error sending message:', err);
     } finally {
       setIsSending(false);
     }
@@ -124,8 +123,8 @@ export function QuickChat({ channel = 'general', compact = false }: QuickChatPro
                 <div key={msg.id} className={cn('flex flex-col', isMe ? 'items-end' : 'items-start')}>
                   <div className={cn(
                     'max-w-[80%] px-3 py-2 rounded-lg text-sm',
-                    isMe 
-                      ? 'bg-primary text-primary-foreground rounded-br-none' 
+                    isMe
+                      ? 'bg-primary text-primary-foreground rounded-br-none'
                       : 'bg-muted rounded-bl-none'
                   )}>
                     {!isMe && (
@@ -152,9 +151,9 @@ export function QuickChat({ channel = 'general', compact = false }: QuickChatPro
             className="text-sm"
             disabled={!user}
           />
-          <Button 
-            size="icon" 
-            onClick={handleSend} 
+          <Button
+            size="icon"
+            onClick={handleSend}
             disabled={!newMessage.trim() || isSending}
             className="shrink-0"
           >

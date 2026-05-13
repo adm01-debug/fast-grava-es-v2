@@ -48,7 +48,7 @@ export function useScrollDirection({
   useEffect(() => {
     lastScrollY.current = window.scrollY;
     window.addEventListener('scroll', onScroll, { passive: true });
-    
+
     return () => {
       window.removeEventListener('scroll', onScroll);
     };

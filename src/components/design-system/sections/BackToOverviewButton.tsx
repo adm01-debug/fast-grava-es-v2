@@ -3,9 +3,9 @@ import { ArrowLeft } from 'lucide-react';
 
 export function BackToOverviewButton({ onNavigate }: { onNavigate: (tabId: string) => void }) {
   return (
-    <Button 
-      variant="ghost" 
-      size="sm" 
+    <Button
+      variant="ghost"
+      size="sm"
       onClick={() => onNavigate('overview')}
       className="gap-2 text-muted-foreground hover:text-foreground"
     >
@@ -42,22 +42,22 @@ const getConfettiShapeStyle = (shape: ConfettiShape, size: number, color: string
     0 8px 12px ${color}40,
     0 12px 16px ${color}20
   `;
-  
+
   switch (shape) {
     case 'circle':
-      return { 
+      return {
         borderRadius: '50%',
         boxShadow: trailShadow,
       };
     case 'square':
-      return { 
+      return {
         borderRadius: '2px',
         boxShadow: trailShadow,
       };
     case 'rectangle':
-      return { 
-        width: size * 0.5, 
-        height: size * 1.5, 
+      return {
+        width: size * 0.5,
+        height: size * 1.5,
         borderRadius: '1px',
         boxShadow: trailShadow,
       };

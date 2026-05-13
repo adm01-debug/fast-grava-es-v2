@@ -13,7 +13,7 @@ export function MachineBulkActions({ selectedCount, onToggle, onCancel }: Machin
   if (selectedCount === 0) return null;
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, y: 50 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 50 }}
@@ -25,29 +25,29 @@ export function MachineBulkActions({ selectedCount, onToggle, onCancel }: Machin
         </Badge>
         <span className="text-sm font-bold uppercase tracking-tight">Máquinas selecionadas</span>
       </div>
-      
+
       <div className="flex items-center gap-3">
-        <Button 
-          size="sm" 
-          variant="outline" 
+        <Button
+          size="sm"
+          variant="outline"
           className="h-9 gap-2 border-success/30 text-success hover:bg-success/10 hover:text-success font-bold"
           onClick={() => onToggle(true)}
         >
           <CheckCircle2 className="h-4 w-4" />
           Ativar
         </Button>
-        <Button 
-          size="sm" 
-          variant="outline" 
+        <Button
+          size="sm"
+          variant="outline"
           className="h-9 gap-2 border-warning/30 text-warning hover:bg-warning/10 hover:text-warning font-bold"
           onClick={() => onToggle(false)}
         >
           <XCircle className="h-4 w-4" />
           Desativar
         </Button>
-        <Button 
-          size="sm" 
-          variant="ghost" 
+        <Button
+          size="sm"
+          variant="ghost"
           className="h-9 text-muted-foreground hover:text-foreground"
           onClick={onCancel}
         >

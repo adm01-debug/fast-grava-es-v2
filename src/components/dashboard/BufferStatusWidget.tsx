@@ -3,10 +3,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
-import { 
-  Package, 
-  AlertTriangle, 
-  CheckCircle2, 
+import {
+  Package,
+  AlertTriangle,
+  CheckCircle2,
   AlertCircle,
   ArrowRight,
   RefreshCw,
@@ -30,7 +30,7 @@ const BufferRow = memo(function BufferRow({ data, onPromote, isPromoting }: Buff
   const { technique, readyCount, queueCount, isHealthy, isCritical } = data;
   const progress = Math.min((readyCount / BUFFER_TARGET) * 100, 100);
   const canPromote = !isHealthy && queueCount > 0;
-  
+
   return (
     <div
       className={cn(
@@ -42,7 +42,7 @@ const BufferRow = memo(function BufferRow({ data, onPromote, isPromoting }: Buff
     >
       <div className="flex items-center justify-between mb-1.5">
         <div className="flex items-center gap-2">
-          <div 
+          <div
             className="w-2.5 h-2.5 rounded-full"
             style={{ backgroundColor: technique.color }}
           />
@@ -60,9 +60,9 @@ const BufferRow = memo(function BufferRow({ data, onPromote, isPromoting }: Buff
           </span>
         </div>
       </div>
-      
-      <Progress 
-        value={progress} 
+
+      <Progress
+        value={progress}
         className={cn(
           "h-1.5",
           isCritical && "[&>div]:bg-primary",
@@ -70,7 +70,7 @@ const BufferRow = memo(function BufferRow({ data, onPromote, isPromoting }: Buff
           isHealthy && "[&>div]:bg-green-500"
         )}
       />
-      
+
       <div className="flex items-center justify-between mt-1">
         <div>
           {isCritical && (
@@ -113,8 +113,8 @@ BufferRow.displayName = 'BufferRow';
 
 function BufferStatusWidgetComponent() {
   const { bufferByTechnique, isLoading } = useBufferStatus();
-  const { triggerPromotion, promoteForTechnique, isPromoting } = useAutoBufferPromotion({ 
-    showToasts: true 
+  const { triggerPromotion, promoteForTechnique, isPromoting } = useAutoBufferPromotion({
+    showToasts: true
   });
 
 
@@ -199,8 +199,8 @@ function BufferStatusWidgetComponent() {
           </div>
         ) : (
           bufferByTechnique.map((data) => (
-            <BufferRow 
-              key={data.technique.id} 
+            <BufferRow
+              key={data.technique.id}
               data={data}
               onPromote={() => promoteForTechnique(data.technique.id)}
               isPromoting={isPromoting}

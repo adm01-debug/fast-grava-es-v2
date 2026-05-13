@@ -16,11 +16,11 @@ interface NavigationEvent extends CustomEvent {
 export function navigateTo(path: string): void {
   // Check if we're already on this path
   if (window.location.pathname === path) return;
-  
+
   // Dispatch custom event for React Router to handle
-  const event = new CustomEvent(NAVIGATION_EVENT, { 
+  const event = new CustomEvent(NAVIGATION_EVENT, {
     detail: { path },
-    bubbles: true 
+    bubbles: true
   });
   window.dispatchEvent(event);
 }

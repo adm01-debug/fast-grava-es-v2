@@ -121,7 +121,7 @@ export const PushNotificationManager = () => {
           <div className="flex flex-col items-center gap-4 py-6">
             <BellRing className="h-12 w-12 text-primary animate-pulse" />
             <p className="text-sm text-muted-foreground text-center max-w-sm">
-              Habilite as notificações para receber alertas sobre jobs atrasados, 
+              Habilite as notificações para receber alertas sobre jobs atrasados,
               gargalos de produção e atualizações importantes.
             </p>
             <Button onClick={requestPermission} className="gap-2">
@@ -138,7 +138,7 @@ export const PushNotificationManager = () => {
           <>
             <div className="space-y-4">
               <h4 className="text-sm font-medium text-foreground">Configurações gerais</h4>
-              
+
               <div className="flex items-center justify-between p-3 rounded-lg bg-muted/20 border border-border/30">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
@@ -159,7 +159,7 @@ export const PushNotificationManager = () => {
 
             <div className="space-y-4">
               <h4 className="text-sm font-medium text-foreground">Tipos de alertas</h4>
-              
+
               <NotificationToggle
                 label="Jobs Atrasados"
                 description="Alertar quando um job ultrapassar o tempo estimado"
@@ -167,7 +167,7 @@ export const PushNotificationManager = () => {
                 onChange={() => handleToggle('delayedJobs')}
                 priority="high"
               />
-              
+
               <NotificationToggle
                 label="Buffer Baixo"
                 description="Alertar quando uma técnica tiver menos de 3 jobs prontos"
@@ -175,7 +175,7 @@ export const PushNotificationManager = () => {
                 onChange={() => handleToggle('lowBuffer')}
                 priority="high"
               />
-              
+
               <NotificationToggle
                 label="Gargalos"
                 description="Alertar quando uma técnica estiver próxima da saturação"
@@ -183,7 +183,7 @@ export const PushNotificationManager = () => {
                 onChange={() => handleToggle('bottleneck')}
                 priority="medium"
               />
-              
+
               <NotificationToggle
                 label="Mudanças de Status"
                 description="Alertar quando o status de um job mudar"
@@ -191,7 +191,7 @@ export const PushNotificationManager = () => {
                 onChange={() => handleToggle('statusChanges')}
                 priority="low"
               />
-              
+
               <NotificationToggle
                 label="Produções Finalizadas"
                 description="Alertar quando uma produção for concluída"
@@ -239,8 +239,8 @@ const NotificationToggle = ({ label, description, checked, onChange, priority }:
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
           <span className="text-sm font-medium text-foreground">{label}</span>
-          <Badge 
-            variant="outline" 
+          <Badge
+            variant="outline"
             className={cn("text-xs px-1.5 py-0", priorityColors[priority])}
           >
             {priority === 'high' ? 'Crítico' : priority === 'medium' ? 'Médio' : 'Baixo'}

@@ -47,7 +47,6 @@ export const useEfficiencyAlertHistory = (options?: { limit?: number; offset?: n
         return data as EfficiencyAlertHistory[];
       } catch (error) {
         const appError = createAppError(error, EFFICIENCY_ALERTS_CONTEXT.fetch);
-        if (import.meta.env.DEV) console.error('[useEfficiencyAlertHistory]', appError);
         throw error;
       }
     },
@@ -68,7 +67,6 @@ export const useEfficiencyAlertHistory = (options?: { limit?: number; offset?: n
         return count ?? 0;
       } catch (error) {
         const appError = createAppError(error, EFFICIENCY_ALERTS_CONTEXT.count);
-        if (import.meta.env.DEV) console.error('[useEfficiencyAlertHistory:count]', appError);
         throw error;
       }
     },
@@ -119,7 +117,6 @@ export const useEfficiencyAlertHistory = (options?: { limit?: number; offset?: n
         return data;
       } catch (error) {
         const appError = createAppError(error, EFFICIENCY_ALERTS_CONTEXT.record);
-        if (import.meta.env.DEV) console.error('[recordAlert]', appError);
         throw error;
       }
     },
@@ -130,16 +127,16 @@ export const useEfficiencyAlertHistory = (options?: { limit?: number; offset?: n
   });
 
   const resolveAlert = useMutation({
-    mutationFn: async ({ 
-      alertId, 
-      resolution_notes 
-    }: { 
-      alertId: string; 
+    mutationFn: async ({
+      alertId,
+      resolution_notes
+    }: {
+      alertId: string;
       resolution_notes?: string;
     }) => {
       try {
         const { data: { user } } = await supabase.auth.getUser();
-        
+
         const { data, error } = await supabase
           .from('efficiency_alert_history')
           .update({
@@ -155,7 +152,6 @@ export const useEfficiencyAlertHistory = (options?: { limit?: number; offset?: n
         return data;
       } catch (error) {
         const appError = createAppError(error, EFFICIENCY_ALERTS_CONTEXT.resolve);
-        if (import.meta.env.DEV) console.error('[resolveAlert]', appError);
         throw error;
       }
     },

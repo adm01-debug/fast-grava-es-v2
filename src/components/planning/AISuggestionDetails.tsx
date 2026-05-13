@@ -133,8 +133,8 @@ export function AISuggestionDetails({ isOpen, onOpenChange, suggestion }: AISugg
           </section>
 
           <div className="pt-6">
-            <Button 
-              className="w-full gap-2" 
+            <Button
+              className="w-full gap-2"
               onClick={() => onOpenChange(false)}
             >
               Entendido, Fechar Explicação

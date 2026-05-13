@@ -41,11 +41,11 @@ export function UtilizationHeatmap({ jobs, machines }: UtilizationHeatmapProps) 
         {machines.map((machine) => {
           const value = utilization[machine.id] || 0;
           const technique = getTechniqueById(machine.technique_id);
-          
+
           return (
             <Tooltip key={machine.id}>
               <TooltipTrigger asChild>
-                <div 
+                <div
                   className={cn(
                     "w-6 h-6 rounded-sm border border-border/30 flex items-center justify-center cursor-help transition-all hover:scale-110 hover:z-10 hover:border-primary/50",
                     getHeatColor(value)

@@ -3,8 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useTPM } from '@/hooks/useTPM';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { 
-  CheckCircle2, Clock, Wrench, Package, 
+import {
+  CheckCircle2, Clock, Wrench, Package,
   Camera, User, ArrowRight, AlertTriangle, Eye
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
@@ -85,7 +85,7 @@ export function MachineTPMTimeline({ machineId }: MachineTimelineProps) {
                 <p className="text-xs text-muted-foreground line-clamp-2 italic">
                   {record.notes || 'Sem observações registradas.'}
                 </p>
-                
+
                 <div className="flex flex-wrap gap-3">
                   <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
                     <Package className="h-3 w-3" />
@@ -119,7 +119,7 @@ export function MachineTPMTimeline({ machineId }: MachineTimelineProps) {
         </div>
       )}
 
-      <ExecutionDetailsModal 
+      <ExecutionDetailsModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         recordId={selectedRecordId}

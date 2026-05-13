@@ -13,15 +13,15 @@ interface KPICardProps {
   bgColor: string;
 }
 
-export function ExecutiveKPICard({ 
-  title, 
-  value, 
-  subtitle, 
-  icon: Icon, 
-  trend, 
-  trendValue, 
-  color, 
-  bgColor 
+export function ExecutiveKPICard({
+  title,
+  value,
+  subtitle,
+  icon: Icon,
+  trend,
+  trendValue,
+  color,
+  bgColor
 }: KPICardProps) {
   return (
     <Card className="glass-card hover:shadow-glow-primary transition-all duration-300 group">

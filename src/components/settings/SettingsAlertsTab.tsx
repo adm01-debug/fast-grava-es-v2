@@ -65,7 +65,7 @@ export function SettingsAlertsTab({ thresholds, onThresholdChange, onEntityThres
             <h4 className="text-sm font-bold">Configuração por Máquina ou Técnica</h4>
           </div>
           <p className="text-xs text-muted-foreground">Define limites de gargalo específicos para equipamentos ou processos específicos.</p>
-          
+
           <div className="flex flex-wrap gap-4 items-end">
             <div className="space-y-2 flex-1 min-w-[200px]">
               <Label>Entidade</Label>
@@ -88,19 +88,19 @@ export function SettingsAlertsTab({ thresholds, onThresholdChange, onEntityThres
                 </SelectContent>
               </Select>
             </div>
-            
+
             <div className="space-y-2 w-[150px]">
               <Label>Limite (min)</Label>
-              <Input 
-                type="number" 
-                value={entityValue} 
+              <Input
+                type="number"
+                value={entityValue}
                 onChange={(e) => setEntityValue(parseInt(e.target.value))}
                 disabled={!selectedEntity}
               />
             </div>
-            
-            <Button 
-              variant="secondary" 
+
+            <Button
+              variant="secondary"
               disabled={!selectedEntity}
               onClick={() => onEntityThresholdChange?.(selectedEntity, entityValue)}
             >

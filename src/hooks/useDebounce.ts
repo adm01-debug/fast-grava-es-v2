@@ -2,15 +2,15 @@ import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 
 /**
  * useDebounce - Delays updating a value until after a specified delay
- * 
+ *
  * @param value - The value to debounce
  * @param delay - Delay in milliseconds
  * @returns The debounced value
- * 
+ *
  * @example
  * const [search, setSearch] = useState('');
  * const debouncedSearch = useDebounce(search, 300);
- * 
+ *
  * useEffect(() => {
  *   // This will only run after 300ms of no changes
  *   fetchResults(debouncedSearch);
@@ -34,19 +34,19 @@ export function useDebounce<T>(value: T, delay: number): T {
 
 /**
  * useDebouncedCallback - Returns a debounced version of a callback
- * 
+ *
  * @param callback - The callback function to debounce
  * @param delay - Delay in milliseconds
  * @param deps - Dependencies array (like useCallback)
  * @returns Object with debounced callback, cancel, and flush functions
- * 
+ *
  * @example
  * const { debouncedCallback, cancel, flush } = useDebouncedCallback(
  *   (value) => saveToServer(value),
  *   500,
  *   [saveToServer]
  * );
- * 
+ *
  * // Use debouncedCallback in onChange handlers
  * <input onChange={(e) => debouncedCallback(e.target.value)} />
  */
@@ -92,13 +92,13 @@ export function useDebouncedCallback<T extends (...args: any[]) => any>(
   const debouncedCallback = useCallback(
     (...args: Parameters<T>) => {
       lastArgsRef.current = args;
-      
+
       if (timerRef.current) {
         clearTimeout(timerRef.current);
       }
-      
+
       setIsPending(true);
-      
+
       timerRef.current = setTimeout(() => {
         callbackRef.current(...args);
         timerRef.current = null;
@@ -127,11 +127,11 @@ export function useDebouncedCallback<T extends (...args: any[]) => any>(
 
 /**
  * useDebouncedState - State that debounces updates
- * 
+ *
  * @param initialValue - Initial state value
  * @param delay - Delay in milliseconds
  * @returns [debouncedValue, setValue, immediateValue]
- * 
+ *
  * @example
  * const [debouncedSearch, setSearch, immediateSearch] = useDebouncedState('', 300);
  */
@@ -147,14 +147,14 @@ export function useDebouncedState<T>(
 
 /**
  * useDebounceWithLoading - Debounce with loading state indicator
- * 
+ *
  * @param value - The value to debounce
  * @param delay - Delay in milliseconds
  * @returns Object with debounced value and loading state
- * 
+ *
  * @example
  * const { debouncedValue, isDebouncing } = useDebounceWithLoading(search, 300);
- * 
+ *
  * return (
  *   <>
  *     <input value={search} onChange={(e) => setSearch(e.target.value)} />
@@ -194,11 +194,11 @@ export function useDebounceWithLoading<T>(
 /**
  * useSearchDebounce - Specialized debounce for search inputs
  * Includes minimum character requirement and loading state
- * 
+ *
  * @param value - The search value
  * @param options - Configuration options
  * @returns Object with debounced value, loading state, and validation
- * 
+ *
  * @example
  * const { debouncedValue, isSearching, isValid } = useSearchDebounce(search, {
  *   delay: 300,
@@ -219,12 +219,12 @@ export function useSearchDebounce(
   isEmpty: boolean;
 } {
   const { delay = 300, minLength = 0, trimValue = true } = options;
-  
+
   const processedValue = useMemo(
     () => (trimValue ? value.trim() : value),
     [value, trimValue]
   );
-  
+
   const { debouncedValue, isDebouncing } = useDebounceWithLoading(
     processedValue,
     delay

@@ -43,14 +43,14 @@ export function useTPM() {
     alerts,
     machines,
     stats,
-    
+
     // Loading
     isLoading,
     fetchRecordDetails,
-    
+
     // Helpers
     getSchedulesByStatus,
-    
+
     // Mutations
     createSchedule,
     startMaintenance,

@@ -90,7 +90,6 @@ export function useABCMutations({ activities, activityRates, jobs, techniques }:
       toast.success('Custo do job calculado com sucesso');
     },
     onError: (error) => {
-      if (import.meta.env.DEV) console.error('[useABCCosts] calculateJobCost failed:', categorizeError(error), error);
       showErrorToast(error, 'Erro ao calcular custo do job', ABC_ERROR_CONTEXT.calculation);
     },
   });
@@ -100,23 +99,22 @@ export function useABCMutations({ activities, activityRates, jobs, techniques }:
     mutationFn: async () => {
       const BATCH_SIZE = 5;
       let calculated = 0;
-      
+
       for (let i = 0; i < jobs.length; i += BATCH_SIZE) {
         const batch = jobs.slice(i, i + BATCH_SIZE);
-        
+
         const results = await Promise.allSettled(
           batch.map(job => calculateJobCost.mutateAsync(job.id))
         );
-        
+
         calculated += results.filter(r => r.status === 'fulfilled').length;
-        
+
         results.forEach((result, idx) => {
           if (result.status === 'rejected') {
-            if (import.meta.env.DEV) console.warn(`Failed to calculate cost for job ${batch[idx].id}:`, result.reason);
           }
         });
       }
-      
+
       return calculated;
     },
     onSuccess: (count) => {

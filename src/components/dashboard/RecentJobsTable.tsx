@@ -21,7 +21,7 @@ interface JobRowProps {
 
 const JobRow = memo(function JobRow({ job, technique, machine, onClick, isLoading }: JobRowProps) {
   return (
-    <TableRow 
+    <TableRow
       className={`border-border/20 hover:bg-secondary/50 transition-all hover:-translate-x-0.5 cursor-pointer ${isLoading ? 'opacity-60 pointer-events-none animate-pulse' : ''}`}
       onClick={onClick}
     >
@@ -79,7 +79,7 @@ function RecentJobsTableComponent() {
   const handleStatusChange = async (jobId: string, newStatus: DbJob['status']) => {
     try {
       const updateData: Partial<DbJob> = { status: newStatus };
-      
+
       if (newStatus === 'production') {
         updateData.actual_start_time = new Date().toISOString();
       } else if (newStatus === 'finished') {
@@ -96,7 +96,6 @@ function RecentJobsTableComponent() {
       toast.success(`Status alterado para ${newStatus}`);
       refetchJobs();
     } catch (error) {
-      if (import.meta.env.DEV) console.error('Error updating job status:', error);
       toast.error('Erro ao atualizar status');
     }
   };

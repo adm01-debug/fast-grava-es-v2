@@ -25,7 +25,7 @@ export interface FuseSearchResult<T> {
 
 /**
  * Hook for fuzzy searching with Fuse.js
- * 
+ *
  * @param items - Array of items to search through
  * @param searchTerm - Search query string
  * @param options - Fuse.js options with required 'keys' field

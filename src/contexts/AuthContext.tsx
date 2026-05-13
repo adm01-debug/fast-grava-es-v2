@@ -15,15 +15,13 @@ async function checkLockout(email: string, ipAddress?: string): Promise<{
     const { data, error } = await supabase.functions.invoke('check-login-lockout', {
       body: { email, ip_address: ipAddress, action: 'check' }
     });
-    
+
     if (error) {
-      if (import.meta.env.DEV) console.error('Lockout check error:', error);
       return { locked: false };
     }
-    
+
     return data;
   } catch (err) {
-    if (import.meta.env.DEV) console.error('Lockout check failed:', err);
     return { locked: false };
   }
 }
@@ -36,21 +34,19 @@ async function recordLoginAttempt(email: string, success: boolean, ipAddress?: s
 }> {
   try {
     const { data, error } = await supabase.functions.invoke('check-login-lockout', {
-      body: { 
-        email, 
-        ip_address: ipAddress, 
-        action: success ? 'record_success' : 'record_failure' 
+      body: {
+        email,
+        ip_address: ipAddress,
+        action: success ? 'record_success' : 'record_failure'
       }
     });
-    
+
     if (error) {
-      if (import.meta.env.DEV) console.error('Record attempt error:', error);
       return {};
     }
-    
+
     return data;
   } catch (err) {
-    if (import.meta.env.DEV) console.error('Record attempt failed:', err);
     return {};
   }
 }
@@ -100,51 +96,50 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const { checkDevice } = useDeviceDetection();
 
   const fetchUserData = async (userId: string) => {
-    console.log('[AuthContext] Fetching user data for:', userId);
+
     try {
       // Fetch profile
-      console.log('[AuthContext] Fetching profile...');
+
       const { data: profileData, error: profileError } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', userId)
         .maybeSingle();
 
-      if (profileError) console.error('[AuthContext] Profile fetch error:', profileError);
       if (profileData) {
-        console.log('[AuthContext] Profile found:', profileData);
+
         setProfile(profileData as Profile);
       } else {
-        console.log('[AuthContext] No profile found');
+
       }
 
       // Fetch role using RPC
-      console.log('[AuthContext] Fetching role via RPC get_user_role...');
+
       const { data: roleData, error: roleError } = await supabase
         .rpc('get_user_role', { _user_id: userId });
 
       if (roleError) {
-        console.error('[AuthContext] Role RPC error:', roleError);
+
       }
-      
+
       if (roleData) {
-        console.log('[AuthContext] Role found:', roleData);
+
         setRole(roleData as AppRole);
       } else {
-        console.warn('[AuthContext] No role returned for user');
+
       }
     } catch (error) {
-      console.error('[AuthContext] Error in fetchUserData:', error);
+
     }
   };
 
   useEffect(() => {
-    console.log('[AuthContext] Mounting AuthProvider, checking session...');
-    
+
+
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
-        console.log('[AuthContext] Auth state change:', event, session?.user?.id);
+
         setSession(session);
         setUser(session?.user ?? null);
 
@@ -157,26 +152,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setProfile(null);
           setRole(null);
         }
-        
+
         setIsLoading(false);
       }
     );
 
     // THEN check for existing session
     supabase.auth.getSession().then(({ data: { session }, error }) => {
-      console.log('[AuthContext] Initial getSession result:', session?.user?.id, error);
+
       setSession(session);
       setUser(session?.user ?? null);
 
       if (session?.user) {
         fetchUserData(session.user.id);
       }
-      
+
       setIsLoading(false);
     });
 
     return () => {
-      console.log('[AuthContext] Unmounting AuthProvider');
+
       subscription.unsubscribe();
     };
   }, []);
@@ -184,11 +179,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signIn = async (email: string, password: string) => {
     // Get client IP for lockout tracking
     const ipAddress = await getClientIP();
-    
+
     // Check if account is locked
     const lockoutStatus = await checkLockout(email, ipAddress);
     if (lockoutStatus.locked) {
-      const lockoutError = new Error(lockoutStatus.message || 'Conta temporariamente bloqueada') as Error & { 
+      const lockoutError = new Error(lockoutStatus.message || 'Conta temporariamente bloqueada') as Error & {
         isLockout: boolean;
         remainingMinutes: number;
       };
@@ -196,16 +191,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       lockoutError.remainingMinutes = lockoutStatus.remaining_minutes || 0;
       return { error: lockoutError };
     }
-    
+
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
-    
+
     // Record login attempt result
     if (error) {
       const result = await recordLoginAttempt(email, false, ipAddress);
-      
+
       // If account is now locked, return specific error
       if (result.locked) {
         const lockoutError = new Error(result.message || `Conta bloqueada por ${result.lockout_minutes} minuto(s)`) as Error & {
@@ -216,7 +211,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         lockoutError.lockoutMinutes = result.lockout_minutes || 0;
         return { error: lockoutError };
       }
-      
+
       // Show remaining attempts warning
       if (result.attempts_remaining !== undefined && result.attempts_remaining <= 2) {
         toast.warning(`Atenção: ${result.attempts_remaining} tentativa(s) restante(s)`, {
@@ -224,13 +219,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           duration: 5000,
         });
       }
-      
+
       return { error };
     }
-    
+
     // Login successful - reset lockout
     await recordLoginAttempt(email, true, ipAddress);
-    
+
     // Se login bem-sucedido, verificar dispositivo
     if (data.user) {
       try {
@@ -239,13 +234,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           .select('full_name')
           .eq('id', data.user.id)
           .maybeSingle();
-        
+
         const result = await checkDevice(
-          data.user.id, 
+          data.user.id,
           data.user.email || email,
           profileData?.full_name || undefined
         );
-        
+
         if (result.isNewDevice) {
           toast.info('Novo dispositivo detectado', {
             description: 'Um email de alerta foi enviado para sua caixa de entrada.',
@@ -253,16 +248,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           });
         }
       } catch (deviceError) {
-        if (import.meta.env.DEV) console.error('Error checking device:', deviceError);
       }
     }
-    
+
     return { error: null };
   };
 
   const signUp = async (email: string, password: string, fullName: string) => {
     const redirectUrl = `${window.location.origin}/`;
-    
+
     const { error } = await supabase.auth.signUp({
       email,
       password,

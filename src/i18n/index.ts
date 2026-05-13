@@ -35,7 +35,7 @@ i18n
     supportedLngs: ['pt-BR', 'en-US', 'es-ES'],
     ns: ['translation'],
     defaultNS: 'translation',
-    
+
     detection: {
       order: ['localStorage', 'navigator', 'htmlTag'],
       caches: ['localStorage'],
@@ -49,7 +49,7 @@ i18n
     react: {
       useSuspense: false,
     },
-    
+
     // Debug em dev
     debug: import.meta.env.DEV,
   });

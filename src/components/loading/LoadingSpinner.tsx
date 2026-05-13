@@ -27,13 +27,13 @@ const colorMap = {
 // Simple rotating spinner
 export function Spinner({ size = 'md', variant = 'default', className }: SpinnerProps) {
   return (
-    <Loader2 
+    <Loader2
       className={cn(
         'animate-spin',
         sizeMap[size],
         colorMap[variant],
         className
-      )} 
+      )}
     />
   );
 }
@@ -107,9 +107,9 @@ interface ProgressLoaderProps {
   showPercentage?: boolean;
 }
 
-export function ProgressLoader({ 
-  progress = 0, 
-  indeterminate = false, 
+export function ProgressLoader({
+  progress = 0,
+  indeterminate = false,
   className,
   showPercentage = false,
 }: ProgressLoaderProps) {
@@ -199,11 +199,11 @@ interface ButtonLoaderProps {
   className?: string;
 }
 
-export function ButtonLoader({ 
-  isLoading, 
-  children, 
+export function ButtonLoader({
+  isLoading,
+  children,
   loadingText = 'Processando...',
-  className 
+  className
 }: ButtonLoaderProps) {
   return (
     <span className={cn('flex items-center gap-2', className)}>

@@ -57,7 +57,7 @@ export function TPMNotificationTemplates() {
         .from('tpm_notification_templates')
         .update({ status: 'published', last_published_at: new Date().toISOString() })
         .eq('id', template.id);
-      
+
       if (updateError) throw updateError;
 
       const { error: publishError } = await supabase
@@ -100,8 +100,8 @@ export function TPMNotificationTemplates() {
             )}
           </div>
           <div className="flex items-center gap-2">
-            <Button 
-              size="sm" 
+            <Button
+              size="sm"
               variant="outline"
               className="h-8"
               onClick={() => {
@@ -112,8 +112,8 @@ export function TPMNotificationTemplates() {
             >
               <Save className="h-4 w-4 mr-2" /> Salvar Rascunho
             </Button>
-            <Button 
-              size="sm" 
+            <Button
+              size="sm"
               variant="default"
               className="h-8 bg-emerald-600 hover:bg-emerald-700"
               disabled={template.status === 'published' && !updateTemplate.isPending}
@@ -123,21 +123,21 @@ export function TPMNotificationTemplates() {
             </Button>
           </div>
         </div>
-        
+
         {activeTab === 'email' && (
           <div className="space-y-2">
             <label className="text-xs font-medium text-muted-foreground">Assunto</label>
-            <Input 
+            <Input
               id={`subject-${template.id}`}
-              defaultValue={template.subject || ''} 
+              defaultValue={template.subject || ''}
               placeholder="Assunto do e-mail"
             />
           </div>
         )}
-        
+
         <div className="space-y-2">
           <label className="text-xs font-medium text-muted-foreground">Corpo do Template</label>
-          <Textarea 
+          <Textarea
             id={`body-${template.id}`}
             defaultValue={template.template_body}
             rows={4}

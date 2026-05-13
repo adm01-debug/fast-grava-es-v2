@@ -43,17 +43,17 @@ export function useABCCosts() {
     jobCosts,
     jobs,
     techniques,
-    
+
     // Loading states
     isLoading,
-    
+
     // Calculations
     getJobCostSummary,
     getTechniqueCostSummary,
     totalBudget,
     totalAllocatedCost,
     averageUnitCost,
-    
+
     // Mutations
     calculateJobCost,
     calculateAllJobsCosts,

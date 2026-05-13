@@ -12,24 +12,24 @@ interface JobQRCodeProps {
   size?: number;
 }
 
-export const JobQRCode = forwardRef<HTMLDivElement, JobQRCodeProps>(({ 
-  jobId, 
-  orderNumber, 
-  product, 
+export const JobQRCode = forwardRef<HTMLDivElement, JobQRCodeProps>(({
+  jobId,
+  orderNumber,
+  product,
   client,
-  size = 150 
+  size = 150
 }, ref) => {
   const qrValue = `${window.location.origin}/track?q=${orderNumber}`;
 
   const handleDownload = () => {
     const svg = document.getElementById(`qr-${jobId}`);
     if (!svg) return;
-    
+
     const svgData = new XMLSerializer().serializeToString(svg);
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
     const img = new Image();
-    
+
     img.onload = () => {
       canvas.width = size;
       canvas.height = size;
@@ -40,19 +40,19 @@ export const JobQRCode = forwardRef<HTMLDivElement, JobQRCodeProps>(({
       downloadLink.href = pngFile;
       downloadLink.click();
     };
-    
+
     img.src = "data:image/svg+xml;base64," + btoa(svgData);
   };
 
   const handlePrint = () => {
     const printWindow = window.open("", "_blank");
     if (!printWindow) return;
-    
+
     const svg = document.getElementById(`qr-${jobId}`);
     if (!svg) return;
-    
+
     const svgData = new XMLSerializer().serializeToString(svg);
-    
+
     printWindow.document.write(`
       <!DOCTYPE html>
       <html>

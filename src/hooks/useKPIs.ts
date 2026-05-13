@@ -28,7 +28,7 @@ function isValidTechnique(technique: DbTechnique): boolean {
   );
 }
 
-function sanitizeNumber(value: unknown, fallback = 0): number {
+function sanitizeNumber(value: any, fallback = 0): number {
   if (typeof value !== 'number' || !Number.isFinite(value)) return fallback;
   return Math.max(0, value);
 }
@@ -72,16 +72,16 @@ export interface KPIData {
   completedJobs: number;
   inProgressJobs: number;
   delayedJobs: number;
-  
+
   // Pieces
   totalPieces: number;
   completedPieces: number;
   lostPieces: number;
   lossRate: number;
-  
+
   // Occupancy
   averageOccupancy: number;
-  
+
   // By machine
   productivityByMachine: {
     machineId: string;
@@ -94,7 +94,7 @@ export interface KPIData {
     lossRate: number;
     avgDuration: number;
   }[];
-  
+
   // By technique
   productivityByTechnique: {
     techniqueId: string;
@@ -116,7 +116,7 @@ export interface KPIData {
     avgDuration: number;
     lossRate: number;
   }[];
-  
+
   // Time-based
   todayStats: {
     scheduled: number;
@@ -124,7 +124,7 @@ export interface KPIData {
     inProgress: number;
     delayed: number;
   };
-  
+
   // Historical data for charts
   performanceHistory: {
     date: string;
@@ -132,7 +132,7 @@ export interface KPIData {
     productivity: number;
     lossRate: number;
   }[];
-  
+
   // Comparisons
   comparison: KPIComparison;
 
@@ -144,7 +144,7 @@ export interface KPIData {
 
   // Targets used
   targets: KPITargets;
-  
+
   // Financial
   estimatedRevenue: number;
   costOfLosses: number;
@@ -263,8 +263,8 @@ export function useKPIs(period: KPIPeriod = 'all', customTargets?: Partial<KPITa
         totalPieces: totalPcs,
         lostPieces: lostPcs,
         lossRate: machineTotalAttempted > 0 ? (lostPcs / machineTotalAttempted) * 100 : 0,
-        avgDuration: machineJobs.length > 0 
-          ? machineJobs.reduce((sum: number, j: DbJob) => sum + sanitizeNumber(j.estimated_duration), 0) / machineJobs.length 
+        avgDuration: machineJobs.length > 0
+          ? machineJobs.reduce((sum: number, j: DbJob) => sum + sanitizeNumber(j.estimated_duration), 0) / machineJobs.length
           : 0,
       };
     }).filter((m: any) => m.jobCount > 0);
@@ -375,7 +375,7 @@ export function useKPIs(period: KPIPeriod = 'all', customTargets?: Partial<KPITa
     const globalLossRate = totalAttemptedPieces > 0 ? (lostPieces / totalAttemptedPieces) * 100 : 0;
 
     return {
-      totalJobs, completedJobs, inProgressJobs, delayedJobs, totalPieces, completedPieces, lostPieces, 
+      totalJobs, completedJobs, inProgressJobs, delayedJobs, totalPieces, completedPieces, lostPieces,
       lossRate: globalLossRate, averageOccupancy,
       productivityByMachine, productivityByTechnique, productivityByProduct, todayStats, performanceHistory, comparison, predictions, anomalies, targets,
       estimatedRevenue: completedPieces * 2.5, costOfLosses: lostPieces * 1.8,

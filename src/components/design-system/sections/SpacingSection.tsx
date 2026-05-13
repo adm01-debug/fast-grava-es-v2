@@ -36,7 +36,7 @@ export function SpacingSection() {
                           <div className="w-16 text-sm font-mono text-muted-foreground">{item.class}</div>
                           <div className="w-16 text-sm text-muted-foreground">{item.value}</div>
                           <div className="flex-1">
-                            <div 
+                            <div
                               className="bg-primary/20 border border-primary/30 rounded"
                               style={{ width: item.value === '0px' ? '4px' : item.value, height: '24px' }}
                             />

@@ -2,10 +2,10 @@ import { useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { 
-  Shield, 
-  ShieldCheck, 
-  ShieldAlert, 
+import {
+  Shield,
+  ShieldCheck,
+  ShieldAlert,
   ShieldOff,
   Key,
   Smartphone,
@@ -150,8 +150,8 @@ export function SecurityOverviewCard() {
                 {securityScore.label}
               </Badge>
             </div>
-            <Progress 
-              value={securityScore.score} 
+            <Progress
+              value={securityScore.score}
               className="h-3"
               variant={getProgressVariant()}
             />
@@ -169,7 +169,7 @@ export function SecurityOverviewCard() {
           <h4 className="text-sm font-medium text-muted-foreground">Verificações de Segurança</h4>
           <div className="space-y-2">
             {securityChecks.map((check) => (
-              <div 
+              <div
                 key={check.id}
                 className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors"
               >

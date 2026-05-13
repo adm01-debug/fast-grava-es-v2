@@ -6,12 +6,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { 
-  Search, 
-  Package, 
-  Truck, 
-  CheckCircle2, 
-  Clock, 
+import {
+  Search,
+  Package,
+  Truck,
+  CheckCircle2,
+  Clock,
   AlertTriangle,
   ArrowRight,
   ShieldCheck,
@@ -59,7 +59,7 @@ export default function PublicTrackingPage() {
         .maybeSingle();
 
       if (supabaseError) throw supabaseError;
-      
+
       if (!data) {
         setError(t('tracking.orderNotFound'));
       } else {
@@ -67,7 +67,7 @@ export default function PublicTrackingPage() {
       }
     } catch (err: any) {
       setError(t('tracking.errorFetching'));
-      console.error(err);
+
     } finally {
       setLoading(false);
     }
@@ -125,8 +125,8 @@ export default function PublicTrackingPage() {
             <div className="relative flex p-1.5 bg-card border-2 border-border/50 rounded-2xl shadow-xl backdrop-blur-xl">
               <div className="flex-1 relative">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                <Input 
-                  placeholder={t('tracking.placeholder')} 
+                <Input
+                  placeholder={t('tracking.placeholder')}
                   className="w-full bg-transparent border-none shadow-none focus-visible:ring-0 pl-12 h-12 text-lg font-medium"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
@@ -182,18 +182,18 @@ export default function PublicTrackingPage() {
                 {/* Visual Stepper */}
                 <div className="relative flex justify-between items-center px-4 max-w-md mx-auto">
                   <div className="absolute top-1/2 left-0 right-0 h-1 bg-muted -translate-y-1/2 z-0" />
-                  <div className={cn("absolute top-1/2 left-0 h-1 bg-primary -translate-y-1/2 z-0 transition-all duration-1000", 
-                    job.status === 'finished' ? 'w-full' : 
-                    job.status === 'production' ? 'w-2/3' : 
+                  <div className={cn("absolute top-1/2 left-0 h-1 bg-primary -translate-y-1/2 z-0 transition-all duration-1000",
+                    job.status === 'finished' ? 'w-full' :
+                    job.status === 'production' ? 'w-2/3' :
                     job.status === 'ready' ? 'w-1/3' : 'w-0'
                   )} />
-                  
+
                   {[
                     { key: 'received', icon: Clock, label: t('tracking.steps.received') },
                     { key: 'production', icon: Truck, label: t('tracking.steps.production') },
                     { key: 'finished', icon: CheckCircle2, label: t('tracking.steps.finished') }
                   ].map((step, index) => {
-                    const isCompleted = (step.key === 'received') || 
+                    const isCompleted = (step.key === 'received') ||
                                        (step.key === 'production' && ['production', 'finished'].includes(job.status)) ||
                                        (step.key === 'finished' && job.status === 'finished');
                     const Icon = step.icon;
@@ -230,7 +230,7 @@ export default function PublicTrackingPage() {
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="space-y-4">
                     <div className="space-y-1">
                       <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{t('tracking.deliveryForecast')}</p>
@@ -254,8 +254,8 @@ export default function PublicTrackingPage() {
                 {/* Production Photos Evidence */}
                 {job.production_photos && job.production_photos.length > 0 && (
                   <div className="pt-8 border-t border-border/50">
-                    <ProductionPhotos 
-                      photos={job.production_photos} 
+                    <ProductionPhotos
+                      photos={job.production_photos}
                       className="border-none bg-transparent p-0"
                       emptyMessage={t('tracking.productionEvidence') + ' ' + t('common.none')}
                     />

@@ -28,7 +28,7 @@ export function OEELoadTrendWidget() {
     return days.map(day => {
       const dateStr = day.toISOString().split('T')[0];
       const oeeDay = oeeData.trendData.find(d => d.date.startsWith(dateStr));
-      
+
       // Calculate real estimated load for this day based on jobs scheduled/produced
       const dayLoad = oeeDay ? (oeeDay.availability + oeeDay.performance) / 2 : 0;
 
@@ -62,12 +62,12 @@ export function OEELoadTrendWidget() {
           {comparisonData && (
             <Badge variant="outline" className={cn(
               "text-[10px] py-0 px-2 h-5 flex items-center gap-1",
-              comparisonData.isPositive ? "text-emerald-500 border-emerald-500/30" : 
-              comparisonData.isNegative ? "text-red-500 border-red-500/30" : 
+              comparisonData.isPositive ? "text-emerald-500 border-emerald-500/30" :
+              comparisonData.isNegative ? "text-red-500 border-red-500/30" :
               "text-muted-foreground"
             )}>
-              {comparisonData.isPositive ? <TrendingUp className="h-3 w-3" /> : 
-               comparisonData.isNegative ? <TrendingDown className="h-3 w-3" /> : 
+              {comparisonData.isPositive ? <TrendingUp className="h-3 w-3" /> :
+               comparisonData.isNegative ? <TrendingDown className="h-3 w-3" /> :
                <Minus className="h-3 w-3" />}
               {comparisonData.isPositive ? '+' : ''}{comparisonData.diff}%
             </Badge>
@@ -89,32 +89,32 @@ export function OEELoadTrendWidget() {
                 </linearGradient>
               </defs>
               <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="hsl(var(--border))" />
-              <XAxis 
-                dataKey="date" 
-                tickLine={false} 
-                axisLine={false} 
-                tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} 
+              <XAxis
+                dataKey="date"
+                tickLine={false}
+                axisLine={false}
+                tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
               />
-              <YAxis 
-                tickLine={false} 
-                axisLine={false} 
-                tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} 
+              <YAxis
+                tickLine={false}
+                axisLine={false}
+                tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
                 domain={[0, 100]}
               />
               <ChartTooltip content={<ChartTooltipContent />} />
-              <Area 
-                type="monotone" 
-                dataKey="oee" 
-                stroke="hsl(var(--primary))" 
-                fill="url(#fillOEE)" 
+              <Area
+                type="monotone"
+                dataKey="oee"
+                stroke="hsl(var(--primary))"
+                fill="url(#fillOEE)"
                 strokeWidth={2}
                 name="OEE"
               />
-              <Area 
-                type="monotone" 
-                dataKey="load" 
-                stroke="hsl(var(--chart-2))" 
-                fill="url(#fillLoad)" 
+              <Area
+                type="monotone"
+                dataKey="load"
+                stroke="hsl(var(--chart-2))"
+                fill="url(#fillLoad)"
                 strokeWidth={2}
                 name="Carga"
               />

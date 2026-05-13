@@ -29,17 +29,17 @@ export function useKanbanDragDrop({ jobs, onJobsUpdate }: UseKanbanDragDropProps
     const { active, over } = event;
     setActiveJob(null);
     if (!over) return;
-    
+
     const activeJobId = active.id as string;
     const overId = over.id as string;
     const overData = over.data.current;
-    
+
     const draggedJob = jobs.find(job => job.id === activeJobId);
     if (!draggedJob) return;
-    
+
     const isColumn = overData?.type === 'column';
     const isJob = overData?.type === 'job';
-    
+
     let targetStatus: JobStatus | null = null;
     if (isColumn) {
       targetStatus = overData.status as JobStatus;
@@ -49,15 +49,15 @@ export function useKanbanDragDrop({ jobs, onJobsUpdate }: UseKanbanDragDropProps
         targetStatus = targetJob.status as JobStatus;
       }
     }
-    
+
     if (!targetStatus) return;
     const currentStatus = draggedJob.status as JobStatus;
-    
+
     if (currentStatus === targetStatus && isJob && activeJobId !== overId) {
       await handleReorderWithinColumn(activeJobId, overId, targetStatus);
       return;
     }
-    
+
     if (currentStatus !== targetStatus) {
       await handleStatusChange(draggedJob, targetStatus);
     }
@@ -98,7 +98,7 @@ export function useKanbanDragDrop({ jobs, onJobsUpdate }: UseKanbanDragDropProps
 
   const handleStatusChange = async (draggedJob: DbJob, targetStatus: JobStatus) => {
     const currentStatus = draggedJob.status as JobStatus;
-    
+
     try {
       assertTransition(currentStatus, targetStatus);
     } catch (err) {
@@ -107,26 +107,26 @@ export function useKanbanDragDrop({ jobs, onJobsUpdate }: UseKanbanDragDropProps
       });
       return;
     }
-    
+
     setIsUpdating(true);
     try {
       const updateData: Record<string, any> = {
         status: targetStatus,
         updated_at: new Date().toISOString(),
       };
-      
+
       if (targetStatus === 'production' && !draggedJob.actual_start_time) {
         updateData.actual_start_time = new Date().toISOString();
       }
       if (targetStatus === 'finished' && !draggedJob.actual_end_time) {
         updateData.actual_end_time = new Date().toISOString();
       }
-      
+
       const { error } = await supabase
         .from('jobs')
         .update(updateData)
         .eq('id', draggedJob.id);
-      
+
       if (error) throw error;
       toast.success(`Job movido para "${getStatusLabel(targetStatus)}"`);
       onJobsUpdate();

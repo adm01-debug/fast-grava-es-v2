@@ -24,9 +24,9 @@ export function SkillsMatrix() {
     const techAssignments = assignments.filter(
       (a) => a.operator_id === operatorId && techniqueMachines.includes(a.machine_id)
     );
-    
+
     if (techAssignments.length === 0) return null;
-    
+
     const count = techAssignments.length;
     if (count >= 3) return 'expert';
     if (count >= 2) return 'advanced';
@@ -66,9 +66,9 @@ export function SkillsMatrix() {
                 {techniques.map((tech) => (
                   <TableHead key={tech.id} className="text-center min-w-[120px]">
                     <div className="flex flex-col items-center gap-1">
-                      <div 
-                        className="w-2 h-2 rounded-full" 
-                        style={{ backgroundColor: tech.color || '#888' }} 
+                      <div
+                        className="w-2 h-2 rounded-full"
+                        style={{ backgroundColor: tech.color || '#888' }}
                       />
                       <span className="text-[10px] uppercase font-bold tracking-tighter">
                         {tech.name}
@@ -99,7 +99,7 @@ export function SkillsMatrix() {
                           <TooltipContent>
                             <p>{op.full_name} - {tech.name}</p>
                             <p className="text-xs text-muted-foreground">
-                              {getSkillLevel(op.user_id, tech.id) 
+                              {getSkillLevel(op.user_id, tech.id)
                                 ? `Nível ${getSkillLevel(op.user_id, tech.id)} confirmado por alocação de ativos.`
                                 : 'Sem certificação ativa para esta técnica.'}
                             </p>

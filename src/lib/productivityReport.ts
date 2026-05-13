@@ -44,12 +44,12 @@ export function generateProductivityReport(data: ProductivityReportData): void {
   // Header
   doc.setFillColor(30, 30, 30);
   doc.rect(0, 0, pageWidth, 40, 'F');
-  
+
   doc.setTextColor(255, 255, 255);
   doc.setFontSize(22);
   doc.setFont('helvetica', 'bold');
   doc.text('Relatório de Produtividade', margin, 25);
-  
+
   doc.setFontSize(10);
   doc.setFont('helvetica', 'normal');
   doc.text(`Gerado em: ${format(new Date(), "dd 'de' MMMM 'de' yyyy 'às' HH:mm", { locale: ptBR })}`, margin, 35);
@@ -77,11 +77,11 @@ export function generateProductivityReport(data: ProductivityReportData): void {
     head: [['Métrica', 'Valor', 'Detalhe', '']],
     body: statsData,
     theme: 'grid',
-    headStyles: { 
+    headStyles: {
       fillColor: [79, 70, 229],
       textColor: 255,
       fontStyle: 'bold',
-      fontSize: 9 
+      fontSize: 9
     },
     bodyStyles: { fontSize: 9 },
     columnStyles: {
@@ -120,11 +120,11 @@ export function generateProductivityReport(data: ProductivityReportData): void {
     head: [['#', 'Operador', 'Eficiência', 'Jobs', 'Peças', 'Perda', 'Veloc.']],
     body: operatorsTableData,
     theme: 'striped',
-    headStyles: { 
+    headStyles: {
       fillColor: [79, 70, 229],
       textColor: 255,
       fontStyle: 'bold',
-      fontSize: 9 
+      fontSize: 9
     },
     bodyStyles: { fontSize: 8 },
     columnStyles: {
@@ -175,7 +175,7 @@ export function generateProductivityReport(data: ProductivityReportData): void {
 
     Object.entries(goalsByPeriod).forEach(([period, periodGoals]) => {
       checkPageBreak(40);
-      
+
       doc.setFontSize(10);
       doc.setFont('helvetica', 'bold');
       doc.setTextColor(100, 100, 100);
@@ -214,11 +214,11 @@ export function generateProductivityReport(data: ProductivityReportData): void {
         head: [['Operador', 'Tipo de Meta', 'Meta', 'Atual', 'Progresso', 'Status']],
         body: goalsTableData,
         theme: 'grid',
-        headStyles: { 
+        headStyles: {
           fillColor: [79, 70, 229],
           textColor: 255,
           fontStyle: 'bold',
-          fontSize: 8 
+          fontSize: 8
         },
         bodyStyles: { fontSize: 8 },
         columnStyles: {
@@ -271,8 +271,8 @@ export function generateProductivityReport(data: ProductivityReportData): void {
       return calculateGoalProgress(goal, currentValue).is_achieved;
     });
 
-    const achievementRate = data.goals.length > 0 
-      ? Math.round((achievedGoals.length / data.goals.length) * 100) 
+    const achievementRate = data.goals.length > 0
+      ? Math.round((achievedGoals.length / data.goals.length) * 100)
       : 0;
 
     doc.setFontSize(10);

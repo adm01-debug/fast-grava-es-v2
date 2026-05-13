@@ -5,11 +5,11 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  Settings2, 
-  ArrowRight, 
-  RefreshCw, 
-  CheckCircle2, 
+import {
+  Settings2,
+  ArrowRight,
+  RefreshCw,
+  CheckCircle2,
   AlertCircle,
   Database,
   Palette,
@@ -89,7 +89,7 @@ export const Bitrix24FieldMapping = () => {
         }
       );
       const data = await response.json();
-      
+
       if (data.connected) {
         toast.success('Conexão com Bitrix24 estabelecida com sucesso!');
       } else if (data.error) {
@@ -120,8 +120,8 @@ export const Bitrix24FieldMapping = () => {
             Mapeamento de Campos
           </CardTitle>
           <div className="flex gap-2">
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               size="sm"
               onClick={testConnection}
               disabled={isTestingConnection}
@@ -133,8 +133,8 @@ export const Bitrix24FieldMapping = () => {
               )}
               Testar
             </Button>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               size="sm"
               onClick={loadBitrixFields}
               disabled={fieldsLoading}
@@ -180,7 +180,7 @@ export const Bitrix24FieldMapping = () => {
                     Mapeamento de campos do Bitrix24 para campos do sistema. O primeiro campo com valor será usado.
                   </p>
                   {mappingData?.fieldMapping && Object.entries(mappingData.fieldMapping).map(([jobField, bitrixFields]) => (
-                    <div 
+                    <div
                       key={jobField}
                       className="p-3 rounded-lg bg-muted/20 border border-border/30"
                     >
@@ -192,9 +192,9 @@ export const Bitrix24FieldMapping = () => {
                       </div>
                       <div className="flex flex-wrap gap-1">
                         {bitrixFields.map((field, idx) => (
-                          <Badge 
-                            key={idx} 
-                            variant="outline" 
+                          <Badge
+                            key={idx}
+                            variant="outline"
                             className="text-[10px] font-mono"
                           >
                             {field}
@@ -215,7 +215,7 @@ export const Bitrix24FieldMapping = () => {
                   </p>
                   <div className="grid grid-cols-2 gap-2">
                     {mappingData?.techniqueMapping && Object.entries(mappingData.techniqueMapping).map(([bitrix, system]) => (
-                      <div 
+                      <div
                         key={bitrix}
                         className="p-2 rounded-lg bg-muted/20 border border-border/30 flex items-center gap-2"
                       >
@@ -241,13 +241,13 @@ export const Bitrix24FieldMapping = () => {
                   </p>
                   <div className="grid grid-cols-2 gap-2">
                     {mappingData?.priorityMapping && Object.entries(mappingData.priorityMapping).map(([bitrix, system]) => (
-                      <div 
+                      <div
                         key={bitrix}
                         className="p-2 rounded-lg bg-muted/20 border border-border/30 flex items-center gap-2"
                       >
                         <span className="text-xs truncate flex-1">{bitrix}</span>
                         <ArrowRight className="h-3 w-3 text-muted-foreground flex-shrink-0" />
-                        <Badge 
+                        <Badge
                           className={`text-[10px] ${
                             system === 'urgent' ? 'bg-red-500/20 text-red-400 border-red-500/30' :
                             system === 'high' ? 'bg-orange-500/20 text-orange-400 border-orange-500/30' :
@@ -273,7 +273,7 @@ export const Bitrix24FieldMapping = () => {
                     </p>
                     <div className="grid grid-cols-2 gap-2">
                       {mappingData?.stageToStatus && Object.entries(mappingData.stageToStatus).map(([stage, status]) => (
-                        <div 
+                        <div
                           key={stage}
                           className="p-2 rounded-lg bg-muted/20 border border-border/30 flex items-center gap-2"
                         >
@@ -304,7 +304,7 @@ export const Bitrix24FieldMapping = () => {
             <ScrollArea className="h-[150px]">
               <div className="space-y-1">
                 {fieldsData.customFields && Object.entries(fieldsData.customFields).map(([fieldId, fieldData]: [string, any]) => (
-                  <div 
+                  <div
                     key={fieldId}
                     className="p-2 rounded bg-muted/10 border border-border/20 flex items-center justify-between"
                   >
@@ -324,7 +324,7 @@ export const Bitrix24FieldMapping = () => {
             <div className="flex items-center gap-2">
               <AlertCircle className="h-4 w-4 text-yellow-400" />
               <span className="text-xs text-yellow-400">
-                Nenhum campo personalizado (UF_CRM_*) encontrado no Bitrix24. 
+                Nenhum campo personalizado (UF_CRM_*) encontrado no Bitrix24.
                 Verifique a configuração do webhook.
               </span>
             </div>

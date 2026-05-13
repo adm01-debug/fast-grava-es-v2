@@ -4,12 +4,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { FavoriteButton, FavoritesDropdown } from '@/components/navigation/FavoritesManager';
-import { 
-  Shield, 
-  ShieldCheck, 
-  ShieldAlert, 
-  Activity, 
-  Users, 
+import {
+  Shield,
+  ShieldCheck,
+  ShieldAlert,
+  Activity,
+  Users,
   Lock,
   Settings,
   AlertTriangle,
@@ -60,7 +60,7 @@ export default function SecurityDashboard() {
   // Calculate stats
   const activeBlocks = blockedIPs?.length || 0;
   const recentRateLimits = rateLimitLogs?.filter(l => l.is_blocked).length || 0;
-  const criticalEvents = securityEvents?.filter(e => 
+  const criticalEvents = securityEvents?.filter(e =>
     e.severity === 'critical' || e.severity === 'error'
   ).length || 0;
   const trustedDevices = devices?.filter(d => d.is_trusted).length || 0;
@@ -69,7 +69,7 @@ export default function SecurityDashboard() {
     <MainLayout>
       <div className="container mx-auto py-6 space-y-6">
         <Breadcrumbs />
-        
+
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
@@ -77,9 +77,9 @@ export default function SecurityDashboard() {
               <h1 className="text-3xl font-display font-black tracking-tighter">
                 <span className="gradient-text animate-pulse-glow">Cyber Resilience 10/10</span>
               </h1>
-              <FavoriteButton 
-                path="/security" 
-                name="Segurança" 
+              <FavoriteButton
+                path="/security"
+                name="Segurança"
               />
             </div>
             <p className="text-muted-foreground mt-1">

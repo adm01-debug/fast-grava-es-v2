@@ -19,10 +19,10 @@ export function DragOverlayCard({ job, technique, machine }: DragOverlayCardProp
         <div className="flex items-center gap-2">
           <GripVertical className="h-4 w-4 text-primary" />
         </div>
-        <Badge 
-          variant="outline" 
+        <Badge
+          variant="outline"
           className="text-xs shrink-0"
-          style={{ 
+          style={{
             borderColor: technique?.color,
             color: technique?.color,
             backgroundColor: `${technique?.color}15`
@@ -31,19 +31,19 @@ export function DragOverlayCard({ job, technique, machine }: DragOverlayCardProp
           {technique?.name || 'N/A'}
         </Badge>
       </div>
-      
+
       <p className="font-medium text-sm text-foreground truncate mb-1">
         {job.client}
       </p>
       <p className="text-xs text-muted-foreground truncate mb-2">
         {job.product}
       </p>
-      
+
       <div className="flex items-center justify-between text-xs text-muted-foreground">
         <span className="font-mono">OS {job.order_number}</span>
         <span>{job.quantity.toLocaleString()} pçs</span>
       </div>
-      
+
       {job.scheduled_date && (
         <div className="mt-2 pt-2 border-t border-border/50 flex items-center gap-1 text-xs text-muted-foreground">
           <Calendar className="h-3 w-3" />
@@ -53,7 +53,7 @@ export function DragOverlayCard({ job, technique, machine }: DragOverlayCardProp
           )}
         </div>
       )}
-      
+
       {machine && (
         <div className="mt-1 text-xs text-muted-foreground truncate">
           📍 {machine.name}

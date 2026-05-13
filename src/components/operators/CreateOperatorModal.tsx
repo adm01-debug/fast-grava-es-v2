@@ -67,7 +67,7 @@ export function CreateOperatorModal({ open, onOpenChange }: CreateOperatorModalP
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
@@ -76,7 +76,7 @@ export function CreateOperatorModal({ open, onOpenChange }: CreateOperatorModalP
 
     try {
       const { data: { session } } = await supabase.auth.getSession();
-      
+
       const response = await supabase.functions.invoke('create-operator', {
         body: formData,
       });
@@ -94,7 +94,6 @@ export function CreateOperatorModal({ open, onOpenChange }: CreateOperatorModalP
       onOpenChange(false);
       setFormData({ full_name: '', email: '', password: '', phone: '' });
     } catch (error) {
-      if (import.meta.env.DEV) console.error('Error creating operator:', error);
       const message = error instanceof Error ? error.message : 'Erro ao criar operador';
       toast.error(message);
     } finally {

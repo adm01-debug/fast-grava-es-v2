@@ -41,7 +41,7 @@ export function useHapticFeedback(options: HapticOptions = {}): HapticFeedback {
       navigator.vibrate(vibrationPattern);
     } catch (error) {
       // Silently fail if vibration is not allowed
-      if (import.meta.env.DEV) console.debug('Haptic feedback not available:', error);
+      // Haptic feedback not available - silent fail in production
     }
   }, [enabled, isSupported]);
 
@@ -74,7 +74,7 @@ export function useHapticButton(pattern: HapticPattern = 'light') {
 // Higher-order component style hook for any interactive element
 export function useHapticInteraction<T extends HTMLElement>(pattern: HapticPattern = 'light') {
   const { trigger } = useHapticFeedback();
-  
+
   const ref = React.useRef<T>(null);
 
   React.useEffect(() => {

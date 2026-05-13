@@ -75,7 +75,7 @@ export function FloatingAIAssistant() {
         "Os indicadores mostram uma tendência positiva nas últimas semanas.",
         "Posso ajudar você a explorar os dashboards para mais detalhes.",
       ];
-      
+
       const assistantMessage: Message = {
         id: `msg-${Date.now()}-response`,
         role: "assistant",

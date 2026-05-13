@@ -44,11 +44,11 @@ export function TPMSeverityConfigs({ machineId }: TPMSeverityConfigsProps) {
 
   const upsertConfig = useMutation({
     mutationFn: async (config: Partial<SeverityConfig>) => {
-      const payload: any = { 
-        ...config, 
-        machine_id: machineId || null 
+      const payload: any = {
+        ...config,
+        machine_id: machineId || null
       };
-      
+
       const { error } = await supabase
         .from('tpm_severity_configs')
         .upsert(payload);
@@ -97,9 +97,9 @@ export function TPMSeverityConfigs({ machineId }: TPMSeverityConfigsProps) {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label className="text-xs">Limite (dias antes/depois)</Label>
-                <Input 
-                  type="number" 
-                  className="h-9" 
+                <Input
+                  type="number"
+                  className="h-9"
                   defaultValue={config.days_threshold}
                   onBlur={(e) => upsertConfig.mutate({ id: config.id, severity: config.severity, days_threshold: parseInt(e.target.value) || 0 })}
                 />
@@ -108,8 +108,8 @@ export function TPMSeverityConfigs({ machineId }: TPMSeverityConfigsProps) {
                 <Label className="text-xs">Throttle (minutos)</Label>
                 <div className="flex items-center gap-2">
                   <Zap className="h-3 w-3 text-muted-foreground" />
-                  <Input 
-                    type="number" 
+                  <Input
+                    type="number"
                     className="h-9"
                     placeholder="60"
                     defaultValue={config.throttle_minutes || 60}
@@ -121,8 +121,8 @@ export function TPMSeverityConfigs({ machineId }: TPMSeverityConfigsProps) {
 
             <div className="space-y-2">
               <Label className="text-xs">Mensagem Customizada</Label>
-              <Input 
-                placeholder="Ex: Urgente! Máquina parada..." 
+              <Input
+                placeholder="Ex: Urgente! Máquina parada..."
                 className="h-9"
                 defaultValue={config.message_override || ''}
                 onBlur={(e) => upsertConfig.mutate({ id: config.id, severity: config.severity, message_override: e.target.value })}

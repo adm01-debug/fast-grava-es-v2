@@ -38,7 +38,7 @@ export function BufferPromotionStatus() {
             {techniques.map(tech => {
               const readyCount = jobs.filter(j => j.technique_id === tech.id && j.status === 'ready').length;
               const isHealthy = readyCount >= bufferTarget;
-              
+
               return (
                 <TooltipProvider key={tech.id}>
                   <Tooltip>
@@ -62,9 +62,9 @@ export function BufferPromotionStatus() {
             })}
           </div>
 
-          <Button 
-            size="sm" 
-            variant="ghost" 
+          <Button
+            size="sm"
+            variant="ghost"
             className="h-8 text-[10px] uppercase font-bold text-blue-400 hover:bg-blue-500/10"
             onClick={() => triggerPromotion()}
             disabled={isPromoting}

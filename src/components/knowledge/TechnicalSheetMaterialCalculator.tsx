@@ -22,11 +22,11 @@ interface MaterialCalculatorProps {
   inventoryItems: InventoryItem[];
 }
 
-export function MaterialCalculator({ 
-  productionQuantity, 
-  setProductionQuantity, 
-  sheetMaterials, 
-  inventoryItems 
+export function MaterialCalculator({
+  productionQuantity,
+  setProductionQuantity,
+  sheetMaterials,
+  inventoryItems
 }: MaterialCalculatorProps) {
   return (
     <div className="space-y-4">
@@ -37,21 +37,21 @@ export function MaterialCalculator({
         </div>
         <div className="flex items-center gap-2 bg-primary/10 px-3 py-1.5 rounded-full border border-primary/20">
           <span className="text-[10px] font-bold text-primary">CALCULAR PARA:</span>
-          <input 
-            type="number" 
+          <input
+            type="number"
             value={productionQuantity}
             onChange={(e) => setProductionQuantity(Number(e.target.value))}
-            className="w-16 bg-transparent border-none text-[10px] font-bold text-primary focus:ring-0 p-0 text-center" 
+            className="w-16 bg-transparent border-none text-[10px] font-bold text-primary focus:ring-0 p-0 text-center"
           />
           <span className="text-[10px] font-bold text-primary">UNIDADES</span>
         </div>
       </div>
-      
+
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         {sheetMaterials.map((mat, idx) => {
           const baseQuantityMatch = mat.quantity?.match(/^(\d+)(\D.*)$/);
           let scaledQuantity = mat.quantity;
-          
+
           if (baseQuantityMatch) {
             const num = parseFloat(baseQuantityMatch[1]);
             const unit = baseQuantityMatch[2];
@@ -79,7 +79,7 @@ export function MaterialCalculator({
                   {scaledQuantity}
                 </Badge>
               </div>
-              
+
               {inventoryItem && (
                 <div className="mt-2 pt-2 border-t border-border/30 flex items-center justify-between">
                   <span className={cn(

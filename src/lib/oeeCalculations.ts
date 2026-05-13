@@ -11,7 +11,7 @@ function isValidDate(dateStr: string | null | undefined): boolean {
   }
 }
 
-function sanitizeNumber(value: unknown, fallback = 0): number {
+function sanitizeNumber(value: any, fallback = 0): number {
   if (typeof value !== 'number' || !Number.isFinite(value)) return fallback;
   return Math.max(0, value);
 }
@@ -23,9 +23,9 @@ export function calculateRealOEE(jobs: DbJob[]) {
   let totalEstimatedMinutes = 0;
   let totalProducedPieces = 0;
   let totalLostPieces = 0;
-  
+
   const finishedJobs = jobs.filter(j => j.status === 'finished');
-  
+
   for (const job of finishedJobs) {
     if (isValidDate(job.actual_start_time) && isValidDate(job.actual_end_time)) {
       try {
@@ -46,20 +46,20 @@ export function calculateRealOEE(jobs: DbJob[]) {
   ).size || 1;
 
   const plannedMinutes = Math.max(daysWithJobs * PLANNED_MINUTES_PER_DAY, totalEstimatedMinutes);
-  
-  const availability = plannedMinutes > 0 
+
+  const availability = plannedMinutes > 0
     ? Math.min(100, (totalActualMinutes / plannedMinutes) * 100)
     : 100;
-  
+
   const performance = totalActualMinutes > 0
     ? Math.min(100, (totalEstimatedMinutes / totalActualMinutes) * 100)
     : 100;
-  
+
   const goodPieces = totalProducedPieces - totalLostPieces;
   const quality = totalProducedPieces > 0
     ? Math.min(100, (goodPieces / totalProducedPieces) * 100)
     : 100;
-  
+
   const oee = (availability / 100) * (performance / 100) * (quality / 100) * 100;
 
   return {

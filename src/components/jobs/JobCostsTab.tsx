@@ -3,13 +3,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { DollarSign, PieChart, TrendingDown, Layers } from 'lucide-react';
-import { 
-  PieChart as RechartsPieChart, 
-  Pie, 
-  Cell, 
-  ResponsiveContainer, 
-  Tooltip as RechartsTooltip, 
-  Legend 
+import {
+  PieChart as RechartsPieChart,
+  Pie,
+  Cell,
+  ResponsiveContainer,
+  Tooltip as RechartsTooltip,
+  Legend
 } from 'recharts';
 
 interface JobCostsTabProps {
@@ -20,7 +20,7 @@ const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'
 
 export function JobCostsTab({ jobId }: JobCostsTabProps) {
   const { getJobCostSummary, isLoading } = useABCCosts();
-  
+
   const summary = getJobCostSummary(jobId);
 
   if (isLoading) {
@@ -92,7 +92,7 @@ export function JobCostsTab({ jobId }: JobCostsTabProps) {
           <PieChart className="h-4 w-4 text-primary" />
           Composição de Custos
         </h4>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
           <div className="h-[200px] w-full">
             <ResponsiveContainer width="100%" height="100%">
@@ -110,7 +110,7 @@ export function JobCostsTab({ jobId }: JobCostsTabProps) {
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
-                <RechartsTooltip 
+                <RechartsTooltip
                   formatter={(value: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value)}
                   contentStyle={{ backgroundColor: '#1f2937', border: 'none', borderRadius: '8px', fontSize: '12px' }}
                 />
@@ -122,8 +122,8 @@ export function JobCostsTab({ jobId }: JobCostsTabProps) {
             {chartData.map((item, index) => (
               <div key={item.name} className="flex items-center justify-between text-xs p-2 rounded-lg bg-secondary/30">
                 <div className="flex items-center gap-2">
-                  <div 
-                    className="w-2 h-2 rounded-full" 
+                  <div
+                    className="w-2 h-2 rounded-full"
                     style={{ backgroundColor: COLORS[index % COLORS.length] }}
                   />
                   <span className="text-muted-foreground truncate max-w-[120px]">{item.name}</span>

@@ -24,13 +24,13 @@ export function OperatorGoalsTab({ operatorId }: OperatorGoalsTabProps) {
 
     return goals.map(goal => {
       let currentValue = 0;
-      
+
       // Calculate current value based on goal type for the period
       switch (goal.goal_type) {
         case 'efficiency':
           const activeDays = operatorStats.dailyData.filter(d => d.jobsCompleted > 0);
-          currentValue = activeDays.length > 0 
-            ? activeDays.reduce((sum, d) => sum + d.efficiencyScore, 0) / activeDays.length 
+          currentValue = activeDays.length > 0
+            ? activeDays.reduce((sum, d) => sum + d.efficiencyScore, 0) / activeDays.length
             : 0;
           break;
         case 'jobs_completed':
@@ -132,9 +132,9 @@ export function OperatorGoalsTab({ operatorId }: OperatorGoalsTabProps) {
                     {goal.progress_percentage}%
                   </span>
                 </div>
-                <Progress 
-                  value={goal.progress_percentage} 
-                  className="h-1.5" 
+                <Progress
+                  value={goal.progress_percentage}
+                  className="h-1.5"
                   variant={goal.is_achieved ? "success" : "default"}
                 />
               </div>

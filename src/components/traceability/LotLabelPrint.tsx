@@ -192,11 +192,11 @@ export function LotLabelPrint({ lots, open, onClose }: LotLabelPrintProps) {
             <div className="space-y-1.5">
               <Label className="text-xs">Zoom Visualizador</Label>
               <div className="flex items-center gap-2 pt-1">
-                <Slider 
-                  value={[zoom]} 
-                  min={0.3} 
-                  max={1.5} 
-                  step={0.1} 
+                <Slider
+                  value={[zoom]}
+                  min={0.3}
+                  max={1.5}
+                  step={0.1}
                   onValueChange={([v]) => setZoom(v)}
                   className="w-full"
                 />

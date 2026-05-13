@@ -11,9 +11,9 @@ interface PendingAction {
 }
 
 interface CachedData {
-  jobs: unknown[];
-  machines: unknown[];
-  techniques: unknown[];
+  jobs: any[];
+  machines: any[];
+  techniques: any[];
   lastSyncedAt: string | null;
 }
 
@@ -39,7 +39,6 @@ export function useOfflineSync() {
         setPendingActions(JSON.parse(stored));
       }
     } catch (error) {
-      if (import.meta.env.DEV) console.error('Error loading pending actions:', error);
     }
   }, []);
 
@@ -55,7 +54,6 @@ export function useOfflineSync() {
         }
       }
     } catch (error) {
-      if (import.meta.env.DEV) console.error('Error loading cached data:', error);
     }
   }, []);
 
@@ -64,7 +62,6 @@ export function useOfflineSync() {
     try {
       localStorage.setItem(STORAGE_KEYS.PENDING_ACTIONS, JSON.stringify(pendingActions));
     } catch (error) {
-      if (import.meta.env.DEV) console.error('Error saving pending actions:', error);
     }
   }, [pendingActions]);
 
@@ -122,10 +119,8 @@ export function useOfflineSync() {
       setCachedData(newCachedData);
       setLastSyncedAt(new Date());
       localStorage.setItem(STORAGE_KEYS.CACHED_DATA, JSON.stringify(newCachedData));
-      
-      if (import.meta.env.DEV) console.log('Data cached successfully for offline use');
+
     } catch (error) {
-      if (import.meta.env.DEV) console.error('Error caching data:', error);
     }
   }, [isOnline]);
 
@@ -210,13 +205,11 @@ export function useOfflineSync() {
         }
 
         default:
-          if (import.meta.env.DEV) console.warn('Unknown action type:', action.type);
           return false;
       }
 
       return true;
     } catch (error) {
-      if (import.meta.env.DEV) console.error('Error processing action:', error);
       return false;
     }
   };
@@ -232,7 +225,7 @@ export function useOfflineSync() {
 
     for (const action of pendingActions) {
       const success = await processPendingAction(action);
-      
+
       if (success) {
         successCount++;
       } else {
@@ -243,7 +236,6 @@ export function useOfflineSync() {
           });
         } else {
           failCount++;
-          if (import.meta.env.DEV) console.error('Action exceeded max retries:', action);
         }
       }
     }
@@ -275,7 +267,7 @@ export function useOfflineSync() {
 
       // Update local cache
       if (cachedData) {
-        const updatedJobs = cachedData.jobs.map((job: unknown) => {
+        const updatedJobs = cachedData.jobs.map((job: any) => {
           const jobObj = job as { id: string };
           if (jobObj.id === jobId) {
             return { ...jobObj, ...updates };
@@ -323,7 +315,7 @@ export function useOfflineSync() {
 
       // Update local cache
       if (cachedData) {
-        const updatedJobs = cachedData.jobs.map((job: unknown) => {
+        const updatedJobs = cachedData.jobs.map((job: any) => {
           const jobObj = job as { id: string };
           if (jobObj.id === jobId) {
             return {

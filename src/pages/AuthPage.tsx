@@ -25,7 +25,7 @@ export default function AuthPage() {
   const { t } = useTranslation();
   const { signIn, signUp, user } = useAuth();
   const { theme, setTheme } = useTheme();
-  
+
   const loginSchema = z.object({ email: z.string().email(t('auth.invalidEmail')), password: z.string().min(6, t('auth.passwordMinLength', { min: 6 })) });
   const signupSchema = z.object({ fullName: z.string().min(2, t('validation.minLength', { min: 2 })), email: z.string().email(t('auth.invalidEmail')), password: z.string().min(6, t('auth.passwordMinLength', { min: 6 })), confirmPassword: z.string() }).refine(data => data.password === data.confirmPassword, { message: t('auth.passwordMismatch'), path: ['confirmPassword'] });
 
@@ -64,7 +64,7 @@ export default function AuthPage() {
     try { z.string().email().parse(forgotEmail); } catch { toast.error(t('auth.invalidEmail')); return; }
     setIsSendingReset(true);
     const { error } = await supabase.from('password_reset_requests').insert({ user_email: forgotEmail.trim().toLowerCase(), requested_by_name: null });
-    if (error) { if (import.meta.env.DEV) console.error('Error creating reset request:', error); toast.error(t('errors.generic')); setIsSendingReset(false); return; }
+    if (error) { if (import.meta.env.DEV)  return; }
     toast.success(t('auth.resetRequestSent', 'Solicitação enviada! Aguarde aprovação do gestor.')); setShowForgotPassword(false); setForgotEmail(''); setIsSendingReset(false);
   };
 

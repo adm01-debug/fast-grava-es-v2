@@ -1,12 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { 
-  startOfMonth, 
-  endOfMonth, 
-  startOfWeek, 
-  endOfWeek, 
-  subMonths, 
-  format, 
+import {
+  startOfMonth,
+  endOfMonth,
+  startOfWeek,
+  endOfWeek,
+  subMonths,
+  format,
   differenceInMinutes,
   subDays,
   differenceInDays,
@@ -25,21 +25,21 @@ export interface ExecutiveKPIs {
   totalPiecesLost: number;
   productionEfficiency: number;
   averageCycleTime: number;
-  
+
   // Machine KPIs
   totalMachines: number;
   activeMachines: number;
   machineUtilization: number;
-  
+
   // Maintenance KPIs
   maintenanceCompleted: number;
   maintenancePending: number;
   averageDowntime: number;
-  
+
   // Quality KPIs
   qualityRate: number;
   defectRate: number;
-  
+
   // Trends & Comparisons
   trends: {
     production: number; // % change
@@ -47,7 +47,7 @@ export interface ExecutiveKPIs {
     quality: number;    // % change
     utilization: number; // % change
   };
-  
+
   productionTrend: { date: string; produced: number; target: number; prevProduced?: number }[];
   efficiencyTrend: { date: string; efficiency: number; prevEfficiency?: number }[];
   techniqueDistribution: { technique: string; count: number; color: string }[];
@@ -87,9 +87,9 @@ export function useExecutiveDashboard(dateRange: DateRange, filters?: { machineI
       const totalPiecesProduced = jobs.reduce((sum, j) => sum + (j.produced_quantity || 0), 0);
       const totalPiecesLost = jobs.reduce((sum, j) => sum + (j.lost_pieces || 0), 0);
       const totalQuantityTarget = jobs.reduce((sum, j) => sum + (j.quantity || 0), 0);
-      
-      const productionEfficiency = totalQuantityTarget > 0 
-        ? (totalPiecesProduced / totalQuantityTarget) * 100 
+
+      const productionEfficiency = totalQuantityTarget > 0
+        ? (totalPiecesProduced / totalQuantityTarget) * 100
         : 0;
 
       const qualityRate = (totalPiecesProduced + totalPiecesLost) > 0
@@ -98,8 +98,8 @@ export function useExecutiveDashboard(dateRange: DateRange, filters?: { machineI
 
       const activeMachines = machines.filter(m => m.is_active).length;
       const machinesWithJobs = new Set(jobs.filter(j => j.machine_id).map(j => j.machine_id)).size;
-      const machineUtilization = activeMachines > 0 
-        ? (machinesWithJobs / activeMachines) * 100 
+      const machineUtilization = activeMachines > 0
+        ? (machinesWithJobs / activeMachines) * 100
         : 0;
 
       // Calculate Trends (Comparisons)
@@ -111,10 +111,10 @@ export function useExecutiveDashboard(dateRange: DateRange, filters?: { machineI
       const prevTotalPiecesProduced = prevJobs.reduce((sum, j) => sum + (j.produced_quantity || 0), 0);
       const prevTotalQuantityTarget = prevJobs.reduce((sum, j) => sum + (j.quantity || 0), 0);
       const prevProductionEfficiency = prevTotalQuantityTarget > 0 ? (prevTotalPiecesProduced / prevTotalQuantityTarget) * 100 : 0;
-      
+
       const prevTotalPiecesLost = prevJobs.reduce((sum, j) => sum + (j.lost_pieces || 0), 0);
-      const prevQualityRate = (prevTotalPiecesProduced + prevTotalPiecesLost) > 0 
-        ? (prevTotalPiecesProduced / (prevTotalPiecesProduced + prevTotalPiecesLost)) * 100 
+      const prevQualityRate = (prevTotalPiecesProduced + prevTotalPiecesLost) > 0
+        ? (prevTotalPiecesProduced / (prevTotalPiecesProduced + prevTotalPiecesLost)) * 100
         : 100;
 
       const prevMachinesWithJobs = new Set(prevJobs.filter(j => j.machine_id).map(j => j.machine_id)).size;
@@ -211,10 +211,10 @@ async function fetchPeriodData(startDate: string, endDate: string, filters?: { m
 
 function calculateDailyTrend(jobs: Job[], prevJobs: Job[], dateRange: DateRange) {
   const days: Record<string, { produced: number; target: number; prevProduced: number }> = {};
-  
+
   // Calculate previous period offset in days
   const duration = differenceInDays(dateRange.end, dateRange.start) + 1;
-  
+
   // Initialize all days in range
   let current = new Date(dateRange.start);
   while (current <= dateRange.end) {
@@ -222,7 +222,7 @@ function calculateDailyTrend(jobs: Job[], prevJobs: Job[], dateRange: DateRange)
     days[dateStr] = { produced: 0, target: 0, prevProduced: 0 };
     current = subDays(current, -1);
   }
-  
+
   jobs.forEach(job => {
     const date = format(new Date(job.created_at), 'dd/MM');
     if (days[date]) {
@@ -246,14 +246,14 @@ function calculateDailyTrend(jobs: Job[], prevJobs: Job[], dateRange: DateRange)
 function calculateEfficiencyTrend(jobs: Job[], prevJobs: Job[], dateRange: DateRange) {
   const days: Record<string, { produced: number; target: number; prevProduced: number; prevTarget: number }> = {};
   const duration = differenceInDays(dateRange.end, dateRange.start) + 1;
-  
+
   let current = new Date(dateRange.start);
   while (current <= dateRange.end) {
     const dateStr = format(current, 'dd/MM');
     days[dateStr] = { produced: 0, target: 0, prevProduced: 0, prevTarget: 0 };
     current = subDays(current, -1);
   }
-  
+
   jobs.forEach(job => {
     const date = format(new Date(job.created_at), 'dd/MM');
     if (days[date]) {

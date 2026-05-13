@@ -24,7 +24,7 @@ export function KanbanMetricsBar({ jobs }: KanbanMetricsBarProps) {
           setThresholds({ bottleneckRiskMinutes: parsed.bottleneckRiskMinutes });
         }
       } catch (e) {
-        console.error('Error loading thresholds', e);
+
       }
     }
   }, []);
@@ -34,7 +34,7 @@ export function KanbanMetricsBar({ jobs }: KanbanMetricsBarProps) {
     const inProgress = jobs.filter(j => j.status === 'production').length;
     const delayed = jobs.filter(j => j.status === 'delayed').length;
     const totalWIP = jobs.filter(j => !['finished', 'cancelled'].includes(j.status)).length;
-    
+
     // Calculate avg lead time for finished jobs
     const finishedJobs = jobs.filter(j => j.status === 'finished' && j.actual_start_time && j.actual_end_time);
     const avgLeadTimeHours = finishedJobs.length > 0
@@ -66,12 +66,12 @@ export function KanbanMetricsBar({ jobs }: KanbanMetricsBarProps) {
       return columnTime > thresholds.bottleneckRiskMinutes;
     });
 
-    return { 
-      inProgress, 
-      delayed, 
-      totalWIP, 
-      avgLeadTimeHours, 
-      todayFinished, 
+    return {
+      inProgress,
+      delayed,
+      totalWIP,
+      avgLeadTimeHours,
+      todayFinished,
       stuckJobs,
       bottlenecks: columnsWithBottleneck.length
     };

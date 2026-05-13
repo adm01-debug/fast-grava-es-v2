@@ -39,7 +39,7 @@ export function useAutoBufferPromotion(options?: { showToasts?: boolean }) {
       }
     },
     onError: (error) => {
-      console.error('Failed to trigger auto-promotion:', error);
+
       if (showToasts) {
         toast.error('Falha ao acionar promoção automática');
       }

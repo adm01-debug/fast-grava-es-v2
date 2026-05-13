@@ -120,7 +120,7 @@ export function TechniqueManagement() {
                     <Input id="short_name" name="short_name" defaultValue={editingTechnique?.short_name} placeholder="Ex: SERI" required />
                   </div>
                 </div>
-                
+
                 <div className="grid grid-cols-2 gap-4">
                   <div className="grid gap-2">
                     <Label htmlFor="color">Cor Identificadora</Label>

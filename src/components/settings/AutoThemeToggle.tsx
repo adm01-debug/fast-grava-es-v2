@@ -53,7 +53,7 @@ export function AutoThemeToggle({ className, compact = false }: AutoThemeToggleP
           />
         </div>
       </CardHeader>
-      
+
       {isAutoThemeEnabled && (
         <CardContent className="pt-0 space-y-4">
           <div className="grid grid-cols-2 gap-4">

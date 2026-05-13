@@ -2,13 +2,13 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { 
-  Download, 
-  Smartphone, 
-  Wifi, 
-  WifiOff, 
-  Zap, 
-  Shield, 
+import {
+  Download,
+  Smartphone,
+  Wifi,
+  WifiOff,
+  Zap,
+  Shield,
   Bell,
   CheckCircle2,
   Share,
@@ -74,7 +74,7 @@ const InstallAppPage = () => {
 
     await deferredPrompt.prompt();
     const { outcome } = await deferredPrompt.userChoice;
-    
+
     if (outcome === "accepted") {
       setIsInstalled(true);
     }
@@ -109,12 +109,12 @@ const InstallAppPage = () => {
       {/* Mobile Header with back navigation */}
       <MobileHeader title="Instalar App" showBack={true} />
       <MobileHeaderSpacer />
-      
+
       <div className="p-4 md:p-8">
         <Breadcrumbs className="mb-4" />
         <div className="max-w-2xl mx-auto space-y-6">
         {/* Header */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           className="text-center space-y-2"
@@ -128,10 +128,10 @@ const InstallAppPage = () => {
           <p className="text-muted-foreground">
             Instale o app no seu dispositivo para acesso rápido e offline
           </p>
-          
+
           {/* Online Status */}
-          <Badge 
-            variant={isOnline ? "default" : "destructive"} 
+          <Badge
+            variant={isOnline ? "default" : "destructive"}
             className="mt-2"
           >
             {isOnline ? (
@@ -155,7 +155,7 @@ const InstallAppPage = () => {
                 {isInstalled ? "App Instalado!" : "Instalar Aplicativo"}
               </CardTitle>
               <CardDescription>
-                {isInstalled 
+                {isInstalled
                   ? "O Fast Gravações já está instalado no seu dispositivo"
                   : "Adicione à sua tela inicial para acesso rápido"
                 }
@@ -173,8 +173,8 @@ const InstallAppPage = () => {
                   </div>
                 </div>
               ) : deferredPrompt ? (
-                <Button 
-                  onClick={handleInstall} 
+                <Button
+                  onClick={handleInstall}
                   className="w-full bg-gradient-primary hover:opacity-90"
                   size="lg"
                 >
@@ -287,8 +287,8 @@ const InstallAppPage = () => {
                 <div>
                   <h4 className="font-medium text-foreground">Modo Offline</h4>
                   <p className="text-sm text-muted-foreground">
-                    Quando instalado, o app armazena dados localmente permitindo que 
-                    operadores registrem produção mesmo sem conexão. Os dados serão 
+                    Quando instalado, o app armazena dados localmente permitindo que
+                    operadores registrem produção mesmo sem conexão. Os dados serão
                     sincronizados automaticamente quando a conexão for restaurada.
                   </p>
                 </div>

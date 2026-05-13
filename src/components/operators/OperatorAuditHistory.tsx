@@ -7,13 +7,13 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { 
-  History, 
-  Download, 
-  Search, 
-  X, 
-  UserCheck, 
-  UserX, 
+import {
+  History,
+  Download,
+  Search,
+  X,
+  UserCheck,
+  UserX,
   UserMinus,
   Calendar,
   User
@@ -107,9 +107,9 @@ export function OperatorAuditHistory() {
             <History className="h-5 w-5" />
             Histórico de Auditoria
           </CardTitle>
-          <Button 
-            variant="outline" 
-            size="sm" 
+          <Button
+            variant="outline"
+            size="sm"
             onClick={exportToCSV}
             disabled={filteredEntries.length === 0}
           >
@@ -198,8 +198,8 @@ export function OperatorAuditHistory() {
           <div className="py-12 text-center">
             <History className="h-12 w-12 mx-auto text-muted-foreground/50 mb-4" />
             <p className="text-muted-foreground">
-              {hasActiveFilters 
-                ? 'Nenhum registro encontrado com os filtros aplicados' 
+              {hasActiveFilters
+                ? 'Nenhum registro encontrado com os filtros aplicados'
                 : 'Nenhum registro de auditoria ainda'
               }
             </p>

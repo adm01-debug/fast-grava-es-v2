@@ -15,10 +15,10 @@ interface OEEGaugeCardProps {
   variant?: 'default' | 'glass';
 }
 
-export const OEEGaugeCard = memo(function OEEGaugeCard({ 
-  title, 
-  value, 
-  icon, 
+export const OEEGaugeCard = memo(function OEEGaugeCard({
+  title,
+  value,
+  icon,
   description,
   benchmark = 85,
   size = 'md',
@@ -30,13 +30,13 @@ export const OEEGaugeCard = memo(function OEEGaugeCard({
   const gaugeData = useMemo(() => {
     const percentage = Math.min(100, Math.max(0, value));
     const rotation = (percentage / 100) * 180;
-    
+
     let color = 'hsl(var(--primary))';
     if (percentage >= 85) color = 'hsl(var(--success))';
     else if (percentage >= 75) color = 'hsl(142 76% 46%)';
     else if (percentage >= 65) color = 'hsl(48 96% 53%)';
     else if (percentage >= 50) color = 'hsl(25 95% 53%)';
-    
+
     return { percentage, rotation, color };
   }, [value]);
 
@@ -76,7 +76,7 @@ export const OEEGaugeCard = memo(function OEEGaugeCard({
               strokeWidth={config.stroke}
               strokeLinecap="round"
             />
-            
+
             {/* Progress arc */}
             <path
               d={`M ${config.stroke / 2} ${config.gauge / 2} A ${radius} ${radius} 0 0 1 ${config.gauge - config.stroke / 2} ${config.gauge / 2}`}
@@ -87,7 +87,7 @@ export const OEEGaugeCard = memo(function OEEGaugeCard({
               strokeDasharray={`${progress} ${circumference}`}
               className="transition-all duration-1000 ease-out"
             />
-            
+
             {/* Benchmark marker */}
             {benchmark && (
               <g transform={`rotate(${(benchmark / 100) * 180 - 180}, ${config.gauge / 2}, ${config.gauge / 2})`}>
@@ -102,7 +102,7 @@ export const OEEGaugeCard = memo(function OEEGaugeCard({
               </g>
             )}
           </svg>
-          
+
           {/* Value text */}
           <div className="absolute inset-0 flex items-end justify-center pb-2">
             <span className={cn("font-bold font-display leading-none", config.text)} style={{ color: gaugeData.color }}>
@@ -120,22 +120,22 @@ export const OEEGaugeCard = memo(function OEEGaugeCard({
             {trend > 0 ? "+" : ""}{trend.toFixed(1)}% MoM
           </div>
         )}
-        
+
         {description && (
           <p className="text-[10px] text-muted-foreground text-center mt-2 leading-tight px-2">{description}</p>
         )}
-        
+
         {/* Scale labels */}
         <div className="flex justify-between w-full text-xs text-muted-foreground mt-1">
           <span>0%</span>
           <span>100%</span>
         </div>
       </CardContent>
-      
+
       {/* Glow effect based on value */}
-      <div 
+      <div
         className="absolute inset-0 opacity-10 pointer-events-none"
-        style={{ 
+        style={{
           background: `radial-gradient(circle at center bottom, ${gaugeData.color} 0%, transparent 70%)`
         }}
       />

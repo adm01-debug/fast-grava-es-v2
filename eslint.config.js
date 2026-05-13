@@ -26,6 +26,8 @@ export default tseslint.config(
     rules: {
       ...reactHooks.configs.recommended.rules,
       "react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
+      "no-console": "error",
+      "no-debugger": "error",
       "@typescript-eslint/no-unused-vars": "off",
       "@typescript-eslint/no-explicit-any": "error",
       "@typescript-eslint/explicit-function-return-type": [
@@ -35,6 +37,12 @@ export default tseslint.config(
           "allowTypedFunctionExpressions": true
         }
       ]
+    },
+  },
+  {
+    files: ["src/lib/logger.ts"],
+    rules: {
+      "no-console": "off",
     },
   },
 );

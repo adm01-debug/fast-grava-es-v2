@@ -60,7 +60,7 @@ export function EditOperatorModal({ operator, open, onOpenChange }: EditOperator
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm() || !operator) {
       return;
     }
@@ -87,9 +87,9 @@ export function EditOperatorModal({ operator, open, onOpenChange }: EditOperator
       toast.success('Operador atualizado com sucesso!');
       queryClient.invalidateQueries({ queryKey: ['operators'] });
       onOpenChange(false);
-    } catch (error: unknown) {
+    } catch (error: any) {
       if (import.meta.env.DEV) {
-        console.error('Error updating operator:', error);
+
       }
       const errorMessage = error instanceof Error ? error.message : 'Erro ao atualizar operador';
       toast.error(errorMessage);

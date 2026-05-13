@@ -38,23 +38,23 @@ export function useDailyDragDrop({ onUpdate, allJobs, startHour, totalMinutes }:
     if (!date) return;
 
     try {
-      const existingJobsOnDest = allJobs.filter(j => 
-        j.machine_id === machineId && 
-        j.scheduled_date === date && 
+      const existingJobsOnDest = allJobs.filter(j =>
+        j.machine_id === machineId &&
+        j.scheduled_date === date &&
         j.id !== jobId &&
         j.status !== 'cancelled'
       );
-      
+
       const duration = job.estimated_duration || 60;
-      
+
       // Find next available slot on the target machine
       const nextSlot = findNextAvailableSlot(existingJobsOnDest, duration);
-      
+
       const updateData: any = {
         machine_id: machineId,
         updated_at: new Date().toISOString(),
       };
-      
+
       if (nextSlot) {
         updateData.start_time = nextSlot.start;
         updateData.end_time = nextSlot.end;
@@ -70,7 +70,7 @@ export function useDailyDragDrop({ onUpdate, allJobs, startHour, totalMinutes }:
       toast.success('Agendamento movido');
       onUpdate();
     } catch (err) {
-      console.error('Error updating job:', err);
+
       toast.error('Erro ao mover agendamento');
     }
   };

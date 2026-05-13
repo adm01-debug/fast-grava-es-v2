@@ -263,7 +263,7 @@ describe('Version History Comparison', () => {
     snapshotB: Record<string, unknown>
   ) {
     const allKeys = new Set([...Object.keys(snapshotA), ...Object.keys(snapshotB)]);
-    const diffs: Array<{ field: string; valueA: unknown; valueB: unknown }> = [];
+    const diffs: Array<{ field: string; valueA: any; valueB: any }> = [];
     allKeys.forEach(field => {
       const a = snapshotA[field];
       const b = snapshotB[field];
@@ -343,8 +343,8 @@ describe('Version Change Detection (update action)', () => {
   function detectChanges(
     previous: Record<string, unknown>,
     current: Record<string, unknown>
-  ): Array<{ field: string; oldValue: unknown; newValue: unknown }> {
-    const changes: Array<{ field: string; oldValue: unknown; newValue: unknown }> = [];
+  ): Array<{ field: string; oldValue: any; newValue: any }> {
+    const changes: Array<{ field: string; oldValue: any; newValue: any }> = [];
     Object.keys(current).forEach(field => {
       const oldVal = previous[field];
       const newVal = current[field];

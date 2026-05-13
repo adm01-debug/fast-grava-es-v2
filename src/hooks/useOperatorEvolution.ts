@@ -43,7 +43,7 @@ interface OperatorProfile {
 
 export function useOperatorEvolution(days: number = 30) {
   const startDate = useMemo(() => subDays(new Date(), days), [days]);
-  const dateRange = useMemo(() => 
+  const dateRange = useMemo(() =>
     eachDayOfInterval({ start: startDate, end: new Date() }),
     [startDate]
   );
@@ -116,7 +116,7 @@ export function useOperatorEvolution(days: number = 30) {
         .map(ma => ma.machine_id);
 
       // Get jobs for this operator's machines
-      const operatorJobs = finishedJobs.filter(j => 
+      const operatorJobs = finishedJobs.filter(j =>
         j.machine_id && operatorMachineIds.includes(j.machine_id)
       );
 
@@ -154,8 +154,8 @@ export function useOperatorEvolution(days: number = 30) {
 
         // Calculate efficiency score for the day
         const lossScore = Math.max(0, 100 - lossRate * 5);
-        const timeRatio = totalEstimated > 0 && productionTimeMinutes > 0 
-          ? productionTimeMinutes / totalEstimated 
+        const timeRatio = totalEstimated > 0 && productionTimeMinutes > 0
+          ? productionTimeMinutes / totalEstimated
           : 1;
         const timeScore = Math.max(0, Math.min(100, 100 - Math.abs(1 - timeRatio) * 50));
         const efficiencyScore = jobsCompleted > 0 ? (lossScore * 0.6 + timeScore * 0.4) : 0;

@@ -26,7 +26,7 @@ export function useMachineDowntime(machineId?: string) {
       if (machineId) {
         query = query.eq('machine_id', machineId);
       }
-      
+
       const { data, error } = await query.order('start_time', { ascending: false });
       if (error) throw error;
       return data;
@@ -40,7 +40,7 @@ export function useMachineDowntime(machineId?: string) {
         .insert(data)
         .select()
         .single();
-      
+
       if (error) throw error;
       return result;
     },
@@ -56,7 +56,7 @@ export function useMachineDowntime(machineId?: string) {
         .from('machine_downtime')
         .update({ end_time: endTime })
         .eq('id', id);
-      
+
       if (error) throw error;
     },
     onSuccess: () => {

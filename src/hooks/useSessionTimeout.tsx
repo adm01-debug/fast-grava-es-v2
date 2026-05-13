@@ -26,18 +26,18 @@ interface SessionTimeoutConfig {
    * @default 25
    */
   warningTimeout?: number;
-  
+
   /**
    * Tempo após warning antes do logout (em minutos)
    * @default 5
    */
   logoutTimeout?: number;
-  
+
   /**
    * Callback quando a sessão expirar
    */
   onSessionExpired?: () => void;
-  
+
   /**
    * Callback quando a sessão for renovada
    */
@@ -124,7 +124,6 @@ export function useSessionTimeout({
       });
       navigate("/auth");
     } catch (error) {
-      if (import.meta.env.DEV) console.error("Logout error:", error);
     }
   }, [navigate, onSessionExpired]);
 

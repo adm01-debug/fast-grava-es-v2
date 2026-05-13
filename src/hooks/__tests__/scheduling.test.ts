@@ -9,7 +9,7 @@ describe('Scheduling Conflict Detection Logic', () => {
   function detectConflicts(jobs: Array<{ id: string; machineId: string; date: string; startTime: string; endTime: string; status: string }>) {
     const activeStatuses = ['scheduled', 'ready', 'production'];
     const activeJobs = jobs.filter(j => activeStatuses.includes(j.status) && j.startTime && j.endTime && j.machineId);
-    
+
     const KEY_SEP = '|||';
     const byMachineDate = new Map<string, typeof activeJobs>();
     activeJobs.forEach(j => {

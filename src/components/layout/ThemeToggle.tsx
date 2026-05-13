@@ -14,7 +14,7 @@ import {
 
 function ThemeTransitionOverlay({ isVisible, isDark }: { isVisible: boolean; isDark: boolean }) {
   if (typeof document === 'undefined') return null;
-  
+
   return createPortal(
     <div
       className={`
@@ -23,7 +23,7 @@ function ThemeTransitionOverlay({ isVisible, isDark }: { isVisible: boolean; isD
         ${isVisible ? 'opacity-100' : 'opacity-0'}
       `}
       style={{
-        background: isDark 
+        background: isDark
           ? 'radial-gradient(circle at center, hsl(var(--primary) / 0.14) 0%, hsl(var(--background) / 0.72) 100%)'
           : 'radial-gradient(circle at center, hsl(var(--muted) / 0.7) 0%, hsl(var(--background) / 0.55) 100%)',
         backdropFilter: isVisible ? 'blur(2px)' : 'blur(0px)',
@@ -46,22 +46,22 @@ export function ThemeToggle() {
 
   const handleToggle = () => {
     const goingToDark = resolvedTheme !== 'dark';
-    
+
     setShowOverlay(true);
     setIsAnimating(true);
-    
+
     // Play appropriate sound
     if (goingToDark) {
       playDarkModeSound();
     } else {
       playLightModeSound();
     }
-    
+
     // Slight delay before theme change for cinematic effect
     setTimeout(() => {
       setTheme(goingToDark ? 'dark' : 'light');
     }, 150);
-    
+
     // Hide overlay after transition
     setTimeout(() => {
       setShowOverlay(false);
@@ -82,7 +82,7 @@ export function ThemeToggle() {
   return (
     <>
       <ThemeTransitionOverlay isVisible={showOverlay} isDark={!isDark} />
-      
+
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
@@ -97,11 +97,11 @@ export function ThemeToggle() {
             title={isDark ? 'Mudar para tema claro' : 'Mudar para tema escuro'}
           >
             {/* Sun icon */}
-            <Sun 
+            <Sun
               className={`
                 absolute h-4 w-4
-                ${isDark 
-                  ? 'rotate-90 scale-0 opacity-0 transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)]' 
+                ${isDark
+                  ? 'rotate-90 scale-0 opacity-0 transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)]'
                   : 'scale-100 opacity-100 animate-[spin_8s_linear_infinite]'
                 }
               `}
@@ -109,13 +109,13 @@ export function ThemeToggle() {
                 filter: isDark ? 'none' : 'drop-shadow(0 0 6px hsl(var(--warning) / 0.6))'
               }}
             />
-            
+
             {/* Moon icon */}
-            <Moon 
+            <Moon
               className={`
                 absolute h-4 w-4
-                ${isDark 
-                  ? 'rotate-0 scale-100 opacity-100 animate-[pulse_3s_ease-in-out_infinite]' 
+                ${isDark
+                  ? 'rotate-0 scale-100 opacity-100 animate-[pulse_3s_ease-in-out_infinite]'
                   : '-rotate-90 scale-0 opacity-0 transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)]'
                 }
               `}
@@ -126,7 +126,7 @@ export function ThemeToggle() {
 
             {/* Ripple effect on click */}
             {isAnimating && (
-              <span 
+              <span
                 className={`
                   absolute inset-0 rounded-md
                   animate-ping
@@ -138,7 +138,7 @@ export function ThemeToggle() {
 
             {/* Sound muted indicator */}
             {!soundEnabled && (
-              <span 
+              <span
                 className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-muted-foreground/60 flex items-center justify-center"
                 title="Som desativado"
               >
@@ -151,7 +151,7 @@ export function ThemeToggle() {
             </span>
           </Button>
         </DropdownMenuTrigger>
-        
+
         <DropdownMenuContent align="end" className="min-w-[160px]">
           <DropdownMenuItem onClick={handleToggle} className="cursor-pointer">
             {isDark ? (
@@ -166,9 +166,9 @@ export function ThemeToggle() {
               </>
             )}
           </DropdownMenuItem>
-          
+
           <DropdownMenuSeparator />
-          
+
           <DropdownMenuItem onClick={toggleSound} className="cursor-pointer">
             {soundEnabled ? (
               <>

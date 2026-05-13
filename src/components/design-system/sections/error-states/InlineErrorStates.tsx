@@ -73,7 +73,7 @@ export function InlineErrorStates() {
 <p className="text-xs text-destructive">
   <AlertCircle /> Email inválido
 </p>`} label="Campo com Erro" />
-            <CodeBlock code={`<div className="border border-destructive/50 
+            <CodeBlock code={`<div className="border border-destructive/50
   rounded-lg p-4 bg-destructive/5">
   <XCircle /> Falha ao carregar dados
   <Button>Tentar Novamente</Button>

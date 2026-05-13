@@ -42,15 +42,15 @@ const getPreferences = (): NotificationPreferences => {
 
 export const NotificationIntegrator = () => {
   const { user } = useAuth();
-  const { 
-    permission, 
-    sendDelayedJobAlert, 
-    sendLowBufferAlert, 
+  const {
+    permission,
+    sendDelayedJobAlert,
+    sendLowBufferAlert,
     sendBottleneckAlert,
     sendStatusChangeAlert,
-    sendProductionCompleteAlert 
+    sendProductionCompleteAlert
   } = usePushNotifications();
-  
+
   const {
     playDelayedAlert,
     playBufferAlert,
@@ -58,7 +58,7 @@ export const NotificationIntegrator = () => {
     playStatusChangeAlert,
     playCompleteAlert
   } = useNotificationSounds();
-  
+
   const previousJobsRef = useRef<Map<string, string>>(new Map());
   const notifiedAlertsRef = useRef<Set<string>>(new Set());
 
@@ -79,7 +79,7 @@ export const NotificationIntegrator = () => {
           const prefs = getPreferences();
           const newJob = payload.new as JobPayload;
           const oldJob = payload.old as JobPayload;
-          
+
           // Status change notification
           if (prefs.statusChanges && oldJob.status !== newJob.status) {
             playStatusChangeAlert();
@@ -144,7 +144,7 @@ export const NotificationIntegrator = () => {
         (payload) => {
           const prefs = getPreferences();
           const alert = payload.new as EfficiencyAlertPayload;
-          
+
           const alertKey = `${alert.alert_type}-${alert.id}`;
           if (notifiedAlertsRef.current.has(alertKey)) return;
           notifiedAlertsRef.current.add(alertKey);

@@ -37,7 +37,7 @@ export const ScanStatsChart = () => {
     queryKey: ["scan-stats", period],
     queryFn: async () => {
       const startDate = subDays(new Date(), parseInt(period));
-      
+
       const { data, error } = await supabase
         .from("qr_scan_history")
         .select("*")
@@ -67,7 +67,7 @@ export const ScanStatsChart = () => {
   // Stats by operator
   const operatorStats = useMemo(() => {
     if (!scans) return [];
-    
+
     const stats = new Map<string, { name: string; scans: number }>();
     scans.forEach((scan) => {
       const current = stats.get(scan.operator_id) || { name: scan.operator_name, scans: 0 };
@@ -83,7 +83,7 @@ export const ScanStatsChart = () => {
   // Stats by action type
   const actionStats = useMemo(() => {
     if (!scans) return [];
-    
+
     const stats = new Map<string, number>();
     scans.forEach((scan) => {
       stats.set(scan.action, (stats.get(scan.action) || 0) + 1);
@@ -100,9 +100,9 @@ export const ScanStatsChart = () => {
   // Stats by day
   const dailyStats = useMemo(() => {
     if (!scans) return [];
-    
+
     const stats = new Map<string, { date: string; scans: number }>();
-    
+
     // Initialize all days in period
     for (let i = parseInt(period) - 1; i >= 0; i--) {
       const date = format(subDays(new Date(), i), "dd/MM", { locale: ptBR });
@@ -162,7 +162,7 @@ export const ScanStatsChart = () => {
             </TabsList>
           </Tabs>
         </div>
-        
+
         {/* Summary stats */}
         <div className="grid grid-cols-2 gap-3 mt-4">
           <div className="p-3 rounded-lg bg-primary/10 border border-primary/20">

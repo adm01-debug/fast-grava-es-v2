@@ -10,11 +10,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button, LoadingButton } from "@/components/ui/button";
 
-import { 
-  Calendar, 
-  Clock, 
-  User, 
-  Package, 
+import {
+  Calendar,
+  Clock,
+  User,
+  Package,
   Palette,
   Play,
   Pause,
@@ -319,12 +319,12 @@ export function JobDetailsModal({ job, open, onOpenChange, onStatusChange }: Job
                       name="quantity"
                       control={control}
                       render={({ field: { onChange, value, ...field } }) => (
-                        <Input 
-                          {...field} 
-                          type="number" 
+                        <Input
+                          {...field}
+                          type="number"
                           value={value}
                           onChange={(e) => onChange(parseInt(e.target.value) || 0)}
-                          className={errors.quantity ? 'border-destructive' : ''} 
+                          className={errors.quantity ? 'border-destructive' : ''}
                         />
                       )}
                     />
@@ -385,42 +385,42 @@ export function JobDetailsModal({ job, open, onOpenChange, onStatusChange }: Job
                 {/* Details Grid */}
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1 p-4 rounded-xl bg-muted/20 border border-border/30">
-                    <InfoRow 
-                      icon={Package} 
-                      label={t('jobs.quantity')} 
+                    <InfoRow
+                      icon={Package}
+                      label={t('jobs.quantity')}
                       value={`${job.quantity.toLocaleString()} ${t('common.pieces')}`}
                       color="bg-indicator-success/20"
                     />
-                    <InfoRow 
-                      icon={Palette} 
-                      label={t('jobs.gravureColor')} 
+                    <InfoRow
+                      icon={Palette}
+                      label={t('jobs.gravureColor')}
                       value={job.gravure_color || t('common.notDefined')}
                       color="bg-accent-purple/20"
                     />
-                    <InfoRow 
-                      icon={Clock} 
-                      label={t('jobs.estimatedDuration')} 
+                    <InfoRow
+                      icon={Clock}
+                      label={t('jobs.estimatedDuration')}
                       value={`${job.estimated_duration} ${t('common.minutes')}`}
                       color="bg-priority-high/20"
                     />
                   </div>
 
                   <div className="space-y-1 p-4 rounded-xl bg-muted/20 border border-border/30">
-                    <InfoRow 
-                      icon={Calendar} 
-                      label={t('jobs.scheduledDate')} 
+                    <InfoRow
+                      icon={Calendar}
+                      label={t('jobs.scheduledDate')}
                       value={job.scheduled_date ? new Date(job.scheduled_date).toLocaleDateString('pt-BR') : t('common.notScheduled')}
                       color="bg-indicator-info/20"
                     />
-                    <InfoRow 
-                      icon={Clock} 
-                      label={t('common.time')} 
+                    <InfoRow
+                      icon={Clock}
+                      label={t('common.time')}
                       value={job.start_time && job.end_time ? `${job.start_time} - ${job.end_time}` : t('common.notDefined')}
                       color="bg-indicator-warning/20"
                     />
-                    <InfoRow 
-                      icon={User} 
-                      label={t('jobs.machine')} 
+                    <InfoRow
+                      icon={User}
+                      label={t('jobs.machine')}
                       value={machine ? `${machine.code} - ${machine.name}` : t('common.notAssigned')}
                       color="bg-accent-pink/20"
                     />
@@ -431,13 +431,13 @@ export function JobDetailsModal({ job, open, onOpenChange, onStatusChange }: Job
                 <div className="flex gap-4">
                   <div className="flex-1 p-4 rounded-xl border border-border/30" style={{ backgroundColor: `${technique?.color}10` }}>
                     <p className="text-xs text-muted-foreground mb-1">{t('jobs.technique')}</p>
-                    <Badge 
+                    <Badge
                       variant="outline"
                       className="text-sm"
-                      style={{ 
+                      style={{
                         backgroundColor: `${technique?.color}20`,
                         borderColor: `${technique?.color}50`,
-                        color: technique?.color 
+                        color: technique?.color
                       }}
                     >
                       {technique?.name || t('common.notDefined')}
@@ -453,7 +453,7 @@ export function JobDetailsModal({ job, open, onOpenChange, onStatusChange }: Job
 
                 {/* QR Code Section */}
                 <div className="flex justify-center">
-                  <JobQRCode 
+                  <JobQRCode
                     jobId={job.id}
                     orderNumber={job.order_number}
                     product={job.product}
@@ -478,7 +478,7 @@ export function JobDetailsModal({ job, open, onOpenChange, onStatusChange }: Job
                 {/* Quick Actions */}
                 <div className="flex flex-wrap gap-2">
                   {(job.status === 'queue' || job.status === 'ready' || job.status === 'scheduled') && (
-                    <Button 
+                    <Button
                       onClick={() => handleAction('start')}
                       className="bg-indicator-success/20 text-indicator-success hover:bg-indicator-success/30 border border-indicator-success/30"
                     >
@@ -486,17 +486,17 @@ export function JobDetailsModal({ job, open, onOpenChange, onStatusChange }: Job
                       Iniciar Produção
                     </Button>
                   )}
-                  
+
                    {job.status === 'production' && (
                     <>
-                      <Button 
+                      <Button
                         onClick={() => handleAction('pause')}
                         className="bg-indicator-warning/20 text-indicator-warning hover:bg-indicator-warning/30 border border-indicator-warning/30"
                       >
                         <Pause className="h-4 w-4 mr-2" />
                         Pausar
                       </Button>
-                      <Button 
+                      <Button
                         onClick={() => handleAction('finish')}
                         className="bg-indicator-success/20 text-indicator-success hover:bg-indicator-success/30 border border-indicator-success/30"
                       >
@@ -507,7 +507,7 @@ export function JobDetailsModal({ job, open, onOpenChange, onStatusChange }: Job
                   )}
 
                    {job.status === 'paused' && (
-                    <Button 
+                    <Button
                       onClick={() => handleAction('start')}
                       className="bg-indicator-success/20 text-indicator-success hover:bg-indicator-success/30 border border-indicator-success/30"
                     >
@@ -517,7 +517,7 @@ export function JobDetailsModal({ job, open, onOpenChange, onStatusChange }: Job
                   )}
 
                    {job.status !== 'rework' && job.status !== 'finished' && job.status !== 'cancelled' && (
-                    <Button 
+                    <Button
                       onClick={() => handleAction('rework')}
                       variant="outline"
                       className="border-accent-purple/30 text-accent-purple hover:bg-accent-purple/20"
@@ -545,12 +545,12 @@ export function JobDetailsModal({ job, open, onOpenChange, onStatusChange }: Job
           <TabsContent value="quality">
             <JobQualityTab jobId={job.id} techniqueId={job.technique_id} machineId={job.machine_id} />
           </TabsContent>
-          
+
           <TabsContent value="photos" className="mt-4">
             <ScrollArea className="h-[450px] pr-4">
-              <ProductionPhotos 
-                photos={job.production_photos} 
-                jobId={job.id} 
+              <ProductionPhotos
+                photos={job.production_photos}
+                jobId={job.id}
               />
             </ScrollArea>
           </TabsContent>
@@ -591,11 +591,11 @@ function JobHistoryTab({ jobId }: { jobId: string }) {
 
   return (
     <div className="mt-4">
-      <HistoryPeriodFilter 
-        value={period} 
-        onChange={setPeriod} 
+      <HistoryPeriodFilter
+        value={period}
+        onChange={setPeriod}
         onExport={handleExport}
-        resultCount={data?.length} 
+        resultCount={data?.length}
       />
       {isLoading ? (
         <div className="space-y-3">

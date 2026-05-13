@@ -71,9 +71,9 @@ export function useLoadBalancingWithActions(targetDate?: Date) {
           .from('jobs')
           .update({ machine_id: suggestion.suggestedMachineId })
           .eq('id', suggestion.jobId);
-        
+
         if (error) throw error;
-        
+
         return {
           success: true,
           jobId: suggestion.jobId,
@@ -83,7 +83,6 @@ export function useLoadBalancingWithActions(targetDate?: Date) {
         };
       } catch (error) {
         const appError = createAppError(error, LOAD_BALANCING_ERROR_CONTEXT.applySuggestion);
-        if (import.meta.env.DEV) console.error('[applySuggestion]', appError);
         throw error;
       }
     },
@@ -108,9 +107,9 @@ export function useLoadBalancingWithActions(targetDate?: Date) {
               .from('jobs')
               .update({ machine_id: suggestion.suggestedMachineId })
               .eq('id', suggestion.jobId);
-            
+
             if (error) throw error;
-            
+
             return {
               success: true,
               jobId: suggestion.jobId,
@@ -120,7 +119,6 @@ export function useLoadBalancingWithActions(targetDate?: Date) {
             };
           } catch (error) {
             const appError = createAppError(error, LOAD_BALANCING_ERROR_CONTEXT.applyMultiple);
-            if (import.meta.env.DEV) console.error('[applyMultipleSuggestions]', appError);
             return {
               success: false,
               jobId: suggestion.jobId,
@@ -131,15 +129,15 @@ export function useLoadBalancingWithActions(targetDate?: Date) {
           }
         })
       );
-      
+
       return results;
     },
     onSuccess: (results) => {
       queryClient.invalidateQueries({ queryKey: ['jobs'] });
-      
+
       const successful = results.filter(r => r.success).length;
       const failed = results.filter(r => !r.success).length;
-      
+
       if (successful > 0 && failed === 0) {
         toast.success(`${successful} job(s) redistribuído(s) com sucesso`);
       } else if (successful > 0 && failed > 0) {
@@ -236,13 +234,13 @@ export function useLoadBalancingWithActions(targetDate?: Date) {
 
         overloaded.forEach(overMachine => {
           // Get movable jobs (not in production, not urgent priority)
-          const movableJobs = overMachine.jobs.filter(j => 
-            !['production', 'finished'].includes(j.status) && 
+          const movableJobs = overMachine.jobs.filter(j =>
+            !['production', 'finished'].includes(j.status) &&
             j.priority !== 'urgent'
           );
 
           movableJobs.forEach(job => {
-            const bestTarget = underloaded.find(m => 
+            const bestTarget = underloaded.find(m =>
               m.availableMinutes >= job.estimated_duration
             );
 

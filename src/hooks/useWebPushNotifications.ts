@@ -23,16 +23,16 @@ export function useWebPushNotifications() {
   // Verifica suporte a push notifications
   useEffect(() => {
     const checkSupport = () => {
-      const supported = 'serviceWorker' in navigator && 
-                       'PushManager' in window && 
+      const supported = 'serviceWorker' in navigator &&
+                       'PushManager' in window &&
                        'Notification' in window;
       setIsSupported(supported);
-      
+
       if (supported) {
         setPermission(Notification.permission);
       }
     };
-    
+
     checkSupport();
   }, []);
 
@@ -47,7 +47,7 @@ export function useWebPushNotifications() {
       try {
         const registration = await navigator.serviceWorker.ready;
         const subscription = await registration.pushManager.getSubscription();
-        
+
         if (subscription) {
           // Verifica se a subscription está salva no banco
           const { data } = await supabase
@@ -56,13 +56,12 @@ export function useWebPushNotifications() {
             .eq('user_id', user.id)
             .eq('endpoint', subscription.endpoint)
             .maybeSingle();
-          
+
           setIsSubscribed(!!data);
         } else {
           setIsSubscribed(false);
         }
       } catch (error) {
-        if (import.meta.env.DEV) console.error('Error checking subscription:', error);
       } finally {
         setIsLoading(false);
       }
@@ -117,7 +116,7 @@ export function useWebPushNotifications() {
 
       // Extrair dados da subscription
       const subscriptionJson = subscription.toJSON();
-      
+
       if (!subscriptionJson.keys?.p256dh || !subscriptionJson.keys?.auth) {
         throw new Error('Subscription keys not available');
       }
@@ -135,7 +134,6 @@ export function useWebPushNotifications() {
         });
 
       if (error) {
-        if (import.meta.env.DEV) console.error('Error saving subscription:', error);
         throw error;
       }
 
@@ -144,7 +142,6 @@ export function useWebPushNotifications() {
       return true;
 
     } catch (error) {
-      if (import.meta.env.DEV) console.error('Error subscribing to push:', error);
       toast.error('Erro ao ativar notificações push');
       return false;
     } finally {
@@ -178,7 +175,6 @@ export function useWebPushNotifications() {
       return true;
 
     } catch (error) {
-      if (import.meta.env.DEV) console.error('Error unsubscribing from push:', error);
       toast.error('Erro ao desativar notificações');
       return false;
     } finally {
@@ -201,11 +197,10 @@ export function useWebPushNotifications() {
       });
 
       if (error) throw error;
-      
+
       toast.success('Notificação de teste enviada!');
       return true;
     } catch (error) {
-      if (import.meta.env.DEV) console.error('Error sending test notification:', error);
       toast.error('Erro ao enviar notificação de teste');
       return false;
     }

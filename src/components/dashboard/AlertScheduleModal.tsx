@@ -312,8 +312,8 @@ export function AlertScheduleModal({ open, onOpenChange, selectedJob, jobs, mach
 
           <DialogFooter className="gap-2">
             <Button variant="ghost" size="sm" onClick={() => setShowOptimizationModal(false)}>Voltar</Button>
-            <Button 
-              size="sm" 
+            <Button
+              size="sm"
               className="gap-2 bg-primary hover:bg-primary/90"
               onClick={() => {
                 applySuggestion();

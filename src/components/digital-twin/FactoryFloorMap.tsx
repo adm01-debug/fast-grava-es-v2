@@ -22,7 +22,7 @@ export function FactoryFloorMap() {
         .from('jobs')
         .select('*, machines(id, name)')
         .eq('status', 'in_progress');
-      
+
       const jobsByMachine: Record<string, any> = {};
       data?.forEach((job: any) => {
         if (job.machine_id) {
@@ -33,14 +33,14 @@ export function FactoryFloorMap() {
     };
 
     fetchActiveJobs();
-    
+
     const interval = setInterval(() => {
       const newData: Record<string, any> = {};
       machines.forEach(m => {
         const hasJob = !!activeJobs[m.id];
         newData[m.id] = {
-          load: hasJob ? Math.floor(Math.random() * 20) + 80 : 0, 
-          temp: hasJob ? Math.floor(Math.random() * 20) + 45 : 30, 
+          load: hasJob ? Math.floor(Math.random() * 20) + 80 : 0,
+          temp: hasJob ? Math.floor(Math.random() * 20) + 45 : 30,
           efficiency: hasJob ? Math.floor(Math.random() * 10) + 90 : 0,
           isWorking: hasJob
         };
@@ -79,14 +79,14 @@ export function FactoryFloorMap() {
 
       <div className="relative w-full aspect-[2.2/1] bg-secondary/10 rounded-xl border border-border/50 overflow-hidden p-8 group/map shadow-inner">
         {/* Factory Grid Background */}
-        <div className="absolute inset-0 opacity-10 pointer-events-none" 
+        <div className="absolute inset-0 opacity-10 pointer-events-none"
              style={{ backgroundImage: 'radial-gradient(circle, hsl(var(--primary)) 1px, transparent 1px)', backgroundSize: '30px 30px' }} />
-        
+
         {/* Logistics Flow Animation */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-20">
           <div className="absolute top-1/2 left-0 w-full h-[2px] bg-primary animate-[shimmer_2s_infinite]" />
           <div className="absolute top-0 left-1/2 w-[2px] h-full bg-primary animate-[shimmer_3s_infinite]" />
-          
+
           <div className="absolute top-[20%] left-0 w-2 h-2 bg-primary rounded-full animate-[ping_1.5s_infinite] shadow-glow-primary" style={{ left: '25%' }} />
           <div className="absolute top-[40%] left-0 w-2 h-2 bg-emerald-500 rounded-full animate-[ping_2s_infinite] shadow-glow-success" style={{ left: '65%' }} />
           <div className="absolute top-[80%] left-0 w-2 h-2 bg-amber-500 rounded-full animate-[ping_2.5s_infinite] shadow-[0_0_10px_rgba(245,158,11,0.5)]" style={{ left: '45%' }} />
@@ -95,7 +95,7 @@ export function FactoryFloorMap() {
         {/* Walls/Areas */}
         <div className="absolute top-1/4 left-0 w-full h-0.5 bg-primary/20" />
         <div className="absolute top-0 left-1/3 w-0.5 h-full bg-primary/20" />
-        
+
         <div className="absolute top-4 left-4 text-[10px] font-black uppercase text-primary/60 tracking-widest flex items-center gap-2">
           <div className="w-1 h-1 bg-primary rounded-full animate-pulse" />
           Área de Impressão (Serigrafia)
@@ -110,13 +110,13 @@ export function FactoryFloorMap() {
           {machines.map((machine) => {
             const status = liveData[machine.id] || { load: 0, temp: 0, efficiency: 0, isWorking: false };
             const isWorking = status.isWorking;
-            
+
             return (
               <div key={machine.id} className="relative group">
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <div 
+                      <div
                         onClick={() => setSelectedMachine(selectedMachine === machine.id ? null : machine.id)}
                         className={cn(
                           "w-full aspect-square rounded-lg border-2 flex flex-col items-center justify-center p-4 transition-all duration-500 cursor-pointer relative overflow-hidden",
@@ -144,7 +144,7 @@ export function FactoryFloorMap() {
                         {isWorking && (
                           <div className="mt-2 w-full space-y-1">
                             <div className="h-1 w-full bg-background/50 rounded-full overflow-hidden">
-                              <div className={cn("h-full transition-all duration-1000", status.load > 90 ? 'bg-amber-500' : 'bg-primary')} 
+                              <div className={cn("h-full transition-all duration-1000", status.load > 90 ? 'bg-amber-500' : 'bg-primary')}
                                    style={{ width: `${status.load}%` }} />
                             </div>
                           </div>

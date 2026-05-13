@@ -27,11 +27,11 @@ const costDriverLabels: Record<string, string> = {
   labor_hours: 'Hora Trabalho',
 };
 
-export function ABCActivityRatesCard({ 
-  activities, 
-  costPools, 
+export function ABCActivityRatesCard({
+  activities,
+  costPools,
   activityRates,
-  onUpdateRate 
+  onUpdateRate
 }: ABCActivityRatesCardProps) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editData, setEditData] = useState({
@@ -88,8 +88,8 @@ export function ABCActivityRatesCard({
           const pool = costPools.find(p => p.id === currentRate?.cost_pool_id);
 
           return (
-            <div 
-              key={activity.id} 
+            <div
+              key={activity.id}
               className="p-4 rounded-lg border border-border/50 bg-card/50 space-y-3"
             >
               <div className="flex items-start justify-between">
@@ -104,8 +104,8 @@ export function ABCActivityRatesCard({
 
               {editingId === activity.id ? (
                 <div className="flex items-center gap-2">
-                  <Select 
-                    value={editData.cost_pool_id} 
+                  <Select
+                    value={editData.cost_pool_id}
                     onValueChange={(v) => setEditData(prev => ({ ...prev, cost_pool_id: v }))}
                   >
                     <SelectTrigger className="w-[180px] h-9">

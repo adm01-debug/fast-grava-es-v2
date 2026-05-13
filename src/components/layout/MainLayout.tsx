@@ -51,18 +51,18 @@ export function MainLayout({ children }: MainLayoutProps) {
       <div className="flex h-screen w-full bg-background overflow-hidden">
         {/* Skip Links for Accessibility */}
         <SkipLinks />
-        
+
         {/* Sidebar - hidden on mobile, shown on tablet+ */}
         <AppSidebar />
-        
-        <main 
+
+        <main
           className={cn(
             "flex-1 flex flex-col overflow-y-auto overflow-x-hidden relative",
             "h-full scrollbar-thin"
           )}
         >
           <OfflineStatusBanner />
-          
+
           {/* Desktop top bar */}
           <div className="fixed top-4 right-4 z-40 hidden md:flex items-center gap-2" role="toolbar" aria-label="Ações rápidas">
             <SectionErrorBoundary section="Favoritos" compact>
@@ -82,7 +82,7 @@ export function MainLayout({ children }: MainLayoutProps) {
               <OfflineReadyIndicator />
             </Suspense>
             <ThemeToggle />
-            
+
             <Link to="/notifications">
               <Button variant="ghost" size="icon" className="relative h-9 w-9">
                 <Bell className="h-5 w-5" />
@@ -100,7 +100,7 @@ export function MainLayout({ children }: MainLayoutProps) {
               </Suspense>
             </SectionErrorBoundary>
           </div>
-          
+
           {/* Mobile/Tablet top bar */}
           <div className="fixed top-2 right-3 z-40 flex md:hidden items-center gap-1.5 safe-area-top" role="toolbar" aria-label="Ações rápidas mobile">
             <Suspense fallback={EmptyFallback}>
@@ -110,7 +110,7 @@ export function MainLayout({ children }: MainLayoutProps) {
               <OfflineReadyIndicator />
             </Suspense>
             <ThemeToggle />
-            
+
             <Link to="/notifications">
               <Button variant="ghost" size="icon" className="relative h-8 w-8">
                 <Bell className="h-4.5 w-4.5" />
@@ -122,7 +122,7 @@ export function MainLayout({ children }: MainLayoutProps) {
               </Button>
             </Link>
           </div>
-          
+
           {/* Content with proper padding and safe-area insets */}
           <MainContent className={cn(
             "pt-12 md:pt-4",
@@ -143,25 +143,25 @@ export function MainLayout({ children }: MainLayoutProps) {
               children
             )}
           </MainContent>
-          
+
           {/* Mobile navigation spacer */}
           {isMobile && <div className="h-20 shrink-0" aria-hidden="true" />}
         </main>
-        
+
         {/* Mobile navigation */}
         <SectionErrorBoundary section="Navegação mobile" compact>
           <Suspense fallback={EmptyFallback}>
             <MobileNavigation />
           </Suspense>
         </SectionErrorBoundary>
-        
+
         {/* Mobile FAB */}
         <SectionErrorBoundary section="Ações rápidas" compact>
           <Suspense fallback={EmptyFallback}>
             <MobileQuickActions />
           </Suspense>
         </SectionErrorBoundary>
-        
+
         {/* Global components */}
         <SectionErrorBoundary section="Assistente" compact>
           <Suspense fallback={EmptyFallback}>

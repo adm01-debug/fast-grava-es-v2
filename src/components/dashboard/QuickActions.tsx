@@ -22,7 +22,7 @@ export function QuickActions() {
           const Icon = action.icon;
           return (
             <Link key={action.href} to={action.href}>
-              <Button 
+              <Button
                 variant="outline"
                 className={cn(
                   "w-full h-auto py-4 flex-col gap-2 border-border/30 transition-all group press-scale",

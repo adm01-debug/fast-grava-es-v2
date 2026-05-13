@@ -80,12 +80,12 @@ export function HttpErrorStates() {
         <div className="space-y-3 pt-4 border-t border-border">
           <h5 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Exemplos de Código</h5>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <CodeBlock code={`<div className="border rounded-xl p-8 
+            <CodeBlock code={`<div className="border rounded-xl p-8
   bg-gradient-to-br from-warning/5 to-transparent">
   <div className="text-8xl font-bold text-warning/20">404</div>
   <Button variant="gradient">Ir para Início</Button>
 </div>`} label="Erro 404" />
-            <CodeBlock code={`<div className="border rounded-xl p-8 
+            <CodeBlock code={`<div className="border rounded-xl p-8
   bg-gradient-to-br from-destructive/5 to-transparent">
   <div className="text-8xl font-bold text-destructive/20">500</div>
   <Button variant="outline">Tentar Novamente</Button>

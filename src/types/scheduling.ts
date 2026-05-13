@@ -1,20 +1,20 @@
 // Types for the Scheduling System
 
-export type JobStatus = 
-  | 'queue' 
-  | 'ready' 
-  | 'scheduled' 
-  | 'production' 
-  | 'finished' 
-  | 'paused' 
-  | 'cancelled' 
-  | 'delayed' 
+export type JobStatus =
+  | 'queue'
+  | 'ready'
+  | 'scheduled'
+  | 'production'
+  | 'finished'
+  | 'paused'
+  | 'cancelled'
+  | 'delayed'
   | 'rework'
   | 'buffer';
 
 export type UserRole = 'coordinator' | 'operator' | 'manager';
 
-export type TechniqueId = 
+export type TechniqueId =
   | 'silk-textile'
   | 'silk-vinyl-flat'
   | 'silk-vinyl-rotative'

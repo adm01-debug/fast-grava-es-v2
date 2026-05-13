@@ -30,16 +30,16 @@ export function ReplacementParts({
       <div className="space-y-3">
         {parts.map((part, index) => (
           <div key={index} className="grid grid-cols-1 sm:grid-cols-4 gap-2 p-3 border rounded-lg bg-secondary/10">
-            <Input 
-              placeholder="Nome da Peça" 
-              value={part.name} 
+            <Input
+              placeholder="Nome da Peça"
+              value={part.name}
               onChange={(e) => onUpdate(index, 'name', e.target.value)}
               className="sm:col-span-2"
             />
-            <Input 
-              type="number" 
-              placeholder="Qtd" 
-              value={part.quantity} 
+            <Input
+              type="number"
+              placeholder="Qtd"
+              value={part.quantity}
               onChange={(e) => onUpdate(index, 'quantity', parseFloat(e.target.value) || 1)}
             />
             <Button variant="ghost" size="icon" className="text-destructive self-end" onClick={() => onRemove(index)}>

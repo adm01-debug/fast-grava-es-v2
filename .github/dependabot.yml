@@ -4,23 +4,13 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
-      day: "monday"
     open-pull-requests-limit: 10
     groups:
-      react:
+      dependencies:
         patterns:
-          - "react*"
-          - "@types/react*"
-      radix:
-        patterns:
-          - "@radix-ui/*"
-      testing:
-        patterns:
-          - "vitest"
-          - "@testing-library/*"
-          - "@vitest/*"
-    commit-message:
-      prefix: "chore(deps):"
-    labels:
-      - "dependencies"
-      - "automated"
+          - "*"
+  
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"

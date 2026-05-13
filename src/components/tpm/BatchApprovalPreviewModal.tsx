@@ -27,7 +27,7 @@ export function BatchApprovalPreviewModal({
   const { records } = useTPM();
   const [selectedRecordId, setSelectedRecordId] = useState<string | null>(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
-  
+
   const selectedRecords = useMemo(() => {
     return records.filter(r => recordIds.includes(r.id));
   }, [records, recordIds]);
@@ -36,11 +36,11 @@ export function BatchApprovalPreviewModal({
     return selectedRecords.map(record => {
       const issues = [];
       if (!record.signature_url) issues.push('Assinatura ausente');
-      
+
       // Check if any item that required photo doesn't have it
       // Note: We'd need the full record details including responses for this
       // For the preview, we'll check what's already in the record if available
-      
+
       return {
         ...record,
         isValid: issues.length === 0,
@@ -133,9 +133,9 @@ export function BatchApprovalPreviewModal({
                     {v.issues.join(', ') || '-'}
                   </TableCell>
                   <TableCell className="text-right">
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
+                    <Button
+                      variant="ghost"
+                      size="sm"
                       onClick={() => handleViewDetails(v.id)}
                       className="h-8 w-8 p-0"
                     >
@@ -148,7 +148,7 @@ export function BatchApprovalPreviewModal({
           </Table>
         </div>
 
-        <ExecutionDetailsModal 
+        <ExecutionDetailsModal
           isOpen={isDetailsOpen}
           onClose={() => setIsDetailsOpen(false)}
           recordId={selectedRecordId}
@@ -158,8 +158,8 @@ export function BatchApprovalPreviewModal({
           <Button variant="outline" onClick={onClose} disabled={isProcessing}>
             Cancelar
           </Button>
-          <Button 
-            onClick={onConfirm} 
+          <Button
+            onClick={onConfirm}
             disabled={!allValid || isProcessing || recordIds.length === 0}
             className="gap-2"
           >

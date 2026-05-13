@@ -78,9 +78,9 @@ export default function TraceabilityPage() {
   const [sortField, setSortField] = useState<SortField>('production_date');
   const [sortDir, setSortDir] = useState<SortDir>('desc');
   const [signatureModal, setSignatureModal] = useState<{ open: boolean; status: string }>({ open: false, status: '' });
-  
+
   const parentRef = useRef<HTMLDivElement>(null);
-  
+
   const [newLot, setNewLot] = useState({
     lot_number: '', product_name: '', quantity: 0, job_id: '',
     production_date: format(new Date(), 'yyyy-MM-dd'), expiration_date: '', notes: ''
@@ -155,8 +155,8 @@ export default function TraceabilityPage() {
 
   const processBulkStatusUpdate = (validLots: ProductionLot[], newStatus: string, reason?: string) => {
     validLots.forEach(lot => {
-      updateLot.mutate({ 
-        id: lot.id, 
+      updateLot.mutate({
+        id: lot.id,
         status: newStatus,
         notes: reason ? `${lot.notes || ''}\n[Assinado]: ${reason}` : lot.notes
       });
@@ -173,7 +173,7 @@ export default function TraceabilityPage() {
       toast.error('Nenhum lote pode ser alterado para este status');
       return;
     }
-    
+
     if (['blocked', 'quarantine', 'active'].includes(newStatus)) {
       setSignatureModal({ open: true, status: newStatus });
     } else {
@@ -244,7 +244,7 @@ export default function TraceabilityPage() {
       <div className="space-y-6 pb-20">
         <Breadcrumbs />
 
-        <ElectronicSignatureDialog 
+        <ElectronicSignatureDialog
           open={signatureModal.open}
           onOpenChange={(open) => setSignatureModal(prev => ({ ...prev, open }))}
           onConfirm={(reason) => {
@@ -408,8 +408,8 @@ export default function TraceabilityPage() {
                   {rowVirtualizer.getVirtualItems().map((virtualRow) => {
                     const lot = filteredAndSortedLots[virtualRow.index];
                     return (
-                      <TableRow 
-                        key={lot.id} 
+                      <TableRow
+                        key={lot.id}
                         className={cn(selectedIds.has(lot.id) ? 'bg-primary/5' : '', "absolute w-full border-b")}
                         style={{
                           height: `${virtualRow.size}px`,

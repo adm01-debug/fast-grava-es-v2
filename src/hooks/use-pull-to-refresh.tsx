@@ -25,7 +25,7 @@ export function usePullToRefresh<T extends HTMLElement = HTMLDivElement>({
   const [pulling, setPulling] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [pullDistance, setPullDistance] = useState(0);
-  
+
   const startYRef = useRef(0);
   const currentYRef = useRef(0);
 
@@ -33,29 +33,29 @@ export function usePullToRefresh<T extends HTMLElement = HTMLDivElement>({
 
   const handleTouchStart = useCallback((e: TouchEvent) => {
     if (disabled || refreshing) return;
-    
+
     const element = ref.current;
     if (!element || element.scrollTop > 0) return;
-    
+
     startYRef.current = e.touches[0].clientY;
     currentYRef.current = startYRef.current;
   }, [disabled, refreshing]);
 
   const handleTouchMove = useCallback((e: TouchEvent) => {
     if (disabled || refreshing) return;
-    
+
     const element = ref.current;
     if (!element || element.scrollTop > 0) return;
-    
+
     currentYRef.current = e.touches[0].clientY;
     const distance = Math.max(0, currentYRef.current - startYRef.current);
-    
+
     if (distance > 0) {
       setPulling(true);
       // Apply resistance
       const resistedDistance = distance * 0.5;
       setPullDistance(resistedDistance);
-      
+
       // Haptic feedback when reaching threshold
       if (hapticFeedback && resistedDistance >= threshold && pullDistance < threshold) {
         if ('vibrate' in navigator) {
@@ -67,9 +67,9 @@ export function usePullToRefresh<T extends HTMLElement = HTMLDivElement>({
 
   const handleTouchEnd = useCallback(async () => {
     if (disabled || refreshing) return;
-    
+
     setPulling(false);
-    
+
     if (pullDistance >= threshold) {
       setRefreshing(true);
       try {
@@ -78,7 +78,7 @@ export function usePullToRefresh<T extends HTMLElement = HTMLDivElement>({
         setRefreshing(false);
       }
     }
-    
+
     setPullDistance(0);
   }, [disabled, refreshing, pullDistance, threshold, onRefresh]);
 

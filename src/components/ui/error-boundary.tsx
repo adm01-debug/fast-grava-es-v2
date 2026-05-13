@@ -27,15 +27,15 @@ export class ErrorBoundary extends Component<Props, State> {
 
   async componentDidCatch(error: Error, errorInfo: ErrorInfo): Promise<void> {
     this.setState({ errorInfo });
-    
+
     // Always log so we can diagnose production issues
-    console.error('[ErrorBoundary] caught error in', this.props.componentName || 'Unknown', error);
-    console.error('[ErrorBoundary] componentStack:', errorInfo.componentStack);
+
+
 
     // Automatically log error to database
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      
+
       await supabase.from('error_logs').insert({
         message: error.message,
         stack: error.stack,
@@ -49,7 +49,7 @@ export class ErrorBoundary extends Component<Props, State> {
         }
       });
     } catch (logError) {
-      console.error('Failed to log error to database:', logError);
+
     }
   }
 
@@ -77,7 +77,7 @@ export class ErrorBoundary extends Component<Props, State> {
             <div className="mx-auto w-16 h-16 rounded-full bg-destructive/10 flex items-center justify-center">
               <AlertTriangle className="h-8 w-8 text-destructive" />
             </div>
-            
+
             <div className="space-y-2">
               <h1 className="text-2xl font-display font-bold text-foreground">
                 Algo deu errado

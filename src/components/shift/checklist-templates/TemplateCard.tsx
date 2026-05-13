@@ -34,7 +34,7 @@ export function TemplateCard({ template, onEdit, onDuplicate, onDelete, isDuplic
             )}
           </div>
           <div className="flex gap-1">
-            <Button 
+            <Button
               variant="ghost" size="icon" className="h-8 w-8"
               onClick={() => onDuplicate(template)}
               disabled={isDuplicating}
@@ -42,14 +42,14 @@ export function TemplateCard({ template, onEdit, onDuplicate, onDelete, isDuplic
             >
               <Copy className="h-4 w-4" />
             </Button>
-            <Button 
+            <Button
               variant="ghost" size="icon" className="h-8 w-8"
               onClick={() => onEdit(template)}
               title="Editar template"
             >
               <Edit2 className="h-4 w-4" />
             </Button>
-            <Button 
+            <Button
               variant="ghost" size="icon" className="h-8 w-8 text-destructive"
               onClick={() => onDelete(template.id)}
               title="Excluir template"

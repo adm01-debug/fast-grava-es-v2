@@ -63,7 +63,7 @@ export function SwipeActions({
 
   const handleDrag = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
     const offset = info.offset.x;
-    
+
     // Haptic feedback when crossing threshold
     if (Math.abs(offset) >= threshold && !actionTriggered) {
       trigger("medium");

@@ -2,16 +2,16 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { CodeBlock } from "@/components/ui/code-block";
 import { Code } from "lucide-react";
 
-export const HookDemo = ({ 
-  title, 
-  description, 
-  code, 
+export const HookDemo = ({
+  title,
+  description,
+  code,
   children,
   icon: Icon = Code
-}: { 
-  title: string; 
-  description: string; 
-  code: string; 
+}: {
+  title: string;
+  description: string;
+  code: string;
   children: React.ReactNode;
   icon?: React.ElementType;
 }) => (

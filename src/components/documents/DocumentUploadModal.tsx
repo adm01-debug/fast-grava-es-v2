@@ -191,8 +191,8 @@ export function DocumentUploadModal({ open, onOpenChange, technicalSheetId }: Do
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancelar
           </Button>
-          <Button 
-            onClick={handleSubmit} 
+          <Button
+            onClick={handleSubmit}
             disabled={!file || !title || uploadDocument.isPending}
           >
             {uploadDocument.isPending ? 'Enviando...' : 'Enviar Documento'}

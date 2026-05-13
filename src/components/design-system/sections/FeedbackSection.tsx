@@ -55,7 +55,7 @@ export function FeedbackSection() {
                   Operação realizada com sucesso!
                 </AlertDescription>
               </Alert>
-              
+
               <Alert className="border-warning bg-warning/10">
                 <AlertTriangle className="h-4 w-4 text-warning" />
                 <AlertTitle className="text-warning">Atenção</AlertTitle>
@@ -120,34 +120,34 @@ export function FeedbackSection() {
           <div className="space-y-2">
             <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Variantes de Toast</h4>
             <div className="flex flex-wrap gap-3">
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 onClick={() => toast('Mensagem padrão', { description: 'Esta é uma notificação padrão.' })}
               >
                 Toast Default
               </Button>
-              <Button 
+              <Button
                 variant="outline"
                 className="border-success text-success hover:bg-success/10"
                 onClick={() => toast.success('Sucesso!', { description: 'Operação completada.' })}
               >
                 Toast Success
               </Button>
-              <Button 
+              <Button
                 variant="outline"
                 className="border-destructive text-destructive hover:bg-destructive/10"
                 onClick={() => toast.error('Erro!', { description: 'Algo deu errado.' })}
               >
                 Toast Error
               </Button>
-              <Button 
+              <Button
                 variant="outline"
                 className="border-warning text-warning hover:bg-warning/10"
                 onClick={() => toast.warning('Atenção!', { description: 'Verifique esta ação.' })}
               >
                 Toast Warning
               </Button>
-              <Button 
+              <Button
                 variant="outline"
                 className="border-info text-info hover:bg-info/10"
                 onClick={() => toast.info('Informação', { description: 'Detalhes importantes.' })}
@@ -160,9 +160,9 @@ export function FeedbackSection() {
           <div className="space-y-2">
             <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Toast com Ações</h4>
             <div className="flex flex-wrap gap-3">
-              <Button 
+              <Button
                 variant="gradient"
-                onClick={() => toast('Ação necessária', { 
+                onClick={() => toast('Ação necessária', {
                   description: 'Deseja confirmar esta operação?',
                   action: {
                     label: 'Confirmar',
@@ -172,7 +172,7 @@ export function FeedbackSection() {
               >
                 Toast com Ação
               </Button>
-              <Button 
+              <Button
                 variant="gradient-secondary"
                 onClick={() => toast.promise(
                   new Promise((resolve) => setTimeout(resolve, 2000)),

@@ -11,9 +11,9 @@ import { supabase } from '@/integrations/supabase/client';
 export const OperatorMachinesIndicator = memo(function OperatorMachinesIndicator() {
   const { user, role } = useAuth();
   const { isTracking } = useOperatorPresence();
-  
+
   const { assignments, isLoading: assignmentsLoading } = useOperatorMachines(user?.id);
-  
+
   const { data: machines } = useQuery({
     queryKey: ['machines-for-indicator'],
     queryFn: async () => {
@@ -29,10 +29,10 @@ export const OperatorMachinesIndicator = memo(function OperatorMachinesIndicator
 
   // Only show for operators
   if (role !== 'operator') return null;
-  
+
   const assignedMachineIds = assignments?.map(a => a.machine_id) || [];
   const assignedMachines = machines?.filter(m => assignedMachineIds.includes(m.id)) || [];
-  
+
   if (assignmentsLoading) {
     return (
       <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-muted/50 animate-pulse">
@@ -84,8 +84,8 @@ const StatusBadge = memo(function StatusBadge({ isOnline }: { isOnline: boolean 
     <Tooltip>
       <TooltipTrigger asChild>
         <div className={`flex items-center gap-1 px-1.5 py-0.5 rounded-full text-xs font-medium ${
-          isOnline 
-            ? 'bg-green-500/20 text-green-600 dark:text-green-400' 
+          isOnline
+            ? 'bg-green-500/20 text-green-600 dark:text-green-400'
             : 'bg-muted text-muted-foreground'
         }`}>
           {isOnline ? (

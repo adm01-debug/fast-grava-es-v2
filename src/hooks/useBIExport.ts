@@ -15,11 +15,11 @@ export function useBIExport(biMetrics: ExportData) {
   const handleExport = async (formatType: 'csv' | 'pdf', type: string, extraData?: any) => {
     setIsExporting(true);
     const dateRange = { start: subDays(new Date(), 30), end: new Date(), label: 'Últimos 30 dias' };
-    
+
     try {
       if (formatType === 'csv') {
         toast.info(`Gerando CSV para ${type}...`);
-        
+
         let dataToExport: any[] = [];
         let filename = `BI_Export_${type}_${format(new Date(), 'yyyyMMdd')}`;
 
@@ -52,10 +52,10 @@ export function useBIExport(biMetrics: ExportData) {
         });
 
         const headers = Object.keys(cleanedData[0]).join(',');
-        const rows = cleanedData.map(obj => 
+        const rows = cleanedData.map(obj =>
           Object.values(obj).map(val => `"${String(val).replace(/"/g, '""')}"`).join(',')
         ).join('\n');
-        
+
         const blob = new Blob([`\uFEFF${headers}\n${rows}`], { type: 'text/csv;charset=utf-8;' });
         const link = document.createElement('a');
         link.href = URL.createObjectURL(blob);
@@ -63,11 +63,11 @@ export function useBIExport(biMetrics: ExportData) {
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-        
+
         toast.success(`Exportação CSV de ${type} concluída.`);
       } else {
         toast.info(`Gerando PDF para ${type}...`);
-        
+
         if (type.includes('Taxa_Perda') || type.includes('Perdas')) {
           const losses = extraData?.jobsWithLosses || (biMetrics.periodJobsList || []).filter((j: any) => (j.lost_pieces || 0) > 0);
           await exportLossesReport(losses, dateRange);
@@ -86,11 +86,11 @@ export function useBIExport(biMetrics: ExportData) {
           }));
           await exportProductionReport(jobs, dateRange, `Relatório: ${type.replace(/_/g, ' ')}`);
         }
-        
+
         toast.success(`Relatório PDF de ${type} gerado com sucesso.`);
       }
     } catch (error) {
-      console.error('Export error:', error);
+
       toast.error("Falha ao gerar exportação.");
     } finally {
       setIsExporting(false);

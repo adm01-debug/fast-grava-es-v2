@@ -5,8 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { 
-  History, Search, Filter, FileSpreadsheet, Download, 
+import {
+  History, Search, Filter, FileSpreadsheet, Download,
   Eye, Calendar, Wrench, CheckCircle, Clock, AlertTriangle,
   CheckSquare, XSquare
 } from 'lucide-react';
@@ -33,11 +33,11 @@ export function TPMExecutionHistory() {
 
   const filteredRecords = useMemo(() => {
     return records.filter(record => {
-      const matchesSearch = 
+      const matchesSearch =
         record.performed_by_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         record.machine?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         record.id.toLowerCase().includes(searchTerm.toLowerCase());
-      
+
       const matchesMachine = machineFilter === 'all' || record.machine_id === machineFilter;
       const matchesStatus = statusFilter === 'all' || record.status === statusFilter;
 
@@ -88,7 +88,7 @@ export function TPMExecutionHistory() {
   };
 
   const handleToggleSelect = (id: string) => {
-    setSelectedIds(prev => 
+    setSelectedIds(prev =>
       prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
     );
   };
@@ -130,8 +130,8 @@ export function TPMExecutionHistory() {
           </div>
           <div className="flex items-center gap-2">
             {selectedIds.length > 0 && (
-              <Button 
-                variant="default" 
+              <Button
+                variant="default"
                 className="bg-emerald-600 hover:bg-emerald-700 animate-in fade-in zoom-in-95 gap-2"
                 onClick={handleApproveBatch}
                 disabled={approveBatch.isPending || isBatchProcessing}
@@ -149,8 +149,8 @@ export function TPMExecutionHistory() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input 
-              placeholder="Buscar por técnico, máquina..." 
+            <Input
+              placeholder="Buscar por técnico, máquina..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-9"
@@ -190,7 +190,7 @@ export function TPMExecutionHistory() {
           </div>
         </div>
       </CardHeader>
-      
+
       <CardContent>
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
@@ -216,14 +216,14 @@ export function TPMExecutionHistory() {
                   <TableRow key={record.id} className={`hover:bg-muted/30 transition-colors ${selectedIds.includes(record.id) ? 'bg-primary/5' : ''}`}>
                     <TableCell>
                       {record.status === 'completed' && (
-                        <Checkbox 
-                          checked={selectedIds.includes(record.id)} 
+                        <Checkbox
+                          checked={selectedIds.includes(record.id)}
                           onCheckedChange={() => handleToggleSelect(record.id)}
                         />
                       )}
                     </TableCell>
                     <TableCell className="font-medium">
-                      {record.completed_at 
+                      {record.completed_at
                         ? format(new Date(record.completed_at), 'dd/MM/yyyy', { locale: ptBR })
                         : format(new Date(record.started_at), 'dd/MM/yyyy', { locale: ptBR })}
                     </TableCell>
@@ -251,9 +251,9 @@ export function TPMExecutionHistory() {
                     </TableCell>
                     <TableCell>{getStatusBadge(record.status)}</TableCell>
                     <TableCell className="text-right">
-                      <Button 
-                        size="sm" 
-                        variant="ghost" 
+                      <Button
+                        size="sm"
+                        variant="ghost"
                         className="hover:bg-primary/10 hover:text-primary transition-colors"
                         onClick={() => handleViewDetails(record.id)}
                       >
@@ -273,7 +273,7 @@ export function TPMExecutionHistory() {
           </div>
         )}
 
-        <ExecutionDetailsModal 
+        <ExecutionDetailsModal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
           recordId={selectedRecordId}

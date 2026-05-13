@@ -42,9 +42,9 @@ export function OperatorConfirmDialogs({
               <br />
               <div className="space-y-2">
                 <Label htmlFor="remove-reason" className="text-xs uppercase font-bold text-muted-foreground">Motivo (Opcional)</Label>
-                <Input 
+                <Input
                   id="remove-reason"
-                  placeholder="Ex: Desligamento, mudança de setor..." 
+                  placeholder="Ex: Desligamento, mudança de setor..."
                   value={reason}
                   onChange={(e) => setReason(e.target.value)}
                 />
@@ -53,9 +53,9 @@ export function OperatorConfirmDialogs({
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel disabled={isRemoving}>Cancelar</AlertDialogCancel>
-            <AlertDialogAction 
-              onClick={() => onRemoveConfirm(reason)} 
-              disabled={isRemoving} 
+            <AlertDialogAction
+              onClick={() => onRemoveConfirm(reason)}
+              disabled={isRemoving}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
               {isRemoving ? 'Removendo...' : 'Remover operador'}
@@ -79,9 +79,9 @@ export function OperatorConfirmDialogs({
                 </p>
                 <div className="space-y-2">
                   <Label htmlFor="toggle-reason" className="text-xs uppercase font-bold text-muted-foreground">Motivo (Opcional)</Label>
-                  <Input 
+                  <Input
                     id="toggle-reason"
-                    placeholder="Ex: Férias, licença médica, retorno..." 
+                    placeholder="Ex: Férias, licença médica, retorno..."
                     value={reason}
                     onChange={(e) => setReason(e.target.value)}
                   />
@@ -91,9 +91,9 @@ export function OperatorConfirmDialogs({
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel disabled={isToggling}>Cancelar</AlertDialogCancel>
-            <AlertDialogAction 
-              onClick={() => onToggleConfirm(reason)} 
-              disabled={isToggling} 
+            <AlertDialogAction
+              onClick={() => onToggleConfirm(reason)}
+              disabled={isToggling}
               className={operatorToToggle?.is_active ? 'bg-warning text-warning-foreground hover:bg-warning/90' : 'bg-success text-success-foreground hover:bg-success/90'}
             >
               {isToggling ? 'Processando...' : operatorToToggle?.is_active ? 'Desativar' : 'Reativar'}

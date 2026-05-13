@@ -14,7 +14,7 @@ export function TPMParameterAlerts() {
 
   useEffect(() => {
     fetchAlerts();
-    
+
     // Subscription for new alerts
     const channel = supabase
       .channel('parameter-alerts')
@@ -36,11 +36,11 @@ export function TPMParameterAlerts() {
         .select('*, execution:maintenance_records(id, machine:machines(name, code))')
         .eq('is_resolved', false)
         .order('created_at', { ascending: false });
-      
+
       if (error) throw error;
       setAlerts(data || []);
     } catch (err) {
-      console.error('Error fetching parameter alerts:', err);
+
     } finally {
       setIsLoading(false);
     }
@@ -52,7 +52,7 @@ export function TPMParameterAlerts() {
         .from('tpm_parameter_alerts')
         .update({ is_resolved: true })
         .eq('id', id);
-      
+
       if (error) throw error;
       toast.success('Alerta resolvido');
       fetchAlerts();
@@ -79,8 +79,8 @@ export function TPMParameterAlerts() {
           <div className="py-4 text-center text-muted-foreground">Carregando desvios...</div>
         ) : (
           alerts.map((alert) => (
-            <div 
-              key={alert.id} 
+            <div
+              key={alert.id}
               className="p-4 rounded-lg border border-amber-500/20 bg-amber-500/5 space-y-3"
             >
               <div className="flex items-start gap-3">
@@ -103,9 +103,9 @@ export function TPMParameterAlerts() {
                 </div>
               </div>
               <div className="flex justify-end">
-                <Button 
-                  size="sm" 
-                  variant="ghost" 
+                <Button
+                  size="sm"
+                  variant="ghost"
                   className="h-8 text-xs hover:bg-amber-500/20 text-amber-700"
                   onClick={() => resolveAlert(alert.id)}
                 >

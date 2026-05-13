@@ -71,10 +71,10 @@ export function LiveMachineStatusPanel() {
 
       let jobInfo: MachineStatus['currentJob'] | undefined;
       if (currentJob) {
-        const elapsed = currentJob.actual_start_time 
-          ? differenceInMinutes(new Date(), new Date(currentJob.actual_start_time)) 
+        const elapsed = currentJob.actual_start_time
+          ? differenceInMinutes(new Date(), new Date(currentJob.actual_start_time))
           : 0;
-        const progress = currentJob.estimated_duration > 0 
+        const progress = currentJob.estimated_duration > 0
           ? Math.min(100, (elapsed / currentJob.estimated_duration) * 100)
           : 0;
 
@@ -157,7 +157,7 @@ export function LiveMachineStatusPanel() {
                       className="w-1.5 h-1.5 rounded-full"
                       style={{ backgroundColor: machine.techniqueColor }}
                     />
-                    
+
                     {/* ML Risk Indicator */}
                     {predictions.find(p => p.machine_id === machine.machineId) && (
                       <TooltipProvider>
@@ -199,7 +199,7 @@ export function LiveMachineStatusPanel() {
 
                 <div className="flex flex-col gap-1 mb-2">
                   <p className="text-[11px] font-medium text-foreground leading-tight truncate">{machine.machineName}</p>
-                  
+
                   {/* Assigned Operator info */}
                   <div className="flex items-center gap-1.5">
                     {machine.assignedOperator ? (
@@ -235,21 +235,21 @@ export function LiveMachineStatusPanel() {
                         {machine.currentJob.product}
                       </p>
                     </div>
-                    
+
                     <div className="space-y-1">
                       <div className="flex justify-between text-[9px] font-medium">
                         <span>Progresso</span>
                         <span>{Math.round(machine.currentJob.progress)}%</span>
                       </div>
-                      <Progress 
-                        value={machine.currentJob.progress} 
+                      <Progress
+                        value={machine.currentJob.progress}
                         className={cn(
                           "h-1 rounded-full",
                           machine.status === 'producing' ? "bg-green-500/20" : "bg-muted"
                         )}
                       />
                     </div>
-                    
+
                     <div className="flex justify-between text-[9px] font-mono text-muted-foreground">
                       <div className="flex items-center gap-1">
                         <Clock className="h-2 w-2" />
@@ -259,7 +259,7 @@ export function LiveMachineStatusPanel() {
                         "flex items-center gap-1 font-bold",
                         machine.currentJob.remainingMinutes <= 0 ? 'text-red-400 animate-pulse' : 'text-primary'
                       )}>
-                        {machine.currentJob.remainingMinutes > 0 
+                        {machine.currentJob.remainingMinutes > 0
                           ? `${machine.currentJob.remainingMinutes}m restantes`
                           : 'Overdue!'
                         }

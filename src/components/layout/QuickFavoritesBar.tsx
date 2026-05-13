@@ -1,8 +1,8 @@
 import { memo, useState, useCallback, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { 
-  Home, Calendar, CalendarDays, LayoutGrid, List, Zap, BarChart3, 
-  AlertTriangle, BookOpen, UserCircle, QrCode, Bot, Printer, Users, 
+import {
+  Home, Calendar, CalendarDays, LayoutGrid, List, Zap, BarChart3,
+  AlertTriangle, BookOpen, UserCircle, QrCode, Bot, Printer, Users,
   Plus, Star, Settings2, X, RotateCcw, RefreshCw, GripVertical, Volume2, VolumeX
 } from 'lucide-react';
 import { arrayMove } from '@dnd-kit/sortable';
@@ -62,10 +62,10 @@ interface SortableFavoriteProps {
   isTriggered: boolean;
 }
 
-const SortableFavorite = memo(function SortableFavorite({ 
-  fav, 
-  isActive, 
-  showBadge, 
+const SortableFavorite = memo(function SortableFavorite({
+  fav,
+  isActive,
+  showBadge,
   alertCount,
   index,
   isTriggered
@@ -148,7 +148,7 @@ interface DragOverlayItemProps {
 
 const DragOverlayItem = memo(function DragOverlayItem({ fav }: DragOverlayItemProps) {
   const Icon = iconMap[fav.icon] || Star;
-  
+
   return (
     <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-primary/20 border-2 border-primary shadow-lg shadow-primary/20 backdrop-blur-sm animate-scale-in">
       <GripVertical className="h-3 w-3 text-primary/60" />
@@ -168,11 +168,11 @@ export const QuickFavoritesBar = memo(function QuickFavoritesBar() {
     const stored = localStorage.getItem('quick_favorites_sound_enabled');
     return stored !== null ? stored === 'true' : true;
   });
-  const { 
-    favorites, 
-    availableShortcuts, 
-    addFavorite, 
-    removeFavorite, 
+  const {
+    favorites,
+    availableShortcuts,
+    addFavorite,
+    removeFavorite,
     resetToDefault,
     isFavorite,
     reorderFavorites,
@@ -188,7 +188,7 @@ export const QuickFavoritesBar = memo(function QuickFavoritesBar() {
   // Play subtle click sound for keyboard shortcut
   const playShortcutSound = useCallback(() => {
     if (!soundEnabled) return;
-    
+
     try {
       if (!audioContextRef.current) {
         audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
@@ -196,18 +196,18 @@ export const QuickFavoritesBar = memo(function QuickFavoritesBar() {
       const ctx = audioContextRef.current;
       const oscillator = ctx.createOscillator();
       const gainNode = ctx.createGain();
-      
+
       oscillator.connect(gainNode);
       gainNode.connect(ctx.destination);
-      
+
       // Soft, pleasant click sound
       oscillator.type = 'sine';
       oscillator.frequency.setValueAtTime(880, ctx.currentTime);
       oscillator.frequency.exponentialRampToValueAtTime(1100, ctx.currentTime + 0.05);
-      
+
       gainNode.gain.setValueAtTime(0.1, ctx.currentTime);
       gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.08);
-      
+
       oscillator.start(ctx.currentTime);
       oscillator.stop(ctx.currentTime + 0.08);
     } catch (error) {
@@ -220,13 +220,13 @@ export const QuickFavoritesBar = memo(function QuickFavoritesBar() {
     const handleKeyDown = (e: KeyboardEvent) => {
       // Only trigger with Alt key held
       if (!e.altKey) return;
-      
+
       // Check if user is typing in an input
       const target = e.target as HTMLElement;
       if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) {
         return;
       }
-      
+
       const keyNum = parseInt(e.key);
       if (keyNum >= 1 && keyNum <= 6) {
         const favIndex = keyNum - 1;
@@ -288,7 +288,7 @@ export const QuickFavoritesBar = memo(function QuickFavoritesBar() {
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     setActiveDragId(null);
-    
+
     if (over && active.id !== over.id) {
       const oldIndex = favorites.findIndex(f => f.id === active.id);
       const newIndex = favorites.findIndex(f => f.id === over.id);
@@ -349,9 +349,9 @@ export const QuickFavoritesBar = memo(function QuickFavoritesBar() {
           {activeDragFav ? <DragOverlayItem fav={activeDragFav} /> : null}
         </DragOverlay>
       </DndContext>
-      
+
       <div className="w-px h-5 bg-border/50 mx-1" />
-      
+
       <Popover open={isEditing} onOpenChange={setIsEditing}>
         <PopoverTrigger asChild>
           <Button
@@ -393,11 +393,11 @@ export const QuickFavoritesBar = memo(function QuickFavoritesBar() {
                 </AlertDialogContent>
               </AlertDialog>
             </div>
-            
+
             <div className="text-xs text-muted-foreground">
               Seus favoritos ({favorites.length}/{maxFavorites})
             </div>
-            
+
             {favorites.length > 0 && (
               <div className="flex flex-wrap gap-1">
                 {favorites.map((fav) => {
@@ -417,7 +417,7 @@ export const QuickFavoritesBar = memo(function QuickFavoritesBar() {
                 })}
               </div>
             )}
-            
+
             <div className="border-t border-border pt-3">
               <div className="flex items-center justify-between mb-2">
                 <div className="text-xs text-muted-foreground">
@@ -447,7 +447,7 @@ export const QuickFavoritesBar = memo(function QuickFavoritesBar() {
                 </Button>
               </div>
             </div>
-            
+
             <div className="border-t border-border pt-3">
               <div className="text-xs text-muted-foreground mb-2">
                 Adicionar atalho
@@ -458,7 +458,7 @@ export const QuickFavoritesBar = memo(function QuickFavoritesBar() {
                   .map((shortcut) => {
                     const Icon = iconMap[shortcut.icon] || Star;
                     const disabled = favorites.length >= maxFavorites;
-                    
+
                     return (
                       <Button
                         key={shortcut.id}

@@ -31,7 +31,7 @@ export function useThemeSound() {
 
   const playLightModeSound = useCallback(() => {
     if (!soundEnabled) return;
-    
+
     try {
       const ctx = getAudioContext();
       const now = ctx.currentTime;
@@ -57,10 +57,10 @@ export function useThemeSound() {
       // Add a subtle shimmer
       const shimmer = ctx.createOscillator();
       const shimmerGain = ctx.createGain();
-      
+
       shimmer.type = 'sine';
       shimmer.frequency.setValueAtTime(1600, now + 0.05);
-      
+
       shimmerGain.gain.setValueAtTime(0, now + 0.05);
       shimmerGain.gain.linearRampToValueAtTime(0.03, now + 0.08);
       shimmerGain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
@@ -77,7 +77,7 @@ export function useThemeSound() {
 
   const playDarkModeSound = useCallback(() => {
     if (!soundEnabled) return;
-    
+
     try {
       const ctx = getAudioContext();
       const now = ctx.currentTime;
@@ -103,10 +103,10 @@ export function useThemeSound() {
       // Add a subtle low hum
       const hum = ctx.createOscillator();
       const humGain = ctx.createGain();
-      
+
       hum.type = 'sine';
       hum.frequency.setValueAtTime(200, now + 0.1);
-      
+
       humGain.gain.setValueAtTime(0, now + 0.1);
       humGain.gain.linearRampToValueAtTime(0.02, now + 0.15);
       humGain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);

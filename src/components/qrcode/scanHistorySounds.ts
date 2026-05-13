@@ -42,6 +42,5 @@ export function playNotificationSound(action: string) {
       currentTime += duration * 0.9;
     });
   } catch (error) {
-    if (import.meta.env.DEV) console.log('Could not play notification sound:', error);
   }
 }

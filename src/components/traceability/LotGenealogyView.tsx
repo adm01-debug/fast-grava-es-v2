@@ -61,10 +61,10 @@ export default function LotGenealogyView({ lot, open, onClose }: LotGenealogyVie
                 </h3>
                 <Badge variant="outline" className="text-[9px] font-black border-blue-500/20 text-blue-500">{parents.length} Componentes</Badge>
               </div>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {parents.length > 0 ? parents.map((item: LotComponent, idx) => (
-                  <motion.div 
+                  <motion.div
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: idx * 0.05 }}
@@ -92,7 +92,7 @@ export default function LotGenealogyView({ lot, open, onClose }: LotGenealogyVie
                   </div>
                 )}
               </div>
-              
+
               {parents.length > 0 && (
                 <div className="absolute left-1/2 -bottom-10 w-px h-10 bg-gradient-to-b from-blue-500/50 to-primary/50 hidden md:block" />
               )}
@@ -100,7 +100,7 @@ export default function LotGenealogyView({ lot, open, onClose }: LotGenealogyVie
 
             {/* Current Lot - Central Node */}
             <div className="flex justify-center relative py-4">
-              <motion.div 
+              <motion.div
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 className="w-full max-w-sm z-10"
@@ -116,7 +116,7 @@ export default function LotGenealogyView({ lot, open, onClose }: LotGenealogyVie
                     </Badge>
                     <h4 className="font-mono font-black text-2xl tracking-tighter text-foreground leading-none">{lot.lot_number}</h4>
                     <p className="text-sm font-black text-muted-foreground mt-2 uppercase tracking-tight">{lot.product_name}</p>
-                    
+
                     <div className="grid grid-cols-2 gap-8 mt-8 w-full border-t border-primary/10 pt-6">
                        <div className="flex flex-col">
                           <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">Yield Operacional</span>
@@ -130,7 +130,7 @@ export default function LotGenealogyView({ lot, open, onClose }: LotGenealogyVie
                   </CardContent>
                 </Card>
               </motion.div>
-              
+
               {children.length > 0 && (
                 <div className="absolute left-1/2 -bottom-10 w-px h-10 bg-gradient-to-b from-primary/50 to-emerald-500/50 hidden md:block" />
               )}
@@ -145,10 +145,10 @@ export default function LotGenealogyView({ lot, open, onClose }: LotGenealogyVie
                   <ArrowRight className="h-4 w-4" />
                 </h3>
               </div>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {children.length > 0 ? children.map((item: GenealogyChildItem, idx) => (
-                  <motion.div 
+                  <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: idx * 0.05 }}

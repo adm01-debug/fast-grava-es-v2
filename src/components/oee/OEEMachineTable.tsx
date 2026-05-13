@@ -67,7 +67,7 @@ export const OEEMachineTable = memo(function OEEMachineTable({ machines }: OEEMa
         const aVal = a[sortField];
         const bVal = b[sortField];
         const dir = sortDirection === 'asc' ? 1 : -1;
-        
+
         if (typeof aVal === 'string' && typeof bVal === 'string') {
           return aVal.localeCompare(bVal) * dir;
         }
@@ -107,16 +107,16 @@ export const OEEMachineTable = memo(function OEEMachineTable({ machines }: OEEMa
   const renderMetricCell = (value: number, benchmark: number = 85) => {
     const color = getOEEColor(value);
     const trend = value >= benchmark ? 'up' : value >= benchmark - 10 ? 'stable' : 'down';
-    
+
     // Using CSS custom property for progress color
     const progressStyle: React.CSSProperties & { '--progress-color'?: string } = {
       '--progress-color': color
     };
-    
+
     return (
       <div className="flex items-center gap-2">
-        <Progress 
-          value={value} 
+        <Progress
+          value={value}
           className="h-2 w-16"
           style={progressStyle}
         />
@@ -139,7 +139,7 @@ export const OEEMachineTable = memo(function OEEMachineTable({ machines }: OEEMa
             {filteredMachines.length} de {machines.length} máquinas
           </span>
         </CardTitle>
-        
+
         {/* Filters */}
         <div className="flex gap-3 mt-4">
           <div className="relative flex-1 max-w-xs">
@@ -151,7 +151,7 @@ export const OEEMachineTable = memo(function OEEMachineTable({ machines }: OEEMa
               className="pl-9"
             />
           </div>
-          
+
           <Select value={techniqueFilter} onValueChange={setTechniqueFilter}>
             <SelectTrigger className="w-48">
               <SelectValue placeholder="Técnica" />
@@ -165,7 +165,7 @@ export const OEEMachineTable = memo(function OEEMachineTable({ machines }: OEEMa
           </Select>
         </div>
       </CardHeader>
-      
+
       <CardContent>
         <div className="rounded-md border">
           <Table>
@@ -224,11 +224,11 @@ export const OEEMachineTable = memo(function OEEMachineTable({ machines }: OEEMa
                       </div>
                     </TableCell>
                     <TableCell>
-                      <Badge 
-                        variant="outline" 
-                        style={{ 
+                      <Badge
+                        variant="outline"
+                        style={{
                           borderColor: machine.techniqueColor,
-                          color: machine.techniqueColor 
+                          color: machine.techniqueColor
                         }}
                       >
                         {machine.techniqueName}
@@ -239,7 +239,7 @@ export const OEEMachineTable = memo(function OEEMachineTable({ machines }: OEEMa
                     <TableCell>{renderMetricCell(machine.quality, 95)}</TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
-                        <span 
+                        <span
                           className="text-lg font-bold"
                           style={{ color: getOEEColor(machine.oee) }}
                         >
@@ -259,9 +259,9 @@ export const OEEMachineTable = memo(function OEEMachineTable({ machines }: OEEMa
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
+                      <Button
+                        variant="ghost"
+                        size="icon"
                         onClick={() => {
                           setSelectedMachineId(machine.machineId);
                           setDetailsOpen(true);
@@ -284,7 +284,7 @@ export const OEEMachineTable = memo(function OEEMachineTable({ machines }: OEEMa
             <DialogTitle>Detalhes da Máquina</DialogTitle>
             <DialogDescription>Dados de performance e manutenção</DialogDescription>
           </DialogHeader>
-          
+
           {selectedMachineId && (
             <Tabs defaultValue="tpm" className="flex-1 flex flex-col overflow-hidden">
               <TabsList className="grid w-full grid-cols-2">

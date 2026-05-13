@@ -3,8 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { supabase } from '@/integrations/supabase/client';
-import { 
-  Play, CheckCircle2, Pause, AlertTriangle, Clock, 
+import {
+  Play, CheckCircle2, Pause, AlertTriangle, Clock,
   ArrowRight, Zap, Package
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
@@ -56,7 +56,7 @@ export function ActivityFeedWidget() {
       }, (payload) => {
         const newJob = payload.new as Record<string, unknown>;
         const oldJob = payload.old as Record<string, unknown>;
-        
+
         if (oldJob.status !== newJob.status) {
           const newStatus = newJob.status as string;
           let type: FeedEvent['type'] = 'status_change';

@@ -14,14 +14,14 @@ export function useRipple({ color = 'currentColor', duration = 600 }: RippleProp
 
   const triggerRipple = useCallback((e: React.MouseEvent<HTMLElement>) => {
     if (prefersReducedMotion) return;
-    
+
     const rect = e.currentTarget.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
     const id = Date.now();
-    
+
     setRipples(prev => [...prev, { x, y, id }]);
-    
+
     setTimeout(() => {
       setRipples(prev => prev.filter(r => r.id !== id));
     }, duration);
@@ -293,7 +293,7 @@ export const FadeSlide = memo(function FadeSlide({
   className,
 }: FadeSlideProps) {
   const prefersReducedMotion = useReducedMotion();
-  
+
   const directionMap = {
     up: { y: 20 },
     down: { y: -20 },

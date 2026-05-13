@@ -44,7 +44,7 @@ export function ThemeToggleSection() {
                   Ícone do sol gira lentamente (8s) em modo claro com glow dourado.
                 </p>
               </div>
-              
+
               <div className="p-4 rounded-lg bg-muted/20 border space-y-2">
                 <div className="flex items-center gap-2">
                   <Moon className="h-4 w-4 text-primary animate-pulse" />
@@ -54,7 +54,7 @@ export function ThemeToggleSection() {
                   Ícone da lua pulsa suavemente (3s) em modo escuro com glow azulado.
                 </p>
               </div>
-              
+
               <div className="p-4 rounded-lg bg-muted/20 border space-y-2">
                 <div className="flex items-center gap-2">
                   <Sparkles className="h-4 w-4 text-primary" />
@@ -64,7 +64,7 @@ export function ThemeToggleSection() {
                   Transição com gradiente radial e blur suave ao trocar de tema.
                 </p>
               </div>
-              
+
               <div className="p-4 rounded-lg bg-muted/20 border space-y-2">
                 <div className="flex items-center gap-2">
                   <Volume2 className="h-4 w-4 text-success" />
@@ -88,7 +88,7 @@ export function ThemeToggleSection() {
                 <div className="space-y-1">
                   <p className="font-medium">Preferência Persistida</p>
                   <p className="text-sm text-muted-foreground">
-                    A opção de som é salva em <code className="text-primary text-xs">localStorage</code> e 
+                    A opção de som é salva em <code className="text-primary text-xs">localStorage</code> e
                     persiste entre sessões. Um indicador visual aparece quando o som está desativado.
                   </p>
                 </div>
@@ -116,7 +116,7 @@ export function ThemeToggleSection() {
               <pre className="text-muted-foreground">
 {`import { useThemeSound } from '@/hooks/useThemeSound';
 
-const { 
+const {
   playLightModeSound,  // Toca som de tema claro
   playDarkModeSound,   // Toca som de tema escuro
   soundEnabled,        // Estado atual do som
@@ -273,16 +273,16 @@ const playCustomLightSound = () => {
   const ctx = new AudioContext();
   const osc = ctx.createOscillator();
   const gain = ctx.createGain();
-  
+
   // Frequência inicial e final
   osc.frequency.setValueAtTime(600, ctx.currentTime);
   osc.frequency.exponentialRampToValueAtTime(1400, ctx.currentTime + 0.2);
-  
+
   // Envelope de volume
   gain.gain.setValueAtTime(0, ctx.currentTime);
   gain.gain.linearRampToValueAtTime(0.1, ctx.currentTime + 0.02);
   gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
-  
+
   osc.connect(gain).connect(ctx.destination);
   osc.start();
   osc.stop(ctx.currentTime + 0.3);
@@ -311,7 +311,7 @@ const addHarmonic = (ctx, baseFreq, multiplier, delay) => {
   --foreground: 222 47% 12%;      /* Texto light mode */
   --primary: 222 47% 50%;         /* Cor primária (lua) */
   --warning: 38 92% 50%;          /* Cor de warning (sol) */
-  
+
   /* Transições globais */
   --theme-transition: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -323,7 +323,7 @@ const addHarmonic = (ctx, baseFreq, multiplier, delay) => {
 
 /* Aplicar transições suaves */
 html, body, .bg-background, .bg-card {
-  transition: 
+  transition:
     background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
     border-color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
     color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -344,7 +344,7 @@ html, body, .bg-background, .bg-card {
                   <li><code className="text-primary">cubic-bezier(0.34,1.56,0.64,1)</code> - Efeito "bounce"</li>
                 </ul>
               </div>
-              
+
               <div className="p-4 rounded-lg bg-muted/20 border space-y-2">
                 <span className="font-medium">Durações Recomendadas</span>
                 <ul className="text-sm text-muted-foreground space-y-1">

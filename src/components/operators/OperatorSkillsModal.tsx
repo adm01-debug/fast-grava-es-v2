@@ -85,8 +85,8 @@ export function OperatorSkillsModal({ operator, open, onOpenChange }: OperatorSk
               </Select>
             </div>
             <div className="sm:col-span-1">
-              <Button 
-                onClick={handleAddSkill} 
+              <Button
+                onClick={handleAddSkill}
                 disabled={!selectedTechnique || isUpserting}
                 size="sm"
                 className="w-full h-9"
@@ -109,14 +109,14 @@ export function OperatorSkillsModal({ operator, open, onOpenChange }: OperatorSk
                   {skills.map(skill => {
                     const tech = techniques.find(t => t.id === skill.technique_id);
                     return (
-                      <div 
-                        key={skill.id} 
+                      <div
+                        key={skill.id}
                         className="flex items-center justify-between p-3 rounded-lg border border-border/50 bg-card/50 hover:bg-accent/5 transition-colors"
                       >
                         <div className="flex items-center gap-3">
-                          <div 
-                            className="w-2 h-2 rounded-full" 
-                            style={{ backgroundColor: tech?.color || '#888' }} 
+                          <div
+                            className="w-2 h-2 rounded-full"
+                            style={{ backgroundColor: tech?.color || '#888' }}
                           />
                           <div>
                             <p className="text-sm font-medium">{tech?.name || skill.technique_id}</p>
@@ -128,9 +128,9 @@ export function OperatorSkillsModal({ operator, open, onOpenChange }: OperatorSk
                             </div>
                           </div>
                         </div>
-                        <Button 
-                          variant="ghost" 
-                          size="icon" 
+                        <Button
+                          variant="ghost"
+                          size="icon"
                           className="h-8 w-8 text-muted-foreground hover:text-destructive"
                           onClick={() => deleteSkill(skill.id)}
                         >

@@ -12,11 +12,11 @@ interface ABCJobCostsTableProps {
   isRecalculating: boolean;
 }
 
-export function ABCJobCostsTable({ 
-  jobSummaries, 
-  onRecalculate, 
+export function ABCJobCostsTable({
+  jobSummaries,
+  onRecalculate,
   onRecalculateAll,
-  isRecalculating 
+  isRecalculating
 }: ABCJobCostsTableProps) {
   const sortedSummaries = [...jobSummaries].sort((a, b) => b.total_cost - a.total_cost);
 
@@ -28,8 +28,8 @@ export function ABCJobCostsTable({
             <Calculator className="h-5 w-5 text-primary" />
             Custos por Job
           </CardTitle>
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             size="sm"
             onClick={onRecalculateAll}
             disabled={isRecalculating}
@@ -70,14 +70,14 @@ export function ABCJobCostsTable({
                       {summary.quantity.toLocaleString()}
                     </TableCell>
                     <TableCell className="text-right font-mono font-semibold text-primary">
-                      {summary.total_cost.toLocaleString('pt-BR', { 
-                        style: 'currency', 
-                        currency: 'BRL' 
+                      {summary.total_cost.toLocaleString('pt-BR', {
+                        style: 'currency',
+                        currency: 'BRL'
                       })}
                     </TableCell>
                     <TableCell className="text-right font-mono">
-                      {summary.unit_cost.toLocaleString('pt-BR', { 
-                        style: 'currency', 
+                      {summary.unit_cost.toLocaleString('pt-BR', {
+                        style: 'currency',
                         currency: 'BRL',
                         minimumFractionDigits: 4,
                       })}

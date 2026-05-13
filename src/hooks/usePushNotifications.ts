@@ -32,10 +32,10 @@ export const usePushNotifications = () => {
     // Check if notifications are supported
     const supported = 'Notification' in window && 'serviceWorker' in navigator;
     setIsSupported(supported);
-    
+
     if (supported) {
       setPermission(Notification.permission);
-      
+
       // Check if already subscribed
       if (user) {
         checkSubscription();
@@ -85,7 +85,7 @@ export const usePushNotifications = () => {
     try {
       const result = await Notification.requestPermission();
       setPermission(result);
-      
+
       if (result === 'granted') {
         toast({
           title: "Notificações ativadas",
@@ -103,19 +103,16 @@ export const usePushNotifications = () => {
       return false;
     } catch (error) {
       const appError = createAppError(error, PUSH_NOTIFICATIONS_ERROR_CONTEXT.requestPermission);
-      if (import.meta.env.DEV) console.error('[requestPermission]', appError);
       return false;
     }
   }, [isSupported, toast]);
 
   const sendNotification = useCallback((options: NotificationOptions) => {
     if (!isSupported) {
-      if (import.meta.env.DEV) console.log('[sendNotification] Notifications not supported');
       return null;
     }
 
     if (permission !== 'granted') {
-      if (import.meta.env.DEV) console.log('[sendNotification] Notification permission not granted');
       return null;
     }
 
@@ -131,7 +128,7 @@ export const usePushNotifications = () => {
       notification.onclick = () => {
         window.focus();
         notification.close();
-        
+
         // Navigate to specific page if data contains a route
         // Using navigateTo helper for React Router integration
         if (options.data?.route && typeof options.data.route === 'string') {
@@ -142,7 +139,6 @@ export const usePushNotifications = () => {
       return notification;
     } catch (error) {
       const appError = createAppError(error, PUSH_NOTIFICATIONS_ERROR_CONTEXT.sendNotification);
-      if (import.meta.env.DEV) console.error('[sendNotification]', appError);
       return null;
     }
   }, [isSupported, permission]);
@@ -199,14 +195,14 @@ export const usePushNotifications = () => {
   // Unsubscribe from push notifications
   const unsubscribe = useCallback(async (): Promise<boolean> => {
     if (!user) return false;
-    
+
     setIsLoading(true);
     try {
       await supabase
         .from('push_subscriptions')
         .delete()
         .eq('user_id', user.id);
-      
+
       setIsSubscribed(false);
       toast({
         title: "Notificações desativadas",
@@ -215,7 +211,6 @@ export const usePushNotifications = () => {
       return true;
     } catch (error) {
       const appError = createAppError(error, PUSH_NOTIFICATIONS_ERROR_CONTEXT.subscribe);
-      if (import.meta.env.DEV) console.error('[unsubscribe]', appError);
       return false;
     } finally {
       setIsLoading(false);

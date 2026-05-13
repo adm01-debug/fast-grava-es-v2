@@ -56,9 +56,9 @@ describe('useInventory Logic & Security', () => {
     (supabase.from as any).mockReturnValue({
       select: vi.fn().mockReturnThis(),
       eq: vi.fn().mockReturnThis(),
-      single: vi.fn().mockReturnValue({ 
-        data: { id: '1', location: 'B1', current_stock: 10 }, 
-        error: null 
+      single: vi.fn().mockReturnValue({
+        data: { id: '1', location: 'B1', current_stock: 10 },
+        error: null
       }),
     });
 
@@ -74,15 +74,15 @@ describe('useInventory Logic & Security', () => {
 
   it('should prevent output if stock is insufficient', async () => {
     (supabase.auth.getUser as any).mockResolvedValue({ data: { user: { id: 'user1' } } });
-    
+
     (supabase.from as any).mockImplementation((table: string) => {
       if (table === 'inventory_items') {
         return {
           select: vi.fn().mockReturnThis(),
           eq: vi.fn().mockReturnThis(),
-          single: vi.fn().mockReturnValue({ 
-            data: { id: '1', current_stock: 5, name: 'Item Test' }, 
-            error: null 
+          single: vi.fn().mockReturnValue({
+            data: { id: '1', current_stock: 5, name: 'Item Test' },
+            error: null
           }),
         };
       }

@@ -8,10 +8,10 @@ import { Label } from '@/components/ui/label';
 import { Loader2, Lock, Shield } from 'lucide-react';
 import { toast } from 'sonner';
 
-type SensitiveAction = 
-  | 'change_password' 
-  | 'change_email' 
-  | 'configure_mfa' 
+type SensitiveAction =
+  | 'change_password'
+  | 'change_email'
+  | 'configure_mfa'
   | 'disable_mfa'
   | 'admin_action'
   | 'delete_account'
@@ -78,7 +78,7 @@ export function ReauthProvider({ children }: { children: ReactNode }) {
 
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      
+
       if (!user?.email) {
         throw new Error('Usuário não encontrado');
       }
@@ -105,14 +105,13 @@ export function ReauthProvider({ children }: { children: ReactNode }) {
       setLastReauthAt(new Date());
       setShowDialog(false);
       setPassword('');
-      
+
       toast.success('Identidade verificada');
-      
+
       if (onSuccessCallback) {
         onSuccessCallback();
       }
     } catch (error) {
-      if (import.meta.env.DEV) console.error('Reauth error:', error);
       const message = error instanceof Error ? error.message : 'Falha na verificação';
       toast.error(message);
 
@@ -138,10 +137,10 @@ export function ReauthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <ReauthContext.Provider value={{ 
-      requireReauth, 
+    <ReauthContext.Provider value={{
+      requireReauth,
       isReauthenticated: isReauthenticated(),
-      lastReauthAt 
+      lastReauthAt
     }}>
       {children}
 
@@ -153,7 +152,7 @@ export function ReauthProvider({ children }: { children: ReactNode }) {
             </div>
             <DialogTitle className="text-center">Verificação de Segurança</DialogTitle>
             <DialogDescription className="text-center">
-              Para executar <strong>{currentAction ? ACTION_LABELS[currentAction] : 'esta ação'}</strong>, 
+              Para executar <strong>{currentAction ? ACTION_LABELS[currentAction] : 'esta ação'}</strong>,
               confirme sua identidade digitando sua senha.
             </DialogDescription>
           </DialogHeader>
@@ -216,7 +215,7 @@ export function withReauth<P extends object>(
 ) {
   return function WithReauthComponent(props: P) {
     const { requireReauth } = useReauth();
-    
+
     const handleAction = (callback: () => void) => {
       requireReauth(action, callback);
     };

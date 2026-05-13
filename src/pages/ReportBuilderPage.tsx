@@ -2,13 +2,13 @@ import { useState, useMemo } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { 
-  FileText, 
-  Download, 
-  Settings2, 
-  Table2, 
-  CheckCircle2, 
-  ChevronRight, 
+import {
+  FileText,
+  Download,
+  Settings2,
+  Table2,
+  CheckCircle2,
+  ChevronRight,
   Filter,
   BarChart3,
   LayoutDashboard,
@@ -96,7 +96,7 @@ export default function ReportBuilderPage() {
         .from(selectedTable as any)
         .select(selectedColumns.join(','))
         .limit(10);
-      
+
       const filterField = TABLE_FILTER_FIELDS[selectedTable];
       if (dateRange?.from && filterField) {
         query = query.gte(filterField, startOfDay(dateRange.from).toISOString());
@@ -104,7 +104,7 @@ export default function ReportBuilderPage() {
       if (dateRange?.to && filterField) {
         query = query.lte(filterField, endOfDay(dateRange.to).toISOString());
       }
-      
+
       if (selectedStatus !== 'all' && STATUS_OPTIONS[selectedTable]) {
         query = query.eq('status', selectedStatus);
       }
@@ -122,7 +122,7 @@ export default function ReportBuilderPage() {
         .from('report_templates')
         .select('*')
         .order('created_at', { ascending: false });
-      
+
       if (error) throw error;
       return data;
     }
@@ -160,7 +160,7 @@ export default function ReportBuilderPage() {
   });
 
   const toggleColumn = (col: string) => {
-    setSelectedColumns(prev => 
+    setSelectedColumns(prev =>
       prev.includes(col) ? prev.filter(c => c !== col) : [...prev, col]
     );
   };
@@ -171,7 +171,7 @@ export default function ReportBuilderPage() {
       let query = supabase
         .from(selectedTable as any)
         .select(selectedColumns.join(','));
-      
+
       const filterField = TABLE_FILTER_FIELDS[selectedTable];
       if (dateRange?.from && filterField) {
         query = query.gte(filterField, startOfDay(dateRange.from).toISOString());
@@ -179,13 +179,13 @@ export default function ReportBuilderPage() {
       if (dateRange?.to && filterField) {
         query = query.lte(filterField, endOfDay(dateRange.to).toISOString());
       }
-      
+
       if (selectedStatus !== 'all' && STATUS_OPTIONS[selectedTable]) {
         query = query.eq('status', selectedStatus);
       }
 
       const { data, error } = await query;
-      
+
       if (error) throw error;
       if (!data || data.length === 0) {
         toast.info('Nenhum dado encontrado para exportação');
@@ -194,7 +194,7 @@ export default function ReportBuilderPage() {
 
       if (formatType === 'csv') {
         const header = selectedColumns.join(',');
-        const rows = data.map(row => 
+        const rows = data.map(row =>
           selectedColumns.map(col => {
             const val = row[col as keyof typeof row];
             return val === null ? '' : `"${String(val).replace(/"/g, '""')}"`;
@@ -211,7 +211,7 @@ export default function ReportBuilderPage() {
         const { default: jsPDF } = await import('jspdf');
         const { default: autoTable } = await import('jspdf-autotable');
         const doc = new jsPDF();
-        
+
         // Custom Header
         doc.setFillColor(14, 165, 233);
         doc.rect(0, 0, 210, 40, 'F');
@@ -226,11 +226,11 @@ export default function ReportBuilderPage() {
         doc.setFontSize(10);
         doc.setTextColor(100);
         doc.text(`Gerado em: ${format(new Date(), 'dd/MM/yyyy HH:mm', { locale: ptBR })}`, 14, 48);
-        
+
         if (dateRange?.from) {
           doc.text(`Período: ${format(dateRange.from, 'dd/MM/yyyy')} a ${dateRange.to ? format(dateRange.to, 'dd/MM/yyyy') : '---'}`, 14, 53);
         }
-        
+
         const tableBody = data.map(row => selectedColumns.map(col => {
            const val = row[col as keyof typeof row];
            if (col.includes('created_at') || col.includes('time')) {
@@ -238,7 +238,7 @@ export default function ReportBuilderPage() {
            }
            return String(val || '-');
         }));
-        
+
         autoTable(doc, {
           startY: 60,
           head: [selectedColumns.map(c => c.replace(/_/g, ' ').toUpperCase())],
@@ -255,7 +255,7 @@ export default function ReportBuilderPage() {
             doc.text(`Página ${data.pageNumber} de ${pageCount} - Fast Gravações Industrial Intelligence`, 105, 285, { align: 'center' });
           }
         });
-        
+
         doc.save(`relatorio_${selectedTable}_${format(new Date(), 'yyyy-MM-dd')}.pdf`);
       } else if (formatType === 'excel') {
         const worksheet = XLSX.utils.json_to_sheet(data);
@@ -263,10 +263,10 @@ export default function ReportBuilderPage() {
         XLSX.utils.book_append_sheet(workbook, worksheet, "Relatório");
         XLSX.writeFile(workbook, `relatorio_${selectedTable}_${format(new Date(), 'yyyy-MM-dd')}.xlsx`);
       }
-      
+
       toast.success(`${data.length} registros exportados!`);
     } catch (error) {
-      console.error('Export error:', error);
+
       toast.error('Erro ao gerar relatório');
     } finally {
       setIsGenerating(false);
@@ -286,7 +286,7 @@ export default function ReportBuilderPage() {
             </h1>
             <p className="text-muted-foreground mt-1">Geração dinâmica de dados e exportação personalizada</p>
           </div>
-          <Button 
+          <Button
             className="gap-2 bg-primary hover:bg-primary/90 shadow-lg shadow-primary/20"
             onClick={handleExport}
             disabled={isGenerating || selectedColumns.length === 0}
@@ -311,7 +311,7 @@ export default function ReportBuilderPage() {
                   <Label className="text-[10px] font-bold uppercase text-muted-foreground">Período de Dados</Label>
                   <DateRangePicker date={dateRange} setDate={setDateRange} />
                 </div>
-                
+
                 {STATUS_OPTIONS[selectedTable] && (
                   <div className="space-y-1.5">
                     <Label className="text-[10px] font-bold uppercase text-muted-foreground">Filtrar por Status</Label>
@@ -355,8 +355,8 @@ export default function ReportBuilderPage() {
                       else setSelectedStatus('all');
                     }}
                     className={`w-full flex items-center gap-3 p-3 rounded-xl border transition-all text-left group ${
-                      selectedTable === table.id 
-                        ? 'border-primary bg-primary/10 shadow-sm' 
+                      selectedTable === table.id
+                        ? 'border-primary bg-primary/10 shadow-sm'
                         : 'border-border/50 hover:bg-muted/50'
                     }`}
                   >
@@ -378,7 +378,7 @@ export default function ReportBuilderPage() {
                  </CardTitle>
                </CardHeader>
                <CardContent className="pt-4 space-y-2">
-                  <button 
+                  <button
                     onClick={() => {
                       setSelectedTable('jobs');
                       setSelectedColumns(['order_number', 'client', 'product', 'status', 'quantity', 'lost_pieces', 'created_at']);
@@ -392,7 +392,7 @@ export default function ReportBuilderPage() {
                     <p className="text-xs font-bold group-hover:text-primary transition-colors">Performance Semanal</p>
                     <p className="text-[9px] text-muted-foreground uppercase font-medium">Jobs + Status + Perdas</p>
                   </button>
-                  <button 
+                  <button
                     onClick={() => {
                       setSelectedTable('inventory_items');
                       setSelectedColumns(['name', 'category', 'current_stock', 'unit', 'location']);
@@ -405,7 +405,7 @@ export default function ReportBuilderPage() {
                     <p className="text-xs font-bold group-hover:text-primary transition-colors">Auditoria de Inventário</p>
                     <p className="text-[9px] text-muted-foreground uppercase font-medium">Estoque + Localização</p>
                   </button>
-                  <button 
+                  <button
                     onClick={() => {
                       setSelectedTable('maintenance_records');
                       setSelectedColumns(['machine_id', 'status', 'start_time', 'end_time']);
@@ -431,15 +431,15 @@ export default function ReportBuilderPage() {
                 <CardContent className="pt-4 space-y-3">
                    <div className="space-y-1.5">
                      <Label className="text-[9px] font-bold uppercase text-muted-foreground">Nome do Template</Label>
-                     <Input 
-                       placeholder="Ex: Produtividade Mensal" 
+                     <Input
+                       placeholder="Ex: Produtividade Mensal"
                        className="h-8 text-xs font-bold"
                        value={templateName}
                        onChange={(e) => setTemplateName(e.target.value)}
                      />
                    </div>
-                   <Button 
-                     className="w-full h-8 text-[10px] uppercase font-black" 
+                   <Button
+                     className="w-full h-8 text-[10px] uppercase font-black"
                      onClick={() => saveTemplateMutation.mutate()}
                      disabled={!templateName || saveTemplateMutation.isPending}
                    >
@@ -459,7 +459,7 @@ export default function ReportBuilderPage() {
                  </CardHeader>
                  <CardContent className="pt-4 space-y-2 max-h-[200px] overflow-y-auto">
                     {savedTemplates.map((template: any) => (
-                      <button 
+                      <button
                         key={template.id}
                         onClick={() => {
                           setSelectedTable(template.table_name);
@@ -543,21 +543,21 @@ export default function ReportBuilderPage() {
               <CardContent className="pt-6">
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
                   {TABLE_COLUMNS[selectedTable].map((col) => (
-                    <div 
-                      key={col} 
+                    <div
+                      key={col}
                       className={`flex items-center gap-3 p-3 rounded-xl border transition-all cursor-pointer select-none ${
                         selectedColumns.includes(col) ? 'bg-primary/5 border-primary/40 shadow-inner' : 'bg-background border-border/50 hover:border-primary/20'
                       }`}
                       onClick={() => toggleColumn(col)}
                     >
-                      <Checkbox 
-                        id={col} 
+                      <Checkbox
+                        id={col}
                         checked={selectedColumns.includes(col)}
                         onCheckedChange={() => toggleColumn(col)}
                         className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                       />
-                      <Label 
-                        htmlFor={col} 
+                      <Label
+                        htmlFor={col}
                         className={`text-xs font-bold uppercase tracking-tight cursor-pointer ${selectedColumns.includes(col) ? 'text-primary' : 'text-muted-foreground'}`}
                       >
                         {col.replace(/_/g, ' ')}

@@ -146,15 +146,15 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, shimmer, asChild = false, children, ...props }, ref) => {
     const Comp = asChild ? Slot : "button";
     return (
-      <Comp 
-        className={cn(buttonVariants({ variant, size, shimmer, className }))} 
-        ref={ref} 
+      <Comp
+        className={cn(buttonVariants({ variant, size, shimmer, className }))}
+        ref={ref}
         {...props}
       >
         {children}
         {shimmer && (
-          <span 
-            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full animate-[shimmer-btn_2s_infinite]" 
+          <span
+            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full animate-[shimmer-btn_2s_infinite]"
             aria-hidden="true"
           />
         )}
@@ -204,8 +204,8 @@ const MotionButton = React.forwardRef<HTMLButtonElement, MotionButtonProps>(
       >
         {children}
         {shimmer && (
-          <span 
-            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full animate-[shimmer-btn_2s_infinite]" 
+          <span
+            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full animate-[shimmer-btn_2s_infinite]"
             aria-hidden="true"
           />
         )}

@@ -4,12 +4,12 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { 
-  Bell, 
-  BellOff, 
+import {
+  Bell,
+  BellOff,
   BellRing,
-  Loader2, 
-  CheckCircle2, 
+  Loader2,
+  CheckCircle2,
   XCircle,
   AlertTriangle,
   Send,
@@ -19,14 +19,14 @@ import { useWebPushNotifications } from '@/hooks/useWebPushNotifications';
 import { cn } from '@/lib/utils';
 
 export function PushNotificationSettings() {
-  const { 
-    isSupported, 
-    isSubscribed, 
-    isLoading, 
+  const {
+    isSupported,
+    isSubscribed,
+    isLoading,
     permission,
-    subscribe, 
+    subscribe,
     unsubscribe,
-    sendTestNotification 
+    sendTestNotification
   } = useWebPushNotifications();
   const [isSendingTest, setIsSendingTest] = useState(false);
 
@@ -154,7 +154,7 @@ export function PushNotificationSettings() {
                   Notificações bloqueadas
                 </p>
                 <p className="text-sm text-red-600 dark:text-red-300 mt-1">
-                  Você bloqueou as notificações deste site. Para reativar, clique no ícone de cadeado 
+                  Você bloqueou as notificações deste site. Para reativar, clique no ícone de cadeado
                   na barra de endereço e altere a permissão de notificações.
                 </p>
               </div>

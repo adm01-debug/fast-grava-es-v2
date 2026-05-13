@@ -22,13 +22,13 @@ export function useJobStatusHistory(jobId: string) {
         .select('*, changed_by_profile:profiles(full_name)')
         .eq('job_id', jobId)
         .order('created_at', { ascending: false });
-      
+
       if (error) throw error;
-      
+
       return (data || []).map(item => ({
         ...item,
-        changed_by_profile: Array.isArray(item.changed_by_profile) 
-          ? item.changed_by_profile[0] 
+        changed_by_profile: Array.isArray(item.changed_by_profile)
+          ? item.changed_by_profile[0]
           : item.changed_by_profile
       })) as JobStatusHistory[];
     },

@@ -124,7 +124,7 @@ describe('Role-Based Access Control', () => {
   });
 });
 
-// ===== i18n KEY STRUCTURE =====  
+// ===== i18n KEY STRUCTURE =====
 describe('Internationalization Patterns', () => {
   it('supports required locales', () => {
     const supportedLocales = ['pt-BR', 'en-US', 'es-ES'];

@@ -1,20 +1,20 @@
 import { useOfflineSync } from '@/hooks/useOfflineSync';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { 
-  Wifi, 
-  WifiOff, 
-  Cloud, 
-  CloudOff, 
+import {
+  Wifi,
+  WifiOff,
+  Cloud,
+  CloudOff,
   RefreshCw,
   CheckCircle2,
   AlertCircle
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { 
-  Tooltip, 
-  TooltipContent, 
-  TooltipTrigger 
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger
 } from '@/components/ui/tooltip';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -24,14 +24,14 @@ interface OfflineSyncIndicatorProps {
   className?: string;
 }
 
-export function OfflineSyncIndicator({ 
+export function OfflineSyncIndicator({
   variant = 'minimal',
-  className 
+  className
 }: OfflineSyncIndicatorProps) {
-  const { 
-    isOnline, 
-    isSyncing, 
-    pendingActionsCount, 
+  const {
+    isOnline,
+    isSyncing,
+    pendingActionsCount,
     lastSyncedAt,
     forceSync,
     hasCachedData
@@ -48,8 +48,8 @@ export function OfflineSyncIndicator({
               <WifiOff className="w-4 h-4 text-destructive" />
             )}
             {pendingActionsCount > 0 && (
-              <Badge 
-                variant="secondary" 
+              <Badge
+                variant="secondary"
                 className="h-5 px-1.5 text-xs bg-amber-500/20 text-amber-500"
               >
                 {pendingActionsCount}
@@ -69,9 +69,9 @@ export function OfflineSyncIndicator({
             )}
             {lastSyncedAt && (
               <p className="text-xs text-muted-foreground">
-                Última sincronização: {formatDistanceToNow(lastSyncedAt, { 
-                  addSuffix: true, 
-                  locale: ptBR 
+                Última sincronização: {formatDistanceToNow(lastSyncedAt, {
+                  addSuffix: true,
+                  locale: ptBR
                 })}
               </p>
             )}
@@ -84,8 +84,8 @@ export function OfflineSyncIndicator({
   return (
     <div className={cn(
       'flex items-center gap-3 p-3 rounded-lg border',
-      isOnline 
-        ? 'bg-green-500/5 border-green-500/20' 
+      isOnline
+        ? 'bg-green-500/5 border-green-500/20'
         : 'bg-amber-500/5 border-amber-500/20',
       className
     )}>
@@ -136,9 +136,9 @@ export function OfflineSyncIndicator({
             <>
               <span>•</span>
               <span>
-                Sync: {formatDistanceToNow(lastSyncedAt, { 
-                  addSuffix: true, 
-                  locale: ptBR 
+                Sync: {formatDistanceToNow(lastSyncedAt, {
+                  addSuffix: true,
+                  locale: ptBR
                 })}
               </span>
             </>

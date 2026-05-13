@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { 
-  useRateLimitSettings, 
+import {
+  useRateLimitSettings,
   useUpdateRateLimitSetting,
   useCreateRateLimitSetting,
   useDeleteRateLimitSetting
@@ -11,15 +11,15 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogDescription, 
-  DialogFooter, 
-  DialogHeader, 
-  DialogTitle 
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle
 } from '@/components/ui/dialog';
-import { 
+import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -29,11 +29,11 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { 
-  Gauge, 
-  Plus, 
-  Loader2, 
-  Pencil, 
+import {
+  Gauge,
+  Plus,
+  Loader2,
+  Pencil,
   Trash2,
   Settings2
 } from 'lucide-react';
@@ -47,7 +47,7 @@ export function RateLimitSettings() {
   const [showDialog, setShowDialog] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
-  
+
   const [formData, setFormData] = useState({
     endpoint_pattern: '',
     max_requests: 100,
@@ -153,7 +153,7 @@ export function RateLimitSettings() {
                   <TableCell className="text-center">
                     <Switch
                       checked={setting.is_active}
-                      onCheckedChange={(checked) => 
+                      onCheckedChange={(checked) =>
                         handleToggleActive(setting.id, checked)
                       }
                     />
@@ -204,9 +204,9 @@ export function RateLimitSettings() {
                 id="endpoint"
                 placeholder="/auth/login ou * para todos"
                 value={formData.endpoint_pattern}
-                onChange={(e) => setFormData(prev => ({ 
-                  ...prev, 
-                  endpoint_pattern: e.target.value 
+                onChange={(e) => setFormData(prev => ({
+                  ...prev,
+                  endpoint_pattern: e.target.value
                 }))}
               />
               <p className="text-xs text-muted-foreground">
@@ -222,9 +222,9 @@ export function RateLimitSettings() {
                   type="number"
                   min="1"
                   value={formData.max_requests}
-                  onChange={(e) => setFormData(prev => ({ 
-                    ...prev, 
-                    max_requests: parseInt(e.target.value) || 1 
+                  onChange={(e) => setFormData(prev => ({
+                    ...prev,
+                    max_requests: parseInt(e.target.value) || 1
                   }))}
                 />
               </div>
@@ -236,9 +236,9 @@ export function RateLimitSettings() {
                   type="number"
                   min="1"
                   value={formData.window_seconds}
-                  onChange={(e) => setFormData(prev => ({ 
-                    ...prev, 
-                    window_seconds: parseInt(e.target.value) || 60 
+                  onChange={(e) => setFormData(prev => ({
+                    ...prev,
+                    window_seconds: parseInt(e.target.value) || 60
                   }))}
                 />
               </div>
@@ -250,9 +250,9 @@ export function RateLimitSettings() {
                   type="number"
                   min="1"
                   value={formData.block_duration_minutes}
-                  onChange={(e) => setFormData(prev => ({ 
-                    ...prev, 
-                    block_duration_minutes: parseInt(e.target.value) || 15 
+                  onChange={(e) => setFormData(prev => ({
+                    ...prev,
+                    block_duration_minutes: parseInt(e.target.value) || 15
                   }))}
                 />
               </div>
@@ -267,7 +267,7 @@ export function RateLimitSettings() {
               </div>
               <Switch
                 checked={formData.is_active}
-                onCheckedChange={(checked) => 
+                onCheckedChange={(checked) =>
                   setFormData(prev => ({ ...prev, is_active: checked }))
                 }
               />
@@ -278,7 +278,7 @@ export function RateLimitSettings() {
             <Button variant="outline" onClick={handleCloseDialog}>
               Cancelar
             </Button>
-            <Button 
+            <Button
               onClick={handleSave}
               disabled={!formData.endpoint_pattern || createSetting.isPending || updateSetting.isPending}
             >
@@ -302,7 +302,7 @@ export function RateLimitSettings() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction 
+            <AlertDialogAction
               onClick={handleDelete}
               className="bg-destructive text-destructive-foreground"
             >

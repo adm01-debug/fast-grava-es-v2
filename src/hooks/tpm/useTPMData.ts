@@ -68,12 +68,10 @@ export function useTPMData() {
           .order('name');
         if (error) {
           const appError = createAppError(error, TPM_ERROR_CONTEXT.types);
-          if (import.meta.env.DEV) console.error('[useTPM:types]', appError);
           throw error;
         }
         return data as MaintenanceType[];
       } catch (err) {
-        if (import.meta.env.DEV) console.error('[useTPM] maintenance_types error:', err);
         throw err;
       }
     },
@@ -93,7 +91,6 @@ export function useTPMData() {
           .order('next_due_at');
         if (error) {
           const appError = createAppError(error, TPM_ERROR_CONTEXT.schedules);
-          if (import.meta.env.DEV) console.error('[useTPM:schedules]', appError);
           throw error;
         }
         return data.map((s: Record<string, unknown>) => ({
@@ -102,7 +99,6 @@ export function useTPMData() {
           maintenance_type: s.maintenance_types,
         })) as MaintenanceSchedule[];
       } catch (err) {
-        if (import.meta.env.DEV) console.error('[useTPM] schedules error:', err);
         throw err;
       }
     },
@@ -122,7 +118,6 @@ export function useTPMData() {
           .order('name');
         if (error) {
           const appError = createAppError(error, TPM_ERROR_CONTEXT.checklists);
-          if (import.meta.env.DEV) console.error('[useTPM:checklists]', appError);
           throw error;
         }
         return data.map((c: Record<string, unknown>) => ({
@@ -130,7 +125,6 @@ export function useTPMData() {
           items: c.maintenance_checklist_items || [],
         })) as MaintenanceChecklist[];
       } catch (err) {
-        if (import.meta.env.DEV) console.error('[useTPM] checklists error:', err);
         throw err;
       }
     },
@@ -150,7 +144,6 @@ export function useTPMData() {
           .limit(200);
         if (error) {
           const appError = createAppError(error, TPM_ERROR_CONTEXT.records);
-          if (import.meta.env.DEV) console.error('[useTPM:records]', appError);
           throw error;
         }
         return data.map((r: Record<string, unknown>) => ({
@@ -158,7 +151,6 @@ export function useTPMData() {
           machine: r.machines,
         })) as MaintenanceRecord[];
       } catch (err) {
-        if (import.meta.env.DEV) console.error('[useTPM] records error:', err);
         throw err;
       }
     },
@@ -174,38 +166,38 @@ export function useTPMData() {
         .select('*, machines(id, name, code, technique_id), maintenance_types(*)')
         .eq('id', recordId)
         .single();
-      
+
       if (recordError) throw recordError;
 
       const { data: responses, error: responsesError } = await supabase
         .from('maintenance_item_responses')
         .select('*, maintenance_checklist_items(*)')
         .eq('record_id', recordId);
-      
+
       if (responsesError) throw responsesError;
 
       const { data: parts, error: partsError } = await supabase
         .from('tpm_execution_parts')
         .select('*')
         .eq('execution_id', recordId);
-      
+
       if (partsError) throw partsError;
 
       const { data: supplies, error: suppliesError } = await supabase
         .from('tpm_execution_supplies')
         .select('*')
         .eq('execution_id', recordId);
-      
+
       if (suppliesError) throw suppliesError;
 
       const { data: executionAlerts, error: alertsError } = await supabase
         .from('tpm_execution_alerts')
         .select('*')
         .eq('execution_id', recordId);
-      
+
       if (alertsError) throw alertsError;
 
-      const { data: technicalSheet, error: sheetError } = record.technical_sheet_id 
+      const { data: technicalSheet, error: sheetError } = record.technical_sheet_id
         ? await supabase.from('technical_sheets').select('*, techniques(*), product_categories(*), machines(*)').eq('id', record.technical_sheet_id).single()
         : { data: null, error: null };
 
@@ -223,7 +215,6 @@ export function useTPMData() {
         execution_alerts: executionAlerts
       };
     } catch (err) {
-      if (import.meta.env.DEV) console.error('[useTPM] fetchRecordDetails error:', err);
       throw err;
     }
   };
@@ -240,7 +231,6 @@ export function useTPMData() {
           .order('created_at', { ascending: false });
         if (error) {
           const appError = createAppError(error, TPM_ERROR_CONTEXT.alerts);
-          if (import.meta.env.DEV) console.error('[useTPM:alerts]', appError);
           throw error;
         }
         return data.map((a: Record<string, unknown>) => ({
@@ -248,7 +238,6 @@ export function useTPMData() {
           machine: a.machines,
         })) as MaintenanceAlert[];
       } catch (err) {
-        if (import.meta.env.DEV) console.error('[useTPM] alerts error:', err);
         throw err;
       }
     },
@@ -268,12 +257,10 @@ export function useTPMData() {
           .order('name');
         if (error) {
           const appError = createAppError(error, TPM_ERROR_CONTEXT.machines);
-          if (import.meta.env.DEV) console.error('[useTPM:machines]', appError);
           throw error;
         }
         return data;
       } catch (err) {
-        if (import.meta.env.DEV) console.error('[useTPM] machines error:', err);
         throw err;
       }
     },

@@ -13,7 +13,7 @@ import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
 interface SyncDetails {
   synced_ids?: string[];
   failed_ids?: string[];
-  [key: string]: unknown;
+  [key: string]: any;
 }
 
 interface SyncHistoryItem {
@@ -296,20 +296,20 @@ export const Bitrix24SyncHistory = () => {
             <ChartContainer config={chartConfig} className="h-[160px] w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={dailyChartData} barSize={16}>
-                  <XAxis 
-                    dataKey="label" 
+                  <XAxis
+                    dataKey="label"
                     tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
                     axisLine={false}
                     tickLine={false}
                   />
-                  <YAxis 
+                  <YAxis
                     tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
                     axisLine={false}
                     tickLine={false}
                     allowDecimals={false}
                   />
                   <Tooltip content={<ChartTooltipContent />} />
-                  <Legend 
+                  <Legend
                     wrapperStyle={{ fontSize: '11px' }}
                     formatter={(value) => chartConfig[value as keyof typeof chartConfig]?.label || value}
                   />
@@ -326,7 +326,7 @@ export const Bitrix24SyncHistory = () => {
           <div className="text-center py-4 text-muted-foreground">Carregando...</div>
         ) : !filteredHistory || filteredHistory.length === 0 ? (
           <div className="text-center py-4 text-muted-foreground">
-            {history && history.length > 0 
+            {history && history.length > 0
               ? 'Nenhum registro encontrado com os filtros selecionados.'
               : 'Nenhuma sincronização registrada ainda.'
             }
@@ -349,7 +349,7 @@ export const Bitrix24SyncHistory = () => {
                       {formatDistanceToNow(new Date(item.started_at), { addSuffix: true, locale: ptBR })}
                     </span>
                   </div>
-                  
+
                   <div className="flex items-center gap-4 text-xs text-muted-foreground">
                     <span className="flex items-center gap-1">
                       <CheckCircle2 className="h-3 w-3 text-green-400" />

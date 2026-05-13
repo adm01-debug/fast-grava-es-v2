@@ -200,7 +200,7 @@ export function ColorsSection() {
                 {/* Gradient Code Examples */}
                 <div className="space-y-4">
                   <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Código CSS</h4>
-                  <CodeBlock 
+                  <CodeBlock
                     label="index.css"
                     showLineNumbers
                     code={`/* Gradientes Primary - Definições em index.css */
@@ -208,8 +208,8 @@ export function ColorsSection() {
 /* Subtle - Para backgrounds suaves */
 .gradient-primary-subtle {
   background: linear-gradient(
-    135deg, 
-    hsl(var(--primary) / 0.1) 0%, 
+    135deg,
+    hsl(var(--primary) / 0.1) 0%,
     hsl(var(--primary) / 0.2) 100%
   );
 }
@@ -217,8 +217,8 @@ export function ColorsSection() {
 /* Default - Gradiente padrão */
 .gradient-primary {
   background: linear-gradient(
-    135deg, 
-    hsl(var(--primary)) 0%, 
+    135deg,
+    hsl(var(--primary)) 0%,
     hsl(var(--primary-glow)) 100%
   );
 }
@@ -226,8 +226,8 @@ export function ColorsSection() {
 /* Intense - Para destaques fortes */
 .gradient-primary-intense {
   background: linear-gradient(
-    135deg, 
-    hsl(var(--primary)) 0%, 
+    135deg,
+    hsl(var(--primary)) 0%,
     hsl(calc(var(--primary-hue) + 15) 85% 55%) 100%
   );
 }
@@ -235,8 +235,8 @@ export function ColorsSection() {
 /* Vivid - Máxima saturação */
 .gradient-primary-vivid {
   background: linear-gradient(
-    135deg, 
-    hsl(var(--primary)) 0%, 
+    135deg,
+    hsl(var(--primary)) 0%,
     hsl(calc(var(--primary-hue) + 30) 100% 50%) 50%,
     hsl(var(--primary)) 100%
   );

@@ -61,7 +61,7 @@ function hasPermission(role: AppRole, permission: string): boolean {
 function formatPermissionName(permission: string): string {
   const parts = permission.split(':');
   const action = parts[1];
-  
+
   const actionLabels: Record<string, string> = {
     read: 'Visualizar',
     create: 'Criar',
@@ -71,7 +71,7 @@ function formatPermissionName(permission: string): string {
     export: 'Exportar',
     manage: 'Gerenciar',
   };
-  
+
   return actionLabels[action] || action;
 }
 

@@ -11,7 +11,7 @@ export function MaintenanceAlertsWidget() {
   const { machines, isLoading, getSchedulesByStatus } = useTPM();
 
   const schedulesByStatus = getSchedulesByStatus();
-  
+
   const getMachineName = (machineId: string) => {
     return machines.find(m => m.id === machineId)?.code || 'MÁQ';
   };
@@ -19,7 +19,7 @@ export function MaintenanceAlertsWidget() {
   // Combine overdue and dueToday for the widget
   const overdue = schedulesByStatus.overdue.map(s => ({ ...s, statusType: 'overdue' as const }));
   const dueToday = schedulesByStatus.dueToday.map(s => ({ ...s, statusType: 'due' as const }));
-  
+
   const pendingMaintenance = [...overdue, ...dueToday].sort((a, b) => {
     if (a.statusType === 'overdue' && b.statusType !== 'overdue') return -1;
     if (a.statusType !== 'overdue' && b.statusType === 'overdue') return 1;
@@ -66,12 +66,12 @@ export function MaintenanceAlertsWidget() {
         ) : (
           <div className="space-y-2 max-h-[250px] overflow-y-auto pr-1">
             {pendingMaintenance.map((schedule) => (
-              <div 
+              <div
                 key={schedule.id}
                 className={cn(
                   "flex items-center gap-3 p-2 rounded-lg border transition-all cursor-pointer",
-                  schedule.statusType === 'overdue' 
-                    ? "bg-destructive/5 border-destructive/20 hover:bg-destructive/10" 
+                  schedule.statusType === 'overdue'
+                    ? "bg-destructive/5 border-destructive/20 hover:bg-destructive/10"
                     : "bg-secondary/40 border-border/20 hover:bg-secondary/60"
                 )}
               >
@@ -81,12 +81,12 @@ export function MaintenanceAlertsWidget() {
                 )}>
                   {schedule.statusType === 'overdue' ? <AlertCircle className="w-4 h-4" /> : <Clock className="w-4 h-4" />}
                 </div>
-                
+
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between gap-2">
                     <p className="text-xs font-bold truncate">{getMachineName(schedule.machine_id)}</p>
-                    <Badge 
-                      variant="outline" 
+                    <Badge
+                      variant="outline"
                       className={cn(
                         "text-[10px] h-4 px-1 leading-none",
                         schedule.statusType === 'overdue' ? "text-destructive border-destructive/30" : "text-primary border-primary/30"

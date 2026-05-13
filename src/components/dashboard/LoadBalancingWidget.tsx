@@ -4,8 +4,8 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
-import { 
-  Scale, 
+import {
+  Scale,
   ArrowRight,
   AlertTriangle,
   CheckCircle2,
@@ -22,22 +22,22 @@ interface TechniqueLoadCardProps {
   isApplying: boolean;
 }
 
-const TechniqueLoadCard = memo(function TechniqueLoadCard({ 
-  summary, 
-  onApplySuggestion, 
+const TechniqueLoadCard = memo(function TechniqueLoadCard({
+  summary,
+  onApplySuggestion,
   onApplyAll,
-  isApplying 
+  isApplying
 }: TechniqueLoadCardProps) {
   return (
     <div className="p-4 rounded-lg bg-muted/30 border border-border/30 space-y-3">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Badge 
-            variant="outline" 
-            style={{ 
+          <Badge
+            variant="outline"
+            style={{
               backgroundColor: `${summary.technique.color}20`,
               borderColor: `${summary.technique.color}50`,
-              color: summary.technique.color 
+              color: summary.technique.color
             }}
           >
             {summary.technique.short_name}
@@ -69,8 +69,8 @@ const TechniqueLoadCard = memo(function TechniqueLoadCard({
                 {Math.round(load.occupancyRate)}%
               </span>
             </div>
-            <Progress 
-              value={load.occupancyRate} 
+            <Progress
+              value={load.occupancyRate}
               className="h-1.5"
             />
           </div>
@@ -86,9 +86,9 @@ const TechniqueLoadCard = memo(function TechniqueLoadCard({
         <div className="pt-2 border-t border-border/30 space-y-2">
           <div className="flex items-center justify-between">
             <p className="text-xs text-muted-foreground">Sugestões de redistribuição:</p>
-            <Button 
-              size="sm" 
-              variant="ghost" 
+            <Button
+              size="sm"
+              variant="ghost"
               className="h-6 text-xs text-cyan-400 hover:text-cyan-300 hover:bg-cyan-500/10"
               onClick={onApplyAll}
               disabled={isApplying}
@@ -102,8 +102,8 @@ const TechniqueLoadCard = memo(function TechniqueLoadCard({
             </Button>
           </div>
           {summary.suggestions.slice(0, 2).map((suggestion) => (
-            <div 
-              key={suggestion.id} 
+            <div
+              key={suggestion.id}
               className="text-xs flex items-center justify-between gap-1 text-muted-foreground group"
             >
               <div className="flex items-center gap-1">
@@ -131,22 +131,22 @@ const TechniqueLoadCard = memo(function TechniqueLoadCard({
 TechniqueLoadCard.displayName = 'TechniqueLoadCard';
 
 function LoadBalancingWidgetComponent() {
-  const { 
-    byTechnique, 
-    suggestions, 
-    isLoading, 
-    applySuggestion, 
+  const {
+    byTechnique,
+    suggestions,
+    isLoading,
+    applySuggestion,
     applyAllForTechnique,
     applyAllSuggestions,
-    isApplying 
+    isApplying
   } = useLoadBalancingWithActions();
 
-  const unbalancedCount = useMemo(() => 
+  const unbalancedCount = useMemo(() =>
     byTechnique.filter(t => t.isUnbalanced).length,
     [byTechnique]
   );
 
-  const filteredTechniques = useMemo(() => 
+  const filteredTechniques = useMemo(() =>
     byTechnique.filter(t => t.machines.some(m => m.jobCount > 0)).slice(0, 6),
     [byTechnique]
   );
@@ -191,13 +191,13 @@ function LoadBalancingWidgetComponent() {
                 Aplicar Tudo
               </Button>
             )}
-            <Badge 
-              className={`border text-xs ${unbalancedCount > 0 
-                ? 'bg-orange-500/20 text-orange-400 border-orange-500/30' 
+            <Badge
+              className={`border text-xs ${unbalancedCount > 0
+                ? 'bg-orange-500/20 text-orange-400 border-orange-500/30'
                 : 'bg-green-500/20 text-green-400 border-green-500/30'}`}
             >
-              {unbalancedCount > 0 
-                ? `${unbalancedCount} desbal.` 
+              {unbalancedCount > 0
+                ? `${unbalancedCount} desbal.`
                 : 'Equilibrado'}
             </Badge>
           </div>
@@ -213,8 +213,8 @@ function LoadBalancingWidgetComponent() {
           <ScrollArea className="h-[320px] pr-2">
             <div className="space-y-3">
               {filteredTechniques.map((summary) => (
-                <TechniqueLoadCard 
-                  key={summary.technique.id} 
+                <TechniqueLoadCard
+                  key={summary.technique.id}
                   summary={summary}
                   onApplySuggestion={applySuggestion}
                   onApplyAll={() => applyAllForTechnique(summary.technique.id)}

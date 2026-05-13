@@ -24,8 +24,8 @@ export function ConflictResolutionPanel({ conflicts, onResolved }: ConflictResol
       </CardHeader>
       <CardContent className="p-4 space-y-4">
         {conflicts.map((conflict, idx) => (
-          <div 
-            key={conflict.id} 
+          <div
+            key={conflict.id}
             className="p-3 rounded-lg border border-destructive/20 bg-card/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
           >
             <div className="space-y-1">
@@ -45,11 +45,11 @@ export function ConflictResolutionPanel({ conflicts, onResolved }: ConflictResol
                 ))}
               </div>
             </div>
-            
+
             <div className="flex items-center gap-2">
-              <Button 
-                variant="outline" 
-                size="sm" 
+              <Button
+                variant="outline"
+                size="sm"
                 className="h-8 text-xs border-destructive/30 text-destructive hover:bg-destructive/10"
                 onClick={() => {
                   // In a real scenario, this would trigger an optimization algorithm
@@ -59,9 +59,9 @@ export function ConflictResolutionPanel({ conflicts, onResolved }: ConflictResol
               >
                 Resolver Manualmente
               </Button>
-              <Button 
-                variant="default" 
-                size="sm" 
+              <Button
+                variant="default"
+                size="sm"
                 className="h-8 text-xs bg-destructive hover:bg-destructive/90"
                 onClick={() => {
                   // Trigger AI resolution
@@ -72,7 +72,7 @@ export function ConflictResolutionPanel({ conflicts, onResolved }: ConflictResol
             </div>
           </div>
         ))}
-        
+
         <p className="text-[10px] text-muted-foreground text-center italic">
           Os conflitos de horário podem comprometer os KPIs de eficiência (OEE) e atrasar a entrega final.
         </p>

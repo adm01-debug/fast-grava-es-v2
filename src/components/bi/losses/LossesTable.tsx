@@ -36,9 +36,9 @@ export function LossesTable({ jobs, onExport, onShowDetails }: LossesTableProps)
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
+                <Button
+                  variant="ghost"
+                  size="icon"
                   className="h-8 w-8 text-muted-foreground hover:text-primary"
                   onClick={() => onExport('csv', 'Perdas_Por_Pedido')}
                 >
@@ -48,13 +48,13 @@ export function LossesTable({ jobs, onExport, onShowDetails }: LossesTableProps)
               <TooltipContent>Exportar CSV</TooltipContent>
             </Tooltip>
           </TooltipProvider>
-          
+
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
+                <Button
+                  variant="ghost"
+                  size="icon"
                   className="h-8 w-8 text-muted-foreground hover:text-primary"
                   onClick={() => onExport('pdf', 'Perdas_Por_Pedido')}
                 >
@@ -84,15 +84,15 @@ export function LossesTable({ jobs, onExport, onShowDetails }: LossesTableProps)
                   const lossRate = ((job.lost_pieces || 0) / total) * 100;
                   const isCritical = lossRate > 5;
                   const isExtreme = lossRate > 15;
-                  
+
                   return (
-                    <TableRow 
-                      key={job.id} 
+                    <TableRow
+                      key={job.id}
                       className={cn(
                         "border-white/5 hover:bg-white/5 cursor-pointer transition-all duration-300 relative overflow-hidden group/row",
                         isCritical && "bg-rose-500/5 hover:bg-rose-500/10 shadow-[inset_0_0_20px_rgba(244,63,94,0.05)]",
                         isExtreme && "bg-rose-500/10 hover:bg-rose-500/15"
-                      )} 
+                      )}
                       onClick={() => onShowDetails ? onShowDetails(job) : navigate(`/job/${job.id}`)}
                     >
                       <TableCell className="py-4">
@@ -111,7 +111,7 @@ export function LossesTable({ jobs, onExport, onShowDetails }: LossesTableProps)
                           </div>
                           <div>
                             <div className={cn(
-                              "font-bold text-sm tracking-tight transition-colors", 
+                              "font-bold text-sm tracking-tight transition-colors",
                               isCritical ? "text-rose-500 group-hover/row:text-rose-400" : "text-white"
                             )}>
                               {job.order_number || `OS-${job.id.slice(0, 5)}`}
@@ -122,17 +122,17 @@ export function LossesTable({ jobs, onExport, onShowDetails }: LossesTableProps)
                       </TableCell>
                       <TableCell className="text-center">
                         <div className="flex flex-col items-center gap-1">
-                          <Badge 
-                            variant="outline" 
+                          <Badge
+                            variant="outline"
                             className={cn(
                               "font-mono transition-all duration-300 relative overflow-hidden",
-                              isCritical 
-                                ? "text-rose-500 border-rose-500/50 bg-rose-500/10 shadow-[0_0_10px_rgba(244,63,94,0.3)] group-hover/row:scale-110" 
+                              isCritical
+                                ? "text-rose-500 border-rose-500/50 bg-rose-500/10 shadow-[0_0_10px_rgba(244,63,94,0.3)] group-hover/row:scale-110"
                                 : "text-muted-foreground border-white/10"
                             )}
                           >
                             {isCritical && (
-                              <motion.div 
+                              <motion.div
                                 className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent"
                                 animate={{ x: ['-100%', '100%'] }}
                                 transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }}
@@ -151,12 +151,12 @@ export function LossesTable({ jobs, onExport, onShowDetails }: LossesTableProps)
                             <span className="text-white/50">{(100 - lossRate).toFixed(1)}% OK</span>
                           </div>
                           <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
-                            <div 
+                            <div
                               className={cn(
                                 "h-full transition-all duration-1000",
                                 isCritical ? "bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.5)]" : "bg-primary"
-                              )} 
-                              style={{ width: `${100 - lossRate}%` }} 
+                              )}
+                              style={{ width: `${100 - lossRate}%` }}
                             />
                           </div>
                         </div>

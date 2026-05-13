@@ -43,8 +43,8 @@ export function KPITooltip({
             <Info className="h-3 w-3 text-muted-foreground/50 absolute -top-1 -right-1 opacity-0 group-hover:opacity-100 transition-opacity" />
           </div>
         </TooltipTrigger>
-        <TooltipContent 
-          side="top" 
+        <TooltipContent
+          side="top"
           className="max-w-xs p-3 space-y-2"
           sideOffset={8}
         >
@@ -52,7 +52,7 @@ export function KPITooltip({
             <p className="font-semibold text-sm">{title}</p>
             <p className="text-xs text-muted-foreground">{description}</p>
           </div>
-          
+
           {formula && (
             <div className="pt-1 border-t border-border/50">
               <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Fórmula</p>
@@ -61,21 +61,21 @@ export function KPITooltip({
               </code>
             </div>
           )}
-          
+
           {target && (
             <div className="flex items-center justify-between text-xs">
               <span className="text-muted-foreground">Meta:</span>
               <span className="font-medium">{target}</span>
             </div>
           )}
-          
+
           {benchmark && (
             <div className="flex items-center justify-between text-xs">
               <span className="text-muted-foreground">Benchmark:</span>
               <span className="font-medium">{benchmark}</span>
             </div>
           )}
-          
+
           {trend && trendValue && (
             <div className="flex items-center justify-between text-xs pt-1 border-t border-border/50">
               <span className="text-muted-foreground">Tendência:</span>

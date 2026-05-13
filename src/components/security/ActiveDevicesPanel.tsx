@@ -2,22 +2,22 @@ import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { 
-  AlertDialog, 
-  AlertDialogAction, 
-  AlertDialogCancel, 
-  AlertDialogContent, 
-  AlertDialogDescription, 
-  AlertDialogFooter, 
-  AlertDialogHeader, 
-  AlertDialogTitle 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle
 } from '@/components/ui/alert-dialog';
-import { 
-  Smartphone, 
-  Monitor, 
-  Tablet, 
-  Trash2, 
-  ShieldCheck, 
+import {
+  Smartphone,
+  Monitor,
+  Tablet,
+  Trash2,
+  ShieldCheck,
   ShieldOff,
   MapPin,
   Clock,
@@ -93,8 +93,8 @@ export function ActiveDevicesPanel() {
         ) : (
           <div className="space-y-4">
             {devices.map((device) => (
-              <DeviceCard 
-                key={device.id} 
+              <DeviceCard
+                key={device.id}
                 device={device}
                 onTrust={() => trustDevice(device.id)}
                 onUntrust={() => untrustDevice(device.id)}
@@ -112,7 +112,7 @@ export function ActiveDevicesPanel() {
           <AlertDialogHeader>
             <AlertDialogTitle>Remover Dispositivo?</AlertDialogTitle>
             <AlertDialogDescription>
-              Este dispositivo será removido da sua lista. Se alguém tentar acessar 
+              Este dispositivo será removido da sua lista. Se alguém tentar acessar
               sua conta a partir dele novamente, você receberá um alerta de novo dispositivo.
             </AlertDialogDescription>
           </AlertDialogHeader>
@@ -139,13 +139,13 @@ export function ActiveDevicesPanel() {
   );
 }
 
-function DeviceCard({ 
-  device, 
-  onTrust, 
-  onUntrust, 
+function DeviceCard({
+  device,
+  onTrust,
+  onUntrust,
   onRemove,
-  isTrusting 
-}: { 
+  isTrusting
+}: {
   device: UserDevice;
   onTrust: () => void;
   onUntrust: () => void;
@@ -211,9 +211,9 @@ function DeviceCard({
             )}
             <span className="flex items-center gap-1">
               <Clock className="h-3 w-3" />
-              Visto {formatDistanceToNow(new Date(device.last_seen_at), { 
-                addSuffix: true, 
-                locale: ptBR 
+              Visto {formatDistanceToNow(new Date(device.last_seen_at), {
+                addSuffix: true,
+                locale: ptBR
               })}
             </span>
           </div>

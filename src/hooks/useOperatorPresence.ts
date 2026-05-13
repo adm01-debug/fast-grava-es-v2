@@ -30,7 +30,7 @@ export function useOperatorPresence() {
       .on('presence', { event: 'sync' }, () => {
         const state = channel.presenceState() as PresenceState;
         const online = new Set<string>();
-        
+
         Object.values(state).forEach((presences) => {
           presences.forEach((presence) => {
             if (presence.user_id) {
@@ -38,7 +38,7 @@ export function useOperatorPresence() {
             }
           });
         });
-        
+
         setOnlineUsers(online);
       })
       .on('presence', { event: 'join' }, ({ newPresences }) => {
@@ -80,7 +80,6 @@ export function useOperatorPresence() {
             setIsTracking(true);
           } catch (error) {
             const appError = createAppError(error, PRESENCE_ERROR_CONTEXT.track);
-            if (import.meta.env.DEV) console.error('[useOperatorPresence:track]', appError);
           }
         }
       });
@@ -92,7 +91,7 @@ export function useOperatorPresence() {
   }, [user]);
 
   const isOnline = useCallback((userId: string) => onlineUsers.has(userId), [onlineUsers]);
-  
+
   const getLastSeen = useCallback((userId: string) => lastSeen.get(userId), [lastSeen]);
 
   return {

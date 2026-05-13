@@ -1,12 +1,12 @@
 import { useMemo, useState, useCallback, useEffect, lazy, Suspense } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { 
-  TrendingUp, Activity, Gauge, Target, 
-  CheckCircle, PieChart, LineChart, Printer, 
+import {
+  TrendingUp, Activity, Gauge, Target,
+  CheckCircle, PieChart, LineChart, Printer,
   Users, Wrench, ShieldAlert, Zap, Download, FileText, FileSpreadsheet, Package, Timer, ArrowUpRight, RefreshCcw, Clock, TrendingDown
 } from 'lucide-react';
-import { 
+import {
   AreaChart, Area, BarChart, Bar, PieChart as RechartsPieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, Radar, Legend
 } from 'recharts';
@@ -84,8 +84,8 @@ export function FuturisticBI({ biMetrics, kpis, oeeData, isLoading }: BIProps) {
         if (segment === 'all') return true;
         const s = segment.toLowerCase();
         return (
-          j.status === s || 
-          j.machine_id === segment || 
+          j.status === s ||
+          j.machine_id === segment ||
           j.technique_id === segment ||
           (s === 'lost' && (j.lost_pieces || 0) > 0) ||
           (s === 'delayed' && j.status === 'delayed') ||
@@ -121,8 +121,8 @@ export function FuturisticBI({ biMetrics, kpis, oeeData, isLoading }: BIProps) {
     if (!biMetrics.machineUtilization) return [];
     const machineGroups: Record<string, any[]> = {};
     biMetrics.machineUtilization.forEach((m: any) => {
-      const studioName = m.technique.includes('Laser') ? 'Studio Alfa' : 
-                        m.technique.includes('UV') ? 'Studio Beta' : 
+      const studioName = m.technique.includes('Laser') ? 'Studio Alfa' :
+                        m.technique.includes('UV') ? 'Studio Beta' :
                         'Studio Gamma';
       if (!machineGroups[studioName]) machineGroups[studioName] = [];
       machineGroups[studioName].push(m);
@@ -173,52 +173,52 @@ export function FuturisticBI({ biMetrics, kpis, oeeData, isLoading }: BIProps) {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-        <FuturisticStatCard 
-          title="Pedidos a Fazer" 
-          value={biMetrics.toDoJobs || 0} 
+        <FuturisticStatCard
+          title="Pedidos a Fazer"
+          value={biMetrics.toDoJobs || 0}
           subtitle="Aguardando Início"
-          icon={Package} 
+          icon={Package}
           gradient={GRADIENTS.purple}
           glowColor="purple"
           onExport={(format) => handleExport(format, 'Pedidos_A_Fazer')}
           onClick={() => handleDrillDown('PEDIDOS AGUARDANDO', 'queue')}
         />
-        <FuturisticStatCard 
-          title="Em Produção" 
-          value={kpis.inProgressJobs} 
+        <FuturisticStatCard
+          title="Em Produção"
+          value={kpis.inProgressJobs}
           subtitle="Tempo Real"
-          icon={Zap} 
+          icon={Zap}
           gradient={GRADIENTS.success}
           glowColor="success"
           onExport={(format) => handleExport(format, 'Producao_Atual')}
           onClick={() => handleDrillDown('PEDIDOS EM PRODUÇÃO', 'production')}
         />
-        <FuturisticStatCard 
-          title="Atrasos Críticos" 
-          value={kpis.delayedJobs} 
+        <FuturisticStatCard
+          title="Atrasos Críticos"
+          value={kpis.delayedJobs}
           subtitle="Intervenção"
-          icon={ShieldAlert} 
+          icon={ShieldAlert}
           variant="danger"
           gradient={GRADIENTS.danger}
           glowColor="danger"
           onExport={(format) => handleExport(format, 'Atrasos_Criticos')}
           onClick={() => handleDrillDown('PEDIDOS ATRASADOS', 'delayed')}
         />
-        <FuturisticStatCard 
-          title="Taxa de Perda" 
-          value={`${(biMetrics.periodLossRate || 0).toFixed(2)}%`} 
+        <FuturisticStatCard
+          title="Taxa de Perda"
+          value={`${(biMetrics.periodLossRate || 0).toFixed(2)}%`}
           subtitle="Projeção"
-          icon={TrendingUp} 
+          icon={TrendingUp}
           gradient={GRADIENTS.primary}
           glowColor="primary"
           onExport={(format) => handleExport(format, 'Taxa_Perda')}
           onClick={() => handleDrillDown('TAXA DE PERDA', 'lost')}
         />
-        <FuturisticStatCard 
-          title="Balanceamento" 
-          value={`${balanceMetrics.score.toFixed(0)}%`} 
+        <FuturisticStatCard
+          title="Balanceamento"
+          value={`${balanceMetrics.score.toFixed(0)}%`}
           subtitle={balanceMetrics.status}
-          icon={RefreshCcw} 
+          icon={RefreshCcw}
           variant={balanceMetrics.score < 70 ? 'danger' : balanceMetrics.score < 90 ? 'warning' : 'success'}
           gradient={balanceMetrics.score < 70 ? GRADIENTS.danger : balanceMetrics.score < 90 ? GRADIENTS.warning : GRADIENTS.success}
           glowColor={balanceMetrics.score < 70 ? 'danger' : balanceMetrics.score < 90 ? 'warning' : 'success'}
@@ -279,30 +279,30 @@ export function FuturisticBI({ biMetrics, kpis, oeeData, isLoading }: BIProps) {
                   </filter>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.03)" />
-                <XAxis 
-                  dataKey="date" 
-                  axisLine={false} 
-                  tickLine={false} 
-                  tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 10, fontWeight: 600 }} 
+                <XAxis
+                  dataKey="date"
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 10, fontWeight: 600 }}
                   dy={10}
                 />
-                <YAxis 
-                  axisLine={false} 
-                  tickLine={false} 
-                  tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 10, fontWeight: 600 }} 
+                <YAxis
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 10, fontWeight: 600 }}
                 />
-                <RechartsTooltip 
-                  content={<BITooltip showPercentage />} 
-                  cursor={{ stroke: 'rgba(14, 165, 233, 0.3)', strokeWidth: 1, strokeDasharray: '5 5' }} 
+                <RechartsTooltip
+                  content={<BITooltip showPercentage />}
+                  cursor={{ stroke: 'rgba(14, 165, 233, 0.3)', strokeWidth: 1, strokeDasharray: '5 5' }}
                 />
                 {visibleSeries.produced && (
-                  <Area 
-                    type="monotone" 
-                    dataKey="produced" 
-                    stroke={CHART_COLORS.primary} 
-                    strokeWidth={4} 
-                    fillOpacity={1} 
-                    fill="url(#colorProduced)" 
+                  <Area
+                    type="monotone"
+                    dataKey="produced"
+                    stroke={CHART_COLORS.primary}
+                    strokeWidth={4}
+                    fillOpacity={1}
+                    fill="url(#colorProduced)"
                     animationDuration={2500}
                     strokeLinecap="round"
                     filter="url(#glow)"
@@ -310,13 +310,13 @@ export function FuturisticBI({ biMetrics, kpis, oeeData, isLoading }: BIProps) {
                   />
                 )}
                 {visibleSeries.lost && (
-                  <Area 
-                    type="monotone" 
-                    dataKey="lost" 
-                    stroke={CHART_COLORS.danger} 
-                    strokeWidth={3} 
-                    fillOpacity={1} 
-                    fill="url(#colorLost)" 
+                  <Area
+                    type="monotone"
+                    dataKey="lost"
+                    stroke={CHART_COLORS.danger}
+                    strokeWidth={3}
+                    fillOpacity={1}
+                    fill="url(#colorLost)"
                     animationDuration={2500}
                     strokeLinecap="round"
                     filter="url(#glow)"
@@ -351,9 +351,9 @@ export function FuturisticBI({ biMetrics, kpis, oeeData, isLoading }: BIProps) {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
-          <LossesTable 
-            jobs={jobsWithLosses} 
-            onExport={handleExport} 
+          <LossesTable
+            jobs={jobsWithLosses}
+            onExport={handleExport}
             onShowDetails={(job) => handleDrillDown(`PERDAS DETALHADAS: ${job.order_number || job.id}`, 'lost')}
           />
         </div>

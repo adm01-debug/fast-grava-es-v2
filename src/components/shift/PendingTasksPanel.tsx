@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { format } from 'date-fns';
-import { 
-  ListTodo, 
-  CheckCircle2, 
-  Clock, 
+import {
+  ListTodo,
+  CheckCircle2,
+  Clock,
   AlertTriangle,
   Filter,
   MoreHorizontal
@@ -152,8 +152,8 @@ export default function PendingTasksPanel() {
                 <SelectItem value="completed">Concluídas</SelectItem>
               </SelectContent>
             </Select>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               size="sm"
               onClick={() => setShowAll(!showAll)}
             >
@@ -183,9 +183,9 @@ export default function PendingTasksPanel() {
               {filteredTasks.map((task) => {
                 const priorityConfig = PRIORITY_CONFIG[task.priority];
                 const StatusIcon = STATUS_CONFIG[task.status]?.icon || Clock;
-                
+
                 return (
-                  <div 
+                  <div
                     key={task.id}
                     className={`p-4 rounded-lg border ${
                       task.status === 'completed' ? 'opacity-60' : ''
@@ -210,8 +210,8 @@ export default function PendingTasksPanel() {
                             </p>
                           )}
                           <div className="flex items-center gap-2 mt-2 flex-wrap">
-                            <Badge 
-                              variant="outline" 
+                            <Badge
+                              variant="outline"
                               className={`${priorityConfig.color} text-xs`}
                             >
                               {priorityConfig.label}
@@ -244,7 +244,7 @@ export default function PendingTasksPanel() {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                           {task.status === 'pending' && (
-                            <DropdownMenuItem 
+                            <DropdownMenuItem
                               onClick={() => handleStatusChange(task, 'in_progress')}
                             >
                               <Clock className="h-4 w-4 mr-2" />
@@ -252,7 +252,7 @@ export default function PendingTasksPanel() {
                             </DropdownMenuItem>
                           )}
                           {task.status !== 'completed' && (
-                            <DropdownMenuItem 
+                            <DropdownMenuItem
                               onClick={() => handleStatusChange(task, 'completed')}
                             >
                               <CheckCircle2 className="h-4 w-4 mr-2" />
@@ -260,7 +260,7 @@ export default function PendingTasksPanel() {
                             </DropdownMenuItem>
                           )}
                           {task.status !== 'cancelled' && task.status !== 'completed' && (
-                            <DropdownMenuItem 
+                            <DropdownMenuItem
                               onClick={() => handleStatusChange(task, 'cancelled')}
                               className="text-destructive"
                             >

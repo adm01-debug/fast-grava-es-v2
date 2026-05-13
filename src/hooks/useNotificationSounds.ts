@@ -82,7 +82,7 @@ export const useNotificationSounds = () => {
 
     oscillator.type = type;
     oscillator.frequency.setValueAtTime(frequency, ctx.currentTime);
-    
+
     gainNode.gain.setValueAtTime(volume, ctx.currentTime);
     gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + duration);
 
@@ -100,10 +100,10 @@ export const useNotificationSounds = () => {
       if (config.pattern) {
         let delay = 0;
         const frequencyStep = soundType === 'complete' ? 100 : 50;
-        
+
         config.pattern.forEach((duration, index) => {
           setTimeout(() => {
-            const freq = soundType === 'delayed' 
+            const freq = soundType === 'delayed'
               ? config.frequency - (index * 30)
               : config.frequency + (index * frequencyStep);
             playTone(freq, duration, config.type, config.volume || 0.2);
@@ -115,7 +115,7 @@ export const useNotificationSounds = () => {
       }
     } catch (error) {
       if (import.meta.env.DEV) {
-        console.error('Error playing notification sound:', error);
+
       }
     }
   }, [playTone]);

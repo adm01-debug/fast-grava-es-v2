@@ -61,10 +61,10 @@ export default function ABCCostingDashboard() {
       <Helmet>
         <title>Financial Intelligence | Sistema de Gravação</title>
       </Helmet>
- 
+
       <div className="space-y-6">
         <Breadcrumbs />
-        
+
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
@@ -122,10 +122,10 @@ export default function ABCCostingDashboard() {
                 <div>
                   <p className="text-sm text-muted-foreground">Custo Unitário Médio</p>
                   <p className="text-2xl font-bold font-display text-amber-500">
-                    {averageUnitCost.toLocaleString('pt-BR', { 
-                      style: 'currency', 
+                    {averageUnitCost.toLocaleString('pt-BR', {
+                      style: 'currency',
                       currency: 'BRL',
-                      minimumFractionDigits: 4 
+                      minimumFractionDigits: 4
                     })}
                   </p>
                 </div>
@@ -171,8 +171,8 @@ export default function ABCCostingDashboard() {
               </div>
             </div>
 
-            <ABCCostPoolsCard 
-              costPools={costPools} 
+            <ABCCostPoolsCard
+              costPools={costPools}
               totalAllocated={totalAllocatedCost}
               onUpdateBudget={(id, budget) => updateCostPoolBudget.mutate({ id, monthly_budget: budget })}
             />
@@ -195,8 +195,8 @@ export default function ABCCostingDashboard() {
                 activityRates={activityRates}
                 onUpdateRate={(data) => updateActivityRate.mutate(data)}
               />
-              <ABCCostPoolsCard 
-                costPools={costPools} 
+              <ABCCostPoolsCard
+                costPools={costPools}
                 totalAllocated={totalAllocatedCost}
                 onUpdateBudget={(id, budget) => updateCostPoolBudget.mutate({ id, monthly_budget: budget })}
               />

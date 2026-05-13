@@ -383,6 +383,30 @@ export type Database = {
         }
         Relationships: []
       }
+      business_config: {
+        Row: {
+          description: string | null
+          key: string
+          updated_at: string | null
+          updated_by: string | null
+          value: Json
+        }
+        Insert: {
+          description?: string | null
+          key: string
+          updated_at?: string | null
+          updated_by?: string | null
+          value: Json
+        }
+        Update: {
+          description?: string | null
+          key?: string
+          updated_at?: string | null
+          updated_by?: string | null
+          value?: Json
+        }
+        Relationships: []
+      }
       chat_messages: {
         Row: {
           channel: string

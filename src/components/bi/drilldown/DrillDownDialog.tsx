@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { 
+import {
   Dialog,
   DialogContent,
   DialogHeader,
@@ -41,7 +41,7 @@ export function DrillDownDialog({ open, onOpenChange, title, jobs, onExport }: D
     let result = jobs;
     if (searchTerm) {
       const lowerSearch = searchTerm.toLowerCase();
-      result = result.filter(job => 
+      result = result.filter(job =>
         job.order_number?.toLowerCase().includes(lowerSearch) ||
         job.product?.toLowerCase().includes(lowerSearch) ||
         job.status?.toLowerCase().includes(lowerSearch)
@@ -72,17 +72,17 @@ export function DrillDownDialog({ open, onOpenChange, title, jobs, onExport }: D
               </DialogDescription>
             </div>
             <div className="flex items-center gap-2">
-              <Button 
-                variant="outline" 
-                size="sm" 
+              <Button
+                variant="outline"
+                size="sm"
                 className="h-9 gap-2 bg-white/5 border-white/10 hover:bg-primary/20 text-xs text-white"
                 onClick={() => onExport('csv')}
               >
                 <FileSpreadsheet className="h-4 w-4 text-emerald-400" /> CSV
               </Button>
-              <Button 
-                variant="outline" 
-                size="sm" 
+              <Button
+                variant="outline"
+                size="sm"
                 className="h-9 gap-2 bg-white/5 border-white/10 hover:bg-primary/20 text-xs text-white"
                 onClick={() => onExport('pdf')}
               >
@@ -100,7 +100,7 @@ export function DrillDownDialog({ open, onOpenChange, title, jobs, onExport }: D
               className="pl-10 bg-white/5 border-white/10 focus:border-primary/50 transition-all h-10 pr-10"
             />
             {searchTerm && (
-              <button 
+              <button
                 onClick={() => setSearchTerm("")}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-white"
               >
@@ -160,9 +160,9 @@ export function DrillDownDialog({ open, onOpenChange, title, jobs, onExport }: D
                         <Filter className="h-8 w-8 text-muted-foreground/30" />
                         <p>Nenhum pedido corresponde à sua pesquisa.</p>
                         {searchTerm && (
-                          <Button 
-                            variant="link" 
-                            className="text-primary h-auto p-0" 
+                          <Button
+                            variant="link"
+                            className="text-primary h-auto p-0"
                             onClick={() => setSearchTerm("")}
                           >
                             Limpar filtros

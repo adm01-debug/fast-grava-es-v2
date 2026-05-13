@@ -45,7 +45,7 @@ export function RealtimeIndicator() {
   };
 
   const config = statusConfig[status];
-  
+
   return (
     <TooltipProvider>
       <Tooltip>

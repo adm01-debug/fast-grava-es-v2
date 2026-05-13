@@ -95,7 +95,7 @@ export function ElectronicSignatureDialog({
           <div className="p-3 bg-muted/50 rounded-lg border border-border/50 text-[10px] text-muted-foreground leading-tight flex gap-3">
              <Fingerprint className="h-5 w-5 shrink-0" />
              <span>
-               ESTA OPERAÇÃO SERÁ VINCULADA AO SEU ID DE USUÁRIO E ENDEREÇO IP, 
+               ESTA OPERAÇÃO SERÁ VINCULADA AO SEU ID DE USUÁRIO E ENDEREÇO IP,
                GERANDO UM HASH SHA-256 IMUTÁVEL NA TRILHA DE AUDITORIA COMPLIANCE.
              </span>
           </div>

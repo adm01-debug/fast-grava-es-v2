@@ -239,18 +239,18 @@ export function CalendarTimeline({
     if (groupBy !== 'technique') {
       return machines.map(m => ({ type: 'machine' as const, data: m }));
     }
-    
+
     const rows: ({ type: 'technique', data: DbTechnique, totalJobs: number, machineCount: number } | { type: 'machine', data: DbMachine })[] = [];
     groupedMachines?.forEach(group => {
       const totalJobs = group.machines.reduce(
         (sum, m) => sum + (jobsByMachine[m.id]?.length || 0),
         0
       );
-      rows.push({ 
-        type: 'technique', 
-        data: group.technique, 
-        totalJobs, 
-        machineCount: group.machines.length 
+      rows.push({
+        type: 'technique',
+        data: group.technique,
+        totalJobs,
+        machineCount: group.machines.length
       });
       if (!collapsed.has(group.technique.id)) {
         group.machines.forEach(m => {
@@ -282,9 +282,9 @@ export function CalendarTimeline({
           <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
             {groupBy === 'technique' ? 'Técnica' : 'Máquina'}
           </span>
-          <Button 
-            variant="ghost" 
-            size="icon" 
+          <Button
+            variant="ghost"
+            size="icon"
             className="h-6 w-6 mt-1 text-primary hover:bg-primary/10"
             title="Otimizar Agenda (IA)"
             onClick={() => {
@@ -310,17 +310,17 @@ export function CalendarTimeline({
       </div>
 
       {/* Virtualized Rows Container */}
-      <div 
+      <div
         ref={parentRef}
         className="flex-1 overflow-auto scrollbar-thin scrollbar-thumb-border"
       >
-        <div 
+        <div
           className="min-w-[1200px] relative"
           style={{ height: `${rowVirtualizer.getTotalSize()}px` }}
         >
           {rowVirtualizer.getVirtualItems().map((virtualRow) => {
             const row = flattenedRows[virtualRow.index];
-            
+
             return (
               <div
                 key={virtualRow.key}
@@ -375,7 +375,7 @@ export function CalendarTimeline({
     </div>
       <DragOverlay>
         {activeJob ? (
-          <div 
+          <div
             className={cn(
               "px-3 py-2 rounded-md border shadow-2xl bg-card min-w-[120px]",
               "border-primary/50 ring-2 ring-primary/20 animate-pulse"
@@ -388,7 +388,7 @@ export function CalendarTimeline({
               {activeJob.client}
             </div>
             <div className="mt-2 flex justify-end">
-              <JobQuickActions 
+              <JobQuickActions
                 jobId={activeJob.id}
                 currentStatus={activeJob.status}
                 onStatusChange={(id, status) => updateStatus({ jobId: id, status })}

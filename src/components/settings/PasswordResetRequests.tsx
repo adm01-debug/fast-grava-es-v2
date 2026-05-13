@@ -210,7 +210,7 @@ export function PasswordResetRequests() {
                   {requests.map((request) => {
                     const expired = isExpired(request.expires_at);
                     const isPending = request.status === 'pending' && !expired;
-                    
+
                     return (
                       <TableRow key={request.id} className={expired && request.status === 'pending' ? 'opacity-50' : ''}>
                         <TableCell className="font-medium">{request.user_email}</TableCell>

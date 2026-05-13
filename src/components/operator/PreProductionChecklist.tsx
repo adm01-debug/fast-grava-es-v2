@@ -116,8 +116,8 @@ export function PreProductionChecklist({ jobId, onComplete, onSkip }: PreProduct
             key={item.key}
             className={cn(
               'flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-all',
-              state[item.key] 
-                ? 'bg-success/5 border-success/30' 
+              state[item.key]
+                ? 'bg-success/5 border-success/30'
                 : 'bg-background/50 border-border hover:border-primary/30'
             )}
           >

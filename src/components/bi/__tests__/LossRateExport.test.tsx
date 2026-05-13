@@ -59,7 +59,7 @@ describe('FuturisticBI Loss Rate Export', () => {
 
     const lossRateCard = screen.getByText('Taxa de Perda').closest('div');
     const exportButton = lossRateCard?.querySelector('button');
-    
+
     if (exportButton) {
       fireEvent.click(exportButton);
       // Depending on the implementation of FuturisticStatCard, this might open a popover or trigger directly.
@@ -67,7 +67,7 @@ describe('FuturisticBI Loss Rate Export', () => {
       // Looking at FuturisticStatCard implementation usually helps, but assuming direct call or popover click:
       const csvBtn = screen.queryByText('CSV') || exportButton;
       fireEvent.click(csvBtn);
-      
+
       expect(mockHandleExport).toHaveBeenCalledWith(expect.any(String), 'Taxa_Perda');
     }
   });

@@ -38,7 +38,7 @@ export const useTechnicalConversations = () => {
     queryKey: ['technical-conversations', user?.id],
     queryFn: async () => {
       if (!user?.id) return [];
-      
+
       try {
         const { data, error } = await supabase
           .from('technical_conversations')
@@ -50,7 +50,6 @@ export const useTechnicalConversations = () => {
         return data as TechnicalConversation[];
       } catch (error) {
         const appError = createAppError(error, CONVERSATIONS_ERROR_CONTEXT.conversations);
-        if (import.meta.env.DEV) console.error('[useTechnicalConversations]', appError);
         throw error;
       }
     },
@@ -82,13 +81,13 @@ export const useTechnicalConversations = () => {
   const createConversation = useMutation({
     mutationFn: async (title?: string) => {
       if (!user?.id) throw new Error('User not authenticated');
-      
+
       try {
         const { data, error } = await supabase
           .from('technical_conversations')
-          .insert([{ 
-            user_id: user.id, 
-            title: title || 'Nova conversa' 
+          .insert([{
+            user_id: user.id,
+            title: title || 'Nova conversa'
           }])
           .select()
           .single();
@@ -97,7 +96,6 @@ export const useTechnicalConversations = () => {
         return data as TechnicalConversation;
       } catch (error) {
         const appError = createAppError(error, CONVERSATIONS_ERROR_CONTEXT.createConversation);
-        if (import.meta.env.DEV) console.error('[createConversation]', appError);
         throw error;
       }
     },
@@ -122,7 +120,6 @@ export const useTechnicalConversations = () => {
         return data;
       } catch (error) {
         const appError = createAppError(error, CONVERSATIONS_ERROR_CONTEXT.updateTitle);
-        if (import.meta.env.DEV) console.error('[updateConversationTitle]', appError);
         throw error;
       }
     },
@@ -143,7 +140,6 @@ export const useTechnicalConversations = () => {
         if (error) throw error;
       } catch (error) {
         const appError = createAppError(error, CONVERSATIONS_ERROR_CONTEXT.deleteConversation);
-        if (import.meta.env.DEV) console.error('[deleteConversation]', appError);
         throw error;
       }
     },
@@ -169,7 +165,7 @@ export const useTechnicalMessages = (conversationId: string | null) => {
     queryKey: ['technical-messages', conversationId],
     queryFn: async () => {
       if (!conversationId) return [];
-      
+
       try {
         const { data, error } = await supabase
           .from('technical_messages')
@@ -181,7 +177,6 @@ export const useTechnicalMessages = (conversationId: string | null) => {
         return data as TechnicalMessage[];
       } catch (error) {
         const appError = createAppError(error, CONVERSATIONS_ERROR_CONTEXT.messages);
-        if (import.meta.env.DEV) console.error('[useTechnicalMessages]', appError);
         throw error;
       }
     },
@@ -193,20 +188,20 @@ export const useTechnicalMessages = (conversationId: string | null) => {
   const addMessage = useMutation({
     mutationFn: async ({ role, content }: { role: 'user' | 'assistant'; content: string }) => {
       if (!conversationId) throw new Error('No conversation selected');
-      
+
       try {
         const { data, error } = await supabase
           .from('technical_messages')
-          .insert([{ 
-            conversation_id: conversationId, 
-            role, 
-            content 
+          .insert([{
+            conversation_id: conversationId,
+            role,
+            content
           }])
           .select()
           .single();
 
         if (error) throw error;
-        
+
         // Update conversation's updated_at (fire and forget, don't block on error)
         supabase
           .from('technical_conversations')
@@ -214,14 +209,13 @@ export const useTechnicalMessages = (conversationId: string | null) => {
           .eq('id', conversationId)
           .then(({ error: updateError }) => {
             if (updateError && import.meta.env.DEV) {
-              console.error('[addMessage:updateTimestamp]', updateError);
+
             }
           });
 
         return data as TechnicalMessage;
       } catch (error) {
         const appError = createAppError(error, CONVERSATIONS_ERROR_CONTEXT.addMessage);
-        if (import.meta.env.DEV) console.error('[addMessage]', appError);
         throw error;
       }
     },

@@ -81,7 +81,7 @@ export function NotificationsList({ notifications, isLoading }: NotificationsLis
                   <p className="text-[10px] uppercase font-bold tracking-tighter text-muted-foreground/60">
                     {formatDistanceToNow(new Date(notification.timestamp), { addSuffix: true, locale: ptBR })}
                   </p>
-                  
+
                   <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                     {!notification.isRead && notification.id.startsWith('push-') && (
                       <Button variant="ghost" size="icon" className="h-7 w-7 hover:bg-primary/10 hover:text-primary" onClick={() => markAsRead(notification.id.replace('push-', ''))}>

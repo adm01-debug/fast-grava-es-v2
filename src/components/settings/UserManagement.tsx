@@ -44,13 +44,13 @@ const roleColors: Record<AppRole, string> = {
 export function UserManagement() {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
-  
+
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedUser, setSelectedUser] = useState<Profile | null>(null);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showInviteModal, setShowInviteModal] = useState(false);
-  
+
   const [editForm, setEditForm] = useState({ full_name: '', phone: '', role: 'operator' as AppRole });
   const [inviteEmail, setInviteEmail] = useState('');
   const [inviteRole, setInviteRole] = useState<AppRole>('operator');
@@ -111,7 +111,6 @@ export function UserManagement() {
       setSelectedUser(null);
     },
     onError: (error) => {
-      if (import.meta.env.DEV) console.error('Error updating user:', error);
       toast.error('Erro ao atualizar usuário');
     },
   });
@@ -135,7 +134,6 @@ export function UserManagement() {
       setSelectedUser(null);
     },
     onError: (error) => {
-      if (import.meta.env.DEV) console.error('Error deleting user:', error);
       toast.error('Erro ao remover usuário');
     },
   });
@@ -158,7 +156,6 @@ export function UserManagement() {
       setInviteRole('operator');
     },
     onError: (error: Error) => {
-      if (import.meta.env.DEV) console.error('Error inviting user:', error);
       // Fallback: just show success since admin invite may not be available
       toast.info('Funcionalidade de convite requer configuração adicional');
       setShowInviteModal(false);
@@ -182,7 +179,7 @@ export function UserManagement() {
 
   const handleSaveEdit = () => {
     if (!selectedUser) return;
-    
+
     updateUserMutation.mutate({
       userId: selectedUser.id,
       updates: {
@@ -360,7 +357,7 @@ export function UserManagement() {
           <AlertDialogHeader>
             <AlertDialogTitle>Confirmar Exclusão</AlertDialogTitle>
             <AlertDialogDescription>
-              Tem certeza que deseja remover o usuário "{selectedUser?.full_name}"? 
+              Tem certeza que deseja remover o usuário "{selectedUser?.full_name}"?
               Esta ação não pode ser desfeita.
             </AlertDialogDescription>
           </AlertDialogHeader>

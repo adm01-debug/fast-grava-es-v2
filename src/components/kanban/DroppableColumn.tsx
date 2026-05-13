@@ -80,7 +80,7 @@ export function DroppableColumn({
           setThresholds({ bottleneckRiskMinutes: parsed.bottleneckRiskMinutes });
         }
       } catch (e) {
-        console.error('Error loading thresholds', e);
+
       }
         }
         const entityStored = localStorage.getItem('entity-thresholds');
@@ -140,11 +140,11 @@ export function DroppableColumn({
   }, [jobs]);
 
   const jobIds = sortedJobs.map(job => job.id);
-  
+
   const criticalMachinesInColumn = useMemo(() => {
     const machineIds = new Set(jobs.map(j => j.machine_id).filter(Boolean));
-    return reliabilityMetrics.filter(m => 
-      machineIds.has(m.machineId) && 
+    return reliabilityMetrics.filter(m =>
+      machineIds.has(m.machineId) &&
       (m.reliabilityScore === 'critical' || m.reliabilityScore === 'poor')
     );
   }, [jobs, reliabilityMetrics]);
@@ -183,10 +183,10 @@ export function DroppableColumn({
           <Icon className="h-4 w-4" />
         </div>
         <h3 className="font-semibold text-sm tracking-tight">{label}</h3>
-        <Badge 
-          variant={isOverWip ? "destructive" : "secondary"} 
+        <Badge
+          variant={isOverWip ? "destructive" : "secondary"}
           className={cn(
-            "ml-auto text-xs font-mono", 
+            "ml-auto text-xs font-mono",
             isOverWip && "animate-pulse shadow-[0_0_10px_rgba(239,68,68,0.5)]"
           )}
         >
@@ -221,7 +221,7 @@ export function DroppableColumn({
           </div>
         )}
       </div>
-      
+
       {/* Bottleneck Risk Indicator */}
       {totalEstimatedTime > 0 && (
         <TooltipProvider>
@@ -231,21 +231,21 @@ export function DroppableColumn({
                 <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider">
                   <Activity className={cn(
                     "h-3 w-3",
-                    totalEstimatedTime > columnLimit ? "text-red-500 animate-pulse" : 
+                    totalEstimatedTime > columnLimit ? "text-red-500 animate-pulse" :
                     totalEstimatedTime > columnLimit * 0.7 ? "text-orange-500" : "text-emerald-500"
                   )} />
                   <span className={cn(
-                    totalEstimatedTime > columnLimit ? "text-red-500" : 
+                    totalEstimatedTime > columnLimit ? "text-red-500" :
                     totalEstimatedTime > columnLimit * 0.7 ? "text-orange-500" : "text-emerald-500"
                   )}>
                     Risco de Gargalo: {totalEstimatedTime > columnLimit ? "Crítico" : totalEstimatedTime > columnLimit * 0.7 ? "Moderado" : "Baixo"}
                   </span>
-                  <Badge 
-                    variant="outline" 
+                  <Badge
+                    variant="outline"
                     className={cn(
                       "ml-auto text-[8px] h-4 px-1.5 leading-none font-bold border-2",
-                      totalEstimatedTime > columnLimit ? "border-red-500 text-red-500 bg-red-500/10 animate-pulse" : 
-                      totalEstimatedTime > columnLimit * 0.7 ? "border-orange-500 text-orange-500 bg-orange-500/10" : 
+                      totalEstimatedTime > columnLimit ? "border-red-500 text-red-500 bg-red-500/10 animate-pulse" :
+                      totalEstimatedTime > columnLimit * 0.7 ? "border-orange-500 text-orange-500 bg-orange-500/10" :
                       "border-emerald-500 text-emerald-500 bg-emerald-500/10"
                     )}
                   >
@@ -278,10 +278,10 @@ export function DroppableColumn({
                 <div className="space-y-1">
                   <p className="text-[9px] text-muted-foreground uppercase">Status da Capacidade</p>
                   <div className="h-1.5 w-full bg-muted/50 rounded-full overflow-hidden">
-                    <div 
+                    <div
                       className={cn(
                         "h-full rounded-full transition-all duration-500",
-                        totalEstimatedTime > columnLimit ? "bg-red-500" : 
+                        totalEstimatedTime > columnLimit ? "bg-red-500" :
                         totalEstimatedTime > columnLimit * 0.7 ? "bg-orange-500" : "bg-emerald-500"
                       )}
                       style={{ width: `${Math.min(100, (totalEstimatedTime / columnLimit) * 100)}%` }}
@@ -289,9 +289,9 @@ export function DroppableColumn({
                   </div>
                 </div>
                 <p className="text-[10px] text-muted-foreground italic leading-relaxed">
-                  {totalEstimatedTime > columnLimit 
-                    ? "Esta coluna representa um gargalo crítico. O tempo de processamento excede a disponibilidade estimada." 
-                    : totalEstimatedTime > columnLimit * 0.7 
+                  {totalEstimatedTime > columnLimit
+                    ? "Esta coluna representa um gargalo crítico. O tempo de processamento excede a disponibilidade estimada."
+                    : totalEstimatedTime > columnLimit * 0.7
                       ? "Capacidade em nível de atenção. Monitore novos agendamentos para evitar saturação."
                       : "Fluxo saudável. A capacidade instalada suporta a carga atual sem riscos imediatos."}
                 </p>
@@ -304,10 +304,10 @@ export function DroppableColumn({
       {/* WIP indicator bar */}
       {effectiveWipLimit < 50 && (
         <div className="h-1 mx-1 mb-2 rounded-full bg-muted/30 overflow-hidden">
-          <div 
+          <div
             className={cn(
               "h-full rounded-full transition-all duration-300",
-              wipPercentage > 100 ? "bg-destructive" : 
+              wipPercentage > 100 ? "bg-destructive" :
               wipPercentage > 80 ? "bg-orange-400" : "bg-primary/60"
             )}
             style={{ width: `${Math.min(100, wipPercentage)}%` }}
@@ -336,10 +336,10 @@ export function DroppableColumn({
             "bg-gradient-to-b from-muted/30 to-card/10 backdrop-blur-md shadow-inner",
             "space-y-1.5 min-h-[400px] max-h-[70vh] overflow-y-auto scrollbar-thin",
             "group-hover/column:border-border/60",
-            isOver 
-              ? "border-primary/50 bg-primary/10 ring-4 ring-primary/5 shadow-[0_0_20px_rgba(var(--primary),0.1)]" 
-              : isOverWip 
-                ? "border-destructive/40 bg-destructive/5" 
+            isOver
+              ? "border-primary/50 bg-primary/10 ring-4 ring-primary/5 shadow-[0_0_20px_rgba(var(--primary),0.1)]"
+              : isOverWip
+                ? "border-destructive/40 bg-destructive/5"
                 : "border-border/30"
           )}
         >
@@ -354,7 +354,7 @@ export function DroppableColumn({
               </div>
             ) : (
               sortedJobs.map((job) => (
-                <DraggableJobCard 
+                <DraggableJobCard
                   key={job.id}
                   job={job}
                   technique={getTechniqueById(job.technique_id)}

@@ -1,11 +1,11 @@
 import { useState, useEffect, useMemo } from 'react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { 
-  ArrowRightLeft, 
-  Plus, 
-  Clock, 
-  CheckCircle2, 
+import {
+  ArrowRightLeft,
+  Plus,
+  Clock,
+  CheckCircle2,
   AlertTriangle,
   ClipboardList,
   ListTodo,
@@ -22,8 +22,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/contexts/AuthContext';
-import { 
-  useShiftHandovers, 
+import {
+  useShiftHandovers,
   useShiftPendingTasks,
   useShiftOccurrences,
   useShiftHandoverMutations,
@@ -133,7 +133,7 @@ export default function ShiftHandoverPage() {
   return (
     <div className="container mx-auto p-4 md:p-6 lg:p-8 space-y-6 animate-fade-in-up">
       <Breadcrumbs />
-      
+
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
@@ -309,8 +309,8 @@ export default function ShiftHandoverPage() {
               ))
             ) : handovers && handovers.length > 0 ? (
               handovers.map((handover) => (
-                <Card 
-                  key={handover.id} 
+                <Card
+                  key={handover.id}
                   className="cursor-pointer hover:bg-accent/50 transition-colors"
                   onClick={() => setSelectedHandover(handover)}
                 >
@@ -338,7 +338,7 @@ export default function ShiftHandoverPage() {
                             </Badge>
                           </div>
                           <p className="text-sm text-muted-foreground">
-                            {handover.machine?.name || 'Sem máquina'} • 
+                            {handover.machine?.name || 'Sem máquina'} •
                             {format(new Date(handover.started_at), " dd/MM/yyyy 'às' HH:mm")}
                           </p>
                           <div className="flex items-center gap-4 mt-2 text-sm">
@@ -356,7 +356,7 @@ export default function ShiftHandoverPage() {
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        {handover.status === 'pending_acceptance' && 
+                        {handover.status === 'pending_acceptance' &&
                          handover.outgoing_operator_id !== user?.id && (
                           <Button
                             size="sm"
@@ -434,7 +434,7 @@ export default function ShiftHandoverPage() {
                   ))
                 ) : handovers && handovers.length > 0 ? (
                   handovers.map((handover) => (
-                    <div 
+                    <div
                       key={handover.id}
                       className="flex items-center justify-between p-3 rounded-lg border hover:bg-accent/50 cursor-pointer"
                       onClick={() => setSelectedHandover(handover)}

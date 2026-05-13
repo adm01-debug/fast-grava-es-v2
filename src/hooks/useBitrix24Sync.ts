@@ -59,32 +59,30 @@ export const useBitrix24Sync = () => {
       });
 
       const result = await response.json();
-      
+
       if (!response.ok) {
         throw new Error(result.error || 'Sync failed');
       }
 
       return result;
-    } catch (error: unknown) {
+    } catch (error: any) {
       const appError = createAppError(error, { ...BITRIX_ERROR_CONTEXT.call, action });
-      
+
       // Retry on network errors or 5xx server errors
       const errorMessage = error instanceof Error ? error.message : String(error);
-      const isRetryable = errorMessage.includes('fetch') || 
+      const isRetryable = errorMessage.includes('fetch') ||
                           errorMessage.includes('network') ||
                           errorMessage.includes('timeout') ||
                           errorMessage.includes('500') ||
                           errorMessage.includes('502') ||
                           errorMessage.includes('503') ||
                           errorMessage.includes('504');
-      
+
       if (isRetryable && retryCount < MAX_RETRIES) {
-        if (import.meta.env.DEV) console.log(`[Bitrix24] Retry ${retryCount + 1}/${MAX_RETRIES} for action: ${action}`);
         await new Promise(resolve => setTimeout(resolve, RETRY_DELAY_MS * Math.pow(2, retryCount)));
         return callBitrixSync(action, body, retryCount + 1);
       }
-      
-      if (import.meta.env.DEV) console.error('[callBitrixSync]', appError);
+
       throw error;
     }
   }, []);
@@ -95,7 +93,7 @@ export const useBitrix24Sync = () => {
       const result = await callBitrixSync<OAuthStatus>('oauth-status');
       setOAuthStatus(result);
       return result;
-    } catch (error: unknown) {
+    } catch (error: any) {
       const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
       toast({
         title: 'Erro ao verificar OAuth',
@@ -118,7 +116,7 @@ export const useBitrix24Sync = () => {
       });
       await checkOAuthStatus();
       return result;
-    } catch (error: unknown) {
+    } catch (error: any) {
       const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
       toast({
         title: 'Erro ao limpar tokens',
@@ -140,7 +138,7 @@ export const useBitrix24Sync = () => {
         description: 'Conexão com Bitrix24 estabelecida com sucesso.'
       });
       return result;
-    } catch (error: unknown) {
+    } catch (error: any) {
       const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
       // Check if it's an auth error
       if (errorMessage.includes('invalid_token') || errorMessage.includes('expired')) {
@@ -167,17 +165,17 @@ export const useBitrix24Sync = () => {
     setIsLoading(true);
     try {
       const result = await callBitrixSync('pull', { categoryId });
-      
+
       setLastSync(new Date());
       queryClient.invalidateQueries({ queryKey: ['jobs'] });
-      
+
       toast({
         title: 'Sincronização concluída',
         description: `${result.synced?.length || 0} jobs sincronizados do Bitrix24.`
       });
-      
+
       return result;
-    } catch (error: unknown) {
+    } catch (error: any) {
       const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
       // Check if it's an auth error
       if (errorMessage.includes('invalid_token') || errorMessage.includes('expired') || errorMessage.includes('authentication')) {
@@ -203,17 +201,16 @@ export const useBitrix24Sync = () => {
   const pushToBitrix = useCallback(async (jobId: string, status: string) => {
     try {
       const result = await callBitrixSync('push', { jobId, status });
-      
+
       if (!result.skipped) {
         toast({
           title: 'Status atualizado',
           description: 'Status sincronizado com Bitrix24.'
         });
       }
-      
+
       return result;
-    } catch (error: unknown) {
-      if (import.meta.env.DEV) console.error('Bitrix24 push error:', error);
+    } catch (error: any) {
       const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
       // Don't show error toast for non-Bitrix jobs
       return { error: errorMessage };

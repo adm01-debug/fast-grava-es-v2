@@ -10,29 +10,29 @@ export interface OperatorProductivityMetrics {
   operatorName: string;
   avatarUrl: string | null;
   isActive: boolean;
-  
+
   // Job metrics
   totalJobsCompleted: number;
   totalJobsInProgress: number;
   totalPiecesProduced: number;
   totalPiecesLost: number;
   lossRate: number;
-  
+
   // Time metrics
   totalProductionTimeMinutes: number;
   averageJobDurationMinutes: number;
   estimatedVsActualRatio: number; // < 1 = faster than estimated, > 1 = slower
-  
+
   // Efficiency metrics
   efficiencyScore: number; // 0-100
   productionVelocity: number; // pieces per hour
-  
+
   // Scan activity
   totalScans: number;
   startActions: number;
   finishActions: number;
   pauseActions: number;
-  
+
   // Machine assignments
   assignedMachines: number;
   machineNames: string[];
@@ -54,7 +54,7 @@ interface OperatorMachineItem {
 
 export function useOperatorProductivity(period: ProductivityPeriod = 'all') {
   const { jobs, machines, isLoading: isLoadingScheduling } = useSchedulingData();
-  
+
   // Calculate period start date
   const periodStartDate = useMemo(() => {
     if (period === 'all') return null;
@@ -99,7 +99,7 @@ export function useOperatorProductivity(period: ProductivityPeriod = 'all') {
       let query = supabase
         .from('qr_scan_history')
         .select('operator_id, action, scanned_at');
-      
+
       if (periodStartDate) {
         query = query.gte('scanned_at', periodStartDate.toISOString());
       }
@@ -202,8 +202,8 @@ export function useOperatorProductivity(period: ProductivityPeriod = 'all') {
         totalEstimatedMinutes += job.estimated_duration || 0;
       });
 
-      const averageJobDurationMinutes = jobsWithActualTime > 0 
-        ? totalProductionTimeMinutes / jobsWithActualTime 
+      const averageJobDurationMinutes = jobsWithActualTime > 0
+        ? totalProductionTimeMinutes / jobsWithActualTime
         : 0;
 
       const estimatedVsActualRatio = totalEstimatedMinutes > 0 && totalProductionTimeMinutes > 0
@@ -224,8 +224,8 @@ export function useOperatorProductivity(period: ProductivityPeriod = 'all') {
       const efficiencyScore = (lossScore * 0.6 + timeScore * 0.4); // 60% weight on quality, 40% on time
 
       // Production velocity (pieces per hour)
-      const productionVelocity = totalProductionTimeMinutes > 0 
-        ? (totalPiecesProduced / totalProductionTimeMinutes) * 60 
+      const productionVelocity = totalProductionTimeMinutes > 0
+        ? (totalPiecesProduced / totalProductionTimeMinutes) * 60
         : 0;
 
       // Get scan activity
@@ -239,25 +239,25 @@ export function useOperatorProductivity(period: ProductivityPeriod = 'all') {
         operatorName: profile?.full_name || 'Sem nome',
         avatarUrl: profile?.avatar_url ?? null,
         isActive: true,
-        
+
         totalJobsCompleted: operatorJobs.length,
         totalJobsInProgress: inProgressJobs.length,
         totalPiecesProduced,
         totalPiecesLost,
         lossRate,
-        
+
         totalProductionTimeMinutes,
         averageJobDurationMinutes,
         estimatedVsActualRatio,
-        
+
         efficiencyScore,
         productionVelocity,
-        
+
         totalScans: operatorScans.length,
         startActions,
         finishActions,
         pauseActions,
-        
+
         assignedMachines: machineIds.length,
         machineNames,
       };
@@ -273,7 +273,7 @@ export function useOperatorProductivity(period: ProductivityPeriod = 'all') {
   const overallStats = useMemo(() => {
     const activeOperators = operatorMetrics.filter(o => o.isActive);
     const totalOperators = activeOperators.length;
-    
+
     if (totalOperators === 0) {
       return {
         averageEfficiency: 0,
@@ -288,8 +288,8 @@ export function useOperatorProductivity(period: ProductivityPeriod = 'all') {
     const totalPiecesProduced = activeOperators.reduce((sum, o) => sum + o.totalPiecesProduced, 0);
     const averageEfficiency = activeOperators.reduce((sum, o) => sum + o.efficiencyScore, 0) / totalOperators;
     const averageLossRate = activeOperators.reduce((sum, o) => sum + o.lossRate, 0) / totalOperators;
-    
-    const topPerformer = activeOperators.reduce((best, curr) => 
+
+    const topPerformer = activeOperators.reduce((best, curr) =>
       curr.efficiencyScore > (best?.efficiencyScore || 0) ? curr : best
     , null as OperatorProductivityMetrics | null);
 

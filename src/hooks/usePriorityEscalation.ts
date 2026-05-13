@@ -8,7 +8,7 @@ import { supabase } from '@/integrations/supabase/client';
  * Automatically escalates job priority based on rules:
  * - Jobs scheduled for today that are still in 'queue' → escalate to 'high'
  * - Jobs past their scheduled date → escalate to 'urgent' and notify
- * 
+ *
  * Runs every 5 minutes.
  */
 export function usePriorityEscalation() {

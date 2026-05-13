@@ -59,7 +59,7 @@ export function useWebAuthn() {
   const safeSetIsRegistering = (val: boolean) => isMounted.current && setIsRegistering(val);
   const safeSetIsAuthenticating = (val: boolean) => isMounted.current && setIsAuthenticating(val);
 
-  const isSupported = typeof window !== 'undefined' && 
+  const isSupported = typeof window !== 'undefined' &&
     !!window.PublicKeyCredential &&
     typeof window.PublicKeyCredential === 'function';
 
@@ -74,7 +74,7 @@ export function useWebAuthn() {
 
   const fetchCredentials = useCallback(async () => {
     if (!user) return;
-    
+
     safeSetIsLoading(true);
     try {
       const { data, error } = await supabase
@@ -86,7 +86,6 @@ export function useWebAuthn() {
       if (error) throw error;
       if (isMounted.current) setCredentials(data || []);
     } catch (error) {
-      if (import.meta.env.DEV) console.error('Error fetching credentials:', error);
     } finally {
       safeSetIsLoading(false);
     }
@@ -169,7 +168,6 @@ export function useWebAuthn() {
       await fetchCredentials();
       return true;
     } catch (error) {
-      if (import.meta.env.DEV) console.error('Error registering passkey:', error);
       const err = error as { name?: string };
       if (err.name === 'NotAllowedError') {
         toast.error('Registro cancelado pelo usuário');
@@ -228,7 +226,7 @@ export function useWebAuthn() {
 
       await supabase
         .from('webauthn_credentials')
-        .update({ 
+        .update({
           last_used_at: new Date().toISOString(),
           counter: (credData.counter || 0) + 1
         })
@@ -242,7 +240,6 @@ export function useWebAuthn() {
       toast.success('Autenticação bem-sucedida!');
       return { success: true, userId: credData.user_id };
     } catch (error) {
-      if (import.meta.env.DEV) console.error('Error authenticating:', error);
       const err = error as { name?: string };
       if (err.name === 'NotAllowedError') {
         toast.error('Autenticação cancelada');
@@ -271,7 +268,6 @@ export function useWebAuthn() {
       await fetchCredentials();
       return true;
     } catch (error) {
-      if (import.meta.env.DEV) console.error('Error removing passkey:', error);
       toast.error('Erro ao remover passkey');
       return false;
     }
