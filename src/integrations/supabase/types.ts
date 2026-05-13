@@ -801,6 +801,36 @@ export type Database = {
         }
         Relationships: []
       }
+      feature_flags: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          is_enabled: boolean | null
+          name: string
+          rules: Json | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_enabled?: boolean | null
+          name: string
+          rules?: Json | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_enabled?: boolean | null
+          name?: string
+          rules?: Json | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       gamification_rewards: {
         Row: {
           color_class: string | null
@@ -4375,6 +4405,45 @@ export type Database = {
           name?: string
           setup_time?: number
           short_name?: string
+        }
+        Relationships: []
+      }
+      telemetry_traces: {
+        Row: {
+          attributes: Json | null
+          created_at: string | null
+          duration_ms: number | null
+          id: string
+          name: string
+          parent_span_id: string | null
+          service_name: string
+          span_id: string
+          status: string | null
+          trace_id: string
+        }
+        Insert: {
+          attributes?: Json | null
+          created_at?: string | null
+          duration_ms?: number | null
+          id?: string
+          name: string
+          parent_span_id?: string | null
+          service_name: string
+          span_id: string
+          status?: string | null
+          trace_id: string
+        }
+        Update: {
+          attributes?: Json | null
+          created_at?: string | null
+          duration_ms?: number | null
+          id?: string
+          name?: string
+          parent_span_id?: string | null
+          service_name?: string
+          span_id?: string
+          status?: string | null
+          trace_id?: string
         }
         Relationships: []
       }
