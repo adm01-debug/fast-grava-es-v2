@@ -12,7 +12,7 @@ import { supportedLanguages } from '@/i18n';
 import { cn } from '@/lib/utils';
 
 export const LanguageSwitcher = forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(function LanguageSwitcher(props, ref) {
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
 
   const currentLanguage = supportedLanguages.find(
     (lang) => lang.code === i18n.language
