@@ -32,6 +32,7 @@ import { BIPredictiveROI } from './BIPredictiveROI';
 import { CHART_COLORS, GRADIENTS } from '@/constants/biConstants';
 
 import { BIJob, BIMetrics, BIProps } from '@/types/bi';
+import { Job } from '@/types/job';
 
 export function FuturisticBI({ biMetrics, kpis, oeeData, isLoading }: BIProps) {
   const navigate = useNavigate();
@@ -70,7 +71,7 @@ export function FuturisticBI({ biMetrics, kpis, oeeData, isLoading }: BIProps) {
 
   const [drillDownOpen, setDrillDownOpen] = useState(false);
   const [drillDownTitle, setDrillDownTitle] = useState('');
-  const [drillDownJobs, setDrillDownJobs] = useState<any[]>([]);
+  const [drillDownJobs, setDrillDownJobs] = useState<Job[]>([]);
   const [visibleSeries, setVisibleSeries] = useState<Record<string, boolean>>({ produced: true, lost: true });
 
   const toggleSeries = (key: string) => {
