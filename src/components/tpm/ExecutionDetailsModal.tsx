@@ -549,55 +549,14 @@ export function ExecutionDetailsModal({ isOpen, onClose, recordId }: ExecutionDe
                 </div>
               </div>
 
-              {/* Adjustment Parameters */}
+              {/* Adjustment Parameters Summary */}
               {record.adjustment_parameters && Object.values(record.adjustment_parameters).some(v => v && typeof v === 'string') && (
                 <div className="space-y-4">
                   <h3 className="text-lg font-semibold flex items-center gap-2">
                     <Zap className="h-5 w-5 text-amber-500" />
                     Regulagem Técnica Aplicada
                   </h3>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {record.adjustment_parameters.squeegee_passes && (
-                      <div className={`p-3 rounded-lg border ${record.adjustment_parameters.recommended?.squeegee_passes && record.adjustment_parameters.squeegee_passes !== record.adjustment_parameters.recommended.squeegee_passes ? 'bg-amber-500/10 border-amber-500/30' : 'bg-secondary/20 border-border/50'}`}>
-                        <Label className="text-[10px] text-muted-foreground uppercase flex items-center gap-1">
-                          <MoveHorizontal className="h-3 w-3" /> Passadas
-                        </Label>
-                        <p className="text-sm font-bold">{record.adjustment_parameters.squeegee_passes}</p>
-                        {record.adjustment_parameters.recommended?.squeegee_passes && record.adjustment_parameters.squeegee_passes !== record.adjustment_parameters.recommended.squeegee_passes && (
-                          <p className="text-[9px] text-amber-600 font-medium">Rec: {record.adjustment_parameters.recommended.squeegee_passes}</p>
-                        )}
-                      </div>
-                    )}
-                    {record.adjustment_parameters.pressure && (
-                      <div className={`p-3 rounded-lg border ${record.adjustment_parameters.recommended?.pressure && record.adjustment_parameters.pressure !== record.adjustment_parameters.recommended.pressure ? 'bg-amber-500/10 border-amber-500/30' : 'bg-secondary/20 border-border/50'}`}>
-                        <Label className="text-[10px] text-muted-foreground uppercase">Pressão</Label>
-                        <p className="text-sm font-bold">{record.adjustment_parameters.pressure}</p>
-                        {record.adjustment_parameters.recommended?.pressure && record.adjustment_parameters.pressure !== record.adjustment_parameters.recommended.pressure && (
-                          <p className="text-[9px] text-amber-600 font-medium">Rec: {record.adjustment_parameters.recommended.pressure}</p>
-                        )}
-                      </div>
-                    )}
-                    {record.adjustment_parameters.speed && (
-                      <div className={`p-3 rounded-lg border ${record.adjustment_parameters.recommended?.speed && record.adjustment_parameters.speed !== record.adjustment_parameters.recommended.speed ? 'bg-amber-500/10 border-amber-500/30' : 'bg-secondary/20 border-border/50'}`}>
-                        <Label className="text-[10px] text-muted-foreground uppercase">Velocidade</Label>
-                        <p className="text-sm font-bold">{record.adjustment_parameters.speed}</p>
-                        {record.adjustment_parameters.recommended?.speed && record.adjustment_parameters.speed !== record.adjustment_parameters.recommended.speed && (
-                          <p className="text-[9px] text-amber-600 font-medium">Rec: {record.adjustment_parameters.recommended.speed}</p>
-                        )}
-                      </div>
-                    )}
-                    {record.adjustment_parameters.temperature && (
-                      <div className={`p-3 rounded-lg border ${record.adjustment_parameters.recommended?.temperature && record.adjustment_parameters.temperature !== record.adjustment_parameters.recommended.temperature ? 'bg-amber-500/10 border-amber-500/30' : 'bg-secondary/20 border-border/50'}`}>
-                        <Label className="text-[10px] text-muted-foreground uppercase flex items-center gap-1">
-                          <Thermometer className="h-3 w-3" /> Temp.
-                        </Label>
-                        <p className="text-sm font-bold">{record.adjustment_parameters.temperature}</p>
-                        {record.adjustment_parameters.recommended?.temperature && record.adjustment_parameters.temperature !== record.adjustment_parameters.recommended.temperature && (
-                          <p className="text-[9px] text-amber-600 font-medium">Rec: {record.adjustment_parameters.recommended.temperature}</p>
-                        )}
-                      </div>
-                    )}
-                  </div>
+                  <AdjustmentParameters adjustmentParameters={record.adjustment_parameters} />
 
                   {/* Print-only Observations Block */}
                   <div className="hidden print:block mt-6 border p-4 rounded-lg">
