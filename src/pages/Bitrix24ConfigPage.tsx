@@ -61,7 +61,7 @@ const Bitrix24ConfigPage = () => {
   const fetchMappings = async () => {
     setIsLoading(true);
     try { const result = await callBitrixSync('list-mappings'); setAllMappings(result.mappings || []); }
-    catch (error) { if (import.meta.env.DEV)  }
+    catch (error) { /* Error handled silently in UI */ }
     finally { setIsLoading(false); }
   };
 
