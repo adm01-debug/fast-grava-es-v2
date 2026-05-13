@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { useSchedulingData } from './useSchedulingData';
+import { useBusinessConfig } from './useBusinessConfig';
 import { startOfDay, endOfDay, subDays, differenceInMinutes, parseISO, isWithinInterval, isValid } from 'date-fns';
 
 // Data validation helpers
