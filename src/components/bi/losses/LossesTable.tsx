@@ -178,12 +178,12 @@ export function LossesTable({ jobs, onExport, onShowDetails }: LossesTableProps)
                           <div className="absolute right-0 top-full mt-1 bg-black/95 border border-white/10 p-2 rounded-lg opacity-0 group-hover/cost:opacity-100 transition-opacity z-50 min-w-[150px] pointer-events-none shadow-2xl">
                             <p className="text-[10px] text-muted-foreground uppercase mb-1">Impacto Financeiro</p>
                             <div className="flex justify-between text-[10px]">
-                              <span>Custo Material:</span>
-                              <span className="text-white font-mono">R$ {(job.lost_pieces * 10).toFixed(2)}</span>
-                            </div>
-                            <div className="flex justify-between text-[10px]">
-                              <span>Hora Máquina:</span>
-                              <span className="text-white font-mono">R$ {(job.lost_pieces * 5.5).toFixed(2)}</span>
+                            <span>{t('bi.materialCost', 'Custo Material')}:</span>
+                            <span className="text-white font-mono">R$ {(job.lost_pieces * 10).toFixed(2)}</span>
+                          </div>
+                          <div className="flex justify-between text-[10px]">
+                            <span>{t('bi.machineHour', 'Hora Máquina')}:</span>
+                            <span className="text-white font-mono">R$ {(job.lost_pieces * 5.5).toFixed(2)}</span>
                             </div>
                           </div>
                         </div>
