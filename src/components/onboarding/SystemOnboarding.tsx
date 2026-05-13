@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import Joyride, { Step, CallBackProps, STATUS } from 'react-joyride';
+import { Joyride, Step, CallbackProps, STATUS } from 'react-joyride';
 import { useTranslation } from 'react-i18next';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { useAuth } from '@/contexts/AuthContext';
@@ -29,6 +29,9 @@ export const SystemOnboarding = () => {
       title: t('onboarding.welcome.title', { defaultValue: 'Bem-vindo ao Fast Gravações!' }),
       content: t('onboarding.welcome.content', { defaultValue: 'Vamos fazer um tour rápido para você conhecer as principais funcionalidades da sua nova Fábrica Autônoma.' }),
       disableBeacon: true,
+      floaterProps: {
+        disableAnimation: true,
+      },
     },
     {
       target: '#navigation',
@@ -56,7 +59,7 @@ export const SystemOnboarding = () => {
     },
   ];
 
-  const handleJoyrideCallback = (data: CallBackProps) => {
+  const handleJoyrideCallback = (data: CallbackProps) => {
     const { status } = data;
     if ([STATUS.FINISHED, STATUS.SKIPPED].includes(status as any)) {
       setHasCompletedOnboarding(true);
