@@ -186,7 +186,7 @@ export function JobDetailsModal({ job, open, onOpenChange, onStatusChange }: Job
 
   return (
     <Dialog open={open} onOpenChange={(val) => { onOpenChange(val); if (!val) setIsEditing(false); }}>
-      <DialogContent className="max-w-2xl bg-card border-border/50 backdrop-blur-sm">
+      <DialogContent className="max-w-2xl bg-card border-border/50 backdrop-blur-sm" aria-describedby="job-details-description">
         <DialogHeader>
           <div className="flex items-center justify-between">
             <DialogTitle className="text-xl font-bold text-foreground flex items-center gap-2">
