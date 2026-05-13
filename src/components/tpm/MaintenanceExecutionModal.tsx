@@ -18,6 +18,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { ChecklistItem } from './execution/ChecklistItem';
 import { AlertRiskPanel } from './execution/AlertRiskPanel';
 import { SupplyList } from './execution/SupplyList';
+import { AdjustmentParameters } from './execution/AdjustmentParameters';
+import { ReplacementParts } from './execution/ReplacementParts';
 
 interface MaintenanceExecutionModalProps {
   isOpen: boolean;
@@ -443,46 +445,13 @@ export function MaintenanceExecutionModal({
                   </Select>
                 </div>
 
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                  {['squeegee_passes', 'pressure', 'speed', 'temperature'].map((param) => {
-                    const labels: Record<string, string> = {
-                      squeegee_passes: 'Passadas',
-                      pressure: 'Pressão',
-                      speed: 'Velocidade',
-                      temperature: 'Temp.'
-                    };
-                    const Icons: Record<string, any> = {
-                      squeegee_passes: MoveHorizontal,
-                      pressure: PenTool,
-                      speed: Zap,
-                      temperature: Thermometer
-                    };
-                    const Icon = Icons[param];
-                    const sheet = technicalSheets.find(s => s.id === selectedSheetId);
-                    const range = (sheet?.settings_ranges as any)?.[param];
-                    const recommended = (sheet?.machine_settings as any)?.[param];
-
-                    return (
-                      <div key={param} className="space-y-2">
-                        <Label className="flex items-center gap-1 text-xs">
-                          {Icon && <Icon className="h-3 w-3" />} {labels[param]}
-                        </Label>
-                        <Input 
-                          placeholder={recommended || "Valor"}
-                          value={(adjustmentParams as any)[param]}
-                          onChange={(e) => setAdjustmentParams(prev => ({ ...prev, [param]: e.target.value }))}
-                          className={activeAlerts.some(a => a.parameter_name === labels[param]) ? "border-destructive ring-destructive/20" : ""}
-                        />
-                        {range && (range.min || range.max) && (
-                          <div className="text-[10px] text-muted-foreground bg-secondary/30 px-1.5 py-0.5 rounded flex justify-between">
-                            <span>Mín: {range.min || '-'}</span>
-                            <span>Máx: {range.max || '-'}</span>
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
+                <AdjustmentParameters
+                  adjustmentParams={adjustmentParams}
+                  setAdjustmentParams={setAdjustmentParams}
+                  activeAlerts={activeAlerts}
+                  selectedSheetId={selectedSheetId}
+                  technicalSheets={technicalSheets}
+                />
 
                 {/* Real-time Alerts Panel */}
                 {activeAlerts.length > 0 && (
@@ -637,41 +606,12 @@ export function MaintenanceExecutionModal({
               </div>
 
               {/* Parts Replacement */}
-              <div className="space-y-4 pt-4 border-t border-border/50">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-semibold flex items-center gap-2">
-                    <Plus className="h-5 w-5 text-primary" />
-                    Peças Trocadas
-                  </h3>
-                  <Button variant="outline" size="sm" onClick={handleAddPart}>
-                    <Plus className="h-4 w-4 mr-1" /> Adicionar Peça
-                  </Button>
-                </div>
-                <div className="space-y-3">
-                  {parts.map((part, index) => (
-                    <div key={index} className="grid grid-cols-1 sm:grid-cols-4 gap-2 p-3 border rounded-lg bg-secondary/10">
-                      <Input 
-                        placeholder="Nome da Peça" 
-                        value={part.name} 
-                        onChange={(e) => handleUpdatePart(index, 'name', e.target.value)}
-                        className="sm:col-span-2"
-                      />
-                      <Input 
-                        type="number" 
-                        placeholder="Qtd" 
-                        value={part.quantity} 
-                        onChange={(e) => handleUpdatePart(index, 'quantity', parseFloat(e.target.value) || 1)}
-                      />
-                      <Button variant="ghost" size="icon" className="text-destructive self-end" onClick={() => handleRemovePart(index)}>
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  ))}
-                  {parts.length === 0 && (
-                    <p className="text-sm text-muted-foreground italic">Nenhuma peça registrada.</p>
-                  )}
-                </div>
-              </div>
+              <ReplacementParts
+                parts={parts}
+                onAdd={handleAddPart}
+                onRemove={handleRemovePart}
+                onUpdate={handleUpdatePart}
+              />
 
               {/* Signature */}
               <div className="space-y-4 pt-4 border-t border-border/50">
