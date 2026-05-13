@@ -30,6 +30,7 @@ export const NavButton = memo(forwardRef<HTMLDivElement, NavButtonProps>(functio
     <Link to={item.href} className="block" onMouseEnter={handlePrefetch} onFocus={handlePrefetch}>
       <Button
         variant="ghost"
+        aria-label={collapsed && !isMobile ? item.label : undefined}
         className={cn(
           'w-full justify-start gap-3 h-11 px-3 relative transition-all duration-300 group/nav',
           'hover:bg-sidebar-accent/50 hover:text-sidebar-foreground hover:pl-4',
