@@ -1,5 +1,7 @@
 {
   "common": {
+    "efficiency": "Eficiencia",
+    "product": "Producto",
     "reportExported": "¡Informe exportado!",
     "report": "Informe",
     "period": "Período",
@@ -281,6 +283,13 @@
       "loadingError": "No se pudieron cargar los datos de OEE.",
       "consolidated": "OEE Consolidado",
       "aiPerformanceInsight": "Su planta está operando <span class='text-primary font-bold'>{{val}} por encima</span> del punto de referencia del último trimestre. La técnica <span class='font-bold text-foreground'>{{tech}}</span> es la destacada con un <span class='text-indicator-success font-bold'>{{avg}}%</span> de eficiencia global.",
+      "losses": "Pérdidas",
+      "loss": "PÉRDIDA",
+      "estCost": "Costo Est.",
+      "highImpact": "Alto Impacto",
+      "materialCost": "Costo Material",
+      "machineHour": "Hora Máquina",
+      "noLosses": "Ninguna pérdida registrada en el período",
       "availability": "Disponibilidad",
       "availabilityShort": "Disponib.",
       "performanceBottleneck": "Cuello de Botella de Rendimiento",
