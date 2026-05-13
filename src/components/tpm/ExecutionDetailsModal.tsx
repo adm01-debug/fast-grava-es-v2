@@ -15,6 +15,8 @@ import { toast } from 'sonner';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 import { supabase } from '@/integrations/supabase/client';
+import { AdjustmentParameters } from './ExecutionAdjustmentParameters';
+import { ExecutionSupplies } from './ExecutionSupplies';
 
 interface ExecutionDetailsModalProps {
   isOpen: boolean;
@@ -407,42 +409,7 @@ export function ExecutionDetailsModal({ isOpen, onClose, recordId }: ExecutionDe
                     <PenTool className="h-5 w-5 text-amber-500" />
                     Regulagem Técnica Aplicada
                   </h3>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {['squeegee_passes', 'pressure', 'speed', 'temperature'].map((param) => {
-                      const labels: Record<string, string> = {
-                        squeegee_passes: 'Passadas',
-                        pressure: 'Pressão',
-                        speed: 'Velocidade',
-                        temperature: 'Temperatura'
-                      };
-                      const value = record.adjustment_parameters[param];
-                      const range = record.adjustment_parameters.ranges?.[param];
-                      const isOutOfRange = (val: string, r: any) => {
-                        if (!r || (!r.min && !r.max)) return false;
-                        const v = parseFloat(val.replace(/[^0-9.]/g, ''));
-                        const min = r.min ? parseFloat(r.min.replace(/[^0-9.]/g, '')) : -Infinity;
-                        const max = r.max ? parseFloat(r.max.replace(/[^0-9.]/g, '')) : Infinity;
-                        return !isNaN(v) && (v < min || v > max);
-                      };
-
-                      const outOfRange = isOutOfRange(value || '', range);
-
-                      return (
-                        <div key={param} className={`p-3 rounded-lg border ${outOfRange ? 'bg-destructive/5 border-destructive/20' : 'bg-secondary/20 border-border/50'}`}>
-                          <p className="text-[10px] text-muted-foreground uppercase font-bold mb-1">{labels[param]}</p>
-                          <p className={`text-lg font-bold ${outOfRange ? 'text-destructive' : ''}`}>
-                            {value || '-'}
-                            {outOfRange && <AlertTriangle className="h-3 w-3 inline ml-1" />}
-                          </p>
-                          {range && (range.min || range.max) && (
-                            <p className="text-[10px] text-muted-foreground mt-1">
-                              Ref: {range.min || '-'} a {range.max || '-'}
-                            </p>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
+                  <AdjustmentParameters adjustmentParameters={record.adjustment_parameters} />
                 </div>
               )}
 
@@ -453,36 +420,10 @@ export function ExecutionDetailsModal({ isOpen, onClose, recordId }: ExecutionDe
                     <Package className="h-5 w-5 text-primary" />
                     Insumos e Consumíveis (OS)
                   </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    {/* Exibe o que foi REALMENTE usado se houver registro, senão exibe o sugerido */}
-                    {record.supplies_used && record.supplies_used.length > 0 ? (
-                      record.supplies_used.map((s: any, idx: number) => (
-                        <div key={idx} className="flex justify-between items-center p-3 rounded-lg bg-emerald-500/5 border border-emerald-500/10">
-                          <div className="flex flex-col">
-                            <span className="text-[10px] font-bold uppercase text-emerald-600">Utilizado {s.alternative_used ? '(Alternativo)' : ''}</span>
-                            <span className="text-sm font-medium">{s.name}</span>
-                          </div>
-                          <div className="flex flex-col items-end">
-                            <span className="text-[10px] font-bold uppercase text-muted-foreground">Quantidade</span>
-                            <span className="text-sm font-bold">{s.quantity}</span>
-                          </div>
-                        </div>
-                      ))
-                    ) : (
-                      record.technical_sheet?.consumables?.map((c: any) => (
-                        <div key={c.id} className="flex justify-between items-center p-3 rounded-lg bg-primary/5 border border-primary/10">
-                          <div className="flex flex-col">
-                            <span className="text-xs font-bold uppercase text-primary">Insumo Sugerido</span>
-                            <span className="text-sm font-medium">{c.name}</span>
-                          </div>
-                          <div className="flex flex-col items-end">
-                            <span className="text-xs font-bold uppercase text-muted-foreground">Qtd Sugerida</span>
-                            <span className="text-sm">{c.quantity}</span>
-                          </div>
-                        </div>
-                      ))
-                    )}
-                  </div>
+                  <ExecutionSupplies 
+                    suppliesUsed={record.supplies_used} 
+                    technicalSheet={record.technical_sheet} 
+                  />
                 </div>
               )}
 
@@ -608,55 +549,14 @@ export function ExecutionDetailsModal({ isOpen, onClose, recordId }: ExecutionDe
                 </div>
               </div>
 
-              {/* Adjustment Parameters */}
+              {/* Adjustment Parameters Summary */}
               {record.adjustment_parameters && Object.values(record.adjustment_parameters).some(v => v && typeof v === 'string') && (
                 <div className="space-y-4">
                   <h3 className="text-lg font-semibold flex items-center gap-2">
                     <Zap className="h-5 w-5 text-amber-500" />
                     Regulagem Técnica Aplicada
                   </h3>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {record.adjustment_parameters.squeegee_passes && (
-                      <div className={`p-3 rounded-lg border ${record.adjustment_parameters.recommended?.squeegee_passes && record.adjustment_parameters.squeegee_passes !== record.adjustment_parameters.recommended.squeegee_passes ? 'bg-amber-500/10 border-amber-500/30' : 'bg-secondary/20 border-border/50'}`}>
-                        <Label className="text-[10px] text-muted-foreground uppercase flex items-center gap-1">
-                          <MoveHorizontal className="h-3 w-3" /> Passadas
-                        </Label>
-                        <p className="text-sm font-bold">{record.adjustment_parameters.squeegee_passes}</p>
-                        {record.adjustment_parameters.recommended?.squeegee_passes && record.adjustment_parameters.squeegee_passes !== record.adjustment_parameters.recommended.squeegee_passes && (
-                          <p className="text-[9px] text-amber-600 font-medium">Rec: {record.adjustment_parameters.recommended.squeegee_passes}</p>
-                        )}
-                      </div>
-                    )}
-                    {record.adjustment_parameters.pressure && (
-                      <div className={`p-3 rounded-lg border ${record.adjustment_parameters.recommended?.pressure && record.adjustment_parameters.pressure !== record.adjustment_parameters.recommended.pressure ? 'bg-amber-500/10 border-amber-500/30' : 'bg-secondary/20 border-border/50'}`}>
-                        <Label className="text-[10px] text-muted-foreground uppercase">Pressão</Label>
-                        <p className="text-sm font-bold">{record.adjustment_parameters.pressure}</p>
-                        {record.adjustment_parameters.recommended?.pressure && record.adjustment_parameters.pressure !== record.adjustment_parameters.recommended.pressure && (
-                          <p className="text-[9px] text-amber-600 font-medium">Rec: {record.adjustment_parameters.recommended.pressure}</p>
-                        )}
-                      </div>
-                    )}
-                    {record.adjustment_parameters.speed && (
-                      <div className={`p-3 rounded-lg border ${record.adjustment_parameters.recommended?.speed && record.adjustment_parameters.speed !== record.adjustment_parameters.recommended.speed ? 'bg-amber-500/10 border-amber-500/30' : 'bg-secondary/20 border-border/50'}`}>
-                        <Label className="text-[10px] text-muted-foreground uppercase">Velocidade</Label>
-                        <p className="text-sm font-bold">{record.adjustment_parameters.speed}</p>
-                        {record.adjustment_parameters.recommended?.speed && record.adjustment_parameters.speed !== record.adjustment_parameters.recommended.speed && (
-                          <p className="text-[9px] text-amber-600 font-medium">Rec: {record.adjustment_parameters.recommended.speed}</p>
-                        )}
-                      </div>
-                    )}
-                    {record.adjustment_parameters.temperature && (
-                      <div className={`p-3 rounded-lg border ${record.adjustment_parameters.recommended?.temperature && record.adjustment_parameters.temperature !== record.adjustment_parameters.recommended.temperature ? 'bg-amber-500/10 border-amber-500/30' : 'bg-secondary/20 border-border/50'}`}>
-                        <Label className="text-[10px] text-muted-foreground uppercase flex items-center gap-1">
-                          <Thermometer className="h-3 w-3" /> Temp.
-                        </Label>
-                        <p className="text-sm font-bold">{record.adjustment_parameters.temperature}</p>
-                        {record.adjustment_parameters.recommended?.temperature && record.adjustment_parameters.temperature !== record.adjustment_parameters.recommended.temperature && (
-                          <p className="text-[9px] text-amber-600 font-medium">Rec: {record.adjustment_parameters.recommended.temperature}</p>
-                        )}
-                      </div>
-                    )}
-                  </div>
+                  <AdjustmentParameters adjustmentParameters={record.adjustment_parameters} />
 
                   {/* Print-only Observations Block */}
                   <div className="hidden print:block mt-6 border p-4 rounded-lg">
