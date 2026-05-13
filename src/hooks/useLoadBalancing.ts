@@ -132,8 +132,8 @@ export function useLoadBalancing(targetDate?: Date) {
 
     // Calculate occupancy rates with clamping
     machineLoads.forEach(load => {
-      load.occupancyRate = clampPercentage((load.scheduledMinutes / DAILY_CAPACITY_MINUTES) * 100);
-      load.availableMinutes = Math.max(0, DAILY_CAPACITY_MINUTES - load.scheduledMinutes);
+      load.occupancyRate = clampPercentage((load.scheduledMinutes / (DAILY_CAPACITY_MINUTES as number)) * 100);
+      load.availableMinutes = Math.max(0, (DAILY_CAPACITY_MINUTES as number) - load.scheduledMinutes);
     });
 
     // Group by technique and find imbalances
