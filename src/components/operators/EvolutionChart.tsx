@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, memo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -30,7 +30,7 @@ interface EvolutionChartProps {
   isLoading: boolean;
 }
 
-export function EvolutionChart({ evolutionData, overallDailyData, selectedOperatorId, onOperatorChange, isLoading }: EvolutionChartProps) {
+export const EvolutionChart = memo(({ evolutionData, overallDailyData, selectedOperatorId, onOperatorChange, isLoading }: EvolutionChartProps) => {
   const FORECAST_DAYS = 7;
 
   const { chartData, trendDirection, forecastValue } = useMemo(() => {
@@ -175,4 +175,6 @@ export function EvolutionChart({ evolutionData, overallDailyData, selectedOperat
       </CardContent>
     </Card>
   );
-}
+});
+
+EvolutionChart.displayName = 'EvolutionChart';

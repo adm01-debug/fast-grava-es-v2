@@ -1,9 +1,10 @@
+import { memo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { BarChart3 } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, Cell } from 'recharts';
 import { OperatorProductivityMetrics } from '@/hooks/useOperatorProductivity';
 
-export function EfficiencyChart({ operators }: { operators: OperatorProductivityMetrics[] }) {
+export const EfficiencyChart = memo(({ operators }: { operators: OperatorProductivityMetrics[] }) => {
   const chartData = operators
     .filter(o => o.isActive && o.totalJobsCompleted > 0)
     .slice(0, 10)
@@ -62,4 +63,6 @@ export function EfficiencyChart({ operators }: { operators: OperatorProductivity
       </CardContent>
     </Card>
   );
-}
+});
+
+EfficiencyChart.displayName = 'EfficiencyChart';
