@@ -8,6 +8,7 @@ import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useTranslation } from "react-i18next";
 
 interface LossesTableProps {
   jobs: any[];
@@ -17,6 +18,7 @@ interface LossesTableProps {
 
 export function LossesTable({ jobs, onExport, onShowDetails }: LossesTableProps) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   return (
     <Card className="bg-black/40 border-primary/20 backdrop-blur-xl group hover:border-primary/40 transition-all duration-500">
@@ -26,8 +28,8 @@ export function LossesTable({ jobs, onExport, onShowDetails }: LossesTableProps)
             <Package className="h-5 w-5 text-primary" />
           </div>
           <div className="flex flex-col">
-            <span className="font-display tracking-wider uppercase text-lg">Métricas de Perda por Pedido</span>
-            <span className="text-[10px] text-muted-foreground font-sans uppercase tracking-widest">Identificação de anomalias críticas</span>
+            <span className="font-display tracking-wider uppercase text-lg">{t('bi.lossMetrics', 'Métricas de Perda por Pedido')}</span>
+            <span className="text-[10px] text-muted-foreground font-sans uppercase tracking-widest">{t('bi.anomallyIdentification', 'Identificação de anomalias críticas')}</span>
           </div>
         </CardTitle>
         <div className="flex items-center gap-2">
@@ -69,10 +71,10 @@ export function LossesTable({ jobs, onExport, onShowDetails }: LossesTableProps)
           <Table>
             <TableHeader>
               <TableRow className="border-white/10 hover:bg-transparent">
-                <TableHead className="text-muted-foreground text-[10px] uppercase font-bold tracking-widest">OS / Produto</TableHead>
-                <TableHead className="text-center text-muted-foreground text-[10px] uppercase font-bold tracking-widest">Perdas</TableHead>
-                <TableHead className="text-muted-foreground text-[10px] uppercase font-bold tracking-widest">Eficiência</TableHead>
-                <TableHead className="text-right text-muted-foreground text-[10px] uppercase font-bold tracking-widest">Custo Est.</TableHead>
+                <TableHead className="text-muted-foreground text-[10px] uppercase font-bold tracking-widest">{t('jobs.orderNumber', 'OS')} / {t('common.product', 'Produto')}</TableHead>
+                <TableHead className="text-center text-muted-foreground text-[10px] uppercase font-bold tracking-widest">{t('bi.losses', 'Perdas')}</TableHead>
+                <TableHead className="text-muted-foreground text-[10px] uppercase font-bold tracking-widest">{t('common.efficiency', 'Eficiência')}</TableHead>
+                <TableHead className="text-right text-muted-foreground text-[10px] uppercase font-bold tracking-widest">{t('bi.estCost', 'Custo Est.')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -114,7 +116,7 @@ export function LossesTable({ jobs, onExport, onShowDetails }: LossesTableProps)
                             )}>
                               {job.order_number || `OS-${job.id.slice(0, 5)}`}
                             </div>
-                            <div className="text-[10px] text-muted-foreground font-medium uppercase">{job.product_name || 'Produto'}</div>
+                            <div className="text-[10px] text-muted-foreground font-medium uppercase">{job.product_name || t('common.product', 'Produto')}</div>
                           </div>
                         </div>
                       </TableCell>
@@ -136,7 +138,7 @@ export function LossesTable({ jobs, onExport, onShowDetails }: LossesTableProps)
                                 transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }}
                               />
                             )}
-                            <span className="relative z-10">{job.lost_pieces} PCS</span>
+                            <span className="relative z-10">{job.lost_pieces} {t('common.piecesShort', 'PCS')}</span>
                           </Badge>
                         </div>
                       </TableCell>
@@ -144,7 +146,7 @@ export function LossesTable({ jobs, onExport, onShowDetails }: LossesTableProps)
                         <div className="flex flex-col gap-1.5 min-w-[100px]">
                           <div className="flex justify-between items-center text-[10px] font-bold">
                             <span className={isCritical ? "text-rose-500" : "text-muted-foreground"}>
-                              {lossRate.toFixed(1)}% PERDA
+                              {lossRate.toFixed(1)}% {t('bi.loss', 'PERDA')}
                             </span>
                             <span className="text-white/50">{(100 - lossRate).toFixed(1)}% OK</span>
                           </div>
@@ -170,18 +172,18 @@ export function LossesTable({ jobs, onExport, onShowDetails }: LossesTableProps)
                           {isCritical && (
                             <div className="flex items-center gap-1 text-[9px] text-rose-500 font-bold uppercase">
                               <TrendingDown className="h-2 w-2" />
-                              Alto Impacto
+                              {t('bi.highImpact', 'Alto Impacto')}
                             </div>
                           )}
                           <div className="absolute right-0 top-full mt-1 bg-black/95 border border-white/10 p-2 rounded-lg opacity-0 group-hover/cost:opacity-100 transition-opacity z-50 min-w-[150px] pointer-events-none shadow-2xl">
                             <p className="text-[10px] text-muted-foreground uppercase mb-1">Impacto Financeiro</p>
                             <div className="flex justify-between text-[10px]">
-                              <span>Custo Material:</span>
-                              <span className="text-white font-mono">R$ {(job.lost_pieces * 10).toFixed(2)}</span>
-                            </div>
-                            <div className="flex justify-between text-[10px]">
-                              <span>Hora Máquina:</span>
-                              <span className="text-white font-mono">R$ {(job.lost_pieces * 5.5).toFixed(2)}</span>
+                            <span>{t('bi.materialCost', 'Custo Material')}:</span>
+                            <span className="text-white font-mono">R$ {(job.lost_pieces * 10).toFixed(2)}</span>
+                          </div>
+                          <div className="flex justify-between text-[10px]">
+                            <span>{t('bi.machineHour', 'Hora Máquina')}:</span>
+                            <span className="text-white font-mono">R$ {(job.lost_pieces * 5.5).toFixed(2)}</span>
                             </div>
                           </div>
                         </div>
@@ -197,7 +199,7 @@ export function LossesTable({ jobs, onExport, onShowDetails }: LossesTableProps)
                   <TableCell colSpan={4} className="text-center py-12">
                     <div className="flex flex-col items-center gap-2 text-muted-foreground">
                       <Package className="h-8 w-8 opacity-20" />
-                      <span className="text-sm font-medium">Nenhuma perda registrada no período</span>
+                      <span className="text-sm font-medium">{t('bi.noLosses', 'Nenhuma perda registrada no período')}</span>
                     </div>
                   </TableCell>
                 </TableRow>

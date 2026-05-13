@@ -1,5 +1,16 @@
 {
   "common": {
+    "efficiency": "Efficiency",
+    "product": "Product",
+    "reportExported": "Report exported!",
+    "report": "Report",
+    "period": "Period",
+    "last7Days": "Last 7 days",
+    "last14Days": "Last 14 days",
+    "last30Days": "Last 30 days",
+    "last90Days": "Last 90 days",
+    "performance": "Performance",
+    "viewDetails": "View Details",
     "appName": "Fast Gravações",
     "loading": "Loading...",
     "error": "Error",
@@ -11,6 +22,7 @@
     "duplicate": "Duplicate",
     "add": "Add",
     "saving": "Saving...",
+    "chat": "Chat",
     "search": "Search",
     "filter": "Filter",
     "clear": "Clear",
@@ -22,6 +34,7 @@
     "no": "No",
     "all": "All",
     "none": "None",
+    "or": "or",
     "actions": "Actions",
     "status": "Status",
     "date": "Date",
@@ -39,6 +52,7 @@
     "logout": "Logout",
     "noResults": "No results found",
     "required": "Required",
+    "language": "Language",
     "optional": "Optional",
     "today": "Today",
     "yesterday": "Yesterday",
@@ -50,11 +64,28 @@
     "minutes": "minutes",
     "notDefined": "Not defined",
     "notScheduled": "Not scheduled",
-    "notAssigned": "Not assigned"
+    "notAssigned": "Not assigned",
+    "order": "Order",
+    "delay": "Delay",
+    "responsible": "Responsible",
+    "items": "items",
+    "piecesShort": "PCS",
+    "close": "Close",
+    "finish": "Finish",
+    "skip": "Skip"
+  },
+  "intelligence": {
+    "title": "Intelligence"
+  },
+  "team": {
+    "title": "Team"
   },
   "auth": {
     "login": "Login",
+    "loginWithGoogle": "Login with Google",
+    "rememberMe": "Remember my email",
     "register": "Register",
+    "systemSlogan": "Production Management System",
     "email": "Email",
     "password": "Password",
     "confirmPassword": "Confirm password",
@@ -92,7 +123,9 @@
     "weeklyOverview": "Weekly Overview",
     "recentJobs": "Recent Jobs",
     "topOperators": "Top Operators",
-    "machineStatus": "Machine Status"
+    "machineStatus": "Machine Status",
+    "overview": "Overview",
+    "timeline": "Timeline"
   },
   "jobs": {
     "title": "Jobs",
@@ -154,7 +187,13 @@
     "lossRate": "Loss Rate",
     "averageTime": "Average Time",
     "goals": "Goals",
-    "evolution": "Evolution"
+    "evolution": "Evolution",
+    "operatorRemoved": "Operator removed",
+    "operatorRemovedDesc": "The operator was successfully removed from the system.",
+    "operatorActivated": "Operator activated",
+    "operatorActivatedDesc": "The operator has been reactivated and can access the system.",
+    "operatorDeactivated": "Operator deactivated",
+    "operatorDeactivatedDesc": "The operator has been temporarily deactivated."
   },
   "machines": {
     "title": "Machines",
@@ -240,7 +279,44 @@
     "productivity": "Productivity",
     "efficiency": "Efficiency",
     "losses": "Losses",
-    "oee": "OEE"
+    "oee": {
+      "description": "Overall Equipment Effectiveness",
+      "loadingError": "Unable to load OEE data.",
+      "consolidated": "Consolidated OEE",
+      "aiPerformanceInsight": "Your plant is operating <span class='text-primary font-bold'>{{val}} above</span> the benchmark of the last quarter. The <span class='font-bold text-foreground'>{{tech}}</span> technique is the highlight with <span class='text-indicator-success font-bold'>{{avg}}%</span> overall efficiency.",
+      "losses": "Losses",
+      "loss": "LOSS",
+      "estCost": "Est. Cost",
+      "highImpact": "High Impact",
+      "materialCost": "Material Cost",
+      "machineHour": "Machine Hour",
+      "noLosses": "No losses recorded in the period",
+      "availability": "Availability",
+      "availabilityShort": "Avail.",
+      "performanceBottleneck": "Performance Bottleneck",
+      "simulator": "OEE Simulator",
+      "simulatorDescription": "Simulate the impact of operational improvements on your final OEE.",
+      "openSimulator": "Open Simulator",
+      "closeSimulator": "Close Simulator",
+      "currentOEE": "Current OEE",
+      "projectedOEE": "Projected OEE",
+      "gain": "gain",
+      "drilldownTitle": "Performance Drill-down (OEE Formula)",
+      "generalOEE": "General OEE",
+      "generalOEEDesc": "Overall efficiency of all machines",
+      "availabilityDesc": "Operating Time / Planned Time",
+      "performanceDesc": "Actual Production / Estimated Production",
+      "qualityDesc": "Good Pieces / Total Produced",
+      "availabilityCalculation": "Availability Calculation",
+      "performanceCalculation": "Performance Calculation"
+    },
+    "bi": {
+      "delaysAndCauses": "Delays & Root Causes",
+      "delayList": "Delay List",
+      "rootCauses": "Root Causes",
+      "lossMetrics": "Loss Metrics per Order",
+      "anomallyIdentification": "Critical anomaly identification"
+    }
   },
   "settings": {
     "title": "Settings",

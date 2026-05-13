@@ -1,5 +1,16 @@
 {
   "common": {
+    "efficiency": "Eficiência",
+    "product": "Produto",
+    "reportExported": "Relatório exportado!",
+    "report": "Relatório",
+    "period": "Período",
+    "last7Days": "Últimos 7 dias",
+    "last14Days": "Últimos 14 dias",
+    "last30Days": "Últimos 30 dias",
+    "last90Days": "Últimos 90 dias",
+    "performance": "Performance",
+    "viewDetails": "Ver Detalhes",
     "appName": "Fast Gravações",
     "loading": "Carregando...",
     "error": "Erro",
@@ -11,6 +22,7 @@
     "duplicate": "Duplicar",
     "add": "Adicionar",
     "saving": "Salvando...",
+    "chat": "Chat",
     "search": "Buscar",
     "filter": "Filtrar",
     "clear": "Limpar",
@@ -22,6 +34,7 @@
     "no": "Não",
     "all": "Todos",
     "none": "Nenhum",
+    "or": "ou",
     "actions": "Ações",
     "status": "Status",
     "date": "Data",
@@ -39,6 +52,7 @@
     "logout": "Sair",
     "noResults": "Nenhum resultado encontrado",
     "required": "Obrigatório",
+    "language": "Idioma",
     "optional": "Opcional",
     "today": "Hoje",
     "yesterday": "Ontem",
@@ -50,11 +64,28 @@
     "minutes": "minutos",
     "notDefined": "Não definida",
     "notScheduled": "Não agendada",
-    "notAssigned": "Não atribuída"
+    "notAssigned": "Não atribuída",
+    "order": "Pedido",
+    "delay": "Atraso",
+    "responsible": "Responsável",
+    "items": "itens",
+    "piecesShort": "PCS",
+    "close": "Fechar",
+    "finish": "Finalizar",
+    "skip": "Pular"
+  },
+  "intelligence": {
+    "title": "Inteligência"
+  },
+  "team": {
+    "title": "Equipe"
   },
   "auth": {
     "login": "Entrar",
+    "loginWithGoogle": "Entrar com Google",
+    "rememberMe": "Lembrar meu e-mail",
     "register": "Cadastrar",
+    "systemSlogan": "Sistema de Gestão de Produção",
     "email": "E-mail",
     "password": "Senha",
     "confirmPassword": "Confirmar senha",
@@ -92,7 +123,9 @@
     "weeklyOverview": "Visão Semanal",
     "recentJobs": "Jobs Recentes",
     "topOperators": "Top Operadores",
-    "machineStatus": "Status das Máquinas"
+    "machineStatus": "Status das Máquinas",
+    "overview": "Visão Geral",
+    "timeline": "Timeline"
   },
   "jobs": {
     "title": "Jobs",
@@ -154,7 +187,13 @@
     "lossRate": "Taxa de Perda",
     "averageTime": "Tempo Médio",
     "goals": "Metas",
-    "evolution": "Evolução"
+    "evolution": "Evolução",
+    "operatorRemoved": "Operador removido",
+    "operatorRemovedDesc": "O operador foi removido do sistema com sucesso.",
+    "operatorActivated": "Operador ativado",
+    "operatorActivatedDesc": "O operador foi reativado e pode acessar o sistema.",
+    "operatorDeactivated": "Operador desativado",
+    "operatorDeactivatedDesc": "O operador foi desativado temporariamente."
   },
   "machines": {
     "title": "Máquinas",
@@ -240,7 +279,44 @@
     "productivity": "Produtividade",
     "efficiency": "Eficiência",
     "losses": "Perdas",
-    "oee": "OEE"
+    "oee": {
+      "description": "Overall Equipment Effectiveness - Eficiência Global dos Equipamentos",
+      "loadingError": "Não foi possível carregar os dados de OEE.",
+      "consolidated": "OEE Consolidado",
+      "aiPerformanceInsight": "Sua planta está operando <span class='text-primary font-bold'>{{val}} acima</span> do benchmark do último trimestre. A técnica <span class='font-bold text-foreground'>{{tech}}</span> é o destaque com <span class='text-indicator-success font-bold'>{{avg}}%</span> de eficiência global.",
+      "losses": "Perdas",
+      "loss": "PERDA",
+      "estCost": "Custo Est.",
+      "highImpact": "Alto Impacto",
+      "materialCost": "Custo Material",
+      "machineHour": "Hora Máquina",
+      "noLosses": "Nenhuma perda registrada no período",
+      "availability": "Disponibilidade",
+      "availabilityShort": "Disponib.",
+      "performanceBottleneck": "Gargalo de Performance",
+      "simulator": "Simulador OEE",
+      "simulatorDescription": "Simule o impacto de melhorias operacionais no seu OEE final.",
+      "openSimulator": "Abrir Simulador",
+      "closeSimulator": "Fechar Simulador",
+      "currentOEE": "OEE Atual",
+      "projectedOEE": "OEE Projetado",
+      "gain": "de ganho",
+      "drilldownTitle": "Drill-down de Performance (Fórmula OEE)",
+      "generalOEE": "OEE Geral",
+      "generalOEEDesc": "Eficiência geral de todas as máquinas",
+      "availabilityDesc": "Tempo operando / Tempo planejado",
+      "performanceDesc": "Produção Real / Produção Estimada",
+      "qualityDesc": "Peças Boas / Total Produzido",
+      "availabilityCalculation": "Cálculo de Disponibilidade",
+      "performanceCalculation": "Cálculo de Performance"
+    },
+    "bi": {
+      "delaysAndCauses": "Atrasos & Causa Raiz",
+      "delayList": "Lista de Atrasos",
+      "rootCauses": "Causas Raiz",
+      "lossMetrics": "Métricas de Perda por Pedido",
+      "anomallyIdentification": "Identificação de anomalias críticas"
+    }
   },
   "settings": {
     "title": "Configurações",

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Timer, FileSpreadsheet, FileText, Activity } from "lucide-react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 interface DelaysAnalysisProps {
   delayedJobs: any[];
@@ -15,13 +16,14 @@ interface DelaysAnalysisProps {
 
 export function DelaysAnalysis({ delayedJobs, rootCauses, onExport }: DelaysAnalysisProps) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   return (
     <Card className="bg-black/40 border-primary/20 backdrop-blur-xl">
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="flex items-center gap-3">
           <Timer className="h-5 w-5 text-primary" />
-          <span className="font-display tracking-wider uppercase">Atrasos & Causa Raiz</span>
+          <span className="font-display tracking-wider uppercase">{t('bi.delaysAndCauses', 'Atrasos & Causa Raiz')}</span>
         </CardTitle>
         <div className="flex items-center gap-2">
           <Button 
@@ -45,17 +47,17 @@ export function DelaysAnalysis({ delayedJobs, rootCauses, onExport }: DelaysAnal
       <CardContent>
         <Tabs defaultValue="list" className="w-full">
           <TabsList className="grid w-full grid-cols-2 bg-white/5">
-            <TabsTrigger value="list" className="text-xs uppercase tracking-widest data-[state=active]:bg-primary/20">Lista de Atrasos</TabsTrigger>
-            <TabsTrigger value="causes" className="text-xs uppercase tracking-widest data-[state=active]:bg-primary/20">Causas Raiz</TabsTrigger>
+            <TabsTrigger value="list" className="text-xs uppercase tracking-widest data-[state=active]:bg-primary/20">{t('bi.delayList', 'Lista de Atrasos')}</TabsTrigger>
+            <TabsTrigger value="causes" className="text-xs uppercase tracking-widest data-[state=active]:bg-primary/20">{t('bi.rootCauses', 'Causas Raiz')}</TabsTrigger>
           </TabsList>
           <TabsContent value="list" className="mt-4">
             <ScrollArea className="h-[250px]">
               <Table>
                 <TableHeader>
                   <TableRow className="border-white/10 hover:bg-transparent">
-                    <TableHead className="text-muted-foreground text-xs">Pedido</TableHead>
-                    <TableHead className="text-muted-foreground text-xs">Atraso</TableHead>
-                    <TableHead className="text-right text-muted-foreground text-xs">Responsável</TableHead>
+                    <TableHead className="text-muted-foreground text-xs">{t('common.order', 'Pedido')}</TableHead>
+                    <TableHead className="text-muted-foreground text-xs">{t('common.delay', 'Atraso')}</TableHead>
+                    <TableHead className="text-right text-muted-foreground text-xs">{t('common.responsible', 'Responsável')}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
