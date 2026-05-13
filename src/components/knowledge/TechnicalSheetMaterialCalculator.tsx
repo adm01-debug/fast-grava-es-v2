@@ -4,8 +4,8 @@ import { cn } from '@/lib/utils';
 
 interface Material {
   name: string;
-  quantity?: string;
-  notes?: string;
+  quantity?: string | null;
+  notes?: string | null;
 }
 
 interface InventoryItem {
