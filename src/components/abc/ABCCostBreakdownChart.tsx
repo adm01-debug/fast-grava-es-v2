@@ -1,3 +1,4 @@
+import { memo, useMemo } from 'react';
 import { PieChart as PieChartIcon } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
@@ -17,19 +18,21 @@ const COLORS = [
   'hsl(217 91% 60%)',
 ];
 
-export function ABCCostBreakdownChart({ costPools, jobCosts }: ABCCostBreakdownChartProps) {
-  const data = costPools.map((pool, index) => {
-    const poolCosts = jobCosts.filter(jc => jc.cost_pool_id === pool.id);
-    const totalCost = poolCosts.reduce((sum, c) => sum + Number(c.total_cost), 0);
+export const ABCCostBreakdownChart = memo(function ABCCostBreakdownChart({ costPools, jobCosts }: ABCCostBreakdownChartProps) {
+  const data = useMemo(() => {
+    return costPools.map((pool, index) => {
+      const poolCosts = jobCosts.filter(jc => jc.cost_pool_id === pool.id);
+      const totalCost = poolCosts.reduce((sum, c) => sum + Number(c.total_cost), 0);
 
-    return {
-      name: pool.name,
-      value: totalCost,
-      color: COLORS[index % COLORS.length],
-    };
-  }).filter(d => d.value > 0);
+      return {
+        name: pool.name,
+        value: totalCost,
+        color: COLORS[index % COLORS.length],
+      };
+    }).filter(d => d.value > 0);
+  }, [costPools, jobCosts]);
 
-  const totalCost = data.reduce((sum, d) => sum + d.value, 0);
+  const totalCost = useMemo(() => data.reduce((sum, d) => sum + d.value, 0), [data]);
 
   const renderCustomLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }: {
     cx: number; cy: number; midAngle: number; innerRadius: number; outerRadius: number; percent: number;
