@@ -243,9 +243,10 @@ export function JobDetailsModal({ job, open, onOpenChange, onStatusChange }: Job
               <StatusBadge status={job.status} />
             </div>
           </div>
-          <DialogDescription className="sr-only">
+          <DialogDescription id="job-details-description" className="sr-only">
             {t('jobs.detailsFor', { order: job.order_number })}
           </DialogDescription>
+
         </DialogHeader>
 
         <Tabs defaultValue="details" className="mt-4">
