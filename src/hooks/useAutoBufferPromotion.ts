@@ -20,6 +20,8 @@ export function useAutoBufferPromotion(options?: { showToasts?: boolean }) {
     const val = getConfig('buffer_size', 3);
     return typeof val === 'string' ? parseInt(val) : val;
   }, [getConfig]);
+
+  const promotionMutation = useMutation({
     mutationFn: async (techniqueId?: string) => {
       const { data, error } = await supabase.functions.invoke('auto-promote-jobs', {
         body: { techniqueId }
@@ -43,8 +45,7 @@ export function useAutoBufferPromotion(options?: { showToasts?: boolean }) {
         });
       }
     },
-    onError: (error) => {
-
+    onError: () => {
       if (showToasts) {
         toast.error('Falha ao acionar promoção automática');
       }
@@ -55,7 +56,6 @@ export function useAutoBufferPromotion(options?: { showToasts?: boolean }) {
     return promotionMutation.mutateAsync(undefined);
   }, [promotionMutation]);
 
-
   const promoteForTechnique = useCallback(async (techniqueId: string) => {
     return promotionMutation.mutateAsync(techniqueId);
   }, [promotionMutation]);
@@ -64,6 +64,6 @@ export function useAutoBufferPromotion(options?: { showToasts?: boolean }) {
     triggerPromotion,
     promoteForTechnique,
     isPromoting: promotionMutation.isPending,
-    bufferTarget: 3,
+    bufferTarget,
   };
 }
