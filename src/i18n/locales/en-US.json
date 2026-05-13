@@ -55,7 +55,10 @@
     "order": "Order",
     "delay": "Delay",
     "responsible": "Responsible",
-    "items": "items"
+    "items": "items",
+    "close": "Close",
+    "finish": "Finish",
+    "skip": "Skip"
   },
   "auth": {
     "login": "Login",

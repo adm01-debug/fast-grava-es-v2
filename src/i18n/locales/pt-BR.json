@@ -55,7 +55,10 @@
     "order": "Pedido",
     "delay": "Atraso",
     "responsible": "Responsável",
-    "items": "itens"
+    "items": "itens",
+    "close": "Fechar",
+    "finish": "Finalizar",
+    "skip": "Pular"
   },
   "auth": {
     "login": "Entrar",
