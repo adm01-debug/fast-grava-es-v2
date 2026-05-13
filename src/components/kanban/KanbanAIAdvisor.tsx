@@ -2,6 +2,7 @@ import { useMemo, useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
 import {
   BrainCircuit, ArrowRight, Zap, AlertTriangle,
   CheckCircle2, Sparkles, ChevronRight, Bell, Settings,
