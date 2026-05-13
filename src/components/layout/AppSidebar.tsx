@@ -147,10 +147,10 @@ export function AppSidebar() {
           {(!collapsed || isMobile) && <div className="mb-2 px-1"><LanguageSwitcher /></div>}
           <div className={cn('flex items-center gap-3 rounded-lg p-2', collapsed && !isMobile && 'justify-center p-2')}>
             <div className="w-9 h-9 rounded-full gradient-primary flex items-center justify-center text-primary-foreground font-semibold text-sm">{profile?.full_name?.charAt(0)?.toUpperCase() || 'U'}</div>
-            {(!collapsed || isMobile) && <div className="flex-1 min-w-0"><p className="text-sm font-medium text-sidebar-foreground truncate">{profile?.full_name || 'Usuário'}</p><p className="text-xs text-sidebar-foreground/40 truncate capitalize">{role === 'coordinator' ? 'Coordenador' : role === 'manager' ? 'Gestão' : 'Operador'}</p></div>}
+            {(!collapsed || isMobile) && <div className="flex-1 min-w-0"><p className="text-sm font-bold text-sidebar-foreground truncate tracking-tight">{profile?.full_name || 'Usuário'}</p><p className="text-[10px] font-black text-primary/60 uppercase tracking-widest truncate">{role === 'coordinator' ? 'Coordenador' : role === 'manager' ? 'Gestão' : 'Operador'}</p></div>}
           </div>
-          <Button variant="ghost" size={(collapsed && !isMobile) ? "icon" : "sm"} onClick={handleSignOut} className={cn('w-full mt-2 text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-muted focus:ring-2 focus:ring-primary focus:ring-offset-2', collapsed && !isMobile && 'px-0')}>
-            <LogOut className="h-4 w-4" />{(!collapsed || isMobile) && <span className="ml-2">{t('common.logout')}</span>}
+          <Button variant="ghost" size={(collapsed && !isMobile) ? "icon" : "sm"} onClick={handleSignOut} className={cn('w-full mt-3 font-bold text-xs uppercase tracking-widest text-sidebar-foreground/60 hover:text-destructive hover:bg-destructive/10 focus:ring-2 focus:ring-destructive focus:ring-offset-2 transition-all duration-300', collapsed && !isMobile && 'px-0')}>
+            <LogOut className="h-3.5 w-3.5" />{(!collapsed || isMobile) && <span className="ml-2">{t('common.logout')}</span>}
           </Button>
         </div>
       </aside>

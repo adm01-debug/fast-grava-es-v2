@@ -189,19 +189,19 @@ export function DraggableJobCard({ job, technique, machine, onClick, viewMode = 
       </div>
 
       {/* Client + Product */}
-      <div className="flex-1 min-w-0">
-        <p className="font-bold text-sm text-foreground truncate mb-0.5 group-hover:text-primary transition-colors">{job.client}</p>
-        <p className="text-[11px] leading-tight text-muted-foreground line-clamp-2 mb-2 h-8">{job.product}</p>
+      <div className="flex-1 min-w-0 space-y-1">
+        <p className="font-black text-sm text-foreground truncate group-hover:text-primary transition-colors tracking-tight uppercase">{job.client}</p>
+        <p className="text-[10px] leading-relaxed font-medium text-muted-foreground line-clamp-2 h-7 italic opacity-80">{job.product}</p>
       </div>
 
       {/* Progress bar */}
       {job.produced_quantity != null && job.quantity > 0 && job.status !== 'finished' && (
-        <div className="mb-2 bg-muted/40 p-1.5 rounded-md border border-border/20">
-          <div className="flex items-center justify-between text-[10px] text-muted-foreground mb-1">
-            <span className="font-bold">{job.produced_quantity?.toLocaleString()} / {job.quantity.toLocaleString()} pçs</span>
-            <Badge variant="outline" className="text-[9px] h-3.5 px-1 leading-none font-bold border-primary/30 text-primary">{progress}%</Badge>
+        <div className="mb-3 bg-white/5 p-2 rounded-lg border border-white/10 shadow-inner">
+          <div className="flex items-center justify-between text-[10px] mb-1.5">
+            <span className="font-black text-primary/80 tracking-widest uppercase">{job.produced_quantity?.toLocaleString()} / {job.quantity.toLocaleString()} PCS</span>
+            <Badge variant="outline" className="text-[9px] h-4 px-1.5 leading-none font-black border-primary/40 bg-primary/10 text-primary shadow-[0_0_8px_rgba(var(--primary-rgb),0.3)]">{progress}%</Badge>
           </div>
-          <Progress value={progress} className="h-1 bg-background" />
+          <Progress value={progress} className="h-1.5 bg-black/40 rounded-full overflow-hidden" />
         </div>
       )}
 
