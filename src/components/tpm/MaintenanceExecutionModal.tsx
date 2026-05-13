@@ -9,12 +9,15 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
-import { Wrench, CheckCircle2, Camera, AlertTriangle, Clock, Plus, Trash2, PenTool, Zap, MoveHorizontal, Thermometer, Info, CheckSquare, Package } from 'lucide-react';
+import { Wrench, CheckCircle2, AlertTriangle, Clock, Plus, Trash2, PenTool, Zap, MoveHorizontal, Thermometer, Info, CheckSquare, Package, Camera } from 'lucide-react';
 import { MaintenanceSchedule, MaintenanceChecklist, MaintenanceChecklistItem } from '@/hooks/tpm/types';
 import { useTPM } from '@/hooks/useTPM';
 import { useTechnicalSheets } from '@/hooks/useTechnicalSheets';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
+import { ChecklistItem } from './execution/ChecklistItem';
+import { AlertRiskPanel } from './execution/AlertRiskPanel';
+import { SupplyList } from './execution/SupplyList';
 
 interface MaintenanceExecutionModalProps {
   isOpen: boolean;
