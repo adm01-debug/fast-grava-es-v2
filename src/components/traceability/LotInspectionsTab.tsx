@@ -12,6 +12,7 @@ import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import { ProductionLot, useTraceabilityMutations } from '@/hooks/useTraceability';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { validateFileMagicBytes } from '@/lib/file-validation';
 
 const INSPECTION_RESULTS: Record<string, { label: string; variant: 'default' | 'secondary' | 'destructive' }> = {
   approved: { label: 'Aprovado', variant: 'default' },
