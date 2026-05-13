@@ -1,6 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-// Removed hmac import due to bundle issues, will use Web Crypto API instead
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -24,8 +23,27 @@ serve(async (req) => {
     // HMAC verification for security
     const secret = Deno.env.get(`WEBHOOK_SECRET_${source.toUpperCase()}`);
     if (secret) {
-      const expectedSignature = hmac("sha256", secret, bodyText, "utf8", "hex");
-      if (signature !== expectedSignature) {
+      const encoder = new TextEncoder();
+      const key = await crypto.subtle.importKey(
+        "raw",
+        encoder.encode(secret),
+        { name: "HMAC", hash: "SHA-256" },
+        false,
+        ["verify"]
+      );
+      
+      const sigBuffer = new Uint8Array(
+        signature?.match(/.{1,2}/g)?.map(byte => parseInt(byte, 16)) || []
+      );
+      
+      const isValid = await crypto.subtle.verify(
+        "HMAC",
+        key,
+        sigBuffer,
+        encoder.encode(bodyText)
+      );
+
+      if (!isValid) {
         console.error(`Invalid signature for source: ${source}`);
         return new Response(JSON.stringify({ error: "Invalid signature" }), {
           status: 401,
