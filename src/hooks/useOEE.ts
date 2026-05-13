@@ -125,7 +125,20 @@ function getOEEColor(oee: number): string {
 export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30) {
   // Use at least double the period to have enough data for comparison
   const effectiveDaysBack = Math.max(daysBack + comparisonDaysBack, 60);
-  const { jobs, machines, techniques, isLoading } = useSchedulingData();
+  const { jobs, machines, techniques, isLoading: schedulingLoading } = useSchedulingData();
+  const { getConfig, isLoading: configLoading } = useBusinessConfig();
+  
+  const isLoading = schedulingLoading || configLoading;
+
+  const PLANNED_MINUTES_PER_DAY = useMemo(() => {
+    const hours = getConfig('operating_hours', { start: '07:00', end: '18:00' });
+    // Assuming start and end are in "HH:MM" format
+    const startParts = (hours.start || '07:00').split(':');
+    const endParts = (hours.end || '18:00').split(':');
+    const startMin = parseInt(startParts[0]) * 60 + parseInt(startParts[1]);
+    const endMin = parseInt(endParts[0]) * 60 + parseInt(endParts[1]);
+    return Math.max(60, endMin - startMin);
+  }, [getConfig]);
 
   const data = useMemo<OEEData | null>(() => {
     if (!jobs || !machines || !techniques) return null;
