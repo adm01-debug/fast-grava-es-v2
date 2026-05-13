@@ -1,11 +1,11 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
   BrainCircuit, ArrowRight, Zap, AlertTriangle,
   CheckCircle2, Sparkles, ChevronRight, Bell, Settings,
-  Clock, Info, LayoutList, Split
+  Clock, Info, LayoutList, Split, TrendingUp, ShieldCheck
 } from 'lucide-react';
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle,
@@ -29,6 +29,20 @@ export function KanbanAIAdvisor() {
   const { suggestions: sequenceSuggestions, totalSavings } = useSmartSequencing();
   const { suggestions: balancingSuggestions } = useLoadBalancing();
   const { alerts: bottleneckAlerts } = useBottleneckPrediction();
+  
+  const [healthScore, setHealthScore] = useState(100);
+
+  useEffect(() => {
+    // Cálculo dinâmico da saúde do planejamento
+    let score = 100;
+    if (bottleneckAlerts.some(a => a.severity === 'critical')) score -= 30;
+    else if (bottleneckAlerts.some(a => a.severity === 'warning')) score -= 15;
+    
+    if (balancingSuggestions.length > 5) score -= 10;
+    if (totalSavings > 120) score -= 5; // Indica que há muito setup a otimizar
+    
+    setHealthScore(Math.max(0, score));
+  }, [bottleneckAlerts, balancingSuggestions, totalSavings]);
 
   const [showSettings, setShowSettings] = useState(false);
   const [selectedAdviceType, setSelectedAdviceType] = useState<'setup' | 'load' | 'bottleneck' | null>(null);
@@ -63,16 +77,32 @@ export function KanbanAIAdvisor() {
       className="space-y-3"
     >
       <div className="flex items-center justify-between px-1">
-        <div className="flex items-center gap-2">
-          <div className="p-1.5 rounded-lg bg-primary/10 text-primary">
-            <BrainCircuit className="h-4 w-4" />
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <div className="p-1.5 rounded-lg bg-primary/10 text-primary">
+              <BrainCircuit className="h-4 w-4" />
+            </div>
+            <h2 className="text-sm font-semibold flex items-center gap-2">
+              IA Strategist Advisor
+              <Badge variant="secondary" className="text-[10px] h-4 px-1.5 bg-primary/5 text-primary border-primary/20">
+                {totalInsights} Insights
+              </Badge>
+            </h2>
           </div>
-          <h2 className="text-sm font-semibold flex items-center gap-2">
-            IA Strategist Advisor
-            <Badge variant="secondary" className="text-[10px] h-4 px-1.5 bg-primary/5 text-primary border-primary/20">
-              {totalInsights} Insights
-            </Badge>
-          </h2>
+          
+          <Separator orientation="vertical" className="h-4 bg-border/50" />
+          
+          <div className="flex items-center gap-2">
+            <TrendingUp className={cn(
+              "h-3.5 w-3.5",
+              healthScore > 80 ? "text-emerald-400" : healthScore > 50 ? "text-amber-400" : "text-red-400"
+            )} />
+            <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+              Planejamento: <span className={cn(
+                healthScore > 80 ? "text-emerald-400" : healthScore > 50 ? "text-amber-400" : "text-red-400"
+              )}>{healthScore}/100</span>
+            </span>
+          </div>
         </div>
         <div className="flex items-center gap-2">
           <Button
@@ -83,8 +113,11 @@ export function KanbanAIAdvisor() {
           >
             <Settings className="h-4 w-4" />
           </Button>
-          <div className="p-1.5 rounded-lg bg-background border border-border/50 text-muted-foreground">
+          <div className="p-1.5 rounded-lg bg-background border border-border/50 text-muted-foreground relative">
             <Bell className="h-4 w-4" />
+            {totalInsights > 0 && (
+              <span className="absolute -top-1 -right-1 w-2 h-2 bg-primary rounded-full animate-pulse" />
+            )}
           </div>
         </div>
       </div>
