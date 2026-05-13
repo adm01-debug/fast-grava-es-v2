@@ -5226,6 +5226,16 @@ export type Database = {
         Args: { p_type: string }
         Returns: undefined
       }
+      test_rls_policies: {
+        Args: { p_role: string; p_table_name: string; p_test_user_id: string }
+        Returns: {
+          can_delete: boolean
+          can_insert: boolean
+          can_select: boolean
+          can_update: boolean
+          operation: string
+        }[]
+      }
       verify_audit_chain:
         | {
             Args: never
