@@ -28,10 +28,9 @@ export class ErrorBoundary extends Component<Props, State> {
   async componentDidCatch(error: Error, errorInfo: ErrorInfo): Promise<void> {
     this.setState({ errorInfo });
     
-    // Log error to console in development
-    if (import.meta.env.DEV) {
-      console.error('ErrorBoundary caught an error:', error, errorInfo);
-    }
+    // Always log so we can diagnose production issues
+    console.error('[ErrorBoundary] caught error in', this.props.componentName || 'Unknown', error);
+    console.error('[ErrorBoundary] componentStack:', errorInfo.componentStack);
 
     // Automatically log error to database
     try {
