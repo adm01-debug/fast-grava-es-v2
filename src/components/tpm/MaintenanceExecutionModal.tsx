@@ -18,6 +18,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { ChecklistItem } from './execution/ChecklistItem';
 import { AlertRiskPanel } from './execution/AlertRiskPanel';
 import { SupplyList } from './execution/SupplyList';
+import { AdjustmentParameters } from './execution/AdjustmentParameters';
+import { ReplacementParts } from './execution/ReplacementParts';
 
 interface MaintenanceExecutionModalProps {
   isOpen: boolean;
