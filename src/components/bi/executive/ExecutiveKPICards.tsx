@@ -1,12 +1,13 @@
 import { Card, CardContent } from '@/components/ui/card';
-import { TrendingUp, TrendingDown } from 'lucide-react';
+import { TrendingUp, TrendingDown, LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { ElementType } from 'react';
 
 interface KPICardProps {
   title: string;
   value: string;
   subtitle: string;
-  icon: any;
+  icon: LucideIcon | ElementType;
   trend: 'up' | 'down';
   trendValue: number;
   color: string;
