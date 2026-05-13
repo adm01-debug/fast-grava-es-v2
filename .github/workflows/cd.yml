@@ -22,8 +22,20 @@ jobs:
       - name: Install dependencies
         run: npm ci
       
-      - name: Build
-        run: npm run build
+      - name: Build and Bundle Audit
+        run: |
+          npm run build
+          echo "### Bundle Size Audit" >> $GITHUB_STEP_SUMMARY
+          SIZE=$(du -sk dist/assets | cut -f1)
+          echo "Total assets size: ${SIZE}KB" >> $GITHUB_STEP_SUMMARY
+          if [ $SIZE -gt 1024 ]; then
+            echo ":warning: Bundle size is too large ($SIZE KB > 1024 KB)" >> $GITHUB_STEP_SUMMARY
+            # fail if it exceeds a critical limit, e.g., 2MB
+            if [ $SIZE -gt 2048 ]; then
+              echo "::error::Bundle size exceeded 2MB limit!"
+              exit 1
+            fi
+          fi
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
