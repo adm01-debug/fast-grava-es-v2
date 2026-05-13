@@ -272,6 +272,7 @@ export function CompactSearch({
         size="icon"
         onClick={() => setIsExpanded(true)}
         className="md:hidden"
+        aria-label="Abrir busca"
       >
         <Search className="h-5 w-5" />
       </Button>
