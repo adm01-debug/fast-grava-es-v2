@@ -8,6 +8,7 @@ import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useTranslation } from "react-i18next";
 
 interface LossesTableProps {
   jobs: any[];
@@ -17,6 +18,7 @@ interface LossesTableProps {
 
 export function LossesTable({ jobs, onExport, onShowDetails }: LossesTableProps) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   return (
     <Card className="bg-black/40 border-primary/20 backdrop-blur-xl group hover:border-primary/40 transition-all duration-500">
@@ -26,8 +28,8 @@ export function LossesTable({ jobs, onExport, onShowDetails }: LossesTableProps)
             <Package className="h-5 w-5 text-primary" />
           </div>
           <div className="flex flex-col">
-            <span className="font-display tracking-wider uppercase text-lg">Métricas de Perda por Pedido</span>
-            <span className="text-[10px] text-muted-foreground font-sans uppercase tracking-widest">Identificação de anomalias críticas</span>
+            <span className="font-display tracking-wider uppercase text-lg">{t('bi.lossMetrics', 'Métricas de Perda por Pedido')}</span>
+            <span className="text-[10px] text-muted-foreground font-sans uppercase tracking-widest">{t('bi.anomallyIdentification', 'Identificação de anomalias críticas')}</span>
           </div>
         </CardTitle>
         <div className="flex items-center gap-2">

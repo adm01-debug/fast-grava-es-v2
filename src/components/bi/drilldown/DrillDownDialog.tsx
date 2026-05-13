@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { 
   Dialog,
   DialogContent,
@@ -33,6 +34,7 @@ interface DrillDownDialogProps {
 
 export function DrillDownDialog({ open, onOpenChange, title, jobs, onExport }: DrillDownDialogProps) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState("");
 
   const filteredJobs = useMemo(() => {
@@ -62,7 +64,7 @@ export function DrillDownDialog({ open, onOpenChange, title, jobs, onExport }: D
                   {title}
                 </DialogTitle>
                 <Badge variant="secondary" className="bg-primary/20 text-primary border-primary/30 h-6">
-                  {jobs.length} itens
+                  {jobs.length} {t('common.items', 'itens')}
                 </Badge>
               </div>
               <DialogDescription className="text-muted-foreground mt-1">

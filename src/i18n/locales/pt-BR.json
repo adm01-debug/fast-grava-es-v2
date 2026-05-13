@@ -51,7 +51,11 @@
     "minutes": "minutos",
     "notDefined": "Não definida",
     "notScheduled": "Não agendada",
-    "notAssigned": "Não atribuída"
+    "notAssigned": "Não atribuída",
+    "order": "Pedido",
+    "delay": "Atraso",
+    "responsible": "Responsável",
+    "items": "itens"
   },
   "auth": {
     "login": "Entrar",
@@ -243,7 +247,14 @@
     "productivity": "Produtividade",
     "efficiency": "Eficiência",
     "losses": "Perdas",
-    "oee": "OEE"
+    "oee": "OEE",
+    "bi": {
+      "delaysAndCauses": "Atrasos & Causa Raiz",
+      "delayList": "Lista de Atrasos",
+      "rootCauses": "Causas Raiz",
+      "lossMetrics": "Métricas de Perda por Pedido",
+      "anomallyIdentification": "Identificação de anomalias críticas"
+    }
   },
   "settings": {
     "title": "Configurações",

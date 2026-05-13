@@ -51,7 +51,11 @@
     "minutes": "minutes",
     "notDefined": "Not defined",
     "notScheduled": "Not scheduled",
-    "notAssigned": "Not assigned"
+    "notAssigned": "Not assigned",
+    "order": "Order",
+    "delay": "Delay",
+    "responsible": "Responsible",
+    "items": "items"
   },
   "auth": {
     "login": "Login",
@@ -243,7 +247,14 @@
     "productivity": "Productivity",
     "efficiency": "Efficiency",
     "losses": "Losses",
-    "oee": "OEE"
+    "oee": "OEE",
+    "bi": {
+      "delaysAndCauses": "Delays & Root Causes",
+      "delayList": "Delay List",
+      "rootCauses": "Root Causes",
+      "lossMetrics": "Loss Metrics per Order",
+      "anomallyIdentification": "Critical anomaly identification"
+    }
   },
   "settings": {
     "title": "Settings",
