@@ -143,10 +143,17 @@ export function ProductionRegistrationModal({
       const uploadedUrls: string[] = [];
 
       for (const file of Array.from(files)) {
+        // Validação por Magic Bytes (Segurança 10/10)
+        const validation = await validateFileMagicBytes(file);
+        if (!validation.isValid) {
+          toast.error(`Arquivo inválido: ${file.name}. ${validation.error}`);
+          continue;
+        }
+
         const fileExt = file.name.split('.').pop();
         const fileName = `${job.id}/${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
 
-        const { error: uploadError, data } = await supabase.storage
+        const { error: uploadError } = await supabase.storage
           .from('production-photos')
           .upload(fileName, file);
 
