@@ -31,10 +31,11 @@ const cardVariants = cva(
           "dark:hover:border-primary/30 dark:hover:shadow-[0_12px_40px_-8px_hsl(0_0%_0%/0.6),0_0_30px_hsl(var(--primary)/0.15)]",
         ],
         glass: [
-          "bg-card/60 backdrop-blur-xl border-white/20",
-          "shadow-[0_4px_24px_-4px_hsl(220_20%_20%/0.1),inset_0_1px_0_hsl(0_0%_100%/0.5)]",
-          "dark:bg-card/40 dark:border-white/10 dark:backdrop-blur-2xl",
-          "dark:shadow-[0_8px_32px_-8px_hsl(0_0%_0%/0.5),inset_0_1px_0_hsl(0_0%_100%/0.1)]",
+          "bg-background/40 backdrop-blur-xl border-white/20 dark:border-white/5",
+          "shadow-[0_8px_32px_0_rgba(31,38,135,0.07)]",
+          "dark:bg-black/20 dark:backdrop-blur-2xl",
+          "dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.3)]",
+          "before:absolute before:inset-0 before:rounded-xl before:bg-gradient-to-br before:from-white/10 before:to-transparent before:pointer-events-none",
         ],
         ghost: [
           "bg-transparent border-transparent",
