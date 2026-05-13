@@ -3,13 +3,14 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Timer, FileSpreadsheet, FileText, Activity } from "lucide-react";
+import { Timer, FileSpreadsheet, FileText } from "lucide-react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { Job } from "@/types/job";
 
 interface DelaysAnalysisProps {
-  delayedJobs: any[];
+  delayedJobs: Job[];
   rootCauses: { label: string; value: number; color: string }[];
   onExport: (format: 'csv' | 'pdf', type: string) => void;
 }
@@ -62,7 +63,7 @@ export function DelaysAnalysis({ delayedJobs, rootCauses, onExport }: DelaysAnal
                 </TableHeader>
                 <TableBody>
                   {delayedJobs.length > 0 ? (
-                    delayedJobs.map((job: any) => (
+                    delayedJobs.map((job: Job) => (
                       <TableRow key={job.id} className="border-white/5 hover:bg-white/5 cursor-pointer" onClick={() => navigate(`/job/${job.id}`)}>
                         <TableCell className="text-xs font-medium">
                           {job.order_number || `OS-${job.id.slice(0, 5)}`}

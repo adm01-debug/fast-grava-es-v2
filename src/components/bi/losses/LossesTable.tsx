@@ -3,17 +3,18 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Package, FileSpreadsheet, FileText, AlertTriangle, TrendingDown, Target } from "lucide-react";
+import { Package, FileSpreadsheet, FileText, AlertTriangle, TrendingDown } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useTranslation } from "react-i18next";
+import { Job } from "@/types/job";
 
 interface LossesTableProps {
-  jobs: any[];
+  jobs: Job[];
   onExport: (format: 'csv' | 'pdf', type: string) => void;
-  onShowDetails?: (job: any) => void;
+  onShowDetails?: (job: Job) => void;
 }
 
 export function LossesTable({ jobs, onExport, onShowDetails }: LossesTableProps) {
@@ -79,7 +80,7 @@ export function LossesTable({ jobs, onExport, onShowDetails }: LossesTableProps)
             </TableHeader>
             <TableBody>
               {jobs.length > 0 ? (
-                jobs.map((job: any) => {
+                jobs.map((job: Job) => {
                   const total = (job.produced_quantity || job.quantity || 1) + (job.lost_pieces || 0);
                   const lossRate = ((job.lost_pieces || 0) / total) * 100;
                   const isCritical = lossRate > 5;
