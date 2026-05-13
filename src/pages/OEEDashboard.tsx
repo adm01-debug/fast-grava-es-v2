@@ -1,4 +1,5 @@
 import { useState, lazy, Suspense, useMemo, memo, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet';
 import { cn } from '@/lib/utils';
 import { Card, CardContent } from '@/components/ui/card';
@@ -54,6 +55,7 @@ const ChartSkeleton = () => <Skeleton className="h-[400px] w-full" />;
 const TableSkeleton = () => <Skeleton className="h-[500px] w-full" />;
 
 const OEEDashboard = memo(function OEEDashboard() {
+  const { t } = useTranslation();
   const [period, setPeriod] = useState<string>('30');
   const [showSimulator, setShowSimulator] = useState(false);
   const [simValues, setSimValues] = useState({ availability: 85, performance: 90, quality: 98 });
@@ -61,7 +63,7 @@ const OEEDashboard = memo(function OEEDashboard() {
   
   const handleDownloadReport = useCallback(() => {
     downloadReport();
-    toast.success('Relatório OEE exportado!');
+    toast.success(t('common.reportExported', 'Relatório OEE exportado!'));
   }, [downloadReport]);
 
 
@@ -85,7 +87,7 @@ const OEEDashboard = memo(function OEEDashboard() {
         <Card>
           <CardContent className="py-12 text-center text-muted-foreground">
             <AlertTriangle className="h-12 w-12 mx-auto mb-4 text-muted-foreground/50" />
-            <p>Não foi possível carregar os dados de OEE.</p>
+            <p>{t('oee.loadingError', 'Não foi possível carregar os dados de OEE.')}</p>
           </CardContent>
         </Card>
       </div>
@@ -111,7 +113,7 @@ const OEEDashboard = memo(function OEEDashboard() {
               OEE Dashboard
             </h1>
             <p className="text-muted-foreground mt-1">
-              Overall Equipment Effectiveness - Eficiência Global dos Equipamentos
+              {t('oee.description', 'Overall Equipment Effectiveness - Eficiência Global dos Equipamentos')}
             </p>
           </div>
           
@@ -124,17 +126,17 @@ const OEEDashboard = memo(function OEEDashboard() {
               className="hidden md:flex gap-2 border-primary/20 hover:bg-primary/5"
             >
               <FileDown className="h-4 w-4" />
-              Relatório
+              {t('common.report', 'Relatório')}
             </Button>
             <Select value={period} onValueChange={setPeriod}>
               <SelectTrigger className="w-32 md:w-40 glass-card border-primary/20">
-                <SelectValue placeholder="Período" />
+                <SelectValue placeholder={t('common.period', 'Período')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="7">Últimos 7 dias</SelectItem>
-                <SelectItem value="14">Últimos 14 dias</SelectItem>
-                <SelectItem value="30">Últimos 30 dias</SelectItem>
-                <SelectItem value="90">Últimos 90 dias</SelectItem>
+                <SelectItem value="7">{t('common.last7Days', 'Últimos 7 dias')}</SelectItem>
+                <SelectItem value="14">{t('common.last14Days', 'Últimos 14 dias')}</SelectItem>
+                <SelectItem value="30">{t('common.last30Days', 'Últimos 30 dias')}</SelectItem>
+                <SelectItem value="90">{t('common.last90Days', 'Últimos 90 dias')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -149,25 +151,29 @@ const OEEDashboard = memo(function OEEDashboard() {
             <div className="flex-1 space-y-2">
               <div className="flex items-center gap-2">
                  <Badge className="bg-primary/20 text-primary border-primary/30 animate-pulse uppercase text-[10px] font-black">AI Insight</Badge>
-                 <h2 className="text-xl font-bold tracking-tight">OEE Consolidado: {data.overallOEE.toFixed(1)}%</h2>
+                 <h2 className="text-xl font-bold tracking-tight">{t('oee.consolidated', 'OEE Consolidado')}: {data.overallOEE.toFixed(1)}%</h2>
               </div>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                 Sua planta está operando <span className="text-primary font-bold">12% acima</span> do benchmark do último trimestre. 
-                 A técnica <span className="font-bold text-foreground">{data.byTechnique[0]?.techniqueName}</span> é o destaque com <span className="text-indicator-success font-bold">{data.byTechnique[0]?.averageOEE}%</span> de eficiência global.
+                 {t('oee.aiPerformanceInsight', { 
+                   val: '12%', 
+                   tech: data.byTechnique[0]?.techniqueName, 
+                   avg: data.byTechnique[0]?.averageOEE,
+                   defaultValue: 'Sua planta está operando {{val}} acima do benchmark. A técnica {{tech}} é o destaque com {{avg}}% de eficiência.'
+                 })}
               </p>
             </div>
             <div className="flex flex-wrap items-center justify-center gap-3 bg-background/40 p-4 rounded-2xl border border-border/50 backdrop-blur-sm">
               <div className="text-center px-4 border-r border-border/50">
                  <p className="text-2xl font-black text-primary">{data.overallAvailability.toFixed(0)}%</p>
-                 <p className="text-[10px] font-bold text-muted-foreground uppercase">Disponib.</p>
+                 <p className="text-[10px] font-bold text-muted-foreground uppercase">{t('oee.availabilityShort', 'Disponib.')}</p>
               </div>
               <div className="text-center px-4 border-r border-border/50">
                  <p className="text-2xl font-black text-indicator-info">{data.overallPerformance.toFixed(0)}%</p>
-                 <p className="text-[10px] font-bold text-muted-foreground uppercase">Perform.</p>
+                 <p className="text-[10px] font-bold text-muted-foreground uppercase">{t('oee.performanceShort', 'Perform.')}</p>
               </div>
               <div className="text-center px-4">
                  <p className="text-2xl font-black text-accent-purple">{data.overallQuality.toFixed(0)}%</p>
-                 <p className="text-[10px] font-bold text-muted-foreground uppercase">Qualidade</p>
+                 <p className="text-[10px] font-bold text-muted-foreground uppercase">{t('common.quality', 'Qualidade')}</p>
               </div>
             </div>
           </CardContent>
@@ -183,12 +189,12 @@ const OEEDashboard = memo(function OEEDashboard() {
                   <Lightbulb className="h-5 w-5 text-indicator-warning" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-sm">Gargalo de Performance</h3>
+                  <h3 className="font-bold text-sm">{t('oee.performanceBottleneck', 'Gargalo de Performance')}</h3>
                   <p className="text-xs text-muted-foreground mt-1">
                     A técnica <span className="font-bold">{data.byTechnique[0]?.techniqueName}</span> está com perda de velocidade de 15%. Recomendamos revisão de setup.
                   </p>
                   <Button variant="link" size="sm" className="p-0 h-auto text-indicator-warning text-xs mt-2">
-                    Ver Detalhes <ArrowRight className="ml-1 h-3 w-3" />
+                    {t('common.viewDetails', 'Ver Detalhes')} <ArrowRight className="ml-1 h-3 w-3" />
                   </Button>
                 </div>
               </CardContent>
@@ -200,9 +206,9 @@ const OEEDashboard = memo(function OEEDashboard() {
                   <Calculator className="h-5 w-5 text-primary" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="font-bold text-sm">OEE Simulator</h3>
+                  <h3 className="font-bold text-sm">{t('oee.simulator', 'OEE Simulator')}</h3>
                   <p className="text-xs text-muted-foreground mt-1">
-                    Simule o impacto de melhorias operacionais no seu OEE final.
+                    {t('oee.simulatorDescription', 'Simule o impacto de melhorias operacionais no seu OEE final.')}
                   </p>
                   <Button 
                     variant="outline" 
@@ -210,7 +216,7 @@ const OEEDashboard = memo(function OEEDashboard() {
                     onClick={() => setShowSimulator(!showSimulator)}
                     className="h-8 text-xs mt-2 border-primary/20 hover:bg-primary/10"
                   >
-                    {showSimulator ? "Fechar Simulador" : "Abrir Simulador"}
+                    {showSimulator ? t('oee.closeSimulator', 'Fechar Simulador') : t('oee.openSimulator', 'Abrir Simulador')}
                     <Play className={cn("ml-2 h-3 w-3 transition-transform", showSimulator && "rotate-90")} />
                   </Button>
                 </div>
@@ -227,7 +233,7 @@ const OEEDashboard = memo(function OEEDashboard() {
                 <div className="space-y-6">
                   <div className="space-y-3">
                     <div className="flex justify-between">
-                      <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Disponibilidade</Label>
+                      <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{t('oee.availability', 'Disponibilidade')}</Label>
                       <span className="text-xs font-black">{simValues.availability}%</span>
                     </div>
                     <Slider 
@@ -239,7 +245,7 @@ const OEEDashboard = memo(function OEEDashboard() {
                   </div>
                   <div className="space-y-3">
                     <div className="flex justify-between">
-                      <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Performance</Label>
+                      <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{t('common.performance', 'Performance')}</Label>
                       <span className="text-xs font-black">{simValues.performance}%</span>
                     </div>
                     <Slider 
@@ -251,7 +257,7 @@ const OEEDashboard = memo(function OEEDashboard() {
                   </div>
                   <div className="space-y-3">
                     <div className="flex justify-between">
-                      <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Qualidade</Label>
+                      <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{t('common.quality', 'Qualidade')}</Label>
                       <span className="text-xs font-black">{simValues.quality}%</span>
                     </div>
                     <Slider 
@@ -265,19 +271,19 @@ const OEEDashboard = memo(function OEEDashboard() {
 
                 <div className="lg:col-span-2 flex flex-col md:flex-row items-center justify-around gap-6 bg-background/50 rounded-2xl p-6 border border-border/50">
                    <div className="text-center">
-                      <p className="text-xs font-bold text-muted-foreground uppercase mb-2">OEE Atual</p>
+                      <p className="text-xs font-bold text-muted-foreground uppercase mb-2">{t('oee.currentOEE', 'OEE Atual')}</p>
                       <p className="text-5xl font-black text-muted-foreground/50">{data.overallOEE.toFixed(1)}%</p>
                    </div>
                    
                    <ArrowRight className="h-8 w-8 text-muted-foreground/30 hidden md:block" />
                    
                    <div className="text-center">
-                      <p className="text-xs font-bold text-primary uppercase mb-2">OEE Projetado</p>
+                      <p className="text-xs font-bold text-primary uppercase mb-2">{t('oee.projectedOEE', 'OEE Projetado')}</p>
                       <p className="text-6xl font-black text-primary">
                         {((simValues.availability/100) * (simValues.performance/100) * (simValues.quality/100) * 100).toFixed(1)}%
                       </p>
                       <Badge className="bg-success/20 text-success border-success/30 mt-2">
-                        + {(((simValues.availability/100) * (simValues.performance/100) * (simValues.quality/100) * 100) - data.overallOEE).toFixed(1)}% de ganho
+                        + {(((simValues.availability/100) * (simValues.performance/100) * (simValues.quality/100) * 100) - data.overallOEE).toFixed(1)}% {t('oee.gain', 'de ganho')}
                       </Badge>
                    </div>
                 </div>
@@ -291,7 +297,7 @@ const OEEDashboard = memo(function OEEDashboard() {
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-bold flex items-center gap-2">
               <Calculator className="h-5 w-5 text-primary" />
-              Drill-down de Performance (Fórmula OEE)
+              {t('oee.drilldownTitle', 'Drill-down de Performance (Fórmula OEE)')}
             </h2>
             <Badge variant="outline" className="text-[10px] font-bold">REAL-TIME CALCULATION</Badge>
           </div>
@@ -299,10 +305,10 @@ const OEEDashboard = memo(function OEEDashboard() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <KPITooltip {...KPI_DEFINITIONS.oee}>
               <OEEGaugeCard
-                title="OEE Geral"
+                title={t('oee.generalOEE', 'OEE Geral')}
                 value={data.overallOEE}
                 icon={<Target className="h-4 w-4" />}
-                description="Eficiência geral de todas as máquinas"
+                description={t('oee.generalOEEDesc', 'Eficiência geral de todas as máquinas')}
                 benchmark={WORLD_CLASS_OEE}
                 trend={data.comparison ? data.comparison.currentOEE - data.comparison.previousOEE : undefined}
                 className="border-primary/40 shadow-glow-primary/10"
@@ -312,10 +318,10 @@ const OEEDashboard = memo(function OEEDashboard() {
 
             <KPITooltip {...KPI_DEFINITIONS.availability}>
               <OEEGaugeCard
-                title="Disponibilidade"
+                title={t('oee.availability', 'Disponibilidade')}
                 value={data.overallAvailability}
                 icon={<Clock className="h-4 w-4" />}
-                description="Tempo operando / Tempo planejado"
+                description={t('oee.availabilityDesc', 'Tempo operando / Tempo planejado')}
                 benchmark={90}
                 trend={data.comparison ? data.comparison.currentAvailability - data.comparison.previousAvailability : undefined}
                 variant="glass"
@@ -324,10 +330,10 @@ const OEEDashboard = memo(function OEEDashboard() {
 
             <KPITooltip {...KPI_DEFINITIONS.performance}>
               <OEEGaugeCard
-                title="Performance"
+                title={t('common.performance', 'Performance')}
                 value={data.overallPerformance}
                 icon={<Gauge className="h-4 w-4" />}
-                description="Produção Real / Produção Estimada"
+                description={t('oee.performanceDesc', 'Produção Real / Produção Estimada')}
                 benchmark={95}
                 trend={data.comparison ? data.comparison.currentPerformance - data.comparison.previousPerformance : undefined}
                 variant="glass"
@@ -336,10 +342,10 @@ const OEEDashboard = memo(function OEEDashboard() {
 
             <KPITooltip {...KPI_DEFINITIONS.quality}>
               <OEEGaugeCard
-                title="Qualidade"
+                title={t('common.quality', 'Qualidade')}
                 value={data.overallQuality}
                 icon={<CheckCircle2 className="h-4 w-4" />}
-                description="Peças Boas / Total Produzido"
+                description={t('oee.qualityDesc', 'Peças Boas / Total Produzido')}
                 benchmark={99}
                 trend={data.comparison ? data.comparison.currentQuality - data.comparison.previousQuality : undefined}
                 variant="glass"
@@ -350,7 +356,7 @@ const OEEDashboard = memo(function OEEDashboard() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Card className="bg-muted/20 border-dashed border-border/50">
               <CardContent className="p-3 text-[10px] space-y-1">
-                <p className="font-bold uppercase text-muted-foreground">Cálculo de Disponibilidade</p>
+                <p className="font-bold uppercase text-muted-foreground">{t('oee.availabilityCalculation', 'Cálculo de Disponibilidade')}</p>
                 <div className="flex justify-between items-center bg-background/50 p-2 rounded">
                   <span className="font-mono">{data.byMachine.reduce((s, m) => s + m.actualOperatingMinutes, 0)} min</span>
                   <span className="text-muted-foreground">/</span>
@@ -361,7 +367,7 @@ const OEEDashboard = memo(function OEEDashboard() {
             </Card>
             <Card className="bg-muted/20 border-dashed border-border/50">
               <CardContent className="p-3 text-[10px] space-y-1">
-                <p className="font-bold uppercase text-muted-foreground">Cálculo de Performance</p>
+                <p className="font-bold uppercase text-muted-foreground">{t('oee.performanceCalculation', 'Cálculo de Performance')}</p>
                 <div className="flex justify-between items-center bg-background/50 p-2 rounded">
                   <span className="font-mono">{data.byMachine.reduce((s, m) => s + m.idealCycleMinutes, 0)} min (Est.)</span>
                   <span className="text-muted-foreground">/</span>
