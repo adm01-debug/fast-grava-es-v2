@@ -9,12 +9,15 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
-import { Wrench, CheckCircle2, Camera, AlertTriangle, Clock, Plus, Trash2, PenTool, Zap, MoveHorizontal, Thermometer, Info, CheckSquare, Package } from 'lucide-react';
+import { Wrench, CheckCircle2, AlertTriangle, Clock, Plus, Trash2, PenTool, Zap, MoveHorizontal, Thermometer, Info, CheckSquare, Package, Camera } from 'lucide-react';
 import { MaintenanceSchedule, MaintenanceChecklist, MaintenanceChecklistItem } from '@/hooks/tpm/types';
 import { useTPM } from '@/hooks/useTPM';
 import { useTechnicalSheets } from '@/hooks/useTechnicalSheets';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
+import { ChecklistItem } from './execution/ChecklistItem';
+import { AlertRiskPanel } from './execution/AlertRiskPanel';
+import { SupplyList } from './execution/SupplyList';
 
 interface MaintenanceExecutionModalProps {
   isOpen: boolean;
@@ -382,75 +385,14 @@ export function MaintenanceExecutionModal({
                 </h3>
                 <div className="space-y-3">
                   {checklist.items?.map((item) => (
-                    <div key={item.id} className="p-4 rounded-lg bg-secondary/20 border border-border/50 space-y-3">
-                      <div className="flex items-start gap-3">
-                        <Checkbox 
-                          id={`item-${item.id}`}
-                          checked={responses[item.id]?.is_checked}
-                          onCheckedChange={(checked) => handleResponseUpdate(item.id, { is_checked: !!checked })}
-                          className="mt-1"
-                        />
-                        <div className="flex-1">
-                          <Label 
-                            htmlFor={`item-${item.id}`}
-                            className="font-medium cursor-pointer"
-                          >
-                            {item.description}
-                            {item.is_critical && <span className="text-destructive ml-1">*</span>}
-                          </Label>
-                        </div>
-                      </div>
-
-                      <div className="flex flex-wrap gap-4 pl-8">
-                        {item.requires_measurement && (
-                          <div className="flex items-center gap-2">
-                            <Label className="text-xs whitespace-nowrap">Medição ({item.measurement_unit}):</Label>
-                            <Input 
-                              type="number"
-                              size={1}
-                              className="h-8 w-24"
-                              placeholder="Valor"
-                              value={responses[item.id]?.measurement_value || ''}
-                              onChange={(e) => handleResponseUpdate(item.id, { measurement_value: parseFloat(e.target.value) })}
-                            />
-                            {(item.min_value !== null || item.max_value !== null) && (
-                              <span className="text-[10px] text-muted-foreground">
-                                Limites: {item.min_value ?? '-'} a {item.max_value ?? '-'}
-                              </span>
-                            )}
-                          </div>
-                        )}
-                        {item.requires_photo && (
-                          <div className="flex items-center gap-2">
-                            {responses[item.id]?.photo_url ? (
-                              <Badge variant="outline" className="text-emerald-500 gap-1 h-8">
-                                <CheckCircle2 className="h-3 w-3" /> Foto OK
-                              </Badge>
-                            ) : (
-                              <div className="relative">
-                                <Input 
-                                  type="file" 
-                                  className="hidden" 
-                                  id={`photo-${item.id}`}
-                                  accept="image/*"
-                                  onChange={(e) => {
-                                    const file = e.target.files?.[0];
-                                    if (file) handleFileUpload(item.id, file);
-                                  }}
-                                  disabled={isUploading}
-                                />
-                                <Label 
-                                  htmlFor={`photo-${item.id}`}
-                                  className="inline-flex items-center justify-center rounded-md text-sm font-medium border border-input bg-background hover:bg-accent hover:text-accent-foreground h-8 px-3 cursor-pointer gap-1"
-                                >
-                                  <Camera className="h-3 w-3" /> Foto
-                                </Label>
-                              </div>
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    </div>
+                    <ChecklistItem
+                      key={item.id}
+                      item={item}
+                      response={responses[item.id]}
+                      onUpdate={(updates) => handleResponseUpdate(item.id, updates)}
+                      onFileUpload={(file) => handleFileUpload(item.id, file)}
+                      isUploading={isUploading}
+                    />
                   ))}
                 </div>
               </div>
@@ -462,59 +404,11 @@ export function MaintenanceExecutionModal({
             )}
 
             {/* Alert/Risk Monitoring */}
-            {activeAlerts.length > 0 && (
-              <div className="space-y-4 p-4 rounded-xl border-2 border-destructive/30 bg-destructive/5 animate-in fade-in slide-in-from-top-2">
-                <h3 className="text-sm font-bold text-destructive flex items-center gap-2">
-                  <Zap className="h-4 w-4 animate-pulse" />
-                  Riscos de Perda Detectados ({activeAlerts.length})
-                </h3>
-                <div className="space-y-3">
-                  {activeAlerts.map((alert, idx) => (
-                    <div key={idx} className="space-y-3">
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="flex-1">
-                          <p className="text-sm font-semibold text-destructive">{alert.description}</p>
-                          <p className="text-xs text-muted-foreground">Range Recomendado: {alert.expected_range}</p>
-                        </div>
-                        <div className="flex flex-col gap-2">
-                          <Input 
-                            type="file" 
-                            className="hidden" 
-                            id={`alert-evidence-${idx}`}
-                            accept="image/*"
-                            onChange={(e) => {
-                              const file = e.target.files?.[0];
-                              if (file) handleAlertEvidenceUpload(idx, file);
-                            }}
-                            disabled={isUploading}
-                          />
-                          <Label 
-                            htmlFor={`alert-evidence-${idx}`}
-                            className="inline-flex items-center justify-center rounded-md text-xs font-medium border-2 border-destructive bg-background hover:bg-destructive/10 h-8 px-3 cursor-pointer gap-2"
-                          >
-                            <Camera className="h-3 w-3" /> Anexar Foto
-                          </Label>
-                        </div>
-                      </div>
-                      
-                      {alert.evidence_urls.length > 0 && (
-                        <div className="flex flex-wrap gap-2 pt-2 border-t border-destructive/10">
-                          {alert.evidence_urls.map((url, pIdx) => (
-                            <div key={pIdx} className="relative h-12 w-12 rounded border border-destructive/20 overflow-hidden">
-                              <img src={url} alt="Evidência" className="h-full w-full object-cover" />
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-                <div className="p-3 bg-destructive/10 rounded-lg text-[11px] text-destructive-foreground font-medium flex items-center gap-2">
-                  <Info className="h-3 w-3" />
-                  Bloqueio Ativo: Anexe fotos e justifique nas observações para liberar o override.
-                </div>
-              </div>
-            )}
+            <AlertRiskPanel
+              alerts={activeAlerts}
+              onEvidenceUpload={handleAlertEvidenceUpload}
+              isUploading={isUploading}
+            />
 
             {/* Technical Sheet & Adjustments */}
             <div className="space-y-4 pt-4 border-t border-border/50">
@@ -655,58 +549,13 @@ export function MaintenanceExecutionModal({
 
                 {/* Supplies Used Tracking */}
                 {selectedSheetId && Object.keys(suppliesUsed).length > 0 && (
-                  <div className="p-4 rounded-lg bg-primary/5 border border-primary/10 space-y-3">
-                    <Label className="text-xs text-primary font-bold uppercase flex items-center gap-1">
-                      <Package className="h-3 w-3" /> Insumos e Consumíveis Utilizados
-                    </Label>
-                    <div className="grid grid-cols-1 gap-2">
-                      {Object.entries(suppliesUsed).map(([id, data]) => (
-                        <div key={id} className="p-3 bg-background rounded border border-border/50 space-y-2">
-                          <div className="flex justify-between items-center">
-                            <div className="flex items-center gap-2">
-                              <Checkbox 
-                                id={`supply-${id}`}
-                                checked={data.is_checked}
-                                onCheckedChange={(checked) => setSuppliesUsed(prev => ({
-                                  ...prev,
-                                  [id]: { ...prev[id], is_checked: !!checked }
-                                }))}
-                              />
-                              <Label htmlFor={`supply-${id}`} className="text-xs font-medium cursor-pointer">
-                                {data.name}
-                              </Label>
-                            </div>
-                            <div className="flex items-center gap-3">
-                              <div className="flex items-center gap-2">
-                                <Label className="text-[10px] text-muted-foreground">Qtd:</Label>
-                                <Input 
-                                  className="h-7 w-16 text-xs"
-                                  value={data.quantity}
-                                  onChange={(e) => setSuppliesUsed(prev => ({
-                                    ...prev,
-                                    [id]: { ...prev[id], quantity: e.target.value }
-                                  }))}
-                                />
-                              </div>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-2 pl-6">
-                            <Checkbox 
-                              id={`alt-${id}`}
-                              checked={data.alternative_used}
-                              onCheckedChange={(checked) => setSuppliesUsed(prev => ({
-                                ...prev,
-                                [id]: { ...prev[id], alternative_used: !!checked }
-                              }))}
-                            />
-                            <Label htmlFor={`alt-${id}`} className="text-[10px] text-muted-foreground cursor-pointer">
-                              Utilizado Insumo Alternativo
-                            </Label>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+                  <SupplyList
+                    supplies={suppliesUsed}
+                    onUpdate={(id, updates) => setSuppliesUsed(prev => ({
+                      ...prev,
+                      [id]: { ...prev[id], ...updates }
+                    }))}
+                  />
                 )}
 
                 {selectedSheetId && technicalSheets.find(s => s.id === selectedSheetId)?.quality_checklist && (technicalSheets.find(s => s.id === selectedSheetId)?.quality_checklist?.length || 0) > 0 && (

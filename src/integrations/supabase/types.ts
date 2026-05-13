@@ -3010,6 +3010,39 @@ export type Database = {
           },
         ]
       }
+      rls_test_results: {
+        Row: {
+          created_at: string | null
+          error_message: string | null
+          id: string
+          operation: string
+          passed: boolean
+          role: string
+          table_name: string
+          test_name: string
+        }
+        Insert: {
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          operation: string
+          passed: boolean
+          role: string
+          table_name: string
+          test_name: string
+        }
+        Update: {
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          operation?: string
+          passed?: boolean
+          role?: string
+          table_name?: string
+          test_name?: string
+        }
+        Relationships: []
+      }
       role_permissions: {
         Row: {
           action: string
@@ -5192,6 +5225,16 @@ export type Database = {
       refresh_operator_rankings: {
         Args: { p_type: string }
         Returns: undefined
+      }
+      test_rls_policies: {
+        Args: { p_role: string; p_table_name: string; p_test_user_id: string }
+        Returns: {
+          can_delete: boolean
+          can_insert: boolean
+          can_select: boolean
+          can_update: boolean
+          operation: string
+        }[]
       }
       verify_audit_chain:
         | {
