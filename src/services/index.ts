@@ -1,4 +1,4 @@
-export { JobsService } from './jobsService';
+export { jobsService as JobsService } from './jobsService';
 export { MachinesService } from './machinesService';
 export { OperatorsService } from './operatorsService';
 export { MaintenanceService } from './maintenanceService';
