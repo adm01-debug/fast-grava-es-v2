@@ -14,8 +14,12 @@ export interface BufferPromotionResult {
 export function useAutoBufferPromotion(options?: { showToasts?: boolean }) {
   const { showToasts = true } = options || {};
   const queryClient = useQueryClient();
-
-  const promotionMutation = useMutation({
+  const { getConfig } = useBusinessConfig();
+  
+  const bufferTarget = useMemo(() => {
+    const val = getConfig('buffer_size', 3);
+    return typeof val === 'string' ? parseInt(val) : val;
+  }, [getConfig]);
     mutationFn: async (techniqueId?: string) => {
       const { data, error } = await supabase.functions.invoke('auto-promote-jobs', {
         body: { techniqueId }
