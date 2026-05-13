@@ -43,6 +43,7 @@ export default function AuthPage() {
   const [forgotEmail, setForgotEmail] = useState('');
   const [isSendingReset, setIsSendingReset] = useState(false);
   const [socialLoading, setSocialLoading] = useState<string | null>(null);
+  const [mfaFactorId, setMfaFactorId] = useState<string | null>(null);
 
   useEffect(() => { const saved = localStorage.getItem('rememberedEmail'); if (saved) { setLoginEmail(saved); setRememberMe(true); } }, []);
   useEffect(() => { if (user) navigate('/', { replace: true }); }, [user, navigate]);
