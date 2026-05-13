@@ -4,17 +4,28 @@ import { LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Card } from '@/components/ui/card';
 
+/**
+ * Props for the StatsCard component
+ */
 export interface StatsCardProps {
+  /** The title of the statistic */
   title: string;
+  /** The main value to display */
   value: string | number;
+  /** Optional subtitle or description */
   subtitle?: string;
+  /** Icon from lucide-react */
   icon: LucideIcon;
+  /** Optional trend data (percentage and direction) */
   trend?: {
     value: number;
     isPositive: boolean;
   };
+  /** Visual variant affecting colors and glow effects */
   variant?: 'primary' | 'success' | 'warning' | 'info' | 'accent' | 'muted';
+  /** Additional CSS classes */
   className?: string;
+  /** Whether to use a more compact layout */
   compact?: boolean;
 }
 
