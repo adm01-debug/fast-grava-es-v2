@@ -25,7 +25,7 @@ const cardVariants = cva(
           "shadow-[0_1px_3px_hsl(220_20%_20%/0.06),0_4px_16px_-4px_hsl(220_20%_20%/0.1),inset_0_1px_0_hsl(0_0%_100%/0.7)]",
           "hover:shadow-[0_8px_25px_-5px_hsl(220_20%_20%/0.15),0_12px_30px_-8px_hsl(220_20%_20%/0.1)]",
           "hover:border-border hover:-translate-y-0.5",
-          "active:translate-y-0 active:shadow-[0_2px_8px_-2px_hsl(220_20%_20%/0.1)]",
+          "active:translate-y-0 active:scale-[0.99] active:shadow-[0_2px_8px_-2px_hsl(220_20%_20%/0.1)]",
           "dark:border-white/10 dark:bg-card/90 dark:backdrop-blur-xl",
           "dark:shadow-[0_8px_32px_-8px_hsl(0_0%_0%/0.5),inset_0_1px_0_hsl(0_0%_100%/0.05)]",
           "dark:hover:border-primary/30 dark:hover:shadow-[0_12px_40px_-8px_hsl(0_0%_0%/0.6),0_0_30px_hsl(var(--primary)/0.15)]",
