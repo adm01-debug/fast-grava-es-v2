@@ -118,4 +118,4 @@ export const ABCCostBreakdownChart = memo(function ABCCostBreakdownChart({ costP
       </CardContent>
     </Card>
   );
-}
+});
