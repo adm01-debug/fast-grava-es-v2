@@ -8,7 +8,9 @@
     "cancel": "Cancelar",
     "delete": "Excluir",
     "edit": "Editar",
+    "duplicate": "Duplicar",
     "add": "Adicionar",
+    "saving": "Salvando...",
     "search": "Buscar",
     "filter": "Filtrar",
     "clear": "Limpar",
@@ -24,6 +26,11 @@
     "status": "Status",
     "date": "Data",
     "time": "Hora",
+    "quality": "Qualidade",
+    "photos": "Fotos",
+    "costs": "Custos",
+    "tracking": "Rastreio",
+    "history": "Histórico",
     "name": "Nome",
     "description": "Descrição",
     "notes": "Observações",
@@ -38,7 +45,12 @@
     "tomorrow": "Amanhã",
     "week": "Semana",
     "month": "Mês",
-    "year": "Ano"
+    "year": "Ano",
+    "pieces": "peças",
+    "minutes": "minutos",
+    "notDefined": "Não definida",
+    "notScheduled": "Não agendada",
+    "notAssigned": "Não atribuída"
   },
   "auth": {
     "login": "Entrar",
@@ -123,7 +135,11 @@
     "startProduction": "Iniciar Produção",
     "pauseProduction": "Pausar Produção",
     "finishProduction": "Finalizar Produção",
-    "cancelJob": "Cancelar Job"
+    "cancelJob": "Cancelar Job",
+    "deleteJob": "Excluir Job",
+    "deleteConfirmation": "Tem certeza que deseja excluir o job {{order}}? Esta ação não pode ser desfeita.",
+    "detailsFor": "Detalhes do trabalho {{order}}",
+    "instructions": "Instruções"
   },
   "operators": {
     "title": "Operadores",

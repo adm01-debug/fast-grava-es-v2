@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
+import { Helmet } from 'react-helmet';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -230,6 +231,12 @@ export default function ExecutiveDashboard() {
   return (
     <MainLayout>
       <div className="p-4 sm:p-6 lg:p-8 space-y-10 animate-fade-in-up">
+        <Helmet>
+          <title>Fábrica Autônoma 360 | Dashboard Executivo</title>
+          <meta name="description" content="Orquestração Inteligente & Governança de Dados Industrial de Alta Performance. Visualize KPIs de produção, eficiência e qualidade em tempo real." />
+          <meta property="og:title" content="Dashboard Executivo - Fast Gravações" />
+          <meta property="og:description" content="Monitoramento autônomo e orquestrado da performance industrial." />
+        </Helmet>
         <Breadcrumbs className="mb-0" />
         
         {/* Header Section */}

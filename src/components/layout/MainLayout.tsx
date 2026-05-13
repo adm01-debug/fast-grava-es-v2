@@ -24,6 +24,7 @@ const OfflineReadyIndicator = lazy(() => import('../offline/OfflineReadyIndicato
 const MobileNavigation = lazy(() => import('../navigation/MobileNavigation').then(m => ({ default: m.MobileNavigation })));
 const MobileQuickActions = lazy(() => import('../navigation/MobileQuickActions').then(m => ({ default: m.MobileQuickActions })));
 const CommandPaletteAdvanced = lazy(() => import('../navigation/CommandPaletteAdvanced').then(m => ({ default: m.CommandPaletteAdvanced })));
+const SystemOnboarding = lazy(() => import('../onboarding/SystemOnboarding').then(m => ({ default: m.SystemOnboarding })));
 
 import { useDevice } from '@/hooks/use-device';
 import { cn } from '@/lib/utils';
@@ -172,6 +173,9 @@ export function MainLayout({ children }: MainLayoutProps) {
         </Suspense>
         <Suspense fallback={EmptyFallback}>
           <CommandPaletteAdvanced />
+        </Suspense>
+        <Suspense fallback={EmptyFallback}>
+          <SystemOnboarding />
         </Suspense>
       </div>
     </SessionProvider>

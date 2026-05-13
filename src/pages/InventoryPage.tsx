@@ -1,4 +1,5 @@
 import { useState, useMemo, useRef } from 'react';
+import { Helmet } from 'react-helmet';
 import { useRBAC, PermissionGate } from '@/hooks/useRBAC';
 import { subDays, isAfter, parseISO, addDays } from 'date-fns';
 import { MainLayout } from '@/components/layout/MainLayout';
@@ -34,6 +35,7 @@ import {
 } from 'lucide-react';
 
 import { useInventory, useInventoryMovements, InventoryItem } from '@/hooks/useInventory';
+import { useDebounce } from '@/hooks/useDebounce';
 import { WarehouseMap } from '@/components/inventory/WarehouseMap';
 import { InventoryStats } from '@/components/inventory/InventoryStats';
 import { QRLabelModal } from '@/components/inventory/QRLabelModal';
@@ -65,12 +67,13 @@ export default function InventoryPage() {
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
   const [isBatchQRModalOpen, setIsBatchQRModalOpen] = useState(false);
   const [isAIPredictionModalOpen, setIsAIPredictionModalOpen] = useState(false);
+  const debouncedSearch = useDebounce(searchTerm, 300);
 
 
   const filteredItems = useMemo(() => {
     return items.filter(item => {
-      const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                           item.specification?.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesSearch = item.name.toLowerCase().includes(debouncedSearch.toLowerCase()) || 
+                           item.specification?.toLowerCase().includes(debouncedSearch.toLowerCase());
       const matchesCategory = selectedCategory === 'all' || item.category === selectedCategory;
       return matchesSearch && matchesCategory;
     });
@@ -81,6 +84,10 @@ export default function InventoryPage() {
   return (
     <MainLayout>
       <div className="p-4 sm:p-6 lg:p-8 space-y-6 animate-fade-in">
+        <Helmet>
+          <title>Gestão de Materiais | Inventory Intelligence</title>
+          <meta name="description" content="Controle de insumos, tintas, telas e solventes com inteligência artificial e previsão de esgotamento." />
+        </Helmet>
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
             <h1 className="text-2xl sm:text-3xl font-display font-bold flex items-center gap-3">

@@ -8,7 +8,9 @@
     "cancel": "Cancel",
     "delete": "Delete",
     "edit": "Edit",
+    "duplicate": "Duplicate",
     "add": "Add",
+    "saving": "Saving...",
     "search": "Search",
     "filter": "Filter",
     "clear": "Clear",
@@ -24,6 +26,11 @@
     "status": "Status",
     "date": "Date",
     "time": "Time",
+    "quality": "Quality",
+    "photos": "Photos",
+    "costs": "Costs",
+    "tracking": "Tracking",
+    "history": "History",
     "name": "Name",
     "description": "Description",
     "notes": "Notes",
@@ -38,7 +45,12 @@
     "tomorrow": "Tomorrow",
     "week": "Week",
     "month": "Month",
-    "year": "Year"
+    "year": "Year",
+    "pieces": "pieces",
+    "minutes": "minutes",
+    "notDefined": "Not defined",
+    "notScheduled": "Not scheduled",
+    "notAssigned": "Not assigned"
   },
   "auth": {
     "login": "Login",
@@ -123,7 +135,11 @@
     "startProduction": "Start Production",
     "pauseProduction": "Pause Production",
     "finishProduction": "Finish Production",
-    "cancelJob": "Cancel Job"
+    "cancelJob": "Cancel Job",
+    "deleteJob": "Delete Job",
+    "deleteConfirmation": "Are you sure you want to delete job {{order}}? This action cannot be undone.",
+    "detailsFor": "Details for job {{order}}",
+    "instructions": "Instructions"
   },
   "operators": {
     "title": "Operators",

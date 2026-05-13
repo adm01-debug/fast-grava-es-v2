@@ -1,5 +1,7 @@
 import { useState, useMemo } from 'react';
+import { Helmet } from 'react-helmet';
 import { useFuseSearch } from '@/hooks/useFuseSearch';
+import { useDebounce } from '@/hooks/useDebounce';
 import { useNavigate } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -61,6 +63,7 @@ export default function OperatorsPage() {
   const [operatorForQR, setOperatorForQR] = useState<OperatorWithProfile | null>(null);
   const [operatorForSkills, setOperatorForSkills] = useState<OperatorWithProfile | null>(null);
   const [isSkillsModalOpen, setIsSkillsModalOpen] = useState(false);
+  const debouncedSearch = useDebounce(searchQuery, 300);
 
   const activeOperators = operators.filter(op => op.is_active);
   const inactiveOperators = operators.filter(op => !op.is_active);
@@ -77,7 +80,7 @@ export default function OperatorsPage() {
   };
 
   // Apply Fuse.js fuzzy search for operators
-  const fuseSearchedOperators = useFuseSearch(operators, searchQuery, {
+  const fuseSearchedOperators = useFuseSearch(operators, debouncedSearch, {
     keys: ['full_name'],
     threshold: 0.3,
   });
@@ -118,6 +121,10 @@ export default function OperatorsPage() {
   return (
     <MainLayout>
       <div className="space-y-6">
+        <Helmet>
+          <title>Workforce Excellence | Gestão de Operadores</title>
+          <meta name="description" content="Gestão de competências, produtividade e ranking global de operadores da fábrica." />
+        </Helmet>
         <Breadcrumbs />
         
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
