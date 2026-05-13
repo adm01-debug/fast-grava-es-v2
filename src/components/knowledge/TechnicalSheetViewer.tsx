@@ -353,8 +353,8 @@ export const TechnicalSheetViewer = ({ sheetId, onEdit, onDuplicate }: Technical
                 <div className="p-6 space-y-8">
                   {/* Visual Reference Section (Etapa 3) */}
                   <VisualReference 
-                    goldStandardUrl={sheet.gold_standard_image_url} 
-                    failureStandardUrl={sheet.failure_standard_image_url} 
+                    goldStandardUrl={sheet.gold_standard_image_url || undefined} 
+                    failureStandardUrl={sheet.failure_standard_image_url || undefined} 
                   />
 
                   {/* Technical Settings Section */}
