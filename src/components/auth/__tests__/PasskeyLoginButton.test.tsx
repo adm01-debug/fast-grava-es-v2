@@ -1,5 +1,5 @@
-import { render, act } from '@testing-library/react';
-import { screen } from '@testing-library/dom';
+import { render, act, screen } from '@testing-library/react';
+
 import { PasskeyLoginButton } from '../PasskeyLoginButton';
 import { useWebAuthn } from '@/hooks/useWebAuthn';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
