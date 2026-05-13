@@ -57,7 +57,7 @@ export const NavGroupComponent = memo(function NavGroupComponent({
         onClick={() => toggleGroup(group.id)}
         className={cn(
           "w-full justify-between gap-3 h-10 px-3 transition-all duration-300 group/btn",
-          "hover:bg-sidebar-accent/50 hover:text-sidebar-foreground hover:pl-4",
+          "hover:bg-sidebar-accent/50 hover:text-sidebar-foreground hover:pl-4 transition-all duration-300",
           "text-sidebar-foreground/70",
           hasActiveItem && "text-sidebar-foreground font-medium bg-sidebar-accent/80 shadow-sm"
         )}
@@ -65,7 +65,7 @@ export const NavGroupComponent = memo(function NavGroupComponent({
         aria-controls={`nav-group-${group.id}`}
       >
         <div className="flex items-center gap-3">
-          <Icon className={cn("h-4 w-4 shrink-0 transition-transform duration-300 group-hover/btn:scale-125 group-hover/btn:rotate-3", hasActiveItem && "text-primary drop-shadow-[0_0_8px_hsl(var(--primary)/0.5)]")} />
+          <Icon className={cn("h-4 w-4 shrink-0 transition-all duration-500 group-hover/btn:scale-125 group-hover/btn:rotate-6", hasActiveItem && "text-primary drop-shadow-[0_0_8px_hsl(var(--primary)/0.5)]")} />
           <span className="text-sm">{group.label}</span>
         </div>
         <motion.div animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.2 }}>
