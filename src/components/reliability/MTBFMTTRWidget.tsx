@@ -69,7 +69,7 @@ export function MTBFMTTRWidget() {
   );
 
   return (
-    <Card className="card-glass">
+    <Card className="bg-card/40 backdrop-blur-xl border-border/50">
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center justify-between">
           <div className="flex items-center gap-2 text-lg">
