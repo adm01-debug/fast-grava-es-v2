@@ -123,7 +123,7 @@ const OEEDashboard = memo(function OEEDashboard() {
               variant="outline"
               size="sm"
               onClick={handleDownloadReport}
-              className="hidden md:flex gap-2 border-primary/20 hover:bg-primary/5"
+              className="hidden md:flex gap-2 border-primary/20 hover:bg-primary/5 active:scale-95 transition-transform"
             >
               <FileDown className="h-4 w-4" />
               {t('common.report', 'Relatório')}

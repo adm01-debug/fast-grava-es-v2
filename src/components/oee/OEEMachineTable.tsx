@@ -279,10 +279,10 @@ export const OEEMachineTable = memo(function OEEMachineTable({ machines }: OEEMa
       </CardContent>
 
       <Dialog open={detailsOpen} onOpenChange={setDetailsOpen}>
-        <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
+        <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-hidden flex flex-col" aria-describedby="machine-details-description">
           <DialogHeader>
             <DialogTitle>Detalhes da Máquina</DialogTitle>
-            <DialogDescription>Dados de performance e manutenção</DialogDescription>
+            <DialogDescription id="machine-details-description">Dados de performance e manutenção</DialogDescription>
           </DialogHeader>
 
           {selectedMachineId && (

@@ -55,10 +55,10 @@ export default function LotDetailsModal({ lot, open, onClose }: LotDetailsModalP
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto" aria-describedby="lot-details-description">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2"><Package className="h-5 w-5" />Lote: {lot.lot_number}</DialogTitle>
-          <DialogDescription>{lot.product_name} — {lot.produced_quantity}/{lot.quantity} unidades</DialogDescription>
+          <DialogDescription id="lot-details-description">{lot.product_name} — {lot.produced_quantity}/{lot.quantity} unidades</DialogDescription>
         </DialogHeader>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">

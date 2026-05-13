@@ -108,7 +108,7 @@ export function AppSidebar() {
         )}
 
         <nav className="flex-1 overflow-y-auto scrollbar-thin p-2 space-y-1 relative" id="main-navigation">
-          {filteredNavGroups.map(group => {
+          {filteredNavGroups.map((group, index) => {
             const isGroupActive = activeGroup?.id === group.id;
             return (
               <div key={group.id} className="relative py-0.5">

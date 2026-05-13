@@ -32,7 +32,7 @@ export const LanguageSwitcher = forwardRef<HTMLDivElement, React.HTMLAttributes<
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56 p-2 glass-card border-primary/20">
-        <div className="px-2 py-1.5 mb-2 border-b border-white/10">
+        <div className="px-2 py-1.5 mb-2 border-b border-border/50">
           <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{t('common.language', 'Idioma')}</p>
         </div>
         {supportedLanguages.map((language) => {
@@ -43,7 +43,7 @@ export const LanguageSwitcher = forwardRef<HTMLDivElement, React.HTMLAttributes<
               onClick={() => handleLanguageChange(language.code)}
               className={cn(
                 "flex items-center justify-between px-3 py-2.5 rounded-lg cursor-pointer transition-all duration-200 mb-1 last:mb-0",
-                isActive ? "bg-primary/20 text-primary font-bold" : "hover:bg-white/5"
+                isActive ? "bg-primary/20 text-primary font-bold" : "hover:bg-muted/50"
               )}
             >
               <div className="flex items-center gap-3">

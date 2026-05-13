@@ -265,7 +265,7 @@ export default function TraceabilityPage() {
             <div className="flex items-center gap-3">
               <h1 className="text-3xl font-display font-black tracking-tighter flex items-center gap-3">
                 <Package className="h-8 w-8 text-primary animate-float" />
-                Hyper-Traceability 13/10
+                Hyper-Traceability 10/10
               </h1>
               <FavoriteButton path="/traceability" name="Rastreabilidade" />
             </div>
@@ -353,7 +353,7 @@ export default function TraceabilityPage() {
         <AnimatePresence>
           {selectedIds.size > 0 && (
             <motion.div initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 50 }}
-              className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-card border border-primary/20 shadow-2xl rounded-full px-6 py-3 flex items-center gap-6 glass-card">
+              className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-card/80 border border-primary/20 shadow-2xl rounded-full px-6 py-3 flex items-center gap-6 backdrop-blur-xl">
                <div className="flex items-center gap-2 pr-6 border-r border-border">
                   <CheckSquare className="h-5 w-5 text-primary" />
                   <span className="font-bold text-sm">{selectedIds.size} selecionados</span>
@@ -368,8 +368,8 @@ export default function TraceabilityPage() {
           )}
         </AnimatePresence>
 
-        <Card className="glass-card border-border/50 overflow-hidden">
-          <CardHeader className="bg-muted/10 border-b border-border/50">
+        <Card className="bg-card/40 backdrop-blur-xl border-border/50 overflow-hidden">
+          <CardHeader className="bg-muted/30 border-b border-border/50">
             <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
               <div>
                 <CardTitle className="text-xl flex items-center gap-2">

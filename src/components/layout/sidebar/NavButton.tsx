@@ -30,10 +30,10 @@ export const NavButton = memo(forwardRef<HTMLDivElement, NavButtonProps>(functio
     <Link to={item.href} className="block" onMouseEnter={handlePrefetch} onFocus={handlePrefetch}>
       <Button
         variant="ghost"
-        aria-label={collapsed && !isMobile ? item.label : undefined}
+        aria-label={item.label}
         className={cn(
           'w-full justify-start gap-3 h-11 px-3 relative transition-all duration-300 group/nav',
-          'hover:bg-sidebar-accent/50 hover:text-sidebar-foreground hover:pl-4',
+          'hover:bg-sidebar-accent/50 hover:text-sidebar-foreground hover:pl-4 active:scale-[0.98]',
           isActive && [
             'bg-sidebar-accent/80 text-primary font-bold border-l-4 border-primary shadow-sm',
             'shadow-[inset_0_0_20px_hsl(var(--primary)/0.05),0_0_15px_hsl(var(--primary)/0.1)]',
@@ -59,7 +59,7 @@ export const NavButton = memo(forwardRef<HTMLDivElement, NavButtonProps>(functio
     return (
       <Tooltip delayDuration={0}>
         <TooltipTrigger asChild>{button}</TooltipTrigger>
-        <TooltipContent side="right" className="flex items-center gap-2 bg-card border-border">
+        <TooltipContent side="right" className="flex items-center gap-2 bg-card/90 backdrop-blur-md border-border">
           {item.label}
           {item.badge && <span className="gradient-primary text-primary-foreground text-xs font-semibold px-2 py-0.5 rounded-full">{item.badge}</span>}
         </TooltipContent>
