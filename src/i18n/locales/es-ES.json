@@ -8,7 +8,9 @@
     "cancel": "Cancelar",
     "delete": "Eliminar",
     "edit": "Editar",
+    "duplicate": "Duplicar",
     "add": "Añadir",
+    "saving": "Guardando...",
     "search": "Buscar",
     "filter": "Filtrar",
     "clear": "Limpiar",
@@ -20,10 +22,16 @@
     "no": "No",
     "all": "Todos",
     "none": "Ninguno",
+    "or": "o",
     "actions": "Acciones",
     "status": "Estado",
     "date": "Fecha",
     "time": "Hora",
+    "quality": "Calidad",
+    "photos": "Fotos",
+    "costs": "Costos",
+    "tracking": "Rastreo",
+    "history": "Historial",
     "name": "Nombre",
     "description": "Descripción",
     "notes": "Notas",
@@ -38,11 +46,26 @@
     "tomorrow": "Mañana",
     "week": "Semana",
     "month": "Mes",
-    "year": "Año"
+    "year": "Año",
+    "pieces": "piezas",
+    "minutes": "minutos",
+    "notDefined": "No definido",
+    "notScheduled": "No programado",
+    "notAssigned": "No asignado",
+    "order": "Pedido",
+    "delay": "Retraso",
+    "responsible": "Responsable",
+    "items": "ítems",
+    "close": "Cerrar",
+    "finish": "Finalizar",
+    "skip": "Omitir"
   },
   "auth": {
     "login": "Iniciar sesión",
+    "loginWithGoogle": "Iniciar sesión con Google",
+    "rememberMe": "Recordar mi correo",
     "register": "Registrarse",
+    "systemSlogan": "Sistema de Gestión de Producción",
     "email": "Correo electrónico",
     "password": "Contraseña",
     "confirmPassword": "Confirmar contraseña",
@@ -123,7 +146,11 @@
     "startProduction": "Iniciar Producción",
     "pauseProduction": "Pausar Producción",
     "finishProduction": "Finalizar Producción",
-    "cancelJob": "Cancelar Trabajo"
+    "cancelJob": "Cancelar Trabajo",
+    "deleteJob": "Eliminar Trabajo",
+    "deleteConfirmation": "¿Está seguro de que desea eliminar el trabajo {{order}}? Esta acción no se puede deshacer.",
+    "detailsFor": "Detalles del trabajo {{order}}",
+    "instructions": "Instrucciones"
   },
   "operators": {
     "title": "Operadores",
@@ -224,7 +251,14 @@
     "productivity": "Productividad",
     "efficiency": "Eficiencia",
     "losses": "Pérdidas",
-    "oee": "OEE"
+    "oee": "OEE",
+    "bi": {
+      "delaysAndCauses": "Retrasos y Causa Raíz",
+      "delayList": "Lista de Retrasos",
+      "rootCauses": "Causas Raíz",
+      "lossMetrics": "Métricas de Pérdida por Pedido",
+      "anomallyIdentification": "Identificación de anomalías críticas"
+    }
   },
   "settings": {
     "title": "Configuración",
