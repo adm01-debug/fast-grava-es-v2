@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { Helmet } from 'react-helmet';
 import { useFuseSearch } from '@/hooks/useFuseSearch';
 import { useNavigate } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
@@ -118,6 +119,10 @@ export default function OperatorsPage() {
   return (
     <MainLayout>
       <div className="space-y-6">
+        <Helmet>
+          <title>Workforce Excellence | Gestão de Operadores</title>
+          <meta name="description" content="Gestão de competências, produtividade e ranking global de operadores da fábrica." />
+        </Helmet>
         <Breadcrumbs />
         
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
