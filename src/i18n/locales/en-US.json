@@ -69,6 +69,7 @@
     "delay": "Delay",
     "responsible": "Responsible",
     "items": "items",
+    "piecesShort": "PCS",
     "close": "Close",
     "finish": "Finish",
     "skip": "Skip"
