@@ -231,9 +231,10 @@ export function JobDetailsModal({ job, open, onOpenChange, onStatusChange }: Job
                   <Button variant="ghost" size="sm" onClick={() => setIsEditing(false)} className="gap-1">
                     <X className="h-4 w-4" /> {t('common.cancel')}
                   </Button>
-                  <Button size="sm" onClick={handleSubmit(handleSave)} disabled={isSubmitting} className="gap-1 gradient-primary">
-                    <Save className="h-4 w-4" /> {isSubmitting ? t('common.saving') : t('common.save')}
-                  </Button>
+                  <LoadingButton size="sm" onClick={handleSubmit(handleSave)} isLoading={isSubmitting} className="gap-1 gradient-primary">
+                    <Save className="h-4 w-4" /> {t('common.save')}
+                  </LoadingButton>
+
                 </div>
               )}
               <Badge className={`${priorityColors[job.priority]} border`}>
