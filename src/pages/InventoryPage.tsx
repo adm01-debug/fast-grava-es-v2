@@ -35,6 +35,8 @@ import {
 
 import { useInventory, useInventoryMovements, InventoryItem } from '@/hooks/useInventory';
 import { WarehouseMap } from '@/components/inventory/WarehouseMap';
+import { InventoryStats } from '@/components/inventory/InventoryStats';
+import { QRLabelModal } from '@/components/inventory/QRLabelModal';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Progress } from '@/components/ui/progress';
