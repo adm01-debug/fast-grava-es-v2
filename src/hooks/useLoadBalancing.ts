@@ -61,7 +61,7 @@ export interface TechniqueLoadSummary {
   suggestions: LoadBalancingSuggestion[];
 }
 
-const DAILY_CAPACITY_MINUTES = 11 * 60; // 07:00 - 18:00 = 11 hours
+// DAILY_CAPACITY_MINUTES is now derived inside the hook from business_config
 
 export function useLoadBalancing(targetDate?: Date) {
   const { data: jobs } = useJobs();
