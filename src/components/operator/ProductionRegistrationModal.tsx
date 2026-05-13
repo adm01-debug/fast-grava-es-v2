@@ -11,6 +11,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { DbJob } from '@/hooks/useJobs';
 import { toast } from 'sonner';
+import { validateFileMagicBytes } from '@/lib/file-validation';
 import {
   Camera,
   Upload,
