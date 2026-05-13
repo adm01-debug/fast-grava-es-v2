@@ -1,6 +1,7 @@
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useQueryClient, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useBusinessConfig } from './useBusinessConfig';
 import { toast } from 'sonner';
 
 export interface BufferPromotionResult {
