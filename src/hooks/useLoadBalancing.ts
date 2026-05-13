@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { useJobs, useMachines, useTechniques, DbJob, DbMachine, DbTechnique } from './useJobs';
+import { useBusinessConfig } from './useBusinessConfig';
 import { parseISO, format, isValid } from 'date-fns';
 
 // Data validation helpers
@@ -60,15 +61,25 @@ export interface TechniqueLoadSummary {
   suggestions: LoadBalancingSuggestion[];
 }
 
-const DAILY_CAPACITY_MINUTES = 11 * 60; // 07:00 - 18:00 = 11 hours
+// DAILY_CAPACITY_MINUTES is now derived inside the hook from business_config
 
 export function useLoadBalancing(targetDate?: Date) {
   const { data: jobs } = useJobs();
   const { data: machines } = useMachines();
   const { data: techniques } = useTechniques();
+  const { getConfig, isLoading: configLoading } = useBusinessConfig();
+
+  const DAILY_CAPACITY_MINUTES = useMemo(() => {
+    const hours = getConfig('operating_hours', { start: '07:00', end: '18:00' });
+    const startParts = (hours.start || '07:00').split(':');
+    const endParts = (hours.end || '18:00').split(':');
+    const startMin = parseInt(startParts[0]) * 60 + parseInt(startParts[1]);
+    const endMin = parseInt(endParts[0]) * 60 + parseInt(endParts[1]);
+    return Math.max(60, endMin - startMin);
+  }, [getConfig]);
 
   const analysis = useMemo(() => {
-    if (!jobs || !machines || !techniques) {
+    if (!jobs || !machines || !techniques || configLoading) {
       return { byTechnique: [], suggestions: [], isLoading: true };
     }
 
@@ -96,7 +107,7 @@ export function useLoadBalancing(targetDate?: Date) {
         machine,
         technique,
         scheduledMinutes: 0,
-        availableMinutes: DAILY_CAPACITY_MINUTES,
+        availableMinutes: DAILY_CAPACITY_MINUTES as number,
         occupancyRate: 0,
         jobCount: 0,
         jobs: []
@@ -121,8 +132,8 @@ export function useLoadBalancing(targetDate?: Date) {
 
     // Calculate occupancy rates with clamping
     machineLoads.forEach(load => {
-      load.occupancyRate = clampPercentage((load.scheduledMinutes / DAILY_CAPACITY_MINUTES) * 100);
-      load.availableMinutes = Math.max(0, DAILY_CAPACITY_MINUTES - load.scheduledMinutes);
+      load.occupancyRate = clampPercentage((load.scheduledMinutes / (DAILY_CAPACITY_MINUTES as number)) * 100);
+      load.availableMinutes = Math.max(0, (DAILY_CAPACITY_MINUTES as number) - load.scheduledMinutes);
     });
 
     // Group by technique and find imbalances

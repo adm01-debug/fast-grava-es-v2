@@ -17,8 +17,9 @@ import { useTheme } from 'next-themes';
 import { LanguageSwitcher } from '@/components/layout/LanguageSwitcher';
 import { AuthLoginForm } from '@/components/auth/AuthLoginForm';
 import { AuthSignupForm } from '@/components/auth/AuthSignupForm';
+import { MFALoginVerification } from '@/components/auth/MFALoginVerification';
 import { AuthErrorBoundary } from '@/components/auth/AuthErrorBoundary';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function AuthPage() {
   const navigate = useNavigate();
@@ -42,6 +43,7 @@ export default function AuthPage() {
   const [forgotEmail, setForgotEmail] = useState('');
   const [isSendingReset, setIsSendingReset] = useState(false);
   const [socialLoading, setSocialLoading] = useState<string | null>(null);
+  const [mfaFactorId, setMfaFactorId] = useState<string | null>(null);
 
   useEffect(() => { const saved = localStorage.getItem('rememberedEmail'); if (saved) { setLoginEmail(saved); setRememberMe(true); } }, []);
   useEffect(() => { if (user) navigate('/', { replace: true }); }, [user, navigate]);
@@ -53,7 +55,32 @@ export default function AuthPage() {
     if (rememberMe) localStorage.setItem('rememberedEmail', loginEmail); else localStorage.removeItem('rememberedEmail');
     setIsLoading(true);
     const { error } = await signIn(loginEmail, loginPassword);
-    if (error) { const le = error as Error & { isLockout?: boolean; remainingMinutes?: number; lockoutMinutes?: number }; if (le.isLockout) { toast.error('Conta Bloqueada', { description: `Muitas tentativas falhas. Tente novamente em ${le.remainingMinutes || le.lockoutMinutes || 0} minuto(s).`, duration: 10000 }); } else { toast.error(t('auth.loginError')); } setIsLoading(false); return; }
+    if (error) { 
+      const le = error as Error & { isLockout?: boolean; remainingMinutes?: number; lockoutMinutes?: number }; 
+      if (le.isLockout) { 
+        toast.error('Conta Bloqueada', { description: `Muitas tentativas falhas. Tente novamente em ${le.remainingMinutes || le.lockoutMinutes || 0} minuto(s).`, duration: 10000 }); 
+      } else { 
+        toast.error(t('auth.loginError')); 
+      } 
+      setIsLoading(false); 
+      return; 
+    }
+
+    // Check if MFA is required
+    try {
+      const { data: factors, error: factorsError } = await supabase.auth.mfa.listFactors();
+      if (factorsError) throw factorsError;
+
+      const totpFactor = factors.totp.find(f => f.status === 'verified');
+      if (totpFactor) {
+        setMfaFactorId(totpFactor.id);
+        setIsLoading(false);
+        return;
+      }
+    } catch (mfaErr) {
+      // If error listing factors, assume session is valid and proceed
+    }
+
     toast.success(t('auth.loginSuccess')); navigate('/');
   };
 
@@ -93,15 +120,42 @@ export default function AuthPage() {
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.35 }}>
             <Card variant="elevated" className="border-border/60 shadow-xl dark:shadow-glow-primary/20 backdrop-blur-xl">
               <CardContent className="pt-6">
-                <Tabs defaultValue="login" className="w-full">
-                  <TabsList className="grid w-full grid-cols-2 mb-6"><TabsTrigger value="login">{t('auth.login')}</TabsTrigger><TabsTrigger value="signup">{t('auth.register')}</TabsTrigger></TabsList>
-                  <TabsContent value="login">
-                    <AuthLoginForm loginEmail={loginEmail} loginPassword={loginPassword} rememberMe={rememberMe} isLoading={isLoading} socialLoading={socialLoading} errors={errors} onEmailChange={setLoginEmail} onPasswordChange={setLoginPassword} onRememberMeChange={setRememberMe} onSubmit={handleLogin} onGoogleLogin={handleGoogleLogin} onForgotPassword={() => setShowForgotPassword(true)} onPasskeySuccess={() => navigate('/')} />
-                  </TabsContent>
-                  <TabsContent value="signup">
-                    <AuthSignupForm signupName={signupName} signupEmail={signupEmail} signupPassword={signupPassword} signupConfirmPassword={signupConfirmPassword} isLoading={isLoading} errors={errors} onNameChange={setSignupName} onEmailChange={setSignupEmail} onPasswordChange={setSignupPassword} onConfirmPasswordChange={setSignupConfirmPassword} onSubmit={handleSignup} />
-                  </TabsContent>
-                </Tabs>
+                <AnimatePresence mode="wait">
+                  {mfaFactorId ? (
+                    <motion.div
+                      key="mfa"
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -20 }}
+                    >
+                      <MFALoginVerification
+                        factorId={mfaFactorId}
+                        onSuccess={() => navigate('/')}
+                        onCancel={() => setMfaFactorId(null)}
+                      />
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="tabs"
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: 20 }}
+                    >
+                      <Tabs defaultValue="login" className="w-full">
+                        <TabsList className="grid w-full grid-cols-2 mb-6">
+                          <TabsTrigger value="login">{t('auth.login')}</TabsTrigger>
+                          <TabsTrigger value="signup">{t('auth.register')}</TabsTrigger>
+                        </TabsList>
+                        <TabsContent value="login">
+                          <AuthLoginForm loginEmail={loginEmail} loginPassword={loginPassword} rememberMe={rememberMe} isLoading={isLoading} socialLoading={socialLoading} errors={errors} onEmailChange={setLoginEmail} onPasswordChange={setLoginPassword} onRememberMeChange={setRememberMe} onSubmit={handleLogin} onGoogleLogin={handleGoogleLogin} onForgotPassword={() => setShowForgotPassword(true)} onPasskeySuccess={() => navigate('/')} />
+                        </TabsContent>
+                        <TabsContent value="signup">
+                          <AuthSignupForm signupName={signupName} signupEmail={signupEmail} signupPassword={signupPassword} signupConfirmPassword={signupConfirmPassword} isLoading={isLoading} errors={errors} onNameChange={setSignupName} onEmailChange={setSignupEmail} onPasswordChange={setSignupPassword} onConfirmPasswordChange={setSignupConfirmPassword} onSubmit={handleSignup} />
+                        </TabsContent>
+                      </Tabs>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </CardContent>
             </Card>
           </motion.div>

@@ -1,6 +1,7 @@
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useQueryClient, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useBusinessConfig } from './useBusinessConfig';
 import { toast } from 'sonner';
 
 export interface BufferPromotionResult {
@@ -13,6 +14,12 @@ export interface BufferPromotionResult {
 export function useAutoBufferPromotion(options?: { showToasts?: boolean }) {
   const { showToasts = true } = options || {};
   const queryClient = useQueryClient();
+  const { getConfig } = useBusinessConfig();
+  
+  const bufferTarget = useMemo(() => {
+    const val = getConfig('buffer_size', 3);
+    return typeof val === 'string' ? parseInt(val) : val;
+  }, [getConfig]);
 
   const promotionMutation = useMutation({
     mutationFn: async (techniqueId?: string) => {
@@ -38,8 +45,7 @@ export function useAutoBufferPromotion(options?: { showToasts?: boolean }) {
         });
       }
     },
-    onError: (error) => {
-
+    onError: () => {
       if (showToasts) {
         toast.error('Falha ao acionar promoção automática');
       }
@@ -50,7 +56,6 @@ export function useAutoBufferPromotion(options?: { showToasts?: boolean }) {
     return promotionMutation.mutateAsync(undefined);
   }, [promotionMutation]);
 
-
   const promoteForTechnique = useCallback(async (techniqueId: string) => {
     return promotionMutation.mutateAsync(techniqueId);
   }, [promotionMutation]);
@@ -59,6 +64,6 @@ export function useAutoBufferPromotion(options?: { showToasts?: boolean }) {
     triggerPromotion,
     promoteForTechnique,
     isPromoting: promotionMutation.isPending,
-    bufferTarget: 3,
+    bufferTarget,
   };
 }
