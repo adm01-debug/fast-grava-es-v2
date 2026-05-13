@@ -36,6 +36,8 @@ import {
 import { useInventory } from '@/hooks/useInventory';
 import { KnowledgeSheetQRCode } from './KnowledgeSheetQRCode';
 import { KnowledgeStatusBadge } from './KnowledgeStatusBadge';
+import { VisualReference } from './TechnicalSheetVisualReference';
+import { MaterialCalculator } from './TechnicalSheetMaterialCalculator';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 
