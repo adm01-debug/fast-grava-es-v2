@@ -50,6 +50,13 @@ export function LotInspectionsTab({ lot, inspections }: LotInspectionsTabProps) 
       const uploadedUrls: string[] = [];
 
       for (const file of Array.from(files)) {
+        // Validação Magic Bytes (Segurança 10/10)
+        const validation = await validateFileMagicBytes(file);
+        if (!validation.isValid) {
+          toast.error(`Arquivo inválido: ${file.name}. ${validation.error}`);
+          continue;
+        }
+
         const fileExt = file.name.split('.').pop();
         const fileName = `inspections/${lot.id}/${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
 
