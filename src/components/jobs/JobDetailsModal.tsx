@@ -189,10 +189,15 @@ export function JobDetailsModal({ job, open, onOpenChange, onStatusChange }: Job
       <DialogContent className="max-w-2xl bg-card border-border/50 backdrop-blur-sm" aria-describedby="job-details-description">
         <DialogHeader>
           <div className="flex items-center justify-between">
-            <DialogTitle className="text-xl font-bold text-foreground flex items-center gap-2">
-              <Hash className="h-5 w-5 text-primary" />
-              {job.order_number}
-            </DialogTitle>
+            <div className="space-y-1">
+              <DialogTitle className="text-xl font-bold text-foreground flex items-center gap-2">
+                <Hash className="h-5 w-5 text-primary" />
+                {job.order_number}
+              </DialogTitle>
+              <DialogDescription id="job-details-description" className="text-xs text-muted-foreground">
+                {t('jobs.viewDetailsAndManage')} - {job.product}
+              </DialogDescription>
+            </div>
             <div className="flex items-center gap-2">
               {!isEditing && (
                 <>
