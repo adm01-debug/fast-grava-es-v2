@@ -47,6 +47,7 @@ import { JobTraceabilityTab } from "./JobTraceabilityTab";
 import { JobQualityTab } from "./JobQualityTab";
 import { JobInstructionsTab } from "./JobInstructionsTab";
 import { useState, useCallback, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useDataExport } from "@/hooks/useDataExport";
 import { useConfirmation } from "@/contexts/ConfirmationContext";
 import { useForm, Controller } from "react-hook-form";
