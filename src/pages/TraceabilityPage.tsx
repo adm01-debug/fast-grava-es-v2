@@ -353,7 +353,7 @@ export default function TraceabilityPage() {
         <AnimatePresence>
           {selectedIds.size > 0 && (
             <motion.div initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 50 }}
-              className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-card border border-primary/20 shadow-2xl rounded-full px-6 py-3 flex items-center gap-6 glass-card">
+              className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-card/80 border border-primary/20 shadow-2xl rounded-full px-6 py-3 flex items-center gap-6 backdrop-blur-xl">
                <div className="flex items-center gap-2 pr-6 border-r border-border">
                   <CheckSquare className="h-5 w-5 text-primary" />
                   <span className="font-bold text-sm">{selectedIds.size} selecionados</span>
