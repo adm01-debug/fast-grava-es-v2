@@ -1,9 +1,10 @@
+import { memo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Target } from 'lucide-react';
 import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer } from 'recharts';
 import { OperatorProductivityMetrics } from '@/hooks/useOperatorProductivity';
 
-export function ProductionRadarChart({ operator }: { operator: OperatorProductivityMetrics }) {
+export const ProductionRadarChart = memo(({ operator }: { operator: OperatorProductivityMetrics }) => {
   const radarData = [
     { metric: 'Eficiência', value: operator.efficiencyScore, fullMark: 100 },
     { metric: 'Volume', value: Math.min(100, operator.totalJobsCompleted * 10), fullMark: 100 },
@@ -33,4 +34,6 @@ export function ProductionRadarChart({ operator }: { operator: OperatorProductiv
       </CardContent>
     </Card>
   );
-}
+});
+
+ProductionRadarChart.displayName = 'ProductionRadarChart';
