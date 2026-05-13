@@ -265,7 +265,7 @@ export default function TraceabilityPage() {
             <div className="flex items-center gap-3">
               <h1 className="text-3xl font-display font-black tracking-tighter flex items-center gap-3">
                 <Package className="h-8 w-8 text-primary animate-float" />
-                Hyper-Traceability 13/10
+                Hyper-Traceability 10/10
               </h1>
               <FavoriteButton path="/traceability" name="Rastreabilidade" />
             </div>
@@ -368,8 +368,8 @@ export default function TraceabilityPage() {
           )}
         </AnimatePresence>
 
-        <Card className="glass-card border-border/50 overflow-hidden">
-          <CardHeader className="bg-muted/10 border-b border-border/50">
+        <Card className="bg-card/40 backdrop-blur-xl border-border/50 overflow-hidden">
+          <CardHeader className="bg-muted/30 border-b border-border/50">
             <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
               <div>
                 <CardTitle className="text-xl flex items-center gap-2">
