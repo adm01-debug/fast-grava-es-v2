@@ -87,11 +87,21 @@ export class ErrorBoundary extends Component<Props, State> {
               </p>
             </div>
 
-            {import.meta.env.DEV && this.state.error && (
-              <div className="bg-destructive/5 border border-destructive/20 rounded-lg p-4 text-left">
-                <p className="text-sm font-mono text-destructive break-all">
+            {this.state.error && (
+              <div className="bg-destructive/5 border border-destructive/20 rounded-lg p-4 text-left space-y-2 max-h-64 overflow-auto">
+                <p className="text-sm font-mono text-destructive break-all font-semibold">
                   {this.state.error.message}
                 </p>
+                {this.state.error.stack && (
+                  <pre className="text-[10px] font-mono text-muted-foreground whitespace-pre-wrap break-all">
+                    {this.state.error.stack.split('\n').slice(0, 6).join('\n')}
+                  </pre>
+                )}
+                {this.state.errorInfo?.componentStack && (
+                  <pre className="text-[10px] font-mono text-muted-foreground/70 whitespace-pre-wrap break-all">
+                    {this.state.errorInfo.componentStack.split('\n').slice(0, 6).join('\n')}
+                  </pre>
+                )}
               </div>
             )}
 
