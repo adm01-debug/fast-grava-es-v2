@@ -1,4 +1,5 @@
 import { memo, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Card } from '@/components/ui/card';
@@ -66,6 +67,7 @@ function StatsCardComponent({
   className,
   compact = false
 }: StatsCardProps) {
+  const { t } = useTranslation();
   const styles = useMemo(() => variantStyles[variant], [variant]);
 
   if (compact) {
@@ -131,7 +133,7 @@ function StatsCardComponent({
               )}>
                 {trend.isPositive ? '+' : ''}{trend.value}%
               </span>
-              <span className="text-[11px] text-muted-foreground">vs. ontem</span>
+              <span className="text-[11px] text-muted-foreground">{t('common.vsYesterday', 'vs. ontem')}</span>
             </div>
           )}
         </div>
