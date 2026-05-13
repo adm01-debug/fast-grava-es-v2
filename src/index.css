@@ -442,7 +442,7 @@
 
   *:focus-visible {
     outline: 2px solid hsl(var(--ring));
-    outline-offset: var(--ring-offset);
+    outline-offset: 2px;
   }
 
   html {
