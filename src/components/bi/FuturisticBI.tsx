@@ -32,6 +32,7 @@ import { BIPredictiveROI } from './BIPredictiveROI';
 import { CHART_COLORS, GRADIENTS } from '@/constants/biConstants';
 
 import { BIJob, BIMetrics, BIProps } from '@/types/bi';
+import { Job } from '@/types/job';
 
 export function FuturisticBI({ biMetrics, kpis, oeeData, isLoading }: BIProps) {
   const navigate = useNavigate();
@@ -70,7 +71,7 @@ export function FuturisticBI({ biMetrics, kpis, oeeData, isLoading }: BIProps) {
 
   const [drillDownOpen, setDrillDownOpen] = useState(false);
   const [drillDownTitle, setDrillDownTitle] = useState('');
-  const [drillDownJobs, setDrillDownJobs] = useState<any[]>([]);
+  const [drillDownJobs, setDrillDownJobs] = useState<Job[]>([]);
   const [visibleSeries, setVisibleSeries] = useState<Record<string, boolean>>({ produced: true, lost: true });
 
   const toggleSeries = (key: string) => {
@@ -106,9 +107,10 @@ export function FuturisticBI({ biMetrics, kpis, oeeData, isLoading }: BIProps) {
           product: j.product_name || 'Produto',
           status: j.status,
           quantity: j.quantity,
+          produced_quantity: j.produced_quantity || 0,
           lost_pieces: j.lost_pieces || 0,
           efficiency: total > 0 ? (((total - (j.lost_pieces || 0)) / total) * 100).toFixed(1) + '%' : '--'
-        };
+        } as Job;
       });
       setDrillDownJobs(filtered);
     } else {

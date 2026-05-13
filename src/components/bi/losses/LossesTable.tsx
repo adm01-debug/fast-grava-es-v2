@@ -3,17 +3,18 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Package, FileSpreadsheet, FileText, AlertTriangle, TrendingDown, Target } from "lucide-react";
+import { Package, FileSpreadsheet, FileText, AlertTriangle, TrendingDown } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useTranslation } from "react-i18next";
+import { Job } from "@/types/job";
 
 interface LossesTableProps {
-  jobs: any[];
+  jobs: Job[];
   onExport: (format: 'csv' | 'pdf', type: string) => void;
-  onShowDetails?: (job: any) => void;
+  onShowDetails?: (job: Job) => void;
 }
 
 export function LossesTable({ jobs, onExport, onShowDetails }: LossesTableProps) {
@@ -79,9 +80,10 @@ export function LossesTable({ jobs, onExport, onShowDetails }: LossesTableProps)
             </TableHeader>
             <TableBody>
               {jobs.length > 0 ? (
-                jobs.map((job: any) => {
-                  const total = (job.produced_quantity || job.quantity || 1) + (job.lost_pieces || 0);
-                  const lossRate = ((job.lost_pieces || 0) / total) * 100;
+                jobs.map((job: Job) => {
+                  const lostPieces = job.lost_pieces || 0;
+                  const total = (job.produced_quantity || job.quantity || 1) + lostPieces;
+                  const lossRate = (lostPieces / total) * 100;
                   const isCritical = lossRate > 5;
                   const isExtreme = lossRate > 15;
 
@@ -167,7 +169,7 @@ export function LossesTable({ jobs, onExport, onShowDetails }: LossesTableProps)
                             "font-mono text-sm font-bold",
                             isCritical ? "text-rose-400" : "text-white"
                           )}>
-                            R$ {(job.lost_pieces * 15.5).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                            R$ {((job.lost_pieces || 0) * 15.5).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                           </span>
                           {isCritical && (
                             <div className="flex items-center gap-1 text-[9px] text-rose-500 font-bold uppercase">
@@ -179,11 +181,11 @@ export function LossesTable({ jobs, onExport, onShowDetails }: LossesTableProps)
                             <p className="text-[10px] text-muted-foreground uppercase mb-1">Impacto Financeiro</p>
                             <div className="flex justify-between text-[10px]">
                             <span>{t('bi.materialCost', 'Custo Material')}:</span>
-                            <span className="text-white font-mono">R$ {(job.lost_pieces * 10).toFixed(2)}</span>
+                            <span className="text-white font-mono">R$ {((job.lost_pieces || 0) * 10).toFixed(2)}</span>
                           </div>
                           <div className="flex justify-between text-[10px]">
                             <span>{t('bi.machineHour', 'Hora Máquina')}:</span>
-                            <span className="text-white font-mono">R$ {(job.lost_pieces * 5.5).toFixed(2)}</span>
+                            <span className="text-white font-mono">R$ {((job.lost_pieces || 0) * 5.5).toFixed(2)}</span>
                             </div>
                           </div>
                         </div>
