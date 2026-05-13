@@ -1,4 +1,5 @@
 import { useState, useMemo, useRef } from 'react';
+import { Helmet } from 'react-helmet';
 import { useRBAC, PermissionGate } from '@/hooks/useRBAC';
 import { subDays, isAfter, parseISO, addDays } from 'date-fns';
 import { MainLayout } from '@/components/layout/MainLayout';
@@ -81,6 +82,10 @@ export default function InventoryPage() {
   return (
     <MainLayout>
       <div className="p-4 sm:p-6 lg:p-8 space-y-6 animate-fade-in">
+        <Helmet>
+          <title>Gestão de Materiais | Inventory Intelligence</title>
+          <meta name="description" content="Controle de insumos, tintas, telas e solventes com inteligência artificial e previsão de esgotamento." />
+        </Helmet>
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
             <h1 className="text-2xl sm:text-3xl font-display font-bold flex items-center gap-3">
