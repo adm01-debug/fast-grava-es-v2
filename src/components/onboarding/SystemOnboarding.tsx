@@ -71,23 +71,18 @@ export const SystemOnboarding = () => {
       showSkipButton
       callback={handleJoyrideCallback}
       styles={{
-        tooltipContainer: {
+        options: {
+          primaryColor: 'hsl(var(--primary))',
+          backgroundColor: theme === 'dark' ? '#1f2937' : '#fff',
+          textColor: theme === 'dark' ? '#f3f4f6' : '#1f2937',
+          arrowColor: theme === 'dark' ? '#1f2937' : '#fff',
+          zIndex: 10000,
+        },
+        tooltip: {
           textAlign: 'left',
           borderRadius: '12px',
         },
-        buttonNext: {
-          borderRadius: '8px',
-          fontWeight: 'bold',
-          backgroundColor: 'hsl(var(--primary))',
-        },
-        buttonBack: {
-          fontWeight: 'bold',
-          color: 'hsl(var(--muted-foreground))',
-        },
-        buttonSkip: {
-          color: 'hsl(var(--muted-foreground))',
-        }
-      }}
+      } as any}
       locale={{
         back: t('common.back'),
         close: t('common.close', { defaultValue: 'Fechar' }),
