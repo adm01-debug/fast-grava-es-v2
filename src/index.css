@@ -445,6 +445,14 @@
     outline-offset: 2px;
   }
 
+  /* Zebra Striping for Tables */
+  .table-zebra tr:nth-child(even) {
+    background-color: hsl(var(--muted) / 0.4);
+  }
+  .dark .table-zebra tr:nth-child(even) {
+    background-color: hsl(var(--muted) / 0.1);
+  }
+
   html {
     scroll-behavior: smooth;
   }
