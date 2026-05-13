@@ -394,63 +394,7 @@ export default function PendingQueue() {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-3 sm:gap-4">
-          <Card className="bg-card/50 backdrop-blur-sm border-border/50">
-            <CardContent className="p-3 sm:p-4 flex items-center gap-2 sm:gap-3">
-              <div className="p-2 sm:p-3 rounded-xl bg-cyan-500/20">
-                <Package className="h-4 w-4 sm:h-5 sm:w-5 text-cyan-400" />
-              </div>
-              <div>
-                <p className="text-lg sm:text-2xl font-bold text-foreground">{stats.total}</p>
-                <p className="text-xs sm:text-sm text-muted-foreground">Total</p>
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="bg-card/50 backdrop-blur-sm border-border/50">
-            <CardContent className="p-3 sm:p-4 flex items-center gap-2 sm:gap-3">
-              <div className="p-2 sm:p-3 rounded-xl bg-red-500/20">
-                <AlertTriangle className="h-4 w-4 sm:h-5 sm:w-5 text-red-400" />
-              </div>
-              <div>
-                <p className="text-lg sm:text-2xl font-bold text-foreground">{stats.urgent}</p>
-                <p className="text-xs sm:text-sm text-muted-foreground">Urgentes</p>
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="bg-card/50 backdrop-blur-sm border-border/50">
-            <CardContent className="p-3 sm:p-4 flex items-center gap-2 sm:gap-3">
-              <div className="p-2 sm:p-3 rounded-xl bg-orange-500/20">
-                <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-orange-400" />
-              </div>
-              <div>
-                <p className="text-lg sm:text-2xl font-bold text-foreground">{stats.delayed}</p>
-                <p className="text-xs sm:text-sm text-muted-foreground">Atrasados</p>
-              </div>
-            </CardContent>
-          </Card>
-          <Card className={`bg-card/50 backdrop-blur-sm border-border/50 ${stats.stuck > 0 ? 'ring-1 ring-amber-500/50' : ''}`}>
-            <CardContent className="p-3 sm:p-4 flex items-center gap-2 sm:gap-3">
-              <div className={`p-2 sm:p-3 rounded-xl ${stats.stuck > 0 ? 'bg-amber-500/20' : 'bg-muted'}`}>
-                <History className={`h-4 w-4 sm:h-5 sm:w-5 ${stats.stuck > 0 ? 'text-amber-400' : 'text-muted-foreground'}`} />
-              </div>
-              <div>
-                <p className="text-lg sm:text-2xl font-bold text-foreground">{stats.stuck}</p>
-                <p className="text-xs sm:text-sm text-muted-foreground">Estagnados</p>
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="bg-card/50 backdrop-blur-sm border-border/50">
-            <CardContent className="p-3 sm:p-4 flex items-center gap-2 sm:gap-3">
-              <div className="p-2 sm:p-3 rounded-xl bg-violet-500/20">
-                <BrainCircuit className="h-4 w-4 sm:h-5 sm:w-5 text-violet-400" />
-              </div>
-              <div>
-                <p className="text-lg sm:text-2xl font-bold text-foreground">{stats.optimizationPotential}m</p>
-                <p className="text-xs sm:text-sm text-muted-foreground">Setup Salvo (IA)</p>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+        <PendingQueueStats stats={stats} />
 
 
         {/* Filters */}
