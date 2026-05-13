@@ -89,6 +89,7 @@ const priorityLabels = {
 };
 
 export function JobDetailsModal({ job, open, onOpenChange, onStatusChange }: JobDetailsModalProps) {
+  const { t } = useTranslation();
   const { getTechniqueById, getMachineById } = useSchedulingData();
   const { duplicateJob } = useDuplicateJob();
   const { confirm } = useConfirmation();
@@ -122,7 +123,7 @@ export function JobDetailsModal({ job, open, onOpenChange, onStatusChange }: Job
   const handleSave = async (data: JobEditValues) => {
     try {
       await updateJobMutation.mutateAsync({ jobId: job.id, data: data as any });
-      toast.success('Job atualizado com sucesso');
+      toast.success(t('jobs.jobUpdated'));
       setIsEditing(false);
     } catch (error) {
       // Error handled by mutation
@@ -131,16 +132,16 @@ export function JobDetailsModal({ job, open, onOpenChange, onStatusChange }: Job
 
   const handleDelete = async () => {
     const confirmed = await confirm({
-      title: 'Excluir Job',
-      description: `Tem certeza que deseja excluir o job ${job.order_number}? Esta ação não pode ser desfeita.`,
-      confirmLabel: 'Excluir',
+      title: t('jobs.deleteJob') || 'Excluir Job',
+      description: t('jobs.deleteConfirmation', { order: job.order_number }) || `Tem certeza que deseja excluir o job ${job.order_number}? Esta ação não pode ser desfeita.`,
+      confirmLabel: t('common.delete'),
       variant: 'destructive'
     });
 
     if (confirmed) {
       try {
         await deleteJobMutation.mutateAsync(job.id);
-        toast.success('Job excluído com sucesso');
+        toast.success(t('jobs.jobDeleted'));
         onOpenChange(false);
       } catch (error) {
         // Error handled by mutation
@@ -200,7 +201,7 @@ export function JobDetailsModal({ job, open, onOpenChange, onStatusChange }: Job
                     title="Duplicar Job"
                   >
                     <Copy className="h-4 w-4 mr-1" />
-                    Duplicar
+                    {t('common.duplicate')}
                   </Button>
                   <Button
                     variant="outline"
@@ -209,7 +210,7 @@ export function JobDetailsModal({ job, open, onOpenChange, onStatusChange }: Job
                     className="border-border/50 text-muted-foreground hover:text-foreground"
                   >
                     <Pencil className="h-4 w-4 mr-1" />
-                    Editar
+                    {t('common.edit')}
                   </Button>
                   <Button
                     variant="outline"
@@ -218,17 +219,17 @@ export function JobDetailsModal({ job, open, onOpenChange, onStatusChange }: Job
                     className="border-destructive/30 text-destructive hover:bg-destructive/10"
                   >
                     <Trash2 className="h-4 w-4 mr-1" />
-                    Excluir
+                    {t('common.delete')}
                   </Button>
                 </>
               )}
               {isEditing && (
                 <div className="flex gap-2">
                   <Button variant="ghost" size="sm" onClick={() => setIsEditing(false)} className="gap-1">
-                    <X className="h-4 w-4" /> Cancelar
+                    <X className="h-4 w-4" /> {t('common.cancel')}
                   </Button>
                   <Button size="sm" onClick={handleSubmit(handleSave)} disabled={isSubmitting} className="gap-1 gradient-primary">
-                    <Save className="h-4 w-4" /> {isSubmitting ? 'Salvando...' : 'Salvar'}
+                    <Save className="h-4 w-4" /> {isSubmitting ? t('common.saving') : t('common.save')}
                   </Button>
                 </div>
               )}
@@ -239,36 +240,36 @@ export function JobDetailsModal({ job, open, onOpenChange, onStatusChange }: Job
             </div>
           </div>
           <DialogDescription className="sr-only">
-            Detalhes do trabalho {job.order_number}
+            {t('jobs.detailsFor', { order: job.order_number })}
           </DialogDescription>
         </DialogHeader>
 
         <Tabs defaultValue="details" className="mt-4">
           <TabsList className="grid w-full grid-cols-4 sm:grid-cols-7 h-auto">
-            <TabsTrigger value="details" className="text-[10px] sm:text-xs">Detalhes</TabsTrigger>
+            <TabsTrigger value="details" className="text-[10px] sm:text-xs">{t('common.details')}</TabsTrigger>
             <TabsTrigger value="instructions" className="flex items-center gap-1 text-[10px] sm:text-xs">
               <FileText className="h-3 w-3" />
-              Instruções
+              {t('jobs.instructions')}
             </TabsTrigger>
             <TabsTrigger value="quality" className="flex items-center gap-1 text-[10px] sm:text-xs">
               <Activity className="h-3 w-3" />
-              Qualidade
+              {t('common.quality')}
             </TabsTrigger>
             <TabsTrigger value="photos" className="flex items-center gap-1 text-[10px] sm:text-xs">
               <Camera className="h-3 w-3" />
-              Fotos
+              {t('common.photos')}
             </TabsTrigger>
             <TabsTrigger value="costs" className="flex items-center gap-1 text-[10px] sm:text-xs">
               <DollarSign className="h-3 w-3" />
-              Custos
+              {t('common.costs')}
             </TabsTrigger>
             <TabsTrigger value="traceability" className="flex items-center gap-1 text-[10px] sm:text-xs">
               <Package className="h-3 w-3" />
-              Rastreio
+              {t('common.tracking')}
             </TabsTrigger>
             <TabsTrigger value="history" className="flex items-center gap-1 text-[10px] sm:text-xs">
               <History className="h-3 w-3" />
-              Histórico
+              {t('common.history')}
             </TabsTrigger>
           </TabsList>
 
@@ -277,7 +278,7 @@ export function JobDetailsModal({ job, open, onOpenChange, onStatusChange }: Job
               <form className="space-y-4 pt-2">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="order_number">Número da OS</Label>
+                    <Label htmlFor="order_number">{t('jobs.orderNumber')}</Label>
                     <Controller
                       name="order_number"
                       control={control}
@@ -285,7 +286,7 @@ export function JobDetailsModal({ job, open, onOpenChange, onStatusChange }: Job
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="client">Cliente</Label>
+                    <Label htmlFor="client">{t('jobs.client')}</Label>
                     <Controller
                       name="client"
                       control={control}
@@ -295,7 +296,7 @@ export function JobDetailsModal({ job, open, onOpenChange, onStatusChange }: Job
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="product">Produto</Label>
+                    <Label htmlFor="product">{t('jobs.product')}</Label>
                     <Controller
                       name="product"
                       control={control}
@@ -303,7 +304,7 @@ export function JobDetailsModal({ job, open, onOpenChange, onStatusChange }: Job
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="quantity">Quantidade</Label>
+                    <Label htmlFor="quantity">{t('jobs.quantity')}</Label>
                     <Controller
                       name="quantity"
                       control={control}
@@ -321,7 +322,7 @@ export function JobDetailsModal({ job, open, onOpenChange, onStatusChange }: Job
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label>Prioridade</Label>
+                    <Label>{t('jobs.priority')}</Label>
                     <Controller
                       name="priority"
                       control={control}
@@ -329,17 +330,17 @@ export function JobDetailsModal({ job, open, onOpenChange, onStatusChange }: Job
                         <Select onValueChange={field.onChange} value={field.value}>
                           <SelectTrigger><SelectValue /></SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="low">Baixa</SelectItem>
-                            <SelectItem value="medium">Média</SelectItem>
-                            <SelectItem value="high">Alta</SelectItem>
-                            <SelectItem value="urgent">Urgente</SelectItem>
+                            <SelectItem value="low">{t('jobs.priorities.low')}</SelectItem>
+                            <SelectItem value="medium">{t('jobs.priorities.medium')}</SelectItem>
+                            <SelectItem value="high">{t('jobs.priorities.high')}</SelectItem>
+                            <SelectItem value="urgent">{t('jobs.priorities.urgent')}</SelectItem>
                           </SelectContent>
                         </Select>
                       )}
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="gravure_color">Cor da Gravação</Label>
+                    <Label htmlFor="gravure_color">{t('jobs.gravureColor')}</Label>
                     <Controller
                       name="gravure_color"
                       control={control}
@@ -348,7 +349,7 @@ export function JobDetailsModal({ job, open, onOpenChange, onStatusChange }: Job
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="notes">Observações</Label>
+                  <Label htmlFor="notes">{t('common.notes')}</Label>
                   <Controller
                     name="notes"
                     control={control}
@@ -376,20 +377,20 @@ export function JobDetailsModal({ job, open, onOpenChange, onStatusChange }: Job
                   <div className="space-y-1 p-4 rounded-xl bg-muted/20 border border-border/30">
                     <InfoRow 
                       icon={Package} 
-                      label="Quantidade" 
-                      value={`${job.quantity.toLocaleString()} peças`}
+                      label={t('jobs.quantity')} 
+                      value={`${job.quantity.toLocaleString()} ${t('common.pieces')}`}
                       color="bg-indicator-success/20"
                     />
                     <InfoRow 
                       icon={Palette} 
-                      label="Cor da Gravação" 
-                      value={job.gravure_color || 'Não definida'}
+                      label={t('jobs.gravureColor')} 
+                      value={job.gravure_color || t('common.notDefined')}
                       color="bg-accent-purple/20"
                     />
                     <InfoRow 
                       icon={Clock} 
-                      label="Duração Estimada" 
-                      value={`${job.estimated_duration} minutos`}
+                      label={t('jobs.estimatedDuration')} 
+                      value={`${job.estimated_duration} ${t('common.minutes')}`}
                       color="bg-priority-high/20"
                     />
                   </div>
@@ -397,20 +398,20 @@ export function JobDetailsModal({ job, open, onOpenChange, onStatusChange }: Job
                   <div className="space-y-1 p-4 rounded-xl bg-muted/20 border border-border/30">
                     <InfoRow 
                       icon={Calendar} 
-                      label="Data Agendada" 
-                      value={job.scheduled_date ? new Date(job.scheduled_date).toLocaleDateString('pt-BR') : 'Não agendada'}
+                      label={t('jobs.scheduledDate')} 
+                      value={job.scheduled_date ? new Date(job.scheduled_date).toLocaleDateString('pt-BR') : t('common.notScheduled')}
                       color="bg-indicator-info/20"
                     />
                     <InfoRow 
                       icon={Clock} 
-                      label="Horário" 
-                      value={job.start_time && job.end_time ? `${job.start_time} - ${job.end_time}` : 'Não definido'}
+                      label={t('common.time')} 
+                      value={job.start_time && job.end_time ? `${job.start_time} - ${job.end_time}` : t('common.notDefined')}
                       color="bg-indicator-warning/20"
                     />
                     <InfoRow 
                       icon={User} 
-                      label="Máquina" 
-                      value={machine ? `${machine.code} - ${machine.name}` : 'Não atribuída'}
+                      label={t('jobs.machine')} 
+                      value={machine ? `${machine.code} - ${machine.name}` : t('common.notAssigned')}
                       color="bg-accent-pink/20"
                     />
                   </div>
@@ -419,7 +420,7 @@ export function JobDetailsModal({ job, open, onOpenChange, onStatusChange }: Job
                 {/* Technique & Machine */}
                 <div className="flex gap-4">
                   <div className="flex-1 p-4 rounded-xl border border-border/30" style={{ backgroundColor: `${technique?.color}10` }}>
-                    <p className="text-xs text-muted-foreground mb-1">Técnica</p>
+                    <p className="text-xs text-muted-foreground mb-1">{t('jobs.technique')}</p>
                     <Badge 
                       variant="outline"
                       className="text-sm"
@@ -429,11 +430,11 @@ export function JobDetailsModal({ job, open, onOpenChange, onStatusChange }: Job
                         color: technique?.color 
                       }}
                     >
-                      {technique?.name || 'Não definida'}
+                      {technique?.name || t('common.notDefined')}
                     </Badge>
                   </div>
                   <div className="flex-1 p-4 rounded-xl bg-muted/20 border border-border/30">
-                    <p className="text-xs text-muted-foreground mb-1">Máquina</p>
+                    <p className="text-xs text-muted-foreground mb-1">{t('jobs.machine')}</p>
                     <p className="text-sm font-medium text-foreground">
                       {machine ? `${machine.code} - ${machine.name}` : 'Não atribuída'}
                     </p>
