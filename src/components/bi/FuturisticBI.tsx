@@ -176,7 +176,7 @@ export function FuturisticBI({ biMetrics, kpis, oeeData, isLoading }: BIProps) {
         <FuturisticStatCard
           title="Pedidos a Fazer"
           value={biMetrics.toDoJobs || 0}
-          subtitle="Aguardando Início"
+          subtitle="Backlog de Ordens"
           icon={Package}
           gradient={GRADIENTS.purple}
           glowColor="purple"
@@ -186,7 +186,7 @@ export function FuturisticBI({ biMetrics, kpis, oeeData, isLoading }: BIProps) {
         <FuturisticStatCard
           title="Em Produção"
           value={kpis.inProgressJobs}
-          subtitle="Tempo Real"
+          subtitle="Live Status"
           icon={Zap}
           gradient={GRADIENTS.success}
           glowColor="success"
@@ -196,7 +196,7 @@ export function FuturisticBI({ biMetrics, kpis, oeeData, isLoading }: BIProps) {
         <FuturisticStatCard
           title="Atrasos Críticos"
           value={kpis.delayedJobs}
-          subtitle="Intervenção"
+          subtitle="Risco de Lead Time"
           icon={ShieldAlert}
           variant="danger"
           gradient={GRADIENTS.danger}
@@ -207,7 +207,7 @@ export function FuturisticBI({ biMetrics, kpis, oeeData, isLoading }: BIProps) {
         <FuturisticStatCard
           title="Taxa de Perda"
           value={`${(biMetrics.periodLossRate || 0).toFixed(2)}%`}
-          subtitle="Projeção"
+          subtitle="Quality Yield"
           icon={TrendingUp}
           gradient={GRADIENTS.primary}
           glowColor="primary"
