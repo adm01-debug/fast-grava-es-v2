@@ -109,8 +109,8 @@ const OEEDashboard = memo(function OEEDashboard() {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl md:text-3xl font-black font-display flex items-center gap-3">
-              <Activity className="h-8 w-8 text-primary" />
-              OEE Dashboard
+              <Activity className="h-8 w-8 text-primary animate-pulse" />
+              OEE Industrial Core
             </h1>
             <p className="text-muted-foreground mt-1">
               {t('oee.description', 'Overall Equipment Effectiveness - Eficiência Global dos Equipamentos')}
@@ -143,7 +143,7 @@ const OEEDashboard = memo(function OEEDashboard() {
         </div>
 
         {/* AI Performance Insight Banner */}
-        <Card className="bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border-primary/20 relative overflow-hidden group">
+        <Card className="bg-black/40 border-primary/30 backdrop-blur-2xl relative overflow-hidden group shadow-2xl">
           <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
             <Sparkles className="h-32 w-32 text-primary" />
           </div>
@@ -294,12 +294,19 @@ const OEEDashboard = memo(function OEEDashboard() {
 
         {/* Main Metrics with OEE Formula Drill-down */}
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between p-4 bg-primary/5 border border-primary/20 rounded-2xl mb-4">
             <h2 className="text-lg font-bold flex items-center gap-2">
               <Calculator className="h-5 w-5 text-primary" />
               {t('oee.drilldownTitle', 'Drill-down de Performance (Fórmula OEE)')}
             </h2>
-            <Badge variant="outline" className="text-[10px] font-bold">REAL-TIME CALCULATION</Badge>
+            <div className="flex items-center gap-3">
+               <div className="flex gap-1">
+                  {[1, 2, 3].map(i => (
+                    <div key={i} className="w-1 h-3 bg-primary/40 rounded-full animate-bounce" style={{ animationDelay: `${i * 0.2}s` }} />
+                  ))}
+               </div>
+               <Badge variant="outline" className="text-[10px] font-bold border-primary/30 text-primary animate-pulse">REAL-TIME CALCULATION</Badge>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -311,7 +318,7 @@ const OEEDashboard = memo(function OEEDashboard() {
                 description={t('oee.generalOEEDesc', 'Eficiência geral de todas as máquinas')}
                 benchmark={WORLD_CLASS_OEE}
                 trend={data.comparison ? data.comparison.currentOEE - data.comparison.previousOEE : undefined}
-                className="border-primary/40 shadow-glow-primary/10"
+                className="border-primary/40 shadow-[0_0_25px_rgba(14,165,233,0.15)] bg-black/60 backdrop-blur-xl"
                 variant="glass"
               />
             </KPITooltip>

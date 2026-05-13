@@ -88,26 +88,32 @@ export const OEELossesChart = memo(function OEELossesChart({
           ))}
         </div>
 
-        <div className="h-48">
+        <div className="h-64 mt-8">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
               data={waterfallData}
               layout="vertical"
               margin={{ top: 0, right: 30, left: 60, bottom: 0 }}
             >
-              <XAxis type="number" domain={[0, 100]} tickFormatter={v => `${v}%`} />
-              <YAxis type="category" dataKey="name" tick={{ fontSize: 12 }} />
+              <XAxis type="number" domain={[0, 100]} tickFormatter={v => `${v}%`} stroke="hsl(var(--muted-foreground))" fontSize={10} />
+              <YAxis type="category" dataKey="name" tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))', fontWeight: 'bold' }} />
               <Tooltip
                 formatter={(value: number) => [`${Math.abs(value).toFixed(1)}%`]}
                 contentStyle={{
-                  backgroundColor: 'hsl(var(--card))',
-                  border: '1px solid hsl(var(--border))',
-                  borderRadius: '8px'
+                  backgroundColor: 'rgba(0,0,0,0.8)',
+                  backdropFilter: 'blur(10px)',
+                  border: '1px solid hsl(var(--primary)/0.3)',
+                  borderRadius: '12px',
+                  boxShadow: '0 10px 30px rgba(0,0,0,0.5)'
                 }}
               />
-              <Bar dataKey="value" radius={4}>
+              <Bar dataKey="value" radius={[0, 8, 8, 0]} animationDuration={1500} animationEasing="ease-out">
                 {waterfallData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.fill} />
+                  <Cell 
+                    key={`cell-${index}`} 
+                    fill={entry.fill} 
+                    className="hover:opacity-80 transition-opacity cursor-pointer shadow-lg"
+                  />
                 ))}
               </Bar>
             </BarChart>
