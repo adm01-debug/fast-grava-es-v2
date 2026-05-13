@@ -75,6 +75,20 @@ export function useInventory() {
 
   const createMovementMutation = useMutation({
     mutationFn: async (movement: Omit<InventoryMovement, 'id' | 'created_at' | 'user_id'>) => {
+      // Validação de segurança: estoque insuficiente
+      if (movement.type === 'OUT') {
+        const { data: item, error: itemError } = await supabase
+          .from('inventory_items')
+          .select('current_stock, name')
+          .eq('id', movement.item_id)
+          .single();
+        
+        if (itemError) throw itemError;
+        if (item.current_stock < movement.quantity) {
+          throw new Error(`Estoque insuficiente de ${item.name} para realizar esta saída.`);
+        }
+      }
+
       const { data: { user } } = await supabase.auth.getUser();
       const { data, error } = await supabase
         .from('inventory_movements')
