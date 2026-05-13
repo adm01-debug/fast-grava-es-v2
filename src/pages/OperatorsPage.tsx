@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { OperatorConfirmDialogs } from '@/components/operators/OperatorConfirmDialogs';
+import { OperatorsStats } from '@/components/operators/OperatorsStats';
 import { Users, UserCheck, Phone, Calendar, Settings2, Search, X, UserPlus, Pencil, Clock, Trash2, UserX, Power, Command, Eye, TrendingUp, Trophy, QrCode as QrCodeIcon, Printer } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { useOperators, OperatorWithProfile } from '@/hooks/useOperators';
@@ -147,61 +148,12 @@ export default function OperatorsPage() {
           </div>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-3">
-          <Card className="glass-card">
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-xl gradient-primary flex items-center justify-center">
-                  <Users className="h-6 w-6 text-primary-foreground" />
-                </div>
-                <div>
-                  {isLoading ? (
-                    <Skeleton className="h-9 w-16" />
-                  ) : (
-                    <p className="text-3xl font-bold">{operators.length}</p>
-                  )}
-                  <p className="text-sm text-muted-foreground">Total de Operadores</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card className="glass-card">
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-xl bg-success/20 flex items-center justify-center">
-                  <UserCheck className="h-6 w-6 text-success" />
-                </div>
-                <div>
-                {isLoading ? (
-                    <Skeleton className="h-9 w-16" />
-                  ) : (
-                    <p className="text-3xl font-bold">{activeOperators.length}</p>
-                  )}
-                  <p className="text-sm text-muted-foreground">Ativos</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="glass-card">
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-xl bg-warning/20 flex items-center justify-center">
-                  <UserX className="h-6 w-6 text-warning" />
-                </div>
-                <div>
-                {isLoading ? (
-                    <Skeleton className="h-9 w-16" />
-                  ) : (
-                    <p className="text-3xl font-bold">{inactiveOperators.length}</p>
-                  )}
-                  <p className="text-sm text-muted-foreground">Inativos</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+        <OperatorsStats 
+          total={operators.length} 
+          active={activeOperators.length} 
+          inactive={inactiveOperators.length} 
+          isLoading={isLoading} 
+        />
 
         <Tabs defaultValue="list" className="space-y-6">
           <TabsList className="glass-card p-1">

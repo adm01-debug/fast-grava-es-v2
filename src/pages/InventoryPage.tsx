@@ -35,6 +35,8 @@ import {
 
 import { useInventory, useInventoryMovements, InventoryItem } from '@/hooks/useInventory';
 import { WarehouseMap } from '@/components/inventory/WarehouseMap';
+import { InventoryStats } from '@/components/inventory/InventoryStats';
+import { QRLabelModal } from '@/components/inventory/QRLabelModal';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Progress } from '@/components/ui/progress';
@@ -104,57 +106,8 @@ export default function InventoryPage() {
         </div>
 
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Card className="glass-card hover:shadow-glow-primary transition-all duration-300">
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between mb-2">
-                <div className="p-2 bg-primary/10 rounded-lg">
-                  <Package className="h-5 w-5 text-primary" />
-                </div>
-                <Badge variant="outline" className="text-[10px]">TOTAL</Badge>
-              </div>
-              <p className="text-3xl font-bold">{items.length}</p>
-              <p className="text-xs text-muted-foreground uppercase font-semibold tracking-tighter">Itens em Catálogo</p>
-            </CardContent>
-          </Card>
-
-          <Card className={cn("glass-card border-red-500/20", lowStockItems.length > 0 && "bg-red-500/5 shadow-glow-destructive")}>
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between mb-2">
-                <div className="p-2 bg-red-500/10 rounded-lg">
-                  <AlertTriangle className="h-5 w-5 text-red-500" />
-                </div>
-                {lowStockItems.length > 0 && <Badge variant="destructive" className="animate-pulse">CRÍTICO</Badge>}
-              </div>
-              <p className="text-3xl font-bold text-red-500">{lowStockItems.length}</p>
-              <p className="text-xs text-muted-foreground uppercase font-semibold tracking-tighter">Estoque Baixo</p>
-            </CardContent>
-          </Card>
-
-          <Card className="glass-card">
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between mb-2">
-                <div className="p-2 bg-blue-500/10 rounded-lg">
-                  <ArrowLeftRight className="h-5 w-5 text-blue-500" />
-                </div>
-              </div>
-              <p className="text-3xl font-bold">{stats?.movementsCount24h || 0}</p>
-              <p className="text-xs text-muted-foreground uppercase font-semibold tracking-tighter">Movimentações (24h)</p>
-            </CardContent>
-          </Card>
-
-          <Card className="glass-card">
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between mb-2">
-                <div className="p-2 bg-amber-500/10 rounded-lg">
-                  <TrendingDown className="h-5 w-5 text-amber-500" />
-                </div>
-              </div>
-              <p className="text-3xl font-bold">R$ {((stats?.inventoryValue || 0) / 1000).toFixed(1)}k</p>
-              <p className="text-xs text-muted-foreground uppercase font-semibold tracking-tighter">Valor em Estoque</p>
-            </CardContent>
-          </Card>
-        </div>
+        {/* Inventory Stats */}
+        <InventoryStats items={items} lowStockItems={lowStockItems} stats={stats} />
 
         <Tabs defaultValue="inventory" className="space-y-6">
           <TabsList className="bg-muted/50 p-1">
@@ -442,68 +395,7 @@ function InventoryCard({
   );
 }
 
-function QRLabelModal({ open, onOpenChange, item }: { open: boolean, onOpenChange: (o: boolean) => void, item: InventoryItem }) {
-  const printRef = useRef<HTMLDivElement>(null);
-
-  const handlePrint = () => {
-    const printContent = printRef.current;
-    if (!printContent) return;
-
-    const win = window.open('', '_blank');
-    if (!win) return;
-
-    win.document.write('<html><head><title>Imprimir Etiqueta</title>');
-    win.document.write('<style>body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; } .label { border: 2px solid #000; padding: 20px; text-align: center; width: 300px; }</style>');
-    win.document.write('</head><body>');
-    win.document.write('<div class="label">');
-    win.document.write(printContent.innerHTML);
-    win.document.write('</div>');
-    win.document.write('</body></html>');
-    win.document.close();
-    win.focus();
-    setTimeout(() => {
-      win.print();
-      win.close();
-    }, 500);
-  };
-
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[400px]">
-        <DialogHeader>
-          <DialogTitle>Gerar Etiqueta QR</DialogTitle>
-          <DialogDescription>
-            Etiqueta oficial para identificação de materiais e rastreabilidade via scanner.
-          </DialogDescription>
-        </DialogHeader>
-        <div className="flex flex-col items-center justify-center p-8 space-y-4">
-          <div ref={printRef} className="p-6 bg-white rounded-xl border-2 border-black flex flex-col items-center">
-            <p className="text-[10px] font-black uppercase tracking-tighter mb-2 text-black">Propriedade: INDÚSTRIA 4.0</p>
-            <QRCodeSVG 
-              value={JSON.stringify({ id: item.id, type: 'inventory', name: item.name })}
-              size={180}
-              level="H"
-              includeMargin={true}
-            />
-            <div className="mt-4 text-center">
-              <p className="text-lg font-black text-black leading-none uppercase">{item.name}</p>
-              <p className="text-[10px] text-black/60 font-bold mt-1">ID: {item.id.substring(0, 8).toUpperCase()}</p>
-              <p className="text-[9px] font-black bg-black text-white px-2 py-0.5 rounded mt-2 inline-block">
-                LOC: {item.location || 'N/A'}
-              </p>
-            </div>
-          </div>
-        </div>
-        <DialogFooter>
-          <Button variant="outline" className="w-full gap-2" onClick={handlePrint}>
-            <Printer className="h-4 w-4" />
-            Imprimir Etiqueta
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
-}
+// Extracted to @/components/inventory/QRLabelModal
 
 
 function InventoryHistoryTable() {
