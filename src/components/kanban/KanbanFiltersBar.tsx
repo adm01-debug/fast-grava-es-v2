@@ -5,9 +5,12 @@ import { Badge } from '@/components/ui/badge';
 import { Toggle } from '@/components/ui/toggle';
 import {
   Search, Filter, LayoutGrid, List, Layers,
-  AlertCircle, ArrowUp, ArrowDown, Minus, X
+  AlertCircle, ArrowUp, ArrowDown, Minus, X, Plus, Wand2
 } from 'lucide-react';
 import { DbMachine } from '@/hooks/useJobs';
+import { useNavigate } from 'react-router-dom';
+import { useSmartSequencing } from '@/hooks/useSmartSequencing';
+import { toast } from 'sonner';
 
 export type ViewMode = 'expanded' | 'compact';
 export type SwimlanesMode = 'none' | 'technique' | 'machine';
@@ -41,6 +44,17 @@ export function KanbanFiltersBar({
   techniques, machines,
   activeFiltersCount, onClearFilters,
 }: KanbanFiltersBarProps) {
+  const navigate = useNavigate();
+  const { hasSuggestions, suggestions } = useSmartSequencing();
+
+  const handleSmartOptimization = () => {
+    if (!hasSuggestions) {
+      toast.info("Nenhuma otimização de setup encontrada para o cenário atual.");
+      return;
+    }
+    toast.success(`IA identificou ${suggestions.length} máquinas que podem ser otimizadas para reduzir setup.`);
+  };
+
   return (
     <div className="flex flex-col gap-3">
       <div className="flex flex-wrap items-center gap-2">
@@ -119,6 +133,25 @@ export function KanbanFiltersBar({
 
         {/* Spacer */}
         <div className="flex-1" />
+
+        <div className="flex items-center gap-2">
+          <Button 
+            className="gap-2 bg-primary/10 hover:bg-primary/20 text-primary border-primary/20 group relative overflow-hidden h-9" 
+            variant="outline"
+            onClick={handleSmartOptimization}
+          >
+            <Wand2 className="h-4 w-4 group-hover:rotate-12 transition-transform" />
+            <span className="hidden sm:inline">IA Otimizar</span>
+            {hasSuggestions && (
+              <span className="absolute inset-0 bg-primary/10 animate-pulse-glow pointer-events-none" />
+            )}
+          </Button>
+
+          <Button className="gap-2 h-9" onClick={() => navigate('/jobs/new')}>
+            <Plus className="h-4 w-4" />
+            <span className="hidden sm:inline">Novo Job</span>
+          </Button>
+        </div>
 
         {/* Swimlanes */}
         <Select value={swimlanesMode} onValueChange={(v) => onSwimlanesChange(v as SwimlanesMode)}>
