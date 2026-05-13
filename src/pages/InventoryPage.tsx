@@ -35,6 +35,7 @@ import {
 } from 'lucide-react';
 
 import { useInventory, useInventoryMovements, InventoryItem } from '@/hooks/useInventory';
+import { useDebounce } from '@/hooks/useDebounce';
 import { WarehouseMap } from '@/components/inventory/WarehouseMap';
 import { InventoryStats } from '@/components/inventory/InventoryStats';
 import { QRLabelModal } from '@/components/inventory/QRLabelModal';
@@ -66,12 +67,13 @@ export default function InventoryPage() {
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
   const [isBatchQRModalOpen, setIsBatchQRModalOpen] = useState(false);
   const [isAIPredictionModalOpen, setIsAIPredictionModalOpen] = useState(false);
+  const debouncedSearch = useDebounce(searchTerm, 300);
 
 
   const filteredItems = useMemo(() => {
     return items.filter(item => {
-      const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                           item.specification?.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesSearch = item.name.toLowerCase().includes(debouncedSearch.toLowerCase()) || 
+                           item.specification?.toLowerCase().includes(debouncedSearch.toLowerCase());
       const matchesCategory = selectedCategory === 'all' || item.category === selectedCategory;
       return matchesSearch && matchesCategory;
     });
