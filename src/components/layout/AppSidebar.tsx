@@ -80,7 +80,7 @@ export function AppSidebar() {
           isMobile && (mobileOpen ? 'translate-x-0' : '-translate-x-full'),
           isMobile && 'flex'
         )}
-        role="navigation" aria-label="Menu principal" id="navigation"
+        role="navigation" aria-label="Menu principal" id="main-navigation"
       >
         {/* Header */}
         <div className={cn('flex items-center h-16 px-4 border-b border-sidebar-border', collapsed && !isMobile ? 'justify-center' : 'justify-between')}>
