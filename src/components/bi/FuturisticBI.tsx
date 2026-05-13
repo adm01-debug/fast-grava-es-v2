@@ -107,9 +107,10 @@ export function FuturisticBI({ biMetrics, kpis, oeeData, isLoading }: BIProps) {
           product: j.product_name || 'Produto',
           status: j.status,
           quantity: j.quantity,
+          produced_quantity: j.produced_quantity || 0,
           lost_pieces: j.lost_pieces || 0,
           efficiency: total > 0 ? (((total - (j.lost_pieces || 0)) / total) * 100).toFixed(1) + '%' : '--'
-        };
+        } as Job;
       });
       setDrillDownJobs(filtered);
     } else {
