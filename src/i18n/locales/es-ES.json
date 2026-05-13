@@ -184,7 +184,13 @@
     "lossRate": "Tasa de Pérdida",
     "averageTime": "Tiempo Promedio",
     "goals": "Metas",
-    "evolution": "Evolución"
+    "evolution": "Evolución",
+    "operatorRemoved": "Operador eliminado",
+    "operatorRemovedDesc": "El operador fue eliminado del sistema con éxito.",
+    "operatorActivated": "Operador activado",
+    "operatorActivatedDesc": "El operador ha sido reactivado y puede acceder al sistema.",
+    "operatorDeactivated": "Operador desactivado",
+    "operatorDeactivatedDesc": "El operador ha sido desactivado temporalmente."
   },
   "machines": {
     "title": "Máquinas",

@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { showErrorToast, createAppError } from '@/lib/errorHandling';
+import { useTranslation } from 'react-i18next';
 
 const OPERATORS_ERROR_CONTEXT = {
   fetch: { entity: 'operators', operation: 'fetch' },
@@ -21,6 +22,7 @@ export interface OperatorWithProfile {
 }
 
 export function useOperators() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   const query = useQuery({
@@ -122,9 +124,8 @@ export function useOperators() {
       queryClient.invalidateQueries({ queryKey: ['operators'] });
       queryClient.invalidateQueries({ queryKey: ['operator-machines'] });
       queryClient.invalidateQueries({ queryKey: ['operator-status-audit'] });
-      toast({
-        title: 'Operador removido',
-        description: 'O operador foi removido do sistema com sucesso.',
+      toast.success(t('operators.operatorRemoved', 'Operador removido'), {
+        description: t('operators.operatorRemovedDesc', 'O operador foi removido do sistema com sucesso.'),
       });
     },
     onError: (error) => {
@@ -178,11 +179,10 @@ export function useOperators() {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['operators'] });
       queryClient.invalidateQueries({ queryKey: ['operator-status-audit'] });
-      toast({
-        title: data.isActive ? 'Operador ativado' : 'Operador desativado',
+      toast.success(data.isActive ? t('operators.operatorActivated', 'Operador ativado') : t('operators.operatorDeactivated', 'Operador desativado'), {
         description: data.isActive 
-          ? 'O operador foi reativado e pode acessar o sistema.'
-          : 'O operador foi desativado temporariamente.',
+          ? t('operators.operatorActivatedDesc', 'O operador foi reativado e pode acessar o sistema.')
+          : t('operators.operatorDeactivatedDesc', 'O operador foi desativado temporariamente.'),
       });
     },
     onError: (error) => {

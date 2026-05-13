@@ -184,7 +184,13 @@
     "lossRate": "Loss Rate",
     "averageTime": "Average Time",
     "goals": "Goals",
-    "evolution": "Evolution"
+    "evolution": "Evolution",
+    "operatorRemoved": "Operator removed",
+    "operatorRemovedDesc": "The operator was successfully removed from the system.",
+    "operatorActivated": "Operator activated",
+    "operatorActivatedDesc": "The operator has been reactivated and can access the system.",
+    "operatorDeactivated": "Operator deactivated",
+    "operatorDeactivatedDesc": "The operator has been temporarily deactivated."
   },
   "machines": {
     "title": "Machines",
