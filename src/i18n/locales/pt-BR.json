@@ -22,6 +22,7 @@
     "no": "Não",
     "all": "Todos",
     "none": "Nenhum",
+    "or": "ou",
     "actions": "Ações",
     "status": "Status",
     "date": "Data",
@@ -54,6 +55,8 @@
   },
   "auth": {
     "login": "Entrar",
+    "loginWithGoogle": "Entrar com Google",
+    "rememberMe": "Lembrar meu e-mail",
     "register": "Cadastrar",
     "email": "E-mail",
     "password": "Senha",
