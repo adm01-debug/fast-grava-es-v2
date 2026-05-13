@@ -29,7 +29,7 @@ export default tseslint.config(
       "@typescript-eslint/no-unused-vars": "off",
       "@typescript-eslint/no-explicit-any": "error",
       "@typescript-eslint/explicit-function-return-type": [
-        "off", // Ativaremos como warn/error gradualmente em services/ conforme o roadmap
+        "warn",
         {
           "allowExpressions": true,
           "allowTypedFunctionExpressions": true
