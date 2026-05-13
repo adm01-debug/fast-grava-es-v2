@@ -25,7 +25,7 @@ export function useFeatureFlags() {
       if (error) throw error;
       
       const flagMap = new Map<string, boolean>();
-      data?.forEach(flag => flagMap.set(flag.name, flag.is_enabled));
+      data?.forEach(flag => flagMap.set(flag.name, !!flag.is_enabled));
       return { raw: data as FeatureFlag[], map: flagMap };
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
