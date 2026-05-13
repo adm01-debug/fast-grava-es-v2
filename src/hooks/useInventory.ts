@@ -89,7 +89,7 @@ export function useInventory() {
       queryClient.invalidateQueries({ queryKey: ['inventory-movements'] });
       toast.success('Movimentação registrada');
     },
-    onError: (error: unknown) => {
+    onError: (error: any) => {
       toast.error(error.message || 'Erro ao registrar movimentação');
     },
   });

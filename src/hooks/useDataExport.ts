@@ -110,7 +110,7 @@ export function useDataExport(tableName: TableName) {
     }
   }, [tableName]);
 
-  const exportAuditTrail = useCallback(async (filters: unknown, fileName?: string, formatType: 'csv' | 'pdf' = 'csv') => {
+  const exportAuditTrail = useCallback(async (filters: any, fileName?: string, formatType: 'csv' | 'pdf' = 'csv') => {
     setIsExporting(true);
     try {
       let query = supabase.from('audit_log').select('*').order('created_at', { ascending: false });
@@ -140,7 +140,7 @@ export function useDataExport(tableName: TableName) {
         doc.text(`Data: ${format(new Date(), 'dd/MM/yyyy HH:mm')}`, 14, 22);
 
         const tableHeaders = ['Data', 'Ação', 'Usuário', 'Entidade', 'Campos Alterados'];
-        const tableBody = data.map((entry: unknown) => [
+        const tableBody = data.map((entry: any) => [
           format(new Date(entry.created_at), 'dd/MM/yy HH:mm'),
           entry.action,
           entry.actor_email || entry.actor_id || 'Sistema',

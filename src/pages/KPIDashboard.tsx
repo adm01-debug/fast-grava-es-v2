@@ -104,14 +104,14 @@ export default function KPIDashboard() {
   const handleDrillDown = (title: string, segment: 'lost' | 'finished' | 'delayed' | 'production' | 'queue') => {
     setDrillDownTitle(title);
     if (jobs) {
-      const filtered = jobs.filter((j: unknown) => {
+      const filtered = jobs.filter((j: any) => {
         if (segment === 'lost') return (j.lost_pieces || 0) > 0;
         if (segment === 'finished') return j.status === 'finished';
         if (segment === 'delayed') return j.status === 'delayed';
         if (segment === 'production') return j.status === 'production';
         if (segment === 'queue') return j.status === 'scheduled' || j.status === 'queue';
         return true;
-      }).map((j: unknown) => {
+      }).map((j: any) => {
         const total = (j.produced_quantity || j.quantity || 1) + (j.lost_pieces || 0);
         return {
           id: j.id,

@@ -5,7 +5,7 @@ import { Package } from 'lucide-react';
 
 interface SupplyListProps {
   supplies: Record<string, any>;
-  onUpdate: (id: string, updates: unknown) => void;
+  onUpdate: (id: string, updates: any) => void;
 }
 
 export function SupplyList({ supplies, onUpdate }: SupplyListProps) {

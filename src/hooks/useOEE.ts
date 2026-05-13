@@ -13,7 +13,7 @@ function isValidDate(dateStr: string | null | undefined): boolean {
   }
 }
 
-function sanitizeNumber(value: unknown, fallback = 0): number {
+function sanitizeNumber(value: any, fallback = 0): number {
   if (typeof value !== 'number' || !Number.isFinite(value)) return fallback;
   return Math.max(0, value);
 }
@@ -358,7 +358,7 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30) {
     const currentPeriod = trendData.slice(Math.max(0, trendData.length - daysBack));
     const previousPeriod = trendData.slice(0, Math.max(0, trendData.length - daysBack));
 
-    const avg = (arr: unknown[], key: string) => arr.length > 0 ? arr.reduce((s, x) => s + x[key], 0) / arr.length : 0;
+    const avg = (arr: any[], key: string) => arr.length > 0 ? arr.reduce((s, x) => s + x[key], 0) / arr.length : 0;
 
     const comparison = {
       currentOEE: avg(currentPeriod, 'oee'),

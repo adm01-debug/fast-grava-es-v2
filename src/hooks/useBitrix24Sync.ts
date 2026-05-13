@@ -65,7 +65,7 @@ export const useBitrix24Sync = () => {
       }
 
       return result;
-    } catch (error: unknown) {
+    } catch (error: any) {
       const appError = createAppError(error, { ...BITRIX_ERROR_CONTEXT.call, action });
 
       // Retry on network errors or 5xx server errors
@@ -93,7 +93,7 @@ export const useBitrix24Sync = () => {
       const result = await callBitrixSync<OAuthStatus>('oauth-status');
       setOAuthStatus(result);
       return result;
-    } catch (error: unknown) {
+    } catch (error: any) {
       const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
       toast({
         title: 'Erro ao verificar OAuth',
@@ -116,7 +116,7 @@ export const useBitrix24Sync = () => {
       });
       await checkOAuthStatus();
       return result;
-    } catch (error: unknown) {
+    } catch (error: any) {
       const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
       toast({
         title: 'Erro ao limpar tokens',
@@ -138,7 +138,7 @@ export const useBitrix24Sync = () => {
         description: 'Conexão com Bitrix24 estabelecida com sucesso.'
       });
       return result;
-    } catch (error: unknown) {
+    } catch (error: any) {
       const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
       // Check if it's an auth error
       if (errorMessage.includes('invalid_token') || errorMessage.includes('expired')) {
@@ -175,7 +175,7 @@ export const useBitrix24Sync = () => {
       });
 
       return result;
-    } catch (error: unknown) {
+    } catch (error: any) {
       const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
       // Check if it's an auth error
       if (errorMessage.includes('invalid_token') || errorMessage.includes('expired') || errorMessage.includes('authentication')) {
@@ -210,7 +210,7 @@ export const useBitrix24Sync = () => {
       }
 
       return result;
-    } catch (error: unknown) {
+    } catch (error: any) {
       const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
       // Don't show error toast for non-Bitrix jobs
       return { error: errorMessage };

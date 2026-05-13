@@ -7,7 +7,7 @@ import { InventoryItem } from '@/hooks/useInventory';
 interface InventoryStatsProps {
   items: InventoryItem[];
   lowStockItems: InventoryItem[];
-  stats: unknown;
+  stats: any;
 }
 
 export function InventoryStats({ items, lowStockItems, stats }: InventoryStatsProps) {

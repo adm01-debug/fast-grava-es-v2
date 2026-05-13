@@ -85,11 +85,11 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
       total_cost?: number;
       downtime_minutes?: number;
       checklist_version?: number;
-      checklist_snapshot?: unknown;
+      checklist_snapshot?: any;
       technical_sheet_id?: string;
       technical_sheet_version?: number;
-      adjustment_parameters?: unknown;
-      quality_checklist_results?: unknown[];
+      adjustment_parameters?: any;
+      quality_checklist_results?: any[];
       failure_risk_detected?: boolean;
       responses?: Array<{
         checklist_item_id: string;
@@ -180,9 +180,9 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
       if (data.adjustment_parameters?.ranges) {
         const params = data.adjustment_parameters;
         const ranges = params.ranges;
-        const alertsToInsert: unknown[] = [];
+        const alertsToInsert: any[] = [];
 
-        const checkRange = (name: string, value: string, range: unknown) => {
+        const checkRange = (name: string, value: string, range: any) => {
           if (!range || (!range.min && !range.max)) return;
           const val = parseFloat(value.replace(/[^0-9.]/g, ''));
           const min = range.min ? parseFloat(range.min.replace(/[^0-9.]/g, '')) : -Infinity;
@@ -271,7 +271,7 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
       if (fetchErr || !record) throw new Error('Registro não encontrado');
 
       // Requisito: Pelo menos uma foto se houver itens que exigem foto
-      const needsPhoto = record.responses.some((r: unknown) => r.photo_url);
+      const needsPhoto = record.responses.some((r: any) => r.photo_url);
       if (!record.signature_url) throw new Error('Assinatura obrigatória ausente');
 
       const { data: recordData, error: recordFetchError } = await supabase
@@ -411,7 +411,7 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
         });
 
         if (!mlError && mlResult?.predictions) {
-          mlResult.predictions.forEach((p: unknown) => {
+          mlResult.predictions.forEach((p: any) => {
             if (p.prediction?.risk_score > 75) {
               // High risk detected by AI, find the primary schedule for this machine
               const machineSchedule = schedules.find(s => s.machine_id === p.machine.id && s.is_active);

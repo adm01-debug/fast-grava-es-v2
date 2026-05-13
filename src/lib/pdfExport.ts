@@ -325,7 +325,7 @@ export async function exportProductionReport(
 }
 
 export async function exportLossesReport(
-  jobs: unknown[],
+  jobs: any[],
   dateRange: { start: Date; end: Date },
   title = 'Relatório de Perdas e Qualidade'
 ): Promise<void> {
@@ -380,7 +380,7 @@ export async function exportLossesReport(
 }
 
 export async function exportDelaysReport(
-  jobs: unknown[],
+  jobs: any[],
   dateRange: { start: Date; end: Date },
   title = 'Relatório de Atrasos e Produtividade'
 ): Promise<void> {

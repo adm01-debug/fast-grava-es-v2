@@ -28,7 +28,7 @@ export interface DbShipment {
   created_at: string;
   updated_at: string;
   provider?: DbShippingProvider;
-  job?: unknown;
+  job?: any;
 }
 
 export function useLogistics() {

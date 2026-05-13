@@ -37,27 +37,27 @@ export function CreateLotModal({ open, onOpenChange, newLot, setNewLot, jobs, on
           <div className="flex gap-2">
             <div className="flex-1 space-y-2">
               <Label>Número do Lote *</Label>
-              <Input value={newLot.lot_number} onChange={(e) => setNewLot((prev: unknown) => ({ ...prev, lot_number: e.target.value }))} placeholder="LOT-20251220-XXXX" />
+              <Input value={newLot.lot_number} onChange={(e) => setNewLot((prev: any) => ({ ...prev, lot_number: e.target.value }))} placeholder="LOT-20251220-XXXX" />
             </div>
-            <Button type="button" variant="outline" className="mt-8" onClick={() => setNewLot((prev: unknown) => ({ ...prev, lot_number: generateLotNumber() }))}>Gerar</Button>
+            <Button type="button" variant="outline" className="mt-8" onClick={() => setNewLot((prev: any) => ({ ...prev, lot_number: generateLotNumber() }))}>Gerar</Button>
           </div>
           <div className="space-y-2">
             <Label>Nome do Produto *</Label>
-            <Input value={newLot.product_name} onChange={(e) => setNewLot((prev: unknown) => ({ ...prev, product_name: e.target.value }))} placeholder="Nome do produto" />
+            <Input value={newLot.product_name} onChange={(e) => setNewLot((prev: any) => ({ ...prev, product_name: e.target.value }))} placeholder="Nome do produto" />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label>Quantidade *</Label>
-              <Input type="number" value={newLot.quantity} onChange={(e) => setNewLot((prev: unknown) => ({ ...prev, quantity: parseInt(e.target.value) || 0 }))} />
+              <Input type="number" value={newLot.quantity} onChange={(e) => setNewLot((prev: any) => ({ ...prev, quantity: parseInt(e.target.value) || 0 }))} />
             </div>
             <div className="space-y-2">
               <Label>Data de Produção</Label>
-              <Input type="date" value={newLot.production_date} onChange={(e) => setNewLot((prev: unknown) => ({ ...prev, production_date: e.target.value }))} />
+              <Input type="date" value={newLot.production_date} onChange={(e) => setNewLot((prev: any) => ({ ...prev, production_date: e.target.value }))} />
             </div>
           </div>
           <div className="space-y-2">
             <Label>Job Relacionado (opcional)</Label>
-            <Select value={newLot.job_id} onValueChange={(v) => setNewLot((prev: unknown) => ({ ...prev, job_id: v }))}>
+            <Select value={newLot.job_id} onValueChange={(v) => setNewLot((prev: any) => ({ ...prev, job_id: v }))}>
               <SelectTrigger><SelectValue placeholder="Selecione um job" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="">Nenhum</SelectItem>
@@ -67,11 +67,11 @@ export function CreateLotModal({ open, onOpenChange, newLot, setNewLot, jobs, on
           </div>
           <div className="space-y-2">
             <Label>Data de Validade (opcional)</Label>
-            <Input type="date" value={newLot.expiration_date} onChange={(e) => setNewLot((prev: unknown) => ({ ...prev, expiration_date: e.target.value }))} />
+            <Input type="date" value={newLot.expiration_date} onChange={(e) => setNewLot((prev: any) => ({ ...prev, expiration_date: e.target.value }))} />
           </div>
           <div className="space-y-2">
             <Label>Observações</Label>
-            <Textarea value={newLot.notes} onChange={(e) => setNewLot((prev: unknown) => ({ ...prev, notes: e.target.value }))} placeholder="Observações sobre o lote..." rows={2} />
+            <Textarea value={newLot.notes} onChange={(e) => setNewLot((prev: any) => ({ ...prev, notes: e.target.value }))} placeholder="Observações sobre o lote..." rows={2} />
           </div>
           <div className="flex justify-end gap-2">
             <Button variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>

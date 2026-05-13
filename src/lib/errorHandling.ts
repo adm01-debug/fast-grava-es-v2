@@ -10,7 +10,7 @@ export interface AppError {
   message: string;
   code?: string;
   severity: ErrorSeverity;
-  originalError?: unknown;
+  originalError?: any;
   context?: Record<string, unknown>;
   timestamp: Date;
   retryable: boolean;
@@ -66,7 +66,7 @@ const ErrorMessages: Record<ErrorCode, string> = {
 /**
  * Parses an error and returns a categorized ErrorCode
  */
-export function categorizeError(error: unknown): ErrorCode {
+export function categorizeError(error: any): ErrorCode {
   if (!error) return ErrorCodes.UNKNOWN_ERROR;
 
   const message = error instanceof Error ? error.message.toLowerCase() : String(error).toLowerCase();
@@ -128,7 +128,7 @@ export function categorizeError(error: unknown): ErrorCode {
  * Creates a standardized AppError from any error
  */
 export function createAppError(
-  error: unknown,
+  error: any,
   context?: Record<string, unknown>
 ): AppError {
   const code = categorizeError(error);
@@ -165,7 +165,7 @@ export function createAppError(
  * Shows an error toast with appropriate styling
  */
 export function showErrorToast(
-  error: unknown,
+  error: any,
   customMessage?: string,
   context?: Record<string, unknown>
 ): void {
@@ -249,7 +249,7 @@ export function createMutationErrorHandler(
   customMessage?: string,
   context?: Record<string, unknown>
 ) {
-  return (error: unknown) => {
+  return (error: any) => {
     showErrorToast(error, customMessage, context);
   };
 }
@@ -257,14 +257,14 @@ export function createMutationErrorHandler(
 /**
  * Checks if an error is a specific type
  */
-export function isErrorCode(error: unknown, code: ErrorCode): boolean {
+export function isErrorCode(error: any, code: ErrorCode): boolean {
   return categorizeError(error) === code;
 }
 
 /**
  * Checks if the error is network-related
  */
-export function isNetworkError(error: unknown): boolean {
+export function isNetworkError(error: any): boolean {
   const code = categorizeError(error);
   return code === ErrorCodes.NETWORK_ERROR || code === ErrorCodes.TIMEOUT;
 }
@@ -272,7 +272,7 @@ export function isNetworkError(error: unknown): boolean {
 /**
  * Checks if the error is auth-related
  */
-export function isAuthError(error: unknown): boolean {
+export function isAuthError(error: any): boolean {
   const code = categorizeError(error);
   return code === ErrorCodes.UNAUTHORIZED ||
          code === ErrorCodes.FORBIDDEN ||

@@ -85,7 +85,7 @@ export default function MachinesPage() {
     });
   };
 
-  const handleCompleteMaintenance = (data: unknown) => {
+  const handleCompleteMaintenance = (data: any) => {
     if (!currentRecordId) return;
 
     completeMaintenance.mutate({
@@ -551,10 +551,10 @@ function MachineHistoryTab({ machineId }: { machineId: string }) {
   );
 }
 
-function FactoryHeatmap({ machines, techniques }: { machines: unknown[]; techniques: unknown[] }) {
+function FactoryHeatmap({ machines, techniques }: { machines: any[]; techniques: any[] }) {
   const { jobs } = useSchedulingData();
 
-  const getHeatColor = (machine: unknown) => {
+  const getHeatColor = (machine: any) => {
     if (!machine.is_active) return 'bg-slate-200 dark:bg-slate-800 opacity-40';
 
     // Count jobs in production for this machine
@@ -571,7 +571,7 @@ function FactoryHeatmap({ machines, techniques }: { machines: unknown[]; techniq
     return 'bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.2)]';
   };
 
-  const getMachineStats = (machine: unknown) => {
+  const getMachineStats = (machine: any) => {
     const machineJobs = jobs.filter(j => j.machine_id === machine.id);
     const productionCount = machineJobs.filter(j => j.status === 'production').length;
     const today = new Date().toISOString().split('T')[0];

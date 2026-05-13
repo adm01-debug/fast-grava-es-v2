@@ -458,7 +458,7 @@ export default function ReportBuilderPage() {
                    </CardTitle>
                  </CardHeader>
                  <CardContent className="pt-4 space-y-2 max-h-[200px] overflow-y-auto">
-                    {savedTemplates.map((template: unknown) => (
+                    {savedTemplates.map((template: any) => (
                       <button
                         key={template.id}
                         onClick={() => {
@@ -511,7 +511,7 @@ export default function ReportBuilderPage() {
                   <CardTitle className="text-[10px] font-black uppercase tracking-widest text-amber-600">Formato de Saída</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <Select value={formatType} onValueChange={(v: unknown) => setFormatType(v)}>
+                  <Select value={formatType} onValueChange={(v: any) => setFormatType(v)}>
                     <SelectTrigger className="bg-background/50 border-amber-500/20 text-amber-900 font-bold h-9">
                       <SelectValue />
                     </SelectTrigger>

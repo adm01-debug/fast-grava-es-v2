@@ -9,7 +9,7 @@ import { DbJob } from '@/hooks/useJobs';
 
 interface UtilizationHeatmapProps {
   jobs: DbJob[];
-  machines: unknown[];
+  machines: any[];
 }
 
 export function UtilizationHeatmap({ jobs, machines }: UtilizationHeatmapProps) {

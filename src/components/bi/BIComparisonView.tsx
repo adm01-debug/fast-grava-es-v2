@@ -17,11 +17,11 @@ const CHART_COLORS = {
 };
 
 interface ComparisonViewProps {
-  biMetrics: unknown;
-  biMetrics2: unknown;
-  getPeriodLabel: (filter?: string, range?: unknown) => string;
+  biMetrics: any;
+  biMetrics2: any;
+  getPeriodLabel: (filter?: string, range?: any) => string;
   periodFilter2: string;
-  customRange2: unknown;
+  customRange2: any;
   getComparisonDelta: (a: number, b: number) => { delta: number; trend: 'up' | 'down' | 'neutral' };
   ComparisonKPICard: React.ComponentType<any>;
 }
@@ -61,7 +61,7 @@ export function BIComparisonView({
                   <ResponsiveContainer width="100%" height={200}>
                     <RechartsPieChart>
                       <Pie data={data.statusDistribution} cx="50%" cy="50%" innerRadius={40} outerRadius={70} paddingAngle={2} dataKey="value">
-                        {data.statusDistribution.map((entry: unknown, index: number) => (
+                        {data.statusDistribution.map((entry: any, index: number) => (
                           <Cell key={`cell-${prefix}-${index}`} fill={entry.color} />
                         ))}
                       </Pie>
@@ -72,7 +72,7 @@ export function BIComparisonView({
               ))}
             </div>
             <div className="flex flex-wrap justify-center gap-4 mt-4">
-              {biMetrics.statusDistribution.map((entry: unknown) => (
+              {biMetrics.statusDistribution.map((entry: any) => (
                 <div key={entry.name} className="flex items-center gap-2">
                   <div className="w-3 h-3 rounded-full" style={{ backgroundColor: entry.color }} />
                   <span className="text-xs">{entry.name}</span>
@@ -93,8 +93,8 @@ export function BIComparisonView({
           <CardContent>
             <ResponsiveContainer width="100%" height={280}>
               <BarChart
-                data={biMetrics.techniquePerformance.slice(0, 6).map((t1: unknown) => {
-                  const t2 = biMetrics2?.techniquePerformance.find((t: unknown) => t.id === t1.id);
+                data={biMetrics.techniquePerformance.slice(0, 6).map((t1: any) => {
+                  const t2 = biMetrics2?.techniquePerformance.find((t: any) => t.id === t1.id);
                   return { name: t1.name, 'Período 1': t1.produced, 'Período 2': t2?.produced ?? 0 };
                 })}
                 layout="vertical"
@@ -134,8 +134,8 @@ export function BIComparisonView({
                 </tr>
               </thead>
               <tbody>
-                {biMetrics.machineUtilization.map((m1: unknown) => {
-                  const m2 = biMetrics2?.machineUtilization.find((m: unknown) => m.id === m1.id);
+                {biMetrics.machineUtilization.map((m1: any) => {
+                  const m2 = biMetrics2?.machineUtilization.find((m: any) => m.id === m1.id);
                   const { delta, trend } = getComparisonDelta(m1.utilization, m2?.utilization ?? 0);
                   return (
                     <tr key={m1.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors">

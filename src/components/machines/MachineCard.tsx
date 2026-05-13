@@ -5,10 +5,10 @@ import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
 
 interface MachineCardProps {
-  machine: unknown;
+  machine: any;
   isSelected: boolean;
   onSelect: (id: string) => void;
-  onOpenSettings: (machine: unknown) => void;
+  onOpenSettings: (machine: any) => void;
   index: number;
   metrics?: {
     oee: number;

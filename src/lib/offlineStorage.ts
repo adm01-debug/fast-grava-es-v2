@@ -7,11 +7,11 @@ const DB_NAME = 'fastgravacoes_offline';
 const DB_VERSION = 1;
 
 interface OfflineStore {
-  jobs: unknown[];
-  machines: unknown[];
-  techniques: unknown[];
-  operators: unknown[];
-  maintenanceSchedules: unknown[];
+  jobs: any[];
+  machines: any[];
+  techniques: any[];
+  operators: any[];
+  maintenanceSchedules: any[];
   pendingActions: PendingAction[];
   syncMetadata: SyncMetadata;
 }

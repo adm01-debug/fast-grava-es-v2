@@ -49,7 +49,7 @@ export default function GamificationPage() {
     redemptionsQuery
   } = useGamification(period);
 
-  const handleRedeem = (reward: unknown) => {
+  const handleRedeem = (reward: any) => {
     if (balance >= reward.cost_points) {
       redeemReward.mutate(reward);
     } else {
@@ -204,7 +204,7 @@ export default function GamificationPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {redemptionsQuery.data?.map((redemption: unknown) => (
+                {redemptionsQuery.data?.map((redemption: any) => (
                   <div key={redemption.id} className="flex items-center justify-between p-4 rounded-xl bg-muted/30 border border-border/50 group hover:bg-muted/50 transition-all">
                     <div className="flex items-center gap-4">
                       <div className={cn("p-2 rounded-lg bg-primary/10", redemption.reward?.color_class)}>

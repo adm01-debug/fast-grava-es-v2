@@ -629,7 +629,7 @@ export const TechnicalSheetViewer = ({ sheetId, onEdit, onDuplicate }: Technical
                     {isLoadingAudit ? (
                       <div className="text-center py-4 text-xs text-muted-foreground">Carregando histórico...</div>
                     ) : auditLogs.length > 0 ? (
-                      auditLogs.map((log: unknown) => (
+                      auditLogs.map((log: any) => (
                         <div key={log.id} className="relative pl-8 pb-8 border-l last:border-l-0">
                           <div className={`absolute -left-1.5 top-0 w-3 h-3 rounded-full ${
                             log.action === 'CREATE' ? 'bg-emerald-500' :

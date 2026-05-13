@@ -57,7 +57,7 @@ function sanitizeOperatorPayload(data: {
   actual_end_time?: string;
   production_photos?: string[] | null;
   notes?: string | null;
-  [key: string]: unknown;
+  [key: string]: any;
 }): SanitizedPayload {
   const sanitized: SanitizedPayload = {};
 

@@ -524,7 +524,7 @@ describe('getSeverityBadge Logic', () => {
   it('TC-BADGE-002: slow', () => expect(getSeverityLabel('slow')).toBe('🟡 Lenta'));
   it('TC-BADGE-003: error', () => expect(getSeverityLabel('error')).toBe('❌ Erro'));
   it('TC-BADGE-004: normal', () => expect(getSeverityLabel('normal')).toBe('normal'));
-  it('TC-BADGE-005: unknown', () => expect(getSeverityLabel('unknown')).toBe('unknown'));
+  it('TC-BADGE-005: any', () => expect(getSeverityLabel('unknown')).toBe('unknown'));
   it('TC-BADGE-006: empty string', () => expect(getSeverityLabel('')).toBe(''));
 });
 

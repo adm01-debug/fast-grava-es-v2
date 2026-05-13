@@ -94,7 +94,7 @@ export default function PendingQueue() {
   });
   const [selectedAISuggestion, setSelectedAISuggestion] = useState<{
     type: 'setup' | 'balancing';
-    data: unknown;
+    data: any;
   } | null>(null);
   const [selectedJobs, setSelectedJobs] = useState<Set<string>>(new Set());
 
@@ -515,13 +515,13 @@ export default function PendingQueue() {
           <CollapsibleContent className="animate-accordion-down">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
               <SmartSequencingPanel
-                onExplain={(suggestion: unknown) => {
+                onExplain={(suggestion: any) => {
                   setSelectedAISuggestion({ type: 'setup', data: suggestion });
                   setIsAISidePanelOpen(true);
                 }}
               />
               <LoadBalancingPanel
-                onExplain={(suggestion: unknown) => {
+                onExplain={(suggestion: any) => {
                   setSelectedAISuggestion({ type: 'balancing', data: suggestion });
                   setIsAISidePanelOpen(true);
                 }}

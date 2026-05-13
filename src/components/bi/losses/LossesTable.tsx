@@ -11,9 +11,9 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { useTranslation } from "react-i18next";
 
 interface LossesTableProps {
-  jobs: unknown[];
+  jobs: any[];
   onExport: (format: 'csv' | 'pdf', type: string) => void;
-  onShowDetails?: (job: unknown) => void;
+  onShowDetails?: (job: any) => void;
 }
 
 export function LossesTable({ jobs, onExport, onShowDetails }: LossesTableProps) {
@@ -79,7 +79,7 @@ export function LossesTable({ jobs, onExport, onShowDetails }: LossesTableProps)
             </TableHeader>
             <TableBody>
               {jobs.length > 0 ? (
-                jobs.map((job: unknown) => {
+                jobs.map((job: any) => {
                   const total = (job.produced_quantity || job.quantity || 1) + (job.lost_pieces || 0);
                   const lossRate = ((job.lost_pieces || 0) / total) * 100;
                   const isCritical = lossRate > 5;

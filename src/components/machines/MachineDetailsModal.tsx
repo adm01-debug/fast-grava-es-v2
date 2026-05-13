@@ -23,7 +23,7 @@ import { calculateRealOEE } from "@/lib/oeeCalculations";
 import { useSchedulingData } from "@/hooks/useSchedulingData";
 
 interface MachineDetailsModalProps {
-  machine: unknown | null;
+  machine: any | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }

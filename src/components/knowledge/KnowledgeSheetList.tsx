@@ -118,7 +118,7 @@ export const KnowledgeSheetList = ({
                 Favoritos
               </div>
               <div className="space-y-2">
-                {Object.values(sheets).flat().filter((s: unknown) => favorites.includes(s.id)).map((sheet: unknown) => (
+                {Object.values(sheets).flat().filter((s: any) => favorites.includes(s.id)).map((sheet: any) => (
                   <button
                     key={`fav-${sheet.id}`}
                     onClick={() => onSheetClick(sheet.id)}

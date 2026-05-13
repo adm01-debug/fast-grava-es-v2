@@ -6,7 +6,7 @@ interface KPICardProps {
   title: string;
   value: string;
   subtitle: string;
-  icon: unknown;
+  icon: any;
   trend: 'up' | 'down';
   trendValue: number;
   color: string;

@@ -12,7 +12,7 @@ import { AccessibilityProvider } from "./components/accessibility/SkipLinks";
 import { OfflineProvider } from "./components/offline/OfflineMode";
 
 // Performance Monitoring (Web Vitals to Sentry)
-const sendToSentry = ({ name, delta, id, value }: unknown) => {
+const sendToSentry = ({ name, delta, id, value }: any) => {
   Sentry.captureMessage(`Web Vital: ${name}`, {
     level: "info",
     extra: { delta, id, value },

@@ -11,9 +11,9 @@ interface PendingAction {
 }
 
 interface CachedData {
-  jobs: unknown[];
-  machines: unknown[];
-  techniques: unknown[];
+  jobs: any[];
+  machines: any[];
+  techniques: any[];
   lastSyncedAt: string | null;
 }
 
@@ -267,7 +267,7 @@ export function useOfflineSync() {
 
       // Update local cache
       if (cachedData) {
-        const updatedJobs = cachedData.jobs.map((job: unknown) => {
+        const updatedJobs = cachedData.jobs.map((job: any) => {
           const jobObj = job as { id: string };
           if (jobObj.id === jobId) {
             return { ...jobObj, ...updates };
@@ -315,7 +315,7 @@ export function useOfflineSync() {
 
       // Update local cache
       if (cachedData) {
-        const updatedJobs = cachedData.jobs.map((job: unknown) => {
+        const updatedJobs = cachedData.jobs.map((job: any) => {
           const jobObj = job as { id: string };
           if (jobObj.id === jobId) {
             return {

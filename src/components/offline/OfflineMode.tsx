@@ -9,7 +9,7 @@ interface PendingAction {
   id: string;
   type: 'create' | 'update' | 'delete';
   entity: string;
-  data: unknown;
+  data: any;
   timestamp: Date;
   retries: number;
 }

@@ -87,7 +87,7 @@ export function EditOperatorModal({ operator, open, onOpenChange }: EditOperator
       toast.success('Operador atualizado com sucesso!');
       queryClient.invalidateQueries({ queryKey: ['operators'] });
       onOpenChange(false);
-    } catch (error: unknown) {
+    } catch (error: any) {
       if (import.meta.env.DEV) {
 
       }

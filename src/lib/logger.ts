@@ -12,7 +12,7 @@ interface LogEntry {
   level: LogLevel;
   message: string;
   context?: string;
-  data?: unknown;
+  data?: any;
   timestamp: string;
 }
 
@@ -21,7 +21,7 @@ function formatEntry(entry: LogEntry): string {
   return entry.context ? `${prefix} [${entry.context}] ${entry.message}` : `${prefix} ${entry.message}`;
 }
 
-function createEntry(level: LogLevel, message: string, context?: string, data?: unknown): LogEntry {
+function createEntry(level: LogLevel, message: string, context?: string, data?: any): LogEntry {
   return {
     level,
     message,
@@ -32,25 +32,25 @@ function createEntry(level: LogLevel, message: string, context?: string, data?: 
 }
 
 export const logger = {
-  debug(message: string, data?: unknown, context?: string) {
+  debug(message: string, data?: any, context?: string) {
     if (!isDev) return;
     const entry = createEntry('debug', message, context, data);
     console.debug(formatEntry(entry), data ?? '');
   },
 
-  info(message: string, data?: unknown, context?: string) {
+  info(message: string, data?: any, context?: string) {
     if (!isDev) return;
     const entry = createEntry('info', message, context, data);
     console.info(formatEntry(entry), data ?? '');
   },
 
-  warn(message: string, data?: unknown, context?: string) {
+  warn(message: string, data?: any, context?: string) {
     if (!isDev) return;
     const entry = createEntry('warn', message, context, data);
     console.warn(formatEntry(entry), data ?? '');
   },
 
-  error(message: string, error?: unknown, context?: string) {
+  error(message: string, error?: any, context?: string) {
     // Errors always log (even in prod for Sentry/error tracking)
     const entry = createEntry('error', message, context, error);
     if (isDev) {

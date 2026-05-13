@@ -1,6 +1,6 @@
 import { InventoryMovement } from '../useInventory';
 
-export function exportInventoryMovementsToCSV(movements: unknown[]) {
+export function exportInventoryMovementsToCSV(movements: any[]) {
   if (!movements || movements.length === 0) return;
 
   const headers = [

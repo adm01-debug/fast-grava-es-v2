@@ -348,7 +348,7 @@ export type Database = {
           created_at: string
           expires_at: string | null
           id: string
-          ip_address: unknown
+          ip_address: any
           is_permanent: boolean
           reason: string
           request_count_at_block: number | null
@@ -361,7 +361,7 @@ export type Database = {
           created_at?: string
           expires_at?: string | null
           id?: string
-          ip_address: unknown
+          ip_address: any
           is_permanent?: boolean
           reason: string
           request_count_at_block?: number | null
@@ -374,7 +374,7 @@ export type Database = {
           created_at?: string
           expires_at?: string | null
           id?: string
-          ip_address?: unknown
+          ip_address?: any
           is_permanent?: boolean
           reason?: string
           request_count_at_block?: number | null
@@ -850,7 +850,7 @@ export type Database = {
           country_name: string | null
           created_at: string
           id: string
-          ip_address: unknown
+          ip_address: any
           request_path: string | null
           user_agent: string | null
           user_id: string | null
@@ -861,7 +861,7 @@ export type Database = {
           country_name?: string | null
           created_at?: string
           id?: string
-          ip_address: unknown
+          ip_address: any
           request_path?: string | null
           user_agent?: string | null
           user_id?: string | null
@@ -872,7 +872,7 @@ export type Database = {
           country_name?: string | null
           created_at?: string
           id?: string
-          ip_address?: unknown
+          ip_address?: any
           request_path?: string | null
           user_agent?: string | null
           user_id?: string | null
@@ -1054,7 +1054,7 @@ export type Database = {
           description: string | null
           expires_at: string | null
           id: string
-          ip_address: unknown
+          ip_address: any
           is_active: boolean
           is_global: boolean
           user_id: string | null
@@ -1065,7 +1065,7 @@ export type Database = {
           description?: string | null
           expires_at?: string | null
           id?: string
-          ip_address: unknown
+          ip_address: any
           is_active?: boolean
           is_global?: boolean
           user_id?: string | null
@@ -1076,7 +1076,7 @@ export type Database = {
           description?: string | null
           expires_at?: string | null
           id?: string
-          ip_address?: unknown
+          ip_address?: any
           is_active?: boolean
           is_global?: boolean
           user_id?: string | null
@@ -1251,7 +1251,7 @@ export type Database = {
           created_at: string
           failure_reason: string | null
           id: string
-          ip_address: unknown
+          ip_address: any
           login_status: string
           user_agent: string | null
           user_email: string
@@ -1261,7 +1261,7 @@ export type Database = {
           created_at?: string
           failure_reason?: string | null
           id?: string
-          ip_address?: unknown
+          ip_address?: any
           login_status: string
           user_agent?: string | null
           user_email: string
@@ -1271,7 +1271,7 @@ export type Database = {
           created_at?: string
           failure_reason?: string | null
           id?: string
-          ip_address?: unknown
+          ip_address?: any
           login_status?: string
           user_agent?: string | null
           user_email?: string
@@ -2147,7 +2147,7 @@ export type Database = {
           email_sent: boolean
           email_sent_at: string | null
           id: string
-          ip_address: unknown
+          ip_address: any
           user_agent: string | null
           user_id: string
         }
@@ -2159,7 +2159,7 @@ export type Database = {
           email_sent?: boolean
           email_sent_at?: string | null
           id?: string
-          ip_address?: unknown
+          ip_address?: any
           user_agent?: string | null
           user_id: string
         }
@@ -2171,7 +2171,7 @@ export type Database = {
           email_sent?: boolean
           email_sent_at?: string | null
           id?: string
-          ip_address?: unknown
+          ip_address?: any
           user_agent?: string | null
           user_id?: string
         }
@@ -2866,7 +2866,7 @@ export type Database = {
           created_at: string
           endpoint: string
           id: string
-          ip_address: unknown
+          ip_address: any
           is_blocked: boolean
           request_count: number
           user_email: string | null
@@ -2878,7 +2878,7 @@ export type Database = {
           created_at?: string
           endpoint: string
           id?: string
-          ip_address: unknown
+          ip_address: any
           is_blocked?: boolean
           request_count?: number
           user_email?: string | null
@@ -2890,7 +2890,7 @@ export type Database = {
           created_at?: string
           endpoint?: string
           id?: string
-          ip_address?: unknown
+          ip_address?: any
           is_blocked?: boolean
           request_count?: number
           user_email?: string | null
@@ -3085,7 +3085,7 @@ export type Database = {
           details: Json | null
           event_type: string
           id: string
-          ip_address: unknown
+          ip_address: any
           severity: string
           user_agent: string | null
           user_email: string | null
@@ -3096,7 +3096,7 @@ export type Database = {
           details?: Json | null
           event_type: string
           id?: string
-          ip_address?: unknown
+          ip_address?: any
           severity?: string
           user_agent?: string | null
           user_email?: string | null
@@ -3107,7 +3107,7 @@ export type Database = {
           details?: Json | null
           event_type?: string
           id?: string
-          ip_address?: unknown
+          ip_address?: any
           severity?: string
           user_agent?: string | null
           user_email?: string | null
@@ -4956,7 +4956,7 @@ export type Database = {
           device_type: string | null
           first_seen_at: string
           id: string
-          ip_address: unknown
+          ip_address: any
           is_trusted: boolean
           last_seen_at: string
           os_name: string | null
@@ -4972,7 +4972,7 @@ export type Database = {
           device_type?: string | null
           first_seen_at?: string
           id?: string
-          ip_address?: unknown
+          ip_address?: any
           is_trusted?: boolean
           last_seen_at?: string
           os_name?: string | null
@@ -4988,7 +4988,7 @@ export type Database = {
           device_type?: string | null
           first_seen_at?: string
           id?: string
-          ip_address?: unknown
+          ip_address?: any
           is_trusted?: boolean
           last_seen_at?: string
           os_name?: string | null

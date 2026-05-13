@@ -2,7 +2,7 @@ import { cn } from '@/lib/utils';
 
 interface BITooltipProps {
   active?: boolean;
-  payload?: unknown[];
+  payload?: any[];
   label?: string;
   prefix?: string;
   showPercentage?: boolean;

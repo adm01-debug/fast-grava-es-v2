@@ -23,7 +23,7 @@ export function MachineTPMPanel({ machineId, onStartMaintenance, onOpenCreateSch
   const machineRecords = records.filter(r => r.machine_id === machineId).slice(0, 10);
   const machineAlerts = alerts.filter(a => a.machine_id === machineId && !a.is_resolved);
 
-  const getStatusBadge = (schedule: unknown) => {
+  const getStatusBadge = (schedule: any) => {
     const dueDate = new Date(schedule.next_due_at);
     const daysUntil = differenceInDays(dueDate, new Date());
 

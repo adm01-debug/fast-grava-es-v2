@@ -3,7 +3,7 @@ import { useCallback, useRef } from 'react';
 /**
  * Returns a throttled version of the callback that executes at most once per `delay` ms.
  */
-export function useThrottle<T extends (...args: unknown[]) => void>(
+export function useThrottle<T extends (...args: any[]) => void>(
   callback: T,
   delay: number
 ): T {
@@ -11,7 +11,7 @@ export function useThrottle<T extends (...args: unknown[]) => void>(
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   return useCallback(
-    ((...args: unknown[]) => {
+    ((...args: any[]) => {
       const now = Date.now();
       const remaining = delay - (now - lastCall.current);
 

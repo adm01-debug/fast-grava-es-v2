@@ -41,7 +41,7 @@ export function useVoiceCommands({
       recognitionRef.current.interimResults = true;
       recognitionRef.current.lang = language;
 
-      recognitionRef.current.onresult = (event: unknown) => {
+      recognitionRef.current.onresult = (event: any) => {
         const current = event.resultIndex;
         const result = event.results[current];
         const transcriptText = result[0].transcript.toLowerCase();
@@ -61,7 +61,7 @@ export function useVoiceCommands({
         }
       };
 
-      recognitionRef.current.onerror = (event: unknown) => {
+      recognitionRef.current.onerror = (event: any) => {
         setIsListening(false);
         toast({
           title: 'Erro no reconhecimento de voz',

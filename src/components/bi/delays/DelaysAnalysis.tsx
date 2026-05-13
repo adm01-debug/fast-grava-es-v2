@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 interface DelaysAnalysisProps {
-  delayedJobs: unknown[];
+  delayedJobs: any[];
   rootCauses: { label: string; value: number; color: string }[];
   onExport: (format: 'csv' | 'pdf', type: string) => void;
 }
@@ -62,7 +62,7 @@ export function DelaysAnalysis({ delayedJobs, rootCauses, onExport }: DelaysAnal
                 </TableHeader>
                 <TableBody>
                   {delayedJobs.length > 0 ? (
-                    delayedJobs.map((job: unknown) => (
+                    delayedJobs.map((job: any) => (
                       <TableRow key={job.id} className="border-white/5 hover:bg-white/5 cursor-pointer" onClick={() => navigate(`/job/${job.id}`)}>
                         <TableCell className="text-xs font-medium">
                           {job.order_number || `OS-${job.id.slice(0, 5)}`}

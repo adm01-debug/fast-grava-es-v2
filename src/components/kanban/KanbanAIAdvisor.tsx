@@ -345,7 +345,7 @@ function AdviceCard({
   severity,
   onClick
 }: {
-  icon: unknown,
+  icon: any,
   title: string,
   description: string,
   actionLabel: string,

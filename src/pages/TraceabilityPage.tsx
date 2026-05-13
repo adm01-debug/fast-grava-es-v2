@@ -455,7 +455,7 @@ export default function TraceabilityPage() {
   );
 }
 
-function SortableHead({ label, field, current, dir, onSort }: unknown) {
+function SortableHead({ label, field, current, dir, onSort }: any) {
   return (
     <TableHead>
       <Button variant="ghost" size="sm" className="h-auto p-0 font-black uppercase text-[10px] tracking-widest hover:bg-transparent" onClick={() => onSort(field)}>

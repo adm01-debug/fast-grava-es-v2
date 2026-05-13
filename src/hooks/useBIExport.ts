@@ -4,15 +4,15 @@ import { subDays, format } from 'date-fns';
 import { exportProductionReport, exportLossesReport, exportDelaysReport } from '@/lib/pdfExport';
 
 interface ExportData {
-  periodJobsList?: unknown[];
-  dailyTrend?: unknown[];
-  statusDistribution?: unknown[];
+  periodJobsList?: any[];
+  dailyTrend?: any[];
+  statusDistribution?: any[];
 }
 
 export function useBIExport(biMetrics: ExportData) {
   const [isExporting, setIsExporting] = useState(false);
 
-  const handleExport = async (formatType: 'csv' | 'pdf', type: string, extraData?: unknown) => {
+  const handleExport = async (formatType: 'csv' | 'pdf', type: string, extraData?: any) => {
     setIsExporting(true);
     const dateRange = { start: subDays(new Date(), 30), end: new Date(), label: 'Últimos 30 dias' };
 
@@ -20,17 +20,17 @@ export function useBIExport(biMetrics: ExportData) {
       if (formatType === 'csv') {
         toast.info(`Gerando CSV para ${type}...`);
 
-        let dataToExport: unknown[] = [];
+        let dataToExport: any[] = [];
         let filename = `BI_Export_${type}_${format(new Date(), 'yyyyMMdd')}`;
 
         if (type.includes('Taxa_Perda') || type.includes('Perdas')) {
-          dataToExport = extraData?.jobsWithLosses || (biMetrics.periodJobsList || []).filter((j: unknown) => (j.lost_pieces || 0) > 0);
+          dataToExport = extraData?.jobsWithLosses || (biMetrics.periodJobsList || []).filter((j: any) => (j.lost_pieces || 0) > 0);
         } else if (type.includes('Atrasos')) {
           dataToExport = extraData?.delayedJobsList || [];
         } else if (type.includes('Pedidos_A_Fazer')) {
-          dataToExport = (biMetrics.periodJobsList || []).filter((j: unknown) => j.status === 'scheduled' || j.status === 'queue');
+          dataToExport = (biMetrics.periodJobsList || []).filter((j: any) => j.status === 'scheduled' || j.status === 'queue');
         } else if (type.includes('Producao_Atual')) {
-          dataToExport = (biMetrics.periodJobsList || []).filter((j: unknown) => j.status === 'production');
+          dataToExport = (biMetrics.periodJobsList || []).filter((j: any) => j.status === 'production');
         } else {
           dataToExport = biMetrics.periodJobsList || [];
         }
@@ -42,7 +42,7 @@ export function useBIExport(biMetrics: ExportData) {
 
         // Clean data for CSV
         const cleanedData = dataToExport.map(item => {
-          const cleaned: unknown = {};
+          const cleaned: any = {};
           Object.entries(item).forEach(([key, val]) => {
             if (typeof val !== 'object' || val === null) {
               cleaned[key] = val;
@@ -69,12 +69,12 @@ export function useBIExport(biMetrics: ExportData) {
         toast.info(`Gerando PDF para ${type}...`);
 
         if (type.includes('Taxa_Perda') || type.includes('Perdas')) {
-          const losses = extraData?.jobsWithLosses || (biMetrics.periodJobsList || []).filter((j: unknown) => (j.lost_pieces || 0) > 0);
+          const losses = extraData?.jobsWithLosses || (biMetrics.periodJobsList || []).filter((j: any) => (j.lost_pieces || 0) > 0);
           await exportLossesReport(losses, dateRange);
         } else if (type.includes('Atrasos')) {
           await exportDelaysReport(extraData?.delayedJobsList || [], dateRange);
         } else {
-          const jobs = (biMetrics.periodJobsList || []).map((j: unknown) => ({
+          const jobs = (biMetrics.periodJobsList || []).map((j: any) => ({
             order_number: j.order_number || `OS-${j.id?.slice(0, 5)}`,
             client: j.client_name || 'Cliente',
             product: j.product_name || 'Produto',

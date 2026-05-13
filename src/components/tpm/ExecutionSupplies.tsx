@@ -1,8 +1,8 @@
 import { Badge } from '@/components/ui/badge';
 
 interface ExecutionSuppliesProps {
-  suppliesUsed?: unknown[];
-  technicalSheet?: unknown;
+  suppliesUsed?: any[];
+  technicalSheet?: any;
 }
 
 export function ExecutionSupplies({ suppliesUsed, technicalSheet }: ExecutionSuppliesProps) {
@@ -13,7 +13,7 @@ export function ExecutionSupplies({ suppliesUsed, technicalSheet }: ExecutionSup
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
       {suppliesUsed && suppliesUsed.length > 0 ? (
-        suppliesUsed.map((s: unknown, idx: number) => (
+        suppliesUsed.map((s: any, idx: number) => (
           <div key={idx} className="flex justify-between items-center p-3 rounded-lg bg-emerald-500/5 border border-emerald-500/10">
             <div className="flex flex-col">
               <span className="text-[10px] font-bold uppercase text-emerald-600">Utilizado {s.alternative_used ? '(Alternativo)' : ''}</span>
@@ -26,7 +26,7 @@ export function ExecutionSupplies({ suppliesUsed, technicalSheet }: ExecutionSup
           </div>
         ))
       ) : (
-        technicalSheet?.consumables?.map((c: unknown) => (
+        technicalSheet?.consumables?.map((c: any) => (
           <div key={c.id} className="flex justify-between items-center p-3 rounded-lg bg-primary/5 border border-primary/10">
             <div className="flex flex-col">
               <span className="text-xs font-bold uppercase text-primary">Insumo Sugerido</span>
