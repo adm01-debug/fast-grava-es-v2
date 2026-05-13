@@ -120,15 +120,42 @@ export default function AuthPage() {
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.35 }}>
             <Card variant="elevated" className="border-border/60 shadow-xl dark:shadow-glow-primary/20 backdrop-blur-xl">
               <CardContent className="pt-6">
-                <Tabs defaultValue="login" className="w-full">
-                  <TabsList className="grid w-full grid-cols-2 mb-6"><TabsTrigger value="login">{t('auth.login')}</TabsTrigger><TabsTrigger value="signup">{t('auth.register')}</TabsTrigger></TabsList>
-                  <TabsContent value="login">
-                    <AuthLoginForm loginEmail={loginEmail} loginPassword={loginPassword} rememberMe={rememberMe} isLoading={isLoading} socialLoading={socialLoading} errors={errors} onEmailChange={setLoginEmail} onPasswordChange={setLoginPassword} onRememberMeChange={setRememberMe} onSubmit={handleLogin} onGoogleLogin={handleGoogleLogin} onForgotPassword={() => setShowForgotPassword(true)} onPasskeySuccess={() => navigate('/')} />
-                  </TabsContent>
-                  <TabsContent value="signup">
-                    <AuthSignupForm signupName={signupName} signupEmail={signupEmail} signupPassword={signupPassword} signupConfirmPassword={signupConfirmPassword} isLoading={isLoading} errors={errors} onNameChange={setSignupName} onEmailChange={setSignupEmail} onPasswordChange={setSignupPassword} onConfirmPasswordChange={setSignupConfirmPassword} onSubmit={handleSignup} />
-                  </TabsContent>
-                </Tabs>
+                <AnimatePresence mode="wait">
+                  {mfaFactorId ? (
+                    <motion.div
+                      key="mfa"
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -20 }}
+                    >
+                      <MFALoginVerification
+                        factorId={mfaFactorId}
+                        onSuccess={() => navigate('/')}
+                        onCancel={() => setMfaFactorId(null)}
+                      />
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="tabs"
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: 20 }}
+                    >
+                      <Tabs defaultValue="login" className="w-full">
+                        <TabsList className="grid w-full grid-cols-2 mb-6">
+                          <TabsTrigger value="login">{t('auth.login')}</TabsTrigger>
+                          <TabsTrigger value="signup">{t('auth.register')}</TabsTrigger>
+                        </TabsList>
+                        <TabsContent value="login">
+                          <AuthLoginForm loginEmail={loginEmail} loginPassword={loginPassword} rememberMe={rememberMe} isLoading={isLoading} socialLoading={socialLoading} errors={errors} onEmailChange={setLoginEmail} onPasswordChange={setLoginPassword} onRememberMeChange={setRememberMe} onSubmit={handleLogin} onGoogleLogin={handleGoogleLogin} onForgotPassword={() => setShowForgotPassword(true)} onPasskeySuccess={() => navigate('/')} />
+                        </TabsContent>
+                        <TabsContent value="signup">
+                          <AuthSignupForm signupName={signupName} signupEmail={signupEmail} signupPassword={signupPassword} signupConfirmPassword={signupConfirmPassword} isLoading={isLoading} errors={errors} onNameChange={setSignupName} onEmailChange={setSignupEmail} onPasswordChange={setSignupPassword} onConfirmPasswordChange={setSignupConfirmPassword} onSubmit={handleSignup} />
+                        </TabsContent>
+                      </Tabs>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </CardContent>
             </Card>
           </motion.div>
