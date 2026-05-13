@@ -107,7 +107,7 @@ export function useLoadBalancing(targetDate?: Date) {
         machine,
         technique,
         scheduledMinutes: 0,
-        availableMinutes: DAILY_CAPACITY_MINUTES,
+        availableMinutes: DAILY_CAPACITY_MINUTES as number,
         occupancyRate: 0,
         jobCount: 0,
         jobs: []
