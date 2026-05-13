@@ -67,9 +67,19 @@ export function useLoadBalancing(targetDate?: Date) {
   const { data: jobs } = useJobs();
   const { data: machines } = useMachines();
   const { data: techniques } = useTechniques();
+  const { getConfig, isLoading: configLoading } = useBusinessConfig();
+
+  const DAILY_CAPACITY_MINUTES = useMemo(() => {
+    const hours = getConfig('operating_hours', { start: '07:00', end: '18:00' });
+    const startParts = (hours.start || '07:00').split(':');
+    const endParts = (hours.end || '18:00').split(':');
+    const startMin = parseInt(startParts[0]) * 60 + parseInt(startParts[1]);
+    const endMin = parseInt(endParts[0]) * 60 + parseInt(endParts[1]);
+    return Math.max(60, endMin - startMin);
+  }, [getConfig]);
 
   const analysis = useMemo(() => {
-    if (!jobs || !machines || !techniques) {
+    if (!jobs || !machines || !techniques || configLoading) {
       return { byTechnique: [], suggestions: [], isLoading: true };
     }
 
