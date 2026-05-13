@@ -1,4 +1,3 @@
-import { forwardRef } from "react";
 import { QRCodeSVG } from "qrcode.react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -12,13 +11,13 @@ interface JobQRCodeProps {
   size?: number;
 }
 
-export const JobQRCode = forwardRef<HTMLDivElement, JobQRCodeProps>(({ 
+export const JobQRCode = (({ 
   jobId, 
   orderNumber, 
   product, 
   client,
   size = 150 
-}, ref) => {
+}: JobQRCodeProps) => {
   const qrValue = `${window.location.origin}/track?q=${orderNumber}`;
 
   const handleDownload = () => {
@@ -96,7 +95,7 @@ export const JobQRCode = forwardRef<HTMLDivElement, JobQRCodeProps>(({
   };
 
   return (
-    <Card ref={ref} className="w-fit">
+    <Card className="w-fit">
       <CardHeader className="pb-2">
         <CardTitle className="text-sm font-medium">QR Code</CardTitle>
       </CardHeader>
@@ -128,4 +127,4 @@ export const JobQRCode = forwardRef<HTMLDivElement, JobQRCodeProps>(({
   );
 });
 
-JobQRCode.displayName = "JobQRCode";
+
