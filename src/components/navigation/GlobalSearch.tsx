@@ -101,11 +101,12 @@ export function GlobalSearch({
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
         <div className="relative w-full max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" aria-hidden="true" />
           <Input
             ref={inputRef}
             type="text"
             placeholder={placeholder}
+            aria-label="Busca global"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onFocus={() => setIsOpen(true)}
@@ -116,6 +117,7 @@ export function GlobalSearch({
             <Button
               variant="ghost"
               size="icon"
+              aria-label="Limpar busca"
               className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7"
               onClick={() => {
                 setQuery("");
