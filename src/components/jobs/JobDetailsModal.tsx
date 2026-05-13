@@ -1,5 +1,4 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { StatusBadge } from "@/components/ui/status-badge";
@@ -9,6 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Button, LoadingButton } from "@/components/ui/button";
+
 import { 
   Calendar, 
   Clock, 
@@ -185,7 +186,7 @@ export function JobDetailsModal({ job, open, onOpenChange, onStatusChange }: Job
 
   return (
     <Dialog open={open} onOpenChange={(val) => { onOpenChange(val); if (!val) setIsEditing(false); }}>
-      <DialogContent className="max-w-2xl bg-card border-border/50 backdrop-blur-sm">
+      <DialogContent className="max-w-2xl bg-card border-border/50 backdrop-blur-sm" aria-describedby="job-details-description">
         <DialogHeader>
           <div className="flex items-center justify-between">
             <DialogTitle className="text-xl font-bold text-foreground flex items-center gap-2">
@@ -230,9 +231,10 @@ export function JobDetailsModal({ job, open, onOpenChange, onStatusChange }: Job
                   <Button variant="ghost" size="sm" onClick={() => setIsEditing(false)} className="gap-1">
                     <X className="h-4 w-4" /> {t('common.cancel')}
                   </Button>
-                  <Button size="sm" onClick={handleSubmit(handleSave)} disabled={isSubmitting} className="gap-1 gradient-primary">
-                    <Save className="h-4 w-4" /> {isSubmitting ? t('common.saving') : t('common.save')}
-                  </Button>
+                  <LoadingButton size="sm" onClick={handleSubmit(handleSave)} isLoading={isSubmitting} className="gap-1 gradient-primary">
+                    <Save className="h-4 w-4" /> {t('common.save')}
+                  </LoadingButton>
+
                 </div>
               )}
               <Badge className={`${priorityColors[job.priority]} border`}>
@@ -241,9 +243,10 @@ export function JobDetailsModal({ job, open, onOpenChange, onStatusChange }: Job
               <StatusBadge status={job.status} />
             </div>
           </div>
-          <DialogDescription className="sr-only">
+          <DialogDescription id="job-details-description" className="sr-only">
             {t('jobs.detailsFor', { order: job.order_number })}
           </DialogDescription>
+
         </DialogHeader>
 
         <Tabs defaultValue="details" className="mt-4">

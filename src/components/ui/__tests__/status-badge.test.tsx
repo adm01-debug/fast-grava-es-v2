@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { render } from '@testing-library/react';
-import { screen } from '@testing-library/dom';
+import { screen } from '@testing-library/react';
 import { StatusBadge } from '../status-badge';
 import type { JobStatus } from '@/types/scheduling';
 
