@@ -100,34 +100,51 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const { checkDevice } = useDeviceDetection();
 
   const fetchUserData = async (userId: string) => {
+    console.log('[AuthContext] Fetching user data for:', userId);
     try {
       // Fetch profile
-      const { data: profileData } = await supabase
+      console.log('[AuthContext] Fetching profile...');
+      const { data: profileData, error: profileError } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', userId)
         .maybeSingle();
 
+      if (profileError) console.error('[AuthContext] Profile fetch error:', profileError);
       if (profileData) {
+        console.log('[AuthContext] Profile found:', profileData);
         setProfile(profileData as Profile);
+      } else {
+        console.log('[AuthContext] No profile found');
       }
 
       // Fetch role using RPC
-      const { data: roleData } = await supabase
+      console.log('[AuthContext] Fetching role via RPC get_user_role...');
+      const { data: roleData, error: roleError } = await supabase
         .rpc('get_user_role', { _user_id: userId });
 
+      if (roleError) {
+        console.error('[AuthContext] Role RPC error:', roleError);
+      }
+      
       if (roleData) {
+        console.log('[AuthContext] Role found:', roleData);
         setRole(roleData as AppRole);
+      } else {
+        console.warn('[AuthContext] No role returned for user');
       }
     } catch (error) {
-      if (import.meta.env.DEV) console.error('Error fetching user data:', error);
+      console.error('[AuthContext] Error in fetchUserData:', error);
     }
   };
 
   useEffect(() => {
+    console.log('[AuthContext] Mounting AuthProvider, checking session...');
+    
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
+        console.log('[AuthContext] Auth state change:', event, session?.user?.id);
         setSession(session);
         setUser(session?.user ?? null);
 
@@ -146,7 +163,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     );
 
     // THEN check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(({ data: { session }, error }) => {
+      console.log('[AuthContext] Initial getSession result:', session?.user?.id, error);
       setSession(session);
       setUser(session?.user ?? null);
 
@@ -157,7 +175,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setIsLoading(false);
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      console.log('[AuthContext] Unmounting AuthProvider');
+      subscription.unsubscribe();
+    };
   }, []);
 
   const signIn = async (email: string, password: string) => {
