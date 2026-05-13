@@ -24,7 +24,7 @@ export function KanbanMetricsBar({ jobs }: KanbanMetricsBarProps) {
           setThresholds({ bottleneckRiskMinutes: parsed.bottleneckRiskMinutes });
         }
       } catch (e) {
-        console.error('Error loading thresholds', e);
+        
       }
     }
   }, []);

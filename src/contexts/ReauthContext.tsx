@@ -112,7 +112,7 @@ export function ReauthProvider({ children }: { children: ReactNode }) {
         onSuccessCallback();
       }
     } catch (error) {
-      if (import.meta.env.DEV) console.error('Reauth error:', error);
+      if (import.meta.env.DEV) 
       const message = error instanceof Error ? error.message : 'Falha na verificação';
       toast.error(message);
 

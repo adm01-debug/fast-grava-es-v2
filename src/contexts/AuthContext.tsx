@@ -17,13 +17,13 @@ async function checkLockout(email: string, ipAddress?: string): Promise<{
     });
     
     if (error) {
-      if (import.meta.env.DEV) console.error('Lockout check error:', error);
+      if (import.meta.env.DEV) 
       return { locked: false };
     }
     
     return data;
   } catch (err) {
-    if (import.meta.env.DEV) console.error('Lockout check failed:', err);
+    if (import.meta.env.DEV) 
     return { locked: false };
   }
 }
@@ -44,13 +44,13 @@ async function recordLoginAttempt(email: string, success: boolean, ipAddress?: s
     });
     
     if (error) {
-      if (import.meta.env.DEV) console.error('Record attempt error:', error);
+      if (import.meta.env.DEV) 
       return {};
     }
     
     return data;
   } catch (err) {
-    if (import.meta.env.DEV) console.error('Record attempt failed:', err);
+    if (import.meta.env.DEV) 
     return {};
   }
 }
@@ -100,51 +100,51 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const { checkDevice } = useDeviceDetection();
 
   const fetchUserData = async (userId: string) => {
-    console.log('[AuthContext] Fetching user data for:', userId);
+    
     try {
       // Fetch profile
-      console.log('[AuthContext] Fetching profile...');
+      
       const { data: profileData, error: profileError } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', userId)
         .maybeSingle();
 
-      if (profileError) console.error('[AuthContext] Profile fetch error:', profileError);
+      if (profileError) 
       if (profileData) {
-        console.log('[AuthContext] Profile found:', profileData);
+        
         setProfile(profileData as Profile);
       } else {
-        console.log('[AuthContext] No profile found');
+        
       }
 
       // Fetch role using RPC
-      console.log('[AuthContext] Fetching role via RPC get_user_role...');
+      
       const { data: roleData, error: roleError } = await supabase
         .rpc('get_user_role', { _user_id: userId });
 
       if (roleError) {
-        console.error('[AuthContext] Role RPC error:', roleError);
+        
       }
       
       if (roleData) {
-        console.log('[AuthContext] Role found:', roleData);
+        
         setRole(roleData as AppRole);
       } else {
-        console.warn('[AuthContext] No role returned for user');
+        
       }
     } catch (error) {
-      console.error('[AuthContext] Error in fetchUserData:', error);
+      
     }
   };
 
   useEffect(() => {
-    console.log('[AuthContext] Mounting AuthProvider, checking session...');
+    
     
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
-        console.log('[AuthContext] Auth state change:', event, session?.user?.id);
+        
         setSession(session);
         setUser(session?.user ?? null);
 
@@ -164,7 +164,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     // THEN check for existing session
     supabase.auth.getSession().then(({ data: { session }, error }) => {
-      console.log('[AuthContext] Initial getSession result:', session?.user?.id, error);
+      
       setSession(session);
       setUser(session?.user ?? null);
 
@@ -176,7 +176,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
 
     return () => {
-      console.log('[AuthContext] Unmounting AuthProvider');
+      
       subscription.unsubscribe();
     };
   }, []);
@@ -253,7 +253,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           });
         }
       } catch (deviceError) {
-        if (import.meta.env.DEV) console.error('Error checking device:', deviceError);
+        if (import.meta.env.DEV) 
       }
     }
     

@@ -14,7 +14,7 @@ interface BIAIInsightsProps {
     periodCompletedPieces: number;
     periodLostPieces: number;
     toDoJobs: number;
-    dailyTrend?: any[];
+    dailyTrend?: unknown[];
   };
   oeeData: {
     overallOEE: number;

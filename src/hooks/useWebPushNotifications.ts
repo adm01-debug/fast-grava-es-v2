@@ -62,7 +62,7 @@ export function useWebPushNotifications() {
           setIsSubscribed(false);
         }
       } catch (error) {
-        if (import.meta.env.DEV) console.error('Error checking subscription:', error);
+        if (import.meta.env.DEV) 
       } finally {
         setIsLoading(false);
       }
@@ -135,7 +135,7 @@ export function useWebPushNotifications() {
         });
 
       if (error) {
-        if (import.meta.env.DEV) console.error('Error saving subscription:', error);
+        if (import.meta.env.DEV) 
         throw error;
       }
 
@@ -144,7 +144,7 @@ export function useWebPushNotifications() {
       return true;
 
     } catch (error) {
-      if (import.meta.env.DEV) console.error('Error subscribing to push:', error);
+      if (import.meta.env.DEV) 
       toast.error('Erro ao ativar notificações push');
       return false;
     } finally {
@@ -178,7 +178,7 @@ export function useWebPushNotifications() {
       return true;
 
     } catch (error) {
-      if (import.meta.env.DEV) console.error('Error unsubscribing from push:', error);
+      if (import.meta.env.DEV) 
       toast.error('Erro ao desativar notificações');
       return false;
     } finally {
@@ -205,7 +205,7 @@ export function useWebPushNotifications() {
       toast.success('Notificação de teste enviada!');
       return true;
     } catch (error) {
-      if (import.meta.env.DEV) console.error('Error sending test notification:', error);
+      if (import.meta.env.DEV) 
       toast.error('Erro ao enviar notificação de teste');
       return false;
     }

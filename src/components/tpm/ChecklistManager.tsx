@@ -142,7 +142,7 @@ export function ChecklistManager() {
       toast.success(`Checklist ${currentChecklist ? 'atualizado' : 'criado'} para versão ${newVersion}`);
       queryClient.invalidateQueries({ queryKey: ['maintenance-checklists'] });
     } catch (error) {
-      console.error('Error saving checklist:', error);
+      
       toast.error('Erro ao salvar checklist');
     } finally {
       setIsSaving(false);

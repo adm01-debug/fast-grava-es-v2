@@ -26,7 +26,7 @@ export function PasskeyLoginButton({ email, onSuccess, className }: PasskeyLogin
           }
         } catch (error) {
           if (isMounted) {
-            console.error('Error checking platform authenticator:', error);
+            
             setIsPlatformAvailable(false);
           }
         }

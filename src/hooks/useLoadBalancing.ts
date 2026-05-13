@@ -80,7 +80,7 @@ export function useLoadBalancing(targetDate?: Date) {
     );
 
     if (validJobs.length === 0 && jobs.length > 0) {
-      if (import.meta.env.DEV) console.warn('[useLoadBalancing] All jobs failed validation');
+      if (import.meta.env.DEV) 
     }
 
     const date = targetDate || new Date();

@@ -52,15 +52,15 @@ export function FuturisticBI({ biMetrics, kpis, oeeData, isLoading }: BIProps) {
   const jobsWithLosses = useMemo(() => {
     if (!biMetrics.periodJobsList) return [];
     return biMetrics.periodJobsList
-      .filter((j: any) => (j.lost_pieces || 0) > 0)
-      .sort((a: any, b: any) => (b.lost_pieces || 0) - (a.lost_pieces || 0))
+      .filter((j: unknown) => (j.lost_pieces || 0) > 0)
+      .sort((a: unknown, b: unknown) => (b.lost_pieces || 0) - (a.lost_pieces || 0))
       .slice(0, 10);
   }, [biMetrics.periodJobsList]);
 
   const delayedJobsList = useMemo(() => {
     if (!biMetrics.periodJobsList) return [];
     return biMetrics.periodJobsList
-      .filter((j: any) => j.status === 'delayed')
+      .filter((j: unknown) => j.status === 'delayed')
       .slice(0, 10);
   }, [biMetrics.periodJobsList]);
 
@@ -80,7 +80,7 @@ export function FuturisticBI({ biMetrics, kpis, oeeData, isLoading }: BIProps) {
   const handleDrillDown = (title: string, segment: string) => {
     setDrillDownTitle(title);
     if (biMetrics.periodJobsList) {
-      const filtered = biMetrics.periodJobsList.filter((j: any) => {
+      const filtered = biMetrics.periodJobsList.filter((j: unknown) => {
         if (segment === 'all') return true;
         const s = segment.toLowerCase();
         return (
@@ -98,7 +98,7 @@ export function FuturisticBI({ biMetrics, kpis, oeeData, isLoading }: BIProps) {
             (segment === 'Studio Gamma' && !j.technique_id?.includes('Laser') && !j.technique_id?.includes('UV'))
           ))
         );
-      }).map((j: any) => {
+      }).map((j: unknown) => {
         const total = (j.produced_quantity || j.quantity || 1) + (j.lost_pieces || 0);
         return {
           id: j.id,
@@ -120,7 +120,7 @@ export function FuturisticBI({ biMetrics, kpis, oeeData, isLoading }: BIProps) {
   const studioData = useMemo(() => {
     if (!biMetrics.machineUtilization) return [];
     const machineGroups: Record<string, any[]> = {};
-    biMetrics.machineUtilization.forEach((m: any) => {
+    biMetrics.machineUtilization.forEach((m: unknown) => {
       const studioName = m.technique.includes('Laser') ? 'Studio Alfa' : 
                         m.technique.includes('UV') ? 'Studio Beta' : 
                         'Studio Gamma';
@@ -128,8 +128,8 @@ export function FuturisticBI({ biMetrics, kpis, oeeData, isLoading }: BIProps) {
       machineGroups[studioName].push(m);
     });
     return Object.entries(machineGroups).map(([name, machines]) => {
-      const totalJobs = machines.reduce((sum: number, m: any) => sum + m.totalJobs, 0);
-      const avgUtilization = machines.reduce((sum: number, m: any) => sum + m.utilization, 0) / machines.length;
+      const totalJobs = machines.reduce((sum: number, m: unknown) => sum + m.totalJobs, 0);
+      const avgUtilization = machines.reduce((sum: number, m: unknown) => sum + m.utilization, 0) / machines.length;
       return {
         name,
         jobs: totalJobs,

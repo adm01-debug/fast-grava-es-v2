@@ -70,11 +70,11 @@ export function useDashboardLayout() {
             });
             setWidgets(merged);
           } catch (e) {
-            console.error("Error parsing local layout", e);
+            
           }
         }
       } catch (err) {
-        console.error("Error loading layout:", err);
+        
       }
     };
 
@@ -101,7 +101,7 @@ export function useDashboardLayout() {
 
       if (error) throw error;
     } catch (error) {
-      console.error("Error saving layout to DB:", error);
+      
       toast.error("Erro ao salvar layout na nuvem. Mantido localmente.");
     } finally {
       setTimeout(() => setIsSaving(false), 500);

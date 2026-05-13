@@ -45,7 +45,7 @@ export const useTechnicalSheetMutations = () => {
     },
     onError: (error: Error) => {
       const appError = createAppError(error, { entity: 'technical_sheets', operation: 'create' });
-      if (import.meta.env.DEV) console.error('[createSheet]', appError);
+      if (import.meta.env.DEV) 
       toast({ title: 'Erro ao criar ficha', description: error.message, variant: 'destructive' });
     }
   });
@@ -67,7 +67,7 @@ export const useTechnicalSheetMutations = () => {
     },
     onError: (error: Error) => {
       const appError = createAppError(error, { entity: 'technical_sheets', operation: 'update' });
-      if (import.meta.env.DEV) console.error('[updateSheet]', appError);
+      if (import.meta.env.DEV) 
       toast({ title: 'Erro ao atualizar', description: error.message, variant: 'destructive' });
     }
   });
@@ -87,7 +87,7 @@ export const useTechnicalSheetMutations = () => {
     },
     onError: (error: Error) => {
       const appError = createAppError(error, { entity: 'technical_sheets', operation: 'delete' });
-      if (import.meta.env.DEV) console.error('[deleteSheet]', appError);
+      if (import.meta.env.DEV) 
       toast({ title: 'Erro ao remover', description: error.message, variant: 'destructive' });
     }
   });

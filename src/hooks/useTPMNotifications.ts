@@ -223,8 +223,8 @@ export const useTPMNotifications = () => {
 
       toast.success(`Notificação de teste enviada via ${channel} para ${recipients.length} usuários.`);
       return { success: true, recipients };
-    } catch (error: any) {
-      console.error('Error sending test notification:', error);
+    } catch (error: unknown) {
+      
       toast.error('Erro ao processar notificação de teste');
       return { success: false, recipients: [] };
     }

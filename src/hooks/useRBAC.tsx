@@ -111,15 +111,15 @@ export function useRBAC(): RBACResult {
 
   const permissions = useMemo(() => {
     if (isLoading) {
-      console.log('[useRBAC] Auth is still loading');
+      
       return [];
     }
     if (!role) {
-      console.log('[useRBAC] No role found for permissions check');
+      
       return [];
     }
     const perms = ROLE_PERMISSIONS[role] || [];
-    console.log('[useRBAC] Loaded permissions for role:', role, perms.length);
+    
     return perms;
   }, [role, isLoading]);
 

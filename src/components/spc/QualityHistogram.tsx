@@ -5,7 +5,7 @@ import { SPCParameter } from '@/hooks/useSPC';
 
 interface QualityHistogramProps {
   parameter: SPCParameter;
-  measurements: any[];
+  measurements: unknown[];
 }
 
 export function QualityHistogram({ parameter, measurements }: QualityHistogramProps) {

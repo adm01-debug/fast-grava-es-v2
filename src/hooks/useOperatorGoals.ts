@@ -73,12 +73,12 @@ export function useOperatorGoals() {
           .order('period_start', { ascending: false });
 
         if (error) {
-          if (import.meta.env.DEV) console.error('[useOperatorGoals] fetch failed:', categorizeError(error), error);
+          if (import.meta.env.DEV) 
           throw error;
         }
         return (data || []) as OperatorGoal[];
       } catch (err) {
-        if (import.meta.env.DEV) console.error('[useOperatorGoals] error:', err);
+        if (import.meta.env.DEV) 
         throw err;
       }
     },
@@ -132,7 +132,7 @@ export function useOperatorGoals() {
       toast.success('Meta criada com sucesso');
     },
     onError: (error) => {
-      if (import.meta.env.DEV) console.error('[useOperatorGoals] create failed:', categorizeError(error), error);
+      if (import.meta.env.DEV) 
       showErrorToast(error, 'Erro ao criar meta', GOALS_ERROR_CONTEXT.create);
     },
   });
@@ -155,7 +155,7 @@ export function useOperatorGoals() {
       toast.success('Meta atualizada com sucesso');
     },
     onError: (error) => {
-      if (import.meta.env.DEV) console.error('[useOperatorGoals] update failed:', categorizeError(error), error);
+      if (import.meta.env.DEV) 
       showErrorToast(error, 'Erro ao atualizar meta', GOALS_ERROR_CONTEXT.update);
     },
   });
@@ -175,7 +175,7 @@ export function useOperatorGoals() {
       toast.success('Meta removida com sucesso');
     },
     onError: (error) => {
-      if (import.meta.env.DEV) console.error('[useOperatorGoals] delete failed:', categorizeError(error), error);
+      if (import.meta.env.DEV) 
       showErrorToast(error, 'Erro ao remover meta', GOALS_ERROR_CONTEXT.delete);
     },
   });

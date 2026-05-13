@@ -56,7 +56,7 @@ export function GlobalSearch({
         setResults(searchResults);
         setSelectedIndex(-1);
       } catch (error) {
-        if (import.meta.env.DEV) console.error("Search error:", error);
+        if (import.meta.env.DEV) 
         setResults([]);
       } finally {
         setIsLoading(false);

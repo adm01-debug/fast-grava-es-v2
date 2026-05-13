@@ -5,9 +5,9 @@ import { Badge } from '@/components/ui/badge';
 import { Camera, CheckCircle2 } from 'lucide-react';
 
 interface ChecklistItemProps {
-  item: any;
-  response: any;
-  onUpdate: (updates: any) => void;
+  item: unknown;
+  response: unknown;
+  onUpdate: (updates: unknown) => void;
   onFileUpload: (file: File) => void;
   isUploading: boolean;
 }

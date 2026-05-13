@@ -83,7 +83,7 @@ export function useLoadBalancingWithActions(targetDate?: Date) {
         };
       } catch (error) {
         const appError = createAppError(error, LOAD_BALANCING_ERROR_CONTEXT.applySuggestion);
-        if (import.meta.env.DEV) console.error('[applySuggestion]', appError);
+        if (import.meta.env.DEV) 
         throw error;
       }
     },
@@ -120,7 +120,7 @@ export function useLoadBalancingWithActions(targetDate?: Date) {
             };
           } catch (error) {
             const appError = createAppError(error, LOAD_BALANCING_ERROR_CONTEXT.applyMultiple);
-            if (import.meta.env.DEV) console.error('[applyMultipleSuggestions]', appError);
+            if (import.meta.env.DEV) 
             return {
               success: false,
               jobId: suggestion.jobId,

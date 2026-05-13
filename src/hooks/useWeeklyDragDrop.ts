@@ -51,7 +51,7 @@ export function useWeeklyDragDrop({ onUpdate, allJobs }: UseWeeklyDragDropProps)
       const duration = job.estimated_duration || 60;
       const nextSlot = findNextAvailableSlot(existingJobsOnDest, duration);
       
-      const updateData: any = {
+      const updateData: unknown = {
         machine_id: machineId,
         scheduled_date: date,
         updated_at: new Date().toISOString(),
@@ -85,7 +85,7 @@ export function useWeeklyDragDrop({ onUpdate, allJobs }: UseWeeklyDragDropProps)
       toast.success('Agendamento movido com sucesso');
       onUpdate();
     } catch (err) {
-      console.error('Error updating job:', err);
+      
       toast.error('Erro ao mover agendamento');
     }
   };

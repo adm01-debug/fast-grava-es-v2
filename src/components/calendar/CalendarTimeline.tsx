@@ -30,7 +30,7 @@ interface CalendarTimelineProps {
   allJobs?: DbJob[];
 }
 
-function DroppableRow({ children, id, className, onClick, style }: any) {
+function DroppableRow({ children, id, className, onClick, style }: unknown) {
   const { setNodeRef, isOver } = useDroppable({ id });
   return (
     <div

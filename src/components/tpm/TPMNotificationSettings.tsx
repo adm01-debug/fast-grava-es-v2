@@ -187,7 +187,7 @@ export function TPMNotificationSettings() {
                       ))}
                     </SelectContent>
                   </Select>
-                  <Select value={testChannel} onValueChange={(v: any) => setTestChannel(v)}>
+                  <Select value={testChannel} onValueChange={(v: unknown) => setTestChannel(v)}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
@@ -399,7 +399,7 @@ export function TPMNotificationSettings() {
                 Destinatários ({validationData.recipients.length})
               </h4>
               <div className="max-h-[200px] overflow-y-auto space-y-2 pr-2">
-                {validationData.recipients.map((r: any, idx: number) => (
+                {validationData.recipients.map((r: unknown, idx: number) => (
                   <div key={idx} className="text-xs p-2 border rounded bg-card flex justify-between items-center">
                     <span className="truncate max-w-[150px]">{r.user_id}</span>
                     {testChannel === 'whatsapp' && r.whatsapp_number && (

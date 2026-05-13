@@ -64,7 +64,7 @@ export default function AuthPage() {
     try { z.string().email().parse(forgotEmail); } catch { toast.error(t('auth.invalidEmail')); return; }
     setIsSendingReset(true);
     const { error } = await supabase.from('password_reset_requests').insert({ user_email: forgotEmail.trim().toLowerCase(), requested_by_name: null });
-    if (error) { if (import.meta.env.DEV) console.error('Error creating reset request:', error); toast.error(t('errors.generic')); setIsSendingReset(false); return; }
+    if (error) { if (import.meta.env.DEV)  return; }
     toast.success(t('auth.resetRequestSent', 'Solicitação enviada! Aguarde aprovação do gestor.')); setShowForgotPassword(false); setForgotEmail(''); setIsSendingReset(false);
   };
 

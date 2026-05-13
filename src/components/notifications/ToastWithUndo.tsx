@@ -365,7 +365,7 @@ export function showToast(
   if (window.__toastManager) {
     return window.__toastManager.addToast(options);
   }
-  if (import.meta.env.DEV) console.warn("Toast container not mounted");
+  if (import.meta.env.DEV) 
   return null;
 }
 

@@ -40,7 +40,7 @@ export function DashboardExport() {
       link.click();
       toast.success('Dashboard exportado como imagem');
     } catch (error) {
-      console.error('Export error:', error);
+      
       toast.error('Erro ao exportar dashboard');
     } finally {
       setIsExporting(false);
@@ -75,7 +75,7 @@ export function DashboardExport() {
       pdf.save(`dashboard-fastgravacoes-${new Date().toISOString().split('T')[0]}.pdf`);
       toast.success('Dashboard exportado como PDF');
     } catch (error) {
-      console.error('Export error:', error);
+      
       toast.error('Erro ao exportar dashboard');
     } finally {
       setIsExporting(false);

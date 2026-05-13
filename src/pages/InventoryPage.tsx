@@ -240,7 +240,7 @@ function InventoryCard({
   onSelect 
 }: { 
   item: InventoryItem, 
-  onMovement: any,
+  onMovement: unknown,
   isSelected: boolean,
   onSelect: (id: string, checked: boolean) => void
 }) {
@@ -366,7 +366,7 @@ function InventoryCard({
               <div className="grid gap-4 py-4">
                 <div className="space-y-2">
                   <Label>Tipo</Label>
-                  <Select value={movementType} onValueChange={(v: any) => setMovementType(v)}>
+                  <Select value={movementType} onValueChange={(v: unknown) => setMovementType(v)}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
@@ -455,7 +455,7 @@ function InventoryHistoryTable() {
       <div className="p-4 border-b border-border/50 flex flex-col sm:flex-row gap-4 items-end bg-muted/20">
         <div className="space-y-1 flex-1">
           <Label className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest">Período</Label>
-          <Select value={dateFilter} onValueChange={(v: any) => setDateFilter(v)}>
+          <Select value={dateFilter} onValueChange={(v: unknown) => setDateFilter(v)}>
             <SelectTrigger className="bg-background">
               <SelectValue />
             </SelectTrigger>
@@ -501,7 +501,7 @@ function InventoryHistoryTable() {
             </tr>
           </thead>
           <tbody className="divide-y divide-border/30">
-            {filteredMovements.map((m: any) => (
+            {filteredMovements.map((m: unknown) => (
               <tr key={m.id} className="hover:bg-muted/10 transition-colors group">
                 <td className="p-4 font-mono text-muted-foreground">
                   {format(parseISO(m.created_at), 'dd/MM/yy HH:mm')}
@@ -648,7 +648,7 @@ function BatchQRLabelModal({ open, onOpenChange, items }: { open: boolean, onOpe
   );
 }
 
-function AIPredictionValidationModal({ open, onOpenChange, items, movements }: { open: boolean, onOpenChange: (o: boolean) => void, items: InventoryItem[], movements: any[] }) {
+function AIPredictionValidationModal({ open, onOpenChange, items, movements }: { open: boolean, onOpenChange: (o: boolean) => void, items: InventoryItem[], movements: unknown[] }) {
   const { calculateAI, isCalculatingAI } = useInventory();
   const [calibratedAccuracy, setCalibratedAccuracy] = useState<number | null>(null);
 

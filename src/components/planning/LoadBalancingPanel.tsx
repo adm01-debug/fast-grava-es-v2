@@ -48,7 +48,7 @@ export function LoadBalancingPanel({ onExplain }: LoadBalancingPanelProps) {
       
       queryClient.invalidateQueries({ queryKey: ['jobs'] });
     } catch (error) {
-      console.error('Error balancing load:', error);
+      
       toast.error('Erro ao reequilibrar carga');
     } finally {
       setIsApplying(false);

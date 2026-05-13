@@ -39,7 +39,7 @@ async function checkPasswordBreach(password: string): Promise<{ breached: boolea
     });
 
     if (!response.ok) {
-      if (import.meta.env.DEV) console.warn('HIBP API request failed:', response.status);
+      if (import.meta.env.DEV) 
       return { breached: false, count: 0 };
     }
 
@@ -56,7 +56,7 @@ async function checkPasswordBreach(password: string): Promise<{ breached: boolea
 
     return { breached: false, count: 0 };
   } catch (error) {
-    if (import.meta.env.DEV) console.warn('Error checking password breach:', error);
+    if (import.meta.env.DEV) 
     return { breached: false, count: 0 };
   }
 }

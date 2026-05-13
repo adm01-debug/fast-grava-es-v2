@@ -358,7 +358,7 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30) {
     const currentPeriod = trendData.slice(Math.max(0, trendData.length - daysBack));
     const previousPeriod = trendData.slice(0, Math.max(0, trendData.length - daysBack));
 
-    const avg = (arr: any[], key: string) => arr.length > 0 ? arr.reduce((s, x) => s + x[key], 0) / arr.length : 0;
+    const avg = (arr: unknown[], key: string) => arr.length > 0 ? arr.reduce((s, x) => s + x[key], 0) / arr.length : 0;
 
     const comparison = {
       currentOEE: avg(currentPeriod, 'oee'),
@@ -431,7 +431,7 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30) {
         }
       });
     } catch (err) {
-      console.error('Error exporting OEE:', err);
+      
     }
   };
 

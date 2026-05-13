@@ -47,7 +47,7 @@ export const useEfficiencyAlertHistory = (options?: { limit?: number; offset?: n
         return data as EfficiencyAlertHistory[];
       } catch (error) {
         const appError = createAppError(error, EFFICIENCY_ALERTS_CONTEXT.fetch);
-        if (import.meta.env.DEV) console.error('[useEfficiencyAlertHistory]', appError);
+        if (import.meta.env.DEV) 
         throw error;
       }
     },
@@ -68,7 +68,7 @@ export const useEfficiencyAlertHistory = (options?: { limit?: number; offset?: n
         return count ?? 0;
       } catch (error) {
         const appError = createAppError(error, EFFICIENCY_ALERTS_CONTEXT.count);
-        if (import.meta.env.DEV) console.error('[useEfficiencyAlertHistory:count]', appError);
+        if (import.meta.env.DEV) 
         throw error;
       }
     },
@@ -119,7 +119,7 @@ export const useEfficiencyAlertHistory = (options?: { limit?: number; offset?: n
         return data;
       } catch (error) {
         const appError = createAppError(error, EFFICIENCY_ALERTS_CONTEXT.record);
-        if (import.meta.env.DEV) console.error('[recordAlert]', appError);
+        if (import.meta.env.DEV) 
         throw error;
       }
     },
@@ -155,7 +155,7 @@ export const useEfficiencyAlertHistory = (options?: { limit?: number; offset?: n
         return data;
       } catch (error) {
         const appError = createAppError(error, EFFICIENCY_ALERTS_CONTEXT.resolve);
-        if (import.meta.env.DEV) console.error('[resolveAlert]', appError);
+        if (import.meta.env.DEV) 
         throw error;
       }
     },

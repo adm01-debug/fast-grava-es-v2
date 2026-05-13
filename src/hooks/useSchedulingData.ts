@@ -58,12 +58,12 @@ export function useSchedulingData() {
         
         if (error) {
           const appError = createAppError(error, ERROR_CONTEXT.techniques);
-          if (import.meta.env.DEV) console.error('[useSchedulingData] Techniques fetch failed:', appError);
+          if (import.meta.env.DEV) 
           throw error;
         }
         return data as DbTechnique[];
       } catch (err) {
-        if (import.meta.env.DEV) console.error('[useSchedulingData] Techniques error:', categorizeError(err), err);
+        if (import.meta.env.DEV) 
         throw err;
       }
     },
@@ -84,12 +84,12 @@ export function useSchedulingData() {
         
         if (error) {
           const appError = createAppError(error, ERROR_CONTEXT.machines);
-          if (import.meta.env.DEV) console.error('[useSchedulingData] Machines fetch failed:', appError);
+          if (import.meta.env.DEV) 
           throw error;
         }
         return data as DbMachine[];
       } catch (err) {
-        if (import.meta.env.DEV) console.error('[useSchedulingData] Machines error:', categorizeError(err), err);
+        if (import.meta.env.DEV) 
         throw err;
       }
     },
@@ -110,12 +110,12 @@ export function useSchedulingData() {
         
         if (error) {
           const appError = createAppError(error, ERROR_CONTEXT.jobs);
-          if (import.meta.env.DEV) console.error('[useSchedulingData] Jobs fetch failed:', appError);
+          if (import.meta.env.DEV) 
           throw error;
         }
         return data as DbJob[];
       } catch (err) {
-        if (import.meta.env.DEV) console.error('[useSchedulingData] Jobs error:', categorizeError(err), err);
+        if (import.meta.env.DEV) 
         throw err;
       }
     },

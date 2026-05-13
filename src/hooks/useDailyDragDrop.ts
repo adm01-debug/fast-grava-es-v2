@@ -50,7 +50,7 @@ export function useDailyDragDrop({ onUpdate, allJobs, startHour, totalMinutes }:
       // Find next available slot on the target machine
       const nextSlot = findNextAvailableSlot(existingJobsOnDest, duration);
       
-      const updateData: any = {
+      const updateData: unknown = {
         machine_id: machineId,
         updated_at: new Date().toISOString(),
       };
@@ -70,7 +70,7 @@ export function useDailyDragDrop({ onUpdate, allJobs, startHour, totalMinutes }:
       toast.success('Agendamento movido');
       onUpdate();
     } catch (err) {
-      console.error('Error updating job:', err);
+      
       toast.error('Erro ao mover agendamento');
     }
   };

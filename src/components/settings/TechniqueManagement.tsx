@@ -33,7 +33,7 @@ export function TechniqueManagement() {
   const isLoading = isLoadingTech || isLoadingData;
 
   const saveMutation = useMutation({
-    mutationFn: async (technique: any) => {
+    mutationFn: async (technique: unknown) => {
       const { data, error } = await supabase
         .from('techniques')
         .upsert(technique)
@@ -47,7 +47,7 @@ export function TechniqueManagement() {
       setEditingTechnique(null);
       toast.success('Técnica salva com sucesso');
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       toast.error(`Erro ao salvar técnica: ${error.message}`);
     }
   });
@@ -61,7 +61,7 @@ export function TechniqueManagement() {
       queryClient.invalidateQueries({ queryKey: ['techniques-admin'] });
       toast.success('Técnica excluída');
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       toast.error(`Erro ao excluir técnica: ${error.message}`);
     }
   });

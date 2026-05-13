@@ -247,7 +247,7 @@ export default function BIDashboard() {
     );
   };
 
-  const handleDrillDown = (title: string, jobs: any[]) => {
+  const handleDrillDown = (title: string, jobs: unknown[]) => {
     setDrillDownTitle(title);
     setDrillDownJobs(jobs.map(j => ({
       ...j,
@@ -379,7 +379,7 @@ export default function BIDashboard() {
                   setDrillDownTitle(title);
                   
                   if (biMetrics.periodJobsList) {
-                    const filtered = biMetrics.periodJobsList.filter((j: any) => {
+                    const filtered = biMetrics.periodJobsList.filter((j: unknown) => {
                       if (segment === 'all') return true;
                       const s = segment.toLowerCase();
                       
@@ -392,7 +392,7 @@ export default function BIDashboard() {
                         (s === 'queue' && (j.status === 'scheduled' || j.status === 'queue')) ||
                         (s === 'production' && j.status === 'production')
                       );
-                    }).map((j: any) => ({
+                    }).map((j: unknown) => ({
                       id: j.id,
                       order_number: j.order_number || `OS-${j.id.slice(0, 5)}`,
                       product: j.product_name || 'Produto',

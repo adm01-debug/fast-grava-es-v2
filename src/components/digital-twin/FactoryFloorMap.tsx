@@ -24,7 +24,7 @@ export function FactoryFloorMap() {
         .eq('status', 'in_progress');
       
       const jobsByMachine: Record<string, any> = {};
-      data?.forEach((job: any) => {
+      data?.forEach((job: unknown) => {
         if (job.machine_id) {
           jobsByMachine[job.machine_id] = job;
         }

@@ -43,7 +43,7 @@ export function KanbanAIAdvisor() {
           bottleneckMedium: parsed.bottleneckRiskMinutes || 300,
         };
       } catch (e) {
-        console.error('Error loading thresholds', e);
+        
       }
     }
     return {
@@ -345,7 +345,7 @@ function AdviceCard({
   severity,
   onClick
 }: { 
-  icon: any, 
+  icon: unknown, 
   title: string, 
   description: string, 
   actionLabel: string, 

@@ -84,7 +84,7 @@ export function useTechniques() {
         return data as DbTechnique[];
       } catch (error) {
         const appError = createAppError(error, JOBS_ERROR_CONTEXT.hooks.techniques);
-        if (import.meta.env.DEV) console.error('[useTechniques]', appError);
+        if (import.meta.env.DEV) 
         throw error;
       }
     },
@@ -133,7 +133,7 @@ export function useMachines() {
         return data as DbMachine[];
       } catch (error) {
         const appError = createAppError(error, JOBS_ERROR_CONTEXT.hooks.machines);
-        if (import.meta.env.DEV) console.error('[useMachines]', appError);
+        if (import.meta.env.DEV) 
         throw error;
       }
     },
@@ -181,7 +181,7 @@ export function useJobs() {
         return data as DbJob[];
       } catch (error) {
         const appError = createAppError(error, JOBS_ERROR_CONTEXT.hooks.jobs);
-        if (import.meta.env.DEV) console.error('[useJobs]', appError);
+        if (import.meta.env.DEV) 
         throw error;
       }
     },
@@ -250,11 +250,11 @@ export function useUpdateJobStatus() {
             }).catch(() => { /* fire and forget */ });
           }
         } catch (e) {
-          if (import.meta.env.DEV) console.error('[useUpdateJobStatus] Bitrix24 sync error:', e);
+          if (import.meta.env.DEV) 
         }
       } catch (error) {
         const appError = createAppError(error, JOBS_ERROR_CONTEXT.hooks.updateStatus);
-        if (import.meta.env.DEV) console.error('[useUpdateJobStatus]', appError);
+        if (import.meta.env.DEV) 
         throw error;
       }
     },
@@ -279,7 +279,7 @@ export function useUpdateJob() {
         if (error) throw error;
       } catch (error) {
         const appError = createAppError(error, JOBS_ERROR_CONTEXT.hooks.updateJob);
-        if (import.meta.env.DEV) console.error('[useUpdateJob]', appError);
+        if (import.meta.env.DEV) 
         throw error;
       }
     },
@@ -305,7 +305,7 @@ export function useDeleteJob() {
         if (error) throw error;
       } catch (error) {
         const appError = createAppError(error, JOBS_ERROR_CONTEXT.hooks.deleteJob);
-        if (import.meta.env.DEV) console.error('[useDeleteJob]', appError);
+        if (import.meta.env.DEV) 
         throw error;
       }
     },

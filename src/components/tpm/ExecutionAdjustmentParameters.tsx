@@ -3,7 +3,7 @@ import { Label } from '@/components/ui/label';
 import { AlertTriangle, MoveHorizontal, Thermometer } from 'lucide-react';
 
 interface AdjustmentParametersProps {
-  adjustmentParameters: any;
+  adjustmentParameters: unknown;
 }
 
 export function AdjustmentParameters({ adjustmentParameters }: AdjustmentParametersProps) {
@@ -11,7 +11,7 @@ export function AdjustmentParameters({ adjustmentParameters }: AdjustmentParamet
     return null;
   }
 
-  const isOutOfRange = (val: string, r: any) => {
+  const isOutOfRange = (val: string, r: unknown) => {
     if (!r || (!r.min && !r.max)) return false;
     const v = parseFloat(val.replace(/[^0-9.]/g, ''));
     const min = r.min ? parseFloat(r.min.replace(/[^0-9.]/g, '')) : -Infinity;

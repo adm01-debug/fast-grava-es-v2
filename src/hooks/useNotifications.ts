@@ -163,7 +163,7 @@ export function useNotifications(options?: { limit?: number; unreadOnly?: boolea
 
 // Helper function for status change notifications
 export function notifyStatusChange(clientName: string, oldStatus: string, newStatus: string) {
-  if (import.meta.env.DEV) console.log(`Job for ${clientName} status changed from ${oldStatus} to ${newStatus}`);
+  if (import.meta.env.DEV) 
   // The system uses Postgres listeners in InAppNotificationWatcher and NotificationIntegrator
   // to trigger UI updates and push notifications automatically.
 }

@@ -80,7 +80,7 @@ export function useOperatorPresence() {
             setIsTracking(true);
           } catch (error) {
             const appError = createAppError(error, PRESENCE_ERROR_CONTEXT.track);
-            if (import.meta.env.DEV) console.error('[useOperatorPresence:track]', appError);
+            if (import.meta.env.DEV) 
           }
         }
       });

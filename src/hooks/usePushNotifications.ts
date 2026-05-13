@@ -103,19 +103,19 @@ export const usePushNotifications = () => {
       return false;
     } catch (error) {
       const appError = createAppError(error, PUSH_NOTIFICATIONS_ERROR_CONTEXT.requestPermission);
-      if (import.meta.env.DEV) console.error('[requestPermission]', appError);
+      if (import.meta.env.DEV) 
       return false;
     }
   }, [isSupported, toast]);
 
   const sendNotification = useCallback((options: NotificationOptions) => {
     if (!isSupported) {
-      if (import.meta.env.DEV) console.log('[sendNotification] Notifications not supported');
+      if (import.meta.env.DEV) 
       return null;
     }
 
     if (permission !== 'granted') {
-      if (import.meta.env.DEV) console.log('[sendNotification] Notification permission not granted');
+      if (import.meta.env.DEV) 
       return null;
     }
 
@@ -142,7 +142,7 @@ export const usePushNotifications = () => {
       return notification;
     } catch (error) {
       const appError = createAppError(error, PUSH_NOTIFICATIONS_ERROR_CONTEXT.sendNotification);
-      if (import.meta.env.DEV) console.error('[sendNotification]', appError);
+      if (import.meta.env.DEV) 
       return null;
     }
   }, [isSupported, permission]);
@@ -215,7 +215,7 @@ export const usePushNotifications = () => {
       return true;
     } catch (error) {
       const appError = createAppError(error, PUSH_NOTIFICATIONS_ERROR_CONTEXT.subscribe);
-      if (import.meta.env.DEV) console.error('[unsubscribe]', appError);
+      if (import.meta.env.DEV) 
       return false;
     } finally {
       setIsLoading(false);

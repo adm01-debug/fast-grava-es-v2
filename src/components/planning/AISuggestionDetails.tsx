@@ -14,7 +14,7 @@ interface AISuggestionDetailsProps {
   onOpenChange: (open: boolean) => void;
   suggestion: {
     type: 'setup' | 'balancing';
-    data: any;
+    data: unknown;
   } | null;
 }
 

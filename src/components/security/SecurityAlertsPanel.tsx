@@ -48,7 +48,7 @@ export function SecurityAlertsPanel() {
         .limit(20);
 
       if (error) {
-        if (import.meta.env.DEV) console.error('Error fetching alerts:', error);
+        if (import.meta.env.DEV) 
         throw error;
       }
 

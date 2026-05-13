@@ -63,7 +63,7 @@ export function useQuickFavorites() {
         
         if (error) {
           const appError = createAppError(error, FAVORITES_ERROR_CONTEXT.fetch);
-          if (import.meta.env.DEV) console.error('[useQuickFavorites]', appError);
+          if (import.meta.env.DEV) 
           return DEFAULT_FAVORITES;
         }
         
@@ -75,7 +75,7 @@ export function useQuickFavorites() {
         return data.favorites as unknown as QuickFavorite[];
       } catch (error) {
         const appError = createAppError(error, FAVORITES_ERROR_CONTEXT.fetch);
-        if (import.meta.env.DEV) console.error('[useQuickFavorites]', appError);
+        if (import.meta.env.DEV) 
         return DEFAULT_FAVORITES;
       }
     },
@@ -100,7 +100,7 @@ export function useQuickFavorites() {
         try {
           const parsed = JSON.parse(localStorageFavorites) as QuickFavorite[];
           if (Array.isArray(parsed) && parsed.length > 0) {
-            if (import.meta.env.DEV) console.log('Migrating favorites from localStorage to database:', parsed);
+            if (import.meta.env.DEV) 
             
             // Save to database
             supabase
@@ -111,14 +111,14 @@ export function useQuickFavorites() {
               }], { onConflict: 'user_id' })
               .then(({ error }) => {
                 if (error) {
-                  if (import.meta.env.DEV) console.error('Error migrating favorites:', error);
+                  if (import.meta.env.DEV) 
                   toast({
                     title: 'Erro na migração',
                     description: 'Não foi possível migrar seus favoritos para a nuvem.',
                     variant: 'destructive',
                   });
                 } else {
-                  if (import.meta.env.DEV) console.log('Successfully migrated favorites to database');
+                  if (import.meta.env.DEV) 
                   // Update query cache
                   queryClient.setQueryData(['user-favorites', user.id], parsed);
                   // Clean up localStorage
@@ -131,7 +131,7 @@ export function useQuickFavorites() {
               });
           }
         } catch (e) {
-          if (import.meta.env.DEV) console.error('Error parsing localStorage favorites:', e);
+          if (import.meta.env.DEV) 
         }
       }
     }
@@ -154,7 +154,7 @@ export function useQuickFavorites() {
           filter: `user_id=eq.${user.id}`,
         },
         (payload) => {
-          if (import.meta.env.DEV) console.log('Favorites updated from another device/tab:', payload);
+          if (import.meta.env.DEV) 
           if (payload.new && 'favorites' in payload.new) {
             queryClient.setQueryData(
               ['user-favorites', user.id],

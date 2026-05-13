@@ -38,7 +38,7 @@ export function useOperatorMachines(operatorId?: string) {
         return data as OperatorMachine[];
       } catch (error) {
         const appError = createAppError(error, OPERATOR_MACHINES_CONTEXT.fetch);
-        if (import.meta.env.DEV) console.error('[useOperatorMachines]', appError);
+        if (import.meta.env.DEV) 
         throw error;
       }
     },
@@ -83,7 +83,7 @@ export function useOperatorMachines(operatorId?: string) {
         if (error) throw error;
       } catch (error) {
         const appError = createAppError(error, OPERATOR_MACHINES_CONTEXT.assign);
-        if (import.meta.env.DEV) console.error('[assignMachine]', appError);
+        if (import.meta.env.DEV) 
         throw error;
       }
     },
@@ -108,7 +108,7 @@ export function useOperatorMachines(operatorId?: string) {
         if (error) throw error;
       } catch (error) {
         const appError = createAppError(error, OPERATOR_MACHINES_CONTEXT.unassign);
-        if (import.meta.env.DEV) console.error('[unassignMachine]', appError);
+        if (import.meta.env.DEV) 
         throw error;
       }
     },

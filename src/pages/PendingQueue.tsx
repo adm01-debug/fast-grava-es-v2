@@ -94,7 +94,7 @@ export default function PendingQueue() {
   });
   const [selectedAISuggestion, setSelectedAISuggestion] = useState<{
     type: 'setup' | 'balancing';
-    data: any;
+    data: unknown;
   } | null>(null);
   const [selectedJobs, setSelectedJobs] = useState<Set<string>>(new Set());
 
@@ -290,7 +290,7 @@ export default function PendingQueue() {
       setSelectedJobs(new Set());
       queryClient.invalidateQueries({ queryKey: ['jobs'] });
     } catch (error) {
-      console.error('Error in bulk action:', error);
+      
       toast.error('Erro ao processar ação em massa');
     }
   };
@@ -515,13 +515,13 @@ export default function PendingQueue() {
           <CollapsibleContent className="animate-accordion-down">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
               <SmartSequencingPanel 
-                onExplain={(suggestion: any) => {
+                onExplain={(suggestion: unknown) => {
                   setSelectedAISuggestion({ type: 'setup', data: suggestion });
                   setIsAISidePanelOpen(true);
                 }}
               />
               <LoadBalancingPanel 
-                onExplain={(suggestion: any) => {
+                onExplain={(suggestion: unknown) => {
                   setSelectedAISuggestion({ type: 'balancing', data: suggestion });
                   setIsAISidePanelOpen(true);
                 }}

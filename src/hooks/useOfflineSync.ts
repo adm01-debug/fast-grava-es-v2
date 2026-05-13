@@ -39,7 +39,7 @@ export function useOfflineSync() {
         setPendingActions(JSON.parse(stored));
       }
     } catch (error) {
-      if (import.meta.env.DEV) console.error('Error loading pending actions:', error);
+      if (import.meta.env.DEV) 
     }
   }, []);
 
@@ -55,7 +55,7 @@ export function useOfflineSync() {
         }
       }
     } catch (error) {
-      if (import.meta.env.DEV) console.error('Error loading cached data:', error);
+      if (import.meta.env.DEV) 
     }
   }, []);
 
@@ -64,7 +64,7 @@ export function useOfflineSync() {
     try {
       localStorage.setItem(STORAGE_KEYS.PENDING_ACTIONS, JSON.stringify(pendingActions));
     } catch (error) {
-      if (import.meta.env.DEV) console.error('Error saving pending actions:', error);
+      if (import.meta.env.DEV) 
     }
   }, [pendingActions]);
 
@@ -123,9 +123,9 @@ export function useOfflineSync() {
       setLastSyncedAt(new Date());
       localStorage.setItem(STORAGE_KEYS.CACHED_DATA, JSON.stringify(newCachedData));
       
-      if (import.meta.env.DEV) console.log('Data cached successfully for offline use');
+      if (import.meta.env.DEV) 
     } catch (error) {
-      if (import.meta.env.DEV) console.error('Error caching data:', error);
+      if (import.meta.env.DEV) 
     }
   }, [isOnline]);
 
@@ -210,13 +210,13 @@ export function useOfflineSync() {
         }
 
         default:
-          if (import.meta.env.DEV) console.warn('Unknown action type:', action.type);
+          if (import.meta.env.DEV) 
           return false;
       }
 
       return true;
     } catch (error) {
-      if (import.meta.env.DEV) console.error('Error processing action:', error);
+      if (import.meta.env.DEV) 
       return false;
     }
   };
@@ -243,7 +243,7 @@ export function useOfflineSync() {
           });
         } else {
           failCount++;
-          if (import.meta.env.DEV) console.error('Action exceeded max retries:', action);
+          if (import.meta.env.DEV) 
         }
       }
     }

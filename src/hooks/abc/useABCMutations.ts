@@ -90,7 +90,7 @@ export function useABCMutations({ activities, activityRates, jobs, techniques }:
       toast.success('Custo do job calculado com sucesso');
     },
     onError: (error) => {
-      if (import.meta.env.DEV) console.error('[useABCCosts] calculateJobCost failed:', categorizeError(error), error);
+      if (import.meta.env.DEV) 
       showErrorToast(error, 'Erro ao calcular custo do job', ABC_ERROR_CONTEXT.calculation);
     },
   });
@@ -112,7 +112,7 @@ export function useABCMutations({ activities, activityRates, jobs, techniques }:
         
         results.forEach((result, idx) => {
           if (result.status === 'rejected') {
-            if (import.meta.env.DEV) console.warn(`Failed to calculate cost for job ${batch[idx].id}:`, result.reason);
+            if (import.meta.env.DEV) 
           }
         });
       }

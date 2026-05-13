@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Camera, Zap, Info } from 'lucide-react';
 
 interface AlertRiskPanelProps {
-  alerts: any[];
+  alerts: unknown[];
   onEvidenceUpload: (index: number, file: File) => void;
   isUploading: boolean;
 }

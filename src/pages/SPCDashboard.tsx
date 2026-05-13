@@ -94,7 +94,7 @@ export default function SPCDashboard() {
       await exportSPCReport(selectedParameter, measurements, capability);
       toast.success('Relatório SPC gerado com sucesso!');
     } catch (err) {
-      console.error('Export failed:', err);
+      
       toast.error('Erro ao gerar relatório PDF.');
     }
   };

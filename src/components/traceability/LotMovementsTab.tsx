@@ -15,7 +15,7 @@ const MOVEMENT_TYPES: Record<string, string> = {
 
 interface LotMovementsTabProps {
   lot: ProductionLot;
-  movements: any[] | undefined;
+  movements: unknown[] | undefined;
 }
 
 export function LotMovementsTab({ lot, movements }: LotMovementsTabProps) {

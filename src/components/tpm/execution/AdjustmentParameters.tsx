@@ -3,11 +3,11 @@ import { Input } from '@/components/ui/input';
 import { MoveHorizontal, PenTool, Zap, Thermometer } from 'lucide-react';
 
 interface AdjustmentParametersProps {
-  adjustmentParams: any;
-  setAdjustmentParams: (params: any) => void;
-  activeAlerts: any[];
+  adjustmentParams: unknown;
+  setAdjustmentParams: (params: unknown) => void;
+  activeAlerts: unknown[];
   selectedSheetId: string | null;
-  technicalSheets: any[];
+  technicalSheets: unknown[];
 }
 
 export function AdjustmentParameters({
@@ -47,7 +47,7 @@ export function AdjustmentParameters({
             <Input 
               placeholder={recommended || "Valor"}
               value={(adjustmentParams as any)[param]}
-              onChange={(e) => setAdjustmentParams((prev: any) => ({ ...prev, [param]: e.target.value }))}
+              onChange={(e) => setAdjustmentParams((prev: unknown) => ({ ...prev, [param]: e.target.value }))}
               className={activeAlerts.some(a => a.parameter_name === labels[param]) ? "border-destructive ring-destructive/20" : ""}
             />
             {range && (range.min || range.max) && (

@@ -89,7 +89,7 @@ const getClientIP = async (): Promise<string> => {
     const data = await response.json();
     return data.ip || '0.0.0.0';
   } catch {
-    if (import.meta.env.DEV) console.warn('Could not fetch IP address');
+    if (import.meta.env.DEV) 
     return '0.0.0.0';
   }
 };
@@ -100,7 +100,7 @@ export const useDeviceDetection = () => {
       const deviceInfo = getDeviceInfo();
       const ipAddress = await getClientIP();
 
-      if (import.meta.env.DEV) console.log('Checking device:', { userId, fingerprint: deviceInfo.fingerprint });
+      if (import.meta.env.DEV) 
 
       const response = await supabase.functions.invoke('new-device-alert', {
         body: {
@@ -117,7 +117,7 @@ export const useDeviceDetection = () => {
       });
 
       if (response.error) {
-        if (import.meta.env.DEV) console.error('Error checking device:', response.error);
+        if (import.meta.env.DEV) 
         return { isNewDevice: false, error: response.error };
       }
 
@@ -127,7 +127,7 @@ export const useDeviceDetection = () => {
         error: null 
       };
     } catch (error) {
-      if (import.meta.env.DEV) console.error('Error in device detection:', error);
+      if (import.meta.env.DEV) 
       return { isNewDevice: false, error };
     }
   }, []);

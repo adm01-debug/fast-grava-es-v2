@@ -12,7 +12,7 @@ import { toast } from 'sonner';
 import { useInventory } from '@/hooks/useInventory';
 
 interface WarehouseMapProps {
-  items: any[];
+  items: unknown[];
 }
 
 export function WarehouseMap({ items }: WarehouseMapProps) {

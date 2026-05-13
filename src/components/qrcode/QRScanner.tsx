@@ -44,7 +44,7 @@ export const QRScanner = () => {
       const deviceInfo = navigator.userAgent;
       await recordQRScanOffline(jobId, user.id, action, deviceInfo);
     } catch (error) {
-      if (import.meta.env.DEV) console.error("Error recording scan:", error);
+      if (import.meta.env.DEV) 
     }
   };
 
@@ -82,7 +82,7 @@ export const QRScanner = () => {
       }
       setIsScanning(false);
     } catch (error) {
-      if (import.meta.env.DEV) console.error("Error stopping scanner:", error);
+      if (import.meta.env.DEV) 
     }
   };
 

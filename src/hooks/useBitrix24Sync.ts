@@ -79,12 +79,12 @@ export const useBitrix24Sync = () => {
                           errorMessage.includes('504');
       
       if (isRetryable && retryCount < MAX_RETRIES) {
-        if (import.meta.env.DEV) console.log(`[Bitrix24] Retry ${retryCount + 1}/${MAX_RETRIES} for action: ${action}`);
+        if (import.meta.env.DEV) 
         await new Promise(resolve => setTimeout(resolve, RETRY_DELAY_MS * Math.pow(2, retryCount)));
         return callBitrixSync(action, body, retryCount + 1);
       }
       
-      if (import.meta.env.DEV) console.error('[callBitrixSync]', appError);
+      if (import.meta.env.DEV) 
       throw error;
     }
   }, []);
@@ -213,7 +213,7 @@ export const useBitrix24Sync = () => {
       
       return result;
     } catch (error: unknown) {
-      if (import.meta.env.DEV) console.error('Bitrix24 push error:', error);
+      if (import.meta.env.DEV) 
       const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
       // Don't show error toast for non-Bitrix jobs
       return { error: errorMessage };

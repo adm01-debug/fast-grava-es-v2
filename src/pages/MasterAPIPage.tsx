@@ -214,7 +214,7 @@ export default function MasterAPIPage() {
 });
 
 const data = await response.json();
-console.log('Success:', data.id);`}
+`}
 </pre>
                    </ScrollArea>
                 </CardContent>

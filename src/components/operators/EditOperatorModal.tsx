@@ -89,7 +89,7 @@ export function EditOperatorModal({ operator, open, onOpenChange }: EditOperator
       onOpenChange(false);
     } catch (error: unknown) {
       if (import.meta.env.DEV) {
-        console.error('Error updating operator:', error);
+        
       }
       const errorMessage = error instanceof Error ? error.message : 'Erro ao atualizar operador';
       toast.error(errorMessage);

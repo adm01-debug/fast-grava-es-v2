@@ -30,17 +30,17 @@ interface MaintenanceExecutionModalProps {
     notes: string;
     total_cost: number;
     downtime_minutes: number;
-    responses: any[];
-    parts: any[];
+    responses: unknown[];
+    parts: unknown[];
     signature?: string;
     checklist_version?: number;
-    checklist_snapshot?: any;
+    checklist_snapshot?: unknown;
     technical_sheet_id?: string;
     technical_sheet_version?: number;
-    quality_responses?: any[];
-    adjustment_parameters?: any;
-    supplies_used?: any[];
-    execution_alerts?: any[];
+    quality_responses?: unknown[];
+    adjustment_parameters?: unknown;
+    supplies_used?: unknown[];
+    execution_alerts?: unknown[];
     failure_risk_detected?: boolean;
   }) => void;
 }
@@ -126,7 +126,7 @@ export function MaintenanceExecutionModal({
 
       if (sheet?.consumables) {
         const initialSupplies: Record<string, any> = {};
-        sheet.consumables.forEach((c: any) => {
+        sheet.consumables.forEach((c: unknown) => {
           initialSupplies[c.id] = {
             name: c.name,
             quantity: c.quantity,
@@ -149,7 +149,7 @@ export function MaintenanceExecutionModal({
     const ranges = (sheet?.settings_ranges as any) || {};
     const newAlerts: typeof activeAlerts = [];
 
-    const checkRange = (name: string, value: string, range: any, paramKey: string) => {
+    const checkRange = (name: string, value: string, range: unknown, paramKey: string) => {
       if (!range || (!range.min && !range.max)) return;
       const val = parseFloat(value.replace(/[^0-9.]/g, ''));
       if (isNaN(val) && value !== '') return;
@@ -196,7 +196,7 @@ export function MaintenanceExecutionModal({
     }
   }, [checklist]);
 
-  const handleResponseUpdate = (itemId: string, updates: any) => {
+  const handleResponseUpdate = (itemId: string, updates: unknown) => {
     setResponses(prev => ({
       ...prev,
       [itemId]: { ...prev[itemId], ...updates }
@@ -211,7 +211,7 @@ export function MaintenanceExecutionModal({
     setParts(parts.filter((_, i) => i !== index));
   };
 
-  const handleUpdatePart = (index: number, field: string, value: any) => {
+  const handleUpdatePart = (index: number, field: string, value: unknown) => {
     const newParts = [...parts];
     newParts[index] = { ...newParts[index], [field]: value };
     setParts(newParts);
@@ -266,7 +266,7 @@ export function MaintenanceExecutionModal({
       
       toast.success('Evidência anexada com sucesso');
     } catch (error) {
-      console.error('Error uploading evidence:', error);
+      
       toast.error('Erro ao enviar evidência');
     } finally {
       setIsUploading(false);

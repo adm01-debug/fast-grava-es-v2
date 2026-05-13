@@ -65,9 +65,9 @@ export default function PublicTrackingPage() {
       } else {
         setJob(data);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       setError(t('tracking.errorFetching'));
-      console.error(err);
+      
     } finally {
       setLoading(false);
     }
@@ -81,7 +81,7 @@ export default function PublicTrackingPage() {
   });
 
   const getStatusInfo = (status: string) => {
-    const maps: Record<string, { label: string, color: string, icon: any }> = {
+    const maps: Record<string, { label: string, color: string, icon: unknown }> = {
       queue: { label: t('jobs.statuses.queue'), color: 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20', icon: Clock },
       ready: { label: t('jobs.statuses.ready'), color: 'bg-blue-500/10 text-blue-500 border-blue-500/20', icon: Package },
       scheduled: { label: t('jobs.statuses.scheduled'), color: 'bg-blue-500/10 text-blue-500 border-blue-500/20', icon: Calendar },
@@ -277,6 +277,6 @@ export default function PublicTrackingPage() {
   );
 }
 
-function cn(...inputs: any[]) {
+function cn(...inputs: unknown[]) {
   return inputs.filter(Boolean).join(' ');
 }

@@ -139,7 +139,7 @@ export function useGamification(period: 'daily' | 'weekly' | 'monthly' = 'weekly
       queryClient.invalidateQueries({ queryKey: ['operator-achievements'] });
     },
     onError: (error) => {
-      if (import.meta.env.DEV) console.error('Error calculating rankings:', error);
+      if (import.meta.env.DEV) 
       toast.error('Erro ao calcular rankings');
     },
   });
@@ -213,7 +213,7 @@ export function useGamification(period: 'daily' | 'weekly' | 'monthly' = 'weekly
       queryClient.invalidateQueries({ queryKey: ['user-points-balance'] });
       toast.success('Resgate solicitado com sucesso! Aguardando aprovação.');
     },
-    onError: (err: any) => toast.error(`Erro no resgate: ${err.message}`),
+    onError: (err: unknown) => toast.error(`Erro no resgate: ${err.message}`),
   });
 
   return {

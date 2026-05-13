@@ -44,7 +44,7 @@ export function TPMSeverityConfigs({ machineId }: TPMSeverityConfigsProps) {
 
   const upsertConfig = useMutation({
     mutationFn: async (config: Partial<SeverityConfig>) => {
-      const payload: any = { 
+      const payload: unknown = { 
         ...config, 
         machine_id: machineId || null 
       };

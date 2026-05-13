@@ -33,7 +33,7 @@ import { Fragment } from 'react';
 import '@/components/calendar/calendar-print.css';
 
 // Helper components for DnD
-function DraggableJob({ job, isConflict, onClick, statusColorsSolid, statusLabels, updateStatus }: any) {
+function DraggableJob({ job, isConflict, onClick, statusColorsSolid, statusLabels, updateStatus }: unknown) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: job.id,
   });
@@ -104,7 +104,7 @@ function DraggableJob({ job, isConflict, onClick, statusColorsSolid, statusLabel
   );
 }
 
-function DroppableCell({ children, id, isToday }: any) {
+function DroppableCell({ children, id, isToday }: unknown) {
   const { isOver, setNodeRef } = useDroppable({
     id,
   });

@@ -41,7 +41,7 @@ interface EditorBasicInfoProps {
     failure_standard_image_url: string;
     version: string;
   };
-  setFormData: (data: any) => void;
+  setFormData: (data: unknown) => void;
   techniques: Array<{ id: string; name: string; color: string; short_name: string }>;
   categories: ProductCategory[];
   materials: Material[];

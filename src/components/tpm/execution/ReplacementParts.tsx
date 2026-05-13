@@ -7,7 +7,7 @@ interface ReplacementPartsProps {
   parts: Array<{ name: string; code: string; quantity: number }>;
   onAdd: () => void;
   onRemove: (index: number) => void;
-  onUpdate: (index: number, field: string, value: any) => void;
+  onUpdate: (index: number, field: string, value: unknown) => void;
 }
 
 export function ReplacementParts({

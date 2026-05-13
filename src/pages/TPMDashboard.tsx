@@ -76,7 +76,7 @@ export default function TPMDashboard() {
     });
   };
 
-  const handleCompleteMaintenance = (data: any) => {
+  const handleCompleteMaintenance = (data: unknown) => {
     if (!currentRecordId) return;
     
     completeMaintenance.mutate({

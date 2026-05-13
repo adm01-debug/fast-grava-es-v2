@@ -53,7 +53,7 @@ export function usePushSubscription() {
       setIsSubscribed(subscribed);
       return subscribed;
     } catch (error) {
-      if (import.meta.env.DEV) console.error('Error checking subscription:', error);
+      if (import.meta.env.DEV) 
       return false;
     }
   }, [isSupported]);
@@ -112,7 +112,7 @@ export function usePushSubscription() {
       });
 
       if (error) {
-        if (import.meta.env.DEV) console.error('Error saving subscription:', error);
+        if (import.meta.env.DEV) 
         toast.error('Erro ao salvar subscription');
         return false;
       }
@@ -121,7 +121,7 @@ export function usePushSubscription() {
       toast.success('Push notifications ativadas com sucesso!');
       return true;
     } catch (error) {
-      if (import.meta.env.DEV) console.error('Error subscribing to push:', error);
+      if (import.meta.env.DEV) 
       toast.error('Erro ao ativar push notifications');
       return false;
     } finally {
@@ -149,7 +149,7 @@ export function usePushSubscription() {
           .eq('endpoint', subscription.endpoint);
 
         if (error) {
-          if (import.meta.env.DEV) console.error('Error removing subscription:', error);
+          if (import.meta.env.DEV) 
         }
       }
 
@@ -157,7 +157,7 @@ export function usePushSubscription() {
       toast.success('Push notifications desativadas');
       return true;
     } catch (error) {
-      if (import.meta.env.DEV) console.error('Error unsubscribing:', error);
+      if (import.meta.env.DEV) 
       toast.error('Erro ao desativar push notifications');
       return false;
     } finally {
@@ -179,7 +179,7 @@ export function usePushSubscription() {
       });
 
       if (error) {
-        if (import.meta.env.DEV) console.error('Error sending test notification:', error);
+        if (import.meta.env.DEV) 
         toast.error('Erro ao enviar notificação de teste');
         return;
       }
@@ -190,7 +190,7 @@ export function usePushSubscription() {
         toast.success('Notificação de teste enviada!');
       }
     } catch (error) {
-      if (import.meta.env.DEV) console.error('Error:', error);
+      if (import.meta.env.DEV) 
       toast.error('Erro ao enviar notificação');
     }
   }, [user]);
@@ -208,13 +208,13 @@ export function usePushSubscription() {
       });
 
       if (error) {
-        if (import.meta.env.DEV) console.error('Error broadcasting notification:', error);
+        if (import.meta.env.DEV) 
         return false;
       }
 
       return true;
     } catch (error) {
-      if (import.meta.env.DEV) console.error('Error:', error);
+      if (import.meta.env.DEV) 
       return false;
     }
   }, []);

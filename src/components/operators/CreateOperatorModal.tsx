@@ -94,7 +94,7 @@ export function CreateOperatorModal({ open, onOpenChange }: CreateOperatorModalP
       onOpenChange(false);
       setFormData({ full_name: '', email: '', password: '', phone: '' });
     } catch (error) {
-      if (import.meta.env.DEV) console.error('Error creating operator:', error);
+      if (import.meta.env.DEV) 
       const message = error instanceof Error ? error.message : 'Erro ao criar operador';
       toast.error(message);
     } finally {

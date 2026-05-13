@@ -44,7 +44,7 @@ class OfflineStorageManager {
       const request = indexedDB.open(DB_NAME, DB_VERSION);
 
       request.onerror = () => {
-        if (import.meta.env.DEV) console.error('Error opening IndexedDB:', request.error);
+        if (import.meta.env.DEV) 
         reject(request.error);
       };
 
@@ -277,7 +277,7 @@ export async function registerBackgroundSync(): Promise<boolean> {
         return true;
       }
     } catch (error) {
-      if (import.meta.env.DEV) console.error('Background sync registration failed:', error);
+      if (import.meta.env.DEV) 
       return false;
     }
   }
@@ -288,7 +288,7 @@ export async function registerBackgroundSync(): Promise<boolean> {
 export async function requestPersistentStorage(): Promise<boolean> {
   if ('storage' in navigator && 'persist' in navigator.storage) {
     const persistent = await navigator.storage.persist();
-    if (import.meta.env.DEV) console.log('Persistent storage:', persistent ? 'granted' : 'denied');
+    if (import.meta.env.DEV) 
     return persistent;
   }
   return false;

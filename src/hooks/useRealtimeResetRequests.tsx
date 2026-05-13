@@ -12,7 +12,7 @@ export function useRealtimeResetRequests() {
     if (!isCoordinator && !isManager) return;
     if (!user) return;
 
-    if (import.meta.env.DEV) console.log('[Realtime] Setting up password reset requests subscription');
+    if (import.meta.env.DEV) 
 
     const channel = supabase
       .channel('password-reset-notifications')
@@ -24,7 +24,7 @@ export function useRealtimeResetRequests() {
           table: 'password_reset_requests',
         },
         (payload) => {
-          if (import.meta.env.DEV) console.log('[Realtime] New password reset request:', payload);
+          if (import.meta.env.DEV) 
           
           const newRequest = payload.new as {
             user_email: string;
@@ -50,11 +50,11 @@ export function useRealtimeResetRequests() {
         }
       )
       .subscribe((status) => {
-        if (import.meta.env.DEV) console.log('[Realtime] Subscription status:', status);
+        if (import.meta.env.DEV) 
       });
 
     return () => {
-      if (import.meta.env.DEV) console.log('[Realtime] Cleaning up password reset requests subscription');
+      if (import.meta.env.DEV) 
       supabase.removeChannel(channel);
     };
   }, [isCoordinator, isManager, user]);

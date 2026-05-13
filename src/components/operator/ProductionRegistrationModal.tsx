@@ -150,7 +150,7 @@ export function ProductionRegistrationModal({
           .upload(fileName, file);
 
         if (uploadError) {
-          if (import.meta.env.DEV) console.error('Upload error:', uploadError);
+          if (import.meta.env.DEV) 
           toast.error(`Erro ao enviar foto: ${file.name}`);
           continue;
         }
@@ -165,7 +165,7 @@ export function ProductionRegistrationModal({
       setPhotos(prev => [...prev, ...uploadedUrls]);
       toast.success(`${uploadedUrls.length} foto(s) enviada(s)`);
     } catch (error) {
-      if (import.meta.env.DEV) console.error('Error uploading photos:', error);
+      if (import.meta.env.DEV) 
       toast.error('Erro ao enviar fotos');
     } finally {
       setIsUploading(false);
@@ -210,8 +210,8 @@ export function ProductionRegistrationModal({
 
       // Log em desenvolvimento para debugging
       if (import.meta.env.DEV) {
-        console.log('Raw payload:', rawPayload);
-        console.log('Sanitized payload (allowed fields only):', sanitizedPayload);
+        
+        
       }
 
       const { error } = await supabase
@@ -230,7 +230,7 @@ export function ProductionRegistrationModal({
       toast.error(`Erro ao salvar registro de produção: ${message}`);
       
       if (import.meta.env.DEV) {
-        console.error('Error saving production:', error);
+        
       }
     } finally {
       setIsSaving(false);

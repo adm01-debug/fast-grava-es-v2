@@ -44,7 +44,7 @@ import { toast } from 'sonner';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
-const getStatusConfig = (t: any) => ({
+const getStatusConfig = (t: unknown) => ({
   pending: { label: t('logistics.status.pending'), color: 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20', icon: Clock },
   in_transit: { label: t('logistics.status.in_transit'), color: 'bg-blue-500/10 text-blue-500 border-blue-500/20', icon: Truck },
   delivered: { label: t('logistics.status.delivered'), color: 'bg-green-500/10 text-green-500 border-green-500/20', icon: CheckCircle2 },

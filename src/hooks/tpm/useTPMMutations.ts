@@ -32,7 +32,7 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
       toast.success('Manutenção agendada com sucesso');
     },
     onError: (error) => {
-      if (import.meta.env.DEV) console.error('[useTPM] createSchedule failed:', categorizeError(error), error);
+      if (import.meta.env.DEV) 
       showErrorToast(error, 'Erro ao agendar manutenção', TPM_ERROR_CONTEXT.schedules);
     },
   });
@@ -74,7 +74,7 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
       toast.success('Manutenção iniciada');
     },
     onError: (error) => {
-      if (import.meta.env.DEV) console.error('[useTPM] startMaintenance failed:', categorizeError(error), error);
+      if (import.meta.env.DEV) 
       showErrorToast(error, 'Erro ao iniciar manutenção', TPM_ERROR_CONTEXT.records);
     },
   });
@@ -87,11 +87,11 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
       total_cost?: number;
       downtime_minutes?: number;
       checklist_version?: number;
-      checklist_snapshot?: any;
+      checklist_snapshot?: unknown;
       technical_sheet_id?: string;
       technical_sheet_version?: number;
-      adjustment_parameters?: any;
-      quality_checklist_results?: any[];
+      adjustment_parameters?: unknown;
+      quality_checklist_results?: unknown[];
       failure_risk_detected?: boolean;
       responses?: Array<{
         checklist_item_id: string;
@@ -182,9 +182,9 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
       if (data.adjustment_parameters?.ranges) {
         const params = data.adjustment_parameters;
         const ranges = params.ranges;
-        const alertsToInsert: any[] = [];
+        const alertsToInsert: unknown[] = [];
 
-        const checkRange = (name: string, value: string, range: any) => {
+        const checkRange = (name: string, value: string, range: unknown) => {
           if (!range || (!range.min && !range.max)) return;
           const val = parseFloat(value.replace(/[^0-9.]/g, ''));
           const min = range.min ? parseFloat(range.min.replace(/[^0-9.]/g, '')) : -Infinity;
@@ -253,7 +253,7 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
       toast.success('Execução concluída e enviada para revisão');
     },
     onError: (error) => {
-      if (import.meta.env.DEV) console.error('[useTPM] completeMaintenance failed:', categorizeError(error), error);
+      if (import.meta.env.DEV) 
       showErrorToast(error, 'Erro ao concluir manutenção', TPM_ERROR_CONTEXT.records);
     },
   });
@@ -274,7 +274,7 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
       if (fetchErr || !record) throw new Error('Registro não encontrado');
 
       // Requisito: Pelo menos uma foto se houver itens que exigem foto
-      const needsPhoto = record.responses.some((r: any) => r.photo_url);
+      const needsPhoto = record.responses.some((r: unknown) => r.photo_url);
       if (!record.signature_url) throw new Error('Assinatura obrigatória ausente');
 
       const { data: recordData, error: recordFetchError } = await supabase
@@ -330,7 +330,7 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
       toast.success('Manutenção aprovada e próximo agendamento atualizado');
     },
     onError: (error) => {
-      if (import.meta.env.DEV) console.error('[useTPM] approveMaintenance failed:', categorizeError(error), error);
+      if (import.meta.env.DEV) 
       showErrorToast(error, 'Erro ao aprovar manutenção', TPM_ERROR_CONTEXT.records);
     },
   });
@@ -409,13 +409,13 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
 
       // 2. Predictive AI Check (Edge Function)
       try {
-        console.log('Invoking ML predictive engine...');
+        
         const { data: mlResult, error: mlError } = await supabase.functions.invoke('ml-predictions', {
           body: { action: 'batch_analyze' }
         });
 
         if (!mlError && mlResult?.predictions) {
-          mlResult.predictions.forEach((p: any) => {
+          mlResult.predictions.forEach((p: unknown) => {
             if (p.prediction?.risk_score > 75) {
               // High risk detected by AI, find the primary schedule for this machine
               const machineSchedule = schedules.find(s => s.machine_id === p.machine.id && s.is_active);
@@ -434,7 +434,7 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
           });
         }
       } catch (err) {
-        console.warn('ML predictions skipped:', err);
+        
       }
 
       const results = await Promise.all(

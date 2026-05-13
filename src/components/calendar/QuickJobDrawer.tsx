@@ -120,7 +120,7 @@ export function QuickJobDrawer({
       onSuccess();
       onOpenChange(false);
     } catch (error) {
-      console.error('Error creating quick job:', error);
+      
       toast.error('Erro ao agendar job');
     } finally {
       setIsSubmitting(false);

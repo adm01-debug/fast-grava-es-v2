@@ -130,7 +130,7 @@ export const TechnicalAssistant = ({ isOpen, onClose }: TechnicalAssistantProps)
     try {
       await streamChat(updatedMessages);
     } catch (error) {
-      if (import.meta.env.DEV) console.error("Error:", error);
+      if (import.meta.env.DEV) 
       toast.error(error instanceof Error ? error.message : "Erro ao processar mensagem");
       // Remove the failed assistant message if any
       setMessages(prev => {

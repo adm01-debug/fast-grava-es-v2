@@ -101,7 +101,7 @@ export function TPMReports() {
       doc.save(`relatorio-tpm-${format(new Date(), 'yyyy-MM-dd')}.pdf`);
       toast.success('Relatório PDF gerado com sucesso');
     } catch (error) {
-      console.error('Error generating PDF:', error);
+      
       toast.error('Erro ao gerar PDF');
     } finally {
       setIsGenerating(false);
@@ -163,7 +163,7 @@ export function TPMReports() {
       
       toast.success('Relatório Excel gerado com sucesso');
     } catch (error) {
-      console.error('Error generating Excel:', error);
+      
       toast.error('Erro ao gerar Excel');
     } finally {
       setIsGenerating(false);
@@ -206,7 +206,7 @@ export function TPMReports() {
             const blob = await response.blob();
             recordFolder?.file(`evidencia_${i + 1}.jpg`, blob);
           } catch (err) {
-            console.error(`Failed to fetch photo: ${record.photos[i]}`, err);
+            
           }
         }
       }
@@ -215,7 +215,7 @@ export function TPMReports() {
       saveAs(content, `tpm_completo_${format(new Date(), 'yyyy-MM-dd')}.zip`);
       toast.success('Arquivo ZIP gerado com sucesso!');
     } catch (error) {
-      console.error('Error generating ZIP:', error);
+      
       toast.error('Erro ao gerar arquivo ZIP');
     } finally {
       setIsGenerating(false);

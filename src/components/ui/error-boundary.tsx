@@ -29,8 +29,8 @@ export class ErrorBoundary extends Component<Props, State> {
     this.setState({ errorInfo });
     
     // Always log so we can diagnose production issues
-    console.error('[ErrorBoundary] caught error in', this.props.componentName || 'Unknown', error);
-    console.error('[ErrorBoundary] componentStack:', errorInfo.componentStack);
+    
+    
 
     // Automatically log error to database
     try {
@@ -49,7 +49,7 @@ export class ErrorBoundary extends Component<Props, State> {
         }
       });
     } catch (logError) {
-      console.error('Failed to log error to database:', logError);
+      
     }
   }
 

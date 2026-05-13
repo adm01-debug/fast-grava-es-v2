@@ -28,7 +28,7 @@ interface DrillDownDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   title: string;
-  jobs: any[];
+  jobs: unknown[];
   onExport: (format: 'csv' | 'pdf') => void;
 }
 
@@ -125,7 +125,7 @@ export function DrillDownDialog({ open, onOpenChange, title, jobs, onExport }: D
               </TableHeader>
               <TableBody>
                 {filteredJobs.length > 0 ? (
-                  filteredJobs.map((job: any) => (
+                  filteredJobs.map((job: unknown) => (
                     <TableRow key={job.id} className="border-white/5 hover:bg-primary/10 transition-colors cursor-pointer group/row" onClick={() => navigate(`/job/${job.id}`)}>
                       <TableCell className="font-mono text-sm font-bold group-hover:text-primary transition-colors">{job.order_number}</TableCell>
                       <TableCell className="text-xs max-w-[200px] truncate">{job.product}</TableCell>

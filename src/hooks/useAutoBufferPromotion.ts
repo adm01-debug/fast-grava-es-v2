@@ -27,7 +27,7 @@ export function useAutoBufferPromotion(options?: { showToasts?: boolean }) {
       if (data?.promoted?.length > 0) {
         queryClient.invalidateQueries({ queryKey: ['jobs'] });
         if (showToasts) {
-          const totalPromoted = data.promoted.reduce((sum: number, r: any) => sum + r.count, 0);
+          const totalPromoted = data.promoted.reduce((sum: number, r: unknown) => sum + r.count, 0);
           toast.success(`${totalPromoted} job(s) promovido(s) automaticamente`, {
             description: 'O buffer de produção foi reabastecido pelo servidor.',
           });
@@ -39,7 +39,7 @@ export function useAutoBufferPromotion(options?: { showToasts?: boolean }) {
       }
     },
     onError: (error) => {
-      console.error('Failed to trigger auto-promotion:', error);
+      
       if (showToasts) {
         toast.error('Falha ao acionar promoção automática');
       }

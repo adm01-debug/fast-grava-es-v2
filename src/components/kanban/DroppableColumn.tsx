@@ -80,7 +80,7 @@ export function DroppableColumn({
           setThresholds({ bottleneckRiskMinutes: parsed.bottleneckRiskMinutes });
         }
       } catch (e) {
-        console.error('Error loading thresholds', e);
+        
       }
         }
         const entityStored = localStorage.getItem('entity-thresholds');

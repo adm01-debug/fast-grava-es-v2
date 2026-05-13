@@ -76,7 +76,7 @@ export function useMTBFMTTR(periodDays: number = 90) {
         return data as MaintenanceRecord[];
       } catch (error) {
         const appError = createAppError(error, MTBF_ERROR_CONTEXT.records);
-        if (import.meta.env.DEV) console.error('[useMTBFMTTR:records]', appError);
+        if (import.meta.env.DEV) 
         throw error;
       }
     },
@@ -116,7 +116,7 @@ export function useMTBFMTTR(periodDays: number = 90) {
         return data;
       } catch (error) {
         const appError = createAppError(error, MTBF_ERROR_CONTEXT.machines);
-        if (import.meta.env.DEV) console.error('[useMTBFMTTR:machines]', appError);
+        if (import.meta.env.DEV) 
         throw error;
       }
     },

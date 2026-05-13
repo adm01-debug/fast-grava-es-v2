@@ -119,7 +119,7 @@ export function useSmartSequencingWithActions() {
         };
       } catch (error) {
         const appError = createAppError(error, SEQUENCING_ERROR_CONTEXT.applySequencing);
-        if (import.meta.env.DEV) console.error('[applySequencing]', appError);
+        if (import.meta.env.DEV) 
         throw error;
       }
     },
@@ -166,7 +166,7 @@ export function useSmartSequencingWithActions() {
             };
           } catch (error) {
             const appError = createAppError(error, SEQUENCING_ERROR_CONTEXT.applyAllSequencing);
-            if (import.meta.env.DEV) console.error(`[applyAllSequencing] Failed for ${suggestion.machineName}:`, appError);
+            if (import.meta.env.DEV) 
             return null;
           }
         })
@@ -200,7 +200,7 @@ export function useSmartSequencingWithActions() {
     const today = new Date();
     
     if (!today || isNaN(today.getTime())) {
-      if (import.meta.env.DEV) console.warn('[useSmartSequencingWithActions] Invalid current date');
+      if (import.meta.env.DEV) 
       return [];
     }
     

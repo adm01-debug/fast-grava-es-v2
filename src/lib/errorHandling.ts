@@ -197,7 +197,7 @@ export function showErrorToast(
   
   // Log to console in development
   if (import.meta.env.DEV) {
-    console.error('[AppError]', appError);
+    
   }
 }
 

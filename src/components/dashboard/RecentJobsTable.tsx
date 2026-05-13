@@ -96,7 +96,7 @@ function RecentJobsTableComponent() {
       toast.success(`Status alterado para ${newStatus}`);
       refetchJobs();
     } catch (error) {
-      if (import.meta.env.DEV) console.error('Error updating job status:', error);
+      if (import.meta.env.DEV) 
       toast.error('Erro ao atualizar status');
     }
   };

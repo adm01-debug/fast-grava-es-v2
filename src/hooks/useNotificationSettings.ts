@@ -70,7 +70,7 @@ export function useNotificationSettings() {
       toast.success('Configurações atualizadas');
     },
     onError: (error) => {
-      console.error('Error updating settings:', error);
+      
       toast.error('Erro ao atualizar configurações');
     }
   });

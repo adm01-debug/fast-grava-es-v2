@@ -11,7 +11,7 @@ import { ProductionLot, useTraceabilityMutations, useProductionLots } from '@/ho
 
 interface LotComponentsTabProps {
   lot: ProductionLot;
-  components: any[] | undefined;
+  components: unknown[] | undefined;
 }
 
 export function LotComponentsTab({ lot, components }: LotComponentsTabProps) {

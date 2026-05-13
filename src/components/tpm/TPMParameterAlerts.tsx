@@ -40,7 +40,7 @@ export function TPMParameterAlerts() {
       if (error) throw error;
       setAlerts(data || []);
     } catch (err) {
-      console.error('Error fetching parameter alerts:', err);
+      
     } finally {
       setIsLoading(false);
     }

@@ -63,7 +63,7 @@ export function useOperators() {
         }) as OperatorWithProfile[];
       } catch (error) {
         const appError = createAppError(error, OPERATORS_ERROR_CONTEXT.fetch);
-        if (import.meta.env.DEV) console.error('[useOperators]', appError);
+        if (import.meta.env.DEV) 
         throw error;
       }
     },
@@ -115,7 +115,7 @@ export function useOperators() {
       if (auditError) {
         // Log audit failure but don't fail the whole operation
         const appError = createAppError(auditError, { entity: 'operator_status_audit', operation: 'insert' });
-        if (import.meta.env.DEV) console.error('[removeOperator:audit]', appError);
+        if (import.meta.env.DEV) 
       }
 
       return operatorId;
@@ -130,7 +130,7 @@ export function useOperators() {
     },
     onError: (error) => {
       const appError = createAppError(error, OPERATORS_ERROR_CONTEXT.remove);
-      if (import.meta.env.DEV) console.error('[removeOperator]', appError);
+      if (import.meta.env.DEV) 
       showErrorToast(error, 'Erro ao remover operador');
     },
   });
@@ -171,7 +171,7 @@ export function useOperators() {
       if (auditError) {
         // Log audit failure but don't fail the whole operation
         const appError = createAppError(auditError, { entity: 'operator_status_audit', operation: 'insert' });
-        if (import.meta.env.DEV) console.error('[toggleActive:audit]', appError);
+        if (import.meta.env.DEV) 
       }
 
       return { operatorId, isActive };
@@ -187,7 +187,7 @@ export function useOperators() {
     },
     onError: (error) => {
       const appError = createAppError(error, OPERATORS_ERROR_CONTEXT.toggleActive);
-      if (import.meta.env.DEV) console.error('[toggleActive]', appError);
+      if (import.meta.env.DEV) 
       showErrorToast(error, 'Erro ao alterar status do operador');
     },
   });

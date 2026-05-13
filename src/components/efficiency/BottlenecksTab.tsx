@@ -12,12 +12,12 @@ interface BottlenecksTabProps {
     message: string;
     occupancyRate?: number;
     affectedJobs?: number;
-    [key: string]: any;
+    [key: string]: unknown;
   }>;
   capacityByDate: Array<{
     date: string | Date;
     occupancyRate?: number;
-    [key: string]: any;
+    [key: string]: unknown;
   }>;
 }
 

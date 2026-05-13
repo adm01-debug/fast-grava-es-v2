@@ -54,7 +54,7 @@ export const SystemOnboarding = () => {
     },
   ];
 
-  const handleJoyrideCallback = (data: any) => {
+  const handleJoyrideCallback = (data: unknown) => {
     const { status } = data;
     if ([STATUS.FINISHED, STATUS.SKIPPED].includes(status)) {
       setHasCompletedOnboarding(true);

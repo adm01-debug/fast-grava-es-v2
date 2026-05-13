@@ -115,7 +115,7 @@ export const useNotificationSounds = () => {
       }
     } catch (error) {
       if (import.meta.env.DEV) {
-        console.error('Error playing notification sound:', error);
+        
       }
     }
   }, [playTone]);

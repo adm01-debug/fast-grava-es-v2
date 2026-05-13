@@ -24,7 +24,7 @@ export class AuthErrorBoundary extends Component<Props, State> {
   }
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error("Uncaught error in Auth route:", error, errorInfo);
+    
     this.logErrorToSupabase(error, errorInfo);
   }
 
@@ -45,7 +45,7 @@ export class AuthErrorBoundary extends Component<Props, State> {
         }
       });
     } catch (e) {
-      console.error("Failed to log error to Supabase:", e);
+      
     }
   }
 

@@ -21,7 +21,7 @@ const INSPECTION_RESULTS: Record<string, { label: string; variant: 'default' | '
 
 interface LotInspectionsTabProps {
   lot: ProductionLot;
-  inspections: any[] | undefined;
+  inspections: unknown[] | undefined;
 }
 
 export function LotInspectionsTab({ lot, inspections }: LotInspectionsTabProps) {

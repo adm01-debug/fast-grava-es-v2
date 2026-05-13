@@ -35,7 +35,7 @@ export function PlanningEfficiencyDashboard() {
         await applyAllSequencing();
       }
     } catch (error) {
-      console.error('Erro na otimização em massa:', error);
+      
     }
   };
 

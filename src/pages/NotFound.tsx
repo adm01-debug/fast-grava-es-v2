@@ -54,7 +54,7 @@ const NotFound = () => {
 
   useEffect(() => {
     if (import.meta.env.DEV) {
-      console.error("404 Error: User attempted to access non-existent route:", location.pathname);
+      
     }
     // Update document title
     document.title = 'Página não encontrada | Fast Gravações';
