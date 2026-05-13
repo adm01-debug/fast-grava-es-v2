@@ -161,30 +161,37 @@ export const OEETrendChart = memo(function OEETrendChart({ data, worldClassBench
                 type="monotone"
                 dataKey="oee"
                 stroke="hsl(var(--primary))"
-                strokeWidth={3}
-                dot={{ fill: 'hsl(var(--primary))', strokeWidth: 2, r: 4 }}
-                activeDot={{ r: 6 }}
+                strokeWidth={4}
+                dot={{ fill: 'hsl(var(--primary))', strokeWidth: 2, r: 5 }}
+                activeDot={{ r: 8, strokeWidth: 0, fill: 'hsl(var(--primary))' }}
+                animationDuration={2000}
               />
               <Line
                 type="monotone"
                 dataKey="availability"
                 stroke="hsl(142 76% 36%)"
                 strokeWidth={2}
+                strokeDasharray="5 5"
                 dot={{ fill: 'hsl(142 76% 36%)', strokeWidth: 1, r: 3 }}
+                animationDuration={2500}
               />
               <Line
                 type="monotone"
                 dataKey="performance"
                 stroke="hsl(221 83% 53%)"
                 strokeWidth={2}
+                strokeDasharray="5 5"
                 dot={{ fill: 'hsl(221 83% 53%)', strokeWidth: 1, r: 3 }}
+                animationDuration={3000}
               />
               <Line
                 type="monotone"
                 dataKey="quality"
                 stroke="hsl(262 83% 58%)"
                 strokeWidth={2}
+                strokeDasharray="5 5"
                 dot={{ fill: 'hsl(262 83% 58%)', strokeWidth: 1, r: 3 }}
+                animationDuration={3500}
               />
             </LineChart>
           </ResponsiveContainer>

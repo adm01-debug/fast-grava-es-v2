@@ -265,11 +265,11 @@ export default function TraceabilityPage() {
             <div className="flex items-center gap-3">
               <h1 className="text-3xl font-display font-black tracking-tighter flex items-center gap-3">
                 <Package className="h-8 w-8 text-primary animate-float" />
-                Hyper-Traceability 10/10
+                Hyper-Traceability Ultra
               </h1>
               <FavoriteButton path="/traceability" name="Rastreabilidade" />
             </div>
-            <p className="text-muted-foreground">Genealogia Forward/Backward e Monitoramento Blockchain</p>
+            <p className="text-muted-foreground text-xs uppercase tracking-tighter">Genealogia Profunda, Monitoramento Blockchain e Compliance FDA/GAMP5</p>
           </div>
           <div className="flex items-center gap-2 flex-wrap">
             <VoiceButton />
@@ -373,9 +373,9 @@ export default function TraceabilityPage() {
             <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
               <div>
                 <CardTitle className="text-xl flex items-center gap-2">
-                   <FileText className="h-5 w-5 text-primary" /> Orquestração de Lotes
+                   <FileText className="h-5 w-5 text-primary" /> Orquestração de Lotes (Audit Trail Blockchain)
                 </CardTitle>
-                <CardDescription>{filteredAndSortedLots.length} registros auditáveis</CardDescription>
+                <CardDescription className="font-mono text-[10px] uppercase tracking-widest">{filteredAndSortedLots.length} registros auditáveis com integridade verificada</CardDescription>
               </div>
               <div className="flex flex-wrap gap-2">
                 <div className="relative">
