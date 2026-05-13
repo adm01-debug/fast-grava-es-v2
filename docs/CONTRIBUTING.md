@@ -33,3 +33,17 @@
 - Mínimo 1 aprovação
 - Checks passando
 - Sem conflitos
+
+## Fluxo de Hotfix
+1. Criar branch `hotfix/*` a partir da `main`.
+2. Implementar correção e testes.
+3. Merge para `main` e `develop`.
+4. Deletar branch.
+
+## Incident Post-Mortem
+Todo incidente em produção deve gerar um post-mortem documentando:
+- O que aconteceu
+- Impacto
+- Causa raiz
+- Ações para evitar recorrência
+
