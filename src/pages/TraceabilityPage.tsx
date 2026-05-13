@@ -2,6 +2,7 @@ import { useState, useMemo, useCallback, useRef } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { cn } from '@/lib/utils';
 import { useFuseSearch } from '@/hooks/useFuseSearch';
+import { useDebounce } from '@/hooks/useDebounce';
 import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import { format, differenceInDays } from 'date-fns';
@@ -91,7 +92,9 @@ export default function TraceabilityPage() {
   const { data: jobs } = useJobs();
   const { createLot, updateLot } = useTraceabilityMutations();
 
-  const fuseSearchedLots = useFuseSearch(lots || [], searchTerm, {
+  const debouncedSearchTerm = useDebounce(searchTerm, 300);
+
+  const fuseSearchedLots = useFuseSearch(lots || [], debouncedSearchTerm, {
     keys: ['lot_number', 'product_name'],
     threshold: 0.3,
   });
