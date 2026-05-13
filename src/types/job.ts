@@ -12,6 +12,7 @@ export type Job = {
   delay_time?: string | null;
   responsible_name?: string | null;
   machine_id?: string | null;
+  operator_id?: string | null;
   technique_id?: string | null;
   efficiency?: string | number | null;
   actual_end_time?: string | null;
