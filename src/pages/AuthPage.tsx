@@ -88,7 +88,7 @@ export default function AuthPage() {
           <div className="text-center space-y-3">
             <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5, ease: [0.175, 0.885, 0.32, 1.275] }} className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-primary to-accent mb-4 shadow-xl shadow-primary/25"><Printer className="h-10 w-10 text-white" /></motion.div>
             <motion.h1 initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.15 }} className="text-4xl font-display font-bold tracking-tight"><span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">{t('common.appName')}</span></motion.h1>
-            <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.25 }} className="text-muted-foreground text-lg">Sistema de Gestão de Produção</motion.p>
+            <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.25 }} className="text-muted-foreground text-lg">{t('auth.systemSlogan', 'Sistema de Gestão de Produção')}</motion.p>
           </div>
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.35 }}>
             <Card variant="elevated" className="border-border/60 shadow-xl dark:shadow-glow-primary/20 backdrop-blur-xl">
