@@ -476,4 +476,3 @@ function SortableHead({ label, field, current, dir, onSort }: SortableHeadProps)
     </TableHead>
   );
 }
-}
