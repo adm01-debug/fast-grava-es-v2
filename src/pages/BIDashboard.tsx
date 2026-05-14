@@ -35,6 +35,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DelaysAnalysis } from '@/components/bi/delays/DelaysAnalysis';
 import { LossesTable } from '@/components/bi/losses/LossesTable';
 
+import { BIMetrics, BIJob } from '@/types/bi';
 type PeriodFilter = '7d' | '30d' | '90d' | 'custom';
 interface DateRange { from: Date; to: Date; }
 
@@ -57,7 +58,7 @@ export default function BIDashboard() {
   const [machineFilter, setMachineFilter] = useState<string>('all');
   const [drillDownOpen, setDrillDownOpen] = useState(false);
   const [drillDownTitle, setDrillDownTitle] = useState('');
-  const [drillDownJobs, setDrillDownJobs] = useState<any[]>([]);
+  const [drillDownJobs, setDrillDownJobs] = useState<BIJob[]>([]);
 
   const periodDays = useMemo(() => {
     if (periodFilter === 'custom') return differenceInDays(customRange.to, customRange.from) || 30;
@@ -84,7 +85,7 @@ export default function BIDashboard() {
     return { from: subDays(endDate, days), to: endDate };
   }, [periodFilter2, customRange2, dateRange.from]);
 
-  const calculatePeriodMetrics = useCallback((range: DateRange) => {
+  const calculatePeriodMetrics = useCallback((range: DateRange): BIMetrics | null => {
     if (!jobs || !machines || !techniques) return null;
     let periodJobs = jobs.filter(j => {
       if (!j.created_at) return false;
@@ -247,7 +248,7 @@ export default function BIDashboard() {
     );
   };
 
-  const handleDrillDown = (title: string, jobs: any[]) => {
+  const handleDrillDown = (title: string, jobs: BIJob[]) => {
     setDrillDownTitle(title);
     setDrillDownJobs(jobs.map(j => ({
       ...j,
