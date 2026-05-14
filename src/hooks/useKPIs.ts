@@ -312,10 +312,12 @@ export function useKPIs(period: KPIPeriod = 'all', customTargets?: Partial<KPITa
     const predictions: KPIPrediction[] = Array.from({ length: 7 }, (_, i) => {
       const date = new Date();
       date.setDate(date.getDate() + i + 1);
+      // Use logic-based variance instead of pure random for reliability
+      const dayFactor = 1 + (Math.sin(i) * 0.1); 
       return {
         date: date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
-        estimatedVolume: Math.round((totalPieces / (daysCount || 1)) * (1 + Math.random() * 0.2)),
-        estimatedLossRate: Math.max(0.5, lossRate * (0.8 + Math.random() * 0.4)),
+        estimatedVolume: Math.round((totalPieces / (daysCount || 1)) * dayFactor),
+        estimatedLossRate: Math.max(0.5, lossRate * dayFactor),
         confidence: 0.9 - (i * 0.05)
       };
     });
