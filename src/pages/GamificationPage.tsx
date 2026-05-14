@@ -49,7 +49,7 @@ export default function GamificationPage() {
     redemptionsQuery
   } = useGamification(period);
 
-  const handleRedeem = (reward: any) => {
+  const handleRedeem = (reward: { id: string; cost_points: number; name: string }) => {
     if (balance >= reward.cost_points) {
       redeemReward.mutate(reward);
     } else {
@@ -118,10 +118,10 @@ export default function GamificationPage() {
             </Badge>
             <Tabs value={activeTab === 'ranking' ? period : activeTab} onValueChange={(v) => {
               if (['daily', 'weekly', 'monthly'].includes(v)) {
-                setPeriod(v as any);
+                setPeriod(v as 'daily' | 'weekly' | 'monthly');
                 setActiveTab('ranking');
               } else {
-                setActiveTab(v as any);
+                setActiveTab(v as 'ranking' | 'rewards' | 'history');
               }
             }}>
               <TabsList className="bg-muted/50 p-1 rounded-xl">
@@ -204,7 +204,7 @@ export default function GamificationPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {redemptionsQuery.data?.map((redemption: any) => (
+                {redemptionsQuery.data?.map((redemption) => (
                   <div key={redemption.id} className="flex items-center justify-between p-4 rounded-xl bg-muted/30 border border-border/50 group hover:bg-muted/50 transition-all">
                     <div className="flex items-center gap-4">
                       <div className={cn("p-2 rounded-lg bg-primary/10", redemption.reward?.color_class)}>
