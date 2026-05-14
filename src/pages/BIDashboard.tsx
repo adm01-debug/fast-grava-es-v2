@@ -396,13 +396,13 @@ export default function BIDashboard() {
                         (s === 'production' && j.status === 'production')
                       );
                     }).map((j: any) => ({
-                      id: j.id,
+                      ...j,
                       order_number: j.order_number || `OS-${j.id.slice(0, 5)}`,
                       product: j.product_name || 'Produto',
-                      status: j.status,
-                      quantity: j.quantity,
-                      efficiency: j.produced_quantity > 0 ? (((j.produced_quantity - (j.lost_pieces || 0)) / j.produced_quantity) * 100).toFixed(1) + '%' : '--'
-                    }));
+                      efficiency: j.produced_quantity > 0 ? (((j.produced_quantity - (j.lost_pieces || 0)) / j.produced_quantity) * 100).toFixed(1) + '%' : '--',
+                      produced_quantity: j.produced_quantity ?? 0,
+                      lost_pieces: j.lost_pieces ?? 0
+                    } as BIJob));
                     setDrillDownJobs(filtered);
                   } else {
                     setDrillDownJobs([]);
