@@ -233,6 +233,8 @@ export default function InventoryPage() {
   );
 }
 
+import { InventoryItem, InventoryMovement } from '@/hooks/useInventory';
+
 function InventoryCard({
   item,
   onMovement,
@@ -240,7 +242,7 @@ function InventoryCard({
   onSelect
 }: {
   item: InventoryItem,
-  onMovement: (data: { item_id: string; type: 'IN' | 'OUT'; quantity: number; reason: string }) => Promise<void>,
+  onMovement: (data: Omit<InventoryMovement, 'id' | 'created_at' | 'user_id'>) => Promise<any>,
   isSelected: boolean,
   onSelect: (id: string, checked: boolean) => void
 }) {
@@ -262,6 +264,9 @@ function InventoryCard({
       type: movementType,
       quantity: Number(quantity),
       reason: movementType === 'IN' ? 'Reposição' : 'Saída para produção',
+      from_location: null,
+      to_location: null,
+      job_id: null,
     });
     setIsModalOpen(false);
   };
