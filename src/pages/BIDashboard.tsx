@@ -254,7 +254,9 @@ export default function BIDashboard() {
       ...j,
       order_number: j.order_number || `OS-${j.id.substring(0, 5).toUpperCase()}`,
       product: j.product_name || 'Produto genérico',
-      efficiency: j.status === 'finished' ? '98.5%' : '---'
+      efficiency: j.status === 'finished' ? '98.5%' : '---',
+      produced_quantity: j.produced_quantity ?? 0,
+      lost_pieces: j.lost_pieces ?? 0
     })));
     setDrillDownOpen(true);
   };

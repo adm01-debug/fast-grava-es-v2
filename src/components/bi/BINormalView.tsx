@@ -84,6 +84,12 @@ interface BINormalViewProps {
   kpis: { inProgressJobs: number; delayedJobs: number };
   oeeData: {
     overallOEE: number;
+    overallAvailability: number;
+    overallPerformance: number;
+    overallQuality: number;
+    availabilityLosses: number;
+    performanceLosses: number;
+    qualityLosses: number;
     trendData: Array<{ date: string; oee: number; quality: number }>;
   };
   getPeriodLabel: () => string;
