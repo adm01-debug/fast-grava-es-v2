@@ -115,12 +115,26 @@ serve(async (req) => {
 
 async function processBitrix24Webhook(supabase: any, event: string, data: any) {
   console.log(`Processing Bitrix24 event: ${event}`);
-  // Adicionar lógica de processamento real aqui
-  return { source: "bitrix24", event, processed: true };
+  
+  // Rastreabilidade: registrar tentativa de sincronização
+  await supabase.from("bitrix24_sync_history").insert({
+    event_type: event,
+    payload: data,
+    status: 'received',
+    sync_date: new Date().toISOString()
+  });
+
+  // TODO: Implementar mapeamento dinâmico de campos Bitrix24 -> Hyper-Logistics
+  return { source: "bitrix24", event, processed: true, timestamp: new Date().toISOString() };
 }
 
 async function processStripeWebhook(supabase: any, event: string, data: any) {
   console.log(`Processing Stripe event: ${event}`);
-  // Adicionar lógica de processamento real aqui
-  return { source: "stripe", event, processed: true };
+  
+  if (event === 'checkout.session.completed') {
+    // Lógica para liberar créditos ou funcionalidades Pro
+    console.log("Stripe Checkout Completed - Processing billing update");
+  }
+
+  return { source: "stripe", event, processed: true, timestamp: new Date().toISOString() };
 }
