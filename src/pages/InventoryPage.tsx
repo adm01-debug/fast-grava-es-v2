@@ -34,7 +34,7 @@ import {
   TrendingUp
 } from 'lucide-react';
 
-import { useInventory, useInventoryMovements, InventoryItem } from '@/hooks/useInventory';
+import { useInventory, useInventoryMovements, InventoryItem, InventoryMovement } from '@/hooks/useInventory';
 import { useDebounce } from '@/hooks/useDebounce';
 import { WarehouseMap } from '@/components/inventory/WarehouseMap';
 import { InventoryStats } from '@/components/inventory/InventoryStats';
@@ -232,8 +232,6 @@ export default function InventoryPage() {
     </MainLayout>
   );
 }
-
-import { InventoryItem, InventoryMovement } from '@/hooks/useInventory';
 
 function InventoryCard({
   item,
