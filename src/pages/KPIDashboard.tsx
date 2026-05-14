@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
+import { BIJob } from '@/types/bi';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -86,7 +87,7 @@ export default function KPIDashboard() {
   const [searchTerm, setSearchTerm] = useState('');
   const [drillDownOpen, setDrillDownOpen] = useState(false);
   const [drillDownTitle, setDrillDownTitle] = useState('');
-  const [drillDownJobs, setDrillDownJobs] = useState<any[]>([]);
+  const [drillDownJobs, setDrillDownJobs] = useState<BIJob[]>([]);
 
   const [visibleKPIs, setVisibleKPIs] = useState({
     completion: true,
@@ -104,24 +105,23 @@ export default function KPIDashboard() {
   const handleDrillDown = (title: string, segment: 'lost' | 'finished' | 'delayed' | 'production' | 'queue') => {
     setDrillDownTitle(title);
     if (jobs) {
-      const filtered = jobs.filter((j: any) => {
+      const filtered = jobs.filter((j) => {
         if (segment === 'lost') return (j.lost_pieces || 0) > 0;
         if (segment === 'finished') return j.status === 'finished';
         if (segment === 'delayed') return j.status === 'delayed';
         if (segment === 'production') return j.status === 'production';
         if (segment === 'queue') return j.status === 'scheduled' || j.status === 'queue';
         return true;
-      }).map((j: any) => {
+      }).map((j) => {
         const total = (j.produced_quantity || j.quantity || 1) + (j.lost_pieces || 0);
         return {
-          id: j.id,
+          ...j,
           order_number: j.order_number || `OS-${j.id.slice(0, 5)}`,
           product: j.product_name || 'Produto',
-          status: j.status,
-          quantity: j.quantity,
+          produced_quantity: j.produced_quantity || 0,
           lost_pieces: j.lost_pieces || 0,
           efficiency: total > 0 ? (((total - (j.lost_pieces || 0)) / total) * 100).toFixed(1) + '%' : '--'
-        };
+        } as BIJob;
       });
       setDrillDownJobs(filtered);
       setDrillDownOpen(true);
