@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback } from 'react';
+import { DbMachine } from '@/hooks/useJobs';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
@@ -53,8 +54,8 @@ export default function MachinesPage() {
   const { exportData } = useDataExport('machines');
   const { data: oeeData } = useOEE(30);
 
-  const [selectedMachine, setSelectedMachine] = useState<any>(null);
-  const [machineForQR, setMachineForQR] = useState<any>(null);
+  const [selectedMachine, setSelectedMachine] = useState<DbMachine | null>(null);
+  const [machineForQR, setMachineForQR] = useState<DbMachine | null>(null);
   const [executionModalOpen, setExecutionModalOpen] = useState(false);
   const [createScheduleModalOpen, setCreateScheduleModalOpen] = useState(false);
   const [selectedSchedule, setSelectedSchedule] = useState<any>(null);
@@ -85,7 +86,7 @@ export default function MachinesPage() {
     });
   };
 
-  const handleCompleteMaintenance = (data: any) => {
+  const handleCompleteMaintenance = (data: { downtime_reason: string; downtime_minutes: number; notes: string }) => {
     if (!currentRecordId) return;
 
     completeMaintenance.mutate({
