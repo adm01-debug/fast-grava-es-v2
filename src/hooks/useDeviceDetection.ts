@@ -115,6 +115,7 @@ export const useDeviceDetection = () => {
       });
 
       if (response.error) {
+        console.error('[useDeviceDetection] Function error:', response.error);
         return { isNewDevice: false, error: response.error };
       }
 

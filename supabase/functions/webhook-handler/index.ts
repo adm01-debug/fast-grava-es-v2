@@ -17,8 +17,24 @@ serve(async (req) => {
 
     const signature = req.headers.get("x-webhook-signature");
     const bodyText = await req.text();
-    const payload = JSON.parse(bodyText);
+    let payload;
+    try {
+      payload = JSON.parse(bodyText);
+    } catch (e) {
+      return new Response(JSON.stringify({ error: "Invalid JSON payload" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const { source, event, data } = payload;
+
+    if (!source || !event) {
+      return new Response(JSON.stringify({ error: "Source and event are required" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
 
     // HMAC verification for security
     const secret = Deno.env.get(`WEBHOOK_SECRET_${source.toUpperCase()}`);
@@ -59,12 +75,16 @@ serve(async (req) => {
     }
 
     // Log webhook
-    await supabase.from("webhook_logs").insert({
+    const { error: logError } = await supabase.from("webhook_logs").insert({
       source,
       event,
       payload: data,
       received_at: new Date().toISOString(),
     });
+
+    if (logError) {
+      console.error("Error logging webhook:", logError);
+    }
 
     // Process based on source
     let result = { processed: true };
@@ -85,6 +105,7 @@ serve(async (req) => {
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown error';
+    console.error("Webhook Error:", error);
     return new Response(JSON.stringify({ error: message }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -94,10 +115,12 @@ serve(async (req) => {
 
 async function processBitrix24Webhook(supabase: any, event: string, data: any) {
   console.log(`Processing Bitrix24 event: ${event}`);
+  // Adicionar lógica de processamento real aqui
   return { source: "bitrix24", event, processed: true };
 }
 
 async function processStripeWebhook(supabase: any, event: string, data: any) {
   console.log(`Processing Stripe event: ${event}`);
+  // Adicionar lógica de processamento real aqui
   return { source: "stripe", event, processed: true };
 }

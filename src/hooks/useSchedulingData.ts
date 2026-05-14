@@ -40,10 +40,14 @@ export function useSchedulingData() {
         .from('profiles')
         .select('id, full_name, avatar_url');
 
-      if (error) throw error;
+      if (error) {
+        console.error('[useSchedulingData] Profiles fetch error:', error);
+        throw error;
+      }
       return data;
     },
     staleTime: STATIC_DATA_STALE_TIME,
+    ...RETRY_CONFIG,
   });
 
   // Fetch techniques with longer stale time (they change infrequently)
