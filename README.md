@@ -8,6 +8,13 @@
 
 ## Visão Geral
 
+### 📄 Relatórios de Auditoria
+- [Relatório Enterprise (Markdown)](AUDITORIA_ENTERPRISE_2026.md)
+- [Relatório Enterprise (PDF)](docs/AUDITORIA_ENTERPRISE_2026.pdf)
+
+*Nota: O PDF é gerado automaticamente durante o processo de CI sempre que houver atualizações no relatório Markdown.*
+
+
 Sistema completo de agendamento e gerenciamento de produção para personalização de produtos, com suporte a 16 técnicas de gravação e 52 máquinas.
 
 ### Funcionalidades Principais
