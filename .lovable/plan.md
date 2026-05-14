@@ -1,24 +1,29 @@
-# Plano de Excelência: Planejamento Estratégico (Product Strategist)
+Após um levantamento minucioso do projeto, identifiquei oportunidades críticas para elevar a robustez e a qualidade técnica do sistema. O foco será na erradicação de tipos genéricos (`any`), melhoria da consistência de dados e otimização da experiência de BI.
 
-Como especialista em Product Design Strategy, identifiquei oportunidades para elevar o módulo de Planejamento ao nível 10/10, transformando-o de uma ferramenta reativa em um sistema preditivo e autogestor.
+### Análise de Gaps e Melhorias
 
-## Melhorias Sugeridas
+1.  **Segurança de Tipos (TypeScript):**
+    *   Substituir o uso excessivo de `any` em componentes de BI e páginas principais por interfaces rigorosas.
+    *   Consolidar os tipos de `biMetrics` e `jobs` em todo o ecossistema de relatórios e dashboards.
+    *   Refinar tipos em hooks customizados para evitar erros silenciosos em tempo de execução.
 
-### 1. Kanban Preditivo e Inteligente
-*   **Sequenciamento Automático de Cores:** Integração visual do `useSmartSequencing` no Kanban para agrupar automaticamente jobs por cor de gravação, reduzindo tempos de setup.
-*   **Balanceamento Dinâmico de Carga:** Alertas visuais e sugestões de "drag-and-drop" baseadas no `useLoadBalancing` para evitar sobrecarga em máquinas específicas.
-*   **Previsão de Gargalos em Tempo Real:** Indicador de "Saúde da Técnica" que antecipa saturações antes que ocorram, sugerindo redistribuição imediata.
+2.  **Performance e BI (Business Intelligence):**
+    *   Otimizar o processamento de dados no `FuturisticBI` e `BINormalView`.
+    *   Melhorar o gerenciamento de estado no `KPIDashboard` para evitar re-renderizações desnecessárias ao lidar com grandes volumes de jobs.
+    *   Adicionar validações de integridade nos cálculos de OEE e perdas.
 
-### 2. Calendário de Alta Performance
-*   **Visualização de Conflitos Críticos:** Destaque neural para sobreposições de horários e falta de recursos humanos.
-*   **Modo de Otimização Assistida:** Um botão que reorganiza a agenda diária para maximizar o OEE (Overall Equipment Effectiveness) com um clique.
+3.  **Manutenibilidade:**
+    *   Remover logs de depuração residuais.
+    *   Padronizar as chamadas ao Supabase usando helpers tipados.
+    *   Unificar constantes de cores e labels de status.
 
-### 3. Experiência de Usuário (UX/UI) de Elite
-*   **Micro-interações de Confirmação:** Feedback tátil e visual para ações de alta relevância (como finalizar um job).
-*   **Dashboard de Metas de Planejamento:** Visualização rápida de "Jobs Planejados vs. Capacidade Disponível" no topo de todas as telas de planejamento.
+### Plano de Execução (Próximo Passo)
 
-## Detalhes Técnicos
-*   Implementar `KanbanAIAdvisor`: Novo componente para exibir sugestões de IA no Kanban.
-*   Refatorar `KanbanMetricsBar`: Adicionar métricas de eficiência de setup e balanceamento.
-*   Integrar hooks de inteligência (`useSmartSequencing`, `useLoadBalancing`, `useBottleneckPrediction`) diretamente na interface do Kanban.
-*   Adicionar suporte a "Quick Sequencing" no menu de ações em massa do Kanban.
+*   **Ação I:** Refatoração do `src/pages/BIDashboard.tsx` e componentes relacionados para remover `any[]` e implementar a interface `Job` e `BIMetrics` de forma integral.
+
+Aguardando aprovação para iniciar a execução sequencial rumo ao 10/10.
+
+```text
+ESTADO ATUAL: 9.5/10 (Gaps de Tipagem e BI detectados)
+META: 10/10 (Total Rigidez de Tipos e Performance Otimizada)
+```
