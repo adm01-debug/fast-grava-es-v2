@@ -60,8 +60,8 @@ export function FuturisticBI({ biMetrics, kpis, oeeData, isLoading }: BIProps) {
 
   const delayedJobsList = useMemo(() => {
     if (!biMetrics.periodJobsList) return [];
-    return biMetrics.periodJobsList
-      .filter((j: any) => j.status === 'delayed')
+    return (biMetrics.periodJobsList as BIJob[])
+      .filter((j: BIJob) => j.status === 'delayed')
       .slice(0, 10);
   }, [biMetrics.periodJobsList]);
 
