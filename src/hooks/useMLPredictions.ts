@@ -141,12 +141,11 @@ export function useMLPredictions() {
       toast.success(`${data.predictions_generated} previsões geradas com sucesso`);
     },
     onError: (error: Error) => {
-      // Registro detalhado de erro de ML para auditoria
+      // Registro detalhado de erro de ML para auditoria (Tipagem corrigida)
       supabase.from('error_logs').insert({
-        context: 'useMLPredictions:generatePredictions',
-        error_message: error.message,
-        severity: 'high',
-        metadata: { machine_id: generatePredictions.variables }
+        component_name: 'useMLPredictions:generatePredictions',
+        message: error.message,
+        metadata: { machine_id: generatePredictions.variables, severity: 'high' }
       }).then();
 
       if (error.message.includes('Rate limit')) {
