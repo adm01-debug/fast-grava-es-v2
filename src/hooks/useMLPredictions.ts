@@ -141,6 +141,13 @@ export function useMLPredictions() {
       toast.success(`${data.predictions_generated} previsões geradas com sucesso`);
     },
     onError: (error: Error) => {
+      // Registro detalhado de erro de ML para auditoria (Tipagem corrigida)
+      supabase.from('error_logs').insert({
+        component_name: 'useMLPredictions:generatePredictions',
+        message: error.message,
+        metadata: { machine_id: generatePredictions.variables, severity: 'high' }
+      }).then();
+
       if (error.message.includes('Rate limit')) {
         toast.error('Limite de requisições excedido. Tente novamente em alguns minutos.');
       } else if (error.message.includes('Payment required')) {
