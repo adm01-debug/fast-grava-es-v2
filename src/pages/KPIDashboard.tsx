@@ -117,7 +117,7 @@ export default function KPIDashboard() {
         return {
           ...j,
           order_number: j.order_number || `OS-${j.id.slice(0, 5)}`,
-          product: j.product_name || 'Produto',
+          product: (j as any).product_name || 'Produto',
           produced_quantity: j.produced_quantity || 0,
           lost_pieces: j.lost_pieces || 0,
           efficiency: total > 0 ? (((total - (j.lost_pieces || 0)) / total) * 100).toFixed(1) + '%' : '--'
