@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Reward } from '@/hooks/useGamification';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { MainLayout } from '@/components/layout/MainLayout';
@@ -49,7 +50,7 @@ export default function GamificationPage() {
     redemptionsQuery
   } = useGamification(period);
 
-  const handleRedeem = (reward: { id: string; cost_points: number; name: string }) => {
+  const handleRedeem = (reward: Reward) => {
     if (balance >= reward.cost_points) {
       redeemReward.mutate(reward);
     } else {
@@ -209,14 +210,14 @@ export default function GamificationPage() {
                     <div className="flex items-center gap-4">
                       <div className={cn("p-2 rounded-lg bg-primary/10", redemption.reward?.color_class)}>
                         {(() => {
-                          const Icon = getRewardIcon(redemption.reward?.icon);
+                          const Icon = getRewardIcon(redemption.reward?.icon || 'trophy');
                           return <Icon className="h-5 w-5" />;
                         })()}
                       </div>
                       <div>
                         <p className="font-bold">{redemption.reward?.name || '---'}</p>
                         <p className="text-xs text-muted-foreground">
-                          {format(new Date(redemption.created_at), "dd 'de' MMMM 'às' HH:mm", { locale: dateLocale })}
+                          {format(new Date(redemption.created_at || new Date()), "dd 'de' MMMM 'às' HH:mm", { locale: dateLocale })}
                         </p>
                       </div>
                     </div>
