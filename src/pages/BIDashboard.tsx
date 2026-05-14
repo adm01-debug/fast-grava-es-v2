@@ -257,7 +257,7 @@ export default function BIDashboard() {
       efficiency: j.status === 'finished' ? '98.5%' : '---',
       produced_quantity: j.produced_quantity ?? 0,
       lost_pieces: j.lost_pieces ?? 0
-    })));
+    } as BIJob)));
     setDrillDownOpen(true);
   };
 
