@@ -140,11 +140,11 @@ export default function ReportBuilderPage() {
         .from('report_templates')
         .insert({
           name: templateName,
-          table_name: selectedTable,
+          table_name: selectedTable as string,
           columns: selectedColumns,
           format_type: formatType,
           user_id: user.id,
-          filters: { status: selectedStatus, dateRange }
+          filters: { status: selectedStatus, dateRange } as any
         })
         .select()
         .single();
@@ -352,9 +352,10 @@ export default function ReportBuilderPage() {
                   <button
                     key={table.id}
                     onClick={() => {
-                      setSelectedTable(table.id);
-                      setSelectedColumns(TABLE_COLUMNS[table.id]);
-                      if (table.id === 'jobs') setSelectedStatus('finished');
+                      const tableId = table.id as PublicTables;
+                      setSelectedTable(tableId);
+                      setSelectedColumns(TABLE_COLUMNS[tableId] || []);
+                      if (tableId === 'jobs') setSelectedStatus('finished');
                       else setSelectedStatus('all');
                     }}
                     className={`w-full flex items-center gap-3 p-3 rounded-xl border transition-all text-left group ${
