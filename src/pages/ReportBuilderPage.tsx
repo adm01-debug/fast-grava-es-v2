@@ -1,4 +1,7 @@
 import { useState, useMemo } from 'react';
+import { Database } from '@/integrations/supabase/types';
+
+type PublicTables = keyof Database['public']['Tables'];
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -76,7 +79,7 @@ const STATUS_OPTIONS: Record<string, string[]> = {
 
 
 export default function ReportBuilderPage() {
-  const [selectedTable, setSelectedTable] = useState<string>('jobs');
+  const [selectedTable, setSelectedTable] = useState<PublicTables>('jobs');
   const [selectedColumns, setSelectedColumns] = useState<string[]>(TABLE_COLUMNS.jobs);
   const [formatType, setFormatType] = useState<'csv' | 'pdf' | 'excel'>('csv');
   const [isGenerating, setIsGenerating] = useState(false);
@@ -93,7 +96,7 @@ export default function ReportBuilderPage() {
     queryKey: ['report-preview', selectedTable, selectedColumns, dateRange, selectedStatus],
     queryFn: async () => {
       let query = supabase
-        .from(selectedTable as any)
+        .from(selectedTable)
         .select(selectedColumns.join(','))
         .limit(10);
 
@@ -134,7 +137,7 @@ export default function ReportBuilderPage() {
       if (!user) throw new Error('User not authenticated');
 
       const { data, error } = await supabase
-        .from('report_templates' as any)
+        .from('report_templates')
         .insert({
           name: templateName,
           table_name: selectedTable,
@@ -142,7 +145,7 @@ export default function ReportBuilderPage() {
           format_type: formatType,
           user_id: user.id,
           filters: { status: selectedStatus, dateRange }
-        } as any)
+        })
         .select()
         .single();
 
@@ -169,7 +172,7 @@ export default function ReportBuilderPage() {
     setIsGenerating(true);
     try {
       let query = supabase
-        .from(selectedTable as any)
+        .from(selectedTable)
         .select(selectedColumns.join(','));
 
       const filterField = TABLE_FILTER_FIELDS[selectedTable];
