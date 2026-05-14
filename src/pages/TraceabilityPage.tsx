@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback, useRef } from 'react';
+import { BIJob } from '@/types/bi';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { cn } from '@/lib/utils';
 import { useFuseSearch } from '@/hooks/useFuseSearch';
@@ -458,7 +459,15 @@ export default function TraceabilityPage() {
   );
 }
 
-function SortableHead({ label, field, current, dir, onSort }: any) {
+interface SortableHeadProps {
+  label: string;
+  field: SortField;
+  current: SortField;
+  dir: SortDir;
+  onSort: (field: SortField) => void;
+}
+
+function SortableHead({ label, field, current, dir, onSort }: SortableHeadProps) {
   return (
     <TableHead>
       <Button variant="ghost" size="sm" className="h-auto p-0 font-black uppercase text-[10px] tracking-widest hover:bg-transparent" onClick={() => onSort(field)}>

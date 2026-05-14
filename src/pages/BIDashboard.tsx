@@ -35,6 +35,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DelaysAnalysis } from '@/components/bi/delays/DelaysAnalysis';
 import { LossesTable } from '@/components/bi/losses/LossesTable';
 
+import { BIMetrics, BIJob } from '@/types/bi';
 type PeriodFilter = '7d' | '30d' | '90d' | 'custom';
 interface DateRange { from: Date; to: Date; }
 
@@ -57,7 +58,7 @@ export default function BIDashboard() {
   const [machineFilter, setMachineFilter] = useState<string>('all');
   const [drillDownOpen, setDrillDownOpen] = useState(false);
   const [drillDownTitle, setDrillDownTitle] = useState('');
-  const [drillDownJobs, setDrillDownJobs] = useState<any[]>([]);
+  const [drillDownJobs, setDrillDownJobs] = useState<BIJob[]>([]);
 
   const periodDays = useMemo(() => {
     if (periodFilter === 'custom') return differenceInDays(customRange.to, customRange.from) || 30;
@@ -84,7 +85,7 @@ export default function BIDashboard() {
     return { from: subDays(endDate, days), to: endDate };
   }, [periodFilter2, customRange2, dateRange.from]);
 
-  const calculatePeriodMetrics = useCallback((range: DateRange) => {
+  const calculatePeriodMetrics = useCallback((range: DateRange): BIMetrics | null => {
     if (!jobs || !machines || !techniques) return null;
     let periodJobs = jobs.filter(j => {
       if (!j.created_at) return false;
@@ -247,14 +248,16 @@ export default function BIDashboard() {
     );
   };
 
-  const handleDrillDown = (title: string, jobs: any[]) => {
+  const handleDrillDown = (title: string, jobs: BIJob[]) => {
     setDrillDownTitle(title);
     setDrillDownJobs(jobs.map(j => ({
       ...j,
       order_number: j.order_number || `OS-${j.id.substring(0, 5).toUpperCase()}`,
       product: j.product_name || 'Produto genérico',
-      efficiency: j.status === 'finished' ? '98.5%' : '---'
-    })));
+      efficiency: j.status === 'finished' ? '98.5%' : '---',
+      produced_quantity: j.produced_quantity ?? 0,
+      lost_pieces: j.lost_pieces ?? 0
+    } as BIJob)));
     setDrillDownOpen(true);
   };
 
@@ -393,13 +396,13 @@ export default function BIDashboard() {
                         (s === 'production' && j.status === 'production')
                       );
                     }).map((j: any) => ({
-                      id: j.id,
+                      ...j,
                       order_number: j.order_number || `OS-${j.id.slice(0, 5)}`,
                       product: j.product_name || 'Produto',
-                      status: j.status,
-                      quantity: j.quantity,
-                      efficiency: j.produced_quantity > 0 ? (((j.produced_quantity - (j.lost_pieces || 0)) / j.produced_quantity) * 100).toFixed(1) + '%' : '--'
-                    }));
+                      efficiency: j.produced_quantity > 0 ? (((j.produced_quantity - (j.lost_pieces || 0)) / j.produced_quantity) * 100).toFixed(1) + '%' : '--',
+                      produced_quantity: j.produced_quantity ?? 0,
+                      lost_pieces: j.lost_pieces ?? 0
+                    } as BIJob));
                     setDrillDownJobs(filtered);
                   } else {
                     setDrillDownJobs([]);

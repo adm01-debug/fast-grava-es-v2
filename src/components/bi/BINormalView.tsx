@@ -1,3 +1,4 @@
+import { BIMetrics, BIJob } from '@/types/bi';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -79,9 +80,18 @@ function StatCard({ title, value, subtitle, icon: Icon, trend, trendValue, varia
 
 
 interface BINormalViewProps {
-  biMetrics: any;
-  kpis: any;
-  oeeData: any;
+  biMetrics: BIMetrics;
+  kpis: { inProgressJobs: number; delayedJobs: number };
+  oeeData: {
+    overallOEE: number;
+    overallAvailability: number;
+    overallPerformance: number;
+    overallQuality: number;
+    availabilityLosses: number;
+    performanceLosses: number;
+    qualityLosses: number;
+    trendData: Array<{ date: string; oee: number; quality: number }>;
+  };
   getPeriodLabel: () => string;
   onDrillDown: (title: string, segment: string) => void;
 }

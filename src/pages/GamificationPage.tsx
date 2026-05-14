@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Reward } from '@/hooks/useGamification';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { MainLayout } from '@/components/layout/MainLayout';
@@ -49,7 +50,7 @@ export default function GamificationPage() {
     redemptionsQuery
   } = useGamification(period);
 
-  const handleRedeem = (reward: any) => {
+  const handleRedeem = (reward: Reward) => {
     if (balance >= reward.cost_points) {
       redeemReward.mutate(reward);
     } else {
@@ -118,10 +119,10 @@ export default function GamificationPage() {
             </Badge>
             <Tabs value={activeTab === 'ranking' ? period : activeTab} onValueChange={(v) => {
               if (['daily', 'weekly', 'monthly'].includes(v)) {
-                setPeriod(v as any);
+                setPeriod(v as 'daily' | 'weekly' | 'monthly');
                 setActiveTab('ranking');
               } else {
-                setActiveTab(v as any);
+                setActiveTab(v as 'ranking' | 'rewards' | 'history');
               }
             }}>
               <TabsList className="bg-muted/50 p-1 rounded-xl">
@@ -204,19 +205,19 @@ export default function GamificationPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {redemptionsQuery.data?.map((redemption: any) => (
+                {redemptionsQuery.data?.map((redemption) => (
                   <div key={redemption.id} className="flex items-center justify-between p-4 rounded-xl bg-muted/30 border border-border/50 group hover:bg-muted/50 transition-all">
                     <div className="flex items-center gap-4">
                       <div className={cn("p-2 rounded-lg bg-primary/10", redemption.reward?.color_class)}>
                         {(() => {
-                          const Icon = getRewardIcon(redemption.reward?.icon);
+                          const Icon = getRewardIcon(redemption.reward?.icon || 'trophy');
                           return <Icon className="h-5 w-5" />;
                         })()}
                       </div>
                       <div>
                         <p className="font-bold">{redemption.reward?.name || '---'}</p>
                         <p className="text-xs text-muted-foreground">
-                          {format(new Date(redemption.created_at), "dd 'de' MMMM 'às' HH:mm", { locale: dateLocale })}
+                          {format(new Date(redemption.created_at || new Date()), "dd 'de' MMMM 'às' HH:mm", { locale: dateLocale })}
                         </p>
                       </div>
                     </div>

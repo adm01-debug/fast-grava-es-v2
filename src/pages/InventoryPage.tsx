@@ -34,7 +34,7 @@ import {
   TrendingUp
 } from 'lucide-react';
 
-import { useInventory, useInventoryMovements, InventoryItem } from '@/hooks/useInventory';
+import { useInventory, useInventoryMovements, InventoryItem, InventoryMovement } from '@/hooks/useInventory';
 import { useDebounce } from '@/hooks/useDebounce';
 import { WarehouseMap } from '@/components/inventory/WarehouseMap';
 import { InventoryStats } from '@/components/inventory/InventoryStats';
@@ -240,7 +240,7 @@ function InventoryCard({
   onSelect
 }: {
   item: InventoryItem,
-  onMovement: any,
+  onMovement: (data: Omit<InventoryMovement, 'id' | 'created_at' | 'user_id'>) => Promise<any>,
   isSelected: boolean,
   onSelect: (id: string, checked: boolean) => void
 }) {
@@ -262,6 +262,9 @@ function InventoryCard({
       type: movementType,
       quantity: Number(quantity),
       reason: movementType === 'IN' ? 'Reposição' : 'Saída para produção',
+      from_location: null,
+      to_location: null,
+      job_id: null,
     });
     setIsModalOpen(false);
   };
@@ -366,7 +369,7 @@ function InventoryCard({
               <div className="grid gap-4 py-4">
                 <div className="space-y-2">
                   <Label>Tipo</Label>
-                  <Select value={movementType} onValueChange={(v: any) => setMovementType(v)}>
+                  <Select value={movementType} onValueChange={(v: 'IN' | 'OUT') => setMovementType(v)}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>

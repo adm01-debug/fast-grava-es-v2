@@ -31,12 +31,12 @@ export function useVoiceCommands({
   const { toast } = useToast();
 
   useEffect(() => {
-    const w = window as unknown as Record<string, new () => unknown>;
+    const w = window as any;
     const SpeechRecognitionAPI = w.SpeechRecognition || w.webkitSpeechRecognition;
     setIsSupported(!!SpeechRecognitionAPI);
 
     if (SpeechRecognitionAPI) {
-      recognitionRef.current = new (SpeechRecognitionAPI as new () => Record<string, unknown>)();
+      recognitionRef.current = new (SpeechRecognitionAPI as any)();
       recognitionRef.current.continuous = continuous;
       recognitionRef.current.interimResults = true;
       recognitionRef.current.lang = language;

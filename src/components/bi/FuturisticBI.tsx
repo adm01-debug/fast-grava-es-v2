@@ -52,16 +52,16 @@ export function FuturisticBI({ biMetrics, kpis, oeeData, isLoading }: BIProps) {
 
   const jobsWithLosses = useMemo(() => {
     if (!biMetrics.periodJobsList) return [];
-    return biMetrics.periodJobsList
-      .filter((j: any) => (j.lost_pieces || 0) > 0)
-      .sort((a: any, b: any) => (b.lost_pieces || 0) - (a.lost_pieces || 0))
+    return (biMetrics.periodJobsList as BIJob[])
+      .filter((j: BIJob) => (j.lost_pieces || 0) > 0)
+      .sort((a: BIJob, b: BIJob) => (b.lost_pieces || 0) - (a.lost_pieces || 0))
       .slice(0, 10);
   }, [biMetrics.periodJobsList]);
 
   const delayedJobsList = useMemo(() => {
     if (!biMetrics.periodJobsList) return [];
-    return biMetrics.periodJobsList
-      .filter((j: any) => j.status === 'delayed')
+    return (biMetrics.periodJobsList as BIJob[])
+      .filter((j: BIJob) => j.status === 'delayed')
       .slice(0, 10);
   }, [biMetrics.periodJobsList]);
 
@@ -81,7 +81,7 @@ export function FuturisticBI({ biMetrics, kpis, oeeData, isLoading }: BIProps) {
   const handleDrillDown = (title: string, segment: string) => {
     setDrillDownTitle(title);
     if (biMetrics.periodJobsList) {
-      const filtered = biMetrics.periodJobsList.filter((j: any) => {
+      const filtered = (biMetrics.periodJobsList as BIJob[]).filter((j: BIJob) => {
         if (segment === 'all') return true;
         const s = segment.toLowerCase();
         return (
@@ -99,20 +99,18 @@ export function FuturisticBI({ biMetrics, kpis, oeeData, isLoading }: BIProps) {
             (segment === 'Studio Gamma' && !j.technique_id?.includes('Laser') && !j.technique_id?.includes('UV'))
           ))
         );
-      }).map((j: any) => {
+      }).map((j: BIJob) => {
         const total = (j.produced_quantity || j.quantity || 1) + (j.lost_pieces || 0);
         return {
-          id: j.id,
+          ...j,
           order_number: j.order_number || `OS-${j.id.slice(0, 5)}`,
           product: j.product_name || 'Produto',
-          status: j.status,
-          quantity: j.quantity,
           produced_quantity: j.produced_quantity || 0,
           lost_pieces: j.lost_pieces || 0,
           efficiency: total > 0 ? (((total - (j.lost_pieces || 0)) / total) * 100).toFixed(1) + '%' : '--'
-        } as Job;
+        };
       });
-      setDrillDownJobs(filtered);
+      setDrillDownJobs(filtered as unknown as Job[]);
     } else {
       setDrillDownJobs([]);
     }
@@ -122,7 +120,7 @@ export function FuturisticBI({ biMetrics, kpis, oeeData, isLoading }: BIProps) {
   const studioData = useMemo(() => {
     if (!biMetrics.machineUtilization) return [];
     const machineGroups: Record<string, any[]> = {};
-    biMetrics.machineUtilization.forEach((m: any) => {
+    (biMetrics.machineUtilization as BIMetrics['machineUtilization']).forEach((m) => {
       const studioName = m.technique.includes('Laser') ? 'Studio Alfa' :
                         m.technique.includes('UV') ? 'Studio Beta' :
                         'Studio Gamma';
