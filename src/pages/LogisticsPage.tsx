@@ -44,13 +44,13 @@ import { toast } from 'sonner';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
-const getStatusConfig = (t: any) => ({
+const getStatusConfig = (t: (key: string) => string) => ({
   pending: { label: t('logistics.status.pending'), color: 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20', icon: Clock },
   in_transit: { label: t('logistics.status.in_transit'), color: 'bg-blue-500/10 text-blue-500 border-blue-500/20', icon: Truck },
   delivered: { label: t('logistics.status.delivered'), color: 'bg-green-500/10 text-green-500 border-green-500/20', icon: CheckCircle2 },
   returned: { label: t('logistics.status.returned'), color: 'bg-purple-500/10 text-purple-500 border-purple-500/20', icon: RotateCcw },
   cancelled: { label: t('logistics.status.cancelled'), color: 'bg-red-500/10 text-red-500 border-red-500/20', icon: AlertTriangle },
-});
+}) as const;
 
 export default function LogisticsPage() {
   const { t, i18n } = useTranslation();
@@ -231,7 +231,8 @@ export default function LogisticsPage() {
                 </div>
               ) : (
                 filteredShipments?.map((shipment) => {
-                  const config = statusMap[shipment.status] || statusMap.pending;
+                  const status = shipment.status as keyof ReturnType<typeof getStatusConfig>;
+                  const config = statusMap[status] || statusMap.pending;
                   const StatusIcon = config.icon;
                   return (
                     <Card key={shipment.id} className="glass-card hover:border-primary/30 transition-all group overflow-hidden border-l-4" style={{ borderLeftColor: shipment.status === 'delivered' ? '#10b981' : shipment.status === 'in_transit' ? '#3b82f6' : '#f59e0b' }}>
