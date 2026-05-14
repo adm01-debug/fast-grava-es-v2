@@ -436,7 +436,7 @@ export default function MachinesPage() {
                     {selectedMachine?.code}
                   </DialogTitle>
                   <DialogDescription>
-                    {selectedMachine?.name} • {getTechniqueById(selectedMachine?.technique_id)?.name}
+                    {selectedMachine?.name} • {selectedMachine?.technique_id ? getTechniqueById(selectedMachine.technique_id)?.name : 'Técnica não definida'}
                   </DialogDescription>
                 </div>
               </div>
