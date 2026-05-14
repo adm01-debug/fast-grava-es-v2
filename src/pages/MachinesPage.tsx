@@ -86,7 +86,7 @@ export default function MachinesPage() {
     });
   };
 
-  const handleCompleteMaintenance = (data: { downtime_reason: string; downtime_minutes: number; notes: string }) => {
+  const handleCompleteMaintenance = (data: Parameters<NonNullable<React.ComponentProps<typeof MaintenanceExecutionModal>['onComplete']>>[0]) => {
     if (!currentRecordId) return;
 
     completeMaintenance.mutate({
@@ -292,7 +292,7 @@ export default function MachinesPage() {
                 </motion.div>
               ) : (
                 Object.entries(machinesByTechnique).map(([techniqueId, techMachines]) => {
-                  const technique = getTechniqueById(techniqueId);
+                  const technique = techniqueId ? getTechniqueById(techniqueId) : undefined;
                   return (
                     <motion.div
                       layout
