@@ -240,7 +240,7 @@ function InventoryCard({
   onSelect
 }: {
   item: InventoryItem,
-  onMovement: any,
+  onMovement: (data: { item_id: string; type: 'IN' | 'OUT'; quantity: number; reason: string }) => Promise<void>,
   isSelected: boolean,
   onSelect: (id: string, checked: boolean) => void
 }) {
@@ -366,7 +366,7 @@ function InventoryCard({
               <div className="grid gap-4 py-4">
                 <div className="space-y-2">
                   <Label>Tipo</Label>
-                  <Select value={movementType} onValueChange={(v: any) => setMovementType(v)}>
+                  <Select value={movementType} onValueChange={(v: 'IN' | 'OUT') => setMovementType(v)}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
