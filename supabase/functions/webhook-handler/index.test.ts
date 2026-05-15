@@ -88,4 +88,5 @@ Deno.test({
     // Should handle gracefully (probably return 200 with unknown source or 500 on DB fail, but not crash)
     assertEquals(res.status === 200 || res.status === 500, true);
   });
+  }
 });
