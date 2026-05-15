@@ -1,6 +1,17 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-// Move mock BEFORE any imports that might use supabase
+// Define localStorage globally BEFORE any module imports
+Object.defineProperty(global, 'localStorage', {
+  value: {
+    getItem: vi.fn(),
+    setItem: vi.fn(),
+    removeItem: vi.fn(),
+    clear: vi.fn(),
+  },
+  writable: true,
+});
+
+// Mock the supabase client BEFORE importing useJobs
 vi.mock('@/integrations/supabase/client', () => ({
   supabase: {
     from: vi.fn(),
@@ -12,18 +23,9 @@ vi.mock('@/integrations/supabase/client', () => ({
   },
 }));
 
-// Mock localStorage for node environment
-if (typeof window === 'undefined') {
-  (global as any).window = {};
-  (global as any).localStorage = {
-    getItem: vi.fn(),
-    setItem: vi.fn(),
-    removeItem: vi.fn(),
-  };
-}
-
 import { useBufferStatus } from '../useJobs';
 import * as useJobsModule from '../useJobs';
+
 
 // Mock the dependencies
 vi.mock('@tanstack/react-query', () => ({
