@@ -2,11 +2,13 @@ import { useMemo, memo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { BarChart3 } from 'lucide-react';
-import { useSchedulingData } from '@/hooks/useSchedulingData';
+import { useOperatorDashboardData } from '@/hooks/useOperatorDashboardData';
 import { cn } from '@/lib/utils';
+import { useTranslation } from 'react-i18next';
 
 function OccupancyChartComponent() {
-  const { jobs, machines } = useSchedulingData();
+  const { t } = useTranslation();
+  const { jobs, machines } = useOperatorDashboardData();
 
   const occupancyData = useMemo(() => {
     if (!machines || !jobs || machines.length === 0) return [];
@@ -38,16 +40,16 @@ function OccupancyChartComponent() {
       <CardHeader className="pb-2">
         <CardTitle className="text-sm font-medium flex items-center gap-2">
           <BarChart3 className="h-4 w-4 text-primary" />
-          Ocupação das Máquinas
-          <Badge variant="outline" className="ml-auto">{avgOccupancy}% média</Badge>
+          {t('dashboard.machineOccupancy', 'Ocupação das Máquinas')}
+          <Badge variant="outline" className="ml-auto">{avgOccupancy}% {t('common.average', 'média')}</Badge>
         </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-3">
-          {occupancyData.slice(0, 6).map((machine) => (
+          {occupancyData.slice(0, 10).map((machine) => (
             <div key={machine.id} className="space-y-1">
               <div className="flex justify-between text-xs">
-                <span className="font-medium truncate max-w-[60%]">{machine.name}</span>
+                <span className="font-medium truncate max-w-[60%]">{machine.name} ({machine.code})</span>
                 <span className="text-muted-foreground">{machine.occupancy}%</span>
               </div>
               <div 
@@ -60,11 +62,11 @@ function OccupancyChartComponent() {
               >
                 <div
                   className={cn(
-                    "h-full rounded-full transition-all",
+                    "h-full rounded-full transition-all duration-500",
                     machine.occupancy >= 90 ? "bg-destructive" :
-                    machine.occupancy >= 70 ? "bg-yellow-500" :
+                    machine.occupancy >= 70 ? "bg-warning" :
                     machine.occupancy >= 40 ? "bg-primary" :
-                    "bg-muted-foreground/30"
+                    "bg-success"
                   )}
                   style={{ width: `${machine.occupancy}%` }}
                 />
@@ -73,7 +75,7 @@ function OccupancyChartComponent() {
           ))}
           {occupancyData.length === 0 && (
             <p className="text-xs text-muted-foreground text-center py-4">
-              Nenhuma máquina com dados de ocupação
+              {t('dashboard.noOccupancyData', 'Nenhuma máquina com dados de ocupação')}
             </p>
           )}
         </div>
