@@ -77,14 +77,14 @@ Deno.test({
     });
 
     await t.step("Fuzz Testing: Script Injection in Payload", async () => {
-      // Set a mock secret for this source so it enters the validation but fails correctly
+      // Use a different source that doesn't have a secret set in this test context
+      // to bypass signature validation correctly
       Deno.env.set("ENFORCE_WEBHOOK_SIGNATURES", "false");
-      Deno.env.set("WEBHOOK_SECRET_BITRIX24", ""); // Ensure secret is empty so it skips signature validation
       
       const req = new Request("http://localhost/functions/v1/webhook-handler", {
         method: "POST",
         body: JSON.stringify({ 
-          source: "bitrix24", 
+          source: "unprotected_source", 
           event: "ONAPPTEST", 
           data: { script: "<script>alert('XSS')</script>", sql: "'; DROP TABLE users; --" } 
         }),
