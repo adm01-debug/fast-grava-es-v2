@@ -6,7 +6,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-webhook-signature",
 };
 
-serve(async (req) => {
+export const handler = async (req: Request): Promise<Response> => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
@@ -111,7 +111,11 @@ serve(async (req) => {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
-});
+};
+
+if (import.meta.main) {
+  serve(handler);
+}
 
 async function processBitrix24Webhook(supabase: any, event: string, data: any) {
   console.log(`Processing Bitrix24 event: ${event}`);
