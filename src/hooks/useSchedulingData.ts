@@ -315,11 +315,12 @@ export function useSchedulingData() {
         }
 
         let totalActual = 0, totalEstimated = 0;
-        for (const job of dayJobs) {
+        for (let j = 0; j < dayJobs.length; j++) {
+          const job = dayJobs[j];
           if (job.actual_start_time && job.actual_end_time) {
             totalActual += Math.max(0, differenceInMinutes(new Date(job.actual_end_time), new Date(job.actual_start_time)));
           }
-          totalEstimated += job.estimated_duration || 60;
+          totalEstimated += Number(job.estimated_duration) || 60;
         }
 
         const oee = totalActual > 0 ? Math.min(100, (totalEstimated / totalActual) * 100) : 100;
