@@ -1,4 +1,5 @@
 import * as React from "react";
+import { getFocusableElements } from "./utils/focus";
 
 export interface FocusTrapOptions {
   enabled?: boolean;
@@ -25,31 +26,10 @@ export function useFocusTrap<T extends HTMLElement = HTMLElement>(
       previousActiveElement.current = document.activeElement as HTMLElement;
     }
 
-    // Get all focusable elements within the container
-    const getFocusableElements = (): HTMLElement[] => {
-      const focusableSelectors = [
-        'button:not([disabled])',
-        'input:not([disabled])',
-        'select:not([disabled])',
-        'textarea:not([disabled])',
-        'a[href]',
-        '[tabindex]:not([tabindex="-1"])',
-        '[contenteditable="true"]',
-      ].join(', ');
-
-      return Array.from(
-        container.querySelectorAll<HTMLElement>(focusableSelectors)
-      ).filter(el => {
-        // Filter out hidden elements
-        const style = window.getComputedStyle(el);
-        return style.display !== 'none' && style.visibility !== 'hidden';
-      });
-    };
-
     // Focus the first focusable element on mount
     let rafId: number;
     if (autoFocus) {
-      const focusableElements = getFocusableElements();
+      const focusableElements = getFocusableElements(container);
       if (focusableElements.length > 0) {
         // Small delay to ensure element is rendered
         rafId = requestAnimationFrame(() => {
@@ -61,7 +41,7 @@ export function useFocusTrap<T extends HTMLElement = HTMLElement>(
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key !== 'Tab') return;
 
-      const focusableElements = getFocusableElements();
+      const focusableElements = getFocusableElements(container);
       if (focusableElements.length === 0) return;
 
       const firstElement = focusableElements[0];
@@ -86,7 +66,7 @@ export function useFocusTrap<T extends HTMLElement = HTMLElement>(
     // Prevent focus from leaving the container
     const handleFocusOut = (e: FocusEvent) => {
       if (!container.contains(e.relatedTarget as Node)) {
-        const focusableElements = getFocusableElements();
+        const focusableElements = getFocusableElements(container);
         if (focusableElements.length > 0) {
           e.preventDefault();
           focusableElements[0].focus();

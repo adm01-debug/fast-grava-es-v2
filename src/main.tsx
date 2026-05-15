@@ -8,7 +8,7 @@ import "./index.css";
 import "./i18n";
 
 // Import global providers
-import { AccessibilityProvider } from "./components/accessibility/SkipLinks";
+import { AccessibilityProvider } from "./components/accessibility/AccessibilityProvider";
 import { OfflineProvider } from "./components/offline/OfflineMode";
 
 // Performance Monitoring (Web Vitals to Sentry)

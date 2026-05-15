@@ -12,7 +12,7 @@
     "test": "vitest run src/tests",
     "test:watch": "vitest src/tests",
     "test:coverage": "vitest run src/tests --coverage",
-    "audit:pdf": "md-to-pdf AUDITORIA_ENTERPRISE_2026.md --launch-options '{\"args\": [\"--no-sandbox\"]}'"
+    "audit:pdf": "echo 'AUDITORIA_ENTERPRISE_2026.md not found' && exit 0"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

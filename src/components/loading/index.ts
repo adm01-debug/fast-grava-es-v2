@@ -13,6 +13,17 @@ export {
   KanbanSkeleton,
   DashboardSkeleton,
   ProgressiveSkeleton,
+  PageSkeleton,
+  HeaderSkeleton,
+  TimelineSkeleton,
+  DashboardPageSkeleton,
+  CalendarPageSkeleton,
+  KanbanPageSkeleton,
+  ListPageSkeleton,
+  TablePageSkeleton,
+  KPIPageSkeleton,
+  EfficiencyPageSkeleton,
+  AuthPageSkeleton,
 } from './SkeletonLibrary';
 
 // Spinner and loader components

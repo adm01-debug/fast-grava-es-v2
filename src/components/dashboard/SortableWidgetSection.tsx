@@ -36,16 +36,16 @@ export const SortableWidgetSection = memo(function SortableWidgetSection({
   children,
   className,
 }: SortableWidgetSectionProps) {
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 8,
-      },
-    }),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
-  );
+  const pointerSensor = useSensor(PointerSensor, {
+    activationConstraint: {
+      distance: 8,
+    },
+  });
+  const keyboardSensor = useSensor(KeyboardSensor, {
+    coordinateGetter: sortableKeyboardCoordinates,
+  });
+  
+  const sensors = useSensors(pointerSensor, keyboardSensor);
 
   const handleDragEnd = useCallback((event: DragEndEvent) => {
     const { active, over } = event;

@@ -22,36 +22,8 @@ import {
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
+import { type ActivityType, type ActivityLogEntry } from "@/hooks/useActivityLog";
 
-type ActivityType =
-  | "create"
-  | "update"
-  | "delete"
-  | "view"
-  | "login"
-  | "logout"
-  | "settings"
-  | "error"
-  | "success"
-  | "warning";
-
-interface ActivityLogEntry {
-  id: string;
-  type: ActivityType;
-  title: string;
-  description?: string;
-  user?: {
-    name: string;
-    avatar?: string;
-  };
-  timestamp: Date;
-  metadata?: Record<string, any>;
-  changes?: {
-    field: string;
-    from?: string;
-    to?: string;
-  }[];
-}
 
 interface ActivityLogProps {
   entries: ActivityLogEntry[];
@@ -192,6 +164,15 @@ function ActivityEntry({ entry, index }: { entry: ActivityLogEntry; index: numbe
           entry.changes && entry.changes.length > 0 && "cursor-pointer hover:bg-muted/50"
         )}
         onClick={() => entry.changes && setIsExpanded(!isExpanded)}
+        onKeyDown={(e) => {
+          if (entry.changes && (e.key === "Enter" || e.key === " ")) {
+            e.preventDefault();
+            setIsExpanded(!isExpanded);
+          }
+        }}
+        role={entry.changes && entry.changes.length > 0 ? "button" : undefined}
+        tabIndex={entry.changes && entry.changes.length > 0 ? 0 : undefined}
+        aria-expanded={isExpanded}
       >
         <div className="flex items-start justify-between gap-2">
           <div className="flex-1 min-w-0">
@@ -249,31 +230,4 @@ function ActivityEntry({ entry, index }: { entry: ActivityLogEntry; index: numbe
   );
 }
 
-// Hook for managing activity log
-export function useActivityLog(maxEntries = 100) {
-  const [entries, setEntries] = React.useState<ActivityLogEntry[]>([]);
-
-  const addEntry = React.useCallback(
-    (entry: Omit<ActivityLogEntry, "id" | "timestamp">) => {
-      const newEntry: ActivityLogEntry = {
-        ...entry,
-        id: `activity-${Date.now()}`,
-        timestamp: new Date(),
-      };
-
-      setEntries((prev) => [newEntry, ...prev].slice(0, maxEntries));
-      return newEntry.id;
-    },
-    [maxEntries]
-  );
-
-  const clearEntries = React.useCallback(() => {
-    setEntries([]);
-  }, []);
-
-  return {
-    entries,
-    addEntry,
-    clearEntries,
-  };
-}
+export { useActivityLog } from "@/hooks/useActivityLog";
