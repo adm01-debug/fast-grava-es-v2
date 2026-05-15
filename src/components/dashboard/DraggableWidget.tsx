@@ -1,7 +1,7 @@
 import { ReactNode, memo } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { GripVertical, Eye, EyeOff } from 'lucide-react';
+import { GripVertical, EyeOff } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 
@@ -30,7 +30,7 @@ export const DraggableWidget = memo(function DraggableWidget({
   } = useSortable({ id, disabled: !isEditMode });
 
   const style = {
-    transform: CSS.Transform.toString(transform),
+    transform: CSS.Translate.toString(transform),
     transition,
   };
 
@@ -40,17 +40,17 @@ export const DraggableWidget = memo(function DraggableWidget({
       style={style}
       className={cn(
         'relative group',
-        isDragging && 'z-50 opacity-90',
+        isDragging && 'z-[100] opacity-90 scale-[1.02] shadow-2xl',
         isEditMode && 'ring-2 ring-primary/20 ring-dashed rounded-lg',
         className
       )}
     >
       {isEditMode && (
-        <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10 flex items-center gap-1 bg-background border border-border rounded-full px-2 py-1 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity">
+        <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-[110] flex items-center gap-1 bg-background border border-border rounded-full px-2 py-1 shadow-lg opacity-100 transition-opacity">
           <div
             {...attributes}
             {...listeners}
-            className="cursor-grab active:cursor-grabbing p-1 hover:bg-muted rounded"
+            className="cursor-grab active:cursor-grabbing p-1 hover:bg-muted rounded transition-colors"
           >
             <GripVertical className="h-4 w-4 text-muted-foreground" />
           </div>
