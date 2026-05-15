@@ -5,7 +5,7 @@ import { Bell } from 'lucide-react';
 import { AppSidebar } from './AppSidebar';
 import { ThemeToggle } from './ThemeToggle';
 import { OfflineStatusBanner } from '../offline/OfflineStatusBanner';
-import { SkipLinks, MainContent } from '../accessibility/SkipLinks';
+import { SkipLinks, MainContent } from '../accessibility';
 import { NetworkStatusIndicator } from '@/hooks/useNetworkStatus';
 import { SessionProvider } from '@/hooks/useSessionTimeout';
 import { SectionErrorBoundary } from '../ui/section-error-boundary';
@@ -50,14 +50,6 @@ export function MainLayout({ children }: MainLayoutProps) {
     <SessionProvider>
       <div className="flex h-screen w-full bg-background overflow-hidden">
         {/* Skip Links for Accessibility */}
-        <a href="#main-navigation" className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-md outline-none ring-2 ring-primary ring-offset-2 transition-all duration-300 transform hover:scale-105 shadow-glow-primary">
-          Pular para navegação
-        </a>
-
-        <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-40 focus:z-[100] focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-md outline-none ring-2 ring-primary ring-offset-2 transition-all duration-300 transform hover:scale-105 shadow-glow-primary">
-          Pular para conteúdo principal
-        </a>
-
         <SkipLinks />
 
         {/* Sidebar - hidden on mobile, shown on tablet+ */}
