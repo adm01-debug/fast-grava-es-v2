@@ -236,9 +236,9 @@ const Index = () => {
             <DashboardEditControls
               isEditMode={isEditMode}
               widgets={filteredWidgetsForControls}
-              onToggleEditMode={() => setIsEditMode(!isEditMode)}
-              onResetLayout={resetLayout}
-              onToggleWidget={toggleWidgetVisibility}
+              onToggleEditMode={handleToggleEditMode}
+              onResetLayout={handleResetLayout}
+              onToggleWidget={handleToggleWidgetVisibility}
               className="no-export"
             />
           </div>
