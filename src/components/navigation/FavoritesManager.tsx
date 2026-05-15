@@ -103,7 +103,7 @@ interface FavoriteButtonProps {
   variant?: "icon" | "text";
 }
 
-export function FavoriteButton({ path, name, icon, variant = "icon" }: FavoriteButtonProps) {
+export function FavoriteButton({ path, name, icon, variant = "icon", className }: FavoriteButtonProps & { className?: string }) {
   const { isFavorite, toggleFavorite } = useFavorites();
   const isStarred = isFavorite(path);
 
