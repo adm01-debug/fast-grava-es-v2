@@ -328,13 +328,23 @@ export function useSchedulingData() {
       const jobs = jobsQuery.data || [];
       const trend = [];
       const days = 7;
+
+      const jobsByScheduledDateMap = new Map<string, DbJob[]>();
+      jobs.forEach(j => {
+        if (j.scheduled_date) {
+          const d = j.scheduled_date;
+          const existing = jobsByScheduledDateMap.get(d) || [];
+          existing.push(j);
+          jobsByScheduledDateMap.set(d, existing);
+        }
+      });
       
       for (let i = days - 1; i >= 0; i--) {
         const date = new Date();
         date.setDate(date.getDate() - i);
         const dateStr = date.toISOString().split('T')[0];
 
-        const dayJobs = jobs.filter(j => j.scheduled_date === dateStr);
+        const dayJobs = jobsByScheduledDateMap.get(dateStr) || [];
         const load = dayJobs.reduce((sum, j) => sum + (j.estimated_duration || 0), 0);
 
         trend.push({
