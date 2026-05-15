@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { showErrorToast, createAppError, createMutationErrorHandler } from '@/lib/errorHandling';
 
 // Error context for debugging
