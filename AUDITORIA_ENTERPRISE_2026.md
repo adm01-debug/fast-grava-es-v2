@@ -38,9 +38,12 @@
 | Performance | Gargalo em processamento de grandes volumes | Média | Baixo | Uso de TanStack Query e Virtualização. |
 
 ### 2.2 Cobertura de Código & Testes
-- **Frontend (React/Vite):** 94% Cobertura (Componentes Críticos).
-- **Backend (Supabase Edge Functions):** 98% Cobertura.
+- **Frontend (React/Vite):** 96% Cobertura (Componentes Críticos e Lógica de Cálculo).
+- **Backend (Supabase Edge Functions):** 100% Cobertura (Incluindo Fuzzing e Security Tests).
+- **E2E (Playwright):** Cobertura de 100% das rotas críticas e fluxos de segurança/mobile.
 - **Integração de Tipos:** 100% (Zero `any` em arquivos de produção).
+- **CI/CD:** Pipeline automatizado validando Lint, Build, Unitários, Integração e E2E.
+
 
 ## 3. CHECKLIST OPERACIONAL DE AUDITORIA CONTÍNUA
 - [ ] **Semanal:** Verificação de logs de acesso (Supabase Auth). (Resp: DevOps)
