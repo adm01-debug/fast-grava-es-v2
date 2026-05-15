@@ -119,10 +119,10 @@ function BufferStatusWidgetComponent() {
 
 
   const { criticalCount, warningCount, healthyCount, hasUnhealthyTechniques } = useMemo(() => ({
-    criticalCount: bufferByTechnique.filter(b => b.isCritical).length,
-    warningCount: bufferByTechnique.filter(b => b.isWarning).length,
-    healthyCount: bufferByTechnique.filter(b => b.isHealthy).length,
-    hasUnhealthyTechniques: bufferByTechnique.some(b => !b.isHealthy && b.queueCount > 0),
+    criticalCount: bufferByTechnique.filter((b: BufferTechniqueStatus) => b.isCritical).length,
+    warningCount: bufferByTechnique.filter((b: BufferTechniqueStatus) => b.isWarning).length,
+    healthyCount: bufferByTechnique.filter((b: BufferTechniqueStatus) => b.isHealthy).length,
+    hasUnhealthyTechniques: bufferByTechnique.some((b: BufferTechniqueStatus) => !b.isHealthy && b.queueCount > 0),
   }), [bufferByTechnique]);
 
   if (isLoading) {
@@ -198,7 +198,7 @@ function BufferStatusWidgetComponent() {
             <p className="text-xs">Nenhum job</p>
           </div>
         ) : (
-          bufferByTechnique.map((data) => (
+          bufferByTechnique.map((data: BufferTechniqueStatus) => (
             <BufferRow
               key={data.technique.id}
               data={data}
