@@ -24,8 +24,14 @@ jobs:
       - name: Type check
         run: bunx tsc --noEmit
         
-      - name: Unit & Integration Tests
-        run: bun run test
+      - name: Unit & Integration Tests (Vite/Vitest)
+        run: bun run test -- --coverage
+        
+      - name: Edge Function Tests (Deno)
+        run: |
+          curl -fsSL https://deno.land/x/install/install.sh | sh
+          export PATH="$HOME/.deno/bin:$PATH"
+          deno test --allow-all --env-file=.env supabase/functions/**/*.test.ts
         
       - name: Build check
         run: bun run build
