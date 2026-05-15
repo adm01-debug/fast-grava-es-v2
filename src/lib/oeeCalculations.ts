@@ -60,7 +60,7 @@ export function calculateRealOEE(jobs: DbJob[]) {
     ? Math.min(100, (goodPieces / totalProducedPieces) * 100)
     : 100;
 
-  const oee = (availability / 100) * (performance / 100) * (quality / 100) * 100;
+  const oee = finishedJobs.length > 0 ? (availability / 100) * (performance / 100) * (quality / 100) * 100 : 100;
 
   return {
     oee: Math.round(oee * 10) / 10,
