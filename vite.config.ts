@@ -27,7 +27,8 @@ export default defineConfig(({ mode }) => ({
       output: {
         manualChunks: {
           vendor: ['react', 'react-dom', 'react-router-dom', '@tanstack/react-query'],
-          ui: ['@radix-ui/react-dialog', '@radix-ui/react-slot', 'lucide-react', 'recharts'],
+          ui: ['@radix-ui/react-dialog', '@radix-ui/react-slot', 'lucide-react', 'recharts', 'framer-motion'],
+          utils: ['date-fns', 'zod', 'clsx', 'tailwind-merge'],
           supabase: ['@supabase/supabase-js'],
         },
       },
