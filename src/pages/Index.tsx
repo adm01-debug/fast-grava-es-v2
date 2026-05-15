@@ -1,4 +1,4 @@
-import { Suspense, lazy, useMemo, ComponentType, useState, useEffect } from 'react';
+import { Suspense, lazy, useMemo, ComponentType, useState, useEffect, useCallback } from 'react';
 import { Helmet } from 'react-helmet';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -131,6 +131,18 @@ const Index = () => {
     getWidgetsBySection,
   } = useDashboardLayout();
 
+  const handleToggleWidgetVisibility = useCallback((id: string) => {
+    toggleWidgetVisibility(id);
+  }, [toggleWidgetVisibility]);
+
+  const handleResetLayout = useCallback(() => {
+    resetLayout();
+  }, [resetLayout]);
+
+  const handleToggleEditMode = useCallback(() => {
+    setIsEditMode((prev: boolean) => !prev);
+  }, [setIsEditMode]);
+
   // Centralized filter for role-based widget visibility
   const filterWidgetsForRole = useMemo(() => {
     return (widgetsList: WidgetConfig[]) => {
@@ -224,9 +236,9 @@ const Index = () => {
             <DashboardEditControls
               isEditMode={isEditMode}
               widgets={filteredWidgetsForControls}
-              onToggleEditMode={() => setIsEditMode(!isEditMode)}
-              onResetLayout={resetLayout}
-              onToggleWidget={toggleWidgetVisibility}
+              onToggleEditMode={handleToggleEditMode}
+              onResetLayout={handleResetLayout}
+              onToggleWidget={handleToggleWidgetVisibility}
               className="no-export"
             />
           </div>

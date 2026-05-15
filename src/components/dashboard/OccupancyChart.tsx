@@ -9,10 +9,12 @@ function OccupancyChartComponent() {
   const { jobs, machines } = useSchedulingData();
 
   const occupancyData = useMemo(() => {
-    if (!machines || !jobs) return [];
+    if (!machines || !jobs || machines.length === 0) return [];
 
+    const activeStatuses = ['production', 'paused', 'scheduled', 'ready', 'queue'];
+    
     return machines.map(machine => {
-      const machineJobs = jobs.filter(j => j.machine_id === machine.id && ['production', 'paused', 'scheduled', 'ready', 'queue'].includes(j.status));
+      const machineJobs = jobs.filter(j => j.machine_id === machine.id && activeStatuses.includes(j.status));
       const totalCapacityHours = 8;
       const usedHours = machineJobs.reduce((sum, j) => sum + (j.estimated_duration || 0) / 60, 0);
       const occupancy = totalCapacityHours > 0 ? Math.min(100, (usedHours / totalCapacityHours) * 100) : 0;

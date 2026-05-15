@@ -47,11 +47,12 @@ export function useFocusTrap<T extends HTMLElement = HTMLElement>(
     };
 
     // Focus the first focusable element on mount
+    let rafId: number;
     if (autoFocus) {
       const focusableElements = getFocusableElements();
       if (focusableElements.length > 0) {
         // Small delay to ensure element is rendered
-        requestAnimationFrame(() => {
+        rafId = requestAnimationFrame(() => {
           focusableElements[0].focus();
         });
       }
@@ -99,6 +100,8 @@ export function useFocusTrap<T extends HTMLElement = HTMLElement>(
     return () => {
       container.removeEventListener('keydown', handleKeyDown);
       container.removeEventListener('focusout', handleFocusOut);
+      if (rafId) cancelAnimationFrame(rafId);
+
 
       // Restore focus to the previously focused element
       if (restoreFocus && previousActiveElement.current) {
