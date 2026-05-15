@@ -3,12 +3,27 @@ import { AppRole } from '@/contexts/AuthContext';
 
 // Permission types
 export type Permission =
-  | 'jobs.view' | 'jobs.create' | 'jobs.edit' | 'jobs.delete'
+  | 'jobs.view' | 'jobs.create' | 'jobs.edit' | 'jobs.delete' | 'jobs.read' | 'jobs.update'
   | 'production.view' | 'production.register' | 'production.edit'
-  | 'operators.view' | 'operators.create' | 'operators.edit' | 'operators.delete'
-  | 'reports.view' | 'reports.export'
-  | 'settings.view' | 'settings.edit'
-  | 'security.view' | 'security.manage';
+  | 'operators.view' | 'operators.create' | 'operators.edit' | 'operators.delete' | 'operators.read'
+  | 'reports.view' | 'reports.export' | 'reports.read'
+  | 'settings.view' | 'settings.edit' | 'settings.read' | 'settings.update'
+  | 'security.view' | 'security.manage' | 'machines.read' | 'machines.create' | 'machines.update' | 'machines.delete'
+  | 'users.read' | 'users.create' | 'users.update' | 'users.delete' | 'users.change_role'
+  | 'maintenance.read' | 'maintenance.create' | 'maintenance.update' | 'maintenance.delete'
+  | 'quality.read' | 'quality.create' | 'quality.update'
+  | 'traceability.read' | 'traceability.create'
+  | 'technical_sheets.read' | 'technical_sheets.create' | 'technical_sheets.update' | 'technical_sheets.delete'
+  | 'technical_sheets.approve'
+  | 'goals.read' | 'goals.create' | 'goals.update' | 'goals.delete'
+  | 'gamification.read' | 'gamification.manage'
+  | 'alerts.read' | 'alerts.resolve'
+  | 'energy.read' | 'energy.manage'
+  | 'spc.read' | 'spc.manage'
+  | 'shifts.read' | 'shifts.manage'
+  | 'bitrix.read' | 'bitrix.sync'
+  | 'audit.read'
+  | 'inventory.read' | 'inventory.transfer' | 'inventory.adjust' | 'inventory.delete';
 
 export interface PermissionDefinition {
   permission: Permission;

@@ -109,8 +109,8 @@ export function AnimatedRoutes() {
         <Route path="/install" element={<PublicPage fallback={<DashboardPageSkeleton />}><InstallAppPage /></PublicPage>} />
         <Route path="/track" element={<PublicPage fallback={<DashboardPageSkeleton />}><PublicTrackingPage /></PublicPage>} />
 
-        {/* Dashboard */}
-        <Route path="/" element={<ProtectedPage fallback={<DashboardPageSkeleton />} allowedRoles={['coordinator', 'manager']}><Index /></ProtectedPage>} />
+        {/* Dashboard - Accessible by all roles, but useOperatorDashboardData filters content */}
+        <Route path="/" element={<ProtectedPage fallback={<DashboardPageSkeleton />}><Index /></ProtectedPage>} />
 
         {/* Calendar */}
         <Route path="/calendar/daily" element={<ProtectedPage fallback={<CalendarPageSkeleton />} allowedRoles={['coordinator', 'manager']}><DailyCalendar /></ProtectedPage>} />
@@ -120,7 +120,7 @@ export function AnimatedRoutes() {
         {/* Operations */}
         <Route path="/pending" element={<ProtectedPage fallback={<ListPageSkeleton />} allowedRoles={['coordinator']}><PendingQueue /></ProtectedPage>} />
         <Route path="/alerts" element={<ProtectedPage fallback={<DashboardPageSkeleton />}><AlertsDashboard /></ProtectedPage>} />
-        <Route path="/kanban" element={<ProtectedPage fallback={<KanbanPageSkeleton />} allowedRoles={['coordinator', 'manager']}><KanbanBoard /></ProtectedPage>} />
+        <Route path="/kanban" element={<ProtectedPage fallback={<KanbanPageSkeleton />} allowedRoles={['coordinator', 'manager', 'operator']}><KanbanBoard /></ProtectedPage>} />
         <Route path="/new-job" element={<ProtectedPage fallback={<DashboardPageSkeleton />} allowedRoles={['coordinator', 'manager']}><NewJobPage /></ProtectedPage>} />
 
         {/* KPIs & Analytics */}

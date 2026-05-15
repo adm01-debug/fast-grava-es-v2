@@ -110,17 +110,13 @@ export function useRBAC(): RBACResult {
   const { role, isCoordinator, isManager, isOperator, isLoading } = useAuth();
 
   const permissions = useMemo(() => {
-    if (isLoading) {
-
-      return [];
-    }
-    if (!role) {
-
-      return [];
-    }
+    if (isLoading || !role) return [];
+    
+    // Merge dot-notated and colon-notated permissions for maximum compatibility
     const perms = ROLE_PERMISSIONS[role] || [];
-
-    return perms;
+    const legacyPerms = perms.map(p => p.replace(':', '.'));
+    
+    return Array.from(new Set([...perms, ...legacyPerms]));
   }, [role, isLoading]);
 
   const hasPermission = useMemo(() => {

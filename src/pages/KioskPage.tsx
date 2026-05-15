@@ -69,7 +69,7 @@ export default function KioskPage() {
     const job = jobs?.find(j => j.id === jobId);
     if (!job) return;
     try {
-      await updateJobOffline(jobId, { status: "production", actual_start_time: new Date().toISOString() });
+      await updateJobOffline(jobId, { status: "production", actual_start_time: new Date().toISOString(), operator_id: profile?.id });
       notifyStatusChange(job.client, job.status, "production");
     } catch (error) {}
   };
@@ -78,7 +78,7 @@ export default function KioskPage() {
     const job = jobs?.find(j => j.id === jobId);
     if (!job) return;
     try {
-      await updateJobOffline(jobId, { status: "paused" });
+      await updateJobOffline(jobId, { status: "paused", operator_id: profile?.id });
       notifyStatusChange(job.client, job.status, "paused");
     } catch (error) {}
   };

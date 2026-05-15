@@ -18,8 +18,9 @@ export function useRealtimeConnection(): UseRealtimeConnectionReturn {
   const setupChannel = useCallback(() => {
     setStatus('connecting');
 
+    const channelId = `realtime-status-monitor-${Math.random().toString(36).substring(7)}`;
     const newChannel = supabase
-      .channel('realtime-status-monitor')
+      .channel(channelId)
       .on(
         'postgres_changes',
         {
