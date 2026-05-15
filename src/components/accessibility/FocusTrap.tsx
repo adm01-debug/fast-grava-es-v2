@@ -60,4 +60,3 @@ export function FocusTrap({
     </div>
   );
 }
-
