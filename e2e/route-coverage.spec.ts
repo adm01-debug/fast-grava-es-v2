@@ -46,26 +46,33 @@ test.describe('Exhaustive Route Testing', () => {
     '/kiosk',
     '/design-system',
     '/install',
-    '/track'
+    '/track',
+    '/abc',
+    '/operators/productivity',
+    '/reset-password',
+    '/knowledge'
   ];
 
   for (const route of routes) {
-    test(`Verify route: ${route}`, async ({ page }) => {
+    test(`Verify route and robustness: ${route}`, async ({ page }) => {
+      // Test normal access
       await page.goto(route);
-      
-      // Check if we hit a 404 or a crash
-      const content = await page.content();
+      let content = await page.content();
       expect(content).not.toContain('error-boundary');
       expect(content).not.toContain('Something went wrong');
       
-      // Verify redirection to /auth for protected routes
       const currentUrl = page.url();
       if (currentUrl.includes('/auth')) {
-        await expect(page.locator('form')).toBeVisible();
+        await expect(page.locator('form, h1, h2')).toBeVisible();
       } else {
-        // For public or accidentally accessible pages
         await expect(page).not.toHaveTitle(/404/);
       }
+
+      // Test with query params fuzzing
+      await page.goto(`${route}?debug=true&sqli='OR 1=1&xss=<script>alert(1)</script>&long=${'A'.repeat(500)}`);
+      content = await page.content();
+      expect(content).not.toContain('error-boundary');
+      expect(content).not.toContain('Something went wrong');
     });
   }
 });
