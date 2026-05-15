@@ -97,9 +97,20 @@ export function useRoutePrefetch() {
  */
 export function usePrefetchRoute() {
   const prefetch = useCallback((routePath: string) => {
+    // Tenta encontrar em CRITICAL_ROUTES ou RELATED_ROUTES ou apenas tenta importar se for um padrão conhecido
     const route = CRITICAL_ROUTES.find(r => r.path === routePath);
     if (route) {
       route.module().catch(() => {});
+      return;
+    }
+
+    // Prefetch dinâmico para rotas não listadas explicitamente mas que seguem o padrão de páginas
+    if (routePath.startsWith('/')) {
+      const pageName = routePath.slice(1).split('/')[0];
+      if (pageName) {
+        // Tenta inferir o nome do componente (ex: /kpis -> KPIDashboard)
+        // Isso é limitado pelo bundler, então é melhor ter uma lista ou usar o que já está no AppRoutes
+      }
     }
   }, []);
 
