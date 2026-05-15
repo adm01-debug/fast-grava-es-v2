@@ -47,7 +47,7 @@ Deno.test("Webhook-Handler: Fuzzing and Validation", async (t) => {
 
   await t.step("Security: Missing secret returns 401 if enforced", async () => {
     Deno.env.set("ENFORCE_WEBHOOK_SIGNATURES", "true");
-    Deno.env.remove("WEBHOOK_SECRET_UNKNOWN");
+    Deno.env.set("WEBHOOK_SECRET_UNKNOWN", "");
     
     const req = new Request("http://localhost/functions/v1/webhook-handler", {
       method: "POST",
