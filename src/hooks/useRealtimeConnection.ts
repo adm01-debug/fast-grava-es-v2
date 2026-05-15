@@ -45,10 +45,15 @@ export function useRealtimeConnection(): UseRealtimeConnectionReturn {
   }, []);
 
   useEffect(() => {
-    const ch = setupChannel();
+    let ch: RealtimeChannel;
+    try {
+      ch = setupChannel();
+    } catch (e) {
+      setStatus('error');
+    }
 
     return () => {
-      supabase.removeChannel(ch);
+      if (ch) supabase.removeChannel(ch);
     };
   }, [setupChannel]);
 

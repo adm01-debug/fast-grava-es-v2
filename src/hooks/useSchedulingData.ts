@@ -105,7 +105,7 @@ export function useSchedulingData() {
         const { data, error } = await supabase
           .from('jobs')
           .select('*')
-          .or('status.neq.finished,created_at.gt.' + new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString())
+          .or(`status.neq.finished,created_at.gt.${new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()}`)
           .order('created_at', { ascending: false });
 
         if (error) {

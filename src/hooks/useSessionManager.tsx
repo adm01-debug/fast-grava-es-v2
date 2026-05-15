@@ -32,9 +32,9 @@ export function useSessionManager() {
       const { data, error } = await supabase.auth.refreshSession();
 
       if (error) {
-
         // If refresh fails and session is inactive, sign out
-        if (!isSessionActive()) {
+        // Categorize error to see if it's a "no session" vs "network error"
+        if (error.message.includes('refresh_token_not_found') || !isSessionActive()) {
           await signOut();
         }
         return;

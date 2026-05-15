@@ -110,13 +110,16 @@ export function FavoriteButton({ path, name, icon, variant = "icon" }: FavoriteB
   return (
     <Button
       variant="ghost"
-      size={variant === "icon" ? "icon" : "sm"}
+      className={cn(
+        "transition-colors h-9 w-9",
+        isStarred ? "text-amber-500 hover:text-amber-600" : "text-muted-foreground hover:text-amber-500",
+        className
+      )}
       onClick={(e) => {
         e.preventDefault();
         e.stopPropagation();
         toggleFavorite({ path, name, icon });
       }}
-      className={`transition-colors ${isStarred ? "text-warning" : "text-muted-foreground hover:text-warning"}`}
     >
       <motion.div
         initial={false}

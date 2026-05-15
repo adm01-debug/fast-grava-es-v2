@@ -60,13 +60,17 @@ function getDeviceInfo(): DeviceInfo {
   ).matches;
 
   // Read safe-area insets via CSS custom properties that resolve env()
-  const cs = getComputedStyle(document.documentElement);
-  const safeAreaInsets = {
-    top: parseSafeAreaValue(cs.getPropertyValue('--safe-area-top')),
-    bottom: parseSafeAreaValue(cs.getPropertyValue('--safe-area-bottom')),
-    left: parseSafeAreaValue(cs.getPropertyValue('--safe-area-left')),
-    right: parseSafeAreaValue(cs.getPropertyValue('--safe-area-right')),
-  };
+  // Check if getComputedStyle and document.documentElement are available (SSR safety)
+  let safeAreaInsets = { top: 0, bottom: 0, left: 0, right: 0 };
+  if (typeof window !== 'undefined' && document.documentElement) {
+    const cs = getComputedStyle(document.documentElement);
+    safeAreaInsets = {
+      top: parseSafeAreaValue(cs.getPropertyValue('--safe-area-top')),
+      bottom: parseSafeAreaValue(cs.getPropertyValue('--safe-area-bottom')),
+      left: parseSafeAreaValue(cs.getPropertyValue('--safe-area-left')),
+      right: parseSafeAreaValue(cs.getPropertyValue('--safe-area-right')),
+    };
+  }
 
   return {
     isMobile: width < MOBILE_BREAKPOINT,
@@ -80,7 +84,7 @@ function getDeviceInfo(): DeviceInfo {
     pixelRatio: window.devicePixelRatio,
     isStandalone,
     prefersReducedMotion,
-    isOnline: navigator.onLine,
+    isOnline: typeof navigator !== 'undefined' ? navigator.onLine : true,
   };
 }
 
