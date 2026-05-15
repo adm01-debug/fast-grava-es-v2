@@ -1,4 +1,4 @@
-import { Suspense, lazy, useMemo, ComponentType, useState, useEffect } from 'react';
+import { Suspense, lazy, useMemo, ComponentType, useState, useEffect, useCallback } from 'react';
 import { Helmet } from 'react-helmet';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
