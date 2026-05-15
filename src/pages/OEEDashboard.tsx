@@ -45,14 +45,13 @@ import { VoiceButton } from '@/components/voice/VoiceCommands';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 
+import { KPIPageSkeleton } from '@/components/loading';
+
 // Lazy load heavy dashboard components
 const OEEMachineTable = lazy(() => import('@/components/oee/OEEMachineTable').then(m => ({ default: m.OEEMachineTable })));
 const OEETrendChart = lazy(() => import('@/components/oee/OEETrendChart').then(m => ({ default: m.OEETrendChart })));
 const OEELossesChart = lazy(() => import('@/components/oee/OEELossesChart').then(m => ({ default: m.OEELossesChart })));
 const OEETechniqueComparison = lazy(() => import('@/components/oee/OEETechniqueComparison').then(m => ({ default: m.OEETechniqueComparison })));
-
-const ChartSkeleton = () => <Skeleton className="h-[400px] w-full" />;
-const TableSkeleton = () => <Skeleton className="h-[500px] w-full" />;
 
 const OEEDashboard = memo(function OEEDashboard() {
   const { t } = useTranslation();
@@ -68,17 +67,7 @@ const OEEDashboard = memo(function OEEDashboard() {
 
 
   if (isLoading) {
-    return (
-      <div className="p-6 space-y-6">
-        <Skeleton className="h-10 w-64" />
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          {[1, 2, 3, 4].map(i => (
-            <Skeleton key={i} className="h-48" />
-          ))}
-        </div>
-        <Skeleton className="h-80" />
-      </div>
-    );
+    return <KPIPageSkeleton />;
   }
 
   if (!data) {
