@@ -59,8 +59,8 @@ describe('CircuitBreaker', () => {
     await expect(breaker.execute(failFn)).rejects.toThrow();
     expect(breaker.state).toBe('open');
 
-    // Advance time
-    vi.advanceTimersByTime(1100);
+    // Advance time manually since Vitest fake timers are giving me trouble
+    vi.setSystemTime(Date.now() + 1100);
     expect(breaker.state).toBe('half_open');
   });
 
@@ -70,7 +70,7 @@ describe('CircuitBreaker', () => {
     await expect(breaker.execute(failFn)).rejects.toThrow();
     await expect(breaker.execute(failFn)).rejects.toThrow();
     
-    vi.advanceTimersByTime(1100);
+    vi.setSystemTime(Date.now() + 1100);
     expect(breaker.state).toBe('half_open');
 
     // First success in half-open
@@ -89,7 +89,7 @@ describe('CircuitBreaker', () => {
     await expect(breaker.execute(failFn)).rejects.toThrow();
     await expect(breaker.execute(failFn)).rejects.toThrow();
     
-    vi.advanceTimersByTime(1100);
+    vi.setSystemTime(Date.now() + 1100);
     expect(breaker.state).toBe('half_open');
 
     // Failure in half-open
@@ -98,4 +98,5 @@ describe('CircuitBreaker', () => {
     expect(breaker.state).toBe('open');
   });
 });
+
 
