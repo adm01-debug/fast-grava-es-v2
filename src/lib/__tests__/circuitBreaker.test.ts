@@ -5,17 +5,12 @@ describe('CircuitBreaker', () => {
   let breaker: CircuitBreaker;
 
   beforeEach(() => {
-    vi.useFakeTimers();
     breaker = new CircuitBreaker({
       failureThreshold: 2,
-      resetTimeout: 1000,
+      resetTimeout: 100, // Short timeout for tests
       successThreshold: 2,
       name: 'test-breaker'
     });
-  });
-
-  afterEach(() => {
-    vi.useRealTimers();
   });
 
   it('starts in CLOSED state', () => {
@@ -59,8 +54,8 @@ describe('CircuitBreaker', () => {
     await expect(breaker.execute(failFn)).rejects.toThrow();
     expect(breaker.state).toBe('open');
 
-    // Advance time manually since Vitest fake timers are giving me trouble
-    vi.setSystemTime(Date.now() + 1100);
+    // Wait for real time
+    await new Promise(resolve => setTimeout(resolve, 150));
     expect(breaker.state).toBe('half_open');
   });
 
@@ -70,7 +65,7 @@ describe('CircuitBreaker', () => {
     await expect(breaker.execute(failFn)).rejects.toThrow();
     await expect(breaker.execute(failFn)).rejects.toThrow();
     
-    vi.setSystemTime(Date.now() + 1100);
+    await new Promise(resolve => setTimeout(resolve, 150));
     expect(breaker.state).toBe('half_open');
 
     // First success in half-open
@@ -89,7 +84,7 @@ describe('CircuitBreaker', () => {
     await expect(breaker.execute(failFn)).rejects.toThrow();
     await expect(breaker.execute(failFn)).rejects.toThrow();
     
-    vi.setSystemTime(Date.now() + 1100);
+    await new Promise(resolve => setTimeout(resolve, 150));
     expect(breaker.state).toBe('half_open');
 
     // Failure in half-open
@@ -98,5 +93,6 @@ describe('CircuitBreaker', () => {
     expect(breaker.state).toBe('open');
   });
 });
+
 
 
