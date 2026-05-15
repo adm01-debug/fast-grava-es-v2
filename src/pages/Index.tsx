@@ -131,6 +131,18 @@ const Index = () => {
     getWidgetsBySection,
   } = useDashboardLayout();
 
+  const handleToggleWidgetVisibility = useCallback((id: string) => {
+    toggleWidgetVisibility(id);
+  }, [toggleWidgetVisibility]);
+
+  const handleResetLayout = useCallback(() => {
+    resetLayout();
+  }, [resetLayout]);
+
+  const handleToggleEditMode = useCallback(() => {
+    setIsEditMode((prev: boolean) => !prev);
+  }, [setIsEditMode]);
+
   // Centralized filter for role-based widget visibility
   const filterWidgetsForRole = useMemo(() => {
     return (widgetsList: WidgetConfig[]) => {
