@@ -1,4 +1,5 @@
 import * as React from "react";
+import { getFocusableElements } from "@/hooks/utils/focus";
 
 interface FocusTrapProps {
   children: React.ReactNode;
@@ -60,17 +61,3 @@ export function FocusTrap({
   );
 }
 
-function getFocusableElements(container: HTMLElement | null): HTMLElement[] | null {
-  if (!container) return null;
-
-  const focusableSelectors = [
-    "a[href]",
-    "button:not([disabled])",
-    "input:not([disabled])",
-    "select:not([disabled])",
-    "textarea:not([disabled])",
-    '[tabindex]:not([tabindex="-1"])',
-  ].join(", ");
-
-  return Array.from(container.querySelectorAll(focusableSelectors));
-}
