@@ -112,11 +112,12 @@ export function useRBAC(): RBACResult {
   const permissions = useMemo(() => {
     if (isLoading || !role) return [];
     
-    // Merge dot-notated and colon-notated permissions for maximum compatibility
     const perms = ROLE_PERMISSIONS[role] || [];
-    const legacyPerms = perms.map(p => p.replace(':', '.'));
+    // Merge dot-notated and legacy colon-notated permissions
+    const legacyPerms = perms.map(p => p.includes(':') ? p.replace(':', '.') : p);
+    const modernPerms = perms.map(p => p.includes('.') ? p.replace('.', ':') : p);
     
-    return Array.from(new Set([...perms, ...legacyPerms]));
+    return Array.from(new Set([...perms, ...legacyPerms, ...modernPerms]));
   }, [role, isLoading]);
 
   const hasPermission = useMemo(() => {
