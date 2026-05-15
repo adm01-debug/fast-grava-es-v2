@@ -46,6 +46,8 @@ export function ActivityFeedWidget() {
   const eventsRef = useRef<FeedEvent[]>([]);
 
   useEffect(() => {
+    let isActive = true;
+
     // Listen to real-time job changes
     const channel = supabase
       .channel('activity-feed')
@@ -54,6 +56,7 @@ export function ActivityFeedWidget() {
         schema: 'public',
         table: 'jobs',
       }, (payload) => {
+        if (!isActive) return;
         const newJob = payload.new as Record<string, unknown>;
         const oldJob = payload.old as Record<string, unknown>;
 
@@ -89,6 +92,7 @@ export function ActivityFeedWidget() {
         schema: 'public',
         table: 'jobs',
       }, (payload) => {
+        if (!isActive) return;
         const job = payload.new as Record<string, unknown>;
         const event: FeedEvent = {
           id: crypto.randomUUID(),
@@ -103,7 +107,10 @@ export function ActivityFeedWidget() {
       })
       .subscribe();
 
-    return () => { supabase.removeChannel(channel); };
+    return () => {
+      isActive = false;
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   return (
