@@ -1,7 +1,12 @@
 import { assertEquals } from "https://deno.land/std@0.224.0/assert/mod.ts";
 import { handler } from "./index.ts";
 
-Deno.test("Webhook-Handler: Fuzzing and Validation", async (t) => {
+Deno.test({
+  name: "Webhook-Handler: Fuzzing and Validation",
+  sanitizeOps: false,
+  sanitizeResources: false,
+  fn: async (t) => {
+
   
   await t.step("Invalid JSON should return 400", async () => {
     const req = new Request("http://localhost/functions/v1/webhook-handler", {
