@@ -1,58 +1,48 @@
 import { describe, it, expect } from 'vitest';
-import { calculateOEE, calculateAvailability, calculatePerformance, calculateQuality } from '../oeeCalculations';
+import { calculateRealOEE } from '../oeeCalculations';
+import { DbJob } from '@/hooks/useJobs';
 
-describe('OEE Calculations', () => {
-  describe('calculateAvailability', () => {
-    it('should calculate availability correctly', () => {
-      // 480 min total, 60 min downtime = 420 min runtime
-      // Availability = 420 / 480 = 0.875
-      expect(calculateAvailability(480, 60)).toBeCloseTo(0.875);
-    });
+describe('OEE Calculations (calculateRealOEE)', () => {
+  it('should calculate OEE correctly for a standard set of finished jobs', () => {
+    const mockJobs: Partial<DbJob>[] = [
+      {
+        id: '1',
+        status: 'finished',
+        actual_start_time: '2024-05-15T08:00:00Z',
+        actual_end_time: '2024-05-15T15:00:00Z', // 7 hours = 420 mins
+        estimated_duration: 360, // 6 hours = 360 mins
+        produced_quantity: 1000,
+        lost_pieces: 50,
+      }
+    ];
 
-    it('should return 0 if total time is 0', () => {
-      expect(calculateAvailability(0, 0)).toBe(0);
-    });
+    const result = calculateRealOEE(mockJobs as DbJob[]);
 
-    it('should not return negative availability', () => {
-      expect(calculateAvailability(100, 150)).toBe(0);
-    });
+    // totalActualMinutes = 420
+    // totalEstimatedMinutes = 360
+    // PLANNED_MINUTES_PER_DAY = 660 (11 * 60)
+    // plannedMinutes = max(660, 360) = 660
+    
+    // availability = (420 / 660) * 100 = 63.6363...
+    // performance = (360 / 420) * 100 = 85.7142...
+    // quality = ((1000 - 50) / 1000) * 100 = 95.0
+    
+    // oee = (0.6363 * 0.8571 * 0.95) * 100 = 51.818...
+    
+    expect(result.availability).toBeCloseTo(63.6, 1);
+    expect(result.performance).toBeCloseTo(85.7, 1);
+    expect(result.quality).toBe(95.0);
+    expect(result.oee).toBeCloseTo(51.8, 1);
   });
 
-  describe('calculatePerformance', () => {
-    it('should calculate performance correctly', () => {
-      // Ideal rate: 10 units/min
-      // Total units: 3500
-      // Runtime: 420 min
-      // Expected units: 420 * 10 = 4200
-      // Performance: 3500 / 4200 = 0.8333
-      expect(calculatePerformance(3500, 420, 10)).toBeCloseTo(0.8333, 4);
-    });
-
-    it('should return 0 if runtime or ideal rate is 0', () => {
-      expect(calculatePerformance(100, 0, 10)).toBe(0);
-      expect(calculatePerformance(100, 420, 0)).toBe(0);
-    });
-  });
-
-  describe('calculateQuality', () => {
-    it('should calculate quality correctly', () => {
-      // Total: 3500, Good: 3400
-      // Quality: 3400 / 3500 = 0.9714
-      expect(calculateQuality(3400, 3500)).toBeCloseTo(0.9714, 4);
-    });
-
-    it('should return 0 if total units is 0', () => {
-      expect(calculateQuality(0, 0)).toBe(0);
-    });
-  });
-
-  describe('calculateOEE', () => {
-    it('should calculate overall OEE correctly', () => {
-      const availability = 0.875;
-      const performance = 0.8333;
-      const quality = 0.9714;
-      // OEE = 0.875 * 0.8333 * 0.9714 = 0.7082
-      expect(calculateOEE(availability, performance, quality)).toBeCloseTo(0.7082, 3);
-    });
+  it('should return 100 for availability/performance if no time elapsed', () => {
+    const mockJobs: Partial<DbJob>[] = [];
+    const result = calculateRealOEE(mockJobs as DbJob[]);
+    
+    expect(result.oee).toBe(100);
+    expect(result.availability).toBe(100);
+    expect(result.performance).toBe(100);
+    expect(result.quality).toBe(100);
   });
 });
+
