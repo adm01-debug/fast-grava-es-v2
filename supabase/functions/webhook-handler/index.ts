@@ -30,11 +30,15 @@ export const handler = async (req: Request): Promise<Response> => {
     const { source, event, data } = payload;
 
     if (!source || !event) {
+      console.warn("Received webhook missing source or event:", payload);
       return new Response(JSON.stringify({ error: "Source and event are required" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+
+    // Input sanitization: ensure data is an object
+    const sanitizedData = typeof data === 'object' && data !== null ? data : {};
 
     // HMAC verification for security (Always use production keys if available)
     const secret = Deno.env.get(`WEBHOOK_SECRET_${source.toUpperCase()}`);
@@ -78,7 +82,7 @@ export const handler = async (req: Request): Promise<Response> => {
     const { error: logError } = await supabase.from("webhook_logs").insert({
       source,
       event,
-      payload: data,
+      payload: sanitizedData,
       created_at: new Date().toISOString(),
     });
 
@@ -91,10 +95,10 @@ export const handler = async (req: Request): Promise<Response> => {
 
     switch (source) {
       case "bitrix24":
-        result = await processBitrix24Webhook(supabase, event, data);
+        result = await processBitrix24Webhook(supabase, event, sanitizedData);
         break;
       case "stripe":
-        result = await processStripeWebhook(supabase, event, data);
+        result = await processStripeWebhook(supabase, event, sanitizedData);
         break;
       default:
         console.log(`Unknown webhook source: ${source}`);

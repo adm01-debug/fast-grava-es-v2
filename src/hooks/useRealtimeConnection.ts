@@ -32,13 +32,19 @@ export function useRealtimeConnection(): UseRealtimeConnectionReturn {
           setLastUpdate(new Date());
         }
       )
-      .subscribe((status) => {
-        if (status === 'SUBSCRIBED') {
+      .subscribe((subscribeStatus, err) => {
+        if (subscribeStatus === 'SUBSCRIBED') {
           setStatus('connected');
-        } else if (status === 'CLOSED') {
+        } else if (subscribeStatus === 'CLOSED') {
           setStatus('disconnected');
-        } else if (status === 'CHANNEL_ERROR') {
+        } else if (subscribeStatus === 'CHANNEL_ERROR') {
+          console.error(`Realtime error on channel ${channelId}:`, err);
           setStatus('error');
+          // Auto-reconnect after delay if it's a transient error
+          setTimeout(() => {
+            // Reconnect logic will check current state
+            reconnect();
+          }, 5000);
         }
       });
 
