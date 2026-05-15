@@ -27,7 +27,7 @@ export const NavButton = memo(forwardRef<HTMLDivElement, NavButtonProps>(functio
   }, [item.href]);
 
   const button = (
-    <Link to={item.href} className="block" onMouseEnter={handlePrefetch} onFocus={handlePrefetch}>
+    <Link to={item.href} className="block group/link" onMouseEnter={handlePrefetch} onFocus={handlePrefetch}>
       <Button
         variant="ghost"
         aria-label={item.label}
