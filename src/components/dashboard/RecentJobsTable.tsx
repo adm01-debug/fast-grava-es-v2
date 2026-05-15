@@ -2,7 +2,7 @@ import { memo, useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { StatusBadge } from '@/components/ui/status-badge';
-import { useSchedulingData } from '@/hooks/useSchedulingData';
+import { useOperatorDashboardData } from '@/hooks/useOperatorDashboardData';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { JobStatus } from '@/types/scheduling';
@@ -10,6 +10,7 @@ import { DbJob, DbTechnique, DbMachine } from '@/hooks/useJobs';
 import { JobDetailsModal } from '@/components/jobs/JobDetailsModal';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 interface JobRowProps {
   job: DbJob;
@@ -59,21 +60,21 @@ const JobRow = memo(function JobRow({ job, technique, machine, onClick, isLoadin
 JobRow.displayName = 'JobRow';
 
 function RecentJobsTableComponent() {
-  const { jobs, isLoadingJobs, getTechniqueById, getMachineById, refetchJobs } = useSchedulingData();
+  const { t } = useTranslation();
+  const { jobs, isLoading, getTechniqueById, getMachineById, refetchAll } = useOperatorDashboardData();
   const [selectedJob, setSelectedJob] = useState<DbJob | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loadingJobId, setLoadingJobId] = useState<string | null>(null);
 
-  const recentJobs = useMemo(() => jobs.slice(0, 6), [jobs]);
+  const recentJobs = useMemo(() => jobs.slice(0, 10), [jobs]);
 
   const handleJobClick = (job: DbJob) => {
     setLoadingJobId(job.id);
-    // Simula um breve delay para feedback visual
     setTimeout(() => {
       setSelectedJob(job);
       setIsModalOpen(true);
       setLoadingJobId(null);
-    }, 150);
+    }, 100);
   };
 
   const handleStatusChange = async (jobId: string, newStatus: DbJob['status']) => {
@@ -93,16 +94,16 @@ function RecentJobsTableComponent() {
 
       if (error) throw error;
 
-      toast.success(`Status alterado para ${newStatus}`);
-      refetchJobs();
+      toast.success(t('jobs.statusUpdated', { status: newStatus }));
+      refetchAll();
     } catch (error) {
-      toast.error('Erro ao atualizar status');
+      toast.error(t('common.error'));
     }
   };
 
-  if (isLoadingJobs) {
+  if (isLoading) {
     return (
-      <Card className="col-span-3 glass-card card-interactive animate-fade-in-up">
+      <Card className="col-span-3 glass-card">
         <CardHeader className="pb-2">
           <Skeleton className="h-6 w-32" />
         </CardHeader>
@@ -119,30 +120,30 @@ function RecentJobsTableComponent() {
 
   return (
     <>
-      <Card className="col-span-3 glass-card card-interactive animate-fade-in-up">
+      <Card className="col-span-3 glass-card">
         <CardHeader className="pb-2">
-          <CardTitle className="text-lg font-display gradient-text">Jobs Recentes</CardTitle>
+          <CardTitle className="text-lg font-display gradient-text">{t('dashboard.recentJobs', 'Jobs Recentes')}</CardTitle>
         </CardHeader>
         <CardContent className="overflow-x-auto">
           <div className="min-w-[700px]">
             <Table>
               <TableHeader>
                 <TableRow className="border-border/30 hover:bg-transparent">
-                  <TableHead className="w-[100px] text-muted-foreground">OS</TableHead>
-                  <TableHead className="text-muted-foreground">Cliente</TableHead>
-                  <TableHead className="text-muted-foreground hidden sm:table-cell">Produto</TableHead>
-                  <TableHead className="text-center text-muted-foreground">Qtd</TableHead>
-                  <TableHead className="text-muted-foreground">Técnica</TableHead>
-                  <TableHead className="text-muted-foreground hidden lg:table-cell">Máquina</TableHead>
-                  <TableHead className="text-muted-foreground hidden md:table-cell">Horário</TableHead>
-                  <TableHead className="text-muted-foreground">Status</TableHead>
+                  <TableHead className="w-[100px] text-muted-foreground">{t('jobs.orderNumber', 'OS')}</TableHead>
+                  <TableHead className="text-muted-foreground">{t('jobs.client', 'Cliente')}</TableHead>
+                  <TableHead className="text-muted-foreground hidden sm:table-cell">{t('jobs.product', 'Produto')}</TableHead>
+                  <TableHead className="text-center text-muted-foreground">{t('jobs.quantity', 'Qtd')}</TableHead>
+                  <TableHead className="text-muted-foreground">{t('jobs.technique', 'Técnica')}</TableHead>
+                  <TableHead className="text-muted-foreground hidden lg:table-cell">{t('jobs.machine', 'Máquina')}</TableHead>
+                  <TableHead className="text-muted-foreground hidden md:table-cell">{t('common.time', 'Horário')}</TableHead>
+                  <TableHead className="text-muted-foreground">{t('common.status', 'Status')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {recentJobs.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={8} className="text-center text-muted-foreground py-8">
-                      Nenhum job encontrado
+                      {t('jobs.noJobsFound', 'Nenhum job encontrado')}
                     </TableCell>
                   </TableRow>
                 ) : (
