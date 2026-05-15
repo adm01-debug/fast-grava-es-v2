@@ -9,9 +9,9 @@
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage",
+    "test": "vitest run src/tests",
+    "test:watch": "vitest src/tests",
+    "test:coverage": "vitest run src/tests --coverage",
     "audit:pdf": "md-to-pdf AUDITORIA_ENTERPRISE_2026.md --launch-options '{\"args\": [\"--no-sandbox\"]}'"
   },
   "dependencies": {
