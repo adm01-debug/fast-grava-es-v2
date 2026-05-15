@@ -33,7 +33,7 @@ export const NavButton = memo(forwardRef<HTMLDivElement, NavButtonProps>(functio
         aria-label={item.label}
         className={cn(
           'w-full justify-start gap-3 h-11 px-3 relative transition-all duration-300 group/nav',
-          'hover:bg-sidebar-accent/50 hover:text-sidebar-foreground hover:pl-4 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1',
+          'hover:bg-sidebar-accent/50 hover:text-sidebar-foreground hover:pl-4 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 focus-visible:bg-sidebar-accent/50',
           isActive && [
             'bg-sidebar-accent/80 text-primary font-bold border-l-4 border-primary shadow-sm',
             'shadow-[inset_0_0_20px_hsl(var(--primary)/0.05),0_0_15px_hsl(var(--primary)/0.1)]',
