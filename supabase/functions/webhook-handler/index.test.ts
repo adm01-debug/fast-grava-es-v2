@@ -77,8 +77,9 @@ Deno.test({
     });
 
     await t.step("Fuzz Testing: Script Injection in Payload", async () => {
-      // Disable enforcement so we can test payload processing robustness
+      // Set a mock secret for this source so it enters the validation but fails correctly
       Deno.env.set("ENFORCE_WEBHOOK_SIGNATURES", "false");
+      Deno.env.set("WEBHOOK_SECRET_BITRIX24", ""); // Ensure secret is empty so it skips signature validation
       
       const req = new Request("http://localhost/functions/v1/webhook-handler", {
         method: "POST",
