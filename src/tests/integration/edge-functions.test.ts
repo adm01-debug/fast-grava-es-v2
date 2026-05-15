@@ -36,6 +36,46 @@ describe('Edge Functions Integration Tests', () => {
     expect(data.error).toBeDefined();
   });
 
+  it('Rate Limit Check allows valid requests', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      json: async () => ({ allowed: true, remaining: 99 }),
+    });
+
+    const response = await fetch('https://xxroejpvloldkmqdydar.supabase.co/functions/v1/rate-limit-check', {
+      method: 'POST',
+      body: JSON.stringify({ endpoint: '/api/test', user_id: '123' }),
+    });
+    const data = await response.json();
+    
+    expect(response.status).toBe(200);
+    expect(data.allowed).toBe(true);
+  });
+
+  it('Technical Assistant returns streamed response', async () => {
+    const mockStream = new ReadableStream({
+      start(controller) {
+        controller.enqueue(new TextEncoder().encode('data: {"choices":[{"delta":{"content":"Dica"}}]} \n\n'));
+        controller.close();
+      }
+    });
+
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      body: mockStream,
+    });
+
+    const response = await fetch('https://xxroejpvloldkmqdydar.supabase.co/functions/v1/technical-assistant', {
+      method: 'POST',
+      body: JSON.stringify({ messages: [{ role: 'user', content: 'Fiber laser' }] }),
+    });
+    
+    expect(response.status).toBe(200);
+    expect(response.body).toBeDefined();
+  });
+
   it('Fuzz testing: Webhook Handler handles invalid payloads', async () => {
     const maliciousPayloads = [
       { malicious: "<script>alert(1)</script>" },
@@ -59,5 +99,20 @@ describe('Edge Functions Integration Tests', () => {
       
       expect([400, 422, 500]).toContain(response.status);
     }
+  });
+
+  it('Technical Assistant handles 429 rate limits', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: false,
+      status: 429,
+      json: async () => ({ error: 'Too many requests' }),
+    });
+
+    const response = await fetch('https://xxroejpvloldkmqdydar.supabase.co/functions/v1/technical-assistant', {
+      method: 'POST',
+      body: JSON.stringify({ messages: [] }),
+    });
+    
+    expect(response.status).toBe(429);
   });
 });
