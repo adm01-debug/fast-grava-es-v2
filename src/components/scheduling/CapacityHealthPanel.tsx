@@ -1,4 +1,4 @@
-import { useTechniqueCapacityAlerts } from '@/hooks/useTechniqueCapacityAlerts';
+import { useTechniqueCapacityAlerts, type CapacityMetric } from '@/hooks/useTechniqueCapacityAlerts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
@@ -26,7 +26,7 @@ export function CapacityHealthPanel() {
       </CardHeader>
       <CardContent className="px-4 pb-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {capacities.slice(0, 4).map((cap: any, idx: number) => (
+          {capacities.slice(0, 4).map((cap: CapacityMetric, idx: number) => (
             <motion.div
               key={cap.techniqueId}
               initial={{ opacity: 0, scale: 0.95 }}

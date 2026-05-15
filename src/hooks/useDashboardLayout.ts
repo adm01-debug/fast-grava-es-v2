@@ -34,6 +34,7 @@ export function useDashboardLayout() {
 
   // Load layout on mount or user change
   useEffect(() => {
+    let isMounted = true;
     const loadLayout = async () => {
       if (!user) return;
 
@@ -45,6 +46,7 @@ export function useDashboardLayout() {
           .eq('user_id', user.id)
           .maybeSingle();
 
+        if (!isMounted) return;
         if (error) throw error;
 
         if (data?.layout) {
@@ -70,15 +72,16 @@ export function useDashboardLayout() {
             });
             setWidgets(merged);
           } catch (e) {
-
+            // Invalid JSON in localStorage
           }
         }
       } catch (err) {
-
+        // Silent fail for non-critical layout loading
       }
     };
 
     loadLayout();
+    return () => { isMounted = false; };
   }, [user]);
 
   // Save layout to both DB and LocalStorage
