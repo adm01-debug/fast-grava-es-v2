@@ -217,15 +217,16 @@ export function useSchedulingData() {
       const j = jobs[i];
       const isToday = j.scheduled_date === today;
 
-      result.totalPieces += j.quantity;
-      result.lostPieces += j.lost_pieces || 0;
+      const quantity = Number(j.quantity) || 0;
+      result.totalPieces += quantity;
+      result.lostPieces += Number(j.lost_pieces) || 0;
 
       if (isToday) result.todayScheduled++;
 
       switch (j.status) {
         case 'finished':
           result.completed++;
-          result.completedPieces += j.quantity;
+          result.completedPieces += quantity;
           if (isToday) result.todayCompleted++;
           break;
         case 'production':
