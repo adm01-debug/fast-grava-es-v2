@@ -47,9 +47,10 @@ export function calculateRealOEE(jobs: DbJob[]) {
 
   const plannedMinutes = Math.max(daysWithJobs * PLANNED_MINUTES_PER_DAY, totalEstimatedMinutes);
 
-  const availability = plannedMinutes > 0
+  const availability = (plannedMinutes > 0 && finishedJobs.length > 0)
     ? Math.min(100, (totalActualMinutes / plannedMinutes) * 100)
     : 100;
+
 
   const performance = totalActualMinutes > 0
     ? Math.min(100, (totalEstimatedMinutes / totalActualMinutes) * 100)
