@@ -9,9 +9,9 @@
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test": "vitest run src/tests",
-    "test:watch": "vitest src/tests",
-    "test:coverage": "vitest run src/tests --coverage",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
     "audit:pdf": "echo 'AUDITORIA_ENTERPRISE_2026.md not found' && exit 0"
   },
   "dependencies": {
