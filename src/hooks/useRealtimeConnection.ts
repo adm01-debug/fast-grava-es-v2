@@ -40,11 +40,11 @@ export function useRealtimeConnection(): UseRealtimeConnectionReturn {
         } else if (subscribeStatus === 'CHANNEL_ERROR') {
           console.error(`Realtime error on channel ${channelId}:`, err);
           setStatus('error');
-          // Auto-reconnect after delay if it's a transient error
-          setTimeout(() => {
-            // Reconnect logic will check current state
+          // Auto-reconnect after exponential backoff or static delay
+          const timer = setTimeout(() => {
             reconnect();
           }, 5000);
+          return () => clearTimeout(timer);
         }
       });
 
