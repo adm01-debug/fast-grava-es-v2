@@ -197,7 +197,9 @@ export function showErrorToast(
 
   // Log to console in development
   if (import.meta.env.DEV) {
-
+    import('./logger').then(({ logger }) => {
+      logger.error(`AppError [${appError.code}]: ${message}`, { originalError: appError.originalError, context });
+    });
   }
 }
 
