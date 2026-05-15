@@ -1,4 +1,27 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+
+// Move mock BEFORE any imports that might use supabase
+vi.mock('@/integrations/supabase/client', () => ({
+  supabase: {
+    from: vi.fn(),
+    channel: vi.fn(),
+    removeChannel: vi.fn(),
+    auth: {
+      getUser: vi.fn(),
+    }
+  },
+}));
+
+// Mock localStorage for node environment
+if (typeof window === 'undefined') {
+  (global as any).window = {};
+  (global as any).localStorage = {
+    getItem: vi.fn(),
+    setItem: vi.fn(),
+    removeItem: vi.fn(),
+  };
+}
+
 import { useBufferStatus } from '../useJobs';
 import * as useJobsModule from '../useJobs';
 
@@ -11,26 +34,8 @@ vi.mock('@tanstack/react-query', () => ({
   })),
 }));
 
-vi.mock('@/integrations/supabase/client', () => ({
-  supabase: {
-    from: vi.fn(() => ({
-      select: vi.fn(() => ({
-        order: vi.fn(() => ({
-          data: [],
-          error: null,
-        })),
-      })),
-    })),
-    channel: vi.fn(() => ({
-      on: vi.fn(() => ({
-        subscribe: vi.fn(),
-      })),
-    })),
-    removeChannel: vi.fn(),
-  },
-}));
-
 describe('useBufferStatus', () => {
+
   beforeEach(() => {
     vi.clearAllMocks();
   });
