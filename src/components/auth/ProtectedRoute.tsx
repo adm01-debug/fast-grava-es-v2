@@ -12,12 +12,15 @@ export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) 
   const { user, role, isLoading } = useAuth();
   const location = useLocation();
 
-  console.log('[ProtectedRoute] Rendering path:', location.pathname, {
-    hasUser: !!user,
-    role,
-    isLoading,
-    allowedRoles
-  });
+  // Remove debug log in production mode
+  if (process.env.NODE_ENV === 'development') {
+    console.log('[ProtectedRoute] Rendering path:', location.pathname, {
+      hasUser: !!user,
+      role,
+      isLoading,
+      allowedRoles
+    });
+  }
 
   if (isLoading) {
 

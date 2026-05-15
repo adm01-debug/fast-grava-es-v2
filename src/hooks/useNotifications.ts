@@ -165,5 +165,7 @@ export function useNotifications(options?: { limit?: number; unreadOnly?: boolea
 export function notifyStatusChange(clientName: string, oldStatus: string, newStatus: string) {
   // Logic shifted to database triggers + InAppNotificationWatcher
   // This helper can be used for manual client-side triggers if needed
-  console.log(`[Status Notification] ${clientName}: ${oldStatus} -> ${newStatus}`);
+  if (process.env.NODE_ENV === 'development') {
+    console.log(`[Status Notification] ${clientName}: ${oldStatus} -> ${newStatus}`);
+  }
 }

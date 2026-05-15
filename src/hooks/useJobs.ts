@@ -323,31 +323,47 @@ export function useBufferStatus() {
   const { data: jobs } = useJobs();
   const { data: techniques } = useTechniques();
 
-  if (!jobs || !techniques) {
-    return { bufferByTechnique: [] as BufferTechniqueStatus[], isLoading: true };
-  }
+  return useMemo(() => {
+    if (!jobs || !techniques) {
+      return { bufferByTechnique: [] as BufferTechniqueStatus[], isLoading: true };
+    }
 
-  const bufferByTechnique: BufferTechniqueStatus[] = techniques.map(technique => {
-    const techniqueJobs = jobs.filter(job => job.technique_id === technique.id);
+    // Optimization: Group jobs by technique in a single pass O(J)
+    const jobsByTechnique = new Map<string, DbJob[]>();
+    for (const job of jobs) {
+      const list = jobsByTechnique.get(job.technique_id) || [];
+      list.push(job);
+      jobsByTechnique.set(job.technique_id, list);
+    }
 
-    const readyJobs = techniqueJobs.filter(job => job.status === 'ready');
-    const queueJobs = techniqueJobs.filter(job => job.status === 'queue');
-    const activeJobs = techniqueJobs.filter(job =>
-      ['production', 'scheduled', 'delayed', 'paused', 'rework'].includes(job.status)
-    );
+    // Map techniques O(T)
+    const bufferByTechnique: BufferTechniqueStatus[] = techniques.map(technique => {
+      const techniqueJobs = jobsByTechnique.get(technique.id) || [];
 
-    // Check if this technique has ANY work (active, queued, or ready)
-    const hasWork = readyJobs.length > 0 || queueJobs.length > 0 || activeJobs.length > 0;
+      let readyCount = 0;
+      let queueCount = 0;
+      let hasActiveWork = false;
 
-    return {
-      technique,
-      readyCount: readyJobs.length,
-      queueCount: queueJobs.length,
-      isHealthy: readyJobs.length >= 3,
-      isCritical: hasWork && readyJobs.length === 0, // Critical if has work but no ready jobs
-      isWarning: hasWork && readyJobs.length > 0 && readyJobs.length < 3,
-    };
-  }).filter(item => item.queueCount > 0 || item.readyCount > 0 || item.isCritical);
+      for (const job of techniqueJobs) {
+        if (job.status === 'ready') readyCount++;
+        else if (job.status === 'queue') queueCount++;
+        else if (['production', 'scheduled', 'delayed', 'paused', 'rework'].includes(job.status)) {
+          hasActiveWork = true;
+        }
+      }
 
-  return { bufferByTechnique, isLoading: false };
+      const hasWork = readyCount > 0 || queueCount > 0 || hasActiveWork;
+
+      return {
+        technique,
+        readyCount,
+        queueCount,
+        isHealthy: readyCount >= 3,
+        isCritical: hasWork && readyCount === 0,
+        isWarning: hasWork && readyCount > 0 && readyCount < 3,
+      };
+    }).filter(item => item.queueCount > 0 || item.readyCount > 0 || item.isCritical);
+
+    return { bufferByTechnique, isLoading: false };
+  }, [jobs, techniques]);
 }
