@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -16,6 +16,27 @@ export function Shimmer({ className }: { className?: string }) {
     )} />
   );
 }
+
+// Page skeleton wrapper
+export const PageSkeleton = memo(({ className, children }: { className?: string, children: React.ReactNode }) => (
+  <div className={cn("min-h-screen bg-background p-4 md:p-6 lg:p-8 animate-in fade-in duration-300", className)}>
+    {children}
+  </div>
+));
+
+// Header skeleton
+export const HeaderSkeleton = memo(({ className }: { className?: string }) => (
+  <div className={cn("flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6", className)}>
+    <div className="space-y-2">
+      <Skeleton className="h-8 w-48 md:w-64" />
+      <Skeleton className="h-4 w-32 md:w-48" />
+    </div>
+    <div className="flex gap-2">
+      <Skeleton className="h-10 w-24" />
+      <Skeleton className="h-10 w-10" />
+    </div>
+  </div>
+));
 
 // Stats card skeleton — anatomically mirrors StatsCard
 export function StatsCardSkeleton({ className }: { className?: string }) {
@@ -176,6 +197,34 @@ export function ChartSkeleton({
   );
 }
 
+// Timeline skeleton
+export const TimelineSkeleton = memo(({ rows = 6, className }: { rows?: number; className?: string }) => (
+  <Card className={cn("glass-card", className)}>
+    <CardHeader className="pb-2">
+      <div className="flex items-center justify-between">
+        <Skeleton className="h-6 w-40" />
+        <Skeleton className="h-4 w-32" />
+      </div>
+    </CardHeader>
+    <CardContent>
+      <div className="space-y-3">
+        <div className="flex gap-2 border-b border-border/30 pb-2">
+          <Skeleton className="w-16 h-4" />
+          {Array.from({ length: 8 }).map((_, i) => (
+            <Skeleton key={i} className="flex-1 h-4" />
+          ))}
+        </div>
+        {Array.from({ length: rows }).map((_, i) => (
+          <div key={i} className="flex items-center gap-2">
+            <Skeleton className="w-16 h-4" />
+            <Skeleton className="flex-1 h-10 rounded-lg" />
+          </div>
+        ))}
+      </div>
+    </CardContent>
+  </Card>
+));
+
 // Form skeleton
 export function FormSkeleton({
   fields = 4,
@@ -302,6 +351,103 @@ export function DashboardSkeleton({ className }: { className?: string }) {
     </div>
   );
 }
+
+// Specific Page Skeletons
+export const DashboardPageSkeleton = memo(() => (
+  <PageSkeleton>
+    <HeaderSkeleton />
+    <DashboardSkeleton />
+  </PageSkeleton>
+));
+
+export const CalendarPageSkeleton = memo(() => (
+  <PageSkeleton>
+    <HeaderSkeleton />
+    <TimelineSkeleton rows={8} />
+  </PageSkeleton>
+));
+
+export const KanbanPageSkeleton = memo(() => (
+  <PageSkeleton>
+    <HeaderSkeleton />
+    <KanbanSkeleton columns={5} cardsPerColumn={3} />
+  </PageSkeleton>
+));
+
+export const ListPageSkeleton = memo(() => (
+  <PageSkeleton>
+    <HeaderSkeleton />
+    <div className="flex gap-2 mb-4">
+      <Skeleton className="h-10 flex-1 max-w-sm" />
+      <Skeleton className="h-10 w-32" />
+    </div>
+    <ListSkeleton items={6} />
+  </PageSkeleton>
+));
+
+export const TablePageSkeleton = memo(() => (
+  <PageSkeleton>
+    <HeaderSkeleton />
+    <TableSkeleton rows={8} columns={6} />
+  </PageSkeleton>
+));
+
+export const KPIPageSkeleton = memo(() => (
+  <PageSkeleton>
+    <HeaderSkeleton />
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <CardSkeleton key={i} lines={1} />
+        ))}
+      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <ChartSkeleton type="bar" />
+        <ChartSkeleton type="line" />
+      </div>
+    </div>
+  </PageSkeleton>
+));
+
+export const EfficiencyPageSkeleton = memo(() => (
+  <PageSkeleton>
+    <HeaderSkeleton />
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      <StatsCardSkeleton />
+      <StatsCardSkeleton />
+      <StatsCardSkeleton />
+    </div>
+    <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+      <CardSkeleton lines={4} />
+      <CardSkeleton lines={4} />
+      <CardSkeleton lines={4} />
+    </div>
+  </PageSkeleton>
+));
+
+export const AuthPageSkeleton = memo(() => (
+  <div className="min-h-screen bg-background flex items-center justify-center p-4">
+    <Card className="w-full max-w-md p-6 space-y-6">
+      <div className="text-center space-y-2">
+        <Skeleton className="h-12 w-12 rounded-xl mx-auto" />
+        <Skeleton className="h-6 w-32 mx-auto" />
+        <Skeleton className="h-4 w-48 mx-auto" />
+      </div>
+      <div className="space-y-4">
+        <div className="space-y-2">
+          <Skeleton className="h-4 w-16" />
+          <Skeleton className="h-10 w-full" />
+        </div>
+        <div className="space-y-2">
+          <Skeleton className="h-4 w-16" />
+          <Skeleton className="h-10 w-full" />
+        </div>
+        <Skeleton className="h-10 w-full" />
+      </div>
+      <Skeleton className="h-4 w-40 mx-auto" />
+    </Card>
+  </div>
+));
 
 // Progressive loading wrapper
 interface ProgressiveSkeletonProps {
