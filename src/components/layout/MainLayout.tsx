@@ -138,18 +138,9 @@ export function MainLayout({ children }: MainLayoutProps) {
             "px-4 sm:px-6 lg:px-8",
             "min-h-0"
           )}>
-            {shouldAnimate ? (
-              <motion.div
-                key={location.pathname}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.1, ease: 'easeOut' }}
-              >
-                {children}
-              </motion.div>
-            ) : (
-              children
-            )}
+            {/* Render direct children as PageTransition is handled in AppRoutes for better SPA experience */}
+            {children}
+
           </MainContent>
 
           {/* Mobile navigation spacer */}
