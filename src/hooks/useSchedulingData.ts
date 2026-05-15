@@ -123,26 +123,29 @@ export function useSchedulingData() {
 
   // Single realtime subscription for all tables
   useEffect(() => {
+    let isActive = true;
+
     const channel = supabase
       .channel('scheduling-data-changes')
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'jobs' },
-        () => queryClient.invalidateQueries({ queryKey: ['jobs'] })
+        () => isActive && queryClient.invalidateQueries({ queryKey: ['jobs'] })
       )
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'techniques' },
-        () => queryClient.invalidateQueries({ queryKey: ['techniques'] })
+        () => isActive && queryClient.invalidateQueries({ queryKey: ['techniques'] })
       )
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'machines' },
-        () => queryClient.invalidateQueries({ queryKey: ['machines'] })
+        () => isActive && queryClient.invalidateQueries({ queryKey: ['machines'] })
       )
       .subscribe();
 
     return () => {
+      isActive = false;
       supabase.removeChannel(channel);
     };
   }, [queryClient]);
@@ -214,15 +217,16 @@ export function useSchedulingData() {
       const j = jobs[i];
       const isToday = j.scheduled_date === today;
 
-      result.totalPieces += j.quantity;
-      result.lostPieces += j.lost_pieces || 0;
+      const quantity = Number(j.quantity) || 0;
+      result.totalPieces += quantity;
+      result.lostPieces += Number(j.lost_pieces) || 0;
 
       if (isToday) result.todayScheduled++;
 
       switch (j.status) {
         case 'finished':
           result.completed++;
-          result.completedPieces += j.quantity;
+          result.completedPieces += quantity;
           if (isToday) result.todayCompleted++;
           break;
         case 'production':
@@ -311,11 +315,12 @@ export function useSchedulingData() {
         }
 
         let totalActual = 0, totalEstimated = 0;
-        for (const job of dayJobs) {
+        for (let j = 0; j < dayJobs.length; j++) {
+          const job = dayJobs[j];
           if (job.actual_start_time && job.actual_end_time) {
             totalActual += Math.max(0, differenceInMinutes(new Date(job.actual_end_time), new Date(job.actual_start_time)));
           }
-          totalEstimated += job.estimated_duration || 60;
+          totalEstimated += Number(job.estimated_duration) || 60;
         }
 
         const oee = totalActual > 0 ? Math.min(100, (totalEstimated / totalActual) * 100) : 100;

@@ -109,7 +109,7 @@ export function AppSidebar() {
           </div>
         )}
 
-        <nav className="flex-1 overflow-y-auto scrollbar-thin p-2 space-y-1 relative" id="main-navigation">
+        <nav className="flex-1 overflow-y-auto scrollbar-thin p-2 space-y-1 relative focus:outline-none" id="main-navigation">
           {filteredNavGroups.map((group, index) => {
             const isGroupActive = activeGroup?.id === group.id;
             return (

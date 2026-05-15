@@ -3,7 +3,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useSchedulingData } from './useSchedulingData';
 import { useOperatorMachines } from './useOperatorMachines';
 import { DateRange } from 'react-day-picker';
-import { isWithinInterval, startOfDay, endOfDay } from 'date-fns';
+import { isWithinInterval, startOfDay, endOfDay, format } from 'date-fns';
 
 /**
  * Hook that provides dashboard data filtered by user role.
@@ -70,7 +70,7 @@ export function useOperatorDashboardData(dateRange?: DateRange) {
 
   // Single-pass stats computation
   const stats = useMemo(() => {
-    const today = new Date().toISOString().split('T')[0];
+    const today = format(new Date(), 'yyyy-MM-dd');
     const result = {
       total: jobs.length,
       completed: 0, inProgress: 0, delayed: 0, queue: 0,
