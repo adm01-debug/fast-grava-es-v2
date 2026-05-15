@@ -55,6 +55,12 @@ export const logger = {
     const entry = createEntry('error', message, context, error);
     if (isDev) {
       console.error(formatEntry(entry), error ?? '');
+    } else {
+      // Production fallback for critical errors if Sentry is not yet initialized
+      if (entry.level === 'error') {
+        // Minimal production logging for diagnostics without leaking data
+        console.error(`[FATAL] ${entry.timestamp} ${message}`);
+      }
     }
     // In production, Sentry captures via its global handler
   },
