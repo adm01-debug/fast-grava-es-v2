@@ -163,6 +163,7 @@ export function useNotifications(options?: { limit?: number; unreadOnly?: boolea
 
 // Helper function for status change notifications
 export function notifyStatusChange(clientName: string, oldStatus: string, newStatus: string) {
-  // The system uses Postgres listeners in InAppNotificationWatcher and NotificationIntegrator
-  // to trigger UI updates and push notifications automatically.
+  // Logic shifted to database triggers + InAppNotificationWatcher
+  // This helper can be used for manual client-side triggers if needed
+  console.log(`[Status Notification] ${clientName}: ${oldStatus} -> ${newStatus}`);
 }

@@ -110,17 +110,14 @@ export function useRBAC(): RBACResult {
   const { role, isCoordinator, isManager, isOperator, isLoading } = useAuth();
 
   const permissions = useMemo(() => {
-    if (isLoading) {
-
-      return [];
-    }
-    if (!role) {
-
-      return [];
-    }
+    if (isLoading || !role) return [];
+    
     const perms = ROLE_PERMISSIONS[role] || [];
-
-    return perms;
+    // Merge dot-notated and legacy colon-notated permissions
+    const legacyPerms = perms.map(p => p.includes(':') ? p.replace(':', '.') : p);
+    const modernPerms = perms.map(p => p.includes('.') ? p.replace('.', ':') : p);
+    
+    return Array.from(new Set([...perms, ...legacyPerms, ...modernPerms]));
   }, [role, isLoading]);
 
   const hasPermission = useMemo(() => {

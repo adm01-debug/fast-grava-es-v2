@@ -91,8 +91,13 @@ export default function AuthPage() {
     e.preventDefault(); if (!forgotEmail.trim()) { toast.error(t('validation.required')); return; }
     try { z.string().email().parse(forgotEmail); } catch { toast.error(t('auth.invalidEmail')); return; }
     setIsSendingReset(true);
-    const { error } = await supabase.from('password_reset_requests').insert({ user_email: forgotEmail.trim().toLowerCase(), requested_by_name: null });
-    if (error) { if (import.meta.env.DEV)  return; }
+    const { error } = await supabase.from('password_reset_requests').insert({ user_email: forgotEmail.trim().toLowerCase(), requested_by_name: null, status: 'pending' });
+    if (error) { 
+      console.error('Error creating reset request:', error);
+      toast.error('Erro ao enviar solicitação. Tente novamente.');
+      setIsSendingReset(false);
+      return; 
+    }
     toast.success(t('auth.resetRequestSent', 'Solicitação enviada! Aguarde aprovação do gestor.')); setShowForgotPassword(false); setForgotEmail(''); setIsSendingReset(false);
   };
 

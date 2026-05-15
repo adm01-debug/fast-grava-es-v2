@@ -1,21 +1,21 @@
-import { useMemo } from 'react';
+import { useMemo, memo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { BarChart3 } from 'lucide-react';
 import { useSchedulingData } from '@/hooks/useSchedulingData';
 import { cn } from '@/lib/utils';
 
-export function OccupancyChart() {
+function OccupancyChartComponent() {
   const { jobs, machines } = useSchedulingData();
 
   const occupancyData = useMemo(() => {
     if (!machines || !jobs) return [];
 
     return machines.map(machine => {
-      const machineJobs = jobs.filter(j => j.machine_id === machine.id && ['production', 'paused', 'scheduled', 'queue'].includes(j.status));
+      const machineJobs = jobs.filter(j => j.machine_id === machine.id && ['production', 'paused', 'scheduled', 'ready', 'queue'].includes(j.status));
       const totalCapacityHours = 8;
       const usedHours = machineJobs.reduce((sum, j) => sum + (j.estimated_duration || 0) / 60, 0);
-      const occupancy = Math.min(100, (usedHours / totalCapacityHours) * 100);
+      const occupancy = totalCapacityHours > 0 ? Math.min(100, (usedHours / totalCapacityHours) * 100) : 0;
 
       return {
         id: machine.id,
@@ -79,3 +79,4 @@ export function OccupancyChart() {
     </Card>
   );
 }
+export const OccupancyChart = memo(OccupancyChartComponent);

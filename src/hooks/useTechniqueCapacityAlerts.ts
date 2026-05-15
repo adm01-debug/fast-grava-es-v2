@@ -1,108 +1,97 @@
-import { useEffect, useRef, useMemo } from 'react';
+import { useMemo, useEffect, useRef } from 'react';
 import { useSchedulingData } from './useSchedulingData';
 import { useNotificationsContext } from '@/contexts/NotificationsContext';
 import { useAuth } from '@/contexts/AuthContext';
 
-interface TechniqueCapacity {
+export interface CapacityMetric {
   techniqueId: string;
   techniqueName: string;
-  totalMachines: number;
+  occupancyPercent: number;
   activeJobs: number;
   scheduledJobs: number;
-  occupancyPercent: number;
+  totalMachines: number;
   status: 'normal' | 'warning' | 'critical';
 }
 
 /**
- * Monitors technique capacity and alerts when occupancy exceeds thresholds.
- * Warning at 75%, Critical at 85%.
- * Checks every 5 minutes.
+ * Hook that monitors technique capacity and alerts when a technique is reaching 
+ * or exceeding its daily production capacity.
  */
 export function useTechniqueCapacityAlerts() {
   const { user } = useAuth();
-  const { jobs, machines, techniques } = useSchedulingData();
+  const { jobs, techniques, machines } = useSchedulingData();
   const { add } = useNotificationsContext();
   const alertedRef = useRef<Set<string>>(new Set());
 
-  const capacities = useMemo((): TechniqueCapacity[] => {
-    if (!techniques.length || !machines.length) return [];
+  // Daily capacity in minutes (e.g., 8 hours = 480 minutes)
+  const DAILY_CAPACITY = 480;
+
+  const capacities = useMemo(() => {
+    if (!jobs.length || !techniques.length) return [] as CapacityMetric[];
+
+    const today = new Date().toISOString().split('T')[0];
+    
+    return techniques.map(technique => {
+      const techniqueJobs = jobs.filter(j => j.technique_id === technique.id && j.scheduled_date === today);
+      const techniqueMachines = machines.filter(m => m.technique_id === technique.id);
+      
+      const activeJobs = techniqueJobs.filter(j => ['production', 'paused'].includes(j.status)).length;
+      const scheduledJobs = techniqueJobs.filter(j => ['scheduled', 'ready', 'queue'].includes(j.status)).length;
+      
+      const totalLoad = techniqueJobs
+        .filter(j => !['finished', 'cancelled'].includes(j.status))
+        .reduce((sum, j) => sum + (j.estimated_duration || 0), 0);
+      
+      // Capacity depends on number of machines
+      const capacity = DAILY_CAPACITY * (techniqueMachines.length || 1);
+      const utilization = capacity > 0 ? (totalLoad / capacity) * 100 : 0;
+
+      return {
+        techniqueId: technique.id,
+        techniqueName: technique.name,
+        occupancyPercent: Math.round(utilization),
+        activeJobs,
+        scheduledJobs,
+        totalMachines: techniqueMachines.length,
+        status: utilization >= 105 ? 'critical' : utilization >= 90 ? 'warning' : 'normal'
+      } as CapacityMetric;
+    });
+  }, [jobs, techniques, machines]);
+
+  useEffect(() => {
+    if (!user || !capacities.length) return;
 
     const today = new Date().toISOString().split('T')[0];
 
-    return techniques.map(tech => {
-      const techMachines = machines.filter(m => m.technique_id === tech.id && m.is_active);
-      const activeJobs = jobs.filter(
-        j => j.technique_id === tech.id &&
-          ['production', 'ready', 'scheduled'].includes(j.status)
-      );
-      const weekJobs = jobs.filter(
-        j => j.technique_id === tech.id &&
-          !['finished', 'cancelled'].includes(j.status)
-      );
-
-      // Occupancy = active jobs / available machine slots (assume 2 jobs per machine per day)
-      const maxCapacity = techMachines.length * 2;
-      const occupancy = maxCapacity > 0 ? (activeJobs.length / maxCapacity) * 100 : 0;
-
-      let status: 'normal' | 'warning' | 'critical' = 'normal';
-      const warningT = tech.medium_threshold ? (tech.medium_threshold / 600) * 100 : 75;
-      const criticalT = tech.high_threshold ? (tech.high_threshold / 600) * 100 : 85;
-
-      if (occupancy >= criticalT) status = 'critical';
-      else if (occupancy >= warningT) status = 'warning';
-
-      return {
-        techniqueId: tech.id,
-        techniqueName: tech.name,
-        totalMachines: techMachines.length,
-        activeJobs: activeJobs.length,
-        scheduledJobs: weekJobs.length,
-        occupancyPercent: Math.round(occupancy),
-        status,
-      };
-    }).sort((a, b) => b.occupancyPercent - a.occupancyPercent);
-  }, [techniques, machines, jobs]);
-
-  useEffect(() => {
-    if (!user) return;
-
-    const checkCapacity = () => {
-      for (const cap of capacities) {
-        if (cap.status === 'normal') continue;
-        const key = `cap-${cap.techniqueId}-${cap.status}`;
-        if (alertedRef.current.has(key)) continue;
-        alertedRef.current.add(key);
-
-        if (cap.status === 'critical') {
+    capacities.forEach(cap => {
+      if (cap.status === 'critical') {
+        const key = `capacity-critical-${cap.techniqueId}-${today}`;
+        if (!alertedRef.current.has(key)) {
+          alertedRef.current.add(key);
           add({
-            title: '🔴 Capacidade Crítica!',
-            message: `${cap.techniqueName} está com ${cap.occupancyPercent}% de ocupação (${cap.activeJobs} jobs ativos em ${cap.totalMachines} máquinas)`,
+            title: '⚠️ Capacidade Excedida',
+            message: `Técnica ${cap.techniqueName} está com ${cap.occupancyPercent}% de ocupação para hoje.`,
             type: 'error',
-            href: '/efficiency',
+            href: '/kanban',
           });
-        } else {
+        }
+      } else if (cap.status === 'warning') {
+        const key = `capacity-warn-${cap.techniqueId}-${today}`;
+        if (!alertedRef.current.has(key)) {
+          alertedRef.current.add(key);
           add({
-            title: '🟡 Capacidade em Atenção',
-            message: `${cap.techniqueName} atingiu ${cap.occupancyPercent}% de ocupação — considere redistribuir`,
+            title: '📊 Técnica Próxima ao Limite',
+            message: `Técnica ${cap.techniqueName} atingiu ${cap.occupancyPercent}% da capacidade diária.`,
             type: 'warning',
-            href: '/efficiency',
+            href: '/kanban',
           });
         }
       }
-    };
+    });
 
-    checkCapacity();
-    const interval = setInterval(checkCapacity, 5 * 60 * 1000);
-
-    // Reset alerts daily
-    const resetDaily = setInterval(() => {
+    if (alertedRef.current.size > 100) {
       alertedRef.current.clear();
-    }, 24 * 60 * 60 * 1000);
-
-    return () => {
-      clearInterval(interval);
-      clearInterval(resetDaily);
-    };
+    }
   }, [user, capacities, add]);
 
   return { capacities };

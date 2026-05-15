@@ -36,7 +36,7 @@ export const handler = async (req: Request): Promise<Response> => {
       });
     }
 
-    // HMAC verification for security
+    // HMAC verification for security (Always use production keys if available)
     const secret = Deno.env.get(`WEBHOOK_SECRET_${source.toUpperCase()}`);
     if (secret) {
       const encoder = new TextEncoder();
