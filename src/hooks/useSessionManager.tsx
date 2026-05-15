@@ -32,9 +32,13 @@ export function useSessionManager() {
       const { data, error } = await supabase.auth.refreshSession();
 
       if (error) {
+        console.error("Session refresh error:", error);
         // If refresh fails and session is inactive, sign out
-        // Categorize error to see if it's a "no session" vs "network error"
-        if (error.message.includes('refresh_token_not_found') || !isSessionActive()) {
+        // Only sign out on definitive auth errors, not network issues
+        const isAuthError = error.message.includes('refresh_token_not_found') || 
+                           error.message.includes('Invalid Refresh Token');
+                           
+        if (isAuthError || !isSessionActive()) {
           await signOut();
         }
         return;
@@ -44,6 +48,7 @@ export function useSessionManager() {
         await signOut();
       }
     } catch (error) {
+      console.error("Critical session refresh error:", error);
     }
   }, [user, isSessionActive, signOut]);
 
