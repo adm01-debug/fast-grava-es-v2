@@ -7,6 +7,9 @@ import {
   useSensor,
   useSensors,
   DragEndEvent,
+  DragStartEvent,
+  DragOverlay,
+  defaultDropAnimationSideEffects,
 } from '@dnd-kit/core';
 import {
   SortableContext,
@@ -55,6 +58,16 @@ export const SortableWidgetSection = memo(function SortableWidgetSection({
   const strategy = direction === 'horizontal'
     ? horizontalListSortingStrategy
     : verticalListSortingStrategy;
+
+  const dropAnimationConfig = {
+    sideEffects: defaultDropAnimationSideEffects({
+      styles: {
+        active: {
+          opacity: '0.5',
+        },
+      },
+    }),
+  };
 
   return (
     <DndContext
