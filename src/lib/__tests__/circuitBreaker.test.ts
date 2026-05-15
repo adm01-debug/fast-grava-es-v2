@@ -5,13 +5,13 @@ describe('CircuitBreaker', () => {
   let breaker: CircuitBreaker;
 
   beforeEach(() => {
+    vi.useFakeTimers();
     breaker = new CircuitBreaker({
       failureThreshold: 2,
       resetTimeout: 1000,
       successThreshold: 2,
       name: 'test-breaker'
     });
-    vi.useFakeTimers();
   });
 
   afterEach(() => {
@@ -93,7 +93,9 @@ describe('CircuitBreaker', () => {
     expect(breaker.state).toBe('half_open');
 
     // Failure in half-open
-    await expect(breaker.execute(failFn)).rejects.toThrow();
+    const newFailFn = vi.fn().mockRejectedValue(new Error('new fail'));
+    await expect(breaker.execute(newFailFn)).rejects.toThrow('new fail');
     expect(breaker.state).toBe('open');
   });
 });
+
