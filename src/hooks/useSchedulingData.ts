@@ -6,8 +6,8 @@ import { DbJob, DbTechnique, DbMachine } from './useJobs';
 import { categorizeError, ErrorCodes, createAppError } from '@/lib/errorHandling';
 
 // Stale time for static data (techniques, machines change less frequently)
-const STATIC_DATA_STALE_TIME = 5 * 60 * 1000; // 5 minutes
-const JOBS_STALE_TIME = 30 * 1000; // 30 seconds
+const STATIC_DATA_STALE_TIME = 15 * 60 * 1000; // 15 minutes (was 5)
+const JOBS_STALE_TIME = 45 * 1000; // 45 seconds (was 30)
 
 // Retry configuration for connection failures
 const RETRY_CONFIG = {
@@ -160,11 +160,17 @@ export function useSchedulingData() {
     return map;
   }, [machinesQuery.data]);
 
+  const profilesMap = useMemo(() => {
+    const map = new Map<string, any>();
+    profilesQuery.data?.forEach(p => map.set(p.id, p));
+    return map;
+  }, [profilesQuery.data]);
+
   // Helper functions using O(1) Map lookups
   const getOperatorById = useCallback((id: string | null) => {
     if (!id) return undefined;
-    return (profilesQuery.data || []).find(p => p.id === id);
-  }, [profilesQuery.data]);
+    return profilesMap.get(id);
+  }, [profilesMap]);
 
   const getTechniqueById = useCallback((id: string): DbTechnique | undefined => {
     return techniquesMap.get(id);
@@ -275,11 +281,12 @@ export function useSchedulingData() {
       machinesQuery.refetch();
     },
 
-    // OEE History and Capacity Monitoring
-    getOEETrend: (days: number = 14) => {
+    // OEE History and Capacity Monitoring - Memoized results
+    oeeTrend: useMemo(() => {
       const jobs = jobsQuery.data || [];
       const trend = [];
       const now = new Date();
+      const days = 14;
 
       for (let i = days - 1; i >= 0; i--) {
         const date = new Date(now);
@@ -305,11 +312,13 @@ export function useSchedulingData() {
         trend.push({ date: dateStr, oee: Math.round(oee) });
       }
       return trend;
-    },
-    // Historic bottleneck and capacity trends
-    getCapacityTrend: (days: number = 7) => {
+    }, [jobsQuery.data]),
+
+    capacityTrend: useMemo(() => {
       const jobs = jobsQuery.data || [];
       const trend = [];
+      const days = 7;
+      
       for (let i = days - 1; i >= 0; i--) {
         const date = new Date();
         date.setDate(date.getDate() - i);
@@ -326,7 +335,7 @@ export function useSchedulingData() {
         });
       }
       return trend;
-    }
+    }, [jobsQuery.data]),
   };
 }
 

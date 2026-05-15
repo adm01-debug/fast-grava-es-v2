@@ -143,15 +143,41 @@ export default defineConfig(({ mode }) => ({
     rollupOptions: {
       output: {
         manualChunks: {
+          // Core frameworks
           'vendor-react': ['react', 'react-dom', 'react-router-dom'],
-          'vendor-query': ['@tanstack/react-query'],
-          'vendor-ui': ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu', '@radix-ui/react-popover', '@radix-ui/react-tabs', '@radix-ui/react-tooltip', '@radix-ui/react-select'],
-          'vendor-charts': ['recharts'],
+          'vendor-query': ['@tanstack/react-query', 'zustand'],
+          
+          // UI Components (grouped by frequency of use)
+          'vendor-ui-core': [
+            '@radix-ui/react-dialog', 
+            '@radix-ui/react-dropdown-menu', 
+            '@radix-ui/react-popover',
+            '@radix-ui/react-select',
+            '@radix-ui/react-label',
+            '@radix-ui/react-slot',
+            '@radix-ui/react-tooltip'
+          ],
+          'vendor-ui-extra': [
+            '@radix-ui/react-accordion',
+            '@radix-ui/react-tabs',
+            '@radix-ui/react-scroll-area',
+            '@radix-ui/react-avatar',
+            '@radix-ui/react-checkbox',
+            '@radix-ui/react-progress',
+            '@radix-ui/react-switch'
+          ],
+          
+          // Visual & Animation
           'vendor-motion': ['framer-motion'],
+          'vendor-charts': ['recharts'],
+          
+          // Utilities
           'vendor-supabase': ['@supabase/supabase-js'],
-          'vendor-date': ['date-fns'],
-          'vendor-i18n': ['i18next', 'react-i18next'],
-          'vendor-pdf': ['jspdf', 'jspdf-autotable'],
+          'vendor-utils': ['date-fns', 'i18next', 'react-i18next', 'clsx', 'tailwind-merge', 'zod'],
+          
+          // Heavy libraries
+          'vendor-pdf': ['jspdf', 'jspdf-autotable', 'html2canvas'],
+          'vendor-excel': ['xlsx', 'jszip'],
           'vendor-qrcode': ['html5-qrcode', 'qrcode.react'],
           'vendor-dnd': ['@dnd-kit/core', '@dnd-kit/sortable', '@dnd-kit/utilities'],
         },
