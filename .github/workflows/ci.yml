@@ -29,9 +29,9 @@ jobs:
         
       - name: Edge Function Tests (Deno)
         run: |
-          curl -fsSL https://deno.land/x/install/install.sh | sh
+          curl -fsSL https://deno.land/install.sh | sh
           export PATH="$HOME/.deno/bin:$PATH"
-          deno test --allow-all --env-file=.env supabase/functions/**/*.test.ts
+          deno test --allow-all supabase/functions/
         
       - name: Build check
         run: bun run build
