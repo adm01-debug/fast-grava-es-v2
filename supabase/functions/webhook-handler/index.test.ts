@@ -77,6 +77,9 @@ Deno.test({
     });
 
     await t.step("Fuzz Testing: Script Injection in Payload", async () => {
+      // Disable enforcement so we can test payload processing robustness
+      Deno.env.set("ENFORCE_WEBHOOK_SIGNATURES", "false");
+      
       const req = new Request("http://localhost/functions/v1/webhook-handler", {
         method: "POST",
         body: JSON.stringify({ 
@@ -87,6 +90,7 @@ Deno.test({
         headers: { "Content-Type": "application/json" }
       });
       const res = await handler(req);
+      // Status should be 200 (processed) or 500 (DB connection fail), but worker must not crash
       assertEquals(res.status === 200 || res.status === 500, true);
     });
 
