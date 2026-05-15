@@ -161,7 +161,7 @@ const Index = () => {
   const efficiencyWidgets = useMemo(() => filterWidgetsForRole(getWidgetsBySection('efficiency')), [getWidgetsBySection, filterWidgetsForRole]);
   const bottomWidgets = useMemo(() => filterWidgetsForRole(getWidgetsBySection('bottom')), [getWidgetsBySection, filterWidgetsForRole]);
 
-  const renderWidget = (widgetId: string) => {
+  const renderWidget = useCallback((widgetId: string) => {
     const config = WIDGET_COMPONENTS[widgetId];
     if (!config) return null;
 
@@ -171,14 +171,14 @@ const Index = () => {
         key={widgetId}
         id={widgetId}
         isEditMode={isEditMode}
-        onToggleVisibility={() => toggleWidgetVisibility(widgetId)}
+        onToggleVisibility={() => handleToggleWidgetVisibility(widgetId)}
       >
         <Suspense fallback={<WidgetSkeleton className={config.skeletonHeight} />}>
           <Component />
         </Suspense>
       </DraggableWidget>
     );
-  };
+  }, [isEditMode, handleToggleWidgetVisibility]);
 
   // Activity log for tracking
   const { entries: activityEntries, addEntry: addActivityEntry } = useActivityLog();
