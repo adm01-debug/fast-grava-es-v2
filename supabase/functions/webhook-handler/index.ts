@@ -79,7 +79,7 @@ export const handler = async (req: Request): Promise<Response> => {
       source,
       event,
       payload: data,
-      received_at: new Date().toISOString(),
+      created_at: new Date().toISOString(),
     });
 
     if (logError) {
