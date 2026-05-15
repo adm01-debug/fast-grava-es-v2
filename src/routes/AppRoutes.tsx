@@ -14,7 +14,7 @@ import {
   EfficiencyPageSkeleton,
   AuthPageSkeleton,
   TablePageSkeleton,
-} from "@/components/ui/page-skeletons";
+} from "@/components/loading";
 
 // Lazy load all pages
 const Index = lazy(() => import("@/pages/Index"));
