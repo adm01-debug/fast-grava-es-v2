@@ -45,7 +45,7 @@ import { VoiceButton } from '@/components/voice/VoiceCommands';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 
-import { KPIPageSkeleton } from '@/components/loading';
+import { KPIPageSkeleton, ChartSkeleton, TableSkeleton } from '@/components/loading';
 
 // Lazy load heavy dashboard components
 const OEEMachineTable = lazy(() => import('@/components/oee/OEEMachineTable').then(m => ({ default: m.OEEMachineTable })));
