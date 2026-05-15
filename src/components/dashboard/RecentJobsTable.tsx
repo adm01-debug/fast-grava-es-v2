@@ -119,7 +119,7 @@ function RecentJobsTableComponent() {
 
   return (
     <>
-      <Card className="col-span-3 glass-card card-interactive animate-fade-in-up opacity-0 [animation-fill-mode:forwards] [animation-delay:0.15s]">
+      <Card className="col-span-3 glass-card card-interactive animate-fade-in-up">
         <CardHeader className="pb-2">
           <CardTitle className="text-lg font-display gradient-text">Jobs Recentes</CardTitle>
         </CardHeader>

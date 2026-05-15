@@ -1,11 +1,11 @@
-import { useMemo } from 'react';
+import { useMemo, memo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { BarChart3 } from 'lucide-react';
 import { useSchedulingData } from '@/hooks/useSchedulingData';
 import { cn } from '@/lib/utils';
 
-export function OccupancyChart() {
+function OccupancyChartComponent() {
   const { jobs, machines } = useSchedulingData();
 
   const occupancyData = useMemo(() => {
@@ -79,3 +79,4 @@ export function OccupancyChart() {
     </Card>
   );
 }
+export const OccupancyChart = memo(OccupancyChartComponent);
