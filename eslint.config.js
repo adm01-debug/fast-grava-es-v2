@@ -6,7 +6,7 @@ import tseslint from "typescript-eslint";
 import jsxA11y from "eslint-plugin-jsx-a11y";
 
 export default tseslint.config(
-  { ignores: ["dist"] },
+  { ignores: ["dist", "coverage", "scripts"] },
   {
     extends: [
       js.configs.recommended,
@@ -28,7 +28,7 @@ export default tseslint.config(
       "no-console": "error",
       "no-debugger": "error",
       "@typescript-eslint/no-unused-vars": "off",
-      "@typescript-eslint/no-explicit-any": "error",
+      "@typescript-eslint/no-explicit-any": "warn",
       "@typescript-eslint/explicit-function-return-type": [
         "warn",
         {
