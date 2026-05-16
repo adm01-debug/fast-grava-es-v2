@@ -49,6 +49,10 @@ export function MainLayout({ children }: MainLayoutProps) {
 
   // Dynamic page title for SEO
   usePageTitle();
+  
+  // Navigation global hotkeys
+  useNavigationHotkeys();
+
 
   const shouldAnimate = !prefersReducedMotion;
 
