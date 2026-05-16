@@ -32,6 +32,8 @@ const BackButton = lazy(() => import('../navigation/BackButton').then(m => ({ de
 
 import { useDevice } from '@/hooks/use-device';
 import { cn } from '@/lib/utils';
+import { useNavigationHotkeys } from '@/hooks/use-navigation-hotkeys';
+
 
 interface MainLayoutProps {
   children: ReactNode;
