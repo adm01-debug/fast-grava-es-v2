@@ -1,6 +1,7 @@
 import { ReactNode } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth, AppRole } from '@/contexts/AuthContext';
+import { logger } from '@/lib/logger';
 import { Loader2 } from 'lucide-react';
 
 interface ProtectedRouteProps {
