@@ -93,7 +93,7 @@ serve(async (req) => {
           <div style="margin-top: 25px;">
             <a href="${Deno.env.get('PUBLIC_URL') || '#'}/tpm" style="display: inline-block; padding: 12px 24px; background: #ef4444; color: white; text-decoration: none; border-radius: 6px; font-weight: bold;">Investigar Ocorrência</a>
           </div>
-          <p style="margin-top: 30px; font-size: 12px; color: #666;">Fast Gravações - Sistema de Gestão de Produção</p>
+          <p style="margin-top: 30px; font-size: 12px; color: #666;">52 STÚDIOS DE GRAVAÇÃO - Sistema de Gestão de Produção</p>
         </div>
       `;
 
@@ -104,7 +104,7 @@ serve(async (req) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          from: 'Alertas de Risco Fast Gravações <notifications@resend.dev>',
+          from: 'Alertas de Risco 52 STÚDIOS DE GRAVAÇÃO <notifications@resend.dev>',
           to: subscriberEmails,
           subject: `🚨 RISCO DE PERDA: ${machine?.code} - ${alert.parameter_name || 'Parâmetro'} fora do range`,
           html: htmlContent,

@@ -91,7 +91,7 @@ export const exportSPCReport = async (parameter: SPCParameter, measurements: SPC
   for (let i = 1; i <= pageCount; i++) {
     doc.setPage(i);
     doc.setFontSize(8);
-    doc.text(`Fast Gravações MES - Página ${i} de ${pageCount}`, 14, 285);
+    doc.text(`52 STÚDIOS DE GRAVAÇÃO MES - Página ${i} de ${pageCount}`, 14, 285);
   }
 
   doc.save(`Relatorio_SPC_${parameter.name.replace(/\s+/g, '_')}_${format(now, 'yyyyMMdd')}.pdf`);
