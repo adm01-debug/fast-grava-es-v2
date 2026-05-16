@@ -6,6 +6,13 @@ import { useEffect, useState, useCallback } from "react";
 import { useHapticFeedback } from "@/hooks/use-haptic-feedback";
 import { useDevice } from "@/hooks/use-device";
 import { motion, AnimatePresence } from "framer-motion";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+
 
 
 interface BackButtonProps {
