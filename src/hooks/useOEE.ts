@@ -80,6 +80,16 @@ export interface OEEData {
     quality: number;
   }[];
 
+  // Heatmap data (Machine ID vs Date)
+  heatmapData: {
+    machineId: string;
+    machineName: string;
+    data: {
+      date: string;
+      oee: number;
+    }[];
+  }[];
+
   // World-class benchmark
   worldClassBenchmark: number;
 
