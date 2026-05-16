@@ -3,6 +3,7 @@ import { Calculator, DollarSign, TrendingUp, Package } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
+import { DashboardSkeleton } from '@/components/ui/DashboardSkeleton';
 import { useABCCosts } from '@/hooks/useABCCosts';
 import { ABCCostPoolsCard } from '@/components/abc/ABCCostPoolsCard';
 import { ABCTechniqueChart } from '@/components/abc/ABCTechniqueChart';
