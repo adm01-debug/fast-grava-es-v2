@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
-  Printer, CheckCircle2, XCircle, Settings, History,
+  Printer, Target, CheckCircle2, XCircle, Settings, History,
   Activity, AlertTriangle, Map as MapIcon, Zap, Search, FileDown
 } from 'lucide-react';
 import { useSchedulingData } from '@/hooks/useSchedulingData';
@@ -189,7 +189,7 @@ export default function MachinesPage() {
             <CardContent className="pt-6">
               <div className="flex items-center gap-4">
                 <div className="w-10 h-10 rounded-lg gradient-primary flex items-center justify-center shrink-0">
-                  <Printer className="h-5 w-5 text-primary-foreground" />
+                  <Target className="h-5 w-5 text-primary-foreground" />
                 </div>
                 <div className="min-w-0">
                   <p className="text-2xl font-bold">{machines.length}</p>
@@ -287,7 +287,7 @@ export default function MachinesPage() {
                   animate={{ opacity: 1 }}
                   className="py-20 text-center"
                 >
-                  <Printer className="h-12 w-12 mx-auto text-muted-foreground/20 mb-4" />
+                  <Target className="h-12 w-12 mx-auto text-muted-foreground/20 mb-4" />
                   <p className="text-muted-foreground">Nenhuma máquina encontrada com os filtros aplicados.</p>
                 </motion.div>
               ) : (
@@ -429,7 +429,7 @@ export default function MachinesPage() {
             <DialogHeader className="p-6 pb-2">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-xl gradient-primary flex items-center justify-center shrink-0">
-                   <Printer className="h-6 w-6 text-primary-foreground" />
+                   <Target className="h-6 w-6 text-primary-foreground" />
                 </div>
                 <div>
                   <DialogTitle className="text-xl">
