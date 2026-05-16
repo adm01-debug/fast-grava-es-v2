@@ -74,19 +74,9 @@ export function useSchedulingData() {
     queryKey: ['machines'],
     queryFn: async () => {
       try {
-        const { data, error } = await supabase
-          .from('machines')
-          .select('*')
-          // .eq('is_active', true) // Removido para permitir ver todas as máquinas e seu status de técnica
-          .order('code');
-
-        if (error) {
-          const appError = createAppError(error, ERROR_CONTEXT.machines);
-          throw error;
-        }
-        return data as DbMachine[];
+        return await machinesService.getAll();
       } catch (err) {
-        throw err;
+        throw createAppError(err, ERROR_CONTEXT.machines);
       }
     },
     staleTime: STATIC_DATA_STALE_TIME,
