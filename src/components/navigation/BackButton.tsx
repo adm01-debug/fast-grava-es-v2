@@ -41,19 +41,19 @@ export function BackButton({ className }: BackButtonProps) {
       <AnimatePresence mode="wait">
         <motion.div
           key={location.pathname}
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.8 }}
-          className="fixed bottom-24 left-6 z-[60] md:hidden no-export group"
+          initial={{ opacity: 0, x: -20, scale: 0.9 }}
+          animate={{ opacity: 1, x: 0, scale: 1 }}
+          exit={{ opacity: 0, x: -20, scale: 0.9 }}
+          className="fixed bottom-28 left-6 z-[60] md:hidden no-export"
         >
           <Button
             variant="default"
             size="icon"
             onClick={handleBack}
             className={cn(
-              "h-14 w-14 rounded-full shadow-[0_8px_32px_rgba(0,0,0,0.2)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.5)] transition-all active:scale-90 touch-target",
-              "bg-background/60 backdrop-blur-2xl border border-primary/30 text-primary",
-              "hover:bg-background/80 hover:border-primary/50 hover:shadow-primary/20",
+              "h-14 w-14 rounded-2xl shadow-xl transition-all active:scale-90 touch-target",
+              "bg-primary text-primary-foreground border-2 border-white/10",
+              "hover:brightness-110",
               className
             )}
             aria-label="Voltar"
@@ -71,12 +71,14 @@ export function BackButton({ className }: BackButtonProps) {
       size="sm"
       onClick={handleBack}
       className={cn(
-        "gap-1.5 px-3 h-9 text-muted-foreground hover:text-foreground hover:bg-primary/5 active:scale-95 transition-all border border-transparent hover:border-border/40 rounded-lg",
+        "gap-2 px-3 h-10 text-muted-foreground hover:text-primary hover:bg-primary/5 active:scale-95 transition-all border-2 border-transparent hover:border-primary/10 rounded-xl group/back",
         className
       )}
       aria-label="Voltar para a página anterior"
     >
-      <ChevronLeft className="h-4 w-4" />
+      <div className="flex items-center justify-center w-6 h-6 rounded-full bg-muted/30 group-hover/back:bg-primary/20 transition-colors">
+        <ChevronLeft className="h-4 w-4 transition-transform group-hover/back:-translate-x-0.5" />
+      </div>
       <span className="text-sm font-bold tracking-tight">Voltar</span>
     </Button>
   );
