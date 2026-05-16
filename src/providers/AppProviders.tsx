@@ -17,6 +17,7 @@ import { ErrorBoundary } from "@/components/ui/error-boundary";
 import { NavigationListener } from "@/components/navigation/NavigationListener";
 import { InAppNotificationWatcher } from "@/components/notifications/InAppNotificationWatcher";
 import { SmartAlertsWatcher } from "@/components/notifications/SmartAlertsWatcher";
+import { BIAlertsWatcher } from "@/components/bi/BIAlertsWatcher";
 
 import { BreadcrumbProvider } from "@/contexts/BreadcrumbContext";
 import { ConfirmationProvider } from "@/contexts/ConfirmationContext";
@@ -61,6 +62,7 @@ function Observers() {
       <NavigationListener />
       <InAppNotificationWatcher />
       <SmartAlertsWatcher />
+      <BIAlertsWatcher />
     </>
   );
 }
