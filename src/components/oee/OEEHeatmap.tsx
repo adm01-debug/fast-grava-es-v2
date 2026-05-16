@@ -57,7 +57,7 @@ export const OEEHeatmap = memo(function OEEHeatmap({ data }: OEEHeatmapProps) {
       </CardHeader>
       <CardContent>
         <div className="overflow-x-auto">
-          <table className="w-full border-separate border-spacing-1">
+          <table className="w-full border-separate border-spacing-x-1 border-spacing-y-2">
             <thead>
               <tr>
                 <th className="text-left text-[10px] font-bold text-muted-foreground uppercase p-1 sticky left-0 bg-background/80 backdrop-blur-sm z-10 w-24">
