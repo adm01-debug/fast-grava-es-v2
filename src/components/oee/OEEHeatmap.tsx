@@ -27,7 +27,6 @@ interface OEEHeatmapProps {
 export const OEEHeatmap = memo(function OEEHeatmap({ data }: OEEHeatmapProps) {
   const { t } = useTranslation();
 
-  // Get unique dates for the header
   const dates = useMemo(() => {
     if (!data.length || !data[0].data.length) return [];
     return data[0].data.map(d => d.date);
@@ -39,20 +38,20 @@ export const OEEHeatmap = memo(function OEEHeatmap({ data }: OEEHeatmapProps) {
     <Card className="border-primary/20 bg-background/50 backdrop-blur-xl">
       <CardHeader className="flex flex-row items-center justify-between pb-2">
         <CardTitle className="text-sm font-bold flex items-center gap-2">
-          Mapa de Calor: Performance por Máquina
+          Mapa de Calor de Produtividade: OEE Diário por Máquina
         </CardTitle>
         <div className="flex items-center gap-2">
            <div className="flex items-center gap-1">
              <div className="w-2 h-2 rounded-sm bg-destructive" />
-             <span className="text-[10px] text-muted-foreground">Baixa</span>
+             <span className="text-[10px] text-muted-foreground">Crítico</span>
            </div>
            <div className="flex items-center gap-1">
              <div className="w-2 h-2 rounded-sm bg-indicator-warning" />
-             <span className="text-[10px] text-muted-foreground">Média</span>
+             <span className="text-[10px] text-muted-foreground">Atenção</span>
            </div>
            <div className="flex items-center gap-1">
              <div className="w-2 h-2 rounded-sm bg-success" />
-             <span className="text-[10px] text-muted-foreground">Alta</span>
+             <span className="text-[10px] text-muted-foreground">Meta</span>
            </div>
         </div>
       </CardHeader>
@@ -85,19 +84,24 @@ export const OEEHeatmap = memo(function OEEHeatmap({ data }: OEEHeatmapProps) {
                             <div
                               className={cn(
                                 "w-full h-8 rounded-sm transition-all hover:scale-110 hover:z-20 cursor-help",
-                                day.oee === 0 ? "bg-muted/20" : ""
+                                day.oee === 0 ? "bg-muted/10" : ""
                               )}
                               style={{ 
                                 backgroundColor: day.oee > 0 ? getOEEColor(day.oee) : undefined,
-                                opacity: day.oee > 0 ? 0.8 : 0.3
+                                opacity: day.oee > 0 ? 0.85 : 0.2
                               }}
                             />
                           </TooltipTrigger>
-                          <TooltipContent className="bg-black/90 border-primary/20">
+                          <TooltipContent className="bg-black/95 border-primary/20 backdrop-blur-md">
                             <div className="text-[10px] space-y-1">
-                              <p className="font-bold">{machine.machineName}</p>
-                              <p>{format(parseISO(day.date), 'dd/MM/yyyy', { locale: ptBR })}</p>
-                              <p className="text-primary font-black">OEE: {day.oee}%</p>
+                              <p className="font-bold text-primary">{machine.machineName}</p>
+                              <p className="text-muted-foreground">{format(parseISO(day.date), 'PPPP', { locale: ptBR })}</p>
+                              <p className="text-white font-black text-xs">Eficiência: {day.oee}%</p>
+                              <p className="text-[9px] italic opacity-70">
+                                {day.oee >= 85 ? 'Desempenho de classe mundial' : 
+                                 day.oee >= 65 ? 'Dentro da faixa operacional' : 
+                                 day.oee > 0 ? 'Necessita investigação de perdas' : 'Sem produção registrada'}
+                              </p>
                             </div>
                           </TooltipContent>
                         </Tooltip>
