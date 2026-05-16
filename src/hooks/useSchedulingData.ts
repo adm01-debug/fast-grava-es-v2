@@ -165,7 +165,7 @@ export function useSchedulingData() {
   }, [machinesQuery.data]);
 
   const profilesMap = useMemo(() => {
-    const map = new Map<string, Database['public']['Tables']['profiles']['Row']>();
+    const map = new Map<string, { id: string; full_name: string | null; avatar_url: string | null }>();
     profilesQuery.data?.forEach(p => map.set(p.id, p));
     return map;
   }, [profilesQuery.data]);
