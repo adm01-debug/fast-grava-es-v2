@@ -137,29 +137,32 @@ export function MainLayout({ children }: MainLayoutProps) {
           )}>
 
             {/* Global Navigation Header - Only show when not on home page or root-level dashboard */}
-            <div className="flex flex-col gap-3 mb-6 sm:flex-row sm:items-center sm:justify-between sm:gap-4 no-export border-b border-border/10 pb-6">
-              <div className="flex items-center gap-3">
+            <header className="flex flex-col gap-4 mb-8 sm:flex-row sm:items-center sm:justify-between sm:gap-6 no-export border-b border-border/10 pb-6">
+              <div className="flex items-center gap-4">
                 <Suspense fallback={null}>
-                  <BackButton className="hover:scale-105 transition-transform" />
+                  <BackButton className="shadow-sm" />
                 </Suspense>
-                <div className="h-6 w-px bg-border/20 mx-1 hidden sm:block shadow-sm" />
-                <Suspense fallback={<div className="h-9 bg-muted/40 animate-pulse rounded-md w-48 border border-border/20" />}>
-                  <Breadcrumbs className="max-w-[calc(100vw-8rem)]" />
-                </Suspense>
+                
+                <div className="flex flex-col gap-1">
+                  <Suspense fallback={<div className="h-6 bg-muted/40 animate-pulse rounded-md w-48" />}>
+                    <Breadcrumbs />
+                  </Suspense>
+                </div>
               </div>
               
-              <div className="hidden sm:flex items-center gap-2 text-xs text-muted-foreground">
-                <span className="flex items-center gap-1.5 px-2 py-1 bg-muted/50 rounded-md border border-border/40">
-                  <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+              <div className="hidden sm:flex items-center gap-4">
+                <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground bg-muted/30 px-3 py-1.5 rounded-full border border-border/40 shadow-inner">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                  </span>
                   Sistema Online
-                </span>
+                </div>
                 <Suspense fallback={null}>
-                  <div className="flex items-center gap-1">
-                    <RealtimeIndicator />
-                  </div>
+                  <RealtimeIndicator />
                 </Suspense>
               </div>
-            </div>
+            </header>
 
 
             {/* Render direct children as PageTransition is handled in AppRoutes for better SPA experience */}
