@@ -51,8 +51,8 @@ export function BackButton({ className }: BackButtonProps) {
             size="icon"
             onClick={handleBack}
             className={cn(
-              "h-14 w-14 rounded-full shadow-2xl transition-all active:scale-90 touch-target",
-              "bg-background/80 backdrop-blur-xl border border-primary/20 text-primary",
+              "h-14 w-14 rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.2)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.5)] transition-all active:scale-90 touch-target",
+              "bg-background/80 backdrop-blur-2xl border border-primary/20 text-primary",
               "hover:bg-background/90 hover:border-primary/40",
               className
             )}
