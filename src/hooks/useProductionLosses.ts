@@ -9,6 +9,8 @@ export interface ProductionLoss {
   operator_id?: string | null;
   notes?: string | null;
   created_at: string;
+  shift?: string | null;
+  loss_type?: 'availability' | 'performance' | 'quality';
 }
 
 export function useProductionLosses(jobId?: string, filters?: { shift?: string; startDate?: string; endDate?: string }) {

@@ -2,6 +2,7 @@ import { useOEE } from './useOEE';
 import { useBusinessConfig } from './useBusinessConfig';
 import { supabase } from '@/integrations/supabase/client';
 import { useEffect, useRef, useCallback } from 'react';
+import { startOfDay, endOfDay } from 'date-fns';
 import { logger } from '@/lib/logger';
 import { usePushNotifications } from './usePushNotifications';
 import { useNotificationSounds } from './useNotificationSounds';
