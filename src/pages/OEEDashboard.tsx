@@ -88,11 +88,19 @@ const OEEDashboard = memo(function OEEDashboard() {
   const [activeTab, setActiveTab] = useState('overview');
   const [showConfig, setShowSimulatorLocal] = useState(false); // Used for a future settings modal if needed
   
-  const filters = useMemo(() => ({
-    machineId: machineId === 'all' ? undefined : machineId,
-    techniqueId: techniqueId === 'all' ? undefined : techniqueId,
-    shift: shift === 'all' ? undefined : shift
-  }), [machineId, techniqueId, shift]);
+  const filters = useMemo(() => {
+    const now = new Date();
+    const startDate = startOfDay(subDays(now, parseInt(period)));
+    const endDate = endOfDay(now);
+    
+    return {
+      machineId: machineId === 'all' ? undefined : machineId,
+      techniqueId: techniqueId === 'all' ? undefined : techniqueId,
+      shift: shift === 'all' ? undefined : shift,
+      startDate: startDate.toISOString(),
+      endDate: endDate.toISOString()
+    };
+  }, [machineId, techniqueId, shift, period]);
 
   const { data, isLoading, downloadReport } = useOEE(parseInt(period), 30, filters);
   const { losses, isLoading: lossesLoading } = useProductionLosses(undefined, filters);
