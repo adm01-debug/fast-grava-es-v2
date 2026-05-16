@@ -137,13 +137,27 @@ export function MainLayout({ children }: MainLayoutProps) {
           )}>
 
             {/* Global Navigation Header - Only show when not on home page */}
-            <div className="flex items-center gap-2 mb-6">
-              <Suspense fallback={null}>
-                <BackButton />
-              </Suspense>
-              <Suspense fallback={<div className="h-9 bg-muted animate-pulse rounded-md w-48" />}>
-                <Breadcrumbs />
-              </Suspense>
+            <div className="flex flex-col gap-2 mb-6 sm:flex-row sm:items-center sm:justify-between sm:gap-4 no-export">
+              <div className="flex items-center gap-2">
+                <Suspense fallback={null}>
+                  <BackButton />
+                </Suspense>
+                <Suspense fallback={<div className="h-9 bg-muted animate-pulse rounded-md w-48" />}>
+                  <Breadcrumbs />
+                </Suspense>
+              </div>
+              
+              <div className="hidden sm:flex items-center gap-2 text-xs text-muted-foreground">
+                <span className="flex items-center gap-1.5 px-2 py-1 bg-muted/50 rounded-md border border-border/40">
+                  <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+                  Sistema Online
+                </span>
+                <Suspense fallback={null}>
+                  <div className="flex items-center gap-1">
+                    <RealtimeIndicator />
+                  </div>
+                </Suspense>
+              </div>
             </div>
 
 
