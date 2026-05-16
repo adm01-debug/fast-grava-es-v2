@@ -10,6 +10,9 @@ interface NotificationPreferences {
   bottleneck: boolean;
   statusChanges: boolean;
   productionComplete: boolean;
+  oeeAlerts: boolean;
+  goalAlerts: boolean;
+  maintenanceAlerts: boolean;
 }
 
 interface JobPayload {
