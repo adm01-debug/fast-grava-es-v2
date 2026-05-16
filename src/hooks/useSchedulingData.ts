@@ -53,23 +53,16 @@ export function useSchedulingData() {
     ...RETRY_CONFIG,
   });
 
-  // Fetch techniques with longer stale time (they change infrequently)
+  // Fetch techniques with longer stale time
   const techniquesQuery = useQuery({
     queryKey: ['techniques'],
     queryFn: async () => {
       try {
-        const { data, error } = await supabase
-          .from('techniques')
-          .select('*')
-          .order('name');
-
-        if (error) {
-          const appError = createAppError(error, ERROR_CONTEXT.techniques);
-          throw error;
-        }
+        const { data, error } = await supabase.from('techniques').select('*').order('name');
+        if (error) throw error;
         return data as DbTechnique[];
       } catch (err) {
-        throw err;
+        throw createAppError(err, ERROR_CONTEXT.techniques);
       }
     },
     staleTime: STATIC_DATA_STALE_TIME,
