@@ -125,7 +125,7 @@ export default function AuthPage() {
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#FF5A1F] opacity-75" />
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-[#FF5A1F]" />
                 </span>
-                <span className="text-[11px] font-mono uppercase tracking-widest text-zinc-400">52 Máquinas Online</span>
+                <span className="text-[11px] font-mono uppercase tracking-widest text-zinc-400">52 Estúdios de Gravação</span>
               </motion.div>
               <motion.h2 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.2 }} className="text-5xl xl:text-6xl font-extrabold leading-[1.05] tracking-tight">
                 Excelência <span className="text-[#FF5A1F]">Operacional</span><br />em Tempo Real.
