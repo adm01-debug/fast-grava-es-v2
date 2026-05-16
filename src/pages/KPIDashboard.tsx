@@ -1018,9 +1018,9 @@ export default function KPIDashboard() {
             <p className="text-xs text-muted-foreground uppercase mb-1">Índice de Perdas</p>
             <p className={cn(
               "text-2xl font-bold",
-              selectedMachine?.lossRate > 5 ? "text-primary" : "text-green-400"
+              (selectedMachine?.lossRate ?? 0) > 5 ? "text-primary" : "text-green-400"
             )}>
-              {selectedMachine?.lossRate.toFixed(1)}%
+              {(selectedMachine?.lossRate ?? 0).toFixed(1)}%
             </p>
           </div>
         </div>
