@@ -39,10 +39,10 @@ export const AuditEntryCard = memo(function AuditEntryCard({ entry }: AuditEntry
   // Helper to get status color
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'finished': return 'text-success bg-success/10';
-      case 'production': return 'text-amber-500 bg-amber-500/10';
-      case 'scheduled': return 'text-blue-500 bg-blue-500/10';
-      default: return 'text-zinc-500 bg-zinc-500/10';
+      case 'finished': return 'text-success border-success/30 bg-success/10';
+      case 'production': return 'text-amber-500 border-amber-500/30 bg-amber-500/10';
+      case 'scheduled': return 'text-blue-500 border-blue-500/30 bg-blue-500/10';
+      default: return 'text-zinc-500 border-zinc-500/30 bg-zinc-500/10';
     }
   };
 
@@ -50,7 +50,7 @@ export const AuditEntryCard = memo(function AuditEntryCard({ entry }: AuditEntry
     <Card className="p-4 space-y-3 border-border bg-card hover:bg-card/80 transition-colors">
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-3">
-          <ActionIcon className={`h-5 w-5 ${cfg.color}`} aria-hidden />
+          <ActionIcon className={cn("h-5 w-5", cfg.color)} aria-hidden />
           <div>
             <div className="flex items-center gap-2 flex-wrap">
               <Badge variant={cfg.variant}>{cfg.label}</Badge>
@@ -63,8 +63,8 @@ export const AuditEntryCard = memo(function AuditEntryCard({ entry }: AuditEntry
             {entry.action === 'status_change' && entry.new_values && (
               <div className="flex items-center gap-2 mt-2">
                 <span className="text-xs text-muted-foreground italic">Alterado para:</span>
-                <Badge variant="outline" className={cn("text-[10px] uppercase font-bold", getStatusColor((entry.new_values as any).status))}>
-                  {(entry.new_values as any).status}
+                <Badge variant="outline" className={cn("text-[10px] uppercase font-bold", getStatusColor(String((entry.new_values as any).status || '')))}>
+                  {String((entry.new_values as any).status || 'status')}
                 </Badge>
               </div>
             )}
