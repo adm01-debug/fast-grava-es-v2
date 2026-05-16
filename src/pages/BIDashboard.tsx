@@ -446,6 +446,8 @@ export default function BIDashboard() {
           machines={machines.map(m => ({ id: m.id, name: m.name }))}
         />
 
+        <AIInsights metrics={biMetrics} />
+
         {comparisonMode && biMetrics2 ? (
           <>
             <div className="flex items-center justify-center gap-4 py-6 animate-bounce-in">
