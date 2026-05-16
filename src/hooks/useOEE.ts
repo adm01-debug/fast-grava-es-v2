@@ -142,7 +142,7 @@ function getOEEColor(oee: number): string {
   return 'hsl(var(--destructive))';
 }
 
-export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, filters?: { machineId?: string; shiftId?: string; startDate?: Date; endDate?: Date; techniqueId?: string }) {
+export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, filters?: { machineId?: string; startDate?: Date; endDate?: Date; techniqueId?: string }) {
   // Use at least double the period to have enough data for comparison
   const effectiveDaysBack = Math.max(daysBack + comparisonDaysBack, 60);
   const { jobs, machines, techniques, isLoading: schedulingLoading } = useSchedulingData();
