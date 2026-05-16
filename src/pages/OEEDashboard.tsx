@@ -372,7 +372,7 @@ const OEEDashboard = memo(function OEEDashboard() {
         </Suspense>
 
         <div className="flex flex-col lg:flex-row gap-4">
-          <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="flex-1 grid grid-cols-1 md:grid-cols-4 gap-4">
             <Card className="border-l-4 border-l-indicator-info bg-indicator-info/10">
               <CardContent className="p-4 flex gap-4">
                 <div className="h-10 w-10 rounded-full bg-indicator-info/20 flex items-center justify-center shrink-0">
@@ -380,7 +380,7 @@ const OEEDashboard = memo(function OEEDashboard() {
                 </div>
                 <div>
                   <h3 className="font-bold text-sm">Status da Linha</h3>
-                  <p className="text-xs text-muted-foreground mt-1">
+                  <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
                     Operação estabilizada com {machinesAtWorldClass} máquinas em modo de alta performance.
                   </p>
                 </div>
@@ -392,12 +392,12 @@ const OEEDashboard = memo(function OEEDashboard() {
                 <div className="h-10 w-10 rounded-full bg-indicator-warning/20 flex items-center justify-center shrink-0">
                   <Lightbulb className="h-5 w-5 text-indicator-warning" />
                 </div>
-                <div>
-                  <h3 className="font-bold text-sm">{data.overallPerformance < 85 ? t('oee.performanceBottleneck', 'Gargalo de Performance') : 'Otimização Ativa'}</h3>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    {data.overallPerformance < 85 ? `A técnica ${data.byTechnique[0]?.techniqueName} apresenta perdas de velocidade.` : 'Performance estabilizada.'}
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-bold text-sm truncate">{data.overallPerformance < 85 ? t('oee.performanceBottleneck', 'Gargalo de Performance') : 'Otimização Ativa'}</h3>
+                  <p className="text-xs text-muted-foreground mt-1 line-clamp-1">
+                    {data.overallPerformance < 85 ? `A técnica ${data.byTechnique[0]?.techniqueName} apresenta perdas.` : 'Performance estabilizada.'}
                   </p>
-                  <Button variant="link" size="sm" onClick={() => setActiveTab('losses')} className="p-0 h-auto text-indicator-warning text-xs mt-2">
+                  <Button variant="link" size="sm" onClick={() => setActiveTab('losses')} className="p-0 h-auto text-indicator-warning text-[10px] font-black uppercase mt-1">
                     {t('common.viewDetails', 'Ver Detalhes')} <ArrowRight className="ml-1 h-3 w-3" />
                   </Button>
                 </div>
@@ -409,12 +409,26 @@ const OEEDashboard = memo(function OEEDashboard() {
                 <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
                   <Calculator className="h-5 w-5 text-primary" />
                 </div>
-                <div className="flex-1">
-                  <h3 className="font-bold text-sm">{t('oee.simulator', 'OEE Simulator')}</h3>
-                  <Button variant="outline" size="sm" onClick={() => setShowSimulator(!showSimulator)} className="h-8 text-xs mt-2 border-primary/20 hover:bg-primary/10">
-                    {showSimulator ? t('oee.closeSimulator', 'Fechar Simulador') : t('oee.openSimulator', 'Abrir Simulador')}
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-bold text-sm truncate">{t('oee.simulator', 'OEE Simulator')}</h3>
+                  <Button variant="outline" size="sm" onClick={() => setShowSimulator(!showSimulator)} className="h-7 text-[10px] font-black uppercase mt-2 border-primary/20 hover:bg-primary/10 w-full">
+                    {showSimulator ? t('oee.closeSimulator', 'Fechar') : t('oee.openSimulator', 'Simular')}
                     <Play className={cn("ml-2 h-3 w-3 transition-transform", showSimulator && "rotate-90")} />
                   </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-l-4 border-l-accent-purple bg-accent-purple/5">
+              <CardContent className="p-4 flex gap-4">
+                <div className="h-10 w-10 rounded-full bg-accent-purple/10 flex items-center justify-center shrink-0">
+                  <TrendingUp className="h-5 w-5 text-accent-purple" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-bold text-sm truncate">Benchmark</h3>
+                  <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                    OEE Geral: {data.overallOEE.toFixed(1)}% vs Meta Industrial: 85.0%
+                  </p>
                 </div>
               </CardContent>
             </Card>
@@ -522,10 +536,61 @@ const OEEDashboard = memo(function OEEDashboard() {
             </div>
             
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <Card><CardContent className="pt-4"><p className="text-2xl font-bold">{machinesAtWorldClass}</p><p className="text-xs text-muted-foreground">World Class</p></CardContent></Card>
-              <Card><CardContent className="pt-4"><p className="text-2xl font-bold">{machinesBelowTarget}</p><p className="text-xs text-muted-foreground">Abaixo do Target</p></CardContent></Card>
-              <Card><CardContent className="pt-4"><p className="text-2xl font-bold">{data.byMachine.filter(m => m.totalJobs > 0).length}</p><p className="text-xs text-muted-foreground">Máquinas Ativas</p></CardContent></Card>
-              <Card><CardContent className="pt-4"><p className="text-2xl font-bold">{data.byTechnique.length}</p><p className="text-xs text-muted-foreground">Técnicas</p></CardContent></Card>
+              <Card className="bg-success/5 border-success/10 transition-transform hover:scale-[1.02]">
+                <CardContent className="pt-4">
+                   <div className="flex items-center gap-3">
+                      <div className="p-2 rounded-lg bg-success/20">
+                         <Award className="h-5 w-5 text-success" />
+                      </div>
+                      <div>
+                        <p className="text-2xl font-black text-success">{machinesAtWorldClass}</p>
+                        <p className="text-[10px] font-black text-muted-foreground uppercase tracking-wider">World Class</p>
+                      </div>
+                   </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-destructive/5 border-destructive/10 transition-transform hover:scale-[1.02]">
+                <CardContent className="pt-4">
+                   <div className="flex items-center gap-3">
+                      <div className="p-2 rounded-lg bg-destructive/20">
+                         <AlertTriangle className="h-5 w-5 text-destructive" />
+                      </div>
+                      <div>
+                        <p className="text-2xl font-black text-destructive">{machinesBelowTarget}</p>
+                        <p className="text-[10px] font-black text-muted-foreground uppercase tracking-wider">Crítico/Baixo</p>
+                      </div>
+                   </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-primary/5 border-primary/10 transition-transform hover:scale-[1.02]">
+                <CardContent className="pt-4">
+                   <div className="flex items-center gap-3">
+                      <div className="p-2 rounded-lg bg-primary/20">
+                         <Settings2 className="h-5 w-5 text-primary" />
+                      </div>
+                      <div>
+                        <p className="text-2xl font-black text-primary">{data.byMachine.filter(m => m.totalJobs > 0).length}</p>
+                        <p className="text-[10px] font-black text-muted-foreground uppercase tracking-wider">Máquinas Ativas</p>
+                      </div>
+                   </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-indicator-info/5 border-indicator-info/10 transition-transform hover:scale-[1.02]">
+                <CardContent className="pt-4">
+                   <div className="flex items-center gap-3">
+                      <div className="p-2 rounded-lg bg-indicator-info/20">
+                         <BarChart3 className="h-5 w-5 text-indicator-info" />
+                      </div>
+                      <div>
+                        <p className="text-2xl font-black text-indicator-info">{data.byTechnique.length}</p>
+                        <p className="text-[10px] font-black text-muted-foreground uppercase tracking-wider">Técnicas</p>
+                      </div>
+                   </div>
+                </CardContent>
+              </Card>
             </div>
           </TabsContent>
 

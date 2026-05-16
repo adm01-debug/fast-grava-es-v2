@@ -166,9 +166,9 @@ export const OEEMachineTable = memo(function OEEMachineTable({ machines }: OEEMa
         </div>
       </CardHeader>
 
-      <CardContent>
-        <div className="rounded-md border">
-          <Table>
+      <CardContent className="p-0 sm:p-6">
+        <div className="rounded-md border-x sm:border overflow-x-auto">
+          <Table className="min-w-[800px] sm:min-w-full">
             <TableHeader>
               <TableRow>
                 <TableHead>
