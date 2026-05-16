@@ -110,7 +110,7 @@ export function Breadcrumbs({ className }: { className?: string }) {
       {/* Retirado botão ArrowLeft pois agora temos o BackButton centralizado no MainLayout */}
 
 
-      <div className="flex items-center gap-1 overflow-x-auto scrollbar-none whitespace-nowrap px-1">
+      <div className="flex items-center gap-1 overflow-x-auto scrollbar-none whitespace-nowrap px-1 scroll-smooth">
         {breadcrumbs.map((item, index) => (
           <div key={index} className="flex items-center gap-1">
             {index > 0 && (
