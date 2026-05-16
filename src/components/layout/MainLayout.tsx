@@ -58,6 +58,18 @@ export function MainLayout({ children }: MainLayoutProps) {
   // Navigation global hotkeys
   useNavigationHotkeys();
 
+  // Swipe to back on mobile
+  const { ref: swipeRef } = useSwipeGesture({
+    onSwipeRight: () => {
+      if (isMobile && location.pathname !== '/' && location.pathname !== '/auth') {
+        navigate(-1);
+      }
+    },
+    threshold: 80,
+    preventScroll: false
+  });
+
+
 
   const shouldAnimate = !prefersReducedMotion;
 
