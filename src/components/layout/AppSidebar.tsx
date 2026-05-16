@@ -16,6 +16,7 @@ import { LanguageSwitcher } from './LanguageSwitcher';
 import { NavButton } from './sidebar/NavButton';
 import { NavGroupComponent } from './sidebar/NavGroupComponent';
 import { navGroups, adminNavItems } from './sidebar/sidebarNavConfig';
+import { StaggeredList } from '../ui/micro-interactions';
 
 export function AppSidebar() {
   const { t } = useTranslation();
@@ -110,32 +111,34 @@ export function AppSidebar() {
         )}
 
         <nav className="flex-1 overflow-y-auto scrollbar-thin p-2 space-y-1 relative focus:outline-none" id="main-navigation">
-          {filteredNavGroups.map((group, index) => {
-            const isGroupActive = activeGroup?.id === group.id;
-            return (
-              <div key={group.id} className="relative py-0.5">
-                {isGroupActive && !collapsed && (
-                  <motion.div
-                    layoutId="active-group-indicator"
-                    className="absolute -left-2 top-0.5 bottom-0.5 w-1.5 gradient-primary rounded-r-full z-10 shadow-[0_0_10px_hsl(var(--primary)/0.4)]"
-                    initial={{ opacity: 0, x: -5 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.3, type: "spring", stiffness: 300, damping: 20 }}
+          <StaggeredList staggerDelay={0.03}>
+            {filteredNavGroups.map((group) => {
+              const isGroupActive = activeGroup?.id === group.id;
+              return (
+                <div key={group.id} className="relative py-0.5">
+                  {isGroupActive && !collapsed && (
+                    <motion.div
+                      layoutId="active-group-indicator"
+                      className="absolute -left-2 top-0.5 bottom-0.5 w-1.5 gradient-primary rounded-r-full z-10 shadow-[0_0_10px_hsl(var(--primary)/0.4)]"
+                      initial={{ opacity: 0, x: -5 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.3, type: "spring", stiffness: 300, damping: 20 }}
+                    />
+                  )}
+                  <NavGroupComponent
+                    group={group}
+                    collapsed={collapsed}
+                    isMobile={isMobile}
+                    isActive={isActive}
+                    alertCount={alertCount}
+                    notificationCount={notificationCount}
+                    openGroups={openGroups}
+                    toggleGroup={toggleGroup}
                   />
-                )}
-                <NavGroupComponent
-                  group={group}
-                  collapsed={collapsed}
-                  isMobile={isMobile}
-                  isActive={isActive}
-                  alertCount={alertCount}
-                  notificationCount={notificationCount}
-                  openGroups={openGroups}
-                  toggleGroup={toggleGroup}
-                />
-              </div>
-            );
-          })}
+                </div>
+              );
+            })}
+          </StaggeredList>
           {filteredAdminNavItems.length > 0 && (
             <>
               <div className="my-4 border-t border-sidebar-border/50" />

@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
+import { DashboardSkeleton } from '@/components/ui/DashboardSkeleton';
 import { Progress } from '@/components/ui/progress';
 import { Switch } from '@/components/ui/switch';
 import { useExecutiveDashboard, getDateRangePresets, DateRange } from '@/hooks/useExecutiveDashboard';
@@ -144,18 +145,18 @@ export default function ExecutiveDashboard() {
   if (isLoading) {
     return (
       <MainLayout>
-        <div className="p-6 space-y-6">
-          <div className="flex justify-between items-center">
-            <Skeleton className="h-10 w-64" />
-            <Skeleton className="h-10 w-32" />
+        <div className="p-4 sm:p-6 lg:p-8 space-y-8">
+          <div className="flex justify-between items-center mb-6">
+            <div className="space-y-2">
+              <Skeleton className="h-10 w-64" />
+              <Skeleton className="h-4 w-48" />
+            </div>
+            <div className="flex gap-2">
+              <Skeleton className="h-10 w-32" />
+              <Skeleton className="h-10 w-32" />
+            </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-32" />)}
-          </div>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Skeleton className="h-80" />
-            <Skeleton className="h-80" />
-          </div>
+          <DashboardSkeleton rows={5} columns={5} />
         </div>
       </MainLayout>
     );

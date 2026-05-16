@@ -2,6 +2,7 @@ import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
 import { motion, type HTMLMotionProps } from "framer-motion";
+import { useRipple } from "./micro-interactions";
 
 import { cn } from "@/lib/utils";
 
@@ -144,17 +145,30 @@ export interface ButtonProps
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, shimmer, asChild = false, children, ...props }, ref) => {
+    const { triggerRipple, RippleContainer } = useRipple({
+      color: variant === 'default' ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.1)'
+    });
     const Comp = asChild ? Slot : "button";
+
+    const handleMouseDown = (e: React.MouseEvent<HTMLButtonElement>) => {
+      triggerRipple(e);
+      props.onMouseDown?.(e);
+    };
+
     return (
       <Comp
-        className={cn(buttonVariants({ variant, size, shimmer, className }))}
+        className={cn(buttonVariants({ variant, size, shimmer, className }), "relative overflow-hidden")}
         ref={ref}
+        onMouseDown={handleMouseDown}
         {...props}
       >
-        {children}
+        <span className="relative z-10 flex items-center justify-center gap-2">
+          {children}
+        </span>
+        <RippleContainer />
         {shimmer && (
           <span
-            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full animate-[shimmer-btn_2s_infinite]"
+            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full animate-[shimmer-btn_2s_infinite] z-0"
             aria-hidden="true"
           />
         )}
