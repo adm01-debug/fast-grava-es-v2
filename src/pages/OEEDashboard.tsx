@@ -180,7 +180,7 @@ const OEEDashboard = memo(function OEEDashboard() {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl md:text-3xl font-black font-display flex items-center gap-3">
-              <Activity className="h-8 w-8 text-primary animate-pulse" />
+              <Activity className="h-8 w-8 text-primary animate-pulse hidden sm:block" />
               OEE Industrial Core
             </h1>
             <p className="text-muted-foreground mt-1">
@@ -195,10 +195,10 @@ const OEEDashboard = memo(function OEEDashboard() {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="hidden md:flex gap-2 border-primary/20 hover:bg-primary/5 active:scale-95 transition-transform"
+                  className="flex gap-2 border-primary/20 hover:bg-primary/5 active:scale-95 transition-transform"
                 >
                   <FileDown className="h-4 w-4" />
-                  {t('common.export', 'Exportar')}
+                  <span className="hidden sm:inline">{t('common.export', 'Exportar')}</span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
@@ -214,7 +214,7 @@ const OEEDashboard = memo(function OEEDashboard() {
               </DropdownMenuContent>
             </DropdownMenu>
             <Select value={period} onValueChange={setPeriod}>
-              <SelectTrigger className="w-28 md:w-36 glass-card border-primary/20">
+              <SelectTrigger className="w-[100px] sm:w-28 md:w-36 glass-card border-primary/20">
                 <SelectValue placeholder={t('common.period', 'Período')} />
               </SelectTrigger>
               <SelectContent>
@@ -229,7 +229,7 @@ const OEEDashboard = memo(function OEEDashboard() {
             </Select>
 
             <Select value={techniqueId} onValueChange={setTechniqueId}>
-              <SelectTrigger className="w-32 md:w-44 glass-card border-primary/20">
+              <SelectTrigger className="w-[110px] sm:w-32 md:w-44 glass-card border-primary/20">
                 <SelectValue placeholder={t('common.technique', 'Técnica')} />
               </SelectTrigger>
               <SelectContent>
@@ -241,7 +241,7 @@ const OEEDashboard = memo(function OEEDashboard() {
             </Select>
 
             <Select value={machineId} onValueChange={setMachineId}>
-              <SelectTrigger className="w-32 md:w-44 glass-card border-primary/20">
+              <SelectTrigger className="w-[110px] sm:w-32 md:w-44 glass-card border-primary/20">
                 <SelectValue placeholder={t('common.machine', 'Máquina')} />
               </SelectTrigger>
               <SelectContent>
