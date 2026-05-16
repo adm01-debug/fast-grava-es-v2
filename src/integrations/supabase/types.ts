@@ -485,6 +485,39 @@ export type Database = {
         }
         Relationships: []
       }
+      dashboard_presets: {
+        Row: {
+          created_at: string
+          dashboard_id: string
+          filters: Json
+          id: string
+          is_default: boolean | null
+          name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          dashboard_id: string
+          filters?: Json
+          id?: string
+          is_default?: boolean | null
+          name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          dashboard_id?: string
+          filters?: Json
+          id?: string
+          is_default?: boolean | null
+          name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       document_versions: {
         Row: {
           change_notes: string | null
@@ -2776,25 +2809,31 @@ export type Database = {
           created_at: string | null
           id: string
           job_id: string
+          loss_type: string | null
           notes: string | null
           operator_id: string | null
           quantity: number
+          shift: string | null
         }
         Insert: {
           created_at?: string | null
           id?: string
           job_id: string
+          loss_type?: string | null
           notes?: string | null
           operator_id?: string | null
           quantity?: number
+          shift?: string | null
         }
         Update: {
           created_at?: string | null
           id?: string
           job_id?: string
+          loss_type?: string | null
           notes?: string | null
           operator_id?: string | null
           quantity?: number
+          shift?: string | null
         }
         Relationships: [
           {
