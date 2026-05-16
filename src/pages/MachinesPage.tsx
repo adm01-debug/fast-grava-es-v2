@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
-  Printer, Target, CheckCircle2, XCircle, Settings, History,
+  Target, CheckCircle2, XCircle, Settings, History,
   Activity, AlertTriangle, Map as MapIcon, Zap, Search, FileDown
 } from 'lucide-react';
 import { useSchedulingData } from '@/hooks/useSchedulingData';
@@ -250,7 +250,7 @@ export default function MachinesPage() {
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <TabsList className="bg-muted/50 p-1 w-fit">
               <TabsTrigger value="list" className="gap-2">
-                <Printer className="h-4 w-4" />
+                <Target className="h-4 w-4" />
                 Lista
               </TabsTrigger>
               <TabsTrigger value="heatmap" className="gap-2">
@@ -411,7 +411,7 @@ export default function MachinesPage() {
             </div>
             <div className="grid grid-cols-2 gap-2">
               <Button variant="outline" className="gap-2" onClick={() => window.print()}>
-                <Printer className="h-4 w-4" /> Imprimir
+                <Target className="h-4 w-4" /> Imprimir
               </Button>
               <Button className="gap-2" onClick={() => {
                 toast.success("QR Code enviado para o terminal móvel.");
