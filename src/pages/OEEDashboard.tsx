@@ -39,7 +39,7 @@ import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 const OEEGaugeCard = lazy(() => import('@/components/oee/OEEGaugeCard').then(m => ({ default: m.OEEGaugeCard })));
 import { Skeleton } from '@/components/ui/skeleton';
-import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
+// Breadcrumbs are now handled globally in MainLayout
 import { KPITooltip, KPI_DEFINITIONS } from '@/components/ui/kpi-tooltip';
 import { VoiceButton } from '@/components/voice/VoiceCommands';
 import { Button } from '@/components/ui/button';
@@ -92,7 +92,7 @@ const OEEDashboard = memo(function OEEDashboard() {
           <title>OEE Dashboard | Fast Gravações</title>
           <meta name="description" content="Análise de Eficiência Global dos Equipamentos (OEE) e indicadores de performance industrial." />
         </Helmet>
-        <Breadcrumbs />
+        {/* Breadcrumbs removed - handled by MainLayout */}
 
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">

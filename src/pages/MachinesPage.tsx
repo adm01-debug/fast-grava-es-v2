@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 import { useSchedulingData } from '@/hooks/useSchedulingData';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
+// Breadcrumbs removed - handled by MainLayout
 import { VoiceButton } from '@/components/voice/VoiceCommands';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -161,7 +161,7 @@ export default function MachinesPage() {
   return (
     <MainLayout>
       <div className="space-y-6 pb-20">
-        <Breadcrumbs />
+        {/* Breadcrumbs removed - handled by MainLayout */}
 
         <MachineBulkActions
           selectedCount={selectedMachines.size}

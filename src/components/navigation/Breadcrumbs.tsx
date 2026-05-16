@@ -1,7 +1,10 @@
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { ChevronRight, Home, ArrowLeft } from 'lucide-react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { ArrowLeft, ChevronRight, Home } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { Link } from 'react-router-dom';
+import { useHapticFeedback } from '@/hooks/use-haptic-feedback';
+import { useCallback } from 'react';
 
 interface BreadcrumbItem {
   label: string;
@@ -52,15 +55,23 @@ const routeLabels: Record<string, string> = {
   'install': 'Instalar App',
   'auth': 'Autenticação',
   'reset-password': 'Redefinir Senha',
+  'abc-costing': 'Custeio ABC',
+  'compare': 'Comparação',
+  'audit': 'Auditoria',
+  'master-api': 'Master API',
+  'telemetria': 'Telemetria',
+  'kiosk': 'Kiosk',
+  'track': 'Rastreio Público'
 };
 
 export function Breadcrumbs({ className }: { className?: string }) {
   const location = useLocation();
   const navigate = useNavigate();
+  const { trigger } = useHapticFeedback();
   const pathnames = location.pathname.split('/').filter(Boolean);
 
-  // Don't show breadcrumbs on home page
-  if (pathnames.length === 0) {
+  // Don't show breadcrumbs on home page or auth pages
+  if (pathnames.length === 0 || location.pathname === '/auth') {
     return null;
   }
 
@@ -79,47 +90,60 @@ export function Breadcrumbs({ className }: { className?: string }) {
     });
   });
 
-  const handleBack = () => {
+  const handleBack = useCallback(() => {
+    trigger('light');
     if (window.history.length > 1) {
       navigate(-1);
     } else {
       navigate('/');
     }
-  };
+  }, [navigate, trigger]);
 
   return (
     <nav
       aria-label="Breadcrumb"
-      className={cn("flex items-center gap-2 text-sm text-muted-foreground mb-4", className)}
+      className={cn(
+        "flex items-center gap-2 text-sm text-muted-foreground mb-6 no-export animate-in fade-in slide-in-from-left-4 duration-300",
+        className
+      )}
     >
       <Button
         variant="ghost"
         size="icon"
         onClick={handleBack}
-        className="h-8 w-8 shrink-0 text-muted-foreground hover:text-foreground"
-        aria-label="Voltar"
+        className="h-9 w-9 shrink-0 text-muted-foreground hover:text-foreground hover:bg-primary/10 active:scale-95 transition-all touch-target"
+        aria-label="Voltar para página anterior"
       >
-        <ArrowLeft className="h-4 w-4" />
+        <ArrowLeft className="h-5 w-5" />
       </Button>
 
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-1 overflow-x-auto scrollbar-none whitespace-nowrap px-1">
         {breadcrumbs.map((item, index) => (
           <div key={index} className="flex items-center gap-1">
             {index > 0 && (
-              <ChevronRight className="h-3.5 w-3.5 flex-shrink-0" />
+              <ChevronRight className="h-3.5 w-3.5 flex-shrink-0 opacity-50" />
             )}
-            {index === 0 && (
-              <Home className="h-3.5 w-3.5 mr-0.5" />
-            )}
-            {item.href ? (
+            {index === 0 ? (
+              <Link
+                to="/"
+                onClick={() => trigger('light')}
+                className="flex items-center justify-center h-8 w-8 rounded-md hover:bg-primary/10 hover:text-foreground transition-colors"
+                aria-label="Ir para o início"
+              >
+                <Home className="h-4 w-4" />
+              </Link>
+            ) : item.href ? (
               <Link
                 to={item.href}
-                className="hover:text-foreground transition-colors hover:underline underline-offset-4"
+                onClick={() => trigger('light')}
+                className="px-2 py-1 rounded-md hover:bg-primary/10 hover:text-foreground transition-all hover:underline underline-offset-4"
               >
                 {item.label}
               </Link>
             ) : (
-              <span className="text-foreground font-medium">{item.label}</span>
+              <span className="px-2 py-1 text-foreground font-bold tracking-tight bg-primary/5 rounded-md border border-primary/10">
+                {item.label}
+              </span>
             )}
           </div>
         ))}

@@ -114,8 +114,9 @@ const MobileNavButton = memo(function MobileNavButton({
       whileTap={{ scale: 0.92 }}
       transition={{ duration: 0.1 }}
       className={cn(
-        'relative flex flex-col items-center justify-center flex-1 py-2 px-1 min-h-[60px]',
-        'touch-target transition-colors duration-200 ease-out',
+        'relative flex flex-col items-center justify-center flex-1 py-1 px-1 min-h-[56px]',
+        'touch-target transition-all duration-300 ease-in-out',
+
         'focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
         isActive
           ? 'text-primary'
@@ -128,21 +129,26 @@ const MobileNavButton = memo(function MobileNavButton({
       <AnimatePresence>
         {isActive && (
           <motion.span
-            initial={{ scaleX: 0, opacity: 0 }}
-            animate={{ scaleX: 1, opacity: 1 }}
-            exit={{ scaleX: 0, opacity: 0 }}
-            transition={{ duration: 0.2, ease: 'easeOut' }}
-            className="absolute top-1 left-1/2 -translate-x-1/2 w-12 h-1 rounded-full bg-primary origin-center"
+            layoutId="mobile-nav-active-pill"
+            initial={{ scale: 0.5, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.5, opacity: 0 }}
+            className="absolute inset-0 bg-primary/10 rounded-xl"
             aria-hidden="true"
           />
+
         )}
       </AnimatePresence>
 
       <motion.div
-        className="relative mt-1"
-        animate={{ scale: isActive ? 1.1 : 1 }}
-        transition={{ duration: 0.2 }}
+        className="relative"
+        animate={{ 
+          scale: isActive ? 1.2 : 1,
+          y: isActive ? -2 : 0
+        }}
+        transition={{ type: "spring", stiffness: 400, damping: 17 }}
       >
+
         <Icon className="h-6 w-6" />
         <AnimatePresence>
           {badge !== undefined && badge > 0 && (
@@ -158,11 +164,12 @@ const MobileNavButton = memo(function MobileNavButton({
         </AnimatePresence>
       </motion.div>
       <span className={cn(
-        'text-[11px] mt-1.5 font-medium truncate max-w-full transition-all duration-200',
-        isActive && 'font-semibold text-primary'
+        'text-[10px] mt-1 font-bold tracking-tight truncate max-w-full transition-all duration-300',
+        isActive ? 'text-primary opacity-100' : 'text-muted-foreground opacity-70'
       )}>
         {item.label}
       </span>
+
     </motion.button>
   );
 });
@@ -277,7 +284,6 @@ export function MobileNavigation() {
   const { trigger } = useHapticFeedback();
   const { isVisible } = useScrollDirection({ threshold: 20 });
 
-  // Get items based on role
   const primaryItems = useMemo(() => {
     switch (role) {
       case 'operator':
@@ -289,6 +295,7 @@ export function MobileNavigation() {
         return coordinatorPrimaryItems;
     }
   }, [role]);
+
 
   const moreItems = useMemo(() => {
     switch (role) {
@@ -324,23 +331,26 @@ export function MobileNavigation() {
     <motion.nav
       initial={false}
       animate={{
-        y: isVisible || sheetOpen ? 0 : 100,
-        opacity: isVisible || sheetOpen ? 1 : 0
+        y: isVisible || sheetOpen || location.pathname === '/auth' ? 0 : 100,
+        opacity: isVisible || sheetOpen || location.pathname === '/auth' ? 1 : 0
       }}
+
       transition={{
         duration: prefersReducedMotion ? 0 : 0.2,
         ease: 'easeOut'
       }}
       className={cn(
-        'fixed bottom-0 left-0 right-0 z-50',
-        'bg-background/95 backdrop-blur-xl border-t border-border',
-        'shadow-[0_-4px_20px_-4px_rgba(0,0,0,0.1)] dark:shadow-[0_-4px_20px_-4px_rgba(0,0,0,0.3)]',
-        'pb-safe'
+        'fixed bottom-0 left-0 right-0 z-50 transition-all duration-300',
+        'bg-background/80 backdrop-blur-2xl border-t border-border/50',
+        'shadow-[0_-8px_30px_rgb(0,0,0,0.12)] dark:shadow-[0_-8px_30px_rgb(0,0,0,0.3)]',
+        'pb-safe px-2',
+        location.pathname === '/auth' && 'hidden'
+
       )}
       role="navigation"
       aria-label="Navegação principal mobile"
     >
-      <div className="flex items-stretch justify-around max-w-md mx-auto">
+      <div className="flex items-stretch justify-around max-w-md mx-auto h-16">
         {primaryItems.map((item) => {
           let badge = undefined;
           if (item.id === 'alerts') badge = alertCount;
@@ -366,27 +376,39 @@ export function MobileNavigation() {
               transition={{ duration: 0.1 }}
               onClick={handleMoreClick}
               className={cn(
-                'relative flex flex-col items-center justify-center flex-1 py-2 px-1 min-h-[60px]',
-                'touch-target transition-colors duration-200 ease-out',
-                'focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
-                sheetOpen
-                  ? 'text-primary'
-                  : 'text-muted-foreground'
+                'relative flex flex-col items-center justify-center flex-1 py-1 px-1 min-h-[56px]',
+                'touch-target transition-all duration-300 ease-in-out',
+                sheetOpen ? 'text-primary' : 'text-muted-foreground'
               )}
             >
+              <AnimatePresence>
+                {sheetOpen && (
+                  <motion.span
+                    layoutId="mobile-nav-active-pill"
+                    className="absolute inset-0 bg-primary/10 rounded-xl"
+                    aria-hidden="true"
+                  />
+                )}
+              </AnimatePresence>
+
               <motion.div
-                className="relative mt-1"
-                animate={{ rotate: sheetOpen ? 90 : 0 }}
-                transition={{ duration: 0.2 }}
+                className="relative"
+                animate={{ 
+                  rotate: sheetOpen ? 90 : 0,
+                  scale: sheetOpen ? 1.2 : 1
+                }}
+                transition={{ duration: 0.3, type: "spring", stiffness: 300 }}
               >
                 <Menu className="h-6 w-6" />
               </motion.div>
+
               <span className={cn(
-                'text-[11px] mt-1.5 font-medium',
-                sheetOpen && 'font-semibold text-primary'
+                'text-[10px] mt-1 font-bold tracking-tight transition-all duration-300',
+                sheetOpen ? 'text-primary opacity-100' : 'text-muted-foreground opacity-70'
               )}>
                 Mais
               </span>
+
             </motion.button>
           </SheetTrigger>
           <SheetContent side="bottom" className="h-[65vh] rounded-t-3xl p-0">

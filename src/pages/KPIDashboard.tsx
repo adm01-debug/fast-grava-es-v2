@@ -46,7 +46,7 @@ import {
   Filter
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
+// Breadcrumbs removed - handled by MainLayout
 import { KPITooltip, KPI_DEFINITIONS } from '@/components/ui/kpi-tooltip';
 import { VoiceButton } from '@/components/voice/VoiceCommands';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
@@ -170,7 +170,7 @@ export default function KPIDashboard() {
   return (
     <MainLayout>
       <div className="p-4 sm:p-6 lg:p-8 space-y-4 sm:space-y-6 animate-fade-in-up">
-        <Breadcrumbs />
+        {/* Breadcrumbs removed - handled by MainLayout */}
 
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">

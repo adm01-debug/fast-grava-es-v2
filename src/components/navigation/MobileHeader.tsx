@@ -1,5 +1,5 @@
 import { ReactNode, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, Home, Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -38,7 +38,9 @@ export function MobileHeader({
   onMenuClick,
 }: MobileHeaderProps) {
   const navigate = useNavigate();
+  const location = useLocation();
   const { isMobile } = useDevice();
+
   const { trigger } = useHapticFeedback();
 
   const handleBack = useCallback(() => {
@@ -63,7 +65,11 @@ export function MobileHeader({
   }, [onMenuClick, trigger]);
 
   // Always render on mobile, optionally on desktop
+  // If no title is provided, try to get it from location
+  const displayTitle = title || (location.pathname === '/' ? 'Dashboard' : undefined);
+
   if (!isMobile) return null;
+
 
   return (
     <header
@@ -119,11 +125,12 @@ export function MobileHeader({
       </div>
 
       {/* Title */}
-      {title && (
-        <h1 className="text-base font-semibold text-foreground truncate flex-1 text-center px-2">
-          {title}
+      {displayTitle && (
+        <h1 className="text-base font-bold text-foreground truncate flex-1 text-center px-2 tracking-tight">
+          {displayTitle}
         </h1>
       )}
+
 
       {/* Right Section */}
       <div className="flex items-center gap-1 min-w-[48px] justify-end">
