@@ -50,7 +50,7 @@ export function useOperators() {
 
         // Type-safe mapping with proper profile extraction
         return (data || []).map(item => {
-          const profile = item.profiles as Database['public']['Tables']['profiles']['Row'] | null;
+          const profile = item.profiles as unknown as Database['public']['Tables']['profiles']['Row'] | null;
           return {
             id: item.id,
             user_id: item.user_id,
