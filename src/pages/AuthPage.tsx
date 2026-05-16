@@ -167,18 +167,9 @@ export default function AuthPage() {
                     <p className="text-zinc-500 text-sm">Acesse sua conta para gerenciar as máquinas.</p>
                   </div>
 
-                  <Tabs defaultValue="login" className="w-full">
-                    <TabsList className="grid w-full grid-cols-2 mb-8 h-11 p-1 rounded-lg bg-white/5 border border-white/5">
-                      <TabsTrigger value="login" className="rounded-md font-semibold text-sm data-[state=active]:bg-white/10 data-[state=active]:text-white data-[state=active]:shadow-sm text-zinc-500">{t('auth.login')}</TabsTrigger>
-                      <TabsTrigger value="signup" className="rounded-md font-semibold text-sm data-[state=active]:bg-white/10 data-[state=active]:text-white data-[state=active]:shadow-sm text-zinc-500">{t('auth.register')}</TabsTrigger>
-                    </TabsList>
-                    <TabsContent value="login">
-                      <AuthLoginForm loginEmail={loginEmail} loginPassword={loginPassword} rememberMe={rememberMe} isLoading={isLoading} socialLoading={socialLoading} errors={errors} onEmailChange={setLoginEmail} onPasswordChange={setLoginPassword} onRememberMeChange={setRememberMe} onSubmit={handleLogin} onGoogleLogin={handleGoogleLogin} onForgotPassword={() => setShowForgotPassword(true)} />
-                    </TabsContent>
-                    <TabsContent value="signup">
-                      <AuthSignupForm signupName={signupName} signupEmail={signupEmail} signupPassword={signupPassword} signupConfirmPassword={signupConfirmPassword} isLoading={isLoading} errors={errors} onNameChange={setSignupName} onEmailChange={setSignupEmail} onPasswordChange={setSignupPassword} onConfirmPasswordChange={setSignupConfirmPassword} onSubmit={handleSignup} />
-                    </TabsContent>
-                  </Tabs>
+                  <div className="w-full">
+                    <AuthLoginForm loginEmail={loginEmail} loginPassword={loginPassword} rememberMe={rememberMe} isLoading={isLoading} socialLoading={socialLoading} errors={errors} onEmailChange={setLoginEmail} onPasswordChange={setLoginPassword} onRememberMeChange={setRememberMe} onSubmit={handleLogin} onGoogleLogin={handleGoogleLogin} onForgotPassword={() => setShowForgotPassword(true)} />
+                  </div>
 
                   <footer className="mt-16 text-center">
                     <p className="text-[10px] text-zinc-600 uppercase tracking-widest font-mono">© {new Date().getFullYear()} 52 STÚDIOS DE GRAVAÇÃO • Indústria 4.0</p>
