@@ -20,7 +20,8 @@ Após um levantamento minucioso do projeto, identifiquei oportunidades críticas
 ### Plano de Execução (Próximo Passo)
 
 *   **Ação I [CONCLUÍDO]:** Refatoração do `src/pages/BIDashboard.tsx` e componentes relacionados. Removido uso de `any` e implementadas interfaces `Job` e `BIMetrics` integralmente.
-*   **Ação II:** Otimização do processamento de dados no `FuturisticBI` e `BINormalView`, melhorando o gerenciamento de estado no `KPIDashboard` para evitar re-renderizações desnecessárias.
+*   **Ação II [CONCLUÍDO]:** Refinados tipos em hooks customizados (`useKPIs`, `useOEE`, `useOperators`), saneamento de logs de depuração residuais com uso do `logger` e sincronização de constantes globais de status.
+*   **Ação III:** Padronizar as chamadas ao Supabase usando helpers tipados e unificar constantes de cores (HSL).
 
 Aguardando aprovação para iniciar a execução sequencial rumo ao 10/10.
 
