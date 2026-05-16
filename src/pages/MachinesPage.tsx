@@ -190,7 +190,7 @@ export default function MachinesPage() {
             <CardContent className="pt-6">
               <div className="flex items-center gap-4">
                 <div className="w-10 h-10 rounded-lg gradient-primary flex items-center justify-center shrink-0">
-                  <Target className="h-5 w-5 text-primary-foreground" />
+                  <TargetArrowIcon className="h-5 w-5 text-primary-foreground" />
                 </div>
                 <div className="min-w-0">
                   <p className="text-2xl font-bold">{machines.length}</p>
@@ -251,7 +251,7 @@ export default function MachinesPage() {
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <TabsList className="bg-muted/50 p-1 w-fit">
               <TabsTrigger value="list" className="gap-2">
-                <Target className="h-4 w-4" />
+                <TargetArrowIcon className="h-4 w-4" />
                 Lista
               </TabsTrigger>
               <TabsTrigger value="heatmap" className="gap-2">
@@ -288,7 +288,7 @@ export default function MachinesPage() {
                   animate={{ opacity: 1 }}
                   className="py-20 text-center"
                 >
-                  <Target className="h-12 w-12 mx-auto text-muted-foreground/20 mb-4" />
+                  <TargetArrowIcon className="h-12 w-12 mx-auto text-muted-foreground/20 mb-4" />
                   <p className="text-muted-foreground">Nenhuma máquina encontrada com os filtros aplicados.</p>
                 </motion.div>
               ) : (
@@ -412,7 +412,7 @@ export default function MachinesPage() {
             </div>
             <div className="grid grid-cols-2 gap-2">
               <Button variant="outline" className="gap-2" onClick={() => window.print()}>
-                <Target className="h-4 w-4" /> Imprimir
+                <TargetArrowIcon className="h-4 w-4" /> Imprimir
               </Button>
               <Button className="gap-2" onClick={() => {
                 toast.success("QR Code enviado para o terminal móvel.");
@@ -430,7 +430,7 @@ export default function MachinesPage() {
             <DialogHeader className="p-6 pb-2">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-xl gradient-primary flex items-center justify-center shrink-0">
-                   <Target className="h-6 w-6 text-primary-foreground" />
+                   <TargetArrowIcon className="h-6 w-6 text-primary-foreground" />
                 </div>
                 <div>
                   <DialogTitle className="text-xl">
