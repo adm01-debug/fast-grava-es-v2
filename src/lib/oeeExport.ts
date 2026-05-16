@@ -32,7 +32,7 @@ export const exportOEETabledData = (data: any, formatType: 'pdf' | 'csv') => {
   } else {
     const csvRows = [
       headers[0].join(','),
-      ...body.map(row => row.join(','))
+      ...body.map((row: any[]) => row.join(','))
     ].join('\n');
     
     const blob = new Blob([csvRows], { type: 'text/csv;charset=utf-8;' });
