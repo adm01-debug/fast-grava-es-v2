@@ -44,6 +44,7 @@ import {
 } from 'lucide-react';
 import { useOEE, WORLD_CLASS_OEE, getOEEColor } from '@/hooks/useOEE';
 import { useOEEAlerts } from '@/hooks/useOEEAlerts';
+import { useProductionLosses } from '@/hooks/useProductionLosses';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 const OEEGaugeCard = lazy(() => import('@/components/oee/OEEGaugeCard').then(m => ({ default: m.OEEGaugeCard })));
@@ -61,6 +62,9 @@ const OEEMachineTable = lazy(() => import('@/components/oee/OEEMachineTable').th
 const OEETrendChart = lazy(() => import('@/components/oee/OEETrendChart').then(m => ({ default: m.OEETrendChart })));
 const OEELossesChart = lazy(() => import('@/components/oee/OEELossesChart').then(m => ({ default: m.OEELossesChart })));
 const OEETechniqueComparison = lazy(() => import('@/components/oee/OEETechniqueComparison').then(m => ({ default: m.OEETechniqueComparison })));
+const OEEHeatmap = lazy(() => import('@/components/oee/OEEHeatmap').then(m => ({ default: m.OEEHeatmap })));
+const PredictiveAlerts = lazy(() => import('@/components/oee/PredictiveAlerts').then(m => ({ default: m.PredictiveAlerts })));
+const ParetoLossesChart = lazy(() => import('@/components/oee/ParetoLossesChart').then(m => ({ default: m.ParetoLossesChart })));
 
 const OEEDashboard = memo(function OEEDashboard() {
   const { t } = useTranslation();
@@ -74,6 +78,7 @@ const OEEDashboard = memo(function OEEDashboard() {
   }), [machineId]);
 
   const { data, isLoading, downloadReport } = useOEE(parseInt(period), 30, filters);
+  const { losses, isLoading: lossesLoading } = useProductionLosses();
 
   const handleDownloadReport = useCallback((format: 'excel' | 'pdf' | 'csv') => {
     downloadReport(format);
@@ -210,6 +215,11 @@ const OEEDashboard = memo(function OEEDashboard() {
             </div>
           </CardContent>
         </Card>
+        
+        {/* Predictive Maintenance & Health Insights */}
+        <Suspense fallback={<div className="h-24 animate-pulse bg-muted rounded-xl" />}>
+          <PredictiveAlerts alerts={data.maintenanceAlerts} />
+        </Suspense>
 
         {/* Actionable Insights & Simulator Toggle */}
         <div className="flex flex-col lg:flex-row gap-4">
@@ -506,7 +516,7 @@ const OEEDashboard = memo(function OEEDashboard() {
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="trend">
+          <TabsContent value="trend" className="space-y-6">
             <Suspense fallback={<ChartSkeleton />}>
               <OEETrendChart
                 data={data.trendData}
@@ -514,9 +524,13 @@ const OEEDashboard = memo(function OEEDashboard() {
                 comparison={data.comparison}
               />
             </Suspense>
+            
+            <Suspense fallback={<ChartSkeleton />}>
+              <OEEHeatmap data={data.heatmapData} />
+            </Suspense>
           </TabsContent>
 
-          <TabsContent value="losses">
+          <TabsContent value="losses" className="space-y-6">
             <Suspense fallback={<ChartSkeleton />}>
               <OEELossesChart
                 availabilityLosses={data.availabilityLosses}
@@ -524,6 +538,10 @@ const OEEDashboard = memo(function OEEDashboard() {
                 qualityLosses={data.qualityLosses}
                 overallOEE={data.overallOEE}
               />
+            </Suspense>
+
+            <Suspense fallback={<ChartSkeleton />}>
+              <ParetoLossesChart losses={losses || []} />
             </Suspense>
           </TabsContent>
 
