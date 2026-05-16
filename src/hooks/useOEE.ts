@@ -175,9 +175,12 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, f
       if (filters?.machineId && job.machine_id !== filters.machineId) return false;
       if (filters?.techniqueId && job.technique_id !== filters.techniqueId) return false;
       if (filters?.shift && filters.shift !== 'all') {
-        // Simple logic for shift filtering if we had a shift field in jobs
-        // For now, since jobs doesn't have a shift, we'll use a placeholder logic 
-        // or just skip if the user selected 'all'
+        if (!job.start_time) return false;
+        // Shift logic: 1: 07:00-15:00, 2: 15:00-23:00, 3: 23:00-07:00
+        const hour = parseInt(job.start_time.split(':')[0]);
+        if (filters.shift === '1' && (hour < 7 || hour >= 15)) return false;
+        if (filters.shift === '2' && (hour < 15 || hour >= 23)) return false;
+        if (filters.shift === '3' && (hour >= 7 && hour < 23)) return false;
       }
       if (job.status !== 'finished') return false;
       if (!isValidDate(job.actual_end_time)) return false;
