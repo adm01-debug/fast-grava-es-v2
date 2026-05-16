@@ -49,7 +49,7 @@ export function AuthSignupForm({
         <PasswordInput id="signup-confirm" placeholder="••••••••" value={signupConfirmPassword} onChange={(e) => onConfirmPasswordChange(e.target.value)} disabled={isLoading} />
         {errors.signup_confirmPassword && <p className="text-xs text-destructive animate-fade-in">{errors.signup_confirmPassword}</p>}
       </div>
-      <Button type="submit" variant="gradient" className="w-full h-12 text-base font-semibold tracking-wide" disabled={isLoading}>
+      <Button type="submit" className="w-full h-12 text-base font-semibold tracking-wide bg-[#FF5A1F] hover:bg-[#e44d18] text-white shadow-lg shadow-[#FF5A1F]/10" disabled={isLoading}>
         {isLoading ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />{t('common.loading')}</> : <><UserPlus className="h-4 w-4 mr-2" />{t('auth.register')}</>}
       </Button>
     </form>

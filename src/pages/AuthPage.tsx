@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { toast } from 'sonner';
-import { Loader2, Moon, Sun, KeyRound, ArrowUpRight, Zap, ShieldCheck, Activity } from 'lucide-react';
+import { Loader2, Moon, Sun, KeyRound } from 'lucide-react';
 import { lovable } from '@/integrations/lovable/index';
 import { z } from 'zod';
 import { useTheme } from 'next-themes';
@@ -20,6 +20,8 @@ import { AuthSignupForm } from '@/components/auth/AuthSignupForm';
 import { MFALoginVerification } from '@/components/auth/MFALoginVerification';
 import { AuthErrorBoundary } from '@/components/auth/AuthErrorBoundary';
 import { motion, AnimatePresence } from 'framer-motion';
+
+const ORANGE = '#FF5A1F';
 
 export default function AuthPage() {
   const navigate = useNavigate();
@@ -102,117 +104,101 @@ export default function AuthPage() {
         <meta name="description" content="Acesse o sistema Fast Gravações para gerenciar sua produção industrial." />
       </Helmet>
 
-      <div className="min-h-screen w-full grid lg:grid-cols-[1.1fr_1fr] bg-background text-foreground overflow-hidden">
-        {/* LEFT — Brand panel with solid color */}
-        <div className="relative hidden lg:flex flex-col justify-between p-12 xl:p-16 bg-[#FF5A1F] text-white overflow-hidden">
-          {/* Geometric solid shapes */}
-          <div className="absolute -top-32 -right-32 w-[420px] h-[420px] rounded-full bg-[#0B0B0F]" />
-          <div className="absolute -bottom-40 -left-20 w-[520px] h-[520px] rounded-full bg-white/10" />
-          <div className="absolute top-1/3 right-16 w-32 h-32 rounded-2xl bg-white/15 rotate-12" />
-          <div className="absolute bottom-24 right-1/3 w-20 h-20 rounded-full border-4 border-white/40" />
+      <div className="min-h-screen w-full flex bg-[#050505] text-white font-display selection:bg-[#FF5A1F]/30">
+        {/* LEFT — Industrial Showcase */}
+        <div className="hidden lg:flex flex-1 relative overflow-hidden bg-[#0a0a0a] border-r border-white/5">
+          <div className="absolute inset-0 opacity-[0.07] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#ffffff 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+          <div className="absolute -right-20 top-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-gradient-to-br from-[#FF5A1F]/20 to-transparent blur-[120px] pointer-events-none" />
 
-          {/* Top: brand mark */}
-          <motion.div initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="relative z-10 flex items-center gap-3">
-            <div className="h-11 w-11 rounded-xl bg-white grid place-items-center">
-              <span className="text-[#FF5A1F] font-black text-xl tracking-tighter">F</span>
-            </div>
-            <div className="leading-tight">
-              <div className="font-display font-black text-xl tracking-tight">FAST GRAVAÇÕES</div>
-              <div className="text-[11px] uppercase tracking-[0.25em] text-white/70">Sistema de Produção</div>
-            </div>
-          </motion.div>
-
-          {/* Middle: hero copy */}
-          <div className="relative z-10 space-y-8 max-w-xl">
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.1 }} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/15 backdrop-blur-sm border border-white/20 text-xs font-medium uppercase tracking-wider">
-              <span className="h-1.5 w-1.5 rounded-full bg-white animate-pulse" />
-              52 máquinas · tempo real
-            </motion.div>
-            <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.2 }} className="font-display font-black text-5xl xl:text-6xl leading-[0.95] tracking-tight">
-              Controle total<br />da sua<br /><span className="bg-[#0B0B0F] text-white px-3 -ml-1 inline-block">produção.</span>
-            </motion.h1>
-            <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.3 }} className="text-white/90 text-lg max-w-md leading-relaxed">
-              Agendamento inteligente, OEE em tempo real e KPIs operacionais — em uma única plataforma.
-            </motion.p>
-          </div>
-
-          {/* Bottom: feature pills */}
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.4 }} className="relative z-10 grid grid-cols-3 gap-3">
-            {[
-              { icon: Zap, label: 'Velocidade', value: '<3s' },
-              { icon: Activity, label: 'OEE médio', value: '87%' },
-              { icon: ShieldCheck, label: 'Uptime', value: '99.9%' },
-            ].map((f) => (
-              <div key={f.label} className="rounded-2xl bg-white/10 backdrop-blur-sm border border-white/15 p-4">
-                <f.icon className="h-5 w-5 mb-3" />
-                <div className="text-2xl font-display font-black leading-none">{f.value}</div>
-                <div className="text-[11px] uppercase tracking-wider text-white/70 mt-1">{f.label}</div>
+          <div className="relative z-10 p-12 xl:p-16 flex flex-col justify-between h-full w-full">
+            <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="flex items-center gap-3">
+              <div className="w-11 h-11 bg-[#FF5A1F] grid place-items-center font-black text-xl rounded-md text-white">F</div>
+              <div>
+                <h1 className="text-base font-extrabold tracking-tight uppercase leading-none">Fast Gravações</h1>
+                <p className="text-[10px] text-zinc-500 tracking-[0.2em] font-medium uppercase mt-1">Sistema de Produção</p>
               </div>
-            ))}
-          </motion.div>
+            </motion.div>
+
+            <div className="max-w-2xl space-y-6">
+              <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.1 }} className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#FF5A1F] opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-[#FF5A1F]" />
+                </span>
+                <span className="text-[11px] font-mono uppercase tracking-widest text-zinc-400">52 Máquinas Online</span>
+              </motion.div>
+              <motion.h2 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.2 }} className="text-5xl xl:text-6xl font-extrabold leading-[1.05] tracking-tight">
+                Excelência <span className="text-[#FF5A1F]">Operacional</span><br />em Tempo Real.
+              </motion.h2>
+              <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.3 }} className="text-zinc-400 text-lg leading-relaxed max-w-md">
+                Gestão inteligente de agendamentos, monitoramento de OEE e KPIs de produção em uma plataforma unificada.
+              </motion.p>
+            </div>
+
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.4 }} className="grid grid-cols-3 gap-4 xl:gap-6">
+              {[
+                { label: 'OEE Médio', value: '87', suffix: '%', highlight: false },
+                { label: 'Uptime', value: '99.9', suffix: '%', highlight: false },
+                { label: 'Velocidade', value: '<3', suffix: 's', highlight: true },
+              ].map((k) => (
+                <div key={k.label} className={`p-5 rounded-xl backdrop-blur-sm border ${k.highlight ? 'bg-[#FF5A1F]/10 border-[#FF5A1F]/20' : 'bg-white/5 border-white/10'}`}>
+                  <p className={`text-[10px] font-mono uppercase tracking-widest mb-2 ${k.highlight ? 'text-[#FF5A1F]' : 'text-zinc-500'}`}>{k.label}</p>
+                  <p className="text-3xl font-bold leading-none">{k.value}<span className="text-[#FF5A1F]">{k.suffix}</span></p>
+                </div>
+              ))}
+            </motion.div>
+          </div>
         </div>
 
-        {/* RIGHT — Form panel */}
-        <div className="relative flex flex-col min-h-screen bg-background">
-          {/* Top bar */}
-          <div className="flex items-center justify-between p-6 lg:p-8">
-            <div className="lg:hidden flex items-center gap-2">
-              <div className="h-9 w-9 rounded-lg bg-[#FF5A1F] grid place-items-center">
-                <span className="text-white font-black text-base">F</span>
-              </div>
-              <span className="font-display font-black tracking-tight">FAST GRAVAÇÕES</span>
-            </div>
-            <div className="ml-auto flex items-center gap-2">
-              <LanguageSwitcher />
-              <Button variant="ghost" size="icon" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} className="h-9 w-9 rounded-lg">
-                <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-                <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-              </Button>
-            </div>
+        {/* RIGHT — Login form */}
+        <div className="w-full lg:w-[540px] flex flex-col p-6 sm:p-10 lg:p-16 justify-center relative bg-[#050505]">
+          {/* Mobile brand */}
+          <div className="lg:hidden flex items-center gap-2 mb-10">
+            <div className="w-9 h-9 bg-[#FF5A1F] grid place-items-center font-black rounded-md">F</div>
+            <span className="font-extrabold tracking-tight uppercase">Fast Gravações</span>
           </div>
 
-          {/* Form */}
-          <div className="flex-1 flex items-center justify-center px-6 pb-12 lg:px-12">
-            <div className="w-full max-w-md">
-              <AnimatePresence mode="wait">
-                {mfaFactorId ? (
-                  <motion.div key="mfa" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
-                    <MFALoginVerification factorId={mfaFactorId} onSuccess={() => navigate('/')} onCancel={() => setMfaFactorId(null)} />
-                  </motion.div>
-                ) : (
-                  <motion.div key="form" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="space-y-8">
-                    <div className="space-y-3">
-                      <div className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-[#FF5A1F]">
-                        <span className="h-px w-8 bg-[#FF5A1F]" />
-                        Bem-vindo
-                      </div>
-                      <h2 className="font-display font-black text-4xl lg:text-5xl tracking-tight leading-[1.05]">
-                        Entre na sua<br />conta.
-                      </h2>
-                      <p className="text-muted-foreground">Acesse o painel para gerenciar agendamentos, máquinas e equipe.</p>
-                    </div>
+          {/* Top utility */}
+          <div className="absolute top-6 right-6 lg:top-8 lg:right-8 flex items-center gap-3">
+            <LanguageSwitcher />
+            <Button variant="ghost" size="icon" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} className="h-9 w-9 rounded-full text-zinc-400 hover:text-white hover:bg-white/5">
+              <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+              <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+            </Button>
+          </div>
 
-                    <Tabs defaultValue="login" className="w-full">
-                      <TabsList className="grid w-full grid-cols-2 mb-6 h-11 rounded-xl bg-muted p-1">
-                        <TabsTrigger value="login" className="rounded-lg data-[state=active]:bg-[#FF5A1F] data-[state=active]:text-white data-[state=active]:shadow-sm font-semibold">{t('auth.login')}</TabsTrigger>
-                        <TabsTrigger value="signup" className="rounded-lg data-[state=active]:bg-[#FF5A1F] data-[state=active]:text-white data-[state=active]:shadow-sm font-semibold">{t('auth.register')}</TabsTrigger>
-                      </TabsList>
-                      <TabsContent value="login">
-                        <AuthLoginForm loginEmail={loginEmail} loginPassword={loginPassword} rememberMe={rememberMe} isLoading={isLoading} socialLoading={socialLoading} errors={errors} onEmailChange={setLoginEmail} onPasswordChange={setLoginPassword} onRememberMeChange={setRememberMe} onSubmit={handleLogin} onGoogleLogin={handleGoogleLogin} onForgotPassword={() => setShowForgotPassword(true)} />
-                      </TabsContent>
-                      <TabsContent value="signup">
-                        <AuthSignupForm signupName={signupName} signupEmail={signupEmail} signupPassword={signupPassword} signupConfirmPassword={signupConfirmPassword} isLoading={isLoading} errors={errors} onNameChange={setSignupName} onEmailChange={setSignupEmail} onPasswordChange={setSignupPassword} onConfirmPasswordChange={setSignupConfirmPassword} onSubmit={handleSignup} />
-                      </TabsContent>
-                    </Tabs>
+          <div className="w-full max-w-sm mx-auto">
+            <AnimatePresence mode="wait">
+              {mfaFactorId ? (
+                <motion.div key="mfa" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
+                  <MFALoginVerification factorId={mfaFactorId} onSuccess={() => navigate('/')} onCancel={() => setMfaFactorId(null)} />
+                </motion.div>
+              ) : (
+                <motion.div key="form" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+                  <div className="mb-8">
+                    <h3 className="text-3xl font-bold mb-2 tracking-tight">Bem-vindo</h3>
+                    <p className="text-zinc-500 text-sm">Acesse sua conta para gerenciar as máquinas.</p>
+                  </div>
 
-                    <div className="flex items-center justify-between pt-4 border-t border-border/60 text-xs text-muted-foreground">
-                      <span>© {new Date().getFullYear()} Fast Gravações</span>
-                      <a href="#" className="inline-flex items-center gap-1 hover:text-[#FF5A1F] transition-colors">Suporte <ArrowUpRight className="h-3 w-3" /></a>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
+                  <Tabs defaultValue="login" className="w-full">
+                    <TabsList className="grid w-full grid-cols-2 mb-8 h-11 p-1 rounded-lg bg-white/5 border border-white/5">
+                      <TabsTrigger value="login" className="rounded-md font-semibold text-sm data-[state=active]:bg-white/10 data-[state=active]:text-white data-[state=active]:shadow-sm text-zinc-500">{t('auth.login')}</TabsTrigger>
+                      <TabsTrigger value="signup" className="rounded-md font-semibold text-sm data-[state=active]:bg-white/10 data-[state=active]:text-white data-[state=active]:shadow-sm text-zinc-500">{t('auth.register')}</TabsTrigger>
+                    </TabsList>
+                    <TabsContent value="login">
+                      <AuthLoginForm loginEmail={loginEmail} loginPassword={loginPassword} rememberMe={rememberMe} isLoading={isLoading} socialLoading={socialLoading} errors={errors} onEmailChange={setLoginEmail} onPasswordChange={setLoginPassword} onRememberMeChange={setRememberMe} onSubmit={handleLogin} onGoogleLogin={handleGoogleLogin} onForgotPassword={() => setShowForgotPassword(true)} />
+                    </TabsContent>
+                    <TabsContent value="signup">
+                      <AuthSignupForm signupName={signupName} signupEmail={signupEmail} signupPassword={signupPassword} signupConfirmPassword={signupConfirmPassword} isLoading={isLoading} errors={errors} onNameChange={setSignupName} onEmailChange={setSignupEmail} onPasswordChange={setSignupPassword} onConfirmPasswordChange={setSignupConfirmPassword} onSubmit={handleSignup} />
+                    </TabsContent>
+                  </Tabs>
+
+                  <footer className="mt-16 text-center">
+                    <p className="text-[10px] text-zinc-600 uppercase tracking-widest font-mono">© {new Date().getFullYear()} Fast Gravações • Indústria 4.0</p>
+                  </footer>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
       </div>
