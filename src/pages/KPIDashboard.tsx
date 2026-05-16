@@ -2,19 +2,44 @@ import { useState, useMemo } from 'react';
 import { BIJob } from '@/types/bi';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Switch } from '@/components/ui/switch';
 import { useKPIs, formatDuration, KPIPeriod, KPITargets } from '@/hooks/useKPIs';
 import { useOperatorProductivity } from '@/hooks/useOperatorProductivity';
 import { useGoalAlerts } from '@/hooks/useGoalAlerts';
 import { useBIExport } from '@/hooks/useBIExport';
 import {
+  TrendingUp,
+  TrendingDown,
+  Package,
+  AlertTriangle,
+  CheckCircle2,
+  Clock,
+  History as HistoryIcon,
+  Percent,
+  Factory,
+  Target,
+  Users,
+  Cpu,
   Settings2,
   Calendar,
+  Search,
+  ArrowUpRight,
   Download,
+  Filter,
+  BrainCircuit,
+  Sparkles,
+  Zap
 } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { KPITooltip, KPI_DEFINITIONS } from '@/components/ui/kpi-tooltip';
 import { VoiceButton } from '@/components/voice/VoiceCommands';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,14 +48,24 @@ import {
   DropdownMenuSeparator,
   DropdownMenuLabel
 } from '@/components/ui/dropdown-menu';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { DrillDownDialog } from '@/components/bi/drilldown/DrillDownDialog';
 import { useSchedulingData } from '@/hooks/useSchedulingData';
 import { KPIOverviewTab } from '@/components/bi/executive/KPIOverviewTab';
 import { KPIMachinesTab } from '@/components/bi/executive/KPIMachinesTab';
 import { KPIOperatorsTab } from '@/components/bi/executive/KPIOperatorsTab';
 import { KPIAlertsTab } from '@/components/bi/executive/KPIAlertsTab';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Switch } from '@/components/ui/switch';
+import {
+  AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell,
+  XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip,
+  ResponsiveContainer, Legend
+} from 'recharts';
 
 export default function KPIDashboard() {
   const [activeTab, setActiveTab] = useState('overview');
