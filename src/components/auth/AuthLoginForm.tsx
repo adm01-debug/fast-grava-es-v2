@@ -21,12 +21,12 @@ interface AuthLoginFormProps {
   onSubmit: (e: React.FormEvent) => void;
   onGoogleLogin: () => void;
   onForgotPassword: () => void;
-  onPasskeySuccess?: () => void;
+  
 }
 
 export function AuthLoginForm({
   loginEmail, loginPassword, rememberMe, isLoading, socialLoading, errors,
-  onEmailChange, onPasswordChange, onRememberMeChange, onSubmit, onGoogleLogin, onForgotPassword, onPasskeySuccess,
+  onEmailChange, onPasswordChange, onRememberMeChange, onSubmit, onGoogleLogin, onForgotPassword,
 }: AuthLoginFormProps) {
   const { t } = useTranslation();
 
