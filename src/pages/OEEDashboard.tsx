@@ -82,10 +82,67 @@ const OEEDashboard = memo(function OEEDashboard() {
   const { data, isLoading, downloadReport } = useOEE(parseInt(period), 30, filters);
   const { losses, isLoading: lossesLoading } = useProductionLosses();
 
-  const handleDownloadReport = useCallback((format: 'excel' | 'pdf' | 'csv') => {
-    downloadReport(format);
-    toast.success(t('common.reportExported', 'Relatório OEE exportado!'));
-  }, [downloadReport, t]);
+  const handleDownloadReport = useCallback(async (format: 'excel' | 'pdf' | 'csv') => {
+    if (!data) return;
+    
+    if (format === 'csv') {
+      const csvData = data.byMachine.map(m => ({
+        'Máquina': m.machineName,
+        'Código': m.machineCode,
+        'Técnica': m.techniqueName,
+        'Disponibilidade (%)': m.availability,
+        'Performance (%)': m.performance,
+        'Qualidade (%)': m.quality,
+        'OEE (%)': m.oee,
+        'Total Peças': m.totalPiecesProduced,
+        'Peças Boas': m.goodPieces,
+        'Perdas': m.lostPieces
+      }));
+      
+      const headers = Object.keys(csvData[0]).join(',');
+      const rows = csvData.map(row => Object.values(row).join(','));
+      const csvContent = "data:text/csv;charset=utf-8," + [headers, ...rows].join('\n');
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `oee_report_${new Date().toISOString().slice(0,10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } else if (format === 'pdf') {
+      const { jsPDF } = await import('jspdf');
+      const { default: autoTable } = await import('jspdf-autotable');
+      const doc = new jsPDF();
+      
+      doc.setFontSize(18);
+      doc.text('Relatório OEE - FAST GRAVAÇÕES', 14, 20);
+      
+      doc.setFontSize(12);
+      doc.text(`Período: Últimos ${period} dias`, 14, 30);
+      doc.text(`OEE Geral: ${data.overallOEE.toFixed(1)}%`, 14, 40);
+      doc.text(`Disponibilidade: ${data.overallAvailability.toFixed(1)}% | Performance: ${data.overallPerformance.toFixed(1)}% | Qualidade: ${data.overallQuality.toFixed(1)}%`, 14, 50);
+      
+      const tableData = data.byMachine.map(m => [
+        m.machineName,
+        m.techniqueName,
+        `${m.availability}%`,
+        `${m.performance}%`,
+        `${m.quality}%`,
+        `${m.oee}%`
+      ]);
+      
+      autoTable(doc, {
+        startY: 60,
+        head: [['Máquina', 'Técnica', 'Disp.', 'Perf.', 'Qual.', 'OEE']],
+        body: tableData,
+      });
+      
+      doc.save(`oee_report_${new Date().toISOString().slice(0,10)}.pdf`);
+    } else {
+      downloadReport(format);
+    }
+    toast.success(t('common.reportExported', 'Relatório exportado com sucesso!'));
+  }, [data, downloadReport, t, period]);
 
   // Activate OEE alerts
   useOEEAlerts();
