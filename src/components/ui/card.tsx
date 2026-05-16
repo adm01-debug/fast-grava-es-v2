@@ -76,13 +76,21 @@ export interface CardProps
     VariantProps<typeof cardVariants> {}
 
 const Card = React.forwardRef<HTMLDivElement, CardProps>(
-  ({ className, variant, ...props }, ref) => (
-    <div
-      ref={ref}
-      className={cn(cardVariants({ variant }), className)}
-      {...props}
-    />
-  )
+  ({ className, variant, ...props }, ref) => {
+    const isInteractive = variant === 'interactive' || variant === 'stat';
+    
+    return (
+      <div
+        ref={ref}
+        className={cn(
+          cardVariants({ variant }), 
+          isInteractive && "hover:shadow-2xl hover:scale-[1.01]",
+          className
+        )}
+        {...props}
+      />
+    );
+  }
 );
 Card.displayName = "Card";
 
