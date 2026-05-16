@@ -11,11 +11,15 @@ export interface JobWithRelations extends Job {
 }
 
 export const jobsService = {
-  async getAll(filters?: { status?: string; technique_id?: string; date?: string }): Promise<JobWithRelations[]> {
+  async getAll(filters?: { status?: string; technique_id?: string; date?: string; recentOnly?: boolean }): Promise<JobWithRelations[]> {
     let query = supabase.from('jobs').select('*, machines(name, code), techniques:technique_id(*)');
     if (filters?.status) query = query.eq('status', filters.status);
     if (filters?.technique_id) query = query.eq('technique_id', filters.technique_id);
     if (filters?.date) query = query.eq('scheduled_date', filters.date);
+    if (filters?.recentOnly) {
+      const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+      query = query.or(`status.neq.finished,created_at.gt.${thirtyDaysAgo}`);
+    }
     const { data, error } = await query.order('created_at', { ascending: false });
     if (error) throw error;
     return (data || []) as JobWithRelations[];

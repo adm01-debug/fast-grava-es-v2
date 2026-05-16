@@ -1,10 +1,12 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Database } from '@/integrations/supabase/types';
 import { supabase } from '@/integrations/supabase/client';
 import { useEffect, useMemo, useCallback } from 'react';
 import { differenceInMinutes } from 'date-fns';
 import { DbJob, DbTechnique, DbMachine } from './useJobs';
-import { categorizeError, ErrorCodes, createAppError } from '@/lib/errorHandling';
+import { Database } from '@/integrations/supabase/types';
+import { createAppError } from '@/lib/errorHandling';
+import { jobsService } from '@/services/jobsService';
+import { machinesService } from '@/services/machinesService';
 
 // Stale time for static data (techniques, machines change less frequently)
 const STATIC_DATA_STALE_TIME = 15 * 60 * 1000; // 15 minutes (was 5)
@@ -51,23 +53,16 @@ export function useSchedulingData() {
     ...RETRY_CONFIG,
   });
 
-  // Fetch techniques with longer stale time (they change infrequently)
+  // Fetch techniques with longer stale time
   const techniquesQuery = useQuery({
     queryKey: ['techniques'],
     queryFn: async () => {
       try {
-        const { data, error } = await supabase
-          .from('techniques')
-          .select('*')
-          .order('name');
-
-        if (error) {
-          const appError = createAppError(error, ERROR_CONTEXT.techniques);
-          throw error;
-        }
+        const { data, error } = await supabase.from('techniques').select('*').order('name');
+        if (error) throw error;
         return data as DbTechnique[];
       } catch (err) {
-        throw err;
+        throw createAppError(err, ERROR_CONTEXT.techniques);
       }
     },
     staleTime: STATIC_DATA_STALE_TIME,
@@ -79,43 +74,24 @@ export function useSchedulingData() {
     queryKey: ['machines'],
     queryFn: async () => {
       try {
-        const { data, error } = await supabase
-          .from('machines')
-          .select('*')
-          // .eq('is_active', true) // Removido para permitir ver todas as máquinas e seu status de técnica
-          .order('code');
-
-        if (error) {
-          const appError = createAppError(error, ERROR_CONTEXT.machines);
-          throw error;
-        }
-        return data as DbMachine[];
+        return await machinesService.getAll();
       } catch (err) {
-        throw err;
+        throw createAppError(err, ERROR_CONTEXT.machines);
       }
     },
     staleTime: STATIC_DATA_STALE_TIME,
     ...RETRY_CONFIG,
   });
 
-  // Fetch jobs with shorter stale time (they change frequently)
+  // Fetch jobs with shorter stale time
   const jobsQuery = useQuery({
     queryKey: ['jobs'],
     queryFn: async () => {
       try {
-        const { data, error } = await supabase
-          .from('jobs')
-          .select('*')
-          .or(`status.neq.finished,created_at.gt.${new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()}`)
-          .order('created_at', { ascending: false });
-
-        if (error) {
-          const appError = createAppError(error, ERROR_CONTEXT.jobs);
-          throw error;
-        }
-        return data as DbJob[];
+        const data = await jobsService.getAll({ recentOnly: true });
+        return data as unknown as DbJob[];
       } catch (err) {
-        throw err;
+        throw createAppError(err, ERROR_CONTEXT.jobs);
       }
     },
     staleTime: JOBS_STALE_TIME,

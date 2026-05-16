@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { Database } from '@/integrations/supabase/types';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { showErrorToast, createAppError } from '@/lib/errorHandling';
@@ -49,7 +50,7 @@ export function useOperators() {
 
         // Type-safe mapping with proper profile extraction
         return (data || []).map(item => {
-          const profile = item.profiles as { full_name?: string | null; avatar_url?: string | null; phone?: string | null } | null;
+          const profile = item.profiles as unknown as Database['public']['Tables']['profiles']['Row'] | null;
           return {
             id: item.id,
             user_id: item.user_id,

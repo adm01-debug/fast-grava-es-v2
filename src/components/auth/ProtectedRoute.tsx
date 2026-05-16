@@ -1,6 +1,7 @@
 import { ReactNode } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth, AppRole } from '@/contexts/AuthContext';
+import { logger } from '@/lib/logger';
 import { Loader2 } from 'lucide-react';
 
 interface ProtectedRouteProps {
@@ -12,14 +13,15 @@ export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) 
   const { user, role, isLoading } = useAuth();
   const location = useLocation();
 
-  // Remove debug log in production mode
+  // Log rendering path in development
   if (process.env.NODE_ENV === 'development') {
-    console.log('[ProtectedRoute] Rendering path:', location.pathname, {
+    logger.debug('Rendering path:', {
+      path: location.pathname,
       hasUser: !!user,
       role,
       isLoading,
       allowedRoles
-    });
+    }, 'ProtectedRoute');
   }
 
   if (isLoading) {

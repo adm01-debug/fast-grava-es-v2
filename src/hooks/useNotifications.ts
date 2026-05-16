@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useEffect } from 'react';
 import { toast } from 'sonner';
+import { logger } from '@/lib/logger';
 
 export interface Notification {
   id: string;
@@ -166,6 +167,6 @@ export function notifyStatusChange(clientName: string, oldStatus: string, newSta
   // Logic shifted to database triggers + InAppNotificationWatcher
   // This helper can be used for manual client-side triggers if needed
   if (process.env.NODE_ENV === 'development') {
-    console.log(`[Status Notification] ${clientName}: ${oldStatus} -> ${newStatus}`);
+    logger.info(`Status changed for ${clientName}: ${oldStatus} -> ${newStatus}`, { clientName, oldStatus, newStatus }, 'Status Notification');
   }
 }

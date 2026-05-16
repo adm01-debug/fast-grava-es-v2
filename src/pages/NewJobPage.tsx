@@ -24,10 +24,12 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 
 const jobSchema = z.object({
-  order_number: z.string().min(1, 'Número da OS é obrigatório'),
-  client: z.string().min(1, 'Cliente é obrigatório'),
-  product: z.string().min(1, 'Produto é obrigatório'),
-  quantity: z.string().min(1, 'Quantidade é obrigatória'),
+  order_number: z.string().min(1, 'Número da OS é obrigatório').trim(),
+  client: z.string().min(1, 'Cliente é obrigatório').trim(),
+  product: z.string().min(1, 'Produto é obrigatório').trim(),
+  quantity: z.string().refine(v => !isNaN(parseInt(v)) && parseInt(v) > 0, {
+    message: 'Quantidade deve ser um número maior que zero'
+  }),
   technique_id: z.string().min(1, 'Técnica é obrigatória'),
   machine_id: z.string().optional(),
   start_time: z.string().optional(),
