@@ -107,6 +107,7 @@ const MobileNavButton = memo(function MobileNavButton({
 
   const handleClick = useCallback(() => {
     onHaptic();
+    SoundFeedback.navForward();
     onClick();
   }, [onHaptic, onClick]);
 
