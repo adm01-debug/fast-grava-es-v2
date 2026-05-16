@@ -31,7 +31,7 @@ export const OEELossesChart = memo(function OEELossesChart({
   qualityLosses,
   overallOEE
 }: OEELossesChartProps) {
-  const [showDrilldown, setShowDrilldown] = useState(false);
+  const [showDrilldown, setShowDrilldown] = useState(true);
   const { losses, isLoading } = useProductionLosses();
 
   const lossCategories = useMemo(() => {

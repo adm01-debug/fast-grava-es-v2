@@ -50,10 +50,10 @@ export const ParetoLossesChart = memo(function ParetoLossesChart({ losses }: Par
   return (
     <Card className="border-primary/20">
       <CardHeader className="flex flex-row items-center justify-between pb-2">
-        <CardTitle className="text-sm font-bold uppercase tracking-wider">
+        <CardTitle className="text-sm font-black uppercase tracking-wider flex items-center gap-2">
           Análise de Pareto (Regra 80/20)
         </CardTitle>
-        <Badge variant="outline" className="text-[10px] font-bold border-primary/30">CRITICAL CAUSES</Badge>
+        <Badge variant="outline" className="text-[10px] font-black border-primary/30 text-primary">CRITICAL CAUSES</Badge>
       </CardHeader>
       <CardContent>
         <div className="h-64">

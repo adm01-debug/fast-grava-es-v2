@@ -64,7 +64,7 @@ export const OEETrendChart = memo(function OEETrendChart({ data, worldClassBench
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center justify-between">
+        <CardTitle className="flex items-center justify-between font-black text-sm uppercase tracking-wider">
           <span>Evolução do OEE (Timeline Comparativa)</span>
           {comparison && (
             <div className="flex flex-wrap gap-2">

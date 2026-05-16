@@ -372,7 +372,21 @@ const OEEDashboard = memo(function OEEDashboard() {
         </Suspense>
 
         <div className="flex flex-col lg:flex-row gap-4">
-          <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4">
+            <Card className="border-l-4 border-l-indicator-info bg-indicator-info/10">
+              <CardContent className="p-4 flex gap-4">
+                <div className="h-10 w-10 rounded-full bg-indicator-info/20 flex items-center justify-center shrink-0">
+                  <Activity className="h-5 w-5 text-indicator-info" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-sm">Status da Linha</h3>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Operação estabilizada com {machinesAtWorldClass} máquinas em modo de alta performance.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+
             <Card className="border-l-4 border-l-indicator-warning bg-indicator-warning/10">
               <CardContent className="p-4 flex gap-4">
                 <div className="h-10 w-10 rounded-full bg-indicator-warning/20 flex items-center justify-center shrink-0">

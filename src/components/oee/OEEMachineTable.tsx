@@ -31,7 +31,7 @@ interface OEEMachineTableProps {
   machines: MachineOEE[];
 }
 
-type SortField = 'oee' | 'availability' | 'performance' | 'quality' | 'machineName';
+type SortField = 'oee' | 'availability' | 'performance' | 'quality' | 'machineName' | 'totalPiecesProduced';
 type SortDirection = 'asc' | 'desc';
 
 import { memo } from 'react';
@@ -202,7 +202,12 @@ export const OEEMachineTable = memo(function OEEMachineTable({ machines }: OEEMa
                     <ArrowUpDown className="ml-2 h-4 w-4" />
                   </Button>
                 </TableHead>
-                <TableHead>Jobs</TableHead>
+                <TableHead>
+                  <Button variant="ghost" size="sm" onClick={() => toggleSort('totalPiecesProduced')}>
+                    Produção
+                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                  </Button>
+                </TableHead>
                 <TableHead>Classificação</TableHead>
                 <TableHead></TableHead>
               </TableRow>
@@ -249,8 +254,8 @@ export const OEEMachineTable = memo(function OEEMachineTable({ machines }: OEEMa
                     </TableCell>
                     <TableCell>
                       <div className="text-sm">
-                        <span className="font-medium">{machine.completedJobs}</span>
-                        <span className="text-muted-foreground"> finalizados</span>
+                        <span className="font-bold text-primary">{machine.totalPiecesProduced.toLocaleString()}</span>
+                        <p className="text-[10px] text-muted-foreground uppercase">{machine.completedJobs} jobs</p>
                       </div>
                     </TableCell>
                     <TableCell>
