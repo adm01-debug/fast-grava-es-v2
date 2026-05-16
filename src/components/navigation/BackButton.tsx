@@ -46,32 +46,7 @@ export function BackButton({ className }: BackButtonProps) {
   if (!canGoBack) return null;
 
   if (isMobile) {
-    return (
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={location.pathname}
-          initial={{ opacity: 0, x: -20, scale: 0.9 }}
-          animate={{ opacity: 1, x: 0, scale: 1 }}
-          exit={{ opacity: 0, x: -20, scale: 0.9 }}
-          className="fixed bottom-28 left-6 z-[60] md:hidden no-export"
-        >
-          <Button
-            variant="default"
-            size="icon"
-            onClick={handleBack}
-            className={cn(
-              "h-14 w-14 rounded-2xl shadow-xl transition-all active:scale-90 touch-target",
-              "bg-primary text-primary-foreground border-2 border-white/10",
-              "hover:brightness-110",
-              className
-            )}
-            aria-label="Voltar"
-          >
-            <ArrowLeft className="h-6 w-6" />
-          </Button>
-        </motion.div>
-      </AnimatePresence>
-    );
+    return null; // Integrated into MobileNavigation
   }
 
   return (
