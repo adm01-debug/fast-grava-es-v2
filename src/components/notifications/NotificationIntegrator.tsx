@@ -183,6 +183,11 @@ export const NotificationIntegrator = () => {
     };
   }, [permission, user, sendBottleneckAlert, sendLowBufferAlert, playBottleneckAlert, playBufferAlert]);
 
+  // Goal, OEE and TPM Alerts Hooks (Self-contained)
+  useGoalAlerts({ enableNotifications: getPreferences().goalAlerts });
+  useOEEAlerts(); // Internal OEEAlerts already handles throttling and dispatch
+  useTPMNotifications(); // Already listens to maintenance alerts via realtime
+
   // Clean up old notification references periodically
   useEffect(() => {
     const cleanup = setInterval(() => {
