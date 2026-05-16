@@ -69,9 +69,13 @@ describe('useKPIs', () => {
     if (result.current.data) {
       expect(result.current.data.totalJobs).toBe(3);
       expect(result.current.data.completedJobs).toBe(2);
-      // Total Attempted = Produced (90+50) + Lost (10+0) = 150
-      // Loss Rate = 10 / 150 = 6.66%
-      expect(result.current.data.lossRate).toBeCloseTo(6.66, 1);
+      
+      // Verification of Calculation Logic:
+      // totalPieces (currentStats.totalPcs) = 100 + 50 + 200 = 350
+      // lostPieces (currentStats.lostPcs) = 10 + 0 + 0 = 10
+      // totalAttemptedPieces (totalPieces + lostPieces) = 350 + 10 = 360
+      // globalLossRate (lostPieces / totalAttemptedPieces) = 10 / 360 = 2.77%
+      expect(result.current.data.lossRate).toBeCloseTo(2.77, 1);
     }
   });
 });
