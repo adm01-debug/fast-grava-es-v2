@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Sparkles, ArrowUpRight, ArrowDownRight, AlertCircle, CheckCircle2, Lightbulb, Clock, ChevronRight, ChevronDown, Zap, Target, TrendingUp, Cpu, RefreshCcw, Info, Activity } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
@@ -6,6 +6,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
+
+import { useOEEAlerts } from '@/hooks/useOEEAlerts';
 
 interface BIAIInsightsProps {
   biMetrics: {
@@ -29,6 +31,7 @@ interface BIAIInsightsProps {
 }
 
 export function BIAIInsights({ biMetrics, oeeData }: BIAIInsightsProps) {
+  useOEEAlerts(); // Activate real-time OEE threshold monitoring while viewing BI
   const [expandedInsight, setExpandedInsight] = useState<number | null>(null);
   const [isSimulating, setIsSimulating] = useState(false);
   const [simulationResult, setSimulationResult] = useState<{ oee: number; revenue: number; risk: string } | null>(null);

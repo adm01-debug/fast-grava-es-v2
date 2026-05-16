@@ -357,6 +357,9 @@ export function FuturisticBI({ biMetrics, kpis, oeeData, isLoading }: BIProps) {
             onShowDetails={(job) => handleDrillDown(`PERDAS DETALHADAS: ${job.order_number || job.id}`, 'lost')}
           />
         </div>
+        <Suspense fallback={<div className="h-full bg-black/20 animate-pulse rounded-2xl" />}>
+          <BIAIInsights biMetrics={biMetrics} oeeData={oeeData} />
+        </Suspense>
         <BIPredictiveROI biMetrics={biMetrics} />
       </div>
 
