@@ -1300,6 +1300,47 @@ export type Database = {
           },
         ]
       }
+      kpi_alerts: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_resolved: boolean | null
+          machine_id: string | null
+          metric_name: string
+          metric_value: number
+          severity: string | null
+          threshold: number
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_resolved?: boolean | null
+          machine_id?: string | null
+          metric_name: string
+          metric_value: number
+          severity?: string | null
+          threshold: number
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_resolved?: boolean | null
+          machine_id?: string | null
+          metric_name?: string
+          metric_value?: number
+          severity?: string | null
+          threshold?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kpi_alerts_machine_id_fkey"
+            columns: ["machine_id"]
+            isOneToOne: false
+            referencedRelation: "machines"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       login_audit: {
         Row: {
           created_at: string

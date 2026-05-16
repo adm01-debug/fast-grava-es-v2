@@ -91,6 +91,9 @@ export function useOEEAlerts() {
       },
       performance: {
         warning: Number(getConfig('performance_threshold_warning', 75)),
+      },
+      speed: {
+        warning: Number(getConfig('speed_threshold_warning', 80)),
       }
     };
 
@@ -99,6 +102,10 @@ export function useOEEAlerts() {
       checkMetric(machine, 'OEE', machine.oee, thresholds.oee.warning, thresholds.oee.critical);
       checkMetric(machine, 'Disponibilidade', machine.availability, thresholds.availability.warning);
       checkMetric(machine, 'Performance', machine.performance, thresholds.performance.warning);
+      
+      // Speed check (using performance as proxy or specific metric if available)
+      const speedValue = machine.performance; 
+      checkMetric(machine, 'Velocidade', speedValue, thresholds.speed.warning);
     });
   }, [oeeData, getConfig, checkMetric]);
 
