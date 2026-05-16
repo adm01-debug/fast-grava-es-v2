@@ -354,6 +354,28 @@ export function MobileNavigation() {
       aria-label="Navegação principal mobile"
     >
       <div className="flex items-stretch justify-around max-w-md mx-auto h-16">
+        {/* Dynamic Back Button for Mobile Nav Bar */}
+        <AnimatePresence>
+          {location.pathname !== '/' && location.pathname !== '/operator' && location.pathname !== '/auth' && (
+            <motion.div
+              initial={{ width: 0, opacity: 0 }}
+              animate={{ width: 'auto', opacity: 1 }}
+              exit={{ width: 0, opacity: 0 }}
+              className="flex-1 flex overflow-hidden"
+            >
+              <MobileNavButton
+                item={{ id: 'back', icon: ArrowLeft, label: 'Voltar', href: '#' }}
+                isActive={false}
+                onClick={() => {
+                  SoundFeedback.navBack();
+                  navigate(-1);
+                }}
+                onHaptic={() => trigger('light')}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {primaryItems.map((item) => {
           let badge = undefined;
           if (item.id === 'alerts') badge = alertCount;
