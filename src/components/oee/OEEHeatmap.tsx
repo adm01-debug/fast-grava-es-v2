@@ -112,6 +112,9 @@ export const OEEHeatmap = memo(function OEEHeatmap({ data }: OEEHeatmapProps) {
               ))}
             </tbody>
           </table>
+          <div className="mt-4 flex justify-end">
+             <p className="text-[9px] text-muted-foreground uppercase font-black">Scroll horizontal para ver histórico completo →</p>
+          </div>
         </div>
       </CardContent>
     </Card>
