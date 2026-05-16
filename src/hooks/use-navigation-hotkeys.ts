@@ -32,6 +32,7 @@ export function useNavigationHotkeys() {
       if (event.altKey && (event.key === 'h' || event.key === 'H')) {
         event.preventDefault();
         trigger('medium');
+        SoundFeedback.navForward();
         navigate('/');
       }
 
