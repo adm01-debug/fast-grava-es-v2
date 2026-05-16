@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useHapticFeedback } from './use-haptic-feedback';
+import { SoundFeedback } from '@/lib/soundFeedback';
 
 export function useNavigationHotkeys() {
   const navigate = useNavigate();
@@ -23,6 +24,7 @@ export function useNavigationHotkeys() {
       if ((event.altKey && event.key === 'ArrowLeft')) {
         event.preventDefault();
         trigger('light');
+        SoundFeedback.navBack();
         navigate(-1);
       }
 
@@ -30,6 +32,7 @@ export function useNavigationHotkeys() {
       if (event.altKey && (event.key === 'h' || event.key === 'H')) {
         event.preventDefault();
         trigger('medium');
+        SoundFeedback.navForward();
         navigate('/');
       }
 
@@ -38,6 +41,14 @@ export function useNavigationHotkeys() {
         event.preventDefault();
         trigger('light');
         navigate('/notifications');
+      }
+
+      // Alt + S to open Global Search (simulates Cmd+K)
+      if (event.altKey && (event.key === 's' || event.key === 'S')) {
+        event.preventDefault();
+        trigger('light');
+        SoundFeedback.click();
+        document.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', metaKey: true, bubbles: true }));
       }
       
       // Alt + K for Command Palette (handled by its own component, but we could unify here)

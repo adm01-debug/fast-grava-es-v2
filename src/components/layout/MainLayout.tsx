@@ -27,6 +27,8 @@ const CommandPaletteAdvanced = lazy(() => import('../navigation/CommandPaletteAd
 const SystemOnboarding = lazy(() => import('../onboarding/SystemOnboarding').then(m => ({ default: m.SystemOnboarding })));
 const Breadcrumbs = lazy(() => import('../navigation/Breadcrumbs').then(m => ({ default: m.Breadcrumbs })));
 const BackButton = lazy(() => import('../navigation/BackButton').then(m => ({ default: m.BackButton })));
+const SwipeIndicator = lazy(() => import('../navigation/SwipeIndicator').then(m => ({ default: m.SwipeIndicator })));
+const TopProgressBar = lazy(() => import('../navigation/TopProgressBar').then(m => ({ default: m.TopProgressBar })));
 
 
 
@@ -78,6 +80,9 @@ export function MainLayout({ children }: MainLayoutProps) {
       <div className="flex h-screen w-full bg-background overflow-hidden">
         {/* Skip Links for Accessibility */}
         <SkipLinks />
+        <Suspense fallback={null}>
+          <TopProgressBar />
+        </Suspense>
 
         {/* Sidebar - hidden on mobile, shown on tablet+ */}
         <AppSidebar />
@@ -91,6 +96,9 @@ export function MainLayout({ children }: MainLayoutProps) {
         >
 
           <OfflineStatusBanner />
+          <Suspense fallback={null}>
+            <SwipeIndicator />
+          </Suspense>
 
           {/* Desktop top bar */}
           <div className="fixed top-4 right-4 z-40 hidden md:flex items-center gap-2" role="toolbar" aria-label="Ações rápidas">
