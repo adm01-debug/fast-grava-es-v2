@@ -13,13 +13,13 @@ export interface ProductionLoss {
   loss_type?: 'availability' | 'performance' | 'quality';
 }
 
-export function useProductionLosses(jobId?: string, filters?: { shift?: string; startDate?: string; endDate?: string }) {
+export function useProductionLosses(jobId?: string, filters?: { shift?: string; startDate?: string; endDate?: string; machineId?: string; techniqueId?: string }) {
   const queryClient = useQueryClient();
 
   const { data: losses, isLoading } = useQuery({
     queryKey: ['production-losses', jobId, filters],
     queryFn: async () => {
-      let query = supabase.from('production_losses').select('*, job:jobs(order_number, client)');
+      let query = supabase.from('production_losses').select('*, job:jobs(order_number, client, machine_id, technique_id)');
       if (jobId) {
         query = query.eq('job_id', jobId);
       }
@@ -38,7 +38,17 @@ export function useProductionLosses(jobId?: string, filters?: { shift?: string; 
 
       const { data, error } = await query.order('created_at', { ascending: false });
       if (error) throw error;
-      return data;
+
+      // Client-side filtering for machine and technique since they are in the related job table
+      let filteredData = data;
+      if (filters?.machineId && filters.machineId !== 'all') {
+        filteredData = filteredData.filter((l: any) => l.job?.machine_id === filters.machineId);
+      }
+      if (filters?.techniqueId && filters.techniqueId !== 'all') {
+        filteredData = filteredData.filter((l: any) => l.job?.technique_id === filters.techniqueId);
+      }
+
+      return filteredData;
     },
   });
 
@@ -53,16 +63,25 @@ export function useProductionLosses(jobId?: string, filters?: { shift?: string; 
       if (error) throw error;
 
       // Update total lost_pieces on the job
-      const { data: job } = await supabase.from('jobs').select('lost_pieces, start_time').eq('id', data.job_id).single();
+      const { data: job } = await supabase.from('jobs').select('lost_pieces, start_time, actual_start_time').eq('id', data.job_id).single();
       const currentLosses = job?.lost_pieces || 0;
 
-      // Auto-detect shift based on job start_time if not provided
+      // Auto-detect shift based on job time if not provided
       let shift = data.shift;
-      if (!shift && job?.start_time) {
-        const hour = parseInt(job.start_time.split(':')[0]);
-        if (hour >= 7 && hour < 15) shift = '1';
-        else if (hour >= 15 && hour < 23) shift = '2';
-        else shift = '3';
+      if (!shift) {
+        const timeToUse = job?.actual_start_time || job?.start_time;
+        if (timeToUse) {
+          let hour: number;
+          if (timeToUse.includes('T')) {
+            hour = new Date(timeToUse).getHours();
+          } else {
+            hour = parseInt(timeToUse.split(':')[0]);
+          }
+          
+          if (hour >= 7 && hour < 15) shift = '1';
+          else if (hour >= 15 && hour < 23) shift = '2';
+          else shift = '3';
+        }
       }
 
       await supabase

@@ -1,4 +1,5 @@
 import { useState, lazy, Suspense, useMemo, memo, useCallback, useEffect } from 'react';
+import { startOfDay, endOfDay, subDays } from 'date-fns';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet';
 import { cn } from '@/lib/utils';
@@ -88,14 +89,30 @@ const OEEDashboard = memo(function OEEDashboard() {
   const [activeTab, setActiveTab] = useState('overview');
   const [showConfig, setShowSimulatorLocal] = useState(false); // Used for a future settings modal if needed
   
-  const filters = useMemo(() => ({
+  const dateRange = useMemo(() => {
+    const now = new Date();
+    return {
+      start: startOfDay(subDays(now, parseInt(period))),
+      end: endOfDay(now)
+    };
+  }, [period]);
+
+  const oeeFilters = useMemo(() => ({
     machineId: machineId === 'all' ? undefined : machineId,
     techniqueId: techniqueId === 'all' ? undefined : techniqueId,
-    shift: shift === 'all' ? undefined : shift
-  }), [machineId, techniqueId, shift]);
+    shift: shift === 'all' ? undefined : shift,
+    startDate: dateRange.start,
+    endDate: dateRange.end
+  }), [machineId, techniqueId, shift, dateRange]);
 
-  const { data, isLoading, downloadReport } = useOEE(parseInt(period), 30, filters);
-  const { losses, isLoading: lossesLoading } = useProductionLosses(undefined, filters);
+  const lossFilters = useMemo(() => ({
+    ...oeeFilters,
+    startDate: dateRange.start.toISOString(),
+    endDate: dateRange.end.toISOString()
+  }), [oeeFilters, dateRange]);
+
+  const { data, isLoading, downloadReport } = useOEE(parseInt(period), 30, oeeFilters);
+  const { losses, isLoading: lossesLoading } = useProductionLosses(undefined, lossFilters);
 
   const applyPreset = (preset: any) => {
     if (preset.filters.period) setPeriod(preset.filters.period);
@@ -662,7 +679,7 @@ const OEEDashboard = memo(function OEEDashboard() {
           <TabsContent value="losses" className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <div className="lg:col-span-2 space-y-6">
-                <Suspense fallback={<ChartSkeleton />}><OEELossDrilldown filters={filters} /></Suspense>
+                <Suspense fallback={<ChartSkeleton />}><OEELossDrilldown filters={lossFilters} /></Suspense>
                 <Suspense fallback={<ChartSkeleton />}><OEELossesChart availabilityLosses={data.availabilityLosses} performanceLosses={data.performanceLosses} qualityLosses={data.qualityLosses} overallOEE={data.overallOEE} /></Suspense>
               </div>
               <div className="space-y-6">

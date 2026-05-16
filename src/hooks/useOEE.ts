@@ -175,9 +175,19 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, f
       if (filters?.machineId && job.machine_id !== filters.machineId) return false;
       if (filters?.techniqueId && job.technique_id !== filters.techniqueId) return false;
       if (filters?.shift && filters.shift !== 'all') {
-        if (!job.start_time) return false;
+        const timeToUse = job.actual_start_time || job.start_time;
+        if (!timeToUse) return false;
+        
+        let hour: number;
+        if (timeToUse.includes('T')) {
+          // ISO format
+          hour = new Date(timeToUse).getHours();
+        } else {
+          // HH:MM format
+          hour = parseInt(timeToUse.split(':')[0]);
+        }
+        
         // Shift logic: 1: 07:00-15:00, 2: 15:00-23:00, 3: 23:00-07:00
-        const hour = parseInt(job.start_time.split(':')[0]);
         if (filters.shift === '1' && (hour < 7 || hour >= 15)) return false;
         if (filters.shift === '2' && (hour < 15 || hour >= 23)) return false;
         if (filters.shift === '3' && (hour >= 7 && hour < 23)) return false;
