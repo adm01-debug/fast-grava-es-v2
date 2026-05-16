@@ -70,12 +70,16 @@ const OEEDashboard = memo(function OEEDashboard() {
   const { t } = useTranslation();
   const [period, setPeriod] = useState<string>('30');
   const [machineId, setMachineId] = useState<string>('all');
+  const [techniqueId, setTechniqueId] = useState<string>('all');
+  const [shiftId, setShiftId] = useState<string>('all');
   const [showSimulator, setShowSimulator] = useState(false);
   const [simValues, setSimValues] = useState({ availability: 85, performance: 90, quality: 98 });
   
   const filters = useMemo(() => ({
-    machineId: machineId === 'all' ? undefined : machineId
-  }), [machineId]);
+    machineId: machineId === 'all' ? undefined : machineId,
+    techniqueId: techniqueId === 'all' ? undefined : techniqueId,
+    shiftId: shiftId === 'all' ? undefined : shiftId
+  }), [machineId, techniqueId, shiftId]);
 
   const { data, isLoading, downloadReport } = useOEE(parseInt(period), 30, filters);
   const { losses, isLoading: lossesLoading } = useProductionLosses();
@@ -144,13 +148,13 @@ const OEEDashboard = memo(function OEEDashboard() {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuItem onClick={() => handleDownloadReport('excel')}>
-                  <FileSpreadsheet className="h-4 w-4 mr-2 text-success" /> Excel
+                  <FileSpreadsheet className="h-4 w-4 mr-2 text-green-500" /> Excel (.xlsx)
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => handleDownloadReport('pdf')}>
-                  <FileText className="h-4 w-4 mr-2 text-destructive" /> PDF
+                  <FileText className="h-4 w-4 mr-2 text-red-500" /> Relatório PDF
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => handleDownloadReport('csv')}>
-                  <FileSpreadsheet className="h-4 w-4 mr-2 text-primary" /> CSV
+                  <FileSpreadsheet className="h-4 w-4 mr-2 text-blue-500" /> Dados CSV
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -162,7 +166,22 @@ const OEEDashboard = memo(function OEEDashboard() {
                 <SelectItem value="7">{t('common.last7Days', '7 dias')}</SelectItem>
                 <SelectItem value="14">{t('common.last14Days', '14 dias')}</SelectItem>
                 <SelectItem value="30">{t('common.last30Days', '30 dias')}</SelectItem>
+                <SelectItem value="60">{t('common.last60Days', '60 dias')}</SelectItem>
                 <SelectItem value="90">{t('common.last90Days', '90 dias')}</SelectItem>
+                <SelectItem value="180">{t('common.last180Days', '180 dias')}</SelectItem>
+                <SelectItem value="365">{t('common.last365Days', '365 dias')}</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <Select value={techniqueId} onValueChange={setTechniqueId}>
+              <SelectTrigger className="w-32 md:w-44 glass-card border-primary/20">
+                <SelectValue placeholder={t('common.technique', 'Técnica')} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">{t('common.allTechniques', 'Todas Técnicas')}</SelectItem>
+                {data.byTechnique.map(tech => (
+                  <SelectItem key={tech.techniqueId} value={tech.techniqueId}>{tech.techniqueName}</SelectItem>
+                ))}
               </SelectContent>
             </Select>
 
@@ -172,9 +191,23 @@ const OEEDashboard = memo(function OEEDashboard() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">{t('common.allMachines', 'Todas Máquinas')}</SelectItem>
-                {data.byMachine.map(m => (
-                  <SelectItem key={m.machineId} value={m.machineId}>{m.machineName}</SelectItem>
-                ))}
+                {data.byMachine
+                  .filter(m => techniqueId === 'all' || m.techniqueId === techniqueId)
+                  .map(m => (
+                    <SelectItem key={m.machineId} value={m.machineId}>{m.machineName}</SelectItem>
+                  ))}
+              </SelectContent>
+            </Select>
+
+            <Select value={shiftId} onValueChange={setShiftId}>
+              <SelectTrigger className="w-28 md:w-36 glass-card border-primary/20">
+                <SelectValue placeholder={t('common.shift', 'Turno')} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">{t('common.allShifts', 'Todos Turnos')}</SelectItem>
+                <SelectItem value="1">Turno 1</SelectItem>
+                <SelectItem value="2">Turno 2</SelectItem>
+                <SelectItem value="3">Turno 3</SelectItem>
               </SelectContent>
             </Select>
           </div>
