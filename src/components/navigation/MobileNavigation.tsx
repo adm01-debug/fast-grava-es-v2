@@ -18,8 +18,10 @@ import {
   ArrowRightLeft,
   Download,
   X,
-  ChevronRight
+  ChevronRight,
+  ArrowLeft
 } from 'lucide-react';
+import { SoundFeedback } from '@/lib/soundFeedback';
 import { cn } from '@/lib/utils';
 import { useDevice } from '@/hooks/use-device';
 import { useAuth } from '@/contexts/AuthContext';
