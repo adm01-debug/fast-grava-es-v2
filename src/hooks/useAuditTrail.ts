@@ -14,7 +14,7 @@ const CONTEXT = 'useAuditTrail';
 async function fetchAuditEntries(filters: AuditFilters): Promise<AuditLogEntry[]> {
   let query = supabase
     .from('audit_log' as any)
-    .select('*')
+    .select('*, profiles:actor_id(full_name)')
     .order('created_at', { ascending: false });
 
   if (filters.limit) query = query.limit(filters.limit);
