@@ -287,7 +287,7 @@ export default function MachinesPage() {
                   animate={{ opacity: 1 }}
                   className="py-20 text-center"
                 >
-                  <Printer className="h-12 w-12 mx-auto text-muted-foreground/20 mb-4" />
+                  <Target className="h-12 w-12 mx-auto text-muted-foreground/20 mb-4" />
                   <p className="text-muted-foreground">Nenhuma máquina encontrada com os filtros aplicados.</p>
                 </motion.div>
               ) : (
