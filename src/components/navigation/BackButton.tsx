@@ -7,9 +7,6 @@ import { useHapticFeedback } from "@/hooks/use-haptic-feedback";
 import { useDevice } from "@/hooks/use-device";
 import { motion, AnimatePresence } from "framer-motion";
 
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { useEffect, useState } from "react";
 
 interface BackButtonProps {
   className?: string;
