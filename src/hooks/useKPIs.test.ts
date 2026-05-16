@@ -22,10 +22,11 @@ describe('useKPIs', () => {
   });
 
   it('should calculate correct metrics when data is provided', () => {
+    const now = new Date().toISOString();
     const mockJobs = [
-      { id: '1', quantity: 100, produced_quantity: 90, lost_pieces: 10, status: 'finished', created_at: new Date().toISOString() },
-      { id: '2', quantity: 50, produced_quantity: 50, lost_pieces: 0, status: 'finished', created_at: new Date().toISOString() },
-      { id: '3', quantity: 200, status: 'production', created_at: new Date().toISOString() },
+      { id: '1', quantity: 100, produced_quantity: 90, lost_pieces: 10, status: 'finished', scheduled_date: now.split('T')[0], created_at: now },
+      { id: '2', quantity: 50, produced_quantity: 50, lost_pieces: 0, status: 'finished', scheduled_date: now.split('T')[0], created_at: now },
+      { id: '3', quantity: 200, status: 'production', scheduled_date: now.split('T')[0], created_at: now },
     ];
     const mockTechniques = [{ id: 'tech1', name: 'Laser', color: '#ff0000' }];
     const mockMachines = [{ id: 'm1', name: 'Machine 1', technique_id: 'tech1' }];
