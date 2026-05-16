@@ -137,14 +137,14 @@ export function MainLayout({ children }: MainLayoutProps) {
           )}>
 
             {/* Global Navigation Header - Only show when not on home page or root-level dashboard */}
-            <div className="flex flex-col gap-3 mb-6 sm:flex-row sm:items-center sm:justify-between sm:gap-4 no-export border-b border-border/10 pb-5">
+            <div className="flex flex-col gap-3 mb-6 sm:flex-row sm:items-center sm:justify-between sm:gap-4 no-export border-b border-border/10 pb-6">
               <div className="flex items-center gap-3">
                 <Suspense fallback={null}>
-                  <BackButton />
+                  <BackButton className="hover:scale-105 transition-transform" />
                 </Suspense>
-                <div className="h-6 w-px bg-border/20 mx-1 hidden sm:block" />
-                <Suspense fallback={<div className="h-9 bg-muted animate-pulse rounded-md w-48" />}>
-                  <Breadcrumbs />
+                <div className="h-6 w-px bg-border/20 mx-1 hidden sm:block shadow-sm" />
+                <Suspense fallback={<div className="h-9 bg-muted/40 animate-pulse rounded-md w-48 border border-border/20" />}>
+                  <Breadcrumbs className="max-w-[calc(100vw-8rem)]" />
                 </Suspense>
               </div>
               
