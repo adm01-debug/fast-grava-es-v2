@@ -13,7 +13,7 @@ const CONTEXT = 'useAuditTrail';
 
 async function fetchAuditEntries(filters: AuditFilters): Promise<AuditLogEntry[]> {
   let query = supabase
-    .from('audit_log_view')
+    .from('audit_log' as any)
     .select('*')
     .order('created_at', { ascending: false });
 
