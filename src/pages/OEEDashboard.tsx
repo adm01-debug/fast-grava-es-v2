@@ -61,6 +61,7 @@ const OEEMachineTable = lazy(() => import('@/components/oee/OEEMachineTable').th
 const OEETrendChart = lazy(() => import('@/components/oee/OEETrendChart').then(m => ({ default: m.OEETrendChart })));
 const OEELossesChart = lazy(() => import('@/components/oee/OEELossesChart').then(m => ({ default: m.OEELossesChart })));
 const OEETechniqueComparison = lazy(() => import('@/components/oee/OEETechniqueComparison').then(m => ({ default: m.OEETechniqueComparison })));
+const OEEHeatmap = lazy(() => import('@/components/oee/OEEHeatmap').then(m => ({ default: m.OEEHeatmap })));
 
 const OEEDashboard = memo(function OEEDashboard() {
   const { t } = useTranslation();
