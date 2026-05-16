@@ -1,4 +1,5 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { Database } from '@/integrations/supabase/types';
 import { supabase } from '@/integrations/supabase/client';
 import { useEffect, useMemo, useCallback } from 'react';
 import { differenceInMinutes } from 'date-fns';
