@@ -530,7 +530,7 @@ const OEEDashboard = memo(function OEEDashboard() {
             </Suspense>
           </TabsContent>
 
-          <TabsContent value="losses">
+          <TabsContent value="losses" className="space-y-6">
             <Suspense fallback={<ChartSkeleton />}>
               <OEELossesChart
                 availabilityLosses={data.availabilityLosses}
@@ -538,6 +538,10 @@ const OEEDashboard = memo(function OEEDashboard() {
                 qualityLosses={data.qualityLosses}
                 overallOEE={data.overallOEE}
               />
+            </Suspense>
+
+            <Suspense fallback={<ChartSkeleton />}>
+              <ParetoLossesChart losses={losses || []} />
             </Suspense>
           </TabsContent>
 
