@@ -21,7 +21,8 @@ Após um levantamento minucioso do projeto, identifiquei oportunidades críticas
 
 *   **Ação I [CONCLUÍDO]:** Refatoração do `src/pages/BIDashboard.tsx` e componentes relacionados. Removido uso de `any` e implementadas interfaces `Job` e `BIMetrics` integralmente.
 *   **Ação II [CONCLUÍDO]:** Refinados tipos em hooks customizados (`useKPIs`, `useOEE`, `useOperators`), saneamento de logs de depuração residuais com uso do `logger` e sincronização de constantes globais de status.
-*   **Ação III:** Padronizar as chamadas ao Supabase usando helpers tipados e unificar constantes de cores (HSL).
+*   **Ação III [CONCLUÍDO]:** Padronizadas as chamadas ao Supabase usando helpers tipados (`jobsService`, `machinesService`) no hook central `useSchedulingData`.
+*   **Ação IV:** Unificar constantes de cores (HSL) e adicionar validações extras de integridade em formulários de criação de jobs.
 
 Aguardando aprovação para iniciar a execução sequencial rumo ao 10/10.
 
