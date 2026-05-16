@@ -130,8 +130,9 @@ export function Breadcrumbs({ className }: { className?: string }) {
               <Link
                 to={item.href}
                 onClick={() => trigger('light')}
-                className="px-2 py-1 rounded-md hover:bg-primary/10 hover:text-foreground transition-all hover:underline underline-offset-4"
+                className="px-2.5 py-1 rounded-md hover:bg-primary/15 hover:text-foreground transition-all hover:scale-105 active:scale-95 hover:underline underline-offset-4 border border-transparent hover:border-primary/20"
               >
+
                 {item.label}
               </Link>
             ) : (
