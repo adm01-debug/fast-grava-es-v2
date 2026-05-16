@@ -44,6 +44,7 @@ import {
 } from 'lucide-react';
 import { useOEE, WORLD_CLASS_OEE, getOEEColor } from '@/hooks/useOEE';
 import { useOEEAlerts } from '@/hooks/useOEEAlerts';
+import { useProductionLosses } from '@/hooks/useProductionLosses';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 const OEEGaugeCard = lazy(() => import('@/components/oee/OEEGaugeCard').then(m => ({ default: m.OEEGaugeCard })));
