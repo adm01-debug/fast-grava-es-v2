@@ -84,6 +84,7 @@ const OEEDashboard = memo(function OEEDashboard() {
   const [presetName, setPresetName] = useState('');
   const { presets, savePreset, deletePreset } = useDashboardPresets('oee');
   const [activeTab, setActiveTab] = useState('overview');
+  const [showConfig, setShowSimulatorLocal] = useState(false); // Used for a future settings modal if needed
   
   const filters = useMemo(() => ({
     machineId: machineId === 'all' ? undefined : machineId,

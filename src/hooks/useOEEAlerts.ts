@@ -10,9 +10,10 @@ import { toast } from 'sonner';
 const CONTEXT = 'useOEEAlerts';
 
 export function useOEEAlerts() {
-  const { data: oeeData } = useOEE(1, 0); // Check current day OEE
+  const { data: oeeData } = useOEE(1, 0, { startDate: startOfDay(new Date()), endDate: endOfDay(new Date()) }); // Check current day OEE strictly
   const { getConfig } = useBusinessConfig();
   const lastAlertsRef = useRef<Record<string, number>>({});
+  const lastOEEValueRef = useRef<Record<string, number>>({}); // Track last seen values to detect drops
   const { sendNotification } = usePushNotifications();
   const { playBottleneckAlert } = useNotificationSounds();
 
@@ -110,9 +111,18 @@ export function useOEEAlerts() {
       checkMetric(machine, 'Performance', machine.performance, thresholds.performance.warning);
       checkMetric(machine, 'Qualidade', machine.quality, thresholds.quality.warning);
       
-      // Speed check (using performance as proxy or specific metric if available)
-      const speedValue = machine.performance; 
-      checkMetric(machine, 'Velocidade', speedValue, thresholds.speed.warning);
+      // Speed check (using performance as proxy)
+      checkMetric(machine, 'Velocidade', machine.performance, thresholds.speed.warning);
+
+      // DROP DETECTION: If OEE drops more than 10% compared to last check within the same session
+      const lastVal = lastOEEValueRef.current[machine.machineId];
+      if (lastVal !== undefined && lastVal - machine.oee > 10) {
+        toast.error(`⚠️ QUEDA DE PERFORMANCE: ${machine.machineName}`, {
+          description: `OEE caiu de ${lastVal.toFixed(1)}% para ${machine.oee.toFixed(1)}%`,
+          duration: 0, // Persistent until closed
+        });
+      }
+      lastOEEValueRef.current[machine.machineId] = machine.oee;
     });
   }, [oeeData, getConfig, checkMetric]);
 
