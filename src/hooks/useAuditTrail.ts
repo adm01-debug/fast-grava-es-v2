@@ -40,7 +40,6 @@ async function fetchAuditEntries(filters: AuditFilters): Promise<AuditLogEntry[]
     throw error;
   }
   const parsed = (data ?? []).map((row: any) => {
-    // AuditLogEntry expected actor_name and actor_email
     const result = auditLogEntrySchema.safeParse(row);
     if (!result.success) {
       logger.warn('Audit row failed validation', result.error.flatten(), CONTEXT);
@@ -48,7 +47,7 @@ async function fetchAuditEntries(filters: AuditFilters): Promise<AuditLogEntry[]
     }
     return {
       ...result.data,
-      actor_name: (row as any).actor_name // Injecting actor_name for UI
+      actor_name: (row as any).profiles?.full_name || (row as any).actor_name // Injecting actor_name for UI
     } as AuditLogEntry & { actor_name?: string };
   });
   return parsed.filter((x): x is AuditLogEntry & { actor_name?: string } => x !== null);
