@@ -17,6 +17,9 @@ export function useOEEAlerts() {
   const { playBottleneckAlert } = useNotificationSounds();
 
   const checkMetric = useCallback(async (machine: any, name: string, value: number, warningThreshold: number, criticalThreshold?: number) => {
+    const prefs = localStorage.getItem('notification-preferences');
+    const oeeAlertsEnabled = prefs ? JSON.parse(prefs).oeeAlerts !== false : true;
+    if (!oeeAlertsEnabled) return;
     // Logic to prevent alert spam: only alert once every 4 hours per metric/machine
     const now = Date.now();
     const throttleMs = 4 * 60 * 60 * 1000;

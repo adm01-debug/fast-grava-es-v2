@@ -1137,6 +1137,53 @@ export type Database = {
         }
         Relationships: []
       }
+      job_status_audit: {
+        Row: {
+          changed_at: string | null
+          changed_by: string | null
+          id: string
+          job_id: string
+          new_lost_pieces: number | null
+          new_produced_quantity: number | null
+          new_status: string | null
+          old_lost_pieces: number | null
+          old_produced_quantity: number | null
+          old_status: string | null
+        }
+        Insert: {
+          changed_at?: string | null
+          changed_by?: string | null
+          id?: string
+          job_id: string
+          new_lost_pieces?: number | null
+          new_produced_quantity?: number | null
+          new_status?: string | null
+          old_lost_pieces?: number | null
+          old_produced_quantity?: number | null
+          old_status?: string | null
+        }
+        Update: {
+          changed_at?: string | null
+          changed_by?: string | null
+          id?: string
+          job_id?: string
+          new_lost_pieces?: number | null
+          new_produced_quantity?: number | null
+          new_status?: string | null
+          old_lost_pieces?: number | null
+          old_produced_quantity?: number | null
+          old_status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "job_status_audit_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       job_status_history: {
         Row: {
           changed_by: string | null
@@ -1628,6 +1675,44 @@ export type Database = {
           },
           {
             foreignKeyName: "machine_downtime_machine_id_fkey"
+            columns: ["machine_id"]
+            isOneToOne: false
+            referencedRelation: "machines"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      machine_event_audit: {
+        Row: {
+          event_type: string
+          id: string
+          machine_id: string
+          new_value: string | null
+          old_value: string | null
+          performed_at: string | null
+          performed_by: string | null
+        }
+        Insert: {
+          event_type: string
+          id?: string
+          machine_id: string
+          new_value?: string | null
+          old_value?: string | null
+          performed_at?: string | null
+          performed_by?: string | null
+        }
+        Update: {
+          event_type?: string
+          id?: string
+          machine_id?: string
+          new_value?: string | null
+          old_value?: string | null
+          performed_at?: string | null
+          performed_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "machine_event_audit_machine_id_fkey"
             columns: ["machine_id"]
             isOneToOne: false
             referencedRelation: "machines"

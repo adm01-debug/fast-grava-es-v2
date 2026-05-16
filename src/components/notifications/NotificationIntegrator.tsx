@@ -3,6 +3,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { usePushNotifications } from "@/hooks/usePushNotifications";
 import { useNotificationSounds } from "@/hooks/useNotificationSounds";
 import { useAuth } from "@/contexts/AuthContext";
+import { useGoalAlerts } from "@/hooks/useGoalAlerts";
+import { useOEEAlerts } from "@/hooks/useOEEAlerts";
+import { useTPMNotifications } from "@/hooks/useTPMNotifications";
 
 interface NotificationPreferences {
   delayedJobs: boolean;
@@ -10,6 +13,9 @@ interface NotificationPreferences {
   bottleneck: boolean;
   statusChanges: boolean;
   productionComplete: boolean;
+  oeeAlerts: boolean;
+  goalAlerts: boolean;
+  maintenanceAlerts: boolean;
 }
 
 interface JobPayload {
@@ -36,7 +42,10 @@ const getPreferences = (): NotificationPreferences => {
     lowBuffer: true,
     bottleneck: true,
     statusChanges: false,
-    productionComplete: false
+    productionComplete: false,
+    oeeAlerts: true,
+    goalAlerts: true,
+    maintenanceAlerts: true
   };
 };
 
@@ -173,6 +182,11 @@ export const NotificationIntegrator = () => {
       supabase.removeChannel(channel);
     };
   }, [permission, user, sendBottleneckAlert, sendLowBufferAlert, playBottleneckAlert, playBufferAlert]);
+
+  // Goal, OEE and TPM Alerts Hooks (Self-contained)
+  useGoalAlerts({ enableNotifications: getPreferences().goalAlerts });
+  useOEEAlerts(); // Internal OEEAlerts already handles throttling and dispatch
+  useTPMNotifications(); // Already listens to maintenance alerts via realtime
 
   // Clean up old notification references periodically
   useEffect(() => {

@@ -3,8 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
-import { AlertTriangle, Target, Clock, Percent, ShieldCheck, User } from 'lucide-react';
-import { useAuditTrail } from '@/hooks/useAuditTrail';
+import { AlertTriangle, Target, Clock, Percent, ShieldCheck, User, Activity } from 'lucide-react';
+import { useDetailedAuditTrail } from '@/hooks/useDetailedAuditTrail';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
@@ -16,7 +16,7 @@ interface KPIAlertsTabProps {
 const KPIAlertsTabComponent = ({
   goalAlerts, kpis
 }: KPIAlertsTabProps) => {
-  const { data: auditLogs } = useAuditTrail({ limit: 5, entityType: 'jobs' });
+  const { jobAudits, machineAudits, isLoading: isLoadingAudit } = useDetailedAuditTrail();
 
   return (
     <div className="space-y-6">
@@ -118,43 +118,65 @@ const KPIAlertsTabComponent = ({
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {auditLogs?.map((log: any) => (
+                {jobAudits.map((log) => (
                   <div key={log.id} className="p-3 rounded-lg bg-background/50 border border-border/40 space-y-2">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <div className="h-6 w-6 rounded-full bg-muted flex items-center justify-center">
                           <User className="h-3 w-3 text-muted-foreground" />
                         </div>
-                        <span className="text-xs font-medium">{log.actor_name || 'Usuário'}</span>
+                        <span className="text-xs font-medium">{log.profiles?.full_name || 'Operador'}</span>
                       </div>
                       <span className="text-[10px] text-muted-foreground">
-                        {format(new Date(log.created_at), "dd MMM, HH:mm", { locale: ptBR })}
+                        {format(new Date(log.changed_at), "dd MMM, HH:mm", { locale: ptBR })}
                       </span>
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
                         <Badge variant="outline" className="text-[9px] uppercase font-bold py-0 h-4">
-                          {log.entity_type}
+                          Job
                         </Badge>
                         <span className="text-xs font-bold">
-                          {log.action === 'UPDATE' ? 'Alterou Status' : 
-                           log.action === 'INSERT' ? 'Criou Registro' : log.action}
+                          {log.jobs?.order_number || '—'}
                         </span>
                       </div>
-                      {log.details && typeof log.details === 'object' && (
-                        <div className="mt-2 text-[11px] text-muted-foreground bg-muted/30 p-2 rounded">
-                          {Object.entries(log.details).slice(0, 2).map(([key, val]: [string, any]) => (
-                            <div key={key} className="flex justify-between">
-                              <span className="capitalize">{key}:</span>
-                              <span className="font-medium text-foreground">{String(val)}</span>
-                            </div>
-                          ))}
+                      <div className="mt-2 text-[11px] text-muted-foreground bg-muted/30 p-2 rounded">
+                        <div className="flex justify-between">
+                          <span>Status:</span>
+                          <span className="font-medium text-foreground">{log.old_status} → {log.new_status}</span>
                         </div>
-                      )}
+                        {log.new_produced_quantity !== log.old_produced_quantity && (
+                          <div className="flex justify-between">
+                            <span>Produzido:</span>
+                            <span className="font-medium text-foreground">{log.new_produced_quantity}</span>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                 ))}
-                {!auditLogs?.length && (
+                
+                {machineAudits.map((log) => (
+                  <div key={log.id} className="p-3 rounded-lg bg-cyan-500/5 border border-cyan-500/20 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Activity className="h-3 w-3 text-cyan-500" />
+                        <span className="text-xs font-medium">{log.profiles?.full_name || 'Sistema'}</span>
+                      </div>
+                      <span className="text-[10px] text-muted-foreground">
+                        {format(new Date(log.performed_at), "dd MMM, HH:mm", { locale: ptBR })}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold">{log.machines?.name}</span>
+                      <Badge className={cn("text-[8px]", log.event_type === 'activation' ? "bg-green-500" : "bg-red-500")}>
+                        {log.event_type === 'activation' ? 'ATIVADA' : 'DESATIVADA'}
+                      </Badge>
+                    </div>
+                  </div>
+                ))}
+
+                {jobAudits.length === 0 && machineAudits.length === 0 && (
                   <div className="text-center py-12">
                     <Clock className="h-12 w-12 text-muted-foreground mx-auto mb-4 opacity-20" />
                     <p className="text-muted-foreground">Nenhuma atividade recente</p>
