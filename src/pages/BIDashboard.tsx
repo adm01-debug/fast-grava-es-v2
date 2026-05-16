@@ -34,6 +34,7 @@ import { cn } from '@/lib/utils';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DelaysAnalysis } from '@/components/bi/delays/DelaysAnalysis';
 import { LossesTable } from '@/components/bi/losses/LossesTable';
+import { AIInsights } from '@/components/bi/AIInsights';
 
 import { BIMetrics, BIJob } from '@/types/bi';
 type PeriodFilter = '7d' | '30d' | '90d' | 'custom';
