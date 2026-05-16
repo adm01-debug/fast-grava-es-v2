@@ -53,16 +53,25 @@ export function useProductionLosses(jobId?: string, filters?: { shift?: string; 
       if (error) throw error;
 
       // Update total lost_pieces on the job
-      const { data: job } = await supabase.from('jobs').select('lost_pieces, start_time').eq('id', data.job_id).single();
+      const { data: job } = await supabase.from('jobs').select('lost_pieces, start_time, actual_start_time').eq('id', data.job_id).single();
       const currentLosses = job?.lost_pieces || 0;
 
-      // Auto-detect shift based on job start_time if not provided
+      // Auto-detect shift based on job time if not provided
       let shift = data.shift;
-      if (!shift && job?.start_time) {
-        const hour = parseInt(job.start_time.split(':')[0]);
-        if (hour >= 7 && hour < 15) shift = '1';
-        else if (hour >= 15 && hour < 23) shift = '2';
-        else shift = '3';
+      if (!shift) {
+        const timeToUse = job?.actual_start_time || job?.start_time;
+        if (timeToUse) {
+          let hour: number;
+          if (timeToUse.includes('T')) {
+            hour = new Date(timeToUse).getHours();
+          } else {
+            hour = parseInt(timeToUse.split(':')[0]);
+          }
+          
+          if (hour >= 7 && hour < 15) shift = '1';
+          else if (hour >= 15 && hour < 23) shift = '2';
+          else shift = '3';
+        }
       }
 
       await supabase
