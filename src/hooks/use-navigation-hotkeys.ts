@@ -42,6 +42,14 @@ export function useNavigationHotkeys() {
         trigger('light');
         navigate('/notifications');
       }
+
+      // Alt + S to open Global Search (simulates Cmd+K)
+      if (event.altKey && (event.key === 's' || event.key === 'S')) {
+        event.preventDefault();
+        trigger('light');
+        SoundFeedback.click();
+        document.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', metaKey: true, bubbles: true }));
+      }
       
       // Alt + K for Command Palette (handled by its own component, but we could unify here)
     };
