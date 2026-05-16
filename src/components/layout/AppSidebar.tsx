@@ -16,6 +16,7 @@ import { LanguageSwitcher } from './LanguageSwitcher';
 import { NavButton } from './sidebar/NavButton';
 import { NavGroupComponent } from './sidebar/NavGroupComponent';
 import { navGroups, adminNavItems } from './sidebar/sidebarNavConfig';
+import { StaggeredList } from '../ui/micro-interactions';
 
 export function AppSidebar() {
   const { t } = useTranslation();
