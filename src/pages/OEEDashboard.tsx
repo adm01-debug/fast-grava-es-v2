@@ -679,7 +679,7 @@ const OEEDashboard = memo(function OEEDashboard() {
           <TabsContent value="losses" className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <div className="lg:col-span-2 space-y-6">
-                <Suspense fallback={<ChartSkeleton />}><OEELossDrilldown filters={filters} /></Suspense>
+                <Suspense fallback={<ChartSkeleton />}><OEELossDrilldown filters={lossFilters} /></Suspense>
                 <Suspense fallback={<ChartSkeleton />}><OEELossesChart availabilityLosses={data.availabilityLosses} performanceLosses={data.performanceLosses} qualityLosses={data.qualityLosses} overallOEE={data.overallOEE} /></Suspense>
               </div>
               <div className="space-y-6">
