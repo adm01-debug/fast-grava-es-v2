@@ -90,6 +90,16 @@ export interface OEEData {
     }[];
   }[];
 
+  // Predictive maintenance alerts
+  maintenanceAlerts: {
+    machineId: string;
+    machineName: string;
+    type: 'performance' | 'quality' | 'availability';
+    severity: 'high' | 'medium' | 'low';
+    message: string;
+    trend: number;
+  }[];
+
   // World-class benchmark
   worldClassBenchmark: number;
 
