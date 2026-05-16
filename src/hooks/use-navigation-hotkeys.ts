@@ -24,6 +24,7 @@ export function useNavigationHotkeys() {
       if ((event.altKey && event.key === 'ArrowLeft')) {
         event.preventDefault();
         trigger('light');
+        SoundFeedback.navBack();
         navigate(-1);
       }
 
