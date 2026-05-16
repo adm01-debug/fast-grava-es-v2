@@ -48,7 +48,7 @@ export function AuthLoginForm({
           <Label htmlFor="remember-me" className="text-sm font-normal text-muted-foreground cursor-pointer">{t('auth.rememberMe', 'Lembrar meu e-mail')}</Label>
         </div>
       </div>
-      <Button type="submit" variant="gradient" className="w-full h-12 text-base font-semibold tracking-wide" disabled={isLoading || !!socialLoading}>
+      <Button type="submit" className="w-full h-12 text-base font-semibold tracking-wide bg-[#FF5A1F] hover:bg-[#e44d18] text-white shadow-lg shadow-[#FF5A1F]/10" disabled={isLoading || !!socialLoading}>
         {isLoading ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />{t('common.loading')}</> : <><LogIn className="h-4 w-4 mr-2" />{t('auth.login')}</>}
       </Button>
       <div className="relative"><div className="absolute inset-0 flex items-center"><span className="w-full border-t" /></div><div className="relative flex justify-center text-xs uppercase"><span className="bg-card px-2 text-muted-foreground">{t('common.or', 'ou')}</span></div></div>
