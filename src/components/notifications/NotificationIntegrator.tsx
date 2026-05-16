@@ -36,7 +36,10 @@ const getPreferences = (): NotificationPreferences => {
     lowBuffer: true,
     bottleneck: true,
     statusChanges: false,
-    productionComplete: false
+    productionComplete: false,
+    oeeAlerts: true,
+    goalAlerts: true,
+    maintenanceAlerts: true
   };
 };
 
