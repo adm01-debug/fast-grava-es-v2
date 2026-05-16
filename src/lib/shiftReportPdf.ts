@@ -29,7 +29,7 @@ export async function exportShiftReportPDF(data: ShiftReportData): Promise<void>
   doc.setTextColor(255, 255, 255);
   doc.setFontSize(20);
   doc.setFont('helvetica', 'bold');
-  doc.text('52 STÚDIOS DE GRAVAÇÃO', margin, 16);
+  doc.text('FAST GRAVAÇÕES', margin, 16);
 
   doc.setFontSize(13);
   doc.setFont('helvetica', 'normal');
@@ -133,7 +133,7 @@ export async function exportShiftReportPDF(data: ShiftReportData): Promise<void>
   const footerY = doc.internal.pageSize.getHeight() - 10;
   doc.setFontSize(7);
   doc.setTextColor(150, 150, 150);
-  doc.text('52 STÚDIOS DE GRAVAÇÃO — Relatório automático de turno', margin, footerY);
+  doc.text('FAST GRAVAÇÕES — Relatório automático de turno', margin, footerY);
   doc.text('Página 1', pageWidth - margin - 15, footerY);
 
   // Save

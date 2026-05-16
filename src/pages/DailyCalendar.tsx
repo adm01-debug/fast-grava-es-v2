@@ -163,7 +163,7 @@ export default function DailyCalendar() {
       dayJobs,
       machines,
       `agenda-${format(selectedDate, 'yyyy-MM-dd')}.ics`,
-      `52 STÚDIOS DE GRAVAÇÃO — ${format(selectedDate, 'dd MMM yyyy', { locale: ptBR })}`
+      `FAST GRAVAÇÕES — ${format(selectedDate, 'dd MMM yyyy', { locale: ptBR })}`
     );
     toast.success('Calendário iCal exportado');
   };

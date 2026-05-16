@@ -85,7 +85,7 @@ export function buildICalFeed(jobs: DbJob[], machines: DbMachine[], calendarName
         `DTEND:${end}`,
         `SUMMARY:${summary}`,
         `DESCRIPTION:${description}`,
-        `LOCATION:${escapeICal(machine?.name ?? '52 STÚDIOS DE GRAVAÇÃO')}`,
+        `LOCATION:${escapeICal(machine?.name ?? 'FAST GRAVAÇÕES')}`,
         'END:VEVENT',
       ].join('\r\n');
     })
@@ -94,7 +94,7 @@ export function buildICalFeed(jobs: DbJob[], machines: DbMachine[], calendarName
   return [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',
-    'PRODID:-//52 STÚDIOS DE GRAVAÇÃO//Calendar//PT-BR',
+    'PRODID:-//FAST GRAVAÇÕES//Calendar//PT-BR',
     `X-WR-CALNAME:${escapeICal(calendarName)}`,
     'CALSCALE:GREGORIAN',
     'METHOD:PUBLISH',

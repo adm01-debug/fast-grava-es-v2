@@ -20,7 +20,7 @@ export default function AuditTrailPage() {
   const { data, isLoading, error } = useAuditTrail(filters);
 
   useEffect(() => {
-    document.title = 'Trilha de Auditoria — 52 STÚDIOS DE GRAVAÇÃO';
+    document.title = 'Trilha de Auditoria — FAST GRAVAÇÕES';
   }, []);
 
   return (

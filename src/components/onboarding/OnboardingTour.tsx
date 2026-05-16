@@ -26,7 +26,7 @@ const DEFAULT_STEPS: TourStep[] = [
   {
     id: "welcome",
     target: "body",
-    title: "Bem-vindo ao 52 STÚDIOS DE GRAVAÇÃO! 🎉",
+    title: "Bem-vindo ao FAST GRAVAÇÕES! 🎉",
     description: "Vamos fazer um tour rápido para você conhecer as principais funcionalidades do sistema.",
     icon: <Sparkles className="h-6 w-6 text-primary" />,
   },
