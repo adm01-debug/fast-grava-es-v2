@@ -1,10 +1,12 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Database } from '@/integrations/supabase/types';
 import { supabase } from '@/integrations/supabase/client';
 import { useEffect, useMemo, useCallback } from 'react';
 import { differenceInMinutes } from 'date-fns';
 import { DbJob, DbTechnique, DbMachine } from './useJobs';
-import { categorizeError, ErrorCodes, createAppError } from '@/lib/errorHandling';
+import { Database } from '@/integrations/supabase/types';
+import { createAppError } from '@/lib/errorHandling';
+import { jobsService } from '@/services/jobsService';
+import { machinesService } from '@/services/machinesService';
 
 // Stale time for static data (techniques, machines change less frequently)
 const STATIC_DATA_STALE_TIME = 15 * 60 * 1000; // 15 minutes (was 5)
