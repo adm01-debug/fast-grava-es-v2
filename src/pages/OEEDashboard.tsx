@@ -507,13 +507,17 @@ const OEEDashboard = memo(function OEEDashboard() {
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="trend">
+          <TabsContent value="trend" className="space-y-6">
             <Suspense fallback={<ChartSkeleton />}>
               <OEETrendChart
                 data={data.trendData}
                 worldClassBenchmark={data.worldClassBenchmark}
                 comparison={data.comparison}
               />
+            </Suspense>
+            
+            <Suspense fallback={<ChartSkeleton />}>
+              <OEEHeatmap data={data.heatmapData} />
             </Suspense>
           </TabsContent>
 
