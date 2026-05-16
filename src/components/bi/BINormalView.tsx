@@ -195,7 +195,7 @@ export function BINormalView({ biMetrics, kpis, oeeData, getPeriodLabel, onDrill
             <ResponsiveContainer width="100%" height={280}>
               <AreaChart
                 data={biMetrics.dailyTrend}
-                onClick={(data: any) => {
+                onClick={(data) => {
                   if (data && data.activeLabel) {
                     onDrillDown(`PEDIDOS EM ${data.activeLabel}`, 'all');
                   }
