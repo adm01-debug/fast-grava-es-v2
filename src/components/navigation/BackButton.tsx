@@ -44,15 +44,15 @@ export function BackButton({ className }: BackButtonProps) {
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.8 }}
-          className="fixed bottom-24 left-6 z-[60] md:hidden no-export"
+          className="fixed bottom-24 left-6 z-[60] md:hidden no-export group"
         >
           <Button
             variant="default"
             size="icon"
             onClick={handleBack}
             className={cn(
-              "h-14 w-14 rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.2)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.5)] transition-all active:scale-90 touch-target",
-              "bg-background/80 backdrop-blur-2xl border border-primary/20 text-primary",
+              "h-14 w-14 rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.15)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.4)] transition-all active:scale-90 touch-target",
+              "bg-background/90 backdrop-blur-xl border border-primary/20 text-primary/90",
               "hover:bg-background/90 hover:border-primary/40",
               className
             )}
