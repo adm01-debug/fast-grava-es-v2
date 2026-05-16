@@ -35,6 +35,7 @@ export function BackButton({ className }: BackButtonProps) {
 
   const handleBack = useCallback(() => {
     trigger('light');
+    SoundFeedback.navBack();
     if (window.history.length > 1) {
       navigate(-1);
     } else {
