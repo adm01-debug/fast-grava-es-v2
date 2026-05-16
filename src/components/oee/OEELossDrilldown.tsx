@@ -125,24 +125,45 @@ export const OEELossDrilldown = memo(function OEELossDrilldown({ filters }: OEEL
     <Card className="border-primary/20 bg-muted/5 backdrop-blur-sm overflow-hidden">
       <CardHeader className="pb-2 border-b border-border/50 bg-muted/20">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-sm font-black uppercase tracking-widest flex items-center gap-2">
-            Análise Hierárquica de Perdas
-          </CardTitle>
-          <Badge variant="outline" className="text-[10px] font-black border-primary/30">
-            {losses?.length || 0} REGISTROS
-          </Badge>
+          <div className="flex flex-col">
+            <CardTitle className="text-sm font-black uppercase tracking-widest flex items-center gap-2">
+              <History className="h-4 w-4 text-primary" />
+              Análise Hierárquica de Perdas
+            </CardTitle>
+            <p className="text-[10px] text-muted-foreground uppercase font-bold mt-1">
+              {path.length === 0 ? 'Visão Geral por Categoria' : path.length === 1 ? 'Detalhamento por Motivo' : 'Relação de Ordens de Produção'}
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            {path.length > 0 && (
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="h-7 w-7 rounded-full hover:bg-destructive/10 hover:text-destructive transition-colors"
+                onClick={reset}
+                title="Fechar caminho"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            )}
+            <Badge variant="outline" className="text-[10px] font-black border-primary/30">
+              {losses?.length || 0} REGISTROS
+            </Badge>
+          </div>
         </div>
         
         {/* Breadcrumbs */}
-        <nav className="flex items-center gap-1 mt-3 overflow-x-auto pb-1 no-scrollbar">
+        <nav className="flex items-center gap-1 mt-4 overflow-x-auto pb-1 no-scrollbar bg-black/20 p-1 rounded-lg">
           <button 
             onClick={reset}
             className={cn(
-              "text-[10px] font-bold uppercase transition-colors px-2 py-1 rounded hover:bg-primary/10",
-              path.length === 0 ? "text-primary bg-primary/10" : "text-muted-foreground"
+              "text-[10px] font-black uppercase transition-all px-3 py-1.5 rounded-md flex items-center gap-1.5",
+              path.length === 0 
+                ? "text-primary bg-primary/10 shadow-[0_0_10px_rgba(var(--primary),0.2)]" 
+                : "text-muted-foreground hover:text-foreground hover:bg-white/5"
             )}
           >
-            Geral
+            Início
           </button>
           
           {path.map((item, idx) => (
@@ -151,8 +172,10 @@ export const OEELossDrilldown = memo(function OEELossDrilldown({ filters }: OEEL
               <button 
                 onClick={() => setPath(path.slice(0, idx + 1))}
                 className={cn(
-                  "text-[10px] font-bold uppercase transition-colors px-2 py-1 rounded hover:bg-primary/10 whitespace-nowrap",
-                  idx === path.length - 1 ? "text-primary bg-primary/10" : "text-muted-foreground"
+                  "text-[10px] font-black uppercase transition-all px-3 py-1.5 rounded-md whitespace-nowrap",
+                  idx === path.length - 1 
+                    ? "text-primary bg-primary/10 shadow-[0_0_10px_rgba(var(--primary),0.2)]" 
+                    : "text-muted-foreground hover:text-foreground hover:bg-white/5"
                 )}
               >
                 {item.label}
