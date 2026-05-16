@@ -1,6 +1,7 @@
 import React, { memo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
+import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { AlertTriangle, Target, Clock, Percent, ShieldCheck, User } from 'lucide-react';
 import { useAuditTrail } from '@/hooks/useAuditTrail';
@@ -15,7 +16,7 @@ interface KPIAlertsTabProps {
 const KPIAlertsTabComponent = ({
   goalAlerts, kpis
 }: KPIAlertsTabProps) => {
-  const { data: auditLogs } = useAuditTrail({ limit: 5, entity_type: 'jobs' });
+  const { data: auditLogs } = useAuditTrail({ limit: 5, entityType: 'jobs' });
 
   return (
     <div className="space-y-6">
@@ -83,7 +84,7 @@ const KPIAlertsTabComponent = ({
                       <div className="flex items-center gap-2">
                         <p className="font-bold text-sm">{anomaly.entityName}</p>
                         {anomaly.severity === 'high' && (
-                          <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-primary text-white font-black">CRÍTICO</span>
+                          <Badge className="bg-primary text-white text-[10px]">CRÍTICO</Badge>
                         )}
                       </div>
                       <p className="text-xs text-muted-foreground mt-0.5">{anomaly.message}</p>
