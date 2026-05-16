@@ -382,7 +382,7 @@ export default function BIDashboard() {
                   setDrillDownTitle(title);
 
                   if (biMetrics.periodJobsList) {
-                    const filtered = biMetrics.periodJobsList.filter((j: any) => {
+                    const filtered = biMetrics.periodJobsList.filter((j: BIJob) => {
                       if (segment === 'all') return true;
                       const s = segment.toLowerCase();
 
@@ -395,11 +395,11 @@ export default function BIDashboard() {
                         (s === 'queue' && (j.status === 'scheduled' || j.status === 'queue')) ||
                         (s === 'production' && j.status === 'production')
                       );
-                    }).map((j: any) => ({
+                    }).map((j: BIJob) => ({
                       ...j,
                       order_number: j.order_number || `OS-${j.id.slice(0, 5)}`,
                       product: j.product_name || 'Produto',
-                      efficiency: j.produced_quantity > 0 ? (((j.produced_quantity - (j.lost_pieces || 0)) / j.produced_quantity) * 100).toFixed(1) + '%' : '--',
+                      efficiency: (j.produced_quantity || 0) > 0 ? ((((j.produced_quantity || 0) - (j.lost_pieces || 0)) / (j.produced_quantity || 1)) * 100).toFixed(1) + '%' : '--',
                       produced_quantity: j.produced_quantity ?? 0,
                       lost_pieces: j.lost_pieces ?? 0
                     } as BIJob));

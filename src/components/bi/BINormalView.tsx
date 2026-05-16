@@ -195,7 +195,7 @@ export function BINormalView({ biMetrics, kpis, oeeData, getPeriodLabel, onDrill
             <ResponsiveContainer width="100%" height={280}>
               <AreaChart
                 data={biMetrics.dailyTrend}
-                onClick={(data: any) => {
+                onClick={(data) => {
                   if (data && data.activeLabel) {
                     onDrillDown(`PEDIDOS EM ${data.activeLabel}`, 'all');
                   }
@@ -236,11 +236,13 @@ export function BINormalView({ biMetrics, kpis, oeeData, getPeriodLabel, onDrill
                   outerRadius={100}
                   paddingAngle={2}
                   dataKey="value"
-                  label={({ name, percent }: any) => `${name} (${(percent * 100).toFixed(0)}%)`}
+                  label={({ name, percent }: { name: string; percent: number }) => `${name} (${(percent * 100).toFixed(0)}%)`}
                   labelLine={false}
-                  onClick={(data: any) => onDrillDown(`PEDIDOS: ${data.name}`, data.name)}
+                  onClick={(data) => {
+                    if (data && data.name) onDrillDown(`PEDIDOS: ${data.name}`, data.name);
+                  }}
                 >
-                  {biMetrics.statusDistribution.map((entry: any, index: number) => (
+                  {biMetrics.statusDistribution.map((entry, index: number) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
@@ -274,14 +276,18 @@ export function BINormalView({ biMetrics, kpis, oeeData, getPeriodLabel, onDrill
                   fill={CHART_COLORS.success}
                   name="Produzidas"
                   radius={[0, 6, 6, 0]}
-                  onClick={(data: any) => onDrillDown(`TÉCNICA: ${data.name}`, data.id)}
+                  onClick={(data) => {
+                    if (data && data.name) onDrillDown(`TÉCNICA: ${data.name}`, data.id);
+                  }}
                 />
                 <Bar
                   dataKey="lost"
                   fill={CHART_COLORS.danger}
                   name="Perdidas"
                   radius={[0, 6, 6, 0]}
-                  onClick={(data: any) => onDrillDown(`PERDAS EM ${data.name}`, data.id)}
+                  onClick={(data) => {
+                    if (data && data.name) onDrillDown(`PERDAS EM ${data.name}`, data.id);
+                  }}
                 />
               </BarChart>
             </ResponsiveContainer>
@@ -335,7 +341,7 @@ export function BINormalView({ biMetrics, kpis, oeeData, getPeriodLabel, onDrill
                 </tr>
               </thead>
               <tbody>
-                {biMetrics.machineUtilization.map((machine: any, index: number) => (
+                {biMetrics.machineUtilization.map((machine, index: number) => (
                   <tr key={machine.id} className="border-b border-border/50 hover:bg-primary/5 transition-all duration-200 group">
                     <td className="py-3 px-4">
                       <div className="flex items-center gap-2">

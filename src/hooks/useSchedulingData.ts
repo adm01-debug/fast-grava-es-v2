@@ -1,4 +1,5 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { Database } from '@/integrations/supabase/types';
 import { supabase } from '@/integrations/supabase/client';
 import { useEffect, useMemo, useCallback } from 'react';
 import { differenceInMinutes } from 'date-fns';
@@ -164,7 +165,7 @@ export function useSchedulingData() {
   }, [machinesQuery.data]);
 
   const profilesMap = useMemo(() => {
-    const map = new Map<string, any>();
+    const map = new Map<string, { id: string; full_name: string | null; avatar_url: string | null }>();
     profilesQuery.data?.forEach(p => map.set(p.id, p));
     return map;
   }, [profilesQuery.data]);
