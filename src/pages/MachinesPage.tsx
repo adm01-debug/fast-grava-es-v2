@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
-  Printer, CheckCircle2, XCircle, Settings, History,
+  Printer, Target, CheckCircle2, XCircle, Settings, History,
   Activity, AlertTriangle, Map as MapIcon, Zap, Search, FileDown
 } from 'lucide-react';
 import { useSchedulingData } from '@/hooks/useSchedulingData';
