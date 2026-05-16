@@ -1,34 +1,34 @@
 export const CHART_COLORS = {
-  primary: '#0ea5e9',
-  primaryGlow: '#38bdf8',
-  success: '#10b981',
-  warning: '#f59e0b',
-  danger: '#ef4444',
-  purple: '#8b5cf6',
-  cyan: '#06b6d4',
-  pink: '#ec4899',
-  muted: '#64748b',
-  xp: '#3b82f6',
-  coins: '#eab308',
-  streak: '#f97316',
+  primary: 'hsl(var(--primary))',
+  primaryGlow: 'hsl(var(--primary-glow))',
+  success: 'hsl(var(--success))',
+  warning: 'hsl(var(--warning))',
+  danger: 'hsl(var(--destructive))',
+  purple: 'hsl(var(--accent-purple))',
+  cyan: 'hsl(var(--accent-cyan))',
+  pink: 'hsl(var(--accent-pink))',
+  muted: 'hsl(var(--muted-foreground))',
+  xp: 'hsl(var(--xp))',
+  coins: 'hsl(var(--coins))',
+  streak: 'hsl(var(--streak))',
 };
 
 
 export const GRADIENTS = {
   primary: 'from-primary/20 via-primary/5 to-transparent',
-  success: 'from-emerald-500/20 via-emerald-500/5 to-transparent',
-  warning: 'from-amber-500/20 via-amber-500/5 to-transparent',
-  danger: 'from-rose-500/20 via-rose-500/5 to-transparent',
-  purple: 'from-violet-500/20 via-violet-500/5 to-transparent',
+  success: 'from-success/20 via-success/5 to-transparent',
+  warning: 'from-warning/20 via-warning/5 to-transparent',
+  danger: 'from-destructive/20 via-destructive/5 to-transparent',
+  purple: 'from-accent-purple/20 via-accent-purple/5 to-transparent',
 };
 
 export const PIE_COLORS = [
-  '#10b981', // success
-  '#0ea5e9', // primary
-  '#f59e0b', // warning
-  '#38bdf8', // primary glow
-  '#8b5cf6', // purple
-  '#06b6d4', // cyan
+  'hsl(var(--success))',
+  'hsl(var(--primary))',
+  'hsl(var(--warning))',
+  'hsl(var(--accent-purple))',
+  'hsl(var(--accent-cyan))',
+  'hsl(var(--accent-pink))',
 ];
 
 export const getStudioName = (technique: string = '') => {
