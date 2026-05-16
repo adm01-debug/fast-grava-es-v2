@@ -24,7 +24,7 @@ import { StuckJobsPanel } from '@/components/scheduling/StuckJobsPanel';
 import { CapacityHealthPanel } from '@/components/scheduling/CapacityHealthPanel';
 import { useKanbanDragDrop } from '@/hooks/useKanbanDragDrop';
 import { FavoriteButton, FavoritesDropdown } from '@/components/navigation/FavoritesManager';
-import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
+// Breadcrumbs removed - handled by MainLayout
 import {
   Clock, Package, Calendar, Play, CheckCircle2,
   AlertTriangle, RotateCcw, Pause, Command, Trash2, ArrowRight,
@@ -326,7 +326,7 @@ export default function KanbanBoard() {
         onDragCancel={handleDragCancel}
       >
         <div className="p-4 sm:p-6 lg:p-8 space-y-4 animate-fade-in-up">
-          <Breadcrumbs />
+          {/* Breadcrumbs removed - handled by MainLayout */}
 
           {/* Header */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">

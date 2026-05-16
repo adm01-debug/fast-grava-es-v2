@@ -114,8 +114,9 @@ const MobileNavButton = memo(function MobileNavButton({
       whileTap={{ scale: 0.92 }}
       transition={{ duration: 0.1 }}
       className={cn(
-        'relative flex flex-col items-center justify-center flex-1 py-2 px-1 min-h-[60px]',
-        'touch-target transition-colors duration-200 ease-out',
+        'relative flex flex-col items-center justify-center flex-1 py-1 px-1 min-h-[56px]',
+        'touch-target transition-all duration-300 ease-in-out',
+
         'focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
         isActive
           ? 'text-primary'
@@ -277,7 +278,6 @@ export function MobileNavigation() {
   const { trigger } = useHapticFeedback();
   const { isVisible } = useScrollDirection({ threshold: 20 });
 
-  // Get items based on role
   const primaryItems = useMemo(() => {
     switch (role) {
       case 'operator':
@@ -289,6 +289,7 @@ export function MobileNavigation() {
         return coordinatorPrimaryItems;
     }
   }, [role]);
+
 
   const moreItems = useMemo(() => {
     switch (role) {
@@ -324,23 +325,26 @@ export function MobileNavigation() {
     <motion.nav
       initial={false}
       animate={{
-        y: isVisible || sheetOpen ? 0 : 100,
-        opacity: isVisible || sheetOpen ? 1 : 0
+        y: isVisible || sheetOpen || location.pathname === '/auth' ? 0 : 100,
+        opacity: isVisible || sheetOpen || location.pathname === '/auth' ? 1 : 0
       }}
+
       transition={{
         duration: prefersReducedMotion ? 0 : 0.2,
         ease: 'easeOut'
       }}
       className={cn(
-        'fixed bottom-0 left-0 right-0 z-50',
-        'bg-background/95 backdrop-blur-xl border-t border-border',
-        'shadow-[0_-4px_20px_-4px_rgba(0,0,0,0.1)] dark:shadow-[0_-4px_20px_-4px_rgba(0,0,0,0.3)]',
-        'pb-safe'
+        'fixed bottom-0 left-0 right-0 z-50 transition-all duration-300',
+        'bg-background/80 backdrop-blur-2xl border-t border-border/50',
+        'shadow-[0_-8px_30px_rgb(0,0,0,0.12)] dark:shadow-[0_-8px_30px_rgb(0,0,0,0.3)]',
+        'pb-safe px-2',
+        location.pathname === '/auth' && 'hidden'
+
       )}
       role="navigation"
       aria-label="Navegação principal mobile"
     >
-      <div className="flex items-stretch justify-around max-w-md mx-auto">
+      <div className="flex items-stretch justify-around max-w-md mx-auto h-16">
         {primaryItems.map((item) => {
           let badge = undefined;
           if (item.id === 'alerts') badge = alertCount;
