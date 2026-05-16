@@ -36,6 +36,16 @@ export const AuditEntryCard = memo(function AuditEntryCard({ entry }: AuditEntry
   const ActionIcon = cfg.icon;
   const date = new Date(entry.created_at);
 
+  // Helper to get status color
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'finished': return 'text-success bg-success/10';
+      case 'production': return 'text-amber-500 bg-amber-500/10';
+      case 'scheduled': return 'text-blue-500 bg-blue-500/10';
+      default: return 'text-zinc-500 bg-zinc-500/10';
+    }
+  };
+
   return (
     <Card className="p-4 space-y-3 border-border bg-card hover:bg-card/80 transition-colors">
       <div className="flex items-start justify-between gap-3">
@@ -49,7 +59,17 @@ export const AuditEntryCard = memo(function AuditEntryCard({ entry }: AuditEntry
                 #{entry.entity_id.slice(0, 8)}
               </span>
             </div>
-            <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
+            
+            {entry.action === 'status_change' && entry.new_values && (
+              <div className="flex items-center gap-2 mt-2">
+                <span className="text-xs text-muted-foreground italic">Alterado para:</span>
+                <Badge variant="outline" className={cn("text-[10px] uppercase font-bold", getStatusColor((entry.new_values as any).status))}>
+                  {(entry.new_values as any).status}
+                </Badge>
+              </div>
+            )}
+
+            <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
               <UserIcon className="h-3 w-3" aria-hidden />
               <span>{entry.actor_email ?? entry.actor_id ?? 'Sistema'}</span>
               <span>•</span>
