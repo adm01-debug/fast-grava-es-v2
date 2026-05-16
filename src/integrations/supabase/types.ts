@@ -5315,6 +5315,16 @@ export type Database = {
         Args: { rec: Database["public"]["Tables"]["audit_log"]["Row"] }
         Returns: string
       }
+      check_and_notify_kpi_alert: {
+        Args: {
+          p_machine_id: string
+          p_metric_name: string
+          p_metric_value: number
+          p_severity: string
+          p_threshold: number
+        }
+        Returns: undefined
+      }
       check_tpm_schedules_notifications: { Args: never; Returns: undefined }
       compute_audit_hash: {
         Args: {

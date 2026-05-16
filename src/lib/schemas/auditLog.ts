@@ -1,6 +1,10 @@
 import { z } from 'zod';
 
-export const auditActionSchema = z.enum(['INSERT', 'UPDATE', 'DELETE']);
+export const auditActionSchema = z.union([
+  z.enum(['INSERT', 'UPDATE', 'DELETE']),
+  z.literal('status_change'),
+  z.string() // Fallback for custom actions
+]);
 export type AuditAction = z.infer<typeof auditActionSchema>;
 
 export const auditLogEntrySchema = z.object({
@@ -10,8 +14,8 @@ export const auditLogEntrySchema = z.object({
   action: auditActionSchema,
   actor_id: z.string().uuid().nullable(),
   actor_email: z.string().nullable(),
-  old_data: z.unknown().nullable(),
-  new_data: z.unknown().nullable(),
+  old_values: z.unknown().nullable(),
+  new_values: z.unknown().nullable(),
   changed_fields: z.array(z.string()).nullable(),
   hash: z.string(),
   previous_hash: z.string().nullable(),

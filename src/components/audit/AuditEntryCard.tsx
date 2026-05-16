@@ -17,11 +17,14 @@ interface AuditEntryCardProps {
   entry: AuditLogEntry;
 }
 
-const actionConfig = {
-  INSERT: { icon: PlusCircleIcon, label: 'Criado', variant: 'default' as const, color: 'text-primary' },
-  UPDATE: { icon: PencilIcon, label: 'Atualizado', variant: 'secondary' as const, color: 'text-secondary-foreground' },
-  DELETE: { icon: Trash2Icon, label: 'Excluído', variant: 'destructive' as const, color: 'text-destructive' },
+const actionConfig: Record<string, { icon: any; label: string; variant: any; color: string }> = {
+  INSERT: { icon: PlusCircleIcon, label: 'Criado', variant: 'default', color: 'text-primary' },
+  UPDATE: { icon: PencilIcon, label: 'Atualizado', variant: 'secondary', color: 'text-secondary-foreground' },
+  DELETE: { icon: Trash2Icon, label: 'Excluído', variant: 'destructive', color: 'text-destructive' },
+  status_change: { icon: ShieldCheckIcon, label: 'Status Alterado', variant: 'outline', color: 'text-amber-500' },
 };
+
+const defaultAction = { icon: ShieldCheckIcon, label: 'Ação', variant: 'outline' as const, color: 'text-muted-foreground' };
 
 function shortHash(hash: string | null | undefined): string {
   if (!hash) return '—';
@@ -29,7 +32,7 @@ function shortHash(hash: string | null | undefined): string {
 }
 
 export const AuditEntryCard = memo(function AuditEntryCard({ entry }: AuditEntryCardProps) {
-  const cfg = actionConfig[entry.action];
+  const cfg = actionConfig[entry.action] || defaultAction;
   const ActionIcon = cfg.icon;
   const date = new Date(entry.created_at);
 
