@@ -34,6 +34,7 @@ import { cn } from '@/lib/utils';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DelaysAnalysis } from '@/components/bi/delays/DelaysAnalysis';
 import { LossesTable } from '@/components/bi/losses/LossesTable';
+import { AIInsights } from '@/components/bi/AIInsights';
 
 import { BIMetrics, BIJob } from '@/types/bi';
 type PeriodFilter = '7d' | '30d' | '90d' | 'custom';
@@ -261,28 +262,153 @@ export default function BIDashboard() {
     setDrillDownOpen(true);
   };
 
-  const handleExport = (format: 'csv' | 'pdf') => {
+  const handleExport = async (format: 'csv' | 'pdf') => {
     toast({
       title: "Exportação iniciada",
-      description: `O arquivo ${format.toUpperCase()} está sendo gerado e o download começará em instantes.`,
+      description: `O relatório ${format.toUpperCase()} está sendo gerado.`,
     });
 
-    // Simulating export logic
-    setTimeout(() => {
+    try {
+      if (format === 'csv') {
+        const header = "ID,OS,Produto,Quantidade,Perdas,Status,Eficiência,Data\n";
+        const rows = drillDownJobs.map(j => {
+          return [
+            j.id,
+            j.order_number,
+            j.product || j.product_name || '',
+            j.produced_quantity,
+            j.lost_pieces,
+            j.status,
+            j.efficiency,
+            j.created_at ? new Date(j.created_at).toLocaleDateString() : ''
+          ].map(val => `"${String(val).replace(/"/g, '""')}"`).join(',');
+        }).join('\n');
+        
+        const csv = header + rows;
+        const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `drilldown_${drillDownTitle.toLowerCase().replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.csv`;
+        link.click();
+      } else {
+        const { default: jsPDF } = await import('jspdf');
+        const { default: autoTable } = await import('jspdf-autotable');
+        const doc = new jsPDF();
+
+        // Header
+        doc.setFillColor(14, 165, 233); // Primary color
+        doc.rect(0, 0, 210, 30, 'F');
+        doc.setFontSize(18);
+        doc.setTextColor(255, 255, 255);
+        doc.text('FAST GRAVAÇÕES - DETALHAMENTO BI', 105, 15, { align: 'center' });
+        doc.setFontSize(10);
+        doc.text(`RELATÓRIO: ${drillDownTitle.toUpperCase()}`, 105, 22, { align: 'center' });
+
+        // Info
+        doc.setTextColor(100);
+        doc.setFontSize(8);
+        doc.text(`Gerado em: ${new Date().toLocaleString('pt-BR')}`, 14, 38);
+        doc.text(`Período analisado: ${getPeriodLabel()}`, 14, 43);
+
+        const tableBody = drillDownJobs.map(j => [
+          j.order_number || '---',
+          j.product || j.product_name || '---',
+          j.produced_quantity ?? 0,
+          j.lost_pieces ?? 0,
+          j.efficiency || '---',
+          j.status === 'finished' ? 'Finalizado' : 'Em Produção'
+        ]);
+
+        autoTable(doc, {
+          startY: 50,
+          head: [['OS', 'CLIENTE', 'PRODUTO', 'PROD.', 'PERDAS', 'EFIC.', 'STATUS']],
+          body: tableBody,
+          styles: { fontSize: 8, cellPadding: 2 },
+          headStyles: { fillColor: [14, 165, 233] },
+          alternateRowStyles: { fillColor: [245, 247, 250] },
+          didDrawPage: (data) => {
+             doc.setFontSize(8);
+             doc.setTextColor(150);
+             doc.text(`Página ${data.pageNumber} - Documento oficial para auditoria`, 105, 285, { align: 'center' });
+          }
+        });
+
+        doc.save(`detalhe_bi_${new Date().getTime()}.pdf`);
+      }
+
       toast({
         title: "Exportação concluída",
-        description: `O relatório consolidado foi baixado com sucesso.`,
+        description: `O relatório foi baixado com sucesso.`,
       });
-    }, 2000);
+    } catch (error) {
+      console.error('Export error:', error);
+      toast({
+        title: "Erro na exportação",
+        description: "Não foi possível gerar o arquivo.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleFullExport = async () => {
+    toast({
+      title: "Gerando PDF Executivo",
+      description: "Capturando gráficos e métricas consolidada...",
+    });
+
+    try {
+      const { default: jsPDF } = await import('jspdf');
+      const { default: html2canvas } = await import('html2canvas');
+      const element = document.getElementById('bi-dashboard-content');
+      if (!element) throw new Error('Element not found');
+
+      const canvas = await html2canvas(element, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        backgroundColor: '#ffffff'
+      });
+      
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const imgProps = pdf.getImageProperties(imgData);
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+      
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      pdf.save(`relatorio_executivo_bi_${new Date().getTime()}.pdf`);
+
+      toast({
+        title: "Relatório gerado!",
+        description: "O PDF foi baixado com sucesso.",
+      });
+    } catch (error) {
+      console.error('Full export error:', error);
+      toast({
+        title: "Erro na exportação",
+        description: "Não foi possível capturar o dashboard.",
+        variant: "destructive"
+      });
+    }
   };
 
   return (
     <MainLayout>
-      <div className="p-6 space-y-8 animate-fade-in">
+      <div className="p-6 space-y-8 animate-fade-in" id="bi-dashboard-content">
         <Breadcrumbs />
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <BIHeader comparisonMode={comparisonMode} setComparisonMode={setComparisonMode} onNavigate={(path) => navigate(path)} />
           <div className="flex items-center gap-2 bg-muted/50 p-1 rounded-lg">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleFullExport}
+              className="gap-2 bg-background border-primary/20 hover:bg-primary/5 text-primary"
+            >
+              <Printer className="h-4 w-4" /> Exportar PDF
+            </Button>
+            <div className="w-px h-4 bg-border mx-1" />
             <Button
               variant={viewMode === 'classic' ? 'secondary' : 'ghost'}
               size="sm"
@@ -319,6 +445,8 @@ export default function BIDashboard() {
           collaborators={(operators || []).map(o => ({ id: o.user_id, name: o.full_name || 'Sem nome' }))}
           machines={machines.map(m => ({ id: m.id, name: m.name }))}
         />
+
+        <AIInsights metrics={biMetrics} />
 
         {comparisonMode && biMetrics2 ? (
           <>

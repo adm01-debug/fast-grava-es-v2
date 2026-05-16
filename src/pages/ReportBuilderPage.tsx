@@ -255,7 +255,7 @@ export default function ReportBuilderPage() {
             const pageCount = doc.getNumberOfPages();
             doc.setFontSize(8);
             doc.setTextColor(150);
-            doc.text(`Página ${data.pageNumber} de ${pageCount} - Fast Gravações Industrial Intelligence`, 105, 285, { align: 'center' });
+            doc.text(`Página ${data.pageNumber} de ${pageCount} - 52 STÚDIOS DE GRAVAÇÃO Industrial Intelligence`, 105, 285, { align: 'center' });
           }
         });
 

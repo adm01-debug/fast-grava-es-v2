@@ -190,9 +190,9 @@ const Index = () => {
   return (
     <MainLayout>
       <Helmet>
-        <title>Dashboard | Fast Gravações</title>
-        <meta name="description" content="Painel de controle principal do sistema Fast Gravações - Gestão de produção e agendamento." />
-        <meta property="og:title" content="Fast Gravações - Dashboard" />
+        <title>Dashboard | 52 STÚDIOS DE GRAVAÇÃO</title>
+        <meta name="description" content="Painel de controle principal do sistema 52 STÚDIOS DE GRAVAÇÃO - Gestão de produção e agendamento." />
+        <meta property="og:title" content="52 STÚDIOS DE GRAVAÇÃO - Dashboard" />
         <meta property="og:description" content="Sistema Inteligente de Gestão Industrial" />
         <meta property="og:type" content="website" />
       </Helmet>

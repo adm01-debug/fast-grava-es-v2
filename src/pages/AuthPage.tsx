@@ -100,8 +100,8 @@ export default function AuthPage() {
   return (
     <AuthErrorBoundary>
       <Helmet>
-        <title>{t('auth.login')} | Fast Gravações</title>
-        <meta name="description" content="Acesse o sistema Fast Gravações para gerenciar sua produção industrial." />
+        <title>{t('auth.login')} | 52 STÚDIOS DE GRAVAÇÃO</title>
+        <meta name="description" content="Acesse o sistema 52 STÚDIOS DE GRAVAÇÃO para gerenciar sua produção industrial." />
       </Helmet>
 
       <div className="min-h-screen w-full flex bg-[#050505] text-white font-display selection:bg-[#FF5A1F]/30">
@@ -114,7 +114,7 @@ export default function AuthPage() {
             <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="flex items-center gap-3">
               <div className="w-11 h-11 bg-[#FF5A1F] grid place-items-center font-black text-xl rounded-md text-white">F</div>
               <div>
-                <h1 className="text-base font-extrabold tracking-tight uppercase leading-none">Fast Gravações</h1>
+                <h1 className="text-base font-extrabold tracking-tight uppercase leading-none">52 STÚDIOS DE GRAVAÇÃO</h1>
                 <p className="text-[10px] text-zinc-500 tracking-[0.2em] font-medium uppercase mt-1">Sistema de Produção</p>
               </div>
             </motion.div>
@@ -155,7 +155,7 @@ export default function AuthPage() {
           {/* Mobile brand */}
           <div className="lg:hidden flex items-center gap-2 mb-10">
             <div className="w-9 h-9 bg-[#FF5A1F] grid place-items-center font-black rounded-md">F</div>
-            <span className="font-extrabold tracking-tight uppercase">Fast Gravações</span>
+            <span className="font-extrabold tracking-tight uppercase">52 STÚDIOS DE GRAVAÇÃO</span>
           </div>
 
           {/* Top utility */}
@@ -194,7 +194,7 @@ export default function AuthPage() {
                   </Tabs>
 
                   <footer className="mt-16 text-center">
-                    <p className="text-[10px] text-zinc-600 uppercase tracking-widest font-mono">© {new Date().getFullYear()} Fast Gravações • Indústria 4.0</p>
+                    <p className="text-[10px] text-zinc-600 uppercase tracking-widest font-mono">© {new Date().getFullYear()} 52 STÚDIOS DE GRAVAÇÃO • Indústria 4.0</p>
                   </footer>
                 </motion.div>
               )}

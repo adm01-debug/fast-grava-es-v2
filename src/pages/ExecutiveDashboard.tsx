@@ -235,7 +235,7 @@ export default function ExecutiveDashboard() {
         <Helmet>
           <title>Fábrica Autônoma 360 | Dashboard Executivo</title>
           <meta name="description" content="Orquestração Inteligente & Governança de Dados Industrial de Alta Performance. Visualize KPIs de produção, eficiência e qualidade em tempo real." />
-          <meta property="og:title" content="Dashboard Executivo - Fast Gravações" />
+          <meta property="og:title" content="Dashboard Executivo - 52 STÚDIOS DE GRAVAÇÃO" />
           <meta property="og:description" content="Monitoramento autônomo e orquestrado da performance industrial." />
         </Helmet>
         <Breadcrumbs className="mb-0" />

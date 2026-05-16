@@ -83,7 +83,7 @@ serve(async (req) => {
           </div>
           <p>Para mais detalhes e execução da manutenção, acesse o painel TPM:</p>
           <a href="${Deno.env.get('PUBLIC_URL') || '#'}/tpm" style="display: inline-block; padding: 10px 20px; background: #f97316; color: white; text-decoration: none; border-radius: 6px;">Ver Painel TPM</a>
-          <p style="margin-top: 30px; font-size: 12px; color: #666;">Fast Gravações - Sistema de Gestão de Produção</p>
+          <p style="margin-top: 30px; font-size: 12px; color: #666;">52 STÚDIOS DE GRAVAÇÃO - Sistema de Gestão de Produção</p>
         </div>
       `;
 
@@ -94,7 +94,7 @@ serve(async (req) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          from: 'Fast Gravações TPM <notifications@resend.dev>',
+          from: '52 STÚDIOS DE GRAVAÇÃO TPM <notifications@resend.dev>',
           to: subscriberEmails,
           subject: `${iconMap[alert.alert_type]} Alerta TPM: ${machine?.code}`,
           html: htmlContent,

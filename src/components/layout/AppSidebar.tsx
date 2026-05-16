@@ -125,7 +125,7 @@ export function AppSidebar() {
               </AnimatePresence>
               
               <motion.div layout className="flex-1 min-w-0">
-                <h1 className="font-display font-bold text-sidebar-foreground text-base tracking-tight truncate">Fast Gravações</h1>
+                <h1 className="font-display font-bold text-sidebar-foreground text-base tracking-tight truncate">52 STÚDIOS DE GRAVAÇÃO</h1>
                 <p className="text-[10px] font-medium text-primary/60 uppercase tracking-widest truncate">Sistema de Gestão</p>
               </motion.div>
             </div>
