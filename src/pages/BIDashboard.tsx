@@ -269,13 +269,12 @@ export default function BIDashboard() {
 
     try {
       if (format === 'csv') {
-        const header = "ID,OS,Cliente,Produto,Quantidade,Perdas,Status,Eficiência,Data\n";
+        const header = "ID,OS,Produto,Quantidade,Perdas,Status,Eficiência,Data\n";
         const rows = drillDownJobs.map(j => {
           return [
             j.id,
             j.order_number,
-            j.client || '',
-            j.product,
+            j.product || j.product_name || '',
             j.produced_quantity,
             j.lost_pieces,
             j.status,
