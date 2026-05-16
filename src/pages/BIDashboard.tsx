@@ -350,13 +350,64 @@ export default function BIDashboard() {
     }
   };
 
+  const handleFullExport = async () => {
+    toast({
+      title: "Gerando PDF Executivo",
+      description: "Capturando gráficos e métricas consolidada...",
+    });
+
+    try {
+      const { default: jsPDF } = await import('jspdf');
+      const { default: html2canvas } = await import('html2canvas');
+      const element = document.getElementById('bi-dashboard-content');
+      if (!element) throw new Error('Element not found');
+
+      const canvas = await html2canvas(element, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        backgroundColor: '#ffffff'
+      });
+      
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const imgProps = pdf.getImageProperties(imgData);
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+      
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      pdf.save(`relatorio_executivo_bi_${new Date().getTime()}.pdf`);
+
+      toast({
+        title: "Relatório gerado!",
+        description: "O PDF foi baixado com sucesso.",
+      });
+    } catch (error) {
+      console.error('Full export error:', error);
+      toast({
+        title: "Erro na exportação",
+        description: "Não foi possível capturar o dashboard.",
+        variant: "destructive"
+      });
+    }
+  };
+
   return (
     <MainLayout>
-      <div className="p-6 space-y-8 animate-fade-in">
+      <div className="p-6 space-y-8 animate-fade-in" id="bi-dashboard-content">
         <Breadcrumbs />
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <BIHeader comparisonMode={comparisonMode} setComparisonMode={setComparisonMode} onNavigate={(path) => navigate(path)} />
           <div className="flex items-center gap-2 bg-muted/50 p-1 rounded-lg">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleFullExport}
+              className="gap-2 bg-background border-primary/20 hover:bg-primary/5 text-primary"
+            >
+              <Printer className="h-4 w-4" /> Exportar PDF
+            </Button>
+            <div className="w-px h-4 bg-border mx-1" />
             <Button
               variant={viewMode === 'classic' ? 'secondary' : 'ghost'}
               size="sm"
