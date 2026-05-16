@@ -116,50 +116,135 @@ export function Breadcrumbs({ className }: { className?: string }) {
     }
   }, [navigate, trigger]);
 
+  // Truncamento inteligente: se a trilha for muito longa, colapsamos os itens
+  // intermediários em um botão "..." que abre um menu com o caminho completo.
+  const shouldCollapse = breadcrumbs.length > MAX_VISIBLE_ITEMS;
+  const collapsedItems: BreadcrumbItem[] = shouldCollapse
+    ? breadcrumbs.slice(1, breadcrumbs.length - 2)
+    : [];
+  const visibleItems: BreadcrumbItem[] = shouldCollapse
+    ? [
+        breadcrumbs[0],
+        ...breadcrumbs.slice(breadcrumbs.length - 2),
+      ]
+    : breadcrumbs;
+
+  const truncateLabel = (label: string) =>
+    label.length > LABEL_MAX_CHARS ? `${label.slice(0, LABEL_MAX_CHARS - 1)}…` : label;
+
+  const fullPathLabel = breadcrumbs.map((b) => b.label).join(' › ');
+
   return (
-    <nav
-      aria-label="Breadcrumb"
-      className={cn(
-        "flex items-center gap-2 text-sm text-muted-foreground no-export animate-in fade-in slide-in-from-left-4 duration-300",
-        className
-      )}
-    >
-      {/* Retirado botão ArrowLeft pois agora temos o BackButton centralizado no MainLayout */}
+    <TooltipProvider delayDuration={300}>
+      <nav
+        aria-label="Breadcrumb"
+        title={fullPathLabel}
+        className={cn(
+          "flex items-center gap-2 text-sm text-muted-foreground no-export animate-in fade-in slide-in-from-left-4 duration-300",
+          className
+        )}
+      >
+        <div className="flex items-center gap-1 overflow-x-auto scrollbar-none whitespace-nowrap px-1 scroll-smooth mask-fade-right max-w-full">
+          {visibleItems.map((item, index) => {
+            const isHome = index === 0;
+            // Após o Home, se houver colapso, inserimos o botão "..."
+            const showEllipsisAfter = shouldCollapse && index === 0;
 
+            return (
+              <div key={`${item.href ?? 'last'}-${index}`} className="flex items-center gap-1">
+                {index > 0 && (
+                  <ChevronRight className="h-3.5 w-3.5 flex-shrink-0 opacity-40 text-muted-foreground/60" />
+                )}
 
-      <div className="flex items-center gap-1 overflow-x-auto scrollbar-none whitespace-nowrap px-1 scroll-smooth mask-fade-right">
-        {breadcrumbs.map((item, index) => (
-          <div key={index} className="flex items-center gap-1">
-            {index > 0 && (
-              <ChevronRight className="h-3.5 w-3.5 flex-shrink-0 opacity-40 text-muted-foreground/60" />
-            )}
-            {index === 0 ? (
-              <Link
-                to="/"
-                onClick={() => trigger('light')}
-                className="flex items-center justify-center h-8 w-8 rounded-md hover:bg-primary/15 hover:text-foreground transition-all hover:scale-110 active:scale-95 shadow-sm border border-transparent hover:border-primary/30 group/home"
-                aria-label="Ir para o início"
+                {isHome ? (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Link
+                        to="/"
+                        onClick={() => trigger('light')}
+                        className="flex items-center justify-center h-8 w-8 rounded-md hover:bg-primary/15 hover:text-foreground transition-all hover:scale-110 active:scale-95 shadow-sm border border-transparent hover:border-primary/30 group/home"
+                        aria-label="Ir para o início"
+                      >
+                        <Home className="h-4 w-4 transition-transform group-hover/home:rotate-[-5deg]" />
+                      </Link>
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom">Início</TooltipContent>
+                  </Tooltip>
+                ) : item.href ? (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Link
+                        to={item.href}
+                        onClick={() => trigger('light')}
+                        className="px-2.5 py-1 rounded-md hover:bg-primary/15 hover:text-foreground transition-all hover:scale-105 active:scale-95 hover:underline underline-offset-4 border border-transparent hover:border-primary/30 font-medium text-muted-foreground/80 max-w-[180px] truncate inline-block"
+                      >
+                        {truncateLabel(item.label)}
+                      </Link>
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom">{item.label}</TooltipContent>
+                  </Tooltip>
+                ) : (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span
+                        aria-current="page"
+                        className="px-3 py-1 text-foreground font-bold tracking-tight bg-primary/10 rounded-md border border-primary/20 shadow-sm animate-in zoom-in-95 duration-300 max-w-[220px] truncate inline-block"
+                      >
+                        {truncateLabel(item.label)}
+                      </span>
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom" className="max-w-xs">
+                      <div className="font-semibold">{item.label}</div>
+                      <div className="text-xs opacity-70 mt-1">{fullPathLabel}</div>
+                    </TooltipContent>
+                  </Tooltip>
+                )}
 
-              >
-                <Home className="h-4 w-4 transition-transform group-hover/home:rotate-[-5deg]" />
-              </Link>
-            ) : item.href ? (
-              <Link
-                to={item.href}
-                onClick={() => trigger('light')}
-                className="px-2.5 py-1 rounded-md hover:bg-primary/15 hover:text-foreground transition-all hover:scale-105 active:scale-95 hover:underline underline-offset-4 border border-transparent hover:border-primary/30 font-medium text-muted-foreground/80"
-              >
-
-                {item.label}
-              </Link>
-            ) : (
-              <span className="px-3 py-1 text-foreground font-bold tracking-tight bg-primary/10 rounded-md border border-primary/20 shadow-sm animate-in zoom-in-95 duration-300">
-                {item.label}
-              </span>
-            )}
-          </div>
-        ))}
-      </div>
-    </nav>
+                {showEllipsisAfter && (
+                  <>
+                    <ChevronRight className="h-3.5 w-3.5 flex-shrink-0 opacity-40 text-muted-foreground/60" />
+                    <DropdownMenu>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <DropdownMenuTrigger asChild>
+                            <button
+                              type="button"
+                              onClick={() => trigger('light')}
+                              aria-label={`Mostrar ${collapsedItems.length} níveis ocultos`}
+                              className="flex items-center justify-center h-7 px-2 rounded-md hover:bg-primary/15 hover:text-foreground transition-all hover:scale-105 active:scale-95 border border-transparent hover:border-primary/30 text-muted-foreground/80"
+                            >
+                              <MoreHorizontal className="h-4 w-4" />
+                            </button>
+                          </DropdownMenuTrigger>
+                        </TooltipTrigger>
+                        <TooltipContent side="bottom" className="max-w-xs">
+                          <div className="text-xs opacity-70">Caminho completo</div>
+                          <div className="font-medium">{fullPathLabel}</div>
+                        </TooltipContent>
+                      </Tooltip>
+                      <DropdownMenuContent align="start" className="min-w-[200px]">
+                        {collapsedItems.map((collapsed, i) => (
+                          <DropdownMenuItem
+                            key={`${collapsed.href}-${i}`}
+                            onClick={() => {
+                              trigger('light');
+                              if (collapsed.href) navigate(collapsed.href);
+                            }}
+                            className="cursor-pointer"
+                          >
+                            <ChevronRight className="h-3.5 w-3.5 mr-2 opacity-50" />
+                            <span className="truncate">{collapsed.label}</span>
+                          </DropdownMenuItem>
+                        ))}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </nav>
+    </TooltipProvider>
   );
 }
