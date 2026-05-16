@@ -52,8 +52,8 @@ export function BackButton({ className }: BackButtonProps) {
             onClick={handleBack}
             className={cn(
               "h-14 w-14 rounded-full shadow-[0_8px_32px_rgba(0,0,0,0.2)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.5)] transition-all active:scale-90 touch-target",
-              "bg-background/40 backdrop-blur-2xl border border-primary/20 text-primary",
-              "hover:bg-background/60 hover:border-primary/40",
+              "bg-background/60 backdrop-blur-2xl border border-primary/30 text-primary",
+              "hover:bg-background/80 hover:border-primary/50 hover:shadow-primary/20",
               className
             )}
             aria-label="Voltar"
