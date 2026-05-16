@@ -25,6 +25,8 @@ const MobileNavigation = lazy(() => import('../navigation/MobileNavigation').the
 const MobileQuickActions = lazy(() => import('../navigation/MobileQuickActions').then(m => ({ default: m.MobileQuickActions })));
 const CommandPaletteAdvanced = lazy(() => import('../navigation/CommandPaletteAdvanced').then(m => ({ default: m.CommandPaletteAdvanced })));
 const SystemOnboarding = lazy(() => import('../onboarding/SystemOnboarding').then(m => ({ default: m.SystemOnboarding })));
+const Breadcrumbs = lazy(() => import('../navigation/Breadcrumbs').then(m => ({ default: m.Breadcrumbs })));
+
 
 import { useDevice } from '@/hooks/use-device';
 import { cn } from '@/lib/utils';
@@ -130,8 +132,14 @@ export function MainLayout({ children }: MainLayoutProps) {
             "px-4 sm:px-6 lg:px-8",
             "min-h-0"
           )}>
+            {/* Global Breadcrumbs - Only show when not on home page */}
+            <Suspense fallback={<div className="h-9 mb-6 bg-muted animate-pulse rounded-md w-48" />}>
+              <Breadcrumbs />
+            </Suspense>
+
             {/* Render direct children as PageTransition is handled in AppRoutes for better SPA experience */}
             {children}
+
 
           </MainContent>
 
