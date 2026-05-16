@@ -83,11 +83,13 @@ export function MainLayout({ children }: MainLayoutProps) {
         <AppSidebar />
 
         <main
+          ref={swipeRef as React.RefObject<HTMLDivElement>}
           className={cn(
             "flex-1 flex flex-col overflow-y-auto overflow-x-hidden relative",
             "h-full scrollbar-thin"
           )}
         >
+
           <OfflineStatusBanner />
 
           {/* Desktop top bar */}
