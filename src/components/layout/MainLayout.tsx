@@ -92,6 +92,9 @@ export function MainLayout({ children }: MainLayoutProps) {
         >
 
           <OfflineStatusBanner />
+          <Suspense fallback={null}>
+            <SwipeIndicator />
+          </Suspense>
 
           {/* Desktop top bar */}
           <div className="fixed top-4 right-4 z-40 hidden md:flex items-center gap-2" role="toolbar" aria-label="Ações rápidas">
