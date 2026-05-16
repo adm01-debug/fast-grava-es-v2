@@ -32,6 +32,11 @@ const BackButton = lazy(() => import('../navigation/BackButton').then(m => ({ de
 
 import { useDevice } from '@/hooks/use-device';
 import { cn } from '@/lib/utils';
+import { useNavigationHotkeys } from '@/hooks/use-navigation-hotkeys';
+import { useSwipeGesture } from '@/hooks/use-swipe-gesture';
+import { useNavigate } from 'react-router-dom';
+
+
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -43,10 +48,28 @@ const EmptyFallback = null;
 export function MainLayout({ children }: MainLayoutProps) {
   const { isMobile, prefersReducedMotion } = useDevice();
   const location = useLocation();
+  const navigate = useNavigate();
   const { unreadCount } = useNotifications();
+
 
   // Dynamic page title for SEO
   usePageTitle();
+  
+  // Navigation global hotkeys
+  useNavigationHotkeys();
+
+  // Swipe to back on mobile
+  const { ref: swipeRef } = useSwipeGesture({
+    onSwipeRight: () => {
+      if (isMobile && location.pathname !== '/' && location.pathname !== '/auth') {
+        navigate(-1);
+      }
+    },
+    threshold: 80,
+    preventScroll: false
+  });
+
+
 
   const shouldAnimate = !prefersReducedMotion;
 
@@ -60,11 +83,13 @@ export function MainLayout({ children }: MainLayoutProps) {
         <AppSidebar />
 
         <main
+          ref={swipeRef as React.RefObject<HTMLDivElement>}
           className={cn(
             "flex-1 flex flex-col overflow-y-auto overflow-x-hidden relative",
             "h-full scrollbar-thin"
           )}
         >
+
           <OfflineStatusBanner />
 
           {/* Desktop top bar */}

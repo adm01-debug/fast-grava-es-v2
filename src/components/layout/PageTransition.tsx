@@ -3,13 +3,14 @@ import { ReactNode } from 'react';
 
 interface PageTransitionProps {
   children: ReactNode;
+  direction?: 'forward' | 'backward';
 }
 
-const pageVariants: Variants = {
+const getVariants = (direction: 'forward' | 'backward'): Variants => ({
   initial: {
     opacity: 0,
-    x: 20,
-    filter: "blur(4px)",
+    x: direction === 'forward' ? 30 : -30,
+    filter: "blur(8px)",
   },
   in: {
     opacity: 1,
@@ -18,27 +19,29 @@ const pageVariants: Variants = {
   },
   out: {
     opacity: 0,
-    x: -20,
-    filter: "blur(4px)",
+    x: direction === 'forward' ? -30 : 30,
+    filter: "blur(8px)",
   },
-};
+});
 
 const pageTransition: Transition = {
   type: 'spring',
-  stiffness: 260,
-  damping: 20,
-  mass: 0.5,
+  stiffness: 300,
+  damping: 30,
+  mass: 1,
 };
 
-export function PageTransition({ children }: PageTransitionProps) {
+export function PageTransition({ children, direction = 'forward' }: PageTransitionProps) {
+  const variants = getVariants(direction);
+
   return (
     <motion.div
       initial="initial"
       animate="in"
       exit="out"
-      variants={pageVariants}
+      variants={variants}
       transition={pageTransition}
-      className="h-full w-full"
+      className="h-full w-full will-change-transform"
     >
       {children}
     </motion.div>
