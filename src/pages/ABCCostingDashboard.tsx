@@ -42,18 +42,15 @@ export default function ABCCostingDashboard() {
 
   if (isLoading) {
     return (
-      <div className="space-y-6 p-6">
-        <Skeleton className="h-10 w-64" />
-        <div className="grid grid-cols-4 gap-4">
-          {[...Array(4)].map((_, i) => (
-            <Skeleton key={i} className="h-28" />
-          ))}
+      <MainLayout>
+        <div className="space-y-6 p-6">
+          <div className="flex flex-col gap-2 mb-8">
+            <Skeleton className="h-10 w-64" />
+            <Skeleton className="h-4 w-96" />
+          </div>
+          <DashboardSkeleton rows={6} columns={4} />
         </div>
-        <div className="grid grid-cols-2 gap-6">
-          <Skeleton className="h-[400px]" />
-          <Skeleton className="h-[400px]" />
-        </div>
-      </div>
+      </MainLayout>
     );
   }
 
