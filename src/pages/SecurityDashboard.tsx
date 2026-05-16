@@ -34,7 +34,7 @@ import { SecurityOverviewCard } from '@/components/security/SecurityOverviewCard
 import { ActiveDevicesPanel } from '@/components/security/ActiveDevicesPanel';
 import { SecurityAlertsPanel } from '@/components/security/SecurityAlertsPanel';
 import { PushNotificationSettings } from '@/components/security/PushNotificationSettings';
-import { PasskeySettings } from '@/components/security/PasskeySettings';
+
 import { useMFA } from '@/hooks/useMFA';
 import { useUserDevices } from '@/hooks/useUserDevices';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
@@ -229,7 +229,7 @@ export default function SecurityDashboard() {
               <MFASettings />
               <PushNotificationSettings />
             </div>
-            <PasskeySettings />
+            
           </div>
         </TabsContent>
 
