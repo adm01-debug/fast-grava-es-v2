@@ -48,7 +48,9 @@ const EmptyFallback = null;
 export function MainLayout({ children }: MainLayoutProps) {
   const { isMobile, prefersReducedMotion } = useDevice();
   const location = useLocation();
+  const navigate = useNavigate();
   const { unreadCount } = useNotifications();
+
 
   // Dynamic page title for SEO
   usePageTitle();
