@@ -65,22 +65,48 @@ const OEETechniqueComparison = lazy(() => import('@/components/oee/OEETechniqueC
 const OEEHeatmap = lazy(() => import('@/components/oee/OEEHeatmap').then(m => ({ default: m.OEEHeatmap })));
 const PredictiveAlerts = lazy(() => import('@/components/oee/PredictiveAlerts').then(m => ({ default: m.PredictiveAlerts })));
 const ParetoLossesChart = lazy(() => import('@/components/oee/ParetoLossesChart').then(m => ({ default: m.ParetoLossesChart })));
+const OEELossDrilldown = lazy(() => import('@/components/oee/OEELossDrilldown').then(m => ({ default: m.OEELossDrilldown })));
+
+import { useDashboardPresets } from '@/hooks/useDashboardPresets';
+import { Bookmark, Save, Trash2 } from 'lucide-react';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Input } from '@/components/ui/input';
 
 const OEEDashboard = memo(function OEEDashboard() {
   const { t } = useTranslation();
   const [period, setPeriod] = useState<string>('30');
   const [machineId, setMachineId] = useState<string>('all');
   const [techniqueId, setTechniqueId] = useState<string>('all');
+  const [shift, setShift] = useState<string>('all');
   const [showSimulator, setShowSimulator] = useState(false);
-  const [simValues, setSimValues] = useState({ availability: 85, performance: 90, quality: 98 });
+  const [presetName, setPresetName] = useState('');
+  const { presets, savePreset, deletePreset } = useDashboardPresets('oee');
   
   const filters = useMemo(() => ({
     machineId: machineId === 'all' ? undefined : machineId,
-    techniqueId: techniqueId === 'all' ? undefined : techniqueId
-  }), [machineId, techniqueId]);
+    techniqueId: techniqueId === 'all' ? undefined : techniqueId,
+    shift: shift === 'all' ? undefined : shift
+  }), [machineId, techniqueId, shift]);
 
   const { data, isLoading, downloadReport } = useOEE(parseInt(period), 30, filters);
-  const { losses, isLoading: lossesLoading } = useProductionLosses();
+  const { losses, isLoading: lossesLoading } = useProductionLosses(undefined, filters);
+
+  const applyPreset = (preset: any) => {
+    if (preset.filters.period) setPeriod(preset.filters.period);
+    if (preset.filters.machineId) setMachineId(preset.filters.machineId);
+    if (preset.filters.techniqueId) setTechniqueId(preset.filters.techniqueId);
+    if (preset.filters.shift) setShift(preset.filters.shift);
+    toast.success(`Filtro "${preset.name}" aplicado`);
+  };
+
+  const handleSavePreset = () => {
+    if (!presetName) return;
+    savePreset({
+      name: presetName,
+      filters: { period, machineId, techniqueId, shift }
+    });
+    setPresetName('');
+  };
 
   const handleDownloadReport = useCallback(async (format: 'excel' | 'pdf' | 'csv') => {
     if (!data) return;
@@ -168,6 +194,8 @@ const OEEDashboard = memo(function OEEDashboard() {
   const machinesAtWorldClass = data.byMachine.filter(m => m.oee >= WORLD_CLASS_OEE).length;
   const machinesBelowTarget = data.byMachine.filter(m => m.oee < 65 && m.totalJobs > 0).length;
 
+  const [activeTab, setActiveTab] = useState('overview');
+
   return (
       <div className="p-6 space-y-6">
         <Helmet>
@@ -254,6 +282,64 @@ const OEEDashboard = memo(function OEEDashboard() {
               </SelectContent>
             </Select>
 
+            <Select value={shift} onValueChange={setShift}>
+              <SelectTrigger className="w-[100px] sm:w-28 md:w-36 glass-card border-primary/20">
+                <SelectValue placeholder="Turno" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos Turnos</SelectItem>
+                <SelectItem value="1">Turno 1 (Manhã)</SelectItem>
+                <SelectItem value="2">Turno 2 (Tarde)</SelectItem>
+                <SelectItem value="3">Turno 3 (Noite)</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline" size="sm" className="glass-card border-primary/20">
+                  <Bookmark className="h-4 w-4 mr-2" />
+                  <span className="hidden sm:inline">Presets</span>
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-64 p-4">
+                <h3 className="text-sm font-bold mb-3 uppercase tracking-wider">Filtros Salvos</h3>
+                <div className="space-y-2 mb-4 max-h-48 overflow-y-auto pr-1">
+                  {presets && presets.length > 0 ? (
+                    presets.map(p => (
+                      <div key={p.id} className="flex items-center justify-between group">
+                        <button 
+                          onClick={() => applyPreset(p)}
+                          className="text-xs font-medium hover:text-primary transition-colors truncate flex-1 text-left"
+                        >
+                          {p.name}
+                        </button>
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          className="h-6 w-6 opacity-0 group-hover:opacity-100"
+                          onClick={() => deletePreset(p.id)}
+                        >
+                          <Trash2 className="h-3 w-3 text-destructive" />
+                        </Button>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-[10px] text-muted-foreground italic">Nenhum preset salvo.</p>
+                  )}
+                </div>
+                <div className="flex flex-col gap-2 pt-2 border-t border-border/50">
+                  <Input 
+                    placeholder="Nome do filtro..." 
+                    className="h-8 text-xs" 
+                    value={presetName}
+                    onChange={e => setPresetName(e.target.value)}
+                  />
+                  <Button size="sm" className="h-8 w-full gap-2" onClick={handleSavePreset} disabled={!presetName}>
+                    <Save className="h-3 w-3" /> Salvar Atual
+                  </Button>
+                </div>
+              </PopoverContent>
+            </Popover>
           </div>
         </div>
 
@@ -379,8 +465,28 @@ const OEEDashboard = memo(function OEEDashboard() {
                       onValueChange={([v]) => setSimValues({...simValues, performance: v})}
                     />
                   </div>
-                  <div className="space-y-3">
-                    <div className="flex justify-between">
+        {/* Tabs Control */}
+        <Tabs defaultValue="overview" className="space-y-6" onValueChange={setActiveTab}>
+          <div className="flex items-center justify-between overflow-x-auto pb-2 scrollbar-hide">
+            <TabsList className="bg-background/50 border border-primary/20 p-1">
+              <TabsTrigger value="overview" className="gap-2 text-xs font-bold uppercase tracking-tight">
+                <LayoutDashboard className="h-4 w-4" /> Visão Geral
+              </TabsTrigger>
+              <TabsTrigger value="losses" className="gap-2 text-xs font-bold uppercase tracking-tight">
+                <AlertTriangle className="h-4 w-4" /> Análise de Perdas
+              </TabsTrigger>
+              <TabsTrigger value="machines" className="gap-2 text-xs font-bold uppercase tracking-tight">
+                <Settings2 className="h-4 w-4" /> Eficiência Máquina
+              </TabsTrigger>
+              <TabsTrigger value="heatmap" className="gap-2 text-xs font-bold uppercase tracking-tight">
+                <BarChart3 className="h-4 w-4" /> Produtividade
+              </TabsTrigger>
+            </TabsList>
+          </div>
+
+          <TabsContent value="overview" className="space-y-6 animate-in fade-in duration-500">
+            {/* ... rest of the overview content ... */}
+
                       <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{t('common.quality', 'Qualidade')}</Label>
                       <span className="text-xs font-black">{simValues.quality}%</span>
                     </div>
