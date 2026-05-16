@@ -132,8 +132,10 @@ export function MainLayout({ children }: MainLayoutProps) {
             "pt-12 md:pt-4",
             "pb-24 md:pb-4",
             "px-4 sm:px-6 lg:px-8",
-            "min-h-0"
+            "min-h-0",
+            "transition-all duration-300"
           )}>
+
             {/* Global Navigation Header - Only show when not on home page */}
             <div className="flex items-center gap-2 mb-6">
               <Suspense fallback={null}>
