@@ -243,5 +243,4 @@ export function Breadcrumbs({ className }: { className?: string }) {
       </nav>
     </TooltipProvider>
   );
-  );
 }
