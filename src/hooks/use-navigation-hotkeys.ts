@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useHapticFeedback } from './use-haptic-feedback';
+import { SoundFeedback } from '@/lib/soundFeedback';
 
 export function useNavigationHotkeys() {
   const navigate = useNavigate();
