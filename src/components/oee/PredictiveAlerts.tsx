@@ -1,7 +1,7 @@
 import { memo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { AlertTriangle, ShieldCheck, ArrowDownRight, Tool } from 'lucide-react';
+import { AlertTriangle, ShieldCheck, ArrowDownRight, Wrench } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 
@@ -37,9 +37,9 @@ export const PredictiveAlerts = memo(function PredictiveAlerts({ alerts }: Predi
 
   return (
     <div className="space-y-4">
-      <h3 className="text-sm font-bold flex items-center gap-2 px-1">
-        <AlertTriangle className="h-4 w-4 text-indicator-warning" />
-        Insights Preditivos e Saúde das Máquinas
+      <h3 className="text-sm font-bold flex items-center gap-2 px-1 text-muted-foreground uppercase tracking-wider">
+        <Wrench className="h-4 w-4 text-primary" />
+        Inteligência Preditiva
       </h3>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {alerts.map((alert, idx) => (
@@ -54,18 +54,18 @@ export const PredictiveAlerts = memo(function PredictiveAlerts({ alerts }: Predi
                 <AlertTitle className="text-sm font-bold">
                   {alert.machineName}
                 </AlertTitle>
-                <Badge variant={alert.severity === 'high' ? 'destructive' : 'outline'} className="text-[10px]">
+                <Badge variant={alert.severity === 'high' ? 'destructive' : 'outline'} className="text-[10px] h-5">
                    <ArrowDownRight className="h-3 w-3 mr-1" />
-                   {alert.trend.toFixed(1)}%
+                   {Math.abs(alert.trend).toFixed(1)}%
                 </Badge>
               </div>
               <AlertDescription className="text-xs">
                 {alert.message}
-                <div className="mt-2 flex gap-2">
-                  <Button variant="outline" size="xs" className="h-7 text-[10px] font-bold border-primary/20 hover:bg-primary/10">
-                    Solicitar Manutenção
+                <div className="mt-3 flex gap-2">
+                  <Button variant="outline" size="sm" className="h-7 text-[10px] font-bold border-primary/20 hover:bg-primary/10">
+                    Agendar Manutenção
                   </Button>
-                  <Button variant="ghost" size="xs" className="h-7 text-[10px]">
+                  <Button variant="ghost" size="sm" className="h-7 text-[10px]">
                     Ignorar
                   </Button>
                 </div>
