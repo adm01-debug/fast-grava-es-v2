@@ -121,18 +121,19 @@ function PublicPage({
 
 export function AnimatedRoutes() {
   const location = useLocation();
-  const [prevPath, setPrevPath] = React.useState(location.pathname);
-  const [direction, setDirection] = React.useState<'forward' | 'backward'>('forward');
+  const [prevPath, setPrevPath] = useState(location.pathname);
+  const [direction, setDirection] = useState<'forward' | 'backward'>('forward');
   
   useRoutePrefetch();
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (location.pathname !== prevPath) {
       const newDirection = getNavigationDirection(prevPath, location.pathname);
       setDirection(newDirection);
       setPrevPath(location.pathname);
     }
   }, [location.pathname, prevPath]);
+
 
   return (
     <AnimatePresence mode="wait">
