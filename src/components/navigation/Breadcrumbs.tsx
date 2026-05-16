@@ -120,8 +120,9 @@ export function Breadcrumbs({ className }: { className?: string }) {
               <Link
                 to="/"
                 onClick={() => trigger('light')}
-                className="flex items-center justify-center h-8 w-8 rounded-md hover:bg-primary/10 hover:text-foreground transition-colors"
+                className="flex items-center justify-center h-8 w-8 rounded-md hover:bg-primary/15 hover:text-foreground transition-all hover:scale-110 active:scale-95 shadow-sm border border-transparent hover:border-primary/20"
                 aria-label="Ir para o início"
+
               >
                 <Home className="h-4 w-4" />
               </Link>
@@ -129,8 +130,9 @@ export function Breadcrumbs({ className }: { className?: string }) {
               <Link
                 to={item.href}
                 onClick={() => trigger('light')}
-                className="px-2 py-1 rounded-md hover:bg-primary/10 hover:text-foreground transition-all hover:underline underline-offset-4"
+                className="px-2.5 py-1 rounded-md hover:bg-primary/15 hover:text-foreground transition-all hover:scale-105 active:scale-95 hover:underline underline-offset-4 border border-transparent hover:border-primary/20"
               >
+
                 {item.label}
               </Link>
             ) : (

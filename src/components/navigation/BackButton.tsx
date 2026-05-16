@@ -44,7 +44,7 @@ export function BackButton({ className }: BackButtonProps) {
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.8 }}
-          className="fixed bottom-24 left-6 z-[60] md:hidden"
+          className="fixed bottom-24 left-6 z-[60] md:hidden no-export"
         >
           <Button
             variant="default"
