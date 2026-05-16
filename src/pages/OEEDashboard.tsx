@@ -536,10 +536,61 @@ const OEEDashboard = memo(function OEEDashboard() {
             </div>
             
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <Card><CardContent className="pt-4"><p className="text-2xl font-bold">{machinesAtWorldClass}</p><p className="text-xs text-muted-foreground">World Class</p></CardContent></Card>
-              <Card><CardContent className="pt-4"><p className="text-2xl font-bold">{machinesBelowTarget}</p><p className="text-xs text-muted-foreground">Abaixo do Target</p></CardContent></Card>
-              <Card><CardContent className="pt-4"><p className="text-2xl font-bold">{data.byMachine.filter(m => m.totalJobs > 0).length}</p><p className="text-xs text-muted-foreground">Máquinas Ativas</p></CardContent></Card>
-              <Card><CardContent className="pt-4"><p className="text-2xl font-bold">{data.byTechnique.length}</p><p className="text-xs text-muted-foreground">Técnicas</p></CardContent></Card>
+              <Card className="bg-success/5 border-success/10 transition-transform hover:scale-[1.02]">
+                <CardContent className="pt-4">
+                   <div className="flex items-center gap-3">
+                      <div className="p-2 rounded-lg bg-success/20">
+                         <Award className="h-5 w-5 text-success" />
+                      </div>
+                      <div>
+                        <p className="text-2xl font-black text-success">{machinesAtWorldClass}</p>
+                        <p className="text-[10px] font-black text-muted-foreground uppercase tracking-wider">World Class</p>
+                      </div>
+                   </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-destructive/5 border-destructive/10 transition-transform hover:scale-[1.02]">
+                <CardContent className="pt-4">
+                   <div className="flex items-center gap-3">
+                      <div className="p-2 rounded-lg bg-destructive/20">
+                         <AlertTriangle className="h-5 w-5 text-destructive" />
+                      </div>
+                      <div>
+                        <p className="text-2xl font-black text-destructive">{machinesBelowTarget}</p>
+                        <p className="text-[10px] font-black text-muted-foreground uppercase tracking-wider">Crítico/Baixo</p>
+                      </div>
+                   </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-primary/5 border-primary/10 transition-transform hover:scale-[1.02]">
+                <CardContent className="pt-4">
+                   <div className="flex items-center gap-3">
+                      <div className="p-2 rounded-lg bg-primary/20">
+                         <Settings2 className="h-5 w-5 text-primary" />
+                      </div>
+                      <div>
+                        <p className="text-2xl font-black text-primary">{data.byMachine.filter(m => m.totalJobs > 0).length}</p>
+                        <p className="text-[10px] font-black text-muted-foreground uppercase tracking-wider">Máquinas Ativas</p>
+                      </div>
+                   </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-indicator-info/5 border-indicator-info/10 transition-transform hover:scale-[1.02]">
+                <CardContent className="pt-4">
+                   <div className="flex items-center gap-3">
+                      <div className="p-2 rounded-lg bg-indicator-info/20">
+                         <BarChart3 className="h-5 w-5 text-indicator-info" />
+                      </div>
+                      <div>
+                        <p className="text-2xl font-black text-indicator-info">{data.byTechnique.length}</p>
+                        <p className="text-[10px] font-black text-muted-foreground uppercase tracking-wider">Técnicas</p>
+                      </div>
+                   </div>
+                </CardContent>
+              </Card>
             </div>
           </TabsContent>
 
