@@ -86,11 +86,47 @@ export function AppSidebar() {
 
       >
         {/* Header */}
-        <div className={cn('flex items-center h-16 px-4 border-b border-sidebar-border', collapsed && !isMobile ? 'justify-center' : 'justify-between')}>
+        <div className={cn('flex items-center h-16 px-4 border-b border-sidebar-border relative', collapsed && !isMobile ? 'justify-center' : 'justify-between')}>
           {(!collapsed || isMobile) && (
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center glow-primary shadow-lg"><Printer className="w-5 h-5 text-primary-foreground" /></div>
-              <div><h1 className="font-display font-bold text-sidebar-foreground text-base tracking-tight">Fast Gravações</h1><p className="text-[10px] font-medium text-primary/60 uppercase tracking-widest">Sistema de Gestão</p></div>
+            <div className="flex items-center gap-3 overflow-hidden">
+              <AnimatePresence mode="wait">
+                {location.pathname !== '/' && location.pathname !== '/operator' && location.pathname !== '/auth' ? (
+                  <motion.div
+                    key="back-icon"
+                    initial={{ x: -20, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    exit={{ x: -20, opacity: 0 }}
+                    className="flex-shrink-0"
+                  >
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      onClick={() => {
+                        SoundFeedback.navBack();
+                        navigate(-1);
+                      }}
+                      className="h-9 w-9 rounded-xl bg-primary/10 text-primary hover:bg-primary/20 hover:scale-105 active:scale-95 transition-all"
+                    >
+                      <ChevronLeft className="w-5 h-5" />
+                    </Button>
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="logo-icon"
+                    initial={{ x: 20, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    exit={{ x: 20, opacity: 0 }}
+                    className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center glow-primary shadow-lg flex-shrink-0"
+                  >
+                    <Printer className="w-5 h-5 text-primary-foreground" />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+              
+              <motion.div layout className="flex-1 min-w-0">
+                <h1 className="font-display font-bold text-sidebar-foreground text-base tracking-tight truncate">Fast Gravações</h1>
+                <p className="text-[10px] font-medium text-primary/60 uppercase tracking-widest truncate">Sistema de Gestão</p>
+              </motion.div>
             </div>
           )}
           {!isMobile && (
