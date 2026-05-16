@@ -68,28 +68,52 @@ const LogisticsPage = lazy(() => import("@/pages/LogisticsPage"));
 const PublicTrackingPage = lazy(() => import("@/pages/PublicTrackingPage"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 
+// Helper to determine transition direction based on path depth
+function getNavigationDirection(prevPath: string, currentPath: string): 'forward' | 'backward' {
+  if (!prevPath) return 'forward';
+  
+  const prevSegments = prevPath.split('/').filter(Boolean).length;
+  const currentSegments = currentPath.split('/').filter(Boolean).length;
+  
+  if (currentSegments > prevSegments) return 'forward';
+  if (currentSegments < prevSegments) return 'backward';
+  
+  // If segments are same, check if it's a sibling or same level
+  return currentPath.length >= prevPath.length ? 'forward' : 'backward';
+}
+
 // Helper para rotas protegidas com Suspense
 function ProtectedPage({
   children,
   fallback,
   allowedRoles,
+  direction = 'forward',
 }: {
   children: React.ReactNode;
   fallback: React.ReactNode;
   allowedRoles?: AppRole[];
+  direction?: 'forward' | 'backward';
 }) {
   return (
     <ProtectedRoute allowedRoles={allowedRoles}>
-      <PageTransition>
+      <PageTransition direction={direction}>
         <Suspense fallback={fallback}>{children}</Suspense>
       </PageTransition>
     </ProtectedRoute>
   );
 }
 
-function PublicPage({ children, fallback }: { children: React.ReactNode; fallback: React.ReactNode }) {
+function PublicPage({ 
+  children, 
+  fallback, 
+  direction = 'forward' 
+}: { 
+  children: React.ReactNode; 
+  fallback: React.ReactNode;
+  direction?: 'forward' | 'backward';
+}) {
   return (
-    <PageTransition>
+    <PageTransition direction={direction}>
       <Suspense fallback={fallback}>{children}</Suspense>
     </PageTransition>
   );
@@ -97,7 +121,18 @@ function PublicPage({ children, fallback }: { children: React.ReactNode; fallbac
 
 export function AnimatedRoutes() {
   const location = useLocation();
+  const [prevPath, setPrevPath] = React.useState(location.pathname);
+  const [direction, setDirection] = React.useState<'forward' | 'backward'>('forward');
+  
   useRoutePrefetch();
+
+  React.useEffect(() => {
+    if (location.pathname !== prevPath) {
+      const newDirection = getNavigationDirection(prevPath, location.pathname);
+      setDirection(newDirection);
+      setPrevPath(location.pathname);
+    }
+  }, [location.pathname, prevPath]);
 
   return (
     <AnimatePresence mode="wait">
