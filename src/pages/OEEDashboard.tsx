@@ -686,20 +686,47 @@ const OEEDashboard = memo(function OEEDashboard() {
           </Card>
         </div>
 
-        {/* Tabs */}
-        <Tabs defaultValue="trend" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-5 max-w-2xl">
-            <TabsTrigger value="trend">Evolução</TabsTrigger>
-            <TabsTrigger id="oee-tabs-trigger-losses" value="losses">Perdas</TabsTrigger>
-            <TabsTrigger value="techniques">Técnicas</TabsTrigger>
-            <TabsTrigger value="machines">Máquinas</TabsTrigger>
-            <TabsTrigger value="sustainability" className="text-emerald-600 flex items-center gap-1.5">
-              <Leaf className="h-3 w-3" />
-              Sustentabilidade
-            </TabsTrigger>
-          </TabsList>
+          </TabsContent>
 
-          <TabsContent value="trend" className="space-y-6">
+          <TabsContent value="losses" className="space-y-6 animate-in fade-in duration-500">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-2 space-y-6">
+                <Suspense fallback={<ChartSkeleton />}>
+                  <OEELossDrilldown filters={filters} />
+                </Suspense>
+                
+                <Suspense fallback={<ChartSkeleton />}>
+                  <OEELossesChart
+                    availabilityLosses={data.availabilityLosses}
+                    performanceLosses={data.performanceLosses}
+                    qualityLosses={data.qualityLosses}
+                    overallOEE={data.overallOEE}
+                  />
+                </Suspense>
+              </div>
+              
+              <div className="space-y-6">
+                <Suspense fallback={<ChartSkeleton />}>
+                  <ParetoLossesChart losses={losses || []} />
+                </Suspense>
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="machines" className="space-y-6 animate-in fade-in duration-500">
+            <Suspense fallback={<TableSkeleton />}>
+              <OEEMachineTable machines={data.byMachine} />
+            </Suspense>
+            
+            <Suspense fallback={<ChartSkeleton />}>
+              <OEETechniqueComparison
+                techniques={data.byTechnique}
+                worldClassBenchmark={data.worldClassBenchmark}
+              />
+            </Suspense>
+          </TabsContent>
+
+          <TabsContent value="heatmap" className="space-y-6 animate-in fade-in duration-500">
             <Suspense fallback={<ChartSkeleton />}>
               <OEETrendChart
                 data={data.trendData}
@@ -711,40 +738,7 @@ const OEEDashboard = memo(function OEEDashboard() {
             <Suspense fallback={<ChartSkeleton />}>
               <OEEHeatmap data={data.heatmapData} />
             </Suspense>
-          </TabsContent>
 
-          <TabsContent value="losses" className="space-y-6">
-            <Suspense fallback={<ChartSkeleton />}>
-              <OEELossesChart
-                availabilityLosses={data.availabilityLosses}
-                performanceLosses={data.performanceLosses}
-                qualityLosses={data.qualityLosses}
-                overallOEE={data.overallOEE}
-              />
-            </Suspense>
-
-            <Suspense fallback={<ChartSkeleton />}>
-              <ParetoLossesChart losses={losses || []} />
-            </Suspense>
-          </TabsContent>
-
-          <TabsContent value="techniques">
-            <Suspense fallback={<ChartSkeleton />}>
-              <OEETechniqueComparison
-                techniques={data.byTechnique}
-                worldClassBenchmark={data.worldClassBenchmark}
-              />
-            </Suspense>
-          </TabsContent>
-
-          <TabsContent value="machines">
-            <Suspense fallback={<TableSkeleton />}>
-              <OEEMachineTable machines={data.byMachine} />
-            </Suspense>
-          </TabsContent>
-
-
-          <TabsContent value="sustainability" className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <Card className="bg-success/5 border-success/20">
                 <CardContent className="pt-6">
@@ -785,36 +779,6 @@ const OEEDashboard = memo(function OEEDashboard() {
                 </CardContent>
               </Card>
             </div>
-
-            <Card>
-              <CardContent className="pt-6">
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="p-2 bg-primary/10 rounded-lg text-primary">
-                    <BarChart3 className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-lg">Impacto Ambiental por Técnica</h3>
-                    <p className="text-xs text-muted-foreground">Redução de emissões e resíduos por tipo de processo</p>
-                  </div>
-                </div>
-                <div className="space-y-4">
-                  {data.byTechnique.map((tech) => (
-                    <div key={tech.techniqueId} className="space-y-2">
-                      <div className="flex justify-between text-sm">
-                        <span className="font-medium">{tech.techniqueName}</span>
-                        <span className="text-success font-bold">Eco-Score: {(tech.averageOEE * 0.8 + 20).toFixed(0)}</span>
-                      </div>
-                      <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
-                        <div
-                          className="h-full bg-success transition-all"
-                          style={{ width: `${tech.averageOEE}%` }}
-                        />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
           </TabsContent>
         </Tabs>
 
