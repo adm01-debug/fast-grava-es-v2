@@ -396,6 +396,61 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, f
       previousQuality: avg(previousPeriod, 'quality'),
     };
 
+    // Generate heatmap data (Machine performance over the period)
+    const heatmapData: OEEData['heatmapData'] = byMachine.map(machine => {
+      const machineHeatmap: { date: string; oee: number }[] = [];
+      
+      for (let i = trendDays - 1; i >= 0; i--) {
+        const date = subDays(now, i);
+        const dayStart = startOfDay(date);
+        const dayEnd = endOfDay(date);
+        
+        const dayMachineJobs = periodJobs.filter(job => {
+          if (job.machine_id !== machine.machineId || !job.actual_end_time) return false;
+          try {
+            const endTime = parseISO(job.actual_end_time);
+            return isWithinInterval(endTime, { start: dayStart, end: dayEnd });
+          } catch {
+            return false;
+          }
+        });
+        
+        if (dayMachineJobs.length === 0) {
+          machineHeatmap.push({ date: dayStart.toISOString(), oee: 0 });
+          continue;
+        }
+        
+        let dayActual = 0, dayEstimated = 0, dayProduced = 0, dayLost = 0;
+        for (const job of dayMachineJobs) {
+          if (isValidDate(job.actual_start_time) && isValidDate(job.actual_end_time)) {
+            try {
+              dayActual += differenceInMinutes(parseISO(job.actual_end_time!), parseISO(job.actual_start_time!));
+            } catch {}
+          }
+          dayEstimated += sanitizeNumber(job.estimated_duration || 60);
+          dayProduced += sanitizeNumber(job.produced_quantity ?? job.quantity);
+          dayLost += sanitizeNumber(job.lost_pieces);
+        }
+        
+        const dayPlanned = Math.max(PLANNED_MINUTES_PER_DAY, dayEstimated);
+        const dayAvail = dayPlanned > 0 ? Math.min(100, (dayActual / dayPlanned) * 100) : 0;
+        const dayPerf = dayActual > 0 ? Math.min(100, (dayEstimated / dayActual) * 100) : 0;
+        const dayQual = dayProduced > 0 ? Math.min(100, ((dayProduced - dayLost) / dayProduced) * 100) : 0;
+        const dayOEE = (dayAvail / 100) * (dayPerf / 100) * (dayQual / 100) * 100;
+        
+        machineHeatmap.push({
+          date: dayStart.toISOString(),
+          oee: Math.round(dayOEE * 10) / 10
+        });
+      }
+      
+      return {
+        machineId: machine.machineId,
+        machineName: machine.machineName,
+        data: machineHeatmap
+      };
+    });
+
     return {
       overallOEE: Math.round(overallOEE * 10) / 10,
       overallAvailability: Math.round(overallAvailability * 10) / 10,
@@ -405,6 +460,7 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, f
       byMachine,
       byTechnique,
       trendData,
+      heatmapData,
       comparison,
 
       worldClassBenchmark: WORLD_CLASS_OEE,
