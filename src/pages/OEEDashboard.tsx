@@ -1,4 +1,4 @@
-import { useState, lazy, Suspense, useMemo, memo, useCallback } from 'react';
+import { useState, lazy, Suspense, useMemo, memo, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet';
 import { cn } from '@/lib/utils';
@@ -43,6 +43,7 @@ import {
   FileText
 } from 'lucide-react';
 import { useOEE, WORLD_CLASS_OEE, getOEEColor } from '@/hooks/useOEE';
+import { useOEEAlerts } from '@/hooks/useOEEAlerts';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 const OEEGaugeCard = lazy(() => import('@/components/oee/OEEGaugeCard').then(m => ({ default: m.OEEGaugeCard })));
@@ -78,6 +79,9 @@ const OEEDashboard = memo(function OEEDashboard() {
     downloadReport(format);
     toast.success(t('common.reportExported', 'Relatório OEE exportado!'));
   }, [downloadReport, t]);
+
+  // Activate OEE alerts
+  useOEEAlerts();
 
 
   if (isLoading) {
