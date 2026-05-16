@@ -38,25 +38,27 @@ export function BackButton({ className }: BackButtonProps) {
 
   if (isMobile) {
     return (
-      <AnimatePresence>
+      <AnimatePresence mode="wait">
         <motion.div
-          initial={{ opacity: 0, x: -10 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -10 }}
-          className="fixed top-2.5 left-3 z-[60] md:hidden"
+          key={location.pathname}
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.8 }}
+          className="fixed bottom-24 left-6 z-[60] md:hidden"
         >
           <Button
-            variant="ghost"
+            variant="default"
             size="icon"
             onClick={handleBack}
             className={cn(
-              "h-9 w-9 rounded-full bg-background/60 backdrop-blur-md border border-border/40 shadow-sm",
-              "text-foreground active:scale-90 transition-all touch-target",
+              "h-14 w-14 rounded-full shadow-2xl transition-all active:scale-90 touch-target",
+              "bg-background/80 backdrop-blur-xl border border-primary/20 text-primary",
+              "hover:bg-background/90 hover:border-primary/40",
               className
             )}
             aria-label="Voltar"
           >
-            <ArrowLeft className="h-5 w-5" />
+            <ArrowLeft className="h-6 w-6" />
           </Button>
         </motion.div>
       </AnimatePresence>
