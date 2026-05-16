@@ -450,7 +450,17 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, f
     }
   };
 
-  return { data, isLoading, downloadReport };
+  const downloadReportFormat = async (formatType: 'excel' | 'pdf' | 'csv') => {
+    if (!data) return;
+    if (formatType === 'excel') {
+      await downloadReport();
+      return;
+    }
+    const { exportOEETabledData } = await import('@/lib/oeeExport');
+    exportOEETabledData(data, formatType as 'pdf' | 'csv');
+  };
+
+  return { data, isLoading, downloadReport: downloadReportFormat };
 }
 
 export { getOEEColor, classifyOEE, WORLD_CLASS_OEE };
