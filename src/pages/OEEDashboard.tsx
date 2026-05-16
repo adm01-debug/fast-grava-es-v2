@@ -71,7 +71,6 @@ const OEEDashboard = memo(function OEEDashboard() {
   const [period, setPeriod] = useState<string>('30');
   const [machineId, setMachineId] = useState<string>('all');
   const [techniqueId, setTechniqueId] = useState<string>('all');
-  const [shiftId, setShiftId] = useState<string>('all');
   const [showSimulator, setShowSimulator] = useState(false);
   const [simValues, setSimValues] = useState({ availability: 85, performance: 90, quality: 98 });
   
@@ -198,17 +197,6 @@ const OEEDashboard = memo(function OEEDashboard() {
               </SelectContent>
             </Select>
 
-            <Select value={shiftId} onValueChange={setShiftId}>
-              <SelectTrigger className="w-28 md:w-36 glass-card border-primary/20">
-                <SelectValue placeholder={t('common.shift', 'Turno')} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">{t('common.allShifts', 'Todos Turnos')}</SelectItem>
-                <SelectItem value="1">Turno 1</SelectItem>
-                <SelectItem value="2">Turno 2</SelectItem>
-                <SelectItem value="3">Turno 3</SelectItem>
-              </SelectContent>
-            </Select>
           </div>
         </div>
 
