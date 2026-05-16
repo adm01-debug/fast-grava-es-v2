@@ -3,6 +3,7 @@ import { renderHook } from '@testing-library/react';
 import { useOEE } from './useOEE';
 import * as schedulingHook from './useSchedulingData';
 import * as configHook from './useBusinessConfig';
+import React from 'react';
 
 vi.mock('./useSchedulingData', () => ({
   useSchedulingData: vi.fn(),

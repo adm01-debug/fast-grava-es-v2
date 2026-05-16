@@ -1,7 +1,8 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { BIStatCard } from './BIStatCard';
 import { Activity } from 'lucide-react';
+import React from 'react';
 
 describe('BIStatCard', () => {
   it('renders title and value correctly', () => {

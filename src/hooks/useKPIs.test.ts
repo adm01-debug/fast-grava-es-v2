@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { renderHook } from '@testing-library/react';
 import { useKPIs } from './useKPIs';
 import * as schedulingHook from './useSchedulingData';
+import React from 'react';
 
 // Mock the dependency
 vi.mock('./useSchedulingData', () => ({
