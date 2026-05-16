@@ -2,14 +2,18 @@
 // Constantes do sistema Fast-Grava-ES
 // ============================================================
 
-// Status de jobs
+// Status de jobs (Sincronizado com JobStateMachine)
 export const JOB_STATUSES = {
-  PENDING: 'pending',
+  QUEUE: 'queue',
   SCHEDULED: 'scheduled',
-  IN_PROGRESS: 'in_progress',
-  COMPLETED: 'completed',
+  READY: 'ready',
+  PRODUCTION: 'production',
+  PAUSED: 'paused',
+  DELAYED: 'delayed',
+  FINISHED: 'finished',
   CANCELLED: 'cancelled',
-  ON_HOLD: 'on_hold',
+  REWORK: 'rework',
+  BUFFER: 'buffer',
 } as const;
 
 export type JobStatus = (typeof JOB_STATUSES)[keyof typeof JOB_STATUSES];
