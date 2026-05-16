@@ -189,7 +189,7 @@ export default function MachinesPage() {
             <CardContent className="pt-6">
               <div className="flex items-center gap-4">
                 <div className="w-10 h-10 rounded-lg gradient-primary flex items-center justify-center shrink-0">
-                  <Printer className="h-5 w-5 text-primary-foreground" />
+                  <Target className="h-5 w-5 text-primary-foreground" />
                 </div>
                 <div className="min-w-0">
                   <p className="text-2xl font-bold">{machines.length}</p>
