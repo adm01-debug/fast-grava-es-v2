@@ -236,11 +236,13 @@ export function BINormalView({ biMetrics, kpis, oeeData, getPeriodLabel, onDrill
                   outerRadius={100}
                   paddingAngle={2}
                   dataKey="value"
-                  label={({ name, percent }: any) => `${name} (${(percent * 100).toFixed(0)}%)`}
+                  label={({ name, percent }: { name: string; percent: number }) => `${name} (${(percent * 100).toFixed(0)}%)`}
                   labelLine={false}
-                  onClick={(data: any) => onDrillDown(`PEDIDOS: ${data.name}`, data.name)}
+                  onClick={(data) => {
+                    if (data && data.name) onDrillDown(`PEDIDOS: ${data.name}`, data.name);
+                  }}
                 >
-                  {biMetrics.statusDistribution.map((entry: any, index: number) => (
+                  {biMetrics.statusDistribution.map((entry, index: number) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
