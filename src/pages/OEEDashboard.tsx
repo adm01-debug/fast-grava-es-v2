@@ -63,6 +63,7 @@ const OEELossesChart = lazy(() => import('@/components/oee/OEELossesChart').then
 const OEETechniqueComparison = lazy(() => import('@/components/oee/OEETechniqueComparison').then(m => ({ default: m.OEETechniqueComparison })));
 const OEEHeatmap = lazy(() => import('@/components/oee/OEEHeatmap').then(m => ({ default: m.OEEHeatmap })));
 const PredictiveAlerts = lazy(() => import('@/components/oee/PredictiveAlerts').then(m => ({ default: m.PredictiveAlerts })));
+const ParetoLossesChart = lazy(() => import('@/components/oee/ParetoLossesChart').then(m => ({ default: m.ParetoLossesChart })));
 
 const OEEDashboard = memo(function OEEDashboard() {
   const { t } = useTranslation();
