@@ -3,32 +3,45 @@ import { ReactNode } from 'react';
 
 interface PageTransitionProps {
   children: ReactNode;
+  direction?: 'forward' | 'backward';
 }
 
 const pageVariants: Variants = {
-  initial: {
-    opacity: 0,
-    x: 20,
-    filter: "blur(4px)",
+  forward: {
+    initial: { opacity: 0, x: 30, filter: "blur(8px)" },
+    in: { opacity: 1, x: 0, filter: "blur(0px)" },
+    out: { opacity: 0, x: -30, filter: "blur(8px)" },
   },
-  in: {
-    opacity: 1,
-    x: 0,
-    filter: "blur(0px)",
-  },
-  out: {
-    opacity: 0,
-    x: -20,
-    filter: "blur(4px)",
+  backward: {
+    initial: { opacity: 0, x: -30, filter: "blur(8px)" },
+    in: { opacity: 1, x: 0, filter: "blur(0px)" },
+    out: { opacity: 0, x: 30, filter: "blur(8px)" },
   },
 };
 
 const pageTransition: Transition = {
   type: 'spring',
-  stiffness: 260,
-  damping: 20,
-  mass: 0.5,
+  stiffness: 300,
+  damping: 30,
+  mass: 1,
 };
+
+export function PageTransition({ children, direction = 'forward' }: PageTransitionProps) {
+  const variants = pageVariants[direction];
+
+  return (
+    <motion.div
+      initial="initial"
+      animate="in"
+      exit="out"
+      variants={variants}
+      transition={pageTransition}
+      className="h-full w-full will-change-transform"
+    >
+      {children}
+    </motion.div>
+  );
+}
 
 export function PageTransition({ children }: PageTransitionProps) {
   return (
