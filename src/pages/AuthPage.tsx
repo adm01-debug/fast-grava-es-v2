@@ -83,13 +83,6 @@ export default function AuthPage() {
     toast.success(t('auth.resetRequestSent', 'Solicitação enviada! Aguarde aprovação do gestor.')); setShowForgotPassword(false); setForgotEmail(''); setIsSendingReset(false);
   };
 
-  const handleSignup = async (e: React.FormEvent) => {
-    e.preventDefault(); setErrors({});
-    try { signupSchema.parse({ fullName: signupName, email: signupEmail, password: signupPassword, confirmPassword: signupConfirmPassword }); } catch (err) { if (err instanceof z.ZodError) { const fe: Record<string, string> = {}; err.errors.forEach(e => { if (e.path[0]) fe[`signup_${e.path[0]}`] = e.message; }); setErrors(fe); return; } }
-    setIsLoading(true); const { error } = await signUp(signupEmail, signupPassword, signupName);
-    if (error) { toast.error(t('errors.generic')); setIsLoading(false); return; }
-    toast.success(t('common.success')); setIsLoading(false);
-  };
 
   return (
     <AuthErrorBoundary>
