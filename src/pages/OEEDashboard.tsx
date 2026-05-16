@@ -70,20 +70,79 @@ const OEEDashboard = memo(function OEEDashboard() {
   const { t } = useTranslation();
   const [period, setPeriod] = useState<string>('30');
   const [machineId, setMachineId] = useState<string>('all');
+  const [techniqueId, setTechniqueId] = useState<string>('all');
   const [showSimulator, setShowSimulator] = useState(false);
   const [simValues, setSimValues] = useState({ availability: 85, performance: 90, quality: 98 });
   
   const filters = useMemo(() => ({
-    machineId: machineId === 'all' ? undefined : machineId
-  }), [machineId]);
+    machineId: machineId === 'all' ? undefined : machineId,
+    techniqueId: techniqueId === 'all' ? undefined : techniqueId
+  }), [machineId, techniqueId]);
 
   const { data, isLoading, downloadReport } = useOEE(parseInt(period), 30, filters);
   const { losses, isLoading: lossesLoading } = useProductionLosses();
 
-  const handleDownloadReport = useCallback((format: 'excel' | 'pdf' | 'csv') => {
-    downloadReport(format);
-    toast.success(t('common.reportExported', 'Relatório OEE exportado!'));
-  }, [downloadReport, t]);
+  const handleDownloadReport = useCallback(async (format: 'excel' | 'pdf' | 'csv') => {
+    if (!data) return;
+    
+    if (format === 'csv') {
+      const csvData = data.byMachine.map(m => ({
+        'Máquina': m.machineName,
+        'Código': m.machineCode,
+        'Técnica': m.techniqueName,
+        'Disponibilidade (%)': m.availability,
+        'Performance (%)': m.performance,
+        'Qualidade (%)': m.quality,
+        'OEE (%)': m.oee,
+        'Total Peças': m.totalPiecesProduced,
+        'Peças Boas': m.goodPieces,
+        'Perdas': m.lostPieces
+      }));
+      
+      const headers = Object.keys(csvData[0]).join(',');
+      const rows = csvData.map(row => Object.values(row).join(','));
+      const csvContent = "data:text/csv;charset=utf-8," + [headers, ...rows].join('\n');
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `oee_report_${new Date().toISOString().slice(0,10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } else if (format === 'pdf') {
+      const { jsPDF } = await import('jspdf');
+      const { default: autoTable } = await import('jspdf-autotable');
+      const doc = new jsPDF();
+      
+      doc.setFontSize(18);
+      doc.text('Relatório OEE - FAST GRAVAÇÕES', 14, 20);
+      
+      doc.setFontSize(12);
+      doc.text(`Período: Últimos ${period} dias`, 14, 30);
+      doc.text(`OEE Geral: ${data.overallOEE.toFixed(1)}%`, 14, 40);
+      doc.text(`Disponibilidade: ${data.overallAvailability.toFixed(1)}% | Performance: ${data.overallPerformance.toFixed(1)}% | Qualidade: ${data.overallQuality.toFixed(1)}%`, 14, 50);
+      
+      const tableData = data.byMachine.map(m => [
+        m.machineName,
+        m.techniqueName,
+        `${m.availability}%`,
+        `${m.performance}%`,
+        `${m.quality}%`,
+        `${m.oee}%`
+      ]);
+      
+      autoTable(doc, {
+        startY: 60,
+        head: [['Máquina', 'Técnica', 'Disp.', 'Perf.', 'Qual.', 'OEE']],
+        body: tableData,
+      });
+      
+      doc.save(`oee_report_${new Date().toISOString().slice(0,10)}.pdf`);
+    } else {
+      downloadReport(format);
+    }
+    toast.success(t('common.reportExported', 'Relatório exportado com sucesso!'));
+  }, [data, downloadReport, t, period]);
 
   // Activate OEE alerts
   useOEEAlerts();
@@ -121,7 +180,7 @@ const OEEDashboard = memo(function OEEDashboard() {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl md:text-3xl font-black font-display flex items-center gap-3">
-              <Activity className="h-8 w-8 text-primary animate-pulse" />
+              <Activity className="h-8 w-8 text-primary animate-pulse hidden sm:block" />
               OEE Industrial Core
             </h1>
             <p className="text-muted-foreground mt-1">
@@ -136,47 +195,65 @@ const OEEDashboard = memo(function OEEDashboard() {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="hidden md:flex gap-2 border-primary/20 hover:bg-primary/5 active:scale-95 transition-transform"
+                  className="flex gap-2 border-primary/20 hover:bg-primary/5 active:scale-95 transition-transform"
                 >
                   <FileDown className="h-4 w-4" />
-                  {t('common.export', 'Exportar')}
+                  <span className="hidden sm:inline">{t('common.export', 'Exportar')}</span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuItem onClick={() => handleDownloadReport('excel')}>
-                  <FileSpreadsheet className="h-4 w-4 mr-2 text-success" /> Excel
+                  <FileSpreadsheet className="h-4 w-4 mr-2 text-green-500" /> Excel (.xlsx)
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => handleDownloadReport('pdf')}>
-                  <FileText className="h-4 w-4 mr-2 text-destructive" /> PDF
+                  <FileText className="h-4 w-4 mr-2 text-red-500" /> Relatório PDF
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => handleDownloadReport('csv')}>
-                  <FileSpreadsheet className="h-4 w-4 mr-2 text-primary" /> CSV
+                  <FileSpreadsheet className="h-4 w-4 mr-2 text-blue-500" /> Dados CSV
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
             <Select value={period} onValueChange={setPeriod}>
-              <SelectTrigger className="w-28 md:w-36 glass-card border-primary/20">
+              <SelectTrigger className="w-[100px] sm:w-28 md:w-36 glass-card border-primary/20">
                 <SelectValue placeholder={t('common.period', 'Período')} />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="7">{t('common.last7Days', '7 dias')}</SelectItem>
                 <SelectItem value="14">{t('common.last14Days', '14 dias')}</SelectItem>
                 <SelectItem value="30">{t('common.last30Days', '30 dias')}</SelectItem>
+                <SelectItem value="60">{t('common.last60Days', '60 dias')}</SelectItem>
                 <SelectItem value="90">{t('common.last90Days', '90 dias')}</SelectItem>
+                <SelectItem value="180">{t('common.last180Days', '180 dias')}</SelectItem>
+                <SelectItem value="365">{t('common.last365Days', '365 dias')}</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <Select value={techniqueId} onValueChange={setTechniqueId}>
+              <SelectTrigger className="w-[110px] sm:w-32 md:w-44 glass-card border-primary/20">
+                <SelectValue placeholder={t('common.technique', 'Técnica')} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">{t('common.allTechniques', 'Todas Técnicas')}</SelectItem>
+                {data.byTechnique.map(tech => (
+                  <SelectItem key={tech.techniqueId} value={tech.techniqueId}>{tech.techniqueName}</SelectItem>
+                ))}
               </SelectContent>
             </Select>
 
             <Select value={machineId} onValueChange={setMachineId}>
-              <SelectTrigger className="w-32 md:w-44 glass-card border-primary/20">
+              <SelectTrigger className="w-[110px] sm:w-32 md:w-44 glass-card border-primary/20">
                 <SelectValue placeholder={t('common.machine', 'Máquina')} />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">{t('common.allMachines', 'Todas Máquinas')}</SelectItem>
-                {data.byMachine.map(m => (
-                  <SelectItem key={m.machineId} value={m.machineId}>{m.machineName}</SelectItem>
-                ))}
+                {data.byMachine
+                  .filter(m => techniqueId === 'all' || m.techniqueId === techniqueId)
+                  .map(m => (
+                    <SelectItem key={m.machineId} value={m.machineId}>{m.machineName}</SelectItem>
+                  ))}
               </SelectContent>
             </Select>
+
           </div>
         </div>
 
