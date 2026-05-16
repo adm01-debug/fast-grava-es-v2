@@ -136,7 +136,7 @@ export function MainLayout({ children }: MainLayoutProps) {
             "transition-all duration-300"
           )}>
 
-            {/* Global Navigation Header - Only show when not on home page */}
+            {/* Global Navigation Header - Only show when not on home page or root-level dashboard */}
             <div className="flex flex-col gap-2 mb-6 sm:flex-row sm:items-center sm:justify-between sm:gap-4 no-export">
               <div className="flex items-center gap-2">
                 <Suspense fallback={null}>
