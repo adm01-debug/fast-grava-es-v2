@@ -26,6 +26,8 @@ const MobileQuickActions = lazy(() => import('../navigation/MobileQuickActions')
 const CommandPaletteAdvanced = lazy(() => import('../navigation/CommandPaletteAdvanced').then(m => ({ default: m.CommandPaletteAdvanced })));
 const SystemOnboarding = lazy(() => import('../onboarding/SystemOnboarding').then(m => ({ default: m.SystemOnboarding })));
 const Breadcrumbs = lazy(() => import('../navigation/Breadcrumbs').then(m => ({ default: m.Breadcrumbs })));
+const BackButton = lazy(() => import('../navigation/BackButton').then(m => ({ default: m.BackButton })));
+
 
 
 import { useDevice } from '@/hooks/use-device';
@@ -130,12 +132,20 @@ export function MainLayout({ children }: MainLayoutProps) {
             "pt-12 md:pt-4",
             "pb-24 md:pb-4",
             "px-4 sm:px-6 lg:px-8",
-            "min-h-0"
+            "min-h-0",
+            "transition-all duration-300"
           )}>
-            {/* Global Breadcrumbs - Only show when not on home page */}
-            <Suspense fallback={<div className="h-9 mb-6 bg-muted animate-pulse rounded-md w-48" />}>
-              <Breadcrumbs />
-            </Suspense>
+
+            {/* Global Navigation Header - Only show when not on home page */}
+            <div className="flex items-center gap-2 mb-6">
+              <Suspense fallback={null}>
+                <BackButton />
+              </Suspense>
+              <Suspense fallback={<div className="h-9 bg-muted animate-pulse rounded-md w-48" />}>
+                <Breadcrumbs />
+              </Suspense>
+            </div>
+
 
             {/* Render direct children as PageTransition is handled in AppRoutes for better SPA experience */}
             {children}

@@ -107,15 +107,8 @@ export function Breadcrumbs({ className }: { className?: string }) {
         className
       )}
     >
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={handleBack}
-        className="h-9 w-9 shrink-0 text-muted-foreground hover:text-foreground hover:bg-primary/10 active:scale-95 transition-all touch-target"
-        aria-label="Voltar para página anterior"
-      >
-        <ArrowLeft className="h-5 w-5" />
-      </Button>
+      {/* Retirado botão ArrowLeft pois agora temos o BackButton centralizado no MainLayout */}
+
 
       <div className="flex items-center gap-1 overflow-x-auto scrollbar-none whitespace-nowrap px-1">
         {breadcrumbs.map((item, index) => (
