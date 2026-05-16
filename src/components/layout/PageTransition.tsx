@@ -6,18 +6,23 @@ interface PageTransitionProps {
   direction?: 'forward' | 'backward';
 }
 
-const pageVariants: Variants = {
-  forward: {
-    initial: { opacity: 0, x: 30, filter: "blur(8px)" },
-    in: { opacity: 1, x: 0, filter: "blur(0px)" },
-    out: { opacity: 0, x: -30, filter: "blur(8px)" },
+const getVariants = (direction: 'forward' | 'backward'): Variants => ({
+  initial: {
+    opacity: 0,
+    x: direction === 'forward' ? 30 : -30,
+    filter: "blur(8px)",
   },
-  backward: {
-    initial: { opacity: 0, x: -30, filter: "blur(8px)" },
-    in: { opacity: 1, x: 0, filter: "blur(0px)" },
-    out: { opacity: 0, x: 30, filter: "blur(8px)" },
+  in: {
+    opacity: 1,
+    x: 0,
+    filter: "blur(0px)",
   },
-};
+  out: {
+    opacity: 0,
+    x: direction === 'forward' ? -30 : 30,
+    filter: "blur(8px)",
+  },
+});
 
 const pageTransition: Transition = {
   type: 'spring',
@@ -27,7 +32,7 @@ const pageTransition: Transition = {
 };
 
 export function PageTransition({ children, direction = 'forward' }: PageTransitionProps) {
-  const variants = pageVariants[direction];
+  const variants = getVariants(direction);
 
   return (
     <motion.div
@@ -37,21 +42,6 @@ export function PageTransition({ children, direction = 'forward' }: PageTransiti
       variants={variants}
       transition={pageTransition}
       className="h-full w-full will-change-transform"
-    >
-      {children}
-    </motion.div>
-  );
-}
-
-export function PageTransition({ children }: PageTransitionProps) {
-  return (
-    <motion.div
-      initial="initial"
-      animate="in"
-      exit="out"
-      variants={pageVariants}
-      transition={pageTransition}
-      className="h-full w-full"
     >
       {children}
     </motion.div>
