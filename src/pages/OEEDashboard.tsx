@@ -89,22 +89,30 @@ const OEEDashboard = memo(function OEEDashboard() {
   const [activeTab, setActiveTab] = useState('overview');
   const [showConfig, setShowSimulatorLocal] = useState(false); // Used for a future settings modal if needed
   
-  const filters = useMemo(() => {
+  const dateRange = useMemo(() => {
     const now = new Date();
-    const startDate = startOfDay(subDays(now, parseInt(period)));
-    const endDate = endOfDay(now);
-    
     return {
-      machineId: machineId === 'all' ? undefined : machineId,
-      techniqueId: techniqueId === 'all' ? undefined : techniqueId,
-      shift: shift === 'all' ? undefined : shift,
-      startDate: startDate.toISOString(),
-      endDate: endDate.toISOString()
+      start: startOfDay(subDays(now, parseInt(period))),
+      end: endOfDay(now)
     };
-  }, [machineId, techniqueId, shift, period]);
+  }, [period]);
 
-  const { data, isLoading, downloadReport } = useOEE(parseInt(period), 30, filters);
-  const { losses, isLoading: lossesLoading } = useProductionLosses(undefined, filters);
+  const oeeFilters = useMemo(() => ({
+    machineId: machineId === 'all' ? undefined : machineId,
+    techniqueId: techniqueId === 'all' ? undefined : techniqueId,
+    shift: shift === 'all' ? undefined : shift,
+    startDate: dateRange.start,
+    endDate: dateRange.end
+  }), [machineId, techniqueId, shift, dateRange]);
+
+  const lossFilters = useMemo(() => ({
+    ...oeeFilters,
+    startDate: dateRange.start.toISOString(),
+    endDate: dateRange.end.toISOString()
+  }), [oeeFilters, dateRange]);
+
+  const { data, isLoading, downloadReport } = useOEE(parseInt(period), 30, oeeFilters);
+  const { losses, isLoading: lossesLoading } = useProductionLosses(undefined, lossFilters);
 
   const applyPreset = (preset: any) => {
     if (preset.filters.period) setPeriod(preset.filters.period);
