@@ -61,7 +61,7 @@ export const AuditEntryCard = memo(function AuditEntryCard({ entry }: AuditEntry
               </span>
             </div>
             
-            {entry.action === 'status_change' && entry.new_values && (
+            {entry.action === 'status_change' && entry.new_values && typeof entry.new_values === 'object' && 'status' in (entry.new_values as any) && (
               <div className="flex items-center gap-2 mt-2">
                 <span className="text-xs text-muted-foreground italic">Alterado para:</span>
                 <Badge variant="outline" className={cn("text-[10px] uppercase font-bold", getStatusColor(String((entry.new_values as any).status || '')))}>
