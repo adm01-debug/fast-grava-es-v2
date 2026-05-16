@@ -83,7 +83,9 @@ export function BackButton({ className }: BackButtonProps) {
             size="sm"
             onClick={handleBack}
             className={cn(
-              "gap-2 px-3 h-10 text-muted-foreground hover:text-primary hover:bg-primary/5 active:scale-95 transition-all border-2 border-transparent hover:border-primary/10 rounded-xl group/back",
+              "gap-2 px-3 h-10 text-muted-foreground hover:text-primary transition-all duration-300",
+              "border-2 border-transparent hover:border-primary/20 rounded-xl group/back",
+              "hover:bg-primary/5 hover:shadow-[0_0_15px_rgba(var(--primary-rgb),0.1)] active:scale-95",
               className
             )}
             aria-label="Voltar para a página anterior"
