@@ -9,6 +9,7 @@ const App = () => (
   <AppProviders>
     <Toaster />
     <Sonner />
+    <NetworkStatusToaster />
     <AnimatedRoutes />
     <PushNotificationPrompt delay={15000} />
   </AppProviders>
