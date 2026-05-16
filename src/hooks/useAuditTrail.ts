@@ -13,7 +13,7 @@ const CONTEXT = 'useAuditTrail';
 
 async function fetchAuditEntries(filters: AuditFilters): Promise<AuditLogEntry[]> {
   let query = supabase
-    .from('audit_log')
+    .from('audit_log_view')
     .select('*')
     .order('created_at', { ascending: false });
 
@@ -39,15 +39,19 @@ async function fetchAuditEntries(filters: AuditFilters): Promise<AuditLogEntry[]
     logger.error('Failed to load audit entries', error, CONTEXT);
     throw error;
   }
-  const parsed = (data ?? []).map((row) => {
+  const parsed = (data ?? []).map((row: any) => {
+    // AuditLogEntry expected actor_name and actor_email
     const result = auditLogEntrySchema.safeParse(row);
     if (!result.success) {
       logger.warn('Audit row failed validation', result.error.flatten(), CONTEXT);
       return null;
     }
-    return result.data;
+    return {
+      ...result.data,
+      actor_name: (row as any).actor_name // Injecting actor_name for UI
+    } as AuditLogEntry & { actor_name?: string };
   });
-  return parsed.filter((x): x is AuditLogEntry => x !== null);
+  return parsed.filter((x): x is AuditLogEntry & { actor_name?: string } => x !== null);
 }
 
 export function useAuditTrail(filters: AuditFilters) {
