@@ -23,6 +23,12 @@ interface NavButtonProps {
 
 export const NavButton = memo(forwardRef<HTMLDivElement, NavButtonProps>(function NavButton({ item, collapsed, isMobile, isActive }, ref) {
   const Icon = item.icon;
+  const { trigger } = useHapticFeedback();
+  
+  const handleClick = useCallback(() => {
+    trigger('light');
+    SoundFeedback.navForward();
+  }, [trigger]);
 
   const handlePrefetch = useCallback(() => {
     prefetchRoute(item.href);
