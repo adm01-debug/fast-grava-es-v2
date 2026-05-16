@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { Printer, CheckCircle2, XCircle, Settings, Activity, Zap } from 'lucide-react';
+import { Target, CheckCircle2, XCircle, Settings, Activity, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
 
