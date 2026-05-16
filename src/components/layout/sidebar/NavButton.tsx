@@ -4,6 +4,8 @@ import { cn } from '@/lib/utils';
 import { prefetchRoute } from '@/lib/prefetch';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { SoundFeedback } from '@/lib/soundFeedback';
+import { useHapticFeedback } from '@/hooks/use-haptic-feedback';
 
 export interface NavItem {
   icon: React.ElementType;
