@@ -25,7 +25,7 @@ export const SystemOnboarding = () => {
     {
       target: 'body',
       placement: 'center',
-      title: t('onboarding.welcome.title', { defaultValue: 'Bem-vindo ao 52 STÚDIOS DE GRAVAÇÃO!' }),
+      title: t('onboarding.welcome.title', { defaultValue: 'Bem-vindo ao FAST GRAVAÇÕES!' }),
       content: t('onboarding.welcome.content', { defaultValue: 'Vamos fazer um tour rápido para você conhecer as principais funcionalidades da sua nova Fábrica Autônoma.' }),
     },
     {

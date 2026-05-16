@@ -57,7 +57,7 @@ const NotFound = () => {
 
     }
     // Update document title
-    document.title = 'Página não encontrada | 52 STÚDIOS DE GRAVAÇÃO';
+    document.title = 'Página não encontrada | FAST GRAVAÇÕES';
   }, [location.pathname]);
 
   const handleBack = () => {

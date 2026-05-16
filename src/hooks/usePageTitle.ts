@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
-const APP_NAME = '52 STÚDIOS DE GRAVAÇÃO';
+const APP_NAME = 'FAST GRAVAÇÕES';
 
 /**
  * Map of route paths to page titles.
