@@ -27,6 +27,7 @@ const CommandPaletteAdvanced = lazy(() => import('../navigation/CommandPaletteAd
 const SystemOnboarding = lazy(() => import('../onboarding/SystemOnboarding').then(m => ({ default: m.SystemOnboarding })));
 const Breadcrumbs = lazy(() => import('../navigation/Breadcrumbs').then(m => ({ default: m.Breadcrumbs })));
 const BackButton = lazy(() => import('../navigation/BackButton').then(m => ({ default: m.BackButton })));
+const SwipeIndicator = lazy(() => import('../navigation/SwipeIndicator').then(m => ({ default: m.SwipeIndicator })));
 
 
 
