@@ -142,14 +142,13 @@ const OEEDashboard = memo(function OEEDashboard() {
                  <Badge className="bg-primary/20 text-primary border-primary/30 animate-pulse uppercase text-[10px] font-black">AI Insight</Badge>
                  <h2 className="text-xl font-bold tracking-tight">{t('oee.consolidated', 'OEE Consolidado')}: {data.overallOEE.toFixed(1)}%</h2>
               </div>
-              <p className="text-sm text-muted-foreground leading-relaxed" dangerouslySetInnerHTML={{
-                 __html: t('oee.aiPerformanceInsight', {
-                   val: '12%',
-                   tech: data.byTechnique[0]?.techniqueName,
-                   avg: data.byTechnique[0]?.averageOEE,
-                   defaultValue: 'Sua planta está operando {{val}} acima do benchmark.'
-                 })
-              }} />
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                {data.overallOEE >= 85 
+                  ? "Sua planta está operando em nível de Classe Mundial. Mantenha a estabilidade dos processos." 
+                  : data.overallOEE >= 65 
+                  ? `A técnica ${data.byTechnique[0]?.techniqueName || 'principal'} está liderando a produtividade. Foque em reduzir perdas de disponibilidade para atingir 85%.`
+                  : "Atenção: Eficiência global abaixo do esperado. Verifique o drill-down de perdas para identificar gargalos críticos."}
+              </p>
             </div>
             <div className="flex flex-wrap items-center justify-center gap-3 bg-background/40 p-4 rounded-2xl border border-border/50 backdrop-blur-sm">
               <div className="text-center px-4 border-r border-border/50">
@@ -178,11 +177,16 @@ const OEEDashboard = memo(function OEEDashboard() {
                   <Lightbulb className="h-5 w-5 text-indicator-warning" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-sm">{t('oee.performanceBottleneck', 'Gargalo de Performance')}</h3>
+                  <h3 className="font-bold text-sm">{data.overallPerformance < 85 ? t('oee.performanceBottleneck', 'Gargalo de Performance') : 'Otimização Ativa'}</h3>
                   <p className="text-xs text-muted-foreground mt-1">
-                    A técnica <span className="font-bold">{data.byTechnique[0]?.techniqueName}</span> está com perda de velocidade de 15%. Recomendamos revisão de setup.
+                    {data.overallPerformance < 85 
+                      ? `A técnica ${data.byTechnique[0]?.techniqueName} apresenta perdas de velocidade. Recomendamos revisão de setup e calibração.`
+                      : 'Performance estabilizada. Continue monitorando a qualidade para evitar retrabalhos.'}
                   </p>
-                  <Button variant="link" size="sm" className="p-0 h-auto text-indicator-warning text-xs mt-2">
+                  <Button variant="link" size="sm" onClick={() => {
+                    const tab = document.querySelector('[value="losses"]') as HTMLElement;
+                    if (tab) tab.click();
+                  }} className="p-0 h-auto text-indicator-warning text-xs mt-2">
                     {t('common.viewDetails', 'Ver Detalhes')} <ArrowRight className="ml-1 h-3 w-3" />
                   </Button>
                 </div>
