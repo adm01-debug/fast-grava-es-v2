@@ -254,20 +254,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { error: null };
   };
 
-  const signUp = async (email: string, password: string, fullName: string) => {
-    const redirectUrl = `${window.location.origin}/`;
-
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: redirectUrl,
-        data: {
-          full_name: fullName,
-        },
-      },
-    });
-    return { error };
+  const signUp = async (_email: string, _password: string, _fullName: string) => {
+    // Cadastro público desabilitado — sistema de uso exclusivo Promo Brindes.
+    // Novos usuários devem ser criados pelo gestor no painel administrativo.
+    return { error: new Error('Cadastro público desabilitado. Solicite acesso ao gestor.') };
   };
 
   const signOut = async () => {
