@@ -136,15 +136,26 @@ export const OEELossDrilldown = memo(function OEELossDrilldown({ filters }: OEEL
           </div>
           <div className="flex items-center gap-2">
             {path.length > 0 && (
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="h-7 w-7 rounded-full hover:bg-destructive/10 hover:text-destructive transition-colors"
-                onClick={reset}
-                title="Fechar caminho"
-              >
-                <X className="h-4 w-4" />
-              </Button>
+              <div className="flex items-center gap-1 border-r border-border/50 pr-2 mr-1">
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="h-7 w-7 rounded-full hover:bg-primary/10 transition-colors"
+                  onClick={goBack}
+                  title="Voltar um nível"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="h-7 w-7 rounded-full hover:bg-destructive/10 hover:text-destructive transition-colors"
+                  onClick={reset}
+                  title="Fechar caminho"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
             )}
             <Badge variant="outline" className="text-[10px] font-black border-primary/30">
               {losses?.length || 0} REGISTROS
