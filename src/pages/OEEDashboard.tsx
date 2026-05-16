@@ -44,7 +44,8 @@ import {
   LayoutDashboard,
   Bookmark,
   Save,
-  Trash2
+  Trash2,
+  Info
 } from 'lucide-react';
 import { useOEE, WORLD_CLASS_OEE, getOEEColor } from '@/hooks/useOEE';
 import { useOEEAlerts } from '@/hooks/useOEEAlerts';
@@ -60,6 +61,7 @@ import { toast } from 'sonner';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Input } from '@/components/ui/input';
 import { useDashboardPresets } from '@/hooks/useDashboardPresets';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 import { KPIPageSkeleton, ChartSkeleton, TableSkeleton } from '@/components/loading';
 
