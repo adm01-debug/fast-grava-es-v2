@@ -40,7 +40,11 @@ import {
   ArrowUpRight,
   Play,
   FileSpreadsheet,
-  FileText
+  FileText,
+  LayoutDashboard,
+  Bookmark,
+  Save,
+  Trash2
 } from 'lucide-react';
 import { useOEE, WORLD_CLASS_OEE, getOEEColor } from '@/hooks/useOEE';
 import { useOEEAlerts } from '@/hooks/useOEEAlerts';
@@ -49,11 +53,13 @@ import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 const OEEGaugeCard = lazy(() => import('@/components/oee/OEEGaugeCard').then(m => ({ default: m.OEEGaugeCard })));
 import { Skeleton } from '@/components/ui/skeleton';
-// Breadcrumbs are now handled globally in MainLayout
 import { KPITooltip, KPI_DEFINITIONS } from '@/components/ui/kpi-tooltip';
 import { VoiceButton } from '@/components/voice/VoiceCommands';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Input } from '@/components/ui/input';
+import { useDashboardPresets } from '@/hooks/useDashboardPresets';
 
 import { KPIPageSkeleton, ChartSkeleton, TableSkeleton } from '@/components/loading';
 
@@ -67,11 +73,6 @@ const PredictiveAlerts = lazy(() => import('@/components/oee/PredictiveAlerts').
 const ParetoLossesChart = lazy(() => import('@/components/oee/ParetoLossesChart').then(m => ({ default: m.ParetoLossesChart })));
 const OEELossDrilldown = lazy(() => import('@/components/oee/OEELossDrilldown').then(m => ({ default: m.OEELossDrilldown })));
 
-import { useDashboardPresets } from '@/hooks/useDashboardPresets';
-import { Bookmark, Save, Trash2 } from 'lucide-react';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Input } from '@/components/ui/input';
-
 const OEEDashboard = memo(function OEEDashboard() {
   const { t } = useTranslation();
   const [period, setPeriod] = useState<string>('30');
@@ -79,8 +80,10 @@ const OEEDashboard = memo(function OEEDashboard() {
   const [techniqueId, setTechniqueId] = useState<string>('all');
   const [shift, setShift] = useState<string>('all');
   const [showSimulator, setShowSimulator] = useState(false);
+  const [simValues, setSimValues] = useState({ availability: 85, performance: 90, quality: 98 });
   const [presetName, setPresetName] = useState('');
   const { presets, savePreset, deletePreset } = useDashboardPresets('oee');
+  const [activeTab, setActiveTab] = useState('overview');
   
   const filters = useMemo(() => ({
     machineId: machineId === 'all' ? undefined : machineId,
@@ -173,7 +176,6 @@ const OEEDashboard = memo(function OEEDashboard() {
   // Activate OEE alerts
   useOEEAlerts();
 
-
   if (isLoading) {
     return <KPIPageSkeleton />;
   }
@@ -194,15 +196,12 @@ const OEEDashboard = memo(function OEEDashboard() {
   const machinesAtWorldClass = data.byMachine.filter(m => m.oee >= WORLD_CLASS_OEE).length;
   const machinesBelowTarget = data.byMachine.filter(m => m.oee < 65 && m.totalJobs > 0).length;
 
-  const [activeTab, setActiveTab] = useState('overview');
-
   return (
       <div className="p-6 space-y-6">
         <Helmet>
-          <title>OEE Dashboard | FAST GRAVA00c700d5ES</title>
+          <title>OEE Dashboard | FAST GRAVAÇÕES</title>
           <meta name="description" content="Análise de Eficiência Global dos Equipamentos (OEE) e indicadores de performance industrial." />
         </Helmet>
-        {/* Breadcrumbs removed - handled by MainLayout */}
 
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -216,15 +215,11 @@ const OEEDashboard = memo(function OEEDashboard() {
             </p>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <VoiceButton />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="flex gap-2 border-primary/20 hover:bg-primary/5 active:scale-95 transition-transform"
-                >
+                <Button variant="outline" size="sm" className="flex gap-2 border-primary/20 hover:bg-primary/5 active:scale-95 transition-transform">
                   <FileDown className="h-4 w-4" />
                   <span className="hidden sm:inline">{t('common.export', 'Exportar')}</span>
                 </Button>
@@ -241,6 +236,7 @@ const OEEDashboard = memo(function OEEDashboard() {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+
             <Select value={period} onValueChange={setPeriod}>
               <SelectTrigger className="w-[100px] sm:w-28 md:w-36 glass-card border-primary/20">
                 <SelectValue placeholder={t('common.period', 'Período')} />
@@ -313,12 +309,7 @@ const OEEDashboard = memo(function OEEDashboard() {
                         >
                           {p.name}
                         </button>
-                        <Button 
-                          variant="ghost" 
-                          size="icon" 
-                          className="h-6 w-6 opacity-0 group-hover:opacity-100"
-                          onClick={() => deletePreset(p.id)}
-                        >
+                        <Button variant="ghost" size="icon" className="h-6 w-6 opacity-0 group-hover:opacity-100" onClick={() => deletePreset(p.id)}>
                           <Trash2 className="h-3 w-3 text-destructive" />
                         </Button>
                       </div>
@@ -328,12 +319,7 @@ const OEEDashboard = memo(function OEEDashboard() {
                   )}
                 </div>
                 <div className="flex flex-col gap-2 pt-2 border-t border-border/50">
-                  <Input 
-                    placeholder="Nome do filtro..." 
-                    className="h-8 text-xs" 
-                    value={presetName}
-                    onChange={e => setPresetName(e.target.value)}
-                  />
+                  <Input placeholder="Nome do filtro..." className="h-8 text-xs" value={presetName} onChange={e => setPresetName(e.target.value)} />
                   <Button size="sm" className="h-8 w-full gap-2" onClick={handleSavePreset} disabled={!presetName}>
                     <Save className="h-3 w-3" /> Salvar Atual
                   </Button>
@@ -384,9 +370,7 @@ const OEEDashboard = memo(function OEEDashboard() {
           <PredictiveAlerts alerts={data.maintenanceAlerts} />
         </Suspense>
 
-        {/* Actionable Insights & Simulator Toggle */}
         <div className="flex flex-col lg:flex-row gap-4">
-          {/* Smart Actions */}
           <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
             <Card className="border-l-4 border-l-indicator-warning bg-indicator-warning/10">
               <CardContent className="p-4 flex gap-4">
@@ -396,14 +380,9 @@ const OEEDashboard = memo(function OEEDashboard() {
                 <div>
                   <h3 className="font-bold text-sm">{data.overallPerformance < 85 ? t('oee.performanceBottleneck', 'Gargalo de Performance') : 'Otimização Ativa'}</h3>
                   <p className="text-xs text-muted-foreground mt-1">
-                    {data.overallPerformance < 85 
-                      ? `A técnica ${data.byTechnique[0]?.techniqueName} apresenta perdas de velocidade. Recomendamos revisão de setup e calibração.`
-                      : 'Performance estabilizada. Continue monitorando a qualidade para evitar retrabalhos.'}
+                    {data.overallPerformance < 85 ? `A técnica ${data.byTechnique[0]?.techniqueName} apresenta perdas de velocidade.` : 'Performance estabilizada.'}
                   </p>
-                  <Button variant="link" size="sm" onClick={() => {
-                    const tab = document.querySelector('[value="losses"]') as HTMLElement;
-                    if (tab) tab.click();
-                  }} className="p-0 h-auto text-indicator-warning text-xs mt-2">
+                  <Button variant="link" size="sm" onClick={() => setActiveTab('losses')} className="p-0 h-auto text-indicator-warning text-xs mt-2">
                     {t('common.viewDetails', 'Ver Detalhes')} <ArrowRight className="ml-1 h-3 w-3" />
                   </Button>
                 </div>
@@ -417,15 +396,7 @@ const OEEDashboard = memo(function OEEDashboard() {
                 </div>
                 <div className="flex-1">
                   <h3 className="font-bold text-sm">{t('oee.simulator', 'OEE Simulator')}</h3>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    {t('oee.simulatorDescription', 'Simule o impacto de melhorias operacionais no seu OEE final.')}
-                  </p>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setShowSimulator(!showSimulator)}
-                    className="h-8 text-xs mt-2 border-primary/20 hover:bg-primary/10"
-                  >
+                  <Button variant="outline" size="sm" onClick={() => setShowSimulator(!showSimulator)} className="h-8 text-xs mt-2 border-primary/20 hover:bg-primary/10">
                     {showSimulator ? t('oee.closeSimulator', 'Fechar Simulador') : t('oee.openSimulator', 'Abrir Simulador')}
                     <Play className={cn("ml-2 h-3 w-3 transition-transform", showSimulator && "rotate-90")} />
                   </Button>
@@ -435,7 +406,6 @@ const OEEDashboard = memo(function OEEDashboard() {
           </div>
         </div>
 
-        {/* Simulator Panel */}
         {showSimulator && (
           <Card className="border-primary/20 bg-muted/20 animate-in slide-in-from-top-4 duration-300">
             <CardContent className="p-6">
@@ -446,56 +416,21 @@ const OEEDashboard = memo(function OEEDashboard() {
                       <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{t('oee.availability', 'Disponibilidade')}</Label>
                       <span className="text-xs font-black">{simValues.availability}%</span>
                     </div>
-                    <Slider
-                      value={[simValues.availability]}
-                      max={100}
-                      step={1}
-                      onValueChange={([v]) => setSimValues({...simValues, availability: v})}
-                    />
+                    <Slider value={[simValues.availability]} max={100} step={1} onValueChange={([v]) => setSimValues({...simValues, availability: v})} />
                   </div>
                   <div className="space-y-3">
                     <div className="flex justify-between">
                       <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{t('common.performance', 'Performance')}</Label>
                       <span className="text-xs font-black">{simValues.performance}%</span>
                     </div>
-                    <Slider
-                      value={[simValues.performance]}
-                      max={100}
-                      step={1}
-                      onValueChange={([v]) => setSimValues({...simValues, performance: v})}
-                    />
+                    <Slider value={[simValues.performance]} max={100} step={1} onValueChange={([v]) => setSimValues({...simValues, performance: v})} />
                   </div>
-        {/* Tabs Control */}
-        <Tabs defaultValue="overview" className="space-y-6" onValueChange={setActiveTab}>
-          <div className="flex items-center justify-between overflow-x-auto pb-2 scrollbar-hide">
-            <TabsList className="bg-background/50 border border-primary/20 p-1">
-              <TabsTrigger value="overview" className="gap-2 text-xs font-bold uppercase tracking-tight">
-                <LayoutDashboard className="h-4 w-4" /> Visão Geral
-              </TabsTrigger>
-              <TabsTrigger value="losses" className="gap-2 text-xs font-bold uppercase tracking-tight">
-                <AlertTriangle className="h-4 w-4" /> Análise de Perdas
-              </TabsTrigger>
-              <TabsTrigger value="machines" className="gap-2 text-xs font-bold uppercase tracking-tight">
-                <Settings2 className="h-4 w-4" /> Eficiência Máquina
-              </TabsTrigger>
-              <TabsTrigger value="heatmap" className="gap-2 text-xs font-bold uppercase tracking-tight">
-                <BarChart3 className="h-4 w-4" /> Produtividade
-              </TabsTrigger>
-            </TabsList>
-          </div>
-
-          <TabsContent value="overview" className="space-y-6 animate-in fade-in duration-500">
-            {/* ... rest of the overview content ... */}
-
+                  <div className="space-y-3">
+                    <div className="flex justify-between">
                       <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{t('common.quality', 'Qualidade')}</Label>
                       <span className="text-xs font-black">{simValues.quality}%</span>
                     </div>
-                    <Slider
-                      value={[simValues.quality]}
-                      max={100}
-                      step={1}
-                      onValueChange={([v]) => setSimValues({...simValues, quality: v})}
-                    />
+                    <Slider value={[simValues.quality]} max={100} step={1} onValueChange={([v]) => setSimValues({...simValues, quality: v})} />
                   </div>
                 </div>
 
@@ -504,17 +439,12 @@ const OEEDashboard = memo(function OEEDashboard() {
                       <p className="text-xs font-bold text-muted-foreground uppercase mb-2">{t('oee.currentOEE', 'OEE Atual')}</p>
                       <p className="text-5xl font-black text-muted-foreground/50">{data.overallOEE.toFixed(1)}%</p>
                    </div>
-
                    <ArrowRight className="h-8 w-8 text-muted-foreground/30 hidden md:block" />
-
                    <div className="text-center">
                       <p className="text-xs font-bold text-primary uppercase mb-2">{t('oee.projectedOEE', 'OEE Projetado')}</p>
                       <p className="text-6xl font-black text-primary">
                         {((simValues.availability/100) * (simValues.performance/100) * (simValues.quality/100) * 100).toFixed(1)}%
                       </p>
-                      <Badge className="bg-success/20 text-success border-success/30 mt-2">
-                        + {(((simValues.availability/100) * (simValues.performance/100) * (simValues.quality/100) * 100) - data.overallOEE).toFixed(1)}% {t('oee.gain', 'de ganho')}
-                      </Badge>
                    </div>
                 </div>
               </div>
@@ -522,267 +452,96 @@ const OEEDashboard = memo(function OEEDashboard() {
           </Card>
         )}
 
-        {/* Main Metrics with OEE Formula Drill-down */}
-        <div className="space-y-4">
-          <div className="flex items-center justify-between p-4 bg-primary/5 border border-primary/20 rounded-2xl mb-4">
-            <h2 className="text-lg font-bold flex items-center gap-2">
-              <Calculator className="h-5 w-5 text-primary" />
-              {t('oee.drilldownTitle', 'Drill-down de Performance (Fórmula OEE)')}
-            </h2>
-            <div className="flex items-center gap-3">
-               <div className="flex gap-1">
-                  {[1, 2, 3].map(i => (
-                    <div key={i} className="w-1 h-3 bg-primary/40 rounded-full animate-bounce" style={{ animationDelay: `${i * 0.2}s` }} />
-                  ))}
-               </div>
-               <Badge variant="outline" className="text-[10px] font-bold border-primary/30 text-primary animate-pulse">REAL-TIME CALCULATION</Badge>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+          <TabsList className="bg-background/50 border border-primary/20 p-1">
+            <TabsTrigger value="overview" className="gap-2 text-xs font-bold uppercase tracking-tight">
+              <LayoutDashboard className="h-4 w-4" /> Visão Geral
+            </TabsTrigger>
+            <TabsTrigger value="losses" className="gap-2 text-xs font-bold uppercase tracking-tight">
+              <AlertTriangle className="h-4 w-4" /> Análise de Perdas
+            </TabsTrigger>
+            <TabsTrigger value="machines" className="gap-2 text-xs font-bold uppercase tracking-tight">
+              <Settings2 className="h-4 w-4" /> Eficiência Máquina
+            </TabsTrigger>
+            <TabsTrigger value="heatmap" className="gap-2 text-xs font-bold uppercase tracking-tight">
+              <BarChart3 className="h-4 w-4" /> Produtividade
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="overview" className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <OEEGaugeCard title={t('oee.generalOEE', 'OEE Geral')} value={data.overallOEE} icon={<Target className="h-4 w-4" />} benchmark={WORLD_CLASS_OEE} variant="glass" />
+              <OEEGaugeCard title={t('oee.availability', 'Disponibilidade')} value={data.overallAvailability} icon={<Clock className="h-4 w-4" />} benchmark={90} variant="glass" />
+              <OEEGaugeCard title={t('common.performance', 'Performance')} value={data.overallPerformance} icon={<Gauge className="h-4 w-4" />} benchmark={95} variant="glass" />
+              <OEEGaugeCard title={t('common.quality', 'Qualidade')} value={data.overallQuality} icon={<CheckCircle2 className="h-4 w-4" />} benchmark={99} variant="glass" />
             </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <KPITooltip {...KPI_DEFINITIONS.oee}>
-              <OEEGaugeCard
-                title={t('oee.generalOEE', 'OEE Geral')}
-                value={data.overallOEE}
-                icon={<Target className="h-4 w-4" />}
-                description={t('oee.generalOEEDesc', 'Eficiência geral de todas as máquinas')}
-                benchmark={WORLD_CLASS_OEE}
-                trend={data.comparison ? data.comparison.currentOEE - data.comparison.previousOEE : undefined}
-                className="border-primary/40 shadow-[0_0_25px_rgba(14,165,233,0.15)] bg-black/60 backdrop-blur-xl"
-                variant="glass"
-              />
-            </KPITooltip>
-
-            <KPITooltip {...KPI_DEFINITIONS.availability}>
-              <OEEGaugeCard
-                title={t('oee.availability', 'Disponibilidade')}
-                value={data.overallAvailability}
-                icon={<Clock className="h-4 w-4" />}
-                description={t('oee.availabilityDesc', 'Tempo operando / Tempo planejado')}
-                benchmark={90}
-                trend={data.comparison ? data.comparison.currentAvailability - data.comparison.previousAvailability : undefined}
-                variant="glass"
-              />
-            </KPITooltip>
-
-            <KPITooltip {...KPI_DEFINITIONS.performance}>
-              <OEEGaugeCard
-                title={t('common.performance', 'Performance')}
-                value={data.overallPerformance}
-                icon={<Gauge className="h-4 w-4" />}
-                description={t('oee.performanceDesc', 'Produção Real / Produção Estimada')}
-                benchmark={95}
-                trend={data.comparison ? data.comparison.currentPerformance - data.comparison.previousPerformance : undefined}
-                variant="glass"
-              />
-            </KPITooltip>
-
-            <KPITooltip {...KPI_DEFINITIONS.quality}>
-              <OEEGaugeCard
-                title={t('common.quality', 'Qualidade')}
-                value={data.overallQuality}
-                icon={<CheckCircle2 className="h-4 w-4" />}
-                description={t('oee.qualityDesc', 'Peças Boas / Total Produzido')}
-                benchmark={99}
-                trend={data.comparison ? data.comparison.currentQuality - data.comparison.previousQuality : undefined}
-                variant="glass"
-              />
-            </KPITooltip>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Card className="bg-muted/20 border-dashed border-border/50">
-              <CardContent className="p-3 text-[10px] space-y-1">
-                <p className="font-bold uppercase text-muted-foreground">{t('oee.availabilityCalculation', 'Cálculo de Disponibilidade')}</p>
-                <div className="flex justify-between items-center bg-background/50 p-2 rounded">
-                  <span className="font-mono">{data.byMachine.reduce((s, m) => s + m.actualOperatingMinutes, 0)} min</span>
-                  <span className="text-muted-foreground">/</span>
-                  <span className="font-mono">{data.byMachine.reduce((s, m) => s + m.plannedProductionMinutes, 0)} min</span>
-                  <span className="text-primary font-bold">= {data.overallAvailability.toFixed(1)}%</span>
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="bg-muted/20 border-dashed border-border/50">
-              <CardContent className="p-3 text-[10px] space-y-1">
-                <p className="font-bold uppercase text-muted-foreground">{t('oee.performanceCalculation', 'Cálculo de Performance')}</p>
-                <div className="flex justify-between items-center bg-background/50 p-2 rounded">
-                  <span className="font-mono">{data.byMachine.reduce((s, m) => s + m.idealCycleMinutes, 0)} min (Est.)</span>
-                  <span className="text-muted-foreground">/</span>
-                  <span className="font-mono">{data.byMachine.reduce((s, m) => s + m.actualOperatingMinutes, 0)} min (Real)</span>
-                  <span className="text-indicator-info font-bold">= {data.overallPerformance.toFixed(1)}%</span>
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="bg-muted/20 border-dashed border-border/50">
-              <CardContent className="p-3 text-[10px] space-y-1">
-                <p className="font-bold uppercase text-muted-foreground">Cálculo de Qualidade</p>
-                <div className="flex justify-between items-center bg-background/50 p-2 rounded">
-                  <span className="font-mono">{data.byMachine.reduce((s, m) => s + m.goodPieces, 0)} pcs (Boas)</span>
-                  <span className="text-muted-foreground">/</span>
-                  <span className="font-mono">{data.byMachine.reduce((s, m) => s + m.totalPiecesProduced, 0)} pcs (Total)</span>
-                  <span className="text-accent-purple font-bold">= {data.overallQuality.toFixed(1)}%</span>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-
-        {/* Quick Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <Card>
-            <CardContent className="pt-4">
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-success/10">
-                  <Award className="h-5 w-5 text-success" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold">{machinesAtWorldClass}</p>
-                  <p className="text-xs text-muted-foreground">World Class (≥85%)</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="pt-4">
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-primary/10">
-                  <AlertTriangle className="h-5 w-5 text-primary" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold">{machinesBelowTarget}</p>
-                  <p className="text-xs text-muted-foreground">Abaixo do Target (&lt;65%)</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="pt-4">
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-primary/10">
-                  <Settings2 className="h-5 w-5 text-primary" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold">{data.byMachine.filter(m => m.totalJobs > 0).length}</p>
-                  <p className="text-xs text-muted-foreground">Máquinas Ativas</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="pt-4">
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-indicator-info/10">
-                  <BarChart3 className="h-5 w-5 text-indicator-info" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold">{data.byTechnique.length}</p>
-                  <p className="text-xs text-muted-foreground">Técnicas Analisadas</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-          </TabsContent>
-
-          <TabsContent value="losses" className="space-y-6 animate-in fade-in duration-500">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <div className="lg:col-span-2 space-y-6">
-                <Suspense fallback={<ChartSkeleton />}>
-                  <OEELossDrilldown filters={filters} />
-                </Suspense>
-                
-                <Suspense fallback={<ChartSkeleton />}>
-                  <OEELossesChart
-                    availabilityLosses={data.availabilityLosses}
-                    performanceLosses={data.performanceLosses}
-                    qualityLosses={data.qualityLosses}
-                    overallOEE={data.overallOEE}
-                  />
-                </Suspense>
-              </div>
-              
-              <div className="space-y-6">
-                <Suspense fallback={<ChartSkeleton />}>
-                  <ParetoLossesChart losses={losses || []} />
-                </Suspense>
-              </div>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="machines" className="space-y-6 animate-in fade-in duration-500">
-            <Suspense fallback={<TableSkeleton />}>
-              <OEEMachineTable machines={data.byMachine} />
-            </Suspense>
-            
-            <Suspense fallback={<ChartSkeleton />}>
-              <OEETechniqueComparison
-                techniques={data.byTechnique}
-                worldClassBenchmark={data.worldClassBenchmark}
-              />
-            </Suspense>
-          </TabsContent>
-
-          <TabsContent value="heatmap" className="space-y-6 animate-in fade-in duration-500">
-            <Suspense fallback={<ChartSkeleton />}>
-              <OEETrendChart
-                data={data.trendData}
-                worldClassBenchmark={data.worldClassBenchmark}
-                comparison={data.comparison}
-              />
-            </Suspense>
-            
-            <Suspense fallback={<ChartSkeleton />}>
-              <OEEHeatmap data={data.heatmapData} />
-            </Suspense>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <Card className="bg-success/5 border-success/20">
-                <CardContent className="pt-6">
-                  <div className="flex flex-col items-center text-center space-y-2">
-                    <div className="p-3 bg-success/20 rounded-full text-success">
-                      <Leaf className="h-6 w-6" />
-                    </div>
-                    <h3 className="font-bold text-foreground">Resíduos Evitados</h3>
-                    <p className="text-3xl font-black text-success">{(data.overallQuality * 100).toFixed(0)} kg</p>
-                    <p className="text-xs text-success/80 font-medium">Estimativa de material salvo por alta qualidade</p>
+              <Card className="bg-muted/20 border-dashed border-border/50">
+                <CardContent className="p-3 text-[10px] space-y-1">
+                  <p className="font-bold uppercase text-muted-foreground">{t('oee.availabilityCalculation', 'Cálculo de Disponibilidade')}</p>
+                  <div className="flex justify-between items-center bg-background/50 p-2 rounded">
+                    <span className="font-mono">{data.byMachine.reduce((s, m) => s + m.actualOperatingMinutes, 0)} min</span>
+                    <span className="text-primary font-bold">= {data.overallAvailability.toFixed(1)}%</span>
                   </div>
                 </CardContent>
               </Card>
+              <Card className="bg-muted/20 border-dashed border-border/50">
+                <CardContent className="p-3 text-[10px] space-y-1">
+                  <p className="font-bold uppercase text-muted-foreground">{t('oee.performanceCalculation', 'Cálculo de Performance')}</p>
+                  <div className="flex justify-between items-center bg-background/50 p-2 rounded">
+                    <span className="font-mono">{data.byMachine.reduce((s, m) => s + m.idealCycleMinutes, 0)} min</span>
+                    <span className="text-indicator-info font-bold">= {data.overallPerformance.toFixed(1)}%</span>
+                  </div>
+                </CardContent>
+              </Card>
+              <Card className="bg-muted/20 border-dashed border-border/50">
+                <CardContent className="p-3 text-[10px] space-y-1">
+                  <p className="font-bold uppercase text-muted-foreground">Cálculo de Qualidade</p>
+                  <div className="flex justify-between items-center bg-background/50 p-2 rounded">
+                    <span className="font-mono">{data.byMachine.reduce((s, m) => s + m.goodPieces, 0)} pcs</span>
+                    <span className="text-accent-purple font-bold">= {data.overallQuality.toFixed(1)}%</span>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+            
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <Card><CardContent className="pt-4"><p className="text-2xl font-bold">{machinesAtWorldClass}</p><p className="text-xs text-muted-foreground">World Class</p></CardContent></Card>
+              <Card><CardContent className="pt-4"><p className="text-2xl font-bold">{machinesBelowTarget}</p><p className="text-xs text-muted-foreground">Abaixo do Target</p></CardContent></Card>
+              <Card><CardContent className="pt-4"><p className="text-2xl font-bold">{data.byMachine.filter(m => m.totalJobs > 0).length}</p><p className="text-xs text-muted-foreground">Máquinas Ativas</p></CardContent></Card>
+              <Card><CardContent className="pt-4"><p className="text-2xl font-bold">{data.byTechnique.length}</p><p className="text-xs text-muted-foreground">Técnicas</p></CardContent></Card>
+            </div>
+          </TabsContent>
 
-              <Card className="bg-indicator-info/5 border-indicator-info/20">
-                <CardContent className="pt-6">
-                  <div className="flex flex-col items-center text-center space-y-2">
-                    <div className="p-3 bg-indicator-info/20 rounded-full text-indicator-info">
-                      <Droplets className="h-6 w-6" />
-                    </div>
-                    <h3 className="font-bold text-foreground">Otimização de Insumos</h3>
-                    <p className="text-3xl font-black text-indicator-info">{(data.overallPerformance * 1.2).toFixed(1)}%</p>
-                    <p className="text-xs text-indicator-info/80 font-medium">Economia de tintas/solventes por performance</p>
-                  </div>
-                </CardContent>
-              </Card>
+          <TabsContent value="losses" className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-2 space-y-6">
+                <Suspense fallback={<ChartSkeleton />}><OEELossDrilldown filters={filters} /></Suspense>
+                <Suspense fallback={<ChartSkeleton />}><OEELossesChart availabilityLosses={data.availabilityLosses} performanceLosses={data.performanceLosses} qualityLosses={data.qualityLosses} overallOEE={data.overallOEE} /></Suspense>
+              </div>
+              <div className="space-y-6">
+                <Suspense fallback={<ChartSkeleton />}><ParetoLossesChart losses={losses || []} /></Suspense>
+              </div>
+            </div>
+          </TabsContent>
 
-              <Card className="bg-warning/5 border-warning/20">
-                <CardContent className="pt-6">
-                  <div className="flex flex-col items-center text-center space-y-2">
-                    <div className="p-3 bg-warning/20 rounded-full text-warning">
-                      <Zap className="h-6 w-6" />
-                    </div>
-                    <h3 className="font-bold text-foreground">Eficiência Energética</h3>
-                    <p className="text-3xl font-black text-warning">{(data.overallAvailability * 0.9).toFixed(1)}%</p>
-                    <p className="text-xs text-warning/80 font-medium">Redução de tempo em idle (ociosidade)</p>
-                  </div>
-                </CardContent>
-              </Card>
+          <TabsContent value="machines" className="space-y-6">
+            <Suspense fallback={<TableSkeleton />}><OEEMachineTable machines={data.byMachine} /></Suspense>
+            <Suspense fallback={<ChartSkeleton />}><OEETechniqueComparison techniques={data.byTechnique} worldClassBenchmark={data.worldClassBenchmark} /></Suspense>
+          </TabsContent>
+
+          <TabsContent value="heatmap" className="space-y-6">
+            <Suspense fallback={<ChartSkeleton />}><OEETrendChart data={data.trendData} worldClassBenchmark={data.worldClassBenchmark} comparison={data.comparison} /></Suspense>
+            <Suspense fallback={<ChartSkeleton />}><OEEHeatmap data={data.heatmapData} /></Suspense>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <Card className="bg-success/5 border-success/20"><CardContent className="pt-6"><h3 className="font-bold">Resíduos Evitados</h3><p className="text-3xl font-black text-success">{(data.overallQuality * 100).toFixed(0)} kg</p></CardContent></Card>
+              <Card className="bg-indicator-info/5 border-indicator-info/20"><CardContent className="pt-6"><h3 className="font-bold">Otimização</h3><p className="text-3xl font-black text-indicator-info">{(data.overallPerformance * 1.2).toFixed(1)}%</p></CardContent></Card>
+              <Card className="bg-warning/5 border-warning/20"><CardContent className="pt-6"><h3 className="font-bold">Eficiência Energética</h3><p className="text-3xl font-black text-warning">{(data.overallAvailability * 0.9).toFixed(1)}%</p></CardContent></Card>
             </div>
           </TabsContent>
         </Tabs>
 
-        {/* Benchmark Info */}
         <Card className="bg-muted/30">
           <CardContent className="py-4">
             <div className="flex items-start gap-3">
