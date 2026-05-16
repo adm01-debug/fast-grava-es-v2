@@ -32,7 +32,7 @@ describe('BIStatCard', () => {
     const handleClick = vi.fn();
     render(<BIStatCard title="Clickable" value="10" icon={Activity} onClick={handleClick} />);
     
-    fireEvent.click(screen.getByText('Clickable').closest('.card')!);
+    fireEvent.click(screen.getByText('Clickable'));
     expect(handleClick).toHaveBeenCalled();
   });
 });
