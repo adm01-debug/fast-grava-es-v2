@@ -6,7 +6,7 @@ import { PasswordInput } from '@/components/ui/password-input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Loader2, LogIn, Chrome } from 'lucide-react';
-import { PasskeyLoginButton } from '@/components/auth/PasskeyLoginButton';
+
 
 interface AuthLoginFormProps {
   loginEmail: string;
@@ -21,12 +21,12 @@ interface AuthLoginFormProps {
   onSubmit: (e: React.FormEvent) => void;
   onGoogleLogin: () => void;
   onForgotPassword: () => void;
-  onPasskeySuccess: () => void;
+  
 }
 
 export function AuthLoginForm({
   loginEmail, loginPassword, rememberMe, isLoading, socialLoading, errors,
-  onEmailChange, onPasswordChange, onRememberMeChange, onSubmit, onGoogleLogin, onForgotPassword, onPasskeySuccess,
+  onEmailChange, onPasswordChange, onRememberMeChange, onSubmit, onGoogleLogin, onForgotPassword,
 }: AuthLoginFormProps) {
   const { t } = useTranslation();
 
@@ -52,7 +52,6 @@ export function AuthLoginForm({
         {isLoading ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />{t('common.loading')}</> : <><LogIn className="h-4 w-4 mr-2" />{t('auth.login')}</>}
       </Button>
       <div className="relative"><div className="absolute inset-0 flex items-center"><span className="w-full border-t" /></div><div className="relative flex justify-center text-xs uppercase"><span className="bg-card px-2 text-muted-foreground">{t('common.or', 'ou')}</span></div></div>
-      <PasskeyLoginButton email={loginEmail} onSuccess={onPasskeySuccess} className="w-full" />
       <Button type="button" variant="outline" className="w-full h-11 gap-2" onClick={onGoogleLogin} disabled={isLoading || !!socialLoading}>
         {socialLoading === 'google' ? <Loader2 className="h-4 w-4 animate-spin" /> : <Chrome className="h-4 w-4" />}{t('auth.loginWithGoogle', 'Entrar com Google')}
       </Button>

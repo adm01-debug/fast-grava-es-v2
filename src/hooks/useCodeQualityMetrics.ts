@@ -82,7 +82,7 @@ const HOOKS = [
   'useShiftHandover', 'useSmartSequencing', 'useSmartSequencingWithActions',
   'useStuckJobsDetection', 'useTPM', 'useTPMNotifications',
   'useTechnicalConversations', 'useTechnicalSheets', 'useThemeSound',
-  'useTraceability', 'useUserDevices', 'useWebAuthn',
+  'useTraceability', 'useUserDevices',
   'useWebPushNotifications',
   'use-device', 'use-focus-trap', 'use-haptic-feedback',
   'use-pull-to-refresh', 'use-scroll-direction', 'use-swipe-gesture',
