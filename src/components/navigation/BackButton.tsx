@@ -73,20 +73,33 @@ export function BackButton({ className }: BackButtonProps) {
   }
 
   return (
-    <Button
-      variant="ghost"
-      size="sm"
-      onClick={handleBack}
-      className={cn(
-        "gap-2 px-3 h-10 text-muted-foreground hover:text-primary hover:bg-primary/5 active:scale-95 transition-all border-2 border-transparent hover:border-primary/10 rounded-xl group/back",
-        className
-      )}
-      aria-label="Voltar para a página anterior"
-    >
-      <div className="flex items-center justify-center w-6 h-6 rounded-full bg-muted/30 group-hover/back:bg-primary/20 transition-colors">
-        <ChevronLeft className="h-4 w-4 transition-transform group-hover/back:-translate-x-0.5" />
-      </div>
-      <span className="text-sm font-bold tracking-tight">Voltar</span>
-    </Button>
+    <TooltipProvider delayDuration={400}>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleBack}
+            className={cn(
+              "gap-2 px-3 h-10 text-muted-foreground hover:text-primary hover:bg-primary/5 active:scale-95 transition-all border-2 border-transparent hover:border-primary/10 rounded-xl group/back",
+              className
+            )}
+            aria-label="Voltar para a página anterior"
+            aria-keyshortcuts="Alt+ArrowLeft"
+          >
+            <div className="flex items-center justify-center w-6 h-6 rounded-full bg-muted/30 group-hover/back:bg-primary/20 transition-colors">
+              <ChevronLeft className="h-4 w-4 transition-transform group-hover/back:-translate-x-0.5" />
+            </div>
+            <span className="text-sm font-bold tracking-tight">Voltar</span>
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent side="right" className="flex items-center gap-2">
+          <span>Voltar</span>
+          <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
+            <span className="text-xs">⌥</span>←
+          </kbd>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 }
