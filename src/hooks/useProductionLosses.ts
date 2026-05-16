@@ -11,15 +11,27 @@ export interface ProductionLoss {
   created_at: string;
 }
 
-export function useProductionLosses(jobId?: string) {
+export function useProductionLosses(jobId?: string, filters?: { shift?: string; startDate?: string; endDate?: string }) {
   const queryClient = useQueryClient();
 
   const { data: losses, isLoading } = useQuery({
-    queryKey: ['production-losses', jobId],
+    queryKey: ['production-losses', jobId, filters],
     queryFn: async () => {
       let query = supabase.from('production_losses').select('*, job:jobs(order_number, client)');
       if (jobId) {
         query = query.eq('job_id', jobId);
+      }
+      
+      if (filters?.shift && filters.shift !== 'all') {
+        query = query.eq('shift', filters.shift);
+      }
+      
+      if (filters?.startDate) {
+        query = query.gte('created_at', filters.startDate);
+      }
+      
+      if (filters?.endDate) {
+        query = query.lte('created_at', filters.endDate);
       }
 
       const { data, error } = await query.order('created_at', { ascending: false });
