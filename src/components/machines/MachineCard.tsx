@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { Target, CheckCircle2, XCircle, Settings, Activity, Zap } from 'lucide-react';
+import { CheckCircle2, XCircle, Settings, Activity, Zap } from 'lucide-react';
+import { TargetArrowIcon } from '@/components/icons/TargetArrowIcon';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
 
@@ -38,7 +39,7 @@ export function MachineCard({ machine, isSelected, onSelect, onOpenSettings, ind
           "w-12 h-12 rounded-xl flex items-center justify-center transition-colors relative",
           isSelected ? "bg-primary/20" : "bg-muted"
         )}>
-          <Target className={cn(
+          <TargetArrowIcon className={cn(
             "h-6 w-6",
             isSelected ? "text-primary" : "text-muted-foreground"
           )} />
