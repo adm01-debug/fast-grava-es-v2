@@ -112,7 +112,7 @@ const OEEDashboard = memo(function OEEDashboard() {
   return (
       <div className="p-6 space-y-6">
         <Helmet>
-          <title>OEE Dashboard | FAST GRAVAÇÕES</title>
+          <title>OEE Dashboard | FAST GRAVA00c700d5ES</title>
           <meta name="description" content="Análise de Eficiência Global dos Equipamentos (OEE) e indicadores de performance industrial." />
         </Helmet>
         {/* Breadcrumbs removed - handled by MainLayout */}
