@@ -261,19 +261,95 @@ export default function BIDashboard() {
     setDrillDownOpen(true);
   };
 
-  const handleExport = (format: 'csv' | 'pdf') => {
+  const handleExport = async (format: 'csv' | 'pdf') => {
     toast({
       title: "Exportação iniciada",
-      description: `O arquivo ${format.toUpperCase()} está sendo gerado e o download começará em instantes.`,
+      description: `O relatório ${format.toUpperCase()} está sendo gerado.`,
     });
 
-    // Simulating export logic
-    setTimeout(() => {
+    try {
+      if (format === 'csv') {
+        const header = "ID,OS,Cliente,Produto,Quantidade,Perdas,Status,Eficiência,Data\n";
+        const rows = drillDownJobs.map(j => {
+          return [
+            j.id,
+            j.order_number,
+            j.client || '',
+            j.product,
+            j.produced_quantity,
+            j.lost_pieces,
+            j.status,
+            j.efficiency,
+            j.created_at ? new Date(j.created_at).toLocaleDateString() : ''
+          ].map(val => `"${String(val).replace(/"/g, '""')}"`).join(',');
+        }).join('\n');
+        
+        const csv = header + rows;
+        const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `drilldown_${drillDownTitle.toLowerCase().replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.csv`;
+        link.click();
+      } else {
+        const { default: jsPDF } = await import('jspdf');
+        const { default: autoTable } = await import('jspdf-autotable');
+        const doc = new jsPDF();
+
+        // Header
+        doc.setFillColor(14, 165, 233); // Primary color
+        doc.rect(0, 0, 210, 30, 'F');
+        doc.setFontSize(18);
+        doc.setTextColor(255, 255, 255);
+        doc.text('FAST GRAVAÇÕES - DETALHAMENTO BI', 105, 15, { align: 'center' });
+        doc.setFontSize(10);
+        doc.text(`RELATÓRIO: ${drillDownTitle.toUpperCase()}`, 105, 22, { align: 'center' });
+
+        // Info
+        doc.setTextColor(100);
+        doc.setFontSize(8);
+        doc.text(`Gerado em: ${new Date().toLocaleString('pt-BR')}`, 14, 38);
+        doc.text(`Período analisado: ${getPeriodLabel()}`, 14, 43);
+
+        const tableBody = drillDownJobs.map(j => [
+          j.order_number || '---',
+          j.client || 'Consumidor Final',
+          j.product || '---',
+          j.produced_quantity ?? 0,
+          j.lost_pieces ?? 0,
+          j.efficiency || '---',
+          j.status === 'finished' ? 'Finalizado' : 'Em Produção'
+        ]);
+
+        autoTable(doc, {
+          startY: 50,
+          head: [['OS', 'CLIENTE', 'PRODUTO', 'PROD.', 'PERDAS', 'EFIC.', 'STATUS']],
+          body: tableBody,
+          styles: { fontSize: 8, cellPadding: 2 },
+          headStyles: { fillColor: [14, 165, 233] },
+          alternateRowStyles: { fillColor: [245, 247, 250] },
+          didDrawPage: (data) => {
+             doc.setFontSize(8);
+             doc.setTextColor(150);
+             doc.text(`Página ${data.pageNumber} - Documento oficial para auditoria`, 105, 285, { align: 'center' });
+          }
+        });
+
+        doc.save(`detalhe_bi_${new Date().getTime()}.pdf`);
+      }
+
       toast({
         title: "Exportação concluída",
-        description: `O relatório consolidado foi baixado com sucesso.`,
+        description: `O relatório foi baixado com sucesso.`,
       });
-    }, 2000);
+    } catch (error) {
+      console.error('Export error:', error);
+      toast({
+        title: "Erro na exportação",
+        description: "Não foi possível gerar o arquivo.",
+        variant: "destructive"
+      });
+    }
   };
 
   return (
