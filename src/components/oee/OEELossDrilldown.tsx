@@ -252,6 +252,4 @@ export const OEELossDrilldown = memo(function OEELossDrilldown({ filters }: OEEL
   );
 });
 
-function cn(...classes: any[]) {
-  return classes.filter(Boolean).join(' ');
-}
+// Removed local cn implementation to use project utility
