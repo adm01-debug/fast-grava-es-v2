@@ -78,6 +78,7 @@ const OEEDashboard = memo(function OEEDashboard() {
   }), [machineId]);
 
   const { data, isLoading, downloadReport } = useOEE(parseInt(period), 30, filters);
+  const { losses, isLoading: lossesLoading } = useProductionLosses();
 
   const handleDownloadReport = useCallback((format: 'excel' | 'pdf' | 'csv') => {
     downloadReport(format);
