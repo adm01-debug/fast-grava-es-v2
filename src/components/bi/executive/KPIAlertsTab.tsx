@@ -16,7 +16,7 @@ interface KPIAlertsTabProps {
 const KPIAlertsTabComponent = ({
   goalAlerts, kpis
 }: KPIAlertsTabProps) => {
-  const { data: auditLogs } = useAuditTrail({ limit: 5, entityType: 'jobs' });
+  const { jobAudits, machineAudits, isLoading: isLoadingAudit } = useDetailedAuditTrail();
 
   return (
     <div className="space-y-6">
