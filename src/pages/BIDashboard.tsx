@@ -312,8 +312,7 @@ export default function BIDashboard() {
 
         const tableBody = drillDownJobs.map(j => [
           j.order_number || '---',
-          j.client || 'Consumidor Final',
-          j.product || '---',
+          j.product || j.product_name || '---',
           j.produced_quantity ?? 0,
           j.lost_pieces ?? 0,
           j.efficiency || '---',
