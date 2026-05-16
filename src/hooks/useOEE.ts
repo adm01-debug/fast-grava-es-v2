@@ -461,6 +461,29 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, f
       };
     });
 
+    // Analyze trends for predictive maintenance alerts
+    const maintenanceAlerts: OEEData['maintenanceAlerts'] = [];
+    
+    heatmapData.forEach(machine => {
+      const recentData = machine.data.slice(-7); // Last 7 days
+      if (recentData.length < 3) return;
+      
+      const firstAvg = recentData.slice(0, 3).reduce((s, d) => s + d.oee, 0) / 3;
+      const lastAvg = recentData.slice(-3).reduce((s, d) => s + d.oee, 0) / 3;
+      const trend = lastAvg - firstAvg;
+      
+      if (trend < -10) { // Significant drop (>10%)
+        maintenanceAlerts.push({
+          machineId: machine.machineId,
+          machineName: machine.machineName,
+          type: 'performance',
+          severity: trend < -20 ? 'high' : 'medium',
+          message: `Tendência de queda acentuada (${trend.toFixed(1)}%) nos últimos 7 dias. Recomendado check-up técnico.`,
+          trend
+        });
+      }
+    });
+
     return {
       overallOEE: Math.round(overallOEE * 10) / 10,
       overallAvailability: Math.round(overallAvailability * 10) / 10,
@@ -471,6 +494,7 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, f
       byTechnique,
       trendData,
       heatmapData,
+      maintenanceAlerts,
       comparison,
 
       worldClassBenchmark: WORLD_CLASS_OEE,
