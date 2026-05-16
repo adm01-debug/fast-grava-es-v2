@@ -80,6 +80,9 @@ export function MainLayout({ children }: MainLayoutProps) {
       <div className="flex h-screen w-full bg-background overflow-hidden">
         {/* Skip Links for Accessibility */}
         <SkipLinks />
+        <Suspense fallback={null}>
+          <TopProgressBar />
+        </Suspense>
 
         {/* Sidebar - hidden on mobile, shown on tablet+ */}
         <AppSidebar />
