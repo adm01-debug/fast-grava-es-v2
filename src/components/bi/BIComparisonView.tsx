@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -7,9 +6,10 @@ import {
 } from 'lucide-react';
 import {
   BarChart, Bar, PieChart as RechartsPieChart, Pie, Cell,
-  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
+  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend
 } from 'recharts';
 import { cn } from '@/lib/utils';
+import { BIMetrics } from '@/types/bi';
 
 const CHART_COLORS = {
   primary: 'hsl(var(--primary))',
@@ -17,13 +17,13 @@ const CHART_COLORS = {
 };
 
 interface ComparisonViewProps {
-  biMetrics: any;
-  biMetrics2: any;
-  getPeriodLabel: (filter?: string, range?: any) => string;
+  biMetrics: BIMetrics;
+  biMetrics2: BIMetrics;
+  getPeriodLabel: (filter?: string, range?: { from: Date; to: Date }) => string;
   periodFilter2: string;
-  customRange2: any;
+  customRange2: { from: Date; to: Date };
   getComparisonDelta: (a: number, b: number) => { delta: number; trend: 'up' | 'down' | 'neutral' };
-  ComparisonKPICard: React.ComponentType<any>;
+  ComparisonKPICard: React.ComponentType<{ title: string; value1: number; value2: number; icon: React.ElementType; format?: (v: number) => string; higherIsBetter?: boolean }>;
 }
 
 export function BIComparisonView({
@@ -61,7 +61,7 @@ export function BIComparisonView({
                   <ResponsiveContainer width="100%" height={200}>
                     <RechartsPieChart>
                       <Pie data={data.statusDistribution} cx="50%" cy="50%" innerRadius={40} outerRadius={70} paddingAngle={2} dataKey="value">
-                        {data.statusDistribution.map((entry: any, index: number) => (
+                        {data.statusDistribution.map((entry, index) => (
                           <Cell key={`cell-${prefix}-${index}`} fill={entry.color} />
                         ))}
                       </Pie>
@@ -72,7 +72,7 @@ export function BIComparisonView({
               ))}
             </div>
             <div className="flex flex-wrap justify-center gap-4 mt-4">
-              {biMetrics.statusDistribution.map((entry: any) => (
+              {biMetrics.statusDistribution.map((entry) => (
                 <div key={entry.name} className="flex items-center gap-2">
                   <div className="w-3 h-3 rounded-full" style={{ backgroundColor: entry.color }} />
                   <span className="text-xs">{entry.name}</span>
@@ -93,8 +93,8 @@ export function BIComparisonView({
           <CardContent>
             <ResponsiveContainer width="100%" height={280}>
               <BarChart
-                data={biMetrics.techniquePerformance.slice(0, 6).map((t1: any) => {
-                  const t2 = biMetrics2?.techniquePerformance.find((t: any) => t.id === t1.id);
+                data={biMetrics.techniquePerformance.slice(0, 6).map((t1) => {
+                  const t2 = biMetrics2?.techniquePerformance.find((t) => t.id === t1.id);
                   return { name: t1.name, 'Período 1': t1.produced, 'Período 2': t2?.produced ?? 0 };
                 })}
                 layout="vertical"
@@ -103,6 +103,7 @@ export function BIComparisonView({
                 <XAxis type="number" tick={{ fill: 'hsl(var(--muted-foreground))' }} />
                 <YAxis dataKey="name" type="category" width={80} tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }} />
                 <Tooltip contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px' }} />
+                <Legend />
                 <Bar dataKey="Período 1" fill={CHART_COLORS.primary} radius={[0, 4, 4, 0]} />
                 <Bar dataKey="Período 2" fill={CHART_COLORS.muted} radius={[0, 4, 4, 0]} />
               </BarChart>
@@ -134,8 +135,8 @@ export function BIComparisonView({
                 </tr>
               </thead>
               <tbody>
-                {biMetrics.machineUtilization.map((m1: any) => {
-                  const m2 = biMetrics2?.machineUtilization.find((m: any) => m.id === m1.id);
+                {biMetrics.machineUtilization.map((m1) => {
+                  const m2 = biMetrics2?.machineUtilization.find((m) => m.id === m1.id);
                   const { delta, trend } = getComparisonDelta(m1.utilization, m2?.utilization ?? 0);
                   return (
                     <tr key={m1.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors">
