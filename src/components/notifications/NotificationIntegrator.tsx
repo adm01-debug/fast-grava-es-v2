@@ -3,6 +3,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { usePushNotifications } from "@/hooks/usePushNotifications";
 import { useNotificationSounds } from "@/hooks/useNotificationSounds";
 import { useAuth } from "@/contexts/AuthContext";
+import { useGoalAlerts } from "@/hooks/useGoalAlerts";
+import { useOEEAlerts } from "@/hooks/useOEEAlerts";
+import { useTPMNotifications } from "@/hooks/useTPMNotifications";
 
 interface NotificationPreferences {
   delayedJobs: boolean;
