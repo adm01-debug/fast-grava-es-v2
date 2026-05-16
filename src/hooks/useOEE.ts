@@ -174,6 +174,7 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, f
     const periodJobs = jobs.filter(job => {
       if (filters?.machineId && job.machine_id !== filters.machineId) return false;
       if (filters?.techniqueId && job.technique_id !== filters.techniqueId) return false;
+      if (filters?.shiftId && job.shift_id !== filters.shiftId) return false;
       if (job.status !== 'finished') return false;
       if (!isValidDate(job.actual_end_time)) return false;
 
