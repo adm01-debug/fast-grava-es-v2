@@ -1,10 +1,27 @@
 import { useLocation, useNavigate } from 'react-router-dom';
-import { ArrowLeft, ChevronRight, Home } from 'lucide-react';
+import { ArrowLeft, ChevronRight, Home, MoreHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Link } from 'react-router-dom';
 import { useHapticFeedback } from '@/hooks/use-haptic-feedback';
 import { useCallback } from 'react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
+
+// Máximo de itens visíveis antes de colapsar em "..."
+// Estrutura visível: Home > primeiro > ... > penúltimo > último
+const MAX_VISIBLE_ITEMS = 4;
+const LABEL_MAX_CHARS = 22;
 
 interface BreadcrumbItem {
   label: string;
