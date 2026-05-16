@@ -122,7 +122,7 @@ function getOEEColor(oee: number): string {
   return 'hsl(var(--destructive))';
 }
 
-export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30) {
+export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, filters?: { machineId?: string; shiftId?: string; startDate?: Date; endDate?: Date }) {
   // Use at least double the period to have enough data for comparison
   const effectiveDaysBack = Math.max(daysBack + comparisonDaysBack, 60);
   const { jobs, machines, techniques, isLoading: schedulingLoading } = useSchedulingData();
@@ -147,11 +147,12 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30) {
     const validDaysBack = Math.max(1, Math.min(365, effectiveDaysBack));
 
     const now = new Date();
-    const startDate = startOfDay(subDays(now, validDaysBack));
-    const endDate = endOfDay(now);
+    const startDate = filters?.startDate || startOfDay(subDays(now, validDaysBack));
+    const endDate = filters?.endDate || endOfDay(now);
 
     // Filter completed jobs within the period with validation
     const periodJobs = jobs.filter(job => {
+      if (filters?.machineId && job.machine_id !== filters.machineId) return false;
       if (job.status !== 'finished') return false;
       if (!isValidDate(job.actual_end_time)) return false;
 
@@ -402,7 +403,7 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30) {
       performanceLosses: Math.round(performanceLosses * 10) / 10,
       qualityLosses: Math.round(qualityLosses * 10) / 10
     };
-  }, [jobs, machines, techniques, effectiveDaysBack, daysBack]);
+  }, [jobs, machines, techniques, effectiveDaysBack, daysBack, filters]);
 
   const downloadReport = async () => {
     if (!data) return;
@@ -449,7 +450,17 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30) {
     }
   };
 
-  return { data, isLoading, downloadReport };
+  const downloadReportFormat = async (formatType: 'excel' | 'pdf' | 'csv') => {
+    if (!data) return;
+    if (formatType === 'excel') {
+      await downloadReport();
+      return;
+    }
+    const { exportOEETabledData } = await import('@/lib/oeeExport');
+    exportOEETabledData(data, formatType as 'pdf' | 'csv');
+  };
+
+  return { data, isLoading, downloadReport: downloadReportFormat };
 }
 
 export { getOEEColor, classifyOEE, WORLD_CLASS_OEE };

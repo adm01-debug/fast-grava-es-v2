@@ -1,10 +1,16 @@
-import { useState, lazy, Suspense, useMemo, memo, useCallback } from 'react';
+import { useState, lazy, Suspense, useMemo, memo, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet';
 import { cn } from '@/lib/utils';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import {
   Select,
   SelectContent,
@@ -32,9 +38,12 @@ import {
   Calculator,
   Lightbulb,
   ArrowUpRight,
-  Play
+  Play,
+  FileSpreadsheet,
+  FileText
 } from 'lucide-react';
 import { useOEE, WORLD_CLASS_OEE, getOEEColor } from '@/hooks/useOEE';
+import { useOEEAlerts } from '@/hooks/useOEEAlerts';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 const OEEGaugeCard = lazy(() => import('@/components/oee/OEEGaugeCard').then(m => ({ default: m.OEEGaugeCard })));
@@ -56,14 +65,23 @@ const OEETechniqueComparison = lazy(() => import('@/components/oee/OEETechniqueC
 const OEEDashboard = memo(function OEEDashboard() {
   const { t } = useTranslation();
   const [period, setPeriod] = useState<string>('30');
+  const [machineId, setMachineId] = useState<string>('all');
   const [showSimulator, setShowSimulator] = useState(false);
   const [simValues, setSimValues] = useState({ availability: 85, performance: 90, quality: 98 });
-  const { data, isLoading, downloadReport } = useOEE(parseInt(period));
+  
+  const filters = useMemo(() => ({
+    machineId: machineId === 'all' ? undefined : machineId
+  }), [machineId]);
 
-  const handleDownloadReport = useCallback(() => {
-    downloadReport();
+  const { data, isLoading, downloadReport } = useOEE(parseInt(period), 30, filters);
+
+  const handleDownloadReport = useCallback((format: 'excel' | 'pdf' | 'csv') => {
+    downloadReport(format);
     toast.success(t('common.reportExported', 'Relatório OEE exportado!'));
-  }, [downloadReport]);
+  }, [downloadReport, t]);
+
+  // Activate OEE alerts
+  useOEEAlerts();
 
 
   if (isLoading) {
@@ -108,24 +126,50 @@ const OEEDashboard = memo(function OEEDashboard() {
 
           <div className="flex items-center gap-2">
             <VoiceButton />
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleDownloadReport}
-              className="hidden md:flex gap-2 border-primary/20 hover:bg-primary/5 active:scale-95 transition-transform"
-            >
-              <FileDown className="h-4 w-4" />
-              {t('common.report', 'Relatório')}
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="hidden md:flex gap-2 border-primary/20 hover:bg-primary/5 active:scale-95 transition-transform"
+                >
+                  <FileDown className="h-4 w-4" />
+                  {t('common.export', 'Exportar')}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => handleDownloadReport('excel')}>
+                  <FileSpreadsheet className="h-4 w-4 mr-2 text-success" /> Excel
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleDownloadReport('pdf')}>
+                  <FileText className="h-4 w-4 mr-2 text-destructive" /> PDF
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleDownloadReport('csv')}>
+                  <FileSpreadsheet className="h-4 w-4 mr-2 text-primary" /> CSV
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             <Select value={period} onValueChange={setPeriod}>
-              <SelectTrigger className="w-32 md:w-40 glass-card border-primary/20">
+              <SelectTrigger className="w-28 md:w-36 glass-card border-primary/20">
                 <SelectValue placeholder={t('common.period', 'Período')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="7">{t('common.last7Days', 'Últimos 7 dias')}</SelectItem>
-                <SelectItem value="14">{t('common.last14Days', 'Últimos 14 dias')}</SelectItem>
-                <SelectItem value="30">{t('common.last30Days', 'Últimos 30 dias')}</SelectItem>
-                <SelectItem value="90">{t('common.last90Days', 'Últimos 90 dias')}</SelectItem>
+                <SelectItem value="7">{t('common.last7Days', '7 dias')}</SelectItem>
+                <SelectItem value="14">{t('common.last14Days', '14 dias')}</SelectItem>
+                <SelectItem value="30">{t('common.last30Days', '30 dias')}</SelectItem>
+                <SelectItem value="90">{t('common.last90Days', '90 dias')}</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <Select value={machineId} onValueChange={setMachineId}>
+              <SelectTrigger className="w-32 md:w-44 glass-card border-primary/20">
+                <SelectValue placeholder={t('common.machine', 'Máquina')} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">{t('common.allMachines', 'Todas Máquinas')}</SelectItem>
+                {data.byMachine.map(m => (
+                  <SelectItem key={m.machineId} value={m.machineId}>{m.machineName}</SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
