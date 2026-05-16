@@ -170,5 +170,3 @@ const KPIAlertsTabComponent = ({
 };
 
 export const KPIAlertsTab = memo(KPIAlertsTabComponent);
-
-export const KPIAlertsTab = memo(KPIAlertsTabComponent);
