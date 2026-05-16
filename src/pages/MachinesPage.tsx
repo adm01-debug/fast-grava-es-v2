@@ -429,7 +429,7 @@ export default function MachinesPage() {
             <DialogHeader className="p-6 pb-2">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-xl gradient-primary flex items-center justify-center shrink-0">
-                   <Printer className="h-6 w-6 text-primary-foreground" />
+                   <Target className="h-6 w-6 text-primary-foreground" />
                 </div>
                 <div>
                   <DialogTitle className="text-xl">
