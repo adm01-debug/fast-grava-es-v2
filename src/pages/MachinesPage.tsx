@@ -411,7 +411,7 @@ export default function MachinesPage() {
             </div>
             <div className="grid grid-cols-2 gap-2">
               <Button variant="outline" className="gap-2" onClick={() => window.print()}>
-                <Printer className="h-4 w-4" /> Imprimir
+                <Target className="h-4 w-4" /> Imprimir
               </Button>
               <Button className="gap-2" onClick={() => {
                 toast.success("QR Code enviado para o terminal móvel.");
