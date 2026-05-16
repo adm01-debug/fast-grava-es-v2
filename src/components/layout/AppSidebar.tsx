@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useLocation, Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ChevronLeft, ChevronRight, Printer, Plus, LogOut } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Printer, Plus, LogOut, ArrowLeft } from 'lucide-react';
+import { SoundFeedback } from '@/lib/soundFeedback';
 import { cn } from '@/lib/utils';
 import { prefetchRoute } from '@/lib/prefetch';
 import { Button } from '@/components/ui/button';
