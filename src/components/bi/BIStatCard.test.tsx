@@ -2,37 +2,49 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { BIStatCard } from './BIStatCard';
 import { Activity } from 'lucide-react';
-import React from 'react';
 
 describe('BIStatCard', () => {
-  it('renders title and value correctly', () => {
-    render(<BIStatCard title="Total Jobs" value="150" icon={Activity} />);
-    
-    expect(screen.getByText('Total Jobs')).toBeDefined();
-    expect(screen.getByText('150')).toBeDefined();
-  });
-
-  it('renders trend indicator when provided', () => {
+  it('renders correctly with basic props', () => {
     render(
       <BIStatCard 
-        title="Efficiency" 
-        value="92%" 
+        title="Test Stat" 
+        value="1,234" 
         icon={Activity} 
-        trend="up" 
-        trendValue="+5%" 
       />
     );
     
-    expect(screen.getByText('+5%')).toBeDefined();
-    const trendContainer = screen.getByTestId('trend-indicator');
-    expect(trendContainer.className).toContain('text-success');
+    expect(screen.getByText('Test Stat')).toBeDefined();
+    expect(screen.getByText('1,234')).toBeDefined();
+  });
+
+  it('shows trend indicator when trend prop is provided', () => {
+    render(
+      <BIStatCard 
+        title="Trend Stat" 
+        value="85%" 
+        icon={Activity} 
+        trend="up" 
+        trendValue="12%" 
+      />
+    );
+    
+    expect(screen.getByText('12%')).toBeDefined();
+    const trendIndicator = screen.getByTestId('trend-indicator');
+    expect(trendIndicator.className).toContain('text-success');
   });
 
   it('calls onClick when clicked', () => {
     const handleClick = vi.fn();
-    render(<BIStatCard title="Clickable" value="10" icon={Activity} onClick={handleClick} />);
+    render(
+      <BIStatCard 
+        title="Clickable Stat" 
+        value="100" 
+        icon={Activity} 
+        onClick={handleClick}
+      />
+    );
     
-    fireEvent.click(screen.getByText('Clickable'));
-    expect(handleClick).toHaveBeenCalled();
+    fireEvent.click(screen.getByText('Clickable Stat'));
+    expect(handleClick).toHaveBeenCalledTimes(1);
   });
 });
