@@ -83,24 +83,15 @@ export function useSchedulingData() {
     ...RETRY_CONFIG,
   });
 
-  // Fetch jobs with shorter stale time (they change frequently)
+  // Fetch jobs with shorter stale time
   const jobsQuery = useQuery({
     queryKey: ['jobs'],
     queryFn: async () => {
       try {
-        const { data, error } = await supabase
-          .from('jobs')
-          .select('*')
-          .or(`status.neq.finished,created_at.gt.${new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()}`)
-          .order('created_at', { ascending: false });
-
-        if (error) {
-          const appError = createAppError(error, ERROR_CONTEXT.jobs);
-          throw error;
-        }
-        return data as DbJob[];
+        const data = await jobsService.getAll({ recentOnly: true });
+        return data as unknown as DbJob[];
       } catch (err) {
-        throw err;
+        throw createAppError(err, ERROR_CONTEXT.jobs);
       }
     },
     staleTime: JOBS_STALE_TIME,
