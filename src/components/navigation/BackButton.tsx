@@ -6,6 +6,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useHapticFeedback } from "@/hooks/use-haptic-feedback";
 import { useDevice } from "@/hooks/use-device";
 import { motion, AnimatePresence } from "framer-motion";
+import { SoundFeedback } from "@/lib/soundFeedback";
 import {
   Tooltip,
   TooltipContent,
@@ -34,6 +35,7 @@ export function BackButton({ className }: BackButtonProps) {
 
   const handleBack = useCallback(() => {
     trigger('light');
+    SoundFeedback.navBack();
     if (window.history.length > 1) {
       navigate(-1);
     } else {
@@ -44,32 +46,7 @@ export function BackButton({ className }: BackButtonProps) {
   if (!canGoBack) return null;
 
   if (isMobile) {
-    return (
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={location.pathname}
-          initial={{ opacity: 0, x: -20, scale: 0.9 }}
-          animate={{ opacity: 1, x: 0, scale: 1 }}
-          exit={{ opacity: 0, x: -20, scale: 0.9 }}
-          className="fixed bottom-28 left-6 z-[60] md:hidden no-export"
-        >
-          <Button
-            variant="default"
-            size="icon"
-            onClick={handleBack}
-            className={cn(
-              "h-14 w-14 rounded-2xl shadow-xl transition-all active:scale-90 touch-target",
-              "bg-primary text-primary-foreground border-2 border-white/10",
-              "hover:brightness-110",
-              className
-            )}
-            aria-label="Voltar"
-          >
-            <ArrowLeft className="h-6 w-6" />
-          </Button>
-        </motion.div>
-      </AnimatePresence>
-    );
+    return null; // Integrated into MobileNavigation
   }
 
   return (
@@ -81,7 +58,9 @@ export function BackButton({ className }: BackButtonProps) {
             size="sm"
             onClick={handleBack}
             className={cn(
-              "gap-2 px-3 h-10 text-muted-foreground hover:text-primary hover:bg-primary/5 active:scale-95 transition-all border-2 border-transparent hover:border-primary/10 rounded-xl group/back",
+              "gap-2 px-3 h-10 text-muted-foreground hover:text-primary transition-all duration-300",
+              "border-2 border-transparent hover:border-primary/20 rounded-xl group/back",
+              "hover:bg-primary/5 hover:shadow-[0_0_15px_rgba(var(--primary-rgb),0.1)] active:scale-95",
               className
             )}
             aria-label="Voltar para a página anterior"

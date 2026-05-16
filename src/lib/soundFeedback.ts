@@ -60,4 +60,16 @@ export const SoundFeedback = {
     setTimeout(() => playTone(784, 0.15, 'sine'), 200);
     setTimeout(() => playTone(1047, 0.3, 'sine'), 300);
   },
+  
+  /** Navigation forward sound */
+  navForward() {
+    playTone(800, 0.1, 'sine', 0.05);
+    setTimeout(() => playTone(1200, 0.15, 'sine', 0.03), 50);
+  },
+
+  /** Navigation backward sound */
+  navBack() {
+    playTone(1200, 0.1, 'sine', 0.05);
+    setTimeout(() => playTone(800, 0.15, 'sine', 0.03), 50);
+  },
 };
