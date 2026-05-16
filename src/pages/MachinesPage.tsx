@@ -7,9 +7,10 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
-  Target, CheckCircle2, XCircle, Settings, History,
+  CheckCircle2, XCircle, Settings, History,
   Activity, AlertTriangle, Map as MapIcon, Zap, Search, FileDown
 } from 'lucide-react';
+import { TargetArrowIcon } from '@/components/icons/TargetArrowIcon';
 import { useSchedulingData } from '@/hooks/useSchedulingData';
 import { Skeleton } from '@/components/ui/skeleton';
 // Breadcrumbs removed - handled by MainLayout
