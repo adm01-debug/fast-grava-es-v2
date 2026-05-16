@@ -276,14 +276,18 @@ export function BINormalView({ biMetrics, kpis, oeeData, getPeriodLabel, onDrill
                   fill={CHART_COLORS.success}
                   name="Produzidas"
                   radius={[0, 6, 6, 0]}
-                  onClick={(data: any) => onDrillDown(`TÉCNICA: ${data.name}`, data.id)}
+                  onClick={(data) => {
+                    if (data && data.name) onDrillDown(`TÉCNICA: ${data.name}`, data.id);
+                  }}
                 />
                 <Bar
                   dataKey="lost"
                   fill={CHART_COLORS.danger}
                   name="Perdidas"
                   radius={[0, 6, 6, 0]}
-                  onClick={(data: any) => onDrillDown(`PERDAS EM ${data.name}`, data.id)}
+                  onClick={(data) => {
+                    if (data && data.name) onDrillDown(`PERDAS EM ${data.name}`, data.id);
+                  }}
                 />
               </BarChart>
             </ResponsiveContainer>
