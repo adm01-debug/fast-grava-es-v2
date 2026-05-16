@@ -77,9 +77,8 @@ const OEEDashboard = memo(function OEEDashboard() {
   
   const filters = useMemo(() => ({
     machineId: machineId === 'all' ? undefined : machineId,
-    techniqueId: techniqueId === 'all' ? undefined : techniqueId,
-    shiftId: shiftId === 'all' ? undefined : shiftId
-  }), [machineId, techniqueId, shiftId]);
+    techniqueId: techniqueId === 'all' ? undefined : techniqueId
+  }), [machineId, techniqueId]);
 
   const { data, isLoading, downloadReport } = useOEE(parseInt(period), 30, filters);
   const { losses, isLoading: lossesLoading } = useProductionLosses();
