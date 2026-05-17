@@ -59,7 +59,6 @@ export const OEERankingGap = memo(function OEERankingGap({
   const renderRankingItem = (item: any, index: number, mode: 'ranking' | 'gap' | 'impact') => {
     const isAboveTarget = item.gap >= 0;
     const isImpactMode = mode === 'impact';
-    const isGapMode = mode === 'gap';
     
     return (
       <div key={item.id} className="flex items-center gap-4 p-3 rounded-xl bg-background/40 border border-border/50 hover:border-primary/30 transition-all group">
@@ -126,17 +125,17 @@ export const OEERankingGap = memo(function OEERankingGap({
         <Card className="border-destructive/10 bg-black/5">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-black uppercase tracking-widest flex items-center gap-2">
-              <TrendingDown className="h-4 w-4 text-destructive" />
-              Impacto de Perdas (Gaps vs Meta 85%)
+              <AlertTriangle className="h-4 w-4 text-destructive" />
+              Impacto de Perdas (Máquinas)
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3 pt-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
-            {rankingData.bottomMachines.map((m, i) => renderRankingItem(m, i, true))}
+            {rankingData.lossImpactMachines.map((m, i) => renderRankingItem(m, i, 'impact'))}
           </CardContent>
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <Card className="border-primary/10 bg-black/5">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-black uppercase tracking-widest flex items-center gap-2">
@@ -145,19 +144,31 @@ export const OEERankingGap = memo(function OEERankingGap({
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3 pt-4">
-            {rankingData.topTechniques.map((t, i) => renderRankingItem(t, i, false))}
+            {rankingData.topTechniques.map((t, i) => renderRankingItem(t, i, 'ranking'))}
           </CardContent>
         </Card>
 
-        <Card className="border-indicator-info/10 bg-black/5">
+        <Card className="border-indicator-warning/10 bg-black/5">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-black uppercase tracking-widest flex items-center gap-2">
-              <TrendingDown className="h-4 w-4 text-indicator-info" />
+              <TrendingDown className="h-4 w-4 text-indicator-warning" />
               Técnicas com Maior Desvio
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3 pt-4">
-            {rankingData.bottomTechniques.map((t, i) => renderRankingItem(t, i, true))}
+            {rankingData.bottomTechniques.map((t, i) => renderRankingItem(t, i, 'gap'))}
+          </CardContent>
+        </Card>
+
+        <Card className="border-indicator-info/10 bg-black/5 shadow-inner">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-black uppercase tracking-widest flex items-center gap-2">
+              <AlertTriangle className="h-4 w-4 text-indicator-info" />
+              Gargalos vs Meta ({targetOEE}%)
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3 pt-4">
+            {rankingData.bottomMachines.slice(0, 5).map((m, i) => renderRankingItem(m, i, 'gap'))}
           </CardContent>
         </Card>
       </div>
