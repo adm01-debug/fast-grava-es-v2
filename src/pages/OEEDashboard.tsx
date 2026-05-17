@@ -991,8 +991,28 @@ const OEEDashboard = memo(function OEEDashboard() {
                 </CardContent>
               </Card>
             </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-2">
+                 <Suspense fallback={<ChartSkeleton />}>
+                    <MaterialEfficiencyChart materials={data.byMaterial || []} />
+                 </Suspense>
+              </div>
+              <div className="space-y-6">
+                 <Card className="bg-primary/5 border-primary/20 h-full flex flex-col justify-center items-center p-8 text-center relative overflow-hidden">
+                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary to-transparent" />
+                    <Sparkles className="h-12 w-12 text-primary mb-4 animate-pulse" />
+                    <h3 className="text-xl font-black italic tracking-tighter uppercase mb-2">Qualidade Hyper 10/10</h3>
+                    <p className="text-sm text-muted-foreground max-w-[200px]">
+                       A excelência operacional da FAST GRAVAÇÕES é monitorada em tempo real com inteligência Studio.
+                    </p>
+                    <div className="mt-6 font-display font-black text-6xl opacity-10 select-none">FAST</div>
+                 </Card>
+              </div>
+            </div>
             
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+
               <Card className="bg-success/5 border-success/10 transition-transform hover:scale-[1.02]">
                 <CardContent className="pt-4">
                    <div className="flex items-center gap-3">
