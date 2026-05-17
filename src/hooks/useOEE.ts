@@ -87,6 +87,9 @@ export interface OEEData {
     data: {
       date: string;
       oee: number;
+      availability: number;
+      performance: number;
+      quality: number;
     }[];
   }[];
 
@@ -481,7 +484,7 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, f
 
     // Generate heatmap data (Machine performance over the period)
     const heatmapData: OEEData['heatmapData'] = byMachine.map(machine => {
-      const machineHeatmap: { date: string; oee: number }[] = [];
+      const machineHeatmap: { date: string; oee: number; availability: number; performance: number; quality: number }[] = [];
       
       for (let i = trendDays - 1; i >= 0; i--) {
         const date = subDays(now, i);
@@ -499,7 +502,7 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, f
         });
         
         if (dayMachineJobs.length === 0) {
-          machineHeatmap.push({ date: dayStart.toISOString(), oee: 0 });
+          machineHeatmap.push({ date: dayStart.toISOString(), oee: 0, availability: 0, performance: 0, quality: 0 });
           continue;
         }
         
@@ -523,7 +526,10 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, f
         
         machineHeatmap.push({
           date: dayStart.toISOString(),
-          oee: Math.round(dayOEE * 10) / 10
+          oee: Math.round(dayOEE * 10) / 10,
+          availability: Math.round(dayAvail * 10) / 10,
+          performance: Math.round(dayPerf * 10) / 10,
+          quality: Math.round(dayQual * 10) / 10
         });
       }
       

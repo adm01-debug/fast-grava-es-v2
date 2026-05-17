@@ -20,6 +20,9 @@ interface OEEHeatmapProps {
     data: {
       date: string;
       oee: number;
+      availability: number;
+      performance: number;
+      quality: number;
     }[];
   }[];
 }
@@ -96,8 +99,13 @@ export const OEEHeatmap = memo(function OEEHeatmap({ data }: OEEHeatmapProps) {
                             <div className="text-[10px] space-y-1">
                               <p className="font-bold text-primary">{machine.machineName}</p>
                               <p className="text-muted-foreground">{format(parseISO(day.date), 'PPPP', { locale: ptBR })}</p>
-                              <p className="text-white font-black text-xs">Eficiência: {day.oee}%</p>
-                              <p className="text-[9px] italic opacity-70">
+                              <div className="grid grid-cols-2 gap-x-4 gap-y-1 mt-2">
+                                <p className="text-white font-black text-xs">OEE: {day.oee}%</p>
+                                <p className="text-indicator-info font-bold text-[10px]">Disp: {day.availability}%</p>
+                                <p className="text-indicator-warning font-bold text-[10px]">Perf: {day.performance}%</p>
+                                <p className="text-accent-purple font-bold text-[10px]">Qual: {day.quality}%</p>
+                              </div>
+                              <p className="text-[9px] italic opacity-70 mt-2">
                                 {day.oee >= 85 ? 'Desempenho de classe mundial' : 
                                  day.oee >= 65 ? 'Dentro da faixa operacional' : 
                                  day.oee > 0 ? 'Necessita investigação de perdas' : 'Sem produção registrada'}
