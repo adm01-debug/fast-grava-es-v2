@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, ReactNode, useCallback } from 'react';
+import { createContext, useContext, useEffect, useState, ReactNode, useCallback, useRef } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { useDeviceDetection } from '@/hooks/useDeviceDetection';
@@ -94,6 +94,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [role, setRole] = useState<AppRole | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { checkDevice } = useDeviceDetection();
+  
+  // Session Management Refs
+  const lastActivityRef = useRef<Date>(new Date());
+  const refreshIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const ACTIVITY_TIMEOUT_MINUTES = 60;
+  const REFRESH_INTERVAL_MINUTES = 30;
 
   const fetchUserData = async (userId: string) => {
 
@@ -129,9 +135,71 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       }
     } catch (error) {
-
+      console.error("Error fetching user data:", error);
     }
   };
+
+  // Session Management Logic
+  const updateActivity = useCallback(() => {
+    lastActivityRef.current = new Date();
+  }, []);
+
+  const isSessionActive = useCallback(() => {
+    const now = new Date();
+    const diffMs = now.getTime() - lastActivityRef.current.getTime();
+    const diffMinutes = diffMs / (1000 * 60);
+    return diffMinutes < ACTIVITY_TIMEOUT_MINUTES;
+  }, []);
+
+  const refreshSession = useCallback(async () => {
+    if (!user) return;
+    try {
+      const { data, error } = await supabase.auth.refreshSession();
+      if (error) {
+        const isAuthError = error.message.includes('refresh_token_not_found') || 
+                           error.message.includes('Invalid Refresh Token');
+        if (isAuthError || !isSessionActive()) {
+          await signOut();
+        }
+        return;
+      }
+      if (!data.session) await signOut();
+    } catch (error) {
+      console.error("Critical session refresh error:", error);
+    }
+  }, [user, isSessionActive]);
+
+  useEffect(() => {
+    if (!user) return;
+    const events = ['mousedown', 'keydown', 'scroll', 'touchstart', 'click'];
+    events.forEach(event => window.addEventListener(event, updateActivity, { passive: true }));
+    
+    refreshIntervalRef.current = setInterval(() => {
+      if (isSessionActive()) refreshSession();
+    }, REFRESH_INTERVAL_MINUTES * 60 * 1000);
+
+    const handleVisibilityChange = async () => {
+      if (document.visibilityState === 'visible') {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) {
+          await signOut();
+          return;
+        }
+        const expiresAt = session.expires_at;
+        if (expiresAt) {
+          const diffHours = (new Date(expiresAt * 1000).getTime() - new Date().getTime()) / (1000 * 60 * 60);
+          if (diffHours < 1) await refreshSession();
+        }
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      events.forEach(event => window.removeEventListener(event, updateActivity));
+      if (refreshIntervalRef.current) clearInterval(refreshIntervalRef.current);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [user, updateActivity, isSessionActive, refreshSession]);
 
   useEffect(() => {
 

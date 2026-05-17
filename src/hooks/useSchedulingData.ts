@@ -1,4 +1,4 @@
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient, useQueries } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useEffect, useMemo, useCallback } from 'react';
 import { differenceInMinutes } from 'date-fns';
@@ -35,94 +35,75 @@ const ERROR_CONTEXT = {
 export function useSchedulingData() {
   const queryClient = useQueryClient();
 
-  // Fetch operator profiles
-  const profilesQuery = useQuery({
-    queryKey: ['operator-profiles'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('id, full_name, avatar_url');
-
-      if (error) {
-        console.error('[useSchedulingData] Profiles fetch error:', error);
-        throw error;
-      }
-      return data;
-    },
-    staleTime: STATIC_DATA_STALE_TIME,
-    ...RETRY_CONFIG,
+  // Using useQueries for parallel data fetching
+  const results = useQueries({
+    queries: [
+      {
+        queryKey: ['operator-profiles'],
+        queryFn: async () => {
+          const { data, error } = await supabase.from('profiles').select('id, full_name, avatar_url');
+          if (error) throw error;
+          return data;
+        },
+        staleTime: STATIC_DATA_STALE_TIME,
+        ...RETRY_CONFIG,
+      },
+      {
+        queryKey: ['techniques'],
+        queryFn: async () => {
+          const { data, error } = await supabase.from('techniques').select('*').order('name');
+          if (error) throw error;
+          return data as DbTechnique[];
+        },
+        staleTime: STATIC_DATA_STALE_TIME,
+        ...RETRY_CONFIG,
+      },
+      {
+        queryKey: ['machines'],
+        queryFn: async () => {
+          return await machinesService.getAll();
+        },
+        staleTime: STATIC_DATA_STALE_TIME,
+        ...RETRY_CONFIG,
+      },
+      {
+        queryKey: ['jobs'],
+        queryFn: async () => {
+          const data = await jobsService.getAll({ recentOnly: true });
+          return data as unknown as DbJob[];
+        },
+        staleTime: JOBS_STALE_TIME,
+        ...RETRY_CONFIG,
+      },
+    ],
   });
 
-  // Fetch techniques with longer stale time
-  const techniquesQuery = useQuery({
-    queryKey: ['techniques'],
-    queryFn: async () => {
-      try {
-        const { data, error } = await supabase.from('techniques').select('*').order('name');
-        if (error) throw error;
-        return data as DbTechnique[];
-      } catch (err) {
-        throw createAppError(err, ERROR_CONTEXT.techniques);
-      }
-    },
-    staleTime: STATIC_DATA_STALE_TIME,
-    ...RETRY_CONFIG,
-  });
+  const [profilesQuery, techniquesQuery, machinesQuery, jobsQuery] = results;
 
-  // Fetch machines with longer stale time
-  const machinesQuery = useQuery({
-    queryKey: ['machines'],
-    queryFn: async () => {
-      try {
-        return await machinesService.getAll();
-      } catch (err) {
-        throw createAppError(err, ERROR_CONTEXT.machines);
-      }
-    },
-    staleTime: STATIC_DATA_STALE_TIME,
-    ...RETRY_CONFIG,
-  });
-
-  // Fetch jobs with shorter stale time
-  const jobsQuery = useQuery({
-    queryKey: ['jobs'],
-    queryFn: async () => {
-      try {
-        const data = await jobsService.getAll({ recentOnly: true });
-        return data as unknown as DbJob[];
-      } catch (err) {
-        throw createAppError(err, ERROR_CONTEXT.jobs);
-      }
-    },
-    staleTime: JOBS_STALE_TIME,
-    ...RETRY_CONFIG,
-  });
-
-  // Single realtime subscription for all tables
+  // Centralized realtime subscription for core tables
   useEffect(() => {
-    let isActive = true;
+    if (!queryClient) return;
 
     const channel = supabase
-      .channel('scheduling-data-changes')
+      .channel('app-core-sync')
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'jobs' },
-        () => isActive && queryClient.invalidateQueries({ queryKey: ['jobs'] })
+        () => queryClient.invalidateQueries({ queryKey: ['jobs'] })
       )
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'techniques' },
-        () => isActive && queryClient.invalidateQueries({ queryKey: ['techniques'] })
+        () => queryClient.invalidateQueries({ queryKey: ['techniques'] })
       )
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'machines' },
-        () => isActive && queryClient.invalidateQueries({ queryKey: ['machines'] })
+        () => queryClient.invalidateQueries({ queryKey: ['machines'] })
       )
       .subscribe();
 
     return () => {
-      isActive = false;
       supabase.removeChannel(channel);
     };
   }, [queryClient]);

@@ -346,8 +346,13 @@ const OEEDashboard = memo(function OEEDashboard() {
     toast.success(t('common.reportExported', 'Relatório exportado com sucesso!'));
   }, [data, downloadReport, t, period, machineId, techniqueId, shift]);
 
-  // Activate OEE alerts
+  // Activate OEE alerts - and optimize rendering
   useOEEAlerts();
+
+  // Scroll to top on mount
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   if (isLoading) {
     return <KPIPageSkeleton />;
@@ -366,8 +371,8 @@ const OEEDashboard = memo(function OEEDashboard() {
     );
   }
 
-  const machinesAtWorldClass = data.byMachine.filter(m => m.oee >= WORLD_CLASS_OEE).length;
-  const machinesBelowTarget = data.byMachine.filter(m => m.oee < 65 && m.totalJobs > 0).length;
+  const machinesAtWorldClass = useMemo(() => data.byMachine.filter(m => m.oee >= WORLD_CLASS_OEE).length, [data.byMachine]);
+  const machinesBelowTarget = useMemo(() => data.byMachine.filter(m => m.oee < 65 && m.totalJobs > 0).length, [data.byMachine]);
 
   return (
       <div className="p-6 space-y-6">
@@ -1224,7 +1229,7 @@ const OEEDashboard = memo(function OEEDashboard() {
                          <Settings2 className="h-5 w-5 text-primary" />
                       </div>
                       <div>
-                        <p className="text-2xl font-black text-primary">{data.byMachine.filter(m => m.totalJobs > 0).length}</p>
+                        <p className="text-2xl font-black text-primary">{useMemo(() => data.byMachine.filter(m => m.totalJobs > 0).length, [data.byMachine])}</p>
                         <p className="text-[10px] font-black text-muted-foreground uppercase tracking-wider">Máquinas Ativas</p>
                       </div>
                    </div>
