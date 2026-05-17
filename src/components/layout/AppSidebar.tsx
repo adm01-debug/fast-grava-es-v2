@@ -118,9 +118,9 @@ export function AppSidebar() {
                     animate={{ x: 0, opacity: 1 }}
                     exit={{ x: 20, opacity: 0 }}
                     className="w-13 h-13 rounded-xl gradient-primary flex items-center justify-center glow-primary shadow-lg flex-shrink-0"
-                    style={{ width: 52, height: 52 }}
+                    style={{ width: 52 * 1.3, height: 52 * 1.3 }}
                   >
-                    <Printer className="w-6 h-6 text-primary-foreground" />
+                    <Printer className="w-8 h-8 text-primary-foreground" />
                   </motion.div>
                 )}
               </AnimatePresence>
