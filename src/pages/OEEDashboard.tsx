@@ -109,6 +109,7 @@ const OEEDashboard = memo(function OEEDashboard() {
   const [showConfig, setShowSimulatorLocal] = useState(false); // Used for a future settings modal if needed
   const [showAudit, setShowAudit] = useState(false);
   const [industryBenchmark, setIndustryBenchmark] = useState('world_class');
+  const { trigger: haptic } = useHapticFeedback();
   
   const STUDIOS = [
     { id: 'all', label: 'Todos os Studios' },
