@@ -1055,21 +1055,21 @@ const OEEDashboard = memo(function OEEDashboard() {
                           <span>Perda Disponibilidade</span>
                           <span className="text-destructive">{data.availabilityLosses.toFixed(1)}%</span>
                         </div>
-                        <Progress value={data.availabilityLosses} className="h-1 bg-muted/50" indicatorClassName="bg-destructive" />
+                        <Progress value={data.availabilityLosses} className="h-1 bg-muted/50" variant="destructive" />
                       </div>
                       <div className="space-y-2">
                         <div className="flex justify-between text-[10px] font-black uppercase">
                           <span>Perda Performance</span>
                           <span className="text-indicator-warning">{data.performanceLosses.toFixed(1)}%</span>
                         </div>
-                        <Progress value={data.performanceLosses} className="h-1 bg-muted/50" indicatorClassName="bg-indicator-warning" />
+                        <Progress value={data.performanceLosses} className="h-1 bg-muted/50" variant="warning" />
                       </div>
                       <div className="space-y-2">
                         <div className="flex justify-between text-[10px] font-black uppercase">
                           <span>Perda Qualidade</span>
                           <span className="text-accent-purple">{data.qualityLosses.toFixed(1)}%</span>
                         </div>
-                        <Progress value={data.qualityLosses} className="h-1 bg-muted/50" indicatorClassName="bg-accent-purple" />
+                        <Progress value={data.qualityLosses} className="h-1 bg-muted/50" variant="default" />
                       </div>
                     </CardContent>
                  </Card>
