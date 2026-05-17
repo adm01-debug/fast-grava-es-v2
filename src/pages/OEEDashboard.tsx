@@ -674,6 +674,9 @@ const OEEDashboard = memo(function OEEDashboard() {
             <TabsTrigger value="heatmap" className="gap-2 text-xs font-bold uppercase tracking-tight">
               <BarChart3 className="h-4 w-4" /> Produtividade
             </TabsTrigger>
+            <TabsTrigger value="shifts" className="gap-2 text-xs font-bold uppercase tracking-tight">
+              <Clock className="h-4 w-4" /> Comparativo de Turnos
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
