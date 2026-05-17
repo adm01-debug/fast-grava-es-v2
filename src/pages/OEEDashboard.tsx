@@ -165,27 +165,48 @@ const OEEDashboard = memo(function OEEDashboard() {
       const { default: autoTable } = await import('jspdf-autotable');
       const doc = new jsPDF();
       
-      doc.setFontSize(18);
-      doc.text('Relatório OEE - FAST GRAVAÇÕES', 14, 20);
+      doc.setFontSize(22);
+      doc.setTextColor(232, 93, 58); // Laranja Premium
+      doc.text('FAST GRAVAÇÕES', 14, 20);
+      doc.setFontSize(10);
+      doc.setTextColor(100);
+      doc.text('SISTEMA DE GESTÃO DE PRODUÇÃO', 14, 26);
       
+      doc.setFontSize(16);
+      doc.setTextColor(0);
+      doc.text('Relatório Executivo OEE', 14, 40);
+      
+      doc.setFontSize(10);
+      doc.text(`Período: Últimos ${period} dias`, 14, 50);
+      doc.text(`Turno: ${shift === 'all' ? 'Todos' : shift}`, 14, 55);
+      doc.text(`Filtros: Máquina: ${machineId === 'all' ? 'Todas' : machineId} | Técnica: ${techniqueId === 'all' ? 'Todas' : techniqueId}`, 14, 60);
+      
+      doc.setFillColor(245, 245, 245);
+      doc.rect(14, 70, 180, 25, 'F');
       doc.setFontSize(12);
-      doc.text(`Período: Últimos ${period} dias`, 14, 30);
-      doc.text(`OEE Geral: ${data.overallOEE.toFixed(1)}%`, 14, 40);
-      doc.text(`Disponibilidade: ${data.overallAvailability.toFixed(1)}% | Performance: ${data.overallPerformance.toFixed(1)}% | Qualidade: ${data.overallQuality.toFixed(1)}%`, 14, 50);
-      
-      const tableData = data.byMachine.map(m => [
+      doc.text('RESUMO GERAL', 20, 78);
+      doc.setFontSize(10);
+      doc.text(`OEE GLOBAL: ${data.overallOEE.toFixed(1)}%`, 20, 85);
+      doc.text(`DISPONIBILIDADE: ${data.overallAvailability.toFixed(1)}% | PERFORMANCE: ${data.overallPerformance.toFixed(1)}% | QUALIDADE: ${data.overallQuality.toFixed(1)}%`, 20, 90);
+
+      const tableData = data.byMachine.map((m, idx) => [
+        idx + 1,
         m.machineName,
         m.techniqueName,
         `${m.availability}%`,
         `${m.performance}%`,
         `${m.quality}%`,
-        `${m.oee}%`
+        `${m.oee}%`,
+        m.lostPieces.toLocaleString()
       ]);
       
       autoTable(doc, {
-        startY: 60,
-        head: [['Máquina', 'Técnica', 'Disp.', 'Perf.', 'Qual.', 'OEE']],
+        startY: 105,
+        head: [['#', 'Máquina', 'Técnica', 'Disp.', 'Perf.', 'Qual.', 'OEE', 'Perdas']],
         body: tableData,
+        theme: 'striped',
+        headStyles: { fillColor: [232, 93, 58] },
+        styles: { fontSize: 8 }
       });
       
       doc.save(`oee_report_${new Date().toISOString().slice(0,10)}.pdf`);
