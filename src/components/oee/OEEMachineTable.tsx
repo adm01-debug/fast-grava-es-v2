@@ -215,6 +215,12 @@ export const OEEMachineTable = memo(function OEEMachineTable({ machines }: OEEMa
                   </Button>
                 </TableHead>
                 <TableHead>
+                  <Button variant="ghost" size="sm" onClick={() => toggleSort('trend')}>
+                    Tendência
+                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                  </Button>
+                </TableHead>
+                <TableHead>
                   <Button variant="ghost" size="sm" onClick={() => toggleSort('totalPiecesProduced')}>
                     Produção
                     <ArrowUpDown className="ml-2 h-4 w-4" />
