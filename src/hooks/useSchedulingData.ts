@@ -98,31 +98,30 @@ export function useSchedulingData() {
     ...RETRY_CONFIG,
   });
 
-  // Single realtime subscription for all tables
+  // Centralized realtime subscription for core tables
   useEffect(() => {
-    let isActive = true;
+    if (!queryClient) return;
 
     const channel = supabase
-      .channel('scheduling-data-changes')
+      .channel('app-core-sync')
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'jobs' },
-        () => isActive && queryClient.invalidateQueries({ queryKey: ['jobs'] })
+        () => queryClient.invalidateQueries({ queryKey: ['jobs'] })
       )
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'techniques' },
-        () => isActive && queryClient.invalidateQueries({ queryKey: ['techniques'] })
+        () => queryClient.invalidateQueries({ queryKey: ['techniques'] })
       )
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'machines' },
-        () => isActive && queryClient.invalidateQueries({ queryKey: ['machines'] })
+        () => queryClient.invalidateQueries({ queryKey: ['machines'] })
       )
       .subscribe();
 
     return () => {
-      isActive = false;
       supabase.removeChannel(channel);
     };
   }, [queryClient]);

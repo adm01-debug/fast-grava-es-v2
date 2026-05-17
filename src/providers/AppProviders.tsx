@@ -8,7 +8,7 @@ import { ReauthProvider } from "@/contexts/ReauthContext";
 import { EfficiencyNotificationProvider } from "@/components/notifications/EfficiencyNotificationProvider";
 import { RealtimeNotificationsProvider } from "@/components/notifications/RealtimeNotificationsProvider";
 import { OfflineSyncProvider } from "@/contexts/OfflineSyncContext";
-import { SessionManager } from "@/hooks/useSessionManager";
+// SessionManager removed to avoid redundancy with consolidated AuthProvider logic
 import { ProductDesignProvider } from "@/components/design-system/ProductDesignProvider";
 import { CelebrationProvider } from "@/components/ui/celebration";
 import { FeedbackProvider } from "@/components/feedback/FeedbackProvider";
@@ -85,7 +85,7 @@ const ComposedProviders = composeProviders([
   AuthProvider,
   ReauthProvider,
   PermissionsProvider,
-  SessionManager,
+  // SessionManager logic now inside AuthProvider
   // Data & sync layer
   OfflineSyncProvider,
   NetworkStatusProvider,
