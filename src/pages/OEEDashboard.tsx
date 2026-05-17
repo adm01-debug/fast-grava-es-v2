@@ -346,8 +346,13 @@ const OEEDashboard = memo(function OEEDashboard() {
     toast.success(t('common.reportExported', 'Relatório exportado com sucesso!'));
   }, [data, downloadReport, t, period, machineId, techniqueId, shift]);
 
-  // Activate OEE alerts
+  // Activate OEE alerts - and optimize rendering
   useOEEAlerts();
+
+  // Scroll to top on mount
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   if (isLoading) {
     return <KPIPageSkeleton />;
