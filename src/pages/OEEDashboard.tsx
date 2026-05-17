@@ -221,7 +221,7 @@ const OEEDashboard = memo(function OEEDashboard() {
       doc.setTextColor(100);
       doc.text(`Período: Últimos ${period} dias`, 14, 65);
       doc.text(`Filtros: Máquina: ${machineId === 'all' ? 'Todas' : machineId} | Técnica: ${techniqueId === 'all' ? 'Todas' : techniqueId} | Turno: ${shift === 'all' ? 'Todos' : shift}`, 14, 70);
-      doc.text(`Gerado em: ${new Date().toLocaleDateString('pt-BR')}`, 14, 75);
+      doc.text(`Gerado em: ${format(new Date(), 'PPP', { locale: ptBR })}`, 14, 75);
       
       // Summary Box
       doc.setDrawColor(230);
