@@ -32,7 +32,7 @@ interface OEEMachineTableProps {
   machines: MachineOEE[];
 }
 
-type SortField = 'oee' | 'availability' | 'performance' | 'quality' | 'machineName' | 'totalPiecesProduced' | 'gap';
+type SortField = 'oee' | 'availability' | 'performance' | 'quality' | 'machineName' | 'totalPiecesProduced' | 'gap' | 'trend';
 type SortDirection = 'asc' | 'desc';
 
 import { memo } from 'react';
@@ -64,7 +64,11 @@ export const OEEMachineTable = memo(function OEEMachineTable({ machines }: OEEMa
         const matchesTechnique = techniqueFilter === 'all' || m.techniqueId === techniqueFilter;
         return matchesTechnique;
       })
-      .map(m => ({ ...m, gap: m.oee - 85 }))
+      .map(m => ({ 
+        ...m, 
+        gap: m.oee - 85,
+        trend: m.oee - (m.previousOee || 0)
+      }))
       .sort((a, b) => {
         const aVal = (a as any)[sortField];
         const bVal = (b as any)[sortField];
@@ -211,6 +215,12 @@ export const OEEMachineTable = memo(function OEEMachineTable({ machines }: OEEMa
                   </Button>
                 </TableHead>
                 <TableHead>
+                  <Button variant="ghost" size="sm" onClick={() => toggleSort('trend')}>
+                    Tendência
+                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                  </Button>
+                </TableHead>
+                <TableHead>
                   <Button variant="ghost" size="sm" onClick={() => toggleSort('totalPiecesProduced')}>
                     Produção
                     <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -263,10 +273,10 @@ export const OEEMachineTable = memo(function OEEMachineTable({ machines }: OEEMa
                     <TableCell>
                       <div className={cn(
                         "flex items-center gap-1 font-bold",
-                        machine.gap >= 0 ? "text-success" : "text-destructive"
+                        (machine as any).trend >= 0 ? "text-success" : "text-destructive"
                       )}>
-                        {machine.gap >= 0 ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}
-                        {Math.abs(machine.gap).toFixed(1)}%
+                        {(machine as any).trend > 0 ? <TrendingUp className="h-3 w-3" /> : (machine as any).trend < 0 ? <TrendingDown className="h-3 w-3" /> : <Minus className="h-3 w-3" />}
+                        {Math.abs((machine as any).trend).toFixed(1)}%
                       </div>
                     </TableCell>
                     <TableCell>

@@ -43,9 +43,9 @@ export const OEEGaugeCard = memo(function OEEGaugeCard({
   }, [value]);
 
   const sizeConfig = {
-    sm: { gauge: 80, stroke: 8, text: 'text-xl' },
-    md: { gauge: 120, stroke: 12, text: 'text-3xl' },
-    lg: { gauge: 160, stroke: 16, text: 'text-4xl' }
+    sm: { gauge: 100, stroke: 10, text: 'text-2xl' },
+    md: { gauge: 150, stroke: 14, text: 'text-4xl' },
+    lg: { gauge: 200, stroke: 18, text: 'text-5xl' }
   };
 
   const config = sizeConfig[size];

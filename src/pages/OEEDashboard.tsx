@@ -95,6 +95,17 @@ const OEEDashboard = memo(function OEEDashboard() {
   const [activeTab, setActiveTab] = useState('overview');
   const [showConfig, setShowSimulatorLocal] = useState(false); // Used for a future settings modal if needed
   const [showAudit, setShowAudit] = useState(false);
+  const [industryBenchmark, setIndustryBenchmark] = useState('world_class');
+  
+  const INDUSTRY_BENCHMARKS: Record<string, { label: string, target: number, desc: string }> = {
+    'world_class': { label: 'World Class (Geral)', target: 85, desc: 'Padrão ouro de excelência industrial global.' },
+    'automotive': { label: 'Automotivo', target: 80, desc: 'Alta automação e processos rígidos de qualidade.' },
+    'food_bev': { label: 'Alimentos & Bebidas', target: 75, desc: 'Foco em disponibilidade e conformidade sanitária.' },
+    'textile': { label: 'Têxtil', target: 65, desc: 'Alta variabilidade de setup e troca de lotes.' },
+    'general': { label: 'Manufatura Geral', target: 60, desc: 'Processos manuais ou semi-automáticos.' }
+  };
+
+  const currentBenchmark = INDUSTRY_BENCHMARKS[industryBenchmark];
   
   const dateRange = useMemo(() => {
     const now = new Date();
@@ -656,11 +667,27 @@ const OEEDashboard = memo(function OEEDashboard() {
 
         {showAudit && (
           <Card className="border-indicator-info/20 bg-muted/20 animate-in slide-in-from-top-4 duration-300">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-black uppercase tracking-widest flex items-center gap-2">
-                <Calculator className="h-4 w-4 text-indicator-info" />
-                Auditoria de Memória de Cálculo
-              </CardTitle>
+            <CardHeader className="pb-2 border-b border-border/10">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <CardTitle className="text-sm font-black uppercase tracking-widest flex items-center gap-2">
+                  <Calculator className="h-4 w-4 text-indicator-info" />
+                  Auditoria de Memória de Cálculo & Benchmarking
+                </CardTitle>
+                
+                <div className="flex items-center gap-2 bg-background/50 p-1 rounded-lg border border-border/50">
+                  <span className="text-[10px] font-bold text-muted-foreground uppercase px-2">Setor:</span>
+                  <Select value={industryBenchmark} onValueChange={setIndustryBenchmark}>
+                    <SelectTrigger className="h-7 w-40 text-[10px] font-bold border-none bg-transparent">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Object.entries(INDUSTRY_BENCHMARKS).map(([id, b]) => (
+                        <SelectItem key={id} value={id} className="text-[10px] font-medium">{b.label} ({b.target}%)</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
             </CardHeader>
             <CardContent className="p-6">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -706,12 +733,50 @@ const OEEDashboard = memo(function OEEDashboard() {
                   </div>
                 </div>
               </div>
-              <div className="mt-6 p-4 bg-black/40 rounded-xl border border-primary/20 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <Badge className="bg-primary/20 text-primary border-primary/30">OEE FINAL</Badge>
-                  <p className="text-xs font-medium text-muted-foreground">O OEE é o produto dos três indicadores acima (Disp x Perf x Qual)</p>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
+                <div className="p-4 bg-black/40 rounded-xl border border-primary/20 flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <Badge className="bg-primary/20 text-primary border-primary/30">OEE FINAL</Badge>
+                    <p className="text-xs font-medium text-muted-foreground">O OEE é o produto dos três indicadores acima (Disp x Perf x Qual)</p>
+                  </div>
+                  <p className="text-2xl font-black text-primary">{data.overallOEE.toFixed(1)}%</p>
                 </div>
-                <p className="text-2xl font-black text-primary">{data.overallOEE.toFixed(1)}%</p>
+
+                <div className={cn(
+                  "p-4 rounded-xl border flex items-center justify-between",
+                  data.overallOEE >= currentBenchmark.target 
+                    ? "bg-success/5 border-success/20" 
+                    : "bg-destructive/5 border-destructive/20"
+                )}>
+                  <div className="flex items-center gap-3">
+                    <div className={cn(
+                      "p-2 rounded-lg",
+                      data.overallOEE >= currentBenchmark.target ? "bg-success/20 text-success" : "bg-destructive/20 text-destructive"
+                    )}>
+                      {data.overallOEE >= currentBenchmark.target ? <Award className="h-5 w-5" /> : <AlertTriangle className="h-5 w-5" />}
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Performance vs Benchmark</p>
+                      <p className="text-xs font-medium">{currentBenchmark.label}: {currentBenchmark.target}%</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className={cn(
+                      "text-xl font-black",
+                      data.overallOEE >= currentBenchmark.target ? "text-success" : "text-destructive"
+                    )}>
+                      {(data.overallOEE - currentBenchmark.target).toFixed(1)}%
+                    </p>
+                    <p className="text-[9px] font-bold uppercase text-muted-foreground">{data.overallOEE >= currentBenchmark.target ? 'Acima da Média' : 'Abaixo da Média'}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-4 p-4 rounded-lg bg-muted/30 border border-border/50">
+                <p className="text-[11px] text-muted-foreground leading-relaxed italic">
+                   <strong>Nota sobre Benchmark:</strong> {currentBenchmark.desc} Estes valores servem como referência setorial para o seu processo de melhoria contínua.
+                </p>
               </div>
             </CardContent>
           </Card>
@@ -784,10 +849,38 @@ const OEEDashboard = memo(function OEEDashboard() {
 
           <TabsContent value="overview" className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              <OEEGaugeCard title={t('oee.generalOEE', 'OEE Geral')} value={data.overallOEE} icon={<Target className="h-4 w-4" />} benchmark={WORLD_CLASS_OEE} variant="glass" />
-              <OEEGaugeCard title={t('oee.availability', 'Disponibilidade')} value={data.overallAvailability} icon={<Clock className="h-4 w-4" />} benchmark={90} variant="glass" />
-              <OEEGaugeCard title={t('common.performance', 'Performance')} value={data.overallPerformance} icon={<Gauge className="h-4 w-4" />} benchmark={95} variant="glass" />
-              <OEEGaugeCard title={t('common.quality', 'Qualidade')} value={data.overallQuality} icon={<CheckCircle2 className="h-4 w-4" />} benchmark={99} variant="glass" />
+              <OEEGaugeCard 
+                title={t('oee.generalOEE', 'OEE Geral')} 
+                value={data.overallOEE} 
+                icon={<Target className="h-4 w-4" />} 
+                benchmark={currentBenchmark.target} 
+                variant="glass" 
+                trend={data.comparison ? data.overallOEE - data.comparison.previousOEE : undefined}
+              />
+              <OEEGaugeCard 
+                title={t('oee.availability', 'Disponibilidade')} 
+                value={data.overallAvailability} 
+                icon={<Clock className="h-4 w-4" />} 
+                benchmark={90} 
+                variant="glass" 
+                trend={data.comparison ? data.overallAvailability - data.comparison.previousAvailability : undefined}
+              />
+              <OEEGaugeCard 
+                title={t('common.performance', 'Performance')} 
+                value={data.overallPerformance} 
+                icon={<Gauge className="h-4 w-4" />} 
+                benchmark={95} 
+                variant="glass" 
+                trend={data.comparison ? data.overallPerformance - data.comparison.previousPerformance : undefined}
+              />
+              <OEEGaugeCard 
+                title={t('common.quality', 'Qualidade')} 
+                value={data.overallQuality} 
+                icon={<CheckCircle2 className="h-4 w-4" />} 
+                benchmark={99} 
+                variant="glass" 
+                trend={data.comparison ? data.overallQuality - data.comparison.previousQuality : undefined}
+              />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -934,7 +1027,7 @@ const OEEDashboard = memo(function OEEDashboard() {
 
           <TabsContent value="machines" className="space-y-6">
             <Suspense fallback={<ChartSkeleton />}>
-              <OEERankingGap machines={data.byMachine} techniques={data.byTechnique} />
+              <OEERankingGap machines={data.byMachine} techniques={data.byTechnique} targetOEE={currentBenchmark.target} />
             </Suspense>
             <Suspense fallback={<TableSkeleton />}><OEEMachineTable machines={data.byMachine} /></Suspense>
             <Suspense fallback={<ChartSkeleton />}><OEETechniqueComparison techniques={data.byTechnique} worldClassBenchmark={data.worldClassBenchmark} /></Suspense>

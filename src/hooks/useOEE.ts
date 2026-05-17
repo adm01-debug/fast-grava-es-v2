@@ -49,6 +49,7 @@ export interface MachineOEE {
 
   // Classification
   oeeClass: 'world-class' | 'excellent' | 'good' | 'acceptable' | 'poor';
+  previousOee?: number;
 }
 
 export interface TechniqueOEE {
@@ -181,38 +182,46 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, f
     const startDate = filters?.startDate || startOfDay(subDays(now, validDaysBack));
     const endDate = filters?.endDate || endOfDay(now);
 
-    // Filter completed jobs within the period with validation
-    const periodJobs = jobs.filter(job => {
+    const previousStartDate = startOfDay(subDays(startDate, daysBack));
+    const previousEndDate = startOfDay(startDate);
+
+    // Filter jobs for current and previous periods
+    const allRelevantJobs = jobs.filter(job => {
       if (filters?.machineId && job.machine_id !== filters.machineId) return false;
       if (filters?.techniqueId && job.technique_id !== filters.techniqueId) return false;
-      if (filters?.shift && filters.shift !== 'all') {
-        const timeToUse = job.actual_start_time || job.start_time;
-        if (!timeToUse) return false;
-        
-        let hour: number;
-        if (timeToUse.includes('T')) {
-          // ISO format
-          hour = new Date(timeToUse).getHours();
-        } else {
-          // HH:MM format
-          hour = parseInt(timeToUse.split(':')[0]);
-        }
-        
-        // Shift logic: 1: 07:00-15:00, 2: 15:00-23:00, 3: 23:00-07:00
-        if (filters.shift === '1' && (hour < 7 || hour >= 15)) return false;
-        if (filters.shift === '2' && (hour < 15 || hour >= 23)) return false;
-        if (filters.shift === '3' && (hour >= 7 && hour < 23)) return false;
-      }
       if (job.status !== 'finished') return false;
       if (!isValidDate(job.actual_end_time)) return false;
-
-      try {
-        const endTime = parseISO(job.actual_end_time!);
-        return isWithinInterval(endTime, { start: startDate, end: endDate });
-      } catch {
-        return false;
-      }
+      return true;
     });
+
+    const periodJobs = allRelevantJobs.filter(job => {
+      const endTime = parseISO(job.actual_end_time!);
+      return isWithinInterval(endTime, { start: startDate, end: endDate });
+    });
+
+    const prevPeriodJobs = allRelevantJobs.filter(job => {
+      const endTime = parseISO(job.actual_end_time!);
+      return isWithinInterval(endTime, { start: previousStartDate, end: previousEndDate });
+    });
+
+    // Helper to calculate OEE for a set of jobs
+    const calculateMetrics = (jobList: typeof jobs, machineDays: number = 1) => {
+      let actual = 0, estimated = 0, produced = 0, lost = 0;
+      for (const job of jobList) {
+        if (isValidDate(job.actual_start_time) && isValidDate(job.actual_end_time)) {
+          try { actual += differenceInMinutes(parseISO(job.actual_end_time!), parseISO(job.actual_start_time!)); } catch {}
+        }
+        estimated += sanitizeNumber(job.estimated_duration || 60);
+        produced += sanitizeNumber(job.produced_quantity ?? job.quantity);
+        lost += sanitizeNumber(job.lost_pieces);
+      }
+      const planned = Math.max(machineDays * PLANNED_MINUTES_PER_DAY, estimated);
+      const avail = planned > 0 ? Math.min(100, (actual / planned) * 100) : 100;
+      const perf = actual > 0 ? Math.min(100, (estimated / actual) * 100) : 100;
+      const qual = produced > 0 ? Math.min(100, ((produced - lost) / produced) * 100) : 100;
+      const oee = (avail / 100) * (perf / 100) * (qual / 100) * 100;
+      return { oee, avail, perf, qual, actual, estimated, produced, lost, planned };
+    };
 
     // Calculate OEE per machine
     const machineOEEMap = new Map<string, MachineOEE>();
@@ -222,67 +231,18 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, f
       if (!technique) continue;
 
       const machineJobs = periodJobs.filter(j => j.machine_id === machine.id);
+      const prevMachineJobs = prevPeriodJobs.filter(j => j.machine_id === machine.id);
 
-      // Calculate metrics
-      let totalActualMinutes = 0;
-      let totalEstimatedMinutes = 0;
-      let totalProducedPieces = 0;
-      let totalLostPieces = 0;
-      let totalQuantity = 0;
-
-      for (const job of machineJobs) {
-        // Actual operating time with validation
-        if (isValidDate(job.actual_start_time) && isValidDate(job.actual_end_time)) {
-          try {
-            const start = parseISO(job.actual_start_time!);
-            const end = parseISO(job.actual_end_time!);
-            const minutes = differenceInMinutes(end, start);
-            totalActualMinutes += sanitizeNumber(minutes);
-          } catch {
-            // Skip invalid date pairs
-          }
-        }
-
-        // Estimated time (ideal cycle time)
-        totalEstimatedMinutes += sanitizeNumber(job.estimated_duration || 60);
-
-        // Quality metrics - use produced_quantity if available, otherwise use quantity
-        const producedQty = sanitizeNumber(job.produced_quantity ?? job.quantity);
-        totalProducedPieces += producedQty;
-        totalLostPieces += sanitizeNumber(job.lost_pieces);
-        totalQuantity += sanitizeNumber(job.quantity);
-      }
-
-      // Calculate planned production time (days with jobs × hours per day)
       const daysWithJobs = new Set(
-        machineJobs.map(j => j.actual_end_time ? startOfDay(parseISO(j.actual_end_time)).toISOString() : null)
-          .filter(Boolean)
-      ).size || 1; // Default to 1 to avoid division by zero
+        machineJobs.map(j => startOfDay(parseISO(j.actual_end_time!)).toISOString())
+      ).size || 1;
 
-      const plannedMinutes = Math.max(daysWithJobs * PLANNED_MINUTES_PER_DAY, totalEstimatedMinutes);
+      const prevDaysWithJobs = new Set(
+        prevMachineJobs.map(j => startOfDay(parseISO(j.actual_end_time!)).toISOString())
+      ).size || 1;
 
-      // REAL OEE CALCULATION based on flow metrics:
-
-      // AVAILABILITY = Actual Operating Time / Planned Production Time
-      // Availability = (Total Time - Downtime) / Total Time
-      const availability = plannedMinutes > 0
-        ? Math.min(100, (totalActualMinutes / plannedMinutes) * 100)
-        : 100;
-
-      // PERFORMANCE = (Total Produced Pieces * Ideal Cycle Time per Piece) / Operating Time
-      // Or simply: Ideal Cycle Time for Total Production / Actual Operating Time
-      const performance = totalActualMinutes > 0
-        ? Math.min(100, (totalEstimatedMinutes / totalActualMinutes) * 100)
-        : 100;
-
-      // QUALITY = Good Pieces / Total Pieces Produced
-      const goodPieces = totalProducedPieces - totalLostPieces;
-      const quality = totalProducedPieces > 0
-        ? Math.min(100, (goodPieces / totalProducedPieces) * 100)
-        : 100;
-
-      // OEE = Availability × Performance × Quality
-      const oee = (availability / 100) * (performance / 100) * (quality / 100) * 100;
+      const current = calculateMetrics(machineJobs, daysWithJobs);
+      const previous = calculateMetrics(prevMachineJobs, prevDaysWithJobs);
 
       machineOEEMap.set(machine.id, {
         machineId: machine.id,
@@ -292,23 +252,24 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, f
         techniqueName: technique.name,
         techniqueColor: technique.color,
 
-        availability: Math.round(availability * 10) / 10,
-        performance: Math.round(performance * 10) / 10,
-        quality: Math.round(quality * 10) / 10,
-        oee: Math.round(oee * 10) / 10,
+        availability: Math.round(current.avail * 10) / 10,
+        performance: Math.round(current.perf * 10) / 10,
+        quality: Math.round(current.qual * 10) / 10,
+        oee: Math.round(current.oee * 10) / 10,
+        previousOee: Math.round(previous.oee * 10) / 10,
 
-        plannedProductionMinutes: plannedMinutes,
-        actualOperatingMinutes: totalActualMinutes,
-        idealCycleMinutes: totalEstimatedMinutes,
-        actualCycleMinutes: totalActualMinutes,
-        totalPiecesProduced: totalProducedPieces,
-        goodPieces,
-        lostPieces: totalLostPieces,
+        plannedProductionMinutes: current.planned,
+        actualOperatingMinutes: current.actual,
+        idealCycleMinutes: current.estimated,
+        actualCycleMinutes: current.actual,
+        totalPiecesProduced: current.produced,
+        goodPieces: current.produced - current.lost,
+        lostPieces: current.lost,
 
         totalJobs: machineJobs.length,
         completedJobs: machineJobs.length,
 
-        oeeClass: classifyOEE(oee)
+        oeeClass: classifyOEE(current.oee)
       });
     }
 
