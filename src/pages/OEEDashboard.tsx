@@ -635,10 +635,10 @@ const OEEDashboard = memo(function OEEDashboard() {
                 <div className="flex-1 min-w-0">
                   <h3 className="font-bold text-sm truncate">Audit & Simulação</h3>
                   <div className="flex gap-2 mt-2">
-                    <Button variant="outline" size="sm" onClick={() => setShowAudit(!showAudit)} className="h-7 text-[9px] font-black uppercase border-indicator-info/20 hover:bg-indicator-info/10 flex-1">
+                    <Button variant="outline" size="sm" onClick={() => { setShowAudit(!showAudit); haptic('light'); }} className="h-7 text-[9px] font-black uppercase border-indicator-info/20 hover:bg-indicator-info/10 flex-1">
                       {showAudit ? 'Fechar Audit' : 'Audit OEE'}
                     </Button>
-                    <Button variant="outline" size="sm" onClick={() => setShowSimulator(!showSimulator)} className="h-7 text-[9px] font-black uppercase border-indicator-info/20 hover:bg-indicator-info/10 flex-1">
+                    <Button variant="outline" size="sm" onClick={() => { setShowSimulator(!showSimulator); haptic('light'); }} className="h-7 text-[9px] font-black uppercase border-indicator-info/20 hover:bg-indicator-info/10 flex-1">
                       {showSimulator ? 'Fechar Sim' : 'Simular'}
                     </Button>
                   </div>
