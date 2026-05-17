@@ -64,7 +64,11 @@ export const OEEMachineTable = memo(function OEEMachineTable({ machines }: OEEMa
         const matchesTechnique = techniqueFilter === 'all' || m.techniqueId === techniqueFilter;
         return matchesTechnique;
       })
-      .map(m => ({ ...m, gap: m.oee - 85 }))
+      .map(m => ({ 
+        ...m, 
+        gap: m.oee - 85,
+        trend: m.oee - (m.previousOee || 0)
+      }))
       .sort((a, b) => {
         const aVal = (a as any)[sortField];
         const bVal = (b as any)[sortField];
