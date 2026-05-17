@@ -63,9 +63,10 @@ export const OEEMachineTable = memo(function OEEMachineTable({ machines }: OEEMa
         const matchesTechnique = techniqueFilter === 'all' || m.techniqueId === techniqueFilter;
         return matchesTechnique;
       })
+      .map(m => ({ ...m, gap: m.oee - 85 })) // Inject gap calculation
       .sort((a, b) => {
-        const aVal = a[sortField];
-        const bVal = b[sortField];
+        const aVal = (a as any)[sortField];
+        const bVal = (b as any)[sortField];
         const dir = sortDirection === 'asc' ? 1 : -1;
 
         if (typeof aVal === 'string' && typeof bVal === 'string') {
