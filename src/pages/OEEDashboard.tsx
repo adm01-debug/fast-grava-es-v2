@@ -320,19 +320,23 @@ const OEEDashboard = memo(function OEEDashboard() {
       if (finalY < 250) {
         doc.setFontSize(14);
         doc.setTextColor(232, 93, 58);
-        doc.text('Recomendações e Plano de Ação', 14, finalY);
+        doc.text('Recomendações e Plano de Ação 10/10', 14, finalY);
         
         doc.setFontSize(9);
         doc.setTextColor(100);
         let actionY = finalY + 10;
-        if (data.overallOEE < 85) {
-          doc.text('• Implementar melhoria contínua nos gargalos de disponibilidade.', 14, actionY);
-          doc.text('• Revisar tempos de setup nas máquinas com maior gap vs meta.', 14, actionY + 5);
-        } else {
-          doc.text('• Performance de Classe Mundial atingida. Manter protocolos atuais.', 14, actionY);
-        }
+        
+        const recommendations = [];
+        if (data.overallAvailability < 85) recommendations.push('• Implementar técnicas SMED para redução de setup nos Studios Serigrafia.');
+        if (data.overallPerformance < 90) recommendations.push('• Calibrar velocidades nominais nos equipamentos de Gravação Laser.');
+        if (data.overallQuality < 98) recommendations.push('• Revisar protocolos de cura UV para evitar micro-fissuras em substratos plásticos.');
+        if (recommendations.length === 0) recommendations.push('• Performance de Classe Mundial atingida. Manter monitoramento preditivo autônomo.');
+
+        recommendations.forEach((rec, i) => {
+          doc.text(rec, 14, actionY + (i * 5));
+        });
       }
-      
+
       doc.save(`fast_gravacoes_oee_report_${new Date().toISOString().slice(0,10)}.pdf`);
     } else {
       downloadReport(reportFormat);
@@ -399,6 +403,45 @@ const OEEDashboard = memo(function OEEDashboard() {
               <ArrowUpRight className="h-4 w-4" />
               <span className="hidden sm:inline">Compartilhar</span>
             </Button>
+
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline" size="sm" className="flex gap-2 border-primary/20 hover:bg-primary/5 active:scale-95 transition-transform">
+                  <Bookmark className="h-4 w-4" />
+                  <span className="hidden sm:inline">Presets</span>
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-80 p-4">
+                <div className="space-y-4">
+                  <h4 className="font-bold text-sm">Presets do Dashboard</h4>
+                  <div className="flex gap-2">
+                    <Input 
+                      placeholder="Nome do preset..." 
+                      value={presetName}
+                      onChange={(e) => setPresetName(e.target.value)}
+                      className="h-8 text-xs"
+                    />
+                    <Button size="sm" onClick={handleSavePreset} className="h-8 px-3">
+                      <Save className="h-3 w-3" />
+                    </Button>
+                  </div>
+                  <div className="space-y-2 max-h-40 overflow-auto">
+                    {presets && presets.length === 0 ? (
+                      <p className="text-[10px] text-muted-foreground text-center py-4 italic">Nenhum preset salvo</p>
+                    ) : (
+                      presets?.map((preset) => (
+                        <div key={preset.id} className="flex items-center justify-between p-2 rounded-md bg-muted/50 hover:bg-muted transition-colors">
+                          <span className="text-xs font-medium truncate flex-1 cursor-pointer" onClick={() => applyPreset(preset)}>{preset.name}</span>
+                          <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive" onClick={() => deletePreset(preset.id)}>
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+              </PopoverContent>
+            </Popover>
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
