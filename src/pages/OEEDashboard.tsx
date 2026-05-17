@@ -540,42 +540,6 @@ const OEEDashboard = memo(function OEEDashboard() {
               </SelectContent>
             </Select>
 
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button variant="outline" size="sm" className="glass-card border-primary/20">
-                  <Bookmark className="h-4 w-4 mr-2" />
-                  <span className="hidden sm:inline">Presets</span>
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-64 p-4">
-                <h3 className="text-sm font-bold mb-3 uppercase tracking-wider">Filtros Salvos</h3>
-                <div className="space-y-2 mb-4 max-h-48 overflow-y-auto pr-1">
-                  {presets && presets.length > 0 ? (
-                    presets.map(p => (
-                      <div key={p.id} className="flex items-center justify-between group">
-                        <button 
-                          onClick={() => applyPreset(p)}
-                          className="text-xs font-medium hover:text-primary transition-colors truncate flex-1 text-left"
-                        >
-                          {p.name}
-                        </button>
-                        <Button variant="ghost" size="icon" className="h-6 w-6 opacity-0 group-hover:opacity-100" onClick={() => deletePreset(p.id)}>
-                          <Trash2 className="h-3 w-3 text-destructive" />
-                        </Button>
-                      </div>
-                    ))
-                  ) : (
-                    <p className="text-[10px] text-muted-foreground italic">Nenhum preset salvo.</p>
-                  )}
-                </div>
-                <div className="flex flex-col gap-2 pt-2 border-t border-border/50">
-                  <Input placeholder="Nome do filtro..." className="h-8 text-xs" value={presetName} onChange={e => setPresetName(e.target.value)} />
-                  <Button size="sm" className="h-8 w-full gap-2" onClick={handleSavePreset} disabled={!presetName}>
-                    <Save className="h-3 w-3" /> Salvar Atual
-                  </Button>
-                </div>
-              </PopoverContent>
-            </Popover>
           </div>
         </div>
 
