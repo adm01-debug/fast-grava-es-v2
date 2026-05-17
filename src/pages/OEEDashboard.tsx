@@ -82,7 +82,9 @@ const OEEShiftComparison = lazy(() => import('@/components/oee/OEEShiftCompariso
 const OEERecommendations = lazy(() => import('@/components/oee/OEERecommendations').then(m => ({ default: m.OEERecommendations })));
 const OEERankingGap = lazy(() => import('@/components/oee/OEERankingGap').then(m => ({ default: m.OEERankingGap })));
 const StudioEfficiencyGrid = lazy(() => import('@/components/oee/StudioEfficiencyGrid').then(m => ({ default: m.StudioEfficiencyGrid })));
-const MaterialEfficiencyChart = lazy(() => import('@/components/oee/MaterialEfficiencyChart').then(m => ({ default: m.MaterialEfficiencyChart })));
+const StudioHealthMonitor = lazy(() => import('@/components/oee/StudioHealthMonitor').then(m => ({ default: m.StudioHealthMonitor })));
+const HyperInsights = lazy(() => import('@/components/oee/HyperInsights').then(m => ({ default: m.HyperInsights })));
+
 
 
 const OEEDashboard = memo(function OEEDashboard() {
@@ -864,12 +866,17 @@ const OEEDashboard = memo(function OEEDashboard() {
               </div>
             </CardContent>
           </Card>
-        )}
+        <Suspense fallback={<ChartSkeleton />}>
+          <HyperInsights />
+        </Suspense>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="bg-background/50 border border-primary/20 p-1">
+
+          <TabsList className="bg-background/50 border border-primary/20 p-1 flex-wrap h-auto">
             <TabsTrigger value="overview" className="gap-2 text-xs font-bold uppercase tracking-tight">
               <LayoutDashboard className="h-4 w-4" /> Visão Geral
+            </TabsTrigger>
+            <TabsTrigger value="studios" className="gap-2 text-xs font-bold uppercase tracking-tight">
+              <Shield className="h-4 w-4" /> Studios & Saúde
             </TabsTrigger>
             <TabsTrigger value="losses" className="gap-2 text-xs font-bold uppercase tracking-tight">
               <AlertTriangle className="h-4 w-4" /> Análise de Perdas
@@ -885,10 +892,25 @@ const OEEDashboard = memo(function OEEDashboard() {
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="overview" className="space-y-6">
+          <TabsContent value="overview" className="space-y-6 focus-visible:outline-none outline-none">
+            <Suspense fallback={<ChartSkeleton />}>
+              <StudioHealthMonitor studios={data.byStudio.filter(s => s.maintenanceStatus !== 'optimal') || []} />
+            </Suspense>
+
+
             <Suspense fallback={<div className="h-48 animate-pulse bg-muted rounded-xl" />}>
               <StudioEfficiencyGrid studios={data.byStudio || []} />
             </Suspense>
+          </TabsContent>
+
+          <TabsContent value="studios" className="space-y-6 focus-visible:outline-none outline-none">
+            <Suspense fallback={<ChartSkeleton />}>
+              <StudioHealthMonitor studios={data.byStudio || []} />
+            </Suspense>
+            <Suspense fallback={<ChartSkeleton />}>
+              <StudioEfficiencyGrid studios={data.byStudio || []} />
+            </Suspense>
+
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
 
