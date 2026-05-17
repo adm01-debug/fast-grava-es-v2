@@ -7,6 +7,7 @@ import { logger } from '@/lib/logger';
 import { usePushNotifications } from './usePushNotifications';
 import { useNotificationSounds } from './useNotificationSounds';
 import { toast } from 'sonner';
+import { createAppError } from '@/lib/errorHandling';
 
 const CONTEXT = 'useOEEAlerts';
 
@@ -78,7 +79,8 @@ export function useOEEAlerts() {
         lastAlertsRef.current[alertKey] = now;
         logger.info(`Alert triggered for ${machine.machineName}: ${name} is ${value}%`, { machine: machine.machineName, metric: name, value }, CONTEXT);
       } catch (err) {
-        logger.error(`Failed to send KPI alert for ${machine.machineName}`, err, CONTEXT);
+        const appError = createAppError(err, { context: CONTEXT, machine: machine.machineName, metric: name });
+        logger.error(`Failed to send KPI alert for ${machine.machineName}`, appError, CONTEXT);
       }
     }
   }, [sendNotification, playBottleneckAlert]);
