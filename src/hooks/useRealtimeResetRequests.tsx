@@ -42,18 +42,17 @@ export function useRealtimeResetRequests() {
               action: {
                 label: 'Ver',
                 onClick: () => {
-                  window.location.href = '/settings?tab=users';
+                  navigate('/settings?tab=users');
                 },
               },
             }
           );
         }
       )
-      .subscribe((status) => {
-      });
+      .subscribe();
 
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [isCoordinator, isManager, user]);
+  }, [isCoordinator, isManager, user, navigate]);
 }
