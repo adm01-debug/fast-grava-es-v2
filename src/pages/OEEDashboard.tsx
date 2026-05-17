@@ -33,6 +33,7 @@ import {
   CheckCircle2,
   BarChart3,
   Shield,
+  ShieldCheck,
   Settings2,
   Leaf,
   Droplets,
