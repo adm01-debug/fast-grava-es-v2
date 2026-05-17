@@ -358,22 +358,34 @@ export const TechnicalSheetViewer = ({ sheetId, onEdit, onDuplicate }: Technical
 
                   {/* Technical Settings Section */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {(sheet.ink_specifications || sheet.tooling_specifications) && (
+                    {(sheet.ink_specifications || sheet.tooling_specifications || sheet.materials?.name) && (
                       <div className="space-y-4">
                         <h3 className="flex items-center gap-2 text-sm font-semibold text-primary">
                           <Droplets className="h-4 w-4" />
-                          Insumos e Ferramental
+                          Insumos e Personalização Premium
                         </h3>
                         <div className="space-y-3">
+                          {sheet.materials?.name && (
+                            <div className="p-3 rounded-lg bg-primary/10 border border-primary/20 animate-in fade-in slide-in-from-left-2">
+                              <Label className="text-[10px] text-primary uppercase font-black flex items-center gap-1">
+                                <Package className="h-3 w-3" /> Recomendação por Material
+                              </Label>
+                              <p className="text-sm font-bold mt-1">
+                                {sheet.materials.name.toLowerCase().includes('metal') ? 'Aderência Crítica: Use Primer ou Tinta Epóxi' : 
+                                 sheet.materials.name.toLowerCase().includes('tecido') ? 'Elasticidade: Use Tinta Elástica / Sericryl' :
+                                 'Aderência Padrão: Verifique compatibilidade de solvente'}
+                              </p>
+                            </div>
+                          )}
                           {sheet.ink_specifications && (
                             <div className="p-3 rounded-lg bg-primary/5 border border-primary/10">
-                              <Label className="text-[10px] text-muted-foreground uppercase">Tinta / Solventes</Label>
+                              <Label className="text-[10px] text-muted-foreground uppercase">Tinta / Solventes / Pigmentos</Label>
                               <p className="text-sm font-medium">{sheet.ink_specifications}</p>
                             </div>
                           )}
                           {sheet.tooling_specifications && (
                             <div className="p-3 rounded-lg bg-secondary/20 border border-border/30">
-                              <Label className="text-[10px] text-muted-foreground uppercase">Ferramental (Rodo/Lâmina)</Label>
+                              <Label className="text-[10px] text-muted-foreground uppercase">Ferramental (Rodo/Lâmina/Tela)</Label>
                               <p className="text-sm font-medium">{sheet.tooling_specifications}</p>
                             </div>
                           )}
