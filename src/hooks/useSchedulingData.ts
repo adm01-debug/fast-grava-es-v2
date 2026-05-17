@@ -36,13 +36,13 @@ export function useSchedulingData() {
   const results = useQueries({
     queries: [
       {
-        queryKey: ['operator-profiles'],
+        queryKey: QUERY_KEYS.OPERATOR_PROFILES,
         queryFn: async () => {
           const { data, error } = await supabase.from('profiles').select('id, full_name, avatar_url');
           if (error) throw createAppError(error, SCHEDULING_ERROR_CONTEXT.profiles);
           return data;
         },
-        staleTime: STATIC_STALE_TIME,
+        staleTime: STALE_TIMES.STATIC,
         ...RETRY_CONFIG,
       },
       {
@@ -52,7 +52,7 @@ export function useSchedulingData() {
           if (error) throw createAppError(error, SCHEDULING_ERROR_CONTEXT.techniques);
           return data as DbTechnique[];
         },
-        staleTime: STATIC_STALE_TIME,
+        staleTime: STALE_TIMES.STATIC,
         ...RETRY_CONFIG,
       },
       {
@@ -64,7 +64,7 @@ export function useSchedulingData() {
             throw createAppError(error, SCHEDULING_ERROR_CONTEXT.machines);
           }
         },
-        staleTime: STATIC_STALE_TIME,
+        staleTime: STALE_TIMES.STATIC,
         ...RETRY_CONFIG,
       },
       {
@@ -77,7 +77,7 @@ export function useSchedulingData() {
             throw createAppError(error, SCHEDULING_ERROR_CONTEXT.jobs);
           }
         },
-        staleTime: JOBS_STALE_TIME,
+        staleTime: STALE_TIMES.DYNAMIC,
         ...RETRY_CONFIG,
       },
     ],
