@@ -38,35 +38,43 @@ export function useSchedulingData() {
         queryKey: ['operator-profiles'],
         queryFn: async () => {
           const { data, error } = await supabase.from('profiles').select('id, full_name, avatar_url');
-          if (error) throw error;
+          if (error) throw createAppError(error, SCHEDULING_ERROR_CONTEXT.profiles);
           return data;
         },
-        staleTime: STATIC_DATA_STALE_TIME,
+        staleTime: STATIC_STALE_TIME,
         ...RETRY_CONFIG,
       },
       {
-        queryKey: ['techniques'],
+        queryKey: QUERY_KEYS.TECHNIQUES,
         queryFn: async () => {
           const { data, error } = await supabase.from('techniques').select('*').order('name');
-          if (error) throw error;
+          if (error) throw createAppError(error, SCHEDULING_ERROR_CONTEXT.techniques);
           return data as DbTechnique[];
         },
-        staleTime: STATIC_DATA_STALE_TIME,
+        staleTime: STATIC_STALE_TIME,
         ...RETRY_CONFIG,
       },
       {
-        queryKey: ['machines'],
+        queryKey: QUERY_KEYS.MACHINES,
         queryFn: async () => {
-          return await machinesService.getAll();
+          try {
+            return await machinesService.getAll();
+          } catch (error) {
+            throw createAppError(error, SCHEDULING_ERROR_CONTEXT.machines);
+          }
         },
-        staleTime: STATIC_DATA_STALE_TIME,
+        staleTime: STATIC_STALE_TIME,
         ...RETRY_CONFIG,
       },
       {
-        queryKey: ['jobs'],
+        queryKey: QUERY_KEYS.JOBS,
         queryFn: async () => {
-          const data = await jobsService.getAll({ recentOnly: true });
-          return data as unknown as DbJob[];
+          try {
+            const data = await jobsService.getAll({ recentOnly: true });
+            return data as unknown as DbJob[];
+          } catch (error) {
+            throw createAppError(error, SCHEDULING_ERROR_CONTEXT.jobs);
+          }
         },
         staleTime: JOBS_STALE_TIME,
         ...RETRY_CONFIG,
