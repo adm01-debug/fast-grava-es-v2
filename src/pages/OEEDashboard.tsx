@@ -79,6 +79,7 @@ const ParetoLossesChart = lazy(() => import('@/components/oee/ParetoLossesChart'
 const OEELossDrilldown = lazy(() => import('@/components/oee/OEELossDrilldown').then(m => ({ default: m.OEELossDrilldown })));
 const OEEShiftComparison = lazy(() => import('@/components/oee/OEEShiftComparison').then(m => ({ default: m.OEEShiftComparison })));
 const OEERecommendations = lazy(() => import('@/components/oee/OEERecommendations').then(m => ({ default: m.OEERecommendations })));
+const OEERankingGap = lazy(() => import('@/components/oee/OEERankingGap').then(m => ({ default: m.OEERankingGap })));
 
 const OEEDashboard = memo(function OEEDashboard() {
   const { t } = useTranslation();
