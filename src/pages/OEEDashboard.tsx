@@ -424,17 +424,21 @@ const OEEDashboard = memo(function OEEDashboard() {
               </CardContent>
             </Card>
 
-            <Card className="border-l-4 border-l-primary bg-primary/5">
+            <Card className="border-l-4 border-l-indicator-info bg-indicator-info/5">
               <CardContent className="p-4 flex gap-4">
-                <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                  <Calculator className="h-5 w-5 text-primary" />
+                <div className="h-10 w-10 rounded-full bg-indicator-info/10 flex items-center justify-center shrink-0">
+                  <Calculator className="h-5 w-5 text-indicator-info" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-bold text-sm truncate">{t('oee.simulator', 'OEE Simulator')}</h3>
-                  <Button variant="outline" size="sm" onClick={() => setShowSimulator(!showSimulator)} className="h-7 text-[10px] font-black uppercase mt-2 border-primary/20 hover:bg-primary/10 w-full">
-                    {showSimulator ? t('oee.closeSimulator', 'Fechar') : t('oee.openSimulator', 'Simular')}
-                    <Play className={cn("ml-2 h-3 w-3 transition-transform", showSimulator && "rotate-90")} />
-                  </Button>
+                  <h3 className="font-bold text-sm truncate">Audit & Simulação</h3>
+                  <div className="flex gap-2 mt-2">
+                    <Button variant="outline" size="sm" onClick={() => setShowAudit(!showAudit)} className="h-7 text-[9px] font-black uppercase border-indicator-info/20 hover:bg-indicator-info/10 flex-1">
+                      {showAudit ? 'Fechar Audit' : 'Audit OEE'}
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={() => setShowSimulator(!showSimulator)} className="h-7 text-[9px] font-black uppercase border-indicator-info/20 hover:bg-indicator-info/10 flex-1">
+                      {showSimulator ? 'Fechar Sim' : 'Simular'}
+                    </Button>
+                  </div>
                 </div>
               </CardContent>
             </Card>
