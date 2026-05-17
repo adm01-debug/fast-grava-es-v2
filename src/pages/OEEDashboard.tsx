@@ -532,17 +532,16 @@ const OEEDashboard = memo(function OEEDashboard() {
           <CardContent className="py-6 flex flex-col md:flex-row items-center gap-6">
             <div className="flex-1 space-y-2">
               <div className="flex items-center gap-2">
-                 <Badge className="bg-primary/20 text-primary border-primary/30 animate-pulse uppercase text-[10px] font-black">AI Insight</Badge>
-                 <h2 className="text-xl font-bold tracking-tight">{t('oee.consolidated', 'OEE Consolidado')}: {data.overallOEE.toFixed(1)}%</h2>
+                 <Badge className="bg-primary/20 text-primary border-primary/30 animate-pulse uppercase text-[10px] font-black">Studio Intelligence 10/10</Badge>
+                 <h2 className="text-xl font-bold tracking-tight">Análise Preditiva FAST - {data.overallOEE.toFixed(1)}%</h2>
               </div>
               <p className="text-sm text-muted-foreground leading-relaxed">
                 {data.overallOEE >= 85 
-                  ? "Sua planta está operando em nível de Classe Mundial. Mantenha a estabilidade dos processos." 
-                  : data.overallOEE >= 65 
-                  ? `A técnica ${data.byTechnique[0]?.techniqueName || 'principal'} está liderando a produtividade. Foque em reduzir perdas de disponibilidade para atingir 85%.`
-                  : "Atenção: Eficiência global abaixo do esperado. Verifique o drill-down de perdas para identificar gargalos críticos."}
+                  ? "Sua operação atingiu o nível de excelência industrial. A sincronia entre Studios e Materiais está otimizada." 
+                  : `Detectamos gargalos no Studio ${data.byStudio[0]?.studioName || 'Principal'}. A performance com ${data.byMaterial[0]?.material || 'materiais variados'} pode ser melhorada em ${(85 - data.overallOEE).toFixed(1)}% para atingir a meta global.`}
               </p>
             </div>
+
             <div className="flex flex-wrap items-center justify-center gap-3 bg-background/40 p-4 rounded-2xl border border-border/50 backdrop-blur-sm">
               <div className="text-center px-4 border-r border-border/50">
                  <p className="text-2xl font-black text-primary">{data.overallAvailability.toFixed(0)}%</p>
