@@ -3,7 +3,7 @@ import { startOfDay, endOfDay, subDays } from 'date-fns';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet';
 import { cn } from '@/lib/utils';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
