@@ -182,38 +182,46 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, f
     const startDate = filters?.startDate || startOfDay(subDays(now, validDaysBack));
     const endDate = filters?.endDate || endOfDay(now);
 
-    // Filter completed jobs within the period with validation
-    const periodJobs = jobs.filter(job => {
+    const previousStartDate = startOfDay(subDays(startDate, daysBack));
+    const previousEndDate = startOfDay(startDate);
+
+    // Filter jobs for current and previous periods
+    const allRelevantJobs = jobs.filter(job => {
       if (filters?.machineId && job.machine_id !== filters.machineId) return false;
       if (filters?.techniqueId && job.technique_id !== filters.techniqueId) return false;
-      if (filters?.shift && filters.shift !== 'all') {
-        const timeToUse = job.actual_start_time || job.start_time;
-        if (!timeToUse) return false;
-        
-        let hour: number;
-        if (timeToUse.includes('T')) {
-          // ISO format
-          hour = new Date(timeToUse).getHours();
-        } else {
-          // HH:MM format
-          hour = parseInt(timeToUse.split(':')[0]);
-        }
-        
-        // Shift logic: 1: 07:00-15:00, 2: 15:00-23:00, 3: 23:00-07:00
-        if (filters.shift === '1' && (hour < 7 || hour >= 15)) return false;
-        if (filters.shift === '2' && (hour < 15 || hour >= 23)) return false;
-        if (filters.shift === '3' && (hour >= 7 && hour < 23)) return false;
-      }
       if (job.status !== 'finished') return false;
       if (!isValidDate(job.actual_end_time)) return false;
-
-      try {
-        const endTime = parseISO(job.actual_end_time!);
-        return isWithinInterval(endTime, { start: startDate, end: endDate });
-      } catch {
-        return false;
-      }
+      return true;
     });
+
+    const periodJobs = allRelevantJobs.filter(job => {
+      const endTime = parseISO(job.actual_end_time!);
+      return isWithinInterval(endTime, { start: startDate, end: endDate });
+    });
+
+    const prevPeriodJobs = allRelevantJobs.filter(job => {
+      const endTime = parseISO(job.actual_end_time!);
+      return isWithinInterval(endTime, { start: previousStartDate, end: previousEndDate });
+    });
+
+    // Helper to calculate OEE for a set of jobs
+    const calculateMetrics = (jobList: typeof jobs, machineDays: number = 1) => {
+      let actual = 0, estimated = 0, produced = 0, lost = 0;
+      for (const job of jobList) {
+        if (isValidDate(job.actual_start_time) && isValidDate(job.actual_end_time)) {
+          try { actual += differenceInMinutes(parseISO(job.actual_end_time!), parseISO(job.actual_start_time!)); } catch {}
+        }
+        estimated += sanitizeNumber(job.estimated_duration || 60);
+        produced += sanitizeNumber(job.produced_quantity ?? job.quantity);
+        lost += sanitizeNumber(job.lost_pieces);
+      }
+      const planned = Math.max(machineDays * PLANNED_MINUTES_PER_DAY, estimated);
+      const avail = planned > 0 ? Math.min(100, (actual / planned) * 100) : 100;
+      const perf = actual > 0 ? Math.min(100, (estimated / actual) * 100) : 100;
+      const qual = produced > 0 ? Math.min(100, ((produced - lost) / produced) * 100) : 100;
+      const oee = (avail / 100) * (perf / 100) * (qual / 100) * 100;
+      return { oee, avail, perf, qual, actual, estimated, produced, lost, planned };
+    };
 
     // Calculate OEE per machine
     const machineOEEMap = new Map<string, MachineOEE>();
