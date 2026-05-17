@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useEffect, useMemo } from 'react';
 import { showErrorToast, createAppError, createMutationErrorHandler } from '@/lib/errorHandling';
+import { QUERY_KEYS, STALE_TIMES } from '@/lib/queryConfig';
 
 // Error context for debugging
 const JOBS_ERROR_CONTEXT = {
@@ -64,17 +65,9 @@ export interface DbMachine {
   is_active: boolean;
 }
 
-// Shared stale time configuration for consistency across hooks
-export const STATIC_STALE_TIME = 15 * 60 * 1000; // 15 minutes
-export const JOBS_STALE_TIME = 45 * 1000; // 45 seconds
-
-// Query keys constants to avoid typos
-export const QUERY_KEYS = {
-  JOBS: ['jobs'],
-  MACHINES: ['machines'],
-  TECHNIQUES: ['techniques'],
-  PAGINATED_JOBS: ['paginated-jobs'],
-};
+// Re-export constants for backward compatibility
+export const STATIC_STALE_TIME = STALE_TIMES.STATIC;
+export const JOBS_STALE_TIME = STALE_TIMES.DYNAMIC;
 
 export function useTechniques() {
   const queryClient = useQueryClient();
