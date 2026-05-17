@@ -843,6 +843,12 @@ const OEEDashboard = memo(function OEEDashboard() {
               <Card className="bg-warning/5 border-warning/20"><CardContent className="pt-6"><h3 className="font-bold">Eficiência Energética</h3><p className="text-3xl font-black text-warning">{(data.overallAvailability * 0.9).toFixed(1)}%</p></CardContent></Card>
             </div>
           </TabsContent>
+          
+          <TabsContent value="shifts" className="space-y-6">
+            <Suspense fallback={<ChartSkeleton />}>
+              <OEEShiftComparison shifts={data.byShift || []} />
+            </Suspense>
+          </TabsContent>
         </Tabs>
 
         <Card className="bg-muted/30">
