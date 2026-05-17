@@ -134,6 +134,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       } else {
 
       }
+    } catch (error) {
+      console.error("Error fetching user data:", error);
     }
   };
 
