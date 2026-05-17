@@ -366,16 +366,21 @@ const OEEDashboard = memo(function OEEDashboard() {
         </Helmet>
 
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-2xl md:text-3xl font-black font-display flex items-center gap-3">
-              <Activity className="h-8 w-8 text-primary animate-pulse hidden sm:block" />
-              FAST GRAVAÇÕES - GESTÃO DE PERSONALIZAÇÃO
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 relative">
+          <div className="absolute -top-10 -left-10 w-64 h-64 bg-primary/5 rounded-full blur-3xl -z-10" />
+          <div className="flex flex-col">
+            <div className="flex items-center gap-2 mb-1">
+               <Badge className="bg-primary text-primary-foreground border-none text-[8px] font-black uppercase tracking-tighter px-1.5 py-0 h-4">Industrial Intelligence</Badge>
+               <div className="h-px w-12 bg-primary/20" />
+            </div>
+            <h1 className="text-2xl md:text-4xl font-black font-display flex items-center gap-3 tracking-tighter">
+              <span className="text-primary italic">FAST</span> GRAVAÇÕES
             </h1>
-            <p className="text-muted-foreground mt-1">
-              {t('oee.description', 'Overall Equipment Effectiveness - Eficiência Global dos Equipamentos')}
+            <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mt-1 opacity-70">
+              Sistema Global de Eficiência Studio 10/10
             </p>
           </div>
+
 
           <div className="flex flex-wrap items-center gap-2">
             <VoiceButton />
