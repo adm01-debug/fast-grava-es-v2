@@ -242,8 +242,8 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, f
       const daysWithJobs = new Set(machineJobs.map(j => startOfDay(parseISO(j.actual_end_time!)).toISOString())).size || 1;
       const prevDaysWithJobs = new Set(prevMachineJobs.map(j => startOfDay(parseISO(j.actual_end_time!)).toISOString())).size || 1;
 
-      const current = calculateMetrics(machineJobs, daysWithJobs);
-      const previous = calculateMetrics(prevMachineJobs, prevDaysWithJobs);
+      const current = calculateMetrics(machineJobs, daysWithJobs, PLANNED_MINUTES_PER_DAY);
+      const previous = calculateMetrics(prevMachineJobs, prevDaysWithJobs, PLANNED_MINUTES_PER_DAY);
 
       machineOEEMap.set(machine.id, {
         machineId: machine.id,
