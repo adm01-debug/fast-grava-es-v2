@@ -131,12 +131,30 @@ export interface OEEData {
   };
 }
 
-// Operating hours per day (7:00 to 18:00 = 11 hours, can extend to 20:00 = 13 hours)
-const PLANNED_HOURS_PER_DAY = 11;
-const PLANNED_MINUTES_PER_DAY = PLANNED_HOURS_PER_DAY * 60;
+// Operating hours per day (7:00 to 18:00 = 11 hours)
+const PLANNED_MINUTES_PER_DAY = 11 * 60;
 
 // World-class OEE benchmark
-const WORLD_CLASS_OEE = 85;
+export const WORLD_CLASS_OEE = 85;
+
+export interface MaterialOEE {
+  material: string;
+  oee: number;
+  availability: number;
+  performance: number;
+  quality: number;
+  totalPieces: number;
+}
+
+export interface StudioOEE {
+  studioId: string;
+  studioName: string;
+  oee: number;
+  availability: number;
+  performance: number;
+  quality: number;
+  techniqueIds: string[];
+}
 
 function classifyOEE(oee: number): MachineOEE['oeeClass'] {
   if (oee >= 85) return 'world-class';
@@ -146,13 +164,14 @@ function classifyOEE(oee: number): MachineOEE['oeeClass'] {
   return 'poor';
 }
 
-function getOEEColor(oee: number): string {
+export function getOEEColor(oee: number): string {
   if (oee >= 85) return 'hsl(var(--success))';
   if (oee >= 75) return 'hsl(142 76% 46%)';
   if (oee >= 65) return 'hsl(48 96% 53%)';
   if (oee >= 50) return 'hsl(25 95% 53%)';
   return 'hsl(var(--destructive))';
 }
+
 
 export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, filters?: { machineId?: string; startDate?: Date; endDate?: Date; techniqueId?: string; shift?: string }) {
   // Use at least double the period to have enough data for comparison
