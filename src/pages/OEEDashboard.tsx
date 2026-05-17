@@ -667,11 +667,27 @@ const OEEDashboard = memo(function OEEDashboard() {
 
         {showAudit && (
           <Card className="border-indicator-info/20 bg-muted/20 animate-in slide-in-from-top-4 duration-300">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-black uppercase tracking-widest flex items-center gap-2">
-                <Calculator className="h-4 w-4 text-indicator-info" />
-                Auditoria de Memória de Cálculo
-              </CardTitle>
+            <CardHeader className="pb-2 border-b border-border/10">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <CardTitle className="text-sm font-black uppercase tracking-widest flex items-center gap-2">
+                  <Calculator className="h-4 w-4 text-indicator-info" />
+                  Auditoria de Memória de Cálculo & Benchmarking
+                </CardTitle>
+                
+                <div className="flex items-center gap-2 bg-background/50 p-1 rounded-lg border border-border/50">
+                  <span className="text-[10px] font-bold text-muted-foreground uppercase px-2">Setor:</span>
+                  <Select value={industryBenchmark} onValueChange={setIndustryBenchmark}>
+                    <SelectTrigger className="h-7 w-40 text-[10px] font-bold border-none bg-transparent">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Object.entries(INDUSTRY_BENCHMARKS).map(([id, b]) => (
+                        <SelectItem key={id} value={id} className="text-[10px] font-medium">{b.label} ({b.target}%)</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
             </CardHeader>
             <CardContent className="p-6">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
