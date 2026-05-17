@@ -107,6 +107,14 @@ export interface OEEData {
   availabilityLosses: number;
   performanceLosses: number;
   qualityLosses: number;
+  byShift?: {
+    shiftId: string;
+    shiftName: string;
+    oee: number;
+    availability: number;
+    performance: number;
+    quality: number;
+  }[];
   comparison?: {
     currentOEE: number;
     previousOEE: number;
