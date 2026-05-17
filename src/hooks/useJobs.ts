@@ -80,39 +80,27 @@ export function useTechniques() {
   const queryClient = useQueryClient();
 
   const query = useQuery({
-    queryKey: ['techniques'],
+    queryKey: QUERY_KEYS.TECHNIQUES,
     queryFn: async () => {
-      try {
-        const { data, error } = await supabase
-          .from('techniques')
-          .select('*')
-          .order('name');
+      const { data, error } = await supabase
+        .from('techniques')
+        .select('*')
+        .order('name');
 
-        if (error) throw error;
-        return data as DbTechnique[];
-      } catch (error) {
-        const appError = createAppError(error, JOBS_ERROR_CONTEXT.hooks.techniques);
-        throw error;
+      if (error) {
+        throw createAppError(error, JOBS_ERROR_CONTEXT.hooks.techniques);
       }
+      return data as DbTechnique[];
     },
     staleTime: STATIC_STALE_TIME,
   });
 
-  // Subscribe to realtime updates only once per queryClient
   useEffect(() => {
     const channel = supabase
       .channel('techniques-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'techniques'
-        },
-        () => {
-          queryClient.invalidateQueries({ queryKey: ['techniques'] });
-        }
-      )
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'techniques' }, () => {
+        queryClient.invalidateQueries({ queryKey: QUERY_KEYS.TECHNIQUES });
+      })
       .subscribe();
 
     return () => {
@@ -127,40 +115,28 @@ export function useMachines() {
   const queryClient = useQueryClient();
 
   const query = useQuery({
-    queryKey: ['machines'],
+    queryKey: QUERY_KEYS.MACHINES,
     queryFn: async () => {
-      try {
-        const { data, error } = await supabase
-          .from('machines')
-          .select('*')
-          .eq('is_active', true)
-          .order('code');
+      const { data, error } = await supabase
+        .from('machines')
+        .select('*')
+        .eq('is_active', true)
+        .order('code');
 
-        if (error) throw error;
-        return data as DbMachine[];
-      } catch (error) {
-        const appError = createAppError(error, JOBS_ERROR_CONTEXT.hooks.machines);
-        throw error;
+      if (error) {
+        throw createAppError(error, JOBS_ERROR_CONTEXT.hooks.machines);
       }
+      return data as DbMachine[];
     },
     staleTime: STATIC_STALE_TIME,
   });
 
-  // Subscribe to realtime updates
   useEffect(() => {
     const channel = supabase
       .channel('machines-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'machines'
-        },
-        () => {
-          queryClient.invalidateQueries({ queryKey: ['machines'] });
-        }
-      )
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'machines' }, () => {
+        queryClient.invalidateQueries({ queryKey: QUERY_KEYS.MACHINES });
+      })
       .subscribe();
 
     return () => {
@@ -175,39 +151,27 @@ export function useJobs() {
   const queryClient = useQueryClient();
 
   const query = useQuery({
-    queryKey: ['jobs'],
+    queryKey: QUERY_KEYS.JOBS,
     queryFn: async () => {
-      try {
-        const { data, error } = await supabase
-          .from('jobs')
-          .select('*')
-          .order('created_at', { ascending: false });
+      const { data, error } = await supabase
+        .from('jobs')
+        .select('*')
+        .order('created_at', { ascending: false });
 
-        if (error) throw error;
-        return data as DbJob[];
-      } catch (error) {
-        const appError = createAppError(error, JOBS_ERROR_CONTEXT.hooks.jobs);
-        throw error;
+      if (error) {
+        throw createAppError(error, JOBS_ERROR_CONTEXT.hooks.jobs);
       }
+      return data as DbJob[];
     },
     staleTime: JOBS_STALE_TIME,
   });
 
-  // Subscribe to realtime updates
   useEffect(() => {
     const channel = supabase
       .channel('jobs-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'jobs'
-        },
-        () => {
-          queryClient.invalidateQueries({ queryKey: ['jobs'] });
-        }
-      )
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'jobs' }, () => {
+        queryClient.invalidateQueries({ queryKey: QUERY_KEYS.JOBS });
+      })
       .subscribe();
 
     return () => {
