@@ -209,17 +209,21 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, f
       return isWithinInterval(endTime, { start: previousStartDate, end: previousEndDate });
     });
 
-    const calculateMetrics = (jobList: typeof jobs, machineDays: number = 1) => {
+    const calculateMetrics = (jobList: typeof jobs, machineDays: number = 1, plannedMinPerDay: number) => {
       let actual = 0, estimated = 0, produced = 0, lost = 0;
       for (const job of jobList) {
         if (isValidDate(job.actual_start_time) && isValidDate(job.actual_end_time)) {
-          try { actual += differenceInMinutes(parseISO(job.actual_end_time!), parseISO(job.actual_start_time!)); } catch {}
+          try { 
+            const start = parseISO(job.actual_start_time!);
+            const end = parseISO(job.actual_end_time!);
+            actual += differenceInMinutes(end, start); 
+          } catch {}
         }
         estimated += sanitizeNumber(job.estimated_duration || 60);
         produced += sanitizeNumber(job.produced_quantity ?? job.quantity);
         lost += sanitizeNumber(job.lost_pieces);
       }
-      const planned = Math.max(machineDays * PLANNED_MINUTES_PER_DAY, estimated);
+      const planned = Math.max(machineDays * plannedMinPerDay, estimated);
       const avail = planned > 0 ? Math.min(100, (actual / planned) * 100) : 100;
       const perf = actual > 0 ? Math.min(100, (estimated / actual) * 100) : 100;
       const qual = produced > 0 ? Math.min(100, ((produced - lost) / produced) * 100) : 100;
@@ -238,8 +242,8 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, f
       const daysWithJobs = new Set(machineJobs.map(j => startOfDay(parseISO(j.actual_end_time!)).toISOString())).size || 1;
       const prevDaysWithJobs = new Set(prevMachineJobs.map(j => startOfDay(parseISO(j.actual_end_time!)).toISOString())).size || 1;
 
-      const current = calculateMetrics(machineJobs, daysWithJobs);
-      const previous = calculateMetrics(prevMachineJobs, prevDaysWithJobs);
+      const current = calculateMetrics(machineJobs, daysWithJobs, PLANNED_MINUTES_PER_DAY);
+      const previous = calculateMetrics(prevMachineJobs, prevDaysWithJobs, PLANNED_MINUTES_PER_DAY);
 
       machineOEEMap.set(machine.id, {
         machineId: machine.id,
@@ -280,7 +284,7 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, f
         if (sId === '3' && (hour < 7 || hour >= 23)) return true;
         return false;
       });
-      const m = calculateMetrics(shiftJobs, 1);
+      const m = calculateMetrics(shiftJobs, 1, PLANNED_MINUTES_PER_DAY);
       return {
         shiftId: sId,
         shiftName: sId === '1' ? 'Manhã' : sId === '2' ? 'Tarde' : 'Noite',
@@ -311,7 +315,7 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, f
     // Group by Studio
     const byStudio: StudioOEE[] = STUDIOS_MAP.map(studio => {
       const studioJobs = periodJobs.filter(j => studio.techniques.includes(j.technique_id));
-      const m = calculateMetrics(studioJobs, 1);
+      const m = calculateMetrics(studioJobs, 1, PLANNED_MINUTES_PER_DAY);
       
       // Mock health data for studios
       let healthScore = 95;
@@ -369,7 +373,7 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, f
       }
       
       const existing = materialOEEMap.get(material) || { material, oee: 0, availability: 0, performance: 0, quality: 0, totalPieces: 0 };
-      const m = calculateMetrics([job], 0.1); // Small weight
+      const m = calculateMetrics([job], 0.1, PLANNED_MINUTES_PER_DAY); // Small weight
       
       materialOEEMap.set(material, {
         material,
@@ -395,13 +399,23 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, f
     const overallPerformance = machinesWithData.length > 0 ? machinesWithData.reduce((sum, m) => sum + m.performance, 0) / machinesWithData.length : 0;
     const overallQuality = machinesWithData.length > 0 ? machinesWithData.reduce((sum, m) => sum + m.quality, 0) / machinesWithData.length : 0;
 
+    // Group periodJobs by date for efficient trend calculation
+    const jobsByDate = new Map<string, typeof periodJobs>();
+    periodJobs.forEach(job => {
+      const dateKey = startOfDay(parseISO(job.actual_end_time!)).toISOString();
+      const existing = jobsByDate.get(dateKey) || [];
+      existing.push(job);
+      jobsByDate.set(dateKey, existing);
+    });
+
     const trendData: OEEData['trendData'] = [];
     for (let i = validDaysBack - 1; i >= 0; i--) {
       const date = subDays(now, i);
-      const dayJobs = periodJobs.filter(job => isWithinInterval(parseISO(job.actual_end_time!), { start: startOfDay(date), end: endOfDay(date) }));
-      const m = calculateMetrics(dayJobs, 1);
+      const dateKey = startOfDay(date).toISOString();
+      const dayJobs = jobsByDate.get(dateKey) || [];
+      const m = calculateMetrics(dayJobs, 1, PLANNED_MINUTES_PER_DAY);
       trendData.push({
-        date: startOfDay(date).toISOString(),
+        date: dateKey,
         oee: Math.round(m.oee * 10) / 10,
         availability: Math.round(m.avail * 10) / 10,
         performance: Math.round(m.perf * 10) / 10,
@@ -411,13 +425,20 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, f
 
     const heatmapData = byMachine.map(machine => {
       const machineDayData = [];
+      const machineDateJobs = periodJobs.filter(j => j.machine_id === machine.machineId);
+      const mJobsByDate = new Map<string, typeof periodJobs>();
+      machineDateJobs.forEach(job => {
+        const dateKey = startOfDay(parseISO(job.actual_end_time!)).toISOString();
+        const existing = mJobsByDate.get(dateKey) || [];
+        existing.push(job);
+        mJobsByDate.set(dateKey, existing);
+      });
+
       for (let i = validDaysBack - 1; i >= 0; i--) {
         const date = subDays(now, i);
-        const dayJobs = periodJobs.filter(job => 
-          job.machine_id === machine.machineId && 
-          isWithinInterval(parseISO(job.actual_end_time!), { start: startOfDay(date), end: endOfDay(date) })
-        );
-        const m = calculateMetrics(dayJobs, 1);
+        const dateKey = startOfDay(date).toISOString();
+        const dayJobs = mJobsByDate.get(dateKey) || [];
+        const m = calculateMetrics(dayJobs, 1, PLANNED_MINUTES_PER_DAY);
         machineDayData.push({
           date: startOfDay(date).toISOString(),
           oee: Math.round(m.oee * 10) / 10,
