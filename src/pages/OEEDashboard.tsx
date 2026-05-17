@@ -849,10 +849,38 @@ const OEEDashboard = memo(function OEEDashboard() {
 
           <TabsContent value="overview" className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              <OEEGaugeCard title={t('oee.generalOEE', 'OEE Geral')} value={data.overallOEE} icon={<Target className="h-4 w-4" />} benchmark={currentBenchmark.target} variant="glass" />
-              <OEEGaugeCard title={t('oee.availability', 'Disponibilidade')} value={data.overallAvailability} icon={<Clock className="h-4 w-4" />} benchmark={90} variant="glass" />
-              <OEEGaugeCard title={t('common.performance', 'Performance')} value={data.overallPerformance} icon={<Gauge className="h-4 w-4" />} benchmark={95} variant="glass" />
-              <OEEGaugeCard title={t('common.quality', 'Qualidade')} value={data.overallQuality} icon={<CheckCircle2 className="h-4 w-4" />} benchmark={99} variant="glass" />
+              <OEEGaugeCard 
+                title={t('oee.generalOEE', 'OEE Geral')} 
+                value={data.overallOEE} 
+                icon={<Target className="h-4 w-4" />} 
+                benchmark={currentBenchmark.target} 
+                variant="glass" 
+                trend={data.comparison ? data.overallOEE - data.comparison.previousOEE : undefined}
+              />
+              <OEEGaugeCard 
+                title={t('oee.availability', 'Disponibilidade')} 
+                value={data.overallAvailability} 
+                icon={<Clock className="h-4 w-4" />} 
+                benchmark={90} 
+                variant="glass" 
+                trend={data.comparison ? data.overallAvailability - data.comparison.previousAvailability : undefined}
+              />
+              <OEEGaugeCard 
+                title={t('common.performance', 'Performance')} 
+                value={data.overallPerformance} 
+                icon={<Gauge className="h-4 w-4" />} 
+                benchmark={95} 
+                variant="glass" 
+                trend={data.comparison ? data.overallPerformance - data.comparison.previousPerformance : undefined}
+              />
+              <OEEGaugeCard 
+                title={t('common.quality', 'Qualidade')} 
+                value={data.overallQuality} 
+                icon={<CheckCircle2 className="h-4 w-4" />} 
+                benchmark={99} 
+                variant="glass" 
+                trend={data.comparison ? data.overallQuality - data.comparison.previousQuality : undefined}
+              />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
