@@ -84,54 +84,58 @@ export const OEERankingGap = memo(function OEERankingGap({
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <Card className="border-primary/10 bg-black/5">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-black uppercase tracking-widest flex items-center gap-2">
-            <Trophy className="h-4 w-4 text-primary" />
-            Top Performance (Máquinas)
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3 pt-4">
-          {rankingData.topMachines.map((m, i) => renderRankingItem(m, i, false))}
-        </CardContent>
-      </Card>
+    <div className="grid grid-cols-1 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card className="border-primary/10 bg-black/5">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-black uppercase tracking-widest flex items-center gap-2">
+              <Trophy className="h-4 w-4 text-primary" />
+              Ranking OEE (Máquinas)
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3 pt-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
+            {rankingData.topMachines.map((m, i) => renderRankingItem(m, i, false))}
+          </CardContent>
+        </Card>
 
-      <Card className="border-destructive/10 bg-black/5">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-black uppercase tracking-widest flex items-center gap-2">
-            <TrendingDown className="h-4 w-4 text-destructive" />
-            Gargalos Críticos (Máquinas)
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3 pt-4">
-          {rankingData.bottomMachines.map((m, i) => renderRankingItem(m, i, true))}
-        </CardContent>
-      </Card>
+        <Card className="border-destructive/10 bg-black/5">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-black uppercase tracking-widest flex items-center gap-2">
+              <TrendingDown className="h-4 w-4 text-destructive" />
+              Impacto de Perdas (Gaps vs Meta 85%)
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3 pt-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
+            {rankingData.bottomMachines.map((m, i) => renderRankingItem(m, i, true))}
+          </CardContent>
+        </Card>
+      </div>
 
-      <Card className="border-primary/10 bg-black/5">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-black uppercase tracking-widest flex items-center gap-2">
-            <Target className="h-4 w-4 text-primary" />
-            Ranking por Técnica
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3 pt-4">
-          {rankingData.topTechniques.map((t, i) => renderRankingItem(t, i, false))}
-        </CardContent>
-      </Card>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card className="border-primary/10 bg-black/5">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-black uppercase tracking-widest flex items-center gap-2">
+              <Target className="h-4 w-4 text-primary" />
+              Ranking por Técnica
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3 pt-4">
+            {rankingData.topTechniques.map((t, i) => renderRankingItem(t, i, false))}
+          </CardContent>
+        </Card>
 
-      <Card className="border-indicator-info/10 bg-black/5">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-black uppercase tracking-widest flex items-center gap-2">
-            <TrendingDown className="h-4 w-4 text-indicator-info" />
-            Técnicas com Menor Eficiência
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3 pt-4">
-          {rankingData.bottomTechniques.map((t, i) => renderRankingItem(t, i, true))}
-        </CardContent>
-      </Card>
+        <Card className="border-indicator-info/10 bg-black/5">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-black uppercase tracking-widest flex items-center gap-2">
+              <TrendingDown className="h-4 w-4 text-indicator-info" />
+              Técnicas com Maior Desvio
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3 pt-4">
+            {rankingData.bottomTechniques.map((t, i) => renderRankingItem(t, i, true))}
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 });
