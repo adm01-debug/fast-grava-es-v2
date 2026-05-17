@@ -49,6 +49,7 @@ export interface MachineOEE {
 
   // Classification
   oeeClass: 'world-class' | 'excellent' | 'good' | 'acceptable' | 'poor';
+  previousOee?: number;
 }
 
 export interface TechniqueOEE {
