@@ -169,10 +169,10 @@ const OEEDashboard = memo(function OEEDashboard() {
     if (tab) setActiveTab(tab);
   }, []);
 
-  const handleDownloadReport = useCallback(async (format: 'excel' | 'pdf' | 'csv') => {
+  const handleDownloadReport = useCallback(async (reportFormat: 'excel' | 'pdf' | 'csv') => {
     if (!data) return;
     
-    if (format === 'csv') {
+    if (reportFormat === 'csv') {
       const csvData = data.byMachine.map(m => ({
         'Máquina': m.machineName,
         'Código': m.machineCode,
@@ -197,7 +197,7 @@ const OEEDashboard = memo(function OEEDashboard() {
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-    } else if (format === 'pdf') {
+    } else if (reportFormat === 'pdf') {
       const { jsPDF } = await import('jspdf');
       const { default: autoTable } = await import('jspdf-autotable');
       const doc = new jsPDF();
@@ -305,7 +305,7 @@ const OEEDashboard = memo(function OEEDashboard() {
       
       doc.save(`fast_gravacoes_oee_report_${new Date().toISOString().slice(0,10)}.pdf`);
     } else {
-      downloadReport(format);
+      downloadReport(reportFormat);
     }
     toast.success(t('common.reportExported', 'Relatório exportado com sucesso!'));
   }, [data, downloadReport, t, period, machineId, techniqueId, shift]);
