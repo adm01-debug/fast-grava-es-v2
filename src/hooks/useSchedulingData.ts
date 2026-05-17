@@ -3,25 +3,22 @@ import { supabase } from '@/integrations/supabase/client';
 import { useEffect, useMemo, useCallback } from 'react';
 import { differenceInMinutes } from 'date-fns';
 import { DbJob, DbTechnique, DbMachine } from './useJobs';
-import { Database } from '@/integrations/supabase/types';
+import { QUERY_KEYS, STALE_TIMES } from '@/lib/queryConfig';
 import { createAppError } from '@/lib/errorHandling';
 import { jobsService } from '@/services/jobsService';
 import { machinesService } from '@/services/machinesService';
 
-// Stale time for static data (techniques, machines change less frequently)
-const STATIC_DATA_STALE_TIME = 15 * 60 * 1000; // 15 minutes (was 5)
-const JOBS_STALE_TIME = 45 * 1000; // 45 seconds (was 30)
-
 // Retry configuration for connection failures
 const RETRY_CONFIG = {
-  retry: 3,
-  retryDelay: (attemptIndex: number) => Math.min(1000 * 2 ** attemptIndex, 30000),
+  retry: 2, // Reduced from 3 for faster failure reporting
+  retryDelay: (attemptIndex: number) => Math.min(1000 * 2 ** attemptIndex, 10000), // Max 10s
 };
 
-// Context-specific error messages for debugging
-const ERROR_CONTEXT = {
-  techniques: { entity: 'técnicas', operation: 'fetch' },
-  machines: { entity: 'máquinas', operation: 'fetch' },
+// Context-specific error messages
+const SCHEDULING_ERROR_CONTEXT = {
+  profiles: { entity: 'operator-profiles', operation: 'fetch' },
+  techniques: { entity: 'techniques', operation: 'fetch' },
+  machines: { entity: 'machines', operation: 'fetch' },
   jobs: { entity: 'jobs', operation: 'fetch' },
 };
 
@@ -39,40 +36,48 @@ export function useSchedulingData() {
   const results = useQueries({
     queries: [
       {
-        queryKey: ['operator-profiles'],
+        queryKey: QUERY_KEYS.OPERATOR_PROFILES,
         queryFn: async () => {
           const { data, error } = await supabase.from('profiles').select('id, full_name, avatar_url');
-          if (error) throw error;
+          if (error) throw createAppError(error, SCHEDULING_ERROR_CONTEXT.profiles);
           return data;
         },
-        staleTime: STATIC_DATA_STALE_TIME,
+        staleTime: STALE_TIMES.STATIC,
         ...RETRY_CONFIG,
       },
       {
-        queryKey: ['techniques'],
+        queryKey: QUERY_KEYS.TECHNIQUES,
         queryFn: async () => {
           const { data, error } = await supabase.from('techniques').select('*').order('name');
-          if (error) throw error;
+          if (error) throw createAppError(error, SCHEDULING_ERROR_CONTEXT.techniques);
           return data as DbTechnique[];
         },
-        staleTime: STATIC_DATA_STALE_TIME,
+        staleTime: STALE_TIMES.STATIC,
         ...RETRY_CONFIG,
       },
       {
-        queryKey: ['machines'],
+        queryKey: QUERY_KEYS.MACHINES,
         queryFn: async () => {
-          return await machinesService.getAll();
+          try {
+            return await machinesService.getAll();
+          } catch (error) {
+            throw createAppError(error, SCHEDULING_ERROR_CONTEXT.machines);
+          }
         },
-        staleTime: STATIC_DATA_STALE_TIME,
+        staleTime: STALE_TIMES.STATIC,
         ...RETRY_CONFIG,
       },
       {
-        queryKey: ['jobs'],
+        queryKey: QUERY_KEYS.JOBS,
         queryFn: async () => {
-          const data = await jobsService.getAll({ recentOnly: true });
-          return data as unknown as DbJob[];
+          try {
+            const data = await jobsService.getAll({ recentOnly: true });
+            return data as unknown as DbJob[];
+          } catch (error) {
+            throw createAppError(error, SCHEDULING_ERROR_CONTEXT.jobs);
+          }
         },
-        staleTime: JOBS_STALE_TIME,
+        staleTime: STALE_TIMES.DYNAMIC,
         ...RETRY_CONFIG,
       },
     ],
@@ -89,17 +94,17 @@ export function useSchedulingData() {
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'jobs' },
-        () => queryClient.invalidateQueries({ queryKey: ['jobs'] })
+        () => queryClient.invalidateQueries({ queryKey: QUERY_KEYS.JOBS })
       )
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'techniques' },
-        () => queryClient.invalidateQueries({ queryKey: ['techniques'] })
+        () => queryClient.invalidateQueries({ queryKey: QUERY_KEYS.TECHNIQUES })
       )
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'machines' },
-        () => queryClient.invalidateQueries({ queryKey: ['machines'] })
+        () => queryClient.invalidateQueries({ queryKey: QUERY_KEYS.MACHINES })
       )
       .subscribe();
 

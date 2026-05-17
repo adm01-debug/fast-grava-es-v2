@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
@@ -6,6 +7,7 @@ import { KeyRound } from 'lucide-react';
 
 export function useRealtimeResetRequests() {
   const { isCoordinator, isManager, user } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Only subscribe for coordinators and managers
@@ -40,18 +42,17 @@ export function useRealtimeResetRequests() {
               action: {
                 label: 'Ver',
                 onClick: () => {
-                  window.location.href = '/settings?tab=users';
+                  navigate('/settings?tab=users');
                 },
               },
             }
           );
         }
       )
-      .subscribe((status) => {
-      });
+      .subscribe();
 
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [isCoordinator, isManager, user]);
+  }, [isCoordinator, isManager, user, navigate]);
 }
