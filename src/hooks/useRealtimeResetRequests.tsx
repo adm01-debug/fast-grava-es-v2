@@ -7,6 +7,7 @@ import { KeyRound } from 'lucide-react';
 
 export function useRealtimeResetRequests() {
   const { isCoordinator, isManager, user } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Only subscribe for coordinators and managers
