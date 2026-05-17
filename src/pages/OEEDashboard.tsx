@@ -367,7 +367,7 @@ const OEEDashboard = memo(function OEEDashboard() {
           <div>
             <h1 className="text-2xl md:text-3xl font-black font-display flex items-center gap-3">
               <Activity className="h-8 w-8 text-primary animate-pulse hidden sm:block" />
-              FAST GRAVAÇÕES - GESTÃO DE GRAVAÇÃO
+              FAST GRAVAÇÕES - GESTÃO DE PERSONALIZAÇÃO
             </h1>
             <p className="text-muted-foreground mt-1">
               {t('oee.description', 'Overall Equipment Effectiveness - Eficiência Global dos Equipamentos')}
