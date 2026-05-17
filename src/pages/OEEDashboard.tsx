@@ -443,7 +443,7 @@ const OEEDashboard = memo(function OEEDashboard() {
                   .filter(tech => {
                     if (studioId === 'all') return true;
                     const studio = STUDIOS.find(s => s.id === studioId);
-                    return studio?.techniques.includes(tech.techniqueId) || tech.techniqueName.toLowerCase().includes(studio?.id.split('_')[0] || '');
+                    return !!studio?.techniques?.includes(tech.techniqueId) || tech.techniqueName.toLowerCase().includes(studio?.id.split('_')[0] || '');
                   })
                   .map(tech => (
                   <SelectItem key={tech.techniqueId} value={tech.techniqueId}>{tech.techniqueName}</SelectItem>
