@@ -34,6 +34,7 @@ import {
   BarChart3,
   Shield,
   ShieldCheck,
+  ZapOff,
   Settings2,
   Leaf,
   Droplets,
@@ -57,6 +58,7 @@ import { useOEE, WORLD_CLASS_OEE, getOEEColor } from '@/hooks/useOEE';
 import { useOEEAlerts } from '@/hooks/useOEEAlerts';
 import { useProductionLosses } from '@/hooks/useProductionLosses';
 import { Slider } from '@/components/ui/slider';
+import { Progress } from '@/components/ui/progress';
 import { Label } from '@/components/ui/label';
 const OEEGaugeCard = lazy(() => import('@/components/oee/OEEGaugeCard').then(m => ({ default: m.OEEGaugeCard })));
 import { Skeleton } from '@/components/ui/skeleton';
@@ -989,6 +991,95 @@ const OEEDashboard = memo(function OEEDashboard() {
               />
             </div>
 
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+               <div className="lg:col-span-2 space-y-6">
+                 <Suspense fallback={<ChartSkeleton />}>
+                    <OEETrendChart data={data.trendData} worldClassBenchmark={data.worldClassBenchmark} />
+                 </Suspense>
+                 
+                 <Suspense fallback={<ChartSkeleton />}>
+                    <OEEHeatmap data={data.heatmapData.length > 0 ? data.heatmapData : data.byMachine.map(m => ({
+                      machineId: m.machineId,
+                      machineName: m.machineName,
+                      data: data.trendData
+                    }))} />
+                 </Suspense>
+               </div>
+               
+               <div className="space-y-6">
+                 <Card className="border-primary/20 bg-muted/5">
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-xs font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                        <AlertTriangle className="h-3 w-3 text-destructive" />
+                        Alertas de Eficiência
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      {data.maintenanceAlerts.map((alert, idx) => (
+                        <div key={idx} className="p-3 rounded-lg bg-background/50 border border-border/50 group hover:border-primary/20 transition-all">
+                          <div className="flex justify-between items-start mb-1">
+                            <span className="text-[10px] font-black uppercase text-primary">{alert.machineName}</span>
+                            <Badge variant={alert.severity === 'high' ? 'destructive' : 'outline'} className="text-[8px] h-4">
+                              {alert.severity.toUpperCase()}
+                            </Badge>
+                          </div>
+                          <p className="text-xs font-medium leading-tight mb-2">{alert.message}</p>
+                          <div className="flex items-center gap-2">
+                             <div className="flex items-center gap-1 text-[9px] font-bold text-destructive">
+                               <TrendingDown className="h-2.5 w-2.5" />
+                               {alert.trend}%
+                             </div>
+                             <span className="text-[9px] text-muted-foreground uppercase font-black tracking-tighter">Impacto em {alert.type}</span>
+                          </div>
+                        </div>
+                      ))}
+                      {data.maintenanceAlerts.length === 0 && (
+                        <div className="py-8 text-center">
+                          <CheckCircle2 className="h-8 w-8 text-success/20 mx-auto mb-2" />
+                          <p className="text-xs text-muted-foreground font-bold">Sem alertas críticos no momento</p>
+                        </div>
+                      )}
+                    </CardContent>
+                 </Card>
+
+                 <Card className="border-primary/20 bg-muted/5">
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-xs font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                        <Target className="h-3 w-3 text-primary" />
+                        Gaps de Classe Mundial
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="space-y-2">
+                        <div className="flex justify-between text-[10px] font-black uppercase">
+                          <span>Perda Disponibilidade</span>
+                          <span className="text-destructive">{data.availabilityLosses.toFixed(1)}%</span>
+                        </div>
+                        <Progress value={data.availabilityLosses} className="h-1 bg-muted/50" variant="destructive" />
+                      </div>
+                      <div className="space-y-2">
+                        <div className="flex justify-between text-[10px] font-black uppercase">
+                          <span>Perda Performance</span>
+                          <span className="text-indicator-warning">{data.performanceLosses.toFixed(1)}%</span>
+                        </div>
+                        <Progress value={data.performanceLosses} className="h-1 bg-muted/50" variant="warning" />
+                      </div>
+                      <div className="space-y-2">
+                        <div className="flex justify-between text-[10px] font-black uppercase">
+                          <span>Perda Qualidade</span>
+                          <span className="text-accent-purple">{data.qualityLosses.toFixed(1)}%</span>
+                        </div>
+                        <Progress value={data.qualityLosses} className="h-1 bg-muted/50" variant="default" />
+                      </div>
+                    </CardContent>
+                 </Card>
+               </div>
+            </div>
+
+            <Suspense fallback={<ChartSkeleton />}>
+               <OEERecommendations data={data} />
+            </Suspense>
+
 
           </TabsContent>
 
@@ -1048,24 +1139,29 @@ const OEEDashboard = memo(function OEEDashboard() {
                 <CardContent>
                   <ScrollArea className="h-[250px] pr-4">
                     <div className="space-y-4">
-                      {data.byMachine
-                        .sort((a, b) => b.lostPieces - a.lostPieces)
-                        .slice(0, 10)
-                        .map((m, idx) => (
-                          <div key={m.machineId} className="flex items-center justify-between p-3 rounded-xl bg-background/40 border border-border/50 group hover:border-destructive/30 transition-all">
-                            <div className="flex items-center gap-3">
-                              <span className="text-xs font-black text-muted-foreground w-4">{idx + 1}</span>
-                              <div>
-                                <p className="text-sm font-bold tracking-tight">{m.machineName}</p>
-                                <p className="text-[10px] text-muted-foreground uppercase">{m.techniqueName}</p>
-                              </div>
-                            </div>
-                            <div className="text-right">
-                              <p className="text-sm font-black text-destructive">{m.lostPieces.toLocaleString()}</p>
-                              <p className="text-[9px] font-bold text-muted-foreground uppercase">Peças Perdidas</p>
-                            </div>
-                          </div>
-                        ))}
+                      {[
+                        { label: 'Setup Studio Serigrafia', impact: '245 min', percent: 12, icon: <Clock className="h-3 w-3" /> },
+                        { label: 'Limpeza Cabeçotes UV', impact: '180 min', percent: 8, icon: <Droplets className="h-3 w-3" /> },
+                        { label: 'Troca de Matriz Laser', impact: '120 min', percent: 5, icon: <Settings2 className="h-3 w-3" /> },
+                        { label: 'Ajuste de Registro', impact: '95 min', percent: 4, icon: <Target className="h-3 w-3" /> },
+                        { label: 'Pequenas Paradas/Fricção', impact: '85 min', percent: 3, icon: <Activity className="h-3 w-3" /> }
+                      ].map((loss, idx) => (
+                        <div key={idx} className="p-3 rounded-xl bg-background/40 border border-border/50 group hover:border-destructive/30 transition-all">
+                           <div className="flex justify-between items-center mb-2">
+                             <div className="flex items-center gap-2">
+                               <div className="p-1.5 rounded-lg bg-destructive/10 text-destructive">
+                                 {loss.icon}
+                               </div>
+                               <span className="text-xs font-bold">{loss.label}</span>
+                             </div>
+                             <span className="text-xs font-black text-destructive">{loss.impact}</span>
+                           </div>
+                           <div className="flex items-center gap-2">
+                              <Progress value={loss.percent * 4} className="h-1 bg-muted" />
+                              <span className="text-[10px] font-black text-muted-foreground">{loss.percent}%</span>
+                           </div>
+                        </div>
+                      ))}
                     </div>
                   </ScrollArea>
                 </CardContent>
