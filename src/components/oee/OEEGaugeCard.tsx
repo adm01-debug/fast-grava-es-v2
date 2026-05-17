@@ -2,7 +2,7 @@ import { useMemo, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { TrendingUp, TrendingDown } from 'lucide-react';
+import { TrendingUp, TrendingDown, Target, Zap, ShieldCheck, Gauge } from 'lucide-react';
 
 interface OEEGaugeCardProps {
   title: string;
@@ -54,32 +54,45 @@ export const OEEGaugeCard = memo(function OEEGaugeCard({
   const progress = (gaugeData.percentage / 100) * circumference;
 
   return (
-    <Card className={cn("relative overflow-hidden", className)} variant={variant}>
+    <Card className={cn("relative overflow-hidden group transition-all duration-500 hover:border-primary/40 shadow-lg hover:shadow-primary/5", className)} variant={variant}>
       <CardHeader className="pb-2">
-        <CardTitle className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-          {icon}
-          {title}
-        </CardTitle>
+        <div className="flex justify-between items-start">
+          <CardTitle className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground group-hover:text-primary transition-colors">
+            <span className="p-1 rounded-md bg-primary/5 group-hover:bg-primary/10 transition-colors">
+              {icon}
+            </span>
+            {title}
+          </CardTitle>
+          <div className="h-1.5 w-1.5 rounded-full bg-primary/20 animate-pulse" />
+        </div>
       </CardHeader>
       <CardContent className="flex flex-col items-center">
         {/* Semi-circular gauge */}
-        <div className="relative" style={{ width: config.gauge, height: config.gauge / 2 + 10 }}>
+        <div className="relative group/gauge" style={{ width: config.gauge, height: config.gauge / 2 + 15 }}>
           <svg
             width={config.gauge}
-            height={config.gauge / 2 + 10}
-            viewBox={`0 0 ${config.gauge} ${config.gauge / 2 + 10}`}
+            height={config.gauge / 2 + 15}
+            viewBox={`0 0 ${config.gauge} ${config.gauge / 2 + 15}`}
             className="overflow-visible"
           >
-            {/* Background arc */}
+            {/* Background arc with drop shadow effect via stroke */}
+            <path
+              d={`M ${config.stroke / 2 + 2} ${config.gauge / 2} A ${radius - 2} ${radius - 2} 0 0 1 ${config.gauge - (config.stroke / 2 + 2)} ${config.gauge / 2}`}
+              fill="none"
+              stroke="rgba(255,255,255,0.03)"
+              strokeWidth={config.stroke + 4}
+              strokeLinecap="round"
+            />
+            
             <path
               d={`M ${config.stroke / 2} ${config.gauge / 2} A ${radius} ${radius} 0 0 1 ${config.gauge - config.stroke / 2} ${config.gauge / 2}`}
               fill="none"
-              stroke="hsl(var(--muted))"
+              stroke="hsl(var(--muted)/0.2)"
               strokeWidth={config.stroke}
               strokeLinecap="round"
             />
 
-            {/* Progress arc */}
+            {/* Progress arc with dynamic glow */}
             <path
               d={`M ${config.stroke / 2} ${config.gauge / 2} A ${radius} ${radius} 0 0 1 ${config.gauge - config.stroke / 2} ${config.gauge / 2}`}
               fill="none"
@@ -87,7 +100,8 @@ export const OEEGaugeCard = memo(function OEEGaugeCard({
               strokeWidth={config.stroke}
               strokeLinecap="round"
               strokeDasharray={`${progress} ${circumference}`}
-              className="transition-all duration-1000 ease-out"
+              className="transition-all duration-1000 ease-out group-hover/gauge:stroke-[16px]"
+              style={{ filter: `drop-shadow(0 0 8px ${gaugeData.color}44)` }}
             />
 
             {/* Benchmark marker */}
@@ -95,52 +109,61 @@ export const OEEGaugeCard = memo(function OEEGaugeCard({
               <g transform={`rotate(${(benchmark / 100) * 180 - 180}, ${config.gauge / 2}, ${config.gauge / 2})`}>
                 <line
                   x1={config.gauge / 2}
-                  y1={config.stroke / 2 + 2}
+                  y1={2}
                   x2={config.gauge / 2}
-                  y2={config.stroke + 6}
-                  stroke="hsl(var(--primary))"
+                  y2={config.stroke + 8}
+                  stroke="rgba(255,255,255,0.4)"
                   strokeWidth={2}
+                  strokeLinecap="round"
                 />
+                <circle cx={config.gauge / 2} cy={config.stroke + 12} r={1.5} fill="white" className="animate-pulse" />
               </g>
             )}
           </svg>
 
           {/* Value text */}
-          <div className="absolute inset-0 flex items-end justify-center pb-2">
-            <span className={cn("font-bold font-display leading-none", config.text)} style={{ color: gaugeData.color }}>
-              {value.toFixed(1)}%
+          <div className="absolute inset-0 flex flex-col items-center justify-end pb-3">
+            <span className={cn("font-black font-display leading-none tracking-tighter", config.text)} style={{ color: gaugeData.color }}>
+              {value.toFixed(1)}<span className="text-[0.4em] opacity-70 ml-0.5">%</span>
             </span>
           </div>
         </div>
 
-        {trend !== undefined && (
-          <div className={cn(
-            "flex items-center gap-1 text-[10px] font-black uppercase px-2 py-0.5 rounded-full mt-1",
-            trend > 0 ? "bg-success/10 text-success" : trend < 0 ? "bg-destructive/10 text-destructive" : "bg-muted text-muted-foreground"
-          )}>
-            {trend > 0 ? <TrendingUp className="h-3 w-3" /> : trend < 0 ? <TrendingDown className="h-3 w-3" /> : null}
-            {trend > 0 ? "+" : ""}{trend.toFixed(1)}% {t('common.mom', 'MoM')}
+        <div className="flex items-center gap-3 mt-2">
+          {trend !== undefined && (
+            <div className={cn(
+              "flex items-center gap-1 text-[9px] font-black uppercase px-2 py-0.5 rounded-full border",
+              trend > 0 ? "bg-success/5 text-success border-success/20" : trend < 0 ? "bg-destructive/5 text-destructive border-destructive/20" : "bg-muted/30 text-muted-foreground border-transparent"
+            )}>
+              {trend > 0 ? <TrendingUp className="h-2.5 w-2.5" /> : trend < 0 ? <TrendingDown className="h-2.5 w-2.5" /> : null}
+              {trend > 0 ? "+" : ""}{trend.toFixed(1)}%
+            </div>
+          )}
+          
+          <div className="flex items-center gap-1">
+            <div className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: gaugeData.color }} />
+            <span className="text-[8px] font-bold uppercase text-muted-foreground tracking-tighter">Status: {gaugeData.percentage >= benchmark ? 'Excelência' : 'Otimizar'}</span>
           </div>
-        )}
+        </div>
 
         {description && (
-          <p className="text-[10px] text-muted-foreground text-center mt-2 leading-tight px-2">{description}</p>
+          <p className="text-[9px] text-muted-foreground/60 font-medium text-center mt-3 leading-tight px-4 max-w-[200px]">{description}</p>
         )}
-
-        {/* Scale labels */}
-        <div className="flex justify-between w-full text-xs text-muted-foreground mt-1">
-          <span>0%</span>
-          <span>100%</span>
-        </div>
       </CardContent>
 
-      {/* Glow effect based on value */}
+      {/* Industrial grid background pattern */}
+      <div className="absolute inset-0 opacity-[0.03] pointer-events-none" 
+        style={{ backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)', backgroundSize: '20px 20px' }} 
+      />
+      
+      {/* Dynamic bottom glow */}
       <div
-        className="absolute inset-0 opacity-10 pointer-events-none"
+        className="absolute inset-x-0 bottom-0 h-24 opacity-20 pointer-events-none blur-3xl transition-all duration-1000 group-hover:opacity-40"
         style={{
           background: `radial-gradient(circle at center bottom, ${gaugeData.color} 0%, transparent 70%)`
         }}
       />
     </Card>
   );
+
 });
