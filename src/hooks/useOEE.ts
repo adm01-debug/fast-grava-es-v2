@@ -359,7 +359,24 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, f
 
     // Group by technique
     const techniqueMap = new Map<string, TechniqueOEE>();
-...
+
+    for (const technique of techniques) {
+      const techniqueMachines = byMachine.filter(m => m.techniqueId === technique.id);
+      if (techniqueMachines.length === 0) continue;
+
+      const avgOEE = techniqueMachines.reduce((sum, m) => sum + m.oee, 0) / techniqueMachines.length;
+      const avgAvailability = techniqueMachines.reduce((sum, m) => sum + sum + m.availability, 0) / techniqueMachines.length;
+      const avgPerformance = techniqueMachines.reduce((sum, m) => sum + m.performance, 0) / techniqueMachines.length;
+      const avgQuality = techniqueMachines.reduce((sum, m) => sum + m.quality, 0) / techniqueMachines.length;
+
+      techniqueMap.set(technique.id, {
+        techniqueId: technique.id,
+        techniqueName: technique.name,
+        techniqueColor: technique.color,
+        machines: techniqueMachines,
+        averageOEE: Math.round(avgOEE * 10) / 10,
+        averageAvailability: Math.round(avgAvailability * 10) / 10,
+        averagePerformance: Math.round(avgPerformance * 10) / 10,
         averageQuality: Math.round(avgQuality * 10) / 10
       });
     }
