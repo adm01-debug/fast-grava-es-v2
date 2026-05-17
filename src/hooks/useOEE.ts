@@ -71,6 +71,12 @@ export interface StudioOEE {
   performance: number;
   quality: number;
   techniqueIds: string[];
+  healthScore: number;
+  maintenanceStatus: 'optimal' | 'warning' | 'critical';
+  consumables: {
+    name: string;
+    level: number;
+  }[];
 }
 
 export interface OEEData {
@@ -306,6 +312,34 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, f
     const byStudio: StudioOEE[] = STUDIOS_MAP.map(studio => {
       const studioJobs = periodJobs.filter(j => studio.techniques.includes(j.technique_id));
       const m = calculateMetrics(studioJobs, 1);
+      
+      // Mock health data for studios
+      let healthScore = 95;
+      let maintenanceStatus: StudioOEE['maintenanceStatus'] = 'optimal';
+      let consumables: StudioOEE['consumables'] = [];
+
+      if (studio.id === 'personalizacao_uv') {
+        healthScore = 78;
+        maintenanceStatus = 'warning';
+        consumables = [
+          { name: 'Lâmpada UV', level: 45 },
+          { name: 'Tintas CMYK', level: 68 },
+          { name: 'Verniz High-Gloss', level: 12 }
+        ];
+      } else if (studio.id === 'laser') {
+        healthScore = 92;
+        consumables = [
+          { name: 'Tubo de Laser CO2', level: 85 },
+          { name: 'Ópticas/Lentes', level: 90 }
+        ];
+      } else if (studio.id.includes('serigrafia')) {
+        healthScore = 88;
+        consumables = [
+          { name: 'Emulsão', level: 75 },
+          { name: 'Rodo de Impressão', level: 60 }
+        ];
+      }
+
       return {
         studioId: studio.id,
         studioName: studio.name,
@@ -313,7 +347,10 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, f
         availability: Math.round(m.avail * 10) / 10,
         performance: Math.round(m.perf * 10) / 10,
         quality: Math.round(m.qual * 10) / 10,
-        techniqueIds: studio.techniques
+        techniqueIds: studio.techniques,
+        healthScore,
+        maintenanceStatus,
+        consumables
       };
     });
 
@@ -383,7 +420,24 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, f
       byStudio,
       trendData,
       heatmapData: [], // Simplified for now
-      maintenanceAlerts: [],
+      maintenanceAlerts: [
+        {
+          machineId: 'uv-01',
+          machineName: 'Mimaki UV-300',
+          type: 'quality',
+          severity: 'high',
+          message: 'Queda na densidade de cor detectada. Calibrar cabeçotes.',
+          trend: -12.5
+        },
+        {
+          machineId: 'laser-02',
+          machineName: 'Laser Precision G5',
+          type: 'performance',
+          severity: 'medium',
+          message: 'Lente com acúmulo de resíduos. Sugerido limpeza preventiva.',
+          trend: -5.2
+        }
+      ],
       worldClassBenchmark: WORLD_CLASS_OEE,
       availabilityLosses: 100 - overallAvailability,
       performanceLosses: 100 - overallPerformance,
