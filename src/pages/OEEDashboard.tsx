@@ -32,6 +32,7 @@ import {
   AlertTriangle,
   CheckCircle2,
   BarChart3,
+  Shield,
   Settings2,
   Leaf,
   Droplets,
