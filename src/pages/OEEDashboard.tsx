@@ -833,6 +833,42 @@ const OEEDashboard = memo(function OEEDashboard() {
                 </div>
               </div>
 
+              <div className="mt-8 space-y-6">
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-center text-primary/60">Detalhamento por Unidade</p>
+                <Suspense fallback={<div className="h-48 animate-pulse bg-muted rounded-xl" />}>
+                  {machineId !== 'all' ? (
+                    <OEECalculationAudit 
+                      machine={data.byMachine.find(m => m.machineId === machineId)!} 
+                    />
+                  ) : (
+                    <OEECalculationAudit 
+                      machine={{
+                        machineId: 'overall',
+                        machineName: 'Consolidado Global FAST',
+                        machineCode: 'GLOBAL',
+                        techniqueId: 'all',
+                        techniqueName: 'Múltiplas',
+                        techniqueColor: 'hsl(var(--primary))',
+                        availability: data.overallAvailability,
+                        performance: data.overallPerformance,
+                        quality: data.overallQuality,
+                        oee: data.overallOEE,
+                        plannedProductionMinutes: data.byMachine.reduce((s, m) => s + m.plannedProductionMinutes, 0),
+                        actualOperatingMinutes: data.byMachine.reduce((s, m) => s + m.actualOperatingMinutes, 0),
+                        idealCycleMinutes: data.byMachine.reduce((s, m) => s + m.idealCycleMinutes, 0),
+                        actualCycleMinutes: data.byMachine.reduce((s, m) => s + m.actualOperatingMinutes, 0),
+                        totalPiecesProduced: data.byMachine.reduce((s, m) => s + m.totalPiecesProduced, 0),
+                        goodPieces: data.byMachine.reduce((s, m) => s + m.goodPieces, 0),
+                        lostPieces: data.byMachine.reduce((s, m) => s + m.lostPieces, 0),
+                        totalJobs: data.byMachine.reduce((s, m) => s + m.totalJobs, 0),
+                        completedJobs: data.byMachine.reduce((s, m) => s + m.completedJobs, 0),
+                        oeeClass: 'excellent'
+                      }} 
+                    />
+                  )}
+                </Suspense>
+              </div>
+
               <div className="mt-4 p-4 rounded-lg bg-muted/30 border border-border/50">
                 <p className="text-[11px] text-muted-foreground leading-relaxed italic">
                    <strong>Nota sobre Benchmark:</strong> {currentBenchmark.desc} Estes valores servem como referência setorial para o seu processo de melhoria contínua.
