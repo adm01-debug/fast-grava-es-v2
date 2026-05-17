@@ -93,17 +93,17 @@ export function useSchedulingData() {
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'jobs' },
-        () => queryClient.invalidateQueries({ queryKey: ['jobs'] })
+        () => queryClient.invalidateQueries({ queryKey: QUERY_KEYS.JOBS })
       )
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'techniques' },
-        () => queryClient.invalidateQueries({ queryKey: ['techniques'] })
+        () => queryClient.invalidateQueries({ queryKey: QUERY_KEYS.TECHNIQUES })
       )
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'machines' },
-        () => queryClient.invalidateQueries({ queryKey: ['machines'] })
+        () => queryClient.invalidateQueries({ queryKey: QUERY_KEYS.MACHINES })
       )
       .subscribe();
 
