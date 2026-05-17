@@ -641,7 +641,7 @@ const OEEDashboard = memo(function OEEDashboard() {
               <AlertTriangle className="h-4 w-4" /> Análise de Perdas
             </TabsTrigger>
             <TabsTrigger value="machines" className="gap-2 text-xs font-bold uppercase tracking-tight">
-              <Settings2 className="h-4 w-4" /> Eficiência Máquina
+              <Settings2 className="h-4 w-4" /> Ranking & Eficiência
             </TabsTrigger>
             <TabsTrigger value="heatmap" className="gap-2 text-xs font-bold uppercase tracking-tight">
               <BarChart3 className="h-4 w-4" /> Produtividade
@@ -656,32 +656,72 @@ const OEEDashboard = memo(function OEEDashboard() {
               <OEEGaugeCard title={t('common.quality', 'Qualidade')} value={data.overallQuality} icon={<CheckCircle2 className="h-4 w-4" />} benchmark={99} variant="glass" />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <Card className="bg-muted/20 border-dashed border-border/50">
-                <CardContent className="p-3 text-[10px] space-y-1">
-                  <p className="font-bold uppercase text-muted-foreground">{t('oee.availabilityCalculation', 'Cálculo de Disponibilidade')}</p>
-                  <div className="flex justify-between items-center bg-background/50 p-2 rounded">
-                    <span className="font-mono">{data.byMachine.reduce((s, m) => s + m.actualOperatingMinutes, 0)} min</span>
-                    <span className="text-primary font-bold">= {data.overallAvailability.toFixed(1)}%</span>
-                  </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Card className="border-primary/20 bg-muted/5">
+                <CardHeader>
+                  <CardTitle className="text-sm font-black uppercase flex items-center gap-2">
+                    <TrendingUp className="h-4 w-4 text-primary" />
+                    Top Ranking Máquinas (vs Meta 85%)
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ScrollArea className="h-[250px] pr-4">
+                    <div className="space-y-4">
+                      {data.byMachine.slice(0, 10).map((m, idx) => {
+                        const gap = m.oee - 85;
+                        return (
+                          <div key={m.machineId} className="flex items-center justify-between p-3 rounded-xl bg-background/40 border border-border/50 group hover:border-primary/30 transition-all">
+                            <div className="flex items-center gap-3">
+                              <span className="text-xs font-black text-muted-foreground w-4">{idx + 1}</span>
+                              <div>
+                                <p className="text-sm font-bold tracking-tight">{m.machineName}</p>
+                                <p className="text-[10px] text-muted-foreground uppercase">{m.techniqueName}</p>
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <p className={cn("text-sm font-black", getOEEColor(m.oee))}>{m.oee.toFixed(1)}%</p>
+                              <p className={cn("text-[9px] font-bold uppercase", gap >= 0 ? "text-success" : "text-destructive")}>
+                                {gap >= 0 ? `+${gap.toFixed(1)}%` : `${gap.toFixed(1)}%`}
+                              </p>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </ScrollArea>
                 </CardContent>
               </Card>
-              <Card className="bg-muted/20 border-dashed border-border/50">
-                <CardContent className="p-3 text-[10px] space-y-1">
-                  <p className="font-bold uppercase text-muted-foreground">{t('oee.performanceCalculation', 'Cálculo de Performance')}</p>
-                  <div className="flex justify-between items-center bg-background/50 p-2 rounded">
-                    <span className="font-mono">{data.byMachine.reduce((s, m) => s + m.idealCycleMinutes, 0)} min</span>
-                    <span className="text-indicator-info font-bold">= {data.overallPerformance.toFixed(1)}%</span>
-                  </div>
-                </CardContent>
-              </Card>
-              <Card className="bg-muted/20 border-dashed border-border/50">
-                <CardContent className="p-3 text-[10px] space-y-1">
-                  <p className="font-bold uppercase text-muted-foreground">Cálculo de Qualidade</p>
-                  <div className="flex justify-between items-center bg-background/50 p-2 rounded">
-                    <span className="font-mono">{data.byMachine.reduce((s, m) => s + m.goodPieces, 0)} pcs</span>
-                    <span className="text-accent-purple font-bold">= {data.overallQuality.toFixed(1)}%</span>
-                  </div>
+
+              <Card className="border-primary/20 bg-muted/5">
+                <CardHeader>
+                  <CardTitle className="text-sm font-black uppercase flex items-center gap-2">
+                    <AlertTriangle className="h-4 w-4 text-destructive" />
+                    Maiores Impactos de Perda
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ScrollArea className="h-[250px] pr-4">
+                    <div className="space-y-4">
+                      {data.byMachine
+                        .sort((a, b) => b.lostPieces - a.lostPieces)
+                        .slice(0, 10)
+                        .map((m, idx) => (
+                          <div key={m.machineId} className="flex items-center justify-between p-3 rounded-xl bg-background/40 border border-border/50 group hover:border-destructive/30 transition-all">
+                            <div className="flex items-center gap-3">
+                              <span className="text-xs font-black text-muted-foreground w-4">{idx + 1}</span>
+                              <div>
+                                <p className="text-sm font-bold tracking-tight">{m.machineName}</p>
+                                <p className="text-[10px] text-muted-foreground uppercase">{m.techniqueName}</p>
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <p className="text-sm font-black text-destructive">{m.lostPieces.toLocaleString()}</p>
+                              <p className="text-[9px] font-bold text-muted-foreground uppercase">Peças Perdidas</p>
+                            </div>
+                          </div>
+                        ))}
+                    </div>
+                  </ScrollArea>
                 </CardContent>
               </Card>
             </div>
@@ -744,6 +784,7 @@ const OEEDashboard = memo(function OEEDashboard() {
               </Card>
             </div>
           </TabsContent>
+
 
           <TabsContent value="losses" className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
