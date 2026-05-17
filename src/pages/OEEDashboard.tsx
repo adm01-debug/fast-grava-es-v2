@@ -295,6 +295,17 @@ const OEEDashboard = memo(function OEEDashboard() {
 
           <div className="flex flex-wrap items-center gap-2">
             <VoiceButton />
+            
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={handleShare}
+              className="flex gap-2 border-primary/20 hover:bg-primary/5 active:scale-95 transition-transform"
+            >
+              <ArrowUpRight className="h-4 w-4" />
+              <span className="hidden sm:inline">Compartilhar</span>
+            </Button>
+
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="sm" className="flex gap-2 border-primary/20 hover:bg-primary/5 active:scale-95 transition-transform">
