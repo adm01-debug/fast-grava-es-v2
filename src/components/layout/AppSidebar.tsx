@@ -117,16 +117,17 @@ export function AppSidebar() {
                     initial={{ x: 20, opacity: 0 }}
                     animate={{ x: 0, opacity: 1 }}
                     exit={{ x: 20, opacity: 0 }}
-                    className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center glow-primary shadow-lg flex-shrink-0"
+                    className="w-13 h-13 rounded-xl gradient-primary flex items-center justify-center glow-primary shadow-lg flex-shrink-0"
+                    style={{ width: 52, height: 52 }}
                   >
-                    <Printer className="w-5 h-5 text-primary-foreground" />
+                    <Printer className="w-6 h-6 text-primary-foreground" />
                   </motion.div>
                 )}
               </AnimatePresence>
               
               <motion.div layout className="flex-1 min-w-0">
-                <h1 className="font-display font-bold text-sidebar-foreground text-base tracking-tight truncate">FAST GRAVAÇÕES</h1>
-                <p className="text-[10px] font-medium text-primary/60 uppercase tracking-widest truncate">Sistema de Gestão</p>
+                <h1 className="font-display font-black text-sidebar-foreground text-xl tracking-tight truncate uppercase">FAST GRAVAÇÕES</h1>
+                <p className="text-[13px] font-semibold text-primary/70 uppercase tracking-widest truncate">Gestão de Gravação</p>
               </motion.div>
             </div>
           )}
