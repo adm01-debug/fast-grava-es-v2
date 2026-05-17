@@ -733,12 +733,50 @@ const OEEDashboard = memo(function OEEDashboard() {
                   </div>
                 </div>
               </div>
-              <div className="mt-6 p-4 bg-black/40 rounded-xl border border-primary/20 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <Badge className="bg-primary/20 text-primary border-primary/30">OEE FINAL</Badge>
-                  <p className="text-xs font-medium text-muted-foreground">O OEE é o produto dos três indicadores acima (Disp x Perf x Qual)</p>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
+                <div className="p-4 bg-black/40 rounded-xl border border-primary/20 flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <Badge className="bg-primary/20 text-primary border-primary/30">OEE FINAL</Badge>
+                    <p className="text-xs font-medium text-muted-foreground">O OEE é o produto dos três indicadores acima (Disp x Perf x Qual)</p>
+                  </div>
+                  <p className="text-2xl font-black text-primary">{data.overallOEE.toFixed(1)}%</p>
                 </div>
-                <p className="text-2xl font-black text-primary">{data.overallOEE.toFixed(1)}%</p>
+
+                <div className={cn(
+                  "p-4 rounded-xl border flex items-center justify-between",
+                  data.overallOEE >= currentBenchmark.target 
+                    ? "bg-success/5 border-success/20" 
+                    : "bg-destructive/5 border-destructive/20"
+                )}>
+                  <div className="flex items-center gap-3">
+                    <div className={cn(
+                      "p-2 rounded-lg",
+                      data.overallOEE >= currentBenchmark.target ? "bg-success/20 text-success" : "bg-destructive/20 text-destructive"
+                    )}>
+                      {data.overallOEE >= currentBenchmark.target ? <Award className="h-5 w-5" /> : <AlertTriangle className="h-5 w-5" />}
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Performance vs Benchmark</p>
+                      <p className="text-xs font-medium">{currentBenchmark.label}: {currentBenchmark.target}%</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className={cn(
+                      "text-xl font-black",
+                      data.overallOEE >= currentBenchmark.target ? "text-success" : "text-destructive"
+                    )}>
+                      {(data.overallOEE - currentBenchmark.target).toFixed(1)}%
+                    </p>
+                    <p className="text-[9px] font-bold uppercase text-muted-foreground">{data.overallOEE >= currentBenchmark.target ? 'Acima da Média' : 'Abaixo da Média'}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-4 p-4 rounded-lg bg-muted/30 border border-border/50">
+                <p className="text-[11px] text-muted-foreground leading-relaxed italic">
+                   <strong>Nota sobre Benchmark:</strong> {currentBenchmark.desc} Estes valores servem como referência setorial para o seu processo de melhoria contínua.
+                </p>
               </div>
             </CardContent>
           </Card>
