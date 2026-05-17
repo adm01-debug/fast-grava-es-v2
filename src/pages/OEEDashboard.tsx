@@ -79,6 +79,7 @@ const ParetoLossesChart = lazy(() => import('@/components/oee/ParetoLossesChart'
 const OEELossDrilldown = lazy(() => import('@/components/oee/OEELossDrilldown').then(m => ({ default: m.OEELossDrilldown })));
 const OEEShiftComparison = lazy(() => import('@/components/oee/OEEShiftComparison').then(m => ({ default: m.OEEShiftComparison })));
 const OEERecommendations = lazy(() => import('@/components/oee/OEERecommendations').then(m => ({ default: m.OEERecommendations })));
+const OEERankingGap = lazy(() => import('@/components/oee/OEERankingGap').then(m => ({ default: m.OEERankingGap })));
 
 const OEEDashboard = memo(function OEEDashboard() {
   const { t } = useTranslation();
@@ -134,7 +135,38 @@ const OEEDashboard = memo(function OEEDashboard() {
       filters: { period, machineId, techniqueId, shift }
     });
     setPresetName('');
+    toast.success('Preset salvo com sucesso');
   };
+
+  const handleShare = () => {
+    const params = new URLSearchParams({
+      period,
+      machineId,
+      techniqueId,
+      shift,
+      tab: activeTab
+    });
+    const url = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
+    navigator.clipboard.writeText(url);
+    toast.success('Link de compartilhamento copiado!', {
+      description: 'Todos os filtros atuais foram incluídos no link.'
+    });
+  };
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const p = params.get('period');
+    const m = params.get('machineId');
+    const t = params.get('techniqueId');
+    const s = params.get('shift');
+    const tab = params.get('tab');
+
+    if (p) setPeriod(p);
+    if (m) setMachineId(m);
+    if (t) setTechniqueId(t);
+    if (s) setShift(s);
+    if (tab) setActiveTab(tab);
+  }, []);
 
   const handleDownloadReport = useCallback(async (format: 'excel' | 'pdf' | 'csv') => {
     if (!data) return;
@@ -263,6 +295,17 @@ const OEEDashboard = memo(function OEEDashboard() {
 
           <div className="flex flex-wrap items-center gap-2">
             <VoiceButton />
+            
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={handleShare}
+              className="flex gap-2 border-primary/20 hover:bg-primary/5 active:scale-95 transition-transform"
+            >
+              <ArrowUpRight className="h-4 w-4" />
+              <span className="hidden sm:inline">Compartilhar</span>
+            </Button>
+
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="sm" className="flex gap-2 border-primary/20 hover:bg-primary/5 active:scale-95 transition-transform">
@@ -831,6 +874,9 @@ const OEEDashboard = memo(function OEEDashboard() {
           </TabsContent>
 
           <TabsContent value="machines" className="space-y-6">
+            <Suspense fallback={<ChartSkeleton />}>
+              <OEERankingGap machines={data.byMachine} techniques={data.byTechnique} />
+            </Suspense>
             <Suspense fallback={<TableSkeleton />}><OEEMachineTable machines={data.byMachine} /></Suspense>
             <Suspense fallback={<ChartSkeleton />}><OEETechniqueComparison techniques={data.byTechnique} worldClassBenchmark={data.worldClassBenchmark} /></Suspense>
           </TabsContent>

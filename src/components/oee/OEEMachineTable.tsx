@@ -20,18 +20,19 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
-import { ArrowUpDown, Search, TrendingUp, TrendingDown, Minus, Eye } from 'lucide-react';
+import { ArrowUpDown, Search, TrendingUp, TrendingDown, Minus, Eye, ArrowUpRight, ArrowDownRight } from 'lucide-react';
 import { MachineOEE, getOEEColor } from '@/hooks/useOEE';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { MachineTPMPanel } from '@/components/tpm/MachineTPMPanel';
 import { MachineReliabilityTab } from '@/components/machines/MachineReliabilityTab';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { cn } from '@/lib/utils';
 
 interface OEEMachineTableProps {
   machines: MachineOEE[];
 }
 
-type SortField = 'oee' | 'availability' | 'performance' | 'quality' | 'machineName' | 'totalPiecesProduced';
+type SortField = 'oee' | 'availability' | 'performance' | 'quality' | 'machineName' | 'totalPiecesProduced' | 'gap';
 type SortDirection = 'asc' | 'desc';
 
 import { memo } from 'react';
@@ -63,9 +64,10 @@ export const OEEMachineTable = memo(function OEEMachineTable({ machines }: OEEMa
         const matchesTechnique = techniqueFilter === 'all' || m.techniqueId === techniqueFilter;
         return matchesTechnique;
       })
+      .map(m => ({ ...m, gap: m.oee - 85 }))
       .sort((a, b) => {
-        const aVal = a[sortField];
-        const bVal = b[sortField];
+        const aVal = (a as any)[sortField];
+        const bVal = (b as any)[sortField];
         const dir = sortDirection === 'asc' ? 1 : -1;
 
         if (typeof aVal === 'string' && typeof bVal === 'string') {
@@ -203,6 +205,12 @@ export const OEEMachineTable = memo(function OEEMachineTable({ machines }: OEEMa
                   </Button>
                 </TableHead>
                 <TableHead>
+                  <Button variant="ghost" size="sm" onClick={() => toggleSort('gap')}>
+                    Gap vs Meta
+                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                  </Button>
+                </TableHead>
+                <TableHead>
                   <Button variant="ghost" size="sm" onClick={() => toggleSort('totalPiecesProduced')}>
                     Produção
                     <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -215,7 +223,7 @@ export const OEEMachineTable = memo(function OEEMachineTable({ machines }: OEEMa
             <TableBody>
               {filteredMachines.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center text-muted-foreground py-8">
+                  <TableCell colSpan={10} className="text-center text-muted-foreground py-8">
                     Nenhuma máquina encontrada
                   </TableCell>
                 </TableRow>
@@ -250,6 +258,15 @@ export const OEEMachineTable = memo(function OEEMachineTable({ machines }: OEEMa
                         >
                           {machine.oee.toFixed(1)}%
                         </span>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className={cn(
+                        "flex items-center gap-1 font-bold",
+                        machine.gap >= 0 ? "text-success" : "text-destructive"
+                      )}>
+                        {machine.gap >= 0 ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}
+                        {Math.abs(machine.gap).toFixed(1)}%
                       </div>
                     </TableCell>
                     <TableCell>
