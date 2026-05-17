@@ -82,6 +82,7 @@ const OEEShiftComparison = lazy(() => import('@/components/oee/OEEShiftCompariso
 const OEERecommendations = lazy(() => import('@/components/oee/OEERecommendations').then(m => ({ default: m.OEERecommendations })));
 const OEERankingGap = lazy(() => import('@/components/oee/OEERankingGap').then(m => ({ default: m.OEERankingGap })));
 const StudioEfficiencyGrid = lazy(() => import('@/components/oee/StudioEfficiencyGrid').then(m => ({ default: m.StudioEfficiencyGrid })));
+const MaterialEfficiencyChart = lazy(() => import('@/components/oee/MaterialEfficiencyChart').then(m => ({ default: m.MaterialEfficiencyChart })));
 const StudioHealthMonitor = lazy(() => import('@/components/oee/StudioHealthMonitor').then(m => ({ default: m.StudioHealthMonitor })));
 const HyperInsights = lazy(() => import('@/components/oee/HyperInsights').then(m => ({ default: m.HyperInsights })));
 
