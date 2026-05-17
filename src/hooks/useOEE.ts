@@ -315,7 +315,7 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, f
     // Group by Studio
     const byStudio: StudioOEE[] = STUDIOS_MAP.map(studio => {
       const studioJobs = periodJobs.filter(j => studio.techniques.includes(j.technique_id));
-      const m = calculateMetrics(studioJobs, 1);
+      const m = calculateMetrics(studioJobs, 1, PLANNED_MINUTES_PER_DAY);
       
       // Mock health data for studios
       let healthScore = 95;
