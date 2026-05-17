@@ -409,6 +409,30 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, f
       });
     }
 
+    const heatmapData = byMachine.map(machine => {
+      const machineDayData = [];
+      for (let i = validDaysBack - 1; i >= 0; i--) {
+        const date = subDays(now, i);
+        const dayJobs = periodJobs.filter(job => 
+          job.machine_id === machine.machineId && 
+          isWithinInterval(parseISO(job.actual_end_time!), { start: startOfDay(date), end: endOfDay(date) })
+        );
+        const m = calculateMetrics(dayJobs, 1);
+        machineDayData.push({
+          date: startOfDay(date).toISOString(),
+          oee: Math.round(m.oee * 10) / 10,
+          availability: Math.round(m.avail * 10) / 10,
+          performance: Math.round(m.perf * 10) / 10,
+          quality: Math.round(m.qual * 10) / 10
+        });
+      }
+      return {
+        machineId: machine.machineId,
+        machineName: machine.machineName,
+        data: machineDayData
+      };
+    });
+
     return {
       overallOEE: Math.round(overallOEE * 10) / 10,
       overallAvailability: Math.round(overallAvailability * 10) / 10,
@@ -419,7 +443,7 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, f
       byMaterial,
       byStudio,
       trendData,
-      heatmapData: [], // Simplified for now
+      heatmapData,
       maintenanceAlerts: [
         {
           machineId: 'uv-01',
