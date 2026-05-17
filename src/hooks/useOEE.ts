@@ -284,7 +284,7 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, f
         if (sId === '3' && (hour < 7 || hour >= 23)) return true;
         return false;
       });
-      const m = calculateMetrics(shiftJobs, 1);
+      const m = calculateMetrics(shiftJobs, 1, PLANNED_MINUTES_PER_DAY);
       return {
         shiftId: sId,
         shiftName: sId === '1' ? 'Manhã' : sId === '2' ? 'Tarde' : 'Noite',
