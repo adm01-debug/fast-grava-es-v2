@@ -882,7 +882,12 @@ const OEEDashboard = memo(function OEEDashboard() {
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
+            <Suspense fallback={<div className="h-48 animate-pulse bg-muted rounded-xl" />}>
+              <StudioEfficiencyGrid studios={data.byStudio || []} />
+            </Suspense>
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+
               <OEEGaugeCard 
                 title={t('oee.generalOEE', 'OEE Geral')} 
                 value={data.overallOEE} 
