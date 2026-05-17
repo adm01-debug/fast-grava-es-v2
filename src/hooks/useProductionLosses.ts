@@ -20,6 +20,7 @@ export function useProductionLosses(jobId?: string, filters?: { shift?: string; 
     queryKey: ['production-losses', jobId, filters],
     queryFn: async () => {
       let query = supabase.from('production_losses').select('*, job:jobs(order_number, client, machine_id, technique_id)');
+      
       if (jobId) {
         query = query.eq('job_id', jobId);
       }
@@ -40,16 +41,19 @@ export function useProductionLosses(jobId?: string, filters?: { shift?: string; 
       if (error) throw error;
 
       // Client-side filtering for machine and technique since they are in the related job table
-      let filteredData = data;
+      let filteredData = (data || []) as any[];
+      
       if (filters?.machineId && filters.machineId !== 'all') {
         filteredData = filteredData.filter((l: any) => l.job?.machine_id === filters.machineId);
       }
+      
       if (filters?.techniqueId && filters.techniqueId !== 'all') {
         filteredData = filteredData.filter((l: any) => l.job?.technique_id === filters.techniqueId);
       }
 
       return filteredData;
     },
+    enabled: true,
   });
 
   const recordLoss = useMutation({
