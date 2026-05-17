@@ -320,19 +320,23 @@ const OEEDashboard = memo(function OEEDashboard() {
       if (finalY < 250) {
         doc.setFontSize(14);
         doc.setTextColor(232, 93, 58);
-        doc.text('Recomendações e Plano de Ação', 14, finalY);
+        doc.text('Recomendações e Plano de Ação 10/10', 14, finalY);
         
         doc.setFontSize(9);
         doc.setTextColor(100);
         let actionY = finalY + 10;
-        if (data.overallOEE < 85) {
-          doc.text('• Implementar melhoria contínua nos gargalos de disponibilidade.', 14, actionY);
-          doc.text('• Revisar tempos de setup nas máquinas com maior gap vs meta.', 14, actionY + 5);
-        } else {
-          doc.text('• Performance de Classe Mundial atingida. Manter protocolos atuais.', 14, actionY);
-        }
+        
+        const recommendations = [];
+        if (data.overallAvailability < 85) recommendations.push('• Implementar técnicas SMED para redução de setup nos Studios Serigrafia.');
+        if (data.overallPerformance < 90) recommendations.push('• Calibrar velocidades nominais nos equipamentos de Gravação Laser.');
+        if (data.overallQuality < 98) recommendations.push('• Revisar protocolos de cura UV para evitar micro-fissuras em substratos plásticos.');
+        if (recommendations.length === 0) recommendations.push('• Performance de Classe Mundial atingida. Manter monitoramento preditivo autônomo.');
+
+        recommendations.forEach((rec, i) => {
+          doc.text(rec, 14, actionY + (i * 5));
+        });
       }
-      
+
       doc.save(`fast_gravacoes_oee_report_${new Date().toISOString().slice(0,10)}.pdf`);
     } else {
       downloadReport(reportFormat);
