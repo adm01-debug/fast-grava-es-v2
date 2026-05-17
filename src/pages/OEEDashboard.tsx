@@ -26,6 +26,7 @@ import {
   Gauge,
   Target,
   TrendingUp,
+  TrendingDown,
   Award,
   AlertTriangle,
   CheckCircle2,
