@@ -239,7 +239,7 @@ export const OEEMachineTable = memo(function OEEMachineTable({ machines }: OEEMa
                 </TableRow>
               ) : (
                 filteredMachines.map(machine => (
-                  <TableRow key={machine.machineId} className="hover:bg-muted/50">
+                  <TableRow key={machine.machineId} className="hover:bg-muted/50 content-visibility-auto">
                     <TableCell>
                       <div>
                         <div className="font-medium">{machine.machineName}</div>
