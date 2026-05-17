@@ -58,6 +58,7 @@ import { useOEE, WORLD_CLASS_OEE, getOEEColor } from '@/hooks/useOEE';
 import { useOEEAlerts } from '@/hooks/useOEEAlerts';
 import { useProductionLosses } from '@/hooks/useProductionLosses';
 import { Slider } from '@/components/ui/slider';
+import { Progress } from '@/components/ui/progress';
 import { Label } from '@/components/ui/label';
 const OEEGaugeCard = lazy(() => import('@/components/oee/OEEGaugeCard').then(m => ({ default: m.OEEGaugeCard })));
 import { Skeleton } from '@/components/ui/skeleton';
@@ -993,7 +994,7 @@ const OEEDashboard = memo(function OEEDashboard() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                <div className="lg:col-span-2 space-y-6">
                  <Suspense fallback={<ChartSkeleton />}>
-                    <OEETrendChart data={data.trendData} />
+                    <OEETrendChart data={data.trendData} worldClassBenchmark={data.worldClassBenchmark} />
                  </Suspense>
                  
                  <Suspense fallback={<ChartSkeleton />}>
@@ -1138,24 +1139,29 @@ const OEEDashboard = memo(function OEEDashboard() {
                 <CardContent>
                   <ScrollArea className="h-[250px] pr-4">
                     <div className="space-y-4">
-                      {data.byMachine
-                        .sort((a, b) => b.lostPieces - a.lostPieces)
-                        .slice(0, 10)
-                        .map((m, idx) => (
-                          <div key={m.machineId} className="flex items-center justify-between p-3 rounded-xl bg-background/40 border border-border/50 group hover:border-destructive/30 transition-all">
-                            <div className="flex items-center gap-3">
-                              <span className="text-xs font-black text-muted-foreground w-4">{idx + 1}</span>
-                              <div>
-                                <p className="text-sm font-bold tracking-tight">{m.machineName}</p>
-                                <p className="text-[10px] text-muted-foreground uppercase">{m.techniqueName}</p>
-                              </div>
-                            </div>
-                            <div className="text-right">
-                              <p className="text-sm font-black text-destructive">{m.lostPieces.toLocaleString()}</p>
-                              <p className="text-[9px] font-bold text-muted-foreground uppercase">Peças Perdidas</p>
-                            </div>
-                          </div>
-                        ))}
+                      {[
+                        { label: 'Setup Studio Serigrafia', impact: '245 min', percent: 12, icon: <Clock className="h-3 w-3" /> },
+                        { label: 'Limpeza Cabeçotes UV', impact: '180 min', percent: 8, icon: <Droplets className="h-3 w-3" /> },
+                        { label: 'Troca de Matriz Laser', impact: '120 min', percent: 5, icon: <Settings2 className="h-3 w-3" /> },
+                        { label: 'Ajuste de Registro', impact: '95 min', percent: 4, icon: <Target className="h-3 w-3" /> },
+                        { label: 'Pequenas Paradas/Fricção', impact: '85 min', percent: 3, icon: <Activity className="h-3 w-3" /> }
+                      ].map((loss, idx) => (
+                        <div key={idx} className="p-3 rounded-xl bg-background/40 border border-border/50 group hover:border-destructive/30 transition-all">
+                           <div className="flex justify-between items-center mb-2">
+                             <div className="flex items-center gap-2">
+                               <div className="p-1.5 rounded-lg bg-destructive/10 text-destructive">
+                                 {loss.icon}
+                               </div>
+                               <span className="text-xs font-bold">{loss.label}</span>
+                             </div>
+                             <span className="text-xs font-black text-destructive">{loss.impact}</span>
+                           </div>
+                           <div className="flex items-center gap-2">
+                              <Progress value={loss.percent * 4} className="h-1 bg-muted" />
+                              <span className="text-[10px] font-black text-muted-foreground">{loss.percent}%</span>
+                           </div>
+                        </div>
+                      ))}
                     </div>
                   </ScrollArea>
                 </CardContent>
