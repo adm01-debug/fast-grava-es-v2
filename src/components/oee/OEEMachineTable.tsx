@@ -31,7 +31,7 @@ interface OEEMachineTableProps {
   machines: MachineOEE[];
 }
 
-type SortField = 'oee' | 'availability' | 'performance' | 'quality' | 'machineName' | 'totalPiecesProduced';
+type SortField = 'oee' | 'availability' | 'performance' | 'quality' | 'machineName' | 'totalPiecesProduced' | 'gap';
 type SortDirection = 'asc' | 'desc';
 
 import { memo } from 'react';
