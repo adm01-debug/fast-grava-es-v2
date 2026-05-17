@@ -411,9 +411,14 @@ const OEEDashboard = memo(function OEEDashboard() {
         </Card>
         
         {/* Predictive Maintenance & Health Insights */}
-        <Suspense fallback={<div className="h-24 animate-pulse bg-muted rounded-xl" />}>
-          <PredictiveAlerts alerts={data.maintenanceAlerts} />
-        </Suspense>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <Suspense fallback={<div className="h-24 animate-pulse bg-muted rounded-xl" />}>
+            <PredictiveAlerts alerts={data.maintenanceAlerts} />
+          </Suspense>
+          <Suspense fallback={<div className="h-24 animate-pulse bg-muted rounded-xl" />}>
+            <OEERecommendations data={data} />
+          </Suspense>
+        </div>
 
         <div className="flex flex-col lg:flex-row gap-4">
           <div className="flex-1 grid grid-cols-1 md:grid-cols-4 gap-4">
