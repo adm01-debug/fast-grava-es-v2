@@ -140,6 +140,9 @@ export function useNotifications(options?: { limit?: number; unreadOnly?: boolea
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
+      // Ensure we don't have multiple channels
+      if (channel) return;
+
       channel = supabase.channel('notifications-realtime').on('postgres_changes', {
         event: 'INSERT', schema: 'public', table: 'push_notifications', filter: `user_id=eq.${user.id}`,
       }, (payload) => {
@@ -148,10 +151,14 @@ export function useNotifications(options?: { limit?: number; unreadOnly?: boolea
         toast.info(notif.title, { description: notif.body });
       }).subscribe();
     };
+    
     setupRealtime();
 
     return () => {
-      if (channel) supabase.removeChannel(channel);
+      if (channel) {
+        supabase.removeChannel(channel);
+        channel = null;
+      }
     };
   }, [queryClient]);
 
