@@ -565,6 +565,7 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, f
 
       byMachine,
       byTechnique,
+      byShift,
       trendData,
       heatmapData,
       maintenanceAlerts,
