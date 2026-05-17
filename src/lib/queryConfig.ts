@@ -6,10 +6,20 @@ import { QueryClient } from '@tanstack/react-query';
 
 // Stale time configuration
 export const STALE_TIMES = {
-  STATIC: 5 * 60 * 1000,    // 5 minutes for static data (techniques, machines)
-  DYNAMIC: 30 * 1000,        // 30 seconds for dynamic data (jobs)
+  STATIC: 15 * 60 * 1000,    // 15 minutes for static data (techniques, machines)
+  DYNAMIC: 45 * 1000,        // 45 seconds for dynamic data (jobs)
   REALTIME: 10 * 1000,       // 10 seconds for realtime data
-  USER: 2 * 60 * 1000,       // 2 minutes for user data
+  USER: 5 * 60 * 1000,       // 5 minutes for user data
+} as const;
+
+// Shared Query Keys to avoid duplication
+export const QUERY_KEYS = {
+  JOBS: ['jobs'],
+  MACHINES: ['machines'],
+  TECHNIQUES: ['techniques'],
+  PROFILES: ['profiles'],
+  OPERATOR_PROFILES: ['operator-profiles'],
+  PAGINATED_JOBS: ['paginated-jobs'],
 } as const;
 
 // Retry configuration
