@@ -273,10 +273,10 @@ export const OEEMachineTable = memo(function OEEMachineTable({ machines }: OEEMa
                     <TableCell>
                       <div className={cn(
                         "flex items-center gap-1 font-bold",
-                        machine.gap >= 0 ? "text-success" : "text-destructive"
+                        (machine as any).trend >= 0 ? "text-success" : "text-destructive"
                       )}>
-                        {machine.gap >= 0 ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}
-                        {Math.abs(machine.gap).toFixed(1)}%
+                        {(machine as any).trend > 0 ? <TrendingUp className="h-3 w-3" /> : (machine as any).trend < 0 ? <TrendingDown className="h-3 w-3" /> : <Minus className="h-3 w-3" />}
+                        {Math.abs((machine as any).trend).toFixed(1)}%
                       </div>
                     </TableCell>
                     <TableCell>
