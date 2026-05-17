@@ -88,6 +88,7 @@ const OEEDashboard = memo(function OEEDashboard() {
   const { presets, savePreset, deletePreset } = useDashboardPresets('oee');
   const [activeTab, setActiveTab] = useState('overview');
   const [showConfig, setShowSimulatorLocal] = useState(false); // Used for a future settings modal if needed
+  const [showAudit, setShowAudit] = useState(false);
   
   const dateRange = useMemo(() => {
     const now = new Date();
