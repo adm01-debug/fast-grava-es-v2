@@ -39,10 +39,10 @@ export const OEERankingGap = memo(function OEERankingGap({
     })).sort((a, b) => b.gap - a.gap);
 
     return {
-      topMachines: machineGaps.slice(0, 3),
-      bottomMachines: machineGaps.slice(-3).reverse(),
-      topTechniques: techniqueGaps.slice(0, 3),
-      bottomTechniques: techniqueGaps.slice(-3).reverse()
+      topMachines: machineGaps.slice(0, 10),
+      bottomMachines: machineGaps.slice(-10).reverse(),
+      topTechniques: techniqueGaps.slice(0, 5),
+      bottomTechniques: techniqueGaps.slice(-5).reverse()
     };
   }, [machines, techniques, targetOEE]);
 
