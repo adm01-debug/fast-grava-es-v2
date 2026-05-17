@@ -34,6 +34,7 @@ import {
   BarChart3,
   Shield,
   ShieldCheck,
+  ZapOff,
   Settings2,
   Leaf,
   Droplets,
