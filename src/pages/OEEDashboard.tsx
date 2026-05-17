@@ -81,6 +81,9 @@ const OEELossDrilldown = lazy(() => import('@/components/oee/OEELossDrilldown').
 const OEEShiftComparison = lazy(() => import('@/components/oee/OEEShiftComparison').then(m => ({ default: m.OEEShiftComparison })));
 const OEERecommendations = lazy(() => import('@/components/oee/OEERecommendations').then(m => ({ default: m.OEERecommendations })));
 const OEERankingGap = lazy(() => import('@/components/oee/OEERankingGap').then(m => ({ default: m.OEERankingGap })));
+const StudioEfficiencyGrid = lazy(() => import('@/components/oee/StudioEfficiencyGrid').then(m => ({ default: m.StudioEfficiencyGrid })));
+const MaterialEfficiencyChart = lazy(() => import('@/components/oee/MaterialEfficiencyChart').then(m => ({ default: m.MaterialEfficiencyChart })));
+
 
 const OEEDashboard = memo(function OEEDashboard() {
   const { t } = useTranslation();
@@ -363,16 +366,21 @@ const OEEDashboard = memo(function OEEDashboard() {
         </Helmet>
 
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-2xl md:text-3xl font-black font-display flex items-center gap-3">
-              <Activity className="h-8 w-8 text-primary animate-pulse hidden sm:block" />
-              FAST GRAVAÇÕES - GESTÃO DE PERSONALIZAÇÃO
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 relative">
+          <div className="absolute -top-10 -left-10 w-64 h-64 bg-primary/5 rounded-full blur-3xl -z-10" />
+          <div className="flex flex-col">
+            <div className="flex items-center gap-2 mb-1">
+               <Badge className="bg-primary text-primary-foreground border-none text-[8px] font-black uppercase tracking-tighter px-1.5 py-0 h-4">Industrial Intelligence</Badge>
+               <div className="h-px w-12 bg-primary/20" />
+            </div>
+            <h1 className="text-2xl md:text-4xl font-black font-display flex items-center gap-3 tracking-tighter">
+              <span className="text-primary italic">FAST</span> GRAVAÇÕES
             </h1>
-            <p className="text-muted-foreground mt-1">
-              {t('oee.description', 'Overall Equipment Effectiveness - Eficiência Global dos Equipamentos')}
+            <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mt-1 opacity-70">
+              Sistema Global de Eficiência Studio 10/10
             </p>
           </div>
+
 
           <div className="flex flex-wrap items-center gap-2">
             <VoiceButton />
@@ -524,17 +532,16 @@ const OEEDashboard = memo(function OEEDashboard() {
           <CardContent className="py-6 flex flex-col md:flex-row items-center gap-6">
             <div className="flex-1 space-y-2">
               <div className="flex items-center gap-2">
-                 <Badge className="bg-primary/20 text-primary border-primary/30 animate-pulse uppercase text-[10px] font-black">AI Insight</Badge>
-                 <h2 className="text-xl font-bold tracking-tight">{t('oee.consolidated', 'OEE Consolidado')}: {data.overallOEE.toFixed(1)}%</h2>
+                 <Badge className="bg-primary/20 text-primary border-primary/30 animate-pulse uppercase text-[10px] font-black">Studio Intelligence 10/10</Badge>
+                 <h2 className="text-xl font-bold tracking-tight">Análise Preditiva FAST - {data.overallOEE.toFixed(1)}%</h2>
               </div>
               <p className="text-sm text-muted-foreground leading-relaxed">
                 {data.overallOEE >= 85 
-                  ? "Sua planta está operando em nível de Classe Mundial. Mantenha a estabilidade dos processos." 
-                  : data.overallOEE >= 65 
-                  ? `A técnica ${data.byTechnique[0]?.techniqueName || 'principal'} está liderando a produtividade. Foque em reduzir perdas de disponibilidade para atingir 85%.`
-                  : "Atenção: Eficiência global abaixo do esperado. Verifique o drill-down de perdas para identificar gargalos críticos."}
+                  ? "Sua operação atingiu o nível de excelência industrial. A sincronia entre Studios e Materiais está otimizada." 
+                  : `Detectamos gargalos no Studio ${data.byStudio[0]?.studioName || 'Principal'}. A performance com ${data.byMaterial[0]?.material || 'materiais variados'} pode ser melhorada em ${(85 - data.overallOEE).toFixed(1)}% para atingir a meta global.`}
               </p>
             </div>
+
             <div className="flex flex-wrap items-center justify-center gap-3 bg-background/40 p-4 rounded-2xl border border-border/50 backdrop-blur-sm">
               <div className="text-center px-4 border-r border-border/50">
                  <p className="text-2xl font-black text-primary">{data.overallAvailability.toFixed(0)}%</p>
@@ -879,7 +886,12 @@ const OEEDashboard = memo(function OEEDashboard() {
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
+            <Suspense fallback={<div className="h-48 animate-pulse bg-muted rounded-xl" />}>
+              <StudioEfficiencyGrid studios={data.byStudio || []} />
+            </Suspense>
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+
               <OEEGaugeCard 
                 title={t('oee.generalOEE', 'OEE Geral')} 
                 value={data.overallOEE} 
@@ -983,8 +995,28 @@ const OEEDashboard = memo(function OEEDashboard() {
                 </CardContent>
               </Card>
             </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-2">
+                 <Suspense fallback={<ChartSkeleton />}>
+                    <MaterialEfficiencyChart materials={data.byMaterial || []} />
+                 </Suspense>
+              </div>
+              <div className="space-y-6">
+                 <Card className="bg-primary/5 border-primary/20 h-full flex flex-col justify-center items-center p-8 text-center relative overflow-hidden">
+                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary to-transparent" />
+                    <Sparkles className="h-12 w-12 text-primary mb-4 animate-pulse" />
+                    <h3 className="text-xl font-black italic tracking-tighter uppercase mb-2">Qualidade Hyper 10/10</h3>
+                    <p className="text-sm text-muted-foreground max-w-[200px]">
+                       A excelência operacional da FAST GRAVAÇÕES é monitorada em tempo real com inteligência Studio.
+                    </p>
+                    <div className="mt-6 font-display font-black text-6xl opacity-10 select-none">FAST</div>
+                 </Card>
+              </div>
+            </div>
             
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+
               <Card className="bg-success/5 border-success/10 transition-transform hover:scale-[1.02]">
                 <CardContent className="pt-4">
                    <div className="flex items-center gap-3">
