@@ -20,6 +20,9 @@ interface OEEHeatmapProps {
     data: {
       date: string;
       oee: number;
+      availability: number;
+      performance: number;
+      quality: number;
     }[];
   }[];
 }
