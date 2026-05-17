@@ -2,7 +2,7 @@ import { memo, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Trophy, TrendingDown, Target, ArrowUpRight, ArrowDownRight, Minus } from 'lucide-react';
+import { Trophy, TrendingDown, Target, ArrowUpRight, ArrowDownRight, Minus, AlertTriangle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { MachineOEE, TechniqueOEE } from '@/hooks/useOEE';
 
@@ -19,15 +19,24 @@ export const OEERankingGap = memo(function OEERankingGap({
 }: OEERankingGapProps) {
   
   const rankingData = useMemo(() => {
-    const machineGaps = machines.map(m => ({
-      name: m.machineName,
-      id: m.machineId,
-      type: 'machine' as const,
-      value: m.oee,
-      gap: m.oee - targetOEE,
-      losses: m.lostPieces,
-      color: m.techniqueColor
-    })).sort((a, b) => b.gap - a.gap);
+    const machineGaps = machines.map(m => {
+      const gap = m.oee - targetOEE;
+      // Impact of losses normalized by piece count vs target
+      const lossImpact = m.lostPieces * (1 - m.oee / 100);
+      
+      return {
+        name: m.machineName,
+        id: m.machineId,
+        type: 'machine' as const,
+        value: m.oee,
+        gap,
+        lossImpact,
+        losses: m.lostPieces,
+        color: m.techniqueColor
+      };
+    }).sort((a, b) => b.gap - a.gap);
+
+    const machineLossImpact = [...machineGaps].sort((a, b) => b.lossImpact - a.lossImpact);
 
     const techniqueGaps = techniques.map(t => ({
       name: t.techniqueName,
@@ -40,20 +49,24 @@ export const OEERankingGap = memo(function OEERankingGap({
 
     return {
       topMachines: machineGaps.slice(0, 10),
-      bottomMachines: machineGaps.slice(-10).reverse(),
+      bottomMachines: machineGaps.filter(m => m.gap < 0).slice(-10).reverse(),
+      lossImpactMachines: machineLossImpact.slice(0, 10),
       topTechniques: techniqueGaps.slice(0, 5),
-      bottomTechniques: techniqueGaps.slice(-5).reverse()
+      bottomTechniques: techniqueGaps.filter(t => t.gap < 0).slice(-5).reverse()
     };
   }, [machines, techniques, targetOEE]);
 
-  const renderRankingItem = (item: any, index: number, isBottom: boolean) => {
+  const renderRankingItem = (item: any, index: number, mode: 'ranking' | 'gap' | 'impact') => {
     const isAboveTarget = item.gap >= 0;
+    const isImpactMode = mode === 'impact';
     
     return (
       <div key={item.id} className="flex items-center gap-4 p-3 rounded-xl bg-background/40 border border-border/50 hover:border-primary/30 transition-all group">
         <div className={cn(
           "h-8 w-8 rounded-lg flex items-center justify-center font-black text-xs shrink-0",
-          isBottom ? "bg-destructive/10 text-destructive" : "bg-primary/10 text-primary"
+          mode === 'ranking' ? "bg-primary/10 text-primary" : 
+          mode === 'impact' ? "bg-destructive/10 text-destructive" :
+          "bg-indicator-warning/10 text-indicator-warning"
         )}>
           #{index + 1}
         </div>
@@ -70,14 +83,25 @@ export const OEERankingGap = memo(function OEERankingGap({
         </div>
 
         <div className="text-right shrink-0">
-          <div className={cn(
-            "flex items-center justify-end gap-1 text-xs font-black",
-            isAboveTarget ? "text-success" : "text-destructive"
-          )}>
-            {isAboveTarget ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}
-            {Math.abs(item.gap).toFixed(1)}%
-          </div>
-          <p className="text-[9px] font-bold text-muted-foreground uppercase">Gap vs Meta</p>
+          {isImpactMode ? (
+            <>
+              <div className="text-xs font-black text-destructive">
+                {item.losses.toLocaleString()}
+              </div>
+              <p className="text-[9px] font-bold text-muted-foreground uppercase">Peças Perdidas</p>
+            </>
+          ) : (
+            <>
+              <div className={cn(
+                "flex items-center justify-end gap-1 text-xs font-black",
+                isAboveTarget ? "text-success" : "text-destructive"
+              )}>
+                {isAboveTarget ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}
+                {Math.abs(item.gap).toFixed(1)}%
+              </div>
+              <p className="text-[9px] font-bold text-muted-foreground uppercase">vs Meta ({targetOEE}%)</p>
+            </>
+          )}
         </div>
       </div>
     );
@@ -94,24 +118,24 @@ export const OEERankingGap = memo(function OEERankingGap({
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3 pt-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
-            {rankingData.topMachines.map((m, i) => renderRankingItem(m, i, false))}
+            {rankingData.topMachines.map((m, i) => renderRankingItem(m, i, 'ranking'))}
           </CardContent>
         </Card>
 
         <Card className="border-destructive/10 bg-black/5">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-black uppercase tracking-widest flex items-center gap-2">
-              <TrendingDown className="h-4 w-4 text-destructive" />
-              Impacto de Perdas (Gaps vs Meta 85%)
+              <AlertTriangle className="h-4 w-4 text-destructive" />
+              Impacto de Perdas (Máquinas)
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3 pt-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
-            {rankingData.bottomMachines.map((m, i) => renderRankingItem(m, i, true))}
+            {rankingData.lossImpactMachines.map((m, i) => renderRankingItem(m, i, 'impact'))}
           </CardContent>
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <Card className="border-primary/10 bg-black/5">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-black uppercase tracking-widest flex items-center gap-2">
@@ -120,19 +144,31 @@ export const OEERankingGap = memo(function OEERankingGap({
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3 pt-4">
-            {rankingData.topTechniques.map((t, i) => renderRankingItem(t, i, false))}
+            {rankingData.topTechniques.map((t, i) => renderRankingItem(t, i, 'ranking'))}
           </CardContent>
         </Card>
 
-        <Card className="border-indicator-info/10 bg-black/5">
+        <Card className="border-indicator-warning/10 bg-black/5">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-black uppercase tracking-widest flex items-center gap-2">
-              <TrendingDown className="h-4 w-4 text-indicator-info" />
+              <TrendingDown className="h-4 w-4 text-indicator-warning" />
               Técnicas com Maior Desvio
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3 pt-4">
-            {rankingData.bottomTechniques.map((t, i) => renderRankingItem(t, i, true))}
+            {rankingData.bottomTechniques.map((t, i) => renderRankingItem(t, i, 'gap'))}
+          </CardContent>
+        </Card>
+
+        <Card className="border-indicator-info/10 bg-black/5 shadow-inner">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-black uppercase tracking-widest flex items-center gap-2">
+              <AlertTriangle className="h-4 w-4 text-indicator-info" />
+              Gargalos vs Meta ({targetOEE}%)
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3 pt-4">
+            {rankingData.bottomMachines.slice(0, 5).map((m, i) => renderRankingItem(m, i, 'gap'))}
           </CardContent>
         </Card>
       </div>
