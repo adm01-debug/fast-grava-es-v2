@@ -64,9 +64,17 @@ export interface DbMachine {
   is_active: boolean;
 }
 
-// Stale time configuration
-const STATIC_STALE_TIME = 5 * 60 * 1000; // 5 minutes for techniques/machines
-const JOBS_STALE_TIME = 30 * 1000; // 30 seconds for jobs
+// Shared stale time configuration for consistency across hooks
+export const STATIC_STALE_TIME = 15 * 60 * 1000; // 15 minutes
+export const JOBS_STALE_TIME = 45 * 1000; // 45 seconds
+
+// Query keys constants to avoid typos
+export const QUERY_KEYS = {
+  JOBS: ['jobs'],
+  MACHINES: ['machines'],
+  TECHNIQUES: ['techniques'],
+  PAGINATED_JOBS: ['paginated-jobs'],
+};
 
 export function useTechniques() {
   const queryClient = useQueryClient();
