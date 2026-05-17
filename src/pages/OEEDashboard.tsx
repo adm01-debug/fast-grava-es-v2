@@ -400,6 +400,45 @@ const OEEDashboard = memo(function OEEDashboard() {
               <span className="hidden sm:inline">Compartilhar</span>
             </Button>
 
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline" size="sm" className="flex gap-2 border-primary/20 hover:bg-primary/5 active:scale-95 transition-transform">
+                  <Bookmark className="h-4 w-4" />
+                  <span className="hidden sm:inline">Presets</span>
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-80 p-4">
+                <div className="space-y-4">
+                  <h4 className="font-bold text-sm">Presets do Dashboard</h4>
+                  <div className="flex gap-2">
+                    <Input 
+                      placeholder="Nome do preset..." 
+                      value={presetName}
+                      onChange={(e) => setPresetName(e.target.value)}
+                      className="h-8 text-xs"
+                    />
+                    <Button size="sm" onClick={handleSavePreset} className="h-8 px-3">
+                      <Save className="h-3 w-3" />
+                    </Button>
+                  </div>
+                  <div className="space-y-2 max-h-40 overflow-auto">
+                    {presets.length === 0 ? (
+                      <p className="text-[10px] text-muted-foreground text-center py-4 italic">Nenhum preset salvo</p>
+                    ) : (
+                      presets.map((preset) => (
+                        <div key={preset.id} className="flex items-center justify-between p-2 rounded-md bg-muted/50 hover:bg-muted transition-colors">
+                          <span className="text-xs font-medium truncate flex-1 cursor-pointer" onClick={() => applyPreset(preset)}>{preset.name}</span>
+                          <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive" onClick={() => deletePreset(preset.id)}>
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+              </PopoverContent>
+            </Popover>
+
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="sm" className="flex gap-2 border-primary/20 hover:bg-primary/5 active:scale-95 transition-transform">
