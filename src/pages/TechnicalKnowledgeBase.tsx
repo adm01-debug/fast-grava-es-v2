@@ -146,7 +146,7 @@ const TechnicalKnowledgeBase = () => {
               <span className="text-base sm:text-2xl">Base de Conhecimento</span>
             </h1>
             <p className="text-xs sm:text-base text-muted-foreground mt-1">
-              Fichas técnicas para personalização
+              Fichas técnicas para personalização de brindes e presentes (FAST GRAVAÇÕES)
             </p>
           </div>
           {canEdit && (

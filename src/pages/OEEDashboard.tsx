@@ -87,6 +87,7 @@ const OEEDashboard = memo(function OEEDashboard() {
   const [period, setPeriod] = useState<string>('30');
   const [machineId, setMachineId] = useState<string>('all');
   const [techniqueId, setTechniqueId] = useState<string>('all');
+  const [studioId, setStudioId] = useState<string>('all');
   const [shift, setShift] = useState<string>('all');
   const [showSimulator, setShowSimulator] = useState(false);
   const [simValues, setSimValues] = useState({ availability: 85, performance: 90, quality: 98 });
@@ -97,8 +98,18 @@ const OEEDashboard = memo(function OEEDashboard() {
   const [showAudit, setShowAudit] = useState(false);
   const [industryBenchmark, setIndustryBenchmark] = useState('world_class');
   
+  const STUDIOS = [
+    { id: 'all', label: 'Todos os Studios' },
+    { id: 'serigrafia_textil', label: 'Studio Serigrafia Têxtil', techniques: ['serigrafia'] },
+    { id: 'serigrafia_cilindrica', label: 'Studio Serigrafia Cilíndrica', techniques: ['serigrafia'] },
+    { id: 'serigrafia_vinilica', label: 'Studio Serigrafia Vinílica', techniques: ['serigrafia'] },
+    { id: 'personalizacao_uv', label: 'Studio UV Premium', techniques: ['digital_uv', 'uv'] },
+    { id: 'laser', label: 'Studio Laser Precision', techniques: ['laser'] }
+  ];
+
   const INDUSTRY_BENCHMARKS: Record<string, { label: string, target: number, desc: string }> = {
     'world_class': { label: 'World Class (Geral)', target: 85, desc: 'Padrão ouro de excelência industrial global.' },
+    'corporate_gifts': { label: 'Brindes Corporativos (FAST)', target: 82, desc: 'Foco em setup rápido e alta variabilidade de produtos.' },
     'automotive': { label: 'Automotivo', target: 80, desc: 'Alta automação e processos rígidos de qualidade.' },
     'food_bev': { label: 'Alimentos & Bebidas', target: 75, desc: 'Foco em disponibilidade e conformidade sanitária.' },
     'textile': { label: 'Têxtil', target: 65, desc: 'Alta variabilidade de setup e troca de lotes.' },
@@ -411,13 +422,30 @@ const OEEDashboard = memo(function OEEDashboard() {
               </SelectContent>
             </Select>
 
+            <Select value={studioId} onValueChange={setStudioId}>
+              <SelectTrigger className="w-[120px] sm:w-36 md:w-52 glass-card border-primary/20">
+                <SelectValue placeholder="Studio" />
+              </SelectTrigger>
+              <SelectContent>
+                {STUDIOS.map(s => (
+                  <SelectItem key={s.id} value={s.id}>{s.label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
             <Select value={techniqueId} onValueChange={setTechniqueId}>
               <SelectTrigger className="w-[110px] sm:w-32 md:w-44 glass-card border-primary/20">
                 <SelectValue placeholder={t('common.technique', 'Técnica')} />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">{t('common.allTechniques', 'Todas Técnicas')}</SelectItem>
-                {data.byTechnique.map(tech => (
+                {data.byTechnique
+                  .filter(tech => {
+                    if (studioId === 'all') return true;
+                    const studio = STUDIOS.find(s => s.id === studioId);
+                    return studio?.techniques.includes(tech.techniqueId) || tech.techniqueName.toLowerCase().includes(studio?.id.split('_')[0] || '');
+                  })
+                  .map(tech => (
                   <SelectItem key={tech.techniqueId} value={tech.techniqueId}>{tech.techniqueName}</SelectItem>
                 ))}
               </SelectContent>
