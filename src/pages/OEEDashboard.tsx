@@ -832,6 +832,9 @@ const OEEDashboard = memo(function OEEDashboard() {
           </TabsContent>
 
           <TabsContent value="machines" className="space-y-6">
+            <Suspense fallback={<ChartSkeleton />}>
+              <OEERankingGap machines={data.byMachine} techniques={data.byTechnique} />
+            </Suspense>
             <Suspense fallback={<TableSkeleton />}><OEEMachineTable machines={data.byMachine} /></Suspense>
             <Suspense fallback={<ChartSkeleton />}><OEETechniqueComparison techniques={data.byTechnique} worldClassBenchmark={data.worldClassBenchmark} /></Suspense>
           </TabsContent>
