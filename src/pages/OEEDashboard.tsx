@@ -95,6 +95,17 @@ const OEEDashboard = memo(function OEEDashboard() {
   const [activeTab, setActiveTab] = useState('overview');
   const [showConfig, setShowSimulatorLocal] = useState(false); // Used for a future settings modal if needed
   const [showAudit, setShowAudit] = useState(false);
+  const [industryBenchmark, setIndustryBenchmark] = useState('world_class');
+  
+  const INDUSTRY_BENCHMARKS: Record<string, { label: string, target: number, desc: string }> = {
+    'world_class': { label: 'World Class (Geral)', target: 85, desc: 'Padrão ouro de excelência industrial global.' },
+    'automotive': { label: 'Automotivo', target: 80, desc: 'Alta automação e processos rígidos de qualidade.' },
+    'food_bev': { label: 'Alimentos & Bebidas', target: 75, desc: 'Foco em disponibilidade e conformidade sanitária.' },
+    'textile': { label: 'Têxtil', target: 65, desc: 'Alta variabilidade de setup e troca de lotes.' },
+    'general': { label: 'Manufatura Geral', target: 60, desc: 'Processos manuais ou semi-automáticos.' }
+  };
+
+  const currentBenchmark = INDUSTRY_BENCHMARKS[industryBenchmark];
   
   const dateRange = useMemo(() => {
     const now = new Date();
