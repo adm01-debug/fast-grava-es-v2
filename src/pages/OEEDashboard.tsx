@@ -26,6 +26,7 @@ import {
   Gauge,
   Target,
   TrendingUp,
+  TrendingDown,
   Award,
   AlertTriangle,
   CheckCircle2,
@@ -76,6 +77,8 @@ const OEEHeatmap = lazy(() => import('@/components/oee/OEEHeatmap').then(m => ({
 const PredictiveAlerts = lazy(() => import('@/components/oee/PredictiveAlerts').then(m => ({ default: m.PredictiveAlerts })));
 const ParetoLossesChart = lazy(() => import('@/components/oee/ParetoLossesChart').then(m => ({ default: m.ParetoLossesChart })));
 const OEELossDrilldown = lazy(() => import('@/components/oee/OEELossDrilldown').then(m => ({ default: m.OEELossDrilldown })));
+const OEEShiftComparison = lazy(() => import('@/components/oee/OEEShiftComparison').then(m => ({ default: m.OEEShiftComparison })));
+const OEERecommendations = lazy(() => import('@/components/oee/OEERecommendations').then(m => ({ default: m.OEERecommendations })));
 
 const OEEDashboard = memo(function OEEDashboard() {
   const { t } = useTranslation();
@@ -409,9 +412,14 @@ const OEEDashboard = memo(function OEEDashboard() {
         </Card>
         
         {/* Predictive Maintenance & Health Insights */}
-        <Suspense fallback={<div className="h-24 animate-pulse bg-muted rounded-xl" />}>
-          <PredictiveAlerts alerts={data.maintenanceAlerts} />
-        </Suspense>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <Suspense fallback={<div className="h-24 animate-pulse bg-muted rounded-xl" />}>
+            <PredictiveAlerts alerts={data.maintenanceAlerts} />
+          </Suspense>
+          <Suspense fallback={<div className="h-24 animate-pulse bg-muted rounded-xl" />}>
+            <OEERecommendations data={data} />
+          </Suspense>
+        </div>
 
         <div className="flex flex-col lg:flex-row gap-4">
           <div className="flex-1 grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -667,6 +675,9 @@ const OEEDashboard = memo(function OEEDashboard() {
             <TabsTrigger value="heatmap" className="gap-2 text-xs font-bold uppercase tracking-tight">
               <BarChart3 className="h-4 w-4" /> Produtividade
             </TabsTrigger>
+            <TabsTrigger value="shifts" className="gap-2 text-xs font-bold uppercase tracking-tight">
+              <Clock className="h-4 w-4" /> Comparativo de Turnos
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
@@ -832,6 +843,12 @@ const OEEDashboard = memo(function OEEDashboard() {
               <Card className="bg-indicator-info/5 border-indicator-info/20"><CardContent className="pt-6"><h3 className="font-bold">Otimização</h3><p className="text-3xl font-black text-indicator-info">{(data.overallPerformance * 1.2).toFixed(1)}%</p></CardContent></Card>
               <Card className="bg-warning/5 border-warning/20"><CardContent className="pt-6"><h3 className="font-bold">Eficiência Energética</h3><p className="text-3xl font-black text-warning">{(data.overallAvailability * 0.9).toFixed(1)}%</p></CardContent></Card>
             </div>
+          </TabsContent>
+          
+          <TabsContent value="shifts" className="space-y-6">
+            <Suspense fallback={<ChartSkeleton />}>
+              <OEEShiftComparison shifts={data.byShift || []} />
+            </Suspense>
           </TabsContent>
         </Tabs>
 

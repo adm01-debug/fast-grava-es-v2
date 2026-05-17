@@ -107,6 +107,14 @@ export interface OEEData {
   availabilityLosses: number;
   performanceLosses: number;
   qualityLosses: number;
+  byShift?: {
+    shiftId: string;
+    shiftName: string;
+    oee: number;
+    availability: number;
+    performance: number;
+    quality: number;
+  }[];
   comparison?: {
     currentOEE: number;
     previousOEE: number;
@@ -303,6 +311,52 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, f
 
     const byMachine = Array.from(machineOEEMap.values()).sort((a, b) => b.oee - a.oee);
 
+    // Group by shift
+    const shifts = ['1', '2', '3'];
+    const byShift = shifts.map(sId => {
+      const shiftJobs = periodJobs.filter(job => {
+        const timeToUse = job.actual_start_time || job.start_time;
+        if (!timeToUse) return false;
+        let hour: number;
+        if (timeToUse.includes('T')) hour = new Date(timeToUse).getHours();
+        else hour = parseInt(timeToUse.split(':')[0]);
+        
+        if (sId === '1' && (hour >= 7 && hour < 15)) return true;
+        if (sId === '2' && (hour >= 15 && hour < 23)) return true;
+        if (sId === '3' && (hour < 7 || hour >= 23)) return true;
+        return false;
+      });
+
+      if (shiftJobs.length === 0) {
+        return { shiftId: sId, shiftName: `Turno ${sId}`, oee: 0, availability: 0, performance: 0, quality: 0 };
+      }
+
+      let sActual = 0, sEstimated = 0, sProduced = 0, sLost = 0;
+      for (const j of shiftJobs) {
+        if (isValidDate(j.actual_start_time) && isValidDate(j.actual_end_time)) {
+          try { sActual += differenceInMinutes(parseISO(j.actual_end_time!), parseISO(j.actual_start_time!)); } catch {}
+        }
+        sEstimated += sanitizeNumber(j.estimated_duration || 60);
+        sProduced += sanitizeNumber(j.produced_quantity ?? j.quantity);
+        sLost += sanitizeNumber(j.lost_pieces);
+      }
+
+      const sPlanned = Math.max(PLANNED_MINUTES_PER_DAY, sEstimated);
+      const sAvail = sPlanned > 0 ? Math.min(100, (sActual / sPlanned) * 100) : 0;
+      const sPerf = sActual > 0 ? Math.min(100, (sEstimated / sActual) * 100) : 0;
+      const sQual = sProduced > 0 ? Math.min(100, ((sProduced - sLost) / sProduced) * 100) : 0;
+      const sOEE = (sAvail / 100) * (sPerf / 100) * (sQual / 100) * 100;
+
+      return {
+        shiftId: sId,
+        shiftName: sId === '1' ? 'Manhã' : sId === '2' ? 'Tarde' : 'Noite',
+        oee: Math.round(sOEE * 10) / 10,
+        availability: Math.round(sAvail * 10) / 10,
+        performance: Math.round(sPerf * 10) / 10,
+        quality: Math.round(sQual * 10) / 10
+      };
+    });
+
     // Group by technique
     const techniqueMap = new Map<string, TechniqueOEE>();
 
@@ -311,7 +365,7 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, f
       if (techniqueMachines.length === 0) continue;
 
       const avgOEE = techniqueMachines.reduce((sum, m) => sum + m.oee, 0) / techniqueMachines.length;
-      const avgAvailability = techniqueMachines.reduce((sum, m) => sum + m.availability, 0) / techniqueMachines.length;
+      const avgAvailability = techniqueMachines.reduce((sum, m) => sum + sum + m.availability, 0) / techniqueMachines.length;
       const avgPerformance = techniqueMachines.reduce((sum, m) => sum + m.performance, 0) / techniqueMachines.length;
       const avgQuality = techniqueMachines.reduce((sum, m) => sum + m.quality, 0) / techniqueMachines.length;
 
@@ -511,6 +565,7 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, f
 
       byMachine,
       byTechnique,
+      byShift,
       trendData,
       heatmapData,
       maintenanceAlerts,
