@@ -522,6 +522,69 @@ const OEEDashboard = memo(function OEEDashboard() {
           </div>
         </div>
 
+        {showAudit && (
+          <Card className="border-indicator-info/20 bg-muted/20 animate-in slide-in-from-top-4 duration-300">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-black uppercase tracking-widest flex items-center gap-2">
+                <Calculator className="h-4 w-4 text-indicator-info" />
+                Auditoria de Memória de Cálculo
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="space-y-4">
+                  <div className="bg-background/50 p-4 rounded-xl border border-border/50">
+                    <p className="text-[10px] font-black text-primary uppercase mb-2">Fórmula Disponibilidade</p>
+                    <p className="text-xs font-mono mb-2">(Tempo Operação / Tempo Planejado) * 100</p>
+                    <div className="flex justify-between items-end mt-4">
+                      <div>
+                        <p className="text-[10px] text-muted-foreground uppercase">Real / Alvo</p>
+                        <p className="text-sm font-bold">{data.byMachine.reduce((s, m) => s + m.actualOperatingMinutes, 0)} / {data.byMachine.reduce((s, m) => s + m.plannedProductionMinutes, 0)} min</p>
+                      </div>
+                      <p className="text-xl font-black text-primary">{data.overallAvailability.toFixed(1)}%</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="bg-background/50 p-4 rounded-xl border border-border/50">
+                    <p className="text-[10px] font-black text-indicator-info uppercase mb-2">Fórmula Performance</p>
+                    <p className="text-xs font-mono mb-2">(Tempo Ideal / Tempo Real) * 100</p>
+                    <div className="flex justify-between items-end mt-4">
+                      <div>
+                        <p className="text-[10px] text-muted-foreground uppercase">Ideal / Real</p>
+                        <p className="text-sm font-bold">{data.byMachine.reduce((s, m) => s + m.idealCycleMinutes, 0)} / {data.byMachine.reduce((s, m) => s + m.actualOperatingMinutes, 0)} min</p>
+                      </div>
+                      <p className="text-xl font-black text-indicator-info">{data.overallPerformance.toFixed(1)}%</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="bg-background/50 p-4 rounded-xl border border-border/50">
+                    <p className="text-[10px] font-black text-accent-purple uppercase mb-2">Fórmula Qualidade</p>
+                    <p className="text-xs font-mono mb-2">(Peças Boas / Peças Produzidas) * 100</p>
+                    <div className="flex justify-between items-end mt-4">
+                      <div>
+                        <p className="text-[10px] text-muted-foreground uppercase">Boas / Total</p>
+                        <p className="text-sm font-bold">{data.byMachine.reduce((s, m) => s + m.goodPieces, 0)} / {data.byMachine.reduce((s, m) => s + m.totalPiecesProduced, 0)} pcs</p>
+                      </div>
+                      <p className="text-xl font-black text-accent-purple">{data.overallQuality.toFixed(1)}%</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="mt-6 p-4 bg-black/40 rounded-xl border border-primary/20 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <Badge className="bg-primary/20 text-primary border-primary/30">OEE FINAL</Badge>
+                  <p className="text-xs font-medium text-muted-foreground">O OEE é o produto dos três indicadores acima (Disp x Perf x Qual)</p>
+                </div>
+                <p className="text-2xl font-black text-primary">{data.overallOEE.toFixed(1)}%</p>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {showSimulator && (
           <Card className="border-primary/20 bg-muted/20 animate-in slide-in-from-top-4 duration-300">
             <CardContent className="p-6">
