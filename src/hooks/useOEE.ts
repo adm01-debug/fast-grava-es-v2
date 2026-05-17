@@ -209,17 +209,21 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, f
       return isWithinInterval(endTime, { start: previousStartDate, end: previousEndDate });
     });
 
-    const calculateMetrics = (jobList: typeof jobs, machineDays: number = 1) => {
+    const calculateMetrics = (jobList: typeof jobs, machineDays: number = 1, plannedMinPerDay: number) => {
       let actual = 0, estimated = 0, produced = 0, lost = 0;
       for (const job of jobList) {
         if (isValidDate(job.actual_start_time) && isValidDate(job.actual_end_time)) {
-          try { actual += differenceInMinutes(parseISO(job.actual_end_time!), parseISO(job.actual_start_time!)); } catch {}
+          try { 
+            const start = parseISO(job.actual_start_time!);
+            const end = parseISO(job.actual_end_time!);
+            actual += differenceInMinutes(end, start); 
+          } catch {}
         }
         estimated += sanitizeNumber(job.estimated_duration || 60);
         produced += sanitizeNumber(job.produced_quantity ?? job.quantity);
         lost += sanitizeNumber(job.lost_pieces);
       }
-      const planned = Math.max(machineDays * PLANNED_MINUTES_PER_DAY, estimated);
+      const planned = Math.max(machineDays * plannedMinPerDay, estimated);
       const avail = planned > 0 ? Math.min(100, (actual / planned) * 100) : 100;
       const perf = actual > 0 ? Math.min(100, (estimated / actual) * 100) : 100;
       const qual = produced > 0 ? Math.min(100, ((produced - lost) / produced) * 100) : 100;
