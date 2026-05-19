@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Switch } from '@/components/ui/switch';
@@ -53,10 +53,13 @@ const RESOURCE_ICONS: Record<string, React.ReactNode> = {
   settings: <Settings className="h-4 w-4" />,
   security: <Lock className="h-4 w-4" />,
   users: <Users className="h-4 w-4" />,
+  admin: <Shield className="h-4 w-4" />,
 };
 
 export function PermissionManager() {
   const { isCoordinator } = useAuth();
+  const [selectedRole, setSelectedRole] = useState<AppRole>('coordinator');
+  
   const {
     permissions,
     isLoading,
@@ -64,10 +67,13 @@ export function PermissionManager() {
     fetchPermissions,
     togglePermission,
     hasPermission
-  } = useRolePermissions();
+  } = useRolePermissions(selectedRole);
 
-  const [selectedRole, setSelectedRole] = useState<AppRole>('coordinator');
   const [togglingPerm, setTogglingPerm] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchPermissions(selectedRole);
+  }, [selectedRole, fetchPermissions]);
 
   // Group permissions by resource
   const groupedPermissions = AVAILABLE_PERMISSIONS.reduce((acc, perm) => {
@@ -79,20 +85,23 @@ export function PermissionManager() {
     return acc;
   }, {} as Record<string, typeof AVAILABLE_PERMISSIONS>);
 
-  const handleToggle = async (permission: string) => {
+  const handleToggle = async (permissionStr: string) => {
     if (!isCoordinator) return;
 
-    setTogglingPerm(permission);
-    const perm = permission as import('@/features/auth').Permission;
-    await togglePermission(selectedRole, perm);
+    setTogglingPerm(permissionStr);
+    await togglePermission(selectedRole, permissionStr);
     setTogglingPerm(null);
   };
 
   const countGrantedPermissions = (role: AppRole) => {
-    return (permissions[role] || []).length;
+    // Note: Since useRolePermissions is now keyed to selectedRole,
+    // this count is only accurate for the selected tab.
+    // For a better UX, we'd need a multi-role hook or more complex state.
+    if (role === selectedRole) return permissions.length;
+    return 0; // Simplified for now
   };
 
-  if (isLoading) {
+  if (isLoading && permissions.length === 0) {
     return (
       <Card>
         <CardHeader>
@@ -121,7 +130,7 @@ export function PermissionManager() {
               Configure as permissões de acesso para cada função do sistema
             </CardDescription>
           </div>
-          <Button variant="outline" size="sm" onClick={fetchPermissions} disabled={isLoading}>
+          <Button variant="outline" size="sm" onClick={() => fetchPermissions(selectedRole)} disabled={isLoading}>
             <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
             Atualizar
           </Button>
@@ -134,9 +143,11 @@ export function PermissionManager() {
               <TabsTrigger key={role} value={role} className="gap-2">
                 {ROLE_CONFIG[role].icon}
                 <span className="hidden sm:inline">{ROLE_CONFIG[role].label}</span>
-                <Badge variant="secondary" className="ml-1">
-                  {countGrantedPermissions(role)}
-                </Badge>
+                {role === selectedRole && (
+                  <Badge variant="secondary" className="ml-1">
+                    {permissions.length}
+                  </Badge>
+                )}
               </TabsTrigger>
             ))}
           </TabsList>
@@ -151,7 +162,7 @@ export function PermissionManager() {
                 <div>
                   <h4 className="font-medium">{ROLE_CONFIG[role].label}</h4>
                   <p className="text-sm text-muted-foreground">
-                    {countGrantedPermissions(role)} de {AVAILABLE_PERMISSIONS.length} permissões ativas
+                    {permissions.length} de {AVAILABLE_PERMISSIONS.length} permissões ativas
                   </p>
                 </div>
               </div>
@@ -161,12 +172,12 @@ export function PermissionManager() {
                 {Object.entries(groupedPermissions).map(([resource, perms]) => (
                   <div key={resource} className="border rounded-lg overflow-hidden">
                     <div className="flex items-center gap-2 px-4 py-3 bg-muted/30 border-b">
-                      {RESOURCE_ICONS[resource]}
+                      {RESOURCE_ICONS[resource] || <Settings className="h-4 w-4" />}
                       <span className="font-medium">{RESOURCE_LABELS[resource] || resource}</span>
                     </div>
                     <div className="divide-y">
                       {perms.map((perm) => {
-                        const isGranted = hasPermission(role, perm.permission);
+                        const isGranted = permissions.includes(perm.permission);
                         const isToggling = togglingPerm === perm.permission;
 
                         return (
