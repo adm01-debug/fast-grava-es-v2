@@ -2,6 +2,17 @@ import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/features/auth';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { z } from 'zod';
+
+const widgetConfigSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  section: z.enum(['main', 'sidebar', 'efficiency', 'bottom']),
+  visible: z.boolean(),
+  order: z.number(),
+});
+
+const layoutSchema = z.array(widgetConfigSchema);
 
 export interface WidgetConfig {
   id: string;
