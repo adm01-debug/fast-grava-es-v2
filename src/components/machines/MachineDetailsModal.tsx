@@ -15,8 +15,8 @@ import {
 import { useState, useCallback } from "react";
 import { useEntityAuditTrail } from "@/features/admin";
 import { useDataExport } from "@/features/admin";
-import { AuditEntryCard } from "@/components/audit/AuditEntryCard";
-import { HistoryPeriodFilter, type HistoryPeriodValue } from "@/components/audit/HistoryPeriodFilter";
+import { AuditEntryCard } from "@/features/admin/components/audit/AuditEntryCard";
+import { HistoryPeriodFilter, type HistoryPeriodValue } from "@/features/admin/components/audit/HistoryPeriodFilter";
 import { MachineReliabilityTab } from "./MachineReliabilityTab";
 import { Badge } from "@/components/ui/badge";
 import { calculateRealOEE } from "@/features/production";
