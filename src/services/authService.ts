@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 export interface LockoutStatus {
   locked: boolean;
   remaining_minutes?: number;
+  lockout_minutes?: number;
   message?: string;
   attempts_remaining?: number;
 }
