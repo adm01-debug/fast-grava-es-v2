@@ -323,7 +323,7 @@ export function useKPIs(period: KPIPeriod = 'all', customTargets?: Partial<KPITa
     });
 
     const anomalies: KPIAnomaly[] = [];
-    productivityByMachine.forEach((m: any) => {
+    productivityByMachine.forEach((m) => {
       if (m.lossRate > targets.lossRate * 2.5) {
         anomalies.push({
           id: `loss-m-${m.machineId}`,
