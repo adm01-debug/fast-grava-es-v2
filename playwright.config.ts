@@ -23,4 +23,9 @@ export default defineConfig({
       use: { ...devices['Pixel 5'] },
     },
   ],
+  webServer: {
+    command: 'npm run preview',
+    port: 8080,
+    reuseExistingServer: !process.env.CI,
+  },
 });
