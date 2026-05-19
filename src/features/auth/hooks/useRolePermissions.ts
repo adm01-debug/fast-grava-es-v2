@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { type AppRole, type Permission } from '../index';
+import { type AppRole } from '../index';
 
 export function useRolePermissions(role: AppRole | null) {
   const [permissions, setPermissions] = useState<string[]>([]);
@@ -58,7 +58,7 @@ export function useRolePermissions(role: AppRole | null) {
             role: targetRole, 
             permission: permissionStr,
             resource: permissionStr.split(':')[0]
-          });
+          } as any);
         if (error) throw error;
         setPermissions(prev => [...prev, permissionStr]);
       }
