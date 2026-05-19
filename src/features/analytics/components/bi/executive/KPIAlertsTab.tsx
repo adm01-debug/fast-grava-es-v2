@@ -7,10 +7,17 @@ import { AlertTriangle, Target, Clock, Percent, ShieldCheck, User, Activity } fr
 import { useDetailedAuditTrail } from '@/features/admin';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { KPIData } from '@/features/analytics/hooks/useKPIs';
 
 interface KPIAlertsTabProps {
-  goalAlerts: any[];
-  kpis: any;
+  goalAlerts: Array<{
+    goalId: string;
+    operatorName: string;
+    message: string;
+    riskLevel: 'critical' | 'warning' | 'on-track';
+    progressPercentage: number;
+  }>;
+  kpis: KPIData;
 }
 
 const KPIAlertsTabComponent = ({
@@ -33,7 +40,7 @@ const KPIAlertsTabComponent = ({
                 <CardDescription>Operadores com metas em risco ou atrasadas</CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
-                {goalAlerts.map((alert: any) => (
+                {goalAlerts.map((alert) => (
                   <div key={alert.goalId} className={cn(
                     "p-4 rounded-xl border flex items-center justify-between",
                     alert.riskLevel === 'critical' ? "bg-red-500/10 border-red-500/20" : "bg-amber-500/10 border-amber-500/20"
@@ -67,7 +74,7 @@ const KPIAlertsTabComponent = ({
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {kpis.anomalies.map((anomaly: any) => (
+                {kpis.anomalies.map((anomaly) => (
                   <div key={anomaly.id} className={cn(
                     "flex items-start gap-4 p-4 rounded-xl border animate-in fade-in slide-in-from-left-4 duration-300",
                     anomaly.severity === 'high' ? "border-primary/40 bg-primary/10" : "border-amber-500/20 bg-amber-500/5"

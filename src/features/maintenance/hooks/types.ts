@@ -27,6 +27,34 @@ export interface MaintenanceSchedule {
   maintenance_type?: MaintenanceType;
 }
 
+export interface ChecklistSnapshot {
+  id: string;
+  name: string;
+  items: Array<{
+    id: string;
+    description: string;
+    is_critical: boolean;
+    requires_photo: boolean;
+    requires_measurement: boolean;
+    measurement_unit: string | null;
+  }>;
+}
+
+export interface AdjustmentParameters {
+  squeegee_passes?: string;
+  pressure?: string;
+  speed?: string;
+  temperature?: string;
+  ranges?: Record<string, { min?: string; max?: string }>;
+  [key: string]: unknown;
+}
+
+export interface QualityChecklistResult {
+  item: string;
+  status: 'pass' | 'fail' | 'na';
+  notes?: string;
+}
+
 export interface MaintenanceChecklist {
   id: string;
   maintenance_type_id: string;
@@ -75,12 +103,12 @@ export interface MaintenanceRecord {
   approved_at: string | null;
   next_scheduled_date_after_approval: string | null;
   checklist_version: number | null;
-  checklist_snapshot: any | null;
+  checklist_snapshot: ChecklistSnapshot | null;
   created_at: string;
   technical_sheet_id?: string | null;
   technical_sheet_version?: number | null;
-  adjustment_parameters?: any | null;
-  quality_checklist_results?: any | null;
+  adjustment_parameters?: AdjustmentParameters | null;
+  quality_checklist_results?: QualityChecklistResult[] | null;
   failure_risk_detected?: boolean;
   supplies_used?: Array<{
     name: string;

@@ -5,12 +5,13 @@ import { Progress } from '@/components/ui/progress';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { AlertTriangle, Cpu, Search, CheckCircle2 } from 'lucide-react';
+import { KPIData } from '@/features/analytics/hooks/useKPIs';
 
 interface KPIMachinesTabProps {
-  kpis: any;
+  kpis: KPIData;
   searchTerm: string;
   setSearchTerm: (val: string) => void;
-  setSelectedMachine: (machine: any) => void;
+  setSelectedMachine: (machine: KPIData['productivityByMachine'][0]) => void;
 }
 
 const KPIMachinesTabComponent = ({
@@ -28,10 +29,10 @@ const KPIMachinesTabComponent = ({
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {kpis.anomalies.filter((a: any) => a.id.startsWith('loss-m-') || a.id.startsWith('occ-m-')).length > 0 ? (
+              {kpis.anomalies.filter((a) => a.id.startsWith('loss-m-') || a.id.startsWith('occ-m-')).length > 0 ? (
                 kpis.anomalies
-                  .filter((a: any) => a.id.startsWith('loss-m-') || a.id.startsWith('occ-m-'))
-                  .map((anomaly: any) => (
+                  .filter((a) => a.id.startsWith('loss-m-') || a.id.startsWith('occ-m-'))
+                  .map((anomaly) => (
                     <div key={anomaly.id} className="p-3 rounded-lg border border-primary/20 bg-primary/5">
                       <p className="text-xs font-bold">{anomaly.entityName}</p>
                       <p className="text-[10px] text-muted-foreground mt-1">{anomaly.message}</p>
@@ -82,9 +83,9 @@ const KPIMachinesTabComponent = ({
                   </tr>
                 </thead>
                 <tbody>
-                  {kpis.productivityByMachine
-                    .filter((m: any) => m.machineName.toLowerCase().includes(searchTerm.toLowerCase()))
-                    .map((machine: any) => (
+                   {kpis.productivityByMachine
+                    .filter((m) => m.machineName.toLowerCase().includes(searchTerm.toLowerCase()))
+                    .map((machine) => (
                     <tr
                       key={machine.machineId}
                       className="border-b border-border/30 hover:bg-muted/10 transition-colors cursor-pointer group"

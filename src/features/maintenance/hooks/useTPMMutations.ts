@@ -3,7 +3,14 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { addDays, differenceInDays } from 'date-fns';
 import { showErrorToast, categorizeError } from '@/lib/errorHandling';
-import { MaintenanceSchedule, MaintenanceAlert, TPM_ERROR_CONTEXT } from './types';
+import { 
+  MaintenanceSchedule, 
+  MaintenanceAlert, 
+  TPM_ERROR_CONTEXT,
+  ChecklistSnapshot,
+  AdjustmentParameters,
+  QualityChecklistResult
+} from './types';
 
 interface UseTPMMutationsProps {
   schedules: MaintenanceSchedule[];
@@ -85,11 +92,11 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
       total_cost?: number;
       downtime_minutes?: number;
       checklist_version?: number;
-      checklist_snapshot?: any;
+      checklist_snapshot?: ChecklistSnapshot;
       technical_sheet_id?: string;
       technical_sheet_version?: number;
-      adjustment_parameters?: any;
-      quality_checklist_results?: any[];
+      adjustment_parameters?: AdjustmentParameters;
+      quality_checklist_results?: QualityChecklistResult[];
       failure_risk_detected?: boolean;
       responses?: Array<{
         checklist_item_id: string;
@@ -142,11 +149,11 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
           downtime_minutes: data.downtime_minutes || 0,
           signature_url: data.signature,
           checklist_version: data.checklist_version,
-          checklist_snapshot: data.checklist_snapshot,
+          checklist_snapshot: data.checklist_snapshot as any,
           technical_sheet_id: data.technical_sheet_id,
           technical_sheet_version: data.technical_sheet_version,
-          adjustment_parameters: data.adjustment_parameters,
-          quality_checklist_results: data.quality_checklist_results,
+          adjustment_parameters: data.adjustment_parameters as any,
+          quality_checklist_results: data.quality_checklist_results as any,
           failure_risk_detected: data.failure_risk_detected || false,
         })
         .eq('id', data.record_id);
@@ -180,10 +187,16 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
       if (data.adjustment_parameters?.ranges) {
         const params = data.adjustment_parameters;
         const ranges = params.ranges;
-        const alertsToInsert: any[] = [];
+        const alertsToInsert: Array<{
+          execution_id: string;
+          parameter_name: string;
+          recorded_value: string;
+          recommended_range: string;
+          severity: string;
+        }> = [];
 
-        const checkRange = (name: string, value: string, range: any) => {
-          if (!range || (!range.min && !range.max)) return;
+        const checkRange = (name: string, value: string | undefined, range: { min?: string; max?: string } | undefined) => {
+          if (!value || !range || (!range.min && !range.max)) return;
           const val = parseFloat(value.replace(/[^0-9.]/g, ''));
           const min = range.min ? parseFloat(range.min.replace(/[^0-9.]/g, '')) : -Infinity;
           const max = range.max ? parseFloat(range.max.replace(/[^0-9.]/g, '')) : Infinity;
@@ -201,10 +214,12 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
           }
         };
 
-        checkRange('Passadas de Rodo', params.squeegee_passes, ranges.squeegee_passes);
-        checkRange('Pressão', params.pressure, ranges.pressure);
-        checkRange('Velocidade', params.speed, ranges.speed);
-        checkRange('Temperatura', params.temperature, ranges.temperature);
+        if (ranges) {
+          checkRange('Passadas de Rodo', params.squeegee_passes, ranges.squeegee_passes);
+          checkRange('Pressão', params.pressure, ranges.pressure);
+          checkRange('Velocidade', params.speed, ranges.speed);
+          checkRange('Temperatura', params.temperature, ranges.temperature);
+        }
 
         if (alertsToInsert.length > 0) {
           await supabase.from('tpm_parameter_alerts').insert(alertsToInsert);
@@ -271,7 +286,7 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
       if (fetchErr || !record) throw new Error('Registro não encontrado');
 
       // Requisito: Pelo menos uma foto se houver itens que exigem foto
-      const needsPhoto = record.responses.some((r: any) => r.photo_url);
+      const needsPhoto = record.responses.some((r: { photo_url: string | null }) => r.photo_url);
       if (!record.signature_url) throw new Error('Assinatura obrigatória ausente');
 
       const { data: recordData, error: recordFetchError } = await supabase
@@ -363,7 +378,12 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
       const now = new Date();
 
       // 1. Static checks (due dates)
-      const alertsToCreate = schedules
+      const alertsToCreate: Array<{
+        schedule_id: string;
+        machine_id: string;
+        alert_type: MaintenanceAlert['alert_type'];
+        message: string;
+      }> = schedules
         .filter(schedule => {
           const existingAlert = alerts.find(
             a => a.schedule_id === schedule.id && !a.is_resolved
@@ -411,7 +431,7 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
         });
 
         if (!mlError && mlResult?.predictions) {
-          mlResult.predictions.forEach((p: any) => {
+          mlResult.predictions.forEach((p: { machine: { id: string }, prediction: { risk_score: number, recommendations?: string[] } }) => {
             if (p.prediction?.risk_score > 75) {
               // High risk detected by AI, find the primary schedule for this machine
               const machineSchedule = schedules.find(s => s.machine_id === p.machine.id && s.is_active);
@@ -421,7 +441,7 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
                   alertsToCreate.push({
                     schedule_id: machineSchedule.id,
                     machine_id: p.machine.id,
-                    alert_type: 'predictive' as any,
+                    alert_type: 'predictive',
                     message: `IA PREDIZ FALHA (Risco: ${p.prediction.risk_score}%): ${p.prediction.recommendations?.[0] || 'Inspeção urgente necessária'}`,
                   });
                 }

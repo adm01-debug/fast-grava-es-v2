@@ -206,7 +206,7 @@ export function useTPMData() {
         machine: record.machines,
         maintenance_type: record.maintenance_types,
         technical_sheet: technicalSheet,
-        responses: responses.map((r: any) => ({
+        responses: responses.map((r: { maintenance_checklist_items: unknown }) => ({
           ...r,
           item: r.maintenance_checklist_items
         })),
