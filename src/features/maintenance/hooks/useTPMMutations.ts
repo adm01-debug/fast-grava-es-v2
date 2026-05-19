@@ -138,6 +138,15 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
         throw new Error('Registro não encontrado');
       }
 
+      // Runtime validation
+      if (data.checklist_snapshot && !data.checklist_snapshot.id) {
+        throw new Error('Snapshot do checklist inválido: ID ausente');
+      }
+
+      if (data.adjustment_parameters && typeof data.adjustment_parameters !== 'object') {
+        throw new Error('Parâmetros de ajuste inválidos');
+      }
+
       // Update the main record to 'completed' (Pending Approval)
       const { error: recordError } = await supabase
         .from('maintenance_records')
