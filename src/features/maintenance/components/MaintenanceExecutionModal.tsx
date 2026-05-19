@@ -144,7 +144,7 @@ export function MaintenanceExecutionModal({
     if (selectedSheetId) {
       const sheet = technicalSheets.find(s => s.id === selectedSheetId);
       if (sheet?.machine_settings) {
-        const settings = sheet.machine_settings as any;
+        const settings = sheet.machine_settings;
         setAdjustmentParams({
           squeegee_passes: settings.squeegee_passes || '',
           pressure: settings.pressure || '',
@@ -154,8 +154,13 @@ export function MaintenanceExecutionModal({
       }
 
       if (sheet?.consumables) {
-        const initialSupplies: Record<string, any> = {};
-        sheet.consumables.forEach((c: any) => {
+        const initialSupplies: Record<string, {
+          quantity: string;
+          alternative_used: boolean;
+          name: string;
+          is_checked: boolean;
+        }> = {};
+        sheet.consumables.forEach((c) => {
           initialSupplies[c.id] = {
             name: c.name,
             quantity: c.quantity,
@@ -175,10 +180,10 @@ export function MaintenanceExecutionModal({
     const sheet = technicalSheets.find(s => s.id === selectedSheetId);
     if (!sheet) return;
 
-    const ranges = (sheet?.settings_ranges as any) || {};
+    const ranges = sheet?.settings_ranges || {};
     const newAlerts: typeof activeAlerts = [];
 
-    const checkRange = (name: string, value: string, range: any, paramKey: string) => {
+    const checkRange = (name: string, value: string, range: { min?: string; max?: string } | undefined) => {
       if (!range || (!range.min && !range.max)) return;
       const val = parseFloat(value.replace(/[^0-9.]/g, ''));
       if (isNaN(val) && value !== '') return;
@@ -203,17 +208,22 @@ export function MaintenanceExecutionModal({
       }
     };
 
-    checkRange('Passadas de Rodo', adjustmentParams.squeegee_passes, ranges.squeegee_passes, 'squeegee_passes');
-    checkRange('Pressão', adjustmentParams.pressure, ranges.pressure, 'pressure');
-    checkRange('Velocidade', adjustmentParams.speed, ranges.speed, 'speed');
-    checkRange('Temperatura', adjustmentParams.temperature, ranges.temperature, 'temperature');
+    checkRange('Passadas de Rodo', adjustmentParams.squeegee_passes, ranges.squeegee_passes);
+    checkRange('Pressão', adjustmentParams.pressure, ranges.pressure);
+    checkRange('Velocidade', adjustmentParams.speed, ranges.speed);
+    checkRange('Temperatura', adjustmentParams.temperature, ranges.temperature);
 
     setActiveAlerts(newAlerts);
   }, [adjustmentParams, selectedSheetId, technicalSheets]);
 
   useEffect(() => {
     if (checklist?.items) {
-      const initialResponses: Record<string, any> = {};
+      const initialResponses: Record<string, {
+        is_checked: boolean;
+        measurement_value?: number;
+        notes?: string;
+        photo_url?: string;
+      }> = {};
       checklist.items.forEach(item => {
         initialResponses[item.id] = {
           is_checked: false,
@@ -225,7 +235,12 @@ export function MaintenanceExecutionModal({
     }
   }, [checklist]);
 
-  const handleResponseUpdate = (itemId: string, updates: any) => {
+  const handleResponseUpdate = (itemId: string, updates: Partial<{
+    is_checked: boolean;
+    measurement_value: number;
+    notes: string;
+    photo_url: string;
+  }>) => {
     setResponses(prev => ({
       ...prev,
       [itemId]: { ...prev[itemId], ...updates }
@@ -240,9 +255,9 @@ export function MaintenanceExecutionModal({
     setParts(parts.filter((_, i) => i !== index));
   };
 
-  const handleUpdatePart = (index: number, field: string, value: any) => {
+  const handleUpdatePart = (index: number, field: keyof typeof parts[0], value: string | number) => {
     const newParts = [...parts];
-    newParts[index] = { ...newParts[index], [field]: value };
+    newParts[index] = { ...newParts[index], [field]: value } as typeof parts[0];
     setParts(newParts);
   };
 
@@ -386,8 +401,8 @@ export function MaintenanceExecutionModal({
       })),
       adjustment_parameters: {
         ...adjustmentParams,
-        recommended: selectedSheetId ? (technicalSheets.find(s => s.id === selectedSheetId)?.machine_settings as any) : null,
-        ranges: selectedSheetId ? (technicalSheets.find(s => s.id === selectedSheetId)?.settings_ranges as any) : null
+        recommended: selectedSheetId ? (technicalSheets.find(s => s.id === selectedSheetId)?.machine_settings || undefined) : undefined,
+        ranges: selectedSheetId ? (technicalSheets.find(s => s.id === selectedSheetId)?.settings_ranges || undefined) : undefined
       },
       supplies_used: Object.entries(suppliesUsed)
         .filter(([_, data]) => data.is_checked)

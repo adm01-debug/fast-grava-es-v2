@@ -2,13 +2,21 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { MoveHorizontal, PenTool, Zap, Thermometer, LucideIcon } from 'lucide-react';
 import { AdjustmentParameters as IAdjustmentParameters } from '../../hooks/types';
+import { TechnicalSheet } from '@/hooks/useTechnicalSheets';
+
+export interface AdjustmentParams {
+  squeegee_passes: string;
+  pressure: string;
+  speed: string;
+  temperature: string;
+}
 
 interface AdjustmentParametersProps {
-  adjustmentParams: Record<string, string>;
-  setAdjustmentParams: (params: any) => void;
+  adjustmentParams: AdjustmentParams;
+  setAdjustmentParams: (fn: (prev: AdjustmentParams) => AdjustmentParams) => void;
   activeAlerts: Array<{ parameter_name?: string }>;
   selectedSheetId: string | null;
-  technicalSheets: any[];
+  technicalSheets: TechnicalSheet[];
 }
 
 export function AdjustmentParameters({
@@ -34,11 +42,11 @@ export function AdjustmentParameters({
 
   return (
     <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-      {['squeegee_passes', 'pressure', 'speed', 'temperature'].map((param) => {
+      {(['squeegee_passes', 'pressure', 'speed', 'temperature'] as Array<keyof AdjustmentParams>).map((param) => {
         const Icon = Icons[param];
         const sheet = technicalSheets.find(s => s.id === selectedSheetId);
-        const range = (sheet?.settings_ranges as any)?.[param];
-        const recommended = (sheet?.machine_settings as any)?.[param];
+        const range = sheet?.settings_ranges?.[param];
+        const recommended = sheet?.machine_settings?.[param];
 
         return (
           <div key={param} className="space-y-2">
@@ -47,8 +55,8 @@ export function AdjustmentParameters({
             </Label>
             <Input
               placeholder={recommended || "Valor"}
-              value={(adjustmentParams as any)[param]}
-              onChange={(e) => setAdjustmentParams((prev: any) => ({ ...prev, [param]: e.target.value }))}
+              value={adjustmentParams[param]}
+              onChange={(e) => setAdjustmentParams((prev) => ({ ...prev, [param]: e.target.value }))}
               className={activeAlerts.some(a => a.parameter_name === labels[param]) ? "border-destructive ring-destructive/20" : ""}
             />
             {range && (range.min || range.max) && (

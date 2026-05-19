@@ -96,7 +96,7 @@ export function TPMReports() {
       (doc as jsPDFWithAutoTable).autoTable({
         startY: 70,
         head: [['Data', 'Máquina', 'Tipo', 'Status', 'Executado por', 'Downtime', 'Regulagem']],
-        body: tableData as any,
+        body: tableData,
         theme: 'striped',
         headStyles: { fillColor: [59, 130, 246] },
         styles: { fontSize: 8 },

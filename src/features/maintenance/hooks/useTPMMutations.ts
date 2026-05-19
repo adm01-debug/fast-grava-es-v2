@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { Database, Json } from '@/integrations/supabase/types';
 import { toast } from 'sonner';
 import { addDays, differenceInDays } from 'date-fns';
 import { showErrorToast, categorizeError } from '@/lib/errorHandling';
@@ -158,11 +159,11 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
           downtime_minutes: data.downtime_minutes || 0,
           signature_url: data.signature,
           checklist_version: data.checklist_version,
-          checklist_snapshot: data.checklist_snapshot as any,
+          checklist_snapshot: data.checklist_snapshot as unknown as Json,
           technical_sheet_id: data.technical_sheet_id,
           technical_sheet_version: data.technical_sheet_version,
-          adjustment_parameters: data.adjustment_parameters as any,
-          quality_checklist_results: data.quality_checklist_results as any,
+          adjustment_parameters: data.adjustment_parameters as unknown as Json,
+          quality_checklist_results: data.quality_checklist_results as unknown as Json,
           failure_risk_detected: data.failure_risk_detected || false,
         })
         .eq('id', data.record_id);

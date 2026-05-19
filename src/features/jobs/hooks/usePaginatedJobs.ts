@@ -1,6 +1,11 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { Database } from '@/integrations/supabase/types';
+import { jobSchema } from '../types/job.schema';
+
+type Job = Database['public']['Tables']['jobs']['Row'];
+type JobKey = keyof Job;
 
 export interface PaginationOptions {
   page: number;
@@ -43,8 +48,8 @@ export function usePaginatedJobs(initialOptions?: Partial<PaginationOptions>) {
       const from = (page - 1) * pageSize;
       const to = from + pageSize - 1;
 
-      let query = (supabase
-        .from('jobs') as any)
+      let query = supabase
+        .from('jobs')
         .select('*', { count: 'exact' });
 
       // Apply search
@@ -58,27 +63,37 @@ export function usePaginatedJobs(initialOptions?: Partial<PaginationOptions>) {
       Object.entries(filters).forEach(([key, value]) => {
         if (value && value.length > 0) {
           if (Array.isArray(value)) {
-            query = query.in(key as any, value);
+            query = query.in(key as JobKey, value);
           } else {
-            query = query.eq(key as any, value);
+            query = query.eq(key as JobKey, value);
           }
         }
       });
 
       // Apply sorting and pagination
       query = query
-        .order(sortBy as any, { ascending: sortOrder === 'asc' })
+        .order(sortBy as JobKey, { ascending: sortOrder === 'asc' })
         .range(from, to);
 
       const { data: jobs, error, count } = await query;
 
       if (error) throw error;
 
+      // Runtime validation
+      const validatedJobs = (jobs || []).map(job => {
+        const result = jobSchema.safeParse(job);
+        if (!result.success) {
+          console.error('Job validation failed:', result.error, job);
+          return job as Job;
+        }
+        return result.data as Job;
+      });
+
       const totalCount = count ?? 0;
       const totalPages = Math.ceil(totalCount / pageSize);
 
       return {
-        data: jobs ?? [],
+        data: validatedJobs,
         totalCount,
         totalPages,
         currentPage: page,

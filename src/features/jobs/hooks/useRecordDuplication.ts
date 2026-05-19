@@ -37,9 +37,9 @@ export function useRecordDuplication(tableName: TableName) {
         Object.assign(duplicate, options.overrides);
       }
 
-      const { data, error } = await (supabase
-        .from(tableName) as any)
-        .insert(duplicate)
+      const { data, error } = await supabase
+        .from(tableName as never)
+        .insert(duplicate as never)
         .select()
         .single();
 
@@ -79,9 +79,9 @@ export function useRecordDuplication(tableName: TableName) {
         return dup;
       });
 
-      const { data, error } = await (supabase
-        .from(tableName) as any)
-        .insert(duplicates)
+      const { data, error } = await supabase
+        .from(tableName as never)
+        .insert(duplicates as never)
         .select();
 
       if (error) throw error;

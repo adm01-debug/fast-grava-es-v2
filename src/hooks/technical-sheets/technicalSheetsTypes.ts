@@ -7,8 +7,8 @@ export interface TechnicalSheet {
   description: string | null;
   estimated_time_minutes: number | null;
   recommended_machine_id: string | null;
-  machine_settings: Record<string, any> | null;
-  settings_ranges: Record<string, { min: string; max: string }> | null;
+  machine_settings: Record<string, string> | null;
+  settings_ranges: Record<string, { min?: string; max?: string }> | null;
   ink_specifications: string | null;
   tooling_specifications: string | null;
   status: 'draft' | 'published' | 'review_needed';

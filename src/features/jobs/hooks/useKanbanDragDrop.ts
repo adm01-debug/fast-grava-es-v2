@@ -4,7 +4,10 @@ import { arrayMove } from '@dnd-kit/sortable';
 import { DbJob } from '@/features/jobs';
 import { JobStatus, assertTransition } from '@/features/jobs';
 import { supabase } from '@/integrations/supabase/client';
+import { Database } from '@/integrations/supabase/types';
 import { toast } from 'sonner';
+
+type JobUpdate = Database['public']['Tables']['jobs']['Update'];
 
 interface UseKanbanDragDropProps {
   jobs: DbJob[];
@@ -76,7 +79,7 @@ export function useKanbanDragDrop({ jobs, onJobsUpdate }: UseKanbanDragDropProps
 
     setIsUpdating(true);
     try {
-      const updates = newOrder.map((job, index) => ({
+      const updates: JobUpdate[] = newOrder.map((job, index) => ({
         id: job.id,
         sort_order: index,
         updated_at: new Date().toISOString(),
@@ -84,7 +87,7 @@ export function useKanbanDragDrop({ jobs, onJobsUpdate }: UseKanbanDragDropProps
 
       const { error } = await supabase
         .from('jobs')
-        .upsert(updates as any, { onConflict: 'id' });
+        .upsert(updates as Database['public']['Tables']['jobs']['Insert'][], { onConflict: 'id' });
 
       if (error) throw error;
       toast.success('Ordem atualizada');
