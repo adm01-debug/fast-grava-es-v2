@@ -116,9 +116,9 @@ export function useDashboardLayout() {
         .from('dashboard_layouts')
         .upsert({
           user_id: user.id,
-          layout: newWidgets,
+          layout: newWidgets as unknown as Json,
           updated_at: new Date().toISOString()
-        });
+        }, { onConflict: 'user_id' });
 
       if (error) throw error;
     } catch (error) {
