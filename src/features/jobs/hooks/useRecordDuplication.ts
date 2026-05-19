@@ -38,8 +38,8 @@ export function useRecordDuplication(tableName: TableName) {
       }
 
       const { data, error } = await supabase
-        .from(tableName)
-        .insert(duplicate as any)
+        .from(tableName as never)
+        .insert(duplicate as never)
         .select()
         .single();
 
