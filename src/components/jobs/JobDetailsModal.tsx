@@ -37,6 +37,7 @@ import {
 } from "lucide-react";
 import { useSchedulingData } from "@/hooks/useSchedulingData";
 import { DbJob, useUpdateJob, useDeleteJob } from "@/hooks/useJobs";
+import { JobPriority, JobStatus } from "@/services/jobsService";
 import { JobQRCode } from "@/components/qrcode/JobQRCode";
 import { useDuplicateJob } from "@/hooks/useDuplicateJob";
 import { useEntityAuditTrail } from "@/hooks/useAuditTrail";
