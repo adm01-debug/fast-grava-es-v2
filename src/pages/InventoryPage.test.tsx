@@ -33,10 +33,28 @@ vi.mock('@/features/auth', () => ({
   PermissionGate: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
-// Mock MainLayout to avoid context issues
-vi.mock('@/components/layout/MainLayout', () => ({
-  MainLayout: ({ children }: { children: React.ReactNode }) => <div data-testid="main-layout">{children}</div>,
+// Mock Supabase
+vi.mock('@/integrations/supabase/client', () => ({
+  supabase: {
+    from: vi.fn(() => ({
+      select: vi.fn().mockReturnThis(),
+      order: vi.fn().mockReturnThis(),
+      limit: vi.fn().mockReturnThis(),
+      eq: vi.fn().mockReturnThis(),
+      insert: vi.fn().mockReturnThis(),
+      delete: vi.fn().mockReturnThis(),
+      update: vi.fn().mockReturnThis(),
+      single: vi.fn().mockResolvedValue({ data: [], error: null }),
+    })),
+    auth: {
+      getUser: vi.fn().mockResolvedValue({ data: { user: { id: 'test-user' } }, error: null }),
+    },
+    functions: {
+      invoke: vi.fn().mockResolvedValue({ data: {}, error: null }),
+    },
+  },
 }));
+
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -54,18 +72,9 @@ describe('InventoryPage - Skeletons e Estabilidade', () => {
   });
 
   it('deve exibir skeletons enquanto os itens do estoque estão carregando', async () => {
-    // Importamos o hook para simular o estado de carregamento
     const { useInventory } = await import('@/features/inventory');
-    vi.mock('@/features/inventory', async (importOriginal) => {
-      const actual = await importOriginal<any>();
-      return {
-        ...actual,
-        useInventory: vi.fn(),
-        useInventoryMovements: vi.fn().mockReturnValue({ data: [], isLoading: false }),
-      };
-    });
-
     const mockUseInventory = vi.mocked(useInventory);
+
     
     // Configurar o mock para retornar isLoading: true inicialmente
     mockUseInventory.mockReturnValue({
