@@ -69,6 +69,8 @@ export default function InventoryPage() {
   const [isBatchQRModalOpen, setIsBatchQRModalOpen] = useState(false);
   const [isAIPredictionModalOpen, setIsAIPredictionModalOpen] = useState(false);
   const debouncedSearch = useDebounce(searchTerm, 300);
+  const isSearching = searchTerm !== debouncedSearch;
+
 
 
   const filteredItems = useMemo(() => {
