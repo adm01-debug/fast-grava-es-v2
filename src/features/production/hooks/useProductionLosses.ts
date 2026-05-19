@@ -13,6 +13,15 @@ export interface ProductionLoss {
   loss_type?: 'availability' | 'performance' | 'quality';
 }
 
+interface ExtendedProductionLoss extends ProductionLoss {
+  job: {
+    order_number: string;
+    client: string | null;
+    machine_id: string | null;
+    technique_id: string | null;
+  } | null;
+}
+
 export function useProductionLosses(jobId?: string, filters?: { shift?: string; startDate?: string; endDate?: string; machineId?: string; techniqueId?: string }) {
   const queryClient = useQueryClient();
 
