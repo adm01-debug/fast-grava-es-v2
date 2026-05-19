@@ -7,10 +7,17 @@ import { AlertTriangle, Target, Clock, Percent, ShieldCheck, User, Activity } fr
 import { useDetailedAuditTrail } from '@/features/admin';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { KPIData } from '@/features/analytics/hooks/useKPIs';
 
 interface KPIAlertsTabProps {
-  goalAlerts: any[];
-  kpis: any;
+  goalAlerts: Array<{
+    goalId: string;
+    operatorName: string;
+    message: string;
+    riskLevel: 'critical' | 'warning';
+    progressPercentage: number;
+  }>;
+  kpis: KPIData;
 }
 
 const KPIAlertsTabComponent = ({
