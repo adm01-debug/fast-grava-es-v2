@@ -7,6 +7,12 @@ import { jobsService, type Job, type JobStatus } from '@/services/jobsService';
 import { useTechniques } from './useTechniques';
 import { useMachines } from './useMachines';
 import { Technique } from '@/services/techniquesService';
+import { Machine } from '@/services/machinesService';
+
+// Re-export types for backward compatibility
+export type DbJob = Job;
+export type DbTechnique = Technique;
+export type DbMachine = Machine;
 
 // Re-export for backward compatibility
 export { useTechniques, useMachines };
