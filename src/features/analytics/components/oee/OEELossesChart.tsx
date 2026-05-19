@@ -36,11 +36,16 @@ export const OEELossesChart = memo(function OEELossesChart({
 
   const lossCategories = useMemo(() => {
     if (!losses) return [];
-    const grouped = losses.reduce((acc: any, loss: any) => {
+    
+    interface GroupedLoss {
+      [key: string]: number;
+    }
+
+    const grouped = losses.reduce((acc: GroupedLoss, loss) => {
       const category = loss.notes?.includes('Qualidade') ? 'Qualidade' : 
                        loss.notes?.includes('Performance') ? 'Performance' : 
                        'Disponibilidade';
-      acc[category] = (acc[category] || 0) + loss.quantity;
+      acc[category] = (acc[category] || 0) + (loss.quantity || 0);
       return acc;
     }, {});
 
