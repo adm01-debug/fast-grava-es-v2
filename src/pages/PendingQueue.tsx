@@ -52,7 +52,7 @@ import { Progress } from "@/components/ui/progress";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { motion, AnimatePresence } from "framer-motion";
 import { useDataExport } from "@/hooks/useDataExport";
-import { useSmartSequencingWithActions } from "@/features/jobsWithActions";
+import { useSmartSequencingWithActions } from "@/features/jobs";
 import { useLoadBalancingWithActions } from "@/hooks/useLoadBalancingWithActions";
 import { useAutoBufferPromotion } from "@/features/jobs";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";

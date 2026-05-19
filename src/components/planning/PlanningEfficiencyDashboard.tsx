@@ -9,7 +9,7 @@ import {
   LayoutGrid, BrainCircuit, History
 } from 'lucide-react';
 import { useSchedulingData } from '@/features/jobs';
-import { useSmartSequencingWithActions } from '@/features/jobsWithActions';
+import { useSmartSequencingWithActions } from '@/features/jobs';
 import { useLoadBalancingWithActions } from '@/hooks/useLoadBalancingWithActions';
 import { useOEE } from '@/hooks/useOEE';
 import { useMTBFMTTR } from '@/hooks/useMTBFMTTR';

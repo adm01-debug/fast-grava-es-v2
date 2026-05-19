@@ -11,7 +11,7 @@ import {
   CheckCircle2, Sparkles, ChevronRight, LayoutPanelTop,
   Search, Filter, Clock, TrendingDown, TrendingUp, Info, Activity
 } from 'lucide-react';
-import { useSmartSequencingWithActions as useSmartSequencing, SequencingSuggestion } from '@/features/jobsWithActions';
+import { useSmartSequencingWithActions as useSmartSequencing, SequencingSuggestion } from '@/features/jobs';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
