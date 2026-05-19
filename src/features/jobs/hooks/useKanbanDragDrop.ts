@@ -87,7 +87,7 @@ export function useKanbanDragDrop({ jobs, onJobsUpdate }: UseKanbanDragDropProps
 
       const { error } = await supabase
         .from('jobs')
-        .upsert(updates as any, { onConflict: 'id' });
+        .upsert(updates as Database['public']['Tables']['jobs']['Insert'][], { onConflict: 'id' });
 
       if (error) throw error;
       toast.success('Ordem atualizada');
