@@ -10,6 +10,7 @@ import { useAuth } from "@/features/auth";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { CommandItemType, buildAllCommands, buildContextualCommands, searchCommands } from "./CommandPaletteCommands";
+import { useCommandEntities } from "./useCommandEntities";
 
 function HighlightMatch({ text, query }: { text: string; query: string }) {
   if (!query) return <>{text}</>;
@@ -67,13 +68,17 @@ export function CommandPaletteAdvanced() {
 
   const allCommands = React.useMemo(() => buildAllCommands({ navigateTo, executeAction, theme, setTheme, signOut, setOpen }), [theme, navigate, signOut, setTheme]);
   const contextualCommands = React.useMemo(() => buildContextualCommands(location.pathname, setOpen), [location.pathname]);
+  const entityCommands = useCommandEntities(query, setOpen);
 
   const filteredCommands = React.useMemo(() => {
     let commands = [...allCommands, ...contextualCommands];
     if (mode === "actions") commands = commands.filter(c => c.category === "actions" || c.category === "contextual");
     else if (mode === "navigation") commands = commands.filter(c => c.category === "navigation");
-    return searchCommands(commands, query);
-  }, [allCommands, contextualCommands, query, mode]);
+    
+    const searchResults = searchCommands(commands, query);
+    // Add entity commands to the top if they exist
+    return [...entityCommands, ...searchResults];
+  }, [allCommands, contextualCommands, entityCommands, query, mode]);
 
   const groupedCommands = React.useMemo(() => {
     const groups: Record<string, CommandItemType[]> = {};
@@ -85,6 +90,10 @@ export function CommandPaletteAdvanced() {
       const favs = favorites.map(id => allCommands.find(c => c.id === id)).filter(Boolean) as CommandItemType[];
       if (favs.length > 0) groups["Favoritos"] = favs;
     }
+    if (!query) {
+      const suggested = entityCommands.slice(0, 3);
+      if (suggested.length > 0) groups["Entidades Sugeridas"] = suggested;
+    }
     const contextual = filteredCommands.filter(c => c.category === "contextual");
     if (contextual.length > 0) groups["Ações Contextuais"] = contextual;
     const actions = filteredCommands.filter(c => c.category === "actions");
@@ -93,6 +102,8 @@ export function CommandPaletteAdvanced() {
     if (navigation.length > 0) groups["Navegação"] = navigation;
     const settings = filteredCommands.filter(c => c.category === "settings");
     if (settings.length > 0) groups["Configurações"] = settings;
+    const search = filteredCommands.filter(c => c.category === "search");
+    if (search.length > 0) groups["Resultados da Busca"] = search;
     return groups;
   }, [filteredCommands, recentCommands, favorites, allCommands, query]);
 
