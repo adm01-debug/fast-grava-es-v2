@@ -108,7 +108,19 @@ export const handler = async (req: Request): Promise<Response> => {
         console.log(`Unknown webhook source: ${source}`);
     }
 
-    return new Response(JSON.stringify(result), {
+    const responsePayload = {
+      ...result,
+      source,
+      event,
+      timestamp: new Date().toISOString()
+    };
+
+    const responseValidation = WebhookResponseSchema.safeParse(responsePayload);
+    if (!responseValidation.success) {
+      console.error("Outgoing webhook response failed contract validation:", responseValidation.error.format());
+    }
+
+    return new Response(JSON.stringify(responsePayload), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (error) {
