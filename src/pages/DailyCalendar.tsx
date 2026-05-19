@@ -21,13 +21,13 @@ import { OptimizationAssistant } from '@/components/calendar/OptimizationAssista
 import { ConflictResolutionPanel } from '@/components/calendar/ConflictResolutionPanel';
 import { QuickJobDrawer } from '@/components/calendar/QuickJobDrawer';
 import { PlanningEfficiencyDashboard } from '@/components/planning/PlanningEfficiencyDashboard';
-import { useSchedulingData } from '@/hooks/useSchedulingData';
+import { useSchedulingData } from '@/features/jobs';
 import { useCalendarFilters } from '@/hooks/useCalendarFilters';
 import { useCalendarPreferences } from '@/hooks/useCalendarPreferences';
 import { useCalendarHotkeys } from '@/hooks/useCalendarHotkeys';
-import { useSchedulingConflicts } from '@/hooks/useSchedulingConflicts';
+import { useSchedulingConflicts } from '@/features/jobs';
 import { useMachineUtilization } from '@/hooks/useMachineUtilization';
-import { DbJob } from '@/hooks/useJobs';
+import { DbJob } from '@/features/jobs';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { useDevice } from '@/hooks/use-device';
 import { exportElementToPdf, downloadICalFeed } from '@/lib/calendarExports';

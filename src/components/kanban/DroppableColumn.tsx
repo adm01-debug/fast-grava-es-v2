@@ -4,7 +4,7 @@ import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { DbJob, DbTechnique, DbMachine } from '@/hooks/useJobs';
+import { DbJob, DbTechnique, DbMachine } from '@/features/jobs';
 import { JobStatus } from '@/types/scheduling';
 import { DraggableJobCard } from './DraggableJobCard';
 import { useMemo } from 'react';

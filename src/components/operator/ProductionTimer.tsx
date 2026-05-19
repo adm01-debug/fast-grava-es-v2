@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Timer, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { DbJob } from '@/hooks/useJobs';
+import { DbJob } from '@/features/jobs';
 
 interface ProductionTimerProps {
   job: DbJob;

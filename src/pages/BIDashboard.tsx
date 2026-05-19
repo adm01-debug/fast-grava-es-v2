@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useKPIs } from '@/hooks/useKPIs';
 import { useOEE } from '@/hooks/useOEE';
-import { useSchedulingData } from '@/hooks/useSchedulingData';
+import { useSchedulingData } from '@/features/jobs';
 import { useOperators } from '@/hooks/useOperators';
 import { useOperatorMachines } from '@/hooks/useOperatorMachines';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';

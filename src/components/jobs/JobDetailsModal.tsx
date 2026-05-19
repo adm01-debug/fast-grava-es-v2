@@ -35,11 +35,11 @@ import {
   X,
   Camera
 } from "lucide-react";
-import { useSchedulingData } from "@/hooks/useSchedulingData";
-import { DbJob, useUpdateJob, useDeleteJob } from "@/hooks/useJobs";
-import { JobPriority, JobStatus } from "@/services/jobsService";
+import { useSchedulingData } from "@/features/jobs";
+import { DbJob, useUpdateJob, useDeleteJob } from "@/features/jobs";
+import { JobPriority, JobStatus } from "@/features/jobs";
 import { JobQRCode } from "@/components/qrcode/JobQRCode";
-import { useDuplicateJob } from "@/hooks/useDuplicateJob";
+import { useDuplicateJob } from "@/features/jobs";
 import { useEntityAuditTrail } from "@/hooks/useAuditTrail";
 import { AuditEntryCard } from "@/components/audit/AuditEntryCard";
 import { HistoryPeriodFilter, type HistoryPeriodValue } from "@/components/audit/HistoryPeriodFilter";

@@ -1,8 +1,8 @@
 import { useState, useCallback } from 'react';
 import { DragEndEvent, DragOverEvent, DragStartEvent } from '@dnd-kit/core';
 import { arrayMove } from '@dnd-kit/sortable';
-import { DbJob } from '@/hooks/useJobs';
-import { JobStatus, assertTransition } from '@/lib/jobStateMachine';
+import { DbJob } from '@/features/jobs';
+import { JobStatus, assertTransition } from '@/features/jobs';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 

@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { Calendar, Clock, ChevronRight } from "lucide-react";
-import { DbJob } from "@/hooks/useJobs";
+import { DbJob } from "@/features/jobs";
 
 const priorityColors: Record<string, string> = {
   urgent: 'bg-primary/20 text-primary border-primary/30',

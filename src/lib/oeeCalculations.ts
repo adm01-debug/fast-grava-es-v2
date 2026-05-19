@@ -1,4 +1,4 @@
-import { DbJob, DbMachine, DbTechnique } from '@/hooks/useJobs';
+import { DbJob, DbMachine, DbTechnique } from '@/features/jobs';
 import { startOfDay, endOfDay, subDays, differenceInMinutes, parseISO, isWithinInterval, isValid } from 'date-fns';
 
 function isValidDate(dateStr: string | null | undefined): boolean {

@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
-import { DbJob, DbTechnique, DbMachine } from '@/hooks/useJobs';
+import { DbJob, DbTechnique, DbMachine } from '@/features/jobs';
 import {
   CalendarFilterState,
   statusLabels,

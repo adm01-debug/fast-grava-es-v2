@@ -36,11 +36,11 @@ import {
   ExternalLink,
   Settings2
 } from "lucide-react";
-import { useSchedulingData } from "@/hooks/useSchedulingData";
+import { useSchedulingData } from "@/features/jobs";
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { DbJob, DbTechnique, DbMachine } from "@/hooks/useJobs";
+import { DbJob, DbTechnique, DbMachine } from "@/features/jobs";
 import { JobStatus } from "@/types/scheduling";
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { SmartSequencingPanel } from "@/components/planning/SmartSequencingPanel";
@@ -52,9 +52,9 @@ import { Progress } from "@/components/ui/progress";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { motion, AnimatePresence } from "framer-motion";
 import { useDataExport } from "@/hooks/useDataExport";
-import { useSmartSequencingWithActions } from "@/hooks/useSmartSequencingWithActions";
+import { useSmartSequencingWithActions } from "@/features/jobsWithActions";
 import { useLoadBalancingWithActions } from "@/hooks/useLoadBalancingWithActions";
-import { useAutoBufferPromotion } from "@/hooks/useAutoBufferPromotion";
+import { useAutoBufferPromotion } from "@/features/jobs";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { formatDistanceToNow, isAfter, subHours } from "date-fns";
 import { ptBR } from "date-fns/locale";

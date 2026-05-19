@@ -3,7 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useEffect } from 'react';
 import { createAppError } from '@/lib/errorHandling';
 import { QUERY_KEYS, STALE_TIMES } from '@/lib/queryConfig';
-import { techniquesService } from '@/services/techniquesService';
+import { techniquesService } from '@/features/jobs';
 
 const TECHNIQUES_ERROR_CONTEXT = { entity: 'techniques', operation: 'fetch' };
 

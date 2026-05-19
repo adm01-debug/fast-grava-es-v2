@@ -1,5 +1,5 @@
 import { useOperators } from '@/hooks/useOperators';
-import { useSchedulingData } from '@/hooks/useSchedulingData';
+import { useSchedulingData } from '@/features/jobs';
 import { useOperatorMachines } from '@/hooks/useOperatorMachines';
 import { useOperatorSkills, type SkillLevel } from '@/hooks/useOperatorSkills';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';

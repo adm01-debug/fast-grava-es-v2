@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { toast } from 'sonner';
 import { Edit2, Plus, Trash2, Hammer, Clock, Zap, Printer, Activity } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { useSchedulingData } from '@/hooks/useSchedulingData';
+import { useSchedulingData } from '@/features/jobs';
 
 export function TechniqueManagement() {
   const queryClient = useQueryClient();

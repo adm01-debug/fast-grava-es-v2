@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
-import { useSchedulingData } from '@/hooks/useSchedulingData';
+import { useSchedulingData } from '@/features/jobs';
 import { useOEE } from '@/hooks/useOEE';
 import {
   ResponsiveContainer,

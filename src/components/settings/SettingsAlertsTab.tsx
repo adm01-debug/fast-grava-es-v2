@@ -6,7 +6,7 @@ import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { AlertTriangle, Save, RotateCcw, Settings2 } from 'lucide-react';
-import { useMachines, useTechniques } from '@/hooks/useJobs';
+import { useMachines, useTechniques } from '@/features/jobs';
 import { useState } from 'react';
 
 interface AlertThresholds {

@@ -8,8 +8,8 @@ import {
   ArrowUpRight, AlertTriangle, Sparkles, ChevronDown, ChevronUp, Activity,
   LayoutGrid, BrainCircuit, History
 } from 'lucide-react';
-import { useSchedulingData } from '@/hooks/useSchedulingData';
-import { useSmartSequencingWithActions } from '@/hooks/useSmartSequencingWithActions';
+import { useSchedulingData } from '@/features/jobs';
+import { useSmartSequencingWithActions } from '@/features/jobsWithActions';
 import { useLoadBalancingWithActions } from '@/hooks/useLoadBalancingWithActions';
 import { useOEE } from '@/hooks/useOEE';
 import { useMTBFMTTR } from '@/hooks/useMTBFMTTR';

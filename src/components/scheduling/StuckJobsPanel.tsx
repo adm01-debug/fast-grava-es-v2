@@ -1,11 +1,11 @@
-import { useStuckJobsDetection } from '@/hooks/useStuckJobsDetection';
+import { useStuckJobsDetection } from '@/features/jobs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { AlertCircle, ArrowRight, Clock, HelpCircle, History, Zap } from 'lucide-react';
 import { JobDetailsModal } from '@/components/jobs/JobDetailsModal';
 import { useState } from 'react';
-import { DbJob } from '@/hooks/useJobs';
+import { DbJob } from '@/features/jobs';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export function StuckJobsPanel() {

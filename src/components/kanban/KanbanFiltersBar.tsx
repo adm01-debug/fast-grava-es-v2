@@ -7,9 +7,9 @@ import {
   Search, Filter, LayoutGrid, List, Layers,
   AlertCircle, ArrowUp, ArrowDown, Minus, X, Plus, Wand2
 } from 'lucide-react';
-import { DbMachine } from '@/hooks/useJobs';
+import { DbMachine } from '@/features/jobs';
 import { useNavigate } from 'react-router-dom';
-import { useSmartSequencing } from '@/hooks/useSmartSequencing';
+import { useSmartSequencing } from '@/features/jobs';
 import { toast } from 'sonner';
 
 export type ViewMode = 'expanded' | 'compact';

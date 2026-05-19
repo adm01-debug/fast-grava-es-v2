@@ -1,8 +1,8 @@
 import { useState, useMemo, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { KioskMode } from "@/components/kiosk/KioskMode";
-import { useSchedulingData } from "@/hooks/useSchedulingData";
-import { useUpdateJobStatus } from "@/hooks/useJobs";
+import { useSchedulingData } from "@/features/jobs";
+import { useUpdateJobStatus } from "@/features/jobs";
 import { notifyStatusChange } from "@/hooks/useNotifications";
 import { useAuth } from "@/features/auth";
 import { ProductionRegistrationModal } from "@/components/operator/ProductionRegistrationModal";

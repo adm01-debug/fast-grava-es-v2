@@ -9,7 +9,7 @@ import { FavoriteButton, FavoritesDropdown } from '@/components/navigation/Favor
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { KPITooltip, KPI_DEFINITIONS } from '@/components/ui/kpi-tooltip';
 import { Layers, Scale, AlertTriangle, TrendingUp, Timer, BarChart3, History, Command, Users } from 'lucide-react';
-import { useSmartSequencing } from '@/hooks/useSmartSequencing';
+import { useSmartSequencing } from '@/features/jobs';
 import { useLoadBalancing } from '@/hooks/useLoadBalancing';
 import { useBottleneckPrediction } from '@/hooks/useBottleneckPrediction';
 import { useEfficiencyAlertHistory } from '@/hooks/useEfficiencyAlertHistory';

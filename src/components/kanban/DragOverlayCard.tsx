@@ -1,6 +1,6 @@
 import { Badge } from '@/components/ui/badge';
 import { Calendar, GripVertical } from 'lucide-react';
-import { DbJob, DbTechnique, DbMachine } from '@/hooks/useJobs';
+import { DbJob, DbTechnique, DbMachine } from '@/features/jobs';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 

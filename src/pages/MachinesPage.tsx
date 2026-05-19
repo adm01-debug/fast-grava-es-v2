@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback } from 'react';
-import { DbMachine } from '@/hooks/useJobs';
+import { DbMachine } from '@/features/jobs';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
@@ -11,7 +11,7 @@ import {
   Activity, AlertTriangle, Map as MapIcon, Zap, Search, FileDown
 } from 'lucide-react';
 import { TargetArrowIcon } from '@/components/icons/TargetArrowIcon';
-import { useSchedulingData } from '@/hooks/useSchedulingData';
+import { useSchedulingData } from '@/features/jobs';
 import { Skeleton } from '@/components/ui/skeleton';
 // Breadcrumbs removed - handled by MainLayout
 import { VoiceButton } from '@/components/voice/VoiceCommands';

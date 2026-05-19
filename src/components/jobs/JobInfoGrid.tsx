@@ -1,7 +1,7 @@
 import React from "react";
 import { InfoRow } from "./JobInfoRow";
 import { Calendar, Clock, User, Package, Palette, Building } from "lucide-react";
-import { DbJob, DbMachine } from "@/hooks/useJobs";
+import { DbJob, DbMachine } from "@/features/jobs";
 import { useTranslation } from "react-i18next";
 
 interface JobInfoGridProps {

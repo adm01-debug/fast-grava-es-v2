@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { DbJob } from '@/hooks/useJobs';
+import { DbJob } from '@/features/jobs';
 import { cn } from '@/lib/utils';
 
 interface DensityMinimapProps {

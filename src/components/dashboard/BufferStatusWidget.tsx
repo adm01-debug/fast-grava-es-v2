@@ -14,8 +14,8 @@ import {
   Zap
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useBufferStatus, BufferTechniqueStatus } from '@/hooks/useJobs';
-import { useAutoBufferPromotion } from '@/hooks/useAutoBufferPromotion';
+import { useBufferStatus, BufferTechniqueStatus } from '@/features/jobs';
+import { useAutoBufferPromotion } from '@/features/jobs';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const BUFFER_TARGET = 3;

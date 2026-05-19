@@ -20,7 +20,7 @@ import { HistoryPeriodFilter, type HistoryPeriodValue } from "@/components/audit
 import { MachineReliabilityTab } from "./MachineReliabilityTab";
 import { Badge } from "@/components/ui/badge";
 import { calculateRealOEE } from "@/lib/oeeCalculations";
-import { useSchedulingData } from "@/hooks/useSchedulingData";
+import { useSchedulingData } from "@/features/jobs";
 
 interface MachineDetailsModalProps {
   machine: any | null;

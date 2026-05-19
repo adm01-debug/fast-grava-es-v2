@@ -3,10 +3,10 @@ import { supabase } from '@/integrations/supabase/client';
 import { useEffect, useMemo } from 'react';
 import { createAppError, createMutationErrorHandler } from '@/lib/errorHandling';
 import { QUERY_KEYS, STALE_TIMES } from '@/lib/queryConfig';
-import { jobsService, type Job, type JobStatus } from '@/services/jobsService';
+import { jobsService, type Job, type JobStatus } from '@/features/jobs';
 import { useTechniques } from './useTechniques';
 import { useMachines } from './useMachines';
-import { Technique } from '@/services/techniquesService';
+import { Technique } from '@/features/jobs';
 import { Machine } from '@/services/machinesService';
 
 // Re-export types for backward compatibility

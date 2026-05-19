@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useOperatorDashboardData } from '@/hooks/useOperatorDashboardData';
-import { useUpdateJobStatus, DbJob } from '@/hooks/useJobs';
+import { useUpdateJobStatus, DbJob } from '@/features/jobs';
 import { notifyStatusChange } from '@/hooks/useNotifications';
 import { useOfflineSync } from '@/hooks/useOfflineSync';
 import { useAuth } from '@/features/auth';

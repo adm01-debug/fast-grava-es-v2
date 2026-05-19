@@ -1,7 +1,7 @@
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { DbJob } from '@/hooks/useJobs';
-import { DbMachine, DbTechnique } from '@/hooks/useJobs';
+import { DbJob } from '@/features/jobs';
+import { DbMachine, DbTechnique } from '@/features/jobs';
 
 export interface ShiftReportData {
   shiftName: string;
