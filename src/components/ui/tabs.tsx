@@ -12,9 +12,9 @@ const TabsList = React.forwardRef<
   <TabsPrimitive.List
     ref={ref}
     className={cn(
-      "inline-flex h-11 items-center justify-center rounded-lg p-1 text-muted-foreground",
-      "bg-muted/80 backdrop-blur-sm border border-border/30",
-      "dark:bg-muted/40 dark:border-white/5",
+      "inline-flex h-12 items-center justify-center rounded-xl p-1 text-muted-foreground transition-all duration-300",
+      "bg-muted/60 backdrop-blur-md border border-border/20 shadow-inner",
+      "dark:bg-muted/30 dark:border-white/5",
       className,
     )}
     {...props}
@@ -29,16 +29,16 @@ const TabsTrigger = React.forwardRef<
   <TabsPrimitive.Trigger
     ref={ref}
     className={cn(
-      "inline-flex items-center justify-center whitespace-nowrap rounded-md px-4 py-2 text-sm font-medium transition-all duration-200",
-      "ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+      "inline-flex items-center justify-center whitespace-nowrap rounded-lg px-4 py-2.5 text-sm font-semibold transition-all duration-300",
+      "ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20",
       "disabled:pointer-events-none disabled:opacity-50",
       // Inactive state
-      "text-muted-foreground hover:text-foreground hover:bg-background/50",
+      "text-muted-foreground/80 hover:text-foreground hover:bg-background/40",
       // Active state
-      "data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm",
-      "data-[state=active]:border data-[state=active]:border-border/50",
-      "dark:data-[state=active]:bg-background/80 dark:data-[state=active]:border-white/10",
-      "dark:data-[state=active]:shadow-[0_2px_8px_-2px_hsl(0_0%_0%/0.3)]",
+      "data-[state=active]:bg-background data-[state=active]:text-primary data-[state=active]:shadow-md",
+      "data-[state=active]:border data-[state=active]:border-border/30",
+      "dark:data-[state=active]:bg-background/90 dark:data-[state=active]:border-white/10",
+      "dark:data-[state=active]:shadow-[0_4px_12px_rgba(0,0,0,0.4)]",
       className,
     )}
     {...props}
