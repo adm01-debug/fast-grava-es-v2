@@ -213,7 +213,7 @@ export const OEELossesChart = memo(function OEELossesChart({
                   <div className="space-y-3">
                     <h4 className="text-xs font-bold uppercase text-muted-foreground tracking-wider">Top Causas Identificadas</h4>
                     <div className="space-y-2">
-                      {lossCategories.map((cat: any) => (
+                      {lossCategories.map((cat) => (
                         <div key={cat.name} className="flex items-center justify-between p-2 rounded bg-muted/30 border border-border/50">
                           <div className="flex items-center gap-2">
                             <div className="w-2 h-2 rounded-full" style={{ backgroundColor: cat.fill }} />
