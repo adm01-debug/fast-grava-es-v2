@@ -33,8 +33,8 @@ export function useInfiniteScroll<T = Record<string, unknown>>({
       const from = (pageParam as number) * pageSize;
       const to = from + pageSize - 1;
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- dynamic table name requires runtime cast
-      let q = (supabase.from(tableName) as any).select(select);
+      // Casting to never to bypass deep type checks for dynamic table names while remaining safer than any
+      let q = supabase.from(tableName as never).select(select);
 
       if (filters) {
         Object.entries(filters).forEach(([key, value]) => {
