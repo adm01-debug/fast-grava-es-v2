@@ -71,9 +71,7 @@ function createEntry(level: LogLevel, message: string, context?: string, data?: 
       }
     };
 
-    if (level !== 'debug') {
-      persistError();
-    }
+    persistError();
   }
 
   return entry;
