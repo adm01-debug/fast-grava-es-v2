@@ -98,15 +98,20 @@ export default function AuthPage() {
           <div className="absolute -right-20 top-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-gradient-to-br from-[#FF5A1F]/20 to-transparent blur-[120px] pointer-events-none" />
 
           <div className="relative z-10 p-12 xl:p-16 flex flex-col justify-between h-full w-full">
-            <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="flex items-center gap-3">
+            <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="flex items-center gap-4">
               <div 
-                className="w-[58px] h-[58px] bg-[#FF5A1F] grid place-items-center font-black text-2xl rounded-md text-white shadow-lg glow-primary"
+                className="w-[72px] h-[72px] bg-transparent flex items-center justify-center flex-shrink-0"
                 role="img"
                 aria-label="Logo FAST GRAVAÇÕES"
-              >F</div>
+              >
+                <picture>
+                  <source srcSet="/logo.webp" type="image/webp" />
+                  <img src="/logo.png" alt="FAST" className="w-full h-full object-contain" />
+                </picture>
+              </div>
               <div>
-                <h1 className="text-xl font-extrabold tracking-tight uppercase leading-none">FAST GRAVAÇÕES</h1>
-                <p className="text-[11px] text-zinc-500 tracking-[0.2em] font-black uppercase mt-1">Qualidade + Velocidade</p>
+                <h1 className="text-2xl font-extrabold tracking-tight uppercase leading-none text-white">FAST GRAVAÇÕES</h1>
+                <p className="text-[12px] text-primary tracking-[0.25em] font-black uppercase mt-1">Qualidade + Velocidade</p>
               </div>
             </motion.div>
 
@@ -144,11 +149,16 @@ export default function AuthPage() {
         {/* RIGHT — Login form */}
         <div className="w-full lg:w-[540px] flex flex-col p-6 sm:p-10 lg:p-16 justify-center relative bg-[#050505]">
           {/* Mobile brand */}
-          <div className="lg:hidden flex items-center gap-3 mb-10">
-            <div className="w-[48px] h-[48px] bg-[#FF5A1F] grid place-items-center font-black text-xl rounded-md">F</div>
+          <div className="lg:hidden flex items-center gap-4 mb-10">
+            <div className="w-[56px] h-[56px] flex items-center justify-center flex-shrink-0">
+              <picture>
+                <source srcSet="/logo.webp" type="image/webp" />
+                <img src="/logo.png" alt="FAST" className="w-full h-full object-contain" />
+              </picture>
+            </div>
             <div className="flex flex-col">
-              <span className="font-extrabold tracking-tight uppercase text-lg leading-none">FAST GRAVAÇÕES</span>
-              <span className="text-[9px] text-zinc-500 tracking-[0.2em] font-black uppercase mt-1">Qualidade + Velocidade</span>
+              <span className="font-extrabold tracking-tight uppercase text-xl leading-none">FAST GRAVAÇÕES</span>
+              <span className="text-[10px] text-primary tracking-[0.2em] font-black uppercase mt-1">Qualidade + Velocidade</span>
             </div>
           </div>
 
