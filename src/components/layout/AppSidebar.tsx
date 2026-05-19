@@ -2,7 +2,9 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLocation, Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { BrandLogo } from '@/components/ui/BrandLogo';
 import { ChevronLeft, ChevronRight, Printer, Plus, LogOut, ArrowLeft, Settings, Shield, Menu } from 'lucide-react';
+
 import { SoundFeedback } from '@/lib/soundFeedback';
 import { cn } from '@/lib/utils';
 import { prefetchRoute } from '@/lib/prefetch';
@@ -88,12 +90,10 @@ export function AppSidebar() {
           >
             <Menu className="h-5 w-5" />
           </Button>
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg gradient-primary flex items-center justify-center glow-primary">
-              <Printer className="w-5 h-5 text-primary-foreground" />
-            </div>
-            <span className="font-display font-black text-xs tracking-tighter uppercase">FAST</span>
+          <div className="flex items-center">
+            <BrandLogo size="sm" showSubtitle={false} />
           </div>
+
           <div className="w-10" /> {/* Spacer */}
         </div>
       )}
@@ -117,8 +117,9 @@ export function AppSidebar() {
 
       >
         {/* Header */}
-        <div className={cn('flex items-center px-4 py-3 border-b border-sidebar-border relative', collapsed && !isMobile ? 'h-16 justify-center' : 'min-h-[14rem] justify-between')}>
-          <div className="flex items-center gap-3 overflow-hidden">
+        <div className={cn('flex items-center h-16 px-4 border-b border-sidebar-border relative', collapsed && !isMobile ? 'justify-center' : 'justify-between')}>
+          <div className="flex items-center overflow-hidden">
+
             <AnimatePresence mode="wait">
               {(!collapsed || isMobile) && location.pathname !== '/' && location.pathname !== '/operator' && location.pathname !== '/auth' ? (
                   <motion.div

@@ -19,6 +19,8 @@ import { AuthLoginForm } from '@/components/auth/AuthLoginForm';
 import { MFALoginVerification } from '@/components/auth/MFALoginVerification';
 import { AuthErrorBoundary } from '@/components/auth/AuthErrorBoundary';
 import { motion, AnimatePresence } from 'framer-motion';
+import { BrandLogo } from '@/components/ui/BrandLogo';
+
 
 const ORANGE = '#FF5A1F';
 
@@ -99,15 +101,9 @@ export default function AuthPage() {
 
           <div className="relative z-10 p-12 xl:p-16 flex flex-col justify-between h-full w-full">
             <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="flex items-center">
-              <picture>
-                <source srcSet="/logo.webp" type="image/webp" />
-                <img
-                  src="/logo.png"
-                  alt="FAST GRAVAÇÕES — Qualidade + Velocidade"
-                  className="h-[300px] w-auto object-contain"
-                />
-              </picture>
+              <BrandLogo size="lg" />
             </motion.div>
+
 
             <div className="max-w-2xl space-y-6">
               <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.1 }} className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10">
@@ -144,15 +140,9 @@ export default function AuthPage() {
         <div className="w-full lg:w-[540px] flex flex-col p-6 sm:p-10 lg:p-16 justify-center relative bg-[#050505]">
           {/* Mobile brand */}
           <div className="lg:hidden flex items-center mb-10">
-            <picture>
-              <source srcSet="/logo.webp" type="image/webp" />
-              <img
-                src="/logo.png"
-                alt="FAST GRAVAÇÕES — Qualidade + Velocidade"
-                className="h-12 w-auto object-contain"
-              />
-            </picture>
+            <BrandLogo size="md" />
           </div>
+
 
           {/* Top utility */}
           <div className="absolute top-6 right-6 lg:top-8 lg:right-8 flex items-center gap-3">
