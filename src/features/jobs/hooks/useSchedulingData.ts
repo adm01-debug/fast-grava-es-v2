@@ -5,15 +5,15 @@ import { differenceInMinutes } from 'date-fns';
 import { type Job as DbJob } from '../services/jobsService';
 import { type Technique as DbTechnique } from '../services/techniquesService';
 import { type Machine as DbMachine } from '../../production/services/machinesService';
-import { QUERY_KEYS, STALE_TIMES } from '@/lib/queryConfig';
+import { QUERY_KEYS, STALE_TIMES, calculateRetryDelay } from '@/lib/queryConfig';
 import { createAppError } from '@/lib/errorHandling';
 import { jobsService } from '../services/jobsService';
 import { machinesService } from '../../production/services/machinesService';
 
 // Retry configuration for connection failures
 const RETRY_CONFIG = {
-  retry: 2, // Reduced from 3 for faster failure reporting
-  retryDelay: (attemptIndex: number) => Math.min(1000 * 2 ** attemptIndex, 10000), // Max 10s
+  retry: 3,
+  retryDelay: (attemptIndex: number) => calculateRetryDelay(attemptIndex),
 };
 
 // Context-specific error messages
