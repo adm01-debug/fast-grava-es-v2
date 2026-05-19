@@ -42,11 +42,11 @@ export function AdjustmentParameters({
 
   return (
     <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-      {['squeegee_passes', 'pressure', 'speed', 'temperature'].map((param) => {
+      {(['squeegee_passes', 'pressure', 'speed', 'temperature'] as Array<keyof AdjustmentParams>).map((param) => {
         const Icon = Icons[param];
         const sheet = technicalSheets.find(s => s.id === selectedSheetId);
-        const range = (sheet?.settings_ranges as any)?.[param];
-        const recommended = (sheet?.machine_settings as any)?.[param];
+        const range = sheet?.settings_ranges?.[param];
+        const recommended = sheet?.machine_settings?.[param];
 
         return (
           <div key={param} className="space-y-2">
