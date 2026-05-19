@@ -132,7 +132,7 @@ export function TPMSeverityConfigs({ machineId }: TPMSeverityConfigsProps) {
         ))}
 
         <div className="flex items-center gap-2 p-4 border border-dashed rounded-lg bg-muted/20">
-          <Select value={newSeverity} onValueChange={(v) => setNewSeverity(v as any)}>
+          <Select value={newSeverity} onValueChange={(v: 'upcoming' | 'due' | 'overdue' | 'critical') => setNewSeverity(v)}>
             <SelectTrigger className="w-full h-9">
               <SelectValue />
             </SelectTrigger>
