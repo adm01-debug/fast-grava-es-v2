@@ -1,11 +1,11 @@
 {
-  "name": "52 STÚDIOS DE GRAVAÇÃO",
+  "name": "FAST GRAVAÇÕES",
   "short_name": "FastGravações",
-  "description": "Sistema de Gestão de Gravação Industrial",
+  "description": "Qualidade + Velocidade em Gestão Industrial",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#1a1a2e",
-  "theme_color": "#6366f1",
+  "background_color": "#050505",
+  "theme_color": "#FF5A1F",
   "orientation": "portrait-primary",
   "scope": "/",
   "lang": "pt-BR",
@@ -63,7 +63,7 @@
   "shortcuts": [
     {
       "name": "Dashboard",
-      "url": "/dashboard",
+      "url": "/",
       "icons": [{ "src": "/pwa-icons/icon-96x96.png", "sizes": "96x96" }]
     },
     {
