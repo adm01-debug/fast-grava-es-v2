@@ -14,13 +14,14 @@ import {
   ResponsiveContainer, Legend
 } from 'recharts';
 import { KPITooltip, KPI_DEFINITIONS } from '@/components/ui/kpi-tooltip';
+import { KPIData } from '@/features/analytics/hooks/useKPIs';
 
 interface KPIOverviewTabProps {
-  kpis: any;
-  visibleKPIs: any;
+  kpis: KPIData;
+  visibleKPIs: Record<string, boolean>;
   completionRate: number;
-  statusData: any[];
-  handleDrillDown: (title: string, segment: any) => void;
+  statusData: Array<{ name: string; value: number; color: string }>;
+  handleDrillDown: (title: string, segment: string) => void;
 }
 
 const KPIOverviewTabComponent = ({
