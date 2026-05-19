@@ -55,7 +55,7 @@ describe('useOperatorProductivity', () => {
       return { select: vi.fn().mockReturnThis() };
     });
 
-    const { result } = renderHook(() => useOperatorProductivity('24h'));
+    const { result } = renderHook(() => useOperatorProductivity(7));
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
