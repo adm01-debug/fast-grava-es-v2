@@ -85,7 +85,23 @@ export const logger = {
   critical(message: string, error?: any, context?: string) {
     const entry = createEntry('critical', message, context, error);
     console.error(`[CRITICAL] ${formatEntry(entry)}`, error ?? '');
-    // Possible integration with external alerting system here
+    
+    // Disparar Webhook de Alerta (Configurado para o time técnico)
+    const WEBHOOK_URL = 'https://n8n.fastgravacoes.com.br/webhook/alerts';
+    if (!isDev) {
+      fetch(WEBHOOK_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'CRITICAL_ERROR',
+          message,
+          error: error instanceof Error ? error.message : String(error),
+          context,
+          timestamp: entry.timestamp,
+          system: 'FAST_GRAVAÇÕES_PROD'
+        })
+      }).catch(err => console.error('Falha ao enviar webhook de alerta', err));
+    }
   },
 
   getErrorHistory(): LogEntry[] {
