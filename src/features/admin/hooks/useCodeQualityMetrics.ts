@@ -34,6 +34,14 @@ export interface PerformanceMetrics {
   treeshakingEnabled: boolean;
 }
 
+export interface ExcellenceMetrics {
+  typeSafetyScore: number;
+  runtimeValidationCoverage: number;
+  anyUsageCount: number;
+  buildStatus: 'passing' | 'failing';
+  criticalErrorCount: number;
+}
+
 export interface CodeQualityMetrics {
   testFiles: TestFile[];
   totalTests: number;
@@ -54,6 +62,7 @@ export interface CodeQualityMetrics {
   };
   buildMetrics: BuildMetrics;
   performanceMetrics: PerformanceMetrics;
+  excellence: ExcellenceMetrics;
 }
 
 // No test files currently exist in the project
