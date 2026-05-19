@@ -2,11 +2,6 @@ import { useState, useMemo } from 'react';
 import { Database, Json } from '@/integrations/supabase/types';
 
 type PublicTables = keyof Database['public']['Tables'];
-
-interface ReportFilters {
-  status: string;
-  dateRange?: DateRange;
-}
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
