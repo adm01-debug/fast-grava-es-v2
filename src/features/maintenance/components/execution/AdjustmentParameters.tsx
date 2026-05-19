@@ -4,15 +4,11 @@ import { MoveHorizontal, PenTool, Zap, Thermometer, LucideIcon } from 'lucide-re
 import { AdjustmentParameters as IAdjustmentParameters } from '../../hooks/types';
 
 interface AdjustmentParametersProps {
-  adjustmentParams: IAdjustmentParameters;
-  setAdjustmentParams: (params: IAdjustmentParameters | ((prev: IAdjustmentParameters) => IAdjustmentParameters)) => void;
-  activeAlerts: Array<{ parameter_name: string }>;
+  adjustmentParams: Record<string, string>;
+  setAdjustmentParams: (params: any) => void;
+  activeAlerts: Array<{ parameter_name?: string }>;
   selectedSheetId: string | null;
-  technicalSheets: Array<{
-    id: string;
-    settings_ranges?: Record<string, { min?: string; max?: string }>;
-    machine_settings?: Record<string, string>;
-  }>;
+  technicalSheets: any[];
 }
 
 export function AdjustmentParameters({
