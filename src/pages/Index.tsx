@@ -115,6 +115,7 @@ const COORDINATOR_ONLY_WIDGETS = ['sequencing', 'loadbalancing', 'bottleneck', '
 
 const Index = () => {
   const { t } = useTranslation();
+  const { metrics } = usePerformanceMetrics('Dashboard');
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
     from: startOfDay(new Date()),
     to: endOfDay(new Date()),
