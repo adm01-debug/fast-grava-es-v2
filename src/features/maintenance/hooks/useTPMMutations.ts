@@ -286,7 +286,7 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
       if (fetchErr || !record) throw new Error('Registro não encontrado');
 
       // Requisito: Pelo menos uma foto se houver itens que exigem foto
-      const needsPhoto = record.responses.some((r: any) => r.photo_url);
+      const needsPhoto = record.responses.some((r: { photo_url?: string }) => r.photo_url);
       if (!record.signature_url) throw new Error('Assinatura obrigatória ausente');
 
       const { data: recordData, error: recordFetchError } = await supabase
