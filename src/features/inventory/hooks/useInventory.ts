@@ -68,7 +68,7 @@ export function useInventory() {
   const stats = useMemo(() => {
     const now = new Date();
     const last24h = subDays(now, 1);
-    const recentMovements = (movements as any[]).filter(m => m.created_at && isAfter(parseISO(m.created_at), last24h));
+    const recentMovements = movements.filter(m => m.created_at && isAfter(parseISO(m.created_at), last24h));
     const totalValue = (itemsQuery.data || []).reduce((sum, item) => sum + (item.current_stock * (item.price_per_unit || 0)), 0);
     return { movementsCount24h: recentMovements.length, inventoryValue: totalValue };
   }, [movements, itemsQuery.data]);
