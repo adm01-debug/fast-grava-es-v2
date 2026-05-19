@@ -208,10 +208,10 @@ export function MaintenanceExecutionModal({
       }
     };
 
-    checkRange('Passadas de Rodo', adjustmentParams.squeegee_passes, ranges.squeegee_passes, 'squeegee_passes');
-    checkRange('Pressão', adjustmentParams.pressure, ranges.pressure, 'pressure');
-    checkRange('Velocidade', adjustmentParams.speed, ranges.speed, 'speed');
-    checkRange('Temperatura', adjustmentParams.temperature, ranges.temperature, 'temperature');
+    checkRange('Passadas de Rodo', adjustmentParams.squeegee_passes, ranges.squeegee_passes);
+    checkRange('Pressão', adjustmentParams.pressure, ranges.pressure);
+    checkRange('Velocidade', adjustmentParams.speed, ranges.speed);
+    checkRange('Temperatura', adjustmentParams.temperature, ranges.temperature);
 
     setActiveAlerts(newAlerts);
   }, [adjustmentParams, selectedSheetId, technicalSheets]);
