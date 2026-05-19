@@ -174,11 +174,12 @@ const OEEDashboard = memo(function OEEDashboard() {
   const { losses, isLoading: lossesLoading } = useProductionLosses(undefined, lossFilters);
 
   const applyPreset = (preset: any) => {
-    if (preset.filters.period) setPeriod(preset.filters.period);
-    if (preset.filters.machineId) setMachineId(preset.filters.machineId);
-    if (preset.filters.techniqueId) setTechniqueId(preset.filters.techniqueId);
-    if (preset.filters.shift) setShift(preset.filters.shift);
-    toast.success(`Filtro "${preset.name}" aplicado`);
+    const p = preset as unknown as OEEPreset;
+    if (p.filters.period) setPeriod(p.filters.period);
+    if (p.filters.machineId) setMachineId(p.filters.machineId);
+    if (p.filters.techniqueId) setTechniqueId(p.filters.techniqueId);
+    if (p.filters.shift) setShift(p.filters.shift);
+    toast.success(`Filtro "${p.name}" aplicado`);
   };
 
   const handleSavePreset = () => {
