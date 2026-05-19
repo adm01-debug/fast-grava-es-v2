@@ -1,3 +1,5 @@
+import { DbJob, DbMachine, DbTechnique } from '@/features/jobs';
+
 export interface BIJob {
   id: string;
   order_number: string | null;
@@ -74,3 +76,40 @@ export interface BIProps {
     overallQuality: number;
   };
 }
+
+export interface MachineLoad {
+  machine: DbMachine;
+  technique: DbTechnique;
+  scheduledMinutes: number;
+  availableMinutes: number;
+  occupancyRate: number;
+  jobCount: number;
+  jobs: DbJob[];
+}
+
+export interface LoadBalancingSuggestion {
+  id?: string;
+  jobId: string;
+  orderNumber: string;
+  client: string;
+  product?: string;
+  estimatedDuration?: number;
+  currentMachineId: string;
+  currentMachineName: string;
+  suggestedMachineId: string;
+  suggestedMachineName: string;
+  currentLoad: number; // percentage
+  suggestedLoad: number; // percentage
+  loadDifference: number; // percentage points saved
+}
+
+export interface TechniqueLoadSummary {
+  technique: DbTechnique;
+  machines: MachineLoad[];
+  averageOccupancy: number;
+  maxOccupancy: number;
+  minOccupancy: number;
+  isUnbalanced: boolean; // > 30% difference between min/max
+  suggestions: LoadBalancingSuggestion[];
+}
+
