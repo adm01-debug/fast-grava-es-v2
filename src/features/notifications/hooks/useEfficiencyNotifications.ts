@@ -1,8 +1,8 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { toast } from 'sonner';
-import { useBottleneckPrediction } from './useBottleneckPrediction';
-import { useLoadBalancing } from './useLoadBalancing';
-import { useEfficiencyAlertHistory } from './useEfficiencyAlertHistory';
+import { useBottleneckPrediction } from '@/hooks/useBottleneckPrediction';
+import { useLoadBalancing } from '@/hooks/useLoadBalancing';
+import { useEfficiencyAlertHistory } from '@/hooks/useEfficiencyAlertHistory';
 import { navigateTo } from '@/lib/navigation';
 
 interface EfficiencyNotificationConfig {

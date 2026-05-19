@@ -1,8 +1,8 @@
 import { useEffect, useCallback, useRef } from 'react';
-import { usePushNotifications } from './usePushNotifications';
-import { useNotificationSounds } from './useNotificationSounds';
+import { usePushNotifications } from '@/hooks/usePushNotifications';
+import { useNotificationSounds } from '@/hooks/useNotificationSounds';
 import { supabase } from '@/integrations/supabase/client';
-import { MachinePrediction, PredictionFactor } from './useMLPredictions';
+import { MachinePrediction, PredictionFactor } from '@/hooks/useMLPredictions';
 import { Json } from '@/integrations/supabase/types';
 
 interface PredictionPayload {

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useCallback, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { usePushNotifications } from './usePushNotifications';
-import { useNotificationSounds } from './useNotificationSounds';
+import { usePushNotifications } from '@/hooks/usePushNotifications';
+import { useNotificationSounds } from '@/hooks/useNotificationSounds';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
