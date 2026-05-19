@@ -242,7 +242,7 @@ export default function TraceabilityPage() {
   return (
     <MainLayout>
       <Helmet>
-        <title>Rastreabilidade | Sistema de Produção</title>
+        <title>Rastreabilidade | Qualidade + Velocidade</title>
       </Helmet>
 
       <div className="space-y-6 pb-20">

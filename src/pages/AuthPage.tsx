@@ -102,7 +102,7 @@ export default function AuthPage() {
               <div className="w-11 h-11 bg-[#FF5A1F] grid place-items-center font-black text-xl rounded-md text-white">F</div>
               <div>
                 <h1 className="text-base font-extrabold tracking-tight uppercase leading-none">FAST GRAVAÇÕES</h1>
-                <p className="text-[10px] text-zinc-500 tracking-[0.2em] font-medium uppercase mt-1">Sistema de Produção</p>
+                <p className="text-[10px] text-zinc-500 tracking-[0.2em] font-medium uppercase mt-1">Qualidade + Velocidade</p>
               </div>
             </motion.div>
 

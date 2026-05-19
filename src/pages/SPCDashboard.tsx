@@ -119,7 +119,7 @@ export default function SPCDashboard() {
 
   return (
     <MainLayout>
-      <Helmet><title>SPC - Controle Estatístico | Sistema de Produção</title></Helmet>
+      <Helmet><title>SPC - Controle Estatístico | Qualidade + Velocidade</title></Helmet>
       <div className="space-y-6">
         <Breadcrumbs />
         <div className="flex items-center justify-between">
