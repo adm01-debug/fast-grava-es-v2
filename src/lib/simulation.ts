@@ -41,11 +41,6 @@ export const generateFuzzPayload = (basePayload: Record<string, any>): any => {
     (p: any) => { p.overflow = "X".repeat(20000); return p; },
     (p: any) => { return "{ malformed_json: true "; },
   ];
-  
-  const mutation = mutations[Math.floor(Math.random() * mutations.length)];
-  return mutation({ ...basePayload });
-};
-  
   const mutation = mutations[Math.floor(Math.random() * mutations.length)];
   return mutation({ ...basePayload });
 };
