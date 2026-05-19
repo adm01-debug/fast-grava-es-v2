@@ -21,26 +21,26 @@ import {
   Command
 } from 'lucide-react';
 import { useBlockedIPs, useRateLimitLogs, useSecurityEvents } from '@/features/admin';
-import { BlockedIPsPanel } from '@/components/security/BlockedIPsPanel';
-import { RateLimitSettings } from '@/components/security/RateLimitSettings';
-import { SecurityEventsLog } from '@/components/security/SecurityEventsLog';
-import { PermissionMatrix } from '@/components/security/PermissionMatrix';
-import { PermissionManager } from '@/components/security/PermissionManager';
-import { MFASettings } from '@/components/security/MFASettings';
-import { GeoBlockingSettings } from '@/components/security/GeoBlockingSettings';
+import { BlockedIPsPanel } from '@/features/admin/components/security/BlockedIPsPanel';
+import { RateLimitSettings } from '@/features/admin/components/security/RateLimitSettings';
+import { SecurityEventsLog } from '@/features/admin/components/security/SecurityEventsLog';
+import { PermissionMatrix } from '@/features/admin/components/security/PermissionMatrix';
+import { PermissionManager } from '@/features/admin/components/security/PermissionManager';
+import { MFASettings } from '@/features/admin/components/security/MFASettings';
+import { GeoBlockingSettings } from '@/features/admin/components/security/GeoBlockingSettings';
 import { IPAllowlist } from '@/components/settings/IPAllowlist';
 import { LoginAuditLog } from '@/components/settings/LoginAuditLog';
-import { SecurityOverviewCard } from '@/components/security/SecurityOverviewCard';
-import { ActiveDevicesPanel } from '@/components/security/ActiveDevicesPanel';
-import { SecurityAlertsPanel } from '@/components/security/SecurityAlertsPanel';
-import { PushNotificationSettings } from '@/components/security/PushNotificationSettings';
+import { SecurityOverviewCard } from '@/features/admin/components/security/SecurityOverviewCard';
+import { ActiveDevicesPanel } from '@/features/admin/components/security/ActiveDevicesPanel';
+import { SecurityAlertsPanel } from '@/features/admin/components/security/SecurityAlertsPanel';
+import { PushNotificationSettings } from '@/features/admin/components/security/PushNotificationSettings';
 
 import { useMFA } from '@/features/auth';
 import { useUserDevices } from '@/hooks/useUserDevices';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { VoiceButton } from '@/components/voice/VoiceCommands';
-import { CyberResilienceScore } from '@/components/security/CyberResilienceScore';
-import { AICyberAdvisor } from '@/components/security/AICyberAdvisor';
+import { CyberResilienceScore } from '@/features/admin/components/security/CyberResilienceScore';
+import { AICyberAdvisor } from '@/features/admin/components/security/AICyberAdvisor';
 import { MainLayout } from '@/components/layout/MainLayout';
 
 
