@@ -2,7 +2,7 @@ import { QRCodeSVG } from 'qrcode.react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Download, Printer } from 'lucide-react';
-import { ProductionLot } from '@/hooks/useTraceability';
+import { ProductionLot } from '@/features/inventory';
 
 interface LotQRCodeProps {
   lot: ProductionLot;

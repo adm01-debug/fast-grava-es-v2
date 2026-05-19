@@ -13,7 +13,7 @@ import {
   Play,
   Loader2
 } from "lucide-react";
-import { useSmartSequencingWithActions, SequencingSuggestion } from "@/hooks/useSmartSequencingWithActions";
+import { useSmartSequencingWithActions, SequencingSuggestion } from "@/features/jobs";
 
 interface SequencingCardProps {
   suggestion: SequencingSuggestion;

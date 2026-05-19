@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Download, Printer, Tag, Copy } from 'lucide-react';
-import { ProductionLot } from '@/hooks/useTraceability';
+import { ProductionLot } from '@/features/inventory';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
 

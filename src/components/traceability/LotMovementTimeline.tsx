@@ -1,7 +1,7 @@
 import { format } from 'date-fns';
 import { Package, Truck, ArrowRight, ArrowLeft, Layers, Clock } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { LotMovement } from '@/hooks/useTraceability';
+import { LotMovement } from '@/features/inventory';
 
 interface LotMovementTimelineProps {
   movements: LotMovement[];

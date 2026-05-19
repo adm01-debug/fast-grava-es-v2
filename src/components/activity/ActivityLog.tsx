@@ -22,7 +22,7 @@ import {
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
-import { type ActivityType, type ActivityLogEntry } from "@/hooks/useActivityLog";
+import { type ActivityType, type ActivityLogEntry } from "@/features/admin";
 
 
 interface ActivityLogProps {
@@ -230,4 +230,4 @@ function ActivityEntry({ entry, index }: { entry: ActivityLogEntry; index: numbe
   );
 }
 
-export { useActivityLog } from "@/hooks/useActivityLog";
+export { useActivityLog } from "@/features/admin";

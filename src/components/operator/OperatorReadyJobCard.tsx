@@ -2,7 +2,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { SwipeActions } from '@/components/mobile/SwipeActions';
-import { DbJob } from '@/hooks/useJobs';
+import { DbJob } from '@/features/jobs';
 import { Play, AlertTriangle, Timer } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';

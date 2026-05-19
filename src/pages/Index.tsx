@@ -9,7 +9,7 @@ import { MainLayout } from '@/components/layout/MainLayout';
 import { StatsCard } from '@/components/dashboard/StatsCard';
 import { useOperatorDashboardData } from '@/hooks/useOperatorDashboardData';
 import { useDashboardLayout, WidgetConfig } from '@/hooks/useDashboardLayout';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/features/auth';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { StatsCardSkeleton, ContentTransition } from '@/components/loading';
 import { DraggableWidget } from '@/components/dashboard/DraggableWidget';
@@ -22,7 +22,7 @@ import { ActivityLog, useActivityLog } from '@/components/activity/ActivityLog';
 import { OfflineBanner, ConnectionStatus } from '@/components/offline/OfflineMode';
 import { GamificationBanner } from '@/components/dashboard/GamificationBanner';
 import { useSmartDelayAlerts } from '@/hooks/useSmartDelayAlerts';
-import { usePerformanceMetrics } from '@/hooks/usePerformanceMetrics';
+import { usePerformanceMetrics } from '@/features/production';
 
 import { VoiceButton } from '@/components/voice/VoiceCommands';
 const ActivityFeedWidget = lazy(() => import('@/components/dashboard/ActivityFeedWidget').then(m => ({ default: m.ActivityFeedWidget })));

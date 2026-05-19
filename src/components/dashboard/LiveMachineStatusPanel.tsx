@@ -10,8 +10,8 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { cn } from '@/lib/utils';
 import { differenceInMinutes } from 'date-fns';
 import { useOperatorPresence } from '@/hooks/useOperatorPresence';
-import { useOperatorMachines } from '@/hooks/useOperatorMachines';
-import { useOperators } from '@/hooks/useOperators';
+import { useOperatorMachines } from '@/features/production';
+import { useOperators } from '@/features/production';
 
 interface MachineStatus {
   machineId: string;

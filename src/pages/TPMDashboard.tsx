@@ -9,7 +9,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { useTPM } from '@/hooks/useTPM';
 import { useTPMNotifications } from '@/hooks/useTPMNotifications';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/features/auth';
 import { TPMAlertsPanel } from '@/components/tpm/TPMAlertsPanel';
 import { TPMParameterAlerts } from '@/components/tpm/TPMParameterAlerts';
 import { TPMCalendar } from '@/components/tpm/TPMCalendar';

@@ -33,8 +33,8 @@ import {
 } from '@/components/ui/select';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Progress } from '@/components/ui/progress';
-import { useProductionLots, useTraceabilityMutations, ProductionLot } from '@/hooks/useTraceability';
-import { useJobs } from '@/hooks/useJobs';
+import { useProductionLots, useTraceabilityMutations, ProductionLot } from '@/features/inventory';
+import { useJobs } from '@/features/jobs';
 import LotDetailsModal from '@/components/traceability/LotDetailsModal';
 import LotGenealogyView from '@/components/traceability/LotGenealogyView';
 import { TraceabilityStatsCards } from '@/components/traceability/TraceabilityStatsCards';

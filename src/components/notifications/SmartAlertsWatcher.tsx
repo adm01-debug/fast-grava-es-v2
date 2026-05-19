@@ -1,5 +1,5 @@
 import { useSmartDelayAlerts } from '@/hooks/useSmartDelayAlerts';
-import { usePriorityEscalation } from '@/hooks/usePriorityEscalation';
+import { usePriorityEscalation } from '@/features/jobs';
 import { useTechniqueCapacityAlerts } from '@/hooks/useTechniqueCapacityAlerts';
 
 /**

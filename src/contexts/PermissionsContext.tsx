@@ -1,12 +1,13 @@
 import { createContext, useContext, ReactNode } from 'react';
-import { useRolePermissions } from '@/hooks/useRolePermissions';
+import { useRolePermissions, useAuth } from '@/features/auth';
 
 type PermissionsContextType = ReturnType<typeof useRolePermissions>;
 
 const PermissionsContext = createContext<PermissionsContextType | undefined>(undefined);
 
 export function PermissionsProvider({ children }: { children: ReactNode }) {
-  const permissions = useRolePermissions();
+  const { role } = useAuth();
+  const permissions = useRolePermissions(role);
 
   return (
     <PermissionsContext.Provider value={permissions}>
@@ -20,3 +21,4 @@ export function usePermissionsContext() {
   if (!ctx) throw new Error('usePermissionsContext must be used within PermissionsProvider');
   return ctx;
 }
+

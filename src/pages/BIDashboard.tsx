@@ -5,10 +5,10 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useKPIs } from '@/hooks/useKPIs';
-import { useOEE } from '@/hooks/useOEE';
-import { useSchedulingData } from '@/hooks/useSchedulingData';
-import { useOperators } from '@/hooks/useOperators';
-import { useOperatorMachines } from '@/hooks/useOperatorMachines';
+import { useOEE } from '@/features/production';
+import { useSchedulingData } from '@/features/jobs';
+import { useOperators } from '@/features/production';
+import { useOperatorMachines } from '@/features/production';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { BIStatCard } from '@/components/bi/BIStatCard';
 import { BILoadingSkeleton } from '@/components/bi/BILoadingSkeleton';

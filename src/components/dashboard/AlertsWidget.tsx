@@ -4,10 +4,10 @@ import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { useMemo, useState } from 'react';
-import { useSchedulingData } from '@/hooks/useSchedulingData';
+import { useSchedulingData } from '@/features/jobs';
 import { AlertScheduleModal } from './AlertScheduleModal';
-import { useStuckJobsDetection } from '@/hooks/useStuckJobsDetection';
-import { useOEE } from '@/hooks/useOEE';
+import { useStuckJobsDetection } from '@/features/jobs';
+import { useOEE } from '@/features/production';
 
 interface Alert {
   id: string;

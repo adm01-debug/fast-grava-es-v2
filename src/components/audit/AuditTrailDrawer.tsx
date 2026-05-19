@@ -2,11 +2,11 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ShieldCheckIcon } from 'lucide-react';
-import { useEntityAuditTrail } from '@/hooks/useAuditTrail';
+import { useEntityAuditTrail } from '@/features/admin';
 import { AuditEntryCard } from './AuditEntryCard';
 import { HistoryPeriodFilter, type HistoryPeriodValue } from './HistoryPeriodFilter';
 import { useState, useCallback } from 'react';
-import { useDataExport } from '@/hooks/useDataExport';
+import { useDataExport } from '@/features/admin';
 
 interface AuditTrailDrawerProps {
   open: boolean;

@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useOperatorDashboardData } from '@/hooks/useOperatorDashboardData';
-import { useSchedulingData } from '@/hooks/useSchedulingData';
+import { useSchedulingData } from '@/features/jobs';
 import { exportShiftReportPDF } from '@/lib/shiftReportPdf';
 import { toast } from 'sonner';
 import {

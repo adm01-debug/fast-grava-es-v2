@@ -5,9 +5,9 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { Loader2, Cpu } from 'lucide-react';
-import { useSchedulingData } from '@/hooks/useSchedulingData';
-import { useOperatorMachines } from '@/hooks/useOperatorMachines';
-import type { OperatorWithProfile } from '@/hooks/useOperators';
+import { useSchedulingData } from '@/features/jobs';
+import { useOperatorMachines } from '@/features/production';
+import type { OperatorWithProfile } from '@/features/production';
 
 interface MachineAssignmentModalProps {
   operator: OperatorWithProfile | null;

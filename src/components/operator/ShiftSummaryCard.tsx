@@ -3,7 +3,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { CheckCircle2, Package, AlertTriangle, Clock, TrendingUp, Zap } from 'lucide-react';
-import { DbJob } from '@/hooks/useJobs';
+import { DbJob } from '@/features/jobs';
 
 interface ShiftSummaryCardProps {
   jobs: DbJob[];

@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Trophy, TrendingDown, Target, ArrowUpRight, ArrowDownRight, Minus, AlertTriangle } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { MachineOEE, TechniqueOEE } from '@/hooks/useOEE';
+import { MachineOEE, TechniqueOEE } from '@/features/production';
 
 interface OEERankingGapProps {
   machines: MachineOEE[];

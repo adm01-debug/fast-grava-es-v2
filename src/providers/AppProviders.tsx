@@ -1,14 +1,13 @@
-import { ReactNode, ComponentType } from "react";
+import { ReactNode } from "react";
 import { ThemeProvider } from "next-themes";
 import { BrowserRouter } from "react-router-dom";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { AuthProvider } from "@/contexts/AuthContext";
+import { AuthProvider } from "@/features/auth";
 import { ReauthProvider } from "@/contexts/ReauthContext";
 import { EfficiencyNotificationProvider } from "@/components/notifications/EfficiencyNotificationProvider";
 import { RealtimeNotificationsProvider } from "@/components/notifications/RealtimeNotificationsProvider";
 import { OfflineSyncProvider } from "@/contexts/OfflineSyncContext";
-// SessionManager removed to avoid redundancy with consolidated AuthProvider logic
 import { ProductDesignProvider } from "@/components/design-system/ProductDesignProvider";
 import { CelebrationProvider } from "@/components/ui/celebration";
 import { FeedbackProvider } from "@/components/feedback/FeedbackProvider";
@@ -34,28 +33,59 @@ import { createQueryClient } from "@/lib/queryConfig";
 
 const queryClient = createQueryClient();
 
-/**
- * Composes an array of providers into a single wrapper, eliminating deep nesting.
- * Each entry is either a Provider component or a tuple [Provider, props].
- */
-type ProviderEntry =
-  | ComponentType<{ children: ReactNode }>
-  | [ComponentType<any>, Record<string, unknown>];
-
-function composeProviders(entries: ProviderEntry[]): ComponentType<{ children: ReactNode }> {
-  return function ComposedProviders({ children }: { children: ReactNode }) {
-    return entries.reduceRight<ReactNode>((acc, entry) => {
-      if (Array.isArray(entry)) {
-        const [Provider, props] = entry;
-        return <Provider {...props}>{acc}</Provider>;
-      }
-      const Provider = entry;
-      return <Provider>{acc}</Provider>;
-    }, children);
-  };
+function ComposedProviders({ children }: { children: ReactNode }) {
+  return (
+    <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
+      <ThemeContextProvider>
+        <TooltipProvider>
+          <UserPreferencesProvider>
+            <FeatureFlagsProvider>
+              <BreadcrumbProvider>
+                <SearchProvider>
+                  <SidebarProvider>
+                    <ConfirmationProvider>
+                      <NotificationsProvider>
+                        <AuthProvider>
+                          <ReauthProvider>
+                            <PermissionsProvider>
+                              <OfflineSyncProvider>
+                                <NetworkStatusProvider>
+                                  <WebSocketProvider>
+                                    <EfficiencyNotificationProvider>
+                                      <RealtimeNotificationsProvider>
+                                        <ProductDesignProvider
+                                          enableOnboarding
+                                          enableCommandPalette
+                                          enableKeyboardShortcuts
+                                          enableToastWithUndo
+                                        >
+                                          <CelebrationProvider>
+                                            <FeedbackProvider>
+                                              {children}
+                                            </FeedbackProvider>
+                                          </CelebrationProvider>
+                                        </ProductDesignProvider>
+                                      </RealtimeNotificationsProvider>
+                                    </EfficiencyNotificationProvider>
+                                  </WebSocketProvider>
+                                </NetworkStatusProvider>
+                              </OfflineSyncProvider>
+                            </PermissionsProvider>
+                          </ReauthProvider>
+                        </AuthProvider>
+                      </NotificationsProvider>
+                    </ConfirmationProvider>
+                  </SidebarProvider>
+                </SearchProvider>
+              </BreadcrumbProvider>
+            </FeatureFlagsProvider>
+          </UserPreferencesProvider>
+        </TooltipProvider>
+      </ThemeContextProvider>
+    </ThemeProvider>
+  );
 }
 
-// Standalone observer components (no children)
 function Observers() {
   return (
     <>
@@ -66,42 +96,6 @@ function Observers() {
     </>
   );
 }
-
-// Build the composed tree – order matters (outermost first)
-const ComposedProviders = composeProviders([
-  // Infrastructure layer (no auth dependency)
-  [ThemeProvider, { attribute: "class", defaultTheme: "dark", enableSystem: true, disableTransitionOnChange: true }],
-  ThemeContextProvider,
-  [TooltipProvider, {}],
-  UserPreferencesProvider,
-  FeatureFlagsProvider,
-  // Router-dependent layer
-  BreadcrumbProvider,
-  SearchProvider,
-  SidebarProvider,
-  ConfirmationProvider,
-  NotificationsProvider,
-  // Auth layer
-  AuthProvider,
-  ReauthProvider,
-  PermissionsProvider,
-  // SessionManager logic now inside AuthProvider
-  // Data & sync layer
-  OfflineSyncProvider,
-  NetworkStatusProvider,
-  WebSocketProvider,
-  // Feature layer
-  EfficiencyNotificationProvider,
-  RealtimeNotificationsProvider,
-  [ProductDesignProvider, {
-    enableOnboarding: true,
-    enableCommandPalette: true,
-    enableKeyboardShortcuts: true,
-    enableToastWithUndo: true,
-  }],
-  CelebrationProvider,
-  FeedbackProvider,
-]);
 
 export function AppProviders({ children }: { children: ReactNode }) {
   return (

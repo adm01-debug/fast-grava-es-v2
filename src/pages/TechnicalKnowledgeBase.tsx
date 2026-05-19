@@ -12,7 +12,7 @@ import { TechnicalSheetViewer } from '@/components/knowledge/TechnicalSheetViewe
 import { TechnicalSheetEditor } from '@/components/knowledge/TechnicalSheetEditor';
 import { KnowledgeBaseStats } from '@/components/knowledge/KnowledgeBaseStats';
 import { KnowledgeSheetList } from '@/components/knowledge/KnowledgeSheetList';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/features/auth';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { toast } from 'sonner';
 

@@ -2,9 +2,9 @@ import { useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { usePushNotifications } from "@/hooks/usePushNotifications";
 import { useNotificationSounds } from "@/hooks/useNotificationSounds";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/features/auth";
 import { useGoalAlerts } from "@/hooks/useGoalAlerts";
-import { useOEEAlerts } from "@/hooks/useOEEAlerts";
+import { useOEEAlerts } from "@/features/production";
 import { useTPMNotifications } from "@/hooks/useTPMNotifications";
 
 interface NotificationPreferences {

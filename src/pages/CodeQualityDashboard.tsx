@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { TestTube2, FileCode, TrendingUp, AlertTriangle, CheckCircle2, XCircle, Layers, GitBranch, BarChart3, PieChart, Timer, Package, Zap, Server, Gauge } from 'lucide-react';
-import { useCodeQualityMetrics } from '@/hooks/useCodeQualityMetrics';
+import { useCodeQualityMetrics } from '@/features/admin';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, PieChart as RechartsPie, Pie, Cell } from 'recharts';
 import { CodeQualityTestsTab } from '@/components/design-system/sections/code-quality/CodeQualityTestsTab';

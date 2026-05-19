@@ -1,4 +1,4 @@
-import { useInventory } from '@/hooks/useInventory';
+import { useInventory } from '@/features/inventory';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Package, AlertTriangle, ArrowRight } from 'lucide-react';

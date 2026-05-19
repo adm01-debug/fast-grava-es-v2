@@ -4,7 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useAuditTrail } from '@/hooks/useAuditTrail';
+import { useAuditTrail } from '@/features/admin';
 import { AuditFilters } from '@/components/audit/AuditFilters';
 import { AuditEntryCard } from '@/components/audit/AuditEntryCard';
 import { AuditChainStatus } from '@/components/audit/AuditChainStatus';

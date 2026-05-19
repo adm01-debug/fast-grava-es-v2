@@ -3,7 +3,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { SwipeActions } from '@/components/mobile/SwipeActions';
 import { ProductionTimer } from '@/components/operator/ProductionTimer';
-import { DbJob } from '@/hooks/useJobs';
+import { DbJob } from '@/features/jobs';
 import { Play, Pause, CheckCircle2, AlertTriangle, ClipboardCheck, Timer } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';

@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback } from 'react';
-import { DbMachine } from '@/hooks/useJobs';
+import { DbMachine } from '@/features/jobs';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
@@ -11,7 +11,7 @@ import {
   Activity, AlertTriangle, Map as MapIcon, Zap, Search, FileDown
 } from 'lucide-react';
 import { TargetArrowIcon } from '@/components/icons/TargetArrowIcon';
-import { useSchedulingData } from '@/hooks/useSchedulingData';
+import { useSchedulingData } from '@/features/jobs';
 import { Skeleton } from '@/components/ui/skeleton';
 // Breadcrumbs removed - handled by MainLayout
 import { VoiceButton } from '@/components/voice/VoiceCommands';
@@ -19,24 +19,24 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { useEntityAuditTrail } from '@/hooks/useAuditTrail';
+import { useEntityAuditTrail } from '@/features/admin';
 import { AuditEntryCard } from '@/components/audit/AuditEntryCard';
 import { HistoryPeriodFilter, type HistoryPeriodValue } from '@/components/audit/HistoryPeriodFilter';
 import { MachineTPMPanel } from '@/components/tpm/MachineTPMPanel';
 import { useTPM } from '@/hooks/useTPM';
 import { MaintenanceExecutionModal } from '@/components/tpm/MaintenanceExecutionModal';
 import { CreateScheduleModal } from '@/components/tpm/CreateScheduleModal';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/features/auth';
 import { toast } from 'sonner';
 import { MachineReliabilityTab } from '@/components/machines/MachineReliabilityTab';
-import { useMTBFMTTR } from '@/hooks/useMTBFMTTR';
-import { useDataExport } from '@/hooks/useDataExport';
+import { useMTBFMTTR } from '@/features/production';
+import { useDataExport } from '@/features/admin';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { Input } from '@/components/ui/input';
 import { MachineCard } from '@/components/machines/MachineCard';
 import { MachineBulkActions } from '@/components/machines/MachineBulkActions';
-import { useOEE } from '@/hooks/useOEE';
+import { useOEE } from '@/features/production';
 import { QrCode as QrCodeIcon, Download, Trash2, Power } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 

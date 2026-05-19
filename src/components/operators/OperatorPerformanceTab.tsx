@@ -1,4 +1,4 @@
-import { useOperatorEvolution } from '@/hooks/useOperatorEvolution';
+import { useOperatorEvolution } from '@/features/production';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import {

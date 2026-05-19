@@ -2,7 +2,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { Badge } from '@/components/ui/badge';
 import { AlertTriangle } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { DbJob } from '@/hooks/useJobs';
+import { DbJob } from '@/features/jobs';
 import { JobStatus } from '@/types/scheduling';
 import { statusColors, statusLabels } from './types';
 import { useHapticFeedback } from '@/hooks/use-haptic-feedback';

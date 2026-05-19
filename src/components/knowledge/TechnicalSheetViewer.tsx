@@ -33,7 +33,7 @@ import {
   useTechnicalSheetFavorites,
   useTechnicalSheetMutations
 } from '@/hooks/useTechnicalSheets';
-import { useInventory } from '@/hooks/useInventory';
+import { useInventory } from '@/features/inventory';
 import { KnowledgeSheetQRCode } from './KnowledgeSheetQRCode';
 import { KnowledgeStatusBadge } from './KnowledgeStatusBadge';
 import { VisualReference } from './TechnicalSheetVisualReference';

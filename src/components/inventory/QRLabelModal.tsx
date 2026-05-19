@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Button } from '@/components/ui/button';
 import { Printer } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
-import { InventoryItem } from '@/hooks/useInventory';
+import { InventoryItem } from '@/features/inventory';
 
 interface QRLabelModalProps {
   open: boolean;

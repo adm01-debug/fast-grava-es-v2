@@ -1,5 +1,5 @@
 import { useMachineSuggestion } from '@/hooks/useMachineSuggestion';
-import { useOEE } from '@/hooks/useOEE';
+import { useOEE } from '@/features/production';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';

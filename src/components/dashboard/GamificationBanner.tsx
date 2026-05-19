@@ -1,5 +1,5 @@
 import { useGamification } from '@/hooks/useGamification';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/features/auth';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Trophy, Star, TrendingUp, Award } from 'lucide-react';

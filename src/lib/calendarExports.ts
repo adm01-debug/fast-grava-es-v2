@@ -3,7 +3,7 @@
  * E13 + E14.
  */
 import { format } from 'date-fns';
-import { DbJob, DbMachine } from '@/hooks/useJobs';
+import { DbJob, DbMachine } from '@/features/jobs';
 import { logger } from '@/lib/logger';
 
 /**

@@ -11,7 +11,7 @@ import {
   Cell,
   ReferenceLine
 } from 'recharts';
-import { TechniqueOEE } from '@/hooks/useOEE';
+import { TechniqueOEE } from '@/features/production';
 import { ChevronRight } from 'lucide-react';
 
 interface OEETechniqueComparisonProps {

@@ -13,7 +13,7 @@ import {
 import { Clock, Gauge, Target, ChevronDown, ChevronUp } from 'lucide-react';
 import { useState, useMemo } from 'react';
 import { Badge } from '@/components/ui/badge';
-import { useProductionLosses } from '@/hooks/useProductionLosses';
+import { useProductionLosses } from '@/features/production';
 import { Skeleton } from '@/components/ui/skeleton';
 
 interface OEELossesChartProps {

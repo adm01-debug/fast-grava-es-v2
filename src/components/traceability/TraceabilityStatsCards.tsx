@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Layers, CheckCircle, AlertTriangle, XCircle, Clock, TrendingUp, TrendingDown } from 'lucide-react';
 import { differenceInDays } from 'date-fns';
-import { ProductionLot } from '@/hooks/useTraceability';
+import { ProductionLot } from '@/features/inventory';
 
 interface TraceabilityStatsCardsProps {
   lots: ProductionLot[];

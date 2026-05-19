@@ -15,7 +15,7 @@ import {
   CheckCircle2,
   XCircle
 } from 'lucide-react';
-import { useMFA } from '@/hooks/useMFA';
+import { useMFA } from '@/features/auth';
 import { useUserDevices } from '@/hooks/useUserDevices';
 import { cn } from '@/lib/utils';
 

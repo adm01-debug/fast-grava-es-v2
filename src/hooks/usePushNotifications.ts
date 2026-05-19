@@ -3,7 +3,7 @@ import { useToast } from '@/hooks/use-toast';
 import { createAppError } from '@/lib/errorHandling';
 import { navigateTo } from '@/lib/navigation';
 import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/features/auth';
 
 const PUSH_NOTIFICATIONS_ERROR_CONTEXT = {
   requestPermission: { entity: 'push_notifications', operation: 'request_permission' },

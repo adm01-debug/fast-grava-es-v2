@@ -5,11 +5,11 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Calendar, GripVertical, AlertCircle, ArrowUp, ArrowDown, Minus, Clock, Play, Pause, CheckCircle2, MessageSquare, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { DbJob, DbTechnique, DbMachine } from '@/hooks/useJobs';
+import { DbJob, DbTechnique, DbMachine } from '@/features/jobs';
 import { format, differenceInHours, differenceInDays } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { ViewMode } from './KanbanFiltersBar';
-import { useJobInventoryCheck } from '@/hooks/useJobInventoryCheck';
+import { useJobInventoryCheck } from '@/features/jobs';
 
 interface DraggableJobCardProps {
   job: DbJob;

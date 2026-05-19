@@ -27,7 +27,7 @@ const CalendarFilters = lazy(() => import('@/components/calendar/CalendarFilters
 import { CalendarLegend } from '@/components/calendar/CalendarLegend';
 import { CalendarEmptyState } from '@/components/calendar/CalendarEmptyState';
 import { MobileFAB } from '@/components/calendar/MobileFAB';
-import { useSchedulingData } from '@/hooks/useSchedulingData';
+import { useSchedulingData } from '@/features/jobs';
 import { useCalendarFilters } from '@/hooks/useCalendarFilters';
 import { useCalendarHotkeys } from '@/hooks/useCalendarHotkeys';
 import { cn } from '@/lib/utils';

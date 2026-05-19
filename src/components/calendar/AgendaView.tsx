@@ -7,7 +7,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { DbJob } from '@/hooks/useJobs';
+import { DbJob } from '@/features/jobs';
 import { JobStatus } from '@/types/scheduling';
 import { HoverLift } from '@/components/ui/micro-interactions';
 import { useIsMobile } from '@/hooks/use-device';

@@ -35,12 +35,12 @@ import {
   X,
   Camera
 } from "lucide-react";
-import { useSchedulingData } from "@/hooks/useSchedulingData";
-import { DbJob, useUpdateJob, useDeleteJob } from "@/hooks/useJobs";
-import { JobPriority, JobStatus } from "@/services/jobsService";
+import { useSchedulingData } from "@/features/jobs";
+import { DbJob, useUpdateJob, useDeleteJob } from "@/features/jobs";
+import { JobPriority, JobStatus } from "@/features/jobs";
 import { JobQRCode } from "@/components/qrcode/JobQRCode";
-import { useDuplicateJob } from "@/hooks/useDuplicateJob";
-import { useEntityAuditTrail } from "@/hooks/useAuditTrail";
+import { useDuplicateJob } from "@/features/jobs";
+import { useEntityAuditTrail } from "@/features/admin";
 import { AuditEntryCard } from "@/components/audit/AuditEntryCard";
 import { HistoryPeriodFilter, type HistoryPeriodValue } from "@/components/audit/HistoryPeriodFilter";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -52,7 +52,7 @@ import { JobInfoGrid } from "./JobInfoGrid";
 import { JobQuickActions } from "./JobQuickActions";
 import { useState, useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { useDataExport } from "@/hooks/useDataExport";
+import { useDataExport } from "@/features/admin";
 import { useConfirmation } from "@/contexts/ConfirmationContext";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";

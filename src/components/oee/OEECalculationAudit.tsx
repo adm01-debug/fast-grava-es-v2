@@ -2,7 +2,7 @@ import React, { memo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Calculator, Info, CheckCircle2, AlertCircle, HelpCircle } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { MachineOEE } from '@/hooks/useOEE';
+import { MachineOEE } from '@/features/production';
 import { cn } from '@/lib/utils';
 
 interface OEECalculationAuditProps {

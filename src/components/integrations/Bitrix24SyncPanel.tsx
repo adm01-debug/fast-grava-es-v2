@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { RefreshCw, Check, X, ArrowDownToLine, Plug, Loader2, KeyRound, ExternalLink, Trash2, AlertTriangle } from 'lucide-react';
-import { useBitrix24Sync } from '@/hooks/useBitrix24Sync';
+import { useBitrix24Sync } from '@/features/admin';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';

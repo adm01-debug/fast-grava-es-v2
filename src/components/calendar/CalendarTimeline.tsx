@@ -2,13 +2,13 @@ import { useMemo, useState, Fragment, useRef } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { cn } from '@/lib/utils';
 import { ChevronDown, ChevronRight as ChevronRightIcon, Sparkles } from 'lucide-react';
-import { DbJob, DbMachine, DbTechnique, useUpdateJobStatus } from '@/hooks/useJobs';
+import { DbJob, DbMachine, DbTechnique, useUpdateJobStatus } from '@/features/jobs';
 import { JobBlock } from './JobBlock';
 import { CalendarGroupBy, CalendarOverlays, CalendarZoomLevel, getOccupancyColor } from './types';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { DndContext, closestCenter, useDroppable, DragOverlay } from '@dnd-kit/core';
-import { useDailyDragDrop } from '@/hooks/useDailyDragDrop';
+import { useDailyDragDrop } from '@/features/jobs';
 import { JobQuickActions } from './JobQuickActions';
 
 interface CalendarTimelineProps {

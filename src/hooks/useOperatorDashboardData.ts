@@ -1,5 +1,5 @@
 import { useMemo, useCallback } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/features/auth';
 import { useSchedulingData } from './useSchedulingData';
 import { useOperatorMachines } from './useOperatorMachines';
 import { DateRange } from 'react-day-picker';

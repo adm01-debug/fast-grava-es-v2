@@ -4,7 +4,7 @@ import { Bell, BellOff, X, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { usePushNotifications } from "@/hooks/usePushNotifications";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/features/auth";
 
 interface PushNotificationPromptProps {
   /** Delay em ms antes de mostrar o prompt */

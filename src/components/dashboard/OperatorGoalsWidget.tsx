@@ -1,9 +1,9 @@
 import { useOperatorGoals, calculateGoalProgress, GOAL_TYPE_LABELS } from '@/hooks/useOperatorGoals';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/features/auth';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Target, TrendingUp, AlertCircle, CheckCircle2, ChevronRight } from 'lucide-react';
-import { useOperatorProductivity } from '@/hooks/useOperatorProductivity';
+import { useOperatorProductivity } from '@/features/production';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';

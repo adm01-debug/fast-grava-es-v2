@@ -1,9 +1,9 @@
 import { useMemo, useState, useEffect } from 'react';
 import { Badge } from '@/components/ui/badge';
-import { DbJob } from '@/hooks/useJobs';
+import { DbJob } from '@/features/jobs';
 import { Clock, TrendingUp, AlertTriangle, BarChart3, Zap, Scale, Activity } from 'lucide-react';
 import { differenceInHours, differenceInDays } from 'date-fns';
-import { useSmartSequencing } from '@/hooks/useSmartSequencing';
+import { useSmartSequencing } from '@/features/jobs';
 import { useLoadBalancing } from '@/hooks/useLoadBalancing';
 
 interface KanbanMetricsBarProps {

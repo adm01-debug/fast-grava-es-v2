@@ -4,8 +4,8 @@ import {
   useBlockedIPsHistory,
   useBlockIP,
   useUnblockIP
-} from '@/hooks/useRateLimitLogs';
-import { useRealtimeBlockedIPs } from '@/hooks/useSecurityEvents';
+} from '@/features/admin';
+import { useRealtimeBlockedIPs } from '@/features/admin';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';

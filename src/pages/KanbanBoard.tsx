@@ -22,7 +22,7 @@ import { LoadBalancingPanel } from '@/components/planning/LoadBalancingPanel';
 import { PlanningEfficiencyDashboard } from '@/components/planning/PlanningEfficiencyDashboard';
 import { StuckJobsPanel } from '@/components/scheduling/StuckJobsPanel';
 import { CapacityHealthPanel } from '@/components/scheduling/CapacityHealthPanel';
-import { useKanbanDragDrop } from '@/hooks/useKanbanDragDrop';
+import { useKanbanDragDrop } from '@/features/jobs';
 import { FavoriteButton, FavoritesDropdown } from '@/components/navigation/FavoritesManager';
 // Breadcrumbs removed - handled by MainLayout
 import {
@@ -30,9 +30,9 @@ import {
   AlertTriangle, RotateCcw, Pause, Command, Trash2, ArrowRight,
   Sparkles
 } from 'lucide-react';
-import { useSchedulingData } from '@/hooks/useSchedulingData';
-import { DbJob } from '@/hooks/useJobs';
-import { JobStatus, assertTransition } from '@/lib/jobStateMachine';
+import { useSchedulingData } from '@/features/jobs';
+import { DbJob } from '@/features/jobs';
+import { JobStatus, assertTransition } from '@/features/jobs';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';

@@ -6,7 +6,7 @@ import { useOperatorDashboardData } from '@/hooks/useOperatorDashboardData';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { JobStatus } from '@/types/scheduling';
-import { DbJob, DbTechnique, DbMachine } from '@/hooks/useJobs';
+import { DbJob, DbTechnique, DbMachine } from '@/features/jobs';
 import { JobDetailsModal } from '@/components/jobs/JobDetailsModal';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';

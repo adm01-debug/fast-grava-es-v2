@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useOperatorGoals, GoalType, GOAL_TYPE_LABELS, CreateGoalInput } from '@/hooks/useOperatorGoals';
-import { useOperators } from '@/hooks/useOperators';
+import { useOperators } from '@/features/production';
 import { Loader2, Target } from 'lucide-react';
 import { format, startOfMonth, endOfMonth, addMonths } from 'date-fns';
 

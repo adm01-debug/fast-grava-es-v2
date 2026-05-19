@@ -7,9 +7,9 @@ import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Switch } from '@/components/ui/switch';
 import { useKPIs, formatDuration, KPIPeriod, KPITargets } from '@/hooks/useKPIs';
-import { useOperatorProductivity } from '@/hooks/useOperatorProductivity';
+import { useOperatorProductivity } from '@/features/production';
 import { useGoalAlerts } from '@/hooks/useGoalAlerts';
-import { useBIExport } from '@/hooks/useBIExport';
+import { useBIExport } from '@/features/admin';
 import {
   TrendingUp,
   TrendingDown,
@@ -56,7 +56,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { DrillDownDialog } from '@/components/bi/drilldown/DrillDownDialog';
-import { useSchedulingData } from '@/hooks/useSchedulingData';
+import { useSchedulingData } from '@/features/jobs';
 import { KPIOverviewTab } from '@/components/bi/executive/KPIOverviewTab';
 import { KPIMachinesTab } from '@/components/bi/executive/KPIMachinesTab';
 import { KPIOperatorsTab } from '@/components/bi/executive/KPIOperatorsTab';

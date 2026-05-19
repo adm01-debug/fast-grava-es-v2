@@ -7,14 +7,14 @@ import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Layers, ClipboardCheck } from 'lucide-react';
-import { ProductionLot, useLotComponents, useLotMovements, useLotInspections, useTraceabilityMutations } from '@/hooks/useTraceability';
+import { ProductionLot, useLotComponents, useLotMovements, useLotInspections, useTraceabilityMutations } from '@/features/inventory';
 import { QualityDashboardCards } from './QualityDashboardCards';
 import { LotComponentsTab } from './LotComponentsTab';
 import { LotMovementsTab } from './LotMovementsTab';
 import { LotInspectionsTab } from './LotInspectionsTab';
 import { toast } from 'sonner';
 import { ProductionPhotos } from '@/components/production/ProductionPhotos';
-import { useJobs } from '@/hooks/useJobs';
+import { useJobs } from '@/features/jobs';
 
 interface LotDetailsModalProps {
   lot: ProductionLot;

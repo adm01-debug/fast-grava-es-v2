@@ -7,7 +7,7 @@ import { SoundFeedback } from '@/lib/soundFeedback';
 import { cn } from '@/lib/utils';
 import { prefetchRoute } from '@/lib/prefetch';
 import { Button } from '@/components/ui/button';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/features/auth';
 import { useDevice } from '@/hooks/use-device';
 import { useAlertCount } from '@/hooks/useAlertCount';
 import { useNotifications } from '@/hooks/useNotifications';

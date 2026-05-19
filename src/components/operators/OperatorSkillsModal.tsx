@@ -3,9 +3,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useOperatorSkills, type SkillLevel } from '@/hooks/useOperatorSkills';
-import { useSchedulingData } from '@/hooks/useSchedulingData';
-import type { OperatorWithProfile } from '@/hooks/useOperators';
+import { useOperatorSkills, type SkillLevel } from '@/features/production';
+import { useSchedulingData } from '@/features/jobs';
+import type { OperatorWithProfile } from '@/features/production';
 import { Loader2, ShieldCheck, Award, Star, X } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
