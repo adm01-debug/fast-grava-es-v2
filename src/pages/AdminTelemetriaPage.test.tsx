@@ -4,6 +4,8 @@ import AdminTelemetriaPage from './AdminTelemetriaPage';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { MemoryRouter } from 'react-router-dom';
+import { AuthProvider } from '@/contexts/AuthContext';
+import { NetworkStatusProvider } from '@/hooks/useNetworkStatus';
 import React from 'react';
 
 // Mock Web Audio API for testing
@@ -86,9 +88,13 @@ describe('Painel de Telemetria', () => {
   it('deve carregar dados de telemetria e exibir na tabela', async () => {
     render(
       <MemoryRouter>
-        <QueryClientProvider client={queryClient}>
-          <AdminTelemetriaPage />
-        </QueryClientProvider>
+        <AuthProvider>
+          <NetworkStatusProvider>
+            <QueryClientProvider client={queryClient}>
+              <AdminTelemetriaPage />
+            </QueryClientProvider>
+          </NetworkStatusProvider>
+        </AuthProvider>
       </MemoryRouter>
     );
 
@@ -103,9 +109,13 @@ describe('Painel de Telemetria', () => {
   it('deve permitir filtrar por severidade', async () => {
     render(
       <MemoryRouter>
-        <QueryClientProvider client={queryClient}>
-          <AdminTelemetriaPage />
-        </QueryClientProvider>
+        <AuthProvider>
+          <NetworkStatusProvider>
+            <QueryClientProvider client={queryClient}>
+              <AdminTelemetriaPage />
+            </QueryClientProvider>
+          </NetworkStatusProvider>
+        </AuthProvider>
       </MemoryRouter>
     );
 
