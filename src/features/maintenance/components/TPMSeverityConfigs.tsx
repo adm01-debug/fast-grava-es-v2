@@ -44,14 +44,14 @@ export function TPMSeverityConfigs({ machineId }: TPMSeverityConfigsProps) {
 
   const upsertConfig = useMutation({
     mutationFn: async (config: Partial<SeverityConfig>) => {
-      const payload: any = {
+      const payload: Partial<SeverityConfig> & { machine_id: string | null } = {
         ...config,
         machine_id: machineId || null
       };
 
       const { error } = await supabase
         .from('tpm_severity_configs')
-        .upsert(payload);
+        .upsert(payload as any); // Upsert needs a single object matching the row type
       if (error) throw error;
     },
     onSuccess: () => {
