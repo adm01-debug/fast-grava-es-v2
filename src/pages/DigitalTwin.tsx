@@ -32,7 +32,7 @@ export default function DigitalTwin() {
   return (
     <MainLayout>
       <Helmet>
-        <title>Digital Twin - Gêmeo Digital | Sistema de Produção</title>
+        <title>Digital Twin - Gêmeo Digital | Qualidade + Velocidade</title>
       </Helmet>
 
       <div className="p-4 sm:p-6 lg:p-8 space-y-8 animate-fade-in">

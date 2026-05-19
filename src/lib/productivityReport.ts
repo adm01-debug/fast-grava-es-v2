@@ -294,7 +294,7 @@ export function generateProductivityReport(data: ProductivityReportData): void {
       { align: 'center' }
     );
     doc.text(
-      'Sistema de Gestão de Produtividade',
+      'FAST GRAVAÇÕES | Qualidade + Velocidade',
       margin,
       pageHeight - 10
     );

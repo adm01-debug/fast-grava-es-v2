@@ -109,10 +109,9 @@ export function AppSidebar() {
       >
         {/* Header */}
         <div className={cn('flex items-center h-16 px-4 border-b border-sidebar-border relative', collapsed && !isMobile ? 'justify-center' : 'justify-between')}>
-          {(!collapsed || isMobile) && (
-            <div className="flex items-center gap-3 overflow-hidden">
-              <AnimatePresence mode="wait">
-                {location.pathname !== '/' && location.pathname !== '/operator' && location.pathname !== '/auth' ? (
+          <div className="flex items-center gap-3 overflow-hidden">
+            <AnimatePresence mode="wait">
+              {(!collapsed || isMobile) && location.pathname !== '/' && location.pathname !== '/operator' && location.pathname !== '/auth' ? (
                   <motion.div
                     key="back-icon"
                     initial={{ x: -20, opacity: 0 }}
@@ -138,20 +137,30 @@ export function AppSidebar() {
                     initial={{ x: 20, opacity: 0 }}
                     animate={{ x: 0, opacity: 1 }}
                     exit={{ x: 20, opacity: 0 }}
-                    className="w-13 h-13 rounded-xl gradient-primary flex items-center justify-center glow-primary shadow-lg flex-shrink-0"
-                    style={{ width: 52 * 1.3, height: 52 * 1.3 }}
+                    className={cn(
+                      "rounded-xl gradient-primary flex items-center justify-center glow-primary shadow-lg flex-shrink-0",
+                      collapsed && !isMobile ? "w-10 h-10" : "w-14 h-14"
+                    )}
+                    style={collapsed && !isMobile ? { width: 40, height: 40 } : { width: 68, height: 68 }}
+                    role="img"
+                    aria-label="FAST GRAVAÇÕES - Qualidade + Velocidade"
                   >
-                    <Printer className="w-8 h-8 text-primary-foreground" />
+                    <div className={cn("font-black text-primary-foreground", collapsed && !isMobile ? "text-lg" : "text-2xl")}>F</div>
                   </motion.div>
                 )}
               </AnimatePresence>
               
-              <motion.div layout className="flex-1 min-w-0">
-                <h1 className="font-display font-black text-sidebar-foreground tracking-tight truncate uppercase leading-none mb-1" style={{ fontSize: '1.625rem' }}>FAST GRAVAÇÕES</h1>
-                <p className="text-[11px] font-black text-primary/70 uppercase tracking-[0.2em] truncate opacity-90">QUALIDADE + VELOCIDADE</p>
-              </motion.div>
+              {(!collapsed || isMobile) && (
+                <motion.div 
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  className="flex-1 min-w-0"
+                >
+                  <h1 className="font-display font-black text-sidebar-foreground tracking-tight truncate uppercase leading-none mb-1" style={{ fontSize: '1.625rem' }}>FAST GRAVAÇÕES</h1>
+                  <p className="text-[11px] font-black text-primary/70 uppercase tracking-[0.2em] truncate opacity-90">QUALIDADE + VELOCIDADE</p>
+                </motion.div>
+              )}
             </div>
-          )}
           {!isMobile && (
             <Button variant="ghost" size="icon" onClick={() => setCollapsed(!collapsed)} aria-label={collapsed ? 'Expandir menu' : 'Recolher menu'} className="h-8 w-8 text-sidebar-foreground/50 hover:text-sidebar-foreground hover:bg-sidebar-muted focus:ring-2 focus:ring-primary">
               {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
