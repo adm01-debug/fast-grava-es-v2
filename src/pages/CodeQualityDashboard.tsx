@@ -188,10 +188,10 @@ export default function CodeQualityDashboard() {
               <CardContent>
                 <div className="space-y-3">
                   {[
-                    { task: "Refatoração de 'any' em Snapshots de Manutenção", status: "concluido", desc: "Tipagem forte em ChecklistSnapshot e AdjustmentParameters." },
-                    { task: "Validação de dados em mutações críticas", status: "concluido", desc: "Runtime checks em useTPMMutations antes do insert." },
+                    { task: "Refatoração de 'any' em Manutenção e Produção", status: "concluido", desc: "Tipagem forte em useTPMMutations, usePaginatedJobs e useInventory." },
+                    { task: "Validação de dados em runtime (Schema)", status: "concluido", desc: "Zod validation em queries de Jobs e mutações de TPM." },
+                    { task: "Expansão de Suíte E2E (Produção/Logística)", status: "concluido", desc: "Fluxos completos de Kanban, OEE e Rastreamento de Pedidos." },
                     { task: "Modo Simulação massiva (Webhooks)", status: "concluido", desc: "Teste de stress e integridade em tempo real (veja /simulation)." },
-                    { task: "Tratamento de erros amigável", status: "concluido", desc: "Mensagens claras para falhas de validação de snapshot." },
                   ].map((item, idx) => (
                     <div key={idx} className="flex items-start gap-3 p-3 rounded-lg bg-muted/30 border border-border/50">
                       {item.status === 'concluido' ? <CheckCircle2 className="h-5 w-5 text-success mt-0.5" /> : <AlertTriangle className="h-5 w-5 text-warning mt-0.5" />}
