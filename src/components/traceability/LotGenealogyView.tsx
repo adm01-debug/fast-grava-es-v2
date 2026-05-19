@@ -8,7 +8,7 @@ import {
 } from '@/components/ui/dialog';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ProductionLot, LotComponent, useLotGenealogy } from '@/hooks/useTraceability';
+import { ProductionLot, LotComponent, useLotGenealogy } from '@/features/inventory';
 import { format } from 'date-fns';
 import { motion } from 'framer-motion';
 

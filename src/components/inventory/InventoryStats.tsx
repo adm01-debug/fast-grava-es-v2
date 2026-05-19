@@ -2,7 +2,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Package, AlertTriangle, ArrowLeftRight, TrendingDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { InventoryItem } from '@/hooks/useInventory';
+import { InventoryItem } from '@/features/inventory';
 
 interface InventoryStatsProps {
   items: InventoryItem[];

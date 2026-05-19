@@ -27,7 +27,7 @@ import {
   BarChart3,
   Activity
 } from 'lucide-react';
-import { useLogistics, DbShipment } from '@/hooks/useLogistics';
+import { useLogistics, DbShipment } from '@/features/inventory';
 import { format } from 'date-fns';
 import { ptBR, enUS, es } from 'date-fns/locale';
 import { Skeleton } from '@/components/ui/skeleton';

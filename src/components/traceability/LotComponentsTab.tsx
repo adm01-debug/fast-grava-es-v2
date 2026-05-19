@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { ProductionLot, useTraceabilityMutations, useProductionLots } from '@/hooks/useTraceability';
+import { ProductionLot, useTraceabilityMutations, useProductionLots } from '@/features/inventory';
 
 interface LotComponentsTabProps {
   lot: ProductionLot;

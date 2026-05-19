@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogD
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
-import { useInventory } from '@/hooks/useInventory';
+import { useInventory } from '@/features/inventory';
 
 interface WarehouseMapProps {
   items: any[];

@@ -1,4 +1,4 @@
-import { useProductionLots, useLotComponents, useLotMovements } from '@/hooks/useTraceability';
+import { useProductionLots, useLotComponents, useLotMovements } from '@/features/inventory';
 import { useJobStatusHistory } from '@/features/jobs';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
