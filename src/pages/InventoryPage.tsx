@@ -69,6 +69,8 @@ export default function InventoryPage() {
   const [isBatchQRModalOpen, setIsBatchQRModalOpen] = useState(false);
   const [isAIPredictionModalOpen, setIsAIPredictionModalOpen] = useState(false);
   const debouncedSearch = useDebounce(searchTerm, 300);
+  const isSearching = searchTerm !== debouncedSearch;
+
 
 
   const filteredItems = useMemo(() => {
@@ -160,7 +162,7 @@ export default function InventoryPage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {isLoading ? (
+              {(isLoading || isSearching) ? (
                 <div className="col-span-full">
                   <ProductGridSkeleton />
                 </div>
