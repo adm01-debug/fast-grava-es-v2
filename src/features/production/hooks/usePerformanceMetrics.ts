@@ -72,10 +72,12 @@ export function usePerformanceMetrics(componentName: string) {
 
     // Persist fetch trace
     try {
-      await supabase.from('telemetry_traces' as any).insert({
+      await supabase.from('telemetry_traces').insert({
         name: `fetch:${componentName}`,
         duration_ms: duration,
         service_name: 'frontend',
+        span_id: crypto.randomUUID().slice(0, 8),
+        trace_id: crypto.randomUUID(),
         attributes: {
           type: 'fetch',
           fetchIndex: reFetchCount.current,
