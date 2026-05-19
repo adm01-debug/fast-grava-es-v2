@@ -41,7 +41,7 @@ export const generateFuzzPayload = (basePayload: Record<string, any>): any => {
     (p: any) => { return "{ malformed: json"; }, // Not a JSON string if sent as body
   ];
   
-  const mutation = mutations[Math.floor(Math.random() * mutations.mutations.length)];
+  const mutation = mutations[Math.floor(Math.random() * mutations.length)];
   return mutation({ ...basePayload });
 };
 
