@@ -42,7 +42,7 @@ describe('useOperatorProductivity', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     // Default mock for useSchedulingData
-    (schedulingHook.useSchedulingData as any).mockReturnValue({
+    (schedulingHook.useSchedulingData as unknown as Mock).mockReturnValue({
       jobs: [],
       machines: [],
       techniques: [],
