@@ -426,7 +426,7 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
         });
 
         if (!mlError && mlResult?.predictions) {
-          mlResult.predictions.forEach((p: any) => {
+          mlResult.predictions.forEach((p: { machine: { id: string }, prediction: { risk_score: number, recommendations?: string[] } }) => {
             if (p.prediction?.risk_score > 75) {
               // High risk detected by AI, find the primary schedule for this machine
               const machineSchedule = schedules.find(s => s.machine_id === p.machine.id && s.is_active);
