@@ -3,19 +3,10 @@ import { supabase } from '@/integrations/supabase/client';
 import { useEffect, useMemo } from 'react';
 import { createAppError, createMutationErrorHandler } from '@/lib/errorHandling';
 import { QUERY_KEYS, STALE_TIMES } from '@/lib/queryConfig';
-import { jobsService, type Job, type JobStatus } from '@/features/jobs';
+import { jobsService } from '../services/jobsService';
+import type { Job, JobStatus } from '../services/jobsService';
 import { useTechniques } from './useTechniques';
-import { useMachines } from './useMachines';
-import { Technique } from '@/features/jobs';
-import { Machine } from '@/features/production';
-
-// Re-export types for backward compatibility
-export type DbJob = Job;
-export type DbTechnique = Technique;
-export type DbMachine = Machine;
-
-// Re-export for backward compatibility
-export { useTechniques, useMachines };
+import type { Technique } from '../services/techniquesService';
 
 // Error context for debugging
 const JOBS_ERROR_CONTEXT = {
