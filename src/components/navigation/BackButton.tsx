@@ -28,9 +28,9 @@ export function BackButton({ className }: BackButtonProps) {
   const [canGoBack, setCanGoBack] = useState(false);
 
   useEffect(() => {
-    // Only show if not on home/dashboard
-    const isHome = location.pathname === "/" || location.pathname === "/operator" || location.pathname === "/auth";
-    setCanGoBack(!isHome);
+    // Only show if not on home/dashboard or utility pages
+    const isExcluded = ["/", "/operator", "/auth", "/reset-password", "/install", "/track"].includes(location.pathname);
+    setCanGoBack(!isExcluded);
   }, [location]);
 
   const handleBack = useCallback(() => {

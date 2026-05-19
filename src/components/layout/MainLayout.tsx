@@ -170,8 +170,9 @@ export function MainLayout({ children }: MainLayoutProps) {
             "transition-all duration-300"
           )}>
 
-            {/* Global Navigation Header - Only show when not on home page or root-level dashboard */}
-            <header className="flex flex-col gap-4 mb-8 sm:flex-row sm:items-center sm:justify-between sm:gap-6 no-export border-b border-border/10 pb-6">
+            {/* Global Navigation Header - Only show when not on home page or auth pages */}
+            {!['/', '/auth', '/reset-password', '/install', '/track'].includes(location.pathname) && (
+              <header className="flex flex-col gap-4 mb-8 sm:flex-row sm:items-center sm:justify-between sm:gap-6 no-export border-b border-border/10 pb-6">
               <div className="flex items-center gap-4">
                 <Suspense fallback={null}>
                   <BackButton className="shadow-sm" />
@@ -197,6 +198,7 @@ export function MainLayout({ children }: MainLayoutProps) {
                 </Suspense>
               </div>
             </header>
+            )}
 
 
             {/* Render direct children as PageTransition is handled in AppRoutes for better SPA experience */}
