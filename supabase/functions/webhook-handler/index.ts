@@ -28,18 +28,21 @@ export const handler = async (req: Request): Promise<Response> => {
       });
     }
 
-    const { source, event, data } = payload;
-
-    if (!source || !event) {
-      console.warn("Received webhook missing source or event:", payload);
-      return new Response(JSON.stringify({ error: "Source and event are required" }), {
+    const validationResult = webhookPayloadSchema.safeParse(payload);
+    
+    if (!validationResult.success) {
+      console.warn("Received webhook failed validation:", validationResult.error.format());
+      return new Response(JSON.stringify({ 
+        error: "Validation failed", 
+        details: validationResult.error.format() 
+      }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    // Input sanitization: ensure data is an object
-    const sanitizedData = typeof data === 'object' && data !== null ? data : {};
+    const { source, event, data } = validationResult.data;
+    const sanitizedData = data;
 
     // HMAC verification for security (Always use production keys if available)
     const secret = Deno.env.get(`WEBHOOK_SECRET_${source.toUpperCase()}`);
