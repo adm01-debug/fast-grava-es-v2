@@ -216,11 +216,11 @@ export function AppSidebar() {
                     openGroups={openGroups}
                     toggleGroup={toggleGroup}
                   />
-          </StaggeredList>
-
+                </div>
               );
             })}
-          </div>
+          </StaggeredList>
+
           {filteredAdminNavItems.length > 0 && (
             <>
               <div className="my-4 border-t border-sidebar-border/50" />
