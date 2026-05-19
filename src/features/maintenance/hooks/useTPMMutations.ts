@@ -351,9 +351,8 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
 
       const scheduleData = recordData.schedule;
       const nextDue = addDays(new Date(), scheduleData?.interval_days || 30).toISOString();
-      
-      // Armazenar data para usar no onSuccess
-      (this as any)._nextDue = nextDue;
+
+
 
       // Update the record to 'approved'
       const { error: recordError } = await supabase
@@ -420,10 +419,10 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
 
       if (error) throw error;
     },
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['maintenance-records'] });
       toast.info('Solicitação de correção enviada ao técnico', {
-        description: data.notes.substring(0, 100) + (data.notes.length > 100 ? '...' : ''),
+        description: variables.notes.substring(0, 100) + (variables.notes.length > 100 ? '...' : ''),
         duration: 5000
       });
     },
