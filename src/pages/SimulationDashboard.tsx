@@ -16,7 +16,7 @@ import {
 export default function SimulationDashboard() {
   const [isRunning, setIsLoading] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [totalScenarios, setTotalScenarios] = useState(100);
+  const [totalScenarios, setTotalScenarios] = useState(1000);
   const [results, setResults] = useState<SimulationResult[]>([]);
 
   const handleStart = async () => {
