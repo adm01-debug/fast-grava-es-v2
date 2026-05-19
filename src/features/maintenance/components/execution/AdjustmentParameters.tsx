@@ -1,13 +1,18 @@
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { MoveHorizontal, PenTool, Zap, Thermometer } from 'lucide-react';
+import { MoveHorizontal, PenTool, Zap, Thermometer, LucideIcon } from 'lucide-react';
+import { AdjustmentParameters as IAdjustmentParameters } from '../../hooks/types';
 
 interface AdjustmentParametersProps {
-  adjustmentParams: any;
-  setAdjustmentParams: (params: any) => void;
-  activeAlerts: any[];
+  adjustmentParams: IAdjustmentParameters;
+  setAdjustmentParams: (params: IAdjustmentParameters | ((prev: IAdjustmentParameters) => IAdjustmentParameters)) => void;
+  activeAlerts: Array<{ parameter_name: string }>;
   selectedSheetId: string | null;
-  technicalSheets: any[];
+  technicalSheets: Array<{
+    id: string;
+    settings_ranges?: Record<string, { min?: string; max?: string }>;
+    machine_settings?: Record<string, string>;
+  }>;
 }
 
 export function AdjustmentParameters({
