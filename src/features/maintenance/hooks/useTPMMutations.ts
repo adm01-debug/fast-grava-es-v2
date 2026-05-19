@@ -4,6 +4,7 @@ import { Database, Json } from '@/integrations/supabase/types';
 import { toast } from 'sonner';
 import { addDays, differenceInDays, isBefore, parseISO } from 'date-fns';
 import { showErrorToast, categorizeError } from '@/lib/errorHandling';
+import { CheckCircle2 } from 'lucide-react';
 import { 
   MaintenanceSchedule, 
   MaintenanceAlert, 
@@ -349,6 +350,9 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
 
       const scheduleData = recordData.schedule;
       const nextDue = addDays(new Date(), scheduleData?.interval_days || 30).toISOString();
+      
+      // Armazenar data para usar no onSuccess
+      (this as any)._nextDue = nextDue;
 
       // Update the record to 'approved'
       const { error: recordError } = await supabase
@@ -388,8 +392,8 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
       queryClient.invalidateQueries({ queryKey: ['maintenance-schedules'] });
       queryClient.invalidateQueries({ queryKey: ['maintenance-alerts'] });
       toast.success('Manutenção aprovada e próximo agendamento atualizado', {
-        description: `Próxima revisão em ${new Date(nextDue).toLocaleDateString('pt-BR')}`,
-        icon: <CheckCircle2 className="h-4 w-4 text-success" />
+        description: `Próxima revisão agendada.`,
+        icon: React.createElement(CheckCircle2, { className: "h-4 w-4 text-success" })
       });
     },
     onError: (error) => {
