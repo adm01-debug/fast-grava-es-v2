@@ -9,7 +9,7 @@ const corsHeaders = {
 // API Documentation
 const API_DOCS = {
   version: "1.0.0",
-  title: "API de Integração ERP - Sistema de Produção",
+  title: "API de Integração ERP - FAST GRAVAÇÕES",
   description: "API REST para integração com sistemas ERP externos",
   baseUrl: "/functions/v1/erp-api",
   authentication: "Bearer token ou x-api-key header",
