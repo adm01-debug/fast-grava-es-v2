@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { TestTube2, FileCode, TrendingUp, AlertTriangle, CheckCircle2, XCircle, Layers, GitBranch, BarChart3, PieChart, Timer, Package, Zap, Server, Gauge } from 'lucide-react';
+import { TestTube2, FileCode, TrendingUp, AlertTriangle, CheckCircle2, XCircle, Layers, GitBranch, BarChart3, PieChart, Timer, Package, Zap, Server, Gauge, ShieldCheck } from 'lucide-react';
 import { useCodeQualityMetrics } from '@/features/admin';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, PieChart as RechartsPie, Pie, Cell } from 'recharts';
@@ -63,6 +63,7 @@ export default function CodeQualityDashboard() {
             <TabsTrigger value="complexity" className="gap-2"><PieChart className="h-4 w-4" />Complexidade</TabsTrigger>
             <TabsTrigger value="build" className="gap-2"><Timer className="h-4 w-4" />Build</TabsTrigger>
             <TabsTrigger value="performance" className="gap-2"><Zap className="h-4 w-4" />Performance</TabsTrigger>
+            <TabsTrigger value="excellence" className="gap-2"><Gauge className="h-4 w-4" />Meta 10/10</TabsTrigger>
           </TabsList>
 
           <TabsContent value="tests" className="space-y-4">
@@ -102,6 +103,110 @@ export default function CodeQualityDashboard() {
 
           <TabsContent value="performance" className="space-y-4">
             <CodeQualityPerformanceTab performanceMetrics={metrics.performanceMetrics} />
+          </TabsContent>
+
+          <TabsContent value="excellence" className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <Card variant="glass">
+                <CardHeader>
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <ShieldCheck className="h-5 w-5 text-success" />
+                    Segurança de Tipos
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm">Type-Safety Score</span>
+                      <span className="text-xl font-bold">{metrics.excellence.typeSafetyScore}%</span>
+                    </div>
+                    <Progress value={metrics.excellence.typeSafetyScore} className="h-2 bg-success/20 [&>div]:bg-success" />
+                    <div className="flex items-center justify-between text-xs text-muted-foreground">
+                      <span>Usos de 'any' remanescentes</span>
+                      <Badge variant="outline" className={metrics.excellence.anyUsageCount > 0 ? "text-warning border-warning/50" : "text-success border-success/50"}>
+                        {metrics.excellence.anyUsageCount}
+                      </Badge>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card variant="glass">
+                <CardHeader>
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <Zap className="h-5 w-5 text-primary" />
+                    Validação em Runtime
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm">Cobertura de Validação</span>
+                      <span className="text-xl font-bold">{metrics.excellence.runtimeValidationCoverage}%</span>
+                    </div>
+                    <Progress value={metrics.excellence.runtimeValidationCoverage} className="h-2 bg-primary/20 [&>div]:bg-primary" />
+                    <p className="text-xs text-muted-foreground">
+                      Módulos de BI e Manutenção protegidos por schemas/guards.
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card variant="glass">
+                <CardHeader>
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <CheckCircle2 className="h-5 w-5 text-success" />
+                    Status do Build & CI
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm">Build Status</span>
+                      <Badge className={metrics.excellence.buildStatus === 'passing' ? "bg-success" : "bg-destructive"}>
+                        {metrics.excellence.buildStatus.toUpperCase()}
+                      </Badge>
+                    </div>
+                    <div className="flex items-center justify-between text-sm">
+                      <span>Erros Críticos</span>
+                      <span className="font-bold text-success">{metrics.excellence.criticalErrorCount}</span>
+                    </div>
+                    <div className="pt-2 border-t flex items-center gap-2 text-xs text-muted-foreground">
+                      <GitBranch className="h-3 w-3" />
+                      <span>Pipeline E2E Playwright ativo</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            <Card variant="elevated">
+              <CardHeader>
+                <CardTitle className="text-lg">Roteiro para Perfeição (10/10)</CardTitle>
+                <CardDescription>Ações concluídas e próximos passos técnicos</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {[
+                    { task: "Refatoração de 'any' em Snapshots de Manutenção", status: "concluido", desc: "Tipagem forte em ChecklistSnapshot e AdjustmentParameters." },
+                    { task: "Validação de dados em mutações críticas", status: "concluido", desc: "Runtime checks em useTPMMutations antes do insert." },
+                    { task: "Tratamento de erros amigável", status: "concluido", desc: "Mensagens claras para falhas de validação de snapshot." },
+                    { task: "Erradicação total de 'as any' em componentes de BI", status: "pendente", desc: "Substituir casts por interfaces reais no OEEMachineTable." },
+                  ].map((item, idx) => (
+                    <div key={idx} className="flex items-start gap-3 p-3 rounded-lg bg-muted/30 border border-border/50">
+                      {item.status === 'concluido' ? <CheckCircle2 className="h-5 w-5 text-success mt-0.5" /> : <AlertTriangle className="h-5 w-5 text-warning mt-0.5" />}
+                      <div>
+                        <p className="text-sm font-bold">{item.task}</p>
+                        <p className="text-xs text-muted-foreground">{item.desc}</p>
+                      </div>
+                      <Badge variant={item.status === 'concluido' ? 'secondary' : 'outline'} className="ml-auto text-[10px]">
+                        {item.status.toUpperCase()}
+                      </Badge>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
         </Tabs>
       </div>

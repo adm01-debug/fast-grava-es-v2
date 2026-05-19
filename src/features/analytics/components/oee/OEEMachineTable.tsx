@@ -70,8 +70,8 @@ export const OEEMachineTable = memo(function OEEMachineTable({ machines }: OEEMa
         trend: m.oee - (m.previousOee || 0)
       }))
       .sort((a, b) => {
-        const aVal = (a as any)[sortField];
-        const bVal = (b as any)[sortField];
+        const aVal = a[sortField as keyof typeof a];
+        const bVal = b[sortField as keyof typeof b];
         const dir = sortDirection === 'asc' ? 1 : -1;
 
         if (typeof aVal === 'string' && typeof bVal === 'string') {
@@ -273,10 +273,10 @@ export const OEEMachineTable = memo(function OEEMachineTable({ machines }: OEEMa
                     <TableCell>
                       <div className={cn(
                         "flex items-center gap-1 font-bold",
-                        (machine as any).trend >= 0 ? "text-success" : "text-destructive"
+                        machine.trend >= 0 ? "text-success" : "text-destructive"
                       )}>
-                        {(machine as any).trend > 0 ? <TrendingUp className="h-3 w-3" /> : (machine as any).trend < 0 ? <TrendingDown className="h-3 w-3" /> : <Minus className="h-3 w-3" />}
-                        {Math.abs((machine as any).trend).toFixed(1)}%
+                        {machine.trend > 0 ? <TrendingUp className="h-3 w-3" /> : machine.trend < 0 ? <TrendingDown className="h-3 w-3" /> : <Minus className="h-3 w-3" />}
+                        {Math.abs(machine.trend).toFixed(1)}%
                       </div>
                     </TableCell>
                     <TableCell>
