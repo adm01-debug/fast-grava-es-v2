@@ -1,6 +1,7 @@
 import { useState, lazy, Suspense, useMemo, memo, useCallback, useEffect } from 'react';
 import { startOfDay, endOfDay, subDays, format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { jsPDF } from 'jspdf';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet';
 import { cn } from '@/lib/utils';
