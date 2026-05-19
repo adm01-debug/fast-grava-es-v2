@@ -1,11 +1,13 @@
 import { useState } from 'react';
+import { cn } from '@/lib/utils';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Play, RotateCcw, AlertTriangle, CheckCircle2, Activity, ShieldCheck, Zap } from 'lucide-react';
-import { runSimulation, SimulationResult, SCENARIOS } from '@/lib/simulation';
+import { runMassiveSimulation as runSimulation, SimulationResult, generateScenarios } from '@/lib/simulation';
+const SCENARIOS = generateScenarios();
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell 
@@ -22,7 +24,7 @@ export default function SimulationDashboard() {
     setProgress(0);
     setResults([]);
     
-    const res = await runSimulation(totalScenarios, (current) => {
+    const res = await runSimulation(totalScenarios, 10, (current) => {
       setProgress(Math.round((current / totalScenarios) * 100));
     });
     
@@ -34,7 +36,10 @@ export default function SimulationDashboard() {
     total: results.length,
     passed: results.filter(r => r.status === 'pass').length,
     failed: results.filter(r => r.status === 'fail').length,
-    avgLatency: results.length > 0 ? results.reduce((acc, r) => acc + r.latency, 0) / results.length : 0
+    avgLatency: results.length > 0 ? results.reduce((acc, r) => acc + r.latency, 0) / results.length : 0,
+    p95Latency: results.length > 0 ? results.sort((a, b) => a.latency - b.latency)[Math.floor(results.length * 0.95)]?.latency : 0,
+    maxLatency: results.length > 0 ? Math.max(...results.map(r => r.latency)) : 0,
+    failureRate: results.length > 0 ? (results.filter(r => r.status === 'fail').length / results.length) * 100 : 0
   };
 
   const chartData = results.length > 0 ? SCENARIOS.map(s => ({
@@ -118,28 +123,36 @@ export default function SimulationDashboard() {
 
             <Card className="glass-card">
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground uppercase">Latência Média</CardTitle>
+                <CardTitle className="text-sm font-medium text-muted-foreground uppercase">Latência P95</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold text-primary">
-                  {stats.avgLatency.toFixed(0)}ms
+                <div className={cn(
+                  "text-3xl font-bold",
+                  stats.p95Latency > 2000 ? "text-primary" : "text-primary"
+                )}>
+                  {stats.p95Latency.toFixed(0)}ms
                 </div>
                 <div className="flex items-center gap-2 mt-2">
                   <Zap className="h-4 w-4 text-amber-400" />
-                  <span className="text-xs">Edge Function Invocation</span>
+                  <span className="text-xs">Velocidade de resposta</span>
                 </div>
               </CardContent>
             </Card>
 
             <Card className="glass-card">
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground uppercase">Integridade</CardTitle>
+                <CardTitle className="text-sm font-medium text-muted-foreground uppercase">Taxa de Falhas</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold">10/10</div>
+                <div className={cn(
+                  "text-3xl font-bold",
+                  stats.failureRate > 5 ? "text-primary" : "text-success"
+                )}>
+                  {stats.failureRate.toFixed(1)}%
+                </div>
                 <div className="flex items-center gap-2 mt-2">
-                  <ShieldCheck className="h-4 w-4 text-cyan-400" />
-                  <span className="text-xs text-muted-foreground">Dados consistentes</span>
+                  <AlertTriangle className="h-4 w-4 text-warning" />
+                  <span className="text-xs text-muted-foreground">Erros HTTP/Timeout</span>
                 </div>
               </CardContent>
             </Card>
