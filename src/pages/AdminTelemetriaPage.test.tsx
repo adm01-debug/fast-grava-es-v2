@@ -14,6 +14,27 @@ vi.mock('@/components/admin/telemetry/TelemetryCharts', () => ({
   TelemetryCharts: () => <div data-testid="mock-charts">Charts</div>,
 }));
 
+const mockTelemetryData = [
+  {
+    id: '1',
+    operation: 'SELECT',
+    table_name: 'jobs',
+    duration_ms: 1200,
+    severity: 'slow',
+    created_at: new Date().toISOString(),
+    error_message: null
+  },
+  {
+    id: '2',
+    operation: 'RPC',
+    rpc_name: 'get_user_role',
+    duration_ms: 500,
+    severity: 'info',
+    created_at: new Date().toISOString(),
+    error_message: null
+  }
+];
+
 // Mock Supabase globally for this test
 vi.mock('@/integrations/supabase/client', () => ({
   supabase: {
@@ -22,7 +43,7 @@ vi.mock('@/integrations/supabase/client', () => ({
       gte: vi.fn().mockReturnThis(),
       lte: vi.fn().mockReturnThis(),
       order: vi.fn().mockReturnThis(),
-      limit: vi.fn().mockResolvedValue({ data: [], error: null }),
+      limit: vi.fn().mockResolvedValue({ data: mockTelemetryData, error: null }),
     })),
     channel: vi.fn().mockReturnValue({
       on: vi.fn().mockReturnThis(),
@@ -50,7 +71,7 @@ describe('Painel de Telemetria (Lite)', () => {
     vi.clearAllMocks();
   });
 
-  it('deve renderizar o título da página', async () => {
+  it('deve carregar dados de telemetria e exibir na tabela', async () => {
     render(
       <MemoryRouter>
         <QueryClientProvider client={queryClient}>
@@ -61,6 +82,16 @@ describe('Painel de Telemetria (Lite)', () => {
 
     await waitFor(() => {
       expect(screen.getByText('Telemetria de Queries')).toBeDefined();
+    });
+
+    // Verificar se os dados mockados aparecem na tabela
+    // Usamos getAllByText e verificamos se pelo menos um aparece
+    await waitFor(() => {
+      const jobElements = screen.getAllByText('jobs');
+      expect(jobElements.length).toBeGreaterThan(0);
+      
+      const rpcElements = screen.getAllByText('get_user_role');
+      expect(rpcElements.length).toBeGreaterThan(0);
     });
   });
 });
