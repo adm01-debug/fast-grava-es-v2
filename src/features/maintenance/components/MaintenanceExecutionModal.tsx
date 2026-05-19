@@ -255,9 +255,9 @@ export function MaintenanceExecutionModal({
     setParts(parts.filter((_, i) => i !== index));
   };
 
-  const handleUpdatePart = (index: number, field: string, value: any) => {
+  const handleUpdatePart = (index: number, field: keyof typeof parts[0], value: string | number) => {
     const newParts = [...parts];
-    newParts[index] = { ...newParts[index], [field]: value };
+    newParts[index] = { ...newParts[index], [field]: value } as typeof parts[0];
     setParts(newParts);
   };
 
