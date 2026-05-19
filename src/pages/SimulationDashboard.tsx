@@ -35,7 +35,10 @@ export default function SimulationDashboard() {
     total: results.length,
     passed: results.filter(r => r.status === 'pass').length,
     failed: results.filter(r => r.status === 'fail').length,
-    avgLatency: results.length > 0 ? results.reduce((acc, r) => acc + r.latency, 0) / results.length : 0
+    avgLatency: results.length > 0 ? results.reduce((acc, r) => acc + r.latency, 0) / results.length : 0,
+    p95Latency: results.length > 0 ? results.sort((a, b) => a.latency - b.latency)[Math.floor(results.length * 0.95)]?.latency : 0,
+    maxLatency: results.length > 0 ? Math.max(...results.map(r => r.latency)) : 0,
+    failureRate: results.length > 0 ? (results.filter(r => r.status === 'fail').length / results.length) * 100 : 0
   };
 
   const chartData = results.length > 0 ? SCENARIOS.map(s => ({
