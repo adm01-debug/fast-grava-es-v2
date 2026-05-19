@@ -136,16 +136,40 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
         .maybeSingle();
 
       if (recordFetchError || !recordData) {
-        throw new Error('Registro não encontrado');
+        throw new Error('Registro de manutenção não encontrado no sistema.');
       }
 
-      // Runtime validation
-      if (data.checklist_snapshot && !data.checklist_snapshot.id) {
-        throw new Error('Snapshot do checklist inválido: ID ausente');
+      // Validar Snapshot do Checklist
+      if (data.checklist_snapshot) {
+        if (!data.checklist_snapshot.id || !data.checklist_snapshot.items || data.checklist_snapshot.items.length === 0) {
+          throw new Error('Snapshot do checklist inválido: estrutura de dados corrompida ou incompleta.');
+        }
       }
 
-      if (data.adjustment_parameters && typeof data.adjustment_parameters !== 'object') {
-        throw new Error('Parâmetros de ajuste inválidos');
+      // Validar Parâmetros de Ajuste
+      if (data.adjustment_parameters) {
+        const params = data.adjustment_parameters;
+        if (typeof params !== 'object') {
+          throw new Error('Parâmetros de ajuste inválidos: formato incorreto.');
+        }
+        
+        // Se houver ficha técnica, os parâmetros devem estar dentro dos limites aceitáveis
+        if (params.ranges) {
+          const criticalAlerts = (data.execution_alerts || []).filter(a => a.alert_type === 'out_of_range' && a.severity === 'critical');
+          const hasEvidence = criticalAlerts.every(a => a.evidence_urls && a.evidence_urls.length > 0);
+          
+          if (criticalAlerts.length > 0 && !hasEvidence) {
+            throw new Error(`Existem ${criticalAlerts.length} parâmetros fora do range crítico sem evidências fotográficas anexadas.`);
+          }
+        }
+      }
+
+      // Validar Requisitos de Qualidade
+      if (data.quality_checklist_results && Array.isArray(data.quality_checklist_results)) {
+        const failures = data.quality_checklist_results.filter(r => r.status === 'fail' && !r.notes);
+        if (failures.length > 0) {
+          throw new Error(`Reprovação em ${failures.length} itens de qualidade sem justificativa técnica.`);
+        }
       }
 
       // Update the main record to 'completed' (Pending Approval)
