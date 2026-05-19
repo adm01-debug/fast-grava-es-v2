@@ -139,6 +139,8 @@ export function AppSidebar() {
                     animate={{ x: 0, opacity: 1 }}
                     exit={{ x: 20, opacity: 0 }}
                     className="w-14 h-14 rounded-xl gradient-primary flex items-center justify-center glow-primary shadow-lg flex-shrink-0"
+                    role="img"
+                    aria-label="FAST GRAVAÇÕES - Qualidade + Velocidade"
                     style={{ width: 68, height: 68 }}
                   >
                     <div className="font-black text-2xl text-primary-foreground">F</div>
