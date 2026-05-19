@@ -122,28 +122,36 @@ export default function SimulationDashboard() {
 
             <Card className="glass-card">
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground uppercase">Latência Média</CardTitle>
+                <CardTitle className="text-sm font-medium text-muted-foreground uppercase">Latência P95</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold text-primary">
-                  {stats.avgLatency.toFixed(0)}ms
+                <div className={cn(
+                  "text-3xl font-bold",
+                  stats.p95Latency > 2000 ? "text-primary" : "text-primary"
+                )}>
+                  {stats.p95Latency.toFixed(0)}ms
                 </div>
                 <div className="flex items-center gap-2 mt-2">
                   <Zap className="h-4 w-4 text-amber-400" />
-                  <span className="text-xs">Edge Function Invocation</span>
+                  <span className="text-xs">Velocidade de resposta</span>
                 </div>
               </CardContent>
             </Card>
 
             <Card className="glass-card">
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground uppercase">Integridade</CardTitle>
+                <CardTitle className="text-sm font-medium text-muted-foreground uppercase">Taxa de Falhas</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold">10/10</div>
+                <div className={cn(
+                  "text-3xl font-bold",
+                  stats.failureRate > 5 ? "text-primary" : "text-success"
+                )}>
+                  {stats.failureRate.toFixed(1)}%
+                </div>
                 <div className="flex items-center gap-2 mt-2">
-                  <ShieldCheck className="h-4 w-4 text-cyan-400" />
-                  <span className="text-xs text-muted-foreground">Dados consistentes</span>
+                  <AlertTriangle className="h-4 w-4 text-warning" />
+                  <span className="text-xs text-muted-foreground">Erros HTTP/Timeout</span>
                 </div>
               </CardContent>
             </Card>
