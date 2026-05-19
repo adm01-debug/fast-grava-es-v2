@@ -1,4 +1,4 @@
-import { JobStatus } from '@/types/scheduling';
+import { JobStatus } from '@/types/job';
 import { cn } from '@/lib/utils';
 import { useEffect, useRef, useState } from 'react';
 import {
