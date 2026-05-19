@@ -66,7 +66,12 @@ export interface CodeQualityMetrics {
 }
 
 // No test files currently exist in the project
-const TEST_FILES: TestFile[] = [];
+const TEST_FILES: TestFile[] = [
+  { name: 'auth.spec.ts', path: 'tests/e2e/auth.spec.ts', testCount: 5, category: 'e2e' },
+  { name: 'dashboard.spec.ts', path: 'tests/e2e/dashboard.spec.ts', testCount: 2, category: 'e2e' },
+  { name: 'maintenance.spec.ts', path: 'tests/e2e/maintenance.spec.ts', testCount: 2, category: 'e2e' },
+  { name: 'inventory-stability.spec.ts', path: 'tests/e2e/inventory-stability.spec.ts', testCount: 2, category: 'e2e' },
+];
 
 // All hooks in the project
 const HOOKS = [
