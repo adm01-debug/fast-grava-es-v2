@@ -29,10 +29,10 @@ const KPIMachinesTabComponent = ({
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {kpis.anomalies.filter((a: any) => a.id.startsWith('loss-m-') || a.id.startsWith('occ-m-')).length > 0 ? (
+              {kpis.anomalies.filter((a) => a.id.startsWith('loss-m-') || a.id.startsWith('occ-m-')).length > 0 ? (
                 kpis.anomalies
-                  .filter((a: any) => a.id.startsWith('loss-m-') || a.id.startsWith('occ-m-'))
-                  .map((anomaly: any) => (
+                  .filter((a) => a.id.startsWith('loss-m-') || a.id.startsWith('occ-m-'))
+                  .map((anomaly) => (
                     <div key={anomaly.id} className="p-3 rounded-lg border border-primary/20 bg-primary/5">
                       <p className="text-xs font-bold">{anomaly.entityName}</p>
                       <p className="text-[10px] text-muted-foreground mt-1">{anomaly.message}</p>
