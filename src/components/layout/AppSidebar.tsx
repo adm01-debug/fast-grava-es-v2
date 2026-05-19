@@ -209,7 +209,7 @@ export function AppSidebar() {
                 </div>
               );
             })}
-          </StaggeredList>
+          </div>
           {filteredAdminNavItems.length > 0 && (
             <>
               <div className="my-4 border-t border-sidebar-border/50" />
