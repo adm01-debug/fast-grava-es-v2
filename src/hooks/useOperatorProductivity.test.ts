@@ -37,17 +37,12 @@ const createWrapper = () => {
   };
 };
 
-
 describe('useOperatorProductivity', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
   it('should fetch and calculate productivity data', async () => {
-    const mockOperators = [
-      { user_id: '1', role: 'operator', profile: { id: '1', full_name: 'John Doe', avatar_url: null } }
-    ];
-    
     const mockJobs = [
       { 
         id: 'j1',
@@ -124,15 +119,29 @@ describe('useOperatorProductivity', () => {
     expect(result.current.operators).toHaveLength(1);
     expect(result.current.operators[0].operatorName).toBe('John Doe');
     expect(result.current.operators[0].totalJobsCompleted).toBe(1);
-    expect(result.current.operators[0].lossRate).toBeCloseTo(4.76, 1); // 5 / (100+5)
+    expect(result.current.operators[0].lossRate).toBeCloseTo(4.76, 1);
   });
 
   it('should handle errors gracefully', async () => {
-    (supabase.from as any).mockImplementation(() => ({
-      select: vi.fn().mockReturnThis(),
-      eq: vi.fn().mockResolvedValue({ data: null, error: { message: 'Fetch error' } }),
-      in: vi.fn().mockResolvedValue({ data: null, error: { message: 'Fetch error' } }),
-    }));
+    (supabase.from as any).mockImplementation((table: string) => {
+      if (table === 'user_roles') {
+        return {
+          select: vi.fn().mockReturnThis(),
+          eq: vi.fn().mockResolvedValue({ data: null, error: { message: 'Fetch error' } }),
+        };
+      }
+      if (table === 'profiles') {
+        return {
+          select: vi.fn().mockReturnThis(),
+          in: vi.fn().mockResolvedValue({ data: null, error: { message: 'Fetch error' } }),
+        };
+      }
+      return {
+        select: vi.fn().mockReturnThis(),
+        gte: vi.fn().mockReturnThis(),
+        order: vi.fn().mockResolvedValue({ data: [], error: null }),
+      };
+    });
 
     const { result } = renderHook(() => useOperatorProductivity(7), {
       wrapper: createWrapper(),
@@ -142,4 +151,5 @@ describe('useOperatorProductivity', () => {
     expect(result.current.operators).toHaveLength(0);
   });
 });
+
 
