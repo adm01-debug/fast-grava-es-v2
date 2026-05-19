@@ -15,7 +15,7 @@ import {
   Send,
   Smartphone
 } from 'lucide-react';
-import { useWebPushNotifications } from '@/hooks/useWebPushNotifications';
+import { useWebPushNotifications } from '@/features/notifications';
 import { cn } from '@/lib/utils';
 
 export function PushNotificationSettings() {

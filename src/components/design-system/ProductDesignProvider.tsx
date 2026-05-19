@@ -2,7 +2,7 @@ import * as React from "react";
 import { OnboardingTour, useOnboarding } from "@/components/onboarding/OnboardingTour";
 import { CommandPaletteAdvanced } from "@/components/navigation/CommandPaletteAdvanced";
 import { KeyboardShortcutsProvider } from "@/components/shortcuts/KeyboardShortcuts";
-import { ToastContainer } from "@/components/notifications/ToastWithUndo";
+import { ToastContainer } from "@/features/notifications/components/ToastWithUndo";
 import { FloatingAIAssistant } from "@/components/ai/FloatingAIAssistant";
 
 interface ProductDesignProviderProps {

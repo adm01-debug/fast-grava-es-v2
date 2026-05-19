@@ -10,7 +10,7 @@ import { NetworkStatusIndicator } from '@/hooks/useNetworkStatus';
 import { SessionProvider } from '@/features/auth';
 import { SectionErrorBoundary } from '../ui/section-error-boundary';
 import { usePageTitle } from '@/hooks/usePageTitle';
-import { useNotifications } from '@/hooks/useNotifications';
+import { useNotifications } from '@/features/notifications';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 

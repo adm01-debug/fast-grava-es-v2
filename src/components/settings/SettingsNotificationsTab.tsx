@@ -5,7 +5,7 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Bell, Volume2 } from 'lucide-react';
-import { usePushSubscription } from '@/hooks/usePushSubscription';
+import { usePushSubscription } from '@/features/notifications';
 
 interface SettingsNotificationsTabProps {
   settings: { notifications: boolean; sounds: boolean };

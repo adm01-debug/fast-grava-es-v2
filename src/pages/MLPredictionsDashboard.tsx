@@ -7,7 +7,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { useMLPredictions } from '@/hooks/useMLPredictions';
-import { useMLPredictionNotifications } from '@/hooks/useMLPredictionNotifications';
+import { useMLPredictionNotifications } from '@/features/notifications';
 import { MLPredictionCard } from '@/components/ml/MLPredictionCard';
 import { MLRiskDistributionChart } from '@/components/ml/MLRiskDistributionChart';
 import { MLNotificationSettings } from '@/components/ml/MLNotificationSettings';
