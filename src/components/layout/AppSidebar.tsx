@@ -141,21 +141,16 @@ export function AppSidebar() {
                   </Button>
                 </motion.div>
               ) : (
-                <motion.div
-                  key="logo-icon"
-                  initial={{ x: 20, opacity: 0 }}
-                  animate={{ x: 0, opacity: 1 }}
-                  exit={{ x: 20, opacity: 0 }}
-                  className="flex flex-col"
-                >
+                <div key="logo-container" className="flex">
                   <BrandLogo 
                     collapsed={collapsed && !isMobile} 
                     size={collapsed && !isMobile ? "sm" : "md"} 
                     showSubtitle={false}
                   />
-                </motion.div>
+                </div>
               )}
             </AnimatePresence>
+
             
             {(!collapsed || isMobile) && (
               <motion.div 
