@@ -22,6 +22,7 @@ import { ActivityLog, useActivityLog } from '@/components/activity/ActivityLog';
 import { OfflineBanner, ConnectionStatus } from '@/components/offline/OfflineMode';
 import { GamificationBanner } from '@/components/dashboard/GamificationBanner';
 import { useSmartDelayAlerts } from '@/hooks/useSmartDelayAlerts';
+import { usePerformanceMetrics } from '@/hooks/usePerformanceMetrics';
 
 import { VoiceButton } from '@/components/voice/VoiceCommands';
 const ActivityFeedWidget = lazy(() => import('@/components/dashboard/ActivityFeedWidget').then(m => ({ default: m.ActivityFeedWidget })));
@@ -114,6 +115,7 @@ const COORDINATOR_ONLY_WIDGETS = ['sequencing', 'loadbalancing', 'bottleneck', '
 
 const Index = () => {
   const { t } = useTranslation();
+  const { metrics } = usePerformanceMetrics('Dashboard');
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
     from: startOfDay(new Date()),
     to: endOfDay(new Date()),

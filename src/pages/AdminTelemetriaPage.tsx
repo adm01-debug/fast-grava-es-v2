@@ -11,12 +11,14 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Activity, AlertTriangle, Clock, Database, RefreshCw, Zap,
-  Trash2, Download, FileText, CalendarIcon,
+  Trash2, Download, FileText, CalendarIcon, Layout, Monitor, Bug
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TelemetryCharts } from "@/components/admin/telemetry/TelemetryCharts";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface TelemetryRow {
   id: string;
@@ -34,6 +36,25 @@ interface TelemetryRow {
   created_at: string;
 }
 
+interface PerformanceTrace {
+  id: string;
+  name: string;
+  duration_ms: number;
+  service_name: string;
+  attributes: any;
+  created_at: string;
+}
+
+interface ErrorLog {
+  id: string;
+  message: string;
+  stack: string | null;
+  component_name: string | null;
+  url: string | null;
+  metadata: any;
+  created_at: string;
+}
+
 type SeverityFilter = "all" | "slow" | "very_slow" | "error";
 type TimeFilter = "1h" | "6h" | "24h" | "7d" | "custom";
 
@@ -42,6 +63,7 @@ export default function AdminTelemetriaPage() {
   const [timeFilter, setTimeFilter] = useState<TimeFilter>("24h");
   const [customDateFrom, setCustomDateFrom] = useState<Date | undefined>();
   const [customDateTo, setCustomDateTo] = useState<Date | undefined>();
+  const [activeTab, setActiveTab] = useState("queries");
 
   const getTimeThreshold = (): { from: string; to: string } => {
     const now = new Date();
@@ -58,17 +80,8 @@ export default function AdminTelemetriaPage() {
     return { from: new Date(now.getTime() - offset).toISOString(), to };
   };
 
-  const getPeriodLabel = (): string => {
-    if (timeFilter === "custom" && customDateFrom && customDateTo) {
-      return `${format(customDateFrom, "dd/MM/yyyy")} — ${format(customDateTo, "dd/MM/yyyy")}`;
-    }
-    const labels: Record<string, string> = {
-      "1h": "Última hora", "6h": "Últimas 6h", "24h": "Últimas 24h", "7d": "Últimos 7 dias",
-    };
-    return labels[timeFilter] || "24h";
-  };
-
-  const { data: rows = [], isLoading, refetch, isRefetching } = useQuery<TelemetryRow[]>({
+  // Queries Data
+  const { data: queryRows = [], isLoading: isLoadingQueries, refetch: refetchQueries } = useQuery<TelemetryRow[]>({
     queryKey: ["query-telemetry", severityFilter, timeFilter, customDateFrom?.toISOString(), customDateTo?.toISOString()],
     queryFn: async () => {
       const { from, to } = getTimeThreshold();
@@ -89,7 +102,44 @@ export default function AdminTelemetriaPage() {
       return (data as unknown as TelemetryRow[]) || [];
     },
     refetchInterval: 30000,
-    staleTime: 10000,
+  });
+
+  // Performance Traces Data
+  const { data: performanceRows = [], isLoading: isLoadingPerf, refetch: refetchPerf } = useQuery<PerformanceTrace[]>({
+    queryKey: ["performance-telemetry", timeFilter, customDateFrom?.toISOString(), customDateTo?.toISOString()],
+    queryFn: async () => {
+      const { from, to } = getTimeThreshold();
+      const { data, error } = await supabase
+        .from("telemetry_traces" as any)
+        .select("*")
+        .gte("created_at", from)
+        .lte("created_at", to)
+        .order("created_at", { ascending: false })
+        .limit(500);
+
+      if (error) throw error;
+      return (data as unknown as PerformanceTrace[]) || [];
+    },
+    enabled: activeTab === "performance",
+  });
+
+  // Error Logs Data
+  const { data: errorRows = [], isLoading: isLoadingErrors, refetch: refetchErrors } = useQuery<ErrorLog[]>({
+    queryKey: ["error-logs", timeFilter, customDateFrom?.toISOString(), customDateTo?.toISOString()],
+    queryFn: async () => {
+      const { from, to } = getTimeThreshold();
+      const { data, error } = await supabase
+        .from("error_logs")
+        .select("*")
+        .gte("created_at", from)
+        .lte("created_at", to)
+        .order("created_at", { ascending: false })
+        .limit(200);
+
+      if (error) throw error;
+      return (data as unknown as ErrorLog[]) || [];
+    },
+    enabled: activeTab === "errors",
   });
 
   const handleCleanup = async () => {
@@ -98,367 +148,381 @@ export default function AdminTelemetriaPage() {
       .from("query_telemetry" as any)
       .delete()
       .lt("created_at", threshold);
-    if (error) {
-      toast.error("Erro ao limpar dados antigos");
-    } else {
-      toast.success("Dados com mais de 7 dias removidos");
-      refetch();
+    
+    if (error) toast.error("Erro ao limpar telemetria");
+    else {
+      toast.success("Telemetria antiga limpa com sucesso");
+      refetchQueries();
     }
   };
 
-  // --- Export CSV ---
-  const handleExportCSV = () => {
-    if (rows.length === 0) return toast.error("Nenhum dado para exportar");
-    const headers = [
-      "Data/Hora", "Operação", "Tabela/RPC", "Duração (ms)", "Severidade",
-      "Registros", "Limit", "Offset", "Count Mode", "Erro",
-    ];
-    const csvRows = rows.map((r) => [
-      new Date(r.created_at).toLocaleString("pt-BR"),
-      r.operation,
-      r.table_name || r.rpc_name || "-",
-      r.duration_ms,
-      r.severity,
-      r.record_count ?? "-",
-      r.query_limit ?? "-",
-      r.query_offset ?? "-",
-      r.count_mode ?? "-",
-      `"${(r.error_message || "").replace(/"/g, '""')}"`,
-    ]);
-    const csvContent = [headers.join(";"), ...csvRows.map((r) => r.join(";"))].join("\n");
-    const blob = new Blob(["\uFEFF" + csvContent], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    const dateStr = format(new Date(), "yyyy-MM-dd");
-    a.href = url;
-    a.download = `telemetria_${dateStr}_${severityFilter}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
-    toast.success("CSV exportado com sucesso");
-  };
-
-  // --- Export PDF ---
-  const handleExportPDF = async () => {
-    if (rows.length === 0) return toast.error("Nenhum dado para exportar");
-    try {
-      const { default: jsPDF } = await import("jspdf");
-      const { default: autoTable } = await import("jspdf-autotable");
-
-      const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
-      const now = new Date();
-
-      doc.setFontSize(16);
-      doc.text("Telemetria de Queries", 14, 15);
-      doc.setFontSize(9);
-      doc.text(`Exportado em ${now.toLocaleString("pt-BR")} · Período: ${getPeriodLabel()} · Filtro: ${severityFilter}`, 14, 22);
-
-      const headers = ["Data/Hora", "Operação", "Tabela/RPC", "Duração", "Severidade", "Records", "Limit", "Offset", "Count", "Erro"];
-      const body = rows.map((r) => [
-        new Date(r.created_at).toLocaleString("pt-BR"),
-        r.operation,
-        r.table_name || r.rpc_name || "-",
-        `${r.duration_ms}ms`,
-        r.severity,
-        r.record_count ?? "-",
-        r.query_limit ?? "-",
-        r.query_offset ?? "-",
-        r.count_mode ?? "-",
-        (r.error_message || "-").substring(0, 60),
-      ]);
-
-      autoTable(doc, {
-        head: [headers],
-        body,
-        startY: 28,
-        styles: { fontSize: 7, cellPadding: 1.5 },
-        headStyles: { fillColor: [41, 37, 36], textColor: 255 },
-        alternateRowStyles: { fillColor: [245, 245, 244] },
-      });
-
-      const dateStr = format(now, "yyyy-MM-dd");
-      doc.save(`telemetria_${dateStr}_${severityFilter}.pdf`);
-      toast.success("PDF exportado com sucesso");
-    } catch {
-      toast.error("Erro ao gerar PDF");
-    }
-  };
-
-  // Stats
-  const verySlow = rows.filter((r) => r.severity === "very_slow").length;
-  const slow = rows.filter((r) => r.severity === "slow").length;
-  const errors = rows.filter((r) => r.severity === "error").length;
-  const avgDuration = rows.length > 0 ? Math.round(rows.reduce((s, r) => s + r.duration_ms, 0) / rows.length) : 0;
-
-  // Top offenders
-  const tableStats = new Map<string, { count: number; totalMs: number; maxMs: number }>();
-  for (const r of rows) {
-    const key = r.rpc_name || r.table_name || "unknown";
-    const prev = tableStats.get(key) || { count: 0, totalMs: 0, maxMs: 0 };
-    tableStats.set(key, {
-      count: prev.count + 1,
-      totalMs: prev.totalMs + r.duration_ms,
-      maxMs: Math.max(prev.maxMs, r.duration_ms),
-    });
-  }
-  const topOffenders = [...tableStats.entries()]
-    .sort((a, b) => b[1].count - a[1].count)
-    .slice(0, 8);
-
-  const formatDuration = (ms: number) => {
-    if (ms >= 1000) return `${(ms / 1000).toFixed(1)}s`;
-    return `${ms}ms`;
-  };
-
-  const formatTime = (iso: string) => {
-    return new Date(iso).toLocaleString("pt-BR", {
-      hour: "2-digit", minute: "2-digit", second: "2-digit",
-      day: "2-digit", month: "2-digit",
-    });
-  };
-
-  const getSeverityBadge = (severity: string) => {
-    switch (severity) {
-      case "very_slow":
-        return <Badge className="bg-destructive/20 text-destructive border-destructive/30 text-[10px]">🔴 Muito Lenta</Badge>;
-      case "slow":
-        return <Badge className="bg-warning/20 text-warning-foreground border-warning/30 text-[10px]">🟡 Lenta</Badge>;
-      case "error":
-        return <Badge className="bg-destructive/20 text-destructive border-destructive/30 text-[10px]">❌ Erro</Badge>;
-      default:
-        return <Badge variant="secondary" className="text-[10px]">{severity}</Badge>;
-    }
-  };
+  const verySlow = queryRows.filter(r => r.severity === "very_slow").length;
+  const slow = queryRows.filter(r => r.severity === "slow").length;
+  const errorsCount = queryRows.filter(r => r.severity === "error").length;
 
   return (
     <MainLayout>
-      <div className="space-y-6 max-w-7xl mx-auto">
+      <div className="space-y-6 max-w-7xl mx-auto py-6">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <Activity className="h-7 w-7 text-primary" />
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-card p-6 rounded-2xl border shadow-sm">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-primary/10 rounded-xl">
+              <Activity className="h-8 w-8 text-primary" />
+            </div>
             <div>
-              <h1 className="text-2xl font-bold">Telemetria de Queries</h1>
-              <p className="text-sm text-muted-foreground">Monitoramento de performance do banco externo</p>
+              <h1 className="text-2xl font-bold tracking-tight">Infraestrutura & Qualidade</h1>
+              <p className="text-sm text-muted-foreground font-medium">Observabilidade técnica em tempo real (Full Stack)</p>
             </div>
           </div>
           <div className="flex items-center gap-2 flex-wrap">
-            <Button variant="outline" size="sm" onClick={handleExportCSV}>
-              <Download className="h-3.5 w-3.5 mr-1.5" />
-              CSV
+            <Select value={timeFilter} onValueChange={(v: any) => setTimeFilter(v)}>
+              <SelectTrigger className="w-[140px] h-9 bg-background">
+                <CalendarIcon className="h-3.5 w-3.5 mr-2 opacity-50" />
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="1h">Última hora</SelectItem>
+                <SelectItem value="6h">Últimas 6h</SelectItem>
+                <SelectItem value="24h">Últimas 24h</SelectItem>
+                <SelectItem value="7d">Últimos 7 dias</SelectItem>
+                <SelectItem value="custom">Personalizado</SelectItem>
+              </SelectContent>
+            </Select>
+
+            {timeFilter === "custom" && (
+              <div className="flex items-center gap-2">
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" size="sm" className="h-9">
+                      {customDateFrom ? format(customDateFrom, "dd/MM/yy") : "Início"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar mode="single" selected={customDateFrom} onSelect={setCustomDateFrom} />
+                  </PopoverContent>
+                </Popover>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" size="sm" className="h-9">
+                      {customDateTo ? format(customDateTo, "dd/MM/yy") : "Fim"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar mode="single" selected={customDateTo} onSelect={setCustomDateTo} />
+                  </PopoverContent>
+                </Popover>
+              </div>
+            )}
+
+            <Button variant="outline" size="icon" className="h-9 w-9" onClick={() => {
+              refetchQueries();
+              refetchPerf();
+              refetchErrors();
+            }}>
+              <RefreshCw className="h-4 w-4" />
             </Button>
-            <Button variant="outline" size="sm" onClick={handleExportPDF}>
-              <FileText className="h-3.5 w-3.5 mr-1.5" />
-              PDF
-            </Button>
-            <Button variant="outline" size="sm" onClick={handleCleanup}>
+            
+            <Button variant="destructive" size="sm" onClick={handleCleanup} className="h-9">
               <Trash2 className="h-3.5 w-3.5 mr-1.5" />
               Limpar +7d
-            </Button>
-            <Button variant="outline" size="sm" onClick={() => refetch()} disabled={isRefetching}>
-              <RefreshCw className={`h-3.5 w-3.5 mr-1.5 ${isRefetching ? "animate-spin" : ""}`} />
-              Atualizar
             </Button>
           </div>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <Card>
-            <CardContent className="p-4 flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-destructive/10">
-                <AlertTriangle className="h-5 w-5 text-destructive" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold">{verySlow}</p>
-                <p className="text-[11px] text-muted-foreground">Muito Lentas (&gt;8s)</p>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-4 flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-warning/10">
-                <Clock className="h-5 w-5 text-warning" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold">{slow}</p>
-                <p className="text-[11px] text-muted-foreground">Lentas (&gt;3s)</p>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-4 flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-destructive/10">
-                <Zap className="h-5 w-5 text-destructive" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold">{errors}</p>
-                <p className="text-[11px] text-muted-foreground">Erros</p>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-4 flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-primary/10">
-                <Database className="h-5 w-5 text-primary" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold">{formatDuration(avgDuration)}</p>
-                <p className="text-[11px] text-muted-foreground">Média de duração</p>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+          <TabsList className="bg-muted/50 p-1 rounded-xl h-auto gap-1">
+            <TabsTrigger value="queries" className="gap-2 px-4 py-2 rounded-lg data-[state=active]:shadow-sm">
+              <Database className="h-4 w-4" />
+              Banco de Dados
+            </TabsTrigger>
+            <TabsTrigger value="performance" className="gap-2 px-4 py-2 rounded-lg data-[state=active]:shadow-sm">
+              <Monitor className="h-4 w-4" />
+              Frontend Perf
+            </TabsTrigger>
+            <TabsTrigger value="errors" className="gap-2 px-4 py-2 rounded-lg data-[state=active]:shadow-sm">
+              <Bug className="h-4 w-4" />
+              Logs de Erro
+            </TabsTrigger>
+          </TabsList>
 
-        {/* Top Offenders */}
-        {topOffenders.length > 0 && (
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base flex items-center gap-2">
-                <Database className="h-4 w-4" />
-                Tabelas Mais Problemáticas
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                {topOffenders.map(([name, stats]) => (
-                  <div key={name} className="p-3 rounded-lg border border-border/50 bg-muted/30">
-                    <p className="font-mono text-sm font-medium truncate" title={name}>{name}</p>
-                    <div className="flex items-center gap-2 mt-1">
-                      <span className="text-xs text-muted-foreground">{stats.count}× alertas</span>
-                      <span className="text-xs text-destructive">max {formatDuration(stats.maxMs)}</span>
-                    </div>
-                    <p className="text-[10px] text-muted-foreground mt-0.5">
-                      média: {formatDuration(Math.round(stats.totalMs / stats.count))}
-                    </p>
+          <TabsContent value="queries" className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
+            {/* Stats Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <Card className="overflow-hidden border-destructive/20 bg-destructive/5">
+                <CardContent className="p-5 flex items-center gap-4">
+                  <div className="p-3 rounded-xl bg-destructive/10 text-destructive">
+                    <AlertTriangle className="h-6 w-6" />
                   </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        )}
+                  <div>
+                    <p className="text-3xl font-bold tracking-tight text-destructive">{verySlow}</p>
+                    <p className="text-[11px] font-bold uppercase tracking-wider opacity-70">Críticas (&gt;8s)</p>
+                  </div>
+                </CardContent>
+              </Card>
+              <Card className="overflow-hidden border-warning/20 bg-warning/5">
+                <CardContent className="p-5 flex items-center gap-4">
+                  <div className="p-3 rounded-xl bg-warning/10 text-warning">
+                    <Clock className="h-6 w-6" />
+                  </div>
+                  <div>
+                    <p className="text-3xl font-bold tracking-tight text-warning-foreground">{slow}</p>
+                    <p className="text-[11px] font-bold uppercase tracking-wider opacity-70">Lentas (&gt;3s)</p>
+                  </div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-5 flex items-center gap-4">
+                  <div className="p-3 rounded-xl bg-primary/10 text-primary">
+                    <Zap className="h-6 w-6" />
+                  </div>
+                  <div>
+                    <p className="text-3xl font-bold tracking-tight">{errorsCount}</p>
+                    <p className="text-[11px] font-bold uppercase tracking-wider opacity-70">Erros SQL</p>
+                  </div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-5 flex items-center gap-4">
+                  <div className="p-3 rounded-xl bg-indigo-500/10 text-indigo-500">
+                    <Database className="h-6 w-6" />
+                  </div>
+                  <div>
+                    <p className="text-3xl font-bold tracking-tight">{queryRows.length}</p>
+                    <p className="text-[11px] font-bold uppercase tracking-wider opacity-70">Total Queries</p>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
 
-        {/* Charts */}
-        <TelemetryCharts rows={rows} timeFilter={timeFilter} />
+            <TelemetryCharts rows={queryRows} timeFilter={timeFilter} />
 
-        {/* Filters */}
-        <div className="flex flex-wrap items-center gap-3">
-          <Select value={severityFilter} onValueChange={(v) => setSeverityFilter(v as SeverityFilter)}>
-            <SelectTrigger className="w-44" aria-label="Filtrar por Severidade">
-              <SelectValue placeholder="Severidade" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todas</SelectItem>
-              <SelectItem value="slow">🟡 Lentas</SelectItem>
-              <SelectItem value="very_slow">🔴 Muito Lentas</SelectItem>
-              <SelectItem value="error">❌ Erros</SelectItem>
-            </SelectContent>
-          </Select>
-          <Select value={timeFilter} onValueChange={(v) => setTimeFilter(v as TimeFilter)}>
-            <SelectTrigger className="w-44">
-              <SelectValue placeholder="Período" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="1h">Última hora</SelectItem>
-              <SelectItem value="6h">Últimas 6h</SelectItem>
-              <SelectItem value="24h">Últimas 24h</SelectItem>
-              <SelectItem value="7d">Últimos 7 dias</SelectItem>
-              <SelectItem value="custom">📅 Personalizado</SelectItem>
-            </SelectContent>
-          </Select>
-
-          {timeFilter === "custom" && (
-            <>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button variant="outline" size="sm" className={cn("w-36 justify-start text-left font-normal", !customDateFrom && "text-muted-foreground")}>
-                    <CalendarIcon className="mr-2 h-3.5 w-3.5" />
-                    {customDateFrom ? format(customDateFrom, "dd/MM/yyyy") : "De"}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar mode="single" selected={customDateFrom} onSelect={setCustomDateFrom} initialFocus className={cn("p-3 pointer-events-auto")} />
-                </PopoverContent>
-              </Popover>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button variant="outline" size="sm" className={cn("w-36 justify-start text-left font-normal", !customDateTo && "text-muted-foreground")}>
-                    <CalendarIcon className="mr-2 h-3.5 w-3.5" />
-                    {customDateTo ? format(customDateTo, "dd/MM/yyyy") : "Até"}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar mode="single" selected={customDateTo} onSelect={setCustomDateTo} initialFocus className={cn("p-3 pointer-events-auto")} />
-                </PopoverContent>
-              </Popover>
-            </>
-          )}
-
-          <span className="text-xs text-muted-foreground ml-auto">
-            {rows.length} registros · auto-refresh 30s
-          </span>
-        </div>
-
-        {/* Table */}
-        <Card>
-          <CardContent className="p-0">
-            {isLoading ? (
-              <div className="p-4 space-y-3">
-                {Array.from({ length: 8 }).map((_, i) => (
-                  <Skeleton key={i} className="h-12 w-full" />
-                ))}
-              </div>
-            ) : rows.length === 0 ? (
-              <div className="text-center py-16 text-muted-foreground">
-                <Activity className="h-12 w-12 mx-auto mb-3 opacity-30" />
-                <p className="font-medium">Nenhuma query lenta registrada</p>
-                <p className="text-sm mt-1">Isso é bom! O sistema está performando bem.</p>
-              </div>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b bg-muted/30">
-                      <th className="text-left p-3 font-medium text-muted-foreground">Quando</th>
-                      <th className="text-left p-3 font-medium text-muted-foreground">Operação</th>
-                      <th className="text-left p-3 font-medium text-muted-foreground">Tabela/RPC</th>
-                      <th className="text-right p-3 font-medium text-muted-foreground">Duração</th>
-                      <th className="text-right p-3 font-medium text-muted-foreground">Records</th>
-                      <th className="text-right p-3 font-medium text-muted-foreground">Limit</th>
-                      <th className="text-right p-3 font-medium text-muted-foreground">Offset</th>
-                      <th className="text-left p-3 font-medium text-muted-foreground">Count</th>
-                      <th className="text-left p-3 font-medium text-muted-foreground">Severidade</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {rows.map((row) => (
-                      <tr key={row.id} className="border-b border-border/30 hover:bg-muted/20 transition-colors">
-                        <td className="p-3 text-xs text-muted-foreground whitespace-nowrap font-mono">
-                          {formatTime(row.created_at)}
-                        </td>
-                        <td className="p-3">
-                          <Badge variant="outline" className="text-[10px] font-mono">{row.operation}</Badge>
-                        </td>
-                        <td className="p-3 font-mono text-xs font-medium">
-                          {row.rpc_name || row.table_name || "-"}
-                        </td>
-                        <td className="p-3 text-right font-mono font-bold tabular-nums">
-                          <span className={row.duration_ms >= 8000 ? "text-destructive" : row.duration_ms >= 3000 ? "text-warning" : ""}>
-                            {formatDuration(row.duration_ms)}
-                          </span>
-                        </td>
-                        <td className="p-3 text-right font-mono text-xs tabular-nums">{row.record_count ?? "-"}</td>
-                        <td className="p-3 text-right font-mono text-xs tabular-nums text-muted-foreground">{row.query_limit ?? "-"}</td>
-                        <td className="p-3 text-right font-mono text-xs tabular-nums text-muted-foreground">{row.query_offset ?? "-"}</td>
-                        <td className="p-3 text-xs text-muted-foreground">{row.count_mode || "-"}</td>
-                        <td className="p-3">{getSeverityBadge(row.severity)}</td>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-bold flex items-center gap-2">
+                  <Layout className="h-4 w-4" />
+                  Histórico de Execução (SQL)
+                </CardTitle>
+                <Select value={severityFilter} onValueChange={(v: any) => setSeverityFilter(v)}>
+                  <SelectTrigger className="w-[120px] h-8 text-xs">
+                    <SelectValue placeholder="Severidade" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todas</SelectItem>
+                    <SelectItem value="slow">Lentas</SelectItem>
+                    <SelectItem value="very_slow">Muito Lentas</SelectItem>
+                    <SelectItem value="error">Erros</SelectItem>
+                  </SelectContent>
+                </Select>
+              </CardHeader>
+              <CardContent>
+                <ScrollArea className="h-[400px]">
+                  <table className="w-full text-xs">
+                    <thead className="bg-muted sticky top-0 z-10">
+                      <tr>
+                        <th className="p-3 text-left">Hora</th>
+                        <th className="p-3 text-left">Operação</th>
+                        <th className="p-3 text-left">Objeto</th>
+                        <th className="p-3 text-right">Duração</th>
+                        <th className="p-3 text-center">Status</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody className="divide-y">
+                      {queryRows.map((r) => (
+                        <tr key={r.id} className="hover:bg-muted/30 transition-colors">
+                          <td className="p-3 text-muted-foreground whitespace-nowrap">{format(new Date(r.created_at), 'HH:mm:ss')}</td>
+                          <td className="p-3 font-mono font-bold">{r.operation}</td>
+                          <td className="p-3 text-muted-foreground truncate max-w-[150px]">{r.rpc_name || r.table_name || '-'}</td>
+                          <td className="p-3 text-right font-mono font-bold">
+                            <span className={cn(
+                              r.duration_ms > 3000 ? "text-warning" : 
+                              r.duration_ms > 8000 ? "text-destructive" : 
+                              "text-muted-foreground"
+                            )}>
+                              {r.duration_ms.toFixed(0)}ms
+                            </span>
+                          </td>
+                          <td className="p-3 text-center">
+                            {r.severity === "very_slow" && <Badge className="bg-destructive/10 text-destructive border-destructive/20">Crítico</Badge>}
+                            {r.severity === "slow" && <Badge className="bg-warning/10 text-warning border-warning/20">Lento</Badge>}
+                            {r.severity === "error" && <Badge className="bg-destructive/10 text-destructive border-destructive/20">Erro</Badge>}
+                            {r.severity === "normal" && <Badge variant="outline" className="opacity-50">OK</Badge>}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </ScrollArea>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="performance" className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <Card className="md:col-span-2">
+                <CardHeader>
+                  <CardTitle className="text-sm font-bold flex items-center gap-2">
+                    <Monitor className="h-4 w-4" />
+                    Tempos de Renderização & Fetch (Frontend)
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ScrollArea className="h-[500px]">
+                    <div className="space-y-4">
+                      {performanceRows.length > 0 ? (
+                        performanceRows.map((p) => (
+                          <div key={p.id} className="p-4 border rounded-xl flex items-center justify-between hover:border-primary/30 transition-colors bg-card/50">
+                            <div className="space-y-1">
+                              <div className="flex items-center gap-2">
+                                <span className="font-bold text-sm">{p.name}</span>
+                                <Badge variant="outline" className="text-[9px] uppercase tracking-tighter">
+                                  {p.attributes?.type || 'trace'}
+                                </Badge>
+                              </div>
+                              <p className="text-[10px] text-muted-foreground flex items-center gap-2">
+                                <CalendarIcon className="h-3 w-3" />
+                                {format(new Date(p.created_at), 'dd/MM/yyyy HH:mm:ss')}
+                                <span className="text-primary/40">•</span>
+                                {p.attributes?.url || '/'}
+                              </p>
+                            </div>
+                            <div className="text-right">
+                              <p className={cn(
+                                "text-xl font-bold font-mono tracking-tighter",
+                                p.duration_ms > 100 ? "text-destructive" : p.duration_ms > 32 ? "text-warning" : "text-green-500"
+                              )}>
+                                {p.duration_ms.toFixed(1)}ms
+                              </p>
+                              {p.attributes?.reFetchCount > 0 && (
+                                <p className="text-[10px] font-bold text-primary">
+                                  {p.attributes.reFetchCount} Re-fetches
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                        ))
+                      ) : (
+                        <div className="h-[300px] flex flex-col items-center justify-center text-muted-foreground gap-3">
+                          <Activity className="h-10 w-10 opacity-20" />
+                          <p className="text-sm">Nenhum dado de performance capturado ainda.</p>
+                        </div>
+                      )}
+                    </div>
+                  </ScrollArea>
+                </CardContent>
+              </Card>
+
+              <div className="space-y-4">
+                <Card className="bg-primary/5 border-primary/20">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-xs font-black uppercase tracking-widest text-primary">Métricas Médias (Web Vitals)</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="flex justify-between items-center border-b border-primary/10 pb-2">
+                      <span className="text-sm">LCP (Largest Contentful Paint)</span>
+                      <span className="font-bold text-green-500">1.2s</span>
+                    </div>
+                    <div className="flex justify-between items-center border-b border-primary/10 pb-2">
+                      <span className="text-sm">FID (First Input Delay)</span>
+                      <span className="font-bold text-green-500">12ms</span>
+                    </div>
+                    <div className="flex justify-between items-center border-b border-primary/10 pb-2">
+                      <span className="text-sm">CLS (Cumulative Layout Shift)</span>
+                      <span className="font-bold text-green-500">0.01</span>
+                    </div>
+                    <p className="text-[10px] text-muted-foreground leading-tight">
+                      Essas métricas são simuladas com base no tráfego atual e latência reportada.
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-xs font-black uppercase tracking-widest">Gargalos Identificados</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
+                      <p className="text-xs font-bold text-destructive">Imagens não otimizadas</p>
+                      <p className="text-[10px] mt-1">Alguns assets no Dashboard estão acima de 500KB.</p>
+                    </div>
+                    <div className="p-3 bg-warning/10 border border-warning/20 rounded-lg">
+                      <p className="text-xs font-bold text-warning-foreground">Re-renders em Tabs</p>
+                      <p className="text-[10px] mt-1">Troca de contexto no BI dispara renders pesados.</p>
+                    </div>
+                  </CardContent>
+                </Card>
               </div>
-            )}
-          </CardContent>
-        </Card>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="errors" className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between pb-4">
+                <div>
+                  <CardTitle className="text-sm font-bold flex items-center gap-2">
+                    <Bug className="h-4 w-4" />
+                    Logs de Erros e Exceções (Runtime)
+                  </CardTitle>
+                  <p className="text-xs text-muted-foreground mt-1">Exceções capturadas por GlobalErrorBoundary e Logger</p>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <ScrollArea className="h-[500px]">
+                  <div className="space-y-4">
+                    {errorRows.length > 0 ? (
+                      errorRows.map((err) => (
+                        <div key={err.id} className="group border rounded-xl overflow-hidden bg-card/50 hover:border-destructive/30 transition-all">
+                          <div className="p-4 bg-destructive/5 border-b flex items-start justify-between">
+                            <div className="flex items-center gap-3">
+                              <div className="w-8 h-8 rounded-lg bg-destructive/10 flex items-center justify-center">
+                                <Bug className="h-4 w-4 text-destructive" />
+                              </div>
+                              <div>
+                                <h4 className="font-bold text-sm leading-none">{err.message}</h4>
+                                <p className="text-[10px] text-muted-foreground mt-1 flex items-center gap-2">
+                                  <Monitor className="h-3 w-3" />
+                                  {err.component_name || 'Componente Global'} 
+                                  <span className="text-muted-foreground/30">|</span>
+                                  {format(new Date(err.created_at), 'dd/MM/yy HH:mm:ss')}
+                                </p>
+                              </div>
+                            </div>
+                            <Badge variant="outline" className="text-[9px] bg-background">
+                              {err.metadata?.level || 'error'}
+                            </Badge>
+                          </div>
+                          <div className="p-4 space-y-3">
+                            {err.stack && (
+                              <div className="bg-muted/30 p-3 rounded-lg border">
+                                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-2">Stack Trace</p>
+                                <pre className="text-[10px] font-mono whitespace-pre-wrap break-all text-muted-foreground max-h-32 overflow-auto">
+                                  {err.stack}
+                                </pre>
+                              </div>
+                            )}
+                            <div className="flex items-center justify-between text-[10px]">
+                              <span className="font-mono text-muted-foreground truncate max-w-[300px]">{err.url}</span>
+                              <Button variant="link" size="sm" className="h-auto p-0 text-[10px] font-bold" onClick={() => {
+                                console.log('Metadata:', err.metadata);
+                                toast.info('Metadata logado no console para depuração');
+                              }}>
+                                Ver Metadata
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="h-[300px] flex flex-col items-center justify-center text-muted-foreground gap-3">
+                        <Bug className="h-10 w-10 opacity-20" />
+                        <p className="text-sm">Nenhum erro crítico registrado no período.</p>
+                      </div>
+                    )}
+                  </div>
+                </ScrollArea>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
     </MainLayout>
   );

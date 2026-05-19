@@ -17,28 +17,40 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABL
   global: {
     fetch: async (url, options) => {
       const start = performance.now();
-      const response = await fetch(url, options);
-      const duration = performance.now() - start;
-      
-      // Capturar métricas de performance para telemetria interna
-      if (url.toString().includes('postgrest') || url.toString().includes('rpc')) {
-        const route = window.location.pathname;
-        const method = options?.method || 'GET';
+      try {
+        const response = await fetch(url, options);
+        const duration = performance.now() - start;
         
-        // Log estruturado para o painel de telemetria
+        // Capturar métricas de performance para telemetria interna
+        if (url.toString().includes('postgrest') || url.toString().includes('rpc')) {
+          const route = window.location.pathname;
+          const method = options?.method || 'GET';
+          
+          import('@/lib/logger').then(({ logger }) => {
+            if (!response.ok) {
+              logger.error(`Falha na API Supabase (${response.status}): ${url.toString()}`, {
+                status: response.status,
+                url: url.toString(),
+                route
+              });
+            } else if (duration > 1500) {
+              logger.warn(`Query lenta detectada em ${route}: ${duration.toFixed(2)}ms`, {
+                url: url.toString(),
+                method,
+                duration,
+                route
+              });
+            }
+          });
+        }
+        
+        return response;
+      } catch (error) {
         import('@/lib/logger').then(({ logger }) => {
-          if (duration > 1000) {
-            logger.warn(`Query lenta detectada em ${route}: ${duration.toFixed(2)}ms`, {
-              url: url.toString(),
-              method,
-              duration,
-              route
-            });
-          }
+          logger.critical(`Erro de rede/conectividade com Supabase: ${url.toString()}`, error);
         });
+        throw error;
       }
-      
-      return response;
     }
   }
 });
