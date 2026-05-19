@@ -23,7 +23,7 @@ export default function SimulationDashboard() {
     setProgress(0);
     setResults([]);
     
-    const res = await runSimulation(totalScenarios, (current) => {
+    const res = await runSimulation(totalScenarios, 10, (current) => {
       setProgress(Math.round((current / totalScenarios) * 100));
     });
     
