@@ -149,7 +149,7 @@ export default function ReportBuilderPage() {
           columns: selectedColumns,
           format_type: formatType,
           user_id: user.id,
-          filters: { status: selectedStatus, dateRange } as any
+          filters: { status: selectedStatus, dateRange } as unknown as Json
         })
         .select()
         .single();
