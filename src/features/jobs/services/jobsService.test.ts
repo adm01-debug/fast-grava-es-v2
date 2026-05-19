@@ -67,7 +67,7 @@ describe('jobsService', () => {
 
   it('deve lidar com erros na busca de jobs', async () => {
     // Override mock for this test
-    (supabase.from as any).mockReturnValueOnce({
+    (supabase.from as unknown as vi.Mock).mockReturnValueOnce({
       select: vi.fn(() => ({
         order: vi.fn(() => ({
           data: null,
