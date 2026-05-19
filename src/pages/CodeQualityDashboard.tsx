@@ -63,6 +63,7 @@ export default function CodeQualityDashboard() {
             <TabsTrigger value="complexity" className="gap-2"><PieChart className="h-4 w-4" />Complexidade</TabsTrigger>
             <TabsTrigger value="build" className="gap-2"><Timer className="h-4 w-4" />Build</TabsTrigger>
             <TabsTrigger value="performance" className="gap-2"><Zap className="h-4 w-4" />Performance</TabsTrigger>
+            <TabsTrigger value="excellence" className="gap-2"><Gauge className="h-4 w-4" />Meta 10/10</TabsTrigger>
           </TabsList>
 
           <TabsContent value="tests" className="space-y-4">
