@@ -3,6 +3,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import AdminTelemetriaPage from './AdminTelemetriaPage';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { MemoryRouter } from 'react-router-dom';
 import React from 'react';
 
 // Mock Web Audio API for testing
@@ -84,9 +85,11 @@ describe('Painel de Telemetria', () => {
 
   it('deve carregar dados de telemetria e exibir na tabela', async () => {
     render(
-      <QueryClientProvider client={queryClient}>
-        <AdminTelemetriaPage />
-      </QueryClientProvider>
+      <MemoryRouter>
+        <QueryClientProvider client={queryClient}>
+          <AdminTelemetriaPage />
+        </QueryClientProvider>
+      </MemoryRouter>
     );
 
     await waitFor(() => {
@@ -99,9 +102,11 @@ describe('Painel de Telemetria', () => {
 
   it('deve permitir filtrar por severidade', async () => {
     render(
-      <QueryClientProvider client={queryClient}>
-        <AdminTelemetriaPage />
-      </QueryClientProvider>
+      <MemoryRouter>
+        <QueryClientProvider client={queryClient}>
+          <AdminTelemetriaPage />
+        </QueryClientProvider>
+      </MemoryRouter>
     );
 
     const select = screen.getByRole('combobox', { name: /severidade/i });
