@@ -28,20 +28,20 @@ export const handler = async (req: Request): Promise<Response> => {
       });
     }
 
-    const validationResult = webhookPayloadSchema.safeParse(payload);
+    const validation = await validateContract(WebhookPayloadSchema, payload);
     
-    if (!validationResult.success) {
-      console.warn("Received webhook failed validation:", validationResult.error.format());
+    if (!validation.success) {
+      console.warn("Received webhook failed contract validation:", validation.details);
       return new Response(JSON.stringify({ 
-        error: "Validation failed", 
-        details: validationResult.error.format() 
+        error: validation.error, 
+        details: validation.details 
       }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    const { source, event, data } = validationResult.data;
+    const { source, event, data } = validation.data;
     const sanitizedData = data;
 
     // HMAC verification for security (Always use production keys if available)
