@@ -195,7 +195,7 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
           severity: string;
         }> = [];
 
-        const checkRange = (name: string, value: string | undefined, range: any) => {
+        const checkRange = (name: string, value: string | undefined, range: { min?: string; max?: string } | undefined) => {
           if (!value || !range || (!range.min && !range.max)) return;
           const val = parseFloat(value.replace(/[^0-9.]/g, ''));
           const min = range.min ? parseFloat(range.min.replace(/[^0-9.]/g, '')) : -Infinity;
