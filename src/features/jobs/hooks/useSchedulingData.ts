@@ -2,11 +2,13 @@ import { useQuery, useQueryClient, useQueries } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useEffect, useMemo, useCallback } from 'react';
 import { differenceInMinutes } from 'date-fns';
-import { DbJob, DbTechnique, DbMachine } from './useJobs';
+import { type Job as DbJob } from '../services/jobsService';
+import { type Technique as DbTechnique } from '../services/techniquesService';
+import { type Machine as DbMachine } from '../../production/services/machinesService';
 import { QUERY_KEYS, STALE_TIMES } from '@/lib/queryConfig';
 import { createAppError } from '@/lib/errorHandling';
-import { jobsService } from '@/features/jobs';
-import { machinesService } from '@/features/production';
+import { jobsService } from '../services/jobsService';
+import { machinesService } from '../../production/services/machinesService';
 
 // Retry configuration for connection failures
 const RETRY_CONFIG = {
