@@ -5,8 +5,8 @@ export type JobPriority = 'low' | 'medium' | 'high' | 'urgent';
 
 export interface Job extends Partial<Omit<Database['public']['Tables']['jobs']['Row'], 'status' | 'priority'>> {
   id: string;
-  order_number: string;
-  status: JobStatus | any; // Using any temporarily for wide compatibility
+  order_number?: string | null;
+  status: JobStatus | any;
   priority?: JobPriority | any;
   product_name?: string | null;
   delay_time?: string | null;
