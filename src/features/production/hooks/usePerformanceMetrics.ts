@@ -35,7 +35,7 @@ export function usePerformanceMetrics(componentName: string) {
     // Persist slow renders or just standard traces
     const persistTrace = async () => {
       try {
-        await supabase.from('telemetry_traces' as any).insert({
+        await supabase.from('telemetry_traces').insert({
           name: `render:${componentName}`,
           duration_ms: duration,
           service_name: 'frontend',
