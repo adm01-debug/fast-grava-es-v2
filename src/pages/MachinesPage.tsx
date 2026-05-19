@@ -72,7 +72,7 @@ export default function MachinesPage() {
       return;
     }
 
-    const schedule = schedules.find(s => s.id === scheduleId);
+    const schedule = schedules.find((s: any) => s.id === scheduleId);
     setSelectedSchedule(schedule);
 
     startMaintenance.mutate({
@@ -80,7 +80,7 @@ export default function MachinesPage() {
       performed_by: user.id,
       performed_by_name: profile.full_name || 'Usuário',
     }, {
-      onSuccess: (record) => {
+      onSuccess: (record: any) => {
         setCurrentRecordId(record.id);
         setExecutionModalOpen(true);
       }
@@ -123,7 +123,7 @@ export default function MachinesPage() {
   };
 
   const filteredMachines = useMemo(() => {
-    return machines.filter(m => {
+    return machines.filter((m: any) => {
       const matchesSearch = m.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            m.name.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesStatus = statusFilter === 'all' ||
@@ -134,7 +134,7 @@ export default function MachinesPage() {
   }, [machines, searchTerm, statusFilter]);
 
   const machinesByTechnique = useMemo(() => {
-    return filteredMachines.reduce((acc, machine) => {
+    return filteredMachines.reduce((acc: any, machine: any) => {
       const techniqueId = machine.technique_id;
       if (!acc[techniqueId]) {
         acc[techniqueId] = [];
