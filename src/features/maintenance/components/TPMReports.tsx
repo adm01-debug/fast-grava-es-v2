@@ -10,6 +10,11 @@ import { useMTBFMTTR } from '@/features/production';
 import { format, subDays } from 'date-fns';
 import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
+import { UserOptions } from 'jspdf-autotable';
+
+interface jsPDFWithAutoTable extends jsPDF {
+  autoTable: (options: UserOptions) => jsPDF;
+}
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import { toast } from 'sonner';
