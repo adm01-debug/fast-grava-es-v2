@@ -1,4 +1,4 @@
-import { useOEE } from './useOEE';
+import { useOEE, MachineOEE } from './useOEE';
 import { useBusinessConfig } from '@/features/admin';
 import { supabase } from '@/integrations/supabase/client';
 import { useEffect, useRef, useCallback } from 'react';
@@ -18,7 +18,7 @@ export function useOEEAlerts() {
   const { sendNotification } = usePushNotifications();
   const { playBottleneckAlert } = useNotificationSounds();
 
-  const checkMetric = useCallback(async (machine: any, name: string, value: number, warningThreshold: number, criticalThreshold?: number) => {
+  const checkMetric = useCallback(async (machine: MachineOEE, name: string, value: number, warningThreshold: number, criticalThreshold?: number) => {
     const prefs = localStorage.getItem('notification-preferences');
     const oeeAlertsEnabled = prefs ? JSON.parse(prefs).oeeAlerts !== false : true;
     if (!oeeAlertsEnabled) return;

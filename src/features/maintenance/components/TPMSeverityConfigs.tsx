@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import type { Database } from '@/integrations/supabase/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -44,8 +45,12 @@ export function TPMSeverityConfigs({ machineId }: TPMSeverityConfigsProps) {
 
   const upsertConfig = useMutation({
     mutationFn: async (config: Partial<SeverityConfig>) => {
-      const payload: any = {
-        ...config,
+      const payload: Database['public']['Tables']['tpm_severity_configs']['Insert'] = {
+        id: config.id,
+        severity: config.severity || 'upcoming',
+        days_threshold: config.days_threshold,
+        message_override: config.message_override,
+        is_enabled: config.is_enabled,
         machine_id: machineId || null
       };
 
@@ -132,7 +137,7 @@ export function TPMSeverityConfigs({ machineId }: TPMSeverityConfigsProps) {
         ))}
 
         <div className="flex items-center gap-2 p-4 border border-dashed rounded-lg bg-muted/20">
-          <Select value={newSeverity} onValueChange={(v) => setNewSeverity(v as any)}>
+          <Select value={newSeverity} onValueChange={(v: 'upcoming' | 'due' | 'overdue' | 'critical') => setNewSeverity(v)}>
             <SelectTrigger className="w-full h-9">
               <SelectValue />
             </SelectTrigger>

@@ -10,7 +10,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { Wrench, CheckCircle2, AlertTriangle, Clock, Plus, Trash2, PenTool, Zap, MoveHorizontal, Thermometer, Info, CheckSquare, Package, Camera } from 'lucide-react';
-import { MaintenanceSchedule, MaintenanceChecklist, MaintenanceChecklistItem } from '@/features/maintenance/hooks/types';
+import { MaintenanceSchedule, MaintenanceChecklist, MaintenanceChecklistItem, ChecklistSnapshot, AdjustmentParameters as IAdjustmentParameters, QualityChecklistResult } from '@/features/maintenance/hooks/types';
 import { useTPM } from '@/features/maintenance/hooks/useTPM';
 import { useTechnicalSheets } from '@/hooks/useTechnicalSheets';
 import { toast } from 'sonner';
@@ -21,6 +21,17 @@ import { SupplyList } from './execution/SupplyList';
 import { AdjustmentParameters } from './execution/AdjustmentParameters';
 import { ReplacementParts } from './execution/ReplacementParts';
 
+interface ExecutionAlert {
+  alert_type: string;
+  parameter_name?: string;
+  expected_range?: string;
+  actual_value?: string;
+  severity: 'info' | 'warning' | 'critical';
+  description: string;
+  evidence_urls: string[];
+  is_critical_risk: boolean;
+}
+
 interface MaintenanceExecutionModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -30,17 +41,35 @@ interface MaintenanceExecutionModalProps {
     notes: string;
     total_cost: number;
     downtime_minutes: number;
-    responses: any[];
-    parts: any[];
+    responses: Array<{
+      checklist_item_id: string;
+      is_checked: boolean;
+      measurement_value?: number;
+      notes?: string;
+      photo_url?: string;
+    }>;
+    parts: Array<{
+      name: string;
+      code: string;
+      quantity: number;
+    }>;
     signature?: string;
     checklist_version?: number;
-    checklist_snapshot?: any;
+    checklist_snapshot?: ChecklistSnapshot;
     technical_sheet_id?: string;
     technical_sheet_version?: number;
-    quality_responses?: any[];
-    adjustment_parameters?: any;
-    supplies_used?: any[];
-    execution_alerts?: any[];
+    quality_responses?: Array<{
+      item: string;
+      status: 'pass' | 'fail' | 'na';
+      notes?: string;
+    }>;
+    adjustment_parameters?: IAdjustmentParameters;
+    supplies_used?: Array<{
+      name: string;
+      quantity: string;
+      alternative_used?: boolean;
+    }>;
+    execution_alerts?: ExecutionAlert[];
     failure_risk_detected?: boolean;
   }) => void;
 }
@@ -336,17 +365,29 @@ export function MaintenanceExecutionModal({
       parts,
       signature,
       checklist_version: checklist?.version,
-      checklist_snapshot: checklist,
+      checklist_snapshot: checklist ? {
+        id: checklist.id,
+        name: checklist.name,
+        items: checklist.items?.map(i => ({
+          id: i.id,
+          description: i.description,
+          is_critical: i.is_critical,
+          requires_photo: i.requires_photo,
+          requires_measurement: i.requires_measurement,
+          measurement_unit: i.measurement_unit
+        })) || []
+      } : undefined,
       technical_sheet_id: selectedSheetId || undefined,
       technical_sheet_version: selectedSheetId ? (technicalSheets.find(s => s.id === selectedSheetId)?.version) : undefined,
       quality_responses: Object.entries(qualityResponses).map(([id, data]) => ({
-        id,
-        ...data
+        item: id,
+        status: data.approved ? 'pass' : 'fail',
+        notes: data.justification
       })),
       adjustment_parameters: {
         ...adjustmentParams,
-        recommended: selectedSheetId ? (technicalSheets.find(s => s.id === selectedSheetId)?.machine_settings) : null,
-        ranges: selectedSheetId ? (technicalSheets.find(s => s.id === selectedSheetId)?.settings_ranges) : null
+        recommended: selectedSheetId ? (technicalSheets.find(s => s.id === selectedSheetId)?.machine_settings as any) : null,
+        ranges: selectedSheetId ? (technicalSheets.find(s => s.id === selectedSheetId)?.settings_ranges as any) : null
       },
       supplies_used: Object.entries(suppliesUsed)
         .filter(([_, data]) => data.is_checked)

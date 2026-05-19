@@ -155,7 +155,7 @@ export function TPMNotificationTemplates() {
         <p>Variáveis disponíveis: <code>{"{{machine_name}}"}</code>, <code>{"{{machine_code}}"}</code>, <code>{"{{due_date}}"}</code>, <code>{"{{days}}"}</code>, <code>{"{{message}}"}</code></p>
       </div>
 
-      <Tabs defaultValue="email" onValueChange={(v) => setActiveTab(v as any)}>
+      <Tabs defaultValue="email" onValueChange={(v: string) => setActiveTab(v as 'email' | 'whatsapp')}>
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="email" className="flex items-center gap-2">
             <Mail className="h-4 w-4" /> E-mail
