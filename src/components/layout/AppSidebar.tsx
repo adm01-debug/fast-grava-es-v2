@@ -109,10 +109,9 @@ export function AppSidebar() {
       >
         {/* Header */}
         <div className={cn('flex items-center h-16 px-4 border-b border-sidebar-border relative', collapsed && !isMobile ? 'justify-center' : 'justify-between')}>
-          {(!collapsed || isMobile) && (
-            <div className="flex items-center gap-3 overflow-hidden">
-              <AnimatePresence mode="wait">
-                {location.pathname !== '/' && location.pathname !== '/operator' && location.pathname !== '/auth' ? (
+          <div className="flex items-center gap-3 overflow-hidden">
+            <AnimatePresence mode="wait">
+              {(!collapsed || isMobile) && location.pathname !== '/' && location.pathname !== '/operator' && location.pathname !== '/auth' ? (
                   <motion.div
                     key="back-icon"
                     initial={{ x: -20, opacity: 0 }}
