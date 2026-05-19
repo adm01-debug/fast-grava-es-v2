@@ -39,6 +39,8 @@ export function usePerformanceMetrics(componentName: string) {
           name: `render:${componentName}`,
           duration_ms: duration,
           service_name: 'frontend',
+          span_id: crypto.randomUUID().slice(0, 8),
+          trace_id: crypto.randomUUID(),
           attributes: {
             type: 'render',
             reFetchCount: reFetchCount.current,
