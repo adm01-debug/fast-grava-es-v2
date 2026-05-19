@@ -287,10 +287,10 @@ export function useKPIs(period: KPIPeriod = 'all', customTargets?: Partial<KPITa
         avgDuration: techJobs.length > 0 ? techJobs.reduce((sum: number, j: DbJob) => sum + sanitizeNumber(j.estimated_duration), 0) / techJobs.length : 0,
         occupancyRate: techMachines.length > 0 ? (busyMachines / techMachines.length) * 100 : 0,
       };
-    }).filter((t: any) => t.jobCount > 0);
+    }).filter(t => t.jobCount > 0);
 
     const averageOccupancy = productivityByTechnique.length > 0
-      ? productivityByTechnique.reduce((sum: number, t: any) => sum + t.occupancyRate, 0) / productivityByTechnique.length
+      ? productivityByTechnique.reduce((sum: number, t) => sum + t.occupancyRate, 0) / productivityByTechnique.length
       : 0;
 
     // Removido random para manter integridade
