@@ -56,7 +56,11 @@ export function AppSidebar() {
       .filter(group => group.items.length > 0);
   }, [role]);
 
-  const filteredAdminNavItems = isCoordinator ? adminNavItems : [];
+  const filteredAdminNavItems = useMemo(() => {
+    return adminNavItems.filter(item => 
+      !item.allowedRoles || (role && item.allowedRoles.includes(role))
+    );
+  }, [role]);
   const isActive = useCallback((href: string) => {
     if (href === '/') return location.pathname === '/';
     return location.pathname.startsWith(href);
