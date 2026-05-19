@@ -1,6 +1,6 @@
 import * as XLSX from 'xlsx';
 import { format } from 'date-fns';
-import { ExecutiveKPIs, DateRange } from '@/hooks/useExecutiveDashboard';
+import { ExecutiveKPIs, DateRange } from '@/features/analytics/hooks/useExecutiveDashboard';
 
 export interface ExportData {
   title: string;

@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { History, AlertTriangle, CheckCircle, Clock, Zap, Scale, Filter, CalendarIcon, X, TrendingUp, BarChart3 } from "lucide-react";
-import { useEfficiencyAlertHistory, EfficiencyAlertHistory } from "@/hooks/useEfficiencyAlertHistory";
+import { useEfficiencyAlertHistory, EfficiencyAlertHistory } from "@/features/analytics/hooks/useEfficiencyAlertHistory";
 import { format, formatDistanceToNow, isAfter, isBefore, startOfDay, endOfDay } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { toast } from "sonner";

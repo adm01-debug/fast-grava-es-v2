@@ -10,8 +10,8 @@ import {
   Scale, ArrowRight, TrendingDown, AlertCircle,
   CheckCircle2, Info, ArrowLeftRight, Sparkles, Clock, Zap
 } from 'lucide-react';
-import { useLoadBalancing, LoadBalancingSuggestion } from '@/hooks/useLoadBalancing';
-import { useLoadBalancingWithActions } from '@/hooks/useLoadBalancingWithActions';
+import { useLoadBalancing, useLoadBalancingWithActions, LoadBalancingSuggestion } from '@/features/analytics';
+
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';

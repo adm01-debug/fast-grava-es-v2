@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { TrendingUp } from "lucide-react";
-import { EfficiencyAlertHistory } from "@/hooks/useEfficiencyAlertHistory";
+import { EfficiencyAlertHistory } from "@/features/analytics/hooks/useEfficiencyAlertHistory";
 import { format, subDays, startOfDay, endOfDay, eachDayOfInterval } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";

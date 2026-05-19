@@ -1,4 +1,4 @@
-import { useEnergy } from '@/hooks/useEnergy';
+import { useEnergy } from '@/features/analytics/hooks/useEnergy';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Zap, TrendingUp, TrendingDown, DollarSign } from 'lucide-react';

@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
-import { useJobs, useMachines, useTechniques, DbJob, DbTechnique } from '@/features/jobs';
-import { format, addDays, parseISO, isValid } from 'date-fns';
+import { useJobs, useMachines, useTechniques, DbJob } from '@/features/jobs';
+import { format, addDays } from 'date-fns';
+import { BottleneckAlert, TechniqueCapacity } from '../types';
 
 // Data validation helpers
 function isValidJob(job: DbJob): boolean {
@@ -17,40 +18,11 @@ function sanitizeNumber(value: any, fallback = 0): number {
   return Math.max(0, value);
 }
 
-export interface BottleneckAlert {
-  id: string;
-  techniqueId: string;
-  techniqueName: string;
-  techniqueColor: string;
-  severity: 'critical' | 'warning' | 'info';
-  date: Date;
-  dateLabel: string;
-  currentCapacity: number; // percentage used
-  projectedCapacity: number; // percentage if pending jobs added
-  machineCount: number;
-  jobCount: number;
-  pendingJobCount: number;
-  message: string;
-  recommendation: string;
-}
-
-export interface TechniqueCapacity {
-  technique: DbTechnique;
-  date: Date;
-  totalCapacityMinutes: number;
-  usedMinutes: number;
-  pendingMinutes: number;
-  occupancyRate: number;
-  projectedOccupancy: number;
-  machineCount: number;
-  scheduledJobs: number;
-  pendingJobs: number;
-}
-
 const DAILY_CAPACITY_MINUTES = 11 * 60; // 07:00 - 18:00
 let CRITICAL_THRESHOLD = 90;
 let WARNING_THRESHOLD = 75;
 const DAYS_AHEAD = 14;
+
 
 export function setBottleneckThresholds(warning: number, critical: number) {
   WARNING_THRESHOLD = warning;

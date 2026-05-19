@@ -10,10 +10,10 @@ import {
 } from 'lucide-react';
 import { useSchedulingData } from '@/features/jobs';
 import { useSmartSequencingWithActions } from '@/features/jobs';
-import { useLoadBalancingWithActions } from '@/hooks/useLoadBalancingWithActions';
+import { useLoadBalancingWithActions } from '@/features/analytics/hooks/useLoadBalancingWithActions';
 import { useOEE } from '@/features/production';
 import { useMTBFMTTR } from '@/features/production';
-import { OEETrendChart } from '@/components/oee/OEETrendChart';
+import { OEETrendChart } from '@/features/analytics/components/oee/OEETrendChart';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';

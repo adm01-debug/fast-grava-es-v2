@@ -1,51 +1,16 @@
 import { useMemo, useCallback } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { useJobs, useMachines, useTechniques, DbJob, DbMachine, DbTechnique } from '@/features/jobs';
+import { useJobs, useMachines, useTechniques } from '@/features/jobs';
 import { toast } from 'sonner';
 import { format, isValid as isValidDate } from 'date-fns';
 import { showErrorToast, createAppError } from '@/lib/errorHandling';
+import { MachineLoad, LoadBalancingSuggestion, TechniqueLoadSummary } from '../types';
 
 const LOAD_BALANCING_ERROR_CONTEXT = {
   applySuggestion: { entity: 'jobs', operation: 'apply_load_balancing' },
   applyMultiple: { entity: 'jobs', operation: 'apply_multiple_load_balancing' },
 };
-
-export interface MachineLoad {
-  machine: DbMachine;
-  technique: DbTechnique;
-  scheduledMinutes: number;
-  availableMinutes: number;
-  occupancyRate: number;
-  jobCount: number;
-  jobs: DbJob[];
-}
-
-export interface LoadBalancingSuggestion {
-  id: string;
-  jobId: string;
-  orderNumber: string;
-  client: string;
-  product: string;
-  estimatedDuration: number;
-  currentMachineId: string;
-  currentMachineName: string;
-  suggestedMachineId: string;
-  suggestedMachineName: string;
-  currentLoad: number;
-  suggestedLoad: number;
-  loadDifference: number;
-}
-
-export interface TechniqueLoadSummary {
-  technique: DbTechnique;
-  machines: MachineLoad[];
-  averageOccupancy: number;
-  maxOccupancy: number;
-  minOccupancy: number;
-  isUnbalanced: boolean;
-  suggestions: LoadBalancingSuggestion[];
-}
 
 export interface ApplySuggestionResult {
   success: boolean;
@@ -56,6 +21,7 @@ export interface ApplySuggestionResult {
 }
 
 const DAILY_CAPACITY_MINUTES = 11 * 60; // 07:00 - 18:00 = 11 hours
+
 
 export function useLoadBalancingWithActions(targetDate?: Date) {
   const { data: jobs } = useJobs();

@@ -18,8 +18,8 @@ import {
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { SupplyChainPanel } from '@/components/digital-twin/SupplyChainPanel';
 import { CostSimulationCard } from '@/components/digital-twin/CostSimulationCard';
-import { useKPIs } from '@/hooks/useKPIs';
-import { useEnergy } from '@/hooks/useEnergy';
+import { useKPIs } from '@/features/analytics/hooks/useKPIs';
+import { useEnergy } from '@/features/analytics/hooks/useEnergy';
 
 export default function DigitalTwin() {
   const { data: kpiData } = useKPIs('day');

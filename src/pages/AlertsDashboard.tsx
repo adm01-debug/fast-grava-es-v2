@@ -4,14 +4,14 @@ import { Button } from "@/components/ui/button";
 import { JobDetailsModal } from "@/components/jobs/JobDetailsModal";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { AlertTriangle, Clock, AlertCircle, RotateCcw, Zap, Bell, RefreshCw } from "lucide-react";
-import { useSchedulingData } from "@/features/jobs";
-import { DbJob } from "@/features/jobs";
+import { useSchedulingData, DbJob, StuckJob } from "@/features/jobs";
 import { Job } from "@/types/scheduling";
-import { useBottleneckPrediction, BottleneckAlert } from "@/hooks/useBottleneckPrediction";
-import { useLoadBalancing, LoadBalancingSuggestion } from "@/hooks/useLoadBalancing";
+import { useBottleneckPrediction, useLoadBalancing, BottleneckAlert, LoadBalancingSuggestion } from "@/features/analytics";
+
 import { useEfficiencyNotifications } from "@/features/notifications";
 import { EfficiencyAlertHistoryWidget } from "@/components/dashboard/EfficiencyAlertHistoryWidget";
-import { useStuckJobsDetection, StuckJob } from "@/features/jobs";
+import { useStuckJobsDetection } from "@/features/jobs";
+
 import { useOrphanedDataDetection } from "@/features/admin";
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { AlertJobCard } from "@/components/alerts/AlertJobCard";

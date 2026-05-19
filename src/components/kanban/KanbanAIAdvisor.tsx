@@ -22,8 +22,8 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { toast } from 'sonner';
 import { useSmartSequencing, SequencingSuggestion } from '@/features/jobs';
-import { useLoadBalancing, LoadBalancingSuggestion } from '@/hooks/useLoadBalancing';
-import { useBottleneckPrediction } from '@/hooks/useBottleneckPrediction';
+import { useLoadBalancing, useBottleneckPrediction, LoadBalancingSuggestion } from '@/features/analytics';
+
 import { motion, AnimatePresence } from 'framer-motion';
 
 export function KanbanAIAdvisor() {

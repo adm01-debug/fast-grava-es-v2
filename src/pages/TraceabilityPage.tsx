@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback, useRef } from 'react';
-import { BIJob } from '@/types/bi';
+import { BIJob } from '@/features/analytics/types';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { cn } from '@/lib/utils';
 import { useFuseSearch } from '@/hooks/useFuseSearch';

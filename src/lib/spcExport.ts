@@ -2,7 +2,7 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { SPCParameter, SPCMeasurement } from '@/hooks/useSPC';
+import { SPCParameter, SPCMeasurement } from '@/features/analytics/hooks/useSPC';
 
 export const exportSPCReport = async (parameter: SPCParameter, measurements: SPCMeasurement[], capability: any) => {
   const doc = new jsPDF();

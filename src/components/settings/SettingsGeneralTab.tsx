@@ -8,7 +8,7 @@ import { Moon, RefreshCw, Database, Shield, Palette, AlertTriangle } from 'lucid
 import { useTheme } from 'next-themes';
 import { AutoThemeToggle } from '@/components/settings/AutoThemeToggle';
 import { useState } from 'react';
-import { setBottleneckThresholds } from '@/hooks/useBottleneckPrediction';
+import { setBottleneckThresholds } from '@/features/analytics/hooks/useBottleneckPrediction';
 import { toast } from 'sonner';
 
 interface SettingsGeneralTabProps {

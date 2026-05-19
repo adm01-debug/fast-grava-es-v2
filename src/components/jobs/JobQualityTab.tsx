@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useSPCParameters, useSPCMeasurements, useSPCMutations } from '@/hooks/useSPC';
+import { useSPCParameters, useSPCMeasurements, useSPCMutations } from '@/features/analytics/hooks/useSPC';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';

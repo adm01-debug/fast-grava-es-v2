@@ -12,7 +12,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSchedulingData } from '@/features/jobs';
 import { supabase } from '@/integrations/supabase/client';
-import { calculateEstimatedTime } from '@/hooks/useKPIs';
+import { calculateEstimatedTime } from '@/features/analytics/hooks/useKPIs';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';

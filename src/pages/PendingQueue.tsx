@@ -53,7 +53,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { motion, AnimatePresence } from "framer-motion";
 import { useDataExport } from "@/features/admin";
 import { useSmartSequencingWithActions } from "@/features/jobs";
-import { useLoadBalancingWithActions } from "@/hooks/useLoadBalancingWithActions";
+import { useLoadBalancingWithActions } from "@/features/analytics/hooks/useLoadBalancingWithActions";
 import { useAutoBufferPromotion } from "@/features/jobs";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { formatDistanceToNow, isAfter, subHours } from "date-fns";
