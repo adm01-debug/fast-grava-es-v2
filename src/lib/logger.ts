@@ -51,6 +51,29 @@ function createEntry(level: LogLevel, message: string, context?: string, data?: 
     if (errorHistory.length > MAX_HISTORY) {
       errorHistory.pop();
     }
+
+    // Persist to Supabase in production or for errors
+    const persistError = async () => {
+      try {
+        await supabase.from('error_logs').insert({
+          message: message,
+          stack: data instanceof Error ? data.stack : JSON.stringify(data),
+          component_name: context || 'global',
+          url: window.location.href,
+          metadata: {
+            level,
+            severity: SEVERITY_MAP[level],
+            data: data instanceof Error ? { name: data.name, message: data.message } : data
+          }
+        });
+      } catch (err) {
+        console.error('Failed to persist error log:', err);
+      }
+    };
+
+    if (level !== 'debug') {
+      persistError();
+    }
   }
 
   return entry;
