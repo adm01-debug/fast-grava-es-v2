@@ -11,10 +11,26 @@ export function useCommandEntities(query: string, setOpen: (open: boolean) => vo
   const navigate = useNavigate();
 
   const entityResults = useMemo(() => {
-    if (query.length < 2) return [];
+    if (query.length < 2 && query.length !== 0) return [];
 
     const results: CommandItemType[] = [];
     const lowerQuery = query.toLowerCase();
+
+    // If query is empty, suggest active things
+    if (query.length === 0) {
+      machines.filter(m => m.is_active).slice(0, 2).forEach(machine => {
+        results.push({
+          id: `suggested-mach-${machine.id}`,
+          name: machine.name,
+          description: "Máquina Ativa",
+          icon: <Printer className="h-4 w-4 text-blue-500" />,
+          action: () => { navigate('/machines'); setOpen(false); },
+          category: 'search',
+          priority: 50
+        });
+      });
+      return results;
+    }
 
     // Search Inventory
     inventoryItems.filter(item => 

@@ -90,6 +90,10 @@ export function CommandPaletteAdvanced() {
       const favs = favorites.map(id => allCommands.find(c => c.id === id)).filter(Boolean) as CommandItemType[];
       if (favs.length > 0) groups["Favoritos"] = favs;
     }
+    if (!query) {
+      const suggested = entityCommands.slice(0, 3);
+      if (suggested.length > 0) groups["Entidades Sugeridas"] = suggested;
+    }
     const contextual = filteredCommands.filter(c => c.category === "contextual");
     if (contextual.length > 0) groups["Ações Contextuais"] = contextual;
     const actions = filteredCommands.filter(c => c.category === "actions");
