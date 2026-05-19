@@ -91,8 +91,9 @@ export function MainLayout({ children }: MainLayoutProps) {
           ref={swipeRef as React.RefObject<HTMLDivElement>}
           className={cn(
             "flex-1 flex flex-col overflow-y-auto overflow-x-hidden relative",
-            "h-full scrollbar-thin"
+            "h-full scrollbar-thin outline-none"
           )}
+          id="main-content-scroll"
         >
 
           <OfflineStatusBanner />
