@@ -83,9 +83,9 @@ const KPIMachinesTabComponent = ({
                   </tr>
                 </thead>
                 <tbody>
-                  {kpis.productivityByMachine
-                    .filter((m: any) => m.machineName.toLowerCase().includes(searchTerm.toLowerCase()))
-                    .map((machine: any) => (
+                   {kpis.productivityByMachine
+                    .filter((m) => m.machineName.toLowerCase().includes(searchTerm.toLowerCase()))
+                    .map((machine) => (
                     <tr
                       key={machine.machineId}
                       className="border-b border-border/30 hover:bg-muted/10 transition-colors cursor-pointer group"
