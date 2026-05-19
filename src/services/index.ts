@@ -2,9 +2,7 @@ export { jobsService as JobsService } from '@/features/jobs/services/jobsService
 export { machinesService as MachinesService } from '@/features/production/services/machinesService';
 export { OperatorsService } from '@/features/production/services/operatorsService';
 export { MaintenanceService } from '@/features/production/services/maintenanceService';
-export { NotificationsService } from './notificationsService';
-export { AuthService } from './authService';
 export { EnergyService } from './energyService';
-export { TraceabilityService } from './traceabilityService';
-export { ReportsService } from './reportsService';
-export { IntegrationsService } from './integrationsService';
+export { IntegrationsService } from '@/features/admin/services/integrationsService';
+export { ReportsService } from '@/features/admin/services/reportsService';
+export { TraceabilityService } from '@/features/inventory/services/traceabilityService';
