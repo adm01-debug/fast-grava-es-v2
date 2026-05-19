@@ -104,7 +104,7 @@ export default function AuthPage() {
                 <img
                   src="/logo.png"
                   alt="FAST GRAVAÇÕES — Qualidade + Velocidade"
-                  className="h-[200px] w-auto object-contain"
+                  className="h-[250px] w-auto object-contain"
                 />
               </picture>
             </motion.div>
