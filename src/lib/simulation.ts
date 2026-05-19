@@ -30,7 +30,46 @@ export const SCENARIOS: SimulationScenario[] = [
   { id: 'fuzz-malformed-json', name: 'Fuzz: JSON Malformado', source: 'bitrix24', event: 'TEST', description: 'Envia string não-JSON', expectedStatus: 400, payload: "NOT_A_JSON_STRING" },
 ];
 
-export const generateScenarios = (): SimulationScenario[] => SCENARIOS;
+export const generateFuzzPayload = (basePayload: Record<string, any>): any => {
+  const mutations = [
+    (p: any) => { delete p.source; return p; }, // Missing required field
+    (p: any) => { p.source = 123; return p; }, // Wrong type
+    (p: any) => { p.event = null; return p; }, // Null value
+    (p: any) => { p.data = "invalid_data_type"; return p; }, // Wrong internal type
+    (p: any) => { p.injection = "'; DROP TABLE users; --"; return p; }, // SQL injection attempt
+    (p: any) => { p.overflow = "A".repeat(10000); return p; }, // Large payload
+    (p: any) => { return "{ malformed: json"; }, // Not a JSON string if sent as body
+  ];
+  
+  const mutation = mutations[Math.floor(Math.random() * mutations.mutations.length)];
+  return mutation({ ...basePayload });
+};
+
+export const generateScenarios = (count: number = 10): SimulationScenario[] => {
+  const baseScenarios = SCENARIOS;
+  const fuzzScenarios: SimulationScenario[] = [];
+  
+  for (let i = 0; i < count; i++) {
+    const base = baseScenarios[i % baseScenarios.length];
+    const isFuzz = Math.random() > 0.5;
+    
+    if (isFuzz) {
+      const basePayload = { source: base.source, event: base.event, data: { id: i } };
+      fuzzScenarios.push({
+        ...base,
+        id: `fuzz-${i}`,
+        name: `Fuzz: ${base.name} (v${i})`,
+        description: 'Payload mutado aleatoriamente para teste de robustez',
+        payload: generateFuzzPayload(basePayload),
+        expectedStatus: 400 // Fuzzed payloads should generally fail validation
+      });
+    } else {
+      fuzzScenarios.push({ ...base, id: `${base.id}-${i}` });
+    }
+  }
+  
+  return fuzzScenarios;
+};
 
 export async function runMassiveSimulation(
   totalCount: number = 100, 
