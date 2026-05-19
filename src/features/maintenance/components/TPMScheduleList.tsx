@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { MaintenanceSchedule } from '@/hooks/useTPM';
+import { MaintenanceSchedule } from '@/features/maintenance/hooks/useTPM';
 import { format, isPast, isToday, differenceInDays } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 

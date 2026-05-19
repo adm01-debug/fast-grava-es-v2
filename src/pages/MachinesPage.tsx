@@ -22,10 +22,10 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { useEntityAuditTrail } from '@/features/admin';
 import { AuditEntryCard } from '@/components/audit/AuditEntryCard';
 import { HistoryPeriodFilter, type HistoryPeriodValue } from '@/components/audit/HistoryPeriodFilter';
-import { MachineTPMPanel } from '@/components/tpm/MachineTPMPanel';
-import { useTPM } from '@/hooks/useTPM';
-import { MaintenanceExecutionModal } from '@/components/tpm/MaintenanceExecutionModal';
-import { CreateScheduleModal } from '@/components/tpm/CreateScheduleModal';
+import { MachineTPMPanel } from '@/features/maintenance/components/MachineTPMPanel';
+import { useTPM } from '@/features/maintenance/hooks/useTPM';
+import { MaintenanceExecutionModal } from '@/features/maintenance/components/MaintenanceExecutionModal';
+import { CreateScheduleModal } from '@/features/maintenance/components/CreateScheduleModal';
 import { useAuth } from '@/features/auth';
 import { toast } from 'sonner';
 import { MachineReliabilityTab } from '@/components/machines/MachineReliabilityTab';
@@ -72,7 +72,7 @@ export default function MachinesPage() {
       return;
     }
 
-    const schedule = schedules.find(s => s.id === scheduleId);
+    const schedule = schedules.find((s: any) => s.id === scheduleId);
     setSelectedSchedule(schedule);
 
     startMaintenance.mutate({
@@ -80,7 +80,7 @@ export default function MachinesPage() {
       performed_by: user.id,
       performed_by_name: profile.full_name || 'Usuário',
     }, {
-      onSuccess: (record) => {
+      onSuccess: (record: any) => {
         setCurrentRecordId(record.id);
         setExecutionModalOpen(true);
       }
@@ -123,7 +123,7 @@ export default function MachinesPage() {
   };
 
   const filteredMachines = useMemo(() => {
-    return machines.filter(m => {
+    return machines.filter((m: any) => {
       const matchesSearch = m.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            m.name.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesStatus = statusFilter === 'all' ||
@@ -134,7 +134,7 @@ export default function MachinesPage() {
   }, [machines, searchTerm, statusFilter]);
 
   const machinesByTechnique = useMemo(() => {
-    return filteredMachines.reduce((acc, machine) => {
+    return filteredMachines.reduce((acc: any, machine: any) => {
       const techniqueId = machine.technique_id;
       if (!acc[techniqueId]) {
         acc[techniqueId] = [];
@@ -312,7 +312,7 @@ export default function MachinesPage() {
                               />
                               <span>{technique?.name || 'Técnica Desconhecida'}</span>
                               <Badge variant="secondary" className="text-[10px] uppercase font-bold tracking-widest">
-                                {techMachines.length}
+                                {(techMachines as any[]).length}
                               </Badge>
                             </CardTitle>
                             <Button
@@ -320,10 +320,10 @@ export default function MachinesPage() {
                               size="sm"
                               className="text-[10px] uppercase font-bold tracking-tighter"
                               onClick={() => {
-                                const allSelected = techMachines.every(m => selectedMachines.has(m.id));
+                                const allSelected = (techMachines as any[]).every((m: any) => selectedMachines.has(m.id));
                                 setSelectedMachines(prev => {
                                   const next = new Set(prev);
-                                  techMachines.forEach(m => {
+                                  (techMachines as any[]).forEach((m: any) => {
                                     if (allSelected) next.delete(m.id);
                                     else next.add(m.id);
                                   });
@@ -331,13 +331,13 @@ export default function MachinesPage() {
                                 });
                               }}
                             >
-                              {techMachines.every(m => selectedMachines.has(m.id)) ? 'Deselecionar' : 'Selecionar Grupo'}
+                              {(techMachines as any[]).every((m: any) => selectedMachines.has(m.id)) ? 'Deselecionar' : 'Selecionar Grupo'}
                             </Button>
                           </div>
                         </CardHeader>
                         <CardContent className="pt-6">
                           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                            {techMachines.map((machine, idx) => {
+                            {(techMachines as any[]).map((machine: any, idx: number) => {
                               const machineMetrics = oeeData?.byMachine.find(m => m.machineId === machine.id);
                               return (
                                 <div key={machine.id} className="relative group">

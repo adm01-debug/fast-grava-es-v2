@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { useTPM } from '@/hooks/useTPM';
+import { useTPM } from '@/features/maintenance/hooks/useTPM';
 import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
 import { Activity, Zap, Thermometer, Box, Layers, MousePointer2 } from 'lucide-react';
@@ -36,7 +36,7 @@ export function FactoryFloorMap() {
 
     const interval = setInterval(() => {
       const newData: Record<string, any> = {};
-      machines.forEach(m => {
+      machines.forEach((m: any) => {
         const hasJob = !!activeJobs[m.id];
         newData[m.id] = {
           load: hasJob ? Math.floor(Math.random() * 20) + 80 : 0,
@@ -107,7 +107,7 @@ export function FactoryFloorMap() {
 
         {/* Machines Placement */}
         <div className="relative z-10 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6 h-full overflow-y-auto pr-2 custom-scrollbar">
-          {machines.map((machine) => {
+          {machines.map((machine: any) => {
             const status = liveData[machine.id] || { load: 0, temp: 0, efficiency: 0, isWorking: false };
             const isWorking = status.isWorking;
 

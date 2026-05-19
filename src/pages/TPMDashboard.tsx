@@ -7,29 +7,29 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { useTPM } from '@/hooks/useTPM';
+import { useTPM } from '@/features/maintenance/hooks/useTPM';
 import { useTPMNotifications } from '@/features/notifications';
 import { useAuth } from '@/features/auth';
-import { TPMAlertsPanel } from '@/components/tpm/TPMAlertsPanel';
-import { TPMParameterAlerts } from '@/components/tpm/TPMParameterAlerts';
-import { TPMCalendar } from '@/components/tpm/TPMCalendar';
-import { TPMScheduleList } from '@/components/tpm/TPMScheduleList';
-import { CreateScheduleModal } from '@/components/tpm/CreateScheduleModal';
-import { TPMNotificationSettings } from '@/components/tpm/TPMNotificationSettings';
-import { ChecklistManager } from '@/components/tpm/ChecklistManager';
-import { MTBFMTTRWidget } from '@/components/reliability/MTBFMTTRWidget';
-import { MaintenanceExecutionModal } from '@/components/tpm/MaintenanceExecutionModal';
-import { TPMReports } from '@/components/tpm/TPMReports';
-import { TPMExecutionHistory } from '@/components/tpm/TPMExecutionHistory';
+import { TPMAlertsPanel } from '@/features/maintenance/components/TPMAlertsPanel';
+import { TPMParameterAlerts } from '@/features/maintenance/components/TPMParameterAlerts';
+import { TPMCalendar } from '@/features/maintenance/components/TPMCalendar';
+import { TPMScheduleList } from '@/features/maintenance/components/TPMScheduleList';
+import { CreateScheduleModal } from '@/features/maintenance/components/CreateScheduleModal';
+import { TPMNotificationSettings } from '@/features/maintenance/components/TPMNotificationSettings';
+import { ChecklistManager } from '@/features/maintenance/components/ChecklistManager';
+import { MTBFMTTRWidget } from '@/features/maintenance/components/MTBFMTTRWidget';
+import { MaintenanceExecutionModal } from '@/features/maintenance/components/MaintenanceExecutionModal';
+import { TPMReports } from '@/features/maintenance/components/TPMReports';
+import { TPMExecutionHistory } from '@/features/maintenance/components/TPMExecutionHistory';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { FavoriteButton, FavoritesDropdown } from '@/components/navigation/FavoritesManager';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 import { VoiceButton } from '@/components/voice/VoiceCommands';
-import { PredictiveHealthCard } from '@/components/tpm/PredictiveHealthCard';
-import { VirtualSensorPanel } from '@/components/tpm/VirtualSensorPanel';
-import { HolographicReliabilityWidget } from '@/components/tpm/HolographicReliabilityWidget';
+import { PredictiveHealthCard } from '@/features/maintenance/components/PredictiveHealthCard';
+import { VirtualSensorPanel } from '@/features/maintenance/components/VirtualSensorPanel';
+import { HolographicReliabilityWidget } from '@/features/maintenance/components/HolographicReliabilityWidget';
 
 export default function TPMDashboard() {
   const navigate = useNavigate();
@@ -61,7 +61,7 @@ export default function TPMDashboard() {
       return;
     }
 
-    const schedule = schedules.find(s => s.id === scheduleId);
+    const schedule = schedules.find((s: any) => s.id === scheduleId);
     setSelectedSchedule(schedule);
 
     startMaintenance.mutate({
@@ -69,7 +69,7 @@ export default function TPMDashboard() {
       performed_by: user.id,
       performed_by_name: profile.full_name || 'Usuário',
     }, {
-      onSuccess: (record) => {
+      onSuccess: (record: any) => {
         setCurrentRecordId(record.id);
         setExecutionModalOpen(true);
       }
@@ -97,7 +97,7 @@ export default function TPMDashboard() {
         <div className="p-4 sm:p-6 lg:p-8 space-y-6 animate-pulse">
           <Skeleton className="h-10 w-64" />
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-            {[...Array(5)].map((_, i) => <Skeleton key={i} className="h-28" />)}
+            {[...Array(5)].map((_, i: number) => <Skeleton key={i} className="h-28" />)}
           </div>
           <Skeleton className="h-[400px]" />
         </div>
@@ -284,7 +284,7 @@ export default function TPMDashboard() {
               <div className="lg:col-span-2">
                 <TPMCalendar
                   schedules={schedules}
-                  onSelectSchedule={(schedule) => handleStartMaintenance(schedule.id)}
+                  onSelectSchedule={(schedule: any) => handleStartMaintenance(schedule.id)}
                 />
               </div>
               <div className="space-y-6">

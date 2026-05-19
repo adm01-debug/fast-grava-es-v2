@@ -1,10 +1,12 @@
 // Main TPM hook - combines data, mutations, and stats
 // Refactored into smaller modules for maintainability
 
-import { useTPMData, useTPMMutations, useTPMStats } from './tpm';
+import { useTPMData } from './useTPMData';
+import { useTPMMutations } from './useTPMMutations';
+import { useTPMStats } from './useTPMStats';
 
 // Re-export types for backward compatibility
-export * from './tpm';
+export * from './types';
 
 export function useTPM() {
   // Data fetching with realtime subscriptions

@@ -1,4 +1,4 @@
-import { useTPM } from '@/hooks/useTPM';
+import { useTPM } from '@/features/maintenance/hooks/useTPM';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Wrench, AlertCircle, Clock, CheckCircle2 } from 'lucide-react';
@@ -13,12 +13,12 @@ export function MaintenanceAlertsWidget() {
   const schedulesByStatus = getSchedulesByStatus();
 
   const getMachineName = (machineId: string) => {
-    return machines.find(m => m.id === machineId)?.code || 'MÁQ';
+    return machines.find((m: any) => m.id === machineId)?.code || 'MÁQ';
   };
 
   // Combine overdue and dueToday for the widget
-  const overdue = schedulesByStatus.overdue.map(s => ({ ...s, statusType: 'overdue' as const }));
-  const dueToday = schedulesByStatus.dueToday.map(s => ({ ...s, statusType: 'due' as const }));
+  const overdue = schedulesByStatus.overdue.map((s: any) => ({ ...s, statusType: 'overdue' as const }));
+  const dueToday = schedulesByStatus.dueToday.map((s: any) => ({ ...s, statusType: 'due' as const }));
 
   const pendingMaintenance = [...overdue, ...dueToday].sort((a, b) => {
     if (a.statusType === 'overdue' && b.statusType !== 'overdue') return -1;

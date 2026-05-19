@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
-import { useTPM } from '@/hooks/useTPM';
+import { useTPM } from '@/features/maintenance/hooks/useTPM';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,7 +11,7 @@ import { ClipboardList, Plus, Trash2, Save, AlertCircle, AlertTriangle, Camera, 
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
-import { MaintenanceChecklistItem } from '@/hooks/tpm/types';
+import { MaintenanceChecklistItem } from '@/features/maintenance/hooks/types';
 
 export function ChecklistManager() {
   const { maintenanceTypes, checklists, machines } = useTPM();
@@ -24,7 +24,7 @@ export function ChecklistManager() {
   // Get unique techniques from machines
   const techniques = useMemo(() => {
     const uniqueTechniques = new Map();
-    machines.forEach(m => {
+    machines.forEach((m: any) => {
       if (m.technique_id) {
         uniqueTechniques.set(m.technique_id, m.technique_id);
       }
@@ -33,7 +33,7 @@ export function ChecklistManager() {
   }, [machines]);
 
   const currentChecklist = useMemo(() => {
-    return checklists.find(c =>
+    return checklists.find((c: any) =>
       c.maintenance_type_id === selectedTypeId &&
       (c.technique_id === selectedTechniqueId || (!c.technique_id && !selectedTechniqueId))
     );
@@ -78,7 +78,7 @@ export function ChecklistManager() {
     setIsSaving(true);
 
     try {
-      const type = maintenanceTypes.find(t => t.id === selectedTypeId);
+      const type = maintenanceTypes.find((t: any) => t.id === selectedTypeId);
       const newVersion = (currentChecklist?.version || 0) + 1;
 
       let checklistId = currentChecklist?.id;
@@ -204,9 +204,9 @@ export function ChecklistManager() {
                 <SelectValue placeholder="Selecione o tipo..." />
               </SelectTrigger>
               <SelectContent>
-                {maintenanceTypes.map((type) => (
-                  <SelectItem key={type.id} value={type.id}>
-                    {type.name}
+                {maintenanceTypes.map((mType: any) => (
+                  <SelectItem key={mType.id} value={mType.id}>
+                    {mType.name}
                   </SelectItem>
                 ))}
               </SelectContent>

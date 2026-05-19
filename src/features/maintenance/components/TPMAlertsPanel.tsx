@@ -2,7 +2,7 @@ import { Wrench, AlertTriangle, Clock, CheckCircle, BrainCircuit } from 'lucide-
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { MaintenanceAlert } from '@/hooks/useTPM';
+import { MaintenanceAlert } from '@/features/maintenance/hooks/useTPM';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 

@@ -3,7 +3,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Wrench, Calendar, History, Plus, AlertTriangle, CheckCircle2, Clock, Settings, Layout } from 'lucide-react';
-import { useTPM } from '@/hooks/useTPM';
+import { useTPM } from '@/features/maintenance/hooks/useTPM';
 import { format, isPast, isToday, differenceInDays } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -19,9 +19,9 @@ interface MachineTPMPanelProps {
 export function MachineTPMPanel({ machineId, onStartMaintenance, onOpenCreateSchedule }: MachineTPMPanelProps) {
   const { schedules, records, alerts } = useTPM();
 
-  const machineSchedules = schedules.filter(s => s.machine_id === machineId);
-  const machineRecords = records.filter(r => r.machine_id === machineId).slice(0, 10);
-  const machineAlerts = alerts.filter(a => a.machine_id === machineId && !a.is_resolved);
+  const machineSchedules = schedules.filter((s: any) => s.machine_id === machineId);
+  const machineRecords = records.filter((r: any) => r.machine_id === machineId).slice(0, 10);
+  const machineAlerts = alerts.filter((a: any) => a.machine_id === machineId && !a.is_resolved);
 
   const getStatusBadge = (schedule: any) => {
     const dueDate = new Date(schedule.next_due_at);
@@ -73,7 +73,7 @@ export function MachineTPMPanel({ machineId, onStartMaintenance, onOpenCreateSch
           <CardContent>
             {machineSchedules.length > 0 ? (
               <div className="space-y-3">
-                {machineSchedules.slice(0, 3).map((schedule) => (
+                {machineSchedules.slice(0, 3).map((schedule: any) => (
                   <div key={schedule.id} className="flex items-center justify-between p-2 rounded-lg bg-secondary/20 border border-border/50">
                     <div className="flex-1 min-w-0 mr-2">
                       <p className="text-xs font-medium truncate">{schedule.name}</p>
@@ -109,7 +109,7 @@ export function MachineTPMPanel({ machineId, onStartMaintenance, onOpenCreateSch
           <CardContent>
             {machineAlerts.length > 0 ? (
               <div className="space-y-2">
-                {machineAlerts.map((alert) => (
+                {machineAlerts.map((alert: any) => (
                   <div key={alert.id} className="flex items-start gap-2 p-2 rounded-lg bg-destructive/10 border border-destructive/20">
                     <AlertTriangle className="h-3 w-3 text-destructive mt-0.5" />
                     <p className="text-[10px] leading-tight font-medium text-destructive">{alert.message}</p>
@@ -138,7 +138,7 @@ export function MachineTPMPanel({ machineId, onStartMaintenance, onOpenCreateSch
           <ScrollArea className="h-[150px]">
             <div className="space-y-2 pr-4">
               {machineRecords.length > 0 ? (
-                machineRecords.map((record) => (
+                machineRecords.map((record: any) => (
                   <div key={record.id} className="flex items-center justify-between p-2 rounded border border-border/30 text-[11px]">
                     <div className="flex items-center gap-2">
                       <Clock className="h-3 w-3 text-muted-foreground" />
