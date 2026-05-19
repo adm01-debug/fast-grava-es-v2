@@ -3,16 +3,16 @@ import type { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { useDeviceDetection } from '@/hooks/useDeviceDetection';
 import { toast } from 'sonner';
-import { AuthService } from '@/services/authService';
+import { AuthService } from '../services/authService';
 import {
   AuthContext,
   type AuthContextType,
   type AppRole,
   type Profile,
-} from '@/contexts/auth-context';
+} from '../types/auth.types';
 
 // Re-export for backward compatibility with existing imports
-export { useAuth } from '@/hooks/useAuth';
+export { useAuth } from '../hooks/useAuth';
 export type { AppRole, Profile, AuthContextType };
 
 export function AuthProvider({ children }: { children: ReactNode }) {
