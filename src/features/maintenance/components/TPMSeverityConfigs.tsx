@@ -51,7 +51,6 @@ export function TPMSeverityConfigs({ machineId }: TPMSeverityConfigsProps) {
         days_threshold: config.days_threshold,
         message_override: config.message_override,
         is_enabled: config.is_enabled,
-        throttle_minutes: config.throttle_minutes,
         machine_id: machineId || null
       };
 
