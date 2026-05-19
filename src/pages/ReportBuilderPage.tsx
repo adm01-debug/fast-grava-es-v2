@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Database } from '@/integrations/supabase/types';
+import { Database, Json } from '@/integrations/supabase/types';
 
 type PublicTables = keyof Database['public']['Tables'];
 import { MainLayout } from '@/components/layout/MainLayout';
@@ -46,6 +46,11 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { useMutation } from '@tanstack/react-query';
 import { Input } from '@/components/ui/input';
 import * as XLSX from 'xlsx';
+
+interface ReportFilters {
+  status: string;
+  dateRange?: DateRange;
+}
 
 
 const REPORT_TABLES = [
@@ -144,7 +149,7 @@ export default function ReportBuilderPage() {
           columns: selectedColumns,
           format_type: formatType,
           user_id: user.id,
-          filters: { status: selectedStatus, dateRange } as any
+          filters: { status: selectedStatus, dateRange } as unknown as Json
         })
         .select()
         .single();
@@ -468,7 +473,7 @@ export default function ReportBuilderPage() {
                         onClick={() => {
                           setSelectedTable(template.table_name);
                           setSelectedColumns(template.columns);
-                          setFormatType(template.format_type as any);
+                          setFormatType(template.format_type as 'csv' | 'pdf' | 'excel');
                           if (template.filters?.status) setSelectedStatus(template.filters.status);
                           toast.success(`Template "${template.name}" aplicado`);
                         }}
@@ -515,7 +520,7 @@ export default function ReportBuilderPage() {
                   <CardTitle className="text-[10px] font-black uppercase tracking-widest text-amber-600">Formato de Saída</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <Select value={formatType} onValueChange={(v: any) => setFormatType(v)}>
+                  <Select value={formatType} onValueChange={(v: 'csv' | 'pdf' | 'excel') => setFormatType(v)}>
                     <SelectTrigger className="bg-background/50 border-amber-500/20 text-amber-900 font-bold h-9">
                       <SelectValue />
                     </SelectTrigger>

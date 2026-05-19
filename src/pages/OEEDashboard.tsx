@@ -1,6 +1,7 @@
 import { useState, lazy, Suspense, useMemo, memo, useCallback, useEffect } from 'react';
 import { startOfDay, endOfDay, subDays, format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { jsPDF } from 'jspdf';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet';
 import { cn } from '@/lib/utils';
@@ -70,7 +71,7 @@ import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Input } from '@/components/ui/input';
-import { useDashboardPresets } from '@/features/admin';
+import { useDashboardPresets, DashboardPreset } from '@/features/admin';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 import { KPIPageSkeleton, ChartSkeleton, TableSkeleton } from '@/components/loading';
@@ -93,6 +94,22 @@ const StudioHealthMonitor = lazy(() => import('@/features/analytics/components/o
 const HyperInsights = lazy(() => import('@/features/analytics/components/oee/HyperInsights').then(m => ({ default: m.HyperInsights })));
 
 
+
+interface OEEPreset {
+  name: string;
+  filters: {
+    period?: string;
+    machineId?: string;
+    techniqueId?: string;
+    shift?: string;
+  };
+}
+
+interface jsPDFWithAutoTable extends jsPDF {
+  lastAutoTable: {
+    finalY: number;
+  };
+}
 
 const OEEDashboard = memo(function OEEDashboard() {
   const { t } = useTranslation();
@@ -156,12 +173,13 @@ const OEEDashboard = memo(function OEEDashboard() {
   const { data, isLoading, downloadReport } = useOEE(parseInt(period), 30, oeeFilters);
   const { losses, isLoading: lossesLoading } = useProductionLosses(undefined, lossFilters);
 
-  const applyPreset = (preset: any) => {
-    if (preset.filters.period) setPeriod(preset.filters.period);
-    if (preset.filters.machineId) setMachineId(preset.filters.machineId);
-    if (preset.filters.techniqueId) setTechniqueId(preset.filters.techniqueId);
-    if (preset.filters.shift) setShift(preset.filters.shift);
-    toast.success(`Filtro "${preset.name}" aplicado`);
+  const applyPreset = (preset: DashboardPreset) => {
+    const p = preset as unknown as OEEPreset;
+    if (p.filters.period) setPeriod(p.filters.period);
+    if (p.filters.machineId) setMachineId(p.filters.machineId);
+    if (p.filters.techniqueId) setTechniqueId(p.filters.techniqueId);
+    if (p.filters.shift) setShift(p.filters.shift);
+    toast.success(`Filtro "${p.name}" aplicado`);
   };
 
   const handleSavePreset = () => {
@@ -233,7 +251,6 @@ const OEEDashboard = memo(function OEEDashboard() {
       link.click();
       document.body.removeChild(link);
     } else if (reportFormat === 'pdf') {
-      const { jsPDF } = await import('jspdf');
       const { default: autoTable } = await import('jspdf-autotable');
       const doc = new jsPDF();
       
@@ -321,7 +338,7 @@ const OEEDashboard = memo(function OEEDashboard() {
       });
       
       // Action Plan section
-      const finalY = (doc as any).lastAutoTable.finalY + 15;
+      const finalY = (doc as jsPDFWithAutoTable).lastAutoTable.finalY + 15;
       if (finalY < 250) {
         doc.setFontSize(14);
         doc.setTextColor(232, 93, 58);

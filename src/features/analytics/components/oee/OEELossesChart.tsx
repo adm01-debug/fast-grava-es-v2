@@ -36,11 +36,16 @@ export const OEELossesChart = memo(function OEELossesChart({
 
   const lossCategories = useMemo(() => {
     if (!losses) return [];
-    const grouped = losses.reduce((acc: any, loss: any) => {
+    
+    interface GroupedLoss {
+      [key: string]: number;
+    }
+
+    const grouped = losses.reduce((acc: GroupedLoss, loss) => {
       const category = loss.notes?.includes('Qualidade') ? 'Qualidade' : 
                        loss.notes?.includes('Performance') ? 'Performance' : 
                        'Disponibilidade';
-      acc[category] = (acc[category] || 0) + loss.quantity;
+      acc[category] = (acc[category] || 0) + (loss.quantity || 0);
       return acc;
     }, {});
 
@@ -191,9 +196,9 @@ export const OEELossesChart = memo(function OEELossesChart({
                           paddingAngle={5}
                           dataKey="value"
                         >
-                          {lossCategories.map((entry: any, index: number) => (
-                            <Cell key={`cell-${index}`} fill={entry.fill} />
-                          ))}
+                        {lossCategories.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.fill} />
+                        ))}
                         </Pie>
                         <Tooltip 
                           contentStyle={{ 
@@ -208,7 +213,7 @@ export const OEELossesChart = memo(function OEELossesChart({
                   <div className="space-y-3">
                     <h4 className="text-xs font-bold uppercase text-muted-foreground tracking-wider">Top Causas Identificadas</h4>
                     <div className="space-y-2">
-                      {lossCategories.map((cat: any) => (
+                      {lossCategories.map((cat) => (
                         <div key={cat.name} className="flex items-center justify-between p-2 rounded bg-muted/30 border border-border/50">
                           <div className="flex items-center gap-2">
                             <div className="w-2 h-2 rounded-full" style={{ backgroundColor: cat.fill }} />
