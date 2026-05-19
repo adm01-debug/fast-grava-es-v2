@@ -28,6 +28,7 @@ export interface MaintenanceSchedule {
 }
 
 export interface ChecklistSnapshot {
+  [key: string]: unknown;
   id: string;
   name: string;
   items: Array<{
