@@ -378,7 +378,12 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
       const now = new Date();
 
       // 1. Static checks (due dates)
-      const alertsToCreate = schedules
+      const alertsToCreate: Array<{
+        schedule_id: string;
+        machine_id: string;
+        alert_type: MaintenanceAlert['alert_type'];
+        message: string;
+      }> = schedules
         .filter(schedule => {
           const existingAlert = alerts.find(
             a => a.schedule_id === schedule.id && !a.is_resolved
