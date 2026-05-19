@@ -24,7 +24,7 @@ export function ChecklistManager() {
   // Get unique techniques from machines
   const techniques = useMemo(() => {
     const uniqueTechniques = new Map();
-    machines.forEach(m => {
+    machines.forEach((m: any) => {
       if (m.technique_id) {
         uniqueTechniques.set(m.technique_id, m.technique_id);
       }
@@ -33,7 +33,7 @@ export function ChecklistManager() {
   }, [machines]);
 
   const currentChecklist = useMemo(() => {
-    return checklists.find(c =>
+    return checklists.find((c: any) =>
       c.maintenance_type_id === selectedTypeId &&
       (c.technique_id === selectedTechniqueId || (!c.technique_id && !selectedTechniqueId))
     );
@@ -78,7 +78,7 @@ export function ChecklistManager() {
     setIsSaving(true);
 
     try {
-      const type = maintenanceTypes.find(t => t.id === selectedTypeId);
+      const type = maintenanceTypes.find((t: any) => t.id === selectedTypeId);
       const newVersion = (currentChecklist?.version || 0) + 1;
 
       let checklistId = currentChecklist?.id;
@@ -204,7 +204,7 @@ export function ChecklistManager() {
                 <SelectValue placeholder="Selecione o tipo..." />
               </SelectTrigger>
               <SelectContent>
-                {maintenanceTypes.map((type) => (
+                {maintenanceTypes.map((mType: any) => (
                   <SelectItem key={type.id} value={type.id}>
                     {type.name}
                   </SelectItem>
