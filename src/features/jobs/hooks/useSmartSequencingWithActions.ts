@@ -1,7 +1,8 @@
 import { useMemo, useCallback } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { useJobs, useMachines, useTechniques, DbJob, DbMachine, DbTechnique } from '../index';
+import { useJobs, useTechniques, DbJob, DbMachine, DbTechnique } from '../index';
+import { useMachines } from '@/features/production';
 import { toast } from 'sonner';
 import { showErrorToast, createAppError } from '@/lib/errorHandling';
 
