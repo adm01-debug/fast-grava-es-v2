@@ -132,15 +132,15 @@ function StatsCardComponent({
       className
     )}>
       <div className="flex items-start justify-between gap-4">
-        <div className="space-y-1.5 min-w-0 flex-1">
-          <p className="text-xs font-medium text-muted-foreground truncate uppercase tracking-wider">
+        <div className="space-y-2 min-w-0 flex-1 relative z-10">
+          <p className="text-xs font-bold text-muted-foreground truncate uppercase tracking-widest opacity-80">
             {title}
           </p>
-          <p className="text-3xl font-bold tracking-tight text-foreground font-display">
+          <p className="text-4xl font-bold tracking-tight text-foreground font-display group-hover:scale-105 transition-transform duration-500 origin-left">
             {value}
           </p>
           {subtitle && (
-            <p className="text-sm text-muted-foreground mt-1 truncate">
+            <p className="text-sm font-medium text-muted-foreground/80 mt-1 truncate inline-flex bg-muted/30 px-2.5 py-0.5 rounded-full">
               {subtitle}
             </p>
           )}
@@ -157,10 +157,10 @@ function StatsCardComponent({
           )}
         </div>
         <div className={cn(
-          'w-12 h-12 rounded-xl flex items-center justify-center shrink-0 transition-all duration-300 group-hover:scale-110 group-hover:rotate-3',
+          'w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 transition-all duration-700 group-hover:scale-125 group-hover:rotate-6 shadow-inner relative z-10',
           styles.iconBg
         )}>
-          <Icon className={cn('w-6 h-6', styles.iconColor)} />
+          <Icon className={cn('w-7 h-7 drop-shadow-md', styles.iconColor)} />
         </div>
       </div>
     </Card>
