@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLocation, Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ChevronLeft, ChevronRight, Printer, Plus, LogOut, ArrowLeft, Settings, Shield } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Printer, Plus, LogOut, ArrowLeft, Settings, Shield, Menu } from 'lucide-react';
 import { SoundFeedback } from '@/lib/soundFeedback';
 import { cn } from '@/lib/utils';
 import { prefetchRoute } from '@/lib/prefetch';
@@ -17,7 +17,7 @@ import { LanguageSwitcher } from './LanguageSwitcher';
 import { NavButton } from './sidebar/NavButton';
 import { NavGroupComponent } from './sidebar/NavGroupComponent';
 import { navGroups, adminNavItems } from './sidebar/sidebarNavConfig';
-import { StaggeredList } from '../ui/micro-interactions';
+import { StaggeredList, useRipple } from '../ui/micro-interactions';
 
 export function AppSidebar() {
   const { t } = useTranslation();
@@ -68,6 +68,27 @@ export function AppSidebar() {
 
   return (
     <>
+      {/* Mobile Top Bar */}
+      {isMobile && !mobileOpen && (
+        <div className="fixed top-0 left-0 right-0 h-14 z-[45] bg-sidebar/80 backdrop-blur-md border-b border-sidebar-border flex items-center px-4 justify-between md:hidden">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={() => setMobileOpen(true)}
+            className="text-sidebar-foreground"
+          >
+            <Menu className="h-5 w-5" />
+          </Button>
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg gradient-primary flex items-center justify-center glow-primary">
+              <Printer className="w-5 h-5 text-primary-foreground" />
+            </div>
+            <span className="font-display font-black text-xs tracking-tighter uppercase">FAST</span>
+          </div>
+          <div className="w-10" /> {/* Spacer */}
+        </div>
+      )}
+
       <div className={cn('fixed inset-0 bg-background/80 backdrop-blur-sm z-40 md:hidden transition-opacity duration-300', mobileOpen ? 'opacity-100' : 'opacity-0 pointer-events-none')} onClick={() => setMobileOpen(false)} aria-hidden="true" />
       {isMobile && !mobileOpen && <div ref={swipeRef} className="fixed inset-y-0 left-0 w-8 z-30 md:hidden" aria-hidden="true" />}
 
@@ -126,8 +147,8 @@ export function AppSidebar() {
               </AnimatePresence>
               
               <motion.div layout className="flex-1 min-w-0">
-                <h1 className="font-display font-black text-sidebar-foreground text-xl tracking-tight truncate uppercase">FAST GRAVAÇÕES</h1>
-                <p className="text-[13px] font-semibold text-primary/70 uppercase tracking-widest truncate">Gestão de Gravação</p>
+                <h1 className="font-display font-black text-sidebar-foreground text-xl tracking-tight truncate uppercase leading-none mb-0.5">FAST GRAVAÇÕES</h1>
+                <p className="text-[10px] font-black text-primary/70 uppercase tracking-[0.2em] truncate opacity-90">INDUSTRIAL INTEL</p>
               </motion.div>
             </div>
           )}
@@ -139,10 +160,13 @@ export function AppSidebar() {
         </div>
 
         {role !== 'operator' && (
-          <div className={cn('p-3', collapsed && !isMobile && 'px-2')}>
+          <div className={cn('p-4', collapsed && !isMobile && 'px-2')}>
             <Link to="/new-job" onMouseEnter={handleNewJobPrefetch} onFocus={handleNewJobPrefetch}>
-              <Button className={cn('w-full gap-2 gradient-primary hover:opacity-90 transition-opacity glow-primary focus:ring-2 focus:ring-primary focus:ring-offset-2', collapsed && !isMobile && 'px-0')}>
-                <Plus className="h-4 w-4" />{(!collapsed || isMobile) && <span>Novo Agendamento</span>}
+              <Button className={cn(
+                'w-full gap-2 gradient-primary hover:opacity-90 transition-all duration-300 glow-primary focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-xl h-11 shadow-lg',
+                collapsed && !isMobile && 'px-0'
+              )}>
+                <Plus className="h-5 w-5" />{(!collapsed || isMobile) && <span className="font-bold uppercase tracking-widest text-[10px]">Novo Agendamento</span>}
               </Button>
             </Link>
           </div>
@@ -186,7 +210,7 @@ export function AppSidebar() {
           )}
         </nav>
 
-        <div className={cn('p-3 border-t border-sidebar-border/50', collapsed && !isMobile && 'p-2')}>
+        <div className={cn('p-4 border-t border-sidebar-border/50 bg-sidebar-accent/5 mt-auto', collapsed && !isMobile && 'p-2')}>
           {(!collapsed || isMobile) && <div className="mb-2 px-1"><LanguageSwitcher /></div>}
           <div className={cn('flex items-center gap-3 rounded-xl p-2 relative group-user', collapsed && !isMobile && 'justify-center p-2')}>
             <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center text-primary-foreground font-bold text-base shadow-lg ring-2 ring-primary/20 ring-offset-2 ring-offset-sidebar">
@@ -206,7 +230,7 @@ export function AppSidebar() {
               </div>
             )}
           </div>
-          <Button variant="ghost" size={(collapsed && !isMobile) ? "icon" : "sm"} onClick={handleSignOut} className={cn('w-full mt-3 font-bold text-xs uppercase tracking-widest text-sidebar-foreground/60 hover:text-destructive hover:bg-destructive/10 focus:ring-2 focus:ring-destructive focus:ring-offset-2 transition-all duration-300', collapsed && !isMobile && 'px-0')}>
+          <Button variant="ghost" size={(collapsed && !isMobile) ? "icon" : "sm"} onClick={handleSignOut} className={cn('w-full mt-4 font-black text-[10px] uppercase tracking-[0.2em] text-sidebar-foreground/50 hover:text-destructive hover:bg-destructive/10 focus:ring-2 focus:ring-destructive rounded-xl transition-all duration-500', collapsed && !isMobile && 'px-0')}>
             <LogOut className="h-3.5 w-3.5" />{(!collapsed || isMobile) && <span className="ml-2">{t('common.logout')}</span>}
           </Button>
         </div>
