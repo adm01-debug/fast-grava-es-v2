@@ -66,6 +66,7 @@ const AuditTrailPage = lazy(() => import("@/pages/AuditTrailPage"));
 const DigitalTwin = lazy(() => import("@/pages/DigitalTwin"));
 const LogisticsPage = lazy(() => import("@/pages/LogisticsPage"));
 const PublicTrackingPage = lazy(() => import("@/pages/PublicTrackingPage"));
+const SimulationDashboard = lazy(() => import("@/pages/SimulationDashboard"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 
 // Helper to determine transition direction based on path depth
