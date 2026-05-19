@@ -187,7 +187,13 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
       if (data.adjustment_parameters?.ranges) {
         const params = data.adjustment_parameters;
         const ranges = params.ranges;
-        const alertsToInsert: any[] = [];
+        const alertsToInsert: Array<{
+          execution_id: string;
+          parameter_name: string;
+          recorded_value: string;
+          recommended_range: string;
+          severity: string;
+        }> = [];
 
         const checkRange = (name: string, value: string | undefined, range: any) => {
           if (!value || !range || (!range.min && !range.max)) return;
