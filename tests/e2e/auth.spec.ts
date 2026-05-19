@@ -39,6 +39,15 @@ test.describe('Acessibilidade Automatizada', () => {
     });
   });
 
+  test('página de login deve passar na auditoria axe', async ({ page }) => {
+    await page.goto('/auth');
+    await injectAxe(page);
+    await checkA11y(page, undefined, {
+      detailedReport: true,
+      detailedReportOptions: { html: true },
+    });
+  });
+
   test('barra de navegação deve ser acessível por teclado', async ({ page }) => {
     await page.goto('/');
     await page.keyboard.press('Tab');
