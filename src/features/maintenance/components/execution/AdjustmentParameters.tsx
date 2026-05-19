@@ -55,8 +55,8 @@ export function AdjustmentParameters({
             </Label>
             <Input
               placeholder={recommended || "Valor"}
-              value={(adjustmentParams as any)[param]}
-              onChange={(e) => setAdjustmentParams((prev: any) => ({ ...prev, [param]: e.target.value }))}
+              value={adjustmentParams[param]}
+              onChange={(e) => setAdjustmentParams((prev) => ({ ...prev, [param]: e.target.value }))}
               className={activeAlerts.some(a => a.parameter_name === labels[param]) ? "border-destructive ring-destructive/20" : ""}
             />
             {range && (range.min || range.max) && (
