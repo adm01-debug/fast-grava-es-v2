@@ -4,6 +4,7 @@ import type { Database } from '@/integrations/supabase/types';
 export type Job = Database['public']['Tables']['jobs']['Row'];
 export type JobInsert = Database['public']['Tables']['jobs']['Insert'];
 export type JobUpdate = Database['public']['Tables']['jobs']['Update'];
+export type JobStatus = Job['status'];
 
 export interface JobWithRelations extends Job {
   machines: { name: string; code: string } | null;
@@ -43,8 +44,44 @@ export const jobsService = {
     return data as Job;
   },
 
-  async updateStatus(id: string, status: string): Promise<Job> {
-    return this.update(id, { status, updated_at: new Date().toISOString() });
+  async updateStatus(id: string, status: JobStatus): Promise<Job> {
+    const { data: { user } } = await supabase.auth.getUser();
+    const updateData: JobUpdate = { 
+      status, 
+      updated_at: new Date().toISOString() 
+    };
+
+    if (status === 'production') {
+      updateData.actual_start_time = new Date().toISOString();
+      if (user) updateData.operator_id = user.id;
+    } else if (status === 'finished') {
+      updateData.actual_end_time = new Date().toISOString();
+    }
+
+    const job = await this.update(id, updateData);
+
+    // Push status update to Bitrix24 (fire and forget)
+    this.syncToBitrix24(id, status);
+
+    return job;
+  },
+
+  async syncToBitrix24(jobId: string, status: JobStatus) {
+    try {
+      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+      if (projectId) {
+        fetch(`https://${projectId}.supabase.co/functions/v1/bitrix24-sync?action=push`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+          },
+          body: JSON.stringify({ jobId, status })
+        }).catch(() => { /* fire and forget */ });
+      }
+    } catch (e) {
+      // Ignore errors in fire-and-forget sync
+    }
   },
 
   async delete(id: string): Promise<void> {
