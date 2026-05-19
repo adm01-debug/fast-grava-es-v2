@@ -436,7 +436,7 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
                   alertsToCreate.push({
                     schedule_id: machineSchedule.id,
                     machine_id: p.machine.id,
-                    alert_type: 'predictive' as any,
+                    alert_type: 'predictive',
                     message: `IA PREDIZ FALHA (Risco: ${p.prediction.risk_score}%): ${p.prediction.recommendations?.[0] || 'Inspeção urgente necessária'}`,
                   });
                 }
