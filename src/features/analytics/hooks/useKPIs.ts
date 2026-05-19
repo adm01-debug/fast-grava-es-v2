@@ -296,18 +296,18 @@ export function useKPIs(period: KPIPeriod = 'all', customTargets?: Partial<KPITa
     // Removido random para manter integridade
 
     const products = Array.from(new Set(validJobs.map((j: DbJob) => j.product).filter(Boolean)));
-    const productivityByProduct = products.map((productName: string | null) => {
+    const productivityByProduct = (products as string[]).map((productName: string) => {
       const productJobs = validJobs.filter(j => j.product === productName);
       const totalPcs = productJobs.reduce((sum: number, j: DbJob) => sum + sanitizeNumber(j.quantity), 0);
       const lostPcs = productJobs.reduce((sum: number, j: DbJob) => sum + sanitizeNumber(j.lost_pieces), 0);
       return {
-        productName: productName!,
+        productName: productName,
         jobCount: productJobs.length,
         totalPieces: totalPcs,
         lossRate: (totalPcs + lostPcs) > 0 ? (lostPcs / (totalPcs + lostPcs)) * 100 : 0,
         avgDuration: productJobs.length > 0 ? productJobs.reduce((sum: number, j: DbJob) => sum + sanitizeNumber(j.estimated_duration), 0) / productJobs.length : 0,
       };
-    }).sort((a: any, b: any) => b.totalPieces - a.totalPieces);
+    }).sort((a, b) => b.totalPieces - a.totalPieces);
 
     const predictions: KPIPrediction[] = Array.from({ length: 7 }, (_, i) => {
       const date = new Date();
