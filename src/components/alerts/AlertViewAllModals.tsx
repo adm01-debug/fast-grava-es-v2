@@ -3,11 +3,10 @@ import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Calendar, ChevronRight } from "lucide-react";
-import { DbJob } from "@/features/jobs";
-import { BottleneckAlert } from "@/features/analytics/hooks/useBottleneckPrediction";
-import { LoadBalancingSuggestion } from "@/features/analytics/hooks/useLoadBalancing";
-import { StuckJob } from "@/features/jobs";
+import { DbJob, StuckJob } from "@/features/jobs";
+import { BottleneckAlert, LoadBalancingSuggestion } from "@/features/analytics";
 import { priorityColors, priorityLabels } from "./AlertJobCard";
+
 
 interface JobsViewAllProps {
   jobs: DbJob[];
