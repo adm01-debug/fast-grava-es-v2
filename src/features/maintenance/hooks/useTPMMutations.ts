@@ -149,11 +149,11 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
           downtime_minutes: data.downtime_minutes || 0,
           signature_url: data.signature,
           checklist_version: data.checklist_version,
-          checklist_snapshot: data.checklist_snapshot as any,
+          checklist_snapshot: data.checklist_snapshot,
           technical_sheet_id: data.technical_sheet_id,
           technical_sheet_version: data.technical_sheet_version,
-          adjustment_parameters: data.adjustment_parameters as any,
-          quality_checklist_results: data.quality_checklist_results as any,
+          adjustment_parameters: data.adjustment_parameters,
+          quality_checklist_results: data.quality_checklist_results,
           failure_risk_detected: data.failure_risk_detected || false,
         })
         .eq('id', data.record_id);
