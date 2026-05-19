@@ -15,3 +15,4 @@ export const maintenanceSchema = z.object({
 export const maintenanceFormSchema = maintenanceSchema.omit({ id: true, status: true });
 
 export type MaintenanceFormData = z.infer<typeof maintenanceFormSchema>;
+export type Maintenance = z.infer<typeof maintenanceSchema>;
