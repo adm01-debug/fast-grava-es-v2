@@ -173,7 +173,7 @@ const OEEDashboard = memo(function OEEDashboard() {
   const { data, isLoading, downloadReport } = useOEE(parseInt(period), 30, oeeFilters);
   const { losses, isLoading: lossesLoading } = useProductionLosses(undefined, lossFilters);
 
-  const applyPreset = (preset: any) => {
+  const applyPreset = (preset: DashboardPreset) => {
     const p = preset as unknown as OEEPreset;
     if (p.filters.period) setPeriod(p.filters.period);
     if (p.filters.machineId) setMachineId(p.filters.machineId);
