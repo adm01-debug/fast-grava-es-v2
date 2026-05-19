@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { type AppRole } from '../types/auth.types';
+import { type AppRole } from '../index';
 
 export function useRolePermissions(role: AppRole | null) {
   return useMemo(() => {
