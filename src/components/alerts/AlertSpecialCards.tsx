@@ -2,10 +2,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Timer, Database, Activity, Scale, Calendar, TrendingDown } from "lucide-react";
-import { DbJob } from "@/features/jobs";
-import { BottleneckAlert } from "@/features/analytics/hooks/useBottleneckPrediction";
-import { LoadBalancingSuggestion } from "@/features/analytics/hooks/useLoadBalancing";
-import { StuckJob } from "@/features/jobs";
+import { DbJob, StuckJob } from "@/features/jobs";
+import { BottleneckAlert, LoadBalancingSuggestion } from "@/features/analytics";
+
 
 interface StuckJobsCardProps {
   stuckJobs: StuckJob[];
