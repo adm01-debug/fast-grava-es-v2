@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo, useEffect } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { type AppRole, type Permission } from '../index';
@@ -55,7 +55,7 @@ export function useRolePermissions(role: AppRole | null) {
         const { error } = await supabase
           .from('role_permissions')
           .insert({ 
-            role: targetRole as any, 
+            role: targetRole, 
             permission: permissionStr,
             resource: permissionStr.split(':')[0]
           });

@@ -76,8 +76,10 @@ export function useMFA() {
       if (error) throw error;
       await refreshFactors();
       toast.success('MFA desativado');
+      return true;
     } catch (error: any) {
       toast.error('Erro ao desativar MFA', { description: error.message });
+      return false;
     }
   };
 
