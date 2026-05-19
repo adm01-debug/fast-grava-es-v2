@@ -113,7 +113,7 @@ describe('useOperatorProductivity', () => {
 
   it('should handle errors gracefully', async () => {
     // Mock scheduling data loading
-    (schedulingHook.useSchedulingData as any).mockReturnValue({
+    (schedulingHook.useSchedulingData as unknown as Mock).mockReturnValue({
       jobs: [],
       machines: [],
       techniques: [],
