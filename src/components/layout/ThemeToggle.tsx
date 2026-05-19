@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { cn } from '@/lib/utils';
 import { useThemeSound } from '@/hooks/useThemeSound';
 import {
   DropdownMenu,
@@ -88,12 +89,11 @@ export function ThemeToggle() {
           <Button
             variant="ghost"
             size="icon"
-            className={`
-              relative h-9 w-9 overflow-hidden
-              transition-all duration-300 ease-out
-              hover:bg-accent/80
-              ${isAnimating ? 'scale-95' : 'scale-100'}
-            `}
+            className={cn(
+              'relative h-9 w-9 overflow-hidden transition-all duration-300 ease-out',
+              'hover:bg-accent/80 hover:scale-110 active:scale-95',
+              isAnimating && 'scale-90 opacity-80'
+            )}
             title={isDark ? 'Mudar para tema claro' : 'Mudar para tema escuro'}
           >
             {/* Sun icon */}
