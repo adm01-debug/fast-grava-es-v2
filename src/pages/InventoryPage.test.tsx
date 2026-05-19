@@ -36,6 +36,11 @@ vi.mock('@/components/inventory/InventoryStats', () => ({
   InventoryStats: () => <div data-testid="mock-inventory-stats">Stats</div>,
 }));
 
+// Mock useDebounce para retornar o valor imediatamente nos testes
+vi.mock('@/hooks/useDebounce', () => ({
+  useDebounce: (val: any) => val,
+}));
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -119,12 +124,12 @@ describe('InventoryPage - Skeletons e Estabilidade', () => {
 
     await waitFor(() => {
       expect(screen.getByText('Tinta Azul')).toBeDefined();
-    }, { timeout: 3000 });
+    });
     
     expect(screen.getByText('10')).toBeDefined();
   });
 
-  it('deve filtrar itens corretamente após o debounce', async () => {
+  it('deve filtrar itens corretamente', async () => {
     const mockUseInventory = vi.mocked(useInventory);
     const mockItems = [
       { id: '1', name: 'Tinta Azul', category: 'ink', current_stock: 10, unit: 'L', min_stock_level: 5 },
@@ -146,16 +151,15 @@ describe('InventoryPage - Skeletons e Estabilidade', () => {
     );
 
     const searchInput = screen.getByPlaceholderText(/Buscar material/i);
-    
     fireEvent.change(searchInput, { target: { value: 'Solvente' } });
 
-    // Aguarda o debounce de 300ms ser processado naturalmente pelo React
     await waitFor(() => {
       expect(screen.queryByText('Tinta Azul')).toBeNull();
       expect(screen.getByText('Solvente X')).toBeDefined();
-    }, { timeout: 5000 });
+    });
   });
 });
+
 
 
 
