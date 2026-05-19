@@ -8,62 +8,105 @@ import {
 import { NavGroup } from './NavGroupComponent';
 import { NavItem } from './NavButton';
 
+// Define common role sets
+const ALL_ROLES = ['coordinator', 'manager', 'operator'];
+const STAFF_ONLY = ['coordinator', 'manager'];
+const COORD_ONLY = ['coordinator'];
+
 export const navGroups: NavGroup[] = [
-  { id: 'home', icon: Home, label: 'Principal', items: [{ icon: Home, label: 'Dashboard', href: '/' }], defaultOpen: true },
-  { id: 'planning', icon: Calendar, label: 'Planejamento', items: [
-    { icon: Calendar, label: 'Calendário Diário', href: '/calendar/daily' },
-    { icon: CalendarDays, label: 'Calendário Semanal', href: '/calendar/weekly' },
-    { icon: CalendarRange, label: 'Calendário Mensal', href: '/calendar/monthly' },
-    { icon: LayoutGrid, label: 'Kanban', href: '/kanban' },
-    { icon: List, label: 'Pendências', href: '/pending' },
-  ]},
-  { id: 'analytics', icon: BarChart3, label: 'Analytics', items: [
-    { icon: BarChart3, label: 'BI Executivo', href: '/bi' },
-    { icon: Factory, label: 'Fábrica 13/10', href: '/executive' },
-    { icon: FileText, label: 'Construtor de Relatórios', href: '/report-builder' },
-    { icon: TrendingUp, label: 'KPIs e Ocupação', href: '/kpis' },
-    { icon: Gauge, label: 'OEE', href: '/oee' },
-    { icon: Zap, label: 'Eficiência', href: '/efficiency' },
-    { icon: Activity, label: 'SPC Qualidade', href: '/spc' },
-    { icon: Coins, label: 'Custeio ABC', href: '/abc' },
-  ]},
-  { id: 'operations', icon: Wrench, label: 'Operações', items: [
-    { icon: Wrench, label: 'TPM', href: '/tpm' },
-    { icon: Cpu, label: 'Máquinas', href: '/machines' },
-    { icon: ArrowRightLeft, label: 'Comparativo Máquinas', href: '/machines/compare' },
-    { icon: BatteryCharging, label: 'Energia', href: '/energy' },
-    { icon: Package, label: 'Estoque', href: '/inventory' },
-    { icon: Package, label: 'Rastreabilidade', href: '/traceability' },
-  ]},
-  { id: 'team', icon: Users, label: 'Equipe', items: [
-    { icon: Users, label: 'Operadores', href: '/operators' },
-    { icon: TrendingUp, label: 'Produtividade', href: '/operators/productivity' },
-    { icon: Activity, label: 'Histórico de Ações', href: '/operator-history' },
-    { icon: Trophy, label: 'Gamificação', href: '/gamification' },
-    { icon: ArrowRightLeft, label: 'Passagem de Turno', href: '/shift-handover' },
-    { icon: UserCircle, label: 'Visão Operador', href: '/operator' },
-  ]},
-  { id: 'intelligence', icon: Brain, label: 'Inteligência', items: [
-    { icon: Brain, label: 'ML Preditivo', href: '/ml-predictions' },
-    { icon: Cpu, label: 'Digital Twin', href: '/digital-twin' },
-    { icon: Bot, label: 'Assistente IA', href: '/assistant' },
-    { icon: BookOpen, label: 'Base de Conhecimento', href: '/knowledge' },
-    { icon: FileText, label: 'Documentos', href: '/documents' },
-  ]},
-  { id: 'system', icon: Cog, label: 'Sistema', items: [
-    { icon: AlertTriangle, label: 'Alertas', href: '/alerts' },
-    { icon: Bell, label: 'Notificações', href: '/notifications' },
-    { icon: ShieldCheck, label: 'Audit Trail', href: '/audit' },
-    { icon: QrCode, label: 'Scanner QR', href: '/scanner' },
-    { icon: Code2, label: 'Master API Hub', href: '/master-api' },
-    { icon: Settings, label: 'Configurações', href: '/settings' },
-  ]},
+  { 
+    id: 'home', 
+    icon: Home, 
+    label: 'Principal', 
+    items: [
+      { icon: Home, label: 'Dashboard', href: '/', allowedRoles: ALL_ROLES }
+    ], 
+    defaultOpen: true 
+  },
+  { 
+    id: 'planning', 
+    icon: Calendar, 
+    label: 'Planejamento', 
+    items: [
+      { icon: Calendar, label: 'Calendário Diário', href: '/calendar/daily', allowedRoles: STAFF_ONLY },
+      { icon: CalendarDays, label: 'Calendário Semanal', href: '/calendar/weekly', allowedRoles: STAFF_ONLY },
+      { icon: CalendarRange, label: 'Calendário Mensal', href: '/calendar/monthly', allowedRoles: STAFF_ONLY },
+      { icon: LayoutGrid, label: 'Kanban', href: '/kanban', allowedRoles: ALL_ROLES },
+      { icon: List, label: 'Pendências', href: '/pending', allowedRoles: COORD_ONLY },
+    ]
+  },
+  { 
+    id: 'analytics', 
+    icon: BarChart3, 
+    label: 'Analytics', 
+    items: [
+      { icon: BarChart3, label: 'BI Executivo', href: '/bi', allowedRoles: STAFF_ONLY },
+      { icon: Factory, label: 'Fábrica 13/10', href: '/executive', allowedRoles: STAFF_ONLY },
+      { icon: FileText, label: 'Construtor de Relatórios', href: '/report-builder', allowedRoles: STAFF_ONLY },
+      { icon: TrendingUp, label: 'KPIs e Ocupação', href: '/kpis', allowedRoles: STAFF_ONLY },
+      { icon: Gauge, label: 'OEE', href: '/oee', allowedRoles: STAFF_ONLY },
+      { icon: Zap, label: 'Eficiência', href: '/efficiency', allowedRoles: STAFF_ONLY },
+      { icon: Activity, label: 'SPC Qualidade', href: '/spc', allowedRoles: STAFF_ONLY },
+      { icon: Coins, label: 'Custeio ABC', href: '/abc', allowedRoles: STAFF_ONLY },
+    ]
+  },
+  { 
+    id: 'operations', 
+    icon: Wrench, 
+    label: 'Operações', 
+    items: [
+      { icon: Wrench, label: 'TPM', href: '/tpm', allowedRoles: STAFF_ONLY },
+      { icon: Cpu, label: 'Máquinas', href: '/machines', allowedRoles: STAFF_ONLY },
+      { icon: ArrowRightLeft, label: 'Comparativo Máquinas', href: '/machines/compare', allowedRoles: STAFF_ONLY },
+      { icon: BatteryCharging, label: 'Energia', href: '/energy', allowedRoles: STAFF_ONLY },
+      { icon: Package, label: 'Estoque', href: '/inventory', allowedRoles: STAFF_ONLY },
+      { icon: Package, label: 'Rastreabilidade', href: '/traceability', allowedRoles: STAFF_ONLY },
+    ]
+  },
+  { 
+    id: 'team', 
+    icon: Users, 
+    label: 'Equipe', 
+    items: [
+      { icon: Users, label: 'Operadores', href: '/operators', allowedRoles: STAFF_ONLY },
+      { icon: TrendingUp, label: 'Produtividade', href: '/operators/productivity', allowedRoles: STAFF_ONLY },
+      { icon: Activity, label: 'Histórico de Ações', href: '/operator-history', allowedRoles: STAFF_ONLY },
+      { icon: Trophy, label: 'Gamificação', href: '/gamification', allowedRoles: ALL_ROLES },
+      { icon: ArrowRightLeft, label: 'Passagem de Turno', href: '/shift-handover', allowedRoles: ALL_ROLES },
+      { icon: UserCircle, label: 'Visão Operador', href: '/operator', allowedRoles: ALL_ROLES },
+    ]
+  },
+  { 
+    id: 'intelligence', 
+    icon: Brain, 
+    label: 'Inteligência', 
+    items: [
+      { icon: Brain, label: 'ML Preditivo', href: '/ml-predictions', allowedRoles: STAFF_ONLY },
+      { icon: Cpu, label: 'Digital Twin', href: '/digital-twin', allowedRoles: STAFF_ONLY },
+      { icon: Bot, label: 'Assistente IA', href: '/assistant', allowedRoles: ALL_ROLES },
+      { icon: BookOpen, label: 'Base de Conhecimento', href: '/knowledge', allowedRoles: ALL_ROLES },
+      { icon: FileText, label: 'Documentos', href: '/documents', allowedRoles: STAFF_ONLY },
+    ]
+  },
+  { 
+    id: 'system', 
+    icon: Cog, 
+    label: 'Sistema', 
+    items: [
+      { icon: AlertTriangle, label: 'Alertas', href: '/alerts', allowedRoles: ALL_ROLES },
+      { icon: Bell, label: 'Notificações', href: '/notifications', allowedRoles: ALL_ROLES },
+      { icon: ShieldCheck, label: 'Audit Trail', href: '/audit', allowedRoles: STAFF_ONLY },
+      { icon: QrCode, label: 'Scanner QR', href: '/scanner', allowedRoles: ALL_ROLES },
+      { icon: Code2, label: 'Master API Hub', href: '/master-api', allowedRoles: STAFF_ONLY },
+      { icon: Settings, label: 'Configurações', href: '/settings', allowedRoles: STAFF_ONLY },
+    ]
+  },
 ];
 
 export const adminNavItems: NavItem[] = [
-  { icon: Code2, label: 'Qualidade de Código', href: '/code-quality' },
-  { icon: Activity, label: 'Telemetria e Performance', href: '/admin/telemetria' },
-  { icon: RefreshCw, label: 'Bitrix24', href: '/integrations/bitrix24' },
-  { icon: Palette, label: 'Design System', href: '/design-system' },
-  { icon: Download, label: 'Instalar App', href: '/install' },
+  { icon: Code2, label: 'Qualidade de Código', href: '/code-quality', allowedRoles: STAFF_ONLY },
+  { icon: Activity, label: 'Telemetria e Performance', href: '/admin/telemetria', allowedRoles: STAFF_ONLY },
+  { icon: RefreshCw, label: 'Bitrix24', href: '/integrations/bitrix24', allowedRoles: COORD_ONLY },
+  { icon: Palette, label: 'Design System', href: '/design-system', allowedRoles: ALL_ROLES },
+  { icon: Download, label: 'Instalar App', href: '/install', allowedRoles: ALL_ROLES },
 ];

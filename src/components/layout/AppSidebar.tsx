@@ -46,12 +46,21 @@ export function AppSidebar() {
   const handleSignOut = useCallback(async () => { await signOut(); navigate('/auth'); }, [signOut, navigate]);
 
   const filteredNavGroups = useMemo(() => {
-    const opPaths = ['/operator', '/alerts', '/assistant', '/scanner', '/knowledge', '/shift-handover'];
-    const mgrPaths = ['/', '/bi', '/executive', '/calendar/daily', '/calendar/weekly', '/calendar/monthly', '/kpis', '/oee', '/abc', '/spc', '/tpm', '/ml-predictions', '/alerts', '/notifications', '/efficiency', '/operators', '/operators/productivity', '/machines', '/energy', '/traceability', '/assistant', '/knowledge', '/documents', '/shift-handover', '/gamification', '/settings', '/security', '/kanban', '/new-job'];
-    return navGroups.map(g => ({ ...g, items: g.items.filter(i => { if (role === 'operator') return opPaths.includes(i.href); if (role === 'manager') return mgrPaths.includes(i.href); return true; }) })).filter(g => g.items.length > 0);
+    return navGroups
+      .map(group => ({
+        ...group,
+        items: group.items.filter(item => 
+          !item.allowedRoles || (role && item.allowedRoles.includes(role))
+        )
+      }))
+      .filter(group => group.items.length > 0);
   }, [role]);
 
-  const filteredAdminNavItems = isCoordinator ? adminNavItems : [];
+  const filteredAdminNavItems = useMemo(() => {
+    return adminNavItems.filter(item => 
+      !item.allowedRoles || (role && item.allowedRoles.includes(role))
+    );
+  }, [role]);
   const isActive = useCallback((href: string) => {
     if (href === '/') return location.pathname === '/';
     return location.pathname.startsWith(href);

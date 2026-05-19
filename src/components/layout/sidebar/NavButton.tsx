@@ -12,6 +12,7 @@ export interface NavItem {
   label: string;
   href: string;
   badge?: number;
+  allowedRoles?: string[];
 }
 
 interface NavButtonProps {
