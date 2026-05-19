@@ -4,9 +4,16 @@ import { MoveHorizontal, PenTool, Zap, Thermometer, LucideIcon } from 'lucide-re
 import { AdjustmentParameters as IAdjustmentParameters } from '../../hooks/types';
 import { TechnicalSheet } from '@/hooks/useTechnicalSheets';
 
+export interface AdjustmentParams {
+  squeegee_passes: string;
+  pressure: string;
+  speed: string;
+  temperature: string;
+}
+
 interface AdjustmentParametersProps {
-  adjustmentParams: Record<string, string>;
-  setAdjustmentParams: (fn: (prev: Record<string, string>) => Record<string, string>) => void;
+  adjustmentParams: AdjustmentParams;
+  setAdjustmentParams: (fn: (prev: AdjustmentParams) => AdjustmentParams) => void;
   activeAlerts: Array<{ parameter_name?: string }>;
   selectedSheetId: string | null;
   technicalSheets: TechnicalSheet[];
