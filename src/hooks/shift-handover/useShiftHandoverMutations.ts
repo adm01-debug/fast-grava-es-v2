@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/features/auth';
 import type { ShiftHandover, ShiftPendingTask, ShiftOccurrence } from './shiftHandoverTypes';
 import { getCurrentShiftType } from './shiftHandoverTypes';
 

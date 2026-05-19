@@ -26,7 +26,7 @@ import { MachineTPMPanel } from '@/components/tpm/MachineTPMPanel';
 import { useTPM } from '@/hooks/useTPM';
 import { MaintenanceExecutionModal } from '@/components/tpm/MaintenanceExecutionModal';
 import { CreateScheduleModal } from '@/components/tpm/CreateScheduleModal';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/features/auth';
 import { toast } from 'sonner';
 import { MachineReliabilityTab } from '@/components/machines/MachineReliabilityTab';
 import { useMTBFMTTR } from '@/hooks/useMTBFMTTR';

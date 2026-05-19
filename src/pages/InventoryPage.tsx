@@ -1,6 +1,6 @@
 import { useState, useMemo, useRef } from 'react';
 import { Helmet } from 'react-helmet';
-import { useRBAC, PermissionGate } from '@/hooks/useRBAC';
+import { useRBAC, PermissionGate } from '@/features/auth';
 import { subDays, isAfter, parseISO, addDays } from 'date-fns';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';

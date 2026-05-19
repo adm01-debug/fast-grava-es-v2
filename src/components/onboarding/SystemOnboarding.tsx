@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Joyride, Step, STATUS } from 'react-joyride';
 import { useTranslation } from 'react-i18next';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/features/auth';
 import { useTheme } from 'next-themes';
 
 export const SystemOnboarding = () => {

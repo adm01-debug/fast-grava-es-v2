@@ -2,7 +2,7 @@ import { memo } from 'react';
 import { Printer, Wifi, WifiOff } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/features/auth';
 import { useOperatorMachines } from '@/hooks/useOperatorMachines';
 import { useOperatorPresence } from '@/hooks/useOperatorPresence';
 import { useQuery } from '@tanstack/react-query';

@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useSchedulingData } from './useSchedulingData';
 import { useNotificationsContext } from '@/contexts/NotificationsContext';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/features/auth';
 import { supabase } from '@/integrations/supabase/client';
 
 /**

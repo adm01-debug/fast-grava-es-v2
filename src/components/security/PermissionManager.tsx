@@ -22,8 +22,8 @@ import {
   useRolePermissions,
   AVAILABLE_PERMISSIONS,
   RESOURCE_LABELS
-} from '@/hooks/useRolePermissions';
-import { useAuth, AppRole } from '@/contexts/AuthContext';
+} from '@/features/auth';
+import { useAuth, AppRole } from '@/features/auth';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 const ROLE_CONFIG: Record<AppRole, { label: string; color: string; icon: React.ReactNode }> = {
@@ -83,7 +83,7 @@ export function PermissionManager() {
     if (!isCoordinator) return;
 
     setTogglingPerm(permission);
-    const perm = permission as import('@/hooks/useRolePermissions').Permission;
+    const perm = permission as import('@/features/auth').Permission;
     await togglePermission(selectedRole, perm);
     setTogglingPerm(null);
   };

@@ -7,7 +7,7 @@ declare global {
   }
 }
 import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/features/auth';
 import { toast } from 'sonner';
 
 // Default VAPID public key - should be overridden by environment variable

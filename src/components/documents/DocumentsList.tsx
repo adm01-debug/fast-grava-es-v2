@@ -24,7 +24,7 @@ import { ptBR } from 'date-fns/locale';
 import { TechnicalDocument, useDocuments } from '@/hooks/useDocuments';
 import { DocumentUploadModal } from './DocumentUploadModal';
 import { DocumentViewer } from './DocumentViewer';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/features/auth';
 
 interface DocumentsListProps {
   technicalSheetId?: string;

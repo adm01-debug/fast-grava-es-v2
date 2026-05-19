@@ -10,7 +10,7 @@ import { useOperatorDashboardData } from '@/hooks/useOperatorDashboardData';
 import { useUpdateJobStatus, DbJob } from '@/hooks/useJobs';
 import { notifyStatusChange } from '@/hooks/useNotifications';
 import { useOfflineSync } from '@/hooks/useOfflineSync';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/features/auth';
 import { JobDetailsModal } from '@/components/jobs/JobDetailsModal';
 import { ProductionRegistrationModal } from '@/components/operator/ProductionRegistrationModal';
 import { PreProductionChecklistModal } from '@/components/operator/PreProductionChecklistModal';

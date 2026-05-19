@@ -1,5 +1,5 @@
 import { createContext, useContext, ReactNode } from 'react';
-import { useRolePermissions } from '@/hooks/useRolePermissions';
+import { useRolePermissions } from '@/features/auth';
 
 type PermissionsContextType = ReturnType<typeof useRolePermissions>;
 

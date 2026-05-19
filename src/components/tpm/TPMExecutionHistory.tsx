@@ -10,7 +10,7 @@ import {
   Eye, Calendar, Wrench, CheckCircle, Clock, AlertTriangle,
   CheckSquare, XSquare
 } from 'lucide-react';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/features/auth';
 import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'sonner';
 import { useTPM } from '@/hooks/useTPM';

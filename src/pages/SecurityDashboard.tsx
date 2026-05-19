@@ -1,4 +1,4 @@
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/features/auth';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -35,7 +35,7 @@ import { ActiveDevicesPanel } from '@/components/security/ActiveDevicesPanel';
 import { SecurityAlertsPanel } from '@/components/security/SecurityAlertsPanel';
 import { PushNotificationSettings } from '@/components/security/PushNotificationSettings';
 
-import { useMFA } from '@/hooks/useMFA';
+import { useMFA } from '@/features/auth';
 import { useUserDevices } from '@/hooks/useUserDevices';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { VoiceButton } from '@/components/voice/VoiceCommands';

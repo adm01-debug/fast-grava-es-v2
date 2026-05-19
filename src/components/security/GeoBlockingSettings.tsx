@@ -32,7 +32,7 @@ import {
   useRemoveCountryRule,
   COMMON_COUNTRIES
 } from '@/hooks/useGeoBlocking';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/features/auth';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 

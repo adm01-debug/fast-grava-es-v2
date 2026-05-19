@@ -7,7 +7,7 @@ import { ThemeToggle } from './ThemeToggle';
 import { OfflineStatusBanner } from '../offline/OfflineStatusBanner';
 import { SkipLinks, MainContent } from '../accessibility';
 import { NetworkStatusIndicator } from '@/hooks/useNetworkStatus';
-import { SessionProvider } from '@/hooks/useSessionTimeout';
+import { SessionProvider } from '@/features/auth';
 import { SectionErrorBoundary } from '../ui/section-error-boundary';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { useNotifications } from '@/hooks/useNotifications';

@@ -10,7 +10,7 @@ import { MaintenanceRecord } from '@/hooks/tpm/types';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useTPM } from '@/hooks/useTPM';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/features/auth';
 import { toast } from 'sonner';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';

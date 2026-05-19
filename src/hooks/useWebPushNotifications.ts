@@ -7,7 +7,7 @@ declare global {
   }
 }
 import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/features/auth';
 import { toast } from 'sonner';
 
 // Chave pública VAPID - substitua pela sua chave gerada

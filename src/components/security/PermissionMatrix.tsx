@@ -2,8 +2,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Check, X, Shield } from 'lucide-react';
-import { ROLE_PERMISSIONS } from '@/hooks/useRBAC';
-import type { AppRole } from '@/contexts/AuthContext';
+import { ROLE_PERMISSIONS } from '@/features/auth';
+import type { AppRole } from '@/features/auth';
 
 const PERMISSION_CATEGORIES = {
   'Produção': [

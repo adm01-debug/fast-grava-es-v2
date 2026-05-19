@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, X, QrCode, Calendar, AlertTriangle, FileText } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useDevice } from '@/hooks/use-device';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/features/auth';
 import { useHapticFeedback } from '@/hooks/use-haptic-feedback';
 
 interface QuickAction {

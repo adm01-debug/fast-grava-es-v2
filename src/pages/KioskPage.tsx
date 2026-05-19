@@ -4,7 +4,7 @@ import { KioskMode } from "@/components/kiosk/KioskMode";
 import { useSchedulingData } from "@/hooks/useSchedulingData";
 import { useUpdateJobStatus } from "@/hooks/useJobs";
 import { notifyStatusChange } from "@/hooks/useNotifications";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/features/auth";
 import { ProductionRegistrationModal } from "@/components/operator/ProductionRegistrationModal";
 import { useOfflineSync } from "@/hooks/useOfflineSync";
 import { Button } from "@/components/ui/button";

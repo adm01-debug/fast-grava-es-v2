@@ -6,7 +6,7 @@ import {
 } from "@/components/ui/command";
 import { Search, Star, StarOff, ChevronRight, Command, Zap, ArrowRight, Layers, Plus } from "lucide-react";
 import { useTheme } from "next-themes";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/features/auth";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { CommandItemType, buildAllCommands, buildContextualCommands, searchCommands } from "./CommandPaletteCommands";

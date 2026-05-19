@@ -1,7 +1,7 @@
 import { useMemo, useEffect, useRef } from 'react';
 import { useSchedulingData } from './useSchedulingData';
 import { useNotificationsContext } from '@/contexts/NotificationsContext';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/features/auth';
 
 export interface CapacityMetric {
   techniqueId: string;
