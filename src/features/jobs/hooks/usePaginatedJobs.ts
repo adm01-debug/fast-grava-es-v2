@@ -93,7 +93,7 @@ export function usePaginatedJobs(initialOptions?: Partial<PaginationOptions>) {
       const totalPages = Math.ceil(totalCount / pageSize);
 
       return {
-        data: jobs ?? [],
+        data: validatedJobs,
         totalCount,
         totalPages,
         currentPage: page,
