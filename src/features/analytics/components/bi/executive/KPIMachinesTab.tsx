@@ -5,12 +5,13 @@ import { Progress } from '@/components/ui/progress';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { AlertTriangle, Cpu, Search, CheckCircle2 } from 'lucide-react';
+import { KPIData } from '@/features/analytics/hooks/useKPIs';
 
 interface KPIMachinesTabProps {
-  kpis: any;
+  kpis: KPIData;
   searchTerm: string;
   setSearchTerm: (val: string) => void;
-  setSelectedMachine: (machine: any) => void;
+  setSelectedMachine: (machine: KPIData['productivityByMachine'][0]) => void;
 }
 
 const KPIMachinesTabComponent = ({
