@@ -49,7 +49,7 @@ export function BatchApprovalPreviewModal({
     });
   }, [selectedRecords]);
 
-  const allValid = validationResults.every(v => v.isValid);
+  const allValid = validationResults.every((v: any) => v.isValid);
 
   const handleViewDetails = (id: string) => {
     setSelectedRecordId(id);
@@ -59,7 +59,7 @@ export function BatchApprovalPreviewModal({
   const handleExportCSV = () => {
     if (validationResults.length === 0) return;
     const headers = ['Máquina', 'Código', 'Data', 'Status Validação', 'Pendências'];
-    const rows = validationResults.map(v => [
+    const rows = validationResults.map((v: any) => [
       v.machine?.name || '',
       v.machine?.code || '',
       v.completed_at ? new Date(v.completed_at).toLocaleDateString() : 'N/A',
@@ -109,7 +109,7 @@ export function BatchApprovalPreviewModal({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {validationResults.map((v) => (
+              {validationResults.map((v: any) => (
                 <TableRow key={v.id}>
                   <TableCell className="font-medium">
                     {v.machine?.name}
