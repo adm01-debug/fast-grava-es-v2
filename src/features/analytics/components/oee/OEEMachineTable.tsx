@@ -70,8 +70,8 @@ export const OEEMachineTable = memo(function OEEMachineTable({ machines }: OEEMa
         trend: m.oee - (m.previousOee || 0)
       }))
       .sort((a, b) => {
-        const aVal = (a as any)[sortField];
-        const bVal = (b as any)[sortField];
+        const aVal = a[sortField as keyof typeof a];
+        const bVal = b[sortField as keyof typeof b];
         const dir = sortDirection === 'asc' ? 1 : -1;
 
         if (typeof aVal === 'string' && typeof bVal === 'string') {
