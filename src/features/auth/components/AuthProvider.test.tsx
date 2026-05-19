@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
-import { AuthProvider, useAuth } from './AuthContext';
+import { AuthProvider, useAuth } from './AuthProvider';
 import { supabase } from '@/integrations/supabase/client';
 import React from 'react';
 
