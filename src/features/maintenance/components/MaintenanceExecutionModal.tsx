@@ -235,7 +235,12 @@ export function MaintenanceExecutionModal({
     }
   }, [checklist]);
 
-  const handleResponseUpdate = (itemId: string, updates: any) => {
+  const handleResponseUpdate = (itemId: string, updates: Partial<{
+    is_checked: boolean;
+    measurement_value: number;
+    notes: string;
+    photo_url: string;
+  }>) => {
     setResponses(prev => ({
       ...prev,
       [itemId]: { ...prev[itemId], ...updates }
