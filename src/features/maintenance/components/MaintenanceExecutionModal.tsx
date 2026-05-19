@@ -10,7 +10,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { Wrench, CheckCircle2, AlertTriangle, Clock, Plus, Trash2, PenTool, Zap, MoveHorizontal, Thermometer, Info, CheckSquare, Package, Camera } from 'lucide-react';
-import { MaintenanceSchedule, MaintenanceChecklist, MaintenanceChecklistItem } from '@/features/maintenance/hooks/types';
+import { MaintenanceSchedule, MaintenanceChecklist, MaintenanceChecklistItem, ChecklistSnapshot, AdjustmentParameters as IAdjustmentParameters, QualityChecklistResult } from '@/features/maintenance/hooks/types';
 import { useTPM } from '@/features/maintenance/hooks/useTPM';
 import { useTechnicalSheets } from '@/hooks/useTechnicalSheets';
 import { toast } from 'sonner';
@@ -20,6 +20,17 @@ import { AlertRiskPanel } from './execution/AlertRiskPanel';
 import { SupplyList } from './execution/SupplyList';
 import { AdjustmentParameters } from './execution/AdjustmentParameters';
 import { ReplacementParts } from './execution/ReplacementParts';
+
+interface ExecutionAlert {
+  alert_type: string;
+  parameter_name?: string;
+  expected_range?: string;
+  actual_value?: string;
+  severity: 'info' | 'warning' | 'critical';
+  description: string;
+  evidence_urls: string[];
+  is_critical_risk: boolean;
+}
 
 interface MaintenanceExecutionModalProps {
   isOpen: boolean;
