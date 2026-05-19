@@ -27,7 +27,8 @@ export const SCENARIOS: SimulationScenario[] = [
   { id: 'stripe-checkout', name: 'Stripe: Checkout Concluído', source: 'stripe', event: 'checkout.session.completed', description: 'Simula finalização de pagamento', expectedStatus: 200 },
   { id: 'invalid-signature', name: 'Segurança: Assinatura Inválida', source: 'unknown', event: 'TEST', description: 'Testa rejeição de payload não assinado', expectedStatus: 400 },
   { id: 'missing-event', name: 'Validação: Evento Ausente', source: 'bitrix24', event: '', description: 'Testa rejeição de payload malformado', expectedStatus: 400 },
-  { id: 'fuzz-malformed-json', name: 'Fuzz: JSON Malformado', source: 'bitrix24', event: 'TEST', description: 'Envia string não-JSON', expectedStatus: 400, payload: "NOT_A_JSON_STRING" },
+  { id: 'ml-predict-machine', name: 'ML: Predição de Máquina', source: 'system', event: 'ML_PREDICT', description: 'Simula predição de falha via IA', expectedStatus: 200 },
+  { id: 'ml-batch-analyze', name: 'ML: Análise em Lote', source: 'system', event: 'ML_BATCH_ANALYZE', description: 'Simula análise preditiva de toda frota', expectedStatus: 200 },
 ];
 
 export const generateFuzzPayload = (basePayload: Record<string, any>): any => {
@@ -35,11 +36,15 @@ export const generateFuzzPayload = (basePayload: Record<string, any>): any => {
     (p: any) => { delete p.source; return p; },
     (p: any) => { p.source = 123; return p; },
     (p: any) => { p.event = null; return p; },
-    (p: any) => { p.data = "invalid_data_type"; return p; },
-    (p: any) => { p.injection = "'; DROP TABLE users; --"; return p; },
-    (p: any) => { p.overflow = "A".repeat(10000); return p; },
-    (p: any) => { return "{ malformed: json"; },
+    (p: any) => { p.data = { invalid: "structure" }; return p; },
+    (p: any) => { p.injection = "'; DROP TABLE machines; --"; return p; },
+    (p: any) => { p.overflow = "X".repeat(20000); return p; },
+    (p: any) => { return "{ malformed_json: true "; },
   ];
+  
+  const mutation = mutations[Math.floor(Math.random() * mutations.length)];
+  return mutation({ ...basePayload });
+};
   
   const mutation = mutations[Math.floor(Math.random() * mutations.length)];
   return mutation({ ...basePayload });
