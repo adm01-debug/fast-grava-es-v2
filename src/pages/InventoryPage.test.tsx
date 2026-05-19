@@ -148,10 +148,14 @@ describe('InventoryPage - Skeletons e Estabilidade', () => {
     const searchInput = screen.getByPlaceholderText(/Buscar material/i);
     fireEvent.change(searchInput, { target: { value: 'Solvente' } });
 
+    // Esperamos 400ms devido ao debounce de 300ms + margem
+    await new Promise(r => setTimeout(r, 400));
+
     await waitFor(() => {
       expect(screen.queryByText('Tinta Azul')).toBeNull();
       expect(screen.getByText('Solvente X')).toBeDefined();
-    });
+    }, { timeout: 2000 });
   });
 });
+
 
