@@ -154,8 +154,13 @@ export function MaintenanceExecutionModal({
       }
 
       if (sheet?.consumables) {
-        const initialSupplies: Record<string, any> = {};
-        sheet.consumables.forEach((c: any) => {
+        const initialSupplies: Record<string, {
+          quantity: string;
+          alternative_used: boolean;
+          name: string;
+          is_checked: boolean;
+        }> = {};
+        sheet.consumables.forEach((c) => {
           initialSupplies[c.id] = {
             name: c.name,
             quantity: c.quantity,
