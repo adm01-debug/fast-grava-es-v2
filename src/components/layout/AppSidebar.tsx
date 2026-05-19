@@ -147,27 +147,14 @@ export function AppSidebar() {
                     initial={{ x: 20, opacity: 0 }}
                     animate={{ x: 0, opacity: 1 }}
                     exit={{ x: 20, opacity: 0 }}
-                    className={cn(
-                      "rounded-2xl overflow-hidden flex items-center justify-center flex-shrink-0",
-                      collapsed && !isMobile ? "w-10 h-10" : "w-[205px] h-[205px]"
-                    )}
-                    style={collapsed && !isMobile ? { width: 40, height: 40 } : { width: 200, height: 200, scale: 2 }}
-
-                    role="img"
-                    aria-label="FAST GRAVAÇÕES - Qualidade + Velocidade"
                   >
-                    <picture>
-                      <source srcSet="/logo.webp" type="image/webp" />
-                      <img 
-                        src="/logo.png" 
-                        alt="FAST" 
-                        className="w-full h-full object-contain"
-                        fetchPriority="high"
-                        loading="eager"
-                        decoding="async"
-                      />
-                    </picture>
+                    <BrandLogo 
+                      collapsed={collapsed && !isMobile} 
+                      size={collapsed && !isMobile ? "sm" : "md"} 
+                      showSubtitle={false}
+                    />
                   </motion.div>
+
                 )}
               </AnimatePresence>
               
