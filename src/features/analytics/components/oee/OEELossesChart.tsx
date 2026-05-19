@@ -196,9 +196,9 @@ export const OEELossesChart = memo(function OEELossesChart({
                           paddingAngle={5}
                           dataKey="value"
                         >
-                          {lossCategories.map((entry: any, index: number) => (
-                            <Cell key={`cell-${index}`} fill={entry.fill} />
-                          ))}
+                        {lossCategories.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.fill} />
+                        ))}
                         </Pie>
                         <Tooltip 
                           contentStyle={{ 
