@@ -20,4 +20,4 @@ export { InAppNotificationWatcher } from './components/InAppNotificationWatcher'
 export { DailySummaryCard } from './components/DailySummaryCard';
 export { EfficiencyNotificationProvider } from './components/EfficiencyNotificationProvider';
 export { SmartAlertsWatcher } from './components/SmartAlertsWatcher';
-export { ToastWithUndo } from './components/ToastWithUndo';
+export { ToastContainer as ToastWithUndo, toast } from './components/ToastWithUndo';
