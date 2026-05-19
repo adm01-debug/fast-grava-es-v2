@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { ReactNode, memo } from 'react';
 import { cn } from '@/lib/utils';
 import { useDevice } from '@/hooks/use-device';
 
@@ -30,7 +30,7 @@ const maxWidthClasses = {
  * - Safe area support for notch devices
  * - Mobile navigation spacing
  */
-export function ResponsiveContainer({
+export const ResponsiveContainer = memo(function ResponsiveContainer({
   children,
   className,
   maxWidth = 'xl',
@@ -60,7 +60,7 @@ export function ResponsiveContainer({
       {children}
     </div>
   );
-}
+});
 
 interface ResponsiveGridProps {
   children: ReactNode;
@@ -88,7 +88,7 @@ const gapClasses = {
 /**
  * Responsive grid layout component
  */
-export function ResponsiveGrid({
+export const ResponsiveGrid = memo(function ResponsiveGrid({
   children,
   className,
   variant = 'cards',
@@ -105,7 +105,7 @@ export function ResponsiveGrid({
       {children}
     </div>
   );
-}
+});
 
 interface ResponsiveStackProps {
   children: ReactNode;
@@ -140,7 +140,7 @@ const justifyClasses = {
 /**
  * Responsive stack that changes direction based on breakpoint
  */
-export function ResponsiveStack({
+export const ResponsiveStack = memo(function ResponsiveStack({
   children,
   className,
   mobileDirection = 'column',
@@ -167,7 +167,7 @@ export function ResponsiveStack({
       {children}
     </div>
   );
-}
+});
 
 interface HideOnProps {
   children: ReactNode;

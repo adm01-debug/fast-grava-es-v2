@@ -101,7 +101,7 @@ function StatsCardComponent({
             'w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 transition-all duration-500 group-hover:scale-110 group-hover:rotate-3 shadow-inner',
             styles.iconBg
           )}>
-            <Icon className={cn('w-6 h-6 drop-shadow-sm', styles.iconColor)} />
+            <Icon className={cn('w-6 h-6 drop-shadow-sm', styles.iconColor)} aria-hidden="true" />
           </div>
           <div className="min-w-0 flex-1">
             <p className="text-[11px] font-medium text-muted-foreground truncate uppercase tracking-wider">
@@ -133,9 +133,9 @@ function StatsCardComponent({
     )}>
       <div className="flex items-start justify-between gap-4">
         <div className="space-y-2 min-w-0 flex-1 relative z-10">
-          <p className="text-xs font-bold text-muted-foreground truncate uppercase tracking-widest opacity-80">
+          <h3 className="text-xs font-bold text-muted-foreground truncate uppercase tracking-widest opacity-80">
             {title}
-          </p>
+          </h3>
           <p className="text-4xl font-bold tracking-tight text-foreground font-display group-hover:scale-105 transition-transform duration-500 origin-left">
             {value}
           </p>
@@ -160,7 +160,7 @@ function StatsCardComponent({
           'w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 transition-all duration-700 group-hover:scale-125 group-hover:rotate-6 shadow-inner relative z-10',
           styles.iconBg
         )}>
-          <Icon className={cn('w-7 h-7 drop-shadow-md', styles.iconColor)} />
+          <Icon className={cn('w-7 h-7 drop-shadow-md', styles.iconColor)} aria-hidden="true" />
         </div>
       </div>
     </Card>
