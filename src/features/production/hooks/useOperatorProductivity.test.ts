@@ -75,7 +75,7 @@ describe('useOperatorProductivity', () => {
 
     // Mock other queries in useOperatorProductivity
     const { supabase } = await import('@/integrations/supabase/client');
-    (supabase.from as any).mockImplementation((table: string) => {
+    (supabase.from as unknown as Mock).mockImplementation((table: string) => {
       if (table === 'user_roles') {
         return {
           select: vi.fn().mockReturnThis(),
