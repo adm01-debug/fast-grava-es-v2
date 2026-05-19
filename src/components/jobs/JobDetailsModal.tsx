@@ -79,14 +79,14 @@ interface JobDetailsModalProps {
   onStatusChange?: (jobId: string, newStatus: DbJob['status']) => void;
 }
 
-const priorityColors = {
+const priorityColors: Record<string, string> = {
   urgent: 'bg-priority-urgent/20 text-priority-urgent border-priority-urgent/30',
   high: 'bg-priority-high/20 text-priority-high border-priority-high/30',
   medium: 'bg-priority-medium/20 text-priority-medium border-priority-medium/30',
   low: 'bg-priority-low/20 text-priority-low border-priority-low/30'
 };
 
-const priorityLabels = {
+const priorityLabels: Record<string, string> = {
   urgent: 'Urgente',
   high: 'Alta',
   medium: 'Média',
