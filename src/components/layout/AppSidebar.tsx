@@ -146,6 +146,7 @@ export function AppSidebar() {
                   initial={{ x: 20, opacity: 0 }}
                   animate={{ x: 0, opacity: 1 }}
                   exit={{ x: 20, opacity: 0 }}
+                  className="flex flex-col"
                 >
                   <BrandLogo 
                     collapsed={collapsed && !isMobile} 
@@ -166,6 +167,7 @@ export function AppSidebar() {
               </motion.div>
             )}
           </div>
+
 
           {!isMobile && (
             <Button variant="ghost" size="icon" onClick={() => setCollapsed(!collapsed)} aria-label={collapsed ? 'Expandir menu' : 'Recolher menu'} className="h-8 w-8 text-sidebar-foreground/50 hover:text-sidebar-foreground hover:bg-sidebar-muted focus:ring-2 focus:ring-primary">
