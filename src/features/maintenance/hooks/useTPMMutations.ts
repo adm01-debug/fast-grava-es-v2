@@ -189,8 +189,8 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
         const ranges = params.ranges;
         const alertsToInsert: any[] = [];
 
-        const checkRange = (name: string, value: string, range: any) => {
-          if (!range || (!range.min && !range.max)) return;
+        const checkRange = (name: string, value: string | undefined, range: any) => {
+          if (!value || !range || (!range.min && !range.max)) return;
           const val = parseFloat(value.replace(/[^0-9.]/g, ''));
           const min = range.min ? parseFloat(range.min.replace(/[^0-9.]/g, '')) : -Infinity;
           const max = range.max ? parseFloat(range.max.replace(/[^0-9.]/g, '')) : Infinity;
@@ -208,10 +208,12 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
           }
         };
 
-        checkRange('Passadas de Rodo', params.squeegee_passes, ranges.squeegee_passes);
-        checkRange('Pressão', params.pressure, ranges.pressure);
-        checkRange('Velocidade', params.speed, ranges.speed);
-        checkRange('Temperatura', params.temperature, ranges.temperature);
+        if (ranges) {
+          checkRange('Passadas de Rodo', params.squeegee_passes, ranges.squeegee_passes);
+          checkRange('Pressão', params.pressure, ranges.pressure);
+          checkRange('Velocidade', params.speed, ranges.speed);
+          checkRange('Temperatura', params.temperature, ranges.temperature);
+        }
 
         if (alertsToInsert.length > 0) {
           await supabase.from('tpm_parameter_alerts').insert(alertsToInsert);
