@@ -99,10 +99,10 @@ export default function AuthPage() {
 
           <div className="relative z-10 p-12 xl:p-16 flex flex-col justify-between h-full w-full">
             <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="flex items-center gap-3">
-              <div className="w-11 h-11 bg-[#FF5A1F] grid place-items-center font-black text-xl rounded-md text-white">F</div>
+              <div className="w-[58px] h-[58px] bg-[#FF5A1F] grid place-items-center font-black text-2xl rounded-md text-white shadow-lg glow-primary">F</div>
               <div>
-                <h1 className="text-base font-extrabold tracking-tight uppercase leading-none">FAST GRAVAÇÕES</h1>
-                <p className="text-[10px] text-zinc-500 tracking-[0.2em] font-medium uppercase mt-1">Qualidade + Velocidade</p>
+                <h1 className="text-xl font-extrabold tracking-tight uppercase leading-none">FAST GRAVAÇÕES</h1>
+                <p className="text-[11px] text-zinc-500 tracking-[0.2em] font-black uppercase mt-1">Qualidade + Velocidade</p>
               </div>
             </motion.div>
 
