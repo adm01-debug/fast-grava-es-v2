@@ -143,17 +143,15 @@ export default function AuthPage() {
         {/* RIGHT — Login form */}
         <div className="w-full lg:w-[540px] flex flex-col p-6 sm:p-10 lg:p-16 justify-center relative bg-[#050505]">
           {/* Mobile brand */}
-          <div className="lg:hidden flex items-center gap-4 mb-10">
-            <div className="w-[56px] h-[56px] flex items-center justify-center flex-shrink-0">
-              <picture>
-                <source srcSet="/logo.webp" type="image/webp" />
-                <img src="/logo.png" alt="FAST" className="w-full h-full object-contain" />
-              </picture>
-            </div>
-            <div className="flex flex-col">
-              <span className="font-extrabold tracking-tight uppercase text-xl leading-none">FAST GRAVAÇÕES</span>
-              <span className="text-[10px] text-primary tracking-[0.2em] font-black uppercase mt-1">Qualidade + Velocidade</span>
-            </div>
+          <div className="lg:hidden flex items-center mb-10">
+            <picture>
+              <source srcSet="/logo.webp" type="image/webp" />
+              <img
+                src="/logo.png"
+                alt="FAST GRAVAÇÕES — Qualidade + Velocidade"
+                className="h-12 w-auto object-contain"
+              />
+            </picture>
           </div>
 
           {/* Top utility */}
