@@ -1,7 +1,8 @@
 import { useMemo } from 'react';
 import { useJobs, useMachines, useTechniques, DbJob, DbMachine, DbTechnique } from '@/features/jobs';
 import { useBusinessConfig } from '@/features/admin';
-import { parseISO, format, isValid } from 'date-fns';
+import { format } from 'date-fns';
+import { MachineLoad, LoadBalancingSuggestion, TechniqueLoadSummary } from '../types';
 
 // Data validation helpers
 function isValidJob(job: DbJob): boolean {
@@ -28,40 +29,8 @@ function clampPercentage(value: number): number {
   return Math.min(100, Math.max(0, value));
 }
 
-export interface MachineLoad {
-  machine: DbMachine;
-  technique: DbTechnique;
-  scheduledMinutes: number;
-  availableMinutes: number;
-  occupancyRate: number;
-  jobCount: number;
-  jobs: DbJob[];
-}
-
-export interface LoadBalancingSuggestion {
-  jobId: string;
-  orderNumber: string;
-  client: string;
-  currentMachineId: string;
-  currentMachineName: string;
-  suggestedMachineId: string;
-  suggestedMachineName: string;
-  currentLoad: number; // percentage
-  suggestedLoad: number; // percentage
-  loadDifference: number; // percentage points saved
-}
-
-export interface TechniqueLoadSummary {
-  technique: DbTechnique;
-  machines: MachineLoad[];
-  averageOccupancy: number;
-  maxOccupancy: number;
-  minOccupancy: number;
-  isUnbalanced: boolean; // > 30% difference between min/max
-  suggestions: LoadBalancingSuggestion[];
-}
-
 // DAILY_CAPACITY_MINUTES is now derived inside the hook from business_config
+
 
 export function useLoadBalancing(targetDate?: Date) {
   const { data: jobs } = useJobs();
