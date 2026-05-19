@@ -38,6 +38,7 @@ import { useInventory, useInventoryMovements, InventoryItem, InventoryMovement }
 import { useDebounce } from '@/hooks/useDebounce';
 import { WarehouseMap } from '@/components/inventory/WarehouseMap';
 import { InventoryStats } from '@/components/inventory/InventoryStats';
+import { ProductGridSkeleton } from '@/components/inventory/ProductGridSkeleton';
 import { QRLabelModal } from '@/components/inventory/QRLabelModal';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -160,21 +161,31 @@ export default function InventoryPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {isLoading ? (
-                [1,2,3].map(i => <Skeleton key={i} className="h-48 w-full rounded-xl" />)
-              ) : filteredItems.map((item) => (
-                <InventoryCard
-                  key={item.id}
-                  item={item}
-                  onMovement={recordMovement}
-                  isSelected={selectedItems.has(item.id)}
-                  onSelect={(id: string, checked: boolean) => {
-                    const next = new Set(selectedItems);
-                    if (checked) next.add(id);
-                    else next.delete(id);
-                    setSelectedItems(next);
-                  }}
-                />
-              ))}
+                <div className="col-span-full">
+                  <ProductGridSkeleton />
+                </div>
+              ) : filteredItems.length === 0 ? (
+                <div className="col-span-full py-12 flex flex-col items-center justify-center text-muted-foreground bg-muted/10 rounded-xl border border-dashed border-border/50">
+                  <Package className="h-12 w-12 mb-4 opacity-20" />
+                  <p className="text-lg font-medium">Nenhum material encontrado</p>
+                  <p className="text-sm">Tente ajustar sua busca ou categoria</p>
+                </div>
+              ) : (
+                filteredItems.map((item) => (
+                  <InventoryCard
+                    key={item.id}
+                    item={item}
+                    onMovement={recordMovement}
+                    isSelected={selectedItems.has(item.id)}
+                    onSelect={(id: string, checked: boolean) => {
+                      const next = new Set(selectedItems);
+                      if (checked) next.add(id);
+                      else next.delete(id);
+                      setSelectedItems(next);
+                    }}
+                  />
+                ))
+              )}
             </div>
           </TabsContent>
 
