@@ -118,56 +118,55 @@ export function AppSidebar() {
       >
         {/* Header */}
         <div className={cn('flex items-center h-16 px-4 border-b border-sidebar-border relative', collapsed && !isMobile ? 'justify-center' : 'justify-between')}>
-          <div className="flex items-center overflow-hidden">
-
+          <div className="flex items-center overflow-hidden flex-1">
             <AnimatePresence mode="wait">
               {(!collapsed || isMobile) && location.pathname !== '/' && location.pathname !== '/operator' && location.pathname !== '/auth' ? (
-                  <motion.div
-                    key="back-icon"
-                    initial={{ x: -20, opacity: 0 }}
-                    animate={{ x: 0, opacity: 1 }}
-                    exit={{ x: -20, opacity: 0 }}
-                    className="flex-shrink-0"
-                  >
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      onClick={() => {
-                        SoundFeedback.navBack();
-                        navigate(-1);
-                      }}
-                      className="h-9 w-9 rounded-xl bg-primary/10 text-primary hover:bg-primary/20 hover:scale-105 active:scale-95 transition-all"
-                    >
-                      <ChevronLeft className="w-5 h-5" />
-                    </Button>
-                  </motion.div>
-                ) : (
-                  <motion.div
-                    key="logo-icon"
-                    initial={{ x: 20, opacity: 0 }}
-                    animate={{ x: 0, opacity: 1 }}
-                    exit={{ x: 20, opacity: 0 }}
-                  >
-                    <BrandLogo 
-                      collapsed={collapsed && !isMobile} 
-                      size={collapsed && !isMobile ? "sm" : "md"} 
-                      showSubtitle={false}
-                    />
-                  </motion.div>
-
-                )}
-              </AnimatePresence>
-              
-              {(!collapsed || isMobile) && (
-                <motion.div 
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  className="flex-1 min-w-0"
+                <motion.div
+                  key="back-icon"
+                  initial={{ x: -20, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  exit={{ x: -20, opacity: 0 }}
+                  className="flex-shrink-0"
                 >
-                  <p className="text-[11px] font-black text-primary/70 uppercase tracking-[0.2em] truncate opacity-90">QUALIDADE + VELOCIDADE</p>
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    onClick={() => {
+                      SoundFeedback.navBack();
+                      navigate(-1);
+                    }}
+                    className="h-9 w-9 rounded-xl bg-primary/10 text-primary hover:bg-primary/20 hover:scale-105 active:scale-95 transition-all"
+                  >
+                    <ChevronLeft className="w-5 h-5" />
+                  </Button>
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="logo-icon"
+                  initial={{ x: 20, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  exit={{ x: 20, opacity: 0 }}
+                >
+                  <BrandLogo 
+                    collapsed={collapsed && !isMobile} 
+                    size={collapsed && !isMobile ? "sm" : "md"} 
+                    showSubtitle={false}
+                  />
                 </motion.div>
               )}
-            </div>
+            </AnimatePresence>
+            
+            {(!collapsed || isMobile) && (
+              <motion.div 
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="flex-1 min-w-0 ml-3"
+              >
+                <p className="text-[11px] font-black text-primary/70 uppercase tracking-[0.2em] truncate opacity-90">QUALIDADE + VELOCIDADE</p>
+              </motion.div>
+            )}
+          </div>
+
           {!isMobile && (
             <Button variant="ghost" size="icon" onClick={() => setCollapsed(!collapsed)} aria-label={collapsed ? 'Expandir menu' : 'Recolher menu'} className="h-8 w-8 text-sidebar-foreground/50 hover:text-sidebar-foreground hover:bg-sidebar-muted focus:ring-2 focus:ring-primary">
               {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
