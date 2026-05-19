@@ -343,7 +343,7 @@ export default function AdminTelemetriaPage() {
         {/* Filters */}
         <div className="flex flex-wrap items-center gap-3">
           <Select value={severityFilter} onValueChange={(v) => setSeverityFilter(v as SeverityFilter)}>
-            <SelectTrigger className="w-44">
+            <SelectTrigger className="w-44" aria-label="Filtrar por Severidade">
               <SelectValue placeholder="Severidade" />
             </SelectTrigger>
             <SelectContent>
