@@ -147,8 +147,8 @@ export function AppSidebar() {
               </AnimatePresence>
               
               <motion.div layout className="flex-1 min-w-0">
-                <h1 className="font-display font-black text-sidebar-foreground text-xl tracking-tight truncate uppercase leading-none mb-0.5">FAST GRAVAÇÕES</h1>
-                <p className="text-[10px] font-black text-primary/70 uppercase tracking-[0.2em] truncate opacity-90">INDUSTRIAL INTEL</p>
+                <h1 className="font-display font-black text-sidebar-foreground tracking-tight truncate uppercase leading-none mb-1" style={{ fontSize: '1.625rem' }}>FAST GRAVAÇÕES</h1>
+                <p className="text-[11px] font-black text-primary/70 uppercase tracking-[0.2em] truncate opacity-90">QUALIDADE + VELOCIDADE</p>
               </motion.div>
             </div>
           )}
