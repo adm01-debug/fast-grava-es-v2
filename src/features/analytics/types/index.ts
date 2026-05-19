@@ -113,3 +113,34 @@ export interface TechniqueLoadSummary {
   suggestions: LoadBalancingSuggestion[];
 }
 
+export interface BottleneckAlert {
+  id: string;
+  techniqueId: string;
+  techniqueName: string;
+  techniqueColor: string;
+  severity: 'critical' | 'warning' | 'info';
+  date: Date;
+  dateLabel: string;
+  currentCapacity: number; // percentage used
+  projectedCapacity: number; // percentage if pending jobs added
+  machineCount: number;
+  jobCount: number;
+  pendingJobCount: number;
+  message: string;
+  recommendation: string;
+}
+
+export interface TechniqueCapacity {
+  technique: DbTechnique;
+  date: Date;
+  totalCapacityMinutes: number;
+  usedMinutes: number;
+  pendingMinutes: number;
+  occupancyRate: number;
+  projectedOccupancy: number;
+  machineCount: number;
+  scheduledJobs: number;
+  pendingJobs: number;
+}
+
+
