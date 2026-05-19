@@ -103,12 +103,12 @@ export interface MaintenanceRecord {
   approved_at: string | null;
   next_scheduled_date_after_approval: string | null;
   checklist_version: number | null;
-  checklist_snapshot: any | null;
+  checklist_snapshot: ChecklistSnapshot | null;
   created_at: string;
   technical_sheet_id?: string | null;
   technical_sheet_version?: number | null;
-  adjustment_parameters?: any | null;
-  quality_checklist_results?: any | null;
+  adjustment_parameters?: AdjustmentParameters | null;
+  quality_checklist_results?: QualityChecklistResult[] | null;
   failure_risk_detected?: boolean;
   supplies_used?: Array<{
     name: string;
