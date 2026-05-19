@@ -29,7 +29,7 @@ export function BatchApprovalPreviewModal({
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
 
   const selectedRecords = useMemo(() => {
-    return records.filter(r => recordIds.includes(r.id));
+    return records.filter((r: MaintenanceRecord) => recordIds.includes(r.id));
   }, [records, recordIds]);
 
   const validationResults = useMemo(() => {
