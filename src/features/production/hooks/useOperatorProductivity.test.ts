@@ -66,7 +66,7 @@ describe('useOperatorProductivity', () => {
       }
     ];
 
-    (schedulingHook.useSchedulingData as any).mockReturnValue({
+    (schedulingHook.useSchedulingData as unknown as Mock).mockReturnValue({
       jobs: mockJobs,
       machines: [{ id: 'm1', name: 'Machine 1' }],
       techniques: [],
