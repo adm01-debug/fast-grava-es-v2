@@ -1,4 +1,4 @@
-import { useOEE } from './useOEE';
+import { useOEE, MachineOEE } from './useOEE';
 import { useBusinessConfig } from '@/features/admin';
 import { supabase } from '@/integrations/supabase/client';
 import { useEffect, useRef, useCallback } from 'react';
