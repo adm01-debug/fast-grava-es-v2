@@ -9,7 +9,7 @@ import { NavGroup } from './NavGroupComponent';
 import { NavItem } from './NavButton';
 
 export const navGroups: NavGroup[] = [
-  { id: 'home', icon: Home, label: 'Início', items: [{ icon: Home, label: 'Dashboard', href: '/' }], defaultOpen: true },
+  { id: 'home', icon: Home, label: 'Principal', items: [{ icon: Home, label: 'Dashboard', href: '/' }], defaultOpen: true },
   { id: 'planning', icon: Calendar, label: 'Planejamento', items: [
     { icon: Calendar, label: 'Calendário Diário', href: '/calendar/daily' },
     { icon: CalendarDays, label: 'Calendário Semanal', href: '/calendar/weekly' },
@@ -53,7 +53,7 @@ export const navGroups: NavGroup[] = [
   { id: 'system', icon: Cog, label: 'Sistema', items: [
     { icon: AlertTriangle, label: 'Alertas', href: '/alerts' },
     { icon: Bell, label: 'Notificações', href: '/notifications' },
-    { icon: ShieldCheck, label: 'Trilha de Auditoria', href: '/audit' },
+    { icon: ShieldCheck, label: 'Audit Trail', href: '/audit' },
     { icon: QrCode, label: 'Scanner QR', href: '/scanner' },
     { icon: Code2, label: 'Master API Hub', href: '/master-api' },
     { icon: Settings, label: 'Configurações', href: '/settings' },
