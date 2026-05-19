@@ -5,6 +5,27 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import React from 'react';
 
+// Mock Web Audio API for testing
+if (typeof window !== 'undefined') {
+  (window as any).AudioContext = vi.fn().mockImplementation(() => ({
+    state: 'running',
+    resume: vi.fn(),
+    createOscillator: vi.fn().mockReturnValue({
+      connect: vi.fn(),
+      frequency: { setValueAtTime: vi.fn(), exponentialRampToValueAtTime: vi.fn() },
+      type: 'sine',
+      start: vi.fn(),
+      stop: vi.fn(),
+    }),
+    createGain: vi.fn().mockReturnValue({
+      connect: vi.fn(),
+      gain: { setValueAtTime: vi.fn(), exponentialRampToValueAtTime: vi.fn() },
+    }),
+    destination: {},
+    currentTime: 0,
+  }));
+}
+
 // Mock Supabase
 vi.mock('@/integrations/supabase/client', () => ({
   supabase: {
