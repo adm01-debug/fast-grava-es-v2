@@ -1,34 +1,18 @@
-import { createContext, useContext, useEffect, useState, ReactNode, useCallback, useRef } from 'react';
-import { User, Session } from '@supabase/supabase-js';
+import { useEffect, useState, ReactNode, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useDeviceDetection } from '@/hooks/useDeviceDetection';
 import { toast } from 'sonner';
 import { AuthService } from '@/services/authService';
+import {
+  AuthContext,
+  type AuthContextType,
+  type AppRole,
+  type Profile,
+} from '@/contexts/auth-context';
 
-export type AppRole = 'coordinator' | 'operator' | 'manager';
-
-export interface Profile {
-  id: string;
-  full_name: string | null;
-  avatar_url: string | null;
-  phone: string | null;
-}
-
-interface AuthContextType {
-  user: User | null;
-  session: Session | null;
-  profile: Profile | null;
-  role: AppRole | null;
-  isLoading: boolean;
-  signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
-  signUp: (email: string, password: string, fullName: string) => Promise<{ error: Error | null }>;
-  signOut: () => Promise<void>;
-  isCoordinator: boolean;
-  isOperator: boolean;
-  isManager: boolean;
-}
-
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+// Re-export for backward compatibility with existing imports
+export { useAuth } from '@/hooks/useAuth';
+export type { AppRole, Profile, AuthContextType };
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
