@@ -180,10 +180,10 @@ export function MaintenanceExecutionModal({
     const sheet = technicalSheets.find(s => s.id === selectedSheetId);
     if (!sheet) return;
 
-    const ranges = (sheet?.settings_ranges as any) || {};
+    const ranges = sheet?.settings_ranges || {};
     const newAlerts: typeof activeAlerts = [];
 
-    const checkRange = (name: string, value: string, range: any, paramKey: string) => {
+    const checkRange = (name: string, value: string, range: { min?: string; max?: string } | undefined) => {
       if (!range || (!range.min && !range.max)) return;
       const val = parseFloat(value.replace(/[^0-9.]/g, ''));
       if (isNaN(val) && value !== '') return;
