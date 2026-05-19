@@ -33,7 +33,7 @@ export function BatchApprovalPreviewModal({
   }, [records, recordIds]);
 
   const validationResults = useMemo(() => {
-    return selectedRecords.map(record => {
+    return selectedRecords.map((record: MaintenanceRecord) => {
       const issues = [];
       if (!record.signature_url) issues.push('Assinatura ausente');
 
