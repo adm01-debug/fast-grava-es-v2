@@ -209,8 +209,8 @@ const Index = () => {
             <h1 className="text-3xl font-display font-black tracking-tighter">
               <span className="gradient-text">{t('dashboard.title')}</span>
             </h1>
-            <Badge variant="outline" className="hidden sm:flex gap-1.5 px-2.5 border-primary/30 bg-primary/5 text-primary text-[10px] font-black uppercase">
-               <ShieldCheck className="h-3 w-3" /> Orquestrado 13/10 (Hyper)
+            <Badge variant="outline" className="hidden sm:flex gap-1.5 px-2.5 border-primary/30 bg-primary/5 text-primary text-[10px] font-black uppercase shadow-[0_0_15px_rgba(255,90,31,0.1)]">
+               <ShieldCheck className="h-3 w-3" /> Orquestrado 10/10 (Elite)
             </Badge>
             <FavoriteButton path="/" name={t('dashboard.title')} />
             {isOperator && (
