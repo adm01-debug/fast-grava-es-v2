@@ -121,7 +121,7 @@ describe('useOperatorProductivity', () => {
     });
 
     const { supabase } = await import('@/integrations/supabase/client');
-    (supabase.from as any).mockImplementation(() => ({
+    (supabase.from as unknown as Mock).mockImplementation(() => ({
       select: vi.fn().mockReturnThis(),
       eq: vi.fn().mockResolvedValue({ data: null, error: { message: 'Fetch error' } }),
       in: vi.fn().mockResolvedValue({ data: null, error: { message: 'Fetch error' } }),
