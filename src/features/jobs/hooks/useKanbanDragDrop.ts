@@ -79,7 +79,7 @@ export function useKanbanDragDrop({ jobs, onJobsUpdate }: UseKanbanDragDropProps
 
     setIsUpdating(true);
     try {
-      const updates = newOrder.map((job, index) => ({
+      const updates: JobUpdate[] = newOrder.map((job, index) => ({
         id: job.id,
         sort_order: index,
         updated_at: new Date().toISOString(),
@@ -87,7 +87,7 @@ export function useKanbanDragDrop({ jobs, onJobsUpdate }: UseKanbanDragDropProps
 
       const { error } = await supabase
         .from('jobs')
-        .upsert(updates as any, { onConflict: 'id' });
+        .upsert(updates, { onConflict: 'id' });
 
       if (error) throw error;
       toast.success('Ordem atualizada');
