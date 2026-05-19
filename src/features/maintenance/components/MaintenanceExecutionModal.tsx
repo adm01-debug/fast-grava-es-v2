@@ -41,17 +41,35 @@ interface MaintenanceExecutionModalProps {
     notes: string;
     total_cost: number;
     downtime_minutes: number;
-    responses: any[];
-    parts: any[];
+    responses: Array<{
+      checklist_item_id: string;
+      is_checked: boolean;
+      measurement_value?: number;
+      notes?: string;
+      photo_url?: string;
+    }>;
+    parts: Array<{
+      name: string;
+      code: string;
+      quantity: number;
+    }>;
     signature?: string;
     checklist_version?: number;
-    checklist_snapshot?: any;
+    checklist_snapshot?: ChecklistSnapshot;
     technical_sheet_id?: string;
     technical_sheet_version?: number;
-    quality_responses?: any[];
-    adjustment_parameters?: any;
-    supplies_used?: any[];
-    execution_alerts?: any[];
+    quality_responses?: Array<{
+      item: string;
+      status: 'pass' | 'fail' | 'na';
+      notes?: string;
+    }>;
+    adjustment_parameters?: IAdjustmentParameters;
+    supplies_used?: Array<{
+      name: string;
+      quantity: string;
+      alternative_used?: boolean;
+    }>;
+    execution_alerts?: ExecutionAlert[];
     failure_risk_detected?: boolean;
   }) => void;
 }
