@@ -1,9 +1,8 @@
 import { supabase } from '@/integrations/supabase/client';
 import type { Database } from '@/integrations/supabase/types';
-import { jobSchema } from '../types/job.schema';
+import { jobSchema, JobStatus, JobPriority } from '../types/job.schema';
 
-export type JobStatus = 'queue' | 'ready' | 'scheduled' | 'production' | 'finished' | 'paused' | 'cancelled' | 'delayed' | 'rework' | 'buffer';
-export type JobPriority = 'low' | 'medium' | 'high' | 'urgent';
+export type { JobStatus, JobPriority };
 
 // Base Job type from DB, but with strictly typed status and priority
 export interface Job extends Omit<Database['public']['Tables']['jobs']['Row'], 'status' | 'priority'> {
