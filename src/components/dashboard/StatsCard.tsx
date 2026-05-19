@@ -89,13 +89,18 @@ function StatsCardComponent({
 
   if (compact) {
     return (
-      <Card className={cn(
-        'group p-4 glass-card transition-all duration-500 relative overflow-hidden',
-        'hover:-translate-y-1 hover:shadow-xl',
-        styles.glowClass,
-        styles.borderClass,
-        className
-      )}>
+      <Card 
+        tabIndex={0}
+        role="region"
+        aria-label={`${title}: ${value}${subtitle ? `, ${subtitle}` : ''}`}
+        className={cn(
+          'group p-4 glass-card transition-all duration-500 relative overflow-hidden',
+          'hover:-translate-y-1 hover:shadow-xl focus:ring-2 focus:ring-primary focus:outline-none',
+          styles.glowClass,
+          styles.borderClass,
+          className
+        )}
+      >
         <div className="flex items-center gap-4 relative z-10">
           <div className={cn(
             'w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 transition-all duration-500 group-hover:scale-110 group-hover:rotate-3 shadow-inner',
@@ -104,9 +109,9 @@ function StatsCardComponent({
             <Icon className={cn('w-6 h-6 drop-shadow-sm', styles.iconColor)} aria-hidden="true" />
           </div>
           <div className="min-w-0 flex-1">
-            <p className="text-[11px] font-medium text-muted-foreground truncate uppercase tracking-wider">
+            <h3 className="text-[11px] font-medium text-muted-foreground truncate uppercase tracking-wider">
               {title}
-            </p>
+            </h3>
             <div className="flex items-baseline gap-2">
               <p className="text-3xl font-bold tracking-tight text-foreground font-display group-hover:scale-105 transition-transform duration-500 origin-left">
                 {value}
