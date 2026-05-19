@@ -1,5 +1,8 @@
+import { supabase } from '@/integrations/supabase/client';
+
 /**
  * Structured logger — handles logging levels and production error capture.
+ * Persists errors to Supabase and sends critical alerts.
  * Never logs PII (emails, tokens, passwords).
  */
 
