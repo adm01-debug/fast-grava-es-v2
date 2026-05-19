@@ -44,7 +44,7 @@ export const NavButton = memo(forwardRef<HTMLDivElement, NavButtonProps>(functio
           'hover:bg-sidebar-accent hover:text-sidebar-foreground hover:pl-4 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 focus-visible:bg-sidebar-accent',
           isActive && [
             'bg-sidebar-accent text-primary font-bold border-l-4 border-primary shadow-sm',
-            'shadow-[inset_0_0_20px_rgba(var(--primary-rgb),0.08),0_0_25px_rgba(var(--primary-rgb),0.12)]',
+            'shadow-[inset_0_0_20px_rgba(var(--primary-rgb),0.08),0_0_25px_rgba(var(--primary-rgb),0.12)] border-r border-primary/10',
             'hover:pl-4 transition-all duration-300',
           ],
           !isActive && 'border-l-4 border-transparent text-sidebar-foreground/70',
