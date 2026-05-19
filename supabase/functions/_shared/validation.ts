@@ -18,3 +18,11 @@ export const stripeDataSchema = z.object({
   id: z.string(),
   object: z.string().optional(),
 });
+
+export const mlPredictionPayloadSchema = z.object({
+  action: z.enum(["batch_analyze", "single_machine"]).default("batch_analyze"),
+  machine_id: z.string().uuid().optional(),
+});
+
+export type MLPredictionPayload = z.infer<typeof mlPredictionPayloadSchema>;
+
