@@ -4,8 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useEffect, useRef, useCallback } from 'react';
 import { startOfDay, endOfDay } from 'date-fns';
 import { logger } from '@/lib/logger';
-import { usePushNotifications } from './usePushNotifications';
-import { useNotificationSounds } from './useNotificationSounds';
+import { usePushNotifications, useNotificationSounds } from '@/features/notifications';
 import { toast } from 'sonner';
 import { createAppError } from '@/lib/errorHandling';
 
