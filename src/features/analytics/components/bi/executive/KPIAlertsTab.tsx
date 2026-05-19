@@ -74,7 +74,7 @@ const KPIAlertsTabComponent = ({
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {kpis.anomalies.map((anomaly: any) => (
+                {kpis.anomalies.map((anomaly) => (
                   <div key={anomaly.id} className={cn(
                     "flex items-start gap-4 p-4 rounded-xl border animate-in fade-in slide-in-from-left-4 duration-300",
                     anomaly.severity === 'high' ? "border-primary/40 bg-primary/10" : "border-amber-500/20 bg-amber-500/5"
