@@ -218,7 +218,12 @@ export function MaintenanceExecutionModal({
 
   useEffect(() => {
     if (checklist?.items) {
-      const initialResponses: Record<string, any> = {};
+      const initialResponses: Record<string, {
+        is_checked: boolean;
+        measurement_value?: number;
+        notes?: string;
+        photo_url?: string;
+      }> = {};
       checklist.items.forEach(item => {
         initialResponses[item.id] = {
           is_checked: false,
