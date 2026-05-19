@@ -312,7 +312,7 @@ export default function MachinesPage() {
                               />
                               <span>{technique?.name || 'Técnica Desconhecida'}</span>
                               <Badge variant="secondary" className="text-[10px] uppercase font-bold tracking-widest">
-                                {techMachines.length}
+                                {(techMachines as any[]).length}
                               </Badge>
                             </CardTitle>
                             <Button
@@ -320,10 +320,10 @@ export default function MachinesPage() {
                               size="sm"
                               className="text-[10px] uppercase font-bold tracking-tighter"
                               onClick={() => {
-                                const allSelected = techMachines.every(m => selectedMachines.has(m.id));
+                                const allSelected = (techMachines as any[]).every((m: any) => selectedMachines.has(m.id));
                                 setSelectedMachines(prev => {
                                   const next = new Set(prev);
-                                  techMachines.forEach(m => {
+                                  (techMachines as any[]).forEach((m: any) => {
                                     if (allSelected) next.delete(m.id);
                                     else next.add(m.id);
                                   });
@@ -331,13 +331,13 @@ export default function MachinesPage() {
                                 });
                               }}
                             >
-                              {techMachines.every(m => selectedMachines.has(m.id)) ? 'Deselecionar' : 'Selecionar Grupo'}
+                              {(techMachines as any[]).every((m: any) => selectedMachines.has(m.id)) ? 'Deselecionar' : 'Selecionar Grupo'}
                             </Button>
                           </div>
                         </CardHeader>
                         <CardContent className="pt-6">
                           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                            {techMachines.map((machine, idx) => {
+                            {(techMachines as any[]).map((machine: any, idx: number) => {
                               const machineMetrics = oeeData?.byMachine.find(m => m.machineId === machine.id);
                               return (
                                 <div key={machine.id} className="relative group">
