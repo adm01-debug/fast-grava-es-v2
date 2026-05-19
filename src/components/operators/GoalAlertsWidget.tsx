@@ -6,7 +6,7 @@ import { Progress } from '@/components/ui/progress';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useGoalAlerts, GoalAlert } from '@/features/notifications';
-import { GOAL_TYPE_LABELS, GoalType } from '@/hooks/useOperatorGoals';
+import { GOAL_TYPE_LABELS, GoalType } from '@/features/production';
 import {
   AlertTriangle,
   Target,

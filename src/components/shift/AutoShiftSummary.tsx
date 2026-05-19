@@ -2,7 +2,7 @@ import { useMemo, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { useOperatorDashboardData } from '@/hooks/useOperatorDashboardData';
+import { useOperatorDashboardData } from '@/features/production';
 import { useSchedulingData } from '@/features/jobs';
 import { exportShiftReportPDF } from '@/lib/shiftReportPdf';
 import { toast } from 'sonner';

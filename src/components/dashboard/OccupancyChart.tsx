@@ -2,7 +2,7 @@ import { useMemo, memo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { BarChart3 } from 'lucide-react';
-import { useOperatorDashboardData } from '@/hooks/useOperatorDashboardData';
+import { useOperatorDashboardData } from '@/features/production';
 import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
 

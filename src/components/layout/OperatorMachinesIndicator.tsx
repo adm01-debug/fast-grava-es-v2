@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useAuth } from '@/features/auth';
 import { useOperatorMachines } from '@/features/production';
-import { useOperatorPresence } from '@/hooks/useOperatorPresence';
+import { useOperatorPresence } from '@/features/production';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 

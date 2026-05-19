@@ -7,7 +7,7 @@ import { DateRange } from 'react-day-picker';
 import { startOfDay, endOfDay } from 'date-fns';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { StatsCard } from '@/components/dashboard/StatsCard';
-import { useOperatorDashboardData } from '@/hooks/useOperatorDashboardData';
+import { useOperatorDashboardData } from '@/features/production';
 import { useDashboardLayout, WidgetConfig } from '@/hooks/useDashboardLayout';
 import { useAuth } from '@/features/auth';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';

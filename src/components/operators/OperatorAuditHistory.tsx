@@ -18,7 +18,7 @@ import {
   Calendar,
   User
 } from 'lucide-react';
-import { useOperatorAudit } from '@/hooks/useOperatorAudit';
+import { useOperatorAudit } from '@/features/production';
 import { format, subDays, isAfter } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 

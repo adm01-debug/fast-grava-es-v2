@@ -1,4 +1,4 @@
-import { useOperatorGoals, calculateGoalProgress, GOAL_TYPE_LABELS } from '@/hooks/useOperatorGoals';
+import { useOperatorGoals, calculateGoalProgress, GOAL_TYPE_LABELS } from '@/features/production';
 import { useOperatorEvolution } from '@/features/production';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
