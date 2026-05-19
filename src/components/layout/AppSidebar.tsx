@@ -119,33 +119,43 @@ export function AppSidebar() {
         {/* Header */}
         <div className={cn('flex items-center h-16 px-4 border-b border-sidebar-border relative', collapsed && !isMobile ? 'justify-center' : 'justify-between')}>
           <div className="flex items-center overflow-hidden flex-1">
-            {(!collapsed || isMobile) && location.pathname !== '/' && location.pathname !== '/operator' && location.pathname !== '/auth' ? (
-              <motion.div
-                key="back-icon"
-                initial={{ x: -20, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                exit={{ x: -20, opacity: 0 }}
-                className="flex-shrink-0"
-              >
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  onClick={() => {
-                    SoundFeedback.navBack();
-                    navigate(-1);
-                  }}
-                  className="h-9 w-9 rounded-xl bg-primary/10 text-primary hover:bg-primary/20 hover:scale-105 active:scale-95 transition-all"
+            <AnimatePresence mode="wait">
+              {(!collapsed || isMobile) && location.pathname !== '/' && location.pathname !== '/operator' && location.pathname !== '/auth' ? (
+                <motion.div
+                  key="back-icon"
+                  initial={{ x: -20, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  exit={{ x: -20, opacity: 0 }}
+                  className="flex-shrink-0"
                 >
-                  <ChevronLeft className="w-5 h-5" />
-                </Button>
-              </motion.div>
-            ) : (
-              <BrandLogo 
-                collapsed={collapsed && !isMobile} 
-                size={collapsed && !isMobile ? "sm" : "md"} 
-                showSubtitle={false}
-              />
-            )}
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    onClick={() => {
+                      SoundFeedback.navBack();
+                      navigate(-1);
+                    }}
+                    className="h-9 w-9 rounded-xl bg-primary/10 text-primary hover:bg-primary/20 hover:scale-105 active:scale-95 transition-all"
+                  >
+                    <ChevronLeft className="w-5 h-5" />
+                  </Button>
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="logo-icon"
+                  initial={{ x: 20, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  exit={{ x: 20, opacity: 0 }}
+                >
+                  <BrandLogo 
+                    collapsed={collapsed && !isMobile} 
+                    size={collapsed && !isMobile ? "sm" : "md"} 
+                    showSubtitle={false}
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
+
 
 
             
