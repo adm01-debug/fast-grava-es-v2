@@ -26,3 +26,13 @@ export const mlPredictionPayloadSchema = z.object({
 
 export type MLPredictionPayload = z.infer<typeof mlPredictionPayloadSchema>;
 
+export const approvePasswordResetSchema = z.object({
+  requestId: z.string().uuid("ID da solicitação inválido"),
+  action: z.enum(["approve", "reject"]),
+  rejectionReason: z.string().optional(),
+  redirectUrl: z.string().url().optional(),
+});
+
+export type ApprovePasswordResetPayload = z.infer<typeof approvePasswordResetSchema>;
+
+
