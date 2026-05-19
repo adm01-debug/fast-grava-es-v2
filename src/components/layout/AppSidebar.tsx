@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLocation, Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ChevronLeft, ChevronRight, Printer, Plus, LogOut, ArrowLeft } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Printer, Plus, LogOut, ArrowLeft, Settings, Shield } from 'lucide-react';
 import { SoundFeedback } from '@/lib/soundFeedback';
 import { cn } from '@/lib/utils';
 import { prefetchRoute } from '@/lib/prefetch';
@@ -188,9 +188,23 @@ export function AppSidebar() {
 
         <div className={cn('p-3 border-t border-sidebar-border/50', collapsed && !isMobile && 'p-2')}>
           {(!collapsed || isMobile) && <div className="mb-2 px-1"><LanguageSwitcher /></div>}
-          <div className={cn('flex items-center gap-3 rounded-lg p-2', collapsed && !isMobile && 'justify-center p-2')}>
-            <div className="w-9 h-9 rounded-full gradient-primary flex items-center justify-center text-primary-foreground font-semibold text-sm">{profile?.full_name?.charAt(0)?.toUpperCase() || 'U'}</div>
-            {(!collapsed || isMobile) && <div className="flex-1 min-w-0"><p className="text-sm font-bold text-sidebar-foreground truncate tracking-tight">{profile?.full_name || 'Usuário'}</p><p className="text-[10px] font-black text-primary/60 uppercase tracking-widest truncate">{role === 'coordinator' ? 'Coordenação' : role === 'manager' ? 'Gestão' : 'Operação'}</p></div>}
+          <div className={cn('flex items-center gap-3 rounded-xl p-2 relative group-user', collapsed && !isMobile && 'justify-center p-2')}>
+            <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center text-primary-foreground font-bold text-base shadow-lg ring-2 ring-primary/20 ring-offset-2 ring-offset-sidebar">
+              {profile?.full_name?.charAt(0)?.toUpperCase() || 'U'}
+            </div>
+            {(!collapsed || isMobile) && (
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-black text-sidebar-foreground truncate tracking-tight uppercase leading-none mb-1">
+                  {profile?.full_name || 'Usuário'}
+                </p>
+                <div className="flex items-center gap-1">
+                  <Shield className="w-2.5 h-2.5 text-primary" />
+                  <p className="text-[9px] font-bold text-primary/80 uppercase tracking-widest truncate">
+                    {role === 'coordinator' ? 'Coordenação' : role === 'manager' ? 'Gestão' : 'Operação'}
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
           <Button variant="ghost" size={(collapsed && !isMobile) ? "icon" : "sm"} onClick={handleSignOut} className={cn('w-full mt-3 font-bold text-xs uppercase tracking-widest text-sidebar-foreground/60 hover:text-destructive hover:bg-destructive/10 focus:ring-2 focus:ring-destructive focus:ring-offset-2 transition-all duration-300', collapsed && !isMobile && 'px-0')}>
             <LogOut className="h-3.5 w-3.5" />{(!collapsed || isMobile) && <span className="ml-2">{t('common.logout')}</span>}
