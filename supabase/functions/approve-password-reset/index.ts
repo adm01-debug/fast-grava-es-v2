@@ -65,21 +65,20 @@ Deno.serve(async (req) => {
       .eq('id', requestingUser.id)
       .single()
 
-    const { requestId, action, rejectionReason, redirectUrl } = await req.json()
+    const body = await req.json().catch(() => ({}))
+    const validationResult = approvePasswordResetSchema.safeParse(body)
 
-    if (!requestId || !action) {
-      return new Response(JSON.stringify({ error: 'ID da solicitação e ação são obrigatórios' }), {
+    if (!validationResult.success) {
+      return new Response(JSON.stringify({ 
+        error: 'Validação falhou', 
+        details: validationResult.error.format() 
+      }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       })
     }
 
-    if (action !== 'approve' && action !== 'reject') {
-      return new Response(JSON.stringify({ error: 'Ação inválida' }), {
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      })
-    }
+    const { requestId, action, rejectionReason, redirectUrl } = validationResult.data
 
     // Get the request
     const { data: resetRequest, error: fetchError } = await supabaseAdmin
