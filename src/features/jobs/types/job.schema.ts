@@ -1,5 +1,11 @@
 import { z } from 'zod';
 
+export const jobStatusSchema = z.enum(['queue', 'ready', 'scheduled', 'production', 'finished', 'paused', 'cancelled', 'delayed', 'rework', 'buffer']);
+export type JobStatus = z.infer<typeof jobStatusSchema>;
+
+export const jobPrioritySchema = z.enum(['low', 'medium', 'high', 'urgent']);
+export type JobPriority = z.infer<typeof jobPrioritySchema>;
+
 export const jobSchema = z.object({
   id: z.string().uuid(),
   order_number: z.string().min(1, 'Número do pedido é obrigatório'),
@@ -8,8 +14,8 @@ export const jobSchema = z.object({
   quantity: z.number().int().positive('Quantidade deve ser positiva'),
   technique_id: z.string().uuid('Técnica é obrigatória'),
   machine_id: z.string().uuid().nullable().optional(),
-  priority: z.enum(['low', 'medium', 'high', 'urgent']).catch('medium'),
-  status: z.enum(['queue', 'ready', 'scheduled', 'production', 'finished', 'paused', 'cancelled', 'delayed', 'rework', 'buffer']).catch('queue'),
+  priority: jobPrioritySchema.catch('medium'),
+  status: jobStatusSchema.catch('queue'),
   estimated_duration: z.number().positive().default(60),
   scheduled_date: z.string().nullable().optional(),
   start_time: z.string().nullable().optional(),
