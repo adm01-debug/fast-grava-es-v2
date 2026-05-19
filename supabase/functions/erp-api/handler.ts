@@ -1,8 +1,6 @@
-import { assertEquals } from "https://deno.land/std@0.168.0/testing/asserts.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { 
   ERPJobRequestSchema, 
-  ERPJobResponseSchema, 
   ERPLotRequestSchema,
   validateContract
 } from "../_shared/contracts.ts";
@@ -20,7 +18,6 @@ export const handler = async (req: Request): Promise<Response> => {
   const erpIndex = pathParts.indexOf('erp-api');
   const apiPath = erpIndex !== -1 ? pathParts.slice(erpIndex + 1) : pathParts;
   const endpoint = apiPath[0] || '';
-  const resourceId = apiPath[1];
 
   const supabase = createClient(
     Deno.env.get('SUPABASE_URL') || '',
@@ -40,8 +37,6 @@ export const handler = async (req: Request): Promise<Response> => {
           }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
         }
 
-        // Mocking database insertion for testing if in test mode or just forwarding
-        // In actual function, it performs DB operations
         return new Response(JSON.stringify({
           id: crypto.randomUUID(),
           ...validation.data,
@@ -76,8 +71,8 @@ export const handler = async (req: Request): Promise<Response> => {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
     });
   } catch (error: any) {
-    return new Response(JSON.stringify({ error: error?.message || "Unknown error" }), { 
-
+    const message = error instanceof Error ? error.message : String(error);
+    return new Response(JSON.stringify({ error: message }), { 
       status: 500, 
       headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
     });
