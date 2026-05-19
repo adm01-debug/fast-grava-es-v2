@@ -11,7 +11,8 @@ import {
   Cpu,
   CheckCircle2
 } from "lucide-react";
-import { useBottleneckPrediction, BottleneckAlert } from "@/features/analytics/hooks/useBottleneckPrediction";
+import { useBottleneckPrediction, BottleneckAlert } from "@/features/analytics";
+
 
 interface AlertCardProps {
   alert: BottleneckAlert;
