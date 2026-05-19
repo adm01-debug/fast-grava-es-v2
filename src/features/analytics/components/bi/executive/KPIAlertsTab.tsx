@@ -14,7 +14,7 @@ interface KPIAlertsTabProps {
     goalId: string;
     operatorName: string;
     message: string;
-    riskLevel: 'critical' | 'warning';
+    riskLevel: 'critical' | 'warning' | 'on-track';
     progressPercentage: number;
   }>;
   kpis: KPIData;
