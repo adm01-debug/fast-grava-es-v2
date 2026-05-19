@@ -155,10 +155,6 @@ export function AppSidebar() {
                 </motion.div>
               )}
             </AnimatePresence>
-
-
-
-            
             {(!collapsed || isMobile) && (
               <motion.div 
                 initial={{ opacity: 0, x: -10 }}
