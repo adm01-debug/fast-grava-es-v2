@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { injectAxe, checkA11y } from '@axe-core/playwright';
+import AxeBuilder from '@axe-core/playwright';
 
 test.describe('Autenticação e Sessão', () => {
   test('deve realizar login e logout com sucesso', async ({ page }) => {
@@ -30,22 +30,17 @@ test.describe('Autenticação e Sessão', () => {
 
 test.describe('Acessibilidade Automatizada', () => {
   test('dashboard deve passar na auditoria axe', async ({ page }) => {
-    // Simular login persistente para acessar dashboard
     await page.goto('/');
-    await injectAxe(page);
-    await checkA11y(page, undefined, {
-      detailedReport: true,
-      detailedReportOptions: { html: true },
-    });
+    // No context login mock would be needed here for a real test, 
+    // but assuming session is handled or we just test public accessibility
+    const accessibilityScanResults = await new AxeBuilder({ page }).analyze();
+    expect(accessibilityScanResults.violations).toEqual([]);
   });
 
   test('página de login deve passar na auditoria axe', async ({ page }) => {
     await page.goto('/auth');
-    await injectAxe(page);
-    await checkA11y(page, undefined, {
-      detailedReport: true,
-      detailedReportOptions: { html: true },
-    });
+    const accessibilityScanResults = await new AxeBuilder({ page }).analyze();
+    expect(accessibilityScanResults.violations).toEqual([]);
   });
 
   test('barra de navegação deve ser acessível por teclado', async ({ page }) => {
