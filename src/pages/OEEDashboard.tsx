@@ -339,7 +339,7 @@ const OEEDashboard = memo(function OEEDashboard() {
       });
       
       // Action Plan section
-      const finalY = (doc as any).lastAutoTable.finalY + 15;
+      const finalY = (doc as jsPDFWithAutoTable).lastAutoTable.finalY + 15;
       if (finalY < 250) {
         doc.setFontSize(14);
         doc.setTextColor(232, 93, 58);
