@@ -90,8 +90,8 @@ export function ThemeToggle() {
             variant="ghost"
             size="icon"
             className={cn(
-              'relative h-9 w-9 overflow-hidden transition-all duration-300 ease-out',
-              'hover:bg-accent/80 hover:scale-110 active:scale-95',
+              'relative h-9 w-9 overflow-hidden transition-all duration-300 ease-out rounded-xl',
+              'hover:bg-accent/80 hover:scale-110 active:scale-95 shadow-lg shadow-black/5',
               isAnimating && 'scale-90 opacity-80'
             )}
             title={isDark ? 'Mudar para tema claro' : 'Mudar para tema escuro'}
