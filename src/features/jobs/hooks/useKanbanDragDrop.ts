@@ -4,7 +4,10 @@ import { arrayMove } from '@dnd-kit/sortable';
 import { DbJob } from '@/features/jobs';
 import { JobStatus, assertTransition } from '@/features/jobs';
 import { supabase } from '@/integrations/supabase/client';
+import { Database } from '@/integrations/supabase/types';
 import { toast } from 'sonner';
+
+type JobUpdate = Database['public']['Tables']['jobs']['Update'];
 
 interface UseKanbanDragDropProps {
   jobs: DbJob[];
