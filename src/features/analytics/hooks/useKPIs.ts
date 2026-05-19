@@ -267,7 +267,7 @@ export function useKPIs(period: KPIPeriod = 'all', customTargets?: Partial<KPITa
           ? machineJobs.reduce((sum: number, j: DbJob) => sum + sanitizeNumber(j.estimated_duration), 0) / machineJobs.length
           : 0,
       };
-    }).filter((m: any) => m.jobCount > 0);
+    }).filter(m => m.jobCount > 0);
 
     const productivityByTechnique = validTechniques.map((technique: DbTechnique) => {
       const techJobs = validJobs.filter(j => j.technique_id === technique.id);
