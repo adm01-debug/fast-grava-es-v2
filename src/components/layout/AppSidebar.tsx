@@ -166,7 +166,6 @@ export function AppSidebar() {
                   animate={{ opacity: 1, x: 0 }}
                   className="flex-1 min-w-0"
                 >
-                  <h1 className="font-display font-black text-sidebar-foreground tracking-tight truncate uppercase leading-none mb-1" style={{ fontSize: '1.625rem' }}>FAST GRAVAÇÕES</h1>
                   <p className="text-[11px] font-black text-primary/70 uppercase tracking-[0.2em] truncate opacity-90">QUALIDADE + VELOCIDADE</p>
                 </motion.div>
               )}
