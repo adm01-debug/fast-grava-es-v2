@@ -93,10 +93,10 @@ export function TPMReports() {
         r.adjustment_parameters ? `Passadas: ${r.adjustment_parameters.squeegee_passes || '-'}\nPressão: ${r.adjustment_parameters.pressure || '-'}\nVelocidade: ${r.adjustment_parameters.speed || '-'}\nTemp: ${r.adjustment_parameters.temperature || '-'}` : '-'
       ]);
 
-      (doc as any).autoTable({
+      (doc as jsPDFWithAutoTable).autoTable({
         startY: 70,
         head: [['Data', 'Máquina', 'Tipo', 'Status', 'Executado por', 'Downtime', 'Regulagem']],
-        body: tableData,
+        body: tableData as any,
         theme: 'striped',
         headStyles: { fillColor: [59, 130, 246] },
         styles: { fontSize: 8 },
