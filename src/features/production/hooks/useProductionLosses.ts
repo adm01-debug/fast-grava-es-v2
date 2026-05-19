@@ -50,14 +50,14 @@ export function useProductionLosses(jobId?: string, filters?: { shift?: string; 
       if (error) throw error;
 
       // Client-side filtering for machine and technique since they are in the related job table
-      let filteredData = (data || []) as any[];
+      let filteredData = (data as unknown as ExtendedProductionLoss[]) || [];
       
       if (filters?.machineId && filters.machineId !== 'all') {
-        filteredData = filteredData.filter((l: any) => l.job?.machine_id === filters.machineId);
+        filteredData = filteredData.filter((l) => l.job?.machine_id === filters.machineId);
       }
       
       if (filters?.techniqueId && filters.techniqueId !== 'all') {
-        filteredData = filteredData.filter((l: any) => l.job?.technique_id === filters.techniqueId);
+        filteredData = filteredData.filter((l) => l.job?.technique_id === filters.techniqueId);
       }
 
       return filteredData;
