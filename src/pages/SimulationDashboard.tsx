@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Play, RotateCcw, AlertTriangle, CheckCircle2, Activity, ShieldCheck, Zap } from 'lucide-react';
-import { runSimulation, SimulationResult, SCENARIOS } from '@/lib/simulation';
+import { runMassiveSimulation as runSimulation, SimulationResult, generateScenarios } from '@/lib/simulation';
+const SCENARIOS = generateScenarios();
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell 
