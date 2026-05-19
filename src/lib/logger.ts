@@ -1,20 +1,32 @@
 /**
- * Structured logger — only logs in development mode.
- * In production, errors go to Sentry (if configured) or are silently discarded.
+ * Structured logger — handles logging levels and production error capture.
  * Never logs PII (emails, tokens, passwords).
  */
 
 const isDev = import.meta.env.DEV;
 
-type LogLevel = 'debug' | 'info' | 'warn' | 'error';
+export type LogLevel = 'debug' | 'info' | 'warn' | 'error' | 'critical';
 
-interface LogEntry {
+export interface LogEntry {
   level: LogLevel;
   message: string;
   context?: string;
   data?: any;
   timestamp: string;
+  severity?: number; // 0-4 scale for monitoring
 }
+
+const SEVERITY_MAP: Record<LogLevel, number> = {
+  debug: 0,
+  info: 1,
+  warn: 2,
+  error: 3,
+  critical: 4,
+};
+
+// Error monitoring history (limited to 50 entries in memory for internal dashboard)
+const errorHistory: LogEntry[] = [];
+const MAX_HISTORY = 50;
 
 function formatEntry(entry: LogEntry): string {
   const prefix = `[${entry.timestamp}] [${entry.level.toUpperCase()}]`;
@@ -22,13 +34,23 @@ function formatEntry(entry: LogEntry): string {
 }
 
 function createEntry(level: LogLevel, message: string, context?: string, data?: any): LogEntry {
-  return {
+  const entry = {
     level,
     message,
     context,
     data,
     timestamp: new Date().toISOString(),
+    severity: SEVERITY_MAP[level],
   };
+
+  if (level === 'error' || level === 'critical' || level === 'warn') {
+    errorHistory.unshift(entry);
+    if (errorHistory.length > MAX_HISTORY) {
+      errorHistory.pop();
+    }
+  }
+
+  return entry;
 }
 
 export const logger = {
@@ -45,23 +67,32 @@ export const logger = {
   },
 
   warn(message: string, data?: any, context?: string) {
-    if (!isDev) return;
     const entry = createEntry('warn', message, context, data);
-    console.warn(formatEntry(entry), data ?? '');
+    if (isDev) {
+      console.warn(formatEntry(entry), data ?? '');
+    }
   },
 
   error(message: string, error?: any, context?: string) {
-    // Errors always log (even in prod for Sentry/error tracking)
     const entry = createEntry('error', message, context, error);
     if (isDev) {
       console.error(formatEntry(entry), error ?? '');
     } else {
-      // Production fallback for critical errors if Sentry is not yet initialized
-      if (entry.level === 'error') {
-        // Minimal production logging for diagnostics without leaking data
-        console.error(`[FATAL] ${entry.timestamp} ${message}`);
-      }
+      console.error(`[FATAL] ${entry.timestamp} ${message}`);
     }
-    // In production, Sentry captures via its global handler
   },
+
+  critical(message: string, error?: any, context?: string) {
+    const entry = createEntry('critical', message, context, error);
+    console.error(`[CRITICAL] ${formatEntry(entry)}`, error ?? '');
+    // Possible integration with external alerting system here
+  },
+
+  getErrorHistory(): LogEntry[] {
+    return [...errorHistory];
+  },
+
+  clearHistory() {
+    errorHistory.length = 0;
+  }
 };
