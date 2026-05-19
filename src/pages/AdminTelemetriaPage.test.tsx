@@ -10,7 +10,7 @@ vi.mock('@/components/layout/MainLayout', () => ({
   MainLayout: ({ children }: { children: React.ReactNode }) => <div data-testid="mock-main-layout">{children}</div>,
 }));
 
-vi.mock('@/components/admin/telemetry/TelemetryCharts', () => ({
+vi.mock('@/features/admin/components/telemetry/TelemetryCharts', () => ({
   TelemetryCharts: () => <div data-testid="mock-charts">Charts</div>,
 }));
 

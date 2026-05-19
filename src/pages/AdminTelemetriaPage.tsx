@@ -14,7 +14,7 @@ import {
   Trash2, Download, FileText, CalendarIcon, Layout, Monitor, Bug
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { TelemetryCharts } from "@/components/admin/telemetry/TelemetryCharts";
+import { TelemetryCharts } from "@/features/admin/components/telemetry/TelemetryCharts";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
