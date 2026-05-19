@@ -365,17 +365,29 @@ export function MaintenanceExecutionModal({
       parts,
       signature,
       checklist_version: checklist?.version,
-      checklist_snapshot: checklist,
+      checklist_snapshot: checklist ? {
+        id: checklist.id,
+        name: checklist.name,
+        items: checklist.items?.map(i => ({
+          id: i.id,
+          description: i.description,
+          is_critical: i.is_critical,
+          requires_photo: i.requires_photo,
+          requires_measurement: i.requires_measurement,
+          measurement_unit: i.measurement_unit
+        })) || []
+      } : undefined,
       technical_sheet_id: selectedSheetId || undefined,
       technical_sheet_version: selectedSheetId ? (technicalSheets.find(s => s.id === selectedSheetId)?.version) : undefined,
       quality_responses: Object.entries(qualityResponses).map(([id, data]) => ({
-        id,
-        ...data
+        item: id,
+        status: data.approved ? 'pass' : 'fail',
+        notes: data.justification
       })),
       adjustment_parameters: {
         ...adjustmentParams,
-        recommended: selectedSheetId ? (technicalSheets.find(s => s.id === selectedSheetId)?.machine_settings) : null,
-        ranges: selectedSheetId ? (technicalSheets.find(s => s.id === selectedSheetId)?.settings_ranges) : null
+        recommended: selectedSheetId ? (technicalSheets.find(s => s.id === selectedSheetId)?.machine_settings as any) : null,
+        ranges: selectedSheetId ? (technicalSheets.find(s => s.id === selectedSheetId)?.settings_ranges as any) : null
       },
       supplies_used: Object.entries(suppliesUsed)
         .filter(([_, data]) => data.is_checked)
