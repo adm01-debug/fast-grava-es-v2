@@ -27,6 +27,34 @@ export interface MaintenanceSchedule {
   maintenance_type?: MaintenanceType;
 }
 
+export interface ChecklistSnapshot {
+  id: string;
+  name: string;
+  items: Array<{
+    id: string;
+    description: string;
+    is_critical: boolean;
+    requires_photo: boolean;
+    requires_measurement: boolean;
+    measurement_unit: string | null;
+  }>;
+}
+
+export interface AdjustmentParameters {
+  squeegee_passes?: string;
+  pressure?: string;
+  speed?: string;
+  temperature?: string;
+  ranges?: Record<string, { min?: string; max?: string }>;
+  [key: string]: unknown;
+}
+
+export interface QualityChecklistResult {
+  item: string;
+  status: 'pass' | 'fail' | 'na';
+  notes?: string;
+}
+
 export interface MaintenanceChecklist {
   id: string;
   maintenance_type_id: string;
