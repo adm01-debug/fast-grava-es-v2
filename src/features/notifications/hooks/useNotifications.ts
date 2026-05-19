@@ -4,22 +4,7 @@ import { useEffect } from 'react';
 import { toast } from 'sonner';
 import { logger } from '@/lib/logger';
 
-export interface Notification {
-  id: string;
-  title: string;
-  message: string;
-  type: 'info' | 'success' | 'warning' | 'error' | 'urgent';
-  category: string | null;
-  source_system: string;
-  is_read: boolean;
-  read_at: string | null;
-  action_url: string | null;
-  action_label: string | null;
-  priority: number;
-  group_count: number;
-  is_grouped: boolean;
-  created_at: string;
-}
+import { Notification } from '../types';
 
 const EMPTY_NOTIFICATIONS: Notification[] = [];
 
