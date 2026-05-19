@@ -21,7 +21,7 @@ interface KPIOverviewTabProps {
   visibleKPIs: Record<string, boolean>;
   completionRate: number;
   statusData: Array<{ name: string; value: number; color: string }>;
-  handleDrillDown: (title: string, segment: string) => void;
+  handleDrillDown: (title: string, segment: "delayed" | "finished" | "lost" | "production" | "queue") => void;
 }
 
 const KPIOverviewTabComponent = ({
