@@ -40,7 +40,7 @@ const KPIAlertsTabComponent = ({
                 <CardDescription>Operadores com metas em risco ou atrasadas</CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
-                {goalAlerts.map((alert: any) => (
+                {goalAlerts.map((alert) => (
                   <div key={alert.goalId} className={cn(
                     "p-4 rounded-xl border flex items-center justify-between",
                     alert.riskLevel === 'critical' ? "bg-red-500/10 border-red-500/20" : "bg-amber-500/10 border-amber-500/20"
