@@ -12,7 +12,7 @@ import { useLoadBalancing, LoadBalancingSuggestion } from "@/hooks/useLoadBalanc
 import { useEfficiencyNotifications } from "@/hooks/useEfficiencyNotifications";
 import { EfficiencyAlertHistoryWidget } from "@/components/dashboard/EfficiencyAlertHistoryWidget";
 import { useStuckJobsDetection, StuckJob } from "@/features/jobs";
-import { useOrphanedDataDetection } from "@/hooks/useOrphanedDataDetection";
+import { useOrphanedDataDetection } from "@/features/admin";
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { AlertJobCard } from "@/components/alerts/AlertJobCard";
 import { AlertStatsGrid } from "@/components/alerts/AlertStatsGrid";

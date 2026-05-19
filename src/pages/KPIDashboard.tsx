@@ -9,7 +9,7 @@ import { Switch } from '@/components/ui/switch';
 import { useKPIs, formatDuration, KPIPeriod, KPITargets } from '@/hooks/useKPIs';
 import { useOperatorProductivity } from '@/features/production';
 import { useGoalAlerts } from '@/hooks/useGoalAlerts';
-import { useBIExport } from '@/hooks/useBIExport';
+import { useBIExport } from '@/features/admin';
 import {
   TrendingUp,
   TrendingDown,

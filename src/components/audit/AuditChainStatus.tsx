@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ShieldCheckIcon, ShieldAlertIcon, RefreshCwIcon, Loader2Icon } from 'lucide-react';
-import { useAuditChainVerification } from '@/hooks/useAuditTrail';
+import { useAuditChainVerification } from '@/features/admin';
 
 export function AuditChainStatus() {
   const [enabled, setEnabled] = useState(false);

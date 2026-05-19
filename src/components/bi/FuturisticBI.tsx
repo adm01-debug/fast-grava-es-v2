@@ -23,7 +23,7 @@ import { DrillDownDialog } from './drilldown/DrillDownDialog';
 import { LossesTable } from './losses/LossesTable';
 import { DelaysAnalysis } from './delays/DelaysAnalysis';
 import { FuturisticStatCard } from './FuturisticStatCard';
-import { useBIExport } from '@/hooks/useBIExport';
+import { useBIExport } from '@/features/admin';
 import { BITooltip } from './BITooltip';
 import { BIEmptyState } from './BIEmptyState';
 import { BILoadingSkeleton } from './BILoadingSkeleton';

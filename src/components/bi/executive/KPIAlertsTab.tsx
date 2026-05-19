@@ -4,7 +4,7 @@ import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { AlertTriangle, Target, Clock, Percent, ShieldCheck, User, Activity } from 'lucide-react';
-import { useDetailedAuditTrail } from '@/hooks/useDetailedAuditTrail';
+import { useDetailedAuditTrail } from '@/features/admin';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 

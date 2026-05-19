@@ -19,7 +19,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { useEntityAuditTrail } from '@/hooks/useAuditTrail';
+import { useEntityAuditTrail } from '@/features/admin';
 import { AuditEntryCard } from '@/components/audit/AuditEntryCard';
 import { HistoryPeriodFilter, type HistoryPeriodValue } from '@/components/audit/HistoryPeriodFilter';
 import { MachineTPMPanel } from '@/components/tpm/MachineTPMPanel';
@@ -30,7 +30,7 @@ import { useAuth } from '@/features/auth';
 import { toast } from 'sonner';
 import { MachineReliabilityTab } from '@/components/machines/MachineReliabilityTab';
 import { useMTBFMTTR } from '@/features/production';
-import { useDataExport } from '@/hooks/useDataExport';
+import { useDataExport } from '@/features/admin';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { Input } from '@/components/ui/input';

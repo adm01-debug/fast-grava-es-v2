@@ -20,7 +20,7 @@ import {
   Globe,
   Command
 } from 'lucide-react';
-import { useBlockedIPs, useRateLimitLogs, useSecurityEvents } from '@/hooks/useRateLimitLogs';
+import { useBlockedIPs, useRateLimitLogs, useSecurityEvents } from '@/features/admin';
 import { BlockedIPsPanel } from '@/components/security/BlockedIPsPanel';
 import { RateLimitSettings } from '@/components/security/RateLimitSettings';
 import { SecurityEventsLog } from '@/components/security/SecurityEventsLog';

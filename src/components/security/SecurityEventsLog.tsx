@@ -1,5 +1,5 @@
-import { useSecurityEvents } from '@/hooks/useRateLimitLogs';
-import { useRealtimeSecurityEvents } from '@/hooks/useSecurityEvents';
+import { useSecurityEvents } from '@/features/admin';
+import { useRealtimeSecurityEvents } from '@/features/admin';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
