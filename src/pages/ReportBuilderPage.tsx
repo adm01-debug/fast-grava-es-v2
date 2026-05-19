@@ -47,6 +47,11 @@ import { useMutation } from '@tanstack/react-query';
 import { Input } from '@/components/ui/input';
 import * as XLSX from 'xlsx';
 
+interface ReportFilters {
+  status: string;
+  dateRange?: DateRange;
+}
+
 
 const REPORT_TABLES = [
   { id: 'jobs', name: 'Jobs e Produção', icon: FileText },
