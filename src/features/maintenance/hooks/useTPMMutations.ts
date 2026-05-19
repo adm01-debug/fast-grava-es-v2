@@ -174,11 +174,16 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
 
       // Validar Tempos e Custos
       if (data.downtime_minutes && data.downtime_minutes > 480) {
-         toast.warning("Tempo de parada muito alto (>8h) detectado. Certifique-se de que o valor está correto.");
+         toast.warning("Tempo de parada muito alto (>8h) detectado. Certifique-se de que o valor está correto.", {
+           action: { label: 'Revisar', onClick: () => {} }
+         });
       }
 
       if (data.total_cost && data.total_cost > 10000) {
-         toast.warning("Custo de manutenção elevado detectado. Verifique se o valor está em centavos ou reais.");
+         toast.warning("Custo de manutenção elevado detectado. Verifique se o valor está em centavos ou reais.", {
+           description: `R$ ${(data.total_cost).toLocaleString('pt-BR')}`,
+           duration: 6000
+         });
       }
 
       // Update the main record to 'completed' (Pending Approval)
@@ -382,7 +387,10 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
       queryClient.invalidateQueries({ queryKey: ['maintenance-records'] });
       queryClient.invalidateQueries({ queryKey: ['maintenance-schedules'] });
       queryClient.invalidateQueries({ queryKey: ['maintenance-alerts'] });
-      toast.success('Manutenção aprovada e próximo agendamento atualizado');
+      toast.success('Manutenção aprovada e próximo agendamento atualizado', {
+        description: `Próxima revisão em ${new Date(nextDue).toLocaleDateString('pt-BR')}`,
+        icon: <CheckCircle2 className="h-4 w-4 text-success" />
+      });
     },
     onError: (error) => {
       showErrorToast(error, 'Erro ao aprovar manutenção', TPM_ERROR_CONTEXT.records);
@@ -409,7 +417,10 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['maintenance-records'] });
-      toast.info('Solicitação de correção enviada ao técnico');
+      toast.info('Solicitação de correção enviada ao técnico', {
+        description: data.notes.substring(0, 100) + (data.notes.length > 100 ? '...' : ''),
+        duration: 5000
+      });
     },
     onError: (error) => {
       showErrorToast(error, 'Erro ao solicitar correção', TPM_ERROR_CONTEXT.records);

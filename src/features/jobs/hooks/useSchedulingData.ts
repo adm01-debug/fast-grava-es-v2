@@ -12,8 +12,8 @@ import { machinesService } from '../../production/services/machinesService';
 
 // Retry configuration for connection failures
 const RETRY_CONFIG = {
-  retry: 2, // Reduced from 3 for faster failure reporting
-  retryDelay: (attemptIndex: number) => Math.min(1000 * 2 ** attemptIndex, 10000), // Max 10s
+  retry: 3,
+  retryDelay: (attemptIndex: number) => calculateRetryDelay(attemptIndex),
 };
 
 // Context-specific error messages
