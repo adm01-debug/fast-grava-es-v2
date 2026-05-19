@@ -1,4 +1,4 @@
-import { InventoryMovement } from '../useInventory';
+import { InventoryMovement } from '@/features/inventory';
 
 export function exportInventoryMovementsToCSV(movements: any[]) {
   if (!movements || movements.length === 0) return;
