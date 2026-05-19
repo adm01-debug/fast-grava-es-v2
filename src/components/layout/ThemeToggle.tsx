@@ -1,4 +1,4 @@
-import { Moon, Sun, Volume2, VolumeX } from 'lucide-react';
+import { Moon, Sun, Volume2, VolumeX, Monitor } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
@@ -165,6 +165,11 @@ export function ThemeToggle() {
                 <span>Tema Escuro</span>
               </>
             )}
+          </DropdownMenuItem>
+
+          <DropdownMenuItem onClick={() => setTheme('system')} className="cursor-pointer">
+            <Monitor className="mr-2 h-4 w-4" />
+            <span>Usar Sistema</span>
           </DropdownMenuItem>
 
           <DropdownMenuSeparator />
