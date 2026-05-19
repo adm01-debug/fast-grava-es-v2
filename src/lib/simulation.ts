@@ -1,12 +1,14 @@
 import { supabase } from "@/integrations/supabase/client";
 
+export type SimulationSource = 'bitrix24' | 'stripe' | 'system' | 'unknown';
+
 export interface SimulationScenario {
   id: string;
   name: string;
-  source: string;
+  source: SimulationSource;
   event: string;
   description: string;
-  payload?: any;
+  payload?: Record<string, unknown> | string;
   expectedStatus: number;
 }
 
