@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { Database, Json } from '@/integrations/supabase/types';
 import { toast } from 'sonner';
 import { addDays, differenceInDays } from 'date-fns';
 import { showErrorToast, categorizeError } from '@/lib/errorHandling';
