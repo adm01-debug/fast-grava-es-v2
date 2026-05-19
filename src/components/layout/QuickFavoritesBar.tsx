@@ -112,9 +112,10 @@ const SortableFavorite = memo(function SortableFavorite({
               variant="ghost"
               size="icon"
               className={cn(
-                'h-8 w-8 relative transition-all cursor-grab active:cursor-grabbing',
-                isActive && 'bg-primary/20 text-primary',
-                !isActive && 'hover:bg-muted'
+                'h-9 w-9 rounded-lg relative transition-all duration-500 cursor-grab active:cursor-grabbing',
+                'hover:scale-110 active:scale-90',
+                isActive && 'bg-primary/20 text-primary shadow-lg shadow-primary/10 border border-primary/20',
+                !isActive && 'hover:bg-muted text-muted-foreground hover:text-foreground'
               )}
               {...attributes}
               {...listeners}
@@ -307,7 +308,7 @@ export const QuickFavoritesBar = memo(function QuickFavoritesBar() {
   };
 
   return (
-    <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-muted/30 border border-border/50">
+    <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-muted/40 backdrop-blur-md border border-border/30 shadow-inner">
       {isSyncing && (
         <Tooltip>
           <TooltipTrigger asChild>
