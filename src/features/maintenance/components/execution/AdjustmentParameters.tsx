@@ -25,7 +25,7 @@ export function AdjustmentParameters({
     temperature: 'Temp.'
   };
 
-  const Icons: Record<string, any> = {
+  const Icons: Record<string, LucideIcon> = {
     squeegee_passes: MoveHorizontal,
     pressure: PenTool,
     speed: Zap,
