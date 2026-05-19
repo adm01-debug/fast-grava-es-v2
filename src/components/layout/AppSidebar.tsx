@@ -138,14 +138,24 @@ export function AppSidebar() {
                     animate={{ x: 0, opacity: 1 }}
                     exit={{ x: 20, opacity: 0 }}
                     className={cn(
-                      "rounded-xl gradient-primary flex items-center justify-center glow-primary shadow-lg flex-shrink-0",
+                      "rounded-xl overflow-hidden flex items-center justify-center flex-shrink-0",
                       collapsed && !isMobile ? "w-10 h-10" : "w-14 h-14"
                     )}
                     style={collapsed && !isMobile ? { width: 40, height: 40 } : { width: 68, height: 68 }}
                     role="img"
                     aria-label="FAST GRAVAÇÕES - Qualidade + Velocidade"
                   >
-                    <div className={cn("font-black text-primary-foreground", collapsed && !isMobile ? "text-lg" : "text-2xl")}>F</div>
+                    <picture>
+                      <source srcSet="/logo.webp" type="image/webp" />
+                      <img 
+                        src="/logo.png" 
+                        alt="FAST" 
+                        className="w-full h-full object-contain"
+                        fetchPriority="high"
+                        loading="eager"
+                        decoding="async"
+                      />
+                    </picture>
                   </motion.div>
                 )}
               </AnimatePresence>

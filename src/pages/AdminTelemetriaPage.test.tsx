@@ -81,7 +81,7 @@ describe('Painel de Telemetria (Lite)', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText('Telemetria de Queries')).toBeDefined();
+      expect(screen.getByText('Infraestrutura & Qualidade')).toBeDefined();
     });
 
     // Verificar se os dados mockados aparecem na tabela
