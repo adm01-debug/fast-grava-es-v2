@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { DbJob } from './useJobs';
+import { DbJob } from '@/features/jobs';
 
 interface UtilizationOptions {
   startHour: number;

@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { useJobs, DbJob } from './useJobs';
+import { useJobs, DbJob } from '../index';
 
 export interface StuckJob {
   job: DbJob;

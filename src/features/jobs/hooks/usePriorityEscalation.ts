@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { useSchedulingData } from './useSchedulingData';
+import { useSchedulingData } from '../index';
 import { useNotificationsContext } from '@/contexts/NotificationsContext';
 import { useAuth } from '@/features/auth';
 import { supabase } from '@/integrations/supabase/client';

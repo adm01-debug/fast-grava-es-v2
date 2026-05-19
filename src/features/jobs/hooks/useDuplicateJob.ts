@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
-import { DbJob } from './useJobs';
+import { DbJob } from '../index';
 import { toast } from 'sonner';
 
 /**

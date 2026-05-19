@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { useJobs, useTechniques, useMachines, DbJob, DbTechnique, DbMachine } from './useJobs';
+import { useJobs, useTechniques, useMachines, DbJob, DbTechnique, DbMachine } from '@/features/jobs';
 
 export interface OrphanedTechnique {
   technique: DbTechnique;

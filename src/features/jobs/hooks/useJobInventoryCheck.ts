@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { useInventory } from './useInventory';
+import { useInventory } from '@/features/inventory';
 
 export function useJobInventoryCheck(techniqueId?: string) {
   const { items: inventoryItems, isLoading: isLoadingInventory } = useInventory();

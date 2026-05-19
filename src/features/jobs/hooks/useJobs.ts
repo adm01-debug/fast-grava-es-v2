@@ -5,7 +5,7 @@ import { createAppError, createMutationErrorHandler } from '@/lib/errorHandling'
 import { QUERY_KEYS, STALE_TIMES } from '@/lib/queryConfig';
 import { jobsService } from '../services/jobsService';
 import type { Job, JobStatus } from '../services/jobsService';
-import { useTechniques } from './useTechniques';
+import { useTechniques } from '../index';
 import type { Technique } from '../services/techniquesService';
 
 // Error context for debugging

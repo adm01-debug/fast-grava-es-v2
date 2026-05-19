@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { useJobs, useMachines } from './useJobs';
+import { useJobs, useMachines } from '../index';
 import { parseISO, parse, isValid, areIntervalsOverlapping } from 'date-fns';
 
 export interface SchedulingConflict {
