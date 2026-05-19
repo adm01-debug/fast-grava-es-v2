@@ -12,10 +12,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
-import { useSPCParameters, useSPCMeasurements, useSPCAlerts, useSPCMutations, calculateCapabilityIndices, detectRunRules, SPCParameter } from '@/hooks/useSPC';
-import { SPCCreateParameterModal } from '@/components/spc/SPCCreateParameterModal';
-import { SPCControlChart } from '@/components/spc/SPCControlChart';
-import { QualityHistogram } from '@/components/spc/QualityHistogram';
+import { useSPCParameters, useSPCMeasurements, useSPCAlerts, useSPCMutations, calculateCapabilityIndices, detectRunRules, SPCParameter } from '@/features/analytics/hooks/useSPC';
+import { SPCCreateParameterModal } from '@/features/analytics/components/spc/SPCCreateParameterModal';
+import { SPCControlChart } from '@/features/analytics/components/spc/SPCControlChart';
+import { QualityHistogram } from '@/features/analytics/components/spc/QualityHistogram';
 import { exportSPCReport } from '@/lib/spcExport';
 import { toast } from 'sonner';
 

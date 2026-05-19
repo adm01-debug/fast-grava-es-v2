@@ -9,7 +9,7 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend
 } from 'recharts';
 import { cn } from '@/lib/utils';
-import { BIMetrics } from '@/types/bi';
+import { BIMetrics } from '@/features/analytics/types';
 
 const CHART_COLORS = {
   primary: 'hsl(var(--primary))',

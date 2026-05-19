@@ -10,7 +10,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { RefreshCw, ArrowRight, Download, Settings2, Loader2, Check, Link2, Database, Layers, X, Trash2 } from 'lucide-react';
 import { Bitrix24SyncPanel } from '@/components/integrations/Bitrix24SyncPanel';
 import { Bitrix24SyncHistory } from '@/components/integrations/Bitrix24SyncHistory';
-import { Bitrix24MappingDialog } from '@/components/bitrix24/Bitrix24MappingDialog';
+import { Bitrix24MappingDialog } from '@/features/analytics/components/bitrix24/Bitrix24MappingDialog';
 import { useToast } from '@/hooks/use-toast';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 

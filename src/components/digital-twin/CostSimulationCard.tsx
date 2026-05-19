@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { DollarSign, TrendingUp, TrendingDown, Calculator, RefreshCw } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { useKPIs } from '@/hooks/useKPIs';
+import { useKPIs } from '@/features/analytics/hooks/useKPIs';
 
 export function CostSimulationCard() {
   const { data, isLoading } = useKPIs('day');

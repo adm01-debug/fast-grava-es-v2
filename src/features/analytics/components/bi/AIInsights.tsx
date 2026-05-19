@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Sparkles, TrendingUp, TrendingDown, AlertCircle, Lightbulb } from 'lucide-react';
-import { BIMetrics } from '@/types/bi';
+import { BIMetrics } from '@/features/analytics/types';
 import { motion } from 'framer-motion';
 
 interface AIInsightsProps {

@@ -4,19 +4,19 @@ import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { useKPIs } from '@/hooks/useKPIs';
+import { useKPIs } from '@/features/analytics/hooks/useKPIs';
 import { useOEE } from '@/features/production';
 import { useSchedulingData } from '@/features/jobs';
 import { useOperators } from '@/features/production';
 import { useOperatorMachines } from '@/features/production';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
-import { BIStatCard } from '@/components/bi/BIStatCard';
-import { BILoadingSkeleton } from '@/components/bi/BILoadingSkeleton';
-import { BIPeriodFilters } from '@/components/bi/BIPeriodFilters';
-import { BIHeader } from '@/components/bi/BIHeader';
-import { FuturisticBI } from '@/components/bi/FuturisticBI';
-import { BINormalView } from '@/components/bi/BINormalView';
-import { DrillDownDialog } from '@/components/bi/drilldown/DrillDownDialog';
+import { BIStatCard } from '@/features/analytics/components/bi/BIStatCard';
+import { BILoadingSkeleton } from '@/features/analytics/components/bi/BILoadingSkeleton';
+import { BIPeriodFilters } from '@/features/analytics/components/bi/BIPeriodFilters';
+import { BIHeader } from '@/features/analytics/components/bi/BIHeader';
+import { FuturisticBI } from '@/features/analytics/components/bi/FuturisticBI';
+import { BINormalView } from '@/features/analytics/components/bi/BINormalView';
+import { DrillDownDialog } from '@/features/analytics/components/bi/drilldown/DrillDownDialog';
 import { useToast } from '@/hooks/use-toast';
 import {
   TrendingUp, AlertTriangle, Printer, CheckCircle, Clock, Target,
@@ -32,11 +32,11 @@ import { format, subDays, startOfDay, endOfDay, isWithinInterval, parseISO, diff
 import { ptBR } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { DelaysAnalysis } from '@/components/bi/delays/DelaysAnalysis';
-import { LossesTable } from '@/components/bi/losses/LossesTable';
-import { AIInsights } from '@/components/bi/AIInsights';
+import { DelaysAnalysis } from '@/features/analytics/components/bi/delays/DelaysAnalysis';
+import { LossesTable } from '@/features/analytics/components/bi/losses/LossesTable';
+import { AIInsights } from '@/features/analytics/components/bi/AIInsights';
 
-import { BIMetrics, BIJob } from '@/types/bi';
+import { BIMetrics, BIJob } from '@/features/analytics/types';
 type PeriodFilter = '7d' | '30d' | '90d' | 'custom';
 interface DateRange { from: Date; to: Date; }
 

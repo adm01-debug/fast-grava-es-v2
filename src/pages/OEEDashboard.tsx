@@ -60,8 +60,8 @@ import { useProductionLosses } from '@/features/production';
 import { Slider } from '@/components/ui/slider';
 import { Progress } from '@/components/ui/progress';
 import { Label } from '@/components/ui/label';
-const OEEGaugeCard = lazy(() => import('@/components/oee/OEEGaugeCard').then(m => ({ default: m.OEEGaugeCard })));
-const OEECalculationAudit = lazy(() => import('@/components/oee/OEECalculationAudit').then(m => ({ default: m.OEECalculationAudit })));
+const OEEGaugeCard = lazy(() => import('@/features/analytics/components/oee/OEEGaugeCard').then(m => ({ default: m.OEEGaugeCard })));
+const OEECalculationAudit = lazy(() => import('@/features/analytics/components/oee/OEECalculationAudit').then(m => ({ default: m.OEECalculationAudit })));
 import { Skeleton } from '@/components/ui/skeleton';
 import { KPITooltip, KPI_DEFINITIONS } from '@/components/ui/kpi-tooltip';
 import { VoiceButton } from '@/components/voice/VoiceCommands';
@@ -76,21 +76,21 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { KPIPageSkeleton, ChartSkeleton, TableSkeleton } from '@/components/loading';
 
 // Lazy load heavy dashboard components
-const OEEMachineTable = lazy(() => import('@/components/oee/OEEMachineTable').then(m => ({ default: m.OEEMachineTable })));
-const OEETrendChart = lazy(() => import('@/components/oee/OEETrendChart').then(m => ({ default: m.OEETrendChart })));
-const OEELossesChart = lazy(() => import('@/components/oee/OEELossesChart').then(m => ({ default: m.OEELossesChart })));
-const OEETechniqueComparison = lazy(() => import('@/components/oee/OEETechniqueComparison').then(m => ({ default: m.OEETechniqueComparison })));
-const OEEHeatmap = lazy(() => import('@/components/oee/OEEHeatmap').then(m => ({ default: m.OEEHeatmap })));
-const PredictiveAlerts = lazy(() => import('@/components/oee/PredictiveAlerts').then(m => ({ default: m.PredictiveAlerts })));
-const ParetoLossesChart = lazy(() => import('@/components/oee/ParetoLossesChart').then(m => ({ default: m.ParetoLossesChart })));
-const OEELossDrilldown = lazy(() => import('@/components/oee/OEELossDrilldown').then(m => ({ default: m.OEELossDrilldown })));
-const OEEShiftComparison = lazy(() => import('@/components/oee/OEEShiftComparison').then(m => ({ default: m.OEEShiftComparison })));
-const OEERecommendations = lazy(() => import('@/components/oee/OEERecommendations').then(m => ({ default: m.OEERecommendations })));
-const OEERankingGap = lazy(() => import('@/components/oee/OEERankingGap').then(m => ({ default: m.OEERankingGap })));
-const StudioEfficiencyGrid = lazy(() => import('@/components/oee/StudioEfficiencyGrid').then(m => ({ default: m.StudioEfficiencyGrid })));
-const MaterialEfficiencyChart = lazy(() => import('@/components/oee/MaterialEfficiencyChart').then(m => ({ default: m.MaterialEfficiencyChart })));
-const StudioHealthMonitor = lazy(() => import('@/components/oee/StudioHealthMonitor').then(m => ({ default: m.StudioHealthMonitor })));
-const HyperInsights = lazy(() => import('@/components/oee/HyperInsights').then(m => ({ default: m.HyperInsights })));
+const OEEMachineTable = lazy(() => import('@/features/analytics/components/oee/OEEMachineTable').then(m => ({ default: m.OEEMachineTable })));
+const OEETrendChart = lazy(() => import('@/features/analytics/components/oee/OEETrendChart').then(m => ({ default: m.OEETrendChart })));
+const OEELossesChart = lazy(() => import('@/features/analytics/components/oee/OEELossesChart').then(m => ({ default: m.OEELossesChart })));
+const OEETechniqueComparison = lazy(() => import('@/features/analytics/components/oee/OEETechniqueComparison').then(m => ({ default: m.OEETechniqueComparison })));
+const OEEHeatmap = lazy(() => import('@/features/analytics/components/oee/OEEHeatmap').then(m => ({ default: m.OEEHeatmap })));
+const PredictiveAlerts = lazy(() => import('@/features/analytics/components/oee/PredictiveAlerts').then(m => ({ default: m.PredictiveAlerts })));
+const ParetoLossesChart = lazy(() => import('@/features/analytics/components/oee/ParetoLossesChart').then(m => ({ default: m.ParetoLossesChart })));
+const OEELossDrilldown = lazy(() => import('@/features/analytics/components/oee/OEELossDrilldown').then(m => ({ default: m.OEELossDrilldown })));
+const OEEShiftComparison = lazy(() => import('@/features/analytics/components/oee/OEEShiftComparison').then(m => ({ default: m.OEEShiftComparison })));
+const OEERecommendations = lazy(() => import('@/features/analytics/components/oee/OEERecommendations').then(m => ({ default: m.OEERecommendations })));
+const OEERankingGap = lazy(() => import('@/features/analytics/components/oee/OEERankingGap').then(m => ({ default: m.OEERankingGap })));
+const StudioEfficiencyGrid = lazy(() => import('@/features/analytics/components/oee/StudioEfficiencyGrid').then(m => ({ default: m.StudioEfficiencyGrid })));
+const MaterialEfficiencyChart = lazy(() => import('@/features/analytics/components/oee/MaterialEfficiencyChart').then(m => ({ default: m.MaterialEfficiencyChart })));
+const StudioHealthMonitor = lazy(() => import('@/features/analytics/components/oee/StudioHealthMonitor').then(m => ({ default: m.StudioHealthMonitor })));
+const HyperInsights = lazy(() => import('@/features/analytics/components/oee/HyperInsights').then(m => ({ default: m.HyperInsights })));
 
 
 

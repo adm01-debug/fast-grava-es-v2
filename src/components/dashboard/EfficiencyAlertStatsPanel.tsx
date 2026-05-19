@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { Badge } from "@/components/ui/badge";
 import { AlertTriangle, CheckCircle, Zap, Scale, BarChart3, Timer } from "lucide-react";
-import { EfficiencyAlertHistory } from "@/hooks/useEfficiencyAlertHistory";
+import { EfficiencyAlertHistory } from "@/features/analytics/hooks/useEfficiencyAlertHistory";
 import { differenceInMinutes } from "date-fns";
 
 const severityColors = {

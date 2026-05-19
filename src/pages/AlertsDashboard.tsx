@@ -7,8 +7,8 @@ import { AlertTriangle, Clock, AlertCircle, RotateCcw, Zap, Bell, RefreshCw } fr
 import { useSchedulingData } from "@/features/jobs";
 import { DbJob } from "@/features/jobs";
 import { Job } from "@/types/scheduling";
-import { useBottleneckPrediction, BottleneckAlert } from "@/hooks/useBottleneckPrediction";
-import { useLoadBalancing, LoadBalancingSuggestion } from "@/hooks/useLoadBalancing";
+import { useBottleneckPrediction, BottleneckAlert } from "@/features/analytics/hooks/useBottleneckPrediction";
+import { useLoadBalancing, LoadBalancingSuggestion } from "@/features/analytics/hooks/useLoadBalancing";
 import { useEfficiencyNotifications } from "@/features/notifications";
 import { EfficiencyAlertHistoryWidget } from "@/components/dashboard/EfficiencyAlertHistoryWidget";
 import { useStuckJobsDetection, StuckJob } from "@/features/jobs";

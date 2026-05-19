@@ -1,4 +1,4 @@
-import { useMLPredictions } from '@/hooks/useMLPredictions';
+import { useMLPredictions } from '@/features/analytics/hooks/useMLPredictions';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';

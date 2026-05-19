@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { useMLPredictions } from '@/hooks/useMLPredictions';
+import { useMLPredictions } from '@/features/analytics/hooks/useMLPredictions';
 import { useMLPredictionNotifications } from '@/features/notifications';
 import { MLPredictionCard } from '@/components/ml/MLPredictionCard';
 import { MLRiskDistributionChart } from '@/components/ml/MLRiskDistributionChart';

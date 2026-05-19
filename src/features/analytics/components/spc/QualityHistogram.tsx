@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, ReferenceLine, Cell } from 'recharts';
-import { SPCParameter } from '@/hooks/useSPC';
+import { SPCParameter } from '@/features/analytics/hooks/useSPC';
 
 interface QualityHistogramProps {
   parameter: SPCParameter;

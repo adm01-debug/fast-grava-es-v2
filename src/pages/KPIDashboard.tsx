@@ -1,12 +1,12 @@
 import { useState, useMemo } from 'react';
-import { BIJob } from '@/types/bi';
+import { BIJob } from '@/features/analytics/types';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Switch } from '@/components/ui/switch';
-import { useKPIs, formatDuration, KPIPeriod, KPITargets } from '@/hooks/useKPIs';
+import { useKPIs, formatDuration, KPIPeriod, KPITargets } from '@/features/analytics/hooks/useKPIs';
 import { useOperatorProductivity } from '@/features/production';
 import { useGoalAlerts } from '@/features/notifications';
 import { useBIExport } from '@/features/admin';
@@ -55,12 +55,12 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { DrillDownDialog } from '@/components/bi/drilldown/DrillDownDialog';
+import { DrillDownDialog } from '@/features/analytics/components/bi/drilldown/DrillDownDialog';
 import { useSchedulingData } from '@/features/jobs';
-import { KPIOverviewTab } from '@/components/bi/executive/KPIOverviewTab';
-import { KPIMachinesTab } from '@/components/bi/executive/KPIMachinesTab';
-import { KPIOperatorsTab } from '@/components/bi/executive/KPIOperatorsTab';
-import { KPIAlertsTab } from '@/components/bi/executive/KPIAlertsTab';
+import { KPIOverviewTab } from '@/features/analytics/components/bi/executive/KPIOverviewTab';
+import { KPIMachinesTab } from '@/features/analytics/components/bi/executive/KPIMachinesTab';
+import { KPIOperatorsTab } from '@/features/analytics/components/bi/executive/KPIOperatorsTab';
+import { KPIAlertsTab } from '@/features/analytics/components/bi/executive/KPIAlertsTab';
 import {
   AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip,

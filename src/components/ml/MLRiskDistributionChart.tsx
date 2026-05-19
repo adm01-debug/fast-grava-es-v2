@@ -1,7 +1,7 @@
 import { Brain, TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Cell } from 'recharts';
-import { MachinePrediction } from '@/hooks/useMLPredictions';
+import { MachinePrediction } from '@/features/analytics/hooks/useMLPredictions';
 
 interface MLRiskDistributionChartProps {
   predictions: MachinePrediction[];

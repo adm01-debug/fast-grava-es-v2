@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { TrendingUp, Sparkles, DollarSign, Target, ArrowRight, BrainCircuit } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { BIMetrics } from '@/types/bi';
+import { BIMetrics } from '@/features/analytics/types';
 
 interface BIPredictiveROIProps {
   biMetrics: BIMetrics;

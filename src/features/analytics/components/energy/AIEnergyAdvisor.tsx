@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { BrainCircuit, Leaf, Zap, AlertTriangle, TrendingDown, Lightbulb, Info } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { motion } from 'framer-motion';
-import { useEnergy } from '@/hooks/useEnergy';
+import { useEnergy } from '@/features/analytics/hooks/useEnergy';
 import { useMemo } from 'react';
 
 export function AIEnergyAdvisor() {

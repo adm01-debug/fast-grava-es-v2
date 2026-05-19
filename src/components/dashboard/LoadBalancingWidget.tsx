@@ -13,7 +13,7 @@ import {
   Play,
   Loader2
 } from "lucide-react";
-import { useLoadBalancingWithActions, TechniqueLoadSummary, LoadBalancingSuggestion } from "@/hooks/useLoadBalancingWithActions";
+import { useLoadBalancingWithActions, TechniqueLoadSummary, LoadBalancingSuggestion } from "@/features/analytics/hooks/useLoadBalancingWithActions";
 
 interface TechniqueLoadCardProps {
   summary: TechniqueLoadSummary;

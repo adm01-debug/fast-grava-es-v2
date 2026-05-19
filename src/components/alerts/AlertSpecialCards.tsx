@@ -3,8 +3,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Timer, Database, Activity, Scale, Calendar, TrendingDown } from "lucide-react";
 import { DbJob } from "@/features/jobs";
-import { BottleneckAlert } from "@/hooks/useBottleneckPrediction";
-import { LoadBalancingSuggestion } from "@/hooks/useLoadBalancing";
+import { BottleneckAlert } from "@/features/analytics/hooks/useBottleneckPrediction";
+import { LoadBalancingSuggestion } from "@/features/analytics/hooks/useLoadBalancing";
 import { StuckJob } from "@/features/jobs";
 
 interface StuckJobsCardProps {

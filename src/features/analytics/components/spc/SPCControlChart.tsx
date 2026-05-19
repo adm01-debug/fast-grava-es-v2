@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Activity, BarChart2, Plus, Sparkles, TrendingUp, History, Info, Target } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, ComposedChart, Area } from 'recharts';
-import { SPCParameter } from '@/hooks/useSPC';
+import { SPCParameter } from '@/features/analytics/hooks/useSPC';
 import { cn } from '@/lib/utils';
 
 interface SPCControlChartProps {

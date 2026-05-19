@@ -9,7 +9,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { DashboardSkeleton } from '@/components/ui/DashboardSkeleton';
 import { Progress } from '@/components/ui/progress';
 import { Switch } from '@/components/ui/switch';
-import { useExecutiveDashboard, getDateRangePresets, DateRange } from '@/hooks/useExecutiveDashboard';
+import { useExecutiveDashboard, getDateRangePresets, DateRange } from '@/features/analytics/hooks/useExecutiveDashboard';
 import { exportExecutiveDashboardPDF } from '@/lib/pdfExport';
 import { exportExecutiveDashboardExcel } from '@/lib/excelExport';
 import { useQuery } from '@tanstack/react-query';
@@ -57,7 +57,7 @@ import { cn } from '@/lib/utils';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { VoiceButton } from '@/components/voice/VoiceCommands';
 import { AutonomousEventLog } from '@/components/autonomous/AutonomousEventLog';
-import { ExecutiveKPICardsGrid } from '@/components/bi/executive/ExecutiveKPICards';
+import { ExecutiveKPICardsGrid } from '@/features/analytics/components/bi/executive/ExecutiveKPICards';
 import {
   Dialog,
   DialogContent,
