@@ -473,7 +473,7 @@ export default function ReportBuilderPage() {
                         onClick={() => {
                           setSelectedTable(template.table_name);
                           setSelectedColumns(template.columns);
-                          setFormatType(template.format_type as any);
+                          setFormatType(template.format_type as 'csv' | 'pdf' | 'excel');
                           if (template.filters?.status) setSelectedStatus(template.filters.status);
                           toast.success(`Template "${template.name}" aplicado`);
                         }}
@@ -520,7 +520,7 @@ export default function ReportBuilderPage() {
                   <CardTitle className="text-[10px] font-black uppercase tracking-widest text-amber-600">Formato de Saída</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <Select value={formatType} onValueChange={(v: any) => setFormatType(v)}>
+                  <Select value={formatType} onValueChange={(v: 'csv' | 'pdf' | 'excel') => setFormatType(v)}>
                     <SelectTrigger className="bg-background/50 border-amber-500/20 text-amber-900 font-bold h-9">
                       <SelectValue />
                     </SelectTrigger>
