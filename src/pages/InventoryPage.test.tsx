@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor, fireEvent, act } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import InventoryPage from './InventoryPage';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { MemoryRouter } from 'react-router-dom';
@@ -49,11 +49,6 @@ describe('InventoryPage - Skeletons e Estabilidade', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     queryClient.clear();
-    vi.useFakeTimers();
-  });
-
-  afterEach(() => {
-    vi.useRealTimers();
   });
 
   it('deve exibir skeletons enquanto os itens do estoque estão carregando', async () => {
@@ -124,7 +119,7 @@ describe('InventoryPage - Skeletons e Estabilidade', () => {
 
     await waitFor(() => {
       expect(screen.getByText('Tinta Azul')).toBeDefined();
-    });
+    }, { timeout: 3000 });
     
     expect(screen.getByText('10')).toBeDefined();
   });
@@ -152,18 +147,16 @@ describe('InventoryPage - Skeletons e Estabilidade', () => {
 
     const searchInput = screen.getByPlaceholderText(/Buscar material/i);
     
-    await act(async () => {
-      fireEvent.change(searchInput, { target: { value: 'Solvente' } });
-      // Avança o tempo do debounce (300ms)
-      vi.advanceTimersByTime(350);
-    });
+    fireEvent.change(searchInput, { target: { value: 'Solvente' } });
 
+    // Aguarda o debounce de 300ms ser processado naturalmente pelo React
     await waitFor(() => {
       expect(screen.queryByText('Tinta Azul')).toBeNull();
       expect(screen.getByText('Solvente X')).toBeDefined();
-    });
+    }, { timeout: 5000 });
   });
 });
+
 
 
 
