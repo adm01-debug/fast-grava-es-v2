@@ -251,7 +251,6 @@ const OEEDashboard = memo(function OEEDashboard() {
       link.click();
       document.body.removeChild(link);
     } else if (reportFormat === 'pdf') {
-      const { jsPDF } = await import('jspdf');
       const { default: autoTable } = await import('jspdf-autotable');
       const doc = new jsPDF();
       
