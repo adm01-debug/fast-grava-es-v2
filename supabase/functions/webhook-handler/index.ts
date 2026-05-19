@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { webhookPayloadSchema } from "../_shared/validation.ts";
+import { WebhookPayloadSchema, WebhookResponseSchema, validateContract } from "../_shared/contracts.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -28,20 +28,20 @@ export const handler = async (req: Request): Promise<Response> => {
       });
     }
 
-    const validationResult = webhookPayloadSchema.safeParse(payload);
+    const validation = await validateContract(WebhookPayloadSchema, payload);
     
-    if (!validationResult.success) {
-      console.warn("Received webhook failed validation:", validationResult.error.format());
+    if (!validation.success) {
+      console.warn("Received webhook failed contract validation:", validation.details);
       return new Response(JSON.stringify({ 
-        error: "Validation failed", 
-        details: validationResult.error.format() 
+        error: validation.error, 
+        details: validation.details 
       }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    const { source, event, data } = validationResult.data;
+    const { source, event, data } = validation.data;
     const sanitizedData = data;
 
     // HMAC verification for security (Always use production keys if available)
@@ -108,7 +108,19 @@ export const handler = async (req: Request): Promise<Response> => {
         console.log(`Unknown webhook source: ${source}`);
     }
 
-    return new Response(JSON.stringify(result), {
+    const responsePayload = {
+      ...result,
+      source,
+      event,
+      timestamp: new Date().toISOString()
+    };
+
+    const responseValidation = WebhookResponseSchema.safeParse(responsePayload);
+    if (!responseValidation.success) {
+      console.error("Outgoing webhook response failed contract validation:", responseValidation.error.format());
+    }
+
+    return new Response(JSON.stringify(responsePayload), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (error) {

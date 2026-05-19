@@ -48,7 +48,7 @@ Deno.test({
     assertEquals(resp.status, 400);
     
     const body = await resp.json();
-    assertEquals(body.error, "Validation failed");
+    assertEquals(body.error, "Contract validation failed");
   }
 });
 

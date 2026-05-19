@@ -1,5 +1,13 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { 
+  ERPJobRequestSchema, 
+  ERPJobResponseSchema, 
+  ERPListResponseSchema,
+  ERPLotRequestSchema,
+  validateContract,
+  ErrorResponseSchema
+} from "../_shared/contracts.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -215,32 +223,42 @@ async function handleJobs(req: Request, supabase: any, jobId: string | undefined
   if (method === 'POST') {
     const body = await req.json();
     
-    // Validate required fields
-    const required = ['order_number', 'client', 'product', 'quantity', 'technique_id'];
-    for (const field of required) {
-      if (!body[field]) {
-        return jsonResponse({ error: `Missing required field: ${field}` }, 400);
-      }
+    const validation = await validateContract(ERPJobRequestSchema, body);
+    if (!validation.success) {
+      return jsonResponse({ 
+        error: validation.error, 
+        message: "Invalid job data",
+        details: validation.details 
+      }, 400);
     }
+
+    const jobData = validation.data;
 
     const { data, error } = await supabase
       .from('jobs')
       .insert({
-        order_number: body.order_number,
-        client: body.client,
-        product: body.product,
-        quantity: body.quantity,
-        technique_id: body.technique_id,
-        priority: body.priority || 'medium',
-        scheduled_date: body.scheduled_date,
-        machine_id: body.machine_id,
-        notes: body.notes,
+        order_number: jobData.order_number,
+        client: jobData.client,
+        product: jobData.product,
+        quantity: jobData.quantity,
+        technique_id: jobData.technique_id,
+        priority: jobData.priority,
+        scheduled_date: jobData.scheduled_date,
+        machine_id: jobData.machine_id,
+        notes: jobData.notes,
         status: 'queue'
       })
       .select()
       .single();
 
     if (error) throw error;
+    
+    // Validate outgoing response
+    const responseValidation = ERPJobResponseSchema.safeParse(data);
+    if (!responseValidation.success) {
+      console.warn("[ERP-API] Outgoing job response failed validation:", responseValidation.error.format());
+    }
+
     return jsonResponse(data, 201);
   }
 
@@ -315,9 +333,19 @@ async function handleLots(req: Request, supabase: any, lotId: string | undefined
 
   if (req.method === 'POST') {
     const body = await req.json();
+    
+    const validation = await validateContract(ERPLotRequestSchema, body);
+    if (!validation.success) {
+      return jsonResponse({ 
+        error: validation.error, 
+        message: "Invalid lot data",
+        details: validation.details 
+      }, 400);
+    }
+
     const { data, error } = await supabase
       .from('production_lots')
-      .insert(body)
+      .insert(validation.data)
       .select()
       .single();
 
