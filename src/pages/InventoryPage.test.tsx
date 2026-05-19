@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor, fireEvent } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent, act } from '@testing-library/react';
 import InventoryPage from './InventoryPage';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { MemoryRouter } from 'react-router-dom';
@@ -49,6 +49,11 @@ describe('InventoryPage - Skeletons e Estabilidade', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     queryClient.clear();
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   it('deve exibir skeletons enquanto os itens do estoque estão carregando', async () => {
@@ -124,7 +129,7 @@ describe('InventoryPage - Skeletons e Estabilidade', () => {
     expect(screen.getByText('10')).toBeDefined();
   });
 
-  it('deve filtrar itens corretamente e manter skeletons se necessário', async () => {
+  it('deve filtrar itens corretamente após o debounce', async () => {
     const mockUseInventory = vi.mocked(useInventory);
     const mockItems = [
       { id: '1', name: 'Tinta Azul', category: 'ink', current_stock: 10, unit: 'L', min_stock_level: 5 },
@@ -146,16 +151,19 @@ describe('InventoryPage - Skeletons e Estabilidade', () => {
     );
 
     const searchInput = screen.getByPlaceholderText(/Buscar material/i);
-    fireEvent.change(searchInput, { target: { value: 'Solvente' } });
-
-    // Esperamos 400ms devido ao debounce de 300ms + margem
-    await new Promise(r => setTimeout(r, 400));
+    
+    await act(async () => {
+      fireEvent.change(searchInput, { target: { value: 'Solvente' } });
+      // Avança o tempo do debounce (300ms)
+      vi.advanceTimersByTime(350);
+    });
 
     await waitFor(() => {
       expect(screen.queryByText('Tinta Azul')).toBeNull();
       expect(screen.getByText('Solvente X')).toBeDefined();
-    }, { timeout: 2000 });
+    });
   });
 });
+
 
 
