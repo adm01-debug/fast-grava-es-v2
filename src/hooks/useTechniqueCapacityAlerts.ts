@@ -1,5 +1,5 @@
 import { useMemo, useEffect, useRef } from 'react';
-import { useSchedulingData } from './useSchedulingData';
+import { useSchedulingData } from '@/features/jobs';
 import { useNotificationsContext } from '@/contexts/NotificationsContext';
 import { useAuth } from '@/features/auth';
 

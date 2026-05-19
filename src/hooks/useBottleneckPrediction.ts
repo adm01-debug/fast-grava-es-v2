@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { useJobs, useMachines, useTechniques, DbJob, DbTechnique } from './useJobs';
+import { useJobs, useMachines, useTechniques, DbJob, DbTechnique } from '@/features/jobs';
 import { format, addDays, parseISO, isValid } from 'date-fns';
 
 // Data validation helpers
