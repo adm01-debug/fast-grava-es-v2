@@ -3,7 +3,7 @@ import {
   WebhookPayloadSchema, 
   ERPJobRequestSchema, 
   validateContract 
-} from "../_shared/contracts.ts";
+} from "./contracts.ts";
 
 Deno.test("Webhook Contract - Valid Payload", async () => {
   const payload = {
