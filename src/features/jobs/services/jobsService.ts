@@ -1,8 +1,8 @@
 import { supabase } from '@/integrations/supabase/client';
 import type { Database } from '@/integrations/supabase/types';
+import { jobSchema, JobStatus, JobPriority } from '../types/job.schema';
 
-export type JobStatus = 'queue' | 'ready' | 'scheduled' | 'production' | 'finished' | 'paused' | 'cancelled' | 'delayed' | 'rework' | 'buffer';
-export type JobPriority = 'low' | 'medium' | 'high' | 'urgent';
+export type { JobStatus, JobPriority };
 
 // Base Job type from DB, but with strictly typed status and priority
 export interface Job extends Omit<Database['public']['Tables']['jobs']['Row'], 'status' | 'priority'> {
@@ -33,7 +33,18 @@ export const jobsService = {
     const { data, error } = await query.order('created_at', { ascending: false });
     if (error) throw error;
     
-    return (data || []) as unknown as JobWithRelations[];
+    // Runtime validation with Schema fallback
+    const validatedData = (data || []).map(row => {
+      const result = jobSchema.safeParse(row);
+      if (!result.success) {
+        console.warn(`Job validation failed for ID ${row.id}:`, result.error.format());
+        // We still return the row to avoid breaking the UI, but cast correctly
+        return row as unknown as JobWithRelations;
+      }
+      return result.data as unknown as JobWithRelations;
+    });
+
+    return validatedData;
   },
 
   async getById(id: string): Promise<JobWithRelations> {

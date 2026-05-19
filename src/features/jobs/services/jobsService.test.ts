@@ -1,6 +1,7 @@
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { jobsService } from './jobsService';
 import { supabase } from '@/integrations/supabase/client';
+import { JobInsert } from './jobsService';
 
 // Mock Supabase
 vi.mock('@/integrations/supabase/client', () => ({
@@ -51,13 +52,13 @@ describe('jobsService', () => {
   });
 
   it('deve criar um novo job com sucesso', async () => {
-    const newJob = { 
+    const newJob: JobInsert = { 
       order_number: 'OS-001', 
       client: 'Cliente Teste',
       product: 'Camiseta',
       quantity: 100,
       technique_id: 'tech-1'
-    } as any;
+    };
 
     const result = await jobsService.create(newJob);
     expect(result).toEqual({ id: '123', status: 'pending' });
@@ -66,6 +67,7 @@ describe('jobsService', () => {
 
   it('deve lidar com erros na busca de jobs', async () => {
     // Override mock for this test
+    // @ts-ignore - Mocking Supabase internal structure
     (supabase.from as any).mockReturnValueOnce({
       select: vi.fn(() => ({
         order: vi.fn(() => ({

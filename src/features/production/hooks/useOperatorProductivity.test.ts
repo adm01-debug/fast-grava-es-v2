@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
 import { useOperatorProductivity } from './useOperatorProductivity';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -42,7 +42,7 @@ describe('useOperatorProductivity', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     // Default mock for useSchedulingData
-    (schedulingHook.useSchedulingData as any).mockReturnValue({
+    (schedulingHook.useSchedulingData as unknown as Mock).mockReturnValue({
       jobs: [],
       machines: [],
       techniques: [],
@@ -66,7 +66,7 @@ describe('useOperatorProductivity', () => {
       }
     ];
 
-    (schedulingHook.useSchedulingData as any).mockReturnValue({
+    (schedulingHook.useSchedulingData as unknown as Mock).mockReturnValue({
       jobs: mockJobs,
       machines: [{ id: 'm1', name: 'Machine 1' }],
       techniques: [],
@@ -75,7 +75,7 @@ describe('useOperatorProductivity', () => {
 
     // Mock other queries in useOperatorProductivity
     const { supabase } = await import('@/integrations/supabase/client');
-    (supabase.from as any).mockImplementation((table: string) => {
+    (supabase.from as unknown as Mock).mockImplementation((table: string) => {
       if (table === 'user_roles') {
         return {
           select: vi.fn().mockReturnThis(),
@@ -113,7 +113,7 @@ describe('useOperatorProductivity', () => {
 
   it('should handle errors gracefully', async () => {
     // Mock scheduling data loading
-    (schedulingHook.useSchedulingData as any).mockReturnValue({
+    (schedulingHook.useSchedulingData as unknown as Mock).mockReturnValue({
       jobs: [],
       machines: [],
       techniques: [],
@@ -121,7 +121,7 @@ describe('useOperatorProductivity', () => {
     });
 
     const { supabase } = await import('@/integrations/supabase/client');
-    (supabase.from as any).mockImplementation(() => ({
+    (supabase.from as unknown as Mock).mockImplementation(() => ({
       select: vi.fn().mockReturnThis(),
       eq: vi.fn().mockResolvedValue({ data: null, error: { message: 'Fetch error' } }),
       in: vi.fn().mockResolvedValue({ data: null, error: { message: 'Fetch error' } }),
