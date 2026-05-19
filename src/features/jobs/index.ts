@@ -19,6 +19,10 @@ export * from './services/techniquesService';
 export * from './services/jobStateMachine';
 export * from './services/scheduling';
 export * from './types/job.schema';
+export * from './types/sequencing';
+
+// Re-export machines from production for convenience (deprecated)
+export { useMachines } from '../production/hooks/useMachines';
 
 // Compatibility aliases
 export type DbJob = import('./services/jobsService').Job;
@@ -26,4 +30,4 @@ export type DbTechnique = import('./services/techniquesService').Technique;
 export type DbMachine = import('../production/services/machinesService').Machine;
 export type SchedulingConflict = import('./hooks/useSchedulingConflicts').SchedulingConflict;
 export type StuckJob = import('./hooks/useStuckJobsDetection').StuckJob;
-export type SequencingSuggestion = import('./hooks/useSmartSequencing').SequencingSuggestion;
+export type { SequencingSuggestion, ColorGroup } from './types/sequencing';

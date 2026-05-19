@@ -1,7 +1,7 @@
 import { useMemo, useEffect, useRef, useCallback } from 'react';
 import { toast } from 'sonner';
-import { useOperatorGoals, calculateGoalProgress, GOAL_TYPE_LABELS, GoalType, GoalWithProgress } from './useOperatorGoals';
-import { useOperatorProductivity } from './useOperatorProductivity';
+import { useOperatorGoals, calculateGoalProgress, GOAL_TYPE_LABELS, GoalType, GoalWithProgress } from '@/features/production';
+import { useOperatorProductivity } from '@/features/production';
 import { navigateTo } from '@/lib/navigation';
 
 export interface GoalAlert {

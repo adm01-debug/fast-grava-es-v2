@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
-import { useJobs, useMachines, useTechniques, DbJob, DbMachine, DbTechnique } from './useJobs';
-import { useBusinessConfig } from './useBusinessConfig';
+import { useJobs, useMachines, useTechniques, DbJob, DbMachine, DbTechnique } from '@/features/jobs';
+import { useBusinessConfig } from '@/features/admin';
 import { parseISO, format, isValid } from 'date-fns';
 
 // Data validation helpers

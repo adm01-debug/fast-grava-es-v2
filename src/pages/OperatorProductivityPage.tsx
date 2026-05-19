@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Skeleton } from '@/components/ui/skeleton';
 import { useOperatorProductivity, OperatorProductivityMetrics, ProductivityPeriod } from '@/features/production';
 import { useOperatorEvolution } from '@/features/production';
-import { useOperatorGoals } from '@/hooks/useOperatorGoals';
+import { useOperatorGoals } from '@/features/production';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { CalendarDays, Download, Plus, Users, Gauge, CheckCircle2, AlertTriangle, Trophy, Search, Target } from 'lucide-react';
 import { Button } from '@/components/ui/button';

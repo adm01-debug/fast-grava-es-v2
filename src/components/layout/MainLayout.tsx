@@ -10,13 +10,13 @@ import { NetworkStatusIndicator } from '@/hooks/useNetworkStatus';
 import { SessionProvider } from '@/features/auth';
 import { SectionErrorBoundary } from '../ui/section-error-boundary';
 import { usePageTitle } from '@/hooks/usePageTitle';
-import { useNotifications } from '@/hooks/useNotifications';
+import { useNotifications } from '@/features/notifications';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 
 // Lazy-load non-critical layout components
 const AssistantButton = lazy(() => import('../assistant/AssistantButton').then(m => ({ default: m.AssistantButton })));
-const NotificationIntegrator = lazy(() => import('../notifications/NotificationIntegrator').then(m => ({ default: m.NotificationIntegrator })));
+const NotificationIntegrator = lazy(() => import('@/features/notifications').then(m => ({ default: m.NotificationIntegrator })));
 const RealtimeIndicator = lazy(() => import('../dashboard/RealtimeIndicator').then(m => ({ default: m.RealtimeIndicator })));
 const OperatorMachinesIndicator = lazy(() => import('./OperatorMachinesIndicator').then(m => ({ default: m.OperatorMachinesIndicator })));
 const QuickFavoritesBar = lazy(() => import('./QuickFavoritesBar').then(m => ({ default: m.QuickFavoritesBar })));

@@ -26,7 +26,7 @@ import { cn } from '@/lib/utils';
 import { useDevice } from '@/hooks/use-device';
 import { useAuth } from '@/features/auth';
 import { useAlertCount } from '@/hooks/useAlertCount';
-import { useNotifications } from '@/hooks/useNotifications';
+import { useNotifications } from '@/features/notifications';
 import { useHapticFeedback } from '@/hooks/use-haptic-feedback';
 import { useScrollDirection } from '@/hooks/use-scroll-direction';
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from '@/components/ui/sheet';

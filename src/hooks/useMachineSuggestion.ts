@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { useSchedulingData } from './useSchedulingData';
+import { useSchedulingData } from '@/features/jobs';
 
 interface MachineSuggestion {
   machineId: string;

@@ -13,6 +13,10 @@ export * from './hooks/useOperatorRankings';
 export * from './hooks/useOperatorEvolution';
 export * from './hooks/useOperatorSkills';
 export * from './hooks/useMTBFMTTR';
+export * from './hooks/useOperatorAudit';
+export * from './hooks/useOperatorDashboardData';
+export * from './hooks/useOperatorGoals';
+export * from './hooks/useOperatorPresence';
 export * from './services/machinesService';
 export * from './services/operatorsService';
 export * from './services/maintenanceService';
@@ -23,7 +27,7 @@ export * from './types/maintenance.schema';
 
 // Compatibility aliases
 export type Machine = import('./services/machinesService').Machine;
-export type Operator = import('./services/operatorsService').Operator;
-export type Maintenance = import('./services/maintenanceService').Maintenance;
+export type Operator = import('./types/operator.schema').Operator;
+export type Maintenance = import('./types/maintenance.schema').Maintenance;
 export type DbMachine = Machine;
 export type DbOperator = Operator;

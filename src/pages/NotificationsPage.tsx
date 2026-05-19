@@ -11,15 +11,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Bell, Wrench, Brain, Calendar, Search, Filter, RefreshCw, Wifi, WifiOff, Trash2, CheckCircle2 } from 'lucide-react';
 import { format, subDays } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { useDailySummaryNotifications } from '@/hooks/useDailySummaryNotifications';
-import { usePushNotifications } from '@/hooks/usePushNotifications';
-import { useNotificationSounds } from '@/hooks/useNotificationSounds';
-import { useNotifications } from '@/hooks/useNotifications';
+import { useDailySummaryNotifications } from '@/features/notifications';
+import { usePushNotifications } from '@/features/notifications';
+import { useNotificationSounds } from '@/features/notifications';
+import { useNotifications } from '@/features/notifications';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
-import { NotificationStatsCards } from '@/components/notifications/NotificationStatsCards';
-import { NotificationsList } from '@/components/notifications/NotificationsList';
+import { NotificationStatsCards } from '@/features/notifications/components/NotificationStatsCards';
+import { NotificationsList } from '@/features/notifications/components/NotificationsList';
 
 interface MaintenanceAlert {
   id: string; alert_type: string; message: string; is_resolved: boolean; is_read: boolean;

@@ -7,7 +7,7 @@ import { DateRange } from 'react-day-picker';
 import { startOfDay, endOfDay } from 'date-fns';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { StatsCard } from '@/components/dashboard/StatsCard';
-import { useOperatorDashboardData } from '@/hooks/useOperatorDashboardData';
+import { useOperatorDashboardData } from '@/features/production';
 import { useDashboardLayout, WidgetConfig } from '@/hooks/useDashboardLayout';
 import { useAuth } from '@/features/auth';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
@@ -37,7 +37,7 @@ const PredictiveAnalyticsWidget = lazy(() => import('@/components/dashboard/Pred
 const ShiftHandoverWidget = lazy(() => import('@/components/dashboard/ShiftHandoverWidget').then(m => ({ default: m.ShiftHandoverWidget })));
 const LeaderboardWidget = lazy(() => import('@/components/dashboard/LeaderboardWidget').then(m => ({ default: m.LeaderboardWidget })));
 const OperatorGoalsWidget = lazy(() => import('@/components/dashboard/OperatorGoalsWidget').then(m => ({ default: m.OperatorGoalsWidget })));
-const DailySummaryCard = lazy(() => import('@/components/notifications/DailySummaryCard').then(m => ({ default: m.DailySummaryCard })));
+const DailySummaryCard = lazy(() => import('@/features/notifications/components/DailySummaryCard').then(m => ({ default: m.DailySummaryCard })));
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { DashboardExport } from '@/components/dashboard/DashboardExport';

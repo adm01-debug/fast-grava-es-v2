@@ -1,6 +1,6 @@
 import { useMemo, useCallback } from 'react';
 import { useLocalStorage } from './useLocalStorage';
-import { DbJob } from './useJobs';
+import { DbJob } from '@/features/jobs';
 import { CalendarFilterState, EMPTY_FILTERS } from '@/components/calendar/types';
 
 /**

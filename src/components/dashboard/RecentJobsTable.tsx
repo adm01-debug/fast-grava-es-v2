@@ -2,7 +2,7 @@ import { memo, useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { StatusBadge } from '@/components/ui/status-badge';
-import { useOperatorDashboardData } from '@/hooks/useOperatorDashboardData';
+import { useOperatorDashboardData } from '@/features/production';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { JobStatus } from '@/types/scheduling';

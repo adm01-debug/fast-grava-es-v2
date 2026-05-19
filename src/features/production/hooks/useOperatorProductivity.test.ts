@@ -3,10 +3,10 @@ import { renderHook, waitFor } from '@testing-library/react';
 import { useOperatorProductivity } from './useOperatorProductivity';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React from 'react';
-import * as schedulingHook from './useSchedulingData';
+import * as schedulingHook from '@/features/jobs';
 
 // Mock useSchedulingData
-vi.mock('./useSchedulingData', () => ({
+vi.mock('@/features/jobs', () => ({
   useSchedulingData: vi.fn(),
 }));
 

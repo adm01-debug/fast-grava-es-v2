@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { useMLPredictionNotifications, saveMLNotificationPreferences } from '@/hooks/useMLPredictionNotifications';
+import { useMLPredictionNotifications, saveMLNotificationPreferences } from '@/features/notifications';
 import { toast } from 'sonner';
 
 interface NotificationPreferences {

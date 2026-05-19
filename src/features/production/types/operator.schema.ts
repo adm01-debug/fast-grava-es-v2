@@ -13,3 +13,4 @@ export const operatorSchema = z.object({
 export const operatorFormSchema = operatorSchema.omit({ id: true });
 
 export type OperatorFormData = z.infer<typeof operatorFormSchema>;
+export type Operator = z.infer<typeof operatorSchema>;

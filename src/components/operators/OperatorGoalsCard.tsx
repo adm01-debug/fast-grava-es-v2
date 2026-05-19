@@ -8,7 +8,7 @@ import {
   GoalWithProgress,
   calculateGoalProgress,
   GOAL_TYPE_LABELS
-} from '@/hooks/useOperatorGoals';
+} from '@/features/production';
 import { OperatorProductivityMetrics } from '@/features/production';
 import { Target, Trophy, TrendingUp, TrendingDown, Minus, CheckCircle2, Package, AlertTriangle, Gauge } from 'lucide-react';
 import { format, parseISO } from 'date-fns';

@@ -1,8 +1,8 @@
 import { useEffect, useCallback, useRef, useState } from 'react';
-import { usePushNotifications } from './usePushNotifications';
-import { useNotificationSounds } from './useNotificationSounds';
+import { usePushNotifications } from '@/features/notifications';
+import { useNotificationSounds } from '@/features/notifications';
 import { supabase } from '@/integrations/supabase/client';
-import { MaintenanceAlert } from './tpm/types';
+import { MaintenanceAlert } from '@/hooks/tpm/types';
 import { toast } from 'sonner';
 
 export interface TPMNotificationPreferences {

@@ -3,17 +3,7 @@
  * Prevents illegal state changes (e.g. "finished" → "queue").
  */
 
-export type JobStatus =
-  | 'queue'
-  | 'scheduled'
-  | 'ready'
-  | 'production'
-  | 'paused'
-  | 'delayed'
-  | 'finished'
-  | 'cancelled'
-  | 'rework'
-  | 'buffer';
+import { JobStatus } from './jobsService';
 
 const TRANSITIONS: Record<JobStatus, JobStatus[]> = {
   queue: ['scheduled', 'ready', 'cancelled'],

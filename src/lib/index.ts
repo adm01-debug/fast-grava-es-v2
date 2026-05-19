@@ -15,8 +15,8 @@ export { retryWithBackoff, isNetworkRetryable } from './retryWithBackoff';
 export { RateLimiter, apiLimiter, searchLimiter, authLimiter } from './rateLimiter';
 
 // State machines
-export { canTransition, getValidTransitions, assertTransition } from './jobStateMachine';
-export type { JobStatus } from './jobStateMachine';
+export { canTransition, getValidTransitions, assertTransition } from '@/features/jobs/services/jobStateMachine';
+export type { JobStatus } from '@/features/jobs/services/jobsService';
 
 // Security
 export { escapeHtml, stripTags, sanitizeText, sanitizeUrl, sanitizeInput } from './sanitize';

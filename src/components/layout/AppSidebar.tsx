@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { useAuth } from '@/features/auth';
 import { useDevice } from '@/hooks/use-device';
 import { useAlertCount } from '@/hooks/useAlertCount';
-import { useNotifications } from '@/hooks/useNotifications';
+import { useNotifications } from '@/features/notifications';
 import { useSwipeGesture } from '@/hooks/use-swipe-gesture';
 import { useFocusTrap } from '@/hooks/use-focus-trap';
 import { LanguageSwitcher } from './LanguageSwitcher';

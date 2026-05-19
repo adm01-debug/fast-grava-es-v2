@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { KioskMode } from "@/components/kiosk/KioskMode";
 import { useSchedulingData } from "@/features/jobs";
 import { useUpdateJobStatus } from "@/features/jobs";
-import { notifyStatusChange } from "@/hooks/useNotifications";
+import { notifyStatusChange } from "@/features/notifications";
 import { useAuth } from "@/features/auth";
 import { ProductionRegistrationModal } from "@/components/operator/ProductionRegistrationModal";
 import { useOfflineSync } from "@/hooks/useOfflineSync";

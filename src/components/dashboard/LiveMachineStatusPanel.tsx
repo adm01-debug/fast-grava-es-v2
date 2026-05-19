@@ -3,13 +3,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { useOperatorDashboardData } from '@/hooks/useOperatorDashboardData';
+import { useOperatorDashboardData } from '@/features/production';
 import { Cpu, Play, Pause, Clock, CheckCircle2, Zap, BrainCircuit, User } from 'lucide-react';
 import { useMLPredictions } from '@/hooks/useMLPredictions';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import { differenceInMinutes } from 'date-fns';
-import { useOperatorPresence } from '@/hooks/useOperatorPresence';
+import { useOperatorPresence } from '@/features/production';
 import { useOperatorMachines } from '@/features/production';
 import { useOperators } from '@/features/production';
 
@@ -51,10 +51,10 @@ export function LiveMachineStatusPanel() {
   const machineStatuses = useMemo<MachineStatus[]>(() => {
     if (!machines || !jobs) return [];
 
-    return machines.map(machine => {
+    return machines.map((machine: any) => {
       const technique = getTechniqueById(machine.technique_id);
-      const activeJob = jobs.find(j => j.machine_id === machine.id && j.status === 'production');
-      const pausedJob = jobs.find(j => j.machine_id === machine.id && j.status === 'paused');
+      const activeJob = jobs.find((j: any) => j.machine_id === machine.id && j.status === 'production');
+      const pausedJob = jobs.find((j: any) => j.machine_id === machine.id && j.status === 'paused');
       const currentJob = activeJob || pausedJob;
 
       // Find assigned operator

@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { useSchedulingData } from './useSchedulingData';
+import { useSchedulingData } from '@/features/jobs';
 
 export function useAlertCount() {
   const { jobs } = useSchedulingData();

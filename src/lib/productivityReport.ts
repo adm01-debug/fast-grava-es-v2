@@ -3,7 +3,7 @@ import autoTable from 'jspdf-autotable';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { OperatorProductivityMetrics } from '@/features/production';
-import { OperatorGoal, calculateGoalProgress, GOAL_TYPE_LABELS, GoalType } from '@/hooks/useOperatorGoals';
+import { OperatorGoal, calculateGoalProgress, GOAL_TYPE_LABELS, GoalType } from '@/features/production';
 
 // Extend jsPDF type to include lastAutoTable from jspdf-autotable
 interface jsPDFWithAutoTable extends jsPDF {

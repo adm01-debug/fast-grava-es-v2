@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { renderHook } from '@testing-library/react';
 import { useKPIs } from './useKPIs';
-import * as useSchedulingDataHook from './useSchedulingData';
+import * as useSchedulingDataHook from '@/features/jobs';
 
 vi.mock('./useSchedulingData', () => ({
   useSchedulingData: vi.fn(),

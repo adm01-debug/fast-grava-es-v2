@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { useTPM } from '@/hooks/useTPM';
-import { useTPMNotifications } from '@/hooks/useTPMNotifications';
+import { useTPMNotifications } from '@/features/notifications';
 import { useAuth } from '@/features/auth';
 import { TPMAlertsPanel } from '@/components/tpm/TPMAlertsPanel';
 import { TPMParameterAlerts } from '@/components/tpm/TPMParameterAlerts';

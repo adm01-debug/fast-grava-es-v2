@@ -11,7 +11,7 @@ import {
   calculateGoalProgress,
   GOAL_TYPE_LABELS,
   GoalType
-} from '@/hooks/useOperatorGoals';
+} from '@/features/production';
 import { OperatorProductivityMetrics } from '@/features/production';
 import {
   History,

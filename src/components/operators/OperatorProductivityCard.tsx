@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { CheckCircle2, Package, XCircle, Zap, Target } from 'lucide-react';
 import { OperatorProductivityMetrics } from '@/features/production';
 import { OperatorGoalsCard } from '@/components/operators/OperatorGoalsCard';
-import { useOperatorGoals } from '@/hooks/useOperatorGoals';
+import { useOperatorGoals } from '@/features/production';
 
 interface OperatorProductivityCardProps {
   operator: OperatorProductivityMetrics;

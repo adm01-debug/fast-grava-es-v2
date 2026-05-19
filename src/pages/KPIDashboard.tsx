@@ -8,7 +8,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Switch } from '@/components/ui/switch';
 import { useKPIs, formatDuration, KPIPeriod, KPITargets } from '@/hooks/useKPIs';
 import { useOperatorProductivity } from '@/features/production';
-import { useGoalAlerts } from '@/hooks/useGoalAlerts';
+import { useGoalAlerts } from '@/features/notifications';
 import { useBIExport } from '@/features/admin';
 import {
   TrendingUp,

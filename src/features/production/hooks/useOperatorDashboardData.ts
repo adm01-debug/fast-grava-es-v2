@@ -1,6 +1,6 @@
 import { useMemo, useCallback } from 'react';
 import { useAuth } from '@/features/auth';
-import { useSchedulingData } from './useSchedulingData';
+import { useSchedulingData } from '@/features/jobs';
 import { useOperatorMachines } from './useOperatorMachines';
 import { DateRange } from 'react-day-picker';
 import { isWithinInterval, startOfDay, endOfDay, format } from 'date-fns';
