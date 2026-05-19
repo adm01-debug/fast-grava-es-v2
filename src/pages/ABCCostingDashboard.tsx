@@ -57,7 +57,7 @@ export default function ABCCostingDashboard() {
   return (
     <MainLayout>
       <Helmet>
-        <title>Financial Intelligence | Sistema de Gravação</title>
+        <title>Financial Intelligence | FAST GRAVAÇÕES</title>
       </Helmet>
 
       <div className="space-y-6">

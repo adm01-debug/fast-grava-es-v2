@@ -323,7 +323,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signUp = async (_email: string, _password: string, _fullName: string) => {
-    // Cadastro público desabilitado — sistema de uso exclusivo Promo Brindes.
+    // Cadastro público desabilitado — sistema de uso exclusivo FAST GRAVAÇÕES.
     // Novos usuários devem ser criados pelo gestor no painel administrativo.
     return { error: new Error('Cadastro público desabilitado. Solicite acesso ao gestor.') };
   };
