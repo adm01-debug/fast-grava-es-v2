@@ -333,9 +333,19 @@ async function handleLots(req: Request, supabase: any, lotId: string | undefined
 
   if (req.method === 'POST') {
     const body = await req.json();
+    
+    const validation = await validateContract(ERPLotRequestSchema, body);
+    if (!validation.success) {
+      return jsonResponse({ 
+        error: validation.error, 
+        message: "Invalid lot data",
+        details: validation.details 
+      }, 400);
+    }
+
     const { data, error } = await supabase
       .from('production_lots')
-      .insert(body)
+      .insert(validation.data)
       .select()
       .single();
 
