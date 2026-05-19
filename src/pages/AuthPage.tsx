@@ -140,9 +140,12 @@ export default function AuthPage() {
         {/* RIGHT — Login form */}
         <div className="w-full lg:w-[540px] flex flex-col p-6 sm:p-10 lg:p-16 justify-center relative bg-[#050505]">
           {/* Mobile brand */}
-          <div className="lg:hidden flex items-center gap-2 mb-10">
-            <div className="w-9 h-9 bg-[#FF5A1F] grid place-items-center font-black rounded-md">F</div>
-            <span className="font-extrabold tracking-tight uppercase">FAST GRAVAÇÕES</span>
+          <div className="lg:hidden flex items-center gap-3 mb-10">
+            <div className="w-[48px] h-[48px] bg-[#FF5A1F] grid place-items-center font-black text-xl rounded-md">F</div>
+            <div className="flex flex-col">
+              <span className="font-extrabold tracking-tight uppercase text-lg leading-none">FAST GRAVAÇÕES</span>
+              <span className="text-[9px] text-zinc-500 tracking-[0.2em] font-black uppercase mt-1">Qualidade + Velocidade</span>
+            </div>
           </div>
 
           {/* Top utility */}
