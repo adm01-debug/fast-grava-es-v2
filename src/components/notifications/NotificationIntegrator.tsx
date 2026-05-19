@@ -4,7 +4,7 @@ import { usePushNotifications } from "@/hooks/usePushNotifications";
 import { useNotificationSounds } from "@/hooks/useNotificationSounds";
 import { useAuth } from "@/features/auth";
 import { useGoalAlerts } from "@/hooks/useGoalAlerts";
-import { useOEEAlerts } from "@/hooks/useOEEAlerts";
+import { useOEEAlerts } from "@/features/productionAlerts";
 import { useTPMNotifications } from "@/hooks/useTPMNotifications";
 
 interface NotificationPreferences {

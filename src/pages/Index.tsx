@@ -22,7 +22,7 @@ import { ActivityLog, useActivityLog } from '@/components/activity/ActivityLog';
 import { OfflineBanner, ConnectionStatus } from '@/components/offline/OfflineMode';
 import { GamificationBanner } from '@/components/dashboard/GamificationBanner';
 import { useSmartDelayAlerts } from '@/hooks/useSmartDelayAlerts';
-import { usePerformanceMetrics } from '@/hooks/usePerformanceMetrics';
+import { usePerformanceMetrics } from '@/features/production';
 
 import { VoiceButton } from '@/components/voice/VoiceCommands';
 const ActivityFeedWidget = lazy(() => import('@/components/dashboard/ActivityFeedWidget').then(m => ({ default: m.ActivityFeedWidget })));

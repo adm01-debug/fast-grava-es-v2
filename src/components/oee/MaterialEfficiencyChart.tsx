@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { MaterialOEE, getOEEColor } from '@/hooks/useOEE';
+import { MaterialOEE, getOEEColor } from '@/features/production';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Cell, CartesianGrid, Legend } from 'recharts';
 import { Layers, Thermometer, ShieldCheck, Box } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';

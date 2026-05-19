@@ -26,7 +26,7 @@ import { useCalendarFilters } from '@/hooks/useCalendarFilters';
 import { useCalendarPreferences } from '@/hooks/useCalendarPreferences';
 import { useCalendarHotkeys } from '@/hooks/useCalendarHotkeys';
 import { useSchedulingConflicts } from '@/features/jobs';
-import { useMachineUtilization } from '@/hooks/useMachineUtilization';
+import { useMachineUtilization } from '@/features/production';
 import { DbJob } from '@/features/jobs';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { useDevice } from '@/hooks/use-device';

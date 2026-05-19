@@ -1,5 +1,5 @@
 import { useOperatorGoals, calculateGoalProgress, GOAL_TYPE_LABELS } from '@/hooks/useOperatorGoals';
-import { useOperatorEvolution } from '@/hooks/useOperatorEvolution';
+import { useOperatorEvolution } from '@/features/production';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';

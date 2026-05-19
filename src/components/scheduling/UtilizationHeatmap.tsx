@@ -1,4 +1,4 @@
-import { useMachineUtilization } from '@/hooks/useMachineUtilization';
+import { useMachineUtilization } from '@/features/production';
 import { useSchedulingData } from '@/features/jobs';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';

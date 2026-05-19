@@ -10,7 +10,7 @@ import { DraggableJobCard } from './DraggableJobCard';
 import { useMemo } from 'react';
 import { ChevronDown, ChevronRight, AlertTriangle, Clock, Activity } from 'lucide-react';
 import { ViewMode } from './KanbanFiltersBar';
-import { useMTBFMTTR } from '@/hooks/useMTBFMTTR';
+import { useMTBFMTTR } from '@/features/production';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface DroppableColumnProps {

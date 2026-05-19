@@ -29,14 +29,14 @@ import { CreateScheduleModal } from '@/components/tpm/CreateScheduleModal';
 import { useAuth } from '@/features/auth';
 import { toast } from 'sonner';
 import { MachineReliabilityTab } from '@/components/machines/MachineReliabilityTab';
-import { useMTBFMTTR } from '@/hooks/useMTBFMTTR';
+import { useMTBFMTTR } from '@/features/production';
 import { useDataExport } from '@/hooks/useDataExport';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { Input } from '@/components/ui/input';
 import { MachineCard } from '@/components/machines/MachineCard';
 import { MachineBulkActions } from '@/components/machines/MachineBulkActions';
-import { useOEE } from '@/hooks/useOEE';
+import { useOEE } from '@/features/production';
 import { QrCode as QrCodeIcon, Download, Trash2, Power } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 

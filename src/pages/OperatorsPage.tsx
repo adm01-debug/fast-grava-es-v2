@@ -15,9 +15,9 @@ import { OperatorConfirmDialogs } from '@/components/operators/OperatorConfirmDi
 import { OperatorsStats } from '@/components/operators/OperatorsStats';
 import { Users, UserCheck, Phone, Calendar, Settings2, Search, X, UserPlus, Pencil, Clock, Trash2, UserX, Power, Command, Eye, TrendingUp, Trophy, QrCode as QrCodeIcon, Printer } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
-import { useOperators, OperatorWithProfile } from '@/hooks/useOperators';
+import { useOperators, OperatorWithProfile } from '@/features/production';
 import { useOperatorPresence } from '@/hooks/useOperatorPresence';
-import { useOperatorMachines } from '@/hooks/useOperatorMachines';
+import { useOperatorMachines } from '@/features/production';
 import { useSchedulingData } from '@/features/jobs';
 import { MachineAssignmentModal } from '@/components/operators/MachineAssignmentModal';
 import { CreateOperatorModal } from '@/components/operators/CreateOperatorModal';

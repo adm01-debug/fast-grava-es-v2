@@ -54,9 +54,9 @@ import {
   Trash2,
   Info
 } from 'lucide-react';
-import { useOEE, WORLD_CLASS_OEE, getOEEColor } from '@/hooks/useOEE';
-import { useOEEAlerts } from '@/hooks/useOEEAlerts';
-import { useProductionLosses } from '@/hooks/useProductionLosses';
+import { useOEE, WORLD_CLASS_OEE, getOEEColor } from '@/features/production';
+import { useOEEAlerts } from '@/features/productionAlerts';
+import { useProductionLosses } from '@/features/production';
 import { Slider } from '@/components/ui/slider';
 import { Progress } from '@/components/ui/progress';
 import { Label } from '@/components/ui/label';

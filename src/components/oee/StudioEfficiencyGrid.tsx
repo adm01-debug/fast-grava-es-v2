@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { StudioOEE, getOEEColor } from '@/hooks/useOEE';
+import { StudioOEE, getOEEColor } from '@/features/production';
 import { cn } from '@/lib/utils';
 import { Activity, Droplets, Zap, Sparkles, Printer } from 'lucide-react';
 

@@ -1,7 +1,7 @@
-import { useOperators } from '@/hooks/useOperators';
+import { useOperators } from '@/features/production';
 import { useSchedulingData } from '@/features/jobs';
-import { useOperatorMachines } from '@/hooks/useOperatorMachines';
-import { useOperatorSkills, type SkillLevel } from '@/hooks/useOperatorSkills';
+import { useOperatorMachines } from '@/features/production';
+import { useOperatorSkills, type SkillLevel } from '@/features/production';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';

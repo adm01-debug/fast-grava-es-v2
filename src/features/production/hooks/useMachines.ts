@@ -3,7 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useEffect } from 'react';
 import { createAppError } from '@/lib/errorHandling';
 import { QUERY_KEYS, STALE_TIMES } from '@/lib/queryConfig';
-import { machinesService } from '@/services/machinesService';
+import { machinesService } from '@/features/production';
 
 const MACHINES_ERROR_CONTEXT = { entity: 'machines', operation: 'fetch' };
 

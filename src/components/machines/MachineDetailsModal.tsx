@@ -19,7 +19,7 @@ import { AuditEntryCard } from "@/components/audit/AuditEntryCard";
 import { HistoryPeriodFilter, type HistoryPeriodValue } from "@/components/audit/HistoryPeriodFilter";
 import { MachineReliabilityTab } from "./MachineReliabilityTab";
 import { Badge } from "@/components/ui/badge";
-import { calculateRealOEE } from "@/lib/oeeCalculations";
+import { calculateRealOEE } from "@/features/production";
 import { useSchedulingData } from "@/features/jobs";
 
 interface MachineDetailsModalProps {

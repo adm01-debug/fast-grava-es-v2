@@ -12,7 +12,7 @@ import {
   GOAL_TYPE_LABELS,
   GoalType
 } from '@/hooks/useOperatorGoals';
-import { OperatorProductivityMetrics } from '@/hooks/useOperatorProductivity';
+import { OperatorProductivityMetrics } from '@/features/production';
 import {
   History,
   Trophy,

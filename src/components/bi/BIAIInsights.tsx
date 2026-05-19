@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 
-import { useOEEAlerts } from '@/hooks/useOEEAlerts';
+import { useOEEAlerts } from '@/features/productionAlerts';
 
 interface BIAIInsightsProps {
   biMetrics: {

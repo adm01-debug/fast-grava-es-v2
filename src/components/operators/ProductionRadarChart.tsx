@@ -2,7 +2,7 @@ import { memo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Target } from 'lucide-react';
 import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer } from 'recharts';
-import { OperatorProductivityMetrics } from '@/hooks/useOperatorProductivity';
+import { OperatorProductivityMetrics } from '@/features/production';
 
 export const ProductionRadarChart = memo(({ operator }: { operator: OperatorProductivityMetrics }) => {
   const radarData = [

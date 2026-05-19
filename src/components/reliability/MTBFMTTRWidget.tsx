@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useMTBFMTTR, MachineReliabilityMetrics } from '@/hooks/useMTBFMTTR';
+import { useMTBFMTTR, MachineReliabilityMetrics } from '@/features/production';
 import { Activity, Clock, AlertTriangle, TrendingUp, Wrench, Timer } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 

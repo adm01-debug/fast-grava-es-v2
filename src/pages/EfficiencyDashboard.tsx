@@ -21,7 +21,7 @@ import { EfficiencyAlertHistoryWidget } from '@/components/dashboard/EfficiencyA
 import { OEELoadTrendWidget } from '@/components/dashboard/OEELoadTrendWidget';
 import { LeaderboardWidget } from '@/components/dashboard/LeaderboardWidget';
 import { EfficiencyAlertTrendChart } from '@/components/dashboard/EfficiencyAlertTrendChart';
-import { useOEE } from '@/hooks/useOEE';
+import { useOEE } from '@/features/production';
 import { OperatorGoalsWidget } from '@/components/dashboard/OperatorGoalsWidget';
 import { VoiceButton } from '@/components/voice/VoiceCommands';
 

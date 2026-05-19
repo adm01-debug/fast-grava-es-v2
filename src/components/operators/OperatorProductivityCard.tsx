@@ -5,7 +5,7 @@ import { Progress } from '@/components/ui/progress';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { Button } from '@/components/ui/button';
 import { CheckCircle2, Package, XCircle, Zap, Target } from 'lucide-react';
-import { OperatorProductivityMetrics } from '@/hooks/useOperatorProductivity';
+import { OperatorProductivityMetrics } from '@/features/production';
 import { OperatorGoalsCard } from '@/components/operators/OperatorGoalsCard';
 import { useOperatorGoals } from '@/hooks/useOperatorGoals';
 

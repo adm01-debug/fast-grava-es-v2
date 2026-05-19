@@ -6,7 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { FileDown, FileText, Table as TableIcon, Calendar, Filter, Activity, Archive } from 'lucide-react';
 import JSZip from 'jszip';
 import { useTPM } from '@/hooks/useTPM';
-import { useMTBFMTTR } from '@/hooks/useMTBFMTTR';
+import { useMTBFMTTR } from '@/features/production';
 import { format, subDays } from 'date-fns';
 import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
