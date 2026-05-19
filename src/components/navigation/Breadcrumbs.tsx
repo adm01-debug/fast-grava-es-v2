@@ -87,8 +87,8 @@ export function Breadcrumbs({ className }: { className?: string }) {
   const { trigger } = useHapticFeedback();
   const pathnames = location.pathname.split('/').filter(Boolean);
 
-  // Don't show breadcrumbs on home page or auth pages
-  if (pathnames.length === 0 || location.pathname === '/auth') {
+  // Don't show breadcrumbs on home page or specific utility pages
+  if (pathnames.length === 0 || ['/auth', '/reset-password', '/install', '/track'].includes(location.pathname)) {
     return null;
   }
 
