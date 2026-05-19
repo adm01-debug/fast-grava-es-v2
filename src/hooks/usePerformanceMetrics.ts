@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 
 interface PerformanceMetrics {
   renderTime: number;
@@ -9,6 +10,7 @@ interface PerformanceMetrics {
 
 /**
  * Hook to track performance metrics for a specific component or data fetch
+ * and persist them to telemetry_traces table
  */
 export function usePerformanceMetrics(componentName: string) {
   const startTime = useRef(performance.now());
@@ -20,7 +22,7 @@ export function usePerformanceMetrics(componentName: string) {
     lastResponseAt: null,
   });
 
-  // Track render time
+  // Track render time and persist
   useEffect(() => {
     const endTime = performance.now();
     const duration = endTime - startTime.current;
@@ -30,13 +32,34 @@ export function usePerformanceMetrics(componentName: string) {
       renderTime: duration
     }));
 
-    // In a real scenario, we could send this to an analytics endpoint
-    if (duration > 100) { // Log slow renders (>100ms)
+    // Persist slow renders or just standard traces
+    const persistTrace = async () => {
+      try {
+        await supabase.from('telemetry_traces' as any).insert({
+          name: `render:${componentName}`,
+          duration_ms: duration,
+          service_name: 'frontend',
+          attributes: {
+            type: 'render',
+            reFetchCount: reFetchCount.current,
+            url: window.location.pathname
+          }
+        });
+      } catch (err) {
+        console.error('Failed to persist telemetry trace:', err);
+      }
+    };
+
+    if (duration > 16) { // Only log if it takes more than 1 frame (~16ms) to keep it efficient
+      persistTrace();
+    }
+
+    if (duration > 100) {
       console.warn(`[PERF] Slow render detected in ${componentName}: ${duration.toFixed(2)}ms`);
     }
-  });
+  }, []); // Only on mount for page-level components
 
-  const recordFetch = (duration: number) => {
+  const recordFetch = async (duration: number) => {
     reFetchCount.current += 1;
     setMetrics(prev => ({
       ...prev,
@@ -44,6 +67,22 @@ export function usePerformanceMetrics(componentName: string) {
       responseTime: duration,
       lastResponseAt: new Date()
     }));
+
+    // Persist fetch trace
+    try {
+      await supabase.from('telemetry_traces' as any).insert({
+        name: `fetch:${componentName}`,
+        duration_ms: duration,
+        service_name: 'frontend',
+        attributes: {
+          type: 'fetch',
+          fetchIndex: reFetchCount.current,
+          url: window.location.pathname
+        }
+      });
+    } catch (err) {
+      console.error('Failed to persist fetch telemetry:', err);
+    }
   };
 
   return {
