@@ -41,18 +41,18 @@ export const NavButton = memo(forwardRef<HTMLDivElement, NavButtonProps>(functio
         aria-label={item.label}
         className={cn(
           'w-full justify-start gap-3 h-11 px-3 relative transition-all duration-300 group/nav',
-          'hover:bg-sidebar-accent/50 hover:text-sidebar-foreground hover:pl-4 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 focus-visible:bg-sidebar-accent/50',
+          'hover:bg-sidebar-accent hover:text-sidebar-foreground hover:pl-4 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 focus-visible:bg-sidebar-accent',
           isActive && [
-            'bg-sidebar-accent/80 text-primary font-bold border-l-4 border-primary shadow-sm',
-            'shadow-[inset_0_0_20px_hsl(var(--primary)/0.05),0_0_15px_hsl(var(--primary)/0.1)]',
-            'hover:pl-4',
+            'bg-sidebar-accent text-primary font-bold border-l-4 border-primary shadow-sm',
+            'shadow-[inset_0_0_20px_rgba(var(--primary-rgb),0.08),0_0_25px_rgba(var(--primary-rgb),0.12)] border-r border-primary/10',
+            'hover:pl-4 transition-all duration-300',
           ],
-          !isActive && 'border-l-4 border-transparent',
+          !isActive && 'border-l-4 border-transparent text-sidebar-foreground/70',
           collapsed && !isMobile && 'justify-center px-0 hover:pl-0'
         )}
       >
-        <Icon className={cn('h-5 w-5 shrink-0 transition-all duration-300 group-hover/nav:scale-125 group-hover/nav:rotate-3 group-hover/nav:text-primary', isActive && 'text-primary drop-shadow-[0_0_8px_hsl(var(--primary)/0.5)]')} />
-        {(!collapsed || isMobile) && <span className="truncate">{item.label}</span>}
+        <Icon className={cn('h-5 w-5 shrink-0 transition-all duration-300 group-hover/nav:scale-125 group-hover/nav:rotate-3 group-hover/nav:text-primary', isActive && 'text-primary drop-shadow-[0_0_8px_rgba(var(--primary-rgb),0.5)]')} />
+        {(!collapsed || isMobile) && <span className="truncate text-sm font-semibold tracking-tight">{item.label}</span>}
         {(!collapsed || isMobile) && item.badge && (
           <span className="ml-auto gradient-primary text-primary-foreground text-xs font-semibold px-2 py-0.5 rounded-full animate-pulse-glow">{item.badge}</span>
         )}

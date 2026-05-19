@@ -56,17 +56,17 @@ export const NavGroupComponent = memo(function NavGroupComponent({
         variant="ghost"
         onClick={() => toggleGroup(group.id)}
         className={cn(
-          "w-full justify-between gap-3 h-10 px-3 transition-all duration-300 group/btn",
-          "hover:bg-sidebar-accent/50 hover:text-sidebar-foreground hover:pl-4 transition-all duration-300 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 focus-visible:bg-sidebar-accent/50",
-          "text-sidebar-foreground/70",
-          hasActiveItem && "text-sidebar-foreground font-medium bg-sidebar-accent/80 shadow-sm"
+          "w-full justify-between gap-3 h-10 px-3 transition-all duration-500 group/btn",
+          "hover:bg-sidebar-accent hover:text-sidebar-foreground hover:pl-4 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1",
+          "text-sidebar-foreground/70 font-semibold tracking-tight uppercase text-[11px]",
+          hasActiveItem && "text-sidebar-foreground bg-sidebar-accent/50 shadow-sm border-l-2 border-primary/30"
         )}
         aria-expanded={isOpen}
         aria-controls={`nav-group-${group.id}`}
       >
         <div className="flex items-center gap-3">
-          <Icon className={cn("h-4 w-4 shrink-0 transition-all duration-500 group-hover/btn:scale-125 group-hover/btn:rotate-6 group-hover/btn:text-primary", hasActiveItem && "text-primary drop-shadow-[0_0_8px_hsl(var(--primary)/0.5)]")} />
-          <span className="text-sm">{group.label}</span>
+          <Icon className={cn("h-4 w-4 shrink-0 transition-all duration-500 group-hover/btn:scale-125 group-hover/btn:rotate-6 group-hover/btn:text-primary", hasActiveItem && "text-primary drop-shadow-[0_0_8px_rgba(var(--primary-rgb),0.5)]")} />
+          <span className="text-[11px] font-bold tracking-widest uppercase">{group.label}</span>
         </div>
         <motion.div animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.2 }}>
           <ChevronDown className="h-4 w-4 opacity-50" />

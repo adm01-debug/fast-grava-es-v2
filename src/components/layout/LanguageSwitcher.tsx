@@ -25,10 +25,10 @@ export const LanguageSwitcher = forwardRef<HTMLDivElement, React.HTMLAttributes<
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="sm" aria-label={t('common.changeLanguage', 'Alterar idioma')} className="gap-2 h-9 px-3 rounded-lg hover:bg-primary/10 hover:text-primary transition-colors border border-transparent hover:border-primary/20">
+        <Button variant="ghost" size="sm" aria-label={t('common.changeLanguage', 'Alterar idioma')} className="gap-2 h-9 px-3 rounded-xl hover:bg-primary/10 hover:text-primary transition-all duration-300 border border-transparent hover:border-primary/20 hover:scale-105 active:scale-95 shadow-lg shadow-black/5">
           <Globe className="h-4 w-4" />
-          <span className="text-xs font-bold uppercase tracking-wider">{currentLanguage.code.split('-')[0]}</span>
-          <span className="ml-1 text-base leading-none">{currentLanguage.flag}</span>
+          <span className="text-[10px] font-black uppercase tracking-widest leading-none">{currentLanguage.code.split('-')[0]}</span>
+          <span className="text-sm leading-none drop-shadow-sm">{currentLanguage.flag}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56 p-2 glass-card border-primary/20">

@@ -51,7 +51,21 @@ export function useNavigationHotkeys() {
         document.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', metaKey: true, bubbles: true }));
       }
       
-      // Alt + K for Command Palette (handled by its own component, but we could unify here)
+      // Alt + R for Refresh data
+      if (event.altKey && (event.key === 'r' || event.key === 'R')) {
+        event.preventDefault();
+        trigger('medium');
+        SoundFeedback.click();
+        window.location.reload();
+      }
+
+      // Alt + B for Back (additional shortcut)
+      if (event.altKey && (event.key === 'b' || event.key === 'B')) {
+        event.preventDefault();
+        trigger('light');
+        SoundFeedback.navBack();
+        navigate(-1);
+      }
     };
 
     window.addEventListener('keydown', handleKeyDown);

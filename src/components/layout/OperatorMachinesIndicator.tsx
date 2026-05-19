@@ -55,9 +55,11 @@ export const OperatorMachinesIndicator = memo(function OperatorMachinesIndicator
   return (
     <Tooltip>
       <TooltipTrigger asChild>
-        <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-primary/10 border border-primary/20 cursor-default hover:bg-primary/15 transition-colors">
-          <Printer className="h-4 w-4 text-primary" />
-          <span className="text-sm font-medium text-foreground">
+        <div className="flex items-center gap-3 px-4 py-2 rounded-xl bg-primary/10 border border-primary/20 cursor-default hover:bg-primary/20 hover:scale-105 active:scale-95 transition-all duration-300 shadow-lg shadow-primary/5 group">
+          <div className="p-1.5 rounded-lg bg-primary/20 text-primary group-hover:rotate-12 transition-transform duration-500">
+            <Printer className="h-4 w-4" />
+          </div>
+          <span className="text-xs font-black text-foreground uppercase tracking-tight">
             {assignedMachines.length} {assignedMachines.length === 1 ? 'máquina' : 'máquinas'}
           </span>
           <StatusBadge isOnline={isTracking} />

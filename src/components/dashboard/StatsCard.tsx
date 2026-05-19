@@ -31,40 +31,46 @@ export interface StatsCardProps {
 
 const variantStyles = {
   primary: {
-    iconBg: 'bg-primary/12 dark:bg-primary/15',
+    iconBg: 'bg-primary/10 dark:bg-primary/20',
     iconColor: 'text-primary',
     accentColor: 'text-primary',
-    glowClass: 'group-hover:shadow-[0_0_20px_hsl(var(--primary)/0.15)]',
+    glowClass: 'hover:shadow-[0_0_20px_rgba(var(--primary-rgb),0.15)]',
+    borderClass: 'border-primary/20 dark:border-primary/10',
   },
   success: {
-    iconBg: 'bg-success/12 dark:bg-success/15',
+    iconBg: 'bg-success/10 dark:bg-success/20',
     iconColor: 'text-success',
     accentColor: 'text-success',
-    glowClass: 'group-hover:shadow-[0_0_20px_hsl(var(--success)/0.15)]',
+    glowClass: 'hover:shadow-[0_0_20px_rgba(var(--success-rgb),0.15)]',
+    borderClass: 'border-success/20 dark:border-success/10',
   },
   warning: {
-    iconBg: 'bg-warning/12 dark:bg-warning/15',
+    iconBg: 'bg-warning/10 dark:bg-warning/20',
     iconColor: 'text-warning',
     accentColor: 'text-warning',
-    glowClass: 'group-hover:shadow-[0_0_20px_hsl(var(--warning)/0.15)]',
+    glowClass: 'hover:shadow-[0_0_20px_rgba(var(--warning-rgb),0.15)]',
+    borderClass: 'border-warning/20 dark:border-warning/10',
   },
   info: {
-    iconBg: 'bg-info/12 dark:bg-info/15',
+    iconBg: 'bg-info/10 dark:bg-info/20',
     iconColor: 'text-info',
     accentColor: 'text-info',
-    glowClass: 'group-hover:shadow-[0_0_20px_hsl(var(--info)/0.15)]',
+    glowClass: 'hover:shadow-[0_0_20px_rgba(var(--info-rgb),0.15)]',
+    borderClass: 'border-info/20 dark:border-info/10',
   },
   accent: {
-    iconBg: 'bg-accent',
+    iconBg: 'bg-accent/10 dark:bg-accent/20',
     iconColor: 'text-accent-foreground',
     accentColor: 'text-accent-foreground',
     glowClass: '',
+    borderClass: 'border-accent/20',
   },
   muted: {
     iconBg: 'bg-muted',
     iconColor: 'text-muted-foreground',
     accentColor: 'text-muted-foreground',
     glowClass: '',
+    borderClass: 'border-muted-foreground/10',
   },
 };
 
@@ -84,28 +90,29 @@ function StatsCardComponent({
   if (compact) {
     return (
       <Card className={cn(
-        'group p-3.5 glass-card card-shine transition-all duration-300',
-        'hover:-translate-y-0.5 hover:shadow-md',
+        'group p-4 glass-card transition-all duration-500 relative overflow-hidden',
+        'hover:-translate-y-1 hover:shadow-xl',
         styles.glowClass,
+        styles.borderClass,
         className
       )}>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4 relative z-10">
           <div className={cn(
-            'w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-110',
+            'w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 transition-all duration-500 group-hover:scale-110 group-hover:rotate-3 shadow-inner',
             styles.iconBg
           )}>
-            <Icon className={cn('w-[18px] h-[18px]', styles.iconColor)} />
+            <Icon className={cn('w-6 h-6 drop-shadow-sm', styles.iconColor)} />
           </div>
           <div className="min-w-0 flex-1">
             <p className="text-[11px] font-medium text-muted-foreground truncate uppercase tracking-wider">
               {title}
             </p>
             <div className="flex items-baseline gap-2">
-              <p className="text-2xl font-bold tracking-tight text-foreground font-display">
+              <p className="text-3xl font-bold tracking-tight text-foreground font-display group-hover:scale-105 transition-transform duration-500 origin-left">
                 {value}
               </p>
               {subtitle && (
-                <p className="text-[11px] text-muted-foreground truncate">
+                <p className="text-[11px] font-semibold text-muted-foreground/80 truncate bg-muted/30 px-2 py-0.5 rounded-full">
                   {subtitle}
                 </p>
               )}
@@ -118,21 +125,22 @@ function StatsCardComponent({
 
   return (
     <Card className={cn(
-      'group p-5 glass-card card-shine transition-all duration-300',
-      'hover:-translate-y-1 hover:shadow-lg',
+      'group p-6 glass-card transition-all duration-500 relative overflow-hidden',
+      'hover:-translate-y-1.5 hover:shadow-2xl',
       styles.glowClass,
+      styles.borderClass,
       className
     )}>
       <div className="flex items-start justify-between gap-4">
-        <div className="space-y-1.5 min-w-0 flex-1">
-          <p className="text-xs font-medium text-muted-foreground truncate uppercase tracking-wider">
+        <div className="space-y-2 min-w-0 flex-1 relative z-10">
+          <p className="text-xs font-bold text-muted-foreground truncate uppercase tracking-widest opacity-80">
             {title}
           </p>
-          <p className="text-3xl font-bold tracking-tight text-foreground font-display">
+          <p className="text-4xl font-bold tracking-tight text-foreground font-display group-hover:scale-105 transition-transform duration-500 origin-left">
             {value}
           </p>
           {subtitle && (
-            <p className="text-sm text-muted-foreground mt-1 truncate">
+            <p className="text-sm font-medium text-muted-foreground/80 mt-1 truncate inline-flex bg-muted/30 px-2.5 py-0.5 rounded-full">
               {subtitle}
             </p>
           )}
@@ -149,10 +157,10 @@ function StatsCardComponent({
           )}
         </div>
         <div className={cn(
-          'w-12 h-12 rounded-xl flex items-center justify-center shrink-0 transition-all duration-300 group-hover:scale-110 group-hover:rotate-3',
+          'w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 transition-all duration-700 group-hover:scale-125 group-hover:rotate-6 shadow-inner relative z-10',
           styles.iconBg
         )}>
-          <Icon className={cn('w-6 h-6', styles.iconColor)} />
+          <Icon className={cn('w-7 h-7 drop-shadow-md', styles.iconColor)} />
         </div>
       </div>
     </Card>
