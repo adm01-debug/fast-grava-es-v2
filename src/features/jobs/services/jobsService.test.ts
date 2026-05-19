@@ -52,13 +52,13 @@ describe('jobsService', () => {
   });
 
   it('deve criar um novo job com sucesso', async () => {
-    const newJob = { 
+    const newJob: JobInsert = { 
       order_number: 'OS-001', 
       client: 'Cliente Teste',
       product: 'Camiseta',
       quantity: 100,
       technique_id: 'tech-1'
-    } as any;
+    };
 
     const result = await jobsService.create(newJob);
     expect(result).toEqual({ id: '123', status: 'pending' });
