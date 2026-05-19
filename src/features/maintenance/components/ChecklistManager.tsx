@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
-import { useTPM } from '@/hooks/useTPM';
+import { useTPM } from '@/features/maintenance/hooks/useTPM';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,7 +11,7 @@ import { ClipboardList, Plus, Trash2, Save, AlertCircle, AlertTriangle, Camera, 
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
-import { MaintenanceChecklistItem } from '@/hooks/tpm/types';
+import { MaintenanceChecklistItem } from '@/features/maintenance/hooks/types';
 
 export function ChecklistManager() {
   const { maintenanceTypes, checklists, machines } = useTPM();

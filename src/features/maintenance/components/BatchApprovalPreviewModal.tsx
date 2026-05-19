@@ -3,9 +3,9 @@ import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { AlertCircle, CheckCircle2, XCircle, Clock, Eye, FileSpreadsheet, Download } from 'lucide-react';
-import { MaintenanceRecord } from '@/hooks/tpm/types';
+import { MaintenanceRecord } from '@/features/maintenance/hooks/types';
 import { useMemo, useState } from 'react';
-import { useTPM } from '@/hooks/useTPM';
+import { useTPM } from '@/features/maintenance/hooks/useTPM';
 import { ExecutionDetailsModal } from './ExecutionDetailsModal';
 import { toast } from 'sonner';
 

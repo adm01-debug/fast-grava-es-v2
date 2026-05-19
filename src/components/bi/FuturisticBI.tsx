@@ -16,7 +16,7 @@ import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useOperatorProductivity } from '@/features/production';
-import { useTPM } from '@/hooks/useTPM';
+import { useTPM } from '@/features/maintenance/hooks/useTPM';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { DrillDownDialog } from './drilldown/DrillDownDialog';

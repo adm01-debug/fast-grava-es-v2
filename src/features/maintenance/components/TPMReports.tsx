@@ -5,7 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { FileDown, FileText, Table as TableIcon, Calendar, Filter, Activity, Archive } from 'lucide-react';
 import JSZip from 'jszip';
-import { useTPM } from '@/hooks/useTPM';
+import { useTPM } from '@/features/maintenance/hooks/useTPM';
 import { useMTBFMTTR } from '@/features/production';
 import { format, subDays } from 'date-fns';
 import { jsPDF } from 'jspdf';

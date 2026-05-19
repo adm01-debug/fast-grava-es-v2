@@ -23,7 +23,7 @@ import { Input } from '@/components/ui/input';
 import { ArrowUpDown, Search, TrendingUp, TrendingDown, Minus, Eye, ArrowUpRight, ArrowDownRight } from 'lucide-react';
 import { MachineOEE, getOEEColor } from '@/features/production';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { MachineTPMPanel } from '@/components/tpm/MachineTPMPanel';
+import { MachineTPMPanel } from '@/features/maintenance/components/MachineTPMPanel';
 import { MachineReliabilityTab } from '@/components/machines/MachineReliabilityTab';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
