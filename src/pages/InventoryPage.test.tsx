@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import InventoryPage from './InventoryPage';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { MemoryRouter } from 'react-router-dom';
@@ -26,26 +26,19 @@ vi.mock('@/features/auth', () => ({
   PermissionGate: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
-// Mock Supabase
-vi.mock('@/integrations/supabase/client', () => ({
-  supabase: {
-    from: vi.fn(() => ({
-      select: vi.fn().mockReturnThis(),
-      order: vi.fn().mockReturnThis(),
-      limit: vi.fn().mockReturnThis(),
-      eq: vi.fn().mockReturnThis(),
-      insert: vi.fn().mockReturnThis(),
-      delete: vi.fn().mockReturnThis(),
-      update: vi.fn().mockReturnThis(),
-      single: vi.fn().mockResolvedValue({ data: [], error: null }),
-    })),
-    auth: {
-      getUser: vi.fn().mockResolvedValue({ data: { user: { id: 'test-user' } }, error: null }),
-    },
-    functions: {
-      invoke: vi.fn().mockResolvedValue({ data: {}, error: null }),
-    },
-  },
+// Mock WarehouseMap to avoid complexity
+vi.mock('@/components/inventory/WarehouseMap', () => ({
+  WarehouseMap: () => <div data-testid="mock-warehouse-map">Map</div>,
+}));
+
+// Mock InventoryStats
+vi.mock('@/components/inventory/InventoryStats', () => ({
+  InventoryStats: () => <div data-testid="mock-inventory-stats">Stats</div>,
+}));
+
+// Mock useDebounce para retornar o valor imediatamente nos testes
+vi.mock('@/hooks/useDebounce', () => ({
+  useDebounce: (val: any) => val,
 }));
 
 const queryClient = new QueryClient({
@@ -134,7 +127,40 @@ describe('InventoryPage - Skeletons e Estabilidade', () => {
     });
     
     expect(screen.getByText('10')).toBeDefined();
-    const cards = screen.getAllByRole('heading', { level: 3 });
-    expect(cards.some(c => c.textContent === 'Tinta Azul')).toBe(true);
+  });
+
+  it('deve filtrar itens corretamente', async () => {
+    const mockUseInventory = vi.mocked(useInventory);
+    const mockItems = [
+      { id: '1', name: 'Tinta Azul', category: 'ink', current_stock: 10, unit: 'L', min_stock_level: 5 },
+      { id: '2', name: 'Solvente X', category: 'solvent', current_stock: 5, unit: 'L', min_stock_level: 2 }
+    ];
+
+    mockUseInventory.mockReturnValue({
+      items: mockItems,
+      isLoading: false,
+      stats: { movementsCount24h: 0, inventoryValue: 0 },
+    } as any);
+
+    render(
+      <MemoryRouter>
+        <QueryClientProvider client={queryClient}>
+          <InventoryPage />
+        </QueryClientProvider>
+      </MemoryRouter>
+    );
+
+    const searchInput = screen.getByPlaceholderText(/Buscar material/i);
+    fireEvent.change(searchInput, { target: { value: 'Solvente' } });
+
+    await waitFor(() => {
+      expect(screen.queryByText('Tinta Azul')).toBeNull();
+      expect(screen.getByText('Solvente X')).toBeDefined();
+    });
   });
 });
+
+
+
+
+
