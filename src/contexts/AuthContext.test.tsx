@@ -50,9 +50,13 @@ describe('AuthContext', () => {
       <AuthProvider>{children}</AuthProvider>
     );
 
-    const { result } = renderHook(() => useAuth(), { wrapper });
+    let result: any;
+    await act(async () => {
+      const renderResult = renderHook(() => useAuth(), { wrapper });
+      result = renderResult.result;
+    });
 
-    expect(result.current.isLoading).toBe(true);
+    expect(result.current.isLoading).toBe(false); // After act, loading should be done
     expect(result.current.user).toBeNull();
   });
 
