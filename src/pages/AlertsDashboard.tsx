@@ -10,7 +10,8 @@ import { useBottleneckPrediction, useLoadBalancing, BottleneckAlert, LoadBalanci
 
 import { useEfficiencyNotifications } from "@/features/notifications";
 import { EfficiencyAlertHistoryWidget } from "@/components/dashboard/EfficiencyAlertHistoryWidget";
-import { useStuckJobsDetection, StuckJob } from "@/features/jobs";
+import { useStuckJobsDetection } from "@/features/jobs";
+
 import { useOrphanedDataDetection } from "@/features/admin";
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { AlertJobCard } from "@/components/alerts/AlertJobCard";
