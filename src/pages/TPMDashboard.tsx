@@ -61,7 +61,7 @@ export default function TPMDashboard() {
       return;
     }
 
-    const schedule = schedules.find(s => s.id === scheduleId);
+    const schedule = schedules.find((s: any) => s.id === scheduleId);
     setSelectedSchedule(schedule);
 
     startMaintenance.mutate({
@@ -69,7 +69,7 @@ export default function TPMDashboard() {
       performed_by: user.id,
       performed_by_name: profile.full_name || 'Usuário',
     }, {
-      onSuccess: (record) => {
+      onSuccess: (record: any) => {
         setCurrentRecordId(record.id);
         setExecutionModalOpen(true);
       }
@@ -97,7 +97,7 @@ export default function TPMDashboard() {
         <div className="p-4 sm:p-6 lg:p-8 space-y-6 animate-pulse">
           <Skeleton className="h-10 w-64" />
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-            {[...Array(5)].map((_, i) => <Skeleton key={i} className="h-28" />)}
+            {[...Array(5)].map((_, i: number) => <Skeleton key={i} className="h-28" />)}
           </div>
           <Skeleton className="h-[400px]" />
         </div>
@@ -284,7 +284,7 @@ export default function TPMDashboard() {
               <div className="lg:col-span-2">
                 <TPMCalendar
                   schedules={schedules}
-                  onSelectSchedule={(schedule) => handleStartMaintenance(schedule.id)}
+                  onSelectSchedule={(schedule: any) => handleStartMaintenance(schedule.id)}
                 />
               </div>
               <div className="space-y-6">
