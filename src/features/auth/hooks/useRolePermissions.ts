@@ -56,7 +56,8 @@ export function useRolePermissions(role: AppRole | null) {
           .from('role_permissions')
           .insert({ 
             role: targetRole as any, 
-            permission: permissionStr 
+            permission: permissionStr,
+            resource: permissionStr.split(':')[0]
           });
         if (error) throw error;
         setPermissions(prev => [...prev, permissionStr]);

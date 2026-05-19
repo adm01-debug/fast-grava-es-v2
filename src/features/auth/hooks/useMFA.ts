@@ -28,13 +28,13 @@ export function useMFA() {
     refreshFactors();
   }, [refreshFactors]);
 
-  const startEnrollment = async () => {
+  const startEnrollment = async (friendlyNameArg?: string) => {
     setIsEnrolling(true);
     try {
       const { data, error } = await supabase.auth.mfa.enroll({
         factorType: 'totp',
         issuer: 'Fast Gravações',
-        friendlyName: 'Fast Gravações MFA'
+        friendlyName: friendlyNameArg || 'Fast Gravações MFA'
       });
       if (error) throw error;
       setEnrollmentData(data);
