@@ -190,8 +190,8 @@ export default function CodeQualityDashboard() {
                   {[
                     { task: "Refatoração de 'any' em Snapshots de Manutenção", status: "concluido", desc: "Tipagem forte em ChecklistSnapshot e AdjustmentParameters." },
                     { task: "Validação de dados em mutações críticas", status: "concluido", desc: "Runtime checks em useTPMMutations antes do insert." },
+                    { task: "Modo Simulação massiva (Webhooks)", status: "concluido", desc: "Teste de stress e integridade em tempo real (veja /simulation)." },
                     { task: "Tratamento de erros amigável", status: "concluido", desc: "Mensagens claras para falhas de validação de snapshot." },
-                    { task: "Erradicação total de 'as any' em componentes de BI", status: "pendente", desc: "Substituir casts por interfaces reais no OEEMachineTable." },
                   ].map((item, idx) => (
                     <div key={idx} className="flex items-start gap-3 p-3 rounded-lg bg-muted/30 border border-border/50">
                       {item.status === 'concluido' ? <CheckCircle2 className="h-5 w-5 text-success mt-0.5" /> : <AlertTriangle className="h-5 w-5 text-warning mt-0.5" />}

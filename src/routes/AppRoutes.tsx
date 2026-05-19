@@ -66,6 +66,7 @@ const AuditTrailPage = lazy(() => import("@/pages/AuditTrailPage"));
 const DigitalTwin = lazy(() => import("@/pages/DigitalTwin"));
 const LogisticsPage = lazy(() => import("@/pages/LogisticsPage"));
 const PublicTrackingPage = lazy(() => import("@/pages/PublicTrackingPage"));
+const SimulationDashboard = lazy(() => import("@/pages/SimulationDashboard"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 
 // Helper to determine transition direction based on path depth
@@ -213,6 +214,7 @@ export function AnimatedRoutes() {
         <Route path="/master-api" element={<ProtectedPage direction={direction} fallback={<KPIPageSkeleton />} allowedRoles={['coordinator', 'manager']}><MasterAPIPage /></ProtectedPage>} />
         <Route path="/code-quality" element={<ProtectedPage direction={direction} fallback={<KPIPageSkeleton />} allowedRoles={['coordinator', 'manager']}><CodeQualityDashboard /></ProtectedPage>} />
         <Route path="/admin/telemetria" element={<ProtectedPage direction={direction} fallback={<KPIPageSkeleton />} allowedRoles={['coordinator', 'manager']}><AdminTelemetriaPage /></ProtectedPage>} />
+        <Route path="/simulation" element={<ProtectedPage direction={direction} fallback={<KPIPageSkeleton />} allowedRoles={['coordinator', 'manager']}><SimulationDashboard /></ProtectedPage>} />
 
         {/* Kiosk */}
         <Route path="/kiosk" element={<ProtectedPage direction={direction} fallback={<DashboardPageSkeleton />}><KioskPage /></ProtectedPage>} />
