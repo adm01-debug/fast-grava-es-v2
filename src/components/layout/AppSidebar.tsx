@@ -216,7 +216,8 @@ export function AppSidebar() {
                     openGroups={openGroups}
                     toggleGroup={toggleGroup}
                   />
-                </div>
+          </StaggeredList>
+
               );
             })}
           </div>
