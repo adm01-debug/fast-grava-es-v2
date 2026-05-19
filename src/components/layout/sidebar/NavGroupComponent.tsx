@@ -56,10 +56,10 @@ export const NavGroupComponent = memo(function NavGroupComponent({
         variant="ghost"
         onClick={() => toggleGroup(group.id)}
         className={cn(
-          "w-full justify-between gap-3 h-10 px-3 transition-all duration-300 group/btn",
-          "hover:bg-sidebar-accent/50 hover:text-sidebar-foreground hover:pl-4 transition-all duration-300 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 focus-visible:bg-sidebar-accent/50",
-          "text-sidebar-foreground/70",
-          hasActiveItem && "text-sidebar-foreground font-medium bg-sidebar-accent/80 shadow-sm"
+          "w-full justify-between gap-3 h-10 px-3 transition-all duration-500 group/btn",
+          "hover:bg-sidebar-accent hover:text-sidebar-foreground hover:pl-4 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1",
+          "text-sidebar-foreground/70 font-semibold tracking-tight uppercase text-[11px]",
+          hasActiveItem && "text-sidebar-foreground bg-sidebar-accent/50 shadow-sm border-l-2 border-primary/30"
         )}
         aria-expanded={isOpen}
         aria-controls={`nav-group-${group.id}`}
