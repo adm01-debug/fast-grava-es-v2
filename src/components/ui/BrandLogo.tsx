@@ -47,7 +47,7 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
           </h1>
           {showSubtitle && (
             <p className={cn("font-bold tracking-[0.2em] text-zinc-500 uppercase mt-1", currentSize.fontSub)}>
-              SISTEMA DE PRODUÇÃO
+              QUALIDADE + VELOCIDADE
             </p>
           )}
         </div>
