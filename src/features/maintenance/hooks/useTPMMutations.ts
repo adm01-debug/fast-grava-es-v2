@@ -166,10 +166,19 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
 
       // Validar Requisitos de Qualidade
       if (data.quality_checklist_results && Array.isArray(data.quality_checklist_results)) {
-        const failures = data.quality_checklist_results.filter(r => r.status === 'fail' && !r.notes);
+        const failures = data.quality_checklist_results.filter(r => r.status === 'fail' && (!r.notes || r.notes.length < 5));
         if (failures.length > 0) {
-          throw new Error(`Reprovação em ${failures.length} itens de qualidade sem justificativa técnica.`);
+          throw new Error(`Reprovação em ${failures.length} itens de qualidade exige justificativa técnica detalhada.`);
         }
+      }
+
+      // Validar Tempos e Custos
+      if (data.downtime_minutes && data.downtime_minutes > 480) {
+         toast.warning("Tempo de parada muito alto (>8h) detectado. Certifique-se de que o valor está correto.");
+      }
+
+      if (data.total_cost && data.total_cost > 10000) {
+         toast.warning("Custo de manutenção elevado detectado. Verifique se o valor está em centavos ou reais.");
       }
 
       // Update the main record to 'completed' (Pending Approval)
