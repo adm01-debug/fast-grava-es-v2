@@ -6,7 +6,7 @@ import { DbJob, DbTechnique, DbMachine } from './useJobs';
 import { QUERY_KEYS, STALE_TIMES } from '@/lib/queryConfig';
 import { createAppError } from '@/lib/errorHandling';
 import { jobsService } from '@/features/jobs';
-import { machinesService } from '@/services/machinesService';
+import { machinesService } from '@/features/production';
 
 // Retry configuration for connection failures
 const RETRY_CONFIG = {

@@ -7,7 +7,7 @@ import { jobsService, type Job, type JobStatus } from '@/features/jobs';
 import { useTechniques } from './useTechniques';
 import { useMachines } from './useMachines';
 import { Technique } from '@/features/jobs';
-import { Machine } from '@/services/machinesService';
+import { Machine } from '@/features/production';
 
 // Re-export types for backward compatibility
 export type DbJob = Job;
