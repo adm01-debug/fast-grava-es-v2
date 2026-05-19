@@ -92,11 +92,11 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
       total_cost?: number;
       downtime_minutes?: number;
       checklist_version?: number;
-      checklist_snapshot?: any;
+      checklist_snapshot?: ChecklistSnapshot;
       technical_sheet_id?: string;
       technical_sheet_version?: number;
-      adjustment_parameters?: any;
-      quality_checklist_results?: any[];
+      adjustment_parameters?: AdjustmentParameters;
+      quality_checklist_results?: QualityChecklistResult[];
       failure_risk_detected?: boolean;
       responses?: Array<{
         checklist_item_id: string;
