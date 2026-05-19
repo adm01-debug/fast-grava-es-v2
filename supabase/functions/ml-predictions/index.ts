@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { mlPredictionPayloadSchema } from "../_shared/validation.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -20,7 +21,20 @@ serve(async (req) => {
     if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) throw new Error("Supabase not configured");
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
-    const { action, machine_id } = await req.json();
+    const body = await req.json().catch(() => ({}));
+    const validationResult = mlPredictionPayloadSchema.safeParse(body);
+
+    if (!validationResult.success) {
+      return new Response(JSON.stringify({ 
+        error: "Validation failed", 
+        details: validationResult.error.format() 
+      }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const { action, machine_id } = validationResult.data;
 
     console.log(`ML Predictions: action=${action}, machine_id=${machine_id || 'all'}`);
 
