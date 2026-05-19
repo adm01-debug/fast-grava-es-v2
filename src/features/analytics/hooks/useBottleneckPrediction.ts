@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
-import { useJobs, useMachines, useTechniques, DbJob } from '@/features/jobs';
+import { useJobs, useTechniques, DbJob } from '@/features/jobs';
+import { useMachines } from '@/features/production';
 import { format, addDays } from 'date-fns';
 import { BottleneckAlert, TechniqueCapacity } from '../types';
 

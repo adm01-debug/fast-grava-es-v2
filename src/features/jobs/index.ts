@@ -21,8 +21,8 @@ export * from './services/scheduling';
 export * from './types/job.schema';
 export * from './types/sequencing';
 
-// Re-export machines from production for convenience (deprecated)
-export { useMachines } from '../production/hooks/useMachines';
+// Re-export machines from production for convenience (deprecated - use @/features/production instead)
+// export { useMachines } from '../production/hooks/useMachines';
 
 // Compatibility aliases
 export type DbJob = import('./services/jobsService').Job;
