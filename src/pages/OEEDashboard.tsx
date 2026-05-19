@@ -95,6 +95,22 @@ const HyperInsights = lazy(() => import('@/features/analytics/components/oee/Hyp
 
 
 
+interface OEEPreset {
+  name: string;
+  filters: {
+    period?: string;
+    machineId?: string;
+    techniqueId?: string;
+    shift?: string;
+  };
+}
+
+interface jsPDFWithAutoTable extends jsPDF {
+  lastAutoTable: {
+    finalY: number;
+  };
+}
+
 const OEEDashboard = memo(function OEEDashboard() {
   const { t } = useTranslation();
   const [period, setPeriod] = useState<string>('30');
