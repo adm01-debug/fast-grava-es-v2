@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
-import { useAuth, type AppRole } from './useAuth';
+import { useAuth } from './useAuth';
+import type { AppRole } from '../types/auth.types';
 
 // Define permissions for each role
 export const ROLE_PERMISSIONS: Record<AppRole, string[]> = {
