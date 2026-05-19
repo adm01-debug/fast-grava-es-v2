@@ -401,8 +401,8 @@ export function MaintenanceExecutionModal({
       })),
       adjustment_parameters: {
         ...adjustmentParams,
-        recommended: selectedSheetId ? (technicalSheets.find(s => s.id === selectedSheetId)?.machine_settings as any) : null,
-        ranges: selectedSheetId ? (technicalSheets.find(s => s.id === selectedSheetId)?.settings_ranges as any) : null
+        recommended: selectedSheetId ? (technicalSheets.find(s => s.id === selectedSheetId)?.machine_settings || null) : null,
+        ranges: selectedSheetId ? (technicalSheets.find(s => s.id === selectedSheetId)?.settings_ranges || null) : null
       },
       supplies_used: Object.entries(suppliesUsed)
         .filter(([_, data]) => data.is_checked)
