@@ -192,7 +192,7 @@ export function AppSidebar() {
         )}
 
         <nav className="flex-1 overflow-y-auto scrollbar-thin p-2 space-y-1 relative focus:outline-none" id="main-navigation">
-          <div className="space-y-1">
+          <StaggeredList staggerDelay={0.03}>
             {filteredNavGroups.map((group) => {
               const isGroupActive = activeGroup?.id === group.id;
               return (
