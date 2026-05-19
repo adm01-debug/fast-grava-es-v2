@@ -147,10 +147,11 @@ export function AppSidebar() {
                     animate={{ x: 0, opacity: 1 }}
                     exit={{ x: 20, opacity: 0 }}
                     className={cn(
-                      "rounded-xl overflow-hidden flex items-center justify-center flex-shrink-0",
-                      collapsed && !isMobile ? "w-10 h-10" : "w-14 h-14"
+                      "rounded-2xl overflow-hidden flex items-center justify-center flex-shrink-0",
+                      collapsed && !isMobile ? "w-10 h-10" : "w-[205px] h-[205px]"
                     )}
-                    style={collapsed && !isMobile ? { width: 40, height: 40 } : { width: 68, height: 68 }}
+                    style={collapsed && !isMobile ? { width: 40, height: 40 } : { width: 205, height: 205 }}
+
                     role="img"
                     aria-label="FAST GRAVAÇÕES - Qualidade + Velocidade"
                   >
