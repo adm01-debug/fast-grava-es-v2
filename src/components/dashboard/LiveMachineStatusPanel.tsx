@@ -51,10 +51,10 @@ export function LiveMachineStatusPanel() {
   const machineStatuses = useMemo<MachineStatus[]>(() => {
     if (!machines || !jobs) return [];
 
-    return machines.map(machine => {
+    return machines.map((machine: any) => {
       const technique = getTechniqueById(machine.technique_id);
-      const activeJob = jobs.find(j => j.machine_id === machine.id && j.status === 'production');
-      const pausedJob = jobs.find(j => j.machine_id === machine.id && j.status === 'paused');
+      const activeJob = jobs.find((j: any) => j.machine_id === machine.id && j.status === 'production');
+      const pausedJob = jobs.find((j: any) => j.machine_id === machine.id && j.status === 'paused');
       const currentJob = activeJob || pausedJob;
 
       // Find assigned operator
