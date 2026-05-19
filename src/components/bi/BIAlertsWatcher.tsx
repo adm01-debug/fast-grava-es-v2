@@ -1,4 +1,4 @@
-import { useOEEAlerts } from "@/features/productionAlerts";
+import { useOEEAlerts } from "@/features/production";
 
 export function BIAlertsWatcher() {
   useOEEAlerts();
