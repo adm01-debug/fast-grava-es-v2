@@ -150,7 +150,7 @@ export function AppSidebar() {
                       "rounded-2xl overflow-hidden flex items-center justify-center flex-shrink-0",
                       collapsed && !isMobile ? "w-10 h-10" : "w-[205px] h-[205px]"
                     )}
-                    style={collapsed && !isMobile ? { width: 40, height: 40 } : { width: 205, height: 205 }}
+                    style={collapsed && !isMobile ? { width: 40, height: 40 } : { width: 200, height: 200, scale: 2 }}
 
                     role="img"
                     aria-label="FAST GRAVAÇÕES - Qualidade + Velocidade"
