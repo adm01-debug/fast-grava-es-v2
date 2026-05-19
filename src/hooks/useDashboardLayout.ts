@@ -61,14 +61,20 @@ export function useDashboardLayout() {
         if (error) throw error;
 
         if (data?.layout) {
-          const parsed = data.layout as unknown as WidgetConfig[];
-          // Merge with defaults to handle any new widgets added in code
-          const merged = DEFAULT_WIDGETS.map(defaultWidget => {
-            const savedWidget = parsed.find(w => w.id === defaultWidget.id);
-            return savedWidget ? { ...defaultWidget, ...savedWidget } : defaultWidget;
-          });
-          setWidgets(merged);
-          return;
+          const result = layoutSchema.safeParse(data.layout);
+          
+          if (result.success) {
+            const parsed = result.data;
+            // Merge with defaults to handle any new widgets added in code
+            const merged = DEFAULT_WIDGETS.map(defaultWidget => {
+              const savedWidget = parsed.find(w => w.id === defaultWidget.id);
+              return savedWidget ? { ...defaultWidget, ...savedWidget } : defaultWidget;
+            });
+            setWidgets(merged);
+            return;
+          } else {
+            console.error('Invalid dashboard layout from database:', result.error);
+          }
         }
 
         // 2. Fallback to localStorage
