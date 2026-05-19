@@ -73,8 +73,11 @@ const TEST_FILES: TestFile[] = [
   { name: 'inventory-stability.spec.ts', path: 'tests/e2e/inventory-stability.spec.ts', testCount: 2, category: 'e2e' },
   { name: 'production.spec.ts', path: 'tests/e2e/production.spec.ts', testCount: 4, category: 'e2e' },
   { name: 'logistics.spec.ts', path: 'tests/e2e/logistics.spec.ts', testCount: 3, category: 'e2e' },
+  { name: 'admin.spec.ts', path: 'tests/e2e/admin.spec.ts', testCount: 5, category: 'e2e' },
+  { name: 'simulation.spec.ts', path: 'tests/e2e/simulation.spec.ts', testCount: 1, category: 'e2e' },
   { name: 'jobsService.test.ts', path: 'src/features/jobs/services/jobsService.test.ts', testCount: 15, category: 'unit' },
   { name: 'useInventory.test.ts', path: 'src/features/inventory/hooks/useInventory.test.ts', testCount: 10, category: 'unit' },
+  { name: 'useNotifications.test.ts', path: 'src/features/notifications/hooks/useNotifications.test.ts', testCount: 2, category: 'unit' },
 ];
 
 // All hooks in the project
