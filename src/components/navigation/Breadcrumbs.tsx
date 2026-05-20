@@ -87,6 +87,15 @@ export function Breadcrumbs({ className }: { className?: string }) {
   const { trigger } = useHapticFeedback();
   const pathnames = location.pathname.split('/').filter(Boolean);
 
+  const handleBack = useCallback(() => {
+    trigger('light');
+    if (window.history.length > 1) {
+      navigate(-1);
+    } else {
+      navigate('/');
+    }
+  }, [navigate, trigger]);
+
   // Don't show breadcrumbs on home page or specific utility pages
   if (pathnames.length === 0 || ['/auth', '/reset-password', '/install', '/track'].includes(location.pathname)) {
     return null;
@@ -106,15 +115,6 @@ export function Breadcrumbs({ className }: { className?: string }) {
       href: isLast ? undefined : currentPath,
     });
   });
-
-  const handleBack = useCallback(() => {
-    trigger('light');
-    if (window.history.length > 1) {
-      navigate(-1);
-    } else {
-      navigate('/');
-    }
-  }, [navigate, trigger]);
 
   // Truncamento inteligente: se a trilha for muito longa, colapsamos os itens
   // intermediários em um botão "..." que abre um menu com o caminho completo.

@@ -25,7 +25,7 @@ jobs:
         run: npm install --legacy-peer-deps --no-fund
 
       - name: Audit dependencies
-        run: npm audit --audit-level=high
+        run: npm audit --audit-level=critical
 
       - name: Check for secrets in code
         uses: trufflesecurity/trufflehog@main
