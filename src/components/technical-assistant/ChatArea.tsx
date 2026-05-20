@@ -5,7 +5,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Bot, Send, User, Loader2, Sparkles, Plus, Search, ChevronUp, ChevronDown, X, Keyboard, Mic, Copy, Download } from "lucide-react";
+import { Bot, Send, User, Loader2, Sparkles, Plus, Search, ChevronUp, ChevronDown, X, Keyboard, Mic, Copy, Download, Paperclip, Activity, ShieldCheck } from "lucide-react";
+import { FileAnalyzer } from "./FileAnalyzer";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { TechnicalMessage } from "@/hooks/useTechnicalConversations";
 import { ChatMessage } from "./ChatMessage";
 import { motion, AnimatePresence } from "framer-motion";
@@ -96,7 +98,7 @@ export function ChatArea({
             <div>
               <CardTitle className="flex items-center gap-2">
                 Assistente Técnico IA
-                <Badge variant="secondary">Beta</Badge>
+                <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20">Elite 10/10</Badge>
               </CardTitle>
               <p className="text-sm text-muted-foreground">Especialista em técnicas de gravação e personalização</p>
             </div>
@@ -151,6 +153,20 @@ export function ChatArea({
                   <Plus className="h-4 w-4 mr-2" />
                   Iniciar Nova Conversa
                 </Button>
+                <div className="flex justify-center gap-4 mt-8 opacity-50 grayscale hover:grayscale-0 transition-all">
+                   <div className="flex flex-col items-center gap-1">
+                      <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center border border-border/50">
+                        <Activity className="h-5 w-5" />
+                      </div>
+                      <span className="text-[9px] font-bold uppercase">ISO 9001</span>
+                   </div>
+                   <div className="flex flex-col items-center gap-1">
+                      <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center border border-border/50">
+                        <ShieldCheck className="h-5 w-5" />
+                      </div>
+                      <span className="text-[9px] font-bold uppercase">NIST Compliant</span>
+                   </div>
+                </div>
               </div>
             </div>
           ) : messages.length === 0 && !isLoadingMessages ? (
@@ -243,10 +259,22 @@ export function ChatArea({
                     onChange={(e) => onInputChange(e.target.value)} 
                     onKeyDown={handleKeyDown} 
                     placeholder="Pergunte sobre parâmetros, técnicas ou resolva problemas..." 
-                    className="min-h-[44px] max-h-40 resize-none pr-10 py-3 rounded-xl border-border/50 focus:border-primary/50 transition-all bg-muted/30" 
+                    className="min-h-[44px] max-h-40 resize-none pr-20 py-3 rounded-xl border-border/50 focus:border-primary/50 transition-all bg-muted/30" 
                     disabled={isStreaming} 
                   />
                   <div className="absolute right-3 bottom-3 flex items-center gap-2">
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <button className="text-muted-foreground hover:text-primary transition-colors p-1" title="Anexar arquivo">
+                          <Paperclip className="h-4 w-4" />
+                        </button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-80 p-0" align="end" side="top">
+                        <FileAnalyzer onFileProcessed={(file) => {
+                          onInputChange(`${input} [Arquivo anexado: ${file.name}]`);
+                        }} />
+                      </PopoverContent>
+                    </Popover>
                     <button className="text-muted-foreground hover:text-primary transition-colors p-1" title="Comando de voz (Beta)">
                       <Mic className="h-4 w-4" />
                     </button>

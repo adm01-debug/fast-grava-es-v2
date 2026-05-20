@@ -1,12 +1,16 @@
 import { useState, useEffect } from "react";
 import { MainLayout } from "@/components/layout/MainLayout";
-import { Zap, Printer, Sun, Flame, Sparkles, Scissors, BookOpen, Settings } from "lucide-react";
+import { Zap, Printer, Sun, Flame, Sparkles, Scissors, BookOpen, Settings, LayoutPanelLeft } from "lucide-react";
 import { toast } from "sonner";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { useTechnicalConversations, useTechnicalMessages, TechnicalMessage } from "@/hooks/useTechnicalConversations";
 import { isToday, isThisWeek, isThisMonth } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { ConversationSidebar } from "@/components/technical-assistant/ConversationSidebar";
 import { ChatArea } from "@/components/technical-assistant/ChatArea";
+import { TechnicalTelemetryPanel } from "@/components/technical-assistant/TechnicalTelemetryPanel";
 import { useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -32,6 +36,7 @@ const TechnicalAssistantPage = () => {
   const [localMessages, setLocalMessages] = useState<TechnicalMessage[]>([]);
   const [input, setInput] = useState("");
   const [isStreaming, setIsStreaming] = useState(false);
+  const [showTelemetry, setShowTelemetry] = useState(true);
 
   const filteredConversations = useMemo(() => {
     return conversations.filter(conv => {
@@ -150,7 +155,25 @@ const TechnicalAssistantPage = () => {
   return (
     <MainLayout>
       <div className="flex flex-col h-[calc(100vh-8rem)] gap-4 animate-in fade-in duration-500">
-        <div className="flex flex-1 gap-4 min-h-0">
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-2">
+            <Badge variant="outline" className="text-[10px] font-black uppercase tracking-widest text-primary border-primary/20 bg-primary/5">Status: Online</Badge>
+            <div className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span className="text-[10px] font-bold text-muted-foreground uppercase">Sincronizado com SPC</span>
+            </div>
+          </div>
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className={cn("h-8 text-[10px] font-black uppercase tracking-widest gap-2", showTelemetry && "text-primary bg-primary/5")}
+            onClick={() => setShowTelemetry(!showTelemetry)}
+          >
+            <LayoutPanelLeft className="h-3.5 w-3.5" />
+            {showTelemetry ? "Ocultar Telemetria" : "Mostrar Telemetria"}
+          </Button>
+        </div>
+        <div className="flex flex-1 gap-0 min-h-0 overflow-hidden rounded-2xl border border-border/50 bg-card shadow-2xl">
           <ConversationSidebar
             conversations={filteredConversations}
             selectedId={selectedConversationId}
@@ -170,7 +193,8 @@ const TechnicalAssistantPage = () => {
             onCancelEdit={() => setEditingId(null)}
             onEditTitleChange={setEditTitle}
           />
-          <ChatArea
+          <div className="flex-1 flex flex-col min-w-0">
+            <ChatArea
             selectedConversationId={selectedConversationId}
             messages={localMessages}
             isStreaming={isStreaming}
@@ -181,59 +205,21 @@ const TechnicalAssistantPage = () => {
             onNewConversation={handleNewConversation}
             isCreating={createConversation.isPending}
             suggestions={techniqueSuggestions}
-          />
-
-          <div className="hidden xl:flex w-72 flex-col gap-4">
-            <motion.div 
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="flex-1 rounded-2xl border border-border/50 bg-card p-4 space-y-4 shadow-sm"
-            >
-              <div className="flex items-center gap-2 text-sm font-bold text-primary">
-                <BookOpen className="h-4 w-4" />
-                DADOS TÉCNICOS EXTRAÍDOS
-              </div>
-              <div className="space-y-3">
-                <div className="p-3 rounded-xl bg-muted/30 border border-border/30">
-                  <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">Última Técnica</span>
-                  <p className="text-xs font-medium mt-1">Laser de Fibra Industrial</p>
-                </div>
-                <div className="p-3 rounded-xl bg-muted/30 border border-border/30">
-                  <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">Parâmetros Críticos</span>
-                  <div className="mt-2 space-y-1">
-                    <div className="flex justify-between text-[10px]">
-                      <span>Velocidade:</span>
-                      <span className="font-bold text-primary">500 mm/s</span>
-                    </div>
-                    <div className="flex justify-between text-[10px]">
-                      <span>Potência:</span>
-                      <span className="font-bold text-primary">35%</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-            
-            <motion.div 
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.1 }}
-              className="rounded-2xl border border-border/50 bg-card p-4 shadow-sm"
-            >
-              <div className="flex items-center gap-2 text-sm font-bold text-muted-foreground mb-3">
-                <Settings className="h-4 w-4" />
-                AÇÕES RÁPIDAS
-              </div>
-              <div className="grid gap-2">
-                <button className="w-full px-3 py-2 rounded-lg bg-primary text-primary-foreground text-[10px] font-bold hover:opacity-90 transition-all uppercase tracking-wider">
-                  Sincronizar Parâmetros
-                </button>
-                <button className="w-full px-3 py-2 rounded-lg bg-muted text-muted-foreground text-[10px] font-bold hover:bg-muted/80 transition-all uppercase tracking-wider">
-                  Gerar Relatório PDF
-                </button>
-              </div>
-            </motion.div>
+            />
           </div>
+
+          <AnimatePresence>
+            {showTelemetry && (
+              <motion.div 
+                initial={{ opacity: 0, x: 100, width: 0 }}
+                animate={{ opacity: 1, x: 0, width: 288 }}
+                exit={{ opacity: 0, x: 100, width: 0 }}
+                className="hidden xl:flex flex-col"
+              >
+                <TechnicalTelemetryPanel />
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
     </MainLayout>

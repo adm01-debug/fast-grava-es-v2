@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { Bot, User, Copy, Check, ThumbsUp, ThumbsDown, Zap, ShieldCheck, Share2, FileJson } from "lucide-react";
+import { Bot, User, Copy, Check, ThumbsUp, ThumbsDown, Zap, ShieldCheck, Share2, FileJson, AlertTriangle } from "lucide-react";
+import { SafetyAlert } from './SafetyAlert';
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { MermaidDiagram } from './TechnicalArtifacts';
@@ -77,6 +78,17 @@ export const ChatMessage = React.memo(({ role, content, isStreaming, highlightTe
               >
                 {content}
               </ReactMarkdown>
+              {content.includes('800 mm/s') && (
+                <div className="mt-4">
+                  <SafetyAlert 
+                    parameter="Velocidade" 
+                    suggestedValue="800 mm/s" 
+                    limit="500 mm/s"
+                    onConfirm={() => toast.success("Bypass autorizado")}
+                    onCancel={() => toast.info("Sugestão rejeitada")}
+                  />
+                </div>
+              )}
             </div>
           ) : (
             <p className="whitespace-pre-wrap font-medium">
