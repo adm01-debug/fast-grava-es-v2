@@ -25,7 +25,7 @@ jobs:
           node-version: 20
 
       - name: Install dependencies
-        run: npm install
+        run: npm install --legacy-peer-deps --no-fund
 
       - name: Run ESLint
         run: npm run lint -- --max-warnings 0
@@ -47,7 +47,7 @@ jobs:
           node-version: 20
 
       - name: Install dependencies
-        run: npm install
+        run: npm install --legacy-peer-deps --no-fund
 
       - name: Dependency vulnerability audit
         run: npm audit --audit-level=high
@@ -75,7 +75,7 @@ jobs:
           node-version: 20
 
       - name: Install dependencies
-        run: npm install
+        run: npm install --legacy-peer-deps --no-fund
 
       - name: Run unit tests with coverage
         run: npm run test:coverage -- --reporter=verbose --reporter=json --outputFile=test-results.json
@@ -118,7 +118,7 @@ jobs:
           node-version: 20
 
       - name: Install dependencies
-        run: npm install
+        run: npm install --legacy-peer-deps --no-fund
 
       - name: Run webhook simulation suite
         run: npx vitest run src/test/webhookSimulation.test.ts --reporter=verbose
@@ -156,7 +156,7 @@ jobs:
           node-version: 20
 
       - name: Install dependencies
-        run: npm install
+        run: npm install --legacy-peer-deps --no-fund
 
       - name: Build production bundle
         env:
@@ -197,7 +197,7 @@ jobs:
           node-version: 20
 
       - name: Install dependencies
-        run: npm install
+        run: npm install --legacy-peer-deps --no-fund
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
