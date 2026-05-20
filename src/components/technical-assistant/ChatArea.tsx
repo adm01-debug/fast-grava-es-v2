@@ -5,7 +5,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Bot, Send, User, Loader2, Sparkles, Plus, Search, ChevronUp, ChevronDown, X, Keyboard, Mic, Copy, Download } from "lucide-react";
+import { Bot, Send, User, Loader2, Sparkles, Plus, Search, ChevronUp, ChevronDown, X, Keyboard, Mic, Copy, Download, Paperclip } from "lucide-react";
+import { FileAnalyzer } from "./FileAnalyzer";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { TechnicalMessage } from "@/hooks/useTechnicalConversations";
 import { ChatMessage } from "./ChatMessage";
 import { motion, AnimatePresence } from "framer-motion";
@@ -243,10 +245,23 @@ export function ChatArea({
                     onChange={(e) => onInputChange(e.target.value)} 
                     onKeyDown={handleKeyDown} 
                     placeholder="Pergunte sobre parâmetros, técnicas ou resolva problemas..." 
-                    className="min-h-[44px] max-h-40 resize-none pr-10 py-3 rounded-xl border-border/50 focus:border-primary/50 transition-all bg-muted/30" 
+                    className="min-h-[44px] max-h-40 resize-none pr-20 py-3 rounded-xl border-border/50 focus:border-primary/50 transition-all bg-muted/30" 
                     disabled={isStreaming} 
                   />
                   <div className="absolute right-3 bottom-3 flex items-center gap-2">
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <button className="text-muted-foreground hover:text-primary transition-colors p-1" title="Anexar arquivo">
+                          <Paperclip className="h-4 w-4" />
+                        </button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-80 p-0" align="end" side="top">
+                        <FileAnalyzer onFileProcessed={(file) => {
+                          onInputChange(`${input} [Arquivo anexado: ${file.name}]`);
+                        }} />
+                      </PopoverContent>
+                    </Popover>
+                    <button className="text-muted-foreground hover:text-primary transition-colors p-1" title="Comando de voz (Beta)">
                     <button className="text-muted-foreground hover:text-primary transition-colors p-1" title="Comando de voz (Beta)">
                       <Mic className="h-4 w-4" />
                     </button>
