@@ -1,4 +1,4 @@
-import { assertEquals } from "https://deno.land/std@0.168.0/testing/asserts.ts";
+import { assertEquals } from "https://deno.land/std@0.224.0/testing/asserts.ts";
 import { z } from "https://esm.sh/zod@3.22.4";
 
 // Define a schema for contract tests to ensure consistency

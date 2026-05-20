@@ -1,9 +1,20 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-forwarded-for, x-real-ip',
-};
+const ALLOWED_ORIGINS = [
+  Deno.env.get('APP_URL') || 'https://fastgravacoes.com.br',
+  'https://xxroejpvloldkmqdydar.lovableproject.com',
+].filter(Boolean);
+
+function getCorsHeaders(req: Request): Record<string, string> {
+  const origin = req.headers.get('origin') || '';
+  const allowedOrigin = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
+  return {
+    'Access-Control-Allow-Origin': allowedOrigin,
+    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-api-key, x-webhook-signature, x-forwarded-for, x-real-ip',
+    'Access-Control-Allow-Methods': 'GET, POST, PATCH, PUT, DELETE, OPTIONS',
+    'Vary': 'Origin',
+  };
+}
 
 interface RateLimitConfig {
   maxRequests: number;
@@ -19,7 +30,7 @@ const DEFAULT_CONFIG: RateLimitConfig = {
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
+    return new Response(null, { headers: getCorsHeaders(req) });
   }
 
   const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
@@ -57,14 +68,14 @@ Deno.serve(async (req) => {
               reason: 'ip_blocked',
               expires_at: blockedIP.expires_at 
             }),
-            { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 429 }
+            { headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' }, status: 429 }
           );
         }
       } else if (blockedIP.is_permanent) {
         console.log(`IP ${ip} is permanently blocked`);
         return new Response(
           JSON.stringify({ allowed: false, reason: 'ip_blocked_permanent' }),
-          { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 429 }
+          { headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' }, status: 429 }
         );
       }
     }
@@ -160,7 +171,7 @@ Deno.serve(async (req) => {
           reason: 'rate_limit_exceeded',
           retry_after: config.blockDurationMinutes * 60,
         }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 429 }
+        { headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' }, status: 429 }
       );
     }
 
@@ -170,7 +181,7 @@ Deno.serve(async (req) => {
         remaining: config.maxRequests - requestCount,
         reset_at: new Date(now.getTime() + config.windowSeconds * 1000).toISOString(),
       }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
+      { headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' }, status: 200 }
     );
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Unknown error';
@@ -179,7 +190,7 @@ Deno.serve(async (req) => {
     // On error, allow the request (fail open)
     return new Response(
       JSON.stringify({ allowed: true, error: message }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
+      { headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' }, status: 200 }
     );
   }
 });

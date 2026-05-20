@@ -110,9 +110,8 @@ export const logger = {
     const entry = createEntry('critical', message, context, error);
     console.error(`[CRITICAL] ${formatEntry(entry)}`, error ?? '');
     
-    // Disparar Webhook de Alerta (Configurado para o time técnico)
-    const WEBHOOK_URL = 'https://n8n.fastgravacoes.com.br/webhook/alerts';
-    if (!isDev) {
+    const WEBHOOK_URL = import.meta.env.VITE_ALERT_WEBHOOK_URL;
+    if (!isDev && WEBHOOK_URL) {
       fetch(WEBHOOK_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

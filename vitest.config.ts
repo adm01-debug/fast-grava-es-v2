@@ -12,5 +12,22 @@ export default defineConfig({
     alias: {
       '@': path.resolve(__dirname, './src'),
     },
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'lcov'],
+      thresholds: {
+        lines: 60,
+        functions: 60,
+        branches: 50,
+        statements: 60,
+      },
+      exclude: [
+        '**/node_modules/**',
+        '**/dist/**',
+        'src/test/**',
+        'src/**/*.d.ts',
+        'src/integrations/**',
+      ],
+    },
   },
 });

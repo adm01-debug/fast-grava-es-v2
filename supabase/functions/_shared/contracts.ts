@@ -50,6 +50,16 @@ export const ERPJobResponseSchema = z.object({
   created_at: z.string(),
 });
 
+export const ERPJobPatchSchema = z.object({
+  status: z.enum(["queue", "ready", "scheduled", "production", "finished", "paused", "cancelled", "delayed", "rework"]).optional(),
+  machine_id: z.string().uuid().optional(),
+  scheduled_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+  notes: z.string().optional(),
+  priority: z.enum(["low", "medium", "high", "urgent"]).optional(),
+  produced_quantity: z.number().nonnegative().optional(),
+  lost_pieces: z.number().nonnegative().optional(),
+}).strict();
+
 // Production Lots
 export const ERPLotRequestSchema = z.object({
   job_id: z.string().uuid(),
