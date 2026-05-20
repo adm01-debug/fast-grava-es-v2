@@ -262,7 +262,6 @@ export function ChatArea({
                       </PopoverContent>
                     </Popover>
                     <button className="text-muted-foreground hover:text-primary transition-colors p-1" title="Comando de voz (Beta)">
-                    <button className="text-muted-foreground hover:text-primary transition-colors p-1" title="Comando de voz (Beta)">
                       <Mic className="h-4 w-4" />
                     </button>
                   </div>
