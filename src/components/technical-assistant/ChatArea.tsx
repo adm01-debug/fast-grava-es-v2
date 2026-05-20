@@ -6,6 +6,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Bot, Send, User, Loader2, Sparkles, Plus, Search, ChevronUp, ChevronDown, X, Keyboard, Mic, Copy, Download, Paperclip, Activity, ShieldCheck } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { FileAnalyzer } from "./FileAnalyzer";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { TechnicalMessage } from "@/hooks/useTechnicalConversations";
@@ -40,6 +41,7 @@ export function ChatArea({
   const [messageSearchActive, setMessageSearchActive] = useState(false);
   const [messageSearchQuery, setMessageSearchQuery] = useState("");
   const [currentMatchIndex, setCurrentMatchIndex] = useState(0);
+  const [diagnosticMode, setDiagnosticMode] = useState(false);
 
   const matchingMessageIndices = useMemo(() => {
     if (!messageSearchQuery.trim()) return [];
@@ -89,53 +91,37 @@ export function ChatArea({
 
   return (
     <Card className="flex-1 flex flex-col glass-card border-border/50">
-      <CardHeader className="pb-3 border-b border-border/50">
+      <CardHeader className="pb-3 border-b border-border/50 bg-card/50 backdrop-blur-sm sticky top-0 z-10">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-gradient-to-br from-primary/20 to-purple-500/20">
-              <Bot className="h-6 w-6 text-primary" />
+            <div className="p-2 rounded-xl bg-gradient-to-br from-primary/20 to-purple-500/20 shadow-lg">
+              <Bot className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle className="flex items-center gap-2 text-sm font-black uppercase tracking-widest">
                 Assistente Técnico IA
-                <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20 animate-pulse">ELITE 10/10</Badge>
+                <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20 animate-pulse text-[8px]">ELITE 10/10</Badge>
               </CardTitle>
-              <p className="text-sm text-muted-foreground">Especialista em técnicas de gravação e personalização</p>
+              <div className="flex items-center gap-3 text-[10px] text-muted-foreground font-bold uppercase tracking-wider">
+                <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> System Online</span>
+                <span className="flex items-center gap-1">CPU: 4%</span>
+                <span className="flex items-center gap-1">LAT: 12ms</span>
+              </div>
             </div>
           </div>
-          {selectedConversationId && messages.length > 0 && (
-            <div className="flex items-center gap-2">
-              {messageSearchActive ? (
-                <div className="flex items-center gap-2">
-                  <div className="relative">
-                    <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input placeholder="Buscar nas mensagens..." value={messageSearchQuery} onChange={(e) => setMessageSearchQuery(e.target.value)} className="pl-9 h-8 w-56 text-sm" autoFocus />
-                  </div>
-                  {messageSearchQuery && matchingMessageIndices.length > 0 && (
-                    <div className="flex items-center gap-1">
-                      <span className="text-xs text-muted-foreground whitespace-nowrap">{currentMatchIndex + 1}/{matchingMessageIndices.length}</span>
-                      <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => setCurrentMatchIndex(p => p === 0 ? matchingMessageIndices.length - 1 : p - 1)}>
-                        <ChevronUp className="h-3 w-3" />
-                      </Button>
-                      <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => setCurrentMatchIndex(p => p === matchingMessageIndices.length - 1 ? 0 : p + 1)}>
-                        <ChevronDown className="h-3 w-3" />
-                      </Button>
-                    </div>
-                  )}
-                  {messageSearchQuery && matchingMessageIndices.length === 0 && (
-                    <span className="text-xs text-muted-foreground whitespace-nowrap">0 resultados</span>
-                  )}
-                  <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => { setMessageSearchActive(false); setMessageSearchQuery(""); }}>
-                    <X className="h-4 w-4" />
-                  </Button>
-                </div>
-              ) : (
-                <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => setMessageSearchActive(true)}>
+          <div className="flex items-center gap-2">
+            {selectedConversationId && messages.length > 0 && (
+                <Button size="icon" variant="ghost" className="h-8 w-8 hover:text-primary transition-colors" onClick={() => setMessageSearchActive(true)}>
                   <Search className="h-4 w-4" />
                 </Button>
-              )}
+            )}
+            <div className="h-8 w-px bg-border/50 mx-1" />
+            <div className="flex -space-x-2">
+              {[1, 2, 3].map(i => (
+                <div key={i} className="w-7 h-7 rounded-full bg-muted border-2 border-card flex items-center justify-center text-[9px] font-black text-muted-foreground">E{i}</div>
+              ))}
             </div>
-          )}
+          </div>
         </div>
       </CardHeader>
 
@@ -250,7 +236,10 @@ export function ChatArea({
           )}
         </ScrollArea>
 
-          <div className="p-4 border-t border-border/50 bg-background/50 backdrop-blur-sm">
+          <div className={cn(
+            "p-4 border-t border-border/50 bg-background/50 backdrop-blur-sm transition-all duration-500",
+            diagnosticMode && "bg-primary/5 ring-1 ring-primary/20"
+          )}>
             <div className="flex flex-col gap-2 max-w-4xl mx-auto">
               <div className="flex gap-2 items-end">
                 <div className="relative flex-1 group">
@@ -321,6 +310,12 @@ export function ChatArea({
                   <div className="flex items-center gap-1.5">
                     <Sparkles className="h-3 w-3 text-primary/50" />
                     <span className="text-[9px] font-bold uppercase text-primary/70">AI Optimizer On</span>
+                  </div>
+                  <div className="flex items-center gap-1.5 cursor-pointer group" onClick={() => setDiagnosticMode(!diagnosticMode)}>
+                    <Activity className={cn("h-3 w-3 transition-colors", diagnosticMode ? "text-primary animate-pulse" : "text-muted-foreground/50")} />
+                    <span className={cn("text-[9px] font-black uppercase tracking-widest", diagnosticMode ? "text-primary" : "text-muted-foreground/70 group-hover:text-primary transition-colors")}>
+                      {diagnosticMode ? "Diagnostic Active" : "Diagnostic Mode"}
+                    </span>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
