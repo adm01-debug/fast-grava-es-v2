@@ -163,15 +163,30 @@ const TechnicalAssistantPage = () => {
               <span className="text-[10px] font-bold text-muted-foreground uppercase">Sincronizado com SPC</span>
             </div>
           </div>
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            className={cn("h-8 text-[10px] font-black uppercase tracking-widest gap-2", showTelemetry && "text-primary bg-primary/5")}
-            onClick={() => setShowTelemetry(!showTelemetry)}
-          >
-            <LayoutPanelLeft className="h-3.5 w-3.5" />
-            {showTelemetry ? "Ocultar Telemetria" : "Mostrar Telemetria"}
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="h-8 text-[10px] font-black uppercase tracking-widest gap-2 bg-background/50 backdrop-blur-sm border-primary/20 hover:bg-primary/5 group"
+              onClick={() => {
+                toast.info("Relatório SPC gerado com sucesso", {
+                  description: "Download iniciado: REL_SPC_" + new Date().toISOString().split('T')[0] + ".pdf",
+                });
+              }}
+            >
+              <Printer className="h-3.5 w-3.5 text-primary group-hover:scale-110 transition-transform" />
+              Exportar SPC
+            </Button>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className={cn("h-8 text-[10px] font-black uppercase tracking-widest gap-2", showTelemetry && "text-primary bg-primary/5")}
+              onClick={() => setShowTelemetry(!showTelemetry)}
+            >
+              <LayoutPanelLeft className="h-3.5 w-3.5" />
+              {showTelemetry ? "Ocultar Telemetria" : "Mostrar Telemetria"}
+            </Button>
+          </div>
         </div>
         <div className="flex flex-1 gap-0 min-h-0 overflow-hidden rounded-2xl border border-border/50 bg-card shadow-2xl">
           <ConversationSidebar

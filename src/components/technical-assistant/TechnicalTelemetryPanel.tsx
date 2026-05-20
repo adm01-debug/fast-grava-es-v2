@@ -2,6 +2,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { Activity, Thermometer, Gauge, Zap } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 
 const mockTelemetryData = [
   { time: '10:00', temp: 180, pressure: 5.2, speed: 45 },
@@ -13,12 +14,15 @@ const mockTelemetryData = [
 
 export function TechnicalTelemetryPanel() {
   return (
-    <Card className="h-full border-l rounded-none border-y-0 border-r-0 glass-card">
+    <Card className="h-full border-l rounded-none border-y-0 border-r-0 glass-card bg-background/30 backdrop-blur-xl">
       <CardHeader className="py-4 border-b border-border/50">
-        <CardTitle className="text-sm font-bold flex items-center gap-2">
-          <Activity className="h-4 w-4 text-primary" />
-          Telemetria em Tempo Real
-        </CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-sm font-black uppercase tracking-tighter flex items-center gap-2">
+            <Activity className="h-4 w-4 text-primary animate-pulse" />
+            Sincronização SPC
+          </CardTitle>
+          <Badge variant="outline" className="text-[8px] bg-primary/5 text-primary border-primary/20">LIVE</Badge>
+        </div>
       </CardHeader>
       <CardContent className="p-4 space-y-6">
         <div className="space-y-4">
