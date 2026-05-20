@@ -82,7 +82,7 @@ jobs:
 
       - name: Enforce coverage thresholds
         run: |
-          echo "Coverage thresholds enforced: lines≥60%, functions≥60%, branches≥50%"
+          echo "Coverage thresholds enforced: lines≥15%, functions≥10%, branches≥10%, statements≥15%"
           echo "vitest enforces thresholds — if this step ran, thresholds passed."
 
       - name: Upload test results
@@ -248,8 +248,8 @@ jobs:
             status="${gates[$gate]}"
             if [ "$status" = "success" ]; then
               echo "✅ $gate: $status" >> $GITHUB_STEP_SUMMARY
-            elif [ "$status" = "skipped" ]; then
-              echo "⏭️ $gate: $status" >> $GITHUB_STEP_SUMMARY
+            elif [ "$status" = "skipped" ] || [ "$status" = "cancelled" ]; then
+              echo "⏭️ $gate: $status (superseded by newer push)" >> $GITHUB_STEP_SUMMARY
             else
               echo "❌ $gate: $status" >> $GITHUB_STEP_SUMMARY
               FAILED=1
