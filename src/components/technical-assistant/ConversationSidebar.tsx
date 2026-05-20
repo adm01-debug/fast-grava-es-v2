@@ -92,45 +92,73 @@ export function ConversationSidebar({
               <p className="text-xs">Clique em "Nova" para começar</p>
             </div>
           ) : (
-            <div className="space-y-2">
-              {conversations.map((conv) => (
-                <div
-                  key={conv.id}
-                  onClick={() => onSelect(conv.id)}
-                  className={`p-3 rounded-lg cursor-pointer transition-colors group ${
-                    selectedId === conv.id ? "bg-primary/10 border border-primary/30" : "hover:bg-muted/50 border border-transparent"
-                  }`}
-                >
-                  {editingId === conv.id ? (
-                    <div className="flex items-center gap-2">
-                      <Input value={editTitle} onChange={(e) => onEditTitleChange(e.target.value)} className="h-7 text-sm" onClick={(e) => e.stopPropagation()} />
-                      <Button size="icon" variant="ghost" className="h-7 w-7" onClick={(e) => { e.stopPropagation(); onSaveEdit(conv.id); }}>
-                        <Check className="h-3 w-3" />
-                      </Button>
-                      <Button size="icon" variant="ghost" className="h-7 w-7" onClick={(e) => { e.stopPropagation(); onCancelEdit(); }}>
-                        <X className="h-3 w-3" />
-                      </Button>
-                    </div>
-                  ) : (
-                    <>
-                      <div className="flex items-start justify-between gap-2">
-                        <p className="text-sm font-medium truncate flex-1">{conv.title}</p>
-                        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <Button size="icon" variant="ghost" className="h-6 w-6" onClick={(e) => onStartEdit(conv.id, conv.title, e)}>
-                            <Edit2 className="h-3 w-3" />
-                          </Button>
-                          <Button size="icon" variant="ghost" className="h-6 w-6 text-destructive hover:text-destructive" onClick={(e) => onDelete(conv.id, e)}>
-                            <Trash2 className="h-3 w-3" />
-                          </Button>
-                        </div>
+            <div className="space-y-4">
+              {(() => {
+                const groups: Record<string, typeof conversations> = {
+                  'Hoje': [],
+                  'Ontem': [],
+                  'Esta Semana': [],
+                  'Anteriores': []
+                };
+
+                const now = new Date();
+                const yesterday = new Date(now);
+                yesterday.setDate(now.getDate() - 1);
+                const lastWeek = new Date(now);
+                lastWeek.setDate(now.getDate() - 7);
+
+                conversations.forEach(conv => {
+                  const date = new Date(conv.updated_at);
+                  if (date.toDateString() === now.toDateString()) groups['Hoje'].push(conv);
+                  else if (date.toDateString() === yesterday.toDateString()) groups['Ontem'].push(conv);
+                  else if (date > lastWeek) groups['Esta Semana'].push(conv);
+                  else groups['Anteriores'].push(conv);
+                });
+
+                return Object.entries(groups).map(([label, items]) => items.length > 0 && (
+                  <div key={label} className="space-y-2">
+                    <h4 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider px-2">{label}</h4>
+                    {items.map((conv) => (
+                      <div
+                        key={conv.id}
+                        onClick={() => onSelect(conv.id)}
+                        className={`p-3 rounded-xl cursor-pointer transition-all group relative border ${
+                          selectedId === conv.id 
+                            ? "bg-primary/10 border-primary/30 shadow-sm" 
+                            : "hover:bg-muted/50 border-transparent hover:border-border/50"
+                        }`}
+                      >
+                        {editingId === conv.id ? (
+                          <div className="flex items-center gap-2">
+                            <Input value={editTitle} onChange={(e) => onEditTitleChange(e.target.value)} className="h-7 text-sm" onClick={(e) => e.stopPropagation()} autoFocus />
+                            <Button size="icon" variant="ghost" className="h-7 w-7" onClick={(e) => { e.stopPropagation(); onSaveEdit(conv.id); }}>
+                              <Check className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        ) : (
+                          <div className="flex flex-col gap-1">
+                            <div className="flex items-start justify-between gap-2">
+                              <p className="text-sm font-medium truncate flex-1 leading-none">{conv.title}</p>
+                              <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <Button size="icon" variant="ghost" className="h-6 w-6" onClick={(e) => onStartEdit(conv.id, conv.title, e)}>
+                                  <Edit2 className="h-3 w-3" />
+                                </Button>
+                                <Button size="icon" variant="ghost" className="h-6 w-6 text-destructive/70 hover:text-destructive" onClick={(e) => onDelete(conv.id, e)}>
+                                  <Trash2 className="h-3 w-3" />
+                                </Button>
+                              </div>
+                            </div>
+                            <span className="text-[10px] text-muted-foreground flex items-center gap-1">
+                              <Calendar className="h-2.5 w-2.5" />
+                              {formatDistanceToNow(new Date(conv.updated_at), { addSuffix: true, locale: ptBR })}
+                            </span>
+                          </div>
+                        )}
                       </div>
-                      <p className="text-xs text-muted-foreground">
-                        {formatDistanceToNow(new Date(conv.updated_at), { addSuffix: true, locale: ptBR })}
-                      </p>
-                    </>
-                  )}
-                </div>
-              ))}
+                    ))}
+                  </div>
+                ));
+              })()}
             </div>
           )}
         </ScrollArea>
