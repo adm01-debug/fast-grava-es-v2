@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { MermaidDiagram } from './TechnicalArtifacts';
 import { motion } from 'framer-motion';
+import { Button } from '@/components/ui/button';
 
 interface ChatMessageProps {
   role: 'user' | 'assistant';

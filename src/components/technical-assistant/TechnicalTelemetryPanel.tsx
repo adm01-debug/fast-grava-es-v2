@@ -156,19 +156,29 @@ export function TechnicalTelemetryPanel() {
 
           {/* Critical Infrastructure Nodes */}
           <div className="grid grid-cols-1 gap-2">
-            <div className="flex items-center justify-between p-2 rounded-xl bg-muted/20 border border-border/30">
+            <div className="flex items-center justify-between p-3 rounded-xl bg-muted/20 border border-border/30 hover:border-primary/30 transition-all group cursor-pointer">
               <div className="flex items-center gap-2">
-                <Database className="h-3 w-3 text-muted-foreground" />
-                <span className="text-[9px] font-bold uppercase">Base de Conhecimento</span>
+                <Database className="h-3.5 w-3.5 text-muted-foreground group-hover:text-primary transition-colors" />
+                <span className="text-[10px] font-black uppercase tracking-tighter">Knowledge Base</span>
               </div>
-              <Badge variant="outline" className="text-[8px] h-4 border-emerald-500/20 text-emerald-500 bg-emerald-500/5">SINCRONIZADO</Badge>
+              <Badge variant="outline" className="text-[8px] h-4 border-emerald-500/20 text-emerald-500 bg-emerald-500/5">SYNCED</Badge>
             </div>
-            <div className="flex items-center justify-between p-2 rounded-xl bg-muted/20 border border-border/30">
+            <div className="flex items-center justify-between p-3 rounded-xl bg-muted/20 border border-border/30 hover:border-primary/30 transition-all group cursor-pointer">
               <div className="flex items-center gap-2">
-                <Network className="h-3 w-3 text-muted-foreground" />
-                <span className="text-[9px] font-bold uppercase">Latência de Resposta</span>
+                <Network className="h-3.5 w-3.5 text-muted-foreground group-hover:text-primary transition-colors" />
+                <span className="text-[10px] font-black uppercase tracking-tighter">API Latency</span>
               </div>
-              <span className="text-[9px] font-black text-emerald-500">14ms</span>
+              <div className="flex items-center gap-1">
+                <div className="w-1 h-1 rounded-full bg-emerald-500" />
+                <span className="text-[10px] font-black text-emerald-500">12ms</span>
+              </div>
+            </div>
+            <div className="flex items-center justify-between p-3 rounded-xl bg-muted/20 border border-border/30 hover:border-primary/30 transition-all group cursor-pointer">
+              <div className="flex items-center gap-2">
+                <Cpu className="h-3.5 w-3.5 text-muted-foreground group-hover:text-primary transition-colors" />
+                <span className="text-[10px] font-black uppercase tracking-tighter">GPU Clusters</span>
+              </div>
+              <span className="text-[10px] font-black text-primary">4 active</span>
             </div>
           </div>
         </div>
@@ -193,4 +203,3 @@ export function TechnicalTelemetryPanel() {
     </Card>
   );
 }
-

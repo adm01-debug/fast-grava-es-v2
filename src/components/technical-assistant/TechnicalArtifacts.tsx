@@ -3,6 +3,7 @@ import mermaid from 'mermaid';
 import { Card } from "@/components/ui/card";
 import { Copy, Check, BarChart3, Settings2 } from "lucide-react";
 import { toast } from "sonner";
+import { Badge } from "@/components/ui/badge";
 
 // Configure mermaid
 mermaid.initialize({
