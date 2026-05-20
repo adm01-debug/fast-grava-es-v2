@@ -82,7 +82,7 @@ describe('Webhook — valid combinations (happy path)', () => {
   }
 
   it.each(cases)('source=%s event=%s → 200', (source, event) => {
-    const payload = validPayload({ source, event });
+    const payload = validPayload({ source: source as WebhookPayload['source'], event });
     const result = simulateWebhookHandler(payload);
     expect(result.status).toBe(200);
     expect(result.body.processed).toBe(true);
