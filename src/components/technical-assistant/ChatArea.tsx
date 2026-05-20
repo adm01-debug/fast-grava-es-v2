@@ -154,25 +154,45 @@ export function ChatArea({
               </div>
             </div>
           ) : messages.length === 0 && !isLoadingMessages ? (
-            <div className="space-y-4">
-              <div className="text-center py-8">
-                <div className="p-4 rounded-full bg-gradient-to-br from-primary/10 to-purple-500/10 w-fit mx-auto mb-4">
-                  <Sparkles className="h-8 w-8 text-primary" />
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="space-y-8 max-w-3xl mx-auto py-12"
+            >
+              <div className="text-center space-y-4">
+                <div className="inline-flex p-4 rounded-3xl bg-gradient-to-br from-primary/10 to-purple-500/10 mb-2">
+                  <Sparkles className="h-10 w-10 text-primary animate-pulse" />
                 </div>
-                <h3 className="text-lg font-medium text-foreground mb-2">Como posso ajudar?</h3>
-                <p className="text-sm text-muted-foreground max-w-md mx-auto">
-                  Pergunte sobre Fiber Laser, Serigrafia, Sublimação, DTF, Tampografia e muito mais!
+                <h3 className="text-2xl font-bold tracking-tight text-foreground">O que vamos criar hoje?</h3>
+                <p className="text-muted-foreground text-sm max-w-md mx-auto">
+                  Seu especialista técnico em gravação industrial, pronto para otimizar seus parâmetros e processos.
                 </p>
               </div>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-2 max-w-2xl mx-auto">
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 {suggestions.map((suggestion, index) => (
-                  <Button key={index} variant="outline" className="h-auto py-3 px-4 justify-start text-left hover:bg-primary/5" onClick={() => onSend(suggestion.question)}>
-                    <suggestion.icon className="h-4 w-4 mr-2 flex-shrink-0" />
-                    <span className="text-xs">{suggestion.label}</span>
-                  </Button>
+                  <motion.div
+                    key={index}
+                    whileHover={{ y: -4 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <Button 
+                      variant="outline" 
+                      className="w-full h-auto py-4 px-5 flex flex-col items-start gap-2 text-left hover:bg-primary/5 hover:border-primary/30 group transition-all rounded-2xl border-border/40" 
+                      onClick={() => onSend(suggestion.question)}
+                    >
+                      <div className="p-2 rounded-xl bg-muted group-hover:bg-primary/10 transition-colors">
+                        <suggestion.icon className="h-5 w-5 text-primary" />
+                      </div>
+                      <span className="text-xs font-semibold">{suggestion.label}</span>
+                      <p className="text-[10px] text-muted-foreground line-clamp-2 leading-relaxed">
+                        {suggestion.question}
+                      </p>
+                    </Button>
+                  </motion.div>
                 ))}
               </div>
-            </div>
+            </motion.div>
           ) : (
             <div className="space-y-6 pb-4">
               <AnimatePresence initial={false}>
