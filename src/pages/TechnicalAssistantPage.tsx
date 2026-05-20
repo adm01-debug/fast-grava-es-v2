@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { MainLayout } from "@/components/layout/MainLayout";
-import { Zap, Printer, Sun, Flame, Sparkles, Scissors, BookOpen, Settings } from "lucide-react";
+import { Zap, Printer, Sun, Flame, Sparkles, Scissors, BookOpen, Settings, LayoutPanelLeft } from "lucide-react";
 import { toast } from "sonner";
 import { useTechnicalConversations, useTechnicalMessages, TechnicalMessage } from "@/hooks/useTechnicalConversations";
 import { isToday, isThisWeek, isThisMonth } from "date-fns";
@@ -152,6 +152,24 @@ const TechnicalAssistantPage = () => {
   return (
     <MainLayout>
       <div className="flex flex-col h-[calc(100vh-8rem)] gap-4 animate-in fade-in duration-500">
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-2">
+            <Badge variant="outline" className="text-[10px] font-black uppercase tracking-widest text-primary border-primary/20 bg-primary/5">Status: Online</Badge>
+            <div className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span className="text-[10px] font-bold text-muted-foreground uppercase">Sincronizado com SPC</span>
+            </div>
+          </div>
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className={cn("h-8 text-[10px] font-black uppercase tracking-widest gap-2", showTelemetry && "text-primary bg-primary/5")}
+            onClick={() => setShowTelemetry(!showTelemetry)}
+          >
+            <LayoutPanelLeft className="h-3.5 w-3.5" />
+            {showTelemetry ? "Ocultar Telemetria" : "Mostrar Telemetria"}
+          </Button>
+        </div>
         <div className="flex flex-1 gap-0 min-h-0 overflow-hidden rounded-2xl border border-border/50 bg-card shadow-2xl">
           <ConversationSidebar
             conversations={filteredConversations}
