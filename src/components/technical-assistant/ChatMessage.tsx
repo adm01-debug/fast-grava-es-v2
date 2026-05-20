@@ -101,19 +101,38 @@ export const ChatMessage = React.memo(({ role, content, isStreaming, highlightTe
         </div>
 
         {role === "assistant" && !isStreaming && (
-          <div className="flex items-center gap-3 mt-1 px-1">
-            <div className="flex items-center gap-1 bg-muted/30 p-1 rounded-lg border border-border/50">
-              <button onClick={handleCopy} className="p-1.5 rounded-md hover:bg-muted transition-colors text-muted-foreground">
-                {copied ? <Check className="h-3.5 w-3.5 text-green-500" /> : <Copy className="h-3.5 w-3.5" />}
-              </button>
-              <button className="p-1.5 rounded-md hover:bg-muted transition-colors text-muted-foreground"><Share2 className="h-3.5 w-3.5" /></button>
+          <div className="flex items-center justify-between w-full mt-2 px-1">
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1 bg-muted/30 p-1 rounded-lg border border-border/50 backdrop-blur-sm">
+                <button onClick={handleCopy} className="p-1.5 rounded-md hover:bg-muted transition-colors text-muted-foreground" title="Copiar resposta">
+                  {copied ? <Check className="h-3.5 w-3.5 text-green-500" /> : <Copy className="h-3.5 w-3.5" />}
+                </button>
+                <button className="p-1.5 rounded-md hover:bg-muted transition-colors text-muted-foreground" title="Compartilhar diagnóstico"><Share2 className="h-3.5 w-3.5" /></button>
+                <div className="w-px h-3 bg-border/50 mx-0.5" />
+                <button 
+                  onClick={() => setFeedback('up')} 
+                  className={cn("p-1.5 rounded-md hover:bg-muted transition-colors", feedback === 'up' ? "text-emerald-500 bg-emerald-500/10" : "text-muted-foreground")}
+                >
+                  <ThumbsUp className="h-3.5 w-3.5" />
+                </button>
+                <button 
+                  onClick={() => setFeedback('down')} 
+                  className={cn("p-1.5 rounded-md hover:bg-muted transition-colors", feedback === 'down' ? "text-red-500 bg-red-500/10" : "text-muted-foreground")}
+                >
+                  <ThumbsDown className="h-3.5 w-3.5" />
+                </button>
+              </div>
             </div>
             
             <div className="flex gap-2">
-              <button className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-primary/10 text-[10px] font-bold text-primary hover:bg-primary/20 transition-all border border-primary/20">
+              <Button size="sm" variant="outline" className="h-7 text-[9px] font-black uppercase tracking-widest gap-1.5 bg-primary/5 border-primary/20 text-primary hover:bg-primary/10 transition-all">
+                <FileJson className="h-3 w-3" />
+                Gerar JSON
+              </Button>
+              <Button size="sm" className="h-7 text-[9px] font-black uppercase tracking-widest gap-1.5 shadow-lg shadow-primary/10 transition-all hover:scale-105 active:scale-95">
                 <Zap className="h-3 w-3" />
-                APLICAR
-              </button>
+                Aplicar Parâmetros
+              </Button>
             </div>
           </div>
         )}

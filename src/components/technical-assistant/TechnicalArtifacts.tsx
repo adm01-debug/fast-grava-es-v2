@@ -71,30 +71,50 @@ export const ParameterTable = ({ data }: ParameterTableProps) => {
 
   return (
     <Card className="my-4 overflow-hidden border-border/50">
-      <div className="bg-muted/50 px-4 py-2 border-b border-border/50 flex justify-between items-center">
-        <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
-          <Settings2 className="h-3.5 w-3.5" />
+      <div className="bg-muted/50 px-4 py-2 border-b border-border/50 flex justify-between items-center bg-gradient-to-r from-muted/50 to-transparent">
+        <div className="flex items-center gap-3 text-[10px] font-black text-muted-foreground uppercase tracking-widest">
+          <div className="p-1.5 rounded bg-primary/10">
+            <Settings2 className="h-3 w-3 text-primary" />
+          </div>
           PARÂMETROS TÉCNICOS EXTRAÍDOS
+          <Badge variant="outline" className="text-[8px] h-4 border-primary/20 text-primary">SPC READY</Badge>
         </div>
-        <button onClick={handleCopy} className="hover:text-primary transition-colors">
-          {copied ? <Check className="h-3.5 w-3.5 text-green-500" /> : <Copy className="h-3.5 w-3.5" />}
-        </button>
+        <div className="flex items-center gap-2">
+          <button 
+            onClick={() => {
+              toast.success("Todos os parâmetros enviados para a máquina");
+            }}
+            className="text-[9px] font-black uppercase tracking-tighter text-primary hover:underline"
+          >
+            Sincronizar Tudo
+          </button>
+          <div className="w-px h-3 bg-border/50 mx-1" />
+          <button onClick={handleCopy} className="hover:text-primary transition-colors p-1 rounded hover:bg-muted">
+            {copied ? <Check className="h-3.5 w-3.5 text-green-500" /> : <Copy className="h-3.5 w-3.5" />}
+          </button>
+        </div>
       </div>
-      <div className="overflow-x-auto">
-        <table className="w-full text-xs text-left">
+      <div className="overflow-x-auto custom-scrollbar">
+        <table className="w-full text-[11px] text-left border-collapse">
           <thead>
             <tr className="bg-muted/30 border-b border-border/50">
               {rows[0].map((cell, i) => (
-                <th key={i} className="px-4 py-2 font-semibold">{cell.trim()}</th>
+                <th key={i} className="px-4 py-2.5 font-black uppercase tracking-tighter text-muted-foreground">{cell.trim()}</th>
               ))}
+              <th className="px-4 py-2.5 font-black uppercase tracking-tighter text-muted-foreground w-10">Ação</th>
             </tr>
           </thead>
           <tbody>
             {rows.slice(1).map((row, i) => (
-              <tr key={i} className="border-b border-border/30 last:border-0 hover:bg-muted/20 transition-colors">
+              <tr key={i} className="border-b border-border/30 last:border-0 hover:bg-primary/5 transition-all group">
                 {row.map((cell, j) => (
-                  <td key={j} className="px-4 py-2">{cell.trim()}</td>
+                  <td key={j} className="px-4 py-2 font-medium">{cell.trim()}</td>
                 ))}
+                <td className="px-4 py-2">
+                  <button className="p-1 rounded bg-muted opacity-0 group-hover:opacity-100 hover:text-primary transition-all">
+                    <Check className="h-3 w-3" />
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>
