@@ -89,53 +89,37 @@ export function ChatArea({
 
   return (
     <Card className="flex-1 flex flex-col glass-card border-border/50">
-      <CardHeader className="pb-3 border-b border-border/50">
+      <CardHeader className="pb-3 border-b border-border/50 bg-card/50 backdrop-blur-sm sticky top-0 z-10">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-gradient-to-br from-primary/20 to-purple-500/20">
-              <Bot className="h-6 w-6 text-primary" />
+            <div className="p-2 rounded-xl bg-gradient-to-br from-primary/20 to-purple-500/20 shadow-lg">
+              <Bot className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle className="flex items-center gap-2 text-sm font-black uppercase tracking-widest">
                 Assistente Técnico IA
-                <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20 animate-pulse">ELITE 10/10</Badge>
+                <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20 animate-pulse text-[8px]">ELITE 10/10</Badge>
               </CardTitle>
-              <p className="text-sm text-muted-foreground">Especialista em técnicas de gravação e personalização</p>
+              <div className="flex items-center gap-3 text-[10px] text-muted-foreground font-bold uppercase tracking-wider">
+                <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> System Online</span>
+                <span className="flex items-center gap-1">CPU: 4%</span>
+                <span className="flex items-center gap-1">LAT: 12ms</span>
+              </div>
             </div>
           </div>
-          {selectedConversationId && messages.length > 0 && (
-            <div className="flex items-center gap-2">
-              {messageSearchActive ? (
-                <div className="flex items-center gap-2">
-                  <div className="relative">
-                    <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input placeholder="Buscar nas mensagens..." value={messageSearchQuery} onChange={(e) => setMessageSearchQuery(e.target.value)} className="pl-9 h-8 w-56 text-sm" autoFocus />
-                  </div>
-                  {messageSearchQuery && matchingMessageIndices.length > 0 && (
-                    <div className="flex items-center gap-1">
-                      <span className="text-xs text-muted-foreground whitespace-nowrap">{currentMatchIndex + 1}/{matchingMessageIndices.length}</span>
-                      <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => setCurrentMatchIndex(p => p === 0 ? matchingMessageIndices.length - 1 : p - 1)}>
-                        <ChevronUp className="h-3 w-3" />
-                      </Button>
-                      <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => setCurrentMatchIndex(p => p === matchingMessageIndices.length - 1 ? 0 : p + 1)}>
-                        <ChevronDown className="h-3 w-3" />
-                      </Button>
-                    </div>
-                  )}
-                  {messageSearchQuery && matchingMessageIndices.length === 0 && (
-                    <span className="text-xs text-muted-foreground whitespace-nowrap">0 resultados</span>
-                  )}
-                  <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => { setMessageSearchActive(false); setMessageSearchQuery(""); }}>
-                    <X className="h-4 w-4" />
-                  </Button>
-                </div>
-              ) : (
-                <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => setMessageSearchActive(true)}>
+          <div className="flex items-center gap-2">
+            {selectedConversationId && messages.length > 0 && (
+                <Button size="icon" variant="ghost" className="h-8 w-8 hover:text-primary transition-colors" onClick={() => setMessageSearchActive(true)}>
                   <Search className="h-4 w-4" />
                 </Button>
-              )}
+            )}
+            <div className="h-8 w-px bg-border/50 mx-1" />
+            <div className="flex -space-x-2">
+              {[1, 2, 3].map(i => (
+                <div key={i} className="w-7 h-7 rounded-full bg-muted border-2 border-card flex items-center justify-center text-[9px] font-black text-muted-foreground">E{i}</div>
+              ))}
             </div>
-          )}
+          </div>
         </div>
       </CardHeader>
 
