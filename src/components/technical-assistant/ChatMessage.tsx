@@ -35,14 +35,17 @@ export const ChatMessage = React.memo(({ role, content, isStreaming, highlightTe
         role === "user" ? "flex-row-reverse" : "flex-row"
       )}
     >
-      <div className={cn(
-        "flex-shrink-0 w-9 h-9 rounded-xl flex items-center justify-center shadow-lg transition-transform",
-        role === "assistant" 
-          ? "bg-gradient-to-br from-primary to-purple-600 text-primary-foreground" 
-          : "bg-muted text-muted-foreground border border-border/50"
-      )}>
+      <motion.div 
+        whileHover={{ scale: 1.05 }}
+        className={cn(
+          "flex-shrink-0 w-9 h-9 rounded-xl flex items-center justify-center shadow-lg transition-all",
+          role === "assistant" 
+            ? "bg-gradient-to-br from-primary via-purple-600 to-blue-600 text-primary-foreground ring-2 ring-primary/20" 
+            : "bg-muted text-muted-foreground border border-border/50"
+        )}
+      >
         {role === "assistant" ? <Bot className="h-5 w-5" /> : <User className="h-5 w-5" />}
-      </div>
+      </motion.div>
       
       <div className={cn(
         "relative flex flex-col gap-2 max-w-[85%]",
