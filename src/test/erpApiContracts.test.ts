@@ -42,7 +42,7 @@ const ERPJobResponseSchema = z.object({
   order_number: z.string(),
   client: z.string(),
   product: z.string(),
-  quantity: z.number(),
+  quantity: z.number().nonnegative(),
   status: z.string(),
   created_at: z.string(),
 });

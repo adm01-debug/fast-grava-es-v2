@@ -74,7 +74,8 @@ describe('sanitizeControlChars', () => {
   it('removes control characters but keeps newlines and tabs', () => {
     const input = 'line1\nline2\ttabbed\x01hidden';
     const result = sanitizeControlChars(input);
-    expect(result).toBe('line1\nline2\ttabbed');
+    // Only the control char \x01 is removed; surrounding text is preserved
+    expect(result).toBe('line1\nline2\ttabbedhidden');
   });
 });
 

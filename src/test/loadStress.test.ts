@@ -8,6 +8,10 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { RateLimiter } from '@/lib/rateLimiter';
 import { CircuitBreaker } from '@/lib/circuitBreaker';
 import { sanitizeInput, escapeHtml, sanitizeUrl } from '@/lib/sanitize';
+
+vi.mock('@/lib/logger', () => ({
+  logger: { debug: vi.fn(), info: vi.fn(), warn: vi.fn(), error: vi.fn(), critical: vi.fn() },
+}));
 import { retryWithBackoff } from '@/lib/retryWithBackoff';
 import { z } from 'zod';
 
@@ -208,9 +212,12 @@ describe('Load — retryWithBackoff stress (fake timers)', () => {
       return Promise.resolve(`result-${callCount}`);
     });
 
-    const promises = concurrently(100, () =>
-      retryWithBackoff(() => fn(), { maxRetries: 1, baseDelay: 10, jitter: false })
-    );
+    // Attach .catch() immediately to prevent unhandled rejections while timers run
+    const promises = concurrently(100, () => {
+      const p = retryWithBackoff(() => fn(), { maxRetries: 1, baseDelay: 10, jitter: false });
+      p.catch(() => {});
+      return p;
+    });
 
     await vi.runAllTimersAsync();
     const results = await Promise.allSettled(promises);

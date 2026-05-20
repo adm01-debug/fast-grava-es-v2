@@ -1,6 +1,10 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { retryWithBackoff, isNetworkRetryable } from '@/lib/retryWithBackoff';
 
+vi.mock('@/lib/logger', () => ({
+  logger: { debug: vi.fn(), info: vi.fn(), warn: vi.fn(), error: vi.fn(), critical: vi.fn() },
+}));
+
 describe('retryWithBackoff', () => {
   beforeEach(() => {
     vi.useFakeTimers();
