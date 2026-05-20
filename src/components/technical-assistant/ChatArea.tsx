@@ -98,7 +98,7 @@ export function ChatArea({
             <div>
               <CardTitle className="flex items-center gap-2">
                 Assistente Técnico IA
-                <Badge variant="secondary">Beta</Badge>
+                <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20">Elite 10/10</Badge>
               </CardTitle>
               <p className="text-sm text-muted-foreground">Especialista em técnicas de gravação e personalização</p>
             </div>
