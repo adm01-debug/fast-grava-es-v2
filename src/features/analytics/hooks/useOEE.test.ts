@@ -4,13 +4,15 @@ import { useOEE } from '@/features/production';
 import * as useSchedulingDataHook from '@/features/jobs';
 import * as useBusinessConfigHook from '@/features/admin';
 
-vi.mock('./useSchedulingData', () => ({
-  useSchedulingData: vi.fn(),
-}));
+vi.mock('@/features/jobs', async (importOriginal) => {
+  const actual = await importOriginal() as Record<string, unknown>;
+  return { ...actual, useSchedulingData: vi.fn() };
+});
 
-vi.mock('./useBusinessConfig', () => ({
-  useBusinessConfig: vi.fn(),
-}));
+vi.mock('@/features/admin', async (importOriginal) => {
+  const actual = await importOriginal() as Record<string, unknown>;
+  return { ...actual, useBusinessConfig: vi.fn() };
+});
 
 describe('useOEE', () => {
   it('should calculate OEE components correctly', () => {

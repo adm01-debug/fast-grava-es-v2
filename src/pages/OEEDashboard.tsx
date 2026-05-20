@@ -374,6 +374,10 @@ const OEEDashboard = memo(function OEEDashboard() {
     window.scrollTo(0, 0);
   }, []);
 
+  const machinesAtWorldClass = useMemo(() => data?.byMachine.filter(m => m.oee >= WORLD_CLASS_OEE).length ?? 0, [data?.byMachine]);
+  const machinesBelowTarget = useMemo(() => data?.byMachine.filter(m => m.oee < 65 && m.totalJobs > 0).length ?? 0, [data?.byMachine]);
+  const activeMachinesCount = useMemo(() => data?.byMachine.filter(m => m.totalJobs > 0).length ?? 0, [data?.byMachine]);
+
   if (isLoading) {
     return <KPIPageSkeleton />;
   }
@@ -390,9 +394,6 @@ const OEEDashboard = memo(function OEEDashboard() {
       </div>
     );
   }
-
-  const machinesAtWorldClass = useMemo(() => data.byMachine.filter(m => m.oee >= WORLD_CLASS_OEE).length, [data.byMachine]);
-  const machinesBelowTarget = useMemo(() => data.byMachine.filter(m => m.oee < 65 && m.totalJobs > 0).length, [data.byMachine]);
 
   return (
       <div className="p-6 space-y-6">
@@ -1249,7 +1250,7 @@ const OEEDashboard = memo(function OEEDashboard() {
                          <Settings2 className="h-5 w-5 text-primary" />
                       </div>
                       <div>
-                        <p className="text-2xl font-black text-primary">{useMemo(() => data.byMachine.filter(m => m.totalJobs > 0).length, [data.byMachine])}</p>
+                        <p className="text-2xl font-black text-primary">{activeMachinesCount}</p>
                         <p className="text-[10px] font-black text-muted-foreground uppercase tracking-wider">Máquinas Ativas</p>
                       </div>
                    </div>

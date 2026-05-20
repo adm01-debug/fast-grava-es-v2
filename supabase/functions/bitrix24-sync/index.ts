@@ -1,10 +1,21 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+const ALLOWED_ORIGINS = [
+  Deno.env.get('APP_URL') || 'https://fastgravacoes.com.br',
+  'https://xxroejpvloldkmqdydar.lovableproject.com',
+].filter(Boolean);
+
+function getCorsHeaders(req: Request): Record<string, string> {
+  const origin = req.headers.get('origin') || '';
+  const allowedOrigin = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
+  return {
+    'Access-Control-Allow-Origin': allowedOrigin,
+    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-api-key, x-webhook-signature, x-forwarded-for, x-real-ip',
+    'Access-Control-Allow-Methods': 'GET, POST, PATCH, PUT, DELETE, OPTIONS',
+    'Vary': 'Origin',
+  };
+}
 
 // OAuth credentials from environment (initial values)
 const BITRIX24_WEBHOOK_URL = Deno.env.get('BITRIX24_WEBHOOK_URL');
@@ -736,7 +747,7 @@ async function logSyncHistory(
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
+    return new Response(null, { headers: getCorsHeaders(req) });
   }
 
   const supabase = createClient(
@@ -1036,7 +1047,7 @@ serve(async (req) => {
     }
 
     return new Response(JSON.stringify(result), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' }
     });
 
   } catch (error: any) {
@@ -1060,7 +1071,7 @@ serve(async (req) => {
       JSON.stringify({ error: error.message }),
       { 
         status: 500, 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' } 
       }
     );
   }

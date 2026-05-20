@@ -1,13 +1,24 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.1'
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+const ALLOWED_ORIGINS = [
+  Deno.env.get('APP_URL') || 'https://fastgravacoes.com.br',
+  'https://xxroejpvloldkmqdydar.lovableproject.com',
+].filter(Boolean);
+
+function getCorsHeaders(req: Request): Record<string, string> {
+  const origin = req.headers.get('origin') || '';
+  const allowedOrigin = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
+  return {
+    'Access-Control-Allow-Origin': allowedOrigin,
+    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-api-key, x-webhook-signature, x-forwarded-for, x-real-ip',
+    'Access-Control-Allow-Methods': 'GET, POST, PATCH, PUT, DELETE, OPTIONS',
+    'Vary': 'Origin',
+  };
 }
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders })
+    return new Response(null, { headers: getCorsHeaders(req) })
   }
 
   try {
@@ -26,7 +37,7 @@ Deno.serve(async (req) => {
     if (!authHeader) {
       return new Response(JSON.stringify({ error: 'Não autorizado' }), {
         status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
       })
     }
 
@@ -38,7 +49,7 @@ Deno.serve(async (req) => {
     if (!requestingUser) {
       return new Response(JSON.stringify({ error: 'Não autorizado' }), {
         status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
       })
     }
 
@@ -52,7 +63,7 @@ Deno.serve(async (req) => {
     if (roleData?.role !== 'coordinator') {
       return new Response(JSON.stringify({ error: 'Apenas coordenadores podem editar operadores' }), {
         status: 403,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
       })
     }
 
@@ -61,14 +72,14 @@ Deno.serve(async (req) => {
     if (!operator_id) {
       return new Response(JSON.stringify({ error: 'ID do operador é obrigatório' }), {
         status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
       })
     }
 
     if (!full_name?.trim()) {
       return new Response(JSON.stringify({ error: 'Nome é obrigatório' }), {
         status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
       })
     }
 
@@ -88,7 +99,7 @@ Deno.serve(async (req) => {
       console.error('Error updating profile:', updateError)
       return new Response(JSON.stringify({ error: updateError.message }), {
         status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
       })
     }
 
@@ -96,13 +107,13 @@ Deno.serve(async (req) => {
 
     return new Response(JSON.stringify({ success: true }), {
       status: 200,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
     })
   } catch (error) {
     console.error('Error:', error)
     return new Response(JSON.stringify({ error: 'Erro interno do servidor' }), {
       status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
     })
   }
 })

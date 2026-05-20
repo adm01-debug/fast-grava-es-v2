@@ -12,6 +12,15 @@ dist
 dist-ssr
 *.local
 
+# Test & coverage artifacts
+coverage/
+test-results.json
+
+# Environment files with secrets
+.env
+.env.local
+.env.*.local
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

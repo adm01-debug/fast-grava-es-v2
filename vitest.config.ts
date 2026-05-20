@@ -12,5 +12,29 @@ export default defineConfig({
     alias: {
       '@': path.resolve(__dirname, './src'),
     },
+    // Pool settings to handle large simulation suites (500+ cases)
+    pool: 'forks',
+    poolOptions: {
+      forks: { singleFork: false },
+    },
+    testTimeout: 30_000,
+    hookTimeout: 10_000,
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'lcov', 'json-summary'],
+      thresholds: {
+        lines: 15,
+        functions: 10,
+        branches: 10,
+        statements: 15,
+      },
+      exclude: [
+        '**/node_modules/**',
+        '**/dist/**',
+        'src/test/**',
+        'src/**/*.d.ts',
+        'src/integrations/**',
+      ],
+    },
   },
 });

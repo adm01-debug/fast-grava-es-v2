@@ -3,9 +3,10 @@ import { renderHook } from '@testing-library/react';
 import { useKPIs } from './useKPIs';
 import * as useSchedulingDataHook from '@/features/jobs';
 
-vi.mock('./useSchedulingData', () => ({
-  useSchedulingData: vi.fn(),
-}));
+vi.mock('@/features/jobs', async (importOriginal) => {
+  const actual = await importOriginal() as Record<string, unknown>;
+  return { ...actual, useSchedulingData: vi.fn() };
+});
 
 describe('useKPIs', () => {
   it('should return null when data is loading', () => {

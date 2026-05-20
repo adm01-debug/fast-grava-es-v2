@@ -1,10 +1,21 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
+import { serve } from 'https://deno.land/std@0.224.0/http/server.ts';
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+const ALLOWED_ORIGINS = [
+  Deno.env.get('APP_URL') || 'https://fastgravacoes.com.br',
+  'https://xxroejpvloldkmqdydar.lovableproject.com',
+].filter(Boolean);
+
+function getCorsHeaders(req: Request): Record<string, string> {
+  const origin = req.headers.get('origin') || '';
+  const allowedOrigin = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
+  return {
+    'Access-Control-Allow-Origin': allowedOrigin,
+    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-api-key, x-webhook-signature, x-forwarded-for, x-real-ip',
+    'Access-Control-Allow-Methods': 'GET, POST, PATCH, PUT, DELETE, OPTIONS',
+    'Vary': 'Origin',
+  };
+}
 
 const MAX_FAILED_ATTEMPTS = 5;
 const BASE_LOCKOUT_MINUTES = 1; // First lockout: 1 minute
@@ -34,7 +45,7 @@ function calculateLockoutMinutes(lockoutCount: number): number {
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
+    return new Response(null, { headers: getCorsHeaders(req) });
   }
 
   try {
@@ -47,7 +58,7 @@ serve(async (req) => {
     if (!email || !action) {
       return new Response(
         JSON.stringify({ error: 'Email and action are required' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        { status: 400, headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' } }
       );
     }
 
@@ -105,7 +116,7 @@ serve(async (req) => {
               failed_attempts: emailLockout.failed_attempts,
               message: `Conta bloqueada por ${remainingMinutes} minuto(s) devido a múltiplas tentativas falhas.`
             }),
-            { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+            { headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' } }
           );
         }
       }
@@ -128,7 +139,7 @@ serve(async (req) => {
               failed_attempts: ipLockout.failed_attempts,
               message: `IP bloqueado por ${remainingMinutes} minuto(s) devido a múltiplas tentativas falhas.`
             }),
-            { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+            { headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' } }
           );
         }
       }
@@ -140,7 +151,7 @@ serve(async (req) => {
           failed_attempts: emailLockout?.failed_attempts || 0,
           attempts_remaining: MAX_FAILED_ATTEMPTS - (emailLockout?.failed_attempts || 0)
         }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        { headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' } }
       );
     }
 
@@ -241,7 +252,7 @@ serve(async (req) => {
             ? `Conta bloqueada por ${lockoutMinutes} minuto(s) devido a ${MAX_FAILED_ATTEMPTS} tentativas falhas.`
             : `Tentativa falha. ${MAX_FAILED_ATTEMPTS - currentAttempts} tentativa(s) restante(s).`
         }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        { headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' } }
       );
     }
 
@@ -279,13 +290,13 @@ serve(async (req) => {
 
       return new Response(
         JSON.stringify({ reset: true }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        { headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' } }
       );
     }
 
     return new Response(
       JSON.stringify({ error: 'Invalid action' }),
-      { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      { status: 400, headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' } }
     );
 
   } catch (error) {
@@ -294,7 +305,7 @@ serve(async (req) => {
     // Fail open - don't block login if there's an error
     return new Response(
       JSON.stringify({ locked: false, error: 'Internal error' }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      { headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' } }
     );
   }
 });
