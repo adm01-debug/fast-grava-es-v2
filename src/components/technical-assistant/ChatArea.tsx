@@ -40,6 +40,7 @@ export function ChatArea({
   const [messageSearchActive, setMessageSearchActive] = useState(false);
   const [messageSearchQuery, setMessageSearchQuery] = useState("");
   const [currentMatchIndex, setCurrentMatchIndex] = useState(0);
+  const [diagnosticMode, setDiagnosticMode] = useState(false);
 
   const matchingMessageIndices = useMemo(() => {
     if (!messageSearchQuery.trim()) return [];
@@ -234,7 +235,10 @@ export function ChatArea({
           )}
         </ScrollArea>
 
-          <div className="p-4 border-t border-border/50 bg-background/50 backdrop-blur-sm">
+          <div className={cn(
+            "p-4 border-t border-border/50 bg-background/50 backdrop-blur-sm transition-all duration-500",
+            diagnosticMode && "bg-primary/5 ring-1 ring-primary/20"
+          )}>
             <div className="flex flex-col gap-2 max-w-4xl mx-auto">
               <div className="flex gap-2 items-end">
                 <div className="relative flex-1 group">
@@ -305,6 +309,12 @@ export function ChatArea({
                   <div className="flex items-center gap-1.5">
                     <Sparkles className="h-3 w-3 text-primary/50" />
                     <span className="text-[9px] font-bold uppercase text-primary/70">AI Optimizer On</span>
+                  </div>
+                  <div className="flex items-center gap-1.5 cursor-pointer group" onClick={() => setDiagnosticMode(!diagnosticMode)}>
+                    <Activity className={cn("h-3 w-3 transition-colors", diagnosticMode ? "text-primary animate-pulse" : "text-muted-foreground/50")} />
+                    <span className={cn("text-[9px] font-black uppercase tracking-widest", diagnosticMode ? "text-primary" : "text-muted-foreground/70 group-hover:text-primary transition-colors")}>
+                      {diagnosticMode ? "Diagnostic Active" : "Diagnostic Mode"}
+                    </span>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
