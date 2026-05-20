@@ -1,90 +1,195 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { Activity, Thermometer, Gauge, Zap } from 'lucide-react';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
+import { Activity, Thermometer, Gauge, Zap, TrendingUp, AlertTriangle, CheckCircle2, Cpu, Database, Network } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
+import { motion } from 'framer-motion';
 
-const mockTelemetryData = [
-  { time: '10:00', temp: 180, pressure: 5.2, speed: 45 },
-  { time: '10:05', temp: 182, pressure: 5.1, speed: 46 },
-  { time: '10:10', temp: 185, pressure: 5.4, speed: 44 },
-  { time: '10:15', temp: 179, pressure: 5.0, speed: 45 },
-  { time: '10:20', temp: 181, pressure: 5.3, speed: 47 },
-];
+const generateMockData = () => {
+  return Array.from({ length: 20 }, (_, i) => ({
+    time: `${10 + Math.floor(i / 12)}:${(i * 5) % 60}`,
+    temp: 180 + Math.random() * 10,
+    pressure: 5.0 + Math.random() * 0.8,
+    speed: 40 + Math.random() * 15,
+    efficiency: 90 + Math.random() * 8,
+  }));
+};
 
 export function TechnicalTelemetryPanel() {
+  const [data, setData] = useState(generateMockData());
+  const [activeMetric, setActiveMetric] = useState<'temp' | 'pressure' | 'efficiency'>('temp');
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setData(prev => {
+        const newData = [...prev.slice(1), {
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+          temp: 180 + Math.random() * 10,
+          pressure: 5.0 + Math.random() * 0.8,
+          speed: 40 + Math.random() * 15,
+          efficiency: 90 + Math.random() * 8,
+        }];
+        return newData;
+      });
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
-    <Card className="h-full border-l rounded-none border-y-0 border-r-0 glass-card bg-background/30 backdrop-blur-xl">
-      <CardHeader className="py-4 border-b border-border/50">
+    <Card className="h-full border-l rounded-none border-y-0 border-r-0 glass-card bg-background/30 backdrop-blur-xl flex flex-col">
+      <CardHeader className="py-4 border-b border-border/50 shrink-0">
         <div className="flex items-center justify-between">
           <CardTitle className="text-sm font-black uppercase tracking-tighter flex items-center gap-2">
             <Activity className="h-4 w-4 text-primary animate-pulse" />
-            Sincronização SPC
+            Telemetria Industrial
           </CardTitle>
-          <Badge variant="outline" className="text-[8px] bg-primary/5 text-primary border-primary/20">LIVE</Badge>
+          <Badge variant="outline" className="text-[8px] bg-emerald-500/10 text-emerald-500 border-emerald-500/20 animate-pulse">
+            SISTEMA NOMINAL
+          </Badge>
         </div>
       </CardHeader>
-      <CardContent className="p-4 space-y-6">
-        <div className="space-y-4">
-          <div className="p-3 rounded-xl bg-muted/30 border border-border/50">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-[10px] font-black uppercase text-muted-foreground">Temperatura (°C)</span>
-              <Thermometer className="h-3 w-3 text-orange-500" />
+      
+      <CardContent className="p-4 flex-1 overflow-y-auto space-y-6 custom-scrollbar">
+        {/* Core KPIs Grid */}
+        <div className="grid grid-cols-2 gap-2">
+          <div 
+            onClick={() => setActiveMetric('temp')}
+            className={cn(
+              "p-3 rounded-xl border transition-all cursor-pointer group",
+              activeMetric === 'temp' ? "bg-orange-500/10 border-orange-500/50 shadow-lg shadow-orange-500/10" : "bg-muted/30 border-border/50 hover:bg-muted/50"
+            )}
+          >
+            <div className="flex items-center justify-between mb-1">
+              <Thermometer className={cn("h-3 w-3", activeMetric === 'temp' ? "text-orange-500" : "text-muted-foreground")} />
+              <TrendingUp className="h-2.5 w-2.5 text-emerald-500" />
             </div>
-            <div className="h-32">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={mockTelemetryData}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#333" />
-                  <XAxis dataKey="time" hide />
-                  <YAxis hide domain={['dataMin - 10', 'dataMax + 10']} />
-                  <Tooltip 
-                    contentStyle={{ backgroundColor: '#111', border: 'none', borderRadius: '8px', fontSize: '10px' }}
-                    itemStyle={{ color: '#fff' }}
-                  />
-                  <Line type="monotone" dataKey="temp" stroke="#f97316" strokeWidth={2} dot={false} />
-                </LineChart>
-              </ResponsiveContainer>
+            <p className="text-[9px] font-bold uppercase text-muted-foreground group-hover:text-foreground transition-colors">Temp</p>
+            <p className="text-lg font-black tracking-tight">{data[data.length - 1].temp.toFixed(1)}°C</p>
+          </div>
+
+          <div 
+            onClick={() => setActiveMetric('pressure')}
+            className={cn(
+              "p-3 rounded-xl border transition-all cursor-pointer group",
+              activeMetric === 'pressure' ? "bg-blue-500/10 border-blue-500/50 shadow-lg shadow-blue-500/10" : "bg-muted/30 border-border/50 hover:bg-muted/50"
+            )}
+          >
+            <div className="flex items-center justify-between mb-1">
+              <Gauge className={cn("h-3 w-3", activeMetric === 'pressure' ? "text-blue-500" : "text-muted-foreground")} />
+              <CheckCircle2 className="h-2.5 w-2.5 text-emerald-500" />
+            </div>
+            <p className="text-[9px] font-bold uppercase text-muted-foreground group-hover:text-foreground transition-colors">Pressão</p>
+            <p className="text-lg font-black tracking-tight">{data[data.length - 1].pressure.toFixed(2)} bar</p>
+          </div>
+        </div>
+
+        {/* Main Dynamic Chart */}
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Monitoramento SPC</span>
+            <div className="flex gap-1">
+              <div className="w-1.5 h-1.5 rounded-full bg-primary animate-ping" />
+              <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+            </div>
+          </div>
+          
+          <div className="h-48 w-full p-2 rounded-2xl bg-black/20 border border-white/5 shadow-inner">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={data}>
+                <defs>
+                  <linearGradient id="colorMetric" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor={activeMetric === 'temp' ? "#f97316" : activeMetric === 'pressure' ? "#3b82f6" : "#8b5cf6"} stopOpacity={0.3}/>
+                    <stop offset="95%" stopColor={activeMetric === 'temp' ? "#f97316" : activeMetric === 'pressure' ? "#3b82f6" : "#8b5cf6"} stopOpacity={0}/>
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#ffffff05" />
+                <XAxis dataKey="time" hide />
+                <YAxis hide domain={['dataMin - 5', 'dataMax + 5']} />
+                <Tooltip 
+                  contentStyle={{ backgroundColor: 'rgba(0,0,0,0.8)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', fontSize: '10px', backdropFilter: 'blur(8px)' }}
+                  itemStyle={{ color: '#fff' }}
+                  labelStyle={{ color: '#888', marginBottom: '4px' }}
+                />
+                <Area 
+                  type="monotone" 
+                  dataKey={activeMetric} 
+                  stroke={activeMetric === 'temp' ? "#f97316" : activeMetric === 'pressure' ? "#3b82f6" : "#8b5cf6"} 
+                  strokeWidth={3} 
+                  fillOpacity={1} 
+                  fill="url(#colorMetric)"
+                  animationDuration={1000}
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* System Health Status */}
+        <div className="space-y-3">
+          <div className="p-4 rounded-2xl bg-gradient-to-br from-primary/10 to-transparent border border-primary/20">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="p-2 rounded-lg bg-primary/20">
+                <Cpu className="h-4 w-4 text-primary" />
+              </div>
+              <div>
+                <p className="text-[10px] font-black uppercase text-primary">Status do Processador</p>
+                <p className="text-[9px] text-muted-foreground">Otimização AI Ativa</p>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <div className="flex justify-between text-[9px] font-bold uppercase">
+                <span>Carga de Trabalho</span>
+                <span>{data[data.length-1].efficiency.toFixed(1)}%</span>
+              </div>
+              <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
+                <motion.div 
+                  className="h-full bg-primary"
+                  initial={{ width: 0 }}
+                  animate={{ width: `${data[data.length-1].efficiency}%` }}
+                  transition={{ duration: 0.5 }}
+                />
+              </div>
             </div>
           </div>
 
-          <div className="p-3 rounded-xl bg-muted/30 border border-border/50">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-[10px] font-black uppercase text-muted-foreground">Pressão (Bar)</span>
-              <Gauge className="h-3 w-3 text-blue-500" />
+          {/* Critical Infrastructure Nodes */}
+          <div className="grid grid-cols-1 gap-2">
+            <div className="flex items-center justify-between p-2 rounded-xl bg-muted/20 border border-border/30">
+              <div className="flex items-center gap-2">
+                <Database className="h-3 w-3 text-muted-foreground" />
+                <span className="text-[9px] font-bold uppercase">Base de Conhecimento</span>
+              </div>
+              <Badge variant="outline" className="text-[8px] h-4 border-emerald-500/20 text-emerald-500 bg-emerald-500/5">SINCRONIZADO</Badge>
             </div>
-            <div className="h-32">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={mockTelemetryData}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#333" />
-                  <XAxis dataKey="time" hide />
-                  <YAxis hide domain={['dataMin - 1', 'dataMax + 1']} />
-                  <Tooltip 
-                    contentStyle={{ backgroundColor: '#111', border: 'none', borderRadius: '8px', fontSize: '10px' }}
-                  />
-                  <Line type="monotone" dataKey="pressure" stroke="#3b82f6" strokeWidth={2} dot={false} />
-                </LineChart>
-              </ResponsiveContainer>
+            <div className="flex items-center justify-between p-2 rounded-xl bg-muted/20 border border-border/30">
+              <div className="flex items-center gap-2">
+                <Network className="h-3 w-3 text-muted-foreground" />
+                <span className="text-[9px] font-bold uppercase">Latência de Resposta</span>
+              </div>
+              <span className="text-[9px] font-black text-emerald-500">14ms</span>
             </div>
           </div>
+        </div>
 
-          <div className="grid grid-cols-2 gap-3">
-             <div className="p-3 rounded-xl bg-primary/5 border border-primary/20">
-                <div className="flex items-center gap-1.5 mb-1">
-                  <Zap className="h-3 w-3 text-primary" />
-                  <span className="text-[9px] font-bold uppercase">Eficiência</span>
-                </div>
-                <p className="text-lg font-black">94.2%</p>
-             </div>
-             <div className="p-3 rounded-xl bg-emerald-500/5 border border-emerald-500/20">
-                <div className="flex items-center gap-1.5 mb-1">
-                  <Activity className="h-3 w-3 text-emerald-500" />
-                  <span className="text-[9px] font-bold uppercase">Cadência</span>
-                </div>
-                <p className="text-lg font-black">46 p/m</p>
-             </div>
+        {/* Actionable Alerts */}
+        <div className="p-3 rounded-xl bg-orange-500/5 border border-orange-500/20 flex gap-3 items-start">
+          <AlertTriangle className="h-4 w-4 text-orange-500 shrink-0 mt-0.5" />
+          <div className="space-y-1">
+            <p className="text-[10px] font-black uppercase text-orange-500">Alerta de Manutenção</p>
+            <p className="text-[9px] text-muted-foreground leading-relaxed">
+              Vibração anômala detectada no eixo Z. Sugerimos revisão preventiva em 48h.
+            </p>
           </div>
         </div>
       </CardContent>
+
+      <div className="p-4 border-t border-border/50 bg-muted/20 shrink-0">
+        <Button variant="outline" size="sm" className="w-full text-[9px] font-black uppercase tracking-widest h-8 border-primary/20 hover:bg-primary/10">
+          Visualizar Logs Completos
+        </Button>
+      </div>
     </Card>
   );
 }
+
