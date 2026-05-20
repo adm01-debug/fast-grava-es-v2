@@ -254,53 +254,81 @@ export function ChatArea({
             <div className="flex flex-col gap-2 max-w-4xl mx-auto">
               <div className="flex gap-2 items-end">
                 <div className="relative flex-1 group">
+                  <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center gap-2 z-10">
+                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    <span className="text-[8px] font-black uppercase text-emerald-500/70 tracking-tighter">Secure Link</span>
+                  </div>
                   <Textarea 
                     value={input} 
                     onChange={(e) => onInputChange(e.target.value)} 
                     onKeyDown={handleKeyDown} 
-                    placeholder="Pergunte sobre parâmetros, técnicas ou resolva problemas..." 
-                    className="min-h-[44px] max-h-40 resize-none pr-20 py-3 rounded-xl border-border/50 focus:border-primary/50 transition-all bg-muted/30" 
+                    placeholder="Solicite diagnósticos, parâmetros ou análise de manuais..." 
+                    className="min-h-[52px] max-h-40 resize-none pl-24 pr-24 py-3.5 rounded-2xl border-primary/20 focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all bg-black/20 backdrop-blur-md text-sm font-medium" 
                     disabled={isStreaming} 
                   />
-                  <div className="absolute right-3 bottom-3 flex items-center gap-2">
+                  <div className="absolute right-3 bottom-3 flex items-center gap-1.5">
                     <Popover>
                       <PopoverTrigger asChild>
-                        <button className="text-muted-foreground hover:text-primary transition-colors p-1" title="Anexar arquivo">
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          className="h-8 w-8 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-xl transition-all"
+                          title="Anexar documentação técnica"
+                        >
                           <Paperclip className="h-4 w-4" />
-                        </button>
+                        </Button>
                       </PopoverTrigger>
-                      <PopoverContent className="w-80 p-0" align="end" side="top">
+                      <PopoverContent className="w-80 p-0 border-primary/20 bg-black/90 backdrop-blur-2xl shadow-2xl" align="end" side="top">
                         <FileAnalyzer onFileProcessed={(file) => {
-                          onInputChange(`${input} [Arquivo anexado: ${file.name}]`);
+                          onInputChange(`${input} [DOCUMENTO TÉCNICO: ${file.name}]`);
                         }} />
                       </PopoverContent>
                     </Popover>
-                    <button className="text-muted-foreground hover:text-primary transition-colors p-1" title="Comando de voz (Beta)">
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="h-8 w-8 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-xl transition-all"
+                      title="Entrada por Voz (Industrial Mode)"
+                    >
                       <Mic className="h-4 w-4" />
-                    </button>
+                    </Button>
                   </div>
                 </div>
                 <Button 
                   onClick={() => onSend()} 
                   disabled={isStreaming || !input.trim()} 
-                  className="h-[44px] w-[44px] rounded-xl shrink-0 shadow-lg shadow-primary/20"
+                  className="h-[52px] px-6 rounded-2xl shrink-0 shadow-lg shadow-primary/20 bg-primary hover:bg-primary/90 transition-all active:scale-95 group overflow-hidden relative"
                 >
-                  {isStreaming ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]" />
+                  {isStreaming ? (
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-black uppercase tracking-widest hidden sm:inline">Executar</span>
+                      <Send className="h-4 w-4" />
+                    </div>
+                  )}
                 </Button>
               </div>
-              <div className="flex items-center justify-between px-2">
-                <div className="flex items-center gap-4">
-                  <span className="text-[10px] text-muted-foreground flex items-center gap-1">
-                    <Keyboard className="h-3 w-3" />
-                    <kbd className="bg-muted px-1 rounded">Enter</kbd> para enviar
-                  </span>
-                  <span className="text-[10px] text-muted-foreground flex items-center gap-1">
-                    <kbd className="bg-muted px-1 rounded">Shift + Enter</kbd> para nova linha
-                  </span>
+              <div className="flex items-center justify-between px-3">
+                <div className="flex items-center gap-5">
+                  <div className="flex items-center gap-1.5">
+                    <Keyboard className="h-3 w-3 text-muted-foreground/50" />
+                    <span className="text-[9px] font-bold uppercase text-muted-foreground/70">
+                      <kbd className="bg-muted px-1 rounded text-[8px]">ENT</kbd> Enviar
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <Sparkles className="h-3 w-3 text-primary/50" />
+                    <span className="text-[9px] font-bold uppercase text-primary/70">AI Optimizer On</span>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Button variant="ghost" size="sm" className="h-7 text-[10px] gap-1 text-muted-foreground">
-                    <Download className="h-3 w-3" /> Exportar
+                <div className="flex items-center gap-3">
+                  <Button variant="ghost" size="sm" className="h-6 text-[9px] font-black uppercase tracking-tighter gap-1.5 text-muted-foreground hover:text-primary transition-colors">
+                    <Copy className="h-3 w-3" /> Copiar Tudo
+                  </Button>
+                  <Button variant="ghost" size="sm" className="h-6 text-[9px] font-black uppercase tracking-tighter gap-1.5 text-muted-foreground hover:text-primary transition-colors">
+                    <Download className="h-3 w-3" /> Gerar PDF Técnico
                   </Button>
                 </div>
               </div>
