@@ -2,6 +2,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { Activity, Thermometer, Gauge, Zap } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 
 const mockTelemetryData = [
   { time: '10:00', temp: 180, pressure: 5.2, speed: 45 },
