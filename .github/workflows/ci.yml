@@ -23,10 +23,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       - name: Run ESLint
         run: npm run lint -- --max-warnings 0
@@ -46,10 +45,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       - name: Dependency vulnerability audit
         run: npm audit --audit-level=high
@@ -75,10 +73,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       - name: Run unit tests with coverage
         run: npm run test:coverage -- --reporter=verbose --reporter=json --outputFile=test-results.json
@@ -119,10 +116,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       - name: Run webhook simulation suite
         run: npx vitest run src/test/webhookSimulation.test.ts --reporter=verbose
@@ -158,10 +154,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       - name: Build production bundle
         env:
@@ -175,7 +170,6 @@ jobs:
           DIST_SIZE=$(du -sk dist/ | cut -f1)
           echo "Bundle size: ${DIST_SIZE}KB"
           echo "Bundle size: ${DIST_SIZE}KB" >> $GITHUB_STEP_SUMMARY
-          # Warn if > 20MB
           if [ "$DIST_SIZE" -gt 20480 ]; then
             echo "::warning::Bundle size ${DIST_SIZE}KB exceeds 20MB threshold"
           fi
@@ -201,10 +195,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
@@ -219,7 +212,7 @@ jobs:
         env:
           PLAYWRIGHT_BASE_URL: http://localhost:8080
         run: npm run test:e2e -- --reporter=html --reporter=list
-        continue-on-error: true  # E2E may fail on preview without real DB
+        continue-on-error: true
 
       - name: Upload Playwright report
         if: always()
