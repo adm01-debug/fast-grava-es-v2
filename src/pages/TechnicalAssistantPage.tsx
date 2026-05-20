@@ -33,6 +33,7 @@ const TechnicalAssistantPage = () => {
   const [localMessages, setLocalMessages] = useState<TechnicalMessage[]>([]);
   const [input, setInput] = useState("");
   const [isStreaming, setIsStreaming] = useState(false);
+  const [showTelemetry, setShowTelemetry] = useState(true);
 
   const filteredConversations = useMemo(() => {
     return conversations.filter(conv => {
@@ -151,7 +152,7 @@ const TechnicalAssistantPage = () => {
   return (
     <MainLayout>
       <div className="flex flex-col h-[calc(100vh-8rem)] gap-4 animate-in fade-in duration-500">
-        <div className="flex flex-1 gap-4 min-h-0">
+        <div className="flex flex-1 gap-0 min-h-0 overflow-hidden rounded-2xl border border-border/50 bg-card shadow-2xl">
           <ConversationSidebar
             conversations={filteredConversations}
             selectedId={selectedConversationId}
@@ -171,7 +172,8 @@ const TechnicalAssistantPage = () => {
             onCancelEdit={() => setEditingId(null)}
             onEditTitleChange={setEditTitle}
           />
-          <ChatArea
+          <div className="flex-1 flex flex-col min-w-0">
+            <ChatArea
             selectedConversationId={selectedConversationId}
             messages={localMessages}
             isStreaming={isStreaming}
@@ -182,7 +184,8 @@ const TechnicalAssistantPage = () => {
             onNewConversation={handleNewConversation}
             isCreating={createConversation.isPending}
             suggestions={techniqueSuggestions}
-          />
+            />
+          </div>
 
           <AnimatePresence>
             {showTelemetry && (
