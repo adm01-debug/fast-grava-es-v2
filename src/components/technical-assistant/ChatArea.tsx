@@ -5,8 +5,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Bot, Send, User, Loader2, Sparkles, Plus, Search, ChevronUp, ChevronDown, X } from "lucide-react";
+import { Bot, Send, User, Loader2, Sparkles, Plus, Search, ChevronUp, ChevronDown, X, Keyboard, Mic, Copy, Download } from "lucide-react";
 import { TechnicalMessage } from "@/hooks/useTechnicalConversations";
+import { ChatMessage } from "./ChatMessage";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface TechniqueSuggestion {
   label: string;
@@ -152,69 +154,130 @@ export function ChatArea({
               </div>
             </div>
           ) : messages.length === 0 && !isLoadingMessages ? (
-            <div className="space-y-4">
-              <div className="text-center py-8">
-                <div className="p-4 rounded-full bg-gradient-to-br from-primary/10 to-purple-500/10 w-fit mx-auto mb-4">
-                  <Sparkles className="h-8 w-8 text-primary" />
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="space-y-8 max-w-3xl mx-auto py-12"
+            >
+              <div className="text-center space-y-4">
+                <div className="inline-flex p-4 rounded-3xl bg-gradient-to-br from-primary/10 to-purple-500/10 mb-2">
+                  <Sparkles className="h-10 w-10 text-primary animate-pulse" />
                 </div>
-                <h3 className="text-lg font-medium text-foreground mb-2">Como posso ajudar?</h3>
-                <p className="text-sm text-muted-foreground max-w-md mx-auto">
-                  Pergunte sobre Fiber Laser, Serigrafia, Sublimação, DTF, Tampografia e muito mais!
+                <h3 className="text-2xl font-bold tracking-tight text-foreground">O que vamos criar hoje?</h3>
+                <p className="text-muted-foreground text-sm max-w-md mx-auto">
+                  Seu especialista técnico em gravação industrial, pronto para otimizar seus parâmetros e processos.
                 </p>
               </div>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-2 max-w-2xl mx-auto">
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 {suggestions.map((suggestion, index) => (
-                  <Button key={index} variant="outline" className="h-auto py-3 px-4 justify-start text-left hover:bg-primary/5" onClick={() => onSend(suggestion.question)}>
-                    <suggestion.icon className="h-4 w-4 mr-2 flex-shrink-0" />
-                    <span className="text-xs">{suggestion.label}</span>
-                  </Button>
+                  <motion.div
+                    key={index}
+                    whileHover={{ y: -4 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <Button 
+                      variant="outline" 
+                      className="w-full h-auto py-4 px-5 flex flex-col items-start gap-2 text-left hover:bg-primary/5 hover:border-primary/30 group transition-all rounded-2xl border-border/40" 
+                      onClick={() => onSend(suggestion.question)}
+                    >
+                      <div className="p-2 rounded-xl bg-muted group-hover:bg-primary/10 transition-colors">
+                        <suggestion.icon className="h-5 w-5 text-primary" />
+                      </div>
+                      <span className="text-xs font-semibold">{suggestion.label}</span>
+                      <p className="text-[10px] text-muted-foreground line-clamp-2 leading-relaxed">
+                        {suggestion.question}
+                      </p>
+                    </Button>
+                  </motion.div>
                 ))}
               </div>
-            </div>
+            </motion.div>
           ) : (
-            <div className="space-y-4">
-              {messages.map((message, index) => {
-                const isMatch = matchingMessageIndices.includes(index);
-                const isCurrentMatch = messageSearchQuery.trim() && matchingMessageIndices[currentMatchIndex] === index;
-                if (messageSearchQuery.trim() && !isMatch) return null;
-                return (
-                  <div
-                    key={message.id || index}
-                    ref={(el) => { if (el && message.id) messageRefs.current.set(message.id, el); }}
-                    className={`flex gap-3 transition-all ${message.role === "user" ? "justify-end" : "justify-start"} ${isCurrentMatch ? "ring-2 ring-primary ring-offset-2 ring-offset-background rounded-lg" : ""}`}
-                  >
-                    {message.role === "assistant" && (
-                      <div className="p-2 rounded-lg bg-primary/20 h-fit"><Bot className="h-4 w-4 text-primary" /></div>
-                    )}
-                    <div className={`max-w-[75%] p-3 rounded-lg ${message.role === "user" ? "bg-primary text-primary-foreground" : "bg-muted/50 text-foreground"}`}>
-                      <p className="text-sm whitespace-pre-wrap">{highlightText(message.content)}</p>
-                    </div>
-                    {message.role === "user" && (
-                      <div className="p-2 rounded-lg bg-muted h-fit"><User className="h-4 w-4" /></div>
-                    )}
-                  </div>
-                );
-              })}
+            <div className="space-y-6 pb-4">
+              <AnimatePresence initial={false}>
+                {messages.map((message, index) => {
+                  const isMatch = matchingMessageIndices.includes(index);
+                  if (messageSearchQuery.trim() && !isMatch) return null;
+                  
+                  return (
+                    <ChatMessage
+                      key={message.id || index}
+                      role={message.role}
+                      content={message.content}
+                      isStreaming={isStreaming && index === messages.length - 1 && message.role === "assistant"}
+                      highlightText={highlightText}
+                    />
+                  );
+                })}
+              </AnimatePresence>
+              
               {isStreaming && messages[messages.length - 1]?.role === "user" && (
-                <div className="flex gap-3">
-                  <div className="p-2 rounded-lg bg-primary/20 h-fit"><Bot className="h-4 w-4 text-primary" /></div>
-                  <div className="bg-muted/50 p-3 rounded-lg"><Loader2 className="h-4 w-4 animate-spin" /></div>
-                </div>
+                <motion.div 
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="flex gap-4"
+                >
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
+                    <Bot className="h-4 w-4 text-primary animate-pulse" />
+                  </div>
+                  <div className="bg-muted/50 px-4 py-3 rounded-2xl rounded-tl-none">
+                    <div className="flex gap-1">
+                      <span className="w-1.5 h-1.5 bg-primary/40 rounded-full animate-bounce [animation-delay:-0.3s]"></span>
+                      <span className="w-1.5 h-1.5 bg-primary/40 rounded-full animate-bounce [animation-delay:-0.15s]"></span>
+                      <span className="w-1.5 h-1.5 bg-primary/40 rounded-full animate-bounce"></span>
+                    </div>
+                  </div>
+                </motion.div>
               )}
             </div>
           )}
         </ScrollArea>
 
-        {selectedConversationId && (
-          <div className="p-4 border-t border-border/50">
-            <div className="flex gap-2">
-              <Textarea value={input} onChange={(e) => onInputChange(e.target.value)} onKeyDown={handleKeyDown} placeholder="Digite sua dúvida técnica..." className="min-h-[44px] max-h-32 resize-none" disabled={isStreaming} />
-              <Button onClick={() => onSend()} disabled={isStreaming || !input.trim()} className="shrink-0">
-                {isStreaming ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-              </Button>
+          <div className="p-4 border-t border-border/50 bg-background/50 backdrop-blur-sm">
+            <div className="flex flex-col gap-2 max-w-4xl mx-auto">
+              <div className="flex gap-2 items-end">
+                <div className="relative flex-1 group">
+                  <Textarea 
+                    value={input} 
+                    onChange={(e) => onInputChange(e.target.value)} 
+                    onKeyDown={handleKeyDown} 
+                    placeholder="Pergunte sobre parâmetros, técnicas ou resolva problemas..." 
+                    className="min-h-[44px] max-h-40 resize-none pr-10 py-3 rounded-xl border-border/50 focus:border-primary/50 transition-all bg-muted/30" 
+                    disabled={isStreaming} 
+                  />
+                  <div className="absolute right-3 bottom-3 flex items-center gap-2">
+                    <button className="text-muted-foreground hover:text-primary transition-colors p-1" title="Comando de voz (Beta)">
+                      <Mic className="h-4 w-4" />
+                    </button>
+                  </div>
+                </div>
+                <Button 
+                  onClick={() => onSend()} 
+                  disabled={isStreaming || !input.trim()} 
+                  className="h-[44px] w-[44px] rounded-xl shrink-0 shadow-lg shadow-primary/20"
+                >
+                  {isStreaming ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                </Button>
+              </div>
+              <div className="flex items-center justify-between px-2">
+                <div className="flex items-center gap-4">
+                  <span className="text-[10px] text-muted-foreground flex items-center gap-1">
+                    <Keyboard className="h-3 w-3" />
+                    <kbd className="bg-muted px-1 rounded">Enter</kbd> para enviar
+                  </span>
+                  <span className="text-[10px] text-muted-foreground flex items-center gap-1">
+                    <kbd className="bg-muted px-1 rounded">Shift + Enter</kbd> para nova linha
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button variant="ghost" size="sm" className="h-7 text-[10px] gap-1 text-muted-foreground">
+                    <Download className="h-3 w-3" /> Exportar
+                  </Button>
+                </div>
+              </div>
             </div>
           </div>
-        )}
       </CardContent>
     </Card>
   );

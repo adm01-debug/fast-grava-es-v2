@@ -121,14 +121,27 @@ const TechnicalAssistantPage = () => {
   const sendMessage = async (text?: string) => {
     const messageText = text || input.trim();
     if (!messageText || !selectedConversationId) return;
+    
+    // Etapa 3: Título Inteligente (apenas na primeira mensagem)
     if (localMessages.length === 0) {
-      const shortTitle = messageText.slice(0, 50) + (messageText.length > 50 ? '...' : '');
-      updateConversationTitle.mutate({ id: selectedConversationId, title: shortTitle });
+      const generatedTitle = messageText.length > 30 
+        ? messageText.split(' ').slice(0, 5).join(' ') + '...' 
+        : messageText;
+      updateConversationTitle.mutate({ id: selectedConversationId, title: generatedTitle });
     }
-    const userMsg: TechnicalMessage = { id: 'temp-user-' + Date.now(), conversation_id: selectedConversationId, role: "user", content: messageText, created_at: new Date().toISOString() };
+
+    const userMsg: TechnicalMessage = { 
+      id: 'temp-user-' + Date.now(), 
+      conversation_id: selectedConversationId, 
+      role: "user", 
+      content: messageText, 
+      created_at: new Date().toISOString() 
+    };
+    
     setLocalMessages(prev => [...prev, userMsg]);
     setInput("");
     setIsStreaming(true);
+    
     try {
       await addMessage.mutateAsync({ role: "user", content: messageText });
       const messagesForAI = [...localMessages, userMsg].map(m => ({ role: m.role, content: m.content }));
@@ -136,7 +149,11 @@ const TechnicalAssistantPage = () => {
       await addMessage.mutateAsync({ role: "assistant", content: assistantResponse });
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Erro ao processar mensagem");
-    } finally { setIsStreaming(false); }
+      // Remove a mensagem do usuário se falhar para manter consistência
+      setLocalMessages(prev => prev.filter(m => m.id !== userMsg.id));
+    } finally { 
+      setIsStreaming(false); 
+    }
   };
 
   return (
