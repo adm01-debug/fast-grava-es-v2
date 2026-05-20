@@ -7,6 +7,7 @@ import { isToday, isThisWeek, isThisMonth } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { ConversationSidebar } from "@/components/technical-assistant/ConversationSidebar";
 import { ChatArea } from "@/components/technical-assistant/ChatArea";
+import { TechnicalTelemetryPanel } from "@/components/technical-assistant/TechnicalTelemetryPanel";
 import { useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -183,57 +184,18 @@ const TechnicalAssistantPage = () => {
             suggestions={techniqueSuggestions}
           />
 
-          <div className="hidden xl:flex w-72 flex-col gap-4">
-            <motion.div 
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="flex-1 rounded-2xl border border-border/50 bg-card p-4 space-y-4 shadow-sm"
-            >
-              <div className="flex items-center gap-2 text-sm font-bold text-primary">
-                <BookOpen className="h-4 w-4" />
-                DADOS TÉCNICOS EXTRAÍDOS
-              </div>
-              <div className="space-y-3">
-                <div className="p-3 rounded-xl bg-muted/30 border border-border/30">
-                  <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">Última Técnica</span>
-                  <p className="text-xs font-medium mt-1">Laser de Fibra Industrial</p>
-                </div>
-                <div className="p-3 rounded-xl bg-muted/30 border border-border/30">
-                  <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">Parâmetros Críticos</span>
-                  <div className="mt-2 space-y-1">
-                    <div className="flex justify-between text-[10px]">
-                      <span>Velocidade:</span>
-                      <span className="font-bold text-primary">500 mm/s</span>
-                    </div>
-                    <div className="flex justify-between text-[10px]">
-                      <span>Potência:</span>
-                      <span className="font-bold text-primary">35%</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-            
-            <motion.div 
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.1 }}
-              className="rounded-2xl border border-border/50 bg-card p-4 shadow-sm"
-            >
-              <div className="flex items-center gap-2 text-sm font-bold text-muted-foreground mb-3">
-                <Settings className="h-4 w-4" />
-                AÇÕES RÁPIDAS
-              </div>
-              <div className="grid gap-2">
-                <button className="w-full px-3 py-2 rounded-lg bg-primary text-primary-foreground text-[10px] font-bold hover:opacity-90 transition-all uppercase tracking-wider">
-                  Sincronizar Parâmetros
-                </button>
-                <button className="w-full px-3 py-2 rounded-lg bg-muted text-muted-foreground text-[10px] font-bold hover:bg-muted/80 transition-all uppercase tracking-wider">
-                  Gerar Relatório PDF
-                </button>
-              </div>
-            </motion.div>
-          </div>
+          <AnimatePresence>
+            {showTelemetry && (
+              <motion.div 
+                initial={{ opacity: 0, x: 100, width: 0 }}
+                animate={{ opacity: 1, x: 0, width: 288 }}
+                exit={{ opacity: 0, x: 100, width: 0 }}
+                className="hidden xl:flex flex-col"
+              >
+                <TechnicalTelemetryPanel />
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
     </MainLayout>
