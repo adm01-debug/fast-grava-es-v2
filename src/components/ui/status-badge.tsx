@@ -6,7 +6,7 @@ import {
   ThumbsUp,
   Calendar,
   Play,
-  CircleCheckBig,
+  CheckCircle as CircleCheckBig,
   Pause,
   XCircle,
   AlertTriangle,
