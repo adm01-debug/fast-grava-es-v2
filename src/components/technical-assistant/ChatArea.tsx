@@ -6,6 +6,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Bot, Send, User, Loader2, Sparkles, Plus, Search, ChevronUp, ChevronDown, X, Keyboard, Mic, Copy, Download, Paperclip, Activity, ShieldCheck } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { FileAnalyzer } from "./FileAnalyzer";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { TechnicalMessage } from "@/hooks/useTechnicalConversations";
