@@ -159,7 +159,6 @@ const TechnicalAssistantPage = () => {
   return (
     <MainLayout>
       <div className="flex flex-col h-[calc(100vh-2rem)] m-4 gap-4">
-        <Breadcrumbs />
         <div className="flex flex-1 gap-4 min-h-0">
           <ConversationSidebar
             conversations={filteredConversations}
