@@ -5,7 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Bot, Send, User, Loader2, Sparkles, Plus, Search, ChevronUp, ChevronDown, X, Keyboard, Mic, Copy, Download, Paperclip } from "lucide-react";
+import { Bot, Send, User, Loader2, Sparkles, Plus, Search, ChevronUp, ChevronDown, X, Keyboard, Mic, Copy, Download, Paperclip, Activity, ShieldCheck } from "lucide-react";
 import { FileAnalyzer } from "./FileAnalyzer";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { TechnicalMessage } from "@/hooks/useTechnicalConversations";
@@ -153,6 +153,20 @@ export function ChatArea({
                   <Plus className="h-4 w-4 mr-2" />
                   Iniciar Nova Conversa
                 </Button>
+                <div className="flex justify-center gap-4 mt-8 opacity-50 grayscale hover:grayscale-0 transition-all">
+                   <div className="flex flex-col items-center gap-1">
+                      <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center border border-border/50">
+                        <Activity className="h-5 w-5" />
+                      </div>
+                      <span className="text-[9px] font-bold uppercase">ISO 9001</span>
+                   </div>
+                   <div className="flex flex-col items-center gap-1">
+                      <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center border border-border/50">
+                        <ShieldCheck className="h-5 w-5" />
+                      </div>
+                      <span className="text-[9px] font-bold uppercase">NIST Compliant</span>
+                   </div>
+                </div>
               </div>
             </div>
           ) : messages.length === 0 && !isLoadingMessages ? (
