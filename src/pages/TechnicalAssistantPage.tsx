@@ -1,14 +1,14 @@
 import { useState, useEffect } from "react";
 import { MainLayout } from "@/components/layout/MainLayout";
-import { Zap, Printer, Sun, Flame, Sparkles, Scissors } from "lucide-react";
+import { Zap, Printer, Sun, Flame, Sparkles, Scissors, BookOpen, Settings } from "lucide-react";
 import { toast } from "sonner";
 import { useTechnicalConversations, useTechnicalMessages, TechnicalMessage } from "@/hooks/useTechnicalConversations";
 import { isToday, isThisWeek, isThisMonth } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { ConversationSidebar } from "@/components/technical-assistant/ConversationSidebar";
 import { ChatArea } from "@/components/technical-assistant/ChatArea";
 import { useMemo } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/technical-assistant`;
 
@@ -79,40 +79,37 @@ const TechnicalAssistantPage = () => {
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
       body: JSON.stringify({ messages: userMessages }),
     });
-    if (resp.status === 429) throw new Error("Limite de requisições excedido. Aguarde um momento.");
-    if (resp.status === 402) throw new Error("Créditos esgotados. Contate o administrador.");
     if (!resp.ok || !resp.body) throw new Error("Falha ao conectar com o assistente");
 
     const reader = resp.body.getReader();
     const decoder = new TextDecoder();
-    let textBuffer = "";
     let assistantContent = "";
 
     while (true) {
       const { done, value } = await reader.read();
       if (done) break;
-      textBuffer += decoder.decode(value, { stream: true });
-      let newlineIndex: number;
-      while ((newlineIndex = textBuffer.indexOf("\n")) !== -1) {
-        let line = textBuffer.slice(0, newlineIndex);
-        textBuffer = textBuffer.slice(newlineIndex + 1);
-        if (line.endsWith("\r")) line = line.slice(0, -1);
-        if (line.startsWith(":") || line.trim() === "") continue;
-        if (!line.startsWith("data: ")) continue;
-        const jsonStr = line.slice(6).trim();
-        if (jsonStr === "[DONE]") break;
-        try {
-          const parsed = JSON.parse(jsonStr);
-          const content = parsed.choices?.[0]?.delta?.content as string | undefined;
-          if (content) {
-            assistantContent += content;
-            setLocalMessages(prev => {
-              const last = prev[prev.length - 1];
-              if (last?.role === "assistant") return prev.map((m, i) => i === prev.length - 1 ? { ...m, content: assistantContent } : m);
-              return [...prev, { id: 'temp-' + Date.now(), conversation_id: selectedConversationId!, role: "assistant" as const, content: assistantContent, created_at: new Date().toISOString() }];
-            });
-          }
-        } catch { textBuffer = line + "\n" + textBuffer; break; }
+      const chunk = decoder.decode(value, { stream: true });
+      const lines = chunk.split('\n');
+      
+      for (const line of lines) {
+        if (line.startsWith('data: ')) {
+          const jsonStr = line.slice(6).trim();
+          if (jsonStr === '[DONE]') break;
+          try {
+            const parsed = JSON.parse(jsonStr);
+            const content = parsed.choices?.[0]?.delta?.content;
+            if (content) {
+              assistantContent += content;
+              setLocalMessages(prev => {
+                const last = prev[prev.length - 1];
+                if (last?.role === "assistant" && last.id.startsWith('temp-')) {
+                  return [...prev.slice(0, -1), { ...last, content: assistantContent }];
+                }
+                return [...prev, { id: 'temp-assistant-' + Date.now(), conversation_id: selectedConversationId!, role: "assistant", content: assistantContent, created_at: new Date().toISOString() }];
+              });
+            }
+          } catch (e) { /* Ignore partial JSON */ }
+        }
       }
     }
     return assistantContent;
@@ -122,11 +119,8 @@ const TechnicalAssistantPage = () => {
     const messageText = text || input.trim();
     if (!messageText || !selectedConversationId) return;
     
-    // Etapa 3: Título Inteligente (apenas na primeira mensagem)
     if (localMessages.length === 0) {
-      const generatedTitle = messageText.length > 30 
-        ? messageText.split(' ').slice(0, 5).join(' ') + '...' 
-        : messageText;
+      const generatedTitle = messageText.length > 30 ? messageText.slice(0, 30) + "..." : messageText;
       updateConversationTitle.mutate({ id: selectedConversationId, title: generatedTitle });
     }
 
@@ -144,13 +138,10 @@ const TechnicalAssistantPage = () => {
     
     try {
       await addMessage.mutateAsync({ role: "user", content: messageText });
-      const messagesForAI = [...localMessages, userMsg].map(m => ({ role: m.role, content: m.content }));
-      const assistantResponse = await streamChat(messagesForAI);
+      const assistantResponse = await streamChat([...localMessages, userMsg].map(m => ({ role: m.role, content: m.content })));
       await addMessage.mutateAsync({ role: "assistant", content: assistantResponse });
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Erro ao processar mensagem");
-      // Remove a mensagem do usuário se falhar para manter consistência
-      setLocalMessages(prev => prev.filter(m => m.id !== userMsg.id));
+      toast.error("Erro no processamento");
     } finally { 
       setIsStreaming(false); 
     }
@@ -158,8 +149,7 @@ const TechnicalAssistantPage = () => {
 
   return (
     <MainLayout>
-      <div className="flex flex-col h-[calc(100vh-2rem)] m-4 gap-4">
-        <Breadcrumbs />
+      <div className="flex flex-col h-[calc(100vh-8rem)] gap-4 animate-in fade-in duration-500">
         <div className="flex flex-1 gap-4 min-h-0">
           <ConversationSidebar
             conversations={filteredConversations}
@@ -192,6 +182,58 @@ const TechnicalAssistantPage = () => {
             isCreating={createConversation.isPending}
             suggestions={techniqueSuggestions}
           />
+
+          <div className="hidden xl:flex w-72 flex-col gap-4">
+            <motion.div 
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="flex-1 rounded-2xl border border-border/50 bg-card p-4 space-y-4 shadow-sm"
+            >
+              <div className="flex items-center gap-2 text-sm font-bold text-primary">
+                <BookOpen className="h-4 w-4" />
+                DADOS TÉCNICOS EXTRAÍDOS
+              </div>
+              <div className="space-y-3">
+                <div className="p-3 rounded-xl bg-muted/30 border border-border/30">
+                  <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">Última Técnica</span>
+                  <p className="text-xs font-medium mt-1">Laser de Fibra Industrial</p>
+                </div>
+                <div className="p-3 rounded-xl bg-muted/30 border border-border/30">
+                  <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">Parâmetros Críticos</span>
+                  <div className="mt-2 space-y-1">
+                    <div className="flex justify-between text-[10px]">
+                      <span>Velocidade:</span>
+                      <span className="font-bold text-primary">500 mm/s</span>
+                    </div>
+                    <div className="flex justify-between text-[10px]">
+                      <span>Potência:</span>
+                      <span className="font-bold text-primary">35%</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+            
+            <motion.div 
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.1 }}
+              className="rounded-2xl border border-border/50 bg-card p-4 shadow-sm"
+            >
+              <div className="flex items-center gap-2 text-sm font-bold text-muted-foreground mb-3">
+                <Settings className="h-4 w-4" />
+                AÇÕES RÁPIDAS
+              </div>
+              <div className="grid gap-2">
+                <button className="w-full px-3 py-2 rounded-lg bg-primary text-primary-foreground text-[10px] font-bold hover:opacity-90 transition-all uppercase tracking-wider">
+                  Sincronizar Parâmetros
+                </button>
+                <button className="w-full px-3 py-2 rounded-lg bg-muted text-muted-foreground text-[10px] font-bold hover:bg-muted/80 transition-all uppercase tracking-wider">
+                  Gerar Relatório PDF
+                </button>
+              </div>
+            </motion.div>
+          </div>
         </div>
       </div>
     </MainLayout>

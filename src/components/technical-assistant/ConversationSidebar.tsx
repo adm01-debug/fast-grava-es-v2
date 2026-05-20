@@ -115,7 +115,7 @@ export function ConversationSidebar({
                   else groups['Anteriores'].push(conv);
                 });
 
-                return Object.entries(groups).map(([label, items]) => items.length > 0 && (
+                return Object.entries(groups).map(([label, items]) => items.length > 0 ? (
                   <div key={label} className="space-y-2">
                     <h4 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider px-2">{label}</h4>
                     {items.map((conv) => (
@@ -131,9 +131,14 @@ export function ConversationSidebar({
                         {editingId === conv.id ? (
                           <div className="flex items-center gap-2">
                             <Input value={editTitle} onChange={(e) => onEditTitleChange(e.target.value)} className="h-7 text-sm" onClick={(e) => e.stopPropagation()} autoFocus />
-                            <Button size="icon" variant="ghost" className="h-7 w-7" onClick={(e) => { e.stopPropagation(); onSaveEdit(conv.id); }}>
-                              <Check className="h-3 w-3" />
-                            </Button>
+                            <div className="flex items-center gap-1">
+                              <Button size="icon" variant="ghost" className="h-7 w-7" onClick={(e) => { e.stopPropagation(); onSaveEdit(conv.id); }}>
+                                <Check className="h-3 w-3" />
+                              </Button>
+                              <Button size="icon" variant="ghost" className="h-7 w-7" onClick={(e) => { e.stopPropagation(); onCancelEdit(); }}>
+                                <X className="h-3 w-3" />
+                              </Button>
+                            </div>
                           </div>
                         ) : (
                           <div className="flex flex-col gap-1">
@@ -157,7 +162,7 @@ export function ConversationSidebar({
                       </div>
                     ))}
                   </div>
-                ));
+                ) : null);
               })()}
             </div>
           )}
