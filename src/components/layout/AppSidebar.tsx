@@ -303,6 +303,5 @@ export function AppSidebar() {
         </div>
       </aside>
     </TooltipProvider>
-    </>
   );
 }
