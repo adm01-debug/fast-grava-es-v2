@@ -131,7 +131,7 @@ export const SystemOnboarding = () => {
           color: 'hsl(var(--muted-foreground))',
           fontSize: 13,
         },
-      }}
+      } as any}
       locale={{
         back: t('common.back', { defaultValue: 'Voltar' }),
         close: t('common.close', { defaultValue: 'Fechar' }),
