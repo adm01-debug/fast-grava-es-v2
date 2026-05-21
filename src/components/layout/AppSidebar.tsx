@@ -163,7 +163,7 @@ export function AppSidebar() {
                 animate={{ opacity: 1, x: 0 }}
                 className="flex-1 min-w-0 ml-3"
               >
-                <p className="text-[10px] font-black text-primary/70 uppercase tracking-[0.2em] truncate opacity-90 leading-tight">QUALIDADE + VELOCIDADE</p>
+                <p className="text-[9px] font-black text-primary/70 uppercase tracking-[0.2em] truncate opacity-90 leading-tight">QUALIDADE + VELOCIDADE</p>
               </motion.div>
             )}
           </div>
@@ -257,7 +257,7 @@ export function AppSidebar() {
                   </p>
                   <div className="flex items-center gap-1">
                     <Shield className="w-2.5 h-2.5 text-primary" />
-                    <p className="text-[9px] font-bold text-primary/80 uppercase tracking-widest">
+                    <p className="text-[9px] font-bold text-primary/80 uppercase tracking-[0.2em]">
                       {role === 'coordinator' ? 'Coordenação' : role === 'manager' ? 'Gestão' : 'Operação'}
                     </p>
                   </div>
@@ -270,12 +270,12 @@ export function AppSidebar() {
                 {profile?.full_name?.charAt(0)?.toUpperCase() || 'U'}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-black text-sidebar-foreground truncate tracking-tight uppercase leading-none mb-1">
+                <p className="text-[11px] font-black text-sidebar-foreground truncate tracking-[0.1em] uppercase leading-none mb-1">
                   {profile?.full_name || 'Usuário'}
                 </p>
                 <div className="flex items-center gap-1">
                   <Shield className="w-2.5 h-2.5 text-primary" />
-                  <p className="text-[9px] font-bold text-primary/80 uppercase tracking-widest truncate">
+                  <p className="text-[9px] font-bold text-primary/80 uppercase tracking-[0.2em] truncate">
                     {role === 'coordinator' ? 'Coordenação' : role === 'manager' ? 'Gestão' : 'Operação'}
                   </p>
                 </div>
