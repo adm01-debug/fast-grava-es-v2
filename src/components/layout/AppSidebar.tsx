@@ -163,7 +163,7 @@ export function AppSidebar() {
                 animate={{ opacity: 1, x: 0 }}
                 className="flex-1 min-w-0 ml-3"
               >
-                <p className="text-[10px] font-black text-primary/70 uppercase tracking-[0.18em] truncate opacity-90 leading-tight">QUALIDADE + VELOCIDADE</p>
+                <p className="text-[10px] font-black text-primary/70 uppercase tracking-[0.2em] truncate opacity-90 leading-tight">QUALIDADE + VELOCIDADE</p>
               </motion.div>
             )}
           </div>
@@ -193,7 +193,7 @@ export function AppSidebar() {
               ) : (
                 <Button className="w-full gap-2 gradient-primary hover:opacity-90 transition-all duration-300 glow-primary focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-xl h-11 shadow-lg">
                   <Plus className="h-5 w-5" />
-                  {(!collapsed || isMobile) && <span className="font-bold uppercase tracking-[0.15em] text-[10px] leading-none">Novo Agendamento</span>}
+                  {(!collapsed || isMobile) && <span className="font-bold uppercase tracking-[0.2em] text-[10px] leading-none">Novo Agendamento</span>}
                 </Button>
               )}
             </Link>
