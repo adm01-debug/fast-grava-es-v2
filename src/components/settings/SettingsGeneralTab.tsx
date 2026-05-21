@@ -4,7 +4,8 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
-import { Moon, RefreshCw, Database, Shield, Palette, AlertTriangle } from 'lucide-react';
+import { Moon, RefreshCw, Database, Shield, Palette, AlertTriangle, HelpCircle } from 'lucide-react';
+import { restartOnboarding } from '@/components/onboarding/SystemOnboarding';
 import { useTheme } from 'next-themes';
 import { AutoThemeToggle } from '@/components/settings/AutoThemeToggle';
 import { useState } from 'react';
@@ -50,6 +51,23 @@ export function SettingsGeneralTab({ settings, onSettingChange }: SettingsGenera
               <p className="text-sm text-muted-foreground">Atualizar dados em tempo real</p>
             </div>
             <Switch checked={settings.autoRefresh} onCheckedChange={(checked) => onSettingChange('autoRefresh', checked)} />
+          </div>
+          <Separator />
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <Label className="flex items-center gap-2"><HelpCircle className="h-4 w-4" />Tour de boas-vindas</Label>
+              <p className="text-sm text-muted-foreground">Refaça o tour guiado pelas principais funcionalidades</p>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                restartOnboarding();
+                toast.success('Iniciando tour...');
+              }}
+            >
+              Refazer tour
+            </Button>
           </div>
         </CardContent>
       </Card>
