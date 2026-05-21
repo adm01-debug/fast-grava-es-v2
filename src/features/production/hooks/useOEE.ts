@@ -140,6 +140,15 @@ export interface OEEData {
 
 export const WORLD_CLASS_OEE = 85;
 
+// Static studio→technique mapping — module scope keeps it referentially stable.
+const STUDIOS_MAP = [
+  { id: 'serigrafia_textil', name: 'Studio Serigrafia Têxtil', techniques: ['serigrafia'] },
+  { id: 'serigrafia_cilindrica', name: 'Studio Serigrafia Cilíndrica', techniques: ['serigrafia'] },
+  { id: 'serigrafia_vinilica', name: 'Studio Serigrafia Vinílica', techniques: ['serigrafia'] },
+  { id: 'personalizacao_uv', name: 'Studio UV Premium', techniques: ['digital_uv', 'uv'] },
+  { id: 'laser', name: 'Studio Laser Precision', techniques: ['laser'] }
+];
+
 export function classifyOEE(oee: number): MachineOEE['oeeClass'] {
   if (oee >= 85) return 'world-class';
   if (oee >= 75) return 'excellent';
@@ -171,14 +180,6 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, f
     const endMin = parseInt(endParts[0], 10) * 60 + parseInt(endParts[1], 10);
     return Math.max(60, endMin - startMin);
   }, [getConfig]);
-
-  const STUDIOS_MAP = [
-    { id: 'serigrafia_textil', name: 'Studio Serigrafia Têxtil', techniques: ['serigrafia'] },
-    { id: 'serigrafia_cilindrica', name: 'Studio Serigrafia Cilíndrica', techniques: ['serigrafia'] },
-    { id: 'serigrafia_vinilica', name: 'Studio Serigrafia Vinílica', techniques: ['serigrafia'] },
-    { id: 'personalizacao_uv', name: 'Studio UV Premium', techniques: ['digital_uv', 'uv'] },
-    { id: 'laser', name: 'Studio Laser Precision', techniques: ['laser'] }
-  ];
 
   const data = useMemo<OEEData | null>(() => {
     if (!jobs || !machines || !techniques) return null;

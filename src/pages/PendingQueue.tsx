@@ -79,6 +79,9 @@ const priorityLabels = {
   low: 'Baixa'
 };
 
+// Static list — hoisted to module scope so it stays referentially stable.
+const pendingStatuses: JobStatus[] = ['queue', 'ready', 'scheduled', 'delayed', 'rework'];
+
 export default function PendingQueue() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTechnique, setSelectedTechnique] = useState<string>("all");
@@ -132,9 +135,6 @@ export default function PendingQueue() {
     getTechniqueById,
     getMachineById
   } = useSchedulingData();
-
-  // Filter pending jobs (queue, ready, scheduled, delayed, rework)
-  const pendingStatuses: JobStatus[] = ['queue', 'ready', 'scheduled', 'delayed', 'rework'];
 
   // Pre-filter by status first
   const pendingJobs = useMemo(() => {
