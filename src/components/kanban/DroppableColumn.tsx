@@ -4,6 +4,7 @@ import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { parseDateOnly } from '@/lib/dateUtils';
 import { DbJob, DbTechnique, DbMachine } from '@/features/jobs';
 import { JobStatus } from '@/types/scheduling';
 import { DraggableJobCard } from './DraggableJobCard';
@@ -128,7 +129,7 @@ export function DroppableColumn({
 
       // 4. Date (Ascending - closer first)
       if (a.scheduled_date && b.scheduled_date) {
-        const dateDiff = new Date(a.scheduled_date).getTime() - new Date(b.scheduled_date).getTime();
+        const dateDiff = (parseDateOnly(a.scheduled_date)?.getTime() ?? 0) - (parseDateOnly(b.scheduled_date)?.getTime() ?? 0);
         if (dateDiff !== 0) return dateDiff;
       }
       if (a.scheduled_date) return -1;

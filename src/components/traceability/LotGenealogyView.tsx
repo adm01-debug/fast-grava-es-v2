@@ -10,6 +10,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ProductionLot, LotComponent, useLotGenealogy } from '@/features/inventory';
 import { format } from 'date-fns';
+import { parseDateOnly } from '@/lib/dateUtils';
 import { motion } from 'framer-motion';
 
 interface GenealogyChildItem extends LotComponent {
@@ -124,7 +125,7 @@ export default function LotGenealogyView({ lot, open, onClose }: LotGenealogyVie
                        </div>
                        <div className="flex flex-col">
                           <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">Data Produção</span>
-                          <span className="text-lg font-black text-primary">{format(new Date(lot.production_date), 'dd/MM')}</span>
+                          <span className="text-lg font-black text-primary">{format(parseDateOnly(lot.production_date)!, 'dd/MM')}</span>
                        </div>
                     </div>
                   </CardContent>

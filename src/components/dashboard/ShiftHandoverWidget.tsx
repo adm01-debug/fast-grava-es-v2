@@ -5,6 +5,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { ArrowRightLeft, Clock, MessageSquare, CheckCircle2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { parseDateOnly } from '@/lib/dateUtils';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
@@ -75,7 +76,7 @@ export function ShiftHandoverWidget() {
                   {lastHandover.outgoing_profile?.full_name?.split(' ')[0]} → {lastHandover.incoming_profile?.full_name?.split(' ')[0] || 'Pendente'}
                 </p>
                 <p className="text-[9px] text-muted-foreground">
-                  {format(new Date(lastHandover.shift_date), "dd 'de' MMM", { locale: ptBR })}
+                  {format(parseDateOnly(lastHandover.shift_date)!, "dd 'de' MMM", { locale: ptBR })}
                 </p>
               </div>
             </div>

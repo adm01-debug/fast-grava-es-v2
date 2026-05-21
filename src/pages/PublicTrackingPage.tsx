@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR, enUS, es } from 'date-fns/locale';
+import { parseDateOnly } from '@/lib/dateUtils';
 import { ProductionPhotos } from '@/components/production/ProductionPhotos';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -236,7 +237,7 @@ export default function PublicTrackingPage() {
                       <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{t('tracking.deliveryForecast')}</p>
                       <div className="flex items-center gap-2 text-lg font-bold">
                         <Calendar className="h-5 w-5 text-primary/70" />
-                        {job.scheduled_date ? format(new Date(job.scheduled_date), "dd 'de' MMMM", { locale: dateLocale }) : t('common.none')}
+                        {job.scheduled_date ? format(parseDateOnly(job.scheduled_date)!, "dd 'de' MMMM", { locale: dateLocale }) : t('common.none')}
                       </div>
                     </div>
                     {job.shipment && (

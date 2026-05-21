@@ -31,6 +31,7 @@ import { useSchedulingData } from '@/features/jobs';
 import { useCalendarFilters } from '@/hooks/useCalendarFilters';
 import { useCalendarHotkeys } from '@/hooks/useCalendarHotkeys';
 import { cn } from '@/lib/utils';
+import { parseDateOnly } from '@/lib/dateUtils';
 import { statusColors, statusLabels } from '@/components/calendar/types';
 import { JobStatus } from '@/types/scheduling';
 
@@ -71,8 +72,9 @@ export default function MonthlyCalendar() {
   const jobsByDay = useMemo(() => {
     const acc: Record<string, any[]> = {};
     filteredJobs.forEach((job) => {
-      if (!job.scheduled_date) return;
-      const k = format(new Date(job.scheduled_date), 'yyyy-MM-dd');
+      const d = parseDateOnly(job.scheduled_date);
+      if (!d) return;
+      const k = format(d, 'yyyy-MM-dd');
       if (!acc[k]) acc[k] = [];
       acc[k].push(job);
     });
@@ -87,9 +89,8 @@ export default function MonthlyCalendar() {
   const monthJobCount = useMemo(
     () =>
       filteredJobs.filter((j) => {
-        if (!j.scheduled_date) return false;
-        const d = new Date(j.scheduled_date);
-        return d >= monthStart && d <= monthEnd;
+        const d = parseDateOnly(j.scheduled_date);
+        return !!d && d >= monthStart && d <= monthEnd;
       }).length,
     [filteredJobs, monthStart, monthEnd]
   );

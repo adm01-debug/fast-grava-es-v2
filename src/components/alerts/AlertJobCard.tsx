@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { Calendar, Clock, ChevronRight } from "lucide-react";
 import { DbJob } from "@/features/jobs";
+import { parseDateOnly } from "@/lib/dateUtils";
 
 const priorityColors: Record<string, string> = {
   urgent: 'bg-primary/20 text-primary border-primary/30',
@@ -75,7 +76,7 @@ export function AlertJobCard({
                     <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground">
                       <span className="flex items-center gap-1">
                         <Calendar className="h-3 w-3" />
-                        {job.scheduled_date ? new Date(job.scheduled_date).toLocaleDateString('pt-BR') : '-'}
+                        {job.scheduled_date ? parseDateOnly(job.scheduled_date)!.toLocaleDateString('pt-BR') : '-'}
                       </span>
                       <span className="flex items-center gap-1">
                         <Clock className="h-3 w-3" />

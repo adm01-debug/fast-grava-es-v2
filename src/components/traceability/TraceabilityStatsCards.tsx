@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Layers, CheckCircle, AlertTriangle, XCircle, Clock, TrendingUp, TrendingDown } from 'lucide-react';
 import { differenceInDays } from 'date-fns';
+import { parseDateOnly } from '@/lib/dateUtils';
 import { ProductionLot } from '@/features/inventory';
 
 interface TraceabilityStatsCardsProps {
@@ -21,13 +22,13 @@ export function TraceabilityStatsCards({ lots }: TraceabilityStatsCardsProps) {
     // Expiration alerts
     const expiringIn7Days = lots.filter(l => {
       if (!l.expiration_date || l.status !== 'active') return false;
-      const daysLeft = differenceInDays(new Date(l.expiration_date), now);
+      const daysLeft = differenceInDays(parseDateOnly(l.expiration_date)!, now);
       return daysLeft >= 0 && daysLeft <= 7;
     }).length;
 
     const expired = lots.filter(l => {
       if (!l.expiration_date) return false;
-      return differenceInDays(new Date(l.expiration_date), now) < 0;
+      return differenceInDays(parseDateOnly(l.expiration_date)!, now) < 0;
     }).length;
 
     // Trends (last 30 days vs previous 30)

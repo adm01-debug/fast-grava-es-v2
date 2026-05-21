@@ -1,5 +1,6 @@
 import { useState, useMemo, useRef, useEffect } from "react";
 import type { TablesUpdate } from "@/integrations/supabase/types";
+import { parseDateOnly } from "@/lib/dateUtils";
 import { useFuseSearch } from "@/hooks/useFuseSearch";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
@@ -167,8 +168,8 @@ export default function PendingQueue() {
             comparison = a.client.localeCompare(b.client);
             break;
           case 'scheduledDate': {
-            const dateA = a.scheduled_date ? new Date(a.scheduled_date).getTime() : 0;
-            const dateB = b.scheduled_date ? new Date(b.scheduled_date).getTime() : 0;
+            const dateA = parseDateOnly(a.scheduled_date)?.getTime() ?? 0;
+            const dateB = parseDateOnly(b.scheduled_date)?.getTime() ?? 0;
             comparison = dateA - dateB;
             break;
           }
@@ -660,7 +661,7 @@ export default function PendingQueue() {
                                   {formatDistanceToNow(new Date(job.created_at), { addSuffix: true, locale: ptBR })}
                                 </TableCell>
                                 <TableCell className="text-foreground hidden sm:table-cell text-xs sm:text-sm">
-                                  <div className="flex items-center gap-1"><Calendar className="h-3 w-3 text-muted-foreground" /> {job.scheduled_date ? new Date(job.scheduled_date).toLocaleDateString('pt-BR') : '-'}</div>
+                                  <div className="flex items-center gap-1"><Calendar className="h-3 w-3 text-muted-foreground" /> {job.scheduled_date ? parseDateOnly(job.scheduled_date)!.toLocaleDateString('pt-BR') : '-'}</div>
                                 </TableCell>
                                 <TableCell>
                                   <Badge className={`${priorityColors[job.priority]} border text-[10px] px-1.5 h-5`}>
@@ -715,7 +716,7 @@ export default function PendingQueue() {
                               </div>
                               <div className="grid grid-cols-2 gap-2 pt-1 border-t border-border/30">
                                 <div className="flex flex-col gap-0.5"><span className="text-[10px] text-muted-foreground uppercase">Quantidade</span><span className="text-xs font-medium">{job.quantity.toLocaleString()} un</span></div>
-                                <div className="flex flex-col gap-0.5"><span className="text-[10px] text-muted-foreground uppercase">Entrega</span><span className="text-xs font-medium flex items-center gap-1"><Calendar className="h-2.5 w-2.5 text-muted-foreground" /> {job.scheduled_date ? new Date(job.scheduled_date).toLocaleDateString('pt-BR') : '-'}</span></div>
+                                <div className="flex flex-col gap-0.5"><span className="text-[10px] text-muted-foreground uppercase">Entrega</span><span className="text-xs font-medium flex items-center gap-1"><Calendar className="h-2.5 w-2.5 text-muted-foreground" /> {job.scheduled_date ? parseDateOnly(job.scheduled_date)!.toLocaleDateString('pt-BR') : '-'}</span></div>
                               </div>
                             </CardContent>
                             <CardFooter className="p-4 pt-0 flex justify-between items-center gap-2">

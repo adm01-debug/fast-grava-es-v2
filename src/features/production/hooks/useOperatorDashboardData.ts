@@ -4,6 +4,7 @@ import { useSchedulingData } from '@/features/jobs';
 import { useOperatorMachines } from './useOperatorMachines';
 import { DateRange } from 'react-day-picker';
 import { isWithinInterval, startOfDay, endOfDay, format } from 'date-fns';
+import { parseDateOnly } from '@/lib/dateUtils';
 
 /**
  * Hook that provides dashboard data filtered by user role.
@@ -46,9 +47,9 @@ export function useOperatorDashboardData(dateRange?: DateRange) {
       const to = dateRange.to ? endOfDay(dateRange.to) : endOfDay(dateRange.from);
 
       filtered = filtered.filter(j => {
-        if (!j.scheduled_date) return false;
+        const jobDate = parseDateOnly(j.scheduled_date);
+        if (!jobDate) return false;
         try {
-          const jobDate = new Date(j.scheduled_date);
           return isWithinInterval(jobDate, { start: from, end: to });
         } catch {
           return false;

@@ -4,6 +4,7 @@ import { StatusBadge } from "@/components/ui/status-badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Calendar, ChevronRight } from "lucide-react";
 import { DbJob, StuckJob } from "@/features/jobs";
+import { parseDateOnly } from "@/lib/dateUtils";
 import { BottleneckAlert, LoadBalancingSuggestion } from "@/features/analytics";
 import { priorityColors, priorityLabels } from "./AlertJobCard";
 
@@ -38,7 +39,7 @@ export function JobsViewAll({ jobs, onJobClick, getTechniqueById }: JobsViewAllP
                   <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground">
                     <span className="flex items-center gap-1">
                       <Calendar className="h-3 w-3" />
-                      {job.scheduled_date ? new Date(job.scheduled_date).toLocaleDateString('pt-BR') : '-'}
+                      {job.scheduled_date ? parseDateOnly(job.scheduled_date)!.toLocaleDateString('pt-BR') : '-'}
                     </span>
                     <Badge
                       variant="outline"

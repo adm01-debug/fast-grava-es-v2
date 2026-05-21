@@ -3,6 +3,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useJobs, useTechniques, DbJob, DbMachine, DbTechnique } from '../index';
 import { useMachines } from '@/features/production';
+import { parseDateOnly } from '@/lib/dateUtils';
 import { toast } from 'sonner';
 import { showErrorToast, createAppError } from '@/lib/errorHandling';
 
@@ -213,8 +214,8 @@ export function useSmartSequencingWithActions() {
       if (!job.machine_id || !job.scheduled_date) return;
       if (!['scheduled', 'ready', 'queue'].includes(job.status)) return;
 
-      const jobDate = new Date(job.scheduled_date);
-      if (isNaN(jobDate.getTime())) return;
+      const jobDate = parseDateOnly(job.scheduled_date);
+      if (!jobDate || isNaN(jobDate.getTime())) return;
 
       jobDate.setHours(0, 0, 0, 0);
 

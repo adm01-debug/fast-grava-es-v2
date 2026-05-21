@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { useJobs, useTechniques, DbJob, DbMachine, DbTechnique } from '../index';
 import { useMachines } from '@/features/production';
+import { parseDateOnly } from '@/lib/dateUtils';
 
 // Data validation helpers
 function isValidJob(job: DbJob): boolean {
@@ -98,8 +99,8 @@ export function useSmartSequencing() {
       if (!['scheduled', 'ready', 'queue'].includes(job.status)) return;
 
       try {
-        const jobDate = new Date(job.scheduled_date);
-        if (!isFinite(jobDate.getTime())) return; // Invalid date
+        const jobDate = parseDateOnly(job.scheduled_date);
+        if (!jobDate || !isFinite(jobDate.getTime())) return; // Invalid date
         jobDate.setHours(0, 0, 0, 0);
 
         if (jobDate < today || jobDate > tomorrow) return;
