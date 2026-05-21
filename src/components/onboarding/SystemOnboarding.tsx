@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Joyride, Step, STATUS } from 'react-joyride';
+import { Joyride as JoyrideBase, Step, STATUS } from 'react-joyride';
+const Joyride = JoyrideBase as any;
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/features/auth';
 import { useTheme } from 'next-themes';
