@@ -68,9 +68,9 @@ export const NavButton = memo(forwardRef<HTMLDivElement, NavButtonProps>(functio
     return (
       <Tooltip delayDuration={0}>
         <TooltipTrigger asChild>{button}</TooltipTrigger>
-        <TooltipContent side="right" className="flex items-center gap-2 bg-card/90 backdrop-blur-md border-border">
+        <TooltipContent side="right" className="flex items-center gap-2 bg-card/90 backdrop-blur-md border-border text-[11px] font-bold uppercase tracking-widest px-3 py-1.5 shadow-xl">
           {item.label}
-          {item.badge && <span className="gradient-primary text-primary-foreground text-xs font-semibold px-2 py-0.5 rounded-full">{item.badge}</span>}
+          {item.badge && <span className="gradient-primary text-primary-foreground text-[10px] font-bold px-1.5 py-0.5 rounded-full">{item.badge}</span>}
         </TooltipContent>
       </Tooltip>
     );

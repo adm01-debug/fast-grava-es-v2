@@ -3,7 +3,6 @@ import { supabase } from '@/integrations/supabase/client';
 import type { TablesUpdate } from '@/integrations/supabase/types';
 import { logger } from '@/lib/logger';
 import { toast } from 'sonner';
-import { logger } from '@/lib/logger';
 
 interface PendingAction {
   id: string;
