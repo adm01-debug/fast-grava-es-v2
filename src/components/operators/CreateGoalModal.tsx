@@ -8,6 +8,7 @@ import { useOperatorGoals, GoalType, GOAL_TYPE_LABELS, CreateGoalInput } from '@
 import { useOperators } from '@/features/production';
 import { Loader2, Target } from 'lucide-react';
 import { format, startOfMonth, endOfMonth, addMonths } from 'date-fns';
+import { safeParseFloat } from '@/lib/utils';
 
 interface CreateGoalModalProps {
   open: boolean;
@@ -162,7 +163,7 @@ export function CreateGoalModal({ open, onOpenChange, defaultOperatorId }: Creat
               min="0"
               max={formData.goal_type === 'efficiency' || formData.goal_type === 'loss_rate' ? '100' : undefined}
               value={formData.target_value}
-              onChange={(e) => setFormData(prev => ({ ...prev, target_value: parseFloat(e.target.value) || 0 }))}
+              onChange={(e) => setFormData(prev => ({ ...prev, target_value: safeParseFloat(e.target.value, 0) }))}
             />
             {formData.goal_type === 'loss_rate' && (
               <p className="text-xs text-muted-foreground">Para taxa de perda, quanto menor, melhor</p>

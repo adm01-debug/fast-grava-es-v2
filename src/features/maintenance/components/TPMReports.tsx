@@ -23,7 +23,7 @@ export function TPMReports() {
   const { machines, records, maintenanceTypes } = useTPM();
   const [selectedMachineId, setSelectedMachineId] = useState<string>('all');
   const [period, setPeriod] = useState<string>('30');
-  const { metrics, summary } = useMTBFMTTR(parseInt(period));
+  const { metrics, summary } = useMTBFMTTR(parseInt(period, 10));
   const [isGenerating, setIsGenerating] = useState(false);
 
   const getFilteredRecords = () => {
@@ -35,7 +35,7 @@ export function TPMReports() {
     }
 
     // Filter by period
-    const startDate = subDays(new Date(), parseInt(period));
+    const startDate = subDays(new Date(), parseInt(period, 10));
     filtered = filtered.filter(r => new Date(r.started_at) >= startDate);
 
     return filtered;

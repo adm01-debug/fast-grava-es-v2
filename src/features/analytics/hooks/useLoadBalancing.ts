@@ -43,8 +43,8 @@ export function useLoadBalancing(targetDate?: Date) {
     const hours = getConfig('operating_hours', { start: '07:00', end: '18:00' });
     const startParts = (hours.start || '07:00').split(':');
     const endParts = (hours.end || '18:00').split(':');
-    const startMin = parseInt(startParts[0]) * 60 + parseInt(startParts[1]);
-    const endMin = parseInt(endParts[0]) * 60 + parseInt(endParts[1]);
+    const startMin = parseInt(startParts[0], 10) * 60 + parseInt(startParts[1], 10);
+    const endMin = parseInt(endParts[0], 10) * 60 + parseInt(endParts[1], 10);
     return Math.max(60, endMin - startMin);
   }, [getConfig]);
 

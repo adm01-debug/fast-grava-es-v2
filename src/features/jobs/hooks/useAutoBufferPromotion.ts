@@ -18,7 +18,7 @@ export function useAutoBufferPromotion(options?: { showToasts?: boolean }) {
   
   const bufferTarget = useMemo(() => {
     const val = getConfig('buffer_size', 3);
-    return typeof val === 'string' ? parseInt(val) : val;
+    return typeof val === 'string' ? parseInt(val, 10) : val;
   }, [getConfig]);
 
   const promotionMutation = useMutation({

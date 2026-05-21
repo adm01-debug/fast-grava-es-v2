@@ -97,7 +97,7 @@ export function QuickJobDrawer({
         order_number: data.order_number,
         client: data.client,
         product: data.product,
-        quantity: parseInt(data.quantity),
+        quantity: parseInt(data.quantity, 10),
         technique_id: data.technique_id,
         machine_id: data.machine_id,
         scheduled_date: format(selectedDate, 'yyyy-MM-dd'),

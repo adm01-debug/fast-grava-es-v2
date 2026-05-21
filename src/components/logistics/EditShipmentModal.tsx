@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useLogistics, DbShipment } from '@/features/inventory';
 import { Truck } from 'lucide-react';
+import { safeParseFloat } from '@/lib/utils';
 
 interface EditShipmentModalProps {
   shipment: DbShipment | null;
@@ -46,7 +47,7 @@ export function EditShipmentModal({ shipment, open, onOpenChange }: EditShipment
         tracking_code: trackingCode,
         destination: destination,
         status: status,
-        freight_cost: parseFloat(freightCost) || 0,
+        freight_cost: safeParseFloat(freightCost, 0),
         estimated_delivery: estimatedDelivery ? new Date(estimatedDelivery).toISOString() : null,
         actual_delivery: status === 'delivered' ? new Date().toISOString() : shipment.actual_delivery
       }

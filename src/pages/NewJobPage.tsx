@@ -27,7 +27,7 @@ const jobSchema = z.object({
   order_number: z.string().min(1, 'Número da OS é obrigatório').trim(),
   client: z.string().min(1, 'Cliente é obrigatório').trim(),
   product: z.string().min(1, 'Produto é obrigatório').trim(),
-  quantity: z.string().refine(v => !isNaN(parseInt(v)) && parseInt(v) > 0, {
+  quantity: z.string().refine(v => !isNaN(parseInt(v, 10)) && parseInt(v, 10) > 0, {
     message: 'Quantidade deve ser um número maior que zero'
   }),
   technique_id: z.string().min(1, 'Técnica é obrigatória'),
@@ -73,7 +73,7 @@ export default function NewJobPage() {
     try {
       const selectedTechnique = techniques.find(t => t.id === data.technique_id);
       const estimatedDuration = calculateEstimatedTime({
-        quantity: parseInt(data.quantity),
+        quantity: parseInt(data.quantity, 10),
         techniqueSetupTime: selectedTechnique?.setup_time ?? 10,
       });
 
@@ -81,7 +81,7 @@ export default function NewJobPage() {
         order_number: data.order_number,
         client: data.client,
         product: data.product,
-        quantity: parseInt(data.quantity),
+        quantity: parseInt(data.quantity, 10),
         technique_id: data.technique_id,
         machine_id: data.machine_id || null,
         scheduled_date: date ? format(date, 'yyyy-MM-dd') : null,

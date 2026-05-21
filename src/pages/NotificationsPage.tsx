@@ -79,17 +79,17 @@ const NotificationsPage = () => {
 
   const { data: maintenanceAlerts, isLoading: isLoadingAlerts, refetch: refetchAlerts } = useQuery({
     queryKey: ['maintenance-alerts-history', dateRange],
-    queryFn: async () => { const { data, error } = await supabase.from('maintenance_alerts').select('*, machines(name, code)').gte('created_at', subDays(new Date(), parseInt(dateRange)).toISOString()).order('created_at', { ascending: false }).limit(100); if (error) throw error; return data as MaintenanceAlert[]; },
+    queryFn: async () => { const { data, error } = await supabase.from('maintenance_alerts').select('*, machines(name, code)').gte('created_at', subDays(new Date(), parseInt(dateRange, 10)).toISOString()).order('created_at', { ascending: false }).limit(100); if (error) throw error; return data as MaintenanceAlert[]; },
   });
 
   const { data: predictions, isLoading: isLoadingPredictions, refetch: refetchPredictions } = useQuery({
     queryKey: ['ml-predictions-history', dateRange],
-    queryFn: async () => { const { data, error } = await supabase.from('machine_predictions').select('*, machines(name, code)').gte('created_at', subDays(new Date(), parseInt(dateRange)).toISOString()).order('created_at', { ascending: false }).limit(100); if (error) throw error; return data as MachinePrediction[]; },
+    queryFn: async () => { const { data, error } = await supabase.from('machine_predictions').select('*, machines(name, code)').gte('created_at', subDays(new Date(), parseInt(dateRange, 10)).toISOString()).order('created_at', { ascending: false }).limit(100); if (error) throw error; return data as MachinePrediction[]; },
   });
 
   const { data: summaries, isLoading: isLoadingSummaries, refetch: refetchSummaries } = useQuery({
     queryKey: ['daily-summaries-history', dateRange],
-    queryFn: async () => { const { data, error } = await supabase.from('daily_summaries').select('*').gte('created_at', subDays(new Date(), parseInt(dateRange)).toISOString()).order('created_at', { ascending: false }).limit(30); if (error) throw error; return data as DailySummaryRecord[]; },
+    queryFn: async () => { const { data, error } = await supabase.from('daily_summaries').select('*').gte('created_at', subDays(new Date(), parseInt(dateRange, 10)).toISOString()).order('created_at', { ascending: false }).limit(30); if (error) throw error; return data as DailySummaryRecord[]; },
   });
 
   const notifications = useMemo((): NotificationItem[] => {

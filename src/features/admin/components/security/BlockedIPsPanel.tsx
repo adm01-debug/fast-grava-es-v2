@@ -66,7 +66,7 @@ export function BlockedIPsPanel() {
 
     const expiresAt = isPermanent
       ? undefined
-      : new Date(Date.now() + parseInt(expiresHours) * 60 * 60 * 1000).toISOString();
+      : new Date(Date.now() + parseInt(expiresHours, 10) * 60 * 60 * 1000).toISOString();
 
     await blockIP.mutateAsync({
       ipAddress: newIP.trim(),

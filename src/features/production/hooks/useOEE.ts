@@ -167,8 +167,8 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, f
     const hours = getConfig('operating_hours', { start: '07:00', end: '18:00' });
     const startParts = (hours.start || '07:00').split(':');
     const endParts = (hours.end || '18:00').split(':');
-    const startMin = parseInt(startParts[0]) * 60 + parseInt(startParts[1]);
-    const endMin = parseInt(endParts[0]) * 60 + parseInt(endParts[1]);
+    const startMin = parseInt(startParts[0], 10) * 60 + parseInt(startParts[1], 10);
+    const endMin = parseInt(endParts[0], 10) * 60 + parseInt(endParts[1], 10);
     return Math.max(60, endMin - startMin);
   }, [getConfig]);
 
@@ -278,7 +278,7 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, f
       const shiftJobs = periodJobs.filter(job => {
         const timeToUse = job.actual_start_time || job.start_time;
         if (!timeToUse) return false;
-        let hour = timeToUse.includes('T') ? new Date(timeToUse).getHours() : parseInt(timeToUse.split(':')[0]);
+        let hour = timeToUse.includes('T') ? new Date(timeToUse).getHours() : parseInt(timeToUse.split(':')[0], 10);
         if (sId === '1' && (hour >= 7 && hour < 15)) return true;
         if (sId === '2' && (hour >= 15 && hour < 23)) return true;
         if (sId === '3' && (hour < 7 || hour >= 23)) return true;

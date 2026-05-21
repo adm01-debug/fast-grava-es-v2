@@ -149,9 +149,11 @@ if (import.meta.main) {
 }
 
 async function processBitrix24Webhook(supabase: any, event: string, data: any) {
-  console.log(`Processing Bitrix24 event: ${event}`);
-  
-  // Rastreabilidade: registrar tentativa de sincronização
+  console.log(`Bitrix24 event received: ${event}`);
+
+  // Rastreabilidade: registrar tentativa de sincronização. O mapeamento real
+  // Bitrix24 → jobs ainda não foi implementado — retornamos `processed: false`
+  // para que o emissor não considere o evento como aplicado.
   await supabase.from("bitrix24_sync_history").insert({
     event_type: event,
     payload: data,
@@ -159,17 +161,28 @@ async function processBitrix24Webhook(supabase: any, event: string, data: any) {
     sync_date: new Date().toISOString()
   });
 
-  // TODO: Implementar mapeamento dinâmico de campos Bitrix24 -> Hyper-Logistics
-  return { source: "bitrix24", event, processed: true, timestamp: new Date().toISOString() };
+  return {
+    source: "bitrix24",
+    event,
+    processed: false,
+    status: 'logged_only',
+    detail: 'Bitrix24 → jobs mapping not yet implemented',
+    timestamp: new Date().toISOString(),
+  };
 }
 
 async function processStripeWebhook(supabase: any, event: string, data: any) {
-  console.log(`Processing Stripe event: ${event}`);
-  
-  if (event === 'checkout.session.completed') {
-    // Lógica para liberar créditos ou funcionalidades Pro
-    console.log("Stripe Checkout Completed - Processing billing update");
-  }
+  console.log(`Stripe event received: ${event}`);
 
-  return { source: "stripe", event, processed: true, timestamp: new Date().toISOString() };
+  // Handler real de Stripe ainda não implementado.
+  return {
+    source: "stripe",
+    event,
+    processed: false,
+    status: 'logged_only',
+    detail: event === 'checkout.session.completed'
+      ? 'Stripe checkout handler not yet implemented'
+      : 'No handler for this Stripe event',
+    timestamp: new Date().toISOString(),
+  };
 }

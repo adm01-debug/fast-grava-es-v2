@@ -87,7 +87,7 @@ export function AlertScheduleModal({ open, onOpenChange, selectedJob, jobs, mach
   const machineScheduledJobs = useMemo(() => {
     if (!selectedMachineId || !scheduleDate) return [];
     return jobs.filter(job => job.machine_id === selectedMachineId && job.scheduled_date === scheduleDate && !['finished', 'cancelled'].includes(job.status))
-      .map(job => { const startMinutes = job.start_time ? parseInt(job.start_time.split(':')[0]) * 60 + parseInt(job.start_time.split(':')[1]) : 0; const endMinutes = startMinutes + job.estimated_duration; return { ...job, endTime: `${String(Math.floor(endMinutes / 60)).padStart(2, '0')}:${String(endMinutes % 60).padStart(2, '0')}`, startMinutes }; })
+      .map(job => { const startMinutes = job.start_time ? parseInt(job.start_time.split(':')[0], 10) * 60 + parseInt(job.start_time.split(':')[1], 10) : 0; const endMinutes = startMinutes + job.estimated_duration; return { ...job, endTime: `${String(Math.floor(endMinutes / 60)).padStart(2, '0')}:${String(endMinutes % 60).padStart(2, '0')}`, startMinutes }; })
       .sort((a, b) => a.startMinutes - b.startMinutes);
   }, [selectedMachineId, scheduleDate, jobs]);
 
@@ -103,14 +103,14 @@ export function AlertScheduleModal({ open, onOpenChange, selectedJob, jobs, mach
 
   const conflicts = useMemo(() => {
     if (!selectedJob || !scheduleDate || !startTime) return [];
-    const selStart = parseInt(startTime.split(':')[0]) * 60 + parseInt(startTime.split(':')[1]);
+    const selStart = parseInt(startTime.split(':')[0], 10) * 60 + parseInt(startTime.split(':')[1], 10);
     const selEnd = selStart + selectedJob.estimated_duration;
     return jobs.filter(job => {
       if (job.id === selectedJob.id || job.scheduled_date !== scheduleDate || ['finished', 'cancelled'].includes(job.status)) return false;
       if (selectedMachineId && job.machine_id !== selectedMachineId) return false;
       if (!selectedMachineId && job.technique_id !== selectedJob.technique_id) return false;
       if (!job.start_time) return false;
-      const jStart = parseInt(job.start_time.split(':')[0]) * 60 + parseInt(job.start_time.split(':')[1]);
+      const jStart = parseInt(job.start_time.split(':')[0], 10) * 60 + parseInt(job.start_time.split(':')[1], 10);
       const jEnd = jStart + job.estimated_duration;
       return selStart < jEnd && selEnd > jStart;
     });
@@ -189,7 +189,7 @@ export function AlertScheduleModal({ open, onOpenChange, selectedJob, jobs, mach
                     ) : (
                       <div className="max-h-36 overflow-y-auto space-y-1.5 pr-1">
                         {machineScheduledJobs.map(job => {
-                          const selStart = startTime ? parseInt(startTime.split(':')[0]) * 60 + parseInt(startTime.split(':')[1]) : 0;
+                          const selStart = startTime ? parseInt(startTime.split(':')[0], 10) * 60 + parseInt(startTime.split(':')[1], 10) : 0;
                           const selEnd = selStart + (selectedJob?.estimated_duration || 0);
                           const isConflicting = startTime && selStart < job.startMinutes + job.estimated_duration && selEnd > job.startMinutes;
                           return (<div key={job.id} className={cn("flex items-center gap-2 p-2 rounded-md text-xs transition-colors", isConflicting ? "bg-destructive/15 border border-destructive/40" : "bg-secondary/50 border border-border/20")}>

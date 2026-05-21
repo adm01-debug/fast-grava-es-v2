@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useCallback } from "react";
+import { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { KioskMode } from "@/components/kiosk/KioskMode";
 import { useSchedulingData } from "@/features/jobs";
@@ -12,6 +12,7 @@ import { ArrowLeft, RefreshCw, CloudOff } from "lucide-react";
 import { toast } from "sonner";
 import { AnimatePresence, motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
+import { logger } from "@/lib/logger";
 
 export default function KioskPage() {
   const navigate = useNavigate();
@@ -23,26 +24,47 @@ export default function KioskPage() {
   const [productionJobId, setProductionJobId] = useState<string | null>(null);
   const [isProductionModalOpen, setIsProductionModalOpen] = useState(false);
 
+  const handleRefresh = useCallback(async () => {
+    if (isSyncing || !isOnline) return;
+    try {
+      await refetchAll();
+      await cacheData();
+    } catch (err) {
+      logger.error("KioskPage refresh failed", err, "KioskPage");
+      toast.error("Falha ao atualizar dados do kiosk");
+    }
+  }, [isSyncing, isOnline, refetchAll, cacheData]);
+
+  const handleRefreshRef = useRef(handleRefresh);
+  useEffect(() => {
+    handleRefreshRef.current = handleRefresh;
+  }, [handleRefresh]);
+
   useEffect(() => {
     const autoRefresh = setInterval(() => {
-      if (isOnline) handleRefresh();
+      if (isOnline) handleRefreshRef.current();
     }, 120000);
     cacheData();
     return () => clearInterval(autoRefresh);
   }, [isOnline, cacheData]);
 
-  const handleRefresh = async () => {
-    if (isSyncing || !isOnline) return;
-    try {
-      await refetchAll();
-      await cacheData();
-    } catch (err) {}
-  };
-
   const kioskJobs = useMemo(() => {
     if (!jobs) return [];
+    const statusMap: Record<string, "ready" | "production" | "paused" | "completed"> = {
+      ready: "ready",
+      scheduled: "ready",
+      production: "production",
+      paused: "paused",
+      finished: "completed",
+    };
+    const priorityMap: Record<string, "normal" | "high" | "urgent"> = {
+      low: "normal",
+      medium: "normal",
+      high: "high",
+      urgent: "urgent",
+    };
     return jobs
-      .filter(job => ["ready", "scheduled", "production", "paused", "finished"].includes(job.status))
+      .filter(job => statusMap[job.status] !== undefined)
       .filter(job => !selectedMachineId || job.machine_id === selectedMachineId)
       .map(job => {
         const technique = getTechniqueById(job.technique_id);
@@ -54,8 +76,8 @@ export default function KioskPage() {
           orderNumber: job.order_number,
           quantity: job.quantity,
           produced: job.produced_quantity || undefined,
-          status: job.status as any,
-          priority: job.priority as any,
+          status: statusMap[job.status],
+          priority: priorityMap[job.priority] ?? "normal",
           technique: technique?.name,
           techniqueColor: technique?.color,
           machine: machine?.name,
@@ -71,7 +93,10 @@ export default function KioskPage() {
     try {
       await updateJobOffline(jobId, { status: "production", actual_start_time: new Date().toISOString(), operator_id: profile?.id });
       notifyStatusChange(job.client, job.status, "production");
-    } catch (error) {}
+    } catch (error) {
+      logger.error("Falha ao iniciar produção", error, "KioskPage");
+      toast.error("Não foi possível iniciar a produção");
+    }
   };
 
   const handlePauseProduction = async (jobId: string) => {
@@ -80,7 +105,10 @@ export default function KioskPage() {
     try {
       await updateJobOffline(jobId, { status: "paused", operator_id: profile?.id });
       notifyStatusChange(job.client, job.status, "paused");
-    } catch (error) {}
+    } catch (error) {
+      logger.error("Falha ao pausar produção", error, "KioskPage");
+      toast.error("Não foi possível pausar a produção");
+    }
   };
 
   const handleCompleteProduction = (jobId: string) => {

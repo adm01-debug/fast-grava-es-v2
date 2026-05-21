@@ -67,7 +67,7 @@ export default function SimulationDashboard() {
               <input 
                 type="number" 
                 value={totalScenarios} 
-                onChange={(e) => setTotalScenarios(parseInt(e.target.value))}
+                onChange={(e) => setTotalScenarios(parseInt(e.target.value, 10))}
                 className="w-16 bg-transparent text-sm focus:outline-none"
                 disabled={isRunning}
               />

@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useLogistics } from '@/features/inventory';
 import { useJobs } from '@/features/jobs';
 import { Truck } from 'lucide-react';
+import { safeParseFloat } from '@/lib/utils';
 
 interface CreateShipmentModalProps {
   open: boolean;
@@ -31,7 +32,7 @@ export function CreateShipmentModal({ open, onOpenChange }: CreateShipmentModalP
       provider_id: selectedProviderId || null,
       tracking_code: trackingCode,
       destination: destination,
-      freight_cost: parseFloat(freightCost) || 0,
+      freight_cost: safeParseFloat(freightCost, 0),
       status: 'pending'
     }, {
       onSuccess: () => onOpenChange(false)

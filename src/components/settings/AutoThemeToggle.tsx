@@ -64,7 +64,7 @@ export function AutoThemeToggle({ className, compact = false }: AutoThemeToggleP
               </Label>
               <Select
                 value={String(config.darkStartHour)}
-                onValueChange={(v) => setConfig({ darkStartHour: parseInt(v) })}
+                onValueChange={(v) => setConfig({ darkStartHour: parseInt(v, 10) })}
               >
                 <SelectTrigger className="h-9">
                   <SelectValue />
@@ -86,7 +86,7 @@ export function AutoThemeToggle({ className, compact = false }: AutoThemeToggleP
               </Label>
               <Select
                 value={String(config.darkEndHour)}
-                onValueChange={(v) => setConfig({ darkEndHour: parseInt(v) })}
+                onValueChange={(v) => setConfig({ darkEndHour: parseInt(v, 10) })}
               >
                 <SelectTrigger className="h-9">
                   <SelectValue />

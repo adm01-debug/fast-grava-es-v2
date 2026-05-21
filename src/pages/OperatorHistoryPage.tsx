@@ -43,7 +43,7 @@ export default function OperatorHistoryPage() {
 
   // Build action timeline from job data
   const actions = useMemo((): ActionEntry[] => {
-    const cutoff = subDays(new Date(), parseInt(periodDays));
+    const cutoff = subDays(new Date(), parseInt(periodDays, 10));
     const entries: ActionEntry[] = [];
 
     for (const job of jobs) {

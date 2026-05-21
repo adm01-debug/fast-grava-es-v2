@@ -44,7 +44,7 @@ export function LotMovementsTab({ lot, movements }: LotMovementsTabProps) {
                 <Label>Tipo *</Label>
                 <Select value={newMovement.movement_type} onValueChange={(v) => setNewMovement(p => ({ ...p, movement_type: v }))}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{Object.entries(MOVEMENT_TYPES).map(([key, label]) => (<SelectItem key={key} value={key}>{label}</SelectItem>))}</SelectContent></Select>
               </div>
-              <div className="space-y-2"><Label>Quantidade *</Label><Input type="number" value={newMovement.quantity} onChange={(e) => setNewMovement(p => ({ ...p, quantity: parseInt(e.target.value) || 0 }))} /></div>
+              <div className="space-y-2"><Label>Quantidade *</Label><Input type="number" value={newMovement.quantity} onChange={(e) => setNewMovement(p => ({ ...p, quantity: parseInt(e.target.value, 10) || 0 }))} /></div>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2"><Label>Origem</Label><Input value={newMovement.from_location} onChange={(e) => setNewMovement(p => ({ ...p, from_location: e.target.value }))} placeholder="Local de origem" /></div>

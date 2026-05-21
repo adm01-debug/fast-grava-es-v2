@@ -48,7 +48,7 @@ export function CreateLotModal({ open, onOpenChange, newLot, setNewLot, jobs, on
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label>Quantidade *</Label>
-              <Input type="number" value={newLot.quantity} onChange={(e) => setNewLot((prev: any) => ({ ...prev, quantity: parseInt(e.target.value) || 0 }))} />
+              <Input type="number" value={newLot.quantity} onChange={(e) => setNewLot((prev: any) => ({ ...prev, quantity: parseInt(e.target.value, 10) || 0 }))} />
             </div>
             <div className="space-y-2">
               <Label>Data de Produção</Label>

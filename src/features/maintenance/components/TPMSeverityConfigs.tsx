@@ -106,7 +106,7 @@ export function TPMSeverityConfigs({ machineId }: TPMSeverityConfigsProps) {
                   type="number"
                   className="h-9"
                   defaultValue={config.days_threshold}
-                  onBlur={(e) => upsertConfig.mutate({ id: config.id, severity: config.severity, days_threshold: parseInt(e.target.value) || 0 })}
+                  onBlur={(e) => upsertConfig.mutate({ id: config.id, severity: config.severity, days_threshold: parseInt(e.target.value, 10) || 0 })}
                 />
               </div>
               <div className="space-y-2">
@@ -118,7 +118,7 @@ export function TPMSeverityConfigs({ machineId }: TPMSeverityConfigsProps) {
                     className="h-9"
                     placeholder="60"
                     defaultValue={config.throttle_minutes || 60}
-                    onBlur={(e) => upsertConfig.mutate({ id: config.id, severity: config.severity, throttle_minutes: parseInt(e.target.value) || 60 })}
+                    onBlur={(e) => upsertConfig.mutate({ id: config.id, severity: config.severity, throttle_minutes: parseInt(e.target.value, 10) || 60 })}
                   />
                 </div>
               </div>

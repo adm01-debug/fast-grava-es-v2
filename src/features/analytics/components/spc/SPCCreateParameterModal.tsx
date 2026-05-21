@@ -72,11 +72,11 @@ export function SPCCreateParameterModal({ open, onOpenChange, newParam, onParamC
             </div>
             <div className="space-y-2">
               <Label>Tamanho Amostra</Label>
-              <Input type="number" value={newParam.sample_size} onChange={(e) => onParamChange((p: ParamType) => ({ ...p, sample_size: parseInt(e.target.value) || 5 }))} />
+              <Input type="number" value={newParam.sample_size} onChange={(e) => onParamChange((p: ParamType) => ({ ...p, sample_size: parseInt(e.target.value, 10) || 5 }))} />
             </div>
             <div className="space-y-2">
               <Label>Frequência (min)</Label>
-              <Input type="number" value={newParam.frequency_minutes} onChange={(e) => onParamChange((p: ParamType) => ({ ...p, frequency_minutes: parseInt(e.target.value) || 60 }))} />
+              <Input type="number" value={newParam.frequency_minutes} onChange={(e) => onParamChange((p: ParamType) => ({ ...p, frequency_minutes: parseInt(e.target.value, 10) || 60 }))} />
             </div>
           </div>
           <div className="flex justify-end gap-2 pt-4">

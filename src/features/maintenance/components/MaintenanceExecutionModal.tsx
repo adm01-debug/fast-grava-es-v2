@@ -638,7 +638,7 @@ export function MaintenanceExecutionModal({
                   <Input
                     type="number"
                     value={downtime}
-                    onChange={(e) => setDowntime(parseInt(e.target.value) || 0)}
+                    onChange={(e) => setDowntime(parseInt(e.target.value, 10) || 0)}
                   />
                 </div>
                 <div className="space-y-2">

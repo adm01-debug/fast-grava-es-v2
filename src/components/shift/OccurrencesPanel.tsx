@@ -59,7 +59,7 @@ export default function OccurrencesPanel() {
     }
   });
 
-  const startDate = format(subDays(new Date(), parseInt(dateRange)), 'yyyy-MM-dd');
+  const startDate = format(subDays(new Date(), parseInt(dateRange, 10)), 'yyyy-MM-dd');
   const { data: occurrences, isLoading } = useShiftOccurrences(undefined, {
     machineId: machineFilter !== 'all' ? machineFilter : undefined,
     type: typeFilter !== 'all' ? typeFilter : undefined,
