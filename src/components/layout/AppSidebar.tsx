@@ -163,7 +163,7 @@ export function AppSidebar() {
                 animate={{ opacity: 1, x: 0 }}
                 className="flex-1 min-w-0 ml-3"
               >
-                <p className="text-[9px] font-black text-primary/70 uppercase tracking-[0.2em] truncate opacity-90 leading-tight">QUALIDADE + VELOCIDADE</p>
+                <p className="text-[10px] font-black text-primary/70 uppercase tracking-[0.2em] truncate opacity-90 leading-tight">QUALIDADE + VELOCIDADE</p>
               </motion.div>
             )}
           </div>
@@ -270,7 +270,7 @@ export function AppSidebar() {
                 {profile?.full_name?.charAt(0)?.toUpperCase() || 'U'}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-[11px] font-black text-sidebar-foreground truncate tracking-[0.1em] uppercase leading-none mb-1">
+                <p className="text-[10px] font-black text-sidebar-foreground truncate tracking-[0.2em] uppercase leading-none mb-1.5">
                   {profile?.full_name || 'Usuário'}
                 </p>
                 <div className="flex items-center gap-1">
@@ -295,8 +295,8 @@ export function AppSidebar() {
               </TooltipContent>
             </Tooltip>
           ) : (
-            <Button variant="ghost" size="sm" onClick={handleSignOut} className="w-full mt-4 font-black text-[9px] uppercase tracking-[0.2em] text-sidebar-foreground/50 hover:text-destructive hover:bg-destructive/10 focus:ring-2 focus:ring-destructive rounded-xl transition-all duration-500">
-              <LogOut className="h-3.5 w-3.5" />
+            <Button variant="ghost" size="sm" onClick={handleSignOut} className="w-full mt-4 font-black text-[10px] uppercase tracking-[0.2em] text-sidebar-foreground/50 hover:text-destructive hover:bg-destructive/10 focus:ring-2 focus:ring-destructive rounded-xl transition-all duration-500">
+              <LogOut className="h-4 w-4" />
               <span className="ml-2">{t('common.logout')}</span>
             </Button>
           )}
