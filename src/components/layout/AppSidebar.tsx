@@ -178,7 +178,7 @@ export function AppSidebar() {
               ) : (
                 <Button className="w-full gap-2 gradient-primary hover:opacity-90 transition-all duration-300 glow-primary focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-xl h-11 shadow-lg">
                   <Plus className="h-5 w-5" />
-                  {(!collapsed || isMobile) && <span className="font-bold uppercase tracking-[0.2em] text-[10px] leading-none">Novo Agendamento</span>}
+                  {(!collapsed || isMobile) && <span className="font-black uppercase tracking-[0.2em] text-[10px] leading-none">Novo Agendamento</span>}
                 </Button>
               )}
             </Link>
