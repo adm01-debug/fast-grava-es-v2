@@ -16,7 +16,7 @@ import { useNotifications } from '@/features/notifications';
 import { useSwipeGesture } from '@/hooks/use-swipe-gesture';
 import { useFocusTrap } from '@/hooks/use-focus-trap';
 import { LanguageSwitcher } from './LanguageSwitcher';
-import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { NavButton } from './sidebar/NavButton';
 import { NavGroupComponent } from './sidebar/NavGroupComponent';
 import { navGroups, adminNavItems } from './sidebar/sidebarNavConfig';
@@ -79,7 +79,7 @@ export function AppSidebar() {
   const focusTrapRef = useFocusTrap<HTMLElement>({ enabled: isMobile && mobileOpen, autoFocus: true, restoreFocus: true });
 
   return (
-    <TooltipProvider delayDuration={0}>
+    <>
       {/* Mobile Top Bar */}
       {isMobile && !mobileOpen && (
         <div className="fixed top-0 left-0 right-0 h-14 z-[45] bg-sidebar/80 backdrop-blur-md border-b border-sidebar-border flex items-center px-4 justify-between md:hidden">
@@ -293,6 +293,6 @@ export function AppSidebar() {
           )}
         </div>
       </aside>
-    </TooltipProvider>
+    </>
   );
 }
