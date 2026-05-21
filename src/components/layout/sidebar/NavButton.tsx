@@ -53,7 +53,7 @@ export const NavButton = memo(forwardRef<HTMLDivElement, NavButtonProps>(functio
         )}
       >
         <Icon className={cn('h-5 w-5 shrink-0 transition-all duration-300 group-hover/nav:scale-125 group-hover/nav:rotate-3 group-hover/nav:text-primary', isActive && 'text-primary drop-shadow-[0_0_8px_rgba(var(--primary-rgb),0.5)]')} />
-        {(!collapsed || isMobile) && <span className="truncate text-sm font-semibold tracking-tight">{item.label}</span>}
+        {(!collapsed || isMobile) && <span className="truncate text-[13px] font-bold tracking-tight leading-none">{item.label}</span>}
         {(!collapsed || isMobile) && item.badge && (
           <span className="ml-auto gradient-primary text-primary-foreground text-xs font-semibold px-2 py-0.5 rounded-full animate-pulse-glow">{item.badge}</span>
         )}

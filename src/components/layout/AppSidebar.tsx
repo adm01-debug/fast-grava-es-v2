@@ -117,8 +117,8 @@ export function AppSidebar() {
 
       >
         {/* Header */}
-        <div className={cn('flex items-center h-16 px-4 border-b border-sidebar-border relative', collapsed && !isMobile ? 'justify-center' : 'justify-between')}>
-          <div className="flex items-center overflow-hidden flex-1">
+        <div className={cn('flex items-center h-16 px-4 border-b border-sidebar-border relative', collapsed && !isMobile ? 'justify-center px-0' : 'justify-between')}>
+          <div className={cn("flex items-center overflow-hidden flex-1", collapsed && !isMobile && "justify-center")}>
             <AnimatePresence mode="wait">
               {(!collapsed || isMobile) && location.pathname !== '/' && location.pathname !== '/operator' && location.pathname !== '/auth' ? (
                 <motion.div
@@ -143,9 +143,10 @@ export function AppSidebar() {
               ) : (
                 <motion.div
                   key="logo-icon"
-                  initial={{ x: 20, opacity: 0 }}
-                  animate={{ x: 0, opacity: 1 }}
-                  exit={{ x: 20, opacity: 0 }}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                  className="flex-shrink-0"
                 >
                   <BrandLogo 
                     collapsed={collapsed && !isMobile} 
@@ -161,7 +162,7 @@ export function AppSidebar() {
                 animate={{ opacity: 1, x: 0 }}
                 className="flex-1 min-w-0 ml-3"
               >
-                <p className="text-[11px] font-black text-primary/70 uppercase tracking-[0.2em] truncate opacity-90">QUALIDADE + VELOCIDADE</p>
+                <p className="text-[10px] font-black text-primary/70 uppercase tracking-[0.18em] truncate opacity-90 leading-tight">QUALIDADE + VELOCIDADE</p>
               </motion.div>
             )}
           </div>
@@ -181,7 +182,7 @@ export function AppSidebar() {
                 'w-full gap-2 gradient-primary hover:opacity-90 transition-all duration-300 glow-primary focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-xl h-11 shadow-lg',
                 collapsed && !isMobile && 'px-0'
               )}>
-                <Plus className="h-5 w-5" />{(!collapsed || isMobile) && <span className="font-bold uppercase tracking-widest text-[10px]">Novo Agendamento</span>}
+                <Plus className="h-5 w-5" />{(!collapsed || isMobile) && <span className="font-bold uppercase tracking-[0.15em] text-[10px] leading-none">Novo Agendamento</span>}
               </Button>
             </Link>
           </div>
@@ -220,14 +221,14 @@ export function AppSidebar() {
           {filteredAdminNavItems.length > 0 && (
             <>
               <div className="my-4 border-t border-sidebar-border/50" />
-              {(!collapsed || isMobile) && <p className="text-xs font-medium text-sidebar-foreground/30 uppercase tracking-wider px-3 py-2">Administração</p>}
+              {(!collapsed || isMobile) && <p className="text-[10px] font-black text-sidebar-foreground/30 uppercase tracking-[0.2em] px-3 py-2 leading-none">Administração</p>}
               {filteredAdminNavItems.map(item => <NavButton key={item.href} item={item} collapsed={collapsed} isMobile={isMobile} isActive={isActive(item.href)} />)}
             </>
           )}
         </nav>
 
         <div className={cn('p-4 border-t border-sidebar-border/50 bg-sidebar-accent/5 mt-auto', collapsed && !isMobile && 'p-2')}>
-          {(!collapsed || isMobile) && <div className="mb-2 px-1"><LanguageSwitcher /></div>}
+          {(!collapsed || isMobile) && <div className="mb-4 px-1"><LanguageSwitcher /></div>}
           <div className={cn('flex items-center gap-3 rounded-xl p-2 relative group-user', collapsed && !isMobile && 'justify-center p-2')}>
             <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center text-primary-foreground font-bold text-base shadow-lg ring-2 ring-primary/20 ring-offset-2 ring-offset-sidebar">
               {profile?.full_name?.charAt(0)?.toUpperCase() || 'U'}
