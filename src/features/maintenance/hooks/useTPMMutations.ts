@@ -5,6 +5,7 @@ import { Database, Json } from '@/integrations/supabase/types';
 import { toast } from 'sonner';
 import { addDays, differenceInDays, isBefore, parseISO } from 'date-fns';
 import { showErrorToast, categorizeError } from '@/lib/errorHandling';
+import { logger } from '@/lib/logger';
 import { CheckCircle2 } from 'lucide-react';
 import { 
   MaintenanceSchedule, 
@@ -509,7 +510,8 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
           });
         }
       } catch (err) {
-
+        // Verificação preditiva por IA é best-effort; não bloqueia o fluxo principal.
+        logger.warn('Falha na análise preditiva de IA (TPM)', err, 'useTPMMutations');
       }
 
       const results = await Promise.all(

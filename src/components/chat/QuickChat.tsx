@@ -8,6 +8,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/features/auth';
 import { MessageCircle, Send, Users } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { logger } from '@/lib/logger';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { toast } from 'sonner';
@@ -84,7 +85,7 @@ export function QuickChat({ channel = 'general', compact = false }: QuickChatPro
       });
       setNewMessage('');
     } catch (err) {
-      logger.error('Failed to send chat message', err, 'QuickChat');
+      logger.error('Falha ao enviar mensagem do chat', err, 'QuickChat');
       toast.error('Não foi possível enviar a mensagem');
     } finally {
       setIsSending(false);

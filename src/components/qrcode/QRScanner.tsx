@@ -3,6 +3,7 @@ import { Html5Qrcode, Html5QrcodeSupportedFormats } from "html5-qrcode";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { logger } from "@/lib/logger";
 import {
   Camera,
   CameraOff,
@@ -44,6 +45,7 @@ export const QRScanner = () => {
       const deviceInfo = navigator.userAgent;
       await recordQRScanOffline(jobId, user.id, action, deviceInfo);
     } catch (error) {
+      logger.warn('Falha ao registrar leitura de QR offline', error, 'QRScanner');
     }
   };
 
@@ -81,6 +83,7 @@ export const QRScanner = () => {
       }
       setIsScanning(false);
     } catch (error) {
+      logger.warn('Falha ao parar o leitor de QR', error, 'QRScanner');
     }
   };
 

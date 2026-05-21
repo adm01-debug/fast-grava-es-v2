@@ -84,9 +84,6 @@ export function useSmartSequencing() {
       typeof t.id === 'string' && typeof t.name === 'string' && typeof t.setup_time === 'number'
     );
 
-    if (validJobs.length === 0 && jobs.length > 0) {
-    }
-
     const result: SequencingSuggestion[] = [];
     const today = new Date();
     today.setHours(0, 0, 0, 0);

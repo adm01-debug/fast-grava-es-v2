@@ -44,8 +44,8 @@ export class AuthErrorBoundary extends Component<Props, State> {
           timestamp: new Date().toISOString()
         }
       });
-    } catch (e) {
-
+    } catch {
+      // Persistir o log de erro é best-effort; nunca deve mascarar o erro original.
     }
   }
 

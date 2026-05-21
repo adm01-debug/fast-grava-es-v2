@@ -42,6 +42,7 @@ export function AlertsWidget() {
         const parsed = JSON.parse(storedThresholds);
         if (parsed.bottleneckRiskMinutes) thresholds.bottleneckRiskMinutes = parsed.bottleneckRiskMinutes;
       } catch {
+        // Configuração corrompida no localStorage: descartamos para evitar loop de parse.
         localStorage.removeItem('alert-thresholds');
       }
     }
@@ -50,6 +51,7 @@ export function AlertsWidget() {
       try {
         entityThresholds = JSON.parse(entityThresholdsStored);
       } catch {
+        // Configuração corrompida no localStorage: descartamos para evitar loop de parse.
         localStorage.removeItem('entity-thresholds');
       }
     }

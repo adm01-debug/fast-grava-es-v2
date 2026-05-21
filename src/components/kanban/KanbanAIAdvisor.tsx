@@ -57,8 +57,8 @@ export function KanbanAIAdvisor() {
           bottleneckHigh: parsed.bottleneckHigh || 480,
           bottleneckMedium: parsed.bottleneckRiskMinutes || 300,
         };
-      } catch (e) {
-
+      } catch {
+        // Configuração corrompida no localStorage: usa os valores padrão abaixo.
       }
     }
     return {

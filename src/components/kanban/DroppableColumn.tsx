@@ -79,8 +79,8 @@ export function DroppableColumn({
         if (parsed.bottleneckRiskMinutes) {
           setThresholds({ bottleneckRiskMinutes: parsed.bottleneckRiskMinutes });
         }
-      } catch (e) {
-
+      } catch {
+        // Configuração corrompida no localStorage: mantém os limites padrão.
       }
         }
         const entityStored = localStorage.getItem('entity-thresholds');

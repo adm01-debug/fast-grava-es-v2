@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { showErrorToast, categorizeError } from '@/lib/errorHandling';
+import { logger } from '@/lib/logger';
 import { ABCActivity, ABCActivityRate, ABCJobCost, ABC_ERROR_CONTEXT } from './types';
 import type { Database } from '@/integrations/supabase/types';
 
@@ -111,6 +112,7 @@ export function useABCMutations({ activities, activityRates, jobs, techniques }:
 
         results.forEach((result, idx) => {
           if (result.status === 'rejected') {
+            logger.warn(`Falha ao calcular custo ABC do job ${batch[idx]?.id}`, result.reason, 'useABCMutations');
           }
         });
       }

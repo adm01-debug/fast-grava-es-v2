@@ -113,10 +113,8 @@ export const useNotificationSounds = () => {
       } else {
         playTone(config.frequency, config.duration, config.type, config.volume || 0.2);
       }
-    } catch (error) {
-      if (import.meta.env.DEV) {
-
-      }
+    } catch {
+      // Som de notificação é opcional; ignora se a Web Audio API falhar.
     }
   }, [playTone]);
 

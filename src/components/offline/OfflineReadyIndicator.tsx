@@ -61,7 +61,8 @@ export function OfflineReadyIndicator({ className }: OfflineReadyIndicatorProps)
           machines: machines.length,
           techniques: techniques.length,
         });
-      } catch (error) {
+      } catch {
+        // Leitura do cache offline é best-effort; ignora se indisponível.
       }
     };
 

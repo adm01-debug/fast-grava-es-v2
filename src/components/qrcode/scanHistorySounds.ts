@@ -41,6 +41,7 @@ export function playNotificationSound(action: string) {
 
       currentTime += duration * 0.9;
     });
-  } catch (error) {
+  } catch {
+    // Som de feedback é opcional; ignora se a Web Audio API falhar.
   }
 }

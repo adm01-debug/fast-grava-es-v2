@@ -68,6 +68,7 @@ const playConfettiSound = () => {
       sparkle.stop(now + i * 0.05 + 0.2);
     }
   } catch {
+    // Efeito sonoro é opcional; ignora se a Web Audio API não estiver disponível.
   }
 };
 

@@ -216,8 +216,10 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, f
           try { 
             const start = parseISO(job.actual_start_time!);
             const end = parseISO(job.actual_end_time!);
-            actual += differenceInMinutes(end, start); 
-          } catch {}
+            actual += differenceInMinutes(end, start);
+          } catch {
+            // Datas já validadas acima; ignora qualquer falha residual de parse.
+          }
         }
         estimated += sanitizeNumber(job.estimated_duration || 60);
         produced += sanitizeNumber(job.produced_quantity ?? job.quantity);

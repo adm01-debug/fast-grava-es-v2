@@ -28,7 +28,8 @@ export function useFavorites() {
     if (saved) {
       try {
         setFavorites(JSON.parse(saved));
-      } catch (e) {
+      } catch {
+        // Favoritos corrompidos no localStorage: ignora e mantém a lista vazia.
       }
     }
   }, []);

@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { logger } from '@/lib/logger';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -35,7 +36,7 @@ export function PlanningEfficiencyDashboard() {
         await applyAllSequencing();
       }
     } catch (error) {
-
+      logger.error('Falha ao aplicar sugestões de planejamento', error, 'PlanningEfficiencyDashboard');
     }
   };
 

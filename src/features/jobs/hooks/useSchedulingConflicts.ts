@@ -116,7 +116,8 @@ export const useSchedulingConflicts = () => {
                 });
               }
             }
-          } catch (e) {
+          } catch {
+            // Datas inválidas em um job: ignora o par e continua a detecção.
           }
         }
       }

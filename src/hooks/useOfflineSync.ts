@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import type { TablesUpdate } from '@/integrations/supabase/types';
+import { logger } from '@/lib/logger';
 import { toast } from 'sonner';
 import { logger } from '@/lib/logger';
 
@@ -41,7 +42,7 @@ export function useOfflineSync() {
         setPendingActions(JSON.parse(stored));
       }
     } catch (error) {
-      logger.warn('Failed to parse pending actions from localStorage', error, 'useOfflineSync');
+      logger.warn('Falha ao carregar ações offline do localStorage', error, 'useOfflineSync');
       localStorage.removeItem(STORAGE_KEYS.PENDING_ACTIONS);
     }
   }, []);
@@ -58,7 +59,7 @@ export function useOfflineSync() {
         }
       }
     } catch (error) {
-      logger.warn('Failed to parse cached data from localStorage', error, 'useOfflineSync');
+      logger.warn('Falha ao carregar dados em cache do localStorage', error, 'useOfflineSync');
       localStorage.removeItem(STORAGE_KEYS.CACHED_DATA);
     }
   }, []);
@@ -68,7 +69,7 @@ export function useOfflineSync() {
     try {
       localStorage.setItem(STORAGE_KEYS.PENDING_ACTIONS, JSON.stringify(pendingActions));
     } catch (error) {
-      logger.error('Failed to persist pending actions (quota exceeded?)', error, 'useOfflineSync');
+      logger.error('Falha ao salvar ações offline (quota excedida?)', error, 'useOfflineSync');
     }
   }, [pendingActions]);
 
@@ -129,7 +130,7 @@ export function useOfflineSync() {
       localStorage.setItem(STORAGE_KEYS.CACHED_DATA, JSON.stringify(newCachedData));
 
     } catch (error) {
-      logger.error('Failed to cache data for offline use', error, 'useOfflineSync');
+      logger.error('Falha ao armazenar dados em cache offline', error, 'useOfflineSync');
     }
   }, [isOnline]);
 

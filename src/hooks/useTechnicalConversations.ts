@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/features/auth";
 import { showErrorToast, createAppError, createMutationErrorHandler } from '@/lib/errorHandling';
+import { logger } from '@/lib/logger';
 import { defaultQueryOptions, STALE_TIMES } from '@/lib/queryConfig';
 
 const CONVERSATIONS_ERROR_CONTEXT = {
@@ -208,8 +209,8 @@ export const useTechnicalMessages = (conversationId: string | null) => {
           .update({ updated_at: new Date().toISOString() })
           .eq('id', conversationId)
           .then(({ error: updateError }) => {
-            if (updateError && import.meta.env.DEV) {
-
+            if (updateError) {
+              logger.warn('Falha ao atualizar updated_at da conversa', updateError, 'useTechnicalConversations');
             }
           });
 
