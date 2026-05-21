@@ -16,6 +16,7 @@ import { useNotifications } from '@/features/notifications';
 import { useSwipeGesture } from '@/hooks/use-swipe-gesture';
 import { useFocusTrap } from '@/hooks/use-focus-trap';
 import { LanguageSwitcher } from './LanguageSwitcher';
+import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
 import { NavButton } from './sidebar/NavButton';
 import { NavGroupComponent } from './sidebar/NavGroupComponent';
 import { navGroups, adminNavItems } from './sidebar/sidebarNavConfig';
@@ -78,7 +79,7 @@ export function AppSidebar() {
   const focusTrapRef = useFocusTrap<HTMLElement>({ enabled: isMobile && mobileOpen, autoFocus: true, restoreFocus: true });
 
   return (
-    <>
+    <TooltipProvider delayDuration={0}>
       {/* Mobile Top Bar */}
       {isMobile && !mobileOpen && (
         <div className="fixed top-0 left-0 right-0 h-14 z-[45] bg-sidebar/80 backdrop-blur-md border-b border-sidebar-border flex items-center px-4 justify-between md:hidden">
@@ -178,12 +179,23 @@ export function AppSidebar() {
         {role !== 'operator' && (
           <div className={cn('p-4', collapsed && !isMobile && 'px-2')}>
             <Link to="/new-job" onMouseEnter={handleNewJobPrefetch} onFocus={handleNewJobPrefetch}>
-              <Button className={cn(
-                'w-full gap-2 gradient-primary hover:opacity-90 transition-all duration-300 glow-primary focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-xl h-11 shadow-lg',
-                collapsed && !isMobile && 'px-0'
-              )}>
-                <Plus className="h-5 w-5" />{(!collapsed || isMobile) && <span className="font-bold uppercase tracking-[0.15em] text-[10px] leading-none">Novo Agendamento</span>}
-              </Button>
+              {collapsed && !isMobile ? (
+                <Tooltip delayDuration={0}>
+                  <TooltipTrigger asChild>
+                    <Button className="w-full h-11 gradient-primary hover:opacity-90 transition-all duration-300 glow-primary rounded-xl shadow-lg p-0 flex items-center justify-center">
+                      <Plus className="h-5 w-5" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="right" className="bg-sidebar-accent border-sidebar-border text-[10px] font-black uppercase tracking-[0.2em] px-3 py-1.5 shadow-xl">
+                    Novo Agendamento
+                  </TooltipContent>
+                </Tooltip>
+              ) : (
+                <Button className="w-full gap-2 gradient-primary hover:opacity-90 transition-all duration-300 glow-primary focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-xl h-11 shadow-lg">
+                  <Plus className="h-5 w-5" />
+                  {(!collapsed || isMobile) && <span className="font-bold uppercase tracking-[0.15em] text-[10px] leading-none">Novo Agendamento</span>}
+                </Button>
+              )}
             </Link>
           </div>
         )}
@@ -229,11 +241,34 @@ export function AppSidebar() {
 
         <div className={cn('p-4 border-t border-sidebar-border/50 bg-sidebar-accent/5 mt-auto', collapsed && !isMobile && 'p-2')}>
           {(!collapsed || isMobile) && <div className="mb-4 px-1"><LanguageSwitcher /></div>}
-          <div className={cn('flex items-center gap-3 rounded-xl p-2 relative group-user', collapsed && !isMobile && 'justify-center p-2')}>
-            <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center text-primary-foreground font-bold text-base shadow-lg ring-2 ring-primary/20 ring-offset-2 ring-offset-sidebar">
-              {profile?.full_name?.charAt(0)?.toUpperCase() || 'U'}
-            </div>
-            {(!collapsed || isMobile) && (
+          {collapsed && !isMobile ? (
+            <Tooltip delayDuration={0}>
+              <TooltipTrigger asChild>
+                <div className="flex items-center justify-center rounded-xl p-2 relative group-user">
+                  <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center text-primary-foreground font-bold text-base shadow-lg ring-2 ring-primary/20 ring-offset-2 ring-offset-sidebar">
+                    {profile?.full_name?.charAt(0)?.toUpperCase() || 'U'}
+                  </div>
+                </div>
+              </TooltipTrigger>
+              <TooltipContent side="right" className="bg-sidebar-accent border-sidebar-border p-3 shadow-xl">
+                <div className="flex flex-col gap-1">
+                  <p className="text-sm font-black text-sidebar-foreground tracking-tight uppercase leading-none">
+                    {profile?.full_name || 'Usuário'}
+                  </p>
+                  <div className="flex items-center gap-1">
+                    <Shield className="w-2.5 h-2.5 text-primary" />
+                    <p className="text-[9px] font-bold text-primary/80 uppercase tracking-widest">
+                      {role === 'coordinator' ? 'Coordenação' : role === 'manager' ? 'Gestão' : 'Operação'}
+                    </p>
+                  </div>
+                </div>
+              </TooltipContent>
+            </Tooltip>
+          ) : (
+            <div className={cn('flex items-center gap-3 rounded-xl p-2 relative group-user')}>
+              <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center text-primary-foreground font-bold text-base shadow-lg ring-2 ring-primary/20 ring-offset-2 ring-offset-sidebar">
+                {profile?.full_name?.charAt(0)?.toUpperCase() || 'U'}
+              </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-black text-sidebar-foreground truncate tracking-tight uppercase leading-none mb-1">
                   {profile?.full_name || 'Usuário'}
@@ -245,13 +280,29 @@ export function AppSidebar() {
                   </p>
                 </div>
               </div>
-            )}
-          </div>
-          <Button variant="ghost" size={(collapsed && !isMobile) ? "icon" : "sm"} onClick={handleSignOut} className={cn('w-full mt-4 font-black text-[9px] uppercase tracking-[0.2em] text-sidebar-foreground/50 hover:text-destructive hover:bg-destructive/10 focus:ring-2 focus:ring-destructive rounded-xl transition-all duration-500', collapsed && !isMobile && 'px-0')}>
-            <LogOut className="h-3.5 w-3.5" />{(!collapsed || isMobile) && <span className="ml-2">{t('common.logout')}</span>}
-          </Button>
+            </div>
+          )}
+          
+          {collapsed && !isMobile ? (
+            <Tooltip delayDuration={0}>
+              <TooltipTrigger asChild>
+                <Button variant="ghost" size="icon" onClick={handleSignOut} className="w-full mt-4 h-10 flex items-center justify-center text-sidebar-foreground/50 hover:text-destructive hover:bg-destructive/10 rounded-xl transition-all">
+                  <LogOut className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="right" className="bg-destructive/90 text-white border-none text-[10px] font-black uppercase tracking-[0.2em] px-3 py-1.5 shadow-xl">
+                {t('common.logout')}
+              </TooltipContent>
+            </Tooltip>
+          ) : (
+            <Button variant="ghost" size="sm" onClick={handleSignOut} className="w-full mt-4 font-black text-[9px] uppercase tracking-[0.2em] text-sidebar-foreground/50 hover:text-destructive hover:bg-destructive/10 focus:ring-2 focus:ring-destructive rounded-xl transition-all duration-500">
+              <LogOut className="h-3.5 w-3.5" />
+              <span className="ml-2">{t('common.logout')}</span>
+            </Button>
+          )}
         </div>
       </aside>
+    </TooltipProvider>
     </>
   );
 }
