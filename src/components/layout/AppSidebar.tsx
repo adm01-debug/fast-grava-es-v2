@@ -119,14 +119,14 @@ export function AppSidebar() {
       >
         {/* Header */}
         <div className={cn('flex items-center h-16 px-4 border-b border-sidebar-border relative', collapsed && !isMobile ? 'justify-center px-0' : 'justify-between')}>
-          <div className={cn("flex items-center overflow-hidden flex-1", collapsed && !isMobile && "justify-center")}>
+          <div className={cn("flex items-center gap-3 overflow-hidden flex-1", collapsed && !isMobile && "justify-center")}>
             <AnimatePresence mode="wait">
-              {(!collapsed || isMobile) && location.pathname !== '/' && location.pathname !== '/operator' && location.pathname !== '/auth' ? (
+              {(!collapsed || isMobile) && location.pathname !== '/' && location.pathname !== '/operator' && location.pathname !== '/auth' && (
                 <motion.div
-                  key="back-icon"
-                  initial={{ x: -20, opacity: 0 }}
-                  animate={{ x: 0, opacity: 1 }}
-                  exit={{ x: -20, opacity: 0 }}
+                  key="back-button"
+                  initial={{ width: 0, opacity: 0 }}
+                  animate={{ width: "auto", opacity: 1 }}
+                  exit={{ width: 0, opacity: 0 }}
                   className="flex-shrink-0"
                 >
                   <Button 
@@ -136,27 +136,21 @@ export function AppSidebar() {
                       SoundFeedback.navBack();
                       navigate(-1);
                     }}
-                    className="h-9 w-9 rounded-xl bg-primary/10 text-primary hover:bg-primary/20 hover:scale-105 active:scale-95 transition-all"
+                    className="h-8 w-8 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 hover:scale-105 active:scale-95 transition-all"
                   >
-                    <ChevronLeft className="w-5 h-5" />
+                    <ChevronLeft className="w-4 h-4" />
                   </Button>
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="logo-icon"
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.8 }}
-                  className="flex-shrink-0"
-                >
-                  <BrandLogo 
-                    collapsed={collapsed && !isMobile} 
-                    size={collapsed && !isMobile ? "sm" : "md"} 
-                    showSubtitle={!collapsed || isMobile}
-                  />
                 </motion.div>
               )}
             </AnimatePresence>
+            
+            <div className="flex-shrink-0">
+              <BrandLogo 
+                collapsed={collapsed && !isMobile} 
+                size={collapsed && !isMobile ? "sm" : "md"} 
+                showSubtitle={!collapsed || isMobile}
+              />
+            </div>
           </div>
 
 
@@ -184,7 +178,7 @@ export function AppSidebar() {
               ) : (
                 <Button className="w-full gap-2 gradient-primary hover:opacity-90 transition-all duration-300 glow-primary focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-xl h-11 shadow-lg">
                   <Plus className="h-5 w-5" />
-                  {(!collapsed || isMobile) && <span className="font-bold uppercase tracking-[0.2em] text-[10px] leading-none">Novo Agendamento</span>}
+                  {(!collapsed || isMobile) && <span className="font-black uppercase tracking-[0.2em] text-[10px] leading-none">Novo Agendamento</span>}
                 </Button>
               )}
             </Link>
@@ -266,7 +260,7 @@ export function AppSidebar() {
                 </p>
                 <div className="flex items-center gap-1">
                   <Shield className="w-2.5 h-2.5 text-primary" />
-                  <p className="text-[9px] font-bold text-primary/80 uppercase tracking-[0.2em] truncate">
+                  <p className="text-[9px] font-black text-primary/80 uppercase tracking-[0.2em] truncate">
                     {role === 'coordinator' ? 'Coordenação' : role === 'manager' ? 'Gestão' : 'Operação'}
                   </p>
                 </div>
