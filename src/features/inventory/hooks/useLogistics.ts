@@ -62,7 +62,11 @@ export function useLogistics() {
   });
 
   const createShipment = useMutation({
-    mutationFn: async (data: Partial<DbShipment>) => {
+    mutationFn: async (input: Partial<DbShipment>) => {
+      // Strip joined relation fields — they are not columns on `shipments`.
+      const { provider, job, ...data } = input;
+      void provider;
+      void job;
       const { data: shipment, error } = await supabase
         .from('shipments')
         .insert(data)
@@ -95,7 +99,11 @@ export function useLogistics() {
   });
 
   const updateShipment = useMutation({
-    mutationFn: async ({ id, data }: { id: string; data: Partial<DbShipment> }) => {
+    mutationFn: async ({ id, data: input }: { id: string; data: Partial<DbShipment> }) => {
+      // Strip joined relation fields — they are not columns on `shipments`.
+      const { provider, job, ...data } = input;
+      void provider;
+      void job;
       const { error } = await supabase
         .from('shipments')
         .update(data)

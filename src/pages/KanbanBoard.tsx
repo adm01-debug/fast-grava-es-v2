@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback, useEffect } from 'react';
+import type { TablesUpdate } from '@/integrations/supabase/types';
 import { useFuseSearch } from '@/hooks/useFuseSearch';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -154,7 +155,7 @@ export default function KanbanBoard() {
     const mapping = quickActionMap[action];
     if (!mapping) return;
 
-    const updateData: Record<string, string> = {
+    const updateData: TablesUpdate<'jobs'> = {
       status: mapping.status,
       updated_at: new Date().toISOString(),
     };
@@ -205,7 +206,7 @@ export default function KanbanBoard() {
     if (selectedJobs.size === 0) return;
 
     if (action === 'move' && targetStatus) {
-      const updateData: Record<string, any> = {
+      const updateData: TablesUpdate<'jobs'> = {
         status: targetStatus,
         updated_at: new Date().toISOString()
       };

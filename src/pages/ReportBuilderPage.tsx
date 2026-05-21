@@ -114,7 +114,9 @@ export default function ReportBuilderPage() {
       }
 
       if (selectedStatus !== 'all' && STATUS_OPTIONS[selectedTable]) {
-        query = query.eq('status', selectedStatus);
+        // `selectedTable` is a union of tables; not all share a `status` column, so the
+        // typed builder narrows the key to `never`. Runtime is guarded by STATUS_OPTIONS above.
+        query = (query as unknown as { eq: (column: string, value: string) => typeof query }).eq('status', selectedStatus);
       }
 
       const { data, error } = await query;
@@ -189,7 +191,9 @@ export default function ReportBuilderPage() {
       }
 
       if (selectedStatus !== 'all' && STATUS_OPTIONS[selectedTable]) {
-        query = query.eq('status', selectedStatus);
+        // `selectedTable` is a union of tables; not all share a `status` column, so the
+        // typed builder narrows the key to `never`. Runtime is guarded by STATUS_OPTIONS above.
+        query = (query as unknown as { eq: (column: string, value: string) => typeof query }).eq('status', selectedStatus);
       }
 
       const { data, error } = await query;

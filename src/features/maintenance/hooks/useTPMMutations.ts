@@ -203,8 +203,9 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
           technical_sheet_id: data.technical_sheet_id,
           technical_sheet_version: data.technical_sheet_version,
           adjustment_parameters: data.adjustment_parameters as unknown as Json,
-          quality_checklist_results: data.quality_checklist_results as unknown as Json,
-          failure_risk_detected: data.failure_risk_detected || false,
+          // NOTE: `quality_checklist_results` and `failure_risk_detected` are columns
+          // on `tpm_executions`, not `maintenance_records`. Writing them here made the
+          // whole update fail at runtime ("column does not exist"), so they are omitted.
         })
         .eq('id', data.record_id);
 

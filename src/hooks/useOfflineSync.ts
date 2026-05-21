@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import type { TablesUpdate } from '@/integrations/supabase/types';
 import { toast } from 'sonner';
 import { logger } from '@/lib/logger';
 
@@ -159,7 +160,7 @@ export function useOfflineSync() {
     try {
       switch (action.type) {
         case 'update_job': {
-          const { jobId, updates } = action.payload as { jobId: string; updates: Record<string, unknown> };
+          const { jobId, updates } = action.payload as { jobId: string; updates: TablesUpdate<'jobs'> };
           const { error } = await supabase
             .from('jobs')
             .update(updates)
@@ -269,7 +270,7 @@ export function useOfflineSync() {
   // Update job offline (for operators)
   const updateJobOffline = useCallback((
     jobId: string,
-    updates: Record<string, unknown>
+    updates: TablesUpdate<'jobs'>
   ) => {
     if (isOnline) {
       // If online, update directly

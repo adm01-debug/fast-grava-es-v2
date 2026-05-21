@@ -1,4 +1,5 @@
 import { useState, useMemo, useRef, useEffect } from "react";
+import type { TablesUpdate } from "@/integrations/supabase/types";
 import { useFuseSearch } from "@/hooks/useFuseSearch";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
@@ -274,7 +275,7 @@ export default function PendingQueue() {
         if (error) throw error;
         toast.success(`${selectedJobs.size} jobs excluídos`);
       } else {
-        const updateData: Record<string, any> = {
+        const updateData: TablesUpdate<'jobs'> = {
           status: action,
           updated_at: new Date().toISOString()
         };

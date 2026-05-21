@@ -41,7 +41,7 @@ export function useABCMutations({ activities, activityRates, jobs, techniques }:
         : job.estimated_duration / 60;
 
       // Calculate costs for each activity
-      const newCosts: Omit<ABCJobCost, 'id' | 'created_at'>[] = [];
+      const newCosts: Omit<ABCJobCost, 'id' | 'created_at' | 'activity' | 'cost_pool'>[] = [];
 
       for (const activity of activities) {
         const activityRate = currentRates.find(r => r.activity_id === activity.id);
