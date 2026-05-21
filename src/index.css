@@ -441,9 +441,11 @@
   }
 
   *:focus-visible {
-    outline: 3px solid hsl(var(--primary));
-    outline-offset: 3px;
-    box-shadow: 0 0 0 4px hsl(var(--primary) / 0.2);
+    outline: 2px solid hsl(var(--primary));
+    outline-offset: 2px;
+    box-shadow: 0 0 0 4px hsl(var(--primary) / 0.18);
+    border-radius: calc(var(--radius) - 2px);
+    transition: box-shadow 150ms var(--easing-standard), outline-offset 150ms var(--easing-standard);
   }
 
   /* Zebra Striping for Tables */
