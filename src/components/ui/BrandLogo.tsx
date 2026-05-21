@@ -15,10 +15,10 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
   showSubtitle = true 
 }) => {
   const sizes = {
-    sm: { icon: 28, fontMain: "text-xs", fontSub: "text-[9px]", gap: "gap-2" },
-    md: { icon: 36, fontMain: "text-sm", fontSub: "text-[10px]", gap: "gap-2.5" },
-    lg: { icon: 64, fontMain: "text-3xl", fontSub: "text-[12px]", gap: "gap-3" },
-    xl: { icon: 110, fontMain: "text-4xl", fontSub: "text-base", gap: "gap-4" },
+    sm: { icon: 32, fontMain: "text-sm", fontSub: "text-[10px]", gap: "gap-2.5" },
+    md: { icon: 44, fontMain: "text-lg", fontSub: "text-[11px]", gap: "gap-3" },
+    lg: { icon: 72, fontMain: "text-4xl", fontSub: "text-sm", gap: "gap-4" },
+    xl: { icon: 140, fontMain: "text-6xl", fontSub: "text-xl", gap: "gap-5" },
   };
 
   const currentSize = sizes[size];
