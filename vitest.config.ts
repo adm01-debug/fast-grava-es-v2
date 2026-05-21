@@ -2,8 +2,25 @@ import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 
+// Dummy Supabase env vars for the test environment. The real `.env` is
+// gitignored, so CI (and any contributor without a local .env) needs
+// these placeholders so `createClient` doesn't throw at module load.
+const TEST_ENV_DEFAULTS = {
+  VITE_SUPABASE_URL: 'http://localhost:54321',
+  VITE_SUPABASE_PUBLISHABLE_KEY: 'test-anon-key',
+  VITE_SUPABASE_PROJECT_ID: 'test-project',
+};
+for (const [k, v] of Object.entries(TEST_ENV_DEFAULTS)) {
+  if (!process.env[k]) process.env[k] = v;
+}
+
 export default defineConfig({
   plugins: [react()],
+  define: {
+    'import.meta.env.VITE_SUPABASE_URL': JSON.stringify(process.env.VITE_SUPABASE_URL),
+    'import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY': JSON.stringify(process.env.VITE_SUPABASE_PUBLISHABLE_KEY),
+    'import.meta.env.VITE_SUPABASE_PROJECT_ID': JSON.stringify(process.env.VITE_SUPABASE_PROJECT_ID),
+  },
   test: {
     environment: 'jsdom',
     globals: true,
