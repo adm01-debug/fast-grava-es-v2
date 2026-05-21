@@ -260,7 +260,7 @@ export function AppSidebar() {
                 </p>
                 <div className="flex items-center gap-1">
                   <Shield className="w-2.5 h-2.5 text-primary" />
-                  <p className="text-[9px] font-bold text-primary/80 uppercase tracking-[0.2em] truncate">
+                  <p className="text-[9px] font-black text-primary/80 uppercase tracking-[0.2em] truncate">
                     {role === 'coordinator' ? 'Coordenação' : role === 'manager' ? 'Gestão' : 'Operação'}
                   </p>
                 </div>
