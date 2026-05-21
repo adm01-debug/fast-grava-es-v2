@@ -13,7 +13,6 @@ import { ArrowLeft, RefreshCw, CloudOff } from "lucide-react";
 import { toast } from "sonner";
 import { AnimatePresence, motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
-import { logger } from "@/lib/logger";
 
 export default function KioskPage() {
   const navigate = useNavigate();

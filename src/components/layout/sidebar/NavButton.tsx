@@ -49,11 +49,11 @@ export const NavButton = memo(forwardRef<HTMLDivElement, NavButtonProps>(functio
             'hover:pl-4 transition-all duration-300',
           ],
           !isActive && 'border-l-4 border-transparent text-sidebar-foreground/70',
-          collapsed && !isMobile && 'justify-center px-0 hover:pl-0'
+          collapsed && !isMobile && 'justify-center px-0 hover:pl-0 border-l-0'
         )}
       >
         <Icon className={cn('h-5 w-5 shrink-0 transition-all duration-300 group-hover/nav:scale-125 group-hover/nav:rotate-3 group-hover/nav:text-primary', isActive && 'text-primary drop-shadow-[0_0_8px_rgba(var(--primary-rgb),0.5)]')} />
-        {(!collapsed || isMobile) && <span className="truncate text-sm font-semibold tracking-tight">{item.label}</span>}
+        {(!collapsed || isMobile) && <span className="truncate text-[13px] font-bold tracking-tight leading-none">{item.label}</span>}
         {(!collapsed || isMobile) && item.badge && (
           <span className="ml-auto gradient-primary text-primary-foreground text-xs font-semibold px-2 py-0.5 rounded-full animate-pulse-glow">{item.badge}</span>
         )}
@@ -68,9 +68,9 @@ export const NavButton = memo(forwardRef<HTMLDivElement, NavButtonProps>(functio
     return (
       <Tooltip delayDuration={0}>
         <TooltipTrigger asChild>{button}</TooltipTrigger>
-        <TooltipContent side="right" className="flex items-center gap-2 bg-card/90 backdrop-blur-md border-border">
+        <TooltipContent side="right" className="flex items-center gap-2 bg-card/90 backdrop-blur-md border-border text-[11px] font-bold uppercase tracking-widest px-3 py-1.5 shadow-xl">
           {item.label}
-          {item.badge && <span className="gradient-primary text-primary-foreground text-xs font-semibold px-2 py-0.5 rounded-full">{item.badge}</span>}
+          {item.badge && <span className="gradient-primary text-primary-foreground text-[10px] font-bold px-1.5 py-0.5 rounded-full">{item.badge}</span>}
         </TooltipContent>
       </Tooltip>
     );

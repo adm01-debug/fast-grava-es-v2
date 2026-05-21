@@ -42,7 +42,7 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
       {/* Text Content */}
       {!collapsed && (
         <div className="flex flex-col leading-none min-w-0 flex-1">
-          <h1 className={cn("font-black tracking-tight text-white uppercase truncate", currentSize.fontMain)}>
+          <h1 className={cn("font-black tracking-tight text-white uppercase truncate leading-none", currentSize.fontMain)}>
             FAST GRAVAÇÕES
           </h1>
           {showSubtitle && (
