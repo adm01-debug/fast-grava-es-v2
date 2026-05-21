@@ -52,6 +52,23 @@ export function SettingsGeneralTab({ settings, onSettingChange }: SettingsGenera
             </div>
             <Switch checked={settings.autoRefresh} onCheckedChange={(checked) => onSettingChange('autoRefresh', checked)} />
           </div>
+          <Separator />
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <Label className="flex items-center gap-2"><HelpCircle className="h-4 w-4" />Tour de boas-vindas</Label>
+              <p className="text-sm text-muted-foreground">Refaça o tour guiado pelas principais funcionalidades</p>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                restartOnboarding();
+                toast.success('Iniciando tour...');
+              }}
+            >
+              Refazer tour
+            </Button>
+          </div>
         </CardContent>
       </Card>
 
