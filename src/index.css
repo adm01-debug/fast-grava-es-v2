@@ -441,9 +441,11 @@
   }
 
   *:focus-visible {
-    outline: 3px solid hsl(var(--primary));
-    outline-offset: 3px;
-    box-shadow: 0 0 0 4px hsl(var(--primary) / 0.2);
+    outline: 2px solid hsl(var(--primary));
+    outline-offset: 2px;
+    box-shadow: 0 0 0 4px hsl(var(--primary) / 0.18);
+    border-radius: calc(var(--radius) - 2px);
+    transition: box-shadow 150ms var(--easing-standard), outline-offset 150ms var(--easing-standard);
   }
 
   /* Zebra Striping for Tables */
@@ -549,6 +551,13 @@
   .gradient-text {
     @apply bg-clip-text text-transparent;
     background-image: var(--gradient-primary);
+    -webkit-background-clip: text;
+    background-size: 200% auto;
+    transition: background-position var(--duration-slow) var(--easing-standard);
+  }
+
+  .gradient-text:hover {
+    background-position: right center;
   }
 
   .gradient-text-success {
@@ -660,13 +669,24 @@
   }
 
   .card-interactive {
-    @apply bg-card rounded-xl border border-border p-6 transition-all duration-200 cursor-pointer;
+    @apply bg-card rounded-xl border border-border p-6 cursor-pointer;
     box-shadow: var(--shadow-sm);
+    transition: transform var(--duration-normal) var(--easing-standard),
+                box-shadow var(--duration-normal) var(--easing-standard),
+                border-color var(--duration-fast) var(--easing-standard),
+                background-color var(--duration-fast) var(--easing-standard);
+    will-change: transform;
   }
 
   .card-interactive:hover {
-    @apply border-primary/30 -translate-y-0.5;
-    box-shadow: var(--shadow-lg), 0 0 20px hsl(24 95% 55% / 0.08);
+    @apply border-primary/40 -translate-y-0.5;
+    box-shadow: var(--shadow-lg), 0 0 24px hsl(var(--primary) / 0.10);
+  }
+
+  .card-interactive:active {
+    transform: translateY(0);
+    box-shadow: var(--shadow-sm);
+    transition-duration: var(--duration-fast);
   }
 
   .card-glass {
@@ -1397,8 +1417,95 @@
 }
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: hsl(var(--primary) / 0.4);
-  .mask-fade-right {
-    mask-image: linear-gradient(to right, black 85%, transparent 100%);
-    -webkit-mask-image: linear-gradient(to right, black 85%, transparent 100%);
+}
+
+.mask-fade-right {
+  mask-image: linear-gradient(to right, black 85%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, black 85%, transparent 100%);
+}
+
+/* ============================================================
+   PREMIUM UI/UX POLISH LAYER
+   Subtle, performance-friendly enhancements applied globally.
+   ============================================================ */
+@layer utilities {
+  /* Smooth, GPU-accelerated interactive lift used on key surfaces */
+  .interactive-surface {
+    transition: transform var(--duration-normal) var(--easing-standard),
+                box-shadow var(--duration-normal) var(--easing-standard),
+                border-color var(--duration-fast) var(--easing-standard);
+    will-change: transform;
+  }
+  .interactive-surface:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+  }
+  .interactive-surface:active {
+    transform: translateY(0);
+    transition-duration: var(--duration-fast);
+  }
+
+  /* Refined tap target for mobile accessibility (≥44px) */
+  .tap-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Subtle inner highlight for dark-theme cards (Apple-style) */
+  .dark .card-highlight {
+    box-shadow: inset 0 1px 0 0 hsl(0 0% 100% / 0.04), var(--shadow-md);
+  }
+
+  /* Skeleton shimmer using design tokens */
+  .skeleton-shimmer {
+    background: linear-gradient(
+      90deg,
+      hsl(var(--muted)) 0%,
+      hsl(var(--muted-foreground) / 0.08) 50%,
+      hsl(var(--muted)) 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.6s ease-in-out infinite;
+  }
+
+  /* Improved text contrast helper for muted-on-dark scenarios */
+  .text-readable {
+    color: hsl(var(--foreground) / 0.85);
+    letter-spacing: -0.005em;
   }
 }
+
+/* Global scrollbar polish (non-intrusive) */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.25);
+  border-radius: 10px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  transition: background var(--duration-fast) var(--easing-standard);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--primary) / 0.5);
+  background-clip: padding-box;
+  border: 2px solid transparent;
+}
+
+/* Better text selection */
+::selection {
+  background: hsl(var(--primary) / 0.25);
+  color: hsl(var(--foreground));
+}
+
+/* Soft fade-in for newly mounted pages — respects reduced motion */
+@media (prefers-reduced-motion: no-preference) {
+  main, [role="main"] {
+    animation: fade-in var(--duration-normal) var(--easing-enter);
+  }
+}
+
