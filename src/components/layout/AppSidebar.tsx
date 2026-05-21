@@ -152,20 +152,11 @@ export function AppSidebar() {
                   <BrandLogo 
                     collapsed={collapsed && !isMobile} 
                     size={collapsed && !isMobile ? "sm" : "md"} 
-                    showSubtitle={false}
+                    showSubtitle={!collapsed || isMobile}
                   />
                 </motion.div>
               )}
             </AnimatePresence>
-            {(!collapsed || isMobile) && (
-              <motion.div 
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                className="flex-1 min-w-0 ml-3"
-              >
-                <p className="text-[10px] font-black text-primary/70 uppercase tracking-[0.2em] truncate opacity-90 leading-tight">QUALIDADE + VELOCIDADE</p>
-              </motion.div>
-            )}
           </div>
 
 
