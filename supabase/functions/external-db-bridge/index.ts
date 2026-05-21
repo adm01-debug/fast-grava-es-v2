@@ -183,7 +183,7 @@ Deno.serve(async (req: Request) => {
         result = data;
         recordCount = Array.isArray(data) ? data.length : data ? 1 : 0;
       } else {
-        let query = supabase.from(table!);
+        const query = supabase.from(table!);
         switch (action) {
           case "select": {
             const q = query.select(params?.columns as string || "*");

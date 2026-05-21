@@ -101,7 +101,7 @@ export default function TraceabilityPage() {
   });
 
   const filteredAndSortedLots = useMemo(() => {
-    let result = fuseSearchedLots.filter(lot => {
+    const result = fuseSearchedLots.filter(lot => {
       if (statusFilter !== 'all' && lot.status !== statusFilter) return false;
       if (dateFrom && lot.production_date < dateFrom) return false;
       if (dateTo && lot.production_date > dateTo) return false;

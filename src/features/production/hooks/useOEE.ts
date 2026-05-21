@@ -280,7 +280,7 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, f
       const shiftJobs = periodJobs.filter(job => {
         const timeToUse = job.actual_start_time || job.start_time;
         if (!timeToUse) return false;
-        let hour = timeToUse.includes('T') ? new Date(timeToUse).getHours() : parseInt(timeToUse.split(':')[0], 10);
+        const hour = timeToUse.includes('T') ? new Date(timeToUse).getHours() : parseInt(timeToUse.split(':')[0], 10);
         if (sId === '1' && (hour >= 7 && hour < 15)) return true;
         if (sId === '2' && (hour >= 15 && hour < 23)) return true;
         if (sId === '3' && (hour < 7 || hour >= 23)) return true;

@@ -34,7 +34,7 @@ export function AlertsWidget() {
     // Load alerts configuration for thresholds
     const storedThresholds = localStorage.getItem('alert-thresholds');
     const entityThresholdsStored = localStorage.getItem('entity-thresholds');
-    let thresholds = { bottleneckRiskMinutes: 480 };
+    const thresholds = { bottleneckRiskMinutes: 480 };
     let entityThresholds: Record<string, number> = {};
 
     if (storedThresholds) {

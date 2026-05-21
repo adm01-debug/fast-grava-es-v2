@@ -34,7 +34,7 @@ export const EvolutionChart = memo(({ evolutionData, overallDailyData, selectedO
   const FORECAST_DAYS = 7;
 
   const { chartData, trendDirection, forecastValue } = useMemo(() => {
-    let baseData = selectedOperatorId === 'all'
+    const baseData = selectedOperatorId === 'all'
       ? overallDailyData
       : evolutionData.find(o => o.operatorId === selectedOperatorId)?.dailyData || [];
 
