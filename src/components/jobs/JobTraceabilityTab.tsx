@@ -7,6 +7,7 @@ import { Package, Truck, Layers, Info, History, Clock, User } from 'lucide-react
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { parseDateOnly } from '@/lib/dateUtils';
 
 interface JobTraceabilityTabProps {
   jobId: string;
@@ -57,7 +58,7 @@ export function JobTraceabilityTab({ jobId }: JobTraceabilityTabProps) {
               <div>
                 <h3 className="text-lg font-bold">Lote: {jobLot.lot_number}</h3>
                 <p className="text-sm text-muted-foreground">
-                  Produzido em {format(new Date(jobLot.production_date), "dd/MM/yyyy", { locale: ptBR })}
+                  Produzido em {format(parseDateOnly(jobLot.production_date)!, "dd/MM/yyyy", { locale: ptBR })}
                 </p>
               </div>
             </div>

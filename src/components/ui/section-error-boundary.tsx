@@ -1,6 +1,7 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { AlertTriangle, RefreshCw } from 'lucide-react';
 import { Button } from './button';
+import { logger } from '@/lib/logger';
 
 interface Props {
   children: ReactNode;
@@ -33,9 +34,8 @@ export class SectionErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
-    if (import.meta.env.DEV) {
-
-    }
+    logger.error('Erro capturado pelo SectionErrorBoundary', error, this.props.section || 'section');
+    void errorInfo;
   }
 
   handleRetry = (): void => {

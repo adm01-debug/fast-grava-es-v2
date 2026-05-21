@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { parseDateOnly } from '@/lib/dateUtils';
 import { useSchedulingData } from '@/features/jobs';
 import { DbJob, DbMachine, DbTechnique } from '@/features/jobs';
 
@@ -181,7 +182,7 @@ export function useKPIs(period: KPIPeriod = 'all', customTargets?: Partial<KPITa
     // Current Period Filter
     const currentPeriodFilter = (job: DbJob) => {
       if (period === 'all') return true;
-      const jobDate = new Date(job.scheduled_date || job.created_at);
+      const jobDate = parseDateOnly(job.scheduled_date || job.created_at) ?? now;
       const diffDays = (now.getTime() - jobDate.getTime()) / (1000 * 60 * 60 * 24);
       return diffDays >= 0 && diffDays <= daysCount;
     };
@@ -189,7 +190,7 @@ export function useKPIs(period: KPIPeriod = 'all', customTargets?: Partial<KPITa
     // Previous Period Filter
     const previousPeriodFilter = (job: DbJob) => {
       if (period === 'all') return false;
-      const jobDate = new Date(job.scheduled_date || job.created_at);
+      const jobDate = parseDateOnly(job.scheduled_date || job.created_at) ?? now;
       const diffDays = (now.getTime() - jobDate.getTime()) / (1000 * 60 * 60 * 24);
       return diffDays > daysCount && diffDays <= (daysCount * 2);
     };

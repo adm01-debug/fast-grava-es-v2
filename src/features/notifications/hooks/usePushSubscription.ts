@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
+import { logger } from '@/lib/logger';
 
 // Extend ServiceWorkerRegistration to include pushManager
 declare global {
@@ -146,6 +147,7 @@ export function usePushSubscription() {
           .eq('endpoint', subscription.endpoint);
 
         if (error) {
+          logger.warn('Falha ao remover inscrição de push do banco', error, 'usePushSubscription');
         }
       }
 

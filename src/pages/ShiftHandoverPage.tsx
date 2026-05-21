@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { parseDateOnly } from '@/lib/dateUtils';
 import {
   ArrowRightLeft,
   Plus,
@@ -445,7 +446,7 @@ export default function ShiftHandoverPage() {
                         </Badge>
                         <div>
                           <p className="font-medium">
-                            {format(new Date(handover.shift_date), 'dd/MM/yyyy')}
+                            {format(parseDateOnly(handover.shift_date)!, 'dd/MM/yyyy')}
                           </p>
                           <p className="text-sm text-muted-foreground">
                             {handover.machine?.name || 'Geral'}

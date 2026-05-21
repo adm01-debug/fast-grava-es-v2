@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { logger } from '@/lib/logger';
 
 // Extend ServiceWorkerRegistration to include pushManager
 declare global {
@@ -62,6 +63,7 @@ export function useWebPushNotifications() {
           setIsSubscribed(false);
         }
       } catch (error) {
+        logger.warn('Falha ao verificar inscrição de push', error, 'useWebPushNotifications');
       } finally {
         setIsLoading(false);
       }

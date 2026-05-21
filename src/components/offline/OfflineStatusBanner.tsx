@@ -45,7 +45,8 @@ export function OfflineStatusBanner({
         await offlineStorage.init();
         const info = await offlineStorage.getStorageInfo();
         setStorageInfo(info);
-      } catch (error) {
+      } catch {
+        // Informação de armazenamento é best-effort; ignora se indisponível.
       }
     };
     loadStorageInfo();

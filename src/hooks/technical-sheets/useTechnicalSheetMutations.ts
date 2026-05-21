@@ -50,7 +50,9 @@ export const useTechnicalSheetMutations = () => {
   });
 
   const updateSheet = useMutation({
-    mutationFn: async ({ id, ...sheet }: Partial<TechnicalSheet> & { id: string }) => {
+    mutationFn: async ({ id, techniques, machines, product_categories, materials, ...sheet }: Partial<TechnicalSheet> & { id: string }) => {
+      // Strip joined relations — not columns on `technical_sheets`.
+      void techniques; void machines; void product_categories; void materials;
       const { data: userData } = await supabase.auth.getUser();
       const { error } = await supabase
         .from('technical_sheets')
@@ -113,7 +115,9 @@ export const useTechnicalSheetMutations = () => {
   });
 
   const updateStep = useMutation({
-    mutationFn: async ({ id, ...step }: Partial<TechnicalSheetStep> & { id: string }) => {
+    mutationFn: async ({ id, image_url, ...step }: Partial<TechnicalSheetStep> & { id: string }) => {
+      // `image_url` is not a column on `technical_sheet_steps`.
+      void image_url;
       const { error } = await supabase
         .from('technical_sheet_steps')
         .update(step)

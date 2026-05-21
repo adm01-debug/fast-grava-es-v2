@@ -32,7 +32,9 @@ export function calculateRealOEE(jobs: DbJob[]) {
         const start = parseISO(job.actual_start_time!);
         const end = parseISO(job.actual_end_time!);
         totalActualMinutes += sanitizeNumber(differenceInMinutes(end, start));
-      } catch {}
+      } catch {
+        // Datas já validadas acima; ignora qualquer falha residual de parse.
+      }
     }
     totalEstimatedMinutes += sanitizeNumber(job.estimated_duration || 60);
     const producedQty = sanitizeNumber(job.produced_quantity ?? job.quantity);

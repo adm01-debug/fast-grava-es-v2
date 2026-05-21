@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { toast } from 'sonner';
+import { logger } from '@/lib/logger';
 import { Shield, ShieldCheck, ShieldOff, Loader2, Copy, QrCode, Key, AlertTriangle } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 
@@ -37,6 +38,7 @@ export function TwoFactorSetup() {
       if (error) throw error;
       setMfaFactors(data?.totp || []);
     } catch (error) {
+      logger.warn('Falha ao listar fatores MFA', error, 'TwoFactorSetup');
     } finally {
       setIsLoading(false);
     }

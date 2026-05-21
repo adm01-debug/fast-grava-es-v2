@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Download, Printer, Tag, Copy } from 'lucide-react';
 import { ProductionLot } from '@/features/inventory';
 import { format } from 'date-fns';
+import { parseDateOnly } from '@/lib/dateUtils';
 import { toast } from 'sonner';
 
 interface LotLabelPrintProps {
@@ -64,11 +65,11 @@ export function LotLabelPrint({ lots, open, onClose }: LotLabelPrintProps) {
             Qtd: ${lot.quantity} un
           </div>
           <div style="font-size:${isLandscape ? '10px' : '11px'};color:#666;margin-bottom:2px;">
-            Produção: ${format(new Date(lot.production_date), 'dd/MM/yyyy')}
+            Produção: ${format(parseDateOnly(lot.production_date)!, 'dd/MM/yyyy')}
           </div>
           ${lot.expiration_date ? `
             <div style="font-size:${isLandscape ? '10px' : '11px'};color:#c00;font-weight:bold;">
-              Val: ${format(new Date(lot.expiration_date), 'dd/MM/yyyy')}
+              Val: ${format(parseDateOnly(lot.expiration_date)!, 'dd/MM/yyyy')}
             </div>
           ` : ''}
           ${lot.job ? `
@@ -100,7 +101,7 @@ export function LotLabelPrint({ lots, open, onClose }: LotLabelPrintProps) {
       <html>
         <head>
           <title>Etiquetas - ${lots.length} lote(s)</title>
-          <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"><\/script>
+          <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
           <style>
             @page { size: auto; margin: 5mm; }
             body {
@@ -125,7 +126,7 @@ export function LotLabelPrint({ lots, open, onClose }: LotLabelPrintProps) {
               });
             });
             setTimeout(() => { window.print(); }, 800);
-          <\/script>
+          </script>
         </body>
       </html>
     `);
@@ -238,11 +239,11 @@ export function LotLabelPrint({ lots, open, onClose }: LotLabelPrintProps) {
                     <div style={{ fontSize: `${12 * zoom}px` }} className="text-muted-foreground truncate">{lots[0].product_name}</div>
                     <div style={{ fontSize: `${10 * zoom}px` }} className="text-muted-foreground font-medium">Qtd: {lots[0].quantity} un</div>
                     <div style={{ fontSize: `${10 * zoom}px` }} className="text-muted-foreground">
-                      {format(new Date(lots[0].production_date), 'dd/MM/yyyy')}
+                      {format(parseDateOnly(lots[0].production_date)!, 'dd/MM/yyyy')}
                     </div>
                     {lots[0].expiration_date && (
                       <div style={{ fontSize: `${10 * zoom}px` }} className="text-destructive font-bold">
-                        Val: {format(new Date(lots[0].expiration_date), 'dd/MM/yyyy')}
+                        Val: {format(parseDateOnly(lots[0].expiration_date)!, 'dd/MM/yyyy')}
                       </div>
                     )}
                   </div>

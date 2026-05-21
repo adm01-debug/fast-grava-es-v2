@@ -60,9 +60,6 @@ export function useLoadBalancing(targetDate?: Date) {
       typeof t.id === 'string' && typeof t.name === 'string'
     );
 
-    if (validJobs.length === 0 && jobs.length > 0) {
-    }
-
     const date = targetDate || new Date();
     const dateStr = format(date, 'yyyy-MM-dd');
 

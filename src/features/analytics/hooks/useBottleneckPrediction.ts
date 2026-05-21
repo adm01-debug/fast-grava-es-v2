@@ -49,9 +49,6 @@ export function useBottleneckPrediction() {
       typeof t.id === 'string' && typeof t.name === 'string'
     );
 
-    if (validJobs.length === 0 && jobs.length > 0) {
-    }
-
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 

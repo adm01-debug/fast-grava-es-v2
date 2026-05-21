@@ -1,6 +1,7 @@
 import { useState, useMemo, lazy, Suspense } from 'react';
 import { format, startOfWeek, endOfWeek, addWeeks, subWeeks, addDays, isToday } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { parseDateOnly } from '@/lib/dateUtils';
 import { CalendarDays, AlertTriangle, ChevronRight, ChevronDown } from 'lucide-react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -158,9 +159,8 @@ export default function WeeklyCalendar() {
   const weekJobs = useMemo(() => {
     const filtered = applyFilters(jobs);
     return filtered.filter((job) => {
-      if (!job.scheduled_date) return false;
-      const jobDate = new Date(job.scheduled_date);
-      return jobDate >= weekStart && jobDate <= weekEnd;
+      const jobDate = parseDateOnly(job.scheduled_date);
+      return !!jobDate && jobDate >= weekStart && jobDate <= weekEnd;
     });
   }, [jobs, weekStart, weekEnd, applyFilters]);
 
@@ -187,9 +187,10 @@ export default function WeeklyCalendar() {
   const jobsByMachineAndDay = useMemo(() => {
     const grouped: Record<string, Record<string, DbJob[]>> = {};
     weekJobs.forEach((job) => {
-      if (!job.machine_id || !job.scheduled_date) return;
+      const jobDate = parseDateOnly(job.scheduled_date);
+      if (!job.machine_id || !jobDate) return;
       if (!grouped[job.machine_id]) grouped[job.machine_id] = {};
-      const dayKey = format(new Date(job.scheduled_date), 'yyyy-MM-dd');
+      const dayKey = format(jobDate, 'yyyy-MM-dd');
       if (!grouped[job.machine_id][dayKey]) grouped[job.machine_id][dayKey] = [];
       grouped[job.machine_id][dayKey].push(job);
     });

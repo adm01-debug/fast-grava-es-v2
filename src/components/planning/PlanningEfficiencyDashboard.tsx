@@ -1,5 +1,8 @@
 import { useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { endOfDay } from 'date-fns';
+import { parseDateOnly } from '@/lib/dateUtils';
+import { logger } from '@/lib/logger';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -35,7 +38,7 @@ export function PlanningEfficiencyDashboard() {
         await applyAllSequencing();
       }
     } catch (error) {
-
+      logger.error('Falha ao aplicar sugestões de planejamento', error, 'PlanningEfficiencyDashboard');
     }
   };
 
@@ -54,7 +57,9 @@ export function PlanningEfficiencyDashboard() {
     const finishedJobs = jobs.filter(j => j.status === 'finished');
     const withinDeadlineCount = finishedJobs.filter(j => {
       if (!j.scheduled_date || !j.actual_end_time) return true;
-      return new Date(j.actual_end_time) <= new Date(j.scheduled_date);
+      const deadline = parseDateOnly(j.scheduled_date);
+      // The deadline is the whole scheduled day, so compare against its end.
+      return !!deadline && new Date(j.actual_end_time) <= endOfDay(deadline);
     }).length;
 
     const efficiencyScore = finishedJobs.length > 0

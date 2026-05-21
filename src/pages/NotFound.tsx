@@ -53,9 +53,6 @@ const NotFound = () => {
   }, [searchQuery, fuseFilteredPages]);
 
   useEffect(() => {
-    if (import.meta.env.DEV) {
-
-    }
     // Update document title
     document.title = 'Página não encontrada | FAST GRAVAÇÕES';
   }, [location.pathname]);

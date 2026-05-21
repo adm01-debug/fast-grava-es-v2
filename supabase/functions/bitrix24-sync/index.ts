@@ -763,13 +763,13 @@ serve(async (req) => {
     let result;
 
     switch (action) {
-      case 'pull':
+      case 'pull': {
         // Pull deals from Bitrix24
         const categoryId = url.searchParams.get('categoryId') || undefined;
         result = await pullFromBitrix(supabase, categoryId);
-        
+
         // Log the sync
-        const pullStatus = result.errors?.length > 0 
+        const pullStatus = result.errors?.length > 0
           ? (result.synced?.length > 0 ? 'partial' : 'error')
           : 'success';
         await logSyncHistory(
@@ -783,12 +783,13 @@ serve(async (req) => {
           triggeredBy
         );
         break;
+      }
 
-      case 'push':
+      case 'push': {
         // Push status update to Bitrix24
         const body = await req.json();
         result = await pushToBitrix(body.jobId, body.status, supabase);
-        
+
         if (!result.skipped && result.success !== undefined) {
           await logSyncHistory(
             supabase,
@@ -802,12 +803,13 @@ serve(async (req) => {
           );
         }
         break;
+      }
 
-      case 'webhook':
+      case 'webhook': {
         // Handle incoming Bitrix24 webhook
         const webhookPayload = await req.json();
         result = await handleBitrixWebhook(webhookPayload, supabase);
-        
+
         await logSyncHistory(
           supabase,
           'webhook',
@@ -819,32 +821,35 @@ serve(async (req) => {
           'bitrix24'
         );
         break;
+      }
 
-      case 'test':
+      case 'test': {
         // Test connection
         const testResult = await callBitrix('app.info', {}, supabase);
         result = { connected: true, info: testResult.result };
         break;
+      }
 
-      case 'history':
+      case 'history': {
         // Get sync history
-        const limit = parseInt(url.searchParams.get('limit') || '20');
+        const limit = parseInt(url.searchParams.get('limit') || '20', 10);
         const { data: history, error: historyError } = await supabase
           .from('bitrix24_sync_history')
           .select('*')
           .order('started_at', { ascending: false })
           .limit(limit);
-        
+
         if (historyError) throw historyError;
         result = { history };
         break;
+      }
 
-      case 'fields':
+      case 'fields': {
         // Get deal custom fields from Bitrix24 and current mappings from database
         const fieldsResult = await callBitrix('crm.deal.fields', {}, supabase);
         const allFields = fieldsResult.result || {};
         const fieldsMappings = await loadMappingsFromDB(supabase);
-        
+
         // Filter to show only UF_CRM_* fields (custom fields)
         const customFields = Object.entries(allFields)
           .filter(([key]) => key.startsWith('UF_CRM_'))
@@ -852,8 +857,8 @@ serve(async (req) => {
             acc[key] = value;
             return acc;
           }, {});
-        
-        result = { 
+
+        result = {
           customFields,
           totalCustomFields: Object.keys(customFields).length,
           currentMapping: fieldsMappings.fieldMapping,
@@ -862,8 +867,9 @@ serve(async (req) => {
           stageMapping: fieldsMappings.stageToStatus
         };
         break;
+      }
 
-      case 'mapping':
+      case 'mapping': {
         // Return current field mapping configuration from database
         const currentMappings = await loadMappingsFromDB(supabase);
         result = {
@@ -879,12 +885,13 @@ serve(async (req) => {
           }
         };
         break;
+      }
 
-      case 'save-mapping':
+      case 'save-mapping': {
         // Save or update a mapping
         const saveBody = await req.json();
         const { mapping_type, source_key, target_key, priority: mappingPriority = 0 } = saveBody;
-        
+
         if (!mapping_type || !source_key || !target_key) {
           result = { error: 'Missing required fields: mapping_type, source_key, target_key' };
           break;
@@ -910,14 +917,15 @@ serve(async (req) => {
           result = { success: true, message: 'Mapeamento salvo com sucesso' };
         }
         break;
+      }
 
-      case 'delete-mapping':
+      case 'delete-mapping': {
         // Delete a mapping
         const deleteBody = await req.json();
         const { id: mappingId, mapping_type: delType, source_key: delSource, target_key: delTarget } = deleteBody;
 
         let deleteQuery = supabase.from('bitrix24_field_mappings').delete();
-        
+
         if (mappingId) {
           deleteQuery = deleteQuery.eq('id', mappingId);
         } else if (delType && delSource && delTarget) {
@@ -939,8 +947,9 @@ serve(async (req) => {
           result = { success: true, message: 'Mapeamento removido com sucesso' };
         }
         break;
+      }
 
-      case 'list-mappings':
+      case 'list-mappings': {
         // List all mappings from database
         const { data: allMappings, error: listError } = await supabase
           .from('bitrix24_field_mappings')
@@ -955,8 +964,9 @@ serve(async (req) => {
           result = { mappings: allMappings };
         }
         break;
+      }
 
-      case 'oauth-status':
+      case 'oauth-status': {
         // Check OAuth status and if reauthorization is needed
         const { data: currentTokens } = await supabase
           .from('bitrix24_oauth_tokens')
@@ -964,10 +974,10 @@ serve(async (req) => {
           .order('created_at', { ascending: false })
           .limit(1)
           .maybeSingle();
-        
+
         let tokenStatus = 'no_tokens';
         let tokenExpiry = null;
-        
+
         if (currentTokens) {
           const expiresAt = new Date(currentTokens.expires_at);
           tokenExpiry = expiresAt.toISOString();
@@ -998,22 +1008,23 @@ serve(async (req) => {
           }
         };
         break;
+      }
 
-      case 'oauth-callback':
+      case 'oauth-callback': {
         // Handle OAuth callback with authorization code
         const code = url.searchParams.get('code');
         const callbackRedirectUri = url.searchParams.get('redirect_uri') || `${url.origin}/bitrix24-sync?action=oauth-callback`;
-        
+
         if (!code) {
-          result = { 
+          result = {
             error: 'No authorization code provided',
             message: 'Use action=oauth-status to get the authorization URL'
           };
           break;
         }
-        
+
         const exchangedTokens = await exchangeCodeForTokens(code, callbackRedirectUri, supabase);
-        
+
         if (exchangedTokens) {
           result = {
             success: true,
@@ -1027,6 +1038,7 @@ serve(async (req) => {
           };
         }
         break;
+      }
 
       case 'clear-tokens':
         // Clear all stored tokens (for troubleshooting)

@@ -2,6 +2,7 @@ import { useState, useMemo, useRef, useEffect, lazy, Suspense } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { format, isToday, addDays, subDays } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { parseDateOnly } from '@/lib/dateUtils';
 import { Clock } from 'lucide-react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -87,9 +88,9 @@ export default function DailyCalendar() {
   const dayJobs = useMemo(() => {
     const filtered = applyFilters(jobs);
     return filtered.filter((job) => {
-      if (!job.scheduled_date) return false;
-      const jobDate = new Date(job.scheduled_date);
+      const jobDate = parseDateOnly(job.scheduled_date);
       return (
+        !!jobDate &&
         jobDate.getDate() === selectedDate.getDate() &&
         jobDate.getMonth() === selectedDate.getMonth() &&
         jobDate.getFullYear() === selectedDate.getFullYear()

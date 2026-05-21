@@ -2,6 +2,7 @@ import { AlertTriangle, Clock, AlertCircle, Calendar } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import { parseDateOnly } from '@/lib/dateUtils';
 import { format } from 'date-fns';
 import { useMemo, useState } from 'react';
 import { useSchedulingData } from '@/features/jobs';
@@ -34,7 +35,7 @@ export function AlertsWidget() {
     // Load alerts configuration for thresholds
     const storedThresholds = localStorage.getItem('alert-thresholds');
     const entityThresholdsStored = localStorage.getItem('entity-thresholds');
-    let thresholds = { bottleneckRiskMinutes: 480 };
+    const thresholds = { bottleneckRiskMinutes: 480 };
     let entityThresholds: Record<string, number> = {};
 
     if (storedThresholds) {
@@ -42,6 +43,7 @@ export function AlertsWidget() {
         const parsed = JSON.parse(storedThresholds);
         if (parsed.bottleneckRiskMinutes) thresholds.bottleneckRiskMinutes = parsed.bottleneckRiskMinutes;
       } catch {
+        // Configuração corrompida no localStorage: descartamos para evitar loop de parse.
         localStorage.removeItem('alert-thresholds');
       }
     }
@@ -50,6 +52,7 @@ export function AlertsWidget() {
       try {
         entityThresholds = JSON.parse(entityThresholdsStored);
       } catch {
+        // Configuração corrompida no localStorage: descartamos para evitar loop de parse.
         localStorage.removeItem('entity-thresholds');
       }
     }
@@ -62,8 +65,8 @@ export function AlertsWidget() {
       alertList.push({ id: `delayed-${job.id}`, type: 'delayed', title: 'Job Atrasado', description: `${job.order_number} ultrapassou o prazo previsto`, time: job.updated_at ? new Date(job.updated_at) : now });
     });
 
-    jobs.filter(job => { if (!job.scheduled_date) return false; const jobDate = new Date(job.scheduled_date); return jobDate < today && !['finished', 'cancelled'].includes(job.status); }).forEach(job => {
-      alertList.push({ id: `overdue-${job.id}`, type: 'conflict', title: 'Job Vencido', description: `${job.order_number} passou da data agendada`, time: job.scheduled_date ? new Date(job.scheduled_date) : now });
+    jobs.filter(job => { if (!job.scheduled_date) return false; const jobDate = parseDateOnly(job.scheduled_date); return !!jobDate && jobDate < today && !['finished', 'cancelled'].includes(job.status); }).forEach(job => {
+      alertList.push({ id: `overdue-${job.id}`, type: 'conflict', title: 'Job Vencido', description: `${job.order_number} passou da data agendada`, time: (job.scheduled_date && parseDateOnly(job.scheduled_date)) || now });
     });
 
     jobs.filter(job => job.priority === 'high' && !job.scheduled_date && !['finished', 'cancelled'].includes(job.status)).forEach(job => {

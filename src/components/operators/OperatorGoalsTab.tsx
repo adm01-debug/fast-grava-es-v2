@@ -27,23 +27,25 @@ export function OperatorGoalsTab({ operatorId }: OperatorGoalsTabProps) {
 
       // Calculate current value based on goal type for the period
       switch (goal.goal_type) {
-        case 'efficiency':
+        case 'efficiency': {
           const activeDays = operatorStats.dailyData.filter(d => d.jobsCompleted > 0);
           currentValue = activeDays.length > 0
             ? activeDays.reduce((sum, d) => sum + d.efficiencyScore, 0) / activeDays.length
             : 0;
           break;
+        }
         case 'jobs_completed':
           currentValue = operatorStats.dailyData.reduce((sum, d) => sum + d.jobsCompleted, 0);
           break;
         case 'pieces_produced':
           currentValue = operatorStats.dailyData.reduce((sum, d) => sum + d.piecesProduced, 0);
           break;
-        case 'loss_rate':
+        case 'loss_rate': {
           const totalProduced = operatorStats.dailyData.reduce((sum, d) => sum + d.piecesProduced, 0);
           const totalLost = operatorStats.dailyData.reduce((sum, d) => sum + d.piecesLost, 0);
           currentValue = totalProduced > 0 ? (totalLost / (totalProduced + totalLost)) * 100 : 0;
           break;
+        }
       }
 
       return calculateGoalProgress(goal, currentValue);

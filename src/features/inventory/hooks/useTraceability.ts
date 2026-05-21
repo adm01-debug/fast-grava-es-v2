@@ -219,7 +219,9 @@ export function useTraceabilityMutations() {
   });
 
   const updateLot = useMutation({
-    mutationFn: async ({ id, ...data }: Partial<ProductionLot> & { id: string }) => {
+    mutationFn: async ({ id, job, ...data }: Partial<ProductionLot> & { id: string }) => {
+      // `job` is a joined relation, not a column on `production_lots`.
+      void job;
       const { error } = await supabase
         .from('production_lots')
         .update(data)

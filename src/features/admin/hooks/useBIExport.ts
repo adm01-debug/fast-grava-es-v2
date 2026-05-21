@@ -21,7 +21,7 @@ export function useBIExport(biMetrics: ExportData) {
         toast.info(`Gerando CSV para ${type}...`);
 
         let dataToExport: any[] = [];
-        let filename = `BI_Export_${type}_${format(new Date(), 'yyyyMMdd')}`;
+        const filename = `BI_Export_${type}_${format(new Date(), 'yyyyMMdd')}`;
 
         if (type.includes('Taxa_Perda') || type.includes('Perdas')) {
           dataToExport = extraData?.jobsWithLosses || (biMetrics.periodJobsList || []).filter((j: any) => (j.lost_pieces || 0) > 0);

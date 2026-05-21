@@ -113,7 +113,7 @@ export function useKanbanDragDrop({ jobs, onJobsUpdate }: UseKanbanDragDropProps
 
     setIsUpdating(true);
     try {
-      const updateData: Record<string, any> = {
+      const updateData: JobUpdate = {
         status: targetStatus,
         updated_at: new Date().toISOString(),
       };

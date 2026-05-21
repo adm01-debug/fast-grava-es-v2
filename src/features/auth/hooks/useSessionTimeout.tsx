@@ -2,6 +2,7 @@ import * as React from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { logger } from "@/lib/logger";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -124,6 +125,7 @@ export function useSessionTimeout({
       });
       navigate("/auth");
     } catch (error) {
+      logger.warn('Falha ao encerrar sessão por inatividade', error, 'useSessionTimeout');
     }
   }, [navigate, onSessionExpired]);
 

@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Calendar, GripVertical, AlertCircle, ArrowUp, ArrowDown, Minus, Clock, Play, Pause, CheckCircle2, MessageSquare, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { parseDateOnly } from '@/lib/dateUtils';
 import { DbJob, DbTechnique, DbMachine } from '@/features/jobs';
 import { format, differenceInHours, differenceInDays } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -38,7 +39,7 @@ function getAgingIndicator(updatedAt: string): { color: string; label: string; d
 
 function getDeadlineInfo(job: DbJob): { label: string; isOverdue: boolean; color: string } | null {
   if (!job.scheduled_date) return null;
-  const scheduled = new Date(job.scheduled_date);
+  const scheduled = parseDateOnly(job.scheduled_date)!;
   const now = new Date();
   const diffDays = differenceInDays(scheduled, now);
 
@@ -223,7 +224,7 @@ export function DraggableJobCard({ job, technique, machine, onClick, viewMode = 
           {job.scheduled_date && (
             <span className="flex items-center gap-1">
               <Calendar className="h-3 w-3" />
-              {format(new Date(job.scheduled_date), "dd/MM", { locale: ptBR })}
+              {format(parseDateOnly(job.scheduled_date)!, "dd/MM", { locale: ptBR })}
               {job.start_time && <span>{job.start_time}</span>}
             </span>
           )}

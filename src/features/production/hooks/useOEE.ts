@@ -140,6 +140,15 @@ export interface OEEData {
 
 export const WORLD_CLASS_OEE = 85;
 
+// Static studio→technique mapping — module scope keeps it referentially stable.
+const STUDIOS_MAP = [
+  { id: 'serigrafia_textil', name: 'Studio Serigrafia Têxtil', techniques: ['serigrafia'] },
+  { id: 'serigrafia_cilindrica', name: 'Studio Serigrafia Cilíndrica', techniques: ['serigrafia'] },
+  { id: 'serigrafia_vinilica', name: 'Studio Serigrafia Vinílica', techniques: ['serigrafia'] },
+  { id: 'personalizacao_uv', name: 'Studio UV Premium', techniques: ['digital_uv', 'uv'] },
+  { id: 'laser', name: 'Studio Laser Precision', techniques: ['laser'] }
+];
+
 export function classifyOEE(oee: number): MachineOEE['oeeClass'] {
   if (oee >= 85) return 'world-class';
   if (oee >= 75) return 'excellent';
@@ -171,14 +180,6 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, f
     const endMin = parseInt(endParts[0], 10) * 60 + parseInt(endParts[1], 10);
     return Math.max(60, endMin - startMin);
   }, [getConfig]);
-
-  const STUDIOS_MAP = [
-    { id: 'serigrafia_textil', name: 'Studio Serigrafia Têxtil', techniques: ['serigrafia'] },
-    { id: 'serigrafia_cilindrica', name: 'Studio Serigrafia Cilíndrica', techniques: ['serigrafia'] },
-    { id: 'serigrafia_vinilica', name: 'Studio Serigrafia Vinílica', techniques: ['serigrafia'] },
-    { id: 'personalizacao_uv', name: 'Studio UV Premium', techniques: ['digital_uv', 'uv'] },
-    { id: 'laser', name: 'Studio Laser Precision', techniques: ['laser'] }
-  ];
 
   const data = useMemo<OEEData | null>(() => {
     if (!jobs || !machines || !techniques) return null;
@@ -216,8 +217,10 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, f
           try { 
             const start = parseISO(job.actual_start_time!);
             const end = parseISO(job.actual_end_time!);
-            actual += differenceInMinutes(end, start); 
-          } catch {}
+            actual += differenceInMinutes(end, start);
+          } catch {
+            // Datas já validadas acima; ignora qualquer falha residual de parse.
+          }
         }
         estimated += sanitizeNumber(job.estimated_duration || 60);
         produced += sanitizeNumber(job.produced_quantity ?? job.quantity);
@@ -278,7 +281,7 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, f
       const shiftJobs = periodJobs.filter(job => {
         const timeToUse = job.actual_start_time || job.start_time;
         if (!timeToUse) return false;
-        let hour = timeToUse.includes('T') ? new Date(timeToUse).getHours() : parseInt(timeToUse.split(':')[0], 10);
+        const hour = timeToUse.includes('T') ? new Date(timeToUse).getHours() : parseInt(timeToUse.split(':')[0], 10);
         if (sId === '1' && (hour >= 7 && hour < 15)) return true;
         if (sId === '2' && (hour >= 15 && hour < 23)) return true;
         if (sId === '3' && (hour < 7 || hour >= 23)) return true;

@@ -160,7 +160,7 @@ serve(async (req) => {
       const currentAttempts = (emailLockout?.failed_attempts || 0) + 1;
       const currentLockoutCount = emailLockout?.lockout_count || 0;
 
-      let updateData: Record<string, string | number> = {
+      const updateData: Record<string, string | number> = {
         failed_attempts: currentAttempts,
         last_failed_at: now.toISOString(),
       };
@@ -211,7 +211,7 @@ serve(async (req) => {
         const ipAttempts = (ipLockout?.failed_attempts || 0) + 1;
         const ipLockoutCount = ipLockout?.lockout_count || 0;
 
-        let ipUpdateData: Record<string, string | number> = {
+        const ipUpdateData: Record<string, string | number> = {
           failed_attempts: ipAttempts,
           last_failed_at: now.toISOString(),
         };

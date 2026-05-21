@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { parseDateOnly } from "@/lib/dateUtils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { JobDetailsModal } from "@/components/jobs/JobDetailsModal";
@@ -44,14 +45,12 @@ export default function AlertsDashboard() {
     const rework = jobs.filter(job => job.status === 'rework');
     const urgent = jobs.filter(job => job.priority === 'urgent' && !['finished', 'cancelled'].includes(job.status));
     const atRisk = jobs.filter(job => {
-      if (!job.scheduled_date) return false;
-      const jobDate = new Date(job.scheduled_date);
-      const jobDateOnly = new Date(jobDate.getFullYear(), jobDate.getMonth(), jobDate.getDate());
-      return jobDateOnly.getTime() === today.getTime() && ['queue', 'ready', 'scheduled'].includes(job.status);
+      const jobDate = parseDateOnly(job.scheduled_date);
+      return !!jobDate && jobDate.getTime() === today.getTime() && ['queue', 'ready', 'scheduled'].includes(job.status);
     });
     const overdue = jobs.filter(job => {
-      if (!job.scheduled_date) return false;
-      return new Date(job.scheduled_date) < today && !['finished', 'cancelled'].includes(job.status);
+      const jobDate = parseDateOnly(job.scheduled_date);
+      return !!jobDate && jobDate < today && !['finished', 'cancelled'].includes(job.status);
     });
     return { delayed, rework, urgent, atRisk, overdue };
   }, [jobs]);

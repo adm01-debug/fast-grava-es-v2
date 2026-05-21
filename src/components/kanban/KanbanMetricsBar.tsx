@@ -23,8 +23,8 @@ export function KanbanMetricsBar({ jobs }: KanbanMetricsBarProps) {
         if (parsed.bottleneckRiskMinutes) {
           setThresholds({ bottleneckRiskMinutes: parsed.bottleneckRiskMinutes });
         }
-      } catch (e) {
-
+      } catch {
+        // Configuração corrompida no localStorage: mantém os limites padrão.
       }
     }
   }, []);

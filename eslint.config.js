@@ -68,4 +68,13 @@ export default tseslint.config(
       "no-console": "off",
     },
   },
+  {
+    // Supabase edge functions run on Deno: `console` is the standard logging
+    // mechanism and payloads are frequently loosely typed.
+    files: ["supabase/functions/**/*.ts"],
+    rules: {
+      "no-console": "off",
+      "@typescript-eslint/no-explicit-any": "off",
+    },
+  },
 );

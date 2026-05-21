@@ -1,4 +1,6 @@
 import { useState, useMemo, useRef, useEffect } from "react";
+import type { TablesUpdate } from "@/integrations/supabase/types";
+import { parseDateOnly } from "@/lib/dateUtils";
 import { useFuseSearch } from "@/hooks/useFuseSearch";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
@@ -78,6 +80,9 @@ const priorityLabels = {
   low: 'Baixa'
 };
 
+// Static list — hoisted to module scope so it stays referentially stable.
+const pendingStatuses: JobStatus[] = ['queue', 'ready', 'scheduled', 'delayed', 'rework'];
+
 export default function PendingQueue() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTechnique, setSelectedTechnique] = useState<string>("all");
@@ -132,9 +137,6 @@ export default function PendingQueue() {
     getMachineById
   } = useSchedulingData();
 
-  // Filter pending jobs (queue, ready, scheduled, delayed, rework)
-  const pendingStatuses: JobStatus[] = ['queue', 'ready', 'scheduled', 'delayed', 'rework'];
-
   // Pre-filter by status first
   const pendingJobs = useMemo(() => {
     return jobs.filter(job => pendingStatuses.includes(job.status as JobStatus));
@@ -165,11 +167,12 @@ export default function PendingQueue() {
           case 'client':
             comparison = a.client.localeCompare(b.client);
             break;
-          case 'scheduledDate':
-            const dateA = a.scheduled_date ? new Date(a.scheduled_date).getTime() : 0;
-            const dateB = b.scheduled_date ? new Date(b.scheduled_date).getTime() : 0;
+          case 'scheduledDate': {
+            const dateA = parseDateOnly(a.scheduled_date)?.getTime() ?? 0;
+            const dateB = parseDateOnly(b.scheduled_date)?.getTime() ?? 0;
             comparison = dateA - dateB;
             break;
+          }
           case 'priority':
             comparison = priorityOrder[a.priority as keyof typeof priorityOrder] - priorityOrder[b.priority as keyof typeof priorityOrder];
             break;
@@ -274,7 +277,7 @@ export default function PendingQueue() {
         if (error) throw error;
         toast.success(`${selectedJobs.size} jobs excluídos`);
       } else {
-        const updateData: Record<string, any> = {
+        const updateData: TablesUpdate<'jobs'> = {
           status: action,
           updated_at: new Date().toISOString()
         };
@@ -658,7 +661,7 @@ export default function PendingQueue() {
                                   {formatDistanceToNow(new Date(job.created_at), { addSuffix: true, locale: ptBR })}
                                 </TableCell>
                                 <TableCell className="text-foreground hidden sm:table-cell text-xs sm:text-sm">
-                                  <div className="flex items-center gap-1"><Calendar className="h-3 w-3 text-muted-foreground" /> {job.scheduled_date ? new Date(job.scheduled_date).toLocaleDateString('pt-BR') : '-'}</div>
+                                  <div className="flex items-center gap-1"><Calendar className="h-3 w-3 text-muted-foreground" /> {job.scheduled_date ? parseDateOnly(job.scheduled_date)!.toLocaleDateString('pt-BR') : '-'}</div>
                                 </TableCell>
                                 <TableCell>
                                   <Badge className={`${priorityColors[job.priority]} border text-[10px] px-1.5 h-5`}>
@@ -713,7 +716,7 @@ export default function PendingQueue() {
                               </div>
                               <div className="grid grid-cols-2 gap-2 pt-1 border-t border-border/30">
                                 <div className="flex flex-col gap-0.5"><span className="text-[10px] text-muted-foreground uppercase">Quantidade</span><span className="text-xs font-medium">{job.quantity.toLocaleString()} un</span></div>
-                                <div className="flex flex-col gap-0.5"><span className="text-[10px] text-muted-foreground uppercase">Entrega</span><span className="text-xs font-medium flex items-center gap-1"><Calendar className="h-2.5 w-2.5 text-muted-foreground" /> {job.scheduled_date ? new Date(job.scheduled_date).toLocaleDateString('pt-BR') : '-'}</span></div>
+                                <div className="flex flex-col gap-0.5"><span className="text-[10px] text-muted-foreground uppercase">Entrega</span><span className="text-xs font-medium flex items-center gap-1"><Calendar className="h-2.5 w-2.5 text-muted-foreground" /> {job.scheduled_date ? parseDateOnly(job.scheduled_date)!.toLocaleDateString('pt-BR') : '-'}</span></div>
                               </div>
                             </CardContent>
                             <CardFooter className="p-4 pt-0 flex justify-between items-center gap-2">

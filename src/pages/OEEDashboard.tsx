@@ -346,7 +346,7 @@ const OEEDashboard = memo(function OEEDashboard() {
         
         doc.setFontSize(9);
         doc.setTextColor(100);
-        let actionY = finalY + 10;
+        const actionY = finalY + 10;
         
         const recommendations = [];
         if (data.overallAvailability < 85) recommendations.push('• Implementar técnicas SMED para redução de setup nos Studios Serigrafia.');

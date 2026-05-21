@@ -215,12 +215,6 @@ export function ProductionRegistrationModal({
       // SANITIZAR: garantir que apenas campos permitidos sejam enviados
       const sanitizedPayload = sanitizeOperatorPayload(rawPayload);
 
-      // Log em desenvolvimento para debugging
-      if (import.meta.env.DEV) {
-
-
-      }
-
       const { error } = await supabase
         .from('jobs')
         .update(sanitizedPayload)
@@ -235,10 +229,6 @@ export function ProductionRegistrationModal({
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Erro desconhecido';
       toast.error(`Erro ao salvar registro de produção: ${message}`);
-
-      if (import.meta.env.DEV) {
-
-      }
     } finally {
       setIsSaving(false);
     }

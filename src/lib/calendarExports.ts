@@ -3,6 +3,7 @@
  * E13 + E14.
  */
 import { format } from 'date-fns';
+import { parseDateOnly } from '@/lib/dateUtils';
 import { DbJob, DbMachine } from '@/features/jobs';
 import { logger } from '@/lib/logger';
 
@@ -69,7 +70,7 @@ export function buildICalFeed(jobs: DbJob[], machines: DbMachine[], calendarName
   const events = jobs
     .filter((j) => j.scheduled_date && j.start_time && j.end_time)
     .map((job) => {
-      const date = new Date(job.scheduled_date as string);
+      const date = parseDateOnly(job.scheduled_date as string)!;
       const start = toICalDateTime(date, job.start_time as string);
       const end = toICalDateTime(date, job.end_time as string);
       const machine = job.machine_id ? machineMap.get(job.machine_id) : null;

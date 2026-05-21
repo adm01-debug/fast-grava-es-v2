@@ -1,5 +1,6 @@
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { parseDateOnly } from '@/lib/dateUtils';
 import type { ExecutiveKPIs, DateRange } from '@/features/analytics/hooks/useExecutiveDashboard';
 
 export interface PDFExportOptions {
@@ -297,7 +298,7 @@ export async function exportProductionReport(
     (job.produced_quantity || 0).toLocaleString('pt-BR'),
     (job.lost_pieces || 0).toLocaleString('pt-BR'),
     job.status,
-    job.scheduled_date ? format(new Date(job.scheduled_date), 'dd/MM/yyyy') : '-',
+    job.scheduled_date ? format(parseDateOnly(job.scheduled_date)!, 'dd/MM/yyyy') : '-',
   ]);
 
   autoTable(doc, {

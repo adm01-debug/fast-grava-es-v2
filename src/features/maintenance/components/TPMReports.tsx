@@ -210,8 +210,8 @@ export function TPMReports() {
             const response = await fetch(record.photos[i]);
             const blob = await response.blob();
             recordFolder?.file(`evidencia_${i + 1}.jpg`, blob);
-          } catch (err) {
-
+          } catch {
+            // Evidência individual indisponível: pula e continua montando o ZIP.
           }
         }
       }

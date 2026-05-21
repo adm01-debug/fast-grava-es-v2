@@ -26,7 +26,9 @@ export function useShiftHandoverMutations() {
   });
 
   const updateHandover = useMutation({
-    mutationFn: async ({ id, ...data }: Partial<ShiftHandover> & { id: string }) => {
+    mutationFn: async ({ id, machine, outgoing_profile, incoming_profile, ...data }: Partial<ShiftHandover> & { id: string }) => {
+      // Strip joined relations — not columns on `shift_handovers`.
+      void machine; void outgoing_profile; void incoming_profile;
       const { error } = await supabase.from('shift_handovers').update(data).eq('id', id);
       if (error) throw error;
     },
@@ -71,8 +73,10 @@ export function useShiftHandoverMutations() {
   });
 
   const updatePendingTask = useMutation({
-    mutationFn: async ({ id, ...data }: Partial<ShiftPendingTask> & { id: string }) => {
-      const updateData: Record<string, unknown> = { ...data };
+    mutationFn: async ({ id, machine, job, ...data }: Partial<ShiftPendingTask> & { id: string }) => {
+      // Strip joined relations — not columns on `shift_pending_tasks`.
+      void machine; void job;
+      const updateData = { ...data } as Partial<Omit<ShiftPendingTask, 'machine' | 'job'>>;
       if (data.status === 'completed' && user) { updateData.completed_at = new Date().toISOString(); updateData.completed_by = user.id; }
       const { error } = await supabase.from('shift_pending_tasks').update(updateData).eq('id', id);
       if (error) throw error;

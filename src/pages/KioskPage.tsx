@@ -4,6 +4,7 @@ import { KioskMode } from "@/components/kiosk/KioskMode";
 import { useSchedulingData } from "@/features/jobs";
 import { useUpdateJobStatus } from "@/features/jobs";
 import { notifyStatusChange } from "@/features/notifications";
+import { logger } from "@/lib/logger";
 import { useAuth } from "@/features/auth";
 import { ProductionRegistrationModal } from "@/components/operator/ProductionRegistrationModal";
 import { useOfflineSync } from "@/hooks/useOfflineSync";
@@ -94,8 +95,8 @@ export default function KioskPage() {
       await updateJobOffline(jobId, { status: "production", actual_start_time: new Date().toISOString(), operator_id: profile?.id });
       notifyStatusChange(job.client, job.status, "production");
     } catch (error) {
-      logger.error("Falha ao iniciar produção", error, "KioskPage");
-      toast.error("Não foi possível iniciar a produção");
+      logger.error('Falha ao iniciar produção no quiosque', error, 'KioskPage');
+      toast.error('Não foi possível iniciar a produção');
     }
   };
 
@@ -106,8 +107,8 @@ export default function KioskPage() {
       await updateJobOffline(jobId, { status: "paused", operator_id: profile?.id });
       notifyStatusChange(job.client, job.status, "paused");
     } catch (error) {
-      logger.error("Falha ao pausar produção", error, "KioskPage");
-      toast.error("Não foi possível pausar a produção");
+      logger.error('Falha ao pausar produção no quiosque', error, 'KioskPage');
+      toast.error('Não foi possível pausar a produção');
     }
   };
 

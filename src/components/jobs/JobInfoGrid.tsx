@@ -1,5 +1,6 @@
 import React from "react";
 import { InfoRow } from "./JobInfoRow";
+import { parseDateOnly } from "@/lib/dateUtils";
 import { Calendar, Clock, User, Package, Palette, Building } from "lucide-react";
 import { DbJob, DbMachine } from "@/features/jobs";
 import { useTranslation } from "react-i18next";
@@ -45,7 +46,7 @@ export function JobInfoGrid({ job, machine }: JobInfoGridProps) {
         <InfoRow
           icon={Calendar}
           label={t('jobs.scheduledDate')}
-          value={job.scheduled_date ? new Date(job.scheduled_date).toLocaleDateString('pt-BR') : t('common.notScheduled')}
+          value={job.scheduled_date ? parseDateOnly(job.scheduled_date)!.toLocaleDateString('pt-BR') : t('common.notScheduled')}
           color="bg-indicator-info/20"
         />
         <InfoRow

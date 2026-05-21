@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
+import { logger } from '@/lib/logger';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { toast } from 'sonner';
@@ -40,7 +41,7 @@ export function TPMParameterAlerts() {
       if (error) throw error;
       setAlerts(data || []);
     } catch (err) {
-
+      logger.warn('Falha ao carregar alertas de parâmetros TPM', err, 'TPMParameterAlerts');
     } finally {
       setIsLoading(false);
     }

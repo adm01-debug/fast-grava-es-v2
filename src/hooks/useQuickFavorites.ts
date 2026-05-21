@@ -125,7 +125,8 @@ export function useQuickFavorites() {
                 }
               });
           }
-        } catch (e) {
+        } catch {
+          // Favoritos legados corrompidos no localStorage: ignora a migração.
         }
       }
     }
