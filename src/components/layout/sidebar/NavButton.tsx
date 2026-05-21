@@ -49,7 +49,7 @@ export const NavButton = memo(forwardRef<HTMLDivElement, NavButtonProps>(functio
             'hover:pl-4 transition-all duration-300',
           ],
           !isActive && 'border-l-4 border-transparent text-sidebar-foreground/70',
-          collapsed && !isMobile && 'justify-center px-0 hover:pl-0'
+          collapsed && !isMobile && 'justify-center px-0 hover:pl-0 border-l-0'
         )}
       >
         <Icon className={cn('h-5 w-5 shrink-0 transition-all duration-300 group-hover/nav:scale-125 group-hover/nav:rotate-3 group-hover/nav:text-primary', isActive && 'text-primary drop-shadow-[0_0_8px_rgba(var(--primary-rgb),0.5)]')} />

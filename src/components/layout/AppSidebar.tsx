@@ -247,7 +247,7 @@ export function AppSidebar() {
               </div>
             )}
           </div>
-          <Button variant="ghost" size={(collapsed && !isMobile) ? "icon" : "sm"} onClick={handleSignOut} className={cn('w-full mt-4 font-black text-[10px] uppercase tracking-[0.2em] text-sidebar-foreground/50 hover:text-destructive hover:bg-destructive/10 focus:ring-2 focus:ring-destructive rounded-xl transition-all duration-500', collapsed && !isMobile && 'px-0')}>
+          <Button variant="ghost" size={(collapsed && !isMobile) ? "icon" : "sm"} onClick={handleSignOut} className={cn('w-full mt-4 font-black text-[9px] uppercase tracking-[0.2em] text-sidebar-foreground/50 hover:text-destructive hover:bg-destructive/10 focus:ring-2 focus:ring-destructive rounded-xl transition-all duration-500', collapsed && !isMobile && 'px-0')}>
             <LogOut className="h-3.5 w-3.5" />{(!collapsed || isMobile) && <span className="ml-2">{t('common.logout')}</span>}
           </Button>
         </div>
