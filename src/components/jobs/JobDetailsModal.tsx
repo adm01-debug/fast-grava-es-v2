@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button, LoadingButton } from "@/components/ui/button";
+import { safeParseInt } from "@/lib/utils";
 
 import {
   Calendar,
@@ -315,7 +316,7 @@ export function JobDetailsModal({ job, open, onOpenChange, onStatusChange }: Job
                           {...field}
                           type="number"
                           value={value}
-                          onChange={(e) => onChange(parseInt(e.target.value) || 0)}
+                          onChange={(e) => onChange(safeParseInt(e.target.value, 0))}
                           className={errors.quantity ? 'border-destructive' : ''}
                         />
                       )}

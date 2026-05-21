@@ -331,7 +331,7 @@ export function KanbanAIAdvisor() {
                   id="high"
                   type="number"
                   value={thresholds.bottleneckHigh}
-                  onChange={(e) => setThresholds(prev => ({ ...prev, bottleneckHigh: parseInt(e.target.value) }))}
+                  onChange={(e) => setThresholds(prev => ({ ...prev, bottleneckHigh: parseInt(e.target.value, 10) }))}
                 />
                 <span className="text-xs text-muted-foreground font-mono w-16">minutos</span>
               </div>
@@ -344,7 +344,7 @@ export function KanbanAIAdvisor() {
                   id="medium"
                   type="number"
                   value={thresholds.bottleneckMedium}
-                  onChange={(e) => setThresholds(prev => ({ ...prev, bottleneckMedium: parseInt(e.target.value) }))}
+                  onChange={(e) => setThresholds(prev => ({ ...prev, bottleneckMedium: parseInt(e.target.value, 10) }))}
                 />
                 <span className="text-xs text-muted-foreground font-mono w-16">minutos</span>
               </div>

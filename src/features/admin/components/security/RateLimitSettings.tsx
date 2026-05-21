@@ -224,7 +224,7 @@ export function RateLimitSettings() {
                   value={formData.max_requests}
                   onChange={(e) => setFormData(prev => ({
                     ...prev,
-                    max_requests: parseInt(e.target.value) || 1
+                    max_requests: parseInt(e.target.value, 10) || 1
                   }))}
                 />
               </div>
@@ -238,7 +238,7 @@ export function RateLimitSettings() {
                   value={formData.window_seconds}
                   onChange={(e) => setFormData(prev => ({
                     ...prev,
-                    window_seconds: parseInt(e.target.value) || 60
+                    window_seconds: parseInt(e.target.value, 10) || 60
                   }))}
                 />
               </div>
@@ -252,7 +252,7 @@ export function RateLimitSettings() {
                   value={formData.block_duration_minutes}
                   onChange={(e) => setFormData(prev => ({
                     ...prev,
-                    block_duration_minutes: parseInt(e.target.value) || 15
+                    block_duration_minutes: parseInt(e.target.value, 10) || 15
                   }))}
                 />
               </div>

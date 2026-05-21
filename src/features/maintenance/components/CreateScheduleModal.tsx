@@ -177,7 +177,7 @@ export function CreateScheduleModal({
               <Input
                 type="number"
                 value={formData.interval_days}
-                onChange={(e) => setFormData(prev => ({ ...prev, interval_days: parseInt(e.target.value) || 30 }))}
+                onChange={(e) => setFormData(prev => ({ ...prev, interval_days: parseInt(e.target.value, 10) || 30 }))}
                 min={1}
               />
             </div>
@@ -188,7 +188,7 @@ export function CreateScheduleModal({
             <Input
               type="number"
               value={formData.estimated_duration_minutes}
-              onChange={(e) => setFormData(prev => ({ ...prev, estimated_duration_minutes: parseInt(e.target.value) || 60 }))}
+              onChange={(e) => setFormData(prev => ({ ...prev, estimated_duration_minutes: parseInt(e.target.value, 10) || 60 }))}
               min={5}
             />
           </div>

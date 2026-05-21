@@ -88,7 +88,7 @@ export function useProductionLosses(jobId?: string, filters?: { shift?: string; 
           if (timeToUse.includes('T')) {
             hour = new Date(timeToUse).getHours();
           } else {
-            hour = parseInt(timeToUse.split(':')[0]);
+            hour = parseInt(timeToUse.split(':')[0], 10);
           }
           
           if (hour >= 7 && hour < 15) shift = '1';

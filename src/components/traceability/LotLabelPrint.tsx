@@ -118,7 +118,7 @@ export function LotLabelPrint({ lots, open, onClose }: LotLabelPrintProps) {
           <script>
             document.querySelectorAll('[id^="qr-placeholder-"]').forEach(el => {
               const value = el.dataset.value;
-              const size = parseInt(el.dataset.size);
+              const size = parseInt(el.dataset.size, 10);
               const canvas = document.createElement('canvas');
               QRCode.toCanvas(canvas, value, { width: size, margin: 1, errorCorrectionLevel: 'H' }, () => {
                 el.appendChild(canvas);
@@ -186,7 +186,7 @@ export function LotLabelPrint({ lots, open, onClose }: LotLabelPrintProps) {
                 min={1}
                 max={50}
                 value={copies}
-                onChange={(e) => setCopies(Math.max(1, parseInt(e.target.value) || 1))}
+                onChange={(e) => setCopies(Math.max(1, parseInt(e.target.value, 10) || 1))}
               />
             </div>
             <div className="space-y-1.5">

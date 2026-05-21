@@ -52,7 +52,7 @@ export function SettingsAlertsTab({ thresholds, onThresholdChange, onEntityThres
           {fields.map(f => (
             <div key={f.key} className="space-y-2">
               <Label>{f.label}</Label>
-              <Input type="number" value={thresholds[f.key]} onChange={(e) => onThresholdChange(f.key, parseInt(e.target.value))} />
+              <Input type="number" value={thresholds[f.key]} onChange={(e) => onThresholdChange(f.key, parseInt(e.target.value, 10))} />
               <p className="text-xs text-muted-foreground">{f.desc}</p>
             </div>
           ))}
@@ -95,7 +95,7 @@ export function SettingsAlertsTab({ thresholds, onThresholdChange, onEntityThres
               <Input
                 type="number"
                 value={entityValue}
-                onChange={(e) => setEntityValue(parseInt(e.target.value))}
+                onChange={(e) => setEntityValue(parseInt(e.target.value, 10))}
                 disabled={!selectedEntity}
               />
             </div>

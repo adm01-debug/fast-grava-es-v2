@@ -99,7 +99,7 @@ export const TechnicalSheetEditor = ({ sheetId, techniques, categories, material
       description: formData.description || undefined,
       product_category_id: formData.product_category_id || undefined,
       material_id: formData.material_id || undefined,
-      estimated_time_minutes: formData.estimated_time_minutes ? parseInt(formData.estimated_time_minutes) : undefined,
+      estimated_time_minutes: formData.estimated_time_minutes ? parseInt(formData.estimated_time_minutes, 10) : undefined,
       recommended_machine_id: formData.recommended_machine_id || undefined,
       ink_specifications: formData.ink_specifications || undefined,
       tooling_specifications: formData.tooling_specifications || undefined,

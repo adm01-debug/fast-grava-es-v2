@@ -4,9 +4,19 @@ import type { RealtimeChannel } from '@supabase/supabase-js';
 
 type ConnectionStatus = 'connecting' | 'connected' | 'disconnected' | 'error';
 
+interface SubscribeOptions {
+  table: string;
+  event?: 'INSERT' | 'UPDATE' | 'DELETE' | '*';
+  filter?: string;
+}
+
 interface WebSocketContextType {
   status: ConnectionStatus;
-  subscribe: (channelName: string, callback: (payload: Record<string, unknown>) => void) => () => void;
+  subscribe: (
+    channelName: string,
+    options: SubscribeOptions,
+    callback: (payload: Record<string, unknown>) => void,
+  ) => () => void;
 }
 
 const WebSocketContext = createContext<WebSocketContextType | undefined>(undefined);
@@ -30,12 +40,29 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  const subscribe = useCallback((channelName: string, callback: (payload: Record<string, unknown>) => void) => {
+  // Requires an explicit table to avoid wildcard subscriptions that flood the
+  // client with unrelated changes (and would otherwise leak data from any
+  // public table the RLS allows the user to read).
+  const subscribe = useCallback((
+    channelName: string,
+    options: SubscribeOptions,
+    callback: (payload: Record<string, unknown>) => void,
+  ) => {
     const channel = supabase
       .channel(channelName)
-      .on('postgres_changes', { event: '*', schema: 'public' }, (payload) => {
-        callback(payload as unknown as Record<string, unknown>);
-      })
+      .on(
+        // @ts-expect-error realtime types are over-strict for dynamic filters
+        'postgres_changes',
+        {
+          event: options.event ?? '*',
+          schema: 'public',
+          table: options.table,
+          ...(options.filter ? { filter: options.filter } : {}),
+        },
+        (payload: Record<string, unknown>) => {
+          callback(payload);
+        },
+      )
       .subscribe();
 
     channelsRef.current.set(channelName, channel);

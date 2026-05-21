@@ -61,7 +61,7 @@ export function OperatorAuditHistory() {
       let periodMatch = true;
       if (periodFilter !== 'all') {
         const entryDate = new Date(entry.created_at);
-        const daysAgo = parseInt(periodFilter);
+        const daysAgo = parseInt(periodFilter, 10);
         periodMatch = isAfter(entryDate, subDays(new Date(), daysAgo));
       }
 

@@ -141,8 +141,8 @@ export function LotInspectionsTab({ lot, inspections }: LotInspectionsTabProps) 
             </div>
             <div className="grid grid-cols-3 gap-4">
               <div className="space-y-2"><Label>Inspetor</Label><Input value={newInspection.inspector_name} onChange={(e) => setNewInspection(p => ({ ...p, inspector_name: e.target.value }))} /></div>
-              <div className="space-y-2"><Label>Amostragem</Label><Input type="number" value={newInspection.sample_size} onChange={(e) => setNewInspection(p => ({ ...p, sample_size: parseInt(e.target.value) || 0 }))} /></div>
-              <div className="space-y-2"><Label>Defeitos</Label><Input type="number" value={newInspection.defects_found} onChange={(e) => setNewInspection(p => ({ ...p, defects_found: parseInt(e.target.value) || 0 }))} /></div>
+              <div className="space-y-2"><Label>Amostragem</Label><Input type="number" value={newInspection.sample_size} onChange={(e) => setNewInspection(p => ({ ...p, sample_size: parseInt(e.target.value, 10) || 0 }))} /></div>
+              <div className="space-y-2"><Label>Defeitos</Label><Input type="number" value={newInspection.defects_found} onChange={(e) => setNewInspection(p => ({ ...p, defects_found: parseInt(e.target.value, 10) || 0 }))} /></div>
             </div>
             <div className="space-y-2"><Label>Notas</Label><Textarea value={newInspection.notes} onChange={(e) => setNewInspection(p => ({ ...p, notes: e.target.value }))} rows={2} /></div>
 

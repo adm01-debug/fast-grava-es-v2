@@ -41,13 +41,17 @@ export function AlertsWidget() {
       try {
         const parsed = JSON.parse(storedThresholds);
         if (parsed.bottleneckRiskMinutes) thresholds.bottleneckRiskMinutes = parsed.bottleneckRiskMinutes;
-      } catch (e) {}
+      } catch {
+        localStorage.removeItem('alert-thresholds');
+      }
     }
 
     if (entityThresholdsStored) {
       try {
         entityThresholds = JSON.parse(entityThresholdsStored);
-      } catch (e) {}
+      } catch {
+        localStorage.removeItem('entity-thresholds');
+      }
     }
 
     jobs.filter(job => job.priority === 'urgent' && !job.scheduled_date && !['finished', 'cancelled'].includes(job.status)).forEach(job => {

@@ -131,7 +131,9 @@ export function ExecutionDetailsModal({ isOpen, onClose, recordId }: ExecutionDe
           const response = await fetch(resp.photo_url);
           const blob = await response.blob();
           photosFolder?.file(`item_${i+1}_${resp.item?.description.substring(0, 20)}.jpg`, blob);
-        } catch (e) {  }
+        } catch (e) {
+          console.warn(`Failed to fetch photo ${resp.photo_url}`, e);
+        }
       }
 
       // Metadata

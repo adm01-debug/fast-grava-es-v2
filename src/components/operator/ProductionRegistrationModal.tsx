@@ -12,6 +12,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { DbJob } from '@/features/jobs';
 import { toast } from 'sonner';
 import { validateFileMagicBytes } from '@/lib/file-validation';
+import { safeParseInt, safeParseFloat } from '@/lib/utils';
 import {
   Camera,
   Upload,
@@ -246,7 +247,7 @@ export function ProductionRegistrationModal({
   if (!job) return null;
 
   const lossPercentage = job.quantity > 0 ? ((lostPieces / job.quantity) * 100).toFixed(1) : '0';
-  const isHighLoss = parseFloat(lossPercentage) > 5;
+  const isHighLoss = safeParseFloat(lossPercentage) > 5;
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -284,7 +285,7 @@ export function ProductionRegistrationModal({
                 type="number"
                 min={0}
                 value={producedQuantity}
-                onChange={(e) => setProducedQuantity(parseInt(e.target.value) || 0)}
+                onChange={(e) => setProducedQuantity(safeParseInt(e.target.value, 0))}
                 className="bg-background"
               />
             </div>
@@ -306,7 +307,7 @@ export function ProductionRegistrationModal({
                 min={0}
                 max={job.quantity}
                 value={lostPieces}
-                onChange={(e) => setLostPieces(parseInt(e.target.value) || 0)}
+                onChange={(e) => setLostPieces(safeParseInt(e.target.value, 0))}
                 className="bg-background"
               />
               <p className="text-xs text-muted-foreground">

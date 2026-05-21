@@ -1,6 +1,7 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { logger } from '@/lib/logger';
 
 interface PendingAction {
   id: string;
@@ -39,6 +40,8 @@ export function useOfflineSync() {
         setPendingActions(JSON.parse(stored));
       }
     } catch (error) {
+      logger.warn('Failed to parse pending actions from localStorage', error, 'useOfflineSync');
+      localStorage.removeItem(STORAGE_KEYS.PENDING_ACTIONS);
     }
   }, []);
 
@@ -54,6 +57,8 @@ export function useOfflineSync() {
         }
       }
     } catch (error) {
+      logger.warn('Failed to parse cached data from localStorage', error, 'useOfflineSync');
+      localStorage.removeItem(STORAGE_KEYS.CACHED_DATA);
     }
   }, []);
 
@@ -62,6 +67,7 @@ export function useOfflineSync() {
     try {
       localStorage.setItem(STORAGE_KEYS.PENDING_ACTIONS, JSON.stringify(pendingActions));
     } catch (error) {
+      logger.error('Failed to persist pending actions (quota exceeded?)', error, 'useOfflineSync');
     }
   }, [pendingActions]);
 
@@ -90,13 +96,14 @@ export function useOfflineSync() {
     };
   }, []);
 
-  // Sync pending actions when coming back online
+  // Sync pending actions when coming back online (kept in a ref to avoid
+  // re-running the effect on every pendingActions/cacheData change).
+  const syncRef = useRef<(() => Promise<void>) | null>(null);
   useEffect(() => {
     if (isOnline && pendingActions.length > 0) {
-      syncPendingActions();
+      syncRef.current?.();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- only trigger on connectivity change
-  }, [isOnline]);
+  }, [isOnline, pendingActions.length]);
 
   // Cache essential data for offline use
   const cacheData = useCallback(async () => {
@@ -121,6 +128,7 @@ export function useOfflineSync() {
       localStorage.setItem(STORAGE_KEYS.CACHED_DATA, JSON.stringify(newCachedData));
 
     } catch (error) {
+      logger.error('Failed to cache data for offline use', error, 'useOfflineSync');
     }
   }, [isOnline]);
 
@@ -210,6 +218,7 @@ export function useOfflineSync() {
 
       return true;
     } catch (error) {
+      logger.warn(`Pending action ${action.type} failed (retry ${action.retryCount})`, error, 'useOfflineSync');
       return false;
     }
   };
@@ -252,6 +261,10 @@ export function useOfflineSync() {
     // Refresh cache after sync
     await cacheData();
   }, [isOnline, pendingActions, isSyncing, cacheData]);
+
+  useEffect(() => {
+    syncRef.current = syncPendingActions;
+  }, [syncPendingActions]);
 
   // Update job offline (for operators)
   const updateJobOffline = useCallback((

@@ -151,7 +151,7 @@ const OEEDashboard = memo(function OEEDashboard() {
   const dateRange = useMemo(() => {
     const now = new Date();
     return {
-      start: startOfDay(subDays(now, parseInt(period))),
+      start: startOfDay(subDays(now, parseInt(period, 10))),
       end: endOfDay(now)
     };
   }, [period]);
@@ -170,7 +170,7 @@ const OEEDashboard = memo(function OEEDashboard() {
     endDate: dateRange.end.toISOString()
   }), [oeeFilters, dateRange]);
 
-  const { data, isLoading, downloadReport } = useOEE(parseInt(period), 30, oeeFilters);
+  const { data, isLoading, downloadReport } = useOEE(parseInt(period, 10), 30, oeeFilters);
   const { losses, isLoading: lossesLoading } = useProductionLosses(undefined, lossFilters);
 
   const applyPreset = (preset: DashboardPreset) => {

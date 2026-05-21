@@ -36,7 +36,7 @@ export const ScanStatsChart = () => {
   const { data: scans, isLoading } = useQuery({
     queryKey: ["scan-stats", period],
     queryFn: async () => {
-      const startDate = subDays(new Date(), parseInt(period));
+      const startDate = subDays(new Date(), parseInt(period, 10));
 
       const { data, error } = await supabase
         .from("qr_scan_history")
@@ -104,7 +104,7 @@ export const ScanStatsChart = () => {
     const stats = new Map<string, { date: string; scans: number }>();
 
     // Initialize all days in period
-    for (let i = parseInt(period) - 1; i >= 0; i--) {
+    for (let i = parseInt(period, 10) - 1; i >= 0; i--) {
       const date = format(subDays(new Date(), i), "dd/MM", { locale: ptBR });
       stats.set(date, { date, scans: 0 });
     }
