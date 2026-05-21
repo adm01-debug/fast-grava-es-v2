@@ -96,7 +96,7 @@ export const SystemOnboarding = () => {
     },
   ];
 
-  const handleJoyrideCallback = useCallback((data: CallBackProps) => {
+  const handleJoyrideCallback = useCallback((data: any) => {
     const { status } = data;
     const finished: string[] = [STATUS.FINISHED, STATUS.SKIPPED];
     if (finished.includes(status)) {
