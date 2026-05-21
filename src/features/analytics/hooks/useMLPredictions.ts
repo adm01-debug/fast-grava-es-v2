@@ -55,25 +55,19 @@ export function useMLPredictions() {
   const { data: predictions = [], isLoading: loadingPredictions, refetch } = useQuery({
     queryKey: ['ml-predictions'],
     queryFn: async () => {
-      try {
-        const { data, error } = await supabase
-          .from('machine_predictions')
-          .select('*, machines(id, name, code)')
-          .eq('is_active', true)
-          .order('risk_score', { ascending: false });
+      const { data, error } = await supabase
+        .from('machine_predictions')
+        .select('*, machines(id, name, code)')
+        .eq('is_active', true)
+        .order('risk_score', { ascending: false });
 
-        if (error) {
-          throw error;
-        }
-        return data.map((p: Record<string, unknown>) => ({
-          ...p,
-          machine: p.machines,
-          factors: Array.isArray(p.factors) ? p.factors : [],
-          recommendations: Array.isArray(p.recommendations) ? p.recommendations : [],
-        })) as MachinePrediction[];
-      } catch (err) {
-        throw err;
-      }
+      if (error) throw error;
+      return data.map((p: Record<string, unknown>) => ({
+        ...p,
+        machine: p.machines,
+        factors: Array.isArray(p.factors) ? p.factors : [],
+        recommendations: Array.isArray(p.recommendations) ? p.recommendations : [],
+      })) as MachinePrediction[];
     },
     staleTime: STALE_TIMES.DYNAMIC,
     ...defaultQueryOptions,
@@ -83,20 +77,14 @@ export function useMLPredictions() {
   const { data: predictionHistory = [], isLoading: loadingHistory } = useQuery({
     queryKey: ['ml-prediction-history'],
     queryFn: async () => {
-      try {
-        const { data, error } = await supabase
+      const { data, error } = await supabase
         .from('prediction_history')
         .select('*')
         .order('created_at', { ascending: false })
         .limit(200);
 
-      if (error) {
-        throw error;
-      }
+      if (error) throw error;
       return data as PredictionHistory[];
-      } catch (err) {
-        throw err;
-      }
     },
     staleTime: STALE_TIMES.DYNAMIC,
     ...defaultQueryOptions,
@@ -106,19 +94,13 @@ export function useMLPredictions() {
   const { data: machines = [] } = useQuery({
     queryKey: ['machines-for-ml'],
     queryFn: async () => {
-      try {
-        const { data, error } = await supabase
-          .from('machines')
-          .select('*')
-          .eq('is_active', true)
-          .order('name');
-        if (error) {
-          throw error;
-        }
-        return data;
-      } catch (err) {
-        throw err;
-      }
+      const { data, error } = await supabase
+        .from('machines')
+        .select('*')
+        .eq('is_active', true)
+        .order('name');
+      if (error) throw error;
+      return data;
     },
     staleTime: STALE_TIMES.STATIC,
     ...defaultQueryOptions,

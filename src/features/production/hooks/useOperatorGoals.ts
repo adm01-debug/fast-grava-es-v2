@@ -66,19 +66,13 @@ export function useOperatorGoals() {
   const { data: goals, isLoading } = useQuery({
     queryKey: ['operator-goals'],
     queryFn: async () => {
-      try {
-        const { data, error } = await supabase
-          .from('operator_goals')
-          .select('*')
-          .order('period_start', { ascending: false });
+      const { data, error } = await supabase
+        .from('operator_goals')
+        .select('*')
+        .order('period_start', { ascending: false });
 
-        if (error) {
-          throw error;
-        }
-        return (data || []) as OperatorGoal[];
-      } catch (err) {
-        throw err;
-      }
+      if (error) throw error;
+      return (data || []) as OperatorGoal[];
     },
     staleTime: STALE_TIMES.USER,
     ...defaultQueryOptions,

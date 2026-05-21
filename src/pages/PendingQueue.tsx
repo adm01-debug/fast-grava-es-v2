@@ -166,11 +166,12 @@ export default function PendingQueue() {
           case 'client':
             comparison = a.client.localeCompare(b.client);
             break;
-          case 'scheduledDate':
+          case 'scheduledDate': {
             const dateA = a.scheduled_date ? new Date(a.scheduled_date).getTime() : 0;
             const dateB = b.scheduled_date ? new Date(b.scheduled_date).getTime() : 0;
             comparison = dateA - dateB;
             break;
+          }
           case 'priority':
             comparison = priorityOrder[a.priority as keyof typeof priorityOrder] - priorityOrder[b.priority as keyof typeof priorityOrder];
             break;

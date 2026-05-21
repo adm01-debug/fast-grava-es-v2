@@ -100,7 +100,7 @@ export function LotLabelPrint({ lots, open, onClose }: LotLabelPrintProps) {
       <html>
         <head>
           <title>Etiquetas - ${lots.length} lote(s)</title>
-          <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"><\/script>
+          <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
           <style>
             @page { size: auto; margin: 5mm; }
             body {
@@ -125,7 +125,7 @@ export function LotLabelPrint({ lots, open, onClose }: LotLabelPrintProps) {
               });
             });
             setTimeout(() => { window.print(); }, 800);
-          <\/script>
+          </script>
         </body>
       </html>
     `);
