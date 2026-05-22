@@ -37,8 +37,13 @@ export function OfflineProvider({ children }: { children: ReactNode }) {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [isSyncing, setIsSyncing] = useState(false);
   const [pendingActions, setPendingActions] = useState<PendingAction[]>(() => {
-    const saved = localStorage.getItem('pending-actions');
-    return saved ? JSON.parse(saved) : [];
+    try {
+      const saved = localStorage.getItem('pending-actions');
+      return saved ? JSON.parse(saved) : [];
+    } catch (e) {
+      console.error('Failed to load pending actions from localStorage:', e);
+      return [];
+    }
   });
   const { toast } = useToast();
 
@@ -72,7 +77,11 @@ export function OfflineProvider({ children }: { children: ReactNode }) {
 
   // Persist pending actions
   useEffect(() => {
-    localStorage.setItem('pending-actions', JSON.stringify(pendingActions));
+    try {
+      localStorage.setItem('pending-actions', JSON.stringify(pendingActions));
+    } catch (e) {
+      console.error('Failed to persist pending actions to localStorage:', e);
+    }
   }, [pendingActions]);
 
   // Auto-sync when back online
