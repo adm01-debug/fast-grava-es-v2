@@ -67,9 +67,9 @@ export default function ABCCostingDashboard() {
         <div className="flex items-center justify-between">
           <div>
             <div className="flex items-center gap-3">
-              <h1 className="text-3xl font-display font-black tracking-tighter">
-                <span className="gradient-text animate-pulse-glow">Financial Intelligence 10/10</span>
-              </h1>
+                <h1 className="text-3xl font-display font-black tracking-tighter uppercase">
+                  <span className="gradient-text animate-pulse-glow">FAST GRAVAÇÕES - GESTÃO DE GRAVAÇÃO</span>
+                </h1>
             </div>
             <p className="text-muted-foreground">
               Activity-Based Costing (ABC) e Gestão Estratégica de Lucratividade
