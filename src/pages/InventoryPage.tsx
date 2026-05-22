@@ -117,7 +117,7 @@ export default function InventoryPage() {
 
 
         {/* Inventory Stats */}
-        <InventoryStats items={items} lowStockItems={lowStockItems} stats={stats} />
+        <InventoryStats items={items as InventoryItem[]} lowStockItems={lowStockItems as InventoryItem[]} stats={stats} />
 
         <Tabs defaultValue="inventory" className="space-y-6">
           <TabsList className="bg-muted/50 p-1">
@@ -233,13 +233,13 @@ export default function InventoryPage() {
       <BatchQRLabelModal
         open={isBatchQRModalOpen}
         onOpenChange={setIsBatchQRModalOpen}
-        items={items.filter(i => selectedItems.has(i.id))}
+        items={items.filter(i => selectedItems.has(i.id)) as InventoryItem[]}
       />
 
       <AIPredictionValidationModal
         open={isAIPredictionModalOpen}
         onOpenChange={setIsAIPredictionModalOpen}
-        items={items}
+        items={items as InventoryItem[]}
         movements={movements || []}
       />
     </MainLayout>
