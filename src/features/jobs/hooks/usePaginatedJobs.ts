@@ -83,7 +83,9 @@ export function usePaginatedJobs(initialOptions?: Partial<PaginationOptions>) {
       const validatedJobs = (jobs || []).map(job => {
         const result = jobSchema.safeParse(job);
         if (!result.success) {
-          console.error('Job validation failed:', result.error, job);
+          import('@/lib/logger').then(({ logger }) => {
+            logger.warn('Job validation failed (Paginated)', { error: result.error, jobId: job.id }, 'usePaginatedJobs');
+          });
           return job as Job;
         }
         return result.data as Job;
