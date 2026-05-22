@@ -152,9 +152,7 @@ export function OfflineProvider({ children }: { children: ReactNode }) {
     clearPending,
   }), [isOnline, isSyncing, pendingActions, addPendingAction, syncNow, clearPending]);
 
-  return (
-    <OfflineContext.Provider value={value}>
-      {children}
-    </OfflineContext.Provider>
-  );
+  return React.createElement(OfflineContext.Provider, { value }, children);
 }
+
+import * as React from 'react';
