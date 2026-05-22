@@ -249,7 +249,7 @@ export default function ExecutiveDashboard() {
               </div>
               <div>
                 <h1 className="text-3xl sm:text-4xl font-display font-black tracking-tighter">
-                  <span className="gradient-text animate-pulse-glow">Fábrica Autônoma 360</span>
+                  <span className="gradient-text animate-pulse-glow">FAST GRAVAÇÕES - GESTÃO DE GRAVAÇÃO</span>
                 </h1>
                 <div className="flex flex-wrap items-center gap-2 mt-1">
                   <Badge variant="outline" className="gap-1.5 px-2.5 py-0.5 border-primary/30 bg-primary/5 text-primary text-[10px] font-black uppercase tracking-widest">
