@@ -7,7 +7,9 @@ import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/componen
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { SectionErrorBoundary } from '@/components/ui/section-error-boundary';
 import {
+
   Package,
   Plus,
   ArrowUpRight,
@@ -117,10 +119,14 @@ export default function InventoryPage() {
 
 
         {/* Inventory Stats */}
-        <InventoryStats items={items as InventoryItem[]} lowStockItems={lowStockItems as InventoryItem[]} stats={stats} />
+        <SectionErrorBoundary section="Estatísticas de Inventário">
+          <InventoryStats items={items as InventoryItem[]} lowStockItems={lowStockItems as InventoryItem[]} stats={stats} />
+        </SectionErrorBoundary>
 
-        <Tabs defaultValue="inventory" className="space-y-6">
-          <TabsList className="bg-muted/50 p-1">
+        <SectionErrorBoundary section="Abas de Inventário">
+          <Tabs defaultValue="inventory" className="space-y-6">
+            <TabsList className="bg-muted/50 p-1">
+
             <TabsTrigger value="inventory" className="gap-2">
               <Package className="h-4 w-4" />
               Estoque Atual
@@ -228,7 +234,9 @@ export default function InventoryPage() {
             </Card>
           </TabsContent>
         </Tabs>
-      </div>
+      </SectionErrorBoundary>
+    </div>
+
 
       <BatchQRLabelModal
         open={isBatchQRModalOpen}
