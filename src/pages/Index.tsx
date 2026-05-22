@@ -182,6 +182,10 @@ const Index = () => {
     );
   }, [isEditMode, handleToggleWidgetVisibility]);
 
+  const handleReorder = useCallback((section: WidgetConfig['section'], activeId: string, overId: string) => {
+    reorderWidgets(section, activeId, overId);
+  }, [reorderWidgets]);
+
   // Activity log for tracking
   const { entries: activityEntries, addEntry: addActivityEntry } = useActivityLog();
   const navigate = useNavigate();
@@ -347,71 +351,91 @@ const Index = () => {
 
           {/* Overview Tab - Main Dashboard */}
           <TabsContent value="overview" className="flex-1 mt-4 min-h-0">
-            <div className="grid grid-cols-1 xl:grid-cols-5 gap-4 h-full">
-              {/* Left Panel - Main Chart */}
-              <div className="xl:col-span-3 flex flex-col min-h-0">
-                <ScrollArea className="flex-1">
-                  <div className="space-y-4 pr-2">
+            <ScrollArea className="h-full">
+              <div className="space-y-6 pb-20 pr-2">
+                {/* Main Dashboard Grid */}
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                  {/* Left Column: Stats & Trends */}
+                  <div className="lg:col-span-8 space-y-6">
                     <SortableWidgetSection
-                      widgets={mainWidgets}
                       section="main"
-                      onReorder={reorderWidgets}
-                      className="space-y-4"
+                      widgets={mainWidgets}
+                      onReorder={handleReorder}
+                      className="space-y-6"
                     >
-                      {mainWidgets.map(widget => renderWidget(widget.id))}
+                      {mainWidgets.map(w => renderWidget(w.id))}
                     </SortableWidgetSection>
                   </div>
-                </ScrollArea>
-              </div>
 
-              {/* Right Panel - Sidebar Widgets */}
-              <div className="xl:col-span-2 flex flex-col min-h-0">
-                <ScrollArea className="flex-1">
-                  <div className="space-y-4 pr-2">
+                  {/* Right Column: Alerts & Side Widgets */}
+                  <div className="lg:col-span-4 space-y-6">
                     <Suspense fallback={<WidgetSkeleton className="h-40" />}>
                       <AutoShiftSummary />
                       <InventoryAlertsWidget />
-                      <OperatorGoalsWidget />
-                      <ShiftHandoverWidget />
-                      <LeaderboardWidget />
-                      <ActivityFeedWidget />
-                      <DailySummaryCard />
-                      <MaintenanceAlertsWidget />
-                      <EnergyWidget />
-                      <PredictiveAnalyticsWidget />
                     </Suspense>
 
                     <SortableWidgetSection
-                      widgets={sidebarWidgets}
                       section="sidebar"
-                      onReorder={reorderWidgets}
-                      className="space-y-4"
+                      widgets={sidebarWidgets}
+                      onReorder={handleReorder}
+                      className="space-y-6"
                     >
-                      {sidebarWidgets.map(widget => renderWidget(widget.id))}
+                      {sidebarWidgets.map(w => renderWidget(w.id))}
+                    </SortableWidgetSection>
+
+                    <Suspense fallback={<WidgetSkeleton className="h-40" />}>
+                      <ActivityFeedWidget />
+                    </Suspense>
+                  </div>
+                </div>
+
+                {/* Bottom Section: Efficiency Widgets (Manager/Coord Only) */}
+                {!isOperator && (
+                  <div className="space-y-4">
+                    <h3 className="text-sm font-black uppercase tracking-[0.2em] text-muted-foreground/50 px-1">
+                      {t('dashboard.smartLogistics', 'Logística Inteligente')}
+                    </h3>
+                    <SortableWidgetSection
+                      section="efficiency"
+                      widgets={efficiencyWidgets}
+                      direction="horizontal"
+                      onReorder={handleReorder}
+                      className="grid grid-cols-1 md:grid-cols-3 gap-6"
+                    >
+                      {efficiencyWidgets.map(w => renderWidget(w.id))}
                     </SortableWidgetSection>
                   </div>
-                </ScrollArea>
+                )}
+
+                {/* Full Width Footer Widgets */}
+                <div className="space-y-6">
+                  <SortableWidgetSection
+                    section="bottom"
+                    widgets={bottomWidgets}
+                    onReorder={handleReorder}
+                    className="space-y-6"
+                  >
+                    {bottomWidgets.map(w => renderWidget(w.id))}
+                  </SortableWidgetSection>
+                </div>
               </div>
-            </div>
+            </ScrollArea>
           </TabsContent>
 
           {/* Efficiency Tab - For Coordinators/Managers */}
           {!isOperator && (
             <TabsContent value="efficiency" className="flex-1 mt-4 min-h-0">
               <ScrollArea className="h-full">
-                <div className="pr-2">
-                  <SortableWidgetSection
-                    widgets={efficiencyWidgets}
-                    section="efficiency"
-                    direction="horizontal"
-                    onReorder={reorderWidgets}
-                    className="grid grid-cols-1 lg:grid-cols-3 gap-4"
-                  >
-                    {efficiencyWidgets.map(widget => renderWidget(widget.id))}
-                  </SortableWidgetSection>
-
-                  {/* Activity Log */}
-                  {activityEntries.length > 0 && (
+                <div className="pr-2 space-y-6">
+                   <div className="h-full bg-card/50 rounded-xl border border-dashed border-border flex items-center justify-center p-12 text-center">
+                      <div className="max-w-md space-y-4">
+                        <TrendingUp className="h-12 w-12 text-primary mx-auto opacity-20" />
+                        <h3 className="text-lg font-bold">Módulo de Eficiência Avançada</h3>
+                        <p className="text-muted-foreground text-sm">Este módulo está sendo consolidado com o Dashboard principal para uma experiência integrada.</p>
+                      </div>
+                   </div>
+                   
+                   {activityEntries.length > 0 && (
                     <div className="mt-6">
                       <ActivityLog
                         entries={activityEntries}
@@ -424,6 +448,17 @@ const Index = () => {
               </ScrollArea>
             </TabsContent>
           )}
+
+          {/* Timeline Tab */}
+          <TabsContent value="timeline" className="flex-1 mt-4 min-h-0">
+            <ScrollArea className="h-full">
+              <div className="pr-2">
+                <Suspense fallback={<WidgetSkeleton className="h-[600px]" />}>
+                  <CompactTimeline />
+                </Suspense>
+              </div>
+            </ScrollArea>
+          </TabsContent>
 
           {/* Machines Tab - Live Status */}
           <TabsContent value="machines" className="flex-1 mt-4 min-h-0">
@@ -451,12 +486,11 @@ const Index = () => {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 pr-2">
                 <LeaderboardWidget />
                 <ShiftHandoverWidget />
-                <ActivityFeedWidget />
+                <OperatorGoalsWidget />
                 <DailySummaryCard />
               </div>
             </ScrollArea>
           </TabsContent>
-
 
           {/* Chat Tab */}
           <TabsContent value="chat" className="flex-1 mt-4 min-h-0">
@@ -467,20 +501,11 @@ const Index = () => {
             </div>
           </TabsContent>
 
-          {/* Timeline Tab */}
-          <TabsContent value="timeline" className="flex-1 mt-4 min-h-0">
-            <ScrollArea className="h-full">
-              <div className="pr-2">
-                {bottomWidgets.filter(w => w.id === 'timeline').map(widget => renderWidget(widget.id))}
-              </div>
-            </ScrollArea>
-          </TabsContent>
-
           {/* Jobs Tab */}
           <TabsContent value="jobs" className="flex-1 mt-4 min-h-0">
             <ScrollArea className="h-full">
               <div className="pr-2">
-                {bottomWidgets.filter(w => w.id === 'jobs').map(widget => renderWidget(widget.id))}
+                <RecentJobsTable />
               </div>
             </ScrollArea>
           </TabsContent>
