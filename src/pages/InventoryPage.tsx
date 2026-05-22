@@ -232,7 +232,9 @@ export default function InventoryPage() {
             </Card>
           </TabsContent>
         </Tabs>
-      </div>
+      </SectionErrorBoundary>
+    </div>
+
 
       <BatchQRLabelModal
         open={isBatchQRModalOpen}
