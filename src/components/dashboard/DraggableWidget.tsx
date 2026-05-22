@@ -30,7 +30,7 @@ export const DraggableWidget = memo(function DraggableWidget({
   } = useSortable({ id, disabled: !isEditMode });
 
   const style = {
-    transform: CSS.Translate.toString(transform),
+    transform: transform ? CSS.Translate.toString(transform) : undefined,
     transition,
   };
 
