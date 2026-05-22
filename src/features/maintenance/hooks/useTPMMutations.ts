@@ -569,15 +569,15 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
 
         const nextDue = addDays(new Date(), record.schedule?.interval_days || 30).toISOString();
 
-        await supabase
+        await (supabase
           .from('maintenance_records')
           .update({
             status: 'approved',
             approver_id: data.approver_id,
             approved_at: new Date().toISOString(),
             next_scheduled_date_after_approval: nextDue,
-          })
-          .eq('id', id);
+          } as any)
+          .eq('id', id));
 
         if (record.schedule) {
           await supabase
