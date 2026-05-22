@@ -193,9 +193,9 @@ const Index = () => {
     <MainLayout>
       <Helmet>
         <title>Dashboard | FAST GRAVAÇÕES</title>
-        <meta name="description" content="Painel de controle principal do sistema FAST GRAVAÇÕES - Gestão de produção e agendamento." />
-        <meta property="og:title" content="FAST GRAVAÇÕES - Dashboard" />
-        <meta property="og:description" content="Sistema Inteligente de Gestão Industrial" />
+        <meta name="description" content="Painel de controle principal do sistema FAST GRAVAÇÕES - GESTÃO DE GRAVAÇÃO." />
+        <meta property="og:title" content="FAST GRAVAÇÕES - GESTÃO DE GRAVAÇÃO" />
+        <meta property="og:description" content="QUALIDADE + VELOCIDADE" />
         <meta property="og:type" content="website" />
       </Helmet>
       {/* Offline Banner */}
