@@ -19,7 +19,7 @@ import { SortableWidgetSection } from '@/components/dashboard/SortableWidgetSect
 import { Badge } from '@/components/ui/badge';
 import { FavoritesDropdown, FavoriteButton } from '@/components/navigation/FavoritesManager';
 import { ActivityLog, useActivityLog } from '@/components/activity/ActivityLog';
-import { OfflineBanner, ConnectionStatus } from '@/components/offline/OfflineMode';
+import { OfflineBanner, ConnectionStatus } from '@/components/offline/NetworkStatusToaster';
 import { GamificationBanner } from '@/components/dashboard/GamificationBanner';
 import { useSmartDelayAlerts } from '@/hooks/useSmartDelayAlerts';
 import { usePerformanceMetrics } from '@/features/production';
