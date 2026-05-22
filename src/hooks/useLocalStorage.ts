@@ -11,7 +11,8 @@ export function useLocalStorage<T>(
     try {
       const item = window.localStorage.getItem(key);
       return item ? (JSON.parse(item) as T) : initialValue;
-    } catch {
+    } catch (e) {
+      console.error(`Failed to load value for key "${key}" from localStorage:`, e);
       return initialValue;
     }
   });
@@ -22,7 +23,8 @@ export function useLocalStorage<T>(
         const nextValue = value instanceof Function ? value(prev) : value;
         try {
           window.localStorage.setItem(key, JSON.stringify(nextValue));
-        } catch {
+        } catch (e) {
+          console.error(`Failed to set value for key "${key}" to localStorage:`, e);
           // Storage full or unavailable
         }
         return nextValue;
@@ -35,7 +37,8 @@ export function useLocalStorage<T>(
     try {
       window.localStorage.removeItem(key);
       setStoredValue(initialValue);
-    } catch {
+    } catch (e) {
+      console.error(`Failed to remove key "${key}" from localStorage:`, e);
       // Storage unavailable
     }
   }, [key, initialValue]);
