@@ -12,6 +12,7 @@ import { ProductDesignProvider } from "@/components/design-system/ProductDesignP
 import { CelebrationProvider } from "@/components/ui/celebration";
 import { FeedbackProvider } from "@/components/feedback/FeedbackProvider";
 import { NetworkStatusProvider } from "@/hooks/useNetworkStatus";
+import { OfflineProvider } from "@/hooks/useLocalStorage";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
 import { NavigationListener } from "@/components/navigation/NavigationListener";
 import { InAppNotificationWatcher } from "@/features/notifications/components/InAppNotificationWatcher";
@@ -50,24 +51,26 @@ function ComposedProviders({ children }: { children: ReactNode }) {
                             <PermissionsProvider>
                               <OfflineSyncProvider>
                                 <NetworkStatusProvider>
-                                  <WebSocketProvider>
-                                    <EfficiencyNotificationProvider>
-                                      <RealtimeNotificationsProvider>
-                                        <ProductDesignProvider
-                                          enableOnboarding
-                                          enableCommandPalette
-                                          enableKeyboardShortcuts
-                                          enableToastWithUndo
-                                        >
-                                          <CelebrationProvider>
-                                            <FeedbackProvider>
-                                              {children}
-                                            </FeedbackProvider>
-                                          </CelebrationProvider>
-                                        </ProductDesignProvider>
-                                      </RealtimeNotificationsProvider>
-                                    </EfficiencyNotificationProvider>
-                                  </WebSocketProvider>
+                                  <OfflineProvider>
+                                    <WebSocketProvider>
+                                      <EfficiencyNotificationProvider>
+                                        <RealtimeNotificationsProvider>
+                                          <ProductDesignProvider
+                                            enableOnboarding
+                                            enableCommandPalette
+                                            enableKeyboardShortcuts
+                                            enableToastWithUndo
+                                          >
+                                            <CelebrationProvider>
+                                              <FeedbackProvider>
+                                                {children}
+                                              </FeedbackProvider>
+                                            </CelebrationProvider>
+                                          </ProductDesignProvider>
+                                        </RealtimeNotificationsProvider>
+                                      </EfficiencyNotificationProvider>
+                                    </WebSocketProvider>
+                                  </OfflineProvider>
                                 </NetworkStatusProvider>
                               </OfflineSyncProvider>
                             </PermissionsProvider>
