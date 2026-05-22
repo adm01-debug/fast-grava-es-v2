@@ -55,7 +55,12 @@ export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) 
     );
   }
 
-  if (allowedRoles && role && role !== 'admin' && !allowedRoles.includes(role)) {
+  // Admin always has bypass
+  if (role === 'admin') {
+    return <>{children}</>;
+  }
+
+  if (allowedRoles && role && !allowedRoles.includes(role)) {
     // Redirect to appropriate page based on role
     if (role === 'operator') {
       return <Navigate to="/operator" replace />;

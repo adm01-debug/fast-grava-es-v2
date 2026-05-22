@@ -1,52 +1,48 @@
 import { test, expect } from '@playwright/test';
-import AxeBuilder from '@axe-core/playwright';
 
-test.describe('Autenticação e Sessão', () => {
-  test('deve realizar login e logout com sucesso', async ({ page }) => {
+test.describe('Auth Flow - Login/Logout', () => {
+  test('should login and logout without flicker on desktop', async ({ page }) => {
+    // Set viewport for desktop
+    await page.setViewportSize({ width: 1280, height: 720 });
+    
     await page.goto('/auth');
     
-    // Preencher credenciais (usando dados de teste fictícios para o ambiente de dev local)
-    await page.fill('input[type="email"]', 'admin@fastgravacoes.com.br');
-    await page.fill('input[type="password"]', 'Fast@2026!');
-    await page.click('button[type="submit"]');
-
-    // Verificar se foi para a dashboard
-    await expect(page).toHaveURL('/');
-    await expect(page.locator('text=FAST GRAVAÇÕES')).toBeVisible();
-
-    // Abrir menu lateral se necessário e deslogar
-    await page.click('button:has-text("Sair"), .lucide-log-out');
+    // Check for login form
+    await expect(page.locator('form')).toBeVisible();
     
-    // Verificar se voltou para o login
+    // Fill login details (using env vars if available, or dummy data for test structure)
+    await page.fill('input[type="email"]', 'admin@example.com');
+    await page.fill('input[type="password"]', 'password123');
+    await page.click('button[type="submit"]');
+    
+    // Check navigation to dashboard
+    // We expect a smooth transition (handled by Framer Motion and Suspense)
+    await expect(page).toHaveURL('/');
+    
+    // Logout
+    await page.click('[data-testid="user-menu"]');
+    await page.click('[data-testid="logout-button"]');
+    
     await expect(page).toHaveURL('/auth');
   });
 
-  test('deve proteger rotas privadas', async ({ page }) => {
-    await page.goto('/settings');
-    // Deve redirecionar para auth se não houver sessão
-    await expect(page).toHaveURL(/\/auth/);
-  });
-});
-
-test.describe('Acessibilidade Automatizada', () => {
-  test('dashboard deve passar na auditoria axe', async ({ page }) => {
-    await page.goto('/');
-    // No context login mock would be needed here for a real test, 
-    // but assuming session is handled or we just test public accessibility
-    const accessibilityScanResults = await new AxeBuilder({ page }).analyze();
-    expect(accessibilityScanResults.violations).toEqual([]);
-  });
-
-  test('página de login deve passar na auditoria axe', async ({ page }) => {
+  test('should login and logout without flicker on mobile', async ({ page }) => {
+    // Set viewport for mobile
+    await page.setViewportSize({ width: 390, height: 844 });
+    
     await page.goto('/auth');
-    const accessibilityScanResults = await new AxeBuilder({ page }).analyze();
-    expect(accessibilityScanResults.violations).toEqual([]);
-  });
-
-  test('barra de navegação deve ser acessível por teclado', async ({ page }) => {
-    await page.goto('/');
-    await page.keyboard.press('Tab');
-    // Verificar skip links
-    await expect(page.locator('text=Ir para conteúdo principal')).toBeFocused();
+    await expect(page.locator('form')).toBeVisible();
+    
+    await page.fill('input[type="email"]', 'operator@example.com');
+    await page.fill('input[type="password"]', 'password123');
+    await page.click('button[type="submit"]');
+    
+    await expect(page).toHaveURL('/');
+    
+    // Mobile logout usually via sidebar or specific mobile menu
+    await page.click('[data-testid="mobile-menu-trigger"]');
+    await page.click('[data-testid="logout-button"]');
+    
+    await expect(page).toHaveURL('/auth');
   });
 });

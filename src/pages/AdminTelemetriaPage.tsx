@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { format } from "date-fns";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -64,6 +64,35 @@ export default function AdminTelemetriaPage() {
   const [customDateFrom, setCustomDateFrom] = useState<Date | undefined>();
   const [customDateTo, setCustomDateTo] = useState<Date | undefined>();
   const [activeTab, setActiveTab] = useState("queries");
+  const [realtimeEnabled, setRealtimeEnabled] = useState(true);
+
+  useEffect(() => {
+    if (!realtimeEnabled) return;
+
+    const channel = supabase
+      .channel('admin-telemetry-realtime')
+      .on('postgres_changes', { event: 'INSERT', table: 'error_logs', schema: 'public' }, (payload) => {
+        toast.error(`Novo erro detectado: ${payload.new.message.substring(0, 50)}...`, {
+          description: payload.new.component_name || 'Global',
+          duration: 5000,
+        });
+        refetchErrors();
+      })
+      .on('postgres_changes', { event: 'INSERT', table: 'query_telemetry', schema: 'public' }, (payload) => {
+        if (payload.new.severity === 'very_slow' || payload.new.severity === 'error') {
+          toast.warning(`Performance Crítica: ${payload.new.operation} em ${payload.new.table_name || 'RPC'}`, {
+            description: `${payload.new.duration_ms}ms`,
+            duration: 5000,
+          });
+        }
+        refetchQueries();
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [realtimeEnabled]);
 
   const getTimeThreshold = (): { from: string; to: string } => {
     const now = new Date();
@@ -213,6 +242,16 @@ export default function AdminTelemetriaPage() {
                 </Popover>
               </div>
             )}
+
+            <Button 
+              variant={realtimeEnabled ? "default" : "outline"} 
+              size="icon" 
+              className={cn("h-9 w-9", realtimeEnabled && "bg-green-500 hover:bg-green-600")} 
+              onClick={() => setRealtimeEnabled(!realtimeEnabled)}
+              title={realtimeEnabled ? "Desativar Realtime" : "Ativar Realtime"}
+            >
+              <Zap className={cn("h-4 w-4", realtimeEnabled && "fill-current")} />
+            </Button>
 
             <Button variant="outline" size="icon" className="h-9 w-9" onClick={() => {
               refetchQueries();
