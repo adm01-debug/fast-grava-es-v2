@@ -38,9 +38,15 @@ export function useRealtimeConnection(): UseRealtimeConnectionReturn {
         } else if (subscribeStatus === 'CLOSED') {
           setStatus('disconnected');
         } else if (subscribeStatus === 'CHANNEL_ERROR') {
-          console.error(`Realtime error on channel ${channelId}:`, err);
+          console.warn(`Realtime connection degraded on channel ${channelId}`);
           setStatus('error');
           // Auto-reconnect after exponential backoff or static delay
+          import('@/lib/errorHandling').then(({ showErrorToast }) => {
+            showErrorToast('Conexão em tempo real instável. Tentando reconectar...', { 
+              severity: 'warning',
+              id: 'realtime-error'
+            });
+          });
           const timer = setTimeout(() => {
             reconnect();
           }, 5000);
