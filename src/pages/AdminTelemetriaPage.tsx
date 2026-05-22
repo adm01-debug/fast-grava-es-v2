@@ -401,14 +401,14 @@ export default function AdminTelemetriaPage() {
                 <CardHeader>
                   <CardTitle className="text-sm font-bold flex items-center gap-2">
                     <Monitor className="h-4 w-4" />
-                    Métricas de Browser
+                    Métricas de Browser & Silent Errors
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-4">
+                  <div className="space-y-6">
                     <div className="grid grid-cols-2 gap-4">
                       <div className="p-4 bg-muted/50 rounded-xl border">
-                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-1">Erros de Console (Silent)</p>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-1">Avisos de Console (Silent)</p>
                         <p className="text-2xl font-black text-warning">
                           {errorRows.filter(e => e.metadata?.level === 'warn').length}
                         </p>
@@ -420,17 +420,10 @@ export default function AdminTelemetriaPage() {
                         </p>
                       </div>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
-        </Tabs>
-      </div>
-    </MainLayout>
-  );
-}
-                    Tempos de Renderização & Fetch (Frontend)
+
+                    <div className="pt-2">
+                      <p className="text-xs font-bold uppercase tracking-wider mb-4">Tempos de Renderização & Fetch (Frontend)</p>
+
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
