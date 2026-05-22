@@ -114,7 +114,7 @@ export default function AuthPage() {
                 <span className="text-[11px] font-mono uppercase tracking-widest text-zinc-400">52 Estúdios de Gravação</span>
               </motion.div>
               <motion.h2 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.2 }} className="text-5xl xl:text-6xl font-extrabold leading-[1.05] tracking-tight">
-                Excelência <span className="text-[#FF5A1F]">Operacional</span><br />em Tempo Real.
+                QUALIDADE + <span className="text-[#FF5A1F]">VELOCIDADE</span><br />em Tempo Real.
               </motion.h2>
               <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.3 }} className="text-zinc-400 text-lg leading-relaxed max-w-md">
                 Gestão inteligente de agendamentos, monitoramento de OEE e KPIs de produção em uma plataforma unificada.
