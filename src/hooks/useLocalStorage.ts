@@ -155,4 +155,82 @@ export function OfflineProvider({ children }: { children: ReactNode }) {
   return React.createElement(OfflineContext.Provider, { value }, children);
 }
 
+// ============================================
+// UI COMPONENTS
+// ============================================
+
+import { motion, AnimatePresence } from 'framer-motion';
+import { Wifi, WifiOff, Cloud, CloudOff, RefreshCw, Check } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+
+// Offline Banner
+export function OfflineBanner() {
+  const { isOnline, isSyncing, pendingActions, syncNow } = useOffline();
+
+  if (isOnline && pendingActions.length === 0) return null;
+
+  return React.createElement(AnimatePresence, {}, 
+    !isOnline ? React.createElement(motion.div, {
+      initial: { height: 0, opacity: 0 },
+      animate: { height: 'auto', opacity: 1 },
+      exit: { height: 0, opacity: 0 },
+      className: "bg-orange-500/10 border-b border-orange-500/20"
+    }, React.createElement("div", { className: "container mx-auto px-4 py-2 flex items-center justify-between" },
+      React.createElement("div", { className: "flex items-center gap-2 text-orange-500" },
+        React.createElement(WifiOff, { className: "h-4 w-4" }),
+        React.createElement("span", { className: "text-sm font-medium" }, "Você está offline"),
+        pendingActions.length > 0 && React.createElement("span", { className: "text-xs bg-orange-500/20 px-2 py-0.5 rounded-full" }, `${pendingActions.length} pendentes`)
+      )
+    )) : pendingActions.length > 0 ? React.createElement(motion.div, {
+      initial: { height: 0, opacity: 0 },
+      animate: { height: 'auto', opacity: 1 },
+      exit: { height: 0, opacity: 0 },
+      className: "bg-primary/10 border-b border-primary/20"
+    }, React.createElement("div", { className: "container mx-auto px-4 py-2 flex items-center justify-between" },
+      React.createElement("div", { className: "flex items-center gap-2 text-primary" },
+        React.createElement(Cloud, { className: "h-4 w-4" }),
+        React.createElement("span", { className: "text-sm font-medium" }, `${pendingActions.length} ações pendentes para sincronizar`)
+      ),
+      React.createElement(Button, {
+        size: "sm",
+        variant: "ghost",
+        onClick: syncNow,
+        disabled: isSyncing,
+        className: "gap-2"
+      }, 
+        React.createElement(RefreshCw, { className: cn('h-4 w-4', isSyncing && 'animate-spin') }),
+        isSyncing ? 'Sincronizando...' : 'Sincronizar agora'
+      )
+    )) : null
+  );
+}
+
+// Connection Status Indicator
+export function ConnectionStatus({ showLabel = false }: { showLabel?: boolean }) {
+  const { isOnline, isSyncing, pendingActions } = useOffline();
+
+  return React.createElement("div", { className: "flex items-center gap-2" },
+    React.createElement("div", {
+      className: cn(
+        'relative p-2 rounded-full transition-colors',
+        isOnline ? 'bg-green-500/10' : 'bg-orange-500/10'
+      )
+    },
+      isOnline ? React.createElement(Wifi, { className: "h-4 w-4 text-green-500" }) : React.createElement(WifiOff, { className: "h-4 w-4 text-orange-500" }),
+      isSyncing && React.createElement(motion.div, {
+        className: "absolute inset-0 rounded-full border-2 border-primary border-t-transparent",
+        animate: { rotate: 360 },
+        transition: { duration: 1, repeat: Infinity, ease: 'linear' }
+      }),
+      pendingActions.length > 0 && React.createElement("span", {
+        className: "absolute -top-1 -right-1 h-4 w-4 rounded-full bg-orange-500 text-[10px] font-bold flex items-center justify-center text-white"
+      }, pendingActions.length)
+    ),
+    showLabel && React.createElement("span", {
+      className: cn('text-sm', isOnline ? 'text-green-500' : 'text-orange-500')
+    }, isOnline ? 'Online' : 'Offline')
+  );
+}
+
 import * as React from 'react';
