@@ -410,14 +410,14 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
       notes: string;
       deadline?: string;
     }) => {
-      const { error } = await supabase
+      const { error } = await (supabase
         .from('maintenance_records')
         .update({
           status: 'correction_requested',
           correction_notes: data.notes,
           correction_deadline: data.deadline,
-        })
-        .eq('id', data.record_id);
+        } as any)
+        .eq('id', data.record_id));
 
       if (error) throw error;
     },
