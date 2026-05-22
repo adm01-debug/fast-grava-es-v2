@@ -123,8 +123,8 @@ export default function InventoryPage() {
 
         <SectionErrorBoundary section="Abas de Inventário">
           <Tabs defaultValue="inventory" className="space-y-6">
+            <TabsList className="bg-muted/50 p-1">
 
-          <TabsList className="bg-muted/50 p-1">
             <TabsTrigger value="inventory" className="gap-2">
               <Package className="h-4 w-4" />
               Estoque Atual
