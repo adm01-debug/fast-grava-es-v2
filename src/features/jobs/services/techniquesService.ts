@@ -12,7 +12,10 @@ export const techniquesService = {
       .select('*')
       .order('name');
 
-    if (error) throw error;
+    if (error) {
+      console.error('Failed to fetch techniques:', error);
+      return [];
+    }
     return data || [];
   },
 
