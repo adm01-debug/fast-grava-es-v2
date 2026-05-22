@@ -106,6 +106,12 @@ export const SystemOnboarding = () => {
     }
   }, []);
 
+  const isDark = theme === 'dark';
+  const bg = isDark ? 'hsl(220 14% 10%)' : '#ffffff';
+  const fg = isDark ? 'hsl(0 0% 98%)' : 'hsl(220 14% 12%)';
+  const muted = isDark ? 'hsl(220 10% 65%)' : 'hsl(220 10% 40%)';
+  const border = isDark ? 'hsl(220 14% 22%)' : 'hsl(220 14% 90%)';
+
   return (
     <Joyride
       run={run}
@@ -115,29 +121,87 @@ export const SystemOnboarding = () => {
       showSkipButton
       disableOverlayClose
       hideCloseButton={false}
+      spotlightPadding={8}
       callback={handleJoyrideCallback}
       styles={{
         options: {
           primaryColor: 'hsl(var(--primary))',
-          backgroundColor: theme === 'dark' ? 'hsl(var(--card))' : '#ffffff',
-          textColor: theme === 'dark' ? 'hsl(var(--foreground))' : '#1f2937',
-          arrowColor: theme === 'dark' ? 'hsl(var(--card))' : '#ffffff',
+          backgroundColor: bg,
+          textColor: fg,
+          arrowColor: bg,
+          overlayColor: 'rgba(0, 0, 0, 0.65)',
           zIndex: 10000,
+          width: 440,
         },
         tooltip: {
           textAlign: 'left',
-          borderRadius: '12px',
+          borderRadius: 16,
+          padding: 24,
+          border: `1px solid ${border}`,
+          boxShadow: '0 24px 60px -12px rgba(0,0,0,0.5), 0 0 0 1px hsl(var(--primary) / 0.15)',
+          fontFamily: 'inherit',
+        },
+        tooltipTitle: {
+          fontSize: 20,
+          fontWeight: 700,
+          color: fg,
+          margin: 0,
+          marginBottom: 8,
+          letterSpacing: '-0.01em',
+        },
+        tooltipContent: {
+          fontSize: 14,
+          lineHeight: 1.55,
+          color: muted,
+          padding: '8px 0 4px',
+        },
+        tooltipFooter: {
+          marginTop: 20,
+          paddingTop: 16,
+          borderTop: `1px solid ${border}`,
+          alignItems: 'center',
+        },
+        buttonNext: {
+          background: 'hsl(var(--primary))',
+          color: 'hsl(var(--primary-foreground))',
+          borderRadius: 10,
+          fontSize: 14,
+          fontWeight: 600,
+          padding: '10px 20px',
+          boxShadow: '0 4px 14px hsl(var(--primary) / 0.4)',
+          outline: 'none',
+        },
+        buttonBack: {
+          color: muted,
+          fontSize: 14,
+          fontWeight: 500,
+          marginRight: 8,
         },
         buttonSkip: {
-          color: 'hsl(var(--muted-foreground))',
+          color: fg,
           fontSize: 13,
+          fontWeight: 600,
+          padding: '8px 14px',
+          borderRadius: 8,
+          border: `1px solid ${border}`,
+          background: 'transparent',
+        },
+        buttonClose: {
+          width: 12,
+          height: 12,
+          top: 16,
+          right: 16,
+          color: muted,
+        },
+        spotlight: {
+          borderRadius: 12,
         },
       } as any}
       locale={{
-        back: t('common.back', { defaultValue: 'Voltar' }),
+        back: t('common.back', { defaultValue: '← Voltar' }),
         close: t('common.close', { defaultValue: 'Fechar' }),
-        last: t('common.finish', { defaultValue: 'Finalizar' }),
-        next: t('common.next', { defaultValue: 'Próximo' }),
+        last: t('common.finish', { defaultValue: '✨ Finalizar' }),
+        next: t('common.next', { defaultValue: 'Próximo →' }),
         skip: t('common.skip', { defaultValue: 'Pular tour' }),
       }}
     />
