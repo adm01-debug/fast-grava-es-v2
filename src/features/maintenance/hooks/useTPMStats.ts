@@ -11,11 +11,11 @@ interface UseTPMStatsProps {
 export function useTPMStats({ schedules, records, alerts }: UseTPMStatsProps) {
   const stats = useMemo((): TPMStats => ({
     totalScheduled: schedules.length,
-    dueToday: schedules.filter(s => isToday(new Date(s.next_due_at))).length,
-    overdue: schedules.filter(s => isPast(new Date(s.next_due_at)) && !isToday(new Date(s.next_due_at))).length,
+    dueToday: schedules.filter(s => s.next_due_at && isToday(new Date(s.next_due_at))).length,
+    overdue: schedules.filter(s => s.next_due_at && isPast(new Date(s.next_due_at)) && !isToday(new Date(s.next_due_at))).length,
     upcoming7Days: schedules.filter(s => {
-      const due = new Date(s.next_due_at);
-      return isFuture(due) && differenceInDays(due, new Date()) <= 7;
+      const due = s.next_due_at ? new Date(s.next_due_at) : null;
+      return due && isFuture(due) && differenceInDays(due, new Date()) <= 7;
     }).length,
     completedThisMonth: records.filter(r => {
       const completed = r.completed_at ? new Date(r.completed_at) : null;
@@ -29,9 +29,9 @@ export function useTPMStats({ schedules, records, alerts }: UseTPMStatsProps) {
 
   const getSchedulesByStatus = useMemo(() => {
     return (): SchedulesByStatus => ({
-      overdue: schedules.filter(s => isPast(new Date(s.next_due_at)) && !isToday(new Date(s.next_due_at))),
-      dueToday: schedules.filter(s => isToday(new Date(s.next_due_at))),
-      upcoming: schedules.filter(s => isFuture(new Date(s.next_due_at))),
+      overdue: schedules.filter(s => s.next_due_at && isPast(new Date(s.next_due_at)) && !isToday(new Date(s.next_due_at))),
+      dueToday: schedules.filter(s => s.next_due_at && isToday(new Date(s.next_due_at))),
+      upcoming: schedules.filter(s => s.next_due_at && isFuture(new Date(s.next_due_at))),
     });
   }, [schedules]);
 
