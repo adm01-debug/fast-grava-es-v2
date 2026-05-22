@@ -55,8 +55,7 @@ export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) 
     );
   }
 
-  if (allowedRoles && role && !allowedRoles.includes(role)) {
-
+  if (allowedRoles && role && role !== 'admin' && !allowedRoles.includes(role)) {
     // Redirect to appropriate page based on role
     if (role === 'operator') {
       return <Navigate to="/operator" replace />;

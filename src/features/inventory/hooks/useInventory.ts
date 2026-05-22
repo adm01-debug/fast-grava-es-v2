@@ -165,7 +165,7 @@ export function useInventoryMovements(itemId?: string) {
     queryFn: async () => {
       let query = supabase
         .from('inventory_movements')
-        .select('*, profiles:user_id (display_name), inventory_items:item_id (name)')
+        .select('*, profiles:user_id (full_name), inventory_items:item_id (name)')
         .order('created_at', { ascending: false });
       if (itemId) query = query.eq('item_id', itemId);
       const { data, error } = await query;

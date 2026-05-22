@@ -22,7 +22,9 @@ export function useRolePermissions(role: AppRole | null) {
     } catch (error: any) {
       console.error('Error fetching permissions:', error);
       // Fallback to defaults
-      if (selectedRole === 'coordinator') {
+      if (selectedRole === 'admin') {
+        setPermissions(['admin:all', 'jobs:all', 'production:all', 'operators:all', 'telemetry:view', 'settings:manage']);
+      } else if (selectedRole === 'coordinator') {
         setPermissions(['admin:all', 'jobs:all', 'production:all', 'operators:all', 'telemetry:view', 'settings:manage']);
       } else if (selectedRole === 'manager') {
         setPermissions(['jobs:view', 'jobs:create', 'jobs:edit', 'production:view', 'operators:view']);

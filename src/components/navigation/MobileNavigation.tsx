@@ -289,6 +289,8 @@ export function MobileNavigation() {
 
   const primaryItems = useMemo(() => {
     switch (role) {
+      case 'admin':
+        return coordinatorPrimaryItems; // Admin uses coordinator items as base
       case 'operator':
         return operatorPrimaryItems;
       case 'manager':
@@ -302,6 +304,8 @@ export function MobileNavigation() {
 
   const moreItems = useMemo(() => {
     switch (role) {
+      case 'admin':
+        return coordinatorMoreItems; // Admin uses coordinator items as base
       case 'operator':
         return operatorMoreItems;
       case 'manager':
