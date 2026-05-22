@@ -30,35 +30,35 @@ const ROLE_CONFIG: Record<AppRole, { label: string; color: string; icon: React.R
   admin: {
     label: 'Administrador',
     color: 'bg-red-500/10 text-red-500 border-red-500/20',
-    icon: <Shield className="h-4 w-4" />
+    icon: React.createElement(Shield, { className: "h-4 w-4" })
   },
   coordinator: {
     label: 'Coordenador',
     color: 'bg-purple-500/10 text-purple-500 border-purple-500/20',
-    icon: <Shield className="h-4 w-4" />
+    icon: React.createElement(Shield, { className: "h-4 w-4" })
   },
   manager: {
     label: 'Gerente',
     color: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
-    icon: <Users className="h-4 w-4" />
+    icon: React.createElement(Users, { className: "h-4 w-4" })
   },
   operator: {
     label: 'Operador',
     color: 'bg-green-500/10 text-green-500 border-green-500/20',
-    icon: <Factory className="h-4 w-4" />
+    icon: React.createElement(Factory, { className: "h-4 w-4" })
   },
 };
 
 const RESOURCE_ICONS: Record<string, React.ReactNode> = {
-  jobs: <Factory className="h-4 w-4" />,
-  production: <Factory className="h-4 w-4" />,
-  operators: <Users className="h-4 w-4" />,
-  machines: <Cog className="h-4 w-4" />,
-  reports: <FileText className="h-4 w-4" />,
-  settings: <Settings className="h-4 w-4" />,
-  security: <Lock className="h-4 w-4" />,
-  users: <Users className="h-4 w-4" />,
-  admin: <Shield className="h-4 w-4" />,
+  jobs: React.createElement(Factory, { className: "h-4 w-4" }),
+  production: React.createElement(Factory, { className: "h-4 w-4" }),
+  operators: React.createElement(Users, { className: "h-4 w-4" }),
+  machines: React.createElement(Cog, { className: "h-4 w-4" }),
+  reports: React.createElement(FileText, { className: "h-4 w-4" }),
+  settings: React.createElement(Settings, { className: "h-4 w-4" }),
+  security: React.createElement(Lock, { className: "h-4 w-4" }),
+  users: React.createElement(Users, { className: "h-4 w-4" }),
+  admin: React.createElement(Shield, { className: "h-4 w-4" }),
 };
 
 export function PermissionManager() {
@@ -145,7 +145,7 @@ export function PermissionManager() {
         <Tabs value={selectedRole} onValueChange={(v) => setSelectedRole(v as AppRole)}>
           <TabsList className="grid w-full grid-cols-4 mb-6">
             {(Object.keys(ROLE_CONFIG) as AppRole[]).map((role) => (
-              <TabsTrigger key={role} value={role} className="gap-2">
+              <TabsTrigger key={role} value={role} className="flex gap-2">
                 {ROLE_CONFIG[role].icon}
                 <span className="hidden sm:inline">{ROLE_CONFIG[role].label}</span>
                 {role === selectedRole && (
@@ -177,7 +177,7 @@ export function PermissionManager() {
                 {Object.entries(groupedPermissions).map(([resource, perms]) => (
                   <div key={resource} className="border rounded-lg overflow-hidden">
                     <div className="flex items-center gap-2 px-4 py-3 bg-muted/30 border-b">
-                      {RESOURCE_ICONS[resource] || <Settings className="h-4 w-4" />}
+                      {RESOURCE_ICONS[resource] || React.createElement(Settings, { className: "h-4 w-4" })}
                       <span className="font-medium">{RESOURCE_LABELS[resource] || resource}</span>
                     </div>
                     <div className="divide-y">
