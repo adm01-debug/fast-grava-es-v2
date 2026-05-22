@@ -41,9 +41,9 @@ export function useRealtimeConnection(): UseRealtimeConnectionReturn {
           console.warn(`Realtime connection degraded on channel ${channelId}`);
           setStatus('error');
           // Auto-reconnect after exponential backoff or static delay
-          import('@/lib/errorHandling').then(({ showErrorToast }) => {
-            showErrorToast('Conexão em tempo real instável. Tentando reconectar...', undefined, { 
-              severity: 'warning',
+          import('sonner').then(({ toast }) => {
+            toast.warning('Conexão instável', {
+              description: 'Tentando reconectar ao serviço em tempo real...',
               id: 'realtime-error'
             });
           });

@@ -7,7 +7,10 @@ export type MachineHealthMetric = Database['public']['Tables']['machine_health_m
 export const machinesService = {
   async getAll(): Promise<Machine[]> {
     const { data, error } = await supabase.from('machines').select('*').order('name');
-    if (error) throw error;
+    if (error) {
+      console.error('Failed to fetch machines:', error);
+      return [];
+    }
     return data || [];
   },
 
