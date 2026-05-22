@@ -59,8 +59,8 @@ export default function MLPredictionsDashboard() {
               <Brain className="h-8 w-8 text-primary" />
               FAST GRAVAÇÕES - GESTÃO DE GRAVAÇÃO
             </h1>
-            <p className="text-muted-foreground">
-              Previsão de falhas baseada em histórico de manutenções e produção
+            <p className="text-muted-foreground font-black uppercase tracking-widest text-xs opacity-70">
+              QUALIDADE + VELOCIDADE
             </p>
           </div>
           <div className="flex gap-3">
