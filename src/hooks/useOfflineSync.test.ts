@@ -4,18 +4,21 @@ import { useOfflineSync } from './useOfflineSync';
 import { supabase } from '@/integrations/supabase/client';
 
 // Mock Supabase
-vi.mock('@/integrations/supabase/client', () => ({
-  supabase: {
-    from: vi.fn(() => ({
-      select: vi.fn().mockReturnThis(),
-      update: vi.fn().mockReturnThis(),
-      insert: vi.fn().mockReturnThis(),
-      eq: vi.fn().mockReturnThis(),
-      order: vi.fn().mockReturnThis(),
-      limit: vi.fn().mockResolvedValue({ data: [], error: null }),
-    })),
-  },
-}));
+vi.mock('@/integrations/supabase/client', () => {
+  const mockFrom = vi.fn(() => ({
+    select: vi.fn().mockReturnThis(),
+    update: vi.fn().mockReturnThis(),
+    insert: vi.fn().mockReturnThis(),
+    eq: vi.fn().mockReturnThis(),
+    order: vi.fn().mockReturnThis(),
+    limit: vi.fn().mockResolvedValue({ data: [], error: null }),
+  }));
+  return {
+    supabase: {
+      from: mockFrom,
+    },
+  };
+});
 
 // Mock navigator.onLine
 const setOnline = (status: boolean) => {
