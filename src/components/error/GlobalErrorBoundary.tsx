@@ -25,14 +25,12 @@ export class GlobalErrorBoundary extends Component<Props, State> {
   }
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('Uncaught error:', error, errorInfo);
-    
     // Log using our standard error handling
     const appError = createAppError(error, { errorInfo });
     import('@/lib/logger').then(({ logger }) => {
-      logger.error('Critical UI Error captured by Boundary', { 
+      logger.error('Critical UI Error captured by Boundary', {
         error: appError,
-        componentStack: errorInfo.componentStack 
+        componentStack: errorInfo.componentStack
       });
     });
   }

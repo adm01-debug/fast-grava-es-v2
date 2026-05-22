@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { useSchedulingData } from '@/features/jobs';
 import { useBusinessConfig } from '@/features/admin';
 import { startOfDay, endOfDay, subDays, differenceInMinutes, parseISO, isWithinInterval, isValid } from 'date-fns';
+import { logger } from '@/lib/logger';
 
 // Data validation helpers
 function isValidDate(dateStr: string | null | undefined): boolean {
@@ -506,7 +507,7 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, f
 
   const downloadReport = async (format: 'excel' | 'pdf' | 'csv') => {
     // Basic implementation
-    console.log(`Downloading ${format} report...`);
+    logger.debug(`Downloading ${format} report`, undefined, 'useOEE');
   };
 
   return { data, isLoading, downloadReport };

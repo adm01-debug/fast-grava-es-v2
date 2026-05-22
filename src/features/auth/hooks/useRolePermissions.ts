@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { logger } from '@/lib/logger';
 import { type AppRole } from '../index';
 
 export function useRolePermissions(role: AppRole | null) {
@@ -20,7 +21,7 @@ export function useRolePermissions(role: AppRole | null) {
       if (error) throw error;
       setPermissions((data || []).map(p => p.permission));
     } catch (error: any) {
-      console.error('Error fetching permissions:', error);
+      logger.error('Falha ao buscar permissões de role', error, 'useRolePermissions');
       // Fallback to defaults
       if (selectedRole === 'coordinator') {
         setPermissions(['admin:all', 'jobs:all', 'production:all', 'operators:all', 'telemetry:view', 'settings:manage']);

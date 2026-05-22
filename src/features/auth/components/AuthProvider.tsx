@@ -3,6 +3,7 @@ import type { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { useDeviceDetection } from '@/hooks/useDeviceDetection';
 import { toast } from 'sonner';
+import { logger } from '@/lib/logger';
 import { AuthService } from '../services/authService';
 import {
   AuthContext,
@@ -43,7 +44,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setRole(roleData as AppRole);
       }
     } catch (error) {
-      console.error("Error fetching user data:", error);
+      logger.error('Falha ao buscar dados do usuário', error, 'AuthProvider');
     }
   };
 
@@ -72,7 +73,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
       if (!data.session) await signOut();
     } catch (error) {
-      console.error("Critical session refresh error:", error);
+      logger.critical('Falha crítica ao renovar sessão', error, 'AuthProvider');
     }
   }, [user, isSessionActive]);
 

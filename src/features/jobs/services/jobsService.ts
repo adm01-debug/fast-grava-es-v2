@@ -1,5 +1,6 @@
 import { supabase } from '@/integrations/supabase/client';
 import type { Database } from '@/integrations/supabase/types';
+import { logger } from '@/lib/logger';
 import { jobSchema, JobStatus, JobPriority } from '../types/job.schema';
 
 export type { JobStatus, JobPriority };
@@ -37,7 +38,7 @@ export const jobsService = {
     const validatedData = (data || []).map(row => {
       const result = jobSchema.safeParse(row);
       if (!result.success) {
-        console.warn(`Job validation failed for ID ${row.id}:`, result.error.format());
+        logger.warn(`Job validation failed for ID ${row.id}`, result.error.format(), 'jobsService');
         // We still return the row to avoid breaking the UI, but cast correctly
         return row as unknown as JobWithRelations;
       }

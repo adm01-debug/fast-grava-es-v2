@@ -15,6 +15,7 @@ import { toast } from 'sonner';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 import { supabase } from '@/integrations/supabase/client';
+import { logger } from '@/lib/logger';
 import { AdjustmentParameters } from './ExecutionAdjustmentParameters';
 import { ExecutionSupplies } from './ExecutionSupplies';
 
@@ -133,7 +134,7 @@ export function ExecutionDetailsModal({ isOpen, onClose, recordId }: ExecutionDe
           photosFolder?.file(`item_${i+1}_${resp.item?.description.substring(0, 20)}.jpg`, blob);
         } catch (e) {
           // Foto individual indisponível: pula e continua montando o ZIP.
-          console.warn(`Falha ao buscar foto ${resp.photo_url}`, e);
+          logger.warn(`Falha ao buscar foto ${resp.photo_url}`, e, 'ExecutionDetailsModal');
         }
       }
 
