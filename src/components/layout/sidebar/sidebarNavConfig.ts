@@ -41,7 +41,7 @@ export const navGroups: NavGroup[] = [
     label: 'Analytics', 
     items: [
       { icon: BarChart3, label: 'BI Executivo', href: '/bi', allowedRoles: STAFF_ONLY },
-      { icon: Factory, label: 'Fábrica 13/10', href: '/executive', allowedRoles: STAFF_ONLY },
+      { icon: Factory, label: 'Produção 10/10', href: '/executive', allowedRoles: STAFF_ONLY },
       { icon: FileText, label: 'Construtor de Relatórios', href: '/report-builder', allowedRoles: STAFF_ONLY },
       { icon: TrendingUp, label: 'KPIs e Ocupação', href: '/kpis', allowedRoles: STAFF_ONLY },
       { icon: Gauge, label: 'OEE', href: '/oee', allowedRoles: STAFF_ONLY },
