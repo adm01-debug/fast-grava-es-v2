@@ -17,7 +17,7 @@ export interface MaintenanceSchedule {
   description: string | null;
   interval_days: number;
   last_completed_at: string | null;
-  next_due_at: string | null;
+  next_due_at: string;
   estimated_duration_minutes: number;
   is_active: boolean;
   created_by: string | null;
@@ -90,7 +90,7 @@ export interface MaintenanceRecord {
   maintenance_type_id: string;
   performed_by: string | null;
   performed_by_name: string | null;
-  started_at: string | null;
+  started_at: string;
   completed_at: string | null;
   status: 'in_progress' | 'completed' | 'approved' | 'cancelled' | 'pending_parts' | 'correction_requested';
   correction_notes: string | null;
@@ -140,7 +140,7 @@ export interface MaintenanceAlert {
   is_resolved: boolean;
   resolved_by: string | null;
   resolved_at: string | null;
-  created_at: string | null;
+  created_at: string;
   schedule?: MaintenanceSchedule;
   machine?: { id: string; name: string; code: string; technique_id?: string };
 }
