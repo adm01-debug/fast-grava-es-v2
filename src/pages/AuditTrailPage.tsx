@@ -40,8 +40,8 @@ export default function AuditTrailPage() {
                   <Lock className="h-2 w-2 mr-1" /> Imutável
                 </Badge>
               </h1>
-              <p className="text-sm text-muted-foreground font-medium">
-                Governança Industrial: Cadeia de hash SHA-256 (21 CFR Part 11)
+              <p className="text-sm text-muted-foreground font-black uppercase tracking-widest opacity-70">
+                QUALIDADE + VELOCIDADE
               </p>
             </div>
           </div>
