@@ -108,8 +108,9 @@ export function useInventory() {
       toast.success('Movimentação registrada');
     },
     onError: (error: any) => {
-      import('@/lib/errorHandling').then(({ showErrorToast }) => {
-        showErrorToast(error, 'Não foi possível registrar a movimentação de estoque.');
+      console.error('Failed to record movement:', error);
+      toast.error('Erro ao registrar movimentação', {
+        description: error.message || 'Verifique sua conexão e tente novamente.'
       });
     },
   });
