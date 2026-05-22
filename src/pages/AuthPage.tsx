@@ -117,7 +117,7 @@ export default function AuthPage() {
                 QUALIDADE + <span className="text-[#FF5A1F]">VELOCIDADE</span><br />em Tempo Real.
               </motion.h2>
               <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.3 }} className="text-zinc-400 text-lg leading-relaxed max-w-md">
-                Gestão inteligente de agendamentos, monitoramento de OEE e KPIs de produção em uma plataforma unificada.
+                FAST GRAVAÇÕES - GESTÃO DE GRAVAÇÃO: Monitoramento de OEE e KPIs em uma plataforma unificada.
               </motion.p>
             </div>
 
