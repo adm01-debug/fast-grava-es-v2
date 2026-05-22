@@ -171,7 +171,7 @@ export default function AuthPage() {
                   </div>
 
                   <footer className="mt-16 text-center">
-                    <p className="text-[10px] text-zinc-600 uppercase tracking-widest font-mono">© {new Date().getFullYear()} FAST GRAVAÇÕES • Indústria 4.0</p>
+                    <p className="text-[10px] text-zinc-600 uppercase tracking-widest font-mono">© {new Date().getFullYear()} FAST GRAVAÇÕES - GESTÃO DE GRAVAÇÃO • Indústria 4.0</p>
                   </footer>
                 </motion.div>
               )}
