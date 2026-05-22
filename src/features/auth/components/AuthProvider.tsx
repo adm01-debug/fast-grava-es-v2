@@ -115,9 +115,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(session?.user ?? null);
 
         if (session?.user) {
-          setTimeout(() => {
-            fetchUserData(session.user.id);
-          }, 0);
+          fetchUserData(session.user.id).finally(() => {
+            setIsLoading(false);
+          });
         } else {
           setProfile(null);
           setRole(null);
@@ -126,11 +126,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     );
 
-    AuthService.getSession().then((session) => {
+    AuthService.getSession().then(async (session) => {
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
-        fetchUserData(session.user.id);
+        await fetchUserData(session.user.id);
       }
       setIsLoading(false);
     }).catch(() => {
