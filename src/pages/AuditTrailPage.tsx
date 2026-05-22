@@ -20,7 +20,7 @@ export default function AuditTrailPage() {
   const { data, isLoading, error } = useAuditTrail(filters);
 
   useEffect(() => {
-    document.title = 'Trilha de Auditoria — FAST GRAVAÇÕES';
+    document.title = 'FAST GRAVAÇÕES - GESTÃO DE GRAVAÇÃO | Auditoria';
   }, []);
 
   return (
