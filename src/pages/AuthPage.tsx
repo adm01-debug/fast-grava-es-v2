@@ -90,7 +90,7 @@ export default function AuthPage() {
     <AuthErrorBoundary>
       <Helmet>
         <title>{t('auth.login')} | FAST GRAVAÇÕES</title>
-        <meta name="description" content="Acesse o sistema FAST GRAVAÇÕES para gerenciar sua produção industrial." />
+        <meta name="description" content="Acesse o sistema FAST GRAVAÇÕES - GESTÃO DE GRAVAÇÃO para gerenciar sua produção industrial." />
       </Helmet>
 
       <div className="min-h-screen w-full flex bg-[#050505] text-white font-display selection:bg-[#FF5A1F]/30">
