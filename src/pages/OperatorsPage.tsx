@@ -135,7 +135,7 @@ export default function OperatorsPage() {
               </h1>
               <FavoriteButton path="/operators" name="Operadores" />
             </div>
-            <p className="text-muted-foreground">Orquestração de capital humano e competências técnicas</p>
+            <p className="text-muted-foreground font-black uppercase tracking-widest text-xs opacity-70">QUALIDADE + VELOCIDADE</p>
           </div>
 
           <div className="flex items-center gap-3">
