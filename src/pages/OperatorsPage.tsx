@@ -131,7 +131,7 @@ export default function OperatorsPage() {
           <div>
             <div className="flex items-center gap-3">
               <h1 className="text-3xl font-display font-black tracking-tighter">
-                <span className="gradient-text animate-pulse-glow">Workforce Excellence 10/10</span>
+                <span className="gradient-text animate-pulse-glow">FAST GRAVAÇÕES - GESTÃO DE GRAVAÇÃO</span>
               </h1>
               <FavoriteButton path="/operators" name="Operadores" />
             </div>
