@@ -338,7 +338,7 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
       if (fetchErr || !record) throw new Error('Registro não encontrado');
 
       // Requisito: Pelo menos uma foto se houver itens que exigem foto
-      const needsPhoto = record.responses.some((r: { photo_url: string | null }) => r.photo_url);
+      const needsPhoto = record.responses.some((r: { photo_url: string | any }) => r.photo_url);
       if (!record.signature_url) throw new Error('Assinatura obrigatória ausente');
 
       const { data: recordData, error: recordFetchError } = await supabase
@@ -351,7 +351,7 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
         throw new Error('Registro não encontrado');
       }
 
-      const scheduleData = recordData.schedule;
+      const scheduleData = recordData.schedule as any;
       const nextDue = addDays(new Date(), scheduleData?.interval_days || 30).toISOString();
 
 
@@ -491,7 +491,7 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
         });
 
         if (!mlError && mlResult?.predictions) {
-          mlResult.predictions.forEach((p: { machine: { id: string }, prediction: { risk_score: number, recommendations?: string[] } }) => {
+          mlResult.predictions.forEach((p: { machine: { id: string }, prediction: { risk_score: number, recommendations?: any[] } }) => {
             if (p.prediction?.risk_score > 75) {
               // High risk detected by AI, find the primary schedule for this machine
               const machineSchedule = schedules.find(s => s.machine_id === p.machine.id && s.is_active);
@@ -561,7 +561,7 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
       for (const id of data.record_ids) {
         const { data: record } = await supabase
           .from('maintenance_records')
-          .select('*, schedule:maintenance_schedules(*)')
+          .select('*, schedule:maintenance_schedules(*)') as any;
           .eq('id', id)
           .single();
 
