@@ -182,6 +182,10 @@ const Index = () => {
     );
   }, [isEditMode, handleToggleWidgetVisibility]);
 
+  const handleReorder = useCallback((section: WidgetConfig['section'], activeId: string, overId: string) => {
+    reorderWidgets(section, activeId, overId);
+  }, [reorderWidgets]);
+
   // Activity log for tracking
   const { entries: activityEntries, addEntry: addActivityEntry } = useActivityLog();
   const navigate = useNavigate();
