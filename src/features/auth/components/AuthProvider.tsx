@@ -221,9 +221,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     signIn,
     signUp,
     signOut,
-    isCoordinator: role === 'coordinator',
+    isCoordinator: role === 'coordinator' || role === 'admin',
     isOperator: role === 'operator',
     isManager: role === 'manager',
+    isAdmin: role === 'admin',
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

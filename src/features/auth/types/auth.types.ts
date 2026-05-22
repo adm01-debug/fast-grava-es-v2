@@ -1,7 +1,7 @@
 import { createContext } from 'react';
 import type { User, Session } from '@supabase/supabase-js';
 
-export type AppRole = 'coordinator' | 'operator' | 'manager';
+export type AppRole = 'coordinator' | 'operator' | 'manager' | 'admin';
 
 export interface Profile {
   id: string;
@@ -22,6 +22,7 @@ export interface AuthContextType {
   isCoordinator: boolean;
   isOperator: boolean;
   isManager: boolean;
+  isAdmin: boolean;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
