@@ -1,8 +1,11 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { Database } from '@/integrations/supabase/types';
 import { subDays, isAfter, parseISO } from 'date-fns';
 import { useMemo } from 'react';
+
+type DbInventoryItem = Database['public']['Tables']['inventory_items']['Row'];
+type DbInventoryMovement = Database['public']['Tables']['inventory_movements']['Row'];
 
 export type InventoryCategory = 'ink' | 'screen' | 'solvent' | 'consumable' | 'other';
 
@@ -46,7 +49,7 @@ export function useInventory() {
         .select('*')
         .order('name');
       if (error) throw error;
-      return data as InventoryItem[];
+      return data;
     },
   });
 
@@ -169,7 +172,11 @@ export function useInventoryMovements(itemId?: string) {
         .from('inventory_movements')
         .select('*, profiles:user_id (full_name), inventory_items:item_id (name)')
         .order('created_at', { ascending: false });
-      if (itemId) query = query.eq('item_id', itemId);
+      
+      if (itemId) {
+        query = query.eq('item_id', itemId);
+      }
+      
       const { data, error } = await query;
       if (error) throw error;
       return data;
