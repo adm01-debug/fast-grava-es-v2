@@ -124,9 +124,9 @@ const InstallAppPage = () => {
               <Smartphone className="w-8 h-8 text-white" />
             </div>
           </div>
-          <h1 className="text-3xl font-bold text-foreground">Instalar FAST GRAVAÇÕES</h1>
-          <p className="text-muted-foreground">
-            Instale o app no seu dispositivo para acesso rápido e offline
+          <h1 className="text-3xl font-bold text-foreground">Instalar FAST GRAVAÇÕES - GESTÃO DE GRAVAÇÃO</h1>
+          <p className="text-muted-foreground font-black uppercase tracking-widest text-xs opacity-70">
+            QUALIDADE + VELOCIDADE
           </p>
 
           {/* Online Status */}
