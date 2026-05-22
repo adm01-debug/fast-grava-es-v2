@@ -40,13 +40,21 @@ serve(async (req) => {
     const { error: dbError } = await supabase.from("profiles").select("id").limit(1);
     checks.database = !dbError;
 
-    // Check storage
-    const { error: storageError } = await supabase.storage.listBuckets();
-    checks.storage = !storageError;
+    // Check storage with timeout
+    const storagePromise = supabase.storage.listBuckets();
+    const storageResult = await Promise.race([
+      storagePromise,
+      new Promise((_, reject) => setTimeout(() => reject(new Error('Storage timeout')), 2000))
+    ]).catch(() => ({ error: true }));
+    checks.storage = !(storageResult as any).error;
 
-    // Check auth
-    const { error: authError } = await supabase.auth.getSession();
-    checks.auth = !authError;
+    // Check auth with timeout
+    const authPromise = supabase.auth.getSession();
+    const authResult = await Promise.race([
+      authPromise,
+      new Promise((_, reject) => setTimeout(() => reject(new Error('Auth timeout')), 2000))
+    ]).catch(() => ({ error: true }));
+    checks.auth = !(authResult as any).error;
 
     const allHealthy = Object.values(checks).every(Boolean);
     const responseTime = Date.now() - startTime;
