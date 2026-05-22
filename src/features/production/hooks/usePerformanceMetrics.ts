@@ -48,7 +48,7 @@ export function usePerformanceMetrics(componentName: string) {
           }
         });
       } catch (err) {
-        console.error('Failed to persist telemetry trace:', err);
+        // Silently fail telemetry persistence to not impact user
       }
     };
 
@@ -85,7 +85,7 @@ export function usePerformanceMetrics(componentName: string) {
         }
       });
     } catch (err) {
-      console.error('Failed to persist fetch telemetry:', err);
+      // Silently fail telemetry persistence
     }
   };
 
