@@ -262,8 +262,8 @@ export default function ExecutiveDashboard() {
                 </div>
               </div>
             </div>
-            <p className="text-muted-foreground text-sm font-medium italic pl-1">
-              Orquestração Inteligente & Governança de Dados Industrial de Alta Performance
+            <p className="text-muted-foreground text-sm font-black uppercase tracking-widest opacity-70">
+              FAST GRAVAÇÕES - GESTÃO DE GRAVAÇÃO
             </p>
           </div>
 
