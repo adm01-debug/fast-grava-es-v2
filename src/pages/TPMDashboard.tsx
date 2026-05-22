@@ -108,7 +108,7 @@ export default function TPMDashboard() {
   return (
     <MainLayout>
       <Helmet>
-        <title>TPM - Manutenção Preventiva | FAST GRAVAÇÕES</title>
+        <title>FAST GRAVAÇÕES | TPM - Manutenção</title>
       </Helmet>
 
       <div className="p-4 sm:p-6 lg:p-8 space-y-6 lg:space-y-8">
