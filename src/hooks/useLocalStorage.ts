@@ -98,22 +98,6 @@ export function OfflineProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  useEffect(() => {
-    if (isOnline && pendingActions.length > 0) {
-      syncNow();
-    }
-  }, [isOnline]);
-
-  const addPendingAction = useCallback((action: Omit<PendingAction, 'id' | 'timestamp' | 'retries'>) => {
-    const newAction: PendingAction = {
-      ...action,
-      id: `action-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-      timestamp: new Date().toISOString(),
-      retries: 0,
-    };
-    setPendingActions(prev => [...prev, newAction]);
-  }, [setPendingActions]);
-
   const syncNow = useCallback(async () => {
     if (!isOnline || isSyncing || pendingActions.length === 0) return;
 
@@ -122,7 +106,6 @@ export function OfflineProvider({ children }: { children: ReactNode }) {
 
     for (const action of pendingActions) {
       try {
-        // Simulate API call or real sync logic
         await new Promise(resolve => setTimeout(resolve, 500));
         successfulIds.push(action.id);
       } catch (error) {
@@ -139,6 +122,22 @@ export function OfflineProvider({ children }: { children: ReactNode }) {
       toast.success(`${successfulIds.length} ações sincronizadas.`);
     }
   }, [isOnline, isSyncing, pendingActions, setPendingActions]);
+
+  useEffect(() => {
+    if (isOnline && pendingActions.length > 0) {
+      syncNow();
+    }
+  }, [isOnline, pendingActions.length, syncNow]);
+
+  const addPendingAction = useCallback((action: Omit<PendingAction, 'id' | 'timestamp' | 'retries'>) => {
+    const newAction: PendingAction = {
+      ...action,
+      id: `action-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      timestamp: new Date().toISOString(),
+      retries: 0,
+    };
+    setPendingActions(prev => [...prev, newAction]);
+  }, [setPendingActions]);
 
   const clearPending = useCallback(() => {
     setPendingActions([]);
