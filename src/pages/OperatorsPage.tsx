@@ -122,8 +122,8 @@ export default function OperatorsPage() {
     <MainLayout>
       <div className="space-y-6">
         <Helmet>
-          <title>Workforce Excellence | Gestão de Operadores</title>
-          <meta name="description" content="Gestão de competências, produtividade e ranking global de operadores da fábrica." />
+          <title>FAST GRAVAÇÕES | Gestão de Operadores</title>
+          <meta name="description" content="FAST GRAVAÇÕES - GESTÃO DE GRAVAÇÃO - Workforce Excellence 10/10" />
         </Helmet>
         <Breadcrumbs />
 
