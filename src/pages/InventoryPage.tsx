@@ -176,7 +176,7 @@ export default function InventoryPage() {
                 filteredItems.map((item) => (
                   <InventoryCard
                     key={item.id}
-                    item={item}
+                    item={item as InventoryItem}
                     onMovement={recordMovement}
                     isSelected={selectedItems.has(item.id)}
                     onSelect={(id: string, checked: boolean) => {
