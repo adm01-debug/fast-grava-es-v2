@@ -364,7 +364,7 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
           approver_id: data.approver_id,
           approved_at: new Date().toISOString(),
           next_scheduled_date_after_approval: nextDue,
-        })
+        } as any)
         .eq('id', data.record_id);
 
       if (recordError) throw recordError;
