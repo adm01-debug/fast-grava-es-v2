@@ -29,7 +29,7 @@ export function AppSidebar() {
   const [openGroups, setOpenGroups] = useState<string[]>(['home', 'planning']);
   const location = useLocation();
   const navigate = useNavigate();
-  const { profile, role, signOut, isCoordinator } = useAuth();
+  const { profile, role, signOut, isCoordinator, isAdmin } = useAuth();
   const { isMobile } = useDevice();
   const alertCount = useAlertCount();
   const { unreadCount: notificationCount } = useNotifications();

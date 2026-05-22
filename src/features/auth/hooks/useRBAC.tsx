@@ -4,6 +4,29 @@ import type { AppRole } from '../index';
 
 // Define permissions for each role
 export const ROLE_PERMISSIONS: Record<AppRole, string[]> = {
+  admin: [
+    'admin:all',
+    'jobs:read', 'jobs:create', 'jobs:update', 'jobs:delete',
+    'machines:read', 'machines:create', 'machines:update', 'machines:delete',
+    'operators:read', 'operators:create', 'operators:update', 'operators:delete',
+    'users:read', 'users:create', 'users:update', 'users:delete', 'users:change_role',
+    'reports:read', 'reports:export',
+    'settings:read', 'settings:update',
+    'maintenance:read', 'maintenance:create', 'maintenance:update', 'maintenance:delete',
+    'quality:read', 'quality:create', 'quality:update',
+    'traceability:read', 'traceability:create',
+    'technical_sheets:read', 'technical_sheets:create', 'technical_sheets:update', 'technical_sheets:delete',
+    'technical_sheets:approve',
+    'goals:read', 'goals:create', 'goals:update', 'goals:delete',
+    'gamification:read', 'gamification:manage',
+    'alerts:read', 'alerts:resolve',
+    'energy:read', 'energy:manage',
+    'spc:read', 'spc:manage',
+    'shifts:read', 'shifts:manage',
+    'bitrix:read', 'bitrix:sync',
+    'audit:read',
+    'inventory:read', 'inventory:transfer', 'inventory:adjust', 'inventory:delete',
+  ],
   coordinator: [
     // Full access
     'jobs:read', 'jobs:create', 'jobs:update', 'jobs:delete',
@@ -99,6 +122,7 @@ export interface RBACResult {
   isCoordinator: boolean;
   isManager: boolean;
   isOperator: boolean;
+  isAdmin: boolean;
 
   // All permissions for current role
   permissions: string[];
@@ -108,7 +132,7 @@ export interface RBACResult {
 }
 
 export function useRBAC(): RBACResult {
-  const { role, isCoordinator, isManager, isOperator, isLoading } = useAuth();
+  const { role, isCoordinator, isManager, isOperator, isAdmin, isLoading } = useAuth();
 
   const permissions = useMemo(() => {
     if (isLoading || !role) return [];
@@ -124,6 +148,7 @@ export function useRBAC(): RBACResult {
   const hasPermission = useMemo(() => {
     return (permission: string): boolean => {
       if (!role) return false;
+      if (role === 'admin') return true;
       return permissions.includes(permission);
     };
   }, [role, permissions]);
@@ -131,6 +156,7 @@ export function useRBAC(): RBACResult {
   const hasAnyPermission = useMemo(() => {
     return (permissionList: string[]): boolean => {
       if (!role) return false;
+      if (role === 'admin') return true;
       return permissionList.some(p => permissions.includes(p));
     };
   }, [role, permissions]);
@@ -138,6 +164,7 @@ export function useRBAC(): RBACResult {
   const hasAllPermissions = useMemo(() => {
     return (permissionList: string[]): boolean => {
       if (!role) return false;
+      if (role === 'admin') return true;
       return permissionList.every(p => permissions.includes(p));
     };
   }, [role, permissions]);
@@ -145,6 +172,7 @@ export function useRBAC(): RBACResult {
   const canAccessRoute = useMemo(() => {
     return (path: string): boolean => {
       if (!role) return false;
+      if (role === 'admin') return true;
 
       // Find matching route
       const requiredPermissions = ROUTE_PERMISSIONS[path];
@@ -163,6 +191,7 @@ export function useRBAC(): RBACResult {
     isCoordinator,
     isManager,
     isOperator,
+    isAdmin,
     permissions,
     isLoading,
   };
