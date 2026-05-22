@@ -126,8 +126,8 @@ export default function TPMDashboard() {
                 name="TPM"
               />
             </div>
-            <p className="text-muted-foreground">
-              Total Productive Maintenance - Gestão de manutenções programadas
+            <p className="text-muted-foreground font-black uppercase tracking-widest text-xs opacity-70">
+              QUALIDADE + VELOCIDADE
             </p>
           </div>
           <div className="flex items-center gap-3">
