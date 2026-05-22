@@ -341,9 +341,9 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
       const needsPhoto = record.responses.some((r: any) => r.photo_url);
       if (!record.signature_url) throw new Error('Assinatura obrigatória ausente');
 
-      const { data: recordData, error: recordFetchError } = await supabase
+      const { data: recordData, error: recordFetchError } = await (supabase
         .from('maintenance_records')
-        .select('*, schedule:maintenance_schedules(*)')
+        .select('*, schedule:maintenance_schedules(*)') as any)
         .eq('id', data.record_id)
         .maybeSingle();
 
