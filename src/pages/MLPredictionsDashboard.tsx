@@ -46,7 +46,7 @@ export default function MLPredictionsDashboard() {
   return (
     <>
       <Helmet>
-        <title>ML Preditivo | FAST GRAVAÇÕES</title>
+        <title>FAST GRAVAÇÕES | ML Preditivo</title>
       </Helmet>
 
       <div className="space-y-6">
@@ -55,12 +55,12 @@ export default function MLPredictionsDashboard() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-display font-black tracking-tighter flex items-center gap-3">
+            <h1 className="text-3xl font-display font-black tracking-tighter flex items-center gap-3 uppercase">
               <Brain className="h-8 w-8 text-primary" />
-              Machine Learning Preditivo
+              FAST GRAVAÇÕES - GESTÃO DE GRAVAÇÃO
             </h1>
-            <p className="text-muted-foreground">
-              Previsão de falhas baseada em histórico de manutenções e produção
+            <p className="text-muted-foreground font-black uppercase tracking-widest text-xs opacity-70">
+              QUALIDADE + VELOCIDADE
             </p>
           </div>
           <div className="flex gap-3">

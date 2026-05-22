@@ -233,10 +233,10 @@ export default function ExecutiveDashboard() {
     <MainLayout>
       <div className="p-4 sm:p-6 lg:p-8 space-y-10 animate-fade-in-up">
         <Helmet>
-          <title>Fábrica Autônoma 360 | Dashboard Executivo</title>
-          <meta name="description" content="Orquestração Inteligente & Governança de Dados Industrial de Alta Performance. Visualize KPIs de produção, eficiência e qualidade em tempo real." />
+          <title>FAST GRAVAÇÕES | Dashboard Executivo</title>
+          <meta name="description" content="FAST GRAVAÇÕES - GESTÃO DE GRAVAÇÃO - QUALIDADE + VELOCIDADE" />
           <meta property="og:title" content="Dashboard Executivo - FAST GRAVAÇÕES" />
-          <meta property="og:description" content="Monitoramento autônomo e orquestrado da performance industrial." />
+          <meta property="og:description" content="QUALIDADE + VELOCIDADE" />
         </Helmet>
         <Breadcrumbs className="mb-0" />
 
@@ -249,12 +249,12 @@ export default function ExecutiveDashboard() {
               </div>
               <div>
                 <h1 className="text-3xl sm:text-4xl font-display font-black tracking-tighter">
-                  <span className="gradient-text animate-pulse-glow">Fábrica Autônoma 360</span>
+                  <span className="gradient-text animate-pulse-glow">FAST GRAVAÇÕES - GESTÃO DE GRAVAÇÃO</span>
                 </h1>
                 <div className="flex flex-wrap items-center gap-2 mt-1">
                   <Badge variant="outline" className="gap-1.5 px-2.5 py-0.5 border-primary/30 bg-primary/5 text-primary text-[10px] font-black uppercase tracking-widest">
                     <div className="w-1.5 h-1.5 rounded-full bg-primary animate-ping" />
-                    Status: Hyper-Quantum 13/10
+                    QUALIDADE + VELOCIDADE
                   </Badge>
                   <Badge variant="secondary" className="text-[10px] font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-600 dark:text-emerald-500 border-emerald-500/20">
                     Governança Total Ativa
@@ -262,8 +262,8 @@ export default function ExecutiveDashboard() {
                 </div>
               </div>
             </div>
-            <p className="text-muted-foreground text-sm font-medium italic pl-1">
-              Orquestração Inteligente & Governança de Dados Industrial de Alta Performance
+            <p className="text-muted-foreground text-sm font-black uppercase tracking-widest opacity-70">
+              FAST GRAVAÇÕES - GESTÃO DE GRAVAÇÃO
             </p>
           </div>
 

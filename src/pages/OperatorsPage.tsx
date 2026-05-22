@@ -122,8 +122,8 @@ export default function OperatorsPage() {
     <MainLayout>
       <div className="space-y-6">
         <Helmet>
-          <title>Workforce Excellence | Gestão de Operadores</title>
-          <meta name="description" content="Gestão de competências, produtividade e ranking global de operadores da fábrica." />
+          <title>FAST GRAVAÇÕES | Gestão de Operadores</title>
+          <meta name="description" content="FAST GRAVAÇÕES - GESTÃO DE GRAVAÇÃO - Workforce Excellence 10/10" />
         </Helmet>
         <Breadcrumbs />
 
@@ -131,11 +131,11 @@ export default function OperatorsPage() {
           <div>
             <div className="flex items-center gap-3">
               <h1 className="text-3xl font-display font-black tracking-tighter">
-                <span className="gradient-text animate-pulse-glow">Workforce Excellence 10/10</span>
+                <span className="gradient-text animate-pulse-glow">FAST GRAVAÇÕES - GESTÃO DE GRAVAÇÃO</span>
               </h1>
               <FavoriteButton path="/operators" name="Operadores" />
             </div>
-            <p className="text-muted-foreground">Orquestração de capital humano e competências técnicas</p>
+            <p className="text-muted-foreground font-black uppercase tracking-widest text-xs opacity-70">QUALIDADE + VELOCIDADE</p>
           </div>
 
           <div className="flex items-center gap-3">

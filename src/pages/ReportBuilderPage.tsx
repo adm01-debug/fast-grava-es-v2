@@ -229,9 +229,9 @@ export default function ReportBuilderPage() {
         doc.rect(0, 0, 210, 40, 'F');
         doc.setFontSize(22);
         doc.setTextColor(255, 255, 255);
-        doc.text('FAST GRAVAÇÕES - RELATÓRIO OFICIAL', 105, 20, { align: 'center' });
+        doc.text('FAST GRAVAÇÕES - GESTÃO DE GRAVAÇÃO', 105, 20, { align: 'center' });
         doc.setFontSize(10);
-        doc.text(`MÓDULO: ${selectedTable.replace(/_/g, ' ').toUpperCase()}`, 105, 30, { align: 'center' });
+        doc.text(`QUALIDADE + VELOCIDADE | MÓDULO: ${selectedTable.replace(/_/g, ' ').toUpperCase()}`, 105, 30, { align: 'center' });
 
         doc.setFontSize(18);
         doc.setTextColor(14, 165, 233); // Primary color
@@ -292,11 +292,11 @@ export default function ReportBuilderPage() {
         <Breadcrumbs />
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-display font-bold flex items-center gap-3">
+            <h1 className="text-2xl sm:text-3xl font-display font-black flex items-center gap-3 tracking-tighter uppercase">
               <FileDown className="h-8 w-8 text-primary" />
-              Construtor de Relatórios
+              FAST GRAVAÇÕES - GESTÃO DE GRAVAÇÃO
             </h1>
-            <p className="text-muted-foreground mt-1">Geração dinâmica de dados e exportação personalizada</p>
+            <p className="text-muted-foreground mt-1 font-black uppercase tracking-widest text-xs opacity-70">QUALIDADE + VELOCIDADE</p>
           </div>
           <Button
             className="gap-2 bg-primary hover:bg-primary/90 shadow-lg shadow-primary/20"

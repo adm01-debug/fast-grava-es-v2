@@ -54,7 +54,7 @@ const NotFound = () => {
 
   useEffect(() => {
     // Update document title
-    document.title = 'Página não encontrada | FAST GRAVAÇÕES';
+    document.title = 'Página não encontrada | FAST GRAVAÇÕES - GESTÃO DE GRAVAÇÃO';
   }, [location.pathname]);
 
   const handleBack = () => {

@@ -20,7 +20,7 @@ export default function AuditTrailPage() {
   const { data, isLoading, error } = useAuditTrail(filters);
 
   useEffect(() => {
-    document.title = 'Trilha de Auditoria — FAST GRAVAÇÕES';
+    document.title = 'FAST GRAVAÇÕES - GESTÃO DE GRAVAÇÃO | Auditoria';
   }, []);
 
   return (
@@ -34,14 +34,14 @@ export default function AuditTrailPage() {
               <ShieldCheckIcon className="h-7 w-7 text-primary" aria-hidden />
             </div>
             <div>
-              <h1 className="text-3xl font-display font-black tracking-tighter flex items-center gap-2">
-                <span className="gradient-text animate-pulse-glow">Hyper-Audit Traceability 10/10</span>
+              <h1 className="text-3xl font-display font-black tracking-tighter flex items-center gap-2 uppercase">
+                <span className="gradient-text animate-pulse-glow">FAST GRAVAÇÕES - GESTÃO DE GRAVAÇÃO</span>
                 <Badge variant="outline" className="text-[10px] font-black uppercase tracking-widest bg-emerald-500/10 text-emerald-500 border-emerald-500/20">
                   <Lock className="h-2 w-2 mr-1" /> Imutável
                 </Badge>
               </h1>
-              <p className="text-sm text-muted-foreground font-medium">
-                Governança Industrial: Cadeia de hash SHA-256 (21 CFR Part 11)
+              <p className="text-sm text-muted-foreground font-black uppercase tracking-widest opacity-70">
+                QUALIDADE + VELOCIDADE
               </p>
             </div>
           </div>

@@ -90,7 +90,7 @@ export default function AuthPage() {
     <AuthErrorBoundary>
       <Helmet>
         <title>{t('auth.login')} | FAST GRAVAÇÕES</title>
-        <meta name="description" content="Acesse o sistema FAST GRAVAÇÕES para gerenciar sua produção industrial." />
+        <meta name="description" content="Acesse o sistema FAST GRAVAÇÕES - GESTÃO DE GRAVAÇÃO para gerenciar sua produção industrial." />
       </Helmet>
 
       <div className="min-h-screen w-full flex bg-[#050505] text-white font-display selection:bg-[#FF5A1F]/30">
@@ -111,13 +111,13 @@ export default function AuthPage() {
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#FF5A1F] opacity-75" />
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-[#FF5A1F]" />
                 </span>
-                <span className="text-[11px] font-mono uppercase tracking-widest text-zinc-400">52 Estúdios de Gravação</span>
+                <span className="text-[11px] font-mono uppercase tracking-widest text-zinc-400">FAST GRAVAÇÕES - GESTÃO DE GRAVAÇÃO</span>
               </motion.div>
               <motion.h2 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.2 }} className="text-5xl xl:text-6xl font-extrabold leading-[1.05] tracking-tight">
-                Excelência <span className="text-[#FF5A1F]">Operacional</span><br />em Tempo Real.
+                QUALIDADE + <span className="text-[#FF5A1F]">VELOCIDADE</span><br />em Tempo Real.
               </motion.h2>
               <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.3 }} className="text-zinc-400 text-lg leading-relaxed max-w-md">
-                Gestão inteligente de agendamentos, monitoramento de OEE e KPIs de produção em uma plataforma unificada.
+                FAST GRAVAÇÕES - GESTÃO DE GRAVAÇÃO: Monitoramento de OEE e KPIs em uma plataforma unificada.
               </motion.p>
             </div>
 
@@ -171,7 +171,7 @@ export default function AuthPage() {
                   </div>
 
                   <footer className="mt-16 text-center">
-                    <p className="text-[10px] text-zinc-600 uppercase tracking-widest font-mono">© {new Date().getFullYear()} FAST GRAVAÇÕES • Indústria 4.0</p>
+                    <p className="text-[10px] text-zinc-600 uppercase tracking-widest font-mono">© {new Date().getFullYear()} FAST GRAVAÇÕES - GESTÃO DE GRAVAÇÃO • Indústria 4.0</p>
                   </footer>
                 </motion.div>
               )}

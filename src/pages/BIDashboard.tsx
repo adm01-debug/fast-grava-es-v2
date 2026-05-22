@@ -301,9 +301,9 @@ export default function BIDashboard() {
         doc.rect(0, 0, 210, 30, 'F');
         doc.setFontSize(18);
         doc.setTextColor(255, 255, 255);
-        doc.text('FAST GRAVAÇÕES - DETALHAMENTO BI', 105, 15, { align: 'center' });
+        doc.text('FAST GRAVAÇÕES - GESTÃO DE GRAVAÇÃO', 105, 15, { align: 'center' });
         doc.setFontSize(10);
-        doc.text(`RELATÓRIO: ${drillDownTitle.toUpperCase()}`, 105, 22, { align: 'center' });
+        doc.text(`QUALIDADE + VELOCIDADE | RELATÓRIO: ${drillDownTitle.toUpperCase()}`, 105, 22, { align: 'center' });
 
         // Info
         doc.setTextColor(100);
