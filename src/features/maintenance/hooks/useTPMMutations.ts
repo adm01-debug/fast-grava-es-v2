@@ -559,9 +559,9 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
     }) => {
       const results = [];
       for (const id of data.record_ids) {
-        const { data: record } = await supabase
+        const { data: record } = await (supabase
           .from('maintenance_records')
-          .select('*, schedule:maintenance_schedules(*)') as any;
+          .select('*, schedule:maintenance_schedules(*)') as any)
           .eq('id', id)
           .single();
 
