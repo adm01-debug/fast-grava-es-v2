@@ -190,7 +190,7 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
       }
 
       // Update the main record to 'completed' (Pending Approval)
-      const { error: recordError } = await supabase
+      const { error: recordError } = await (supabase
         .from('maintenance_records')
         .update({
           status: 'completed',
@@ -207,8 +207,8 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
           // NOTE: `quality_checklist_results` and `failure_risk_detected` are columns
           // on `tpm_executions`, not `maintenance_records`. Writing them here made the
           // whole update fail at runtime ("column does not exist"), so they are omitted.
-        })
-        .eq('id', data.record_id);
+        } as any)
+        .eq('id', data.record_id));
 
       if (recordError) throw recordError;
 
