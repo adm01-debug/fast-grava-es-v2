@@ -292,11 +292,11 @@ export default function ReportBuilderPage() {
         <Breadcrumbs />
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-display font-bold flex items-center gap-3">
+            <h1 className="text-2xl sm:text-3xl font-display font-black flex items-center gap-3 tracking-tighter uppercase">
               <FileDown className="h-8 w-8 text-primary" />
-              Construtor de Relatórios
+              FAST GRAVAÇÕES - GESTÃO DE GRAVAÇÃO
             </h1>
-            <p className="text-muted-foreground mt-1">Geração dinâmica de dados e exportação personalizada</p>
+            <p className="text-muted-foreground mt-1 font-black uppercase tracking-widest text-xs opacity-70">QUALIDADE + VELOCIDADE</p>
           </div>
           <Button
             className="gap-2 bg-primary hover:bg-primary/90 shadow-lg shadow-primary/20"
