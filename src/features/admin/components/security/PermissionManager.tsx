@@ -27,6 +27,11 @@ import { useAuth, AppRole } from '@/features/auth';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 const ROLE_CONFIG: Record<AppRole, { label: string; color: string; icon: React.ReactNode }> = {
+  admin: {
+    label: 'Administrador',
+    color: 'bg-red-500/10 text-red-500 border-red-500/20',
+    icon: <Shield className="h-4 w-4" />
+  },
   coordinator: {
     label: 'Coordenador',
     color: 'bg-purple-500/10 text-purple-500 border-purple-500/20',
@@ -138,7 +143,7 @@ export function PermissionManager() {
       </CardHeader>
       <CardContent>
         <Tabs value={selectedRole} onValueChange={(v) => setSelectedRole(v as AppRole)}>
-          <TabsList className="grid w-full grid-cols-3 mb-6">
+          <TabsList className="grid w-full grid-cols-4 mb-6">
             {(Object.keys(ROLE_CONFIG) as AppRole[]).map((role) => (
               <TabsTrigger key={role} value={role} className="gap-2">
                 {ROLE_CONFIG[role].icon}

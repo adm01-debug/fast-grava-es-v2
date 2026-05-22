@@ -99,6 +99,7 @@ export interface RBACResult {
   isCoordinator: boolean;
   isManager: boolean;
   isOperator: boolean;
+  isAdmin: boolean;
 
   // All permissions for current role
   permissions: string[];
@@ -108,7 +109,7 @@ export interface RBACResult {
 }
 
 export function useRBAC(): RBACResult {
-  const { role, isCoordinator, isManager, isOperator, isLoading } = useAuth();
+  const { role, isCoordinator, isManager, isOperator, isAdmin, isLoading } = useAuth();
 
   const permissions = useMemo(() => {
     if (isLoading || !role) return [];
@@ -124,6 +125,7 @@ export function useRBAC(): RBACResult {
   const hasPermission = useMemo(() => {
     return (permission: string): boolean => {
       if (!role) return false;
+      if (role === 'admin') return true;
       return permissions.includes(permission);
     };
   }, [role, permissions]);
@@ -131,6 +133,7 @@ export function useRBAC(): RBACResult {
   const hasAnyPermission = useMemo(() => {
     return (permissionList: string[]): boolean => {
       if (!role) return false;
+      if (role === 'admin') return true;
       return permissionList.some(p => permissions.includes(p));
     };
   }, [role, permissions]);
@@ -138,6 +141,7 @@ export function useRBAC(): RBACResult {
   const hasAllPermissions = useMemo(() => {
     return (permissionList: string[]): boolean => {
       if (!role) return false;
+      if (role === 'admin') return true;
       return permissionList.every(p => permissions.includes(p));
     };
   }, [role, permissions]);
@@ -145,6 +149,7 @@ export function useRBAC(): RBACResult {
   const canAccessRoute = useMemo(() => {
     return (path: string): boolean => {
       if (!role) return false;
+      if (role === 'admin') return true;
 
       // Find matching route
       const requiredPermissions = ROUTE_PERMISSIONS[path];
@@ -163,6 +168,7 @@ export function useRBAC(): RBACResult {
     isCoordinator,
     isManager,
     isOperator,
+    isAdmin,
     permissions,
     isLoading,
   };
