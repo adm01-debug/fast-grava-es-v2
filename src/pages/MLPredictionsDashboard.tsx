@@ -46,7 +46,7 @@ export default function MLPredictionsDashboard() {
   return (
     <>
       <Helmet>
-        <title>ML Preditivo | FAST GRAVAÇÕES</title>
+        <title>FAST GRAVAÇÕES | ML Preditivo</title>
       </Helmet>
 
       <div className="space-y-6">
