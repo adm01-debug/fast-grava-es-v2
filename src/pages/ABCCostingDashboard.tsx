@@ -71,8 +71,8 @@ export default function ABCCostingDashboard() {
                   <span className="gradient-text animate-pulse-glow">FAST GRAVAÇÕES - GESTÃO DE GRAVAÇÃO</span>
                 </h1>
             </div>
-            <p className="text-muted-foreground">
-              Activity-Based Costing (ABC) e Gestão Estratégica de Lucratividade
+            <p className="text-muted-foreground font-black uppercase tracking-widest text-xs opacity-70">
+              QUALIDADE + VELOCIDADE
             </p>
           </div>
         </div>
