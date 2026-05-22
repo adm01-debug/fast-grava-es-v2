@@ -229,9 +229,9 @@ export default function ReportBuilderPage() {
         doc.rect(0, 0, 210, 40, 'F');
         doc.setFontSize(22);
         doc.setTextColor(255, 255, 255);
-        doc.text('FAST GRAVAÇÕES - RELATÓRIO OFICIAL', 105, 20, { align: 'center' });
+        doc.text('FAST GRAVAÇÕES - GESTÃO DE GRAVAÇÃO', 105, 20, { align: 'center' });
         doc.setFontSize(10);
-        doc.text(`MÓDULO: ${selectedTable.replace(/_/g, ' ').toUpperCase()}`, 105, 30, { align: 'center' });
+        doc.text(`QUALIDADE + VELOCIDADE | MÓDULO: ${selectedTable.replace(/_/g, ' ').toUpperCase()}`, 105, 30, { align: 'center' });
 
         doc.setFontSize(18);
         doc.setTextColor(14, 165, 233); // Primary color
