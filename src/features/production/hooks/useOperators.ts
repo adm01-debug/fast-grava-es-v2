@@ -112,8 +112,7 @@ export function useOperators() {
         });
 
       if (auditError) {
-        // Log audit failure but don't fail the whole operation
-        const appError = createAppError(auditError, { entity: 'operator_status_audit', operation: 'insert' });
+        console.warn('Failed to log operator removal audit:', auditError);
       }
 
       return operatorId;
@@ -166,8 +165,7 @@ export function useOperators() {
         });
 
       if (auditError) {
-        // Log audit failure but don't fail the whole operation
-        const appError = createAppError(auditError, { entity: 'operator_status_audit', operation: 'insert' });
+        console.warn('Failed to log operator status toggle audit:', auditError);
       }
 
       return { operatorId, isActive };
