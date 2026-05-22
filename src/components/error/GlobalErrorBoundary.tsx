@@ -89,8 +89,8 @@ export class GlobalErrorBoundary extends Component<Props, State> {
                 </Button>
               </div>
               
-              <p className="text-[10px] text-muted-foreground/60 uppercase tracking-widest">
-                FAST GRAVAÇÕES Industrial Intelligence
+              <p className="text-[10px] text-muted-foreground/60 uppercase tracking-widest font-black">
+                FAST GRAVAÇÕES - GESTÃO DE GRAVAÇÃO
               </p>
             </CardContent>
           </Card>
