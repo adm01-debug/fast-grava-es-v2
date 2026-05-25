@@ -54,9 +54,11 @@ export class GlobalErrorBoundary extends Component<Props, State> {
       }
 
       const isTelemetryError = this.state.error?.message?.toLowerCase().includes('telemetry') || 
-                               this.state.error?.message?.toLowerCase().includes('postgrest');
+                               this.state.error?.message?.toLowerCase().includes('postgrest') ||
+                               this.state.error?.message?.toLowerCase().includes('inventory');
       const isRealtimeError = this.state.error?.message?.toLowerCase().includes('realtime') || 
-                              this.state.error?.message?.toLowerCase().includes('websocket');
+                              this.state.error?.message?.toLowerCase().includes('websocket') ||
+                              this.state.error?.message?.toLowerCase().includes('network');
 
       return (
         <div className="min-h-screen flex items-center justify-center p-4 bg-background">
