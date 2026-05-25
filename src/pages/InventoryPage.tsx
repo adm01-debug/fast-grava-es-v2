@@ -120,7 +120,9 @@ export default function InventoryPage() {
 
         {/* Inventory Stats */}
         <SectionErrorBoundary section="Estatísticas de Inventário">
-          <InventoryStats items={items as InventoryItem[]} lowStockItems={lowStockItems as InventoryItem[]} stats={stats} />
+          <SectionErrorBoundary section="Stats Inner">
+            <InventoryStats items={items as InventoryItem[]} lowStockItems={lowStockItems as InventoryItem[]} stats={stats} />
+          </SectionErrorBoundary>
         </SectionErrorBoundary>
 
         <SectionErrorBoundary section="Abas de Inventário">
@@ -168,7 +170,8 @@ export default function InventoryPage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {(isLoading || isSearching) ? (
+              <SectionErrorBoundary section="Grid de Produtos">
+                {(isLoading || isSearching) ? (
                 <div className="col-span-full">
                   <ProductGridSkeleton />
                 </div>
@@ -194,13 +197,16 @@ export default function InventoryPage() {
                   />
                 ))
               )}
+              </SectionErrorBoundary>
             </div>
           </TabsContent>
 
           <TabsContent value="wms" className="space-y-6 animate-fade-in">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                <div className="lg:col-span-2">
-                  <WarehouseMap items={items} />
+                  <SectionErrorBoundary section="Mapa WMS">
+                    <WarehouseMap items={items} />
+                  </SectionErrorBoundary>
                </div>
                <div className="space-y-6">
                   <Card className="glass-card">

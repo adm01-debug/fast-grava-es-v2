@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { format } from "date-fns";
 import { MainLayout } from "@/components/layout/MainLayout";
+import { logger } from "@/lib/logger";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -126,10 +127,13 @@ export default function AdminTelemetriaPage() {
       }
 
       const { data, error } = await query;
-      if (error) throw error;
+      if (error) {
+        logger.error('Falha ao buscar telemetria de queries', error, 'AdminTelemetria');
+        throw error;
+      }
       return (data as unknown as TelemetryRow[]) || [];
     },
-    refetchInterval: 30000,
+    refetchInterval: realtimeEnabled ? 10000 : false, // Auto-refresh every 10s if realtime is enabled
   });
 
   const { data: performanceRows = [], isLoading: isLoadingPerf, refetch: refetchPerf } = useQuery<PerformanceTrace[]>({
@@ -144,7 +148,10 @@ export default function AdminTelemetriaPage() {
         .order("created_at", { ascending: false })
         .limit(500);
 
-      if (error) throw error;
+      if (error) {
+        logger.error('Falha ao buscar traços de performance', error, 'AdminTelemetria');
+        throw error;
+      }
       return (data as unknown as PerformanceTrace[]) || [];
     },
     enabled: activeTab === "performance",
@@ -162,10 +169,14 @@ export default function AdminTelemetriaPage() {
         .order("created_at", { ascending: false })
         .limit(200);
 
-      if (error) throw error;
+      if (error) {
+        logger.error('Falha ao buscar logs de erro', error, 'AdminTelemetria');
+        throw error;
+      }
       return (data as unknown as ErrorLog[]) || [];
     },
     enabled: activeTab === "errors",
+    refetchInterval: realtimeEnabled ? 15000 : false,
   });
 
   const handleCleanup = async () => {

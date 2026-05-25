@@ -44,7 +44,6 @@ export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) 
   // Admin always has bypass - check this BEFORE checking loading roles
   // and BEFORE checking allowedRoles to prevent any flickering or extra loaders
   if (role === 'admin') {
-    logger.debug('Admin bypass granted', { path: location.pathname }, 'ProtectedRoute');
     return <>{children}</>;
   }
 
