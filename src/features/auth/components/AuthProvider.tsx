@@ -138,17 +138,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
+      async (event, session) => {
+        logger.debug('Auth state change event:', { event, hasSession: !!session }, 'AuthProvider');
+        
         setSession(session);
         setUser(session?.user ?? null);
 
         if (session?.user) {
           setIsLoading(true);
-          window.setTimeout(() => {
-            fetchUserData(session.user.id).finally(() => {
-              setIsLoading(false);
-            });
-          }, 0);
+          try {
+            await fetchUserData(session.user.id);
+          } finally {
+            setIsLoading(false);
+          }
         } else {
           setProfile(null);
           setRole(null);
@@ -197,6 +199,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await AuthService.recordLoginAttempt(email, true, ipAddress);
 
       if (data.user) {
+        // Update state immediately to avoid race conditions with ProtectedRoute
+        setSession(data.session);
+        setUser(data.user);
+        
         const { data: profileData } = await supabase
           .from('profiles')
           .select('full_name')
