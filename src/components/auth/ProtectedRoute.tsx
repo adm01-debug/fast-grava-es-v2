@@ -47,17 +47,14 @@ export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) 
     return <>{children}</>;
   }
 
-  // Wait for role to load before checking permissions
-  // role is fetched async after auth, so it may be null briefly
+  // If role verification finished without a valid role, do not keep users stuck
+  // on the permission loader. Redirect to the safest available authenticated route.
   if (allowedRoles && role === null) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="text-center space-y-4">
-          <Loader2 className="h-8 w-8 animate-spin mx-auto text-primary shadow-glow" />
-          <p className="text-muted-foreground font-medium animate-pulse">Verificando permissões...</p>
-        </div>
-      </div>
-    );
+    logger.warn('Role unavailable after auth loading completed', {
+      path: location.pathname,
+      allowedRoles,
+    }, 'ProtectedRoute');
+    return <Navigate to="/" replace />;
   }
 
   if (allowedRoles && role && !allowedRoles.includes(role)) {

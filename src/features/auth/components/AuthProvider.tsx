@@ -4,12 +4,29 @@ import { supabase } from '@/integrations/supabase/client';
 import { useDeviceDetection } from '@/hooks/useDeviceDetection';
 import { toast } from 'sonner';
 import { AuthService } from '../services/authService';
+import { logger } from '@/lib/logger';
 import {
   AuthContext,
   type AuthContextType,
   type AppRole,
   type Profile,
 } from '../types/auth.types';
+
+const AUTH_BOOT_TIMEOUT_MS = 8000;
+const USER_DATA_TIMEOUT_MS = 6000;
+
+function withTimeout<T>(promise: Promise<T>, timeoutMs: number, label: string): Promise<T> {
+  return new Promise((resolve, reject) => {
+    const timeoutId = window.setTimeout(() => {
+      reject(new Error(`${label} excedeu o tempo limite`));
+    }, timeoutMs);
+
+    promise
+      .then(resolve)
+      .catch(reject)
+      .finally(() => window.clearTimeout(timeoutId));
+  });
+}
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
@@ -26,24 +43,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const fetchUserData = async (userId: string) => {
     try {
-      const { data: profileData } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', userId)
-        .maybeSingle();
+      const [profileResult, roleResult] = await withTimeout(
+        Promise.allSettled([
+          supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', userId)
+            .maybeSingle(),
+          supabase.rpc('get_user_role', { _user_id: userId }),
+        ]),
+        USER_DATA_TIMEOUT_MS,
+        'Carregamento dos dados do usuário'
+      );
+
+      const profileData = profileResult.status === 'fulfilled' ? profileResult.value?.data : null;
+      const roleData = roleResult.status === 'fulfilled' ? roleResult.value?.data : null;
 
       if (profileData) {
         setProfile(profileData as Profile);
       }
 
-      const { data: roleData } = await supabase
-        .rpc('get_user_role', { _user_id: userId });
-
       if (roleData) {
         setRole(roleData as AppRole);
+      } else {
+        setRole(null);
       }
     } catch (error) {
-      console.error("Error fetching user data:", error);
+      setRole(null);
+      logger.warn('Não foi possível carregar todos os dados do usuário', error, 'AuthProvider');
     }
   };
 
@@ -72,7 +99,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
       if (!data.session) await signOut();
     } catch (error) {
-      console.error("Critical session refresh error:", error);
+      logger.warn('Não foi possível renovar a sessão', error, 'AuthProvider');
     }
   }, [user, isSessionActive]);
 
@@ -110,16 +137,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      (event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
 
         if (session?.user) {
-          if (!profile || profile.id !== session.user.id) {
-            setIsLoading(true);
-            await fetchUserData(session.user.id);
-            setIsLoading(false);
-          }
+          setIsLoading(true);
+          window.setTimeout(() => {
+            fetchUserData(session.user.id).finally(() => {
+              setIsLoading(false);
+            });
+          }, 0);
         } else {
           setProfile(null);
           setRole(null);
@@ -128,16 +156,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     );
 
-    AuthService.getSession().then(async (session) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        await fetchUserData(session.user.id);
-      }
-      setIsLoading(false);
-    }).catch(() => {
-      setIsLoading(false);
-    });
+    withTimeout(AuthService.getSession(), AUTH_BOOT_TIMEOUT_MS, 'Inicialização da sessão')
+      .then(async (session) => {
+        setSession(session);
+        setUser(session?.user ?? null);
+        if (session?.user) {
+          await fetchUserData(session.user.id);
+        }
+      })
+      .catch((error) => {
+        logger.warn('Não foi possível inicializar a sessão', error, 'AuthProvider');
+        setSession(null);
+        setUser(null);
+        setProfile(null);
+        setRole(null);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
 
     return () => {
       subscription.unsubscribe();
