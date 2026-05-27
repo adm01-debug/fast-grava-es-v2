@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { type AppRole } from '../index';
+import { ROLE_PERMISSIONS } from './useRBAC';
 
 export function useRolePermissions(role: AppRole | null) {
   const [permissions, setPermissions] = useState<string[]>([]);
