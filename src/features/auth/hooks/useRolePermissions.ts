@@ -19,7 +19,7 @@ export function useRolePermissions(role: AppRole | null) {
 
       if (error) throw error;
       setPermissions((data || []).map(p => p.permission));
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error fetching permissions:', error);
       // Fallback to defaults
       if (selectedRole === 'admin') {
@@ -65,7 +65,7 @@ export function useRolePermissions(role: AppRole | null) {
         setPermissions(prev => [...prev, permissionStr]);
       }
       toast.success('Permissão atualizada');
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast.error('Erro ao atualizar permissão', { description: error.message });
     } finally {
       setIsSaving(false);
