@@ -22,15 +22,11 @@ export function useRolePermissions(role: AppRole | null) {
       setPermissions((data || []).map(p => p.permission));
     } catch (error: unknown) {
       console.error('Error fetching permissions:', error);
-      // Fallback to defaults
-      if (selectedRole === 'admin') {
-        setPermissions(['admin:all', 'jobs:all', 'production:all', 'operators:all', 'telemetry:view', 'settings:manage']);
-      } else if (selectedRole === 'coordinator') {
-        setPermissions(['admin:all', 'jobs:all', 'production:all', 'operators:all', 'telemetry:view', 'settings:manage']);
-      } else if (selectedRole === 'manager') {
-        setPermissions(['jobs:view', 'jobs:create', 'jobs:edit', 'production:view', 'operators:view']);
-      } else if (selectedRole === 'operator') {
-        setPermissions(['jobs:view', 'production:register']);
+      // Fallback to static permissions from useRBAC
+      if (selectedRole && ROLE_PERMISSIONS[selectedRole]) {
+        setPermissions(ROLE_PERMISSIONS[selectedRole]);
+      } else {
+        setPermissions([]);
       }
     } finally {
       setIsLoading(false);
@@ -67,7 +63,8 @@ export function useRolePermissions(role: AppRole | null) {
       }
       toast.success('Permissão atualizada');
     } catch (error: unknown) {
-      toast.error('Erro ao atualizar permissão', { description: error.message });
+      const message = error instanceof Error ? error.message : 'Unknown error';
+      toast.error('Erro ao atualizar permissão', { description: message });
     } finally {
       setIsSaving(false);
     }
