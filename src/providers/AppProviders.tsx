@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+import { ProviderComposer } from "./ProviderComposer";
 import { ThemeProvider } from "next-themes";
 import { BrowserRouter } from "react-router-dom";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -37,54 +38,43 @@ const queryClient = createQueryClient();
 function ComposedProviders({ children }: { children: ReactNode }) {
   return (
     <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
-      <ThemeContextProvider>
-        <TooltipProvider>
-          <UserPreferencesProvider>
-            <FeatureFlagsProvider>
-              <BreadcrumbProvider>
-                <SearchProvider>
-                  <SidebarProvider>
-                    <ConfirmationProvider>
-                      <NotificationsProvider>
-                        <AuthProvider>
-                          <ReauthProvider>
-                            <PermissionsProvider>
-                              <OfflineSyncProvider>
-                                <NetworkStatusProvider>
-                                  <OfflineProvider>
-                                    <WebSocketProvider>
-                                      <EfficiencyNotificationProvider>
-                                        <RealtimeNotificationsProvider>
-                                          <ProductDesignProvider
-                                            enableOnboarding
-                                            enableCommandPalette
-                                            enableKeyboardShortcuts
-                                            enableToastWithUndo
-                                          >
-                                            <CelebrationProvider>
-                                              <FeedbackProvider>
-                                                {children}
-                                              </FeedbackProvider>
-                                            </CelebrationProvider>
-                                          </ProductDesignProvider>
-                                        </RealtimeNotificationsProvider>
-                                      </EfficiencyNotificationProvider>
-                                    </WebSocketProvider>
-                                  </OfflineProvider>
-                                </NetworkStatusProvider>
-                              </OfflineSyncProvider>
-                            </PermissionsProvider>
-                          </ReauthProvider>
-                        </AuthProvider>
-                      </NotificationsProvider>
-                    </ConfirmationProvider>
-                  </SidebarProvider>
-                </SearchProvider>
-              </BreadcrumbProvider>
-            </FeatureFlagsProvider>
-          </UserPreferencesProvider>
-        </TooltipProvider>
-      </ThemeContextProvider>
+      <ProviderComposer
+        providers={[
+          ThemeContextProvider,
+          TooltipProvider,
+          UserPreferencesProvider,
+          FeatureFlagsProvider,
+          BreadcrumbProvider,
+          SearchProvider,
+          SidebarProvider,
+          ConfirmationProvider,
+          NotificationsProvider,
+          AuthProvider,
+          ReauthProvider,
+          PermissionsProvider,
+          OfflineSyncProvider,
+          NetworkStatusProvider,
+          OfflineProvider,
+          WebSocketProvider,
+          EfficiencyNotificationProvider,
+          RealtimeNotificationsProvider,
+          // Special case for ProductDesignProvider as it has props
+          ({ children }) => (
+            <ProductDesignProvider
+              enableOnboarding
+              enableCommandPalette
+              enableKeyboardShortcuts
+              enableToastWithUndo
+            >
+              {children}
+            </ProductDesignProvider>
+          ),
+          CelebrationProvider,
+          FeedbackProvider,
+        ]}
+      >
+        {children}
+      </ProviderComposer>
     </ThemeProvider>
   );
 }
