@@ -66,6 +66,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (roleData) {
         setRole(roleData as AppRole);
       } else {
+        // Explicitly set to null if no role is returned to avoid "stuck" states
         setRole(null);
       }
     } catch (error) {

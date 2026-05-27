@@ -41,8 +41,8 @@ export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) 
     return <Navigate to="/auth" state={{ from: location }} replace />;
   }
 
-  // Admin always has bypass - check this BEFORE checking loading roles
-  // and BEFORE checking allowedRoles to prevent any flickering or extra loaders
+  // Role-based access control
+  // If role is strictly admin, bypass all other checks
   if (role === 'admin') {
     return <>{children}</>;
   }
