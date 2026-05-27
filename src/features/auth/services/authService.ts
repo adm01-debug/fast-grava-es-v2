@@ -68,8 +68,14 @@ export const AuthService = {
 
   async getClientIP(): Promise<string | undefined> {
     try {
-      const response = await fetch('https://api.ipify.org?format=json');
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 2000);
+      
+      const response = await fetch('https://api.ipify.org?format=json', {
+        signal: controller.signal
+      });
       const data = await response.json();
+      clearTimeout(timeoutId);
       return data.ip;
     } catch {
       return undefined;

@@ -137,44 +137,68 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [user, updateActivity, isSessionActive, refreshSession]);
 
   useEffect(() => {
+    let isInitialMount = true;
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
+      async (event, session) => {
+        // Skip INITIAL_SESSION if we already handled it via getSession to avoid race conditions
+        if (event === 'INITIAL_SESSION' && !isInitialMount) return;
+        
+        logger.debug('Auth state change event:', { event, hasSession: !!session }, 'AuthProvider');
+        
         setSession(session);
         setUser(session?.user ?? null);
 
         if (session?.user) {
           setIsLoading(true);
-          window.setTimeout(() => {
-            fetchUserData(session.user.id).finally(() => {
-              setIsLoading(false);
-            });
-          }, 0);
+          try {
+            await fetchUserData(session.user.id);
+          } finally {
+            setIsLoading(false);
+          }
         } else {
           setProfile(null);
           setRole(null);
           setIsLoading(false);
         }
+        
+        isInitialMount = false;
       }
     );
 
-    withTimeout(AuthService.getSession(), AUTH_BOOT_TIMEOUT_MS, 'Inicialização da sessão')
-      .then(async (session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-        if (session?.user) {
-          await fetchUserData(session.user.id);
+    // Initial boot
+    const initAuth = async () => {
+      try {
+        const session = await withTimeout(
+          AuthService.getSession(), 
+          AUTH_BOOT_TIMEOUT_MS, 
+          'Inicialização da sessão'
+        );
+        
+        if (isInitialMount) {
+          setSession(session);
+          setUser(session?.user ?? null);
+          if (session?.user) {
+            await fetchUserData(session.user.id);
+          }
         }
-      })
-      .catch((error) => {
-        logger.warn('Não foi possível inicializar a sessão', error, 'AuthProvider');
-        setSession(null);
-        setUser(null);
-        setProfile(null);
-        setRole(null);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
+      } catch (error) {
+        logger.warn('Não foi possível inicializar a sessão no boot', error, 'AuthProvider');
+        if (isInitialMount) {
+          setSession(null);
+          setUser(null);
+          setProfile(null);
+          setRole(null);
+        }
+      } finally {
+        if (isInitialMount) {
+          setIsLoading(false);
+          isInitialMount = false;
+        }
+      }
+    };
+
+    initAuth();
 
     return () => {
       subscription.unsubscribe();
@@ -197,24 +221,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await AuthService.recordLoginAttempt(email, true, ipAddress);
 
       if (data.user) {
-        const { data: profileData } = await supabase
-          .from('profiles')
-          .select('full_name')
-          .eq('id', data.user.id)
-          .maybeSingle();
+        // Update state immediately to avoid race conditions with ProtectedRoute
+        setSession(data.session);
+        setUser(data.user);
+        
+        // Load user data in background to not block the login redirect
+        fetchUserData(data.user.id);
+        
+        // Check device in background
+        (async () => {
+          try {
+            const { data: profileData } = await supabase
+              .from('profiles')
+              .select('full_name')
+              .eq('id', data.user.id)
+              .maybeSingle();
 
-        const result = await checkDevice(
-          data.user.id,
-          data.user.email || email,
-          profileData?.full_name || undefined
-        );
+            const result = await checkDevice(
+              data.user.id,
+              data.user.email || email,
+              profileData?.full_name || undefined
+            );
 
-        if (result.isNewDevice) {
-          toast.info('Novo dispositivo detectado', {
-            description: 'Um email de alerta foi enviado para sua caixa de entrada.',
-            duration: 5000,
-          });
-        }
+            if (result.isNewDevice) {
+              toast.info('Novo dispositivo detectado', {
+                description: 'Um email de alerta foi enviado para sua caixa de entrada.',
+                duration: 5000,
+              });
+            }
+          } catch (e) {
+            logger.warn('Erro ao verificar dispositivo (em background)', e, 'AuthProvider');
+          }
+        })();
       }
 
       return { error: null };
