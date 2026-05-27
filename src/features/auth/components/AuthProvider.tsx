@@ -221,12 +221,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await AuthService.recordLoginAttempt(email, true, ipAddress);
 
       if (data.user) {
-        // Update state immediately to avoid race conditions with ProtectedRoute
+        // Set loading true while we fetch profile/role to prevent ProtectedRoute from redirecting too early
+        setIsLoading(true);
+        
         setSession(data.session);
         setUser(data.user);
         
-        // Load user data in background to not block the login redirect
-        fetchUserData(data.user.id);
+        // Load user data
+        await fetchUserData(data.user.id);
+        setIsLoading(false);
         
         // Check device in background
         (async () => {
