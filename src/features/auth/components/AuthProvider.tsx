@@ -4,12 +4,29 @@ import { supabase } from '@/integrations/supabase/client';
 import { useDeviceDetection } from '@/hooks/useDeviceDetection';
 import { toast } from 'sonner';
 import { AuthService } from '../services/authService';
+import { logger } from '@/lib/logger';
 import {
   AuthContext,
   type AuthContextType,
   type AppRole,
   type Profile,
 } from '../types/auth.types';
+
+const AUTH_BOOT_TIMEOUT_MS = 8000;
+const USER_DATA_TIMEOUT_MS = 6000;
+
+function withTimeout<T>(promise: Promise<T>, timeoutMs: number, label: string): Promise<T> {
+  return new Promise((resolve, reject) => {
+    const timeoutId = window.setTimeout(() => {
+      reject(new Error(`${label} excedeu o tempo limite`));
+    }, timeoutMs);
+
+    promise
+      .then(resolve)
+      .catch(reject)
+      .finally(() => window.clearTimeout(timeoutId));
+  });
+}
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
@@ -26,24 +43,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const fetchUserData = async (userId: string) => {
     try {
-      const { data: profileData } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', userId)
-        .maybeSingle();
+      const [profileResult, roleResult] = await withTimeout(
+        Promise.allSettled([
+          supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', userId)
+            .maybeSingle(),
+          supabase.rpc('get_user_role', { _user_id: userId }),
+        ]),
+        USER_DATA_TIMEOUT_MS,
+        'Carregamento dos dados do usuário'
+      );
 
-      if (profileData) {
-        setProfile(profileData as Profile);
+      if (profileResult.status === 'fulfilled' && profileResult.value.data) {
+        setProfile(profileResult.value.data as Profile);
       }
 
-      const { data: roleData } = await supabase
-        .rpc('get_user_role', { _user_id: userId });
-
-      if (roleData) {
-        setRole(roleData as AppRole);
+      if (roleResult.status === 'fulfilled' && roleResult.value.data) {
+        setRole(roleResult.value.data as AppRole);
+      } else {
+        setRole(null);
       }
     } catch (error) {
-      console.error("Error fetching user data:", error);
+      setRole(null);
+      logger.warn('Não foi possível carregar todos os dados do usuário', error, 'AuthProvider');
     }
   };
 
