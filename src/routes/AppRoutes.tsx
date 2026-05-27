@@ -127,6 +127,7 @@ export function AnimatedRoutes() {
   
   useRoutePrefetch();
 
+  // Optimized navigation direction update
   useEffect(() => {
     if (location.pathname !== prevPath) {
       const newDirection = getNavigationDirection(prevPath, location.pathname);
