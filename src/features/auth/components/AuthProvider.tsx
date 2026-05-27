@@ -96,7 +96,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
       if (!data.session) await signOut();
     } catch (error) {
-      console.error("Critical session refresh error:", error);
+      logger.warn('Não foi possível renovar a sessão', error, 'AuthProvider');
     }
   }, [user, isSessionActive]);
 
@@ -152,16 +152,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     );
 
-    AuthService.getSession().then(async (session) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        await fetchUserData(session.user.id);
-      }
-      setIsLoading(false);
-    }).catch(() => {
-      setIsLoading(false);
-    });
+    withTimeout(AuthService.getSession(), AUTH_BOOT_TIMEOUT_MS, 'Inicialização da sessão')
+      .then(async (session) => {
+        setSession(session);
+        setUser(session?.user ?? null);
+        if (session?.user) {
+          await fetchUserData(session.user.id);
+        }
+      })
+      .catch((error) => {
+        logger.warn('Não foi possível inicializar a sessão', error, 'AuthProvider');
+        setSession(null);
+        setUser(null);
+        setProfile(null);
+        setRole(null);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
 
     return () => {
       subscription.unsubscribe();
