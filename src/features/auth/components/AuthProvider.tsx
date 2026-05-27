@@ -137,8 +137,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [user, updateActivity, isSessionActive, refreshSession]);
 
   useEffect(() => {
+    let isInitialMount = true;
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
+        // Skip INITIAL_SESSION if we already handled it via getSession to avoid race conditions
+        if (event === 'INITIAL_SESSION' && !isInitialMount) return;
+        
         logger.debug('Auth state change event:', { event, hasSession: !!session }, 'AuthProvider');
         
         setSession(session);
@@ -156,27 +161,44 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setRole(null);
           setIsLoading(false);
         }
+        
+        isInitialMount = false;
       }
     );
 
-    withTimeout(AuthService.getSession(), AUTH_BOOT_TIMEOUT_MS, 'Inicialização da sessão')
-      .then(async (session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-        if (session?.user) {
-          await fetchUserData(session.user.id);
+    // Initial boot
+    const initAuth = async () => {
+      try {
+        const session = await withTimeout(
+          AuthService.getSession(), 
+          AUTH_BOOT_TIMEOUT_MS, 
+          'Inicialização da sessão'
+        );
+        
+        if (isInitialMount) {
+          setSession(session);
+          setUser(session?.user ?? null);
+          if (session?.user) {
+            await fetchUserData(session.user.id);
+          }
         }
-      })
-      .catch((error) => {
-        logger.warn('Não foi possível inicializar a sessão', error, 'AuthProvider');
-        setSession(null);
-        setUser(null);
-        setProfile(null);
-        setRole(null);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
+      } catch (error) {
+        logger.warn('Não foi possível inicializar a sessão no boot', error, 'AuthProvider');
+        if (isInitialMount) {
+          setSession(null);
+          setUser(null);
+          setProfile(null);
+          setRole(null);
+        }
+      } finally {
+        if (isInitialMount) {
+          setIsLoading(false);
+          isInitialMount = false;
+        }
+      }
+    };
+
+    initAuth();
 
     return () => {
       subscription.unsubscribe();
