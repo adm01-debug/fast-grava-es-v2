@@ -56,12 +56,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         'Carregamento dos dados do usuário'
       );
 
-      if (profileResult.status === 'fulfilled' && profileResult.value.data) {
-        setProfile(profileResult.value.data as Profile);
+      const profileData = profileResult.status === 'fulfilled' ? profileResult.value?.data : null;
+      const roleData = roleResult.status === 'fulfilled' ? roleResult.value?.data : null;
+
+      if (profileData) {
+        setProfile(profileData as Profile);
       }
 
-      if (roleResult.status === 'fulfilled' && roleResult.value.data) {
-        setRole(roleResult.value.data as AppRole);
+      if (roleData) {
+        setRole(roleData as AppRole);
       } else {
         setRole(null);
       }
