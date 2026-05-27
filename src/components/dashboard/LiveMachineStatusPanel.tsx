@@ -278,5 +278,5 @@ export const LiveMachineStatusPanel = memo(function LiveMachineStatusPanel() {
       </CardContent>
     </Card>
   );
-}
+});
 
