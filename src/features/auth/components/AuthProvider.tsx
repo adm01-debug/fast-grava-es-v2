@@ -203,24 +203,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setSession(data.session);
         setUser(data.user);
         
-        const { data: profileData } = await supabase
-          .from('profiles')
-          .select('full_name')
-          .eq('id', data.user.id)
-          .maybeSingle();
+        // Load user data in background to not block the login redirect
+        fetchUserData(data.user.id);
+        
+        // Check device in background
+        (async () => {
+          try {
+            const { data: profileData } = await supabase
+              .from('profiles')
+              .select('full_name')
+              .eq('id', data.user.id)
+              .maybeSingle();
 
-        const result = await checkDevice(
-          data.user.id,
-          data.user.email || email,
-          profileData?.full_name || undefined
-        );
+            const result = await checkDevice(
+              data.user.id,
+              data.user.email || email,
+              profileData?.full_name || undefined
+            );
 
-        if (result.isNewDevice) {
-          toast.info('Novo dispositivo detectado', {
-            description: 'Um email de alerta foi enviado para sua caixa de entrada.',
-            duration: 5000,
-          });
-        }
+            if (result.isNewDevice) {
+              toast.info('Novo dispositivo detectado', {
+                description: 'Um email de alerta foi enviado para sua caixa de entrada.',
+                duration: 5000,
+              });
+            }
+          } catch (e) {
+            logger.warn('Erro ao verificar dispositivo (em background)', e, 'AuthProvider');
+          }
+        })();
       }
 
       return { error: null };
