@@ -1,5 +1,6 @@
 import { useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { logger } from '@/lib/logger';
 
 interface DeviceInfo {
   fingerprint: string;
@@ -115,7 +116,7 @@ export const useDeviceDetection = () => {
       });
 
       if (response.error) {
-        console.error('[useDeviceDetection] Function error:', response.error);
+        logger.error('Falha na edge function de device detection', response.error, 'useDeviceDetection');
         return { isNewDevice: false, error: response.error };
       }
 

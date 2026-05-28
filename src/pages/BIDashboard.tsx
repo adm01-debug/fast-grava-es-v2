@@ -1,6 +1,7 @@
 import { useMemo, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
+import { logger } from '@/lib/logger';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -342,7 +343,7 @@ export default function BIDashboard() {
         description: `O relatório foi baixado com sucesso.`,
       });
     } catch (error) {
-      console.error('Export error:', error);
+      logger.error('Falha na exportação de relatório BI', error, 'BIDashboard');
       toast({
         title: "Erro na exportação",
         description: "Não foi possível gerar o arquivo.",
@@ -384,7 +385,7 @@ export default function BIDashboard() {
         description: "O PDF foi baixado com sucesso.",
       });
     } catch (error) {
-      console.error('Full export error:', error);
+      logger.error('Falha na exportação full do dashboard BI', error, 'BIDashboard');
       toast({
         title: "Erro na exportação",
         description: "Não foi possível capturar o dashboard.",

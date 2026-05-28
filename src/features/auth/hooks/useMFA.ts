@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '../index';
 import { toast } from 'sonner';
+import { logger } from '@/lib/logger';
 
 export function useMFA() {
   const { user } = useAuth();
@@ -18,7 +19,7 @@ export function useMFA() {
       if (error) throw error;
       setFactors(data.all || []);
     } catch (error) {
-      console.error('Error listing MFA factors:', error);
+      logger.error('Falha ao listar fatores MFA', error, 'useMFA');
     } finally {
       setIsLoading(false);
     }

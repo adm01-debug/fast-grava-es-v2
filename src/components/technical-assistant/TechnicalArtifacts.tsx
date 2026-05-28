@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Copy, Check, BarChart3, Settings2 } from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
+import { logger } from "@/lib/logger";
 
 // Configure mermaid
 mermaid.initialize({
@@ -31,7 +32,7 @@ export const MermaidDiagram = ({ chart }: MermaidDiagramProps) => {
         setSvg(svg);
         setError(false);
       } catch (err) {
-        console.error('Mermaid rendering failed:', err);
+        logger.error('Mermaid rendering failed', err, 'MermaidDiagram');
         setError(true);
       }
     };

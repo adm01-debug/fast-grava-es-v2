@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Json } from '@/integrations/supabase/types';
 import { toast } from 'sonner';
 import { z } from 'zod';
+import { logger } from '@/lib/logger';
 
 const widgetConfigSchema = z.object({
   id: z.string(),
@@ -74,7 +75,7 @@ export function useDashboardLayout() {
             setWidgets(merged);
             return;
           } else {
-            console.error('Invalid dashboard layout from database:', result.error);
+            logger.warn('Layout de dashboard inválido no banco', result.error, 'useDashboardLayout');
           }
         }
 
