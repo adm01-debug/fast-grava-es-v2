@@ -1,0 +1,1095 @@
+﻿
+> vite_react_shadcn_ts@0.0.0 lint
+> eslint .
+
+
+C:\Projetos\fast-grava-es-v2\src\components\accessibility\AccessibilityProvider.tsx
+  9:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Projetos\fast-grava-es-v2\src\components\activity\ActivityLog.tsx
+  233:10  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Projetos\fast-grava-es-v2\src\components\alerts\AlertCard.tsx
+   62:15  warning  Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+   62:15  warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+  109:10  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components                                                                     react-refresh/only-export-components
+  109:26  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components                                                                     react-refresh/only-export-components
+
+C:\Projetos\fast-grava-es-v2\src\components\alerts\AlertJobCard.tsx
+   62:15  warning  Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+   62:15  warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+  121:10  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components                                                                     react-refresh/only-export-components
+  121:26  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components                                                                     react-refresh/only-export-components
+
+C:\Projetos\fast-grava-es-v2\src\components\alerts\AlertSpecialCards.tsx
+  41:17  warning  Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  41:17  warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+
+C:\Projetos\fast-grava-es-v2\src\components\alerts\AlertViewAllModals.tsx
+   25:13  warning  Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+   25:13  warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+  138:13  warning  Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  138:13  warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+
+C:\Projetos\fast-grava-es-v2\src\components\auth\MFALoginVerification.tsx
+  77:13  warning  The autoFocus prop should not be used, as it can reduce usability and accessibility for users  jsx-a11y/no-autofocus
+
+C:\Projetos\fast-grava-es-v2\src\components\auth\PasswordStrengthIndicator.tsx
+  267:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Projetos\fast-grava-es-v2\src\components\autonomous\AutonomousEventLog.tsx
+   9:36  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+  39:6   warning  React Hook useEffect has a missing dependency: 'events'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Projetos\fast-grava-es-v2\src\components\calendar\CalendarTimeline.tsx
+  33:68  warning  Unexpected any. Specify a different type                                                                                                                                                           @typescript-eslint/no-explicit-any
+  36:5   warning  Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  36:5   warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+
+C:\Projetos\fast-grava-es-v2\src\components\dashboard\AlertScheduleModal.tsx
+  155:17  warning  Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  155:17  warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+
+C:\Projetos\fast-grava-es-v2\src\components\dashboard\AlertsWidget.tsx
+  169:17  warning  Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  169:17  warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+
+C:\Projetos\fast-grava-es-v2\src\components\dashboard\EfficiencyAlertHistoryWidget.tsx
+  41:68  warning  React Hook useMemo has a missing dependency: 'filterAlerts'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  42:72  warning  React Hook useMemo has a missing dependency: 'filterAlerts'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Projetos\fast-grava-es-v2\src\components\dashboard\MaintenanceAlertsWidget.tsx
+  16:30  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  20:53  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  21:55  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\components\dashboard\OccupancyChart.tsx
+  18:35  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  19:43  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  21:61  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  31:17  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  31:25  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  35:56  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  49:53  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\components\design-system\sections\cards\CardVariants.tsx
+  22:45  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\components\design-system\sections\loading\ButtonLoadingSection.tsx
+  22:49  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  43:57  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\components\design-system\sections\navigation\NavigationMenuExamples.tsx
+  25:27  warning  The href attribute requires a valid value to be accessible. Provide a valid, navigable address as the href value. If you cannot provide a valid href, but still need the element to resemble a link, use a button and change it with appropriate styles. Learn more: https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/HEAD/docs/rules/anchor-is-valid.md  jsx-a11y/anchor-is-valid
+  32:68  warning  The href attribute requires a valid value to be accessible. Provide a valid, navigable address as the href value. If you cannot provide a valid href, but still need the element to resemble a link, use a button and change it with appropriate styles. Learn more: https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/HEAD/docs/rules/anchor-is-valid.md  jsx-a11y/anchor-is-valid
+  46:70  warning  The href attribute requires a valid value to be accessible. Provide a valid, navigable address as the href value. If you cannot provide a valid href, but still need the element to resemble a link, use a button and change it with appropriate styles. Learn more: https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/HEAD/docs/rules/anchor-is-valid.md  jsx-a11y/anchor-is-valid
+
+C:\Projetos\fast-grava-es-v2\src\components\design-system\sections\overview\OverviewCategoriesGrid.tsx
+  47:15  warning  Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  47:15  warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+
+C:\Projetos\fast-grava-es-v2\src\components\digital-twin\FactoryFloorMap.tsx
+   14:59  warning  Unexpected any. Specify a different type                                                                                                                                                           @typescript-eslint/no-explicit-any
+   15:63  warning  Unexpected any. Specify a different type                                                                                                                                                           @typescript-eslint/no-explicit-any
+   26:43  warning  Unexpected any. Specify a different type                                                                                                                                                           @typescript-eslint/no-explicit-any
+   27:27  warning  Unexpected any. Specify a different type                                                                                                                                                           @typescript-eslint/no-explicit-any
+   38:37  warning  Unexpected any. Specify a different type                                                                                                                                                           @typescript-eslint/no-explicit-any
+   39:28  warning  Unexpected any. Specify a different type                                                                                                                                                           @typescript-eslint/no-explicit-any
+  110:35  warning  Unexpected any. Specify a different type                                                                                                                                                           @typescript-eslint/no-explicit-any
+  119:23  warning  Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  119:23  warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+
+C:\Projetos\fast-grava-es-v2\src\components\digital-twin\SupplyChainPanel.tsx
+  8:38  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\components\documents\DocumentUploadModal.tsx
+  97:11  warning  Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  97:11  warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+
+C:\Projetos\fast-grava-es-v2\src\components\documents\DocumentsList.tsx
+  99:15  warning  Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  99:15  warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+
+C:\Projetos\fast-grava-es-v2\src\components\error\GlobalErrorBoundary.tsx
+  28:5  warning  Unexpected console statement  no-console
+
+C:\Projetos\fast-grava-es-v2\src\components\feedback\CelebrationMoment.tsx
+  237:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Projetos\fast-grava-es-v2\src\components\feedback\FeedbackProvider.tsx
+  108:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Projetos\fast-grava-es-v2\src\components\integrations\Bitrix24FieldMapping.tsx
+   30:32   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  306:121  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\components\integrations\Bitrix24SyncHistory.tsx
+  16:18  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\components\integrations\Bitrix24SyncPanel.tsx
+  25:6  warning  React Hook useEffect has a missing dependency: 'checkOAuthStatus'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Projetos\fast-grava-es-v2\src\components\inventory\InventoryStats.tsx
+  10:10  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\components\inventory\WarehouseMap.tsx
+   15:10  warning  Unexpected any. Specify a different type                                                                                                                                                           @typescript-eslint/no-explicit-any
+  105:27  warning  Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  105:27  warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+
+C:\Projetos\fast-grava-es-v2\src\components\jobs\JobDetailsModal.tsx
+  132:74  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  475:56  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\components\jobs\JobQualityTab.tsx
+  95:15  warning  Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  95:15  warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+
+C:\Projetos\fast-grava-es-v2\src\components\jobs\JobTraceabilityTab.tsx
+  159:31  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\components\kanban\DraggableJobCard.tsx
+   84:7   warning  Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+   84:7   warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+   99:9   warning  Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+   99:9   warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+  132:5   warning  Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  132:5   warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+  167:11  warning  Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  167:11  warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+
+C:\Projetos\fast-grava-es-v2\src\components\kanban\DroppableColumn.tsx
+  321:9  warning  Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  321:9  warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+
+C:\Projetos\fast-grava-es-v2\src\components\kanban\KanbanAIAdvisor.tsx
+  382:9  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\components\knowledge\KnowledgeSheetList.tsx
+  121:58   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  121:104  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\components\knowledge\TechnicalSheetEditor.tsx
+  58:48  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  69:53  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  70:46  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  71:43  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  72:49  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\components\knowledge\TechnicalSheetViewer.tsx
+  410:70  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  411:69  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  644:43  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\components\knowledge\TechnicalSheetVisualReference.tsx
+  20:11  warning  Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  20:11  warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+  45:11  warning  Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  45:11  warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+
+C:\Projetos\fast-grava-es-v2\src\components\knowledge\editor\EditorBasicInfo.tsx
+  44:23  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\components\knowledge\editor\EditorMaterialsSection.tsx
+  15:130  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\components\knowledge\editor\EditorStepsSection.tsx
+  16:155  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\components\knowledge\editor\EditorTipsSection.tsx
+  16:119  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  67:100  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\components\layout\AppSidebar.tsx
+  44:6  warning  React Hook useEffect has a missing dependency: 'openGroups'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Projetos\fast-grava-es-v2\src\components\layout\QuickFavoritesBar.tsx
+  195:74  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\components\logistics\EditShipmentModal.tsx
+  85:57  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\components\machines\MachineCard.tsx
+   9:12  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  12:29  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\components\machines\MachineDetailsModal.tsx
+   26:12  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  145:60  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\components\ml\MLNotificationSettings.tsx
+  25:6  warning  React Hook useEffect has a missing dependency: 'getPreferences'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Projetos\fast-grava-es-v2\src\components\mobile\SwipeActions.tsx
+  131:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Projetos\fast-grava-es-v2\src\components\navigation\CommandPaletteAdvanced.tsx
+   69:127  warning  React Hook React.useMemo has missing dependencies: 'executeAction' and 'navigateTo'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+  108:6    warning  React Hook React.useMemo has a missing dependency: 'entityCommands'. Either include it or remove the dependency array                    react-hooks/exhaustive-deps
+
+C:\Projetos\fast-grava-es-v2\src\components\navigation\FavoritesManager.tsx
+  22:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Projetos\fast-grava-es-v2\src\components\onboarding\OnboardingTour.tsx
+  101:9   warning  Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  101:9   warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+  214:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components                                                                     react-refresh/only-export-components
+
+C:\Projetos\fast-grava-es-v2\src\components\onboarding\SystemOnboarding.tsx
+    3:32  warning  Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+   13:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+   25:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  100:52  warning  Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+  199:12  warning  Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\components\operator\OperatorProductionCard.tsx
+  46:13  warning  Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  46:13  warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+
+C:\Projetos\fast-grava-es-v2\src\components\operator\PreProductionChecklist.tsx
+  115:11  warning  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+
+C:\Projetos\fast-grava-es-v2\src\components\operator\ProductionRegistrationModal.tsx
+  62:18  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\components\operators\EditOperatorModal.tsx
+  90:21  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\components\operators\MachineAssignmentModal.tsx
+   32:6   warning  React Hook useEffect has a missing dependency: 'assignedMachineIds'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  120:25  warning  A form label must be associated with a control                                                                         jsx-a11y/label-has-associated-control
+
+C:\Projetos\fast-grava-es-v2\src\components\operators\OperatorAuditHistory.tsx
+  25:36  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\components\planning\AISuggestionDetails.tsx
+  17:11  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\components\planning\PlanningEfficiencyDashboard.tsx
+  79:6  warning  React Hook useMemo has missing dependencies: 'balancingSuggestions' and 'sequencingSuggestions'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Projetos\fast-grava-es-v2\src\components\production\ProductionPhotos.tsx
+  75:15  warning  Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  75:15  warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+
+C:\Projetos\fast-grava-es-v2\src\components\qrcode\ScanHistoryFilters.tsx
+  47:11  warning  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+  57:11  warning  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+  71:11  warning  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+
+C:\Projetos\fast-grava-es-v2\src\components\scheduling\MachineSuggestionPanel.tsx
+  109:21  warning  Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  109:21  warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+
+C:\Projetos\fast-grava-es-v2\src\components\scheduling\UtilizationHeatmap.tsx
+  12:13  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\components\settings\TechniqueManagement.tsx
+  18:60  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  36:35  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  50:22  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  64:22  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\components\settings\TwoFactorSetup.tsx
+  21:48  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\components\shift\AutoShiftSummary.tsx
+  34:23  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  35:31  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  36:35  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\components\shift\OccurrencesPanel.tsx
+  153:150  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  160:136  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\components\shortcuts\KeyboardShortcuts.tsx
+   29:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  246:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Projetos\fast-grava-es-v2\src\components\technical-assistant\ChatArea.tsx
+  314:19  warning  Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  314:19  warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+
+C:\Projetos\fast-grava-es-v2\src\components\technical-assistant\ChatMessage.tsx
+  73:73  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\components\technical-assistant\ConversationSidebar.tsx
+  122:23   warning  Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  122:23   warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+  133:167  warning  The autoFocus prop should not be used, as it can reduce usability and accessibility for users                                                                                                      jsx-a11y/no-autofocus
+
+C:\Projetos\fast-grava-es-v2\src\components\technical-assistant\TechnicalArtifacts.tsx
+  34:9  warning  Unexpected console statement  no-console
+
+C:\Projetos\fast-grava-es-v2\src\components\technical-assistant\TechnicalTelemetryPanel.tsx
+  57:11  warning  Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  57:11  warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+  72:11  warning  Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  72:11  warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+
+C:\Projetos\fast-grava-es-v2\src\components\traceability\CreateLotModal.tsx
+  16:50   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  40:82   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  42:102  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  46:82   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  51:94   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  55:99   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  60:82   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  70:97   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  74:78   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\components\traceability\LotComponentsTab.tsx
+  14:15  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\components\traceability\LotInspectionsTab.tsx
+  25:16  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\components\traceability\LotMovementsTab.tsx
+  18:14  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\components\ui\alert.tsx
+  31:5  warning  Headings must have content and the content must be accessible by a screen reader  jsx-a11y/heading-has-content
+
+C:\Projetos\fast-grava-es-v2\src\components\ui\badge.tsx
+  77:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Projetos\fast-grava-es-v2\src\components\ui\button.tsx
+  335:18  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Projetos\fast-grava-es-v2\src\components\ui\card.tsx
+  106:5   warning  Headings must have content and the content must be accessible by a screen reader                                                jsx-a11y/heading-has-content
+  130:81  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Projetos\fast-grava-es-v2\src\components\ui\celebration.tsx
+  164:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Projetos\fast-grava-es-v2\src\components\ui\chart.tsx
+  278:68  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\components\ui\command.tsx
+  24:11  warning  An interface declaring no members is equivalent to its supertype  @typescript-eslint/no-empty-object-type
+
+C:\Projetos\fast-grava-es-v2\src\components\ui\empty-state.tsx
+  434:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Projetos\fast-grava-es-v2\src\components\ui\form.tsx
+  129:10  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Projetos\fast-grava-es-v2\src\components\ui\kpi-tooltip.tsx
+  95:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Projetos\fast-grava-es-v2\src\components\ui\micro-interactions.tsx
+  11:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Projetos\fast-grava-es-v2\src\components\ui\navigation-menu.tsx
+  111:3  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Projetos\fast-grava-es-v2\src\components\ui\pagination.tsx
+  35:3  warning  Anchors must have content and the content must be accessible by a screen reader  jsx-a11y/anchor-has-content
+
+C:\Projetos\fast-grava-es-v2\src\components\ui\sidebar.tsx
+  636:3  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Projetos\fast-grava-es-v2\src\components\ui\sonner.tsx
+  27:19  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Projetos\fast-grava-es-v2\src\components\ui\textarea.tsx
+  5:18  warning  An interface declaring no members is equivalent to its supertype  @typescript-eslint/no-empty-object-type
+
+C:\Projetos\fast-grava-es-v2\src\components\ui\toggle.tsx
+  37:18  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Projetos\fast-grava-es-v2\src\components\voice\VoiceCommands.tsx
+   21:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+   34:25  warning  Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+   39:61  warning  Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+   44:49  warning  Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+   64:48  warning  Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+  308:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  360:16  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Projetos\fast-grava-es-v2\src\contexts\BreadcrumbContext.tsx
+  38:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Projetos\fast-grava-es-v2\src\contexts\ConfirmationContext.tsx
+  47:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Projetos\fast-grava-es-v2\src\contexts\FeatureFlagsContext.tsx
+  45:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Projetos\fast-grava-es-v2\src\contexts\NotificationsContext.tsx
+  61:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Projetos\fast-grava-es-v2\src\contexts\OfflineSyncContext.tsx
+  39:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Projetos\fast-grava-es-v2\src\contexts\PermissionsContext.tsx
+  19:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Projetos\fast-grava-es-v2\src\contexts\ReauthContext.tsx
+  176:19  warning  The autoFocus prop should not be used, as it can reduce usability and accessibility for users                                   jsx-a11y/no-autofocus
+  203:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  212:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Projetos\fast-grava-es-v2\src\contexts\SearchContext.tsx
+  29:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Projetos\fast-grava-es-v2\src\contexts\SidebarContext.tsx
+  32:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Projetos\fast-grava-es-v2\src\contexts\ThemeContext.tsx
+  32:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Projetos\fast-grava-es-v2\src\contexts\UserPreferencesContext.tsx
+  61:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Projetos\fast-grava-es-v2\src\contexts\WebSocketContext.tsx
+  83:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Projetos\fast-grava-es-v2\src\features\admin\components\audit\AuditEntryCard.tsx
+  21:44   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  21:73   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  67:134  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  68:48   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\features\admin\components\audit\AuditTrailDrawer.tsx
+  32:60  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\features\admin\components\audit\HistoryPeriodFilter.tsx
+  26:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Projetos\fast-grava-es-v2\src\features\admin\hooks\useActivityLog.ts
+  25:29  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\features\admin\hooks\useAuditTrail.ts
+  16:26  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  42:41  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  50:27  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  50:63  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\features\admin\hooks\useBIExport.ts
+   7:20  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   8:16  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   9:24  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  15:84  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  23:27  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  27:99  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  31:70  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  33:70  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  45:26  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  72:99  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  77:65  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\features\admin\hooks\useBitrix24Sync.ts
+   68:21  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   96:21  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  119:21  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  141:21  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  178:21  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  213:21  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\features\admin\hooks\useBusinessConfig.ts
+   8:10  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  27:41  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  35:62  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  51:22  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  56:61  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\features\admin\hooks\useDashboardPresets.ts
+  11:12  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  34:87  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  57:22  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\features\admin\hooks\useDataExport.ts
+  113:56  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  143:44  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\features\admin\hooks\useDataImport.ts
+  105:62  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\features\admin\hooks\useDetailedAuditTrail.ts
+  44:37  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  54:38  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  67:40  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  77:38  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\features\admin\hooks\useFeatureFlags.ts
+  10:10  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\features\admin\hooks\useOrphanedDataDetection.ts
+  91:6  warning  React Hook useMemo has missing dependencies: 'jobs', 'machines', and 'techniques'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Projetos\fast-grava-es-v2\src\features\admin\hooks\useRateLimitLogs.ts
+  52:27  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\features\admin\hooks\useVersionHistory.ts
+  11:15  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  12:15  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  93:51  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  93:64  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\features\admin\types\audit.ts
+  8:13  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  9:13  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\features\admin\types\security.ts
+  6:14  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\features\analytics\components\bi\BITooltip.tsx
+  9:20  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\features\analytics\components\bi\executive\KPIOperatorsTab.tsx
+   9:14  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  10:9   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  71:68  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  94:66  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\features\analytics\components\efficiency\HistoryTab.tsx
+  18:20  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\features\analytics\components\oee\OEELossDrilldown.tsx
+   49:46  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   49:57  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   70:48  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   77:51  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   77:62  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   90:20  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   90:28  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   96:48  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   98:37  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  112:29  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  217:43  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\features\analytics\components\oee\OEERankingGap.tsx
+  59:36  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\features\analytics\components\oee\ParetoLossesChart.tsx
+  17:11  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\features\analytics\components\oee\StudioEfficiencyGrid.tsx
+  11:36  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\features\analytics\components\spc\QualityHistogram.tsx
+  8:17  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\features\analytics\hooks\useKPIs.test.ts
+  13:49  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  60:49  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\features\analytics\hooks\useLoadBalancing.ts
+  187:6  warning  React Hook useMemo has missing dependencies: 'DAILY_CAPACITY_MINUTES' and 'configLoading'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Projetos\fast-grava-es-v2\src\features\analytics\hooks\useOEE.test.ts
+  36:49  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  43:49  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\features\analytics\hooks\useRealtimeConnection.test.ts
+  15:20  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  28:26  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  46:51  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\features\analytics\hooks\useRealtimeConnection.ts
+  41:11  warning  Unexpected console statement                                                                                    no-console
+  58:6   warning  React Hook useCallback has a missing dependency: 'reconnect'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Projetos\fast-grava-es-v2\src\features\auth\components\AuthProvider.test.tsx
+  38:41  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  43:34  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  49:31  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  58:23  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  66:17  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  78:42  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  83:35  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\features\auth\components\AuthProvider.tsx
+  213:101  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  262:21   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  266:120  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\features\auth\hooks\useMFA.ts
+   8:42  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  12:56  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  21:7   warning  Unexpected console statement              no-console
+  42:21  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  62:21  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  80:21  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\features\auth\hooks\useRBAC.tsx
+    6:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  134:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  250:16  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Projetos\fast-grava-es-v2\src\features\auth\hooks\useRolePermissions.ts
+  24:7   warning  Unexpected console statement              no-console
+  60:16  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\features\auth\hooks\useSessionTimeout.tsx
+   54:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+   91:6   warning  React Hook React.useCallback has a missing dependency: 'startCountdown'. Either include it or remove the dependency array       react-hooks/exhaustive-deps
+  110:6   warning  React Hook React.useCallback has a missing dependency: 'handleLogout'. Either include it or remove the dependency array         react-hooks/exhaustive-deps
+
+C:\Projetos\fast-grava-es-v2\src\features\inventory\hooks\useInventory.ts
+   70:9   warning  The 'movements' logical expression could make the dependencies of useMemo Hook (at line 78) change on every render. Move it inside the useMemo callback. Alternatively, wrap the initialization of 'movements' in its own useMemo() Hook  react-hooks/exhaustive-deps
+  110:22  warning  Unexpected any. Specify a different type                                                                                                                                                                                                  @typescript-eslint/no-explicit-any
+  111:7   warning  Unexpected console statement                                                                                                                                                                                                              no-console
+
+C:\Projetos\fast-grava-es-v2\src\features\inventory\hooks\useLogistics.ts
+  31:9  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\features\jobs\hooks\useAutoBufferPromotion.ts
+  37:71  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\features\jobs\hooks\useDailyDragDrop.ts
+  53:25  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\features\jobs\hooks\useKanbanDragDrop.ts
+  67:6  warning  React Hook useCallback has missing dependencies: 'handleReorderWithinColumn' and 'handleStatusChange'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Projetos\fast-grava-es-v2\src\features\jobs\hooks\useRecordDuplication.ts
+  90:23  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\features\jobs\hooks\useSmartSequencing.ts
+  23:32  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\features\jobs\hooks\useWeeklyDragDrop.ts
+  54:25  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\features\jobs\services\jobsService.test.ts
+  70:5   warning  Use "@ts-expect-error" instead of "@ts-ignore", as "@ts-ignore" will do nothing if the following line is error-free  @typescript-eslint/ban-ts-comment
+  71:23  warning  Unexpected any. Specify a different type                                                                             @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\features\jobs\services\jobsService.ts
+  35:7  warning  Unexpected console statement  no-console
+  43:9  warning  Unexpected console statement  no-console
+
+C:\Projetos\fast-grava-es-v2\src\features\jobs\services\techniquesService.ts
+  16:7  warning  Unexpected console statement  no-console
+
+C:\Projetos\fast-grava-es-v2\src\features\maintenance\components\BatchApprovalPreviewModal.tsx
+   52:48  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   62:44  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  112:42  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\features\maintenance\components\ChecklistManager.tsx
+   27:26  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   36:32  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   81:46  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  207:47  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\features\maintenance\components\ExecutionAdjustmentParameters.tsx
+   6:25  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  14:41  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\features\maintenance\components\ExecutionDetailsModal.tsx
+   30:40  warning  Unexpected any. Specify a different type                                                                        @typescript-eslint/no-explicit-any
+   39:6   warning  React Hook useEffect has a missing dependency: 'loadDetails'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+   59:35  warning  Unexpected any. Specify a different type                                                                        @typescript-eslint/no-explicit-any
+  126:58  warning  Unexpected any. Specify a different type                                                                        @typescript-eslint/no-explicit-any
+  136:11  warning  Unexpected console statement                                                                                    no-console
+  201:43  warning  Unexpected any. Specify a different type                                                                        @typescript-eslint/no-explicit-any
+  209:39  warning  Unexpected any. Specify a different type                                                                        @typescript-eslint/no-explicit-any
+  441:58  warning  Unexpected any. Specify a different type                                                                        @typescript-eslint/no-explicit-any
+  476:58  warning  Unexpected any. Specify a different type                                                                        @typescript-eslint/no-explicit-any
+  478:94  warning  Unexpected any. Specify a different type                                                                        @typescript-eslint/no-explicit-any
+  479:89  warning  Unexpected any. Specify a different type                                                                        @typescript-eslint/no-explicit-any
+  523:50  warning  Unexpected any. Specify a different type                                                                        @typescript-eslint/no-explicit-any
+  601:47  warning  Unexpected any. Specify a different type                                                                        @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\features\maintenance\components\ExecutionSupplies.tsx
+   4:18  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   5:20  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  16:30  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  29:46  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\features\maintenance\components\MachineTPMPanel.tsx
+   22:49  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   23:45  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   24:43  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   26:37  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   76:62  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  112:44  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  141:45  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\features\maintenance\components\MachineTPMTimeline.tsx
+  26:19  warning  Unexpected any. Specify a different type                                                                                                                                                           @typescript-eslint/no-explicit-any
+  27:17  warning  Unexpected any. Specify a different type                                                                                                                                                           @typescript-eslint/no-explicit-any
+  27:25  warning  Unexpected any. Specify a different type                                                                                                                                                           @typescript-eslint/no-explicit-any
+  51:37  warning  Unexpected any. Specify a different type                                                                                                                                                           @typescript-eslint/no-explicit-any
+  54:13  warning  Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  54:13  warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+
+C:\Projetos\fast-grava-es-v2\src\features\maintenance\components\MaintenanceExecutionModal.tsx
+  217:6  warning  React Hook useEffect has a missing dependency: 'activeAlerts'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Projetos\fast-grava-es-v2\src\features\maintenance\components\PredictiveHealthCard.tsx
+  112:135  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\features\maintenance\components\TPMNotificationSettings.tsx
+   32:56  warning  Unexpected any. Specify a different type                                                                                                                                                           @typescript-eslint/no-explicit-any
+  190:66  warning  Unexpected any. Specify a different type                                                                                                                                                           @typescript-eslint/no-explicit-any
+  292:23  warning  Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  292:23  warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+  402:52  warning  Unexpected any. Specify a different type                                                                                                                                                           @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\features\maintenance\components\TPMNotificationTemplates.tsx
+  129:13  warning  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+  139:11  warning  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+
+C:\Projetos\fast-grava-es-v2\src\features\maintenance\components\TPMParameterAlerts.tsx
+  13:40  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\features\maintenance\components\VirtualSensorPanel.tsx
+  11:36  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\features\maintenance\components\execution\AlertRiskPanel.tsx
+  7:11  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\features\maintenance\components\execution\ChecklistItem.tsx
+   8:9   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   9:13  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  10:23  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\features\maintenance\components\execution\SupplyList.tsx
+  7:28  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  8:35  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\features\maintenance\hooks\useTPMData.ts
+   83:42  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  103:42  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  122:42  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  178:69  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  198:42  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\features\maintenance\hooks\useTPMMutations.ts
+  210:14   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  341:60   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  346:60   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  354:51   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  367:14   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  398:90   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  419:14   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  494:123  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  564:62   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  579:16   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\features\notifications\components\NotificationCenter.tsx
+  68:21  warning  Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  68:21  warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+
+C:\Projetos\fast-grava-es-v2\src\features\notifications\components\ToastWithUndo.tsx
+  362:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  372:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Projetos\fast-grava-es-v2\src\features\notifications\hooks\useEfficiencyNotifications.ts
+  208:6  warning  React Hook useEffect has missing dependencies: 'bottleneckAlerts', 'criticalCount', 'loadBalancingSuggestions', and 'warningCount'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Projetos\fast-grava-es-v2\src\features\notifications\hooks\useNotificationSounds.ts
+  70:72  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\features\notifications\hooks\useNotifications.test.ts
+  63:5  warning  Use "@ts-expect-error" instead of "@ts-ignore", as "@ts-ignore" will do nothing if the following line is error-free  @typescript-eslint/ban-ts-comment
+
+C:\Projetos\fast-grava-es-v2\src\features\notifications\hooks\useNotifications.ts
+  36:39  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  43:77  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\features\notifications\hooks\usePushNotifications.ts
+  48:6  warning  React Hook useEffect has a missing dependency: 'checkSubscription'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Projetos\fast-grava-es-v2\src\features\notifications\hooks\usePushSubscription.ts
+  45:6  warning  React Hook useEffect has a missing dependency: 'checkSubscription'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Projetos\fast-grava-es-v2\src\features\notifications\hooks\useTPMNotifications.ts
+  165:138  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  226:21   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\features\production\hooks\useOEE.ts
+  509:5  warning  Unexpected console statement  no-console
+
+C:\Projetos\fast-grava-es-v2\src\features\production\hooks\useOperators.ts
+   65:9  warning  Unexpected console statement  no-console
+  115:9  warning  Unexpected console statement  no-console
+  129:7  warning  Unexpected console statement  no-console
+  168:9  warning  Unexpected console statement  no-console
+  183:7  warning  Unexpected console statement  no-console
+
+C:\Projetos\fast-grava-es-v2\src\features\production\hooks\usePerformanceMetrics.ts
+  60:7  warning  Unexpected console statement                                                                                      no-console
+  62:6  warning  React Hook useEffect has a missing dependency: 'componentName'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Projetos\fast-grava-es-v2\src\features\production\services\machinesService.ts
+  11:7  warning  Unexpected console statement  no-console
+
+C:\Projetos\fast-grava-es-v2\src\hooks\useBulkActions.ts
+  55:31  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  98:31  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\hooks\useDashboardLayout.ts
+  77:13  warning  Unexpected console statement  no-console
+
+C:\Projetos\fast-grava-es-v2\src\hooks\useDebounce.ts
+  53:58  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  53:68  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\hooks\useDeviceDetection.ts
+  118:9  warning  Unexpected console statement  no-console
+
+C:\Projetos\fast-grava-es-v2\src\hooks\useGamification.ts
+  215:20  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\hooks\useInfiniteScroll.ts
+  85:6  warning  React Hook useEffect has a missing dependency: 'query'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Projetos\fast-grava-es-v2\src\hooks\useLocalStorage.ts
+  16:7   warning  Unexpected console statement              no-console
+  28:11  warning  Unexpected console statement              no-console
+  41:7   warning  Unexpected console statement              no-console
+  52:9   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\hooks\useNetworkStatus.tsx
+  29:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Projetos\fast-grava-es-v2\src\hooks\useOfflineSync.test.ts
+  72:49  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  73:57  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  95:49  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  96:57  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\hooks\useOfflineSync.ts
+   16:9   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   17:13  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   18:15  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  284:55  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  332:55  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\hooks\useThemeSound.ts
+  27:72  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\hooks\useThrottle.ts
+   6:49  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  14:16  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\hooks\utils\inventoryExport.ts
+  3:58  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\lib\errorHandling.ts
+   13:19  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   69:40  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  131:10  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  168:10  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  208:5   warning  Unexpected console statement              no-console
+  260:18  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  268:36  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  275:39  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  283:36  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\lib\logger.ts
+   17:10  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   39:81  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   81:33  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   87:32  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   93:32  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  100:34  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  109:37  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\lib\oeeExport.ts
+   5:43  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   9:39  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  23:13  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  35:25  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\lib\offlineStorage.ts
+   10:9   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   11:13  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   12:15  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   13:14  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   14:25  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  275:32  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\lib\pdfExport.ts
+   77:23  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   98:23  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  118:23  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  145:23  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  173:25  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  200:25  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  329:9   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  384:9   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\lib\queryConfig.ts
+   52:36  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  101:40  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\lib\retryWithBackoff.ts
+  20:25  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  22:53  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  62:18  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  93:43  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\lib\simulation.ts
+   24:18  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   39:65  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   39:72  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   41:9   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   42:9   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   43:9   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   44:9   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   45:9   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   46:9   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   47:9   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   48:9   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  120:49  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  132:21  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\lib\soundFeedback.ts
+  4:94  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\lib\spcExport.ts
+   7:108  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  46:28   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  90:29   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\lib\validation.ts
+  22:58  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  41:10  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\main.tsx
+  15:51  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\pages\AdminTelemetriaPage.tsx
+   45:15  warning  Unexpected any. Specify a different type                                                                                                 @typescript-eslint/no-explicit-any
+   55:13  warning  Unexpected any. Specify a different type                                                                                                 @typescript-eslint/no-explicit-any
+   96:6   warning  React Hook useEffect has missing dependencies: 'refetchErrors' and 'refetchQueries'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+  118:36  warning  Unexpected any. Specify a different type                                                                                                 @typescript-eslint/no-explicit-any
+  144:37  warning  Unexpected any. Specify a different type                                                                                                 @typescript-eslint/no-explicit-any
+  185:34  warning  Unexpected any. Specify a different type                                                                                                 @typescript-eslint/no-explicit-any
+  214:59  warning  Unexpected any. Specify a different type                                                                                                 @typescript-eslint/no-explicit-any
+  350:67  warning  Unexpected any. Specify a different type                                                                                                 @typescript-eslint/no-explicit-any
+  554:33  warning  Unexpected console statement                                                                                                             no-console
+
+C:\Projetos\fast-grava-es-v2\src\pages\AuthPage.tsx
+  187:258  warning  The autoFocus prop should not be used, as it can reduce usability and accessibility for users  jsx-a11y/no-autofocus
+
+C:\Projetos\fast-grava-es-v2\src\pages\BIDashboard.tsx
+  185:6  warning  React Hook useCallback has missing dependencies: 'assignments', 'collaboratorFilter', 'machineFilter', and 'studioFilter'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+  345:7  warning  Unexpected console statement                                                                                                                                                   no-console
+  387:7  warning  Unexpected console statement                                                                                                                                                   no-console
+
+C:\Projetos\fast-grava-es-v2\src\pages\Bitrix24ConfigPage.tsx
+  84:41  warning  React Hook useEffect has a missing dependency: 'fetchMappings'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Projetos\fast-grava-es-v2\src\pages\ExecutiveDashboard.tsx
+  452:54  warning  Unexpected any. Specify a different type                                                                                                                                                           @typescript-eslint/no-explicit-any
+  665:19  warning  Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  665:19  warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+
+C:\Projetos\fast-grava-es-v2\src\pages\InventoryPage.test.tsx
+   15:39  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   41:22  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   72:10  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  115:10  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  143:10  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\pages\InventoryPage.tsx
+   85:6    warning  React Hook useMemo has a missing dependency: 'debouncedSearch'. Either include it or remove the dependency array                                                                                   react-hooks/exhaustive-deps
+  270:91   warning  Unexpected any. Specify a different type                                                                                                                                                           @typescript-eslint/no-explicit-any
+  310:9    warning  Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  310:9    warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+  488:57   warning  Unexpected any. Specify a different type                                                                                                                                                           @typescript-eslint/no-explicit-any
+  534:40   warning  Unexpected any. Specify a different type                                                                                                                                                           @typescript-eslint/no-explicit-any
+  681:168  warning  Unexpected any. Specify a different type                                                                                                                                                           @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\pages\KPIDashboard.tsx
+  271:27  warning  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+  280:27  warning  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+  289:27  warning  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+
+C:\Projetos\fast-grava-es-v2\src\pages\MachinesPage.tsx
+   62:60  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   75:41  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   83:27  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  126:32  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  137:42  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  137:56  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  315:51  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  323:70  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  323:87  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  326:52  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  326:71  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  334:49  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  334:66  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  340:47  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  340:68  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  510:60  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  556:63  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  556:82  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  559:34  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  576:37  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\pages\MonthlyCalendar.tsx
+  73:31  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\pages\OEEDashboard.tsx
+  462:27  warning  Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  462:27  warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+
+C:\Projetos\fast-grava-es-v2\src\pages\OperatorHistoryPage.tsx
+  136:6  warning  React Hook useMemo has a missing dependency: 'getOperatorById'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Projetos\fast-grava-es-v2\src\pages\OperatorProductivityPage.tsx
+  201:15  warning  Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  201:15  warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+
+C:\Projetos\fast-grava-es-v2\src\pages\OperatorsPage.tsx
+  101:6  warning  React Hook useMemo has a missing dependency: 'getAssignedMachineIds'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Projetos\fast-grava-es-v2\src\pages\PendingQueue.tsx
+  102:11  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  521:41  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  527:41  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\pages\PublicTrackingPage.tsx
+   32:34  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   69:19  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   85:70  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  281:24  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\pages\ReportBuilderPage.tsx
+  474:52  warning  Unexpected any. Specify a different type                                                                                                                                                           @typescript-eslint/no-explicit-any
+  559:21  warning  Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  559:21  warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+
+C:\Projetos\fast-grava-es-v2\src\pages\SPCDashboard.tsx
+  196:21  warning  Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  196:21  warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+
+C:\Projetos\fast-grava-es-v2\src\pages\ShiftHandoverPage.tsx
+  438:21  warning  Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  438:21  warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+
+C:\Projetos\fast-grava-es-v2\src\pages\TPMDashboard.tsx
+   52:60  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   64:41  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   72:27  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   79:44  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  287:48  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\pages\TechnicalKnowledgeBase.tsx
+  67:6  warning  React Hook useEffect has a missing dependency: 'setSearchParams'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Projetos\fast-grava-es-v2\src\pages\TraceabilityPage.tsx
+  187:6  warning  React Hook useCallback has a missing dependency: 'processBulkStatusUpdate'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Projetos\fast-grava-es-v2\src\pages\WeeklyCalendar.tsx
+   37:100  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  108:51   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\src\types\job.ts
+  22:23  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  23:28  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projetos\fast-grava-es-v2\tailwind.config.ts
+  298:13  warning  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+
+Ô£û 606 problems (0 errors, 606 warnings)
+
