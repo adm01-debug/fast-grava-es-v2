@@ -29,7 +29,7 @@ export function AppSidebar() {
   const [openGroups, setOpenGroups] = useState<string[]>(['home', 'planning']);
   const location = useLocation();
   const navigate = useNavigate();
-  const { profile, role, signOut, isCoordinator } = useAuth();
+  const { profile, role, signOut, isCoordinator, isAdmin, user } = useAuth();
   const { isMobile } = useDevice();
   const alertCount = useAlertCount();
   const { unreadCount: notificationCount } = useNotifications();
@@ -231,19 +231,19 @@ export function AppSidebar() {
               <TooltipTrigger asChild>
                 <div className="flex items-center justify-center rounded-xl p-2 relative group-user">
                   <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center text-primary-foreground font-bold text-base shadow-lg ring-2 ring-primary/20 ring-offset-2 ring-offset-sidebar">
-                    {profile?.full_name?.charAt(0)?.toUpperCase() || 'U'}
+                    {profile?.full_name?.charAt(0)?.toUpperCase() || user?.email?.charAt(0)?.toUpperCase() || 'U'}
                   </div>
                 </div>
               </TooltipTrigger>
               <TooltipContent side="right" className="bg-sidebar-accent border-sidebar-border p-3 shadow-xl">
                 <div className="flex flex-col gap-1">
                   <p className="text-sm font-black text-sidebar-foreground tracking-tight uppercase leading-none">
-                    {profile?.full_name || 'Usuário'}
+                    {profile?.full_name || user?.email?.split('@')[0] || 'Usuário'}
                   </p>
                   <div className="flex items-center gap-1">
                     <Shield className="w-2.5 h-2.5 text-primary" />
                     <p className="text-[9px] font-bold text-primary/80 uppercase tracking-[0.2em]">
-                      {role === 'coordinator' ? 'Coordenação' : role === 'manager' ? 'Gestão' : 'Operação'}
+                      {role === 'admin' ? 'Administrador' : role === 'coordinator' ? 'Coordenação' : role === 'manager' ? 'Gestão' : 'Operação'}
                     </p>
                   </div>
                 </div>
@@ -252,16 +252,16 @@ export function AppSidebar() {
           ) : (
             <div className={cn('flex items-center gap-3 rounded-xl p-2 relative group-user')}>
               <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center text-primary-foreground font-bold text-base shadow-lg ring-2 ring-primary/20 ring-offset-2 ring-offset-sidebar">
-                {profile?.full_name?.charAt(0)?.toUpperCase() || 'U'}
+                {profile?.full_name?.charAt(0)?.toUpperCase() || user?.email?.charAt(0)?.toUpperCase() || 'U'}
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-[10px] font-black text-sidebar-foreground truncate tracking-[0.2em] uppercase leading-none mb-1.5">
-                  {profile?.full_name || 'Usuário'}
+                  {profile?.full_name || user?.email?.split('@')[0] || 'Usuário'}
                 </p>
                 <div className="flex items-center gap-1">
                   <Shield className="w-2.5 h-2.5 text-primary" />
                   <p className="text-[9px] font-black text-primary/80 uppercase tracking-[0.2em] truncate">
-                    {role === 'coordinator' ? 'Coordenação' : role === 'manager' ? 'Gestão' : 'Operação'}
+                    {role === 'admin' ? 'Administrador' : role === 'coordinator' ? 'Coordenação' : role === 'manager' ? 'Gestão' : 'Operação'}
                   </p>
                 </div>
               </div>

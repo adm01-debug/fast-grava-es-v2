@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { RealtimeChannel } from '@supabase/supabase-js';
-import { logger } from '@/lib/logger';
 
 export type ConnectionStatus = 'connecting' | 'connected' | 'disconnected' | 'error';
 
@@ -39,9 +38,15 @@ export function useRealtimeConnection(): UseRealtimeConnectionReturn {
         } else if (subscribeStatus === 'CLOSED') {
           setStatus('disconnected');
         } else if (subscribeStatus === 'CHANNEL_ERROR') {
-          logger.error(`Realtime error on channel ${channelId}`, err, 'useRealtimeConnection');
+          console.warn(`Realtime connection degraded on channel ${channelId}`);
           setStatus('error');
           // Auto-reconnect after exponential backoff or static delay
+          import('sonner').then(({ toast }) => {
+            toast.warning('Conexão instável', {
+              description: 'Tentando reconectar ao serviço em tempo real...',
+              id: 'realtime-error'
+            });
+          });
           const timer = setTimeout(() => {
             reconnect();
           }, 5000);

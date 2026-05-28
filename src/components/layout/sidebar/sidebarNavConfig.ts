@@ -7,11 +7,12 @@ import {
 } from 'lucide-react';
 import { NavGroup } from './NavGroupComponent';
 import { NavItem } from './NavButton';
+import { type AppRole } from '@/features/auth';
 
 // Define common role sets
-const ALL_ROLES = ['coordinator', 'manager', 'operator'];
-const STAFF_ONLY = ['coordinator', 'manager'];
-const COORD_ONLY = ['coordinator'];
+const ALL_ROLES: AppRole[] = ['coordinator', 'manager', 'operator', 'admin'];
+const STAFF_ONLY: AppRole[] = ['coordinator', 'manager', 'admin'];
+const COORD_ONLY: AppRole[] = ['coordinator', 'admin'];
 
 export const navGroups: NavGroup[] = [
   { 
@@ -41,7 +42,7 @@ export const navGroups: NavGroup[] = [
     label: 'Analytics', 
     items: [
       { icon: BarChart3, label: 'BI Executivo', href: '/bi', allowedRoles: STAFF_ONLY },
-      { icon: Factory, label: 'Fábrica 13/10', href: '/executive', allowedRoles: STAFF_ONLY },
+      { icon: Factory, label: 'Produção 10/10', href: '/executive', allowedRoles: STAFF_ONLY },
       { icon: FileText, label: 'Construtor de Relatórios', href: '/report-builder', allowedRoles: STAFF_ONLY },
       { icon: TrendingUp, label: 'KPIs e Ocupação', href: '/kpis', allowedRoles: STAFF_ONLY },
       { icon: Gauge, label: 'OEE', href: '/oee', allowedRoles: STAFF_ONLY },

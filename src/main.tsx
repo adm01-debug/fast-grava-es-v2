@@ -9,7 +9,7 @@ import "./i18n";
 
 // Import global providers
 import { AccessibilityProvider } from "./components/accessibility/AccessibilityProvider";
-import { OfflineProvider } from "./components/offline/OfflineMode";
+import { OfflineProvider } from "./hooks/useLocalStorage";
 
 // Performance Monitoring (Web Vitals to Sentry)
 const sendToSentry = ({ name, delta, id, value }: any) => {

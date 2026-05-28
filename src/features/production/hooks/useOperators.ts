@@ -2,7 +2,6 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Database } from '@/integrations/supabase/types';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { showErrorToast, createAppError } from '@/lib/errorHandling';
 import { useTranslation } from 'react-i18next';
 
 const OPERATORS_ERROR_CONTEXT = {
@@ -63,8 +62,8 @@ export function useOperators() {
           };
         }) as OperatorWithProfile[];
       } catch (error) {
-        const appError = createAppError(error, OPERATORS_ERROR_CONTEXT.fetch);
-        throw error;
+        console.error('Failed to fetch operators:', error);
+        return [];
       }
     },
     staleTime: 1000 * 60 * 5, // 5 minutes
@@ -113,8 +112,7 @@ export function useOperators() {
         });
 
       if (auditError) {
-        // Log audit failure but don't fail the whole operation
-        const appError = createAppError(auditError, { entity: 'operator_status_audit', operation: 'insert' });
+        console.warn('Failed to log operator removal audit:', auditError);
       }
 
       return operatorId;
@@ -128,8 +126,8 @@ export function useOperators() {
       });
     },
     onError: (error) => {
-      const appError = createAppError(error, OPERATORS_ERROR_CONTEXT.remove);
-      showErrorToast(error, 'Erro ao remover operador');
+      console.error('Failed to remove operator:', error);
+      toast.error('Erro ao remover operador');
     },
   });
 
@@ -167,8 +165,7 @@ export function useOperators() {
         });
 
       if (auditError) {
-        // Log audit failure but don't fail the whole operation
-        const appError = createAppError(auditError, { entity: 'operator_status_audit', operation: 'insert' });
+        console.warn('Failed to log operator status toggle audit:', auditError);
       }
 
       return { operatorId, isActive };
@@ -183,8 +180,8 @@ export function useOperators() {
       });
     },
     onError: (error) => {
-      const appError = createAppError(error, OPERATORS_ERROR_CONTEXT.toggleActive);
-      showErrorToast(error, 'Erro ao alterar status do operador');
+      console.error('Failed to toggle operator status:', error);
+      toast.error('Erro ao alterar status do operador');
     },
   });
 

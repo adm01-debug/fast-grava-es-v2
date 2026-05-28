@@ -1,10 +1,14 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { Database } from '@/integrations/supabase/types';
 import { toast } from 'sonner';
 import { subDays, isAfter, parseISO } from 'date-fns';
 import { useMemo } from 'react';
 
-export type InventoryCategory = 'ink' | 'screen' | 'solvent' | 'consumable' | 'other';
+type DbInventoryItem = Database['public']['Tables']['inventory_items']['Row'];
+type DbInventoryMovement = Database['public']['Tables']['inventory_movements']['Row'];
+
+export type InventoryCategory = 'ink' | 'screen' | 'solvent' | 'consumable' | 'other' | string;
 
 export interface InventoryItem {
   id: string;
@@ -104,7 +108,10 @@ export function useInventory() {
       toast.success('Movimentação registrada');
     },
     onError: (error: any) => {
-      toast.error(error.message || 'Erro ao registrar movimentação');
+      console.error('Failed to record movement:', error);
+      toast.error('Erro ao registrar movimentação', {
+        description: error.message || 'Verifique sua conexão e tente novamente.'
+      });
     },
   });
 
@@ -165,9 +172,13 @@ export function useInventoryMovements(itemId?: string) {
     queryFn: async () => {
       let query = supabase
         .from('inventory_movements')
-        .select('*, profiles:user_id (display_name), inventory_items:item_id (name)')
+        .select('*, profiles:user_id (full_name), inventory_items:item_id (name)')
         .order('created_at', { ascending: false });
-      if (itemId) query = query.eq('item_id', itemId);
+      
+      if (itemId) {
+        query = query.eq('item_id', itemId);
+      }
+      
       const { data, error } = await query;
       if (error) throw error;
       return data;

@@ -31,7 +31,10 @@ i18n
   .init({
     resources,
     lng: 'pt-BR', // Idioma padrão
-    fallbackLng: 'pt-BR',
+    fallbackLng: {
+      'pt': ['pt-BR'],
+      'default': ['pt-BR']
+    },
     supportedLngs: ['pt-BR', 'en-US', 'es-ES'],
     ns: ['translation'],
     defaultNS: 'translation',

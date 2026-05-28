@@ -1,4 +1,4 @@
-import React, { Suspense, lazy, useState, useEffect } from "react";
+import React, { Suspense, lazy, useState, useEffect, useRef, useMemo } from "react";
 import { Routes, Route, useLocation, Navigate } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
@@ -127,6 +127,7 @@ export function AnimatedRoutes() {
   
   useRoutePrefetch();
 
+  // Optimized navigation direction update
   useEffect(() => {
     if (location.pathname !== prevPath) {
       const newDirection = getNavigationDirection(prevPath, location.pathname);

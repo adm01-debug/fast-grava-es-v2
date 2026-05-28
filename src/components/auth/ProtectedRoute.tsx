@@ -37,25 +37,32 @@ export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) 
   }
 
   if (!user) {
-
+    logger.info('No user session, redirecting to /auth', { path: location.pathname }, 'ProtectedRoute');
     return <Navigate to="/auth" state={{ from: location }} replace />;
   }
 
-  // Wait for role to load before checking permissions
-  // role is fetched async after auth, so it may be null briefly
-  if (allowedRoles && role === null) {
+  // Role-based access control
+  // If role is strictly admin, bypass all other checks
+  if (role === 'admin') {
+    return <>{children}</>;
+  }
 
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="text-center space-y-4">
-          <Loader2 className="h-8 w-8 animate-spin mx-auto text-primary" />
-          <p className="text-muted-foreground">Verificando permissões...</p>
-        </div>
-      </div>
-    );
+  // If role verification finished without a valid role, do not keep users stuck
+  // on the permission loader. Redirect to the safest available authenticated route.
+  if (allowedRoles && role === null) {
+    logger.warn('Role unavailable after auth loading completed', {
+      path: location.pathname,
+      allowedRoles,
+    }, 'ProtectedRoute');
+    return <Navigate to="/" replace />;
   }
 
   if (allowedRoles && role && !allowedRoles.includes(role)) {
+    logger.warn('Access denied: role not allowed', { 
+      role, 
+      allowedRoles, 
+      path: location.pathname 
+    }, 'ProtectedRoute');
 
     // Redirect to appropriate page based on role
     if (role === 'operator') {

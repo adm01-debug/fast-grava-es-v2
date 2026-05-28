@@ -46,8 +46,8 @@ interface NetworkStatusProviderProps {
 
 export function NetworkStatusProvider({
   children,
-  pingUrl = "/api/health",
-  pingInterval = 30000,
+  pingUrl = "/functions/v1/health-check",
+  pingInterval = 60000,
 }: NetworkStatusProviderProps) {
   const [state, setState] = React.useState<NetworkState>({
     isOnline: navigator.onLine,
@@ -81,10 +81,15 @@ export function NetworkStatusProvider({
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 5000);
 
-      const response = await fetch(pingUrl, {
-        method: "HEAD",
+      const fullUrl = pingUrl.startsWith('http') ? pingUrl : `${import.meta.env.VITE_SUPABASE_URL}${pingUrl}`;
+      
+      const response = await fetch(fullUrl, {
+        method: "GET",
         cache: "no-store",
         signal: controller.signal,
+        headers: {
+          'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY
+        }
       });
 
       clearTimeout(timeoutId);

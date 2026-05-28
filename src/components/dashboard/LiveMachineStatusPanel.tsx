@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, memo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
@@ -39,7 +39,7 @@ interface MachineStatus {
   };
 }
 
-export function LiveMachineStatusPanel() {
+export const LiveMachineStatusPanel = memo(function LiveMachineStatusPanel() {
   const { jobs, machines, isLoading: loadingDash, getTechniqueById } = useOperatorDashboardData();
   const { predictions, getRiskLevel } = useMLPredictions();
   const { isOnline } = useOperatorPresence();
@@ -51,10 +51,10 @@ export function LiveMachineStatusPanel() {
   const machineStatuses = useMemo<MachineStatus[]>(() => {
     if (!machines || !jobs) return [];
 
-    return machines.map((machine: any) => {
+    return machines.map((machine) => {
       const technique = getTechniqueById(machine.technique_id);
-      const activeJob = jobs.find((j: any) => j.machine_id === machine.id && j.status === 'production');
-      const pausedJob = jobs.find((j: any) => j.machine_id === machine.id && j.status === 'paused');
+      const activeJob = jobs.find((j) => j.machine_id === machine.id && j.status === 'production');
+      const pausedJob = jobs.find((j) => j.machine_id === machine.id && j.status === 'paused');
       const currentJob = activeJob || pausedJob;
 
       // Find assigned operator
@@ -278,5 +278,5 @@ export function LiveMachineStatusPanel() {
       </CardContent>
     </Card>
   );
-}
+});
 

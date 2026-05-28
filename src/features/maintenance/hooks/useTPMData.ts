@@ -80,7 +80,7 @@ export function useTPMData() {
         .eq('is_active', true)
         .order('next_due_at');
       if (error) throw error;
-      return data.map((s: Record<string, unknown>) => ({
+      return data.map((s: Record<string, any>) => ({
         ...s,
         machine: s.machines,
         maintenance_type: s.maintenance_types,
@@ -100,7 +100,7 @@ export function useTPMData() {
         .eq('is_active', true)
         .order('name');
       if (error) throw error;
-      return data.map((c: Record<string, unknown>) => ({
+      return data.map((c: Record<string, any>) => ({
         ...c,
         items: c.maintenance_checklist_items || [],
       })) as MaintenanceChecklist[];
@@ -119,7 +119,7 @@ export function useTPMData() {
         .order('started_at', { ascending: false })
         .limit(200);
       if (error) throw error;
-      return data.map((r: Record<string, unknown>) => ({
+      return data.map((r: Record<string, any>) => ({
         ...r,
         machine: r.machines,
       })) as MaintenanceRecord[];
@@ -175,7 +175,7 @@ export function useTPMData() {
         machine: record.machines,
         maintenance_type: record.maintenance_types,
         technical_sheet: technicalSheet,
-        responses: responses.map((r: { maintenance_checklist_items: unknown }) => ({
+        responses: responses.map((r: { maintenance_checklist_items: any }) => ({
           ...r,
           item: r.maintenance_checklist_items
         })),
@@ -195,7 +195,7 @@ export function useTPMData() {
         .eq('is_resolved', false)
         .order('created_at', { ascending: false });
       if (error) throw error;
-      return data.map((a: Record<string, unknown>) => ({
+      return data.map((a: Record<string, any>) => ({
         ...a,
         machine: a.machines,
       })) as MaintenanceAlert[];

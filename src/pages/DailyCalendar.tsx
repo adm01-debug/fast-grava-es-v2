@@ -164,7 +164,7 @@ export default function DailyCalendar() {
       dayJobs,
       machines,
       `agenda-${format(selectedDate, 'yyyy-MM-dd')}.ics`,
-      `FAST GRAVAÇÕES — ${format(selectedDate, 'dd MMM yyyy', { locale: ptBR })}`
+      `FAST GRAVAÇÕES - GESTÃO DE GRAVAÇÃO — ${format(selectedDate, 'dd MMM yyyy', { locale: ptBR })}`
     );
     toast.success('Calendário iCal exportado');
   };
@@ -209,8 +209,8 @@ export default function DailyCalendar() {
 
         <Suspense fallback={<div className="h-20 bg-muted animate-pulse rounded-lg" />}>
           <CalendarHeader
-            title="Calendário Diário"
-            subtitle="Visualização completa da agenda por máquina"
+            title="FAST GRAVAÇÕES - GESTÃO DE GRAVAÇÃO"
+            subtitle="Visualização completa da agenda por máquina | QUALIDADE + VELOCIDADE"
             selectedDate={selectedDate}
             onDateChange={setSelectedDate}
             onPrev={() => setSelectedDate(subDays(selectedDate, 1))}

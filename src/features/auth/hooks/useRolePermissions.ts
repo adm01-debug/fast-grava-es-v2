@@ -1,8 +1,8 @@
 import { useState, useCallback, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { logger } from '@/lib/logger';
 import { type AppRole } from '../index';
+import { ROLE_PERMISSIONS } from './useRBAC';
 
 export function useRolePermissions(role: AppRole | null) {
   const [permissions, setPermissions] = useState<string[]>([]);
@@ -20,15 +20,13 @@ export function useRolePermissions(role: AppRole | null) {
 
       if (error) throw error;
       setPermissions((data || []).map(p => p.permission));
-    } catch (error: any) {
-      logger.error('Falha ao buscar permissões de role', error, 'useRolePermissions');
-      // Fallback to defaults
-      if (selectedRole === 'coordinator') {
-        setPermissions(['admin:all', 'jobs:all', 'production:all', 'operators:all', 'telemetry:view', 'settings:manage']);
-      } else if (selectedRole === 'manager') {
-        setPermissions(['jobs:view', 'jobs:create', 'jobs:edit', 'production:view', 'operators:view']);
-      } else if (selectedRole === 'operator') {
-        setPermissions(['jobs:view', 'production:register']);
+    } catch (error: unknown) {
+      console.error('Error fetching permissions:', error);
+      // Fallback to static permissions from useRBAC
+      if (selectedRole && ROLE_PERMISSIONS[selectedRole]) {
+        setPermissions(ROLE_PERMISSIONS[selectedRole]);
+      } else {
+        setPermissions([]);
       }
     } finally {
       setIsLoading(false);
@@ -64,8 +62,9 @@ export function useRolePermissions(role: AppRole | null) {
         setPermissions(prev => [...prev, permissionStr]);
       }
       toast.success('Permissão atualizada');
-    } catch (error: any) {
-      toast.error('Erro ao atualizar permissão', { description: error.message });
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Unknown error';
+      toast.error('Erro ao atualizar permissão', { description: message });
     } finally {
       setIsSaving(false);
     }

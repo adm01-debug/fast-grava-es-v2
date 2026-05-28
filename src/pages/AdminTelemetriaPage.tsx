@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { format } from "date-fns";
 import { MainLayout } from "@/components/layout/MainLayout";
+import { logger } from "@/lib/logger";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -64,6 +65,35 @@ export default function AdminTelemetriaPage() {
   const [customDateFrom, setCustomDateFrom] = useState<Date | undefined>();
   const [customDateTo, setCustomDateTo] = useState<Date | undefined>();
   const [activeTab, setActiveTab] = useState("queries");
+  const [realtimeEnabled, setRealtimeEnabled] = useState(true);
+
+  useEffect(() => {
+    if (!realtimeEnabled) return;
+
+    const channel = supabase
+      .channel('admin-telemetry-realtime')
+      .on('postgres_changes', { event: 'INSERT', table: 'error_logs', schema: 'public' }, (payload) => {
+        toast.error(`Novo erro detectado: ${payload.new.message.substring(0, 50)}...`, {
+          description: payload.new.component_name || 'Global',
+          duration: 5000,
+        });
+        refetchErrors();
+      })
+      .on('postgres_changes', { event: 'INSERT', table: 'query_telemetry', schema: 'public' }, (payload) => {
+        if (payload.new.severity === 'very_slow' || payload.new.severity === 'error') {
+          toast.warning(`Performance Crítica: ${payload.new.operation} em ${payload.new.table_name || 'RPC'}`, {
+            description: `${payload.new.duration_ms}ms`,
+            duration: 5000,
+          });
+        }
+        refetchQueries();
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [realtimeEnabled]);
 
   const getTimeThreshold = (): { from: string; to: string } => {
     const now = new Date();
@@ -80,7 +110,6 @@ export default function AdminTelemetriaPage() {
     return { from: new Date(now.getTime() - offset).toISOString(), to };
   };
 
-  // Queries Data
   const { data: queryRows = [], isLoading: isLoadingQueries, refetch: refetchQueries } = useQuery<TelemetryRow[]>({
     queryKey: ["query-telemetry", severityFilter, timeFilter, customDateFrom?.toISOString(), customDateTo?.toISOString()],
     queryFn: async () => {
@@ -98,13 +127,15 @@ export default function AdminTelemetriaPage() {
       }
 
       const { data, error } = await query;
-      if (error) throw error;
+      if (error) {
+        logger.error('Falha ao buscar telemetria de queries', error, 'AdminTelemetria');
+        throw error;
+      }
       return (data as unknown as TelemetryRow[]) || [];
     },
-    refetchInterval: 30000,
+    refetchInterval: realtimeEnabled ? 10000 : false, // Auto-refresh every 10s if realtime is enabled
   });
 
-  // Performance Traces Data
   const { data: performanceRows = [], isLoading: isLoadingPerf, refetch: refetchPerf } = useQuery<PerformanceTrace[]>({
     queryKey: ["performance-telemetry", timeFilter, customDateFrom?.toISOString(), customDateTo?.toISOString()],
     queryFn: async () => {
@@ -117,13 +148,15 @@ export default function AdminTelemetriaPage() {
         .order("created_at", { ascending: false })
         .limit(500);
 
-      if (error) throw error;
+      if (error) {
+        logger.error('Falha ao buscar traços de performance', error, 'AdminTelemetria');
+        throw error;
+      }
       return (data as unknown as PerformanceTrace[]) || [];
     },
     enabled: activeTab === "performance",
   });
 
-  // Error Logs Data
   const { data: errorRows = [], isLoading: isLoadingErrors, refetch: refetchErrors } = useQuery<ErrorLog[]>({
     queryKey: ["error-logs", timeFilter, customDateFrom?.toISOString(), customDateTo?.toISOString()],
     queryFn: async () => {
@@ -136,10 +169,14 @@ export default function AdminTelemetriaPage() {
         .order("created_at", { ascending: false })
         .limit(200);
 
-      if (error) throw error;
+      if (error) {
+        logger.error('Falha ao buscar logs de erro', error, 'AdminTelemetria');
+        throw error;
+      }
       return (data as unknown as ErrorLog[]) || [];
     },
     enabled: activeTab === "errors",
+    refetchInterval: realtimeEnabled ? 15000 : false,
   });
 
   const handleCleanup = async () => {
@@ -163,7 +200,6 @@ export default function AdminTelemetriaPage() {
   return (
     <MainLayout>
       <div className="space-y-6 max-w-7xl mx-auto py-6">
-        {/* Header */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-card p-6 rounded-2xl border shadow-sm">
           <div className="flex items-center gap-4">
             <div className="p-3 bg-primary/10 rounded-xl">
@@ -214,6 +250,16 @@ export default function AdminTelemetriaPage() {
               </div>
             )}
 
+            <Button 
+              variant={realtimeEnabled ? "default" : "outline"} 
+              size="icon" 
+              className={cn("h-9 w-9", realtimeEnabled && "bg-green-500 hover:bg-green-600")} 
+              onClick={() => setRealtimeEnabled(!realtimeEnabled)}
+              title={realtimeEnabled ? "Desativar Realtime" : "Ativar Realtime"}
+            >
+              <Zap className={cn("h-4 w-4", realtimeEnabled && "fill-current")} />
+            </Button>
+
             <Button variant="outline" size="icon" className="h-9 w-9" onClick={() => {
               refetchQueries();
               refetchPerf();
@@ -246,7 +292,6 @@ export default function AdminTelemetriaPage() {
           </TabsList>
 
           <TabsContent value="queries" className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
-            {/* Stats Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <Card className="overflow-hidden border-destructive/20 bg-destructive/5">
                 <CardContent className="p-5 flex items-center gap-4">
@@ -362,52 +407,72 @@ export default function AdminTelemetriaPage() {
                 <CardHeader>
                   <CardTitle className="text-sm font-bold flex items-center gap-2">
                     <Monitor className="h-4 w-4" />
-                    Tempos de Renderização & Fetch (Frontend)
+                    Métricas de Browser & Silent Errors
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <ScrollArea className="h-[500px]">
-                    <div className="space-y-4">
-                      {performanceRows.length > 0 ? (
-                        performanceRows.map((p) => (
-                          <div key={p.id} className="p-4 border rounded-xl flex items-center justify-between hover:border-primary/30 transition-colors bg-card/50">
-                            <div className="space-y-1">
-                              <div className="flex items-center gap-2">
-                                <span className="font-bold text-sm">{p.name}</span>
-                                <Badge variant="outline" className="text-[9px] uppercase tracking-tighter">
-                                  {p.attributes?.type || 'trace'}
-                                </Badge>
-                              </div>
-                              <p className="text-[10px] text-muted-foreground flex items-center gap-2">
-                                <CalendarIcon className="h-3 w-3" />
-                                {format(new Date(p.created_at), 'dd/MM/yyyy HH:mm:ss')}
-                                <span className="text-primary/40">•</span>
-                                {p.attributes?.url || '/'}
-                              </p>
-                            </div>
-                            <div className="text-right">
-                              <p className={cn(
-                                "text-xl font-bold font-mono tracking-tighter",
-                                p.duration_ms > 100 ? "text-destructive" : p.duration_ms > 32 ? "text-warning" : "text-green-500"
-                              )}>
-                                {p.duration_ms.toFixed(1)}ms
-                              </p>
-                              {p.attributes?.reFetchCount > 0 && (
-                                <p className="text-[10px] font-bold text-primary">
-                                  {p.attributes.reFetchCount} Re-fetches
-                                </p>
-                              )}
-                            </div>
-                          </div>
-                        ))
-                      ) : (
-                        <div className="h-[300px] flex flex-col items-center justify-center text-muted-foreground gap-3">
-                          <Activity className="h-10 w-10 opacity-20" />
-                          <p className="text-sm">Nenhum dado de performance capturado ainda.</p>
-                        </div>
-                      )}
+                  <div className="space-y-6">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="p-4 bg-muted/50 rounded-xl border">
+                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-1">Avisos de Console (Silent)</p>
+                        <p className="text-2xl font-black text-warning">
+                          {errorRows.filter(e => e.metadata?.level === 'warn').length}
+                        </p>
+                      </div>
+                      <div className="p-4 bg-muted/50 rounded-xl border">
+                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-1">Falhas Críticas UI</p>
+                        <p className="text-2xl font-black text-destructive">
+                          {errorRows.filter(e => e.metadata?.level === 'critical').length}
+                        </p>
+                      </div>
                     </div>
-                  </ScrollArea>
+
+                    <div className="pt-2">
+                      <p className="text-xs font-bold uppercase tracking-wider mb-4">Tempos de Renderização & Fetch (Frontend)</p>
+                      <ScrollArea className="h-[400px]">
+                        <div className="space-y-4">
+                          {performanceRows.length > 0 ? (
+                            performanceRows.map((p) => (
+                              <div key={p.id} className="p-4 border rounded-xl flex items-center justify-between hover:border-primary/30 transition-colors bg-card/50">
+                                <div className="space-y-1">
+                                  <div className="flex items-center gap-2">
+                                    <span className="font-bold text-sm">{p.name}</span>
+                                    <Badge variant="outline" className="text-[9px] uppercase tracking-tighter">
+                                      {p.attributes?.type || 'trace'}
+                                    </Badge>
+                                  </div>
+                                  <p className="text-[10px] text-muted-foreground flex items-center gap-2">
+                                    <CalendarIcon className="h-3 w-3" />
+                                    {format(new Date(p.created_at), 'dd/MM/yyyy HH:mm:ss')}
+                                    <span className="text-primary/40">•</span>
+                                    {p.attributes?.url || '/'}
+                                  </p>
+                                </div>
+                                <div className="text-right">
+                                  <p className={cn(
+                                    "text-xl font-bold font-mono tracking-tighter",
+                                    p.duration_ms > 100 ? "text-destructive" : p.duration_ms > 32 ? "text-warning" : "text-green-500"
+                                  )}>
+                                    {p.duration_ms.toFixed(1)}ms
+                                  </p>
+                                  {p.attributes?.reFetchCount > 0 && (
+                                    <p className="text-[10px] font-bold text-primary">
+                                      {p.attributes.reFetchCount} Re-fetches
+                                    </p>
+                                  )}
+                                </div>
+                              </div>
+                            ))
+                          ) : (
+                            <div className="h-[300px] flex flex-col items-center justify-center text-muted-foreground gap-3">
+                              <Activity className="h-10 w-10 opacity-20" />
+                              <p className="text-sm">Nenhum dado de performance capturado ainda.</p>
+                            </div>
+                          )}
+                        </div>
+                      </ScrollArea>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
 
@@ -429,25 +494,9 @@ export default function AdminTelemetriaPage() {
                       <span className="text-sm">CLS (Cumulative Layout Shift)</span>
                       <span className="font-bold text-green-500">0.01</span>
                     </div>
-                    <p className="text-[10px] text-muted-foreground leading-tight">
-                      Essas métricas são simuladas com base no tráfego atual e latência reportada.
+                    <p className="text-[10px] text-muted-foreground leading-tight pt-2">
+                      Métricas baseadas em amostras reais capturadas via User Timing API.
                     </p>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-xs font-black uppercase tracking-widest">Gargalos Identificados</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
-                      <p className="text-xs font-bold text-destructive">Imagens não otimizadas</p>
-                      <p className="text-[10px] mt-1">Alguns assets no Dashboard estão acima de 500KB.</p>
-                    </div>
-                    <div className="p-3 bg-warning/10 border border-warning/20 rounded-lg">
-                      <p className="text-xs font-bold text-warning-foreground">Re-renders em Tabs</p>
-                      <p className="text-[10px] mt-1">Troca de contexto no BI dispara renders pesados.</p>
-                    </div>
                   </CardContent>
                 </Card>
               </div>
@@ -456,29 +505,29 @@ export default function AdminTelemetriaPage() {
 
           <TabsContent value="errors" className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
             <Card>
-              <CardHeader className="flex flex-row items-center justify-between pb-4">
-                <div>
-                  <CardTitle className="text-sm font-bold flex items-center gap-2">
-                    <Bug className="h-4 w-4" />
-                    Logs de Erros e Exceções (Runtime)
-                  </CardTitle>
-                  <p className="text-xs text-muted-foreground mt-1">Exceções capturadas por GlobalErrorBoundary e Logger</p>
-                </div>
+              <CardHeader>
+                <CardTitle className="text-sm font-bold flex items-center gap-2">
+                  <Bug className="h-4 w-4" />
+                  Log Detalhado de Erros & Exceções
+                </CardTitle>
               </CardHeader>
               <CardContent>
-                <ScrollArea className="h-[500px]">
+                <ScrollArea className="h-[600px]">
                   <div className="space-y-4">
                     {errorRows.length > 0 ? (
                       errorRows.map((err) => (
-                        <div key={err.id} className="group border rounded-xl overflow-hidden bg-card/50 hover:border-destructive/30 transition-all">
-                          <div className="p-4 bg-destructive/5 border-b flex items-start justify-between">
-                            <div className="flex items-center gap-3">
-                              <div className="w-8 h-8 rounded-lg bg-destructive/10 flex items-center justify-center">
-                                <Bug className="h-4 w-4 text-destructive" />
+                        <div key={err.id} className="border rounded-xl overflow-hidden bg-card/50">
+                          <div className="p-4 bg-muted/30 border-b flex items-start justify-between gap-4">
+                            <div className="flex items-start gap-3">
+                              <div className={cn(
+                                "p-2 rounded-lg",
+                                err.metadata?.level === 'critical' ? "bg-destructive/10 text-destructive" : "bg-warning/10 text-warning"
+                              )}>
+                                <AlertTriangle className="h-4 w-4" />
                               </div>
-                              <div>
-                                <h4 className="font-bold text-sm leading-none">{err.message}</h4>
-                                <p className="text-[10px] text-muted-foreground mt-1 flex items-center gap-2">
+                              <div className="space-y-1">
+                                <h3 className="text-sm font-bold tracking-tight">{err.message}</h3>
+                                <p className="text-[10px] text-muted-foreground flex items-center gap-2">
                                   <Monitor className="h-3 w-3" />
                                   {err.component_name || 'Componente Global'} 
                                   <span className="text-muted-foreground/30">|</span>

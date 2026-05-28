@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { logger } from '@/lib/logger';
 
 interface PerformanceMetrics {
   renderTime: number;
@@ -49,7 +48,7 @@ export function usePerformanceMetrics(componentName: string) {
           }
         });
       } catch (err) {
-        logger.warn('Falha ao persistir telemetria de render', err, 'usePerformanceMetrics');
+        // Silently fail telemetry persistence to not impact user
       }
     };
 
@@ -58,7 +57,7 @@ export function usePerformanceMetrics(componentName: string) {
     }
 
     if (duration > 100) {
-      logger.warn(`Slow render detected in ${componentName}: ${duration.toFixed(2)}ms`, { duration }, 'usePerformanceMetrics');
+      console.warn(`[PERF] Slow render detected in ${componentName}: ${duration.toFixed(2)}ms`);
     }
   }, []); // Only on mount for page-level components
 
@@ -86,7 +85,7 @@ export function usePerformanceMetrics(componentName: string) {
         }
       });
     } catch (err) {
-      logger.warn('Falha ao persistir telemetria de fetch', err, 'usePerformanceMetrics');
+      // Silently fail telemetry persistence
     }
   };
 

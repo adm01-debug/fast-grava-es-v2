@@ -2,7 +2,6 @@ import { useState, useMemo, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Database } from '@/integrations/supabase/types';
-import { logger } from '@/lib/logger';
 import { jobSchema } from '../types/job.schema';
 
 type Job = Database['public']['Tables']['jobs']['Row'];
@@ -84,7 +83,9 @@ export function usePaginatedJobs(initialOptions?: Partial<PaginationOptions>) {
       const validatedJobs = (jobs || []).map(job => {
         const result = jobSchema.safeParse(job);
         if (!result.success) {
-          logger.warn('Job validation failed', { error: result.error, job }, 'usePaginatedJobs');
+          import('@/lib/logger').then(({ logger }) => {
+            logger.warn('Job validation failed (Paginated)', { error: result.error, jobId: job.id }, 'usePaginatedJobs');
+          });
           return job as Job;
         }
         return result.data as Job;

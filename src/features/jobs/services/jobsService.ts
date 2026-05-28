@@ -1,6 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
 import type { Database } from '@/integrations/supabase/types';
-import { logger } from '@/lib/logger';
 import { jobSchema, JobStatus, JobPriority } from '../types/job.schema';
 
 export type { JobStatus, JobPriority };
@@ -32,20 +31,20 @@ export const jobsService = {
     }
     
     const { data, error } = await query.order('created_at', { ascending: false });
-    if (error) throw error;
+    if (error) {
+      console.error('Failed to fetch jobs:', error);
+      return [];
+    }
     
     // Runtime validation with Schema fallback
-    const validatedData = (data || []).map(row => {
+    return (data || []).map(row => {
       const result = jobSchema.safeParse(row);
       if (!result.success) {
-        logger.warn(`Job validation failed for ID ${row.id}`, result.error.format(), 'jobsService');
-        // We still return the row to avoid breaking the UI, but cast correctly
+        console.warn(`Job validation failed for ID ${row.id}:`, result.error.format());
         return row as unknown as JobWithRelations;
       }
       return result.data as unknown as JobWithRelations;
     });
-
-    return validatedData;
   },
 
   async getById(id: string): Promise<JobWithRelations> {

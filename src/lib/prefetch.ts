@@ -17,6 +17,12 @@ const routeModules: Record<string, () => Promise<unknown>> = {
   '/integrations/bitrix24': () => import('@/pages/Bitrix24ConfigPage'),
   '/design-system': () => import('@/pages/DesignSystemPage'),
   '/auth': () => import('@/pages/AuthPage'),
+  '/operator-productivity': () => import('@/pages/OperatorProductivityPage'),
+  '/operator-history': () => import('@/pages/OperatorHistoryPage'),
+  '/machines': () => import('@/pages/MachinesPage'),
+  '/inventory': () => import('@/pages/InventoryPage'),
+  '/tpm': () => import('@/pages/TPMDashboard'),
+  '/settings': () => import('@/pages/SettingsPage'),
 };
 
 // Cache to prevent duplicate prefetches

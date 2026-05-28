@@ -411,10 +411,10 @@ const OEEDashboard = memo(function OEEDashboard() {
                <div className="h-px w-12 bg-primary/20" />
             </div>
             <h1 className="text-2xl md:text-4xl font-black font-display flex items-center gap-3 tracking-tighter">
-              <span className="text-primary italic">FAST</span> GRAVAÇÕES
+              <span className="text-primary italic">FAST</span> GRAVAÇÕES - GESTÃO DE GRAVAÇÃO
             </h1>
             <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mt-1 opacity-70">
-              Sistema Global de Eficiência Studio 10/10
+              QUALIDADE + VELOCIDADE
             </p>
           </div>
 

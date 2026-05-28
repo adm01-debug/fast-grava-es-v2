@@ -42,12 +42,14 @@ const PERMISSION_CATEGORIES = {
 };
 
 const ROLE_LABELS: Record<AppRole, string> = {
+  admin: 'Administrador',
   coordinator: 'Coordenador',
   manager: 'Gerente',
   operator: 'Operador',
 };
 
 const ROLE_COLORS: Record<AppRole, string> = {
+  admin: 'bg-red-500/10 text-red-500 border-red-500/20',
   coordinator: 'bg-purple-500/10 text-purple-500 border-purple-500/20',
   manager: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
   operator: 'bg-green-500/10 text-green-500 border-green-500/20',
@@ -76,7 +78,7 @@ function formatPermissionName(permission: string): string {
 }
 
 export function PermissionMatrix() {
-  const roles: AppRole[] = ['coordinator', 'manager', 'operator'];
+  const roles: AppRole[] = ['admin', 'coordinator', 'manager', 'operator'];
 
   return (
     <Card>

@@ -57,7 +57,7 @@ export default function ABCCostingDashboard() {
   return (
     <MainLayout>
       <Helmet>
-        <title>Financial Intelligence | FAST GRAVAÇÕES</title>
+        <title>FAST GRAVAÇÕES | Financial Intelligence</title>
       </Helmet>
 
       <div className="space-y-6">
@@ -67,12 +67,12 @@ export default function ABCCostingDashboard() {
         <div className="flex items-center justify-between">
           <div>
             <div className="flex items-center gap-3">
-              <h1 className="text-3xl font-display font-black tracking-tighter">
-                <span className="gradient-text animate-pulse-glow">Financial Intelligence 10/10</span>
-              </h1>
+                <h1 className="text-3xl font-display font-black tracking-tighter uppercase">
+                  <span className="gradient-text animate-pulse-glow">FAST GRAVAÇÕES - GESTÃO DE GRAVAÇÃO</span>
+                </h1>
             </div>
-            <p className="text-muted-foreground">
-              Activity-Based Costing (ABC) e Gestão Estratégica de Lucratividade
+            <p className="text-muted-foreground font-black uppercase tracking-widest text-xs opacity-70">
+              QUALIDADE + VELOCIDADE
             </p>
           </div>
         </div>

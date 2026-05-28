@@ -7,7 +7,9 @@ import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/componen
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { SectionErrorBoundary } from '@/components/ui/section-error-boundary';
 import {
+
   Package,
   Plus,
   ArrowUpRight,
@@ -117,10 +119,16 @@ export default function InventoryPage() {
 
 
         {/* Inventory Stats */}
-        <InventoryStats items={items} lowStockItems={lowStockItems} stats={stats} />
+        <SectionErrorBoundary section="Estatísticas de Inventário">
+          <SectionErrorBoundary section="Stats Inner">
+            <InventoryStats items={items as InventoryItem[]} lowStockItems={lowStockItems as InventoryItem[]} stats={stats} />
+          </SectionErrorBoundary>
+        </SectionErrorBoundary>
 
-        <Tabs defaultValue="inventory" className="space-y-6">
-          <TabsList className="bg-muted/50 p-1">
+        <SectionErrorBoundary section="Abas de Inventário">
+          <Tabs defaultValue="inventory" className="space-y-6">
+            <TabsList className="bg-muted/50 p-1">
+
             <TabsTrigger value="inventory" className="gap-2">
               <Package className="h-4 w-4" />
               Estoque Atual
@@ -162,7 +170,8 @@ export default function InventoryPage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {(isLoading || isSearching) ? (
+              <SectionErrorBoundary section="Grid de Produtos">
+                {(isLoading || isSearching) ? (
                 <div className="col-span-full">
                   <ProductGridSkeleton />
                 </div>
@@ -176,7 +185,7 @@ export default function InventoryPage() {
                 filteredItems.map((item) => (
                   <InventoryCard
                     key={item.id}
-                    item={item}
+                    item={item as InventoryItem}
                     onMovement={recordMovement}
                     isSelected={selectedItems.has(item.id)}
                     onSelect={(id: string, checked: boolean) => {
@@ -188,13 +197,16 @@ export default function InventoryPage() {
                   />
                 ))
               )}
+              </SectionErrorBoundary>
             </div>
           </TabsContent>
 
           <TabsContent value="wms" className="space-y-6 animate-fade-in">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                <div className="lg:col-span-2">
-                  <WarehouseMap items={items} />
+                  <SectionErrorBoundary section="Mapa WMS">
+                    <WarehouseMap items={items} />
+                  </SectionErrorBoundary>
                </div>
                <div className="space-y-6">
                   <Card className="glass-card">
@@ -228,18 +240,20 @@ export default function InventoryPage() {
             </Card>
           </TabsContent>
         </Tabs>
-      </div>
+      </SectionErrorBoundary>
+    </div>
+
 
       <BatchQRLabelModal
         open={isBatchQRModalOpen}
         onOpenChange={setIsBatchQRModalOpen}
-        items={items.filter(i => selectedItems.has(i.id))}
+        items={items.filter(i => selectedItems.has(i.id)) as InventoryItem[]}
       />
 
       <AIPredictionValidationModal
         open={isAIPredictionModalOpen}
         onOpenChange={setIsAIPredictionModalOpen}
-        items={items}
+        items={items as InventoryItem[]}
         movements={movements || []}
       />
     </MainLayout>
