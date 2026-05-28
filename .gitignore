@@ -16,6 +16,10 @@ dist-ssr
 coverage/
 test-results.json
 
+# Code review artifacts (npm audit / lint dumps)
+audit.json
+lint.txt
+
 # Environment files with secrets
 .env
 .env.local
