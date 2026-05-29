@@ -121,6 +121,31 @@ identidade no código**, e não há configuração `verify_jwt` em
   (header) no topo dessas functions **e** atualizar o agendador (pg_cron/
   pg_net) para enviá-lo; ou marcar `verify_jwt = true` e invocar via service role.
 
+### 3.1.1 [auditoria profunda das 32 edge functions] — conclusões
+
+Auditadas todas as functions quanto a **auth**, **validação de payload** e **paginação**:
+
+- **Mass-assignment:** *nenhuma vulnerabilidade*. O único spread em `insert` é
+  `erp-api` (`.insert({ ...validation.data })`), e `validation.data` é validado
+  por Zod. Nenhuma function injeta o `req.json()` cru em `insert`/`update`.
+- **Auth:** as functions privilegiadas verificam o chamador antes da ação —
+  ex.: `create-operator`/`update-operator` exigem `role = 'coordinator'`;
+  `erp-api` valida JWT ou `x-api-key` (hash). Exceções: as 3 functions de cron
+  (ver 3.1).
+- **Validação de payload:** `erp-api`, `ml-predictions` e
+  `approve-password-reset` usam Zod (`_shared/validation.ts`). As demais
+  desestruturam **campos específicos** + checagem de obrigatórios (não é
+  vulnerável, mas falta validação de formato). *Recomendação (baixa prioridade):*
+  adotar os schemas de `_shared/validation.ts` nas demais para validar
+  formato/limites — requer deploy+teste, não feito às cegas aqui.
+- **Paginação / queries sem `.limit()`:** `calculate-rankings`,
+  `calculate-inventory-intelligence`, `metrics-collector` e
+  `daily-maintenance-summary` fazem `select` sem limite. **Atenção:** são
+  *agregações* — aplicar `.limit()` ingênuo **truncaria** o resultado (regressão
+  de correção). A correção correta é agregação no servidor (SQL `count`/`sum`/
+  RPC) ou janelamento por data. Documentado; não corrigido às cegas para não
+  introduzir resultado incorreto.
+
 ### 3.2 [FEATURE] `webhook-handler` Bitrix24 não processa eventos
 O handler registra o evento e marca `processed: true` sem mapear
 `crm.deal → job` (TODO no código). É funcionalidade não implementada, não bug —
