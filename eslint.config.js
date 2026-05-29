@@ -27,6 +27,19 @@ export default tseslint.config(
       // Critical: keep as errors
       "react-hooks/rules-of-hooks": "error",
       "no-debugger": "error",
+      // eslint-plugin-react-hooks v7 ships the React Compiler heuristic rules
+      // enabled as errors in its `recommended` config. This project does not use
+      // the React Compiler, and these rules are advisory/heuristic (prone to
+      // false positives). Surface them as warnings — consistent with the policy
+      // below of downgrading noisy pre-existing patterns — so genuine issues stay
+      // visible without blocking CI. `rules-of-hooks` above remains an error.
+      "react-hooks/set-state-in-effect": "warn",
+      "react-hooks/purity": "warn",
+      "react-hooks/immutability": "warn",
+      "react-hooks/static-components": "warn",
+      "react-hooks/preserve-manual-memoization": "warn",
+      "react-hooks/use-memo": "warn",
+      "react-hooks/incompatible-library": "warn",
       // Downgrade noisy pre-existing violations to warnings
       "no-console": "warn",
       "no-case-declarations": "warn",

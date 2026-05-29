@@ -74,10 +74,12 @@ describe('useOfflineSync', () => {
       return Promise.resolve({ data: [], error: null }).then(onFulfilled);
     });
 
+    // Flip online in its own act() so the hook re-renders and result.current is
+    // refreshed to the up-to-date (isOnline=true) closure before we sync.
     await act(async () => {
       setOnline(true);
-      // The hook has a useEffect that triggers sync when isOnline changes and pendingActions > 0
-      // But it might need an extra tick
+    });
+    await act(async () => {
       await result.current.syncPendingActions();
     });
 
@@ -97,8 +99,12 @@ describe('useOfflineSync', () => {
       return Promise.resolve({ data: null, error: new Error('Network error') }).then(onFulfilled);
     });
 
+    // Flip online in its own act() so result.current points at the fresh
+    // (isOnline=true) closure before invoking the sync.
     await act(async () => {
       setOnline(true);
+    });
+    await act(async () => {
       await result.current.syncPendingActions();
     });
 

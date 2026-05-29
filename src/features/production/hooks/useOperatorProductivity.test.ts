@@ -51,18 +51,25 @@ describe('useOperatorProductivity', () => {
   });
 
   it('should fetch and calculate productivity data', async () => {
+    // Use a recent, relative date so the job always falls within the 7-day
+    // period filter regardless of when the test runs (avoids time-rot flakiness).
+    const recent = new Date(Date.now() - 2 * 24 * 60 * 60 * 1000); // 2 days ago
+    const recentStart = new Date(recent);
+    recentStart.setUTCHours(8, 0, 0, 0);
+    const recentEnd = new Date(recent);
+    recentEnd.setUTCHours(9, 0, 0, 0);
     const mockJobs = [
-      { 
+      {
         id: 'j1',
         machine_id: 'm1',
-        status: 'finished', 
-        produced_quantity: 100, 
-        lost_pieces: 5, 
-        actual_start_time: '2026-05-18T08:00:00Z',
-        actual_end_time: '2026-05-18T09:00:00Z',
+        status: 'finished',
+        produced_quantity: 100,
+        lost_pieces: 5,
+        actual_start_time: recentStart.toISOString(),
+        actual_end_time: recentEnd.toISOString(),
         estimated_duration: 60,
         quantity: 105,
-        created_at: '2026-05-18T08:00:00Z'
+        created_at: recentStart.toISOString()
       }
     ];
 

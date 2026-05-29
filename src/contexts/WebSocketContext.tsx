@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, useCallback, ReactNode, useRef } from 'react';
+import { createContext, useContext, useEffect, useState, useCallback, useMemo, ReactNode, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import type { RealtimeChannel } from '@supabase/supabase-js';
 
@@ -51,7 +51,6 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
     const channel = supabase
       .channel(channelName)
       .on(
-        // @ts-expect-error realtime types are over-strict for dynamic filters
         'postgres_changes',
         {
           event: options.event ?? '*',
@@ -73,8 +72,10 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
+  const value = useMemo(() => ({ status, subscribe }), [status, subscribe]);
+
   return (
-    <WebSocketContext.Provider value={{ status, subscribe }}>
+    <WebSocketContext.Provider value={value}>
       {children}
     </WebSocketContext.Provider>
   );
