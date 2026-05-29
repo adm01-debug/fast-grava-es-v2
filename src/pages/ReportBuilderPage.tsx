@@ -45,7 +45,7 @@ import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useMutation } from '@tanstack/react-query';
 import { Input } from '@/components/ui/input';
-import * as XLSX from 'xlsx';
+import { downloadWorkbook, objectsToRows } from '@/lib/excel';
 
 interface ReportFilters {
   status: string;
@@ -270,10 +270,10 @@ export default function ReportBuilderPage() {
 
         doc.save(`relatorio_${selectedTable}_${format(new Date(), 'yyyy-MM-dd')}.pdf`);
       } else if (formatType === 'excel') {
-        const worksheet = XLSX.utils.json_to_sheet(data);
-        const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, "Relatório");
-        XLSX.writeFile(workbook, `relatorio_${selectedTable}_${format(new Date(), 'yyyy-MM-dd')}.xlsx`);
+        await downloadWorkbook(
+          [{ name: 'Relatório', rows: objectsToRows(data as unknown as Array<Record<string, unknown>>) }],
+          `relatorio_${selectedTable}_${format(new Date(), 'yyyy-MM-dd')}.xlsx`,
+        );
       }
 
       toast.success(`${data.length} registros exportados!`);
