@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback, ReactNode } from 'react';
+import { createContext, useContext, useState, useCallback, useMemo, ReactNode } from 'react';
 
 interface SearchContextType {
   query: string;
@@ -19,8 +19,13 @@ export function SearchProvider({ children }: { children: ReactNode }) {
   const close = useCallback(() => { setIsOpen(false); setQuery(''); }, []);
   const toggle = useCallback(() => setIsOpen((prev) => !prev), []);
 
+  const value = useMemo(
+    () => ({ query, setQuery, isOpen, open, close, toggle }),
+    [query, isOpen, open, close, toggle],
+  );
+
   return (
-    <SearchContext.Provider value={{ query, setQuery, isOpen, open, close, toggle }}>
+    <SearchContext.Provider value={value}>
       {children}
     </SearchContext.Provider>
   );

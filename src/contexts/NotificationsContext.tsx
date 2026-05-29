@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback, ReactNode } from 'react';
+import { createContext, useContext, useState, useCallback, useMemo, ReactNode } from 'react';
 
 export interface AppNotification {
   id: string;
@@ -51,8 +51,13 @@ export function NotificationsProvider({ children }: { children: ReactNode }) {
 
   const clear = useCallback(() => setNotifications([]), []);
 
+  const value = useMemo(
+    () => ({ notifications, unreadCount, add, markAsRead, markAllAsRead, remove, clear }),
+    [notifications, unreadCount, add, markAsRead, markAllAsRead, remove, clear],
+  );
+
   return (
-    <NotificationsContext.Provider value={{ notifications, unreadCount, add, markAsRead, markAllAsRead, remove, clear }}>
+    <NotificationsContext.Provider value={value}>
       {children}
     </NotificationsContext.Provider>
   );
