@@ -20,22 +20,28 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABL
       try {
         const response = await fetch(url, options);
         const duration = performance.now() - start;
-        
-        // Capturar métricas de performance para telemetria interna
-        if (url.toString().includes('postgrest') || url.toString().includes('rpc')) {
+        const urlString = url.toString();
+
+        // Capturar métricas de performance para telemetria interna.
+        // IMPORTANT: never instrument the telemetry table itself. The logger
+        // persists into `error_logs` via this same client; logging a slow/failed
+        // `error_logs` write would re-trigger the logger → another write →
+        // self-amplifying cascade. Skip telemetry endpoints entirely.
+        const isTelemetry = urlString.includes('error_logs');
+        if (!isTelemetry && (urlString.includes('postgrest') || urlString.includes('rpc'))) {
           const route = window.location.pathname;
           const method = options?.method || 'GET';
-          
+
           import('@/lib/logger').then(({ logger }) => {
             if (!response.ok) {
-              logger.error(`Falha na API Supabase (${response.status}): ${url.toString()}`, {
+              logger.error(`Falha na API Supabase (${response.status}): ${urlString}`, {
                 status: response.status,
-                url: url.toString(),
+                url: urlString,
                 route
               });
             } else if (duration > 1500) {
               logger.warn(`Query lenta detectada em ${route}: ${duration.toFixed(2)}ms`, {
-                url: url.toString(),
+                url: urlString,
                 method,
                 duration,
                 route
@@ -43,12 +49,15 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABL
             }
           });
         }
-        
+
         return response;
       } catch (error) {
-        import('@/lib/logger').then(({ logger }) => {
-          logger.critical(`Erro de rede/conectividade com Supabase: ${url.toString()}`, error);
-        });
+        // Skip telemetry endpoints to avoid the logging-of-logging cascade.
+        if (!url.toString().includes('error_logs')) {
+          import('@/lib/logger').then(({ logger }) => {
+            logger.critical(`Erro de rede/conectividade com Supabase: ${url.toString()}`, error);
+          });
+        }
         throw error;
       }
     }

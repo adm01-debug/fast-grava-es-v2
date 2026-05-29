@@ -1,4 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
+import type { Database } from '@/integrations/supabase/types';
 
 /**
  * Structured logger — handles logging levels and production error capture.
@@ -31,6 +32,92 @@ const SEVERITY_MAP: Record<LogLevel, number> = {
 const errorHistory: LogEntry[] = [];
 const MAX_HISTORY = 50;
 
+// --- Batched persistence to Supabase ---------------------------------------
+// Persisting one row per log event put a network write on the hot path. We now
+// buffer rows and flush them in a single batched insert (debounced), which also
+// guards against runaway volume. An anti-recursion flag ensures a failure inside
+// the flush never re-enters the logger.
+type ErrorLogRow = Database['public']['Tables']['error_logs']['Insert'];
+
+const persistQueue: ErrorLogRow[] = [];
+const MAX_QUEUE = 100; // hard cap to bound memory if offline / DB unavailable
+const FLUSH_DEBOUNCE_MS = 2000;
+const FLUSH_AT_SIZE = 25;
+let flushTimer: ReturnType<typeof setTimeout> | null = null;
+let isFlushing = false;
+
+async function flushLogs(): Promise<void> {
+  if (isFlushing || persistQueue.length === 0) return;
+  if (flushTimer) {
+    clearTimeout(flushTimer);
+    flushTimer = null;
+  }
+  isFlushing = true;
+  // Drain the queue up front so events logged during the await are not lost
+  // and are not double-sent.
+  const batch = persistQueue.splice(0, persistQueue.length);
+  try {
+    const { error } = await supabase.from('error_logs').insert(batch);
+    if (error) {
+      // Do NOT route this through the logger (would recurse). Plain console only.
+      console.error('Failed to persist error logs batch:', error.message);
+    }
+  } catch (err) {
+    console.error('Failed to persist error logs batch:', err);
+  } finally {
+    isFlushing = false;
+  }
+}
+
+function scheduleFlush(): void {
+  if (persistQueue.length >= FLUSH_AT_SIZE) {
+    void flushLogs();
+    return;
+  }
+  if (!flushTimer) {
+    flushTimer = setTimeout(() => {
+      flushTimer = null;
+      void flushLogs();
+    }, FLUSH_DEBOUNCE_MS);
+  }
+}
+
+// Best-effort flush when the tab is hidden/closed so buffered logs aren't lost.
+if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
+  const finalFlush = () => { void flushLogs(); };
+  window.addEventListener('pagehide', finalFlush);
+  window.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') finalFlush();
+  });
+}
+
+function enqueuePersist(level: LogLevel, message: string, context: string | undefined, data: any): void {
+  persistQueue.push({
+    message,
+    stack: data instanceof Error ? data.stack ?? null : (data !== undefined ? safeStringify(data) : null),
+    component_name: context || 'global',
+    url: typeof window !== 'undefined' ? window.location.href : '',
+    metadata: {
+      level,
+      severity: SEVERITY_MAP[level],
+      data: data instanceof Error ? { name: data.name, message: data.message } : data,
+    },
+  });
+  // Bound memory: drop the oldest entries if the DB is unreachable for a while.
+  if (persistQueue.length > MAX_QUEUE) {
+    persistQueue.splice(0, persistQueue.length - MAX_QUEUE);
+  }
+  scheduleFlush();
+}
+
+function safeStringify(value: unknown): string {
+  try {
+    return JSON.stringify(value);
+  } catch {
+    return String(value);
+  }
+}
+
 function formatEntry(entry: LogEntry): string {
   const prefix = `[${entry.timestamp}] [${entry.level.toUpperCase()}]`;
   return entry.context ? `${prefix} [${entry.context}] ${entry.message}` : `${prefix} ${entry.message}`;
@@ -52,26 +139,7 @@ function createEntry(level: LogLevel, message: string, context?: string, data?: 
       errorHistory.pop();
     }
 
-    // Persist to Supabase in production or for errors
-    const persistError = async () => {
-      try {
-        await supabase.from('error_logs').insert({
-          message: message,
-          stack: data instanceof Error ? data.stack : JSON.stringify(data),
-          component_name: context || 'global',
-          url: window.location.href,
-          metadata: {
-            level,
-            severity: SEVERITY_MAP[level],
-            data: data instanceof Error ? { name: data.name, message: data.message } : data
-          }
-        });
-      } catch (err) {
-        console.error('Failed to persist error log:', err);
-      }
-    };
-
-    persistError();
+    enqueuePersist(level, message, context, data);
   }
 
   return entry;
