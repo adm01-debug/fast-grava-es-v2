@@ -128,9 +128,14 @@ export function useDevice(): DeviceInfo {
     };
 
     window.addEventListener('resize', throttledUpdate);
-    window.addEventListener('orientationchange', () =>
-      setTimeout(throttledUpdate, 100)
-    );
+    // Named handler so it can actually be removed on cleanup. The previous
+    // inline arrow could never be unregistered, leaking a listener on every
+    // mount of this widely-used hook.
+    let orientationTimer: ReturnType<typeof setTimeout> | null = null;
+    const handleOrientationChange = () => {
+      orientationTimer = setTimeout(throttledUpdate, 100);
+    };
+    window.addEventListener('orientationchange', handleOrientationChange);
 
     const handleOnline = () =>
       setDevice((prev) => (prev.isOnline ? prev : { ...prev, isOnline: true }));
@@ -151,10 +156,12 @@ export function useDevice(): DeviceInfo {
 
     return () => {
       window.removeEventListener('resize', throttledUpdate);
+      window.removeEventListener('orientationchange', handleOrientationChange);
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
       motionQuery.removeEventListener('change', handleMotionChange);
       if (throttleTimer) clearTimeout(throttleTimer);
+      if (orientationTimer) clearTimeout(orientationTimer);
       if (rafId) cancelAnimationFrame(rafId);
     };
   }, []);

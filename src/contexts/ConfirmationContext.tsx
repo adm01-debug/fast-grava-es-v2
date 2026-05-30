@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback, ReactNode } from 'react';
+import { createContext, useContext, useState, useCallback, useMemo, ReactNode } from 'react';
 
 interface ConfirmationOptions {
   title: string;
@@ -37,8 +37,13 @@ export function ConfirmationProvider({ children }: { children: ReactNode }) {
     setResolveRef(null);
   }, [resolveRef]);
 
+  const value = useMemo(
+    () => ({ confirm, isOpen, options, resolve: handleResolve }),
+    [confirm, isOpen, options, handleResolve],
+  );
+
   return (
-    <ConfirmationContext.Provider value={{ confirm, isOpen, options, resolve: handleResolve }}>
+    <ConfirmationContext.Provider value={value}>
       {children}
     </ConfirmationContext.Provider>
   );

@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback, ReactNode } from 'react';
+import { createContext, useContext, useState, useCallback, useMemo, ReactNode } from 'react';
 
 interface UserPreferences {
   language: string;
@@ -51,8 +51,13 @@ export function UserPreferencesProvider({ children }: { children: ReactNode }) {
     try { localStorage.removeItem('user-preferences'); } catch { /* noop */ }
   }, []);
 
+  const value = useMemo(
+    () => ({ preferences, updatePreference, resetPreferences }),
+    [preferences, updatePreference, resetPreferences],
+  );
+
   return (
-    <UserPreferencesContext.Provider value={{ preferences, updatePreference, resetPreferences }}>
+    <UserPreferencesContext.Provider value={value}>
       {children}
     </UserPreferencesContext.Provider>
   );

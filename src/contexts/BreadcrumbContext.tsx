@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback, ReactNode } from 'react';
+import { createContext, useContext, useState, useCallback, useMemo, ReactNode } from 'react';
 
 interface BreadcrumbItem {
   label: string;
@@ -28,8 +28,13 @@ export function BreadcrumbProvider({ children }: { children: ReactNode }) {
 
   const clear = useCallback(() => setItems([]), []);
 
+  const value = useMemo(
+    () => ({ items, setItems, push, pop, clear }),
+    [items, push, pop, clear],
+  );
+
   return (
-    <BreadcrumbContext.Provider value={{ items, setItems, push, pop, clear }}>
+    <BreadcrumbContext.Provider value={value}>
       {children}
     </BreadcrumbContext.Provider>
   );

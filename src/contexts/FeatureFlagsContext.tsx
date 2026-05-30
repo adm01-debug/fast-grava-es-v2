@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback, ReactNode } from 'react';
+import { createContext, useContext, useState, useCallback, useMemo, ReactNode } from 'react';
 
 type FeatureFlags = Record<string, boolean>;
 
@@ -35,8 +35,13 @@ export function FeatureFlagsProvider({ children, initial }: { children: ReactNod
     setFlagsState((prev) => ({ ...prev, ...newFlags }));
   }, []);
 
+  const value = useMemo(
+    () => ({ flags, isEnabled, setFlag, setFlags }),
+    [flags, isEnabled, setFlag, setFlags],
+  );
+
   return (
-    <FeatureFlagsContext.Provider value={{ flags, isEnabled, setFlag, setFlags }}>
+    <FeatureFlagsContext.Provider value={value}>
       {children}
     </FeatureFlagsContext.Provider>
   );

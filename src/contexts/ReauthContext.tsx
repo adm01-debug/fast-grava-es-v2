@@ -1,4 +1,4 @@
-import { useState, createContext, useContext, ReactNode, useCallback } from 'react';
+import { useState, createContext, useContext, ReactNode, useCallback, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -136,12 +136,19 @@ export function ReauthProvider({ children }: { children: ReactNode }) {
     setOnSuccessCallback(null);
   };
 
-  return (
-    <ReauthContext.Provider value={{
+  // Memoize so password-field keystrokes (which re-render this provider) don't
+  // recreate the context value and re-render every useReauth consumer.
+  const contextValue = useMemo(
+    () => ({
       requireReauth,
       isReauthenticated: isReauthenticated(),
-      lastReauthAt
-    }}>
+      lastReauthAt,
+    }),
+    [requireReauth, isReauthenticated, lastReauthAt],
+  );
+
+  return (
+    <ReauthContext.Provider value={contextValue}>
       {children}
 
       <Dialog open={showDialog} onOpenChange={handleClose}>

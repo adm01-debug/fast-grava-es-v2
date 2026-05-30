@@ -1,5 +1,5 @@
-import * as XLSX from 'xlsx';
 import { format } from 'date-fns';
+import { downloadWorkbook } from '@/lib/excel';
 import { ExecutiveKPIs, DateRange } from '@/features/analytics/hooks/useExecutiveDashboard';
 
 export interface ExportData {
@@ -25,29 +25,26 @@ export const exportExecutiveDashboardExcel = async (data: ExportData) => {
     ['Jobs em Progresso', kpis.totalJobsInProgress, ''],
   ];
 
-  const wsSummary = XLSX.utils.aoa_to_sheet(summaryData);
-
   // 2. Production Trend Sheet
   const trendData = [
     ['Data', 'Produzido', 'Meta'],
     ...kpis.productionTrend.map(t => [t.date, t.produced, t.target])
   ];
-  const wsTrend = XLSX.utils.aoa_to_sheet(trendData);
 
   // 3. Machine Performance Sheet
   const machineData = [
     ['Máquina', 'Utilização (%)', 'OEE (%)'],
     ...kpis.machinePerformance.map(m => [m.machine, m.utilization, m.oee])
   ];
-  const wsMachines = XLSX.utils.aoa_to_sheet(machineData);
-
-  // Create workbook and append sheets
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, wsSummary, 'Resumo');
-  XLSX.utils.book_append_sheet(wb, wsTrend, 'Tendência de Produção');
-  XLSX.utils.book_append_sheet(wb, wsMachines, 'Performance Máquinas');
 
   // Generate file name and download
   const fileName = `${title.replace(/\s+/g, '_')}_${format(new Date(), 'yyyy-MM-dd_HHmm')}.xlsx`;
-  XLSX.writeFile(wb, fileName);
+  await downloadWorkbook(
+    [
+      { name: 'Resumo', rows: summaryData },
+      { name: 'Tendência de Produção', rows: trendData },
+      { name: 'Performance Máquinas', rows: machineData },
+    ],
+    fileName,
+  );
 };

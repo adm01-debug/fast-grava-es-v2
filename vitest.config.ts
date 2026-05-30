@@ -29,11 +29,9 @@ export default defineConfig({
     alias: {
       '@': path.resolve(__dirname, './src'),
     },
-    // Pool settings to handle large simulation suites (500+ cases)
+    // Use the forks pool to isolate large simulation suites (500+ cases).
+    // (Vitest 4 removed `poolOptions`; `singleFork` defaults to false.)
     pool: 'forks',
-    poolOptions: {
-      forks: { singleFork: false },
-    },
     testTimeout: 30_000,
     hookTimeout: 10_000,
     coverage: {

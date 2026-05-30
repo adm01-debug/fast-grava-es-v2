@@ -15,7 +15,7 @@ import { UserOptions } from 'jspdf-autotable';
 interface jsPDFWithAutoTable extends jsPDF {
   autoTable: (options: UserOptions) => jsPDF;
 }
-import * as XLSX from 'xlsx';
+import { downloadWorkbook, objectsToRows } from '@/lib/excel';
 import { saveAs } from 'file-saver';
 import { toast } from 'sonner';
 
@@ -113,7 +113,7 @@ export function TPMReports() {
     }
   };
 
-  const generateExcel = () => {
+  const generateExcel = async () => {
     setIsGenerating(true);
     try {
       const filteredRecords = getFilteredRecords();
@@ -154,17 +154,13 @@ export function TPMReports() {
         'Notas': r.notes || ''
       }));
 
-      const workbook = XLSX.utils.book_new();
-
-      const performanceWs = XLSX.utils.json_to_sheet(performanceData);
-      XLSX.utils.book_append_sheet(workbook, performanceWs, 'Métricas de Performance');
-
-      const historyWs = XLSX.utils.json_to_sheet(historyData);
-      XLSX.utils.book_append_sheet(workbook, historyWs, 'Histórico de Atividades');
-
-      const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-      const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-      saveAs(blob, `relatorio-tpm-${format(new Date(), 'yyyy-MM-dd')}.xlsx`);
+      await downloadWorkbook(
+        [
+          { name: 'Métricas de Performance', rows: objectsToRows(performanceData) },
+          { name: 'Histórico de Atividades', rows: objectsToRows(historyData) },
+        ],
+        `relatorio-tpm-${format(new Date(), 'yyyy-MM-dd')}.xlsx`,
+      );
 
       toast.success('Relatório Excel gerado com sucesso');
     } catch (error) {

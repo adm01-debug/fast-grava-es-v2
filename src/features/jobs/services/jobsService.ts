@@ -1,5 +1,6 @@
 import { supabase } from '@/integrations/supabase/client';
 import type { Database } from '@/integrations/supabase/types';
+import { logger } from '@/lib/logger';
 import { jobSchema, JobStatus, JobPriority } from '../types/job.schema';
 
 export type { JobStatus, JobPriority };
@@ -31,16 +32,16 @@ export const jobsService = {
     }
     
     const { data, error } = await query.order('created_at', { ascending: false });
-    if (error) {
-      console.error('Failed to fetch jobs:', error);
-      return [];
-    }
-    
+    // Propagate the error instead of silently returning an empty list. Swallowing
+    // it here made connectivity/RLS failures indistinguishable from "no jobs" in
+    // the UI; callers (React Query) already handle thrown errors and surface them.
+    if (error) throw error;
+
     // Runtime validation with Schema fallback
     return (data || []).map(row => {
       const result = jobSchema.safeParse(row);
       if (!result.success) {
-        console.warn(`Job validation failed for ID ${row.id}:`, result.error.format());
+        logger.warn(`Job validation failed for ID ${row.id}`, result.error.format(), 'jobsService');
         return row as unknown as JobWithRelations;
       }
       return result.data as unknown as JobWithRelations;
