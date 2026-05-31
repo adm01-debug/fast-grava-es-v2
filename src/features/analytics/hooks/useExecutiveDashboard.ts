@@ -281,7 +281,7 @@ function calculateEfficiencyTrend(jobs: Job[], prevJobs: Job[], dateRange: DateR
 function calculateTopOperators(completedJobs: Job[], profiles: Profile[]) {
   const operatorStats: Record<string, { produced: number; jobs: number }> = {};
   completedJobs.forEach(job => {
-    const key = job.machine_id || 'unknown';
+    const key = job.operator_id || 'unknown';
     if (!operatorStats[key]) operatorStats[key] = { produced: 0, jobs: 0 };
     operatorStats[key].produced += job.produced_quantity || 0;
     operatorStats[key].jobs += 1;

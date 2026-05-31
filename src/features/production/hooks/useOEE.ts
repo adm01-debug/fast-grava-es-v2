@@ -266,7 +266,7 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, f
         idealCycleMinutes: current.estimated,
         actualCycleMinutes: current.actual,
         totalPiecesProduced: current.produced,
-        goodPieces: current.produced - current.lost,
+        goodPieces: Math.max(0, current.produced - current.lost),
         lostPieces: current.lost,
         totalJobs: machineJobs.length,
         completedJobs: machineJobs.length,
