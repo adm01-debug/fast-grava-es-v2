@@ -21,6 +21,28 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: getCorsHeaders(req) });
 
   try {
+    // Auth check — only authenticated users may generate PDFs
+    const authHeader = req.headers.get("Authorization") || req.headers.get("authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      return new Response(JSON.stringify({ error: "Não autorizado" }), {
+        status: 401,
+        headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+      });
+    }
+    const supabaseAuth = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_ANON_KEY") ?? ""
+    );
+    const { data: { user }, error: authError } = await supabaseAuth.auth.getUser(
+      authHeader.replace("Bearer ", "")
+    );
+    if (authError || !user) {
+      return new Response(JSON.stringify({ error: "Token inválido" }), {
+        status: 401,
+        headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+      });
+    }
+
     const { type, data, options } = await req.json();
 
     let pdfContent: Uint8Array;
