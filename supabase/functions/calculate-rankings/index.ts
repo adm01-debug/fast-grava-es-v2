@@ -72,7 +72,7 @@ serve(async (req: Request): Promise<Response> => {
         machine_id,
         actual_end_time
       `)
-      .eq("status", "completed")
+      .eq("status", "finished")
       .gte("actual_end_time", periodStart.toISOString())
       .lt("actual_end_time", periodEnd.toISOString());
 

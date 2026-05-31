@@ -13,12 +13,12 @@ serve(async (req) => {
 
     // Jobs metrics
     const { count: totalJobs } = await supabase.from("jobs").select("*", { count: "exact", head: true });
-    const { count: activeJobs } = await supabase.from("jobs").select("*", { count: "exact", head: true }).eq("status", "in_progress");
+    const { count: activeJobs } = await supabase.from("jobs").select("*", { count: "exact", head: true }).eq("status", "production");
     const { count: completedToday } = await supabase
       .from("jobs")
       .select("*", { count: "exact", head: true })
-      .eq("status", "completed")
-      .gte("completed_at", new Date(now.setHours(0, 0, 0, 0)).toISOString());
+      .eq("status", "finished")
+      .gte("actual_end_time", new Date(now.setHours(0, 0, 0, 0)).toISOString());
 
     metrics.jobs = { total: totalJobs, active: activeJobs, completedToday };
 

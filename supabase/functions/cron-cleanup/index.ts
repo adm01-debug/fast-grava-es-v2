@@ -37,13 +37,13 @@ serve(async (req) => {
       .lt("expires_at", new Date().toISOString());
     results.deletedSessions = sessionsCount || 0;
 
-    // Archive completed jobs older than 6 months
+    // Archive finished jobs older than 6 months
     const sixMonthsAgo = new Date(Date.now() - 180 * 24 * 60 * 60 * 1000).toISOString();
     const { data: oldJobs } = await supabase
       .from("jobs")
       .select("*")
-      .eq("status", "completed")
-      .lt("completed_at", sixMonthsAgo);
+      .eq("status", "finished")
+      .lt("actual_end_time", sixMonthsAgo);
 
     if (oldJobs?.length) {
       await supabase.from("archived_jobs").insert(oldJobs);

@@ -258,8 +258,8 @@ async function handleProductionSummary(req: Request, supabase: ReturnType<typeof
   const summary = {
     date,
     total_jobs: jobs.length,
-    completed: jobs.filter((j: { status: string }) => j.status === 'completed').length,
-    in_progress: jobs.filter((j: { status: string }) => j.status === 'in_progress').length,
+    completed: jobs.filter((j: { status: string }) => j.status === 'finished').length,
+    in_progress: jobs.filter((j: { status: string }) => j.status === 'production').length,
     pending: jobs.filter((j: { status: string }) => ['queue', 'scheduled'].includes(j.status)).length,
     total_planned: jobs.reduce((s: number, j: { quantity: number }) => s + (j.quantity || 0), 0),
     total_produced: jobs.reduce((s: number, j: { produced_quantity: number }) => s + (j.produced_quantity || 0), 0),
@@ -287,8 +287,8 @@ async function handleKPIs(req: Request, supabase: ReturnType<typeof createClient
     date: today,
     production: {
       jobs_total: jobs.length,
-      jobs_completed: jobs.filter((j: { status: string }) => j.status === 'completed').length,
-      jobs_in_progress: jobs.filter((j: { status: string }) => j.status === 'in_progress').length,
+      jobs_completed: jobs.filter((j: { status: string }) => j.status === 'finished').length,
+      jobs_in_progress: jobs.filter((j: { status: string }) => j.status === 'production').length,
       planned_quantity: totalPlanned,
       produced_quantity: totalProduced,
       losses: totalLosses,
