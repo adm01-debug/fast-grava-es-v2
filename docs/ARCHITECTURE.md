@@ -118,7 +118,45 @@ A função registra automaticamente em `query_telemetry` qualquer operação que
 
 ---
 
-## 4. Exemplos de Chamadas Reais
+## 4. Padrões Obrigatórios de Uso (External DB Bridge)
+
+Para manter a consistência e segurança, todos os novos desenvolvimentos devem seguir estes padrões:
+
+### 1. Nomenclatura de Parâmetros
+- Use `snake_case` para nomes de colunas e parâmetros RPC.
+- Sempre defina um `limit` em operações de `select` para evitar payloads massivos.
+
+### 2. Tratamento de Erros Padronizado
+A Bridge retorna erros no formato `{ error: string, telemetry: object }`. Nunca exponha stack traces brutos para o frontend; a Bridge já higieniza as mensagens de erro do PostgreSQL.
+
+### 3. Tabelas Permitidas
+Atualmente, as seguintes tabelas possuem suporte otimizado:
+- `job_status_audit`
+- `machine_event_audit`
+- `query_telemetry`
+- `production_losses`
+
+### 4. Exemplo de Implementação de Referência (TypeScript)
+
+```typescript
+// Padrão de Chamada para Novo Desenvolvedor
+const callBridge = async (action: string, table: string, data: any) => {
+  const { data: response, error } = await supabase.functions.invoke('external-db-bridge', {
+    body: { action, table, params: { data } }
+  });
+
+  if (error) {
+     console.error("Erro na Bridge:", error.message);
+     throw new Error("Falha na comunicação com o banco externo");
+  }
+
+  return response.data;
+};
+```
+
+---
+
+## 5. Exemplos de Chamadas Reais
 
 ### Exemplo: Buscar Logs de Auditoria via Hook
 ```typescript
