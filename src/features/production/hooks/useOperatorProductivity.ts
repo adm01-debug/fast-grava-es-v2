@@ -178,7 +178,7 @@ export function useOperatorProductivity(period: ProductivityPeriod = 'all') {
       });
 
       // Calculate production metrics - use produced_quantity when available, fallback to quantity - lost_pieces
-      const totalPiecesProduced = operatorJobs.reduce((sum, j) => sum + (j.produced_quantity ?? (j.quantity - (j.lost_pieces || 0))), 0);
+      const totalPiecesProduced = operatorJobs.reduce((sum, j) => sum + (j.produced_quantity ?? Math.max(0, j.quantity - (j.lost_pieces || 0))), 0);
       const totalPiecesLost = operatorJobs.reduce((sum, j) => sum + (j.lost_pieces || 0), 0);
       const totalPiecesAttempted = totalPiecesProduced + totalPiecesLost;
       const lossRate = totalPiecesAttempted > 0 ? (totalPiecesLost / totalPiecesAttempted) * 100 : 0;
