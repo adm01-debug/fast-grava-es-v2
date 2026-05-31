@@ -41,7 +41,33 @@ Deno.serve(async (req) => {
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    
+
+    // Accept either a valid user JWT (frontend) or the cron API key (scheduled jobs)
+    const cronApiKey = Deno.env.get('CRON_API_KEY');
+    const authHeader = req.headers.get('authorization');
+    const providedKey = req.headers.get('x-api-key') || authHeader?.replace('Bearer ', '');
+    const isCronKey = cronApiKey && providedKey === cronApiKey;
+    const hasBearer = authHeader?.startsWith('Bearer ');
+    if (!isCronKey && !hasBearer) {
+      return new Response(JSON.stringify({ error: 'Não autorizado' }), {
+        status: 401,
+        headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
+      });
+    }
+    if (!isCronKey && hasBearer) {
+      const anonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
+      const userClient = createClient(supabaseUrl, anonKey);
+      const { data: { user }, error: authError } = await userClient.auth.getUser(
+        authHeader!.replace('Bearer ', '')
+      );
+      if (authError || !user) {
+        return new Response(JSON.stringify({ error: 'Token inválido' }), {
+          status: 401,
+          headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
+        });
+      }
+    }
+
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     const today = new Date();

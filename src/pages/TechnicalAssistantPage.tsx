@@ -79,9 +79,12 @@ const TechnicalAssistantPage = () => {
   };
 
   const streamChat = async (userMessages: { role: string; content: string }[]) => {
+    const { supabase } = await import("@/integrations/supabase/client");
+    const { data: { session } } = await supabase.auth.getSession();
+    const token = session?.access_token || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
     const resp = await fetch(CHAT_URL, {
       method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
       body: JSON.stringify({ messages: userMessages }),
     });
     if (!resp.ok || !resp.body) throw new Error("Falha ao conectar com o assistente");

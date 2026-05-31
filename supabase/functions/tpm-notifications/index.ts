@@ -23,6 +23,17 @@ serve(async (req) => {
   }
 
   try {
+    const apiKey = Deno.env.get('CRON_API_KEY');
+    if (apiKey) {
+      const provided = req.headers.get('x-api-key') || req.headers.get('authorization')?.replace('Bearer ', '');
+      if (provided !== apiKey) {
+        return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+          status: 401,
+          headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
+        });
+      }
+    }
+
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
@@ -95,17 +106,17 @@ serve(async (req) => {
           status: 'success',
           sent_at: new Date().toISOString()
         })
-      } catch (e) {
+      } catch (e: unknown) {
         const nextRetry = new Date()
-        nextRetry.setMinutes(nextRetry.getMinutes() + Math.pow(2, item.retry_count + 1)) // Exponential backoff
+        nextRetry.setMinutes(nextRetry.getMinutes() + Math.pow(2, item.retry_count + 1))
 
         await supabase
           .from('tpm_notification_queue')
-          .update({ 
+          .update({
             status: 'failed',
             retry_count: item.retry_count + 1,
             next_retry_at: nextRetry.toISOString(),
-            error_log: e.message
+            error_log: e instanceof Error ? e.message : 'Unknown error'
           })
           .eq('id', item.id)
       }
