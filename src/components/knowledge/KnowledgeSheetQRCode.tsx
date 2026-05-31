@@ -29,11 +29,12 @@ export const KnowledgeSheetQRCode = ({ sheetId, title }: KnowledgeSheetQRCodePro
     const svg = document.getElementById(`kb-qr-${sheetId}`);
     if (!svg) return;
     const svgData = new XMLSerializer().serializeToString(svg);
+    const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     printWindow.document.write(`
-      <html><head><title>QR - ${title}</title>
+      <html><head><title>QR - ${esc(title)}</title>
       <style>body{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;font-family:sans-serif}
       h2{margin-bottom:16px;font-size:18px}p{color:#666;font-size:12px;margin-top:8px}</style></head>
-      <body><h2>${title}</h2>${svgData}<p>Escaneie para acessar a ficha técnica</p></body></html>
+      <body><h2>${esc(title)}</h2>${svgData}<p>Escaneie para acessar a ficha técnica</p></body></html>
     `);
     printWindow.document.close();
     printWindow.print();

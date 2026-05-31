@@ -44,6 +44,9 @@ export const JobQRCode = forwardRef<HTMLDivElement, JobQRCodeProps>(({
     img.src = "data:image/svg+xml;base64," + btoa(svgData);
   };
 
+  const escapeHtml = (str: string) =>
+    str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
   const handlePrint = () => {
     const printWindow = window.open("", "_blank");
     if (!printWindow) return;
@@ -82,9 +85,9 @@ export const JobQRCode = forwardRef<HTMLDivElement, JobQRCodeProps>(({
         </head>
         <body>
           <div class="qr-container">
-            <h2>OS: ${orderNumber}</h2>
-            <p>${product}</p>
-            <p>${client}</p>
+            <h2>OS: ${escapeHtml(orderNumber)}</h2>
+            <p>${escapeHtml(product)}</p>
+            <p>${escapeHtml(client)}</p>
             ${svgData}
             <p style="font-size: 12px; color: #999;">Escaneie para iniciar produção</p>
           </div>
