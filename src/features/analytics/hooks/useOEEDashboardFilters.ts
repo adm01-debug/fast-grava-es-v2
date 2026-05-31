@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback, useEffect } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { startOfDay, endOfDay, subDays } from 'date-fns';
 import { toast } from 'sonner';
 
@@ -29,28 +29,18 @@ export interface OEELossFilters extends Omit<OEEQueryFilters, 'startDate' | 'end
   endDate: string;
 }
 
+function readUrlParam(key: string, fallback: string): string {
+  const params = new URLSearchParams(window.location.search);
+  return params.get(key) ?? fallback;
+}
+
 export function useOEEDashboardFilters() {
-  const [period, setPeriod] = useState('30');
-  const [machineId, setMachineId] = useState('all');
-  const [techniqueId, setTechniqueId] = useState('all');
-  const [studioId, setStudioId] = useState('all');
-  const [shift, setShift] = useState('all');
-  const [activeTab, setActiveTab] = useState('overview');
-
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const p = params.get('period');
-    const m = params.get('machineId');
-    const t = params.get('techniqueId');
-    const s = params.get('shift');
-    const tab = params.get('tab');
-
-    if (p) setPeriod(p);
-    if (m) setMachineId(m);
-    if (t) setTechniqueId(t);
-    if (s) setShift(s);
-    if (tab) setActiveTab(tab);
-  }, []);
+  const [period, setPeriod] = useState(() => readUrlParam('period', '30'));
+  const [machineId, setMachineId] = useState(() => readUrlParam('machineId', 'all'));
+  const [techniqueId, setTechniqueId] = useState(() => readUrlParam('techniqueId', 'all'));
+  const [studioId, setStudioId] = useState(() => readUrlParam('studioId', 'all'));
+  const [shift, setShift] = useState(() => readUrlParam('shift', 'all'));
+  const [activeTab, setActiveTab] = useState(() => readUrlParam('tab', 'overview'));
 
   const dateRange = useMemo<OEEDateRange>(() => {
     const now = new Date();

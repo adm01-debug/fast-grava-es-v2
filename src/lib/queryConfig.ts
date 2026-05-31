@@ -57,7 +57,7 @@ export function calculateRetryDelay(attemptIndex: number): number {
  * @param error - The error to check
  * @returns true if the error is retryable
  */
-export function shouldRetry(error: any): boolean {
+export function shouldRetry(error: unknown): boolean {
   // Don't retry on 4xx errors (client errors) except 408 (timeout) and 429 (rate limit)
   if (error instanceof Error) {
     const message = error.message.toLowerCase();
@@ -106,7 +106,7 @@ export function shouldRetry(error: any): boolean {
  * Default query options with retry configuration
  */
 export const defaultQueryOptions = {
-  retry: (failureCount: number, error: any) => {
+  retry: (failureCount: number, error: unknown) => {
     if (failureCount >= RETRY_CONFIG.maxRetries) return false;
     return shouldRetry(error);
   },
