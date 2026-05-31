@@ -19,8 +19,8 @@ export interface Job {
   start_time?: string | null;
   end_time?: string | null;
   estimated_duration?: number;
-  status: JobStatus | any;
-  priority?: JobPriority | any;
+  status: JobStatus;
+  priority?: JobPriority;
   gravure_color?: string | null;
   notes?: string | null;
   actual_start_time?: string | null;

@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
+import { QUERY_KEYS } from '@/lib/queryConfig';
 import { Loader2, UserPlus } from 'lucide-react';
 import { PasswordStrengthIndicator } from '@/components/auth/PasswordStrengthIndicator';
 
@@ -90,7 +91,7 @@ export function CreateOperatorModal({ open, onOpenChange }: CreateOperatorModalP
       }
 
       toast.success('Operador criado com sucesso!');
-      queryClient.invalidateQueries({ queryKey: ['operators'] });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.OPERATORS });
       onOpenChange(false);
       setFormData({ full_name: '', email: '', password: '', phone: '' });
     } catch (error) {

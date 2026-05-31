@@ -9,6 +9,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Checkbox } from '@/components/ui/checkbox';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
+import { QUERY_KEYS } from '@/lib/queryConfig';
 import { DbJob } from '@/features/jobs';
 import { canTransition } from '@/features/jobs/services/jobStateMachine';
 import { JobStatus } from '@/types/scheduling';
@@ -229,8 +230,8 @@ export function ProductionRegistrationModal({
 
       if (error) throw error;
 
-      queryClient.invalidateQueries({ queryKey: ['jobs'] });
-      queryClient.invalidateQueries({ queryKey: ['scheduling-data'] });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.JOBS });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.SCHEDULING_DATA });
       toast.success('Produção finalizada com sucesso!');
       onOpenChange(false);
     } catch (error) {

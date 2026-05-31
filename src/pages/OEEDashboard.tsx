@@ -1,5 +1,5 @@
 import { useState, lazy, Suspense, useMemo, memo, useCallback, useEffect } from 'react';
-import { startOfDay, endOfDay, subDays, format } from 'date-fns';
+import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { jsPDF } from 'jspdf';
 import { useTranslation } from 'react-i18next';
@@ -55,9 +55,9 @@ import {
   Trash2,
   Info
 } from 'lucide-react';
-import { useOEE, WORLD_CLASS_OEE, getOEEColor } from '@/features/production';
-import { useOEEAlerts } from '@/features/production';
-import { useProductionLosses } from '@/features/production';
+import { useOEE, WORLD_CLASS_OEE, getOEEColor, useOEEAlerts, useProductionLosses } from '@/features/production';
+import { useOEEDashboardFilters } from '@/features/analytics/hooks/useOEEDashboardFilters';
+import { STUDIOS, INDUSTRY_BENCHMARKS } from '@/features/analytics/constants/oee';
 import { Slider } from '@/components/ui/slider';
 import { Progress } from '@/components/ui/progress';
 import { Label } from '@/components/ui/label';
@@ -113,62 +113,28 @@ interface jsPDFWithAutoTable extends jsPDF {
 
 const OEEDashboard = memo(function OEEDashboard() {
   const { t } = useTranslation();
-  const [period, setPeriod] = useState<string>('30');
-  const [machineId, setMachineId] = useState<string>('all');
-  const [techniqueId, setTechniqueId] = useState<string>('all');
-  const [studioId, setStudioId] = useState<string>('all');
-  const [shift, setShift] = useState<string>('all');
+  const {
+    period, setPeriod,
+    machineId, setMachineId,
+    techniqueId, setTechniqueId,
+    studioId, setStudioId,
+    shift, setShift,
+    activeTab, setActiveTab,
+    oeeFilters,
+    lossFilters,
+    handleShare,
+  } = useOEEDashboardFilters();
+
   const [showSimulator, setShowSimulator] = useState(false);
   const [simValues, setSimValues] = useState({ availability: 85, performance: 90, quality: 98 });
   const [presetName, setPresetName] = useState('');
   const { presets, savePreset, deletePreset } = useDashboardPresets('oee');
-  const [activeTab, setActiveTab] = useState('overview');
-  const [showConfig, setShowSimulatorLocal] = useState(false); // Used for a future settings modal if needed
+  const [showConfig, setShowSimulatorLocal] = useState(false);
   const [showAudit, setShowAudit] = useState(false);
   const [industryBenchmark, setIndustryBenchmark] = useState('world_class');
   const { trigger: haptic } = useHapticFeedback();
-  
-  const STUDIOS = [
-    { id: 'all', label: 'Todos os Studios' },
-    { id: 'serigrafia_textil', label: 'Studio Serigrafia Têxtil', techniques: ['serigrafia'] },
-    { id: 'serigrafia_cilindrica', label: 'Studio Serigrafia Cilíndrica', techniques: ['serigrafia'] },
-    { id: 'serigrafia_vinilica', label: 'Studio Serigrafia Vinílica', techniques: ['serigrafia'] },
-    { id: 'personalizacao_uv', label: 'Studio UV Premium', techniques: ['digital_uv', 'uv'] },
-    { id: 'laser', label: 'Studio Laser Precision', techniques: ['laser'] }
-  ];
-
-  const INDUSTRY_BENCHMARKS: Record<string, { label: string, target: number, desc: string }> = {
-    'world_class': { label: 'World Class (Geral)', target: 85, desc: 'Padrão ouro de excelência industrial global.' },
-    'corporate_gifts': { label: 'Brindes Corporativos (FAST)', target: 82, desc: 'Foco em setup rápido e alta variabilidade de produtos.' },
-    'automotive': { label: 'Automotivo', target: 80, desc: 'Alta automação e processos rígidos de qualidade.' },
-    'food_bev': { label: 'Alimentos & Bebidas', target: 75, desc: 'Foco em disponibilidade e conformidade sanitária.' },
-    'textile': { label: 'Têxtil', target: 65, desc: 'Alta variabilidade de setup e troca de lotes.' },
-    'general': { label: 'Manufatura Geral', target: 60, desc: 'Processos manuais ou semi-automáticos.' }
-  };
 
   const currentBenchmark = INDUSTRY_BENCHMARKS[industryBenchmark];
-  
-  const dateRange = useMemo(() => {
-    const now = new Date();
-    return {
-      start: startOfDay(subDays(now, parseInt(period, 10))),
-      end: endOfDay(now)
-    };
-  }, [period]);
-
-  const oeeFilters = useMemo(() => ({
-    machineId: machineId === 'all' ? undefined : machineId,
-    techniqueId: techniqueId === 'all' ? undefined : techniqueId,
-    shift: shift === 'all' ? undefined : shift,
-    startDate: dateRange.start,
-    endDate: dateRange.end
-  }), [machineId, techniqueId, shift, dateRange]);
-
-  const lossFilters = useMemo(() => ({
-    ...oeeFilters,
-    startDate: dateRange.start.toISOString(),
-    endDate: dateRange.end.toISOString()
-  }), [oeeFilters, dateRange]);
 
   const { data, isLoading, downloadReport } = useOEE(parseInt(period, 10), 30, oeeFilters);
   const { losses, isLoading: lossesLoading } = useProductionLosses(undefined, lossFilters);
@@ -184,43 +150,10 @@ const OEEDashboard = memo(function OEEDashboard() {
 
   const handleSavePreset = () => {
     if (!presetName) return;
-    savePreset({
-      name: presetName,
-      filters: { period, machineId, techniqueId, shift }
-    });
+    savePreset({ name: presetName, filters: { period, machineId, techniqueId, shift } });
     setPresetName('');
     toast.success('Preset salvo com sucesso');
   };
-
-  const handleShare = () => {
-    const params = new URLSearchParams({
-      period,
-      machineId,
-      techniqueId,
-      shift,
-      tab: activeTab
-    });
-    const url = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
-    navigator.clipboard.writeText(url);
-    toast.success('Link de compartilhamento copiado!', {
-      description: 'Todos os filtros atuais foram incluídos no link.'
-    });
-  };
-
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const p = params.get('period');
-    const m = params.get('machineId');
-    const t = params.get('techniqueId');
-    const s = params.get('shift');
-    const tab = params.get('tab');
-
-    if (p) setPeriod(p);
-    if (m) setMachineId(m);
-    if (t) setTechniqueId(t);
-    if (s) setShift(s);
-    if (tab) setActiveTab(tab);
-  }, []);
 
   const handleDownloadReport = useCallback(async (reportFormat: 'excel' | 'pdf' | 'csv') => {
     if (!data) return;

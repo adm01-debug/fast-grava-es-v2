@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { QUERY_KEYS } from '@/lib/queryConfig';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -19,7 +20,7 @@ export function TechniqueManagement() {
   const { getMachinesByTechnique, getJobsByTechnique, isLoading: isLoadingData } = useSchedulingData();
 
   const { data: techniques, isLoading: isLoadingTech } = useQuery({
-    queryKey: ['techniques-admin'],
+    queryKey: QUERY_KEYS.TECHNIQUES_ADMIN,
     queryFn: async () => {
       const { data, error } = await supabase
         .from('techniques')
@@ -42,7 +43,7 @@ export function TechniqueManagement() {
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['techniques-admin'] });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.TECHNIQUES_ADMIN });
       setIsDialogOpen(false);
       setEditingTechnique(null);
       toast.success('Técnica salva com sucesso');
@@ -58,7 +59,7 @@ export function TechniqueManagement() {
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['techniques-admin'] });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.TECHNIQUES_ADMIN });
       toast.success('Técnica excluída');
     },
     onError: (error: any) => {

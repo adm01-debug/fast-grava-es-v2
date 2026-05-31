@@ -20,6 +20,14 @@ export const QUERY_KEYS = {
   PROFILES: ['profiles'],
   OPERATOR_PROFILES: ['operator-profiles'],
   PAGINATED_JOBS: ['paginated-jobs'],
+  OPERATORS: ['operators'],
+  SCHEDULING_DATA: ['scheduling-data'],
+  USERS_MANAGEMENT: ['users-management'],
+  USER_ROLES_MANAGEMENT: ['user-roles-management'],
+  TECHNIQUES_ADMIN: ['techniques-admin'],
+  AUDIT_TRAIL: ['audit-trail'],
+  LOGIN_AUDIT: ['login-audit'],
+  SECURITY_ALERTS: ['security-alerts'],
 } as const;
 
 // Retry configuration
