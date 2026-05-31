@@ -75,7 +75,10 @@ export const TechnicalAssistant = ({ isOpen, onClose }: TechnicalAssistantProps)
     const reader = resp.body.getReader();
     const decoder = new TextDecoder();
     let textBuffer = "";
-    let assistantContent = "";
+    // Use an array accumulator to avoid mutating a `let` variable inside a
+    // closure — the React Compiler requires local variables used in closures to
+    // be treated as immutable values.
+    const contentChunks: string[] = [];
 
     while (true) {
       const { done, value } = await reader.read();
@@ -98,7 +101,8 @@ export const TechnicalAssistant = ({ isOpen, onClose }: TechnicalAssistantProps)
           const parsed = JSON.parse(jsonStr);
           const content = parsed.choices?.[0]?.delta?.content as string | undefined;
           if (content) {
-            assistantContent += content;
+            contentChunks.push(content);
+            const assistantContent = contentChunks.join("");
             setMessages(prev => {
               const last = prev[prev.length - 1];
               if (last?.role === "assistant") {

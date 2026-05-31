@@ -76,7 +76,7 @@ export function PlanningEfficiencyDashboard() {
                              (balancingSuggestions?.some(s => s.currentLoad > 90));
 
     return { efficiencyScore, deadlineHealth, totalJobs, delayedCount, estimatedOEE, oeeData, hasHighBottleneck };
-  }, [jobs, oeeData]);
+  }, [jobs, oeeData, sequencingSuggestions, balancingSuggestions]);
 
   if (!stats) return null;
 

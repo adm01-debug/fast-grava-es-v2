@@ -69,6 +69,54 @@ export function useSessionTimeout({
   const countdownRef = React.useRef<ReturnType<typeof setInterval> | null>(null);
   const lastActivityRef = React.useRef<number>(Date.now());
 
+  // Use a stable ref for handleLogout so timer callbacks always call the latest
+  // version without needing to be recreated when navigate/onSessionExpired change.
+  const handleLogoutRef = React.useRef<() => Promise<void>>(async () => {});
+
+  // Handle logout — declared first so startCountdown and resetTimers can depend on it
+  const handleLogout = React.useCallback(async () => {
+    if (warningTimerRef.current) clearTimeout(warningTimerRef.current);
+    if (logoutTimerRef.current) clearTimeout(logoutTimerRef.current);
+    if (countdownRef.current) clearInterval(countdownRef.current);
+
+    setState({ showWarning: false, remainingTime: 0, isActive: false });
+
+    try {
+      await supabase.auth.signOut();
+      onSessionExpired?.();
+      toast.info("Sessão expirada", {
+        description: "Você foi desconectado por inatividade.",
+      });
+      navigate("/auth");
+    } catch (error) {
+      logger.warn('Falha ao encerrar sessão por inatividade', error, 'useSessionTimeout');
+    }
+  }, [navigate, onSessionExpired]);
+
+  // Keep the ref in sync with the latest handleLogout so timer closures stay fresh
+  React.useEffect(() => {
+    handleLogoutRef.current = handleLogout;
+  }, [handleLogout]);
+
+  // Start countdown when warning is shown — calls handleLogout via ref to avoid stale closure
+  const startCountdown = React.useCallback(() => {
+    let remaining = logoutTimeout * 60;
+
+    countdownRef.current = setInterval(() => {
+      remaining -= 1;
+      setState((prev) => ({ ...prev, remainingTime: remaining }));
+
+      if (remaining <= 0) {
+        void handleLogoutRef.current();
+      }
+    }, 1000);
+
+    // Backup timer in case the interval drifts
+    logoutTimerRef.current = setTimeout(() => {
+      void handleLogoutRef.current();
+    }, logoutTimeout * 60 * 1000);
+  }, [logoutTimeout]);
+
   // Reset all timers
   const resetTimers = React.useCallback(() => {
     if (warningTimerRef.current) clearTimeout(warningTimerRef.current);
@@ -88,46 +136,7 @@ export function useSessionTimeout({
     }, warningTimeout * 60 * 1000);
 
     lastActivityRef.current = Date.now();
-  }, [warningTimeout, logoutTimeout]);
-
-  // Start countdown when warning is shown
-  const startCountdown = React.useCallback(() => {
-    let remaining = logoutTimeout * 60;
-
-    countdownRef.current = setInterval(() => {
-      remaining -= 1;
-      setState((prev) => ({ ...prev, remainingTime: remaining }));
-
-      if (remaining <= 0) {
-        handleLogout();
-      }
-    }, 1000);
-
-    // Set logout timer as backup
-    logoutTimerRef.current = setTimeout(() => {
-      handleLogout();
-    }, logoutTimeout * 60 * 1000);
-  }, [logoutTimeout]);
-
-  // Handle logout
-  const handleLogout = React.useCallback(async () => {
-    if (warningTimerRef.current) clearTimeout(warningTimerRef.current);
-    if (logoutTimerRef.current) clearTimeout(logoutTimerRef.current);
-    if (countdownRef.current) clearInterval(countdownRef.current);
-
-    setState({ showWarning: false, remainingTime: 0, isActive: false });
-
-    try {
-      await supabase.auth.signOut();
-      onSessionExpired?.();
-      toast.info("Sessão expirada", {
-        description: "Você foi desconectado por inatividade.",
-      });
-      navigate("/auth");
-    } catch (error) {
-      logger.warn('Falha ao encerrar sessão por inatividade', error, 'useSessionTimeout');
-    }
-  }, [navigate, onSessionExpired]);
+  }, [warningTimeout, logoutTimeout, startCountdown]);
 
   // Extend session
   const extendSession = React.useCallback(() => {

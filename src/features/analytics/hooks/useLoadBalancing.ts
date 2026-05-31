@@ -184,7 +184,7 @@ export function useLoadBalancing(targetDate?: Date) {
       suggestions: allSuggestions,
       isLoading: false
     };
-  }, [jobs, machines, techniques, targetDate]);
+  }, [jobs, machines, techniques, targetDate, DAILY_CAPACITY_MINUTES, configLoading]);
 
   return analysis;
 }

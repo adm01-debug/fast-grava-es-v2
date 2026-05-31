@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useTPM } from '@/features/maintenance/hooks/useTPM';
@@ -16,12 +16,24 @@ export function FactoryFloorMap() {
   const [heatmapType, setHeatmapType] = useState<'none' | 'load' | 'temp'>('none');
   const [selectedMachine, setSelectedMachine] = useState<string | null>(null);
 
+  // Refs let the interval callback always read the latest state without being
+  // included in effect deps (which would cause infinite re-fetch loops).
+  const machinesRef = useRef(machines);
+  const activeJobsRef = useRef(activeJobs);
+  useEffect(() => { machinesRef.current = machines; }, [machines]);
+  useEffect(() => { activeJobsRef.current = activeJobs; }, [activeJobs]);
+
+  // Fetch active jobs once on mount; re-fetch only when machines list changes.
   useEffect(() => {
+    let isMounted = true;
+
     const fetchActiveJobs = async () => {
       const { data } = await supabase
         .from('jobs')
         .select('*, machines(id, name)')
-        .eq('status', 'in_progress');
+        .eq('status', 'production');
+
+      if (!isMounted) return;
 
       const jobsByMachine: Record<string, any> = {};
       data?.forEach((job: any) => {
@@ -34,10 +46,15 @@ export function FactoryFloorMap() {
 
     fetchActiveJobs();
 
+    return () => { isMounted = false; };
+  }, [machines]);
+
+  // Simulated live telemetry tick (independent of fetch cycle).
+  useEffect(() => {
     const interval = setInterval(() => {
       const newData: Record<string, any> = {};
-      machines.forEach((m: any) => {
-        const hasJob = !!activeJobs[m.id];
+      machinesRef.current.forEach((m: any) => {
+        const hasJob = !!activeJobsRef.current[m.id];
         newData[m.id] = {
           load: hasJob ? Math.floor(Math.random() * 20) + 80 : 0,
           temp: hasJob ? Math.floor(Math.random() * 20) + 45 : 30,
@@ -48,7 +65,7 @@ export function FactoryFloorMap() {
       setLiveData(newData);
     }, 3000);
     return () => clearInterval(interval);
-  }, [machines, activeJobs]);
+  }, []);
 
   return (
     <div className="space-y-4">
