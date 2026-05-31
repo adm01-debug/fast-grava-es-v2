@@ -48,7 +48,7 @@ export function useBusinessConfig() {
       queryClient.invalidateQueries({ queryKey: ['business-config'] });
       toast.success('Configuração atualizada com sucesso');
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast.error('Erro ao atualizar configuração: ' + (error.message || 'Erro desconhecido'));
     }
   });

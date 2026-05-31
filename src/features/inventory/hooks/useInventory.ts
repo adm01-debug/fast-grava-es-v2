@@ -107,7 +107,7 @@ export function useInventory() {
       queryClient.invalidateQueries({ queryKey: ['inventory-movements'] });
       toast.success('Movimentação registrada');
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       console.error('Failed to record movement:', error);
       toast.error('Erro ao registrar movimentação', {
         description: error.message || 'Verifique sua conexão e tente novamente.'
