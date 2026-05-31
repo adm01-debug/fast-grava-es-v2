@@ -337,9 +337,14 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
 
       if (fetchErr || !record) throw new Error('Registro não encontrado');
 
-      // Requisito: Pelo menos uma foto se houver itens que exigem foto
-      const needsPhoto = (record.responses || []).some((r: any) => r.photo_url);
       if (!record.signature_url) throw new Error('Assinatura obrigatória ausente');
+
+      // Requisito: pelo menos uma foto se algum item de checklist exigir foto
+      const hasPhotoRequired = (record.responses || []).some((r: any) => r.requires_photo);
+      const hasPhoto = (record.responses || []).some((r: any) => r.photo_url);
+      if (hasPhotoRequired && !hasPhoto) {
+        throw new Error('Pelo menos uma foto de evidência é obrigatória para itens que exigem foto.');
+      }
 
       const { data: recordData, error: recordFetchError } = await (supabase
         .from('maintenance_records')

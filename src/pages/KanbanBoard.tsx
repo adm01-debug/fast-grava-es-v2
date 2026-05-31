@@ -205,41 +205,62 @@ export default function KanbanBoard() {
   const handleBulkAction = useCallback(async (action: 'delete' | 'move' | 'rework' | 'pause', targetStatus?: JobStatus) => {
     if (selectedJobs.size === 0) return;
 
+    const selectedJobsList = jobs.filter(j => selectedJobs.has(j.id));
+
     if (action === 'move' && targetStatus) {
+      // Validate all transitions before updating any
+      const invalid = selectedJobsList.filter(j => !canTransition(j.status as JobStatus, targetStatus));
+      if (invalid.length > 0) {
+        toast.error(`${invalid.length} job(s) não podem ser movidos para "${targetStatus}" a partir do estado atual`);
+        return;
+      }
+
       const updateData: TablesUpdate<'jobs'> = {
         status: targetStatus,
         updated_at: new Date().toISOString()
       };
-
-      // Add timestamps if needed
       if (targetStatus === 'production') updateData.actual_start_time = new Date().toISOString();
       if (targetStatus === 'finished') updateData.actual_end_time = new Date().toISOString();
 
-      const updates = Array.from(selectedJobs).map(id =>
-        supabase.from('jobs').update(updateData).eq('id', id)
-      );
-      await Promise.all(updates);
-      toast.success(`${selectedJobs.size} jobs movidos para "${targetStatus}"`);
+      try {
+        const updates = selectedJobsList.map(j => supabase.from('jobs').update(updateData).eq('id', j.id));
+        await Promise.all(updates);
+        toast.success(`${selectedJobs.size} jobs movidos para "${targetStatus}"`);
+      } catch {
+        toast.error('Erro ao mover jobs');
+        return;
+      }
       setSelectedJobs(new Set());
       handleJobsUpdate();
     } else if (action === 'rework') {
-      const updates = Array.from(selectedJobs).map(id =>
-        supabase.from('jobs').update({ status: 'rework', updated_at: new Date().toISOString() }).eq('id', id)
-      );
-      await Promise.all(updates);
-      toast.success(`${selectedJobs.size} jobs marcados como Retrabalho`);
+      const invalid = selectedJobsList.filter(j => !canTransition(j.status as JobStatus, 'rework'));
+      if (invalid.length > 0) {
+        toast.error(`${invalid.length} job(s) não podem ser enviados para Retrabalho a partir do estado atual`);
+        return;
+      }
+      try {
+        await Promise.all(selectedJobsList.map(j =>
+          supabase.from('jobs').update({ status: 'rework', updated_at: new Date().toISOString() }).eq('id', j.id)
+        ));
+        toast.success(`${selectedJobs.size} jobs marcados como Retrabalho`);
+      } catch {
+        toast.error('Erro ao mover jobs para retrabalho');
+        return;
+      }
       setSelectedJobs(new Set());
       handleJobsUpdate();
     } else if (action === 'delete') {
-      const updates = Array.from(selectedJobs).map(id =>
-        supabase.from('jobs').delete().eq('id', id)
-      );
-      await Promise.all(updates);
-      toast.success(`${selectedJobs.size} jobs excluídos permanentemente`);
+      try {
+        await Promise.all(Array.from(selectedJobs).map(id => supabase.from('jobs').delete().eq('id', id)));
+        toast.success(`${selectedJobs.size} jobs excluídos permanentemente`);
+      } catch {
+        toast.error('Erro ao excluir jobs');
+        return;
+      }
       setSelectedJobs(new Set());
       handleJobsUpdate();
     }
-  }, [selectedJobs, handleJobsUpdate]);
+  }, [selectedJobs, jobs, handleJobsUpdate]);
 
   // Swimlane grouping
   const swimlaneGroups = useMemo(() => {

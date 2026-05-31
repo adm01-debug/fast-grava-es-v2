@@ -48,6 +48,19 @@ export function useShiftHandoverMutations() {
   const acceptHandover = useMutation({
     mutationFn: async (id: string) => {
       if (!user) throw new Error('Usuário não autenticado');
+      // Guard: cannot accept your own handover
+      const { data: handover, error: fetchErr } = await supabase
+        .from('shift_handovers')
+        .select('outgoing_operator_id, status')
+        .eq('id', id)
+        .single();
+      if (fetchErr) throw fetchErr;
+      if (handover.outgoing_operator_id === user.id) {
+        throw new Error('Você não pode aceitar sua própria passagem de turno.');
+      }
+      if (handover.status !== 'pending_acceptance') {
+        throw new Error(`Passagem não está aguardando aceite (status atual: ${handover.status}).`);
+      }
       const { error } = await supabase.from('shift_handovers').update({ status: 'completed', incoming_operator_id: user.id, accepted_at: new Date().toISOString() }).eq('id', id);
       if (error) throw error;
     },

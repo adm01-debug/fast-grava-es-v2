@@ -41,9 +41,9 @@ export const Bitrix24FieldMapping = () => {
   const { data: mappingData, isLoading: mappingLoading, refetch: refetchMapping } = useQuery({
     queryKey: ['bitrix24-mapping'],
     queryFn: async () => {
-      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
       const response = await fetch(
-        `https://${projectId}.supabase.co/functions/v1/bitrix24-sync?action=mapping`,
+        `${supabaseUrl}/functions/v1/bitrix24-sync?action=mapping`,
         {
           headers: {
             'Content-Type': 'application/json',
@@ -59,9 +59,9 @@ export const Bitrix24FieldMapping = () => {
   const { data: fieldsData, isLoading: fieldsLoading, refetch: refetchFields } = useQuery({
     queryKey: ['bitrix24-fields'],
     queryFn: async () => {
-      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
       const response = await fetch(
-        `https://${projectId}.supabase.co/functions/v1/bitrix24-sync?action=fields`,
+        `${supabaseUrl}/functions/v1/bitrix24-sync?action=fields`,
         {
           headers: {
             'Content-Type': 'application/json',
@@ -78,9 +78,9 @@ export const Bitrix24FieldMapping = () => {
   const testConnection = async () => {
     setIsTestingConnection(true);
     try {
-      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
       const response = await fetch(
-        `https://${projectId}.supabase.co/functions/v1/bitrix24-sync?action=test`,
+        `${supabaseUrl}/functions/v1/bitrix24-sync?action=test`,
         {
           headers: {
             'Content-Type': 'application/json',

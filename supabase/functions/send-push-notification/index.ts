@@ -125,7 +125,43 @@ serve(async (req: Request): Promise<Response> => {
     const vapidSubject = Deno.env.get("VAPID_SUBJECT") || "mailto:admin@fastgrava.com";
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+    // Require authenticated caller
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader) {
+      return new Response(
+        JSON.stringify({ error: "Não autorizado" }),
+        { status: 401, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
+      );
+    }
+
+    const supabaseAuth = createClient(supabaseUrl, Deno.env.get("SUPABASE_ANON_KEY")!, {
+      global: { headers: { Authorization: authHeader } },
+    });
+    const { data: { user: callerUser } } = await supabaseAuth.auth.getUser();
+    if (!callerUser) {
+      return new Response(
+        JSON.stringify({ error: "Não autorizado" }),
+        { status: 401, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
+      );
+    }
+
     const { user_id, title, body, icon, data, broadcast }: PushNotificationRequest = await req.json();
+
+    // Only coordinators/admins can broadcast; operators can only notify themselves
+    if (broadcast || (user_id && user_id !== callerUser.id)) {
+      const { data: roleData } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", callerUser.id)
+        .single();
+      if (!["coordinator", "admin"].includes(roleData?.role ?? "")) {
+        return new Response(
+          JSON.stringify({ error: "Sem permissão para enviar notificações a outros usuários" }),
+          { status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
+        );
+      }
+    }
 
     console.log("Sending push notification:", { user_id, title, broadcast });
 

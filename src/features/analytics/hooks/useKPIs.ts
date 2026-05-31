@@ -365,12 +365,14 @@ export function useKPIs(period: KPIPeriod = 'all', customTargets?: Partial<KPITa
     const performanceHistory = Array.from({ length: historyDays }, (_, i) => {
       const date = new Date();
       date.setDate(date.getDate() - (historyDays - 1 - i));
-      const variance = 1.0; // Mantendo estável se não houver dados históricos suficientes
+      const dayKey = date.toISOString().split('T')[0];
+      const dayJobs = validJobsAll.filter(j => j.scheduled_date === dayKey || j.created_at?.startsWith(dayKey));
+      const dayStats = calculateStats(dayJobs);
       return {
         date: date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
-        efficiency: Math.min(100, averageOccupancy * variance),
-        productivity: Math.round((totalPieces / (daysCount || 1)) * variance),
-        lossRate: Math.max(0, lossRate * (0.6 + Math.random() * 0.8)),
+        efficiency: dayJobs.length > 0 ? dayStats.occupancyRate : averageOccupancy,
+        productivity: dayJobs.reduce((s, j) => s + sanitizeNumber(j.produced_quantity ?? j.quantity), 0),
+        lossRate: dayStats.lossRate,
       };
     });
 

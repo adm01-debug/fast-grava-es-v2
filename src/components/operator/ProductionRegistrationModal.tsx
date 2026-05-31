@@ -10,6 +10,8 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { DbJob } from '@/features/jobs';
+import { canTransition } from '@/features/jobs/services/jobStateMachine';
+import { JobStatus } from '@/types/scheduling';
 import { toast } from 'sonner';
 import { validateFileMagicBytes } from '@/lib/file-validation';
 import { safeParseInt, safeParseFloat } from '@/lib/utils';
@@ -192,6 +194,11 @@ export function ProductionRegistrationModal({
     // Validar campos numéricos
     if (producedQuantity < 0 || lostPieces < 0) {
       toast.error('Quantidades não podem ser negativas');
+      return;
+    }
+
+    if (!canTransition(job.status as JobStatus, 'finished')) {
+      toast.error(`Job não pode ser finalizado no estado atual: "${job.status}"`);
       return;
     }
 

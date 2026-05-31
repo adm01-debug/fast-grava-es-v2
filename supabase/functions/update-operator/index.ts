@@ -60,8 +60,8 @@ Deno.serve(async (req) => {
       .eq('user_id', requestingUser.id)
       .single()
 
-    if (roleData?.role !== 'coordinator') {
-      return new Response(JSON.stringify({ error: 'Apenas coordenadores podem editar operadores' }), {
+    if (!['coordinator', 'admin'].includes(roleData?.role ?? '')) {
+      return new Response(JSON.stringify({ error: 'Apenas coordenadores e administradores podem editar operadores' }), {
         status: 403,
         headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
       })

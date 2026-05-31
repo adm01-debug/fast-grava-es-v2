@@ -316,14 +316,24 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, f
       };
     }).filter(Boolean) as TechniqueOEE[];
 
+    // Build a map from technique_id → normalized technique name for studio matching
+    const techniqueNameById = new Map(
+      techniques.map(t => [t.id, t.name.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')])
+    );
+
     // Group by Studio
     const byStudio: StudioOEE[] = STUDIOS_MAP.map(studio => {
-      const studioJobs = periodJobs.filter(j => studio.techniques.includes(j.technique_id));
-      const m = calculateMetrics(studioJobs, 1, PLANNED_MINUTES_PER_DAY);
-      
-      // Mock health data for studios
-      let healthScore = 95;
+      const studioJobs = periodJobs.filter(j => {
+        const techName = techniqueNameById.get(j.technique_id) || '';
+        return studio.techniques.some(pattern => techName.includes(pattern));
+      });
+      const m = calculateMetrics(studioJobs, Math.max(studioJobs.length, 1), PLANNED_MINUTES_PER_DAY);
+
+      // Derive health score from actual OEE data
+      let healthScore = Math.round(Math.max(0, Math.min(100, m.oee)));
       let maintenanceStatus: StudioOEE['maintenanceStatus'] = 'optimal';
+      if (healthScore < 60) maintenanceStatus = 'critical';
+      else if (healthScore < 80) maintenanceStatus = 'warning';
       let consumables: StudioOEE['consumables'] = [];
 
       if (studio.id === 'personalizacao_uv') {
@@ -364,8 +374,8 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, f
 
     // Group by Material (Inferred from product name)
     const materialsList = ['Metal', 'Plástico', 'Têxtil', 'Papel', 'Couro', 'Vidro', 'Cerâmica'];
-    const materialOEEMap = new Map<string, MaterialOEE>();
-    
+    const materialJobsMap = new Map<string, typeof periodJobs>();
+
     periodJobs.forEach(job => {
       const product = job.product?.toLowerCase() || '';
       let material = 'Outros';
@@ -375,27 +385,23 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, f
           break;
         }
       }
-      
-      const existing = materialOEEMap.get(material) || { material, oee: 0, availability: 0, performance: 0, quality: 0, totalPieces: 0 };
-      const m = calculateMetrics([job], 0.1, PLANNED_MINUTES_PER_DAY); // Small weight
-      
-      materialOEEMap.set(material, {
-        material,
-        totalPieces: existing.totalPieces + (job.produced_quantity || job.quantity),
-        oee: (existing.oee + m.oee) / 2, // Simplified avg
-        availability: (existing.availability + m.avail) / 2,
-        performance: (existing.performance + m.perf) / 2,
-        quality: (existing.quality + m.qual) / 2
-      });
+      const existing = materialJobsMap.get(material) || [];
+      existing.push(job);
+      materialJobsMap.set(material, existing);
     });
-    
-    const byMaterial = Array.from(materialOEEMap.values()).map(m => ({
-      ...m,
-      oee: Math.round(m.oee * 10) / 10,
-      availability: Math.round(m.availability * 10) / 10,
-      performance: Math.round(m.performance * 10) / 10,
-      quality: Math.round(m.quality * 10) / 10
-    }));
+
+    const byMaterial = Array.from(materialJobsMap.entries()).map(([material, matJobs]) => {
+      const m = calculateMetrics(matJobs, Math.max(matJobs.length, 1), PLANNED_MINUTES_PER_DAY);
+      const totalPieces = matJobs.reduce((s, j) => s + sanitizeNumber(j.produced_quantity ?? j.quantity), 0);
+      return {
+        material,
+        oee: Math.round(m.oee * 10) / 10,
+        availability: Math.round(m.avail * 10) / 10,
+        performance: Math.round(m.perf * 10) / 10,
+        quality: Math.round(m.qual * 10) / 10,
+        totalPieces,
+      };
+    });
 
     const machinesWithData = byMachine.filter(m => m.totalJobs > 0);
     const overallOEE = machinesWithData.length > 0 ? machinesWithData.reduce((sum, m) => sum + m.oee, 0) / machinesWithData.length : 0;
@@ -469,39 +475,81 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, f
       byStudio,
       trendData,
       heatmapData,
-      maintenanceAlerts: [
-        {
-          machineId: 'uv-01',
-          machineName: 'Mimaki UV-300',
-          type: 'quality',
-          severity: 'high',
-          message: 'Queda na densidade de cor detectada. Calibrar cabeçotes.',
-          trend: -12.5
-        },
-        {
-          machineId: 'laser-02',
-          machineName: 'Laser Precision G5',
-          type: 'performance',
-          severity: 'medium',
-          message: 'Lente com acúmulo de resíduos. Sugerido limpeza preventiva.',
-          trend: -5.2
-        }
-      ],
+      maintenanceAlerts: byMachine
+        .filter(m => m.oee < 65 || m.quality < 90 || m.availability < 80)
+        .map(m => {
+          const isQuality = m.quality < 90;
+          const isAvail = m.availability < 80;
+          const type = isAvail ? 'availability' : isQuality ? 'quality' : 'performance';
+          const val = isAvail ? m.availability : isQuality ? m.quality : m.performance;
+          const trend = m.previousOee !== undefined ? Math.round((m.oee - m.previousOee) * 10) / 10 : 0;
+          const severity: 'high' | 'medium' | 'low' = val < 60 ? 'high' : val < 75 ? 'medium' : 'low';
+          const messages: Record<string, string> = {
+            availability: `Disponibilidade crítica (${m.availability}%). Verificar paradas não planejadas.`,
+            quality: `Taxa de qualidade abaixo do aceitável (${m.quality}%). Revisar processo.`,
+            performance: `Performance reduzida (${m.performance}%). Verificar velocidade de ciclo.`,
+          };
+          return {
+            machineId: m.machineId,
+            machineName: m.machineName,
+            type,
+            severity,
+            message: messages[type],
+            trend,
+          };
+        })
+        .slice(0, 5),
       worldClassBenchmark: WORLD_CLASS_OEE,
       availabilityLosses: 100 - overallAvailability,
       performanceLosses: 100 - overallPerformance,
       qualityLosses: 100 - overallQuality,
       byShift,
-      comparison: {
-        currentOEE: overallOEE,
-        previousOEE: overallOEE * 0.95,
-        currentAvailability: overallAvailability,
-        previousAvailability: overallAvailability * 0.98,
-        currentPerformance: overallPerformance,
-        previousPerformance: overallPerformance * 0.96,
-        currentQuality: overallQuality,
-        previousQuality: overallQuality * 0.99,
-      }
+      comparison: (() => {
+        const prevMachinesWithData = Array.from(machineOEEMap.values()).filter(m => {
+          const pJobs = prevPeriodJobs.filter(j => j.machine_id === m.machineId);
+          return pJobs.length > 0;
+        });
+        const prevOEE = prevMachinesWithData.length > 0
+          ? prevMachinesWithData.reduce((s, m) => s + (m.previousOee ?? m.oee), 0) / prevMachinesWithData.length
+          : overallOEE;
+        const prevAvail = prevMachinesWithData.length > 0
+          ? byMachine.reduce((s, m) => {
+              const pJobs = prevPeriodJobs.filter(j => j.machine_id === m.machineId);
+              if (!pJobs.length) return s;
+              const pDays = new Set(pJobs.map(j => j.actual_end_time!.slice(0, 10))).size || 1;
+              const pm = calculateMetrics(pJobs, pDays, PLANNED_MINUTES_PER_DAY);
+              return s + pm.avail;
+            }, 0) / Math.max(prevMachinesWithData.length, 1)
+          : overallAvailability;
+        const prevPerf = prevMachinesWithData.length > 0
+          ? byMachine.reduce((s, m) => {
+              const pJobs = prevPeriodJobs.filter(j => j.machine_id === m.machineId);
+              if (!pJobs.length) return s;
+              const pDays = new Set(pJobs.map(j => j.actual_end_time!.slice(0, 10))).size || 1;
+              const pm = calculateMetrics(pJobs, pDays, PLANNED_MINUTES_PER_DAY);
+              return s + pm.perf;
+            }, 0) / Math.max(prevMachinesWithData.length, 1)
+          : overallPerformance;
+        const prevQual = prevMachinesWithData.length > 0
+          ? byMachine.reduce((s, m) => {
+              const pJobs = prevPeriodJobs.filter(j => j.machine_id === m.machineId);
+              if (!pJobs.length) return s;
+              const pDays = new Set(pJobs.map(j => j.actual_end_time!.slice(0, 10))).size || 1;
+              const pm = calculateMetrics(pJobs, pDays, PLANNED_MINUTES_PER_DAY);
+              return s + pm.qual;
+            }, 0) / Math.max(prevMachinesWithData.length, 1)
+          : overallQuality;
+        return {
+          currentOEE: overallOEE,
+          previousOEE: Math.round(prevOEE * 10) / 10,
+          currentAvailability: overallAvailability,
+          previousAvailability: Math.round(prevAvail * 10) / 10,
+          currentPerformance: overallPerformance,
+          previousPerformance: Math.round(prevPerf * 10) / 10,
+          currentQuality: overallQuality,
+          previousQuality: Math.round(prevQual * 10) / 10,
+        };
+      })()
     };
   }, [jobs, machines, techniques, effectiveDaysBack, daysBack, filters, PLANNED_MINUTES_PER_DAY]);
 
