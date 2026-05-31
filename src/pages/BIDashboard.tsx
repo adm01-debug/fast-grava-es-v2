@@ -140,7 +140,7 @@ export default function BIDashboard() {
       const lost = dayJobs.reduce((sum, j) => sum + (j.lost_pieces ?? 0), 0);
       dailyTrend.push({
         date: format(date, 'dd/MM', { locale: ptBR }), fullDate: format(date, 'dd MMM', { locale: ptBR }),
-        jobs: dayJobs.length, produced, lost, efficiency: produced > 0 ? ((produced - lost) / produced * 100) : 0,
+        jobs: dayJobs.length, produced, lost, efficiency: produced > 0 ? Math.max(0, (produced - lost) / produced * 100) : 0,
       });
     }
 
@@ -151,7 +151,7 @@ export default function BIDashboard() {
       return {
         id: tech.id, name: tech.short_name || tech.name, jobs: techJobs.length,
         produced: totalProduced, lost: totalLost, machines: machines.filter(m => m.technique_id === tech.id).length,
-        quality: totalProduced > 0 ? ((totalProduced - totalLost) / totalProduced * 100) : 100, color: tech.color,
+        quality: totalProduced > 0 ? Math.max(0, (totalProduced - totalLost) / totalProduced * 100) : 100, color: tech.color,
       };
     }).filter(t => t.jobs > 0).sort((a, b) => b.produced - a.produced);
 
@@ -528,7 +528,7 @@ export default function BIDashboard() {
                       ...j,
                       order_number: j.order_number || `OS-${j.id.slice(0, 5)}`,
                       product: j.product_name || 'Produto',
-                      efficiency: (j.produced_quantity || 0) > 0 ? ((((j.produced_quantity || 0) - (j.lost_pieces || 0)) / (j.produced_quantity || 1)) * 100).toFixed(1) + '%' : '--',
+                      efficiency: (j.produced_quantity || 0) > 0 ? (Math.max(0, (j.produced_quantity || 0) - (j.lost_pieces || 0)) / (j.produced_quantity || 1) * 100).toFixed(1) + '%' : '--',
                       produced_quantity: j.produced_quantity ?? 0,
                       lost_pieces: j.lost_pieces ?? 0
                     } as BIJob));

@@ -230,7 +230,7 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, f
       const planned = Math.max(machineDays * plannedMinPerDay, estimated);
       const avail = planned > 0 ? Math.min(100, (actual / planned) * 100) : 100;
       const perf = actual > 0 ? Math.min(100, (estimated / actual) * 100) : 100;
-      const qual = produced > 0 ? Math.min(100, ((produced - lost) / produced) * 100) : 100;
+      const qual = produced > 0 ? Math.max(0, Math.min(100, ((produced - lost) / produced) * 100)) : 100;
       const oee = (avail / 100) * (perf / 100) * (qual / 100) * 100;
       return { oee, avail, perf, qual, actual, estimated, produced, lost, planned };
     };
