@@ -33,7 +33,7 @@ import {
 } from 'lucide-react';
 import { useSchedulingData } from '@/features/jobs';
 import { DbJob } from '@/features/jobs';
-import { JobStatus, assertTransition } from '@/features/jobs';
+import { JobStatus, assertTransition, canTransition } from '@/features/jobs';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';

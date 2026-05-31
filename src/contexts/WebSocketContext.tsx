@@ -51,7 +51,7 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
     const channel = supabase
       .channel(channelName)
       .on(
-        'postgres_changes',
+        'postgres_changes' as any,
         {
           event: options.event ?? '*',
           schema: 'public',

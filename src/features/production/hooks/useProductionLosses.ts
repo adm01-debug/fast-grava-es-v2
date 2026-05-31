@@ -95,7 +95,7 @@ export function useProductionLosses(jobId?: string, filters?: { shift?: string; 
       if (error) throw error;
 
       // Use atomic SQL increment to avoid lost-update race condition
-      const { error: rpcError } = await supabase.rpc('increment_job_lost_pieces', {
+      const { error: rpcError } = await supabase.rpc('increment_job_lost_pieces' as any, {
         p_job_id: data.job_id,
         p_amount: data.quantity,
       });
