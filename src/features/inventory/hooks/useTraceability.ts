@@ -328,10 +328,13 @@ export function useSearchLots(searchTerm: string) {
     queryKey: ['search-lots', searchTerm],
     queryFn: async () => {
       if (!searchTerm || searchTerm.length < 2) return [];
+      // Strip PostgREST filter special characters to prevent filter injection
+      const safeTerm = searchTerm.replace(/[,()%.\\]/g, '');
+      if (!safeTerm) return [];
       const { data, error } = await supabase
         .from('production_lots')
         .select('id, lot_number, product_name, status')
-        .or(`lot_number.ilike.%${searchTerm}%,product_name.ilike.%${searchTerm}%`)
+        .or(`lot_number.ilike.%${safeTerm}%,product_name.ilike.%${safeTerm}%`)
         .limit(10);
       if (error) throw error;
       return data;
