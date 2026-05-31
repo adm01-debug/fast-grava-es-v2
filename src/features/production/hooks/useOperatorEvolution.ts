@@ -134,7 +134,7 @@ export function useOperatorEvolution(days: number = 30) {
         });
 
         const jobsCompleted = dayJobs.length;
-        const piecesProduced = dayJobs.reduce((sum, j) => sum + (j.produced_quantity ?? (j.quantity - (j.lost_pieces || 0))), 0);
+        const piecesProduced = dayJobs.reduce((sum, j) => sum + (j.produced_quantity ?? Math.max(0, j.quantity - (j.lost_pieces || 0))), 0);
         const piecesLost = dayJobs.reduce((sum, j) => sum + (j.lost_pieces || 0), 0);
         const totalPieces = piecesProduced + piecesLost;
         const lossRate = totalPieces > 0 ? (piecesLost / totalPieces) * 100 : 0;
