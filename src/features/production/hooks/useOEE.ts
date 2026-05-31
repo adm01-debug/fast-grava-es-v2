@@ -403,6 +403,12 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, f
     const overallPerformance = machinesWithData.length > 0 ? machinesWithData.reduce((sum, m) => sum + m.performance, 0) / machinesWithData.length : 0;
     const overallQuality = machinesWithData.length > 0 ? machinesWithData.reduce((sum, m) => sum + m.quality, 0) / machinesWithData.length : 0;
 
+    const prevMetrics = calculateMetrics(prevPeriodJobs, Math.max(1, daysBack), PLANNED_MINUTES_PER_DAY);
+    const prevOEE = Math.round(prevMetrics.oee * 10) / 10;
+    const prevAvail = Math.round(prevMetrics.avail * 10) / 10;
+    const prevPerf = Math.round(prevMetrics.perf * 10) / 10;
+    const prevQual = Math.round(prevMetrics.qual * 10) / 10;
+
     // Group periodJobs by date for efficient trend calculation
     const jobsByDate = new Map<string, typeof periodJobs>();
     periodJobs.forEach(job => {
@@ -494,13 +500,13 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, f
       byShift,
       comparison: {
         currentOEE: overallOEE,
-        previousOEE: overallOEE * 0.95,
+        previousOEE: prevOEE,
         currentAvailability: overallAvailability,
-        previousAvailability: overallAvailability * 0.98,
+        previousAvailability: prevAvail,
         currentPerformance: overallPerformance,
-        previousPerformance: overallPerformance * 0.96,
+        previousPerformance: prevPerf,
         currentQuality: overallQuality,
-        previousQuality: overallQuality * 0.99,
+        previousQuality: prevQual,
       }
     };
   }, [jobs, machines, techniques, effectiveDaysBack, daysBack, filters, PLANNED_MINUTES_PER_DAY]);

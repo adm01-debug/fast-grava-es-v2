@@ -259,13 +259,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       return { error: null };
-    } catch (error: any) {
+    } catch (error: unknown) {
       const result = await AuthService.recordLoginAttempt(email, false, ipAddress);
 
       if (result.locked) {
-        const lockoutError = new Error(result.message || `Conta bloqueada por ${result.lockout_minutes} minuto(s)`) as any;
-        lockoutError.isLockout = true;
-        lockoutError.lockoutMinutes = result.lockout_minutes || 0;
+        const lockoutError = Object.assign(
+          new Error(result.message || `Conta bloqueada por ${result.lockout_minutes} minuto(s)`),
+          { isLockout: true, lockoutMinutes: result.lockout_minutes || 0 }
+        );
         return { error: lockoutError };
       }
 
@@ -276,7 +277,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         });
       }
 
-      return { error };
+      return { error: error instanceof Error ? error : new Error(String(error)) };
     }
   };
 

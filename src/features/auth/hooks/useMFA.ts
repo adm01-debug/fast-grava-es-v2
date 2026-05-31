@@ -40,8 +40,9 @@ export function useMFA() {
       if (error) throw error;
       setEnrollmentData(data);
       return data;
-    } catch (error: any) {
-      toast.error('Erro ao iniciar cadastro MFA', { description: error.message });
+    } catch (error: unknown) {
+      const msg = error instanceof Error ? error.message : 'Erro desconhecido';
+      toast.error('Erro ao iniciar cadastro MFA', { description: msg });
     } finally {
       setIsEnrolling(false);
     }
@@ -60,8 +61,9 @@ export function useMFA() {
       setEnrollmentData(null);
       toast.success('MFA ativado com sucesso!');
       return data;
-    } catch (error: any) {
-      toast.error('Código inválido', { description: error.message });
+    } catch (error: unknown) {
+      const msg = error instanceof Error ? error.message : 'Código inválido';
+      toast.error('Código inválido', { description: msg });
     } finally {
       setIsVerifying(false);
     }
@@ -78,8 +80,9 @@ export function useMFA() {
       await refreshFactors();
       toast.success('MFA desativado');
       return true;
-    } catch (error: any) {
-      toast.error('Erro ao desativar MFA', { description: error.message });
+    } catch (error: unknown) {
+      const msg = error instanceof Error ? error.message : 'Erro desconhecido';
+      toast.error('Erro ao desativar MFA', { description: msg });
       return false;
     }
   };

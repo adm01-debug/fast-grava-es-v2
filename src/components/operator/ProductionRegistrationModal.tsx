@@ -194,6 +194,14 @@ export function ProductionRegistrationModal({
       toast.error('Quantidades não podem ser negativas');
       return;
     }
+    if (producedQuantity > job.quantity * 3) {
+      toast.error(`Quantidade produzida muito alta (máximo ${(job.quantity * 3).toLocaleString()})`);
+      return;
+    }
+    if (notes.length > 2000) {
+      toast.error('Observações excedem o limite de 2000 caracteres');
+      return;
+    }
 
     setIsSaving(true);
 
@@ -274,6 +282,7 @@ export function ProductionRegistrationModal({
                 id="produced"
                 type="number"
                 min={0}
+                max={job.quantity * 3}
                 value={producedQuantity}
                 onChange={(e) => setProducedQuantity(safeParseInt(e.target.value, 0))}
                 className="bg-background"
@@ -363,6 +372,7 @@ export function ProductionRegistrationModal({
                 placeholder="Adicione observações sobre a produção..."
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
+                maxLength={2000}
                 className="bg-background min-h-[80px]"
               />
             </div>
