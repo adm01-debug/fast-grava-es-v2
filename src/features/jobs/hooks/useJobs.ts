@@ -83,7 +83,7 @@ export function useUpdateJob() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.JOBS });
-      queryClient.invalidateQueries({ queryKey: ['paginated-jobs'] });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.PAGINATED_JOBS });
     },
     onError: createMutationErrorHandler('Erro ao atualizar job'),
   });
@@ -102,7 +102,7 @@ export function useDeleteJob() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.JOBS });
-      queryClient.invalidateQueries({ queryKey: ['paginated-jobs'] });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.PAGINATED_JOBS });
     },
     onError: createMutationErrorHandler('Erro ao excluir job'),
   });
