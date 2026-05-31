@@ -186,8 +186,9 @@ export function useSPCMutations() {
     }) => {
       // Calculate statistics
       const values = data.values;
+      if (values.length === 0) throw new Error('Nenhum valor fornecido para medição');
       const mean = values.reduce((a, b) => a + b, 0) / values.length;
-      const range = Math.max(...values) - Math.min(...values);
+      const range = values.length > 1 ? Math.max(...values) - Math.min(...values) : 0;
       const variance = values.reduce((sum, v) => sum + Math.pow(v - mean, 2), 0) / values.length;
       const stdDev = Math.sqrt(variance);
 

@@ -55,7 +55,7 @@ describe('useOfflineSync', () => {
     const { result } = renderHook(() => useOfflineSync());
 
     await act(async () => {
-      result.current.updateJobOffline('job-1', { status: 'in_progress' });
+      result.current.updateJobOffline('job-1', { status: 'production' });
     });
 
     expect(result.current.pendingActionsCount).toBe(1);
@@ -66,7 +66,7 @@ describe('useOfflineSync', () => {
     const { result } = renderHook(() => useOfflineSync());
 
     await act(async () => {
-      result.current.updateJobOffline('job-1', { status: 'in_progress' });
+      result.current.updateJobOffline('job-1', { status: 'production' });
     });
 
     const mockTable = (supabase.from('jobs') as any);
@@ -91,7 +91,7 @@ describe('useOfflineSync', () => {
     const { result } = renderHook(() => useOfflineSync());
 
     await act(async () => {
-      result.current.updateJobOffline('job-1', { status: 'in_progress' });
+      result.current.updateJobOffline('job-1', { status: 'production' });
     });
 
     const mockTable = (supabase.from('jobs') as any);
