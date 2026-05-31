@@ -21,6 +21,9 @@ export function LotQRCode({ lot, open, onClose }: LotQRCodeProps) {
     date: lot.production_date,
   });
 
+  const escHtml = (s: string) =>
+    s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
   const handlePrint = () => {
     const printWindow = window.open('', '_blank');
     if (!printWindow) return;
@@ -30,13 +33,13 @@ export function LotQRCode({ lot, open, onClose }: LotQRCodeProps) {
 
     printWindow.document.write(`
       <html>
-        <head><title>Etiqueta - ${lot.lot_number}</title></head>
+        <head><title>Etiqueta - ${escHtml(lot.lot_number)}</title></head>
         <body style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;font-family:monospace;">
-          <h2>${lot.lot_number}</h2>
-          <p>${lot.product_name}</p>
+          <h2>${escHtml(lot.lot_number)}</h2>
+          <p>${escHtml(lot.product_name)}</p>
           ${svgEl.outerHTML}
-          <p style="margin-top:8px;">Qtd: ${lot.quantity} | Status: ${lot.status}</p>
-          <p>${lot.production_date}</p>
+          <p style="margin-top:8px;">Qtd: ${lot.quantity} | Status: ${escHtml(lot.status)}</p>
+          <p>${escHtml(lot.production_date)}</p>
         </body>
       </html>
     `);

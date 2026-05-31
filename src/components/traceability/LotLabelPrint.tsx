@@ -33,6 +33,12 @@ export function LotLabelPrint({ lots, open, onClose }: LotLabelPrintProps) {
 
   const config = LABEL_CONFIGS[labelSize];
 
+  const escHtml = (s: string) =>
+    s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+  const escAttr = (s: string) =>
+    escHtml(s).replace(/"/g, '&quot;');
+
   const generateQrValue = (lot: ProductionLot) => {
     return `LOT:${lot.lot_number}`;
   };
@@ -52,14 +58,14 @@ export function LotLabelPrint({ lots, open, onClose }: LotLabelPrintProps) {
         page-break-inside:avoid;break-inside:avoid;
       ">
         <div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex-shrink:0;">
-          <div id="qr-placeholder-${lot.id}" data-value="${qrValue}" data-size="${cfg.qrSize}"></div>
+          <div id="qr-placeholder-${lot.id}" data-value="${escAttr(qrValue)}" data-size="${cfg.qrSize}"></div>
         </div>
         <div style="text-align:${isLandscape ? 'left' : 'center'};flex:1;min-width:0;overflow:hidden;">
           <div style="font-size:${isLandscape ? '13px' : '16px'};font-weight:bold;margin-bottom:4px;word-break:break-word;">
-            ${lot.lot_number}
+            ${escHtml(lot.lot_number)}
           </div>
           <div style="font-size:${isLandscape ? '11px' : '13px'};color:#333;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
-            ${lot.product_name}
+            ${escHtml(lot.product_name)}
           </div>
           <div style="font-size:${isLandscape ? '10px' : '11px'};color:#666;margin-bottom:2px;">
             Qtd: ${lot.quantity} un
@@ -74,11 +80,11 @@ export function LotLabelPrint({ lots, open, onClose }: LotLabelPrintProps) {
           ` : ''}
           ${lot.job ? `
             <div style="font-size:${isLandscape ? '9px' : '10px'};color:#999;margin-top:4px;">
-              OS: ${lot.job.order_number}
+              OS: ${escHtml(lot.job.order_number)}
             </div>
           ` : ''}
           <div style="font-size:8px;color:#bbb;margin-top:6px;">
-            ${lot.lot_number}
+            ${escHtml(lot.lot_number)}
           </div>
         </div>
       </div>
