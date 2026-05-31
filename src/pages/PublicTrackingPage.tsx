@@ -39,14 +39,19 @@ export default function PublicTrackingPage() {
     e?.preventDefault();
     if (!query) return;
 
+    // Sanitize: only allow alphanumeric, hyphens, dots, and slashes (valid for order numbers and UUIDs)
+    const safeQuery = query.trim().replace(/[^a-zA-Z0-9\-./]/g, '');
+    if (!safeQuery) return;
+
     setLoading(true);
     setError(null);
     setJob(null);
 
     try {
-      const { data, error: supabaseError } = await supabase
-        .from('jobs')
-        .select(`
+      // Use separate parameterized queries instead of embedding user input in filter string
+      const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(safeQuery);
+
+      const selectClause = `
           *,
           shipment:shipments(
             tracking_code,
@@ -55,9 +60,24 @@ export default function PublicTrackingPage() {
             actual_delivery,
             provider:shipping_providers(name)
           )
-        `)
-        .or(`order_number.eq.${query},id.eq.${query}`)
-        .maybeSingle();
+        `;
+
+      let data = null;
+      let supabaseError = null;
+
+      if (isUUID) {
+        ({ data, error: supabaseError } = await supabase
+          .from('jobs')
+          .select(selectClause)
+          .eq('id', safeQuery)
+          .maybeSingle());
+      } else {
+        ({ data, error: supabaseError } = await supabase
+          .from('jobs')
+          .select(selectClause)
+          .eq('order_number', safeQuery)
+          .maybeSingle());
+      }
 
       if (supabaseError) throw supabaseError;
 
