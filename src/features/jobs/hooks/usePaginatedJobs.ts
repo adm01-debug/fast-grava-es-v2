@@ -52,10 +52,11 @@ export function usePaginatedJobs(initialOptions?: Partial<PaginationOptions>) {
         .from('jobs')
         .select('*', { count: 'exact' });
 
-      // Apply search
-      if (search.trim()) {
+      // Apply search — strip PostgREST filter meta-characters to prevent filter injection
+      const safeSearch = search.trim().replace(/[,()%.\\]/g, '');
+      if (safeSearch) {
         query = query.or(
-          `client.ilike.%${search}%,product.ilike.%${search}%,order_number.ilike.%${search}%`
+          `client.ilike.%${safeSearch}%,product.ilike.%${safeSearch}%,order_number.ilike.%${safeSearch}%`
         );
       }
 

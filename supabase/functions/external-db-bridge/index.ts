@@ -158,6 +158,21 @@ Deno.serve(async (req: Request) => {
       });
     }
 
+    // Role check — only admin/manager may use this service-role bridge
+    const adminClient = createClient(supabaseUrl, serviceRoleKey);
+    const { data: roleData } = await adminClient
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    if (!roleData || !["admin", "manager"].includes(roleData.role)) {
+      return new Response(JSON.stringify({ error: "Insufficient permissions" }), {
+        status: 403,
+        headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+      });
+    }
+
     const body = await req.json();
     const validation = validateBridgeRequest(body);
 
