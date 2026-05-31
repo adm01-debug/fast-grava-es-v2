@@ -81,7 +81,7 @@ export function useDataExport(tableName: TableName) {
         });
       }
 
-      query = query.order(sortBy, { ascending: sortOrder === 'asc' });
+      query = query.order(sortBy, { ascending: sortOrder === 'asc' }).limit(10_000);
 
       const { data, error } = await query;
       if (error) throw error;

@@ -2,12 +2,12 @@ import { z } from 'zod';
 
 export const operatorSchema = z.object({
   id: z.string().uuid(),
-  name: z.string().min(2, 'Nome deve ter pelo menos 2 caracteres'),
-  email: z.string().email('Email inválido'),
+  name: z.string().min(2, 'Nome deve ter pelo menos 2 caracteres').max(100, 'Nome muito longo'),
+  email: z.string().email('Email inválido').max(254, 'Email muito longo'),
   role: z.enum(['operator', 'coordinator', 'manager']),
   is_active: z.boolean().default(true),
-  phone: z.string().nullable().optional(),
-  badge_number: z.string().nullable().optional(),
+  phone: z.string().max(20, 'Telefone muito longo').nullable().optional(),
+  badge_number: z.string().max(50, 'Crachá muito longo').nullable().optional(),
 });
 
 export const operatorFormSchema = operatorSchema.omit({ id: true });

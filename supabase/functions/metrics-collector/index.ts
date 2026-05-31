@@ -2,6 +2,21 @@ import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 serve(async (req) => {
+  if (req.method === "OPTIONS") {
+    return new Response(null, { status: 204 });
+  }
+
+  const cronApiKey = Deno.env.get("CRON_API_KEY");
+  if (cronApiKey) {
+    const provided = req.headers.get("x-api-key") || req.headers.get("authorization")?.replace("Bearer ", "");
+    if (provided !== cronApiKey) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+  }
+
   try {
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
@@ -9,7 +24,7 @@ serve(async (req) => {
     );
 
     const now = new Date();
-    const metrics: Record<string, any> = {};
+    const metrics: Record<string, unknown> = {};
 
     // Jobs metrics
     const { count: totalJobs } = await supabase.from("jobs").select("*", { count: "exact", head: true });
@@ -44,7 +59,7 @@ serve(async (req) => {
       headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Unknown error';
+    const message = error instanceof Error ? error.message : "Unknown error";
     return new Response(JSON.stringify({ error: message }), { status: 500 });
   }
 });

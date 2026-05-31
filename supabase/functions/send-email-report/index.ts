@@ -342,10 +342,11 @@ serve(async (req) => {
         { headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' } }
       );
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('[send-email-report] Error:', error);
+    const message = error instanceof Error ? error.message : 'Unknown error';
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: message }),
       { status: 500, headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' } }
     );
   }

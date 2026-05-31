@@ -585,9 +585,9 @@ async function pullFromBitrix(supabase: any, categoryId?: string) {
       }
 
       synced.push(orderNumber);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(`Error syncing deal ${deal.ID}:`, error);
-      errors.push(`${deal.ID}: ${error.message}`);
+      errors.push(`${deal.ID}: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
 
@@ -1100,9 +1100,11 @@ serve(async (req) => {
       headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' }
     });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Bitrix24 sync error:', error);
-    
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    const stack = error instanceof Error ? error.stack : undefined;
+
     // Log error to history
     if (action && ['pull', 'push', 'webhook'].includes(action)) {
       await logSyncHistory(
@@ -1111,17 +1113,17 @@ serve(async (req) => {
         'error',
         0,
         1,
-        error.message,
-        { stack: error.stack },
+        message,
+        { stack },
         triggeredBy
       );
     }
 
     return new Response(
-      JSON.stringify({ error: error.message }),
-      { 
-        status: 500, 
-        headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' } 
+      JSON.stringify({ error: message }),
+      {
+        status: 500,
+        headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' }
       }
     );
   }

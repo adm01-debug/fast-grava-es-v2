@@ -130,7 +130,9 @@ serve(async (req: Request): Promise<Response> => {
         headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
       });
     }
-    if (providedKey !== supabaseServiceKey) {
+    let callerUserId: string | null = null;
+    const isServiceRole = providedKey === supabaseServiceKey;
+    if (!isServiceRole) {
       const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
       const userClient = createClient(supabaseUrl, anonKey);
       const { data: { user }, error: authError } = await userClient.auth.getUser(providedKey);
@@ -140,6 +142,7 @@ serve(async (req: Request): Promise<Response> => {
           headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
         });
       }
+      callerUserId = user.id;
     }
 
     const vapidPublicKey = Deno.env.get("VAPID_PUBLIC_KEY");
@@ -148,6 +151,21 @@ serve(async (req: Request): Promise<Response> => {
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
     const { user_id, title, body, icon, data, broadcast }: PushNotificationRequest = await req.json();
+
+    // Broadcast requires service-role key or admin/manager role
+    if (broadcast && !isServiceRole && callerUserId) {
+      const { data: roleData } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", callerUserId)
+        .maybeSingle();
+      if (!roleData || !["admin", "manager"].includes(roleData.role)) {
+        return new Response(JSON.stringify({ error: "Forbidden: broadcast requires admin or manager role" }), {
+          status: 403,
+          headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+        });
+      }
+    }
 
     console.log("Sending push notification:", { user_id, title, broadcast });
 

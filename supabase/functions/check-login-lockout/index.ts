@@ -63,6 +63,13 @@ serve(async (req) => {
     }
 
     const normalizedEmail = email.toLowerCase().trim();
+    // Reject malformed email addresses to prevent abuse
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail) || normalizedEmail.length > 254) {
+      return new Response(JSON.stringify({ error: 'Invalid email' }), {
+        status: 400,
+        headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
+      });
+    }
 
     // Get current lockout status for email
     const { data: emailLockout, error: emailError } = await supabase

@@ -24,6 +24,17 @@ serve(async (req) => {
     return new Response('ok', { headers: getCorsHeaders(req) })
   }
 
+  const cronApiKey = Deno.env.get('CRON_API_KEY');
+  if (cronApiKey) {
+    const provided = req.headers.get('x-api-key') || req.headers.get('authorization')?.replace('Bearer ', '');
+    if (provided !== cronApiKey) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
+      });
+    }
+  }
+
   try {
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
@@ -137,9 +148,10 @@ serve(async (req) => {
       status: 200,
     })
 
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Unexpected error:', error)
-    return new Response(JSON.stringify({ error: error.message }), {
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    return new Response(JSON.stringify({ error: message }), {
       headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
       status: 500,
     })

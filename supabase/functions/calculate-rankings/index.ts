@@ -30,9 +30,38 @@ serve(async (req: Request): Promise<Response> => {
     return new Response(null, { headers: getCorsHeaders(req) });
   }
 
+  const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+  const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+
+  // Accept CRON_API_KEY (scheduled jobs) or valid user JWT (frontend)
+  const cronApiKey = Deno.env.get("CRON_API_KEY");
+  const authHeader = req.headers.get("authorization") || req.headers.get("Authorization");
+  const providedKey = req.headers.get("x-api-key") || authHeader?.replace("Bearer ", "");
+  const isCronKey = cronApiKey && providedKey === cronApiKey;
+  const hasBearer = authHeader?.startsWith("Bearer ");
+
+  if (!isCronKey && !hasBearer) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+    });
+  }
+
+  if (!isCronKey && hasBearer) {
+    const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+    const userClient = createClient(supabaseUrl, anonKey);
+    const { data: { user }, error: authError } = await userClient.auth.getUser(
+      authHeader!.replace("Bearer ", "")
+    );
+    if (authError || !user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+      });
+    }
+  }
+
   try {
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     const body = await req.json().catch(() => ({}));
