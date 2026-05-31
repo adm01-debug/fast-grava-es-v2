@@ -31,36 +31,18 @@ interface CalendarFiltersProps {
   onClear: () => void;
 }
 
-export function CalendarFilters({
-  filters,
-  jobs,
-  techniques,
-  machines,
-  activeCount,
-  onToggle,
-  onUpdate,
-  onClear,
-}: CalendarFiltersProps) {
-  const [open, setOpen] = useState(false);
-
-  const uniqueClients = useMemo(() => {
-    return Array.from(new Set(jobs.map((j) => j.client))).sort();
-  }, [jobs]);
-
-  const statusEntries = Object.entries(statusLabels) as [JobStatus, string][];
-  const priorityEntries = Object.entries(PRIORITY_LABELS);
-
-  const Section = ({
-    title,
-    items,
-    selected,
-    onItemToggle,
-  }: {
-    title: string;
-    items: { value: string; label: string; color?: string }[];
-    selected: string[];
-    onItemToggle: (v: string) => void;
-  }) => (
+function Section({
+  title,
+  items,
+  selected,
+  onItemToggle,
+}: {
+  title: string;
+  items: { value: string; label: string; color?: string }[];
+  selected: string[];
+  onItemToggle: (v: string) => void;
+}) {
+  return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
         <Label className="text-xs uppercase tracking-wide text-muted-foreground">{title}</Label>
@@ -100,6 +82,26 @@ export function CalendarFilters({
       </div>
     </div>
   );
+}
+
+export function CalendarFilters({
+  filters,
+  jobs,
+  techniques,
+  machines,
+  activeCount,
+  onToggle,
+  onUpdate,
+  onClear,
+}: CalendarFiltersProps) {
+  const [open, setOpen] = useState(false);
+
+  const uniqueClients = useMemo(() => {
+    return Array.from(new Set(jobs.map((j) => j.client))).sort();
+  }, [jobs]);
+
+  const statusEntries = Object.entries(statusLabels) as [JobStatus, string][];
+  const priorityEntries = Object.entries(PRIORITY_LABELS);
 
   return (
     <div className="flex items-center gap-2 flex-wrap">

@@ -45,8 +45,8 @@ export const useBitrix24Sync = () => {
   const callBitrixSync = useCallback(async <T = SyncResult>(action: string, body?: Record<string, unknown>, retryCount = 0): Promise<T> => {
     const MAX_RETRIES = 3;
     const RETRY_DELAY_MS = 1000;
-    const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
-    const url = `https://${projectId}.supabase.co/functions/v1/bitrix24-sync?action=${action}`;
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+    const url = `${supabaseUrl}/functions/v1/bitrix24-sync?action=${action}`;
 
     try {
       const response = await fetch(url, {

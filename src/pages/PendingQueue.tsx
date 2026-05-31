@@ -44,6 +44,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { DbJob, DbTechnique, DbMachine } from "@/features/jobs";
 import { JobStatus } from "@/types/scheduling";
+import { canTransition } from "@/features/jobs/services/jobStateMachine";
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { SmartSequencingPanel } from "@/components/planning/SmartSequencingPanel";
 import { LoadBalancingPanel } from "@/components/planning/LoadBalancingPanel";
@@ -277,6 +278,14 @@ export default function PendingQueue() {
         if (error) throw error;
         toast.success(`${selectedJobs.size} jobs excluídos`);
       } else {
+        const targetStatus = action as JobStatus;
+        const selectedJobsList = filteredJobs.filter(j => selectedJobs.has(j.id));
+        const invalid = selectedJobsList.filter(j => !canTransition(j.status as JobStatus, targetStatus));
+        if (invalid.length > 0) {
+          toast.error(`${invalid.length} job(s) não podem ser movidos para "${targetStatus}" a partir do estado atual`);
+          return;
+        }
+
         const updateData: TablesUpdate<'jobs'> = {
           status: action,
           updated_at: new Date().toISOString()
@@ -285,15 +294,15 @@ export default function PendingQueue() {
           updateData.actual_start_time = new Date().toISOString();
         }
 
-        const { error } = await supabase.from('jobs').update(updateData).in('id', Array.from(selectedJobs));
-        if (error) throw error;
+        await Promise.all(
+          selectedJobsList.map(j => supabase.from('jobs').update(updateData).eq('id', j.id))
+        );
         toast.success(`${selectedJobs.size} jobs movidos para "${action === 'production' ? 'Em Produção' : 'No Jeito'}"`);
       }
 
       setSelectedJobs(new Set());
       queryClient.invalidateQueries({ queryKey: ['jobs'] });
     } catch (error) {
-
       toast.error('Erro ao processar ação em massa');
     }
   };

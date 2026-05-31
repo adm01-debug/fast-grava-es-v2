@@ -143,10 +143,12 @@ export function useMLPredictions() {
   // Acknowledge prediction mutation
   const acknowledgePrediction = useMutation({
     mutationFn: async (predictionId: string) => {
+      const { data: { user } } = await supabase.auth.getUser();
       const { error } = await supabase
         .from('machine_predictions')
         .update({
           acknowledged_at: new Date().toISOString(),
+          acknowledged_by: user?.id ?? null,
         })
         .eq('id', predictionId);
 

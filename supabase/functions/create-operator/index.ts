@@ -60,8 +60,8 @@ Deno.serve(async (req) => {
       .eq('user_id', requestingUser.id)
       .single()
 
-    if (roleData?.role !== 'coordinator') {
-      return new Response(JSON.stringify({ error: 'Apenas coordenadores podem criar operadores' }), {
+    if (!['coordinator', 'admin'].includes(roleData?.role ?? '')) {
+      return new Response(JSON.stringify({ error: 'Apenas coordenadores e administradores podem criar operadores' }), {
         status: 403,
         headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
       })
@@ -71,6 +71,22 @@ Deno.serve(async (req) => {
 
     if (!email || !password || !full_name) {
       return new Response(JSON.stringify({ error: 'Email, senha e nome são obrigatórios' }), {
+        status: 400,
+        headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
+      })
+    }
+
+    // Basic email format check
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return new Response(JSON.stringify({ error: 'Formato de email inválido' }), {
+        status: 400,
+        headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
+      })
+    }
+
+    // Minimum password length
+    if (password.length < 8) {
+      return new Response(JSON.stringify({ error: 'A senha deve ter no mínimo 8 caracteres' }), {
         status: 400,
         headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
       })

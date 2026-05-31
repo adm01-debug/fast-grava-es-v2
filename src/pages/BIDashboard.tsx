@@ -43,6 +43,34 @@ interface DateRange { from: Date; to: Date; }
 
 import { CHART_COLORS, PIE_COLORS, STUDIO_MAP, STUDIO_LIST } from '@/constants/biConstants';
 
+function getComparisonDelta(current: number, previous: number) {
+  if (previous === 0) return { delta: 0, trend: 'neutral' as const };
+  const delta = ((current - previous) / previous) * 100;
+  return { delta: Math.abs(delta), trend: delta > 0 ? 'up' as const : delta < 0 ? 'down' as const : 'neutral' as const };
+}
+
+function ComparisonKPICard({ title, value1, value2, icon: Icon, format: formatFn = (v: number) => v.toLocaleString(), higherIsBetter = true }: { title: string; value1: number; value2: number; icon: React.ElementType; format?: (v: number) => string; higherIsBetter?: boolean }) {
+  const { delta, trend } = getComparisonDelta(value1, value2);
+  const isPositive = higherIsBetter ? trend === 'up' : trend === 'down';
+  return (
+    <Card className="card-interactive overflow-hidden group hover:shadow-glow-primary transition-all duration-300">
+      <CardContent className="pt-6">
+        <div className="flex items-start justify-between mb-4">
+          <p className="text-sm font-medium text-muted-foreground">{title}</p>
+          <div className="p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-all"><Icon className="h-5 w-5 text-primary" /></div>
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          <div><p className="text-xs text-muted-foreground">Período 1</p><p className="text-2xl font-bold gradient-text">{formatFn(value1)}</p></div>
+          <div><p className="text-xs text-muted-foreground">Período 2</p><p className="text-2xl font-bold text-muted-foreground">{formatFn(value2)}</p></div>
+        </div>
+        <div className={cn("mt-4 flex items-center gap-2 text-sm font-medium", isPositive ? "text-success" : trend === 'neutral' ? "text-muted-foreground" : "text-primary")}>
+          {trend === 'up' ? <ArrowUp className="h-4 w-4" /> : trend === 'down' ? <ArrowDown className="h-4 w-4" /> : <Minus className="h-4 w-4" />}
+          <span>{delta.toFixed(1)}% {trend === 'up' ? 'maior' : trend === 'down' ? 'menor' : 'igual'}</span>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
 
 export default function BIDashboard() {
   const navigate = useNavigate();
@@ -219,35 +247,6 @@ export default function BIDashboard() {
   const getPeriodLabel = (filter: PeriodFilter = periodFilter, range: DateRange = customRange) => {
     if (filter === 'custom') return `${format(range.from, 'dd/MM/yyyy')} - ${format(range.to, 'dd/MM/yyyy')}`;
     return filter === '7d' ? 'Últimos 7 dias' : filter === '90d' ? 'Últimos 90 dias' : 'Últimos 30 dias';
-  };
-
-  const getComparisonDelta = (current: number, previous: number) => {
-    if (previous === 0) return { delta: 0, trend: 'neutral' as const };
-    const delta = ((current - previous) / previous) * 100;
-    return { delta: Math.abs(delta), trend: delta > 0 ? 'up' as const : delta < 0 ? 'down' as const : 'neutral' as const };
-  };
-
-  const ComparisonKPICard = ({ title, value1, value2, icon: Icon, format: formatFn = (v: number) => v.toLocaleString(), higherIsBetter = true }: { title: string; value1: number; value2: number; icon: React.ElementType; format?: (v: number) => string; higherIsBetter?: boolean }) => {
-    const { delta, trend } = getComparisonDelta(value1, value2);
-    const isPositive = higherIsBetter ? trend === 'up' : trend === 'down';
-    return (
-      <Card className="card-interactive overflow-hidden group hover:shadow-glow-primary transition-all duration-300">
-        <CardContent className="pt-6">
-          <div className="flex items-start justify-between mb-4">
-            <p className="text-sm font-medium text-muted-foreground">{title}</p>
-            <div className="p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-all"><Icon className="h-5 w-5 text-primary" /></div>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div><p className="text-xs text-muted-foreground">Período 1</p><p className="text-2xl font-bold gradient-text">{formatFn(value1)}</p></div>
-            <div><p className="text-xs text-muted-foreground">Período 2</p><p className="text-2xl font-bold text-muted-foreground">{formatFn(value2)}</p></div>
-          </div>
-          <div className={cn("mt-4 flex items-center gap-2 text-sm font-medium", isPositive ? "text-success" : trend === 'neutral' ? "text-muted-foreground" : "text-primary")}>
-            {trend === 'up' ? <ArrowUp className="h-4 w-4" /> : trend === 'down' ? <ArrowDown className="h-4 w-4" /> : <Minus className="h-4 w-4" />}
-            <span>{delta.toFixed(1)}% {trend === 'up' ? 'maior' : trend === 'down' ? 'menor' : 'igual'}</span>
-          </div>
-        </CardContent>
-      </Card>
-    );
   };
 
   const handleDrillDown = (title: string, jobs: BIJob[]) => {

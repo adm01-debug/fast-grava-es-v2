@@ -44,8 +44,8 @@ const Bitrix24ConfigPage = () => {
   const { toast } = useToast();
 
   const callBitrixSync = async (action: string, body?: Record<string, unknown>): Promise<Record<string, unknown> & { customFields?: Record<string, FieldInfo>; totalCustomFields?: number; mappings?: MappingRecord[] }> => {
-    const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
-    const url = `https://${projectId}.supabase.co/functions/v1/bitrix24-sync?action=${action}`;
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+    const url = `${supabaseUrl}/functions/v1/bitrix24-sync?action=${action}`;
     const response = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json', 'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY }, body: body ? JSON.stringify(body) : undefined });
     if (!response.ok) { const error = await response.json(); throw new Error(error.error || 'Request failed'); }
     return response.json();

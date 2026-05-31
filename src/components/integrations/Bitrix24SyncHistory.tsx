@@ -39,9 +39,9 @@ export const Bitrix24SyncHistory = () => {
   const { data: history, isLoading } = useQuery({
     queryKey: ['bitrix24-sync-history'],
     queryFn: async () => {
-      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
       const response = await fetch(
-        `https://${projectId}.supabase.co/functions/v1/bitrix24-sync?action=history&limit=50`,
+        `${supabaseUrl}/functions/v1/bitrix24-sync?action=history&limit=50`,
         {
           headers: {
             'Content-Type': 'application/json',

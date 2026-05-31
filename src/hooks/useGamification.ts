@@ -200,6 +200,29 @@ export function useGamification(period: 'daily' | 'weekly' | 'monthly' = 'weekly
   // Redemption mutation
   const redeemReward = useMutation({
     mutationFn: async (reward: Reward) => {
+      // Verify current balance to prevent over-redemption
+      const { data: achievements } = await supabase
+        .from('operator_achievements')
+        .select('points')
+        .eq('operator_id', user!.id);
+      const earned = (achievements || []).reduce((s: number, a: { points: number }) => s + a.points, 0);
+
+      const { data: existingRedemptions } = await supabase
+        .from('reward_redemptions')
+        .select('points_spent')
+        .eq('user_id', user!.id)
+        .neq('status', 'cancelled');
+      const spent = (existingRedemptions || []).reduce((s: number, r: { points_spent: number }) => s + r.points_spent, 0);
+
+      const currentBalance = Math.max(0, earned - spent);
+      if (currentBalance < reward.cost_points) {
+        throw new Error(`Saldo insuficiente. Você tem ${currentBalance} pontos, mas este resgate custa ${reward.cost_points}.`);
+      }
+
+      if (reward.stock !== undefined && reward.stock <= 0) {
+        throw new Error('Este prêmio está esgotado.');
+      }
+
       const { error } = await supabase.from('reward_redemptions').insert({
         user_id: user!.id,
         reward_id: reward.id,

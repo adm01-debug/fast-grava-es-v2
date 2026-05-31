@@ -25,10 +25,35 @@ serve(async (req) => {
   }
 
   try {
-    const supabaseClient = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    )
+    const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? ''
+    const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+    const supabaseClient = createClient(supabaseUrl, serviceRoleKey)
+
+    // Allow cron invocations (no auth header) OR authenticated coordinator/admin calls
+    const authHeader = req.headers.get('Authorization')
+    if (authHeader) {
+      const userClient = createClient(supabaseUrl, Deno.env.get('SUPABASE_ANON_KEY') ?? '', {
+        global: { headers: { Authorization: authHeader } },
+      })
+      const { data: { user } } = await userClient.auth.getUser()
+      if (!user) {
+        return new Response(JSON.stringify({ error: 'Não autorizado' }), {
+          status: 401,
+          headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
+        })
+      }
+      const { data: roleData } = await supabaseClient
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', user.id)
+        .single()
+      if (!['coordinator', 'admin'].includes(roleData?.role ?? '')) {
+        return new Response(JSON.stringify({ error: 'Sem permissão' }), {
+          status: 403,
+          headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
+        })
+      }
+    }
 
     console.log('Starting auto-promotion check...')
 
