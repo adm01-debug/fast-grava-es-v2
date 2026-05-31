@@ -17,7 +17,6 @@ export * from './hooks/usePriorityEscalation';
 export * from './services/jobsService';
 export * from './services/techniquesService';
 export * from './services/jobStateMachine';
-export * from './services/jobStateMachine';
 export * from './services/scheduling';
 export * from './types/job.schema';
 export * from './types/sequencing';
